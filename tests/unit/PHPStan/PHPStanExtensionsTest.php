@@ -24,6 +24,8 @@
 
 declare(strict_types=1);
 
+namespace Prado\Test\Unit\PHPStan;
+
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -55,13 +57,13 @@ class PHPStanExtensionsTest extends TestCase
 	/**
 	 * Run PHPStan on a fixture file and return the JSON-decoded result.
 	 *
-	 * @param string $fixtureFile  Basename of a file under tests/unit/PHPStan/fixtures/
+	 * @param string $fixtureFile  Basename of a file under tests/unit/PHPStan/Fixtures/
 	 * @param string|null $config  Path to a neon config (null → phpstan.neon.dist)
 	 * @return array{totals: array{errors: int, file_errors: int}, files: array<string,mixed>}
 	 */
 	private function runPhpStan(string $fixtureFile, ?string $config = null): array
 	{
-		$fixture = __DIR__ . '/fixtures/' . $fixtureFile;
+		$fixture = __DIR__ . '/Fixtures/' . $fixtureFile;
 		$phpstan = $this->projectRoot . '/vendor/bin/phpstan';
 		$configArg = $config !== null
 			? '--configuration=' . escapeshellarg($config)
@@ -102,15 +104,7 @@ class PHPStanExtensionsTest extends TestCase
 	 */
 	private function countFileErrors(array $result, string $fixtureFile): int
 	{
-		$fixturePath = realpath(__DIR__ . '/fixtures/' . $fixtureFile) ?: (__DIR__ . '/fixtures/' . $fixtureFile);
-		foreach ($result['files'] ?? [] as $path => $data) {
-			// PHPStan may use relative or absolute paths; match by realpath or basename.
-			$realPath = realpath($path) ?: $path;
-			if ($realPath === $fixturePath || basename($path) === $fixtureFile) {
-				return (int) ($data['errors'] ?? 0);
-			}
-		}
-		return 0;
+		return count($this->extensionRelevantMessages($this->fileMessages($result, $fixtureFile)));
 	}
 
 	/**
@@ -124,25 +118,64 @@ class PHPStanExtensionsTest extends TestCase
 	 */
 	private function describeErrors(array $result, string $fixtureFile): string
 	{
-		$fixturePath = realpath(__DIR__ . '/fixtures/' . $fixtureFile) ?: (__DIR__ . '/fixtures/' . $fixtureFile);
+		$messages = $this->extensionRelevantMessages($this->fileMessages($result, $fixtureFile));
+		if (empty($messages)) {
+			return '';
+		}
+		$lines = ["\nPHPStan errors in {$fixtureFile}:"];
+		foreach ($messages as $msg) {
+			$line = $msg['line'] ?? '?';
+			$text = $msg['message'] ?? '(no message)';
+			$lines[] = "  line {$line}: {$text}";
+		}
+		return implode("\n", $lines);
+	}
+
+	/**
+	 * Removes level-4 diagnostics caused by the fixture scaffolding itself.
+	 *
+	 * These tests verify whether an extension resolves dynamic methods and
+	 * properties. Redundant-condition, unused-expression, and backing-property
+	 * diagnostics do not describe that behavior.
+	 *
+	 * @param array<int,array<string,mixed>> $messages PHPStan messages.
+	 * @return array<int,array<string,mixed>> Messages relevant to the extension.
+	 * @since 4.4.0
+	 */
+	private function extensionRelevantMessages(array $messages): array
+	{
+		$fixtureDiagnostics = [
+			'expr.resultUnused',
+			'function.alreadyNarrowedType',
+			'method.alreadyNarrowedType',
+			'property.onlyWritten',
+			'staticMethod.alreadyNarrowedType',
+		];
+
+		return array_values(array_filter(
+			$messages,
+			static fn(array $message): bool => !in_array($message['identifier'] ?? '', $fixtureDiagnostics, true)
+		));
+	}
+
+	/**
+	 * Returns every PHPStan message reported for a fixture file, unfiltered.
+	 *
+	 * @param array<string,mixed> $result  Return value of runPhpStan()
+	 * @param string $fixtureFile          Basename of the fixture file
+	 * @return array<int,array<string,mixed>> PHPStan messages for the fixture.
+	 * @since 4.4.0
+	 */
+	private function fileMessages(array $result, string $fixtureFile): array
+	{
+		$fixturePath = realpath(__DIR__ . '/Fixtures/' . $fixtureFile) ?: (__DIR__ . '/Fixtures/' . $fixtureFile);
 		foreach ($result['files'] ?? [] as $path => $data) {
 			$realPath = realpath($path) ?: $path;
-			if ($realPath !== $fixturePath && basename($path) !== $fixtureFile) {
-				continue;
+			if ($realPath === $fixturePath || basename($path) === $fixtureFile) {
+				return $data['messages'] ?? [];
 			}
-			$messages = $data['messages'] ?? [];
-			if (empty($messages)) {
-				return '';
-			}
-			$lines = ["\nPHPStan errors in {$fixtureFile}:"];
-			foreach ($messages as $msg) {
-				$line = $msg['line'] ?? '?';
-				$text = $msg['message'] ?? '(no message)';
-				$lines[] = "  line {$line}: {$text}";
-			}
-			return implode("\n", $lines);
 		}
-		return '';
+		return [];
 	}
 
 	/** Path to the "no extensions" config used for the negative pass. */
@@ -227,6 +260,37 @@ class PHPStanExtensionsTest extends TestCase
 		);
 	}
 
+	/**
+	 * Without the extensions PHPStan reports each guarded `fx` call as undefined.
+	 *
+	 * @group phpstan
+	 */
+	public function testHasMethodExtension_FxGuardFailsWithoutExtension(): void
+	{
+		$result = $this->runPhpStan('HasMethodFxFixture.php', $this->noExtensionsConfig());
+		$this->assertNotEmpty(
+			$this->fileMessages($result, 'HasMethodFxFixture.php'),
+			'Expected PHPStan to report the fx calls without the extensions.'
+		);
+	}
+
+	/**
+	 * A hasMethod() guard on an `fx` name is a real runtime check, so PHPStan must
+	 * not report it as always true. The fixture-diagnostic filter does not apply;
+	 * any message fails the test.
+	 *
+	 * @group phpstan
+	 */
+	public function testHasMethodExtension_FxGuardIsNotAlwaysTrue(): void
+	{
+		$result = $this->runPhpStan('HasMethodFxFixture.php');
+		$messages = array_map(
+			static fn(array $message): string => 'line ' . ($message['line'] ?? '?') . ': ' . ($message['message'] ?? ''),
+			$this->fileMessages($result, 'HasMethodFxFixture.php')
+		);
+		$this->assertSame([], $messages, 'Expected no PHPStan messages for hasMethod() guards on fx names.');
+	}
+
 	// -------------------------------------------------------------------------
 	// PradoMethodVisibleStaticMethodTypeSpecifyingExtension
 	// -------------------------------------------------------------------------
@@ -270,18 +334,22 @@ class PHPStanExtensionsTest extends TestCase
 	// -------------------------------------------------------------------------
 
 	/**
-	 * Without the extension, isa() guards do not narrow the type.
+	 * isa() narrowing is carried by the assertion tag on TComponent::isa(), which
+	 * travels with the framework source.  The narrowing therefore applies with no
+	 * PRADO services configured at all.
 	 *
 	 * @group phpstan
+	 * @since 4.4.0
 	 */
-	public function testIsaExtension_FailsWithoutExtension(): void
+	public function testIsaExtension_NarrowsWithoutServicesConfig(): void
 	{
 		$result = $this->runPhpStan('IsaFixture.php', $this->noExtensionsConfig());
 		$errors = $this->countFileErrors($result, 'IsaFixture.php');
-		$this->assertGreaterThan(
+		$this->assertSame(
 			0,
 			$errors,
-			'Expected PHPStan errors for subclass-specific calls inside isa() guards without the extension.'
+			'Expected zero PHPStan errors for isa()-guarded subclass calls without the services block.'
+				. $this->describeErrors($result, 'IsaFixture.php')
 		);
 	}
 
@@ -308,21 +376,23 @@ class PHPStanExtensionsTest extends TestCase
 	// -------------------------------------------------------------------------
 
 	/**
-	 * Without the extension, isa() guards on interface class strings do not narrow
-	 * the type, so interface-method calls inside the guard produce errors.
+	 * Interface narrowing comes from the same assertion tag, so it also applies
+	 * with no PRADO services configured.
 	 *
 	 * This test isolates the interface case from the subclass case above.
 	 *
 	 * @group phpstan
+	 * @since 4.4.0
 	 */
-	public function testIsaExtensionInterface_FailsWithoutExtension(): void
+	public function testIsaExtensionInterface_NarrowsWithoutServicesConfig(): void
 	{
 		$result = $this->runPhpStan('IsaInterfaceFixture.php', $this->noExtensionsConfig());
 		$errors = $this->countFileErrors($result, 'IsaInterfaceFixture.php');
-		$this->assertGreaterThan(
+		$this->assertSame(
 			0,
 			$errors,
-			'Expected PHPStan errors for interface-method calls inside isa() guards without the extension.'
+			'Expected zero PHPStan errors for isa()-guarded interface-method calls without the services block.'
+				. $this->describeErrors($result, 'IsaInterfaceFixture.php')
 		);
 	}
 
@@ -341,6 +411,78 @@ class PHPStanExtensionsTest extends TestCase
 			$errors,
 			'Expected zero PHPStan errors for isa()-guarded interface-method calls with the extension.'
 				. $this->describeErrors($result, 'IsaInterfaceFixture.php')
+		);
+	}
+
+	// -------------------------------------------------------------------------
+	// TComponent::isa() — intersection subjects
+	// -------------------------------------------------------------------------
+
+	/**
+	 * PHPStan hands a method call to a MethodTypeSpecifyingExtension only when the
+	 * subject has exactly one object class name, so an intersection subject such as
+	 * `IService&TComponent` never reaches TComponentIsaTypeSpecifyingExtension.
+	 * The assertion tag on TComponent::isa() narrows those subjects instead.
+	 *
+	 * @group phpstan
+	 * @since 4.4.0
+	 */
+	public function testIsaIntersection_PassesWithExtension(): void
+	{
+		$result = $this->runPhpStan('IsaIntersectionFixture.php');
+		$errors = $this->countFileErrors($result, 'IsaIntersectionFixture.php');
+		$this->assertSame(
+			0,
+			$errors,
+			'Expected zero PHPStan errors for isa()-guarded calls on intersection-typed subjects.'
+				. $this->describeErrors($result, 'IsaIntersectionFixture.php')
+		);
+	}
+
+	/**
+	 * Intersection narrowing comes from the framework source, so it applies with no
+	 * PRADO services configured.
+	 *
+	 * @group phpstan
+	 * @since 4.4.0
+	 */
+	public function testIsaIntersection_NarrowsWithoutServicesConfig(): void
+	{
+		$result = $this->runPhpStan('IsaIntersectionFixture.php', $this->noExtensionsConfig());
+		$errors = $this->countFileErrors($result, 'IsaIntersectionFixture.php');
+		$this->assertSame(
+			0,
+			$errors,
+			'Expected zero PHPStan errors for isa()-guarded intersection calls without the services block.'
+				. $this->describeErrors($result, 'IsaIntersectionFixture.php')
+		);
+	}
+
+	/**
+	 * Zero errors alone cannot tell a correct narrowing from a permissive one, so
+	 * this fixture calls a method that exists nowhere.  PHPStan reports it against
+	 * the class the guard narrowed to, which pins the narrowing to the asserted
+	 * class.  Without the narrowing the same error names the intersection.
+	 *
+	 * @group phpstan
+	 * @since 4.4.0
+	 */
+	public function testIsaIntersection_NarrowsToTheAssertedClass(): void
+	{
+		$result = $this->runPhpStan('IsaIntersectionNegativeFixture.php');
+		$messages = $this->extensionRelevantMessages(
+			$this->fileMessages($result, 'IsaIntersectionNegativeFixture.php')
+		);
+		$this->assertCount(
+			1,
+			$messages,
+			'Expected exactly one PHPStan error in IsaIntersectionNegativeFixture.php.'
+				. $this->describeErrors($result, 'IsaIntersectionNegativeFixture.php')
+		);
+		$this->assertStringContainsString(
+			'IsaNegativeFixtureComponent::thisMethodDoesNotExist()',
+			(string) ($messages[0]['message'] ?? ''),
+			'Expected the undefined-method error to name the class the isa() guard narrowed to.'
 		);
 	}
 
@@ -417,6 +559,48 @@ class PHPStanExtensionsTest extends TestCase
 			$errors,
 			'Expected zero PHPStan errors for canSetProperty()-guarded setter calls with the extension.'
 				. $this->describeErrors($result, 'CanSetPropertyFixture.php')
+		);
+	}
+
+	// -------------------------------------------------------------------------
+	// Virtual property spelling — canGetProperty() / canSetProperty() / hasMethod()
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Without the extensions, no guard narrows the virtual property, so every
+	 * access in the fixture is an undefined property.
+	 *
+	 * @group phpstan
+	 * @since 4.4.0
+	 */
+	public function testPropertyCase_FailsWithoutExtension(): void
+	{
+		$result = $this->runPhpStan('PropertyCaseFixture.php', $this->noExtensionsConfig());
+		$errors = $this->countFileErrors($result, 'PropertyCaseFixture.php');
+		$this->assertGreaterThan(
+			0,
+			$errors,
+			'Expected PHPStan errors for guarded virtual property access without the extensions.'
+		);
+	}
+
+	/**
+	 * PRADO writes a virtual property as `Title` in templates and in code, while
+	 * `title` reaches the same accessor.  PHPStan asks for the property with the
+	 * spelling written in the source, so a guard must narrow both spellings.
+	 *
+	 * @group phpstan
+	 * @since 4.4.0
+	 */
+	public function testPropertyCase_PassesWithExtension(): void
+	{
+		$result = $this->runPhpStan('PropertyCaseFixture.php');
+		$errors = $this->countFileErrors($result, 'PropertyCaseFixture.php');
+		$this->assertSame(
+			0,
+			$errors,
+			'Expected zero PHPStan errors for guarded virtual property access in either spelling.'
+				. $this->describeErrors($result, 'PropertyCaseFixture.php')
 		);
 	}
 

@@ -1,0 +1,433 @@
+<com:TContent ID="Content">
+
+<h1>Issue 1154 &mdash; jQuery.fn.trigger bridge</h1>
+
+<p>
+This page exercises every branch of the bridge installed in <code>prado.js</code>
+that maps <code>jQuery(el).trigger(name)</code> to native <code>dispatchEvent</code>
+for Prado-managed (klass) elements. The Playwright spec drives this page via
+<code>page.evaluate()</code>, calling helpers attached to <code>window.__bridge</code>.
+</p>
+
+<!-- ─── Plain DOM probes the spec wraps with helpers ─── -->
+<input type="text" id="probePlain" />
+<input type="text" id="probeKlass" />
+<input type="text" id="probeText" />
+<input type="text" id="probeMulti1" />
+<input type="text" id="probeMulti2" />
+<input type="text" id="probeFocus" />
+<button type="button" id="probeButton">btn</button>
+<div id="probeCustom"></div>
+<!-- Note: the <form> probes are appended to document.body at runtime
+	 from the helper script below, OUTSIDE the page-wrapping Prado form.
+	 (HTML5 unwraps nested forms, so we can't author the form here.) -->
+
+
+<!-- ─── Visible result tape (for tests that prefer reading the DOM) ─── -->
+<pre id="bridgeResults" style="background:#eee; padding:6px; min-height:1em;"></pre>
+
+<com:TClientScript>
+// Wait until prado.js + jQuery are loaded.
+(function ready(fn) {
+	if (document.readyState !== 'loading') fn();
+	else document.addEventListener('DOMContentLoaded', fn);
+})(function () {
+	// ─── Helpers ────────────────────────────────────────────────────────────
+	var results = document.getElementById('bridgeResults');
+	function record(label) {
+		results.textContent = results.textContent
+			? results.textContent + '\n' + label
+			: label;
+	}
+	function reset() { results.textContent = ''; }
+
+	// Bare-bones klass control: registers itself in Prado.Registry under
+	// options.ID, exposes the element as `this.element`. Mirrors what
+	// Prado.WebUI.Control does without dragging controls.js in.
+	function makeKlass(id) {
+		var K = jQuery.klass({
+			initialize: function (opts) {
+				this.options = opts;
+				this.ID = opts.ID;
+				this.element = document.getElementById(opts.ID);
+				Prado.Registry[opts.ID] = this;
+			}
+		});
+		return new K({ ID: id });
+	}
+
+	// Build form probes outside the Prado-controlled page area so they're
+	// not stripped by HTML5 form unwrapping. Append directly to body.
+	var form = document.createElement('form');
+	form.id = 'bridgeForm';
+	form.method = 'get';
+	form.action = '?page=Issue1154TriggerBridge&submitted=1';
+	var submitBtn = document.createElement('input');
+	submitBtn.type = 'submit';
+	submitBtn.id = 'probeSubmit';
+	submitBtn.value = 'submit';
+	form.appendChild(submitBtn);
+	// Append OUTSIDE the Prado wrapper form. document.documentElement works
+	// because the Prado form is just one of body's children.
+	document.documentElement.appendChild(form);
+
+	// Pre-register every probe element as a klass control. probePlain stays
+	// non-klass so we can exercise the passthrough branch.
+	var klassInputs = ['probeKlass', 'probeText', 'probeMulti1', 'probeFocus',
+		'probeButton', 'probeCustom', 'bridgeForm', 'probeSubmit'];
+	var instances = {};
+	klassInputs.forEach(function (id) { instances[id] = makeKlass(id); });
+
+	// ─── window.__bridge: the API the spec drives ──────────────────────────
+	window.__bridge = {
+		reset: reset,
+		results: function () { return results.textContent; },
+		count: 0,
+		// Marker assertions: spec reads these via page.evaluate().
+		isPradoClassMarker: function (id) {
+			var inst = Prado.Registry[id];
+			return !!(inst && inst.constructor && inst.constructor.isPradoClass);
+		},
+		// Prado.Class.prototype.trigger tests ───────────────────────────────
+		probeKlass_triggerHelper: function (evtName, detail) {
+			var got = null;
+			var handler = function (e) { got = { type: e.type, detail: e.detail }; };
+			var el = document.getElementById('probeKlass');
+			el.addEventListener(evtName, handler);
+			instances.probeKlass.trigger(evtName, detail);
+			el.removeEventListener(evtName, handler);
+			return got;
+		},
+		// Bridge — addEventListener handler fires when jQuery.trigger called
+		klassChange_fires: function () {
+			var fired = 0;
+			var el = document.getElementById('probeKlass');
+			var h = function () { fired++; };
+			el.addEventListener('change', h);
+			jQuery(el).trigger('change');
+			el.removeEventListener('change', h);
+			return fired;
+		},
+		// Bridge — jQuery.on handler also fires on klass element
+		klassChange_jq_on_fires: function () {
+			var fired = 0;
+			var $el = jQuery('#probeKlass');
+			var h = function () { fired++; };
+			$el.on('change.tb', h);
+			$el.trigger('change');
+			$el.off('change.tb', h);
+			return fired;
+		},
+		// Bridge — mixed handlers: both fire (once each)
+		klassChange_mixed: function () {
+			var n = 0, j = 0;
+			var el = document.getElementById('probeKlass');
+			var native = function () { n++; };
+			var jqh = function () { j++; };
+			el.addEventListener('change', native);
+			jQuery(el).on('change.tb', jqh);
+			jQuery(el).trigger('change');
+			el.removeEventListener('change', native);
+			jQuery(el).off('change.tb', jqh);
+			return { native: n, jq: j };
+		},
+		// Bridge — non-klass passthrough
+		nonKlass_passthrough: function () {
+			var fired = 0;
+			var $el = jQuery('#probePlain');
+			$el.on('change.tb', function () { fired++; });
+			$el.trigger('change');
+			$el.off('change.tb');
+			return fired;
+		},
+		// Bridge — registry slot exists but is not a klass instance
+		registry_not_klass: function () {
+			// Plant a non-klass entry, ensure passthrough still works.
+			var saved = Prado.Registry['probeText'];
+			Prado.Registry['probeText'] = { not: 'a klass' };
+			var fired = 0;
+			var $el = jQuery('#probeText');
+			$el.on('change.tb', function () { fired++; });
+			$el.trigger('change');
+			$el.off('change.tb');
+			Prado.Registry['probeText'] = saved;
+			return fired;
+		},
+		// Bridge — CustomEvent detail payload
+		customDetail: function (payload) {
+			var got = null;
+			var el = document.getElementById('probeCustom');
+			var h = function (e) { got = e.detail; };
+			el.addEventListener('mything', h);
+			jQuery(el).trigger('mything', payload);
+			el.removeEventListener('mything', h);
+			return got;
+		},
+		// Bridge — uses CustomEvent (not plain Event)
+		usesCustomEvent: function () {
+			var got = null;
+			var el = document.getElementById('probeCustom');
+			var h = function (e) { got = e instanceof CustomEvent; };
+			el.addEventListener('thing', h);
+			jQuery(el).trigger('thing', 'p');
+			el.removeEventListener('thing', h);
+			return got;
+		},
+		// Bridge — real Event instance is dispatched verbatim
+		realEventPassthrough: function () {
+			var got = null;
+			var el = document.getElementById('probeCustom');
+			var h = function (e) { got = e; };
+			el.addEventListener('keydown', h);
+			var real = new Event('keydown', { bubbles: true });
+			jQuery(el).trigger(real);
+			el.removeEventListener('keydown', h);
+			return got === real;
+		},
+		// Bridge — chainability: returns the jQuery wrapper
+		chainability: function () {
+			var $el = jQuery('#probeKlass');
+			var ret = $el.trigger('change');
+			return ret === $el;
+		},
+		// Bridge — multi-element selector with klass + non-klass mix
+		multiset: function () {
+			var a = 0, b = 0;
+			var elA = document.getElementById('probeMulti1'); // klass
+			var elB = document.getElementById('probePlain');  // non-klass
+			elA.addEventListener('change', function () { a++; });
+			jQuery(elB).on('change.tb', function () { b++; });
+			jQuery('#probeMulti1, #probePlain').trigger('change');
+			jQuery(elB).off('change.tb');
+			return { klassFired: a, plainFired: b };
+		},
+		// Bridge — focus activation: jQuery.trigger('focus') calls el.focus()
+		focusActivation: function () {
+			var el = document.getElementById('probeFocus');
+			document.body.focus();          // ensure not already focused
+			jQuery(el).trigger('focus');
+			return document.activeElement === el;
+		},
+		// Bridge — blur activation
+		blurActivation: function () {
+			var el = document.getElementById('probeFocus');
+			el.focus();                      // make sure it has focus first
+			jQuery(el).trigger('blur');
+			return document.activeElement !== el;
+		},
+		// Bridge — submit on klass FORM: form.submit() is invoked
+		submitInvoked: function () {
+			var form = document.getElementById('bridgeForm');
+			var calls = 0;
+			var origSubmit = form.submit;
+			form.submit = function () { calls++; };
+			jQuery(form).trigger('submit');
+			form.submit = origSubmit;
+			return calls;
+		},
+		// Bridge — submit on klass FORM with preventDefault stops submission
+		submitPrevented: function () {
+			var form = document.getElementById('bridgeForm');
+			var canceller = function (e) { e.preventDefault(); };
+			form.addEventListener('submit', canceller);
+			var calls = 0;
+			var origSubmit = form.submit;
+			form.submit = function () { calls++; };
+			jQuery(form).trigger('submit');
+			form.submit = origSubmit;
+			form.removeEventListener('submit', canceller);
+			return calls;
+		},
+		// Bridge — submit on klass FORM dispatches the submit event before
+		// calling form.submit(), so handlers see the event in order.
+		submitEventFires: function () {
+			var form = document.getElementById('bridgeForm');
+			var ordering = [];
+			var handler = function () { ordering.push('event'); };
+			form.addEventListener('submit', handler);
+			var origSubmit = form.submit;
+			form.submit = function () { ordering.push('submit'); };
+			jQuery(form).trigger('submit');
+			form.submit = origSubmit;
+			form.removeEventListener('submit', handler);
+			return ordering;
+		},
+		// Bridge — click on klass submit-button invokes el.click(), which
+		// the browser routes to default activation (form submit).
+		clickActivation: function () {
+			var btn = document.getElementById('probeSubmit');
+			var calls = 0;
+			var origClick = btn.click.bind(btn);
+			btn.click = function () { calls++; };
+			jQuery(btn).trigger('click');
+			btn.click = origClick;
+			return calls;
+		},
+		// Bridge — empty / undefined event name is a no-op for klass elements
+		emptyEventName: function () {
+			var fired = 0;
+			var el = document.getElementById('probeKlass');
+			el.addEventListener('change', function () { fired++; });
+			try { jQuery(el).trigger(''); } catch (e) {}
+			try { jQuery(el).trigger(undefined); } catch (e) {}
+			return fired;
+		},
+		// Bridge — handler order: addEventListener-then-jq.on fires native first
+		handlerOrder: function () {
+			var order = [];
+			var el = document.getElementById('probeKlass');
+			var n = function () { order.push('native'); };
+			var j = function () { order.push('jquery'); };
+			el.addEventListener('change', n);
+			jQuery(el).on('change.tb', j);
+			jQuery(el).trigger('change');
+			el.removeEventListener('change', n);
+			jQuery(el).off('change.tb', j);
+			return order;
+		},
+
+		// ─── Exactly-once dispatch coverage ────────────────────────────────
+		// Each helper returns the full set of call counts so the spec
+		// can assert the exact multiplicities, ruling out any spurious
+		// extra calls slipped in by the bridge.
+
+		exactlyOnce_native: function () {
+			var c = 0;
+			var el = document.getElementById('probeKlass');
+			var fn = function () { c++; };
+			el.addEventListener('change', fn);
+			jQuery(el).trigger('change');
+			el.removeEventListener('change', fn);
+			return c;
+		},
+		exactlyOnce_jq: function () {
+			var c = 0;
+			var el = document.getElementById('probeKlass');
+			var fn = function () { c++; };
+			jQuery(el).on('change.t', fn);
+			jQuery(el).trigger('change');
+			jQuery(el).off('change.t', fn);
+			return c;
+		},
+		exactlyOnce_threeNative: function () {
+			var a = 0, b = 0, c = 0;
+			var el = document.getElementById('probeKlass');
+			var fa = function () { a++; }, fb = function () { b++; }, fc = function () { c++; };
+			el.addEventListener('change', fa);
+			el.addEventListener('change', fb);
+			el.addEventListener('change', fc);
+			jQuery(el).trigger('change');
+			el.removeEventListener('change', fa);
+			el.removeEventListener('change', fb);
+			el.removeEventListener('change', fc);
+			return [a, b, c];
+		},
+		exactlyOnce_threeJq: function () {
+			var a = 0, b = 0, c = 0;
+			var el = document.getElementById('probeKlass');
+			var fa = function () { a++; }, fb = function () { b++; }, fc = function () { c++; };
+			jQuery(el).on('change.t1', fa);
+			jQuery(el).on('change.t2', fb);
+			jQuery(el).on('change.t3', fc);
+			jQuery(el).trigger('change');
+			jQuery(el).off('change.t1', fa);
+			jQuery(el).off('change.t2', fb);
+			jQuery(el).off('change.t3', fc);
+			return [a, b, c];
+		},
+		exactlyOnce_matrix: function () {
+			var n1 = 0, n2 = 0, j1 = 0, j2 = 0;
+			var el = document.getElementById('probeKlass');
+			var fn1 = function () { n1++; }, fn2 = function () { n2++; };
+			var fj1 = function () { j1++; }, fj2 = function () { j2++; };
+			el.addEventListener('change', fn1);
+			el.addEventListener('change', fn2);
+			jQuery(el).on('change.t1', fj1);
+			jQuery(el).on('change.t2', fj2);
+			jQuery(el).trigger('change');
+			el.removeEventListener('change', fn1);
+			el.removeEventListener('change', fn2);
+			jQuery(el).off('change.t1', fj1);
+			jQuery(el).off('change.t2', fj2);
+			return { n1: n1, n2: n2, j1: j1, j2: j2, total: n1 + n2 + j1 + j2 };
+		},
+		exactlyOnce_addEventListenerDedupe: function () {
+			var c = 0;
+			var el = document.getElementById('probeKlass');
+			var fn = function () { c++; };
+			el.addEventListener('change', fn);
+			el.addEventListener('change', fn); // browser spec: no-op
+			jQuery(el).trigger('change');
+			el.removeEventListener('change', fn);
+			return c;
+		},
+		exactlyOnce_jqDoesNotDedupe: function () {
+			var c = 0;
+			var el = document.getElementById('probeKlass');
+			var fn = function () { c++; };
+			jQuery(el).on('change.t1', fn);
+			jQuery(el).on('change.t2', fn);
+			jQuery(el).trigger('change');
+			jQuery(el).off('change.t1', fn);
+			jQuery(el).off('change.t2', fn);
+			return c;
+		},
+		exactlyOnce_threeTriggers: function () {
+			var n = 0, j = 0;
+			var el = document.getElementById('probeKlass');
+			var fn = function () { n++; }, fj = function () { j++; };
+			el.addEventListener('change', fn);
+			jQuery(el).on('change.t', fj);
+			jQuery(el).trigger('change');
+			jQuery(el).trigger('change');
+			jQuery(el).trigger('change');
+			el.removeEventListener('change', fn);
+			jQuery(el).off('change.t', fj);
+			return { native: n, jq: j };
+		},
+		exactlyOnce_distinctEventNames: function () {
+			var c = 0, i = 0;
+			var el = document.getElementById('probeKlass');
+			var fc = function () { c++; }, fi = function () { i++; };
+			el.addEventListener('change', fc);
+			jQuery(el).on('input.t', fi);
+			jQuery(el).trigger('change');
+			el.removeEventListener('change', fc);
+			jQuery(el).off('input.t', fi);
+			return { change: c, input: i };
+		},
+		exactlyOnce_stopPropagation: function () {
+			// Confirms the native event flow path is the only one in use —
+			// stopPropagation in a native handler must stop jQuery-bound
+			// bubble-phase handlers on an ancestor.
+			var childCalls = 0, parentCalls = 0;
+			var parent = document.createElement('div');
+			parent.id = 'sp_parent';
+			var child = document.createElement('input');
+			child.id = 'sp_child';
+			parent.appendChild(child);
+			document.documentElement.appendChild(parent);
+			// klass-register the child.
+			var K = jQuery.klass({
+				initialize: function (opts) {
+					this.options = opts;
+					this.element = document.getElementById(opts.ID);
+					Prado.Registry[opts.ID] = this;
+				}
+			});
+			new K({ ID: 'sp_child' });
+			child.addEventListener('change', function (e) { childCalls++; e.stopPropagation(); });
+			jQuery(parent).on('change.sp', function () { parentCalls++; });
+			jQuery(child).trigger('change');
+			jQuery(parent).off('change.sp');
+			parent.remove();
+			delete Prado.Registry['sp_child'];
+			return { child: childCalls, parent: parentCalls };
+		}
+	};
+
+	record('ready');
+});
+</com:TClientScript>
+
+</com:TContent>

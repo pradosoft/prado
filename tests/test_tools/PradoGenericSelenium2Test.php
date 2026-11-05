@@ -11,6 +11,14 @@ use Facebook\WebDriver\Exception\NoSuchElementException;
 use Facebook\WebDriver\Exception\NoAlertOpenException;
 use Facebook\WebDriver\Exception\NoSuchAlertException;
 
+/**
+ * PradoGenericSelenium2Test class 
+ * 
+ * **Deprecated Testing Infrastructure**
+ *
+ * These are no longer in use with the upgrade to Playwright for
+ * functional tests.
+ */
 class PradoGenericSelenium2Test extends \PHPUnit\Framework\TestCase
 {
 	public static $baseurl = 'http://127.0.0.1:8037/tests/harness/';

@@ -39,7 +39,11 @@ class THelpAction extends TShellAction
 	public function actionIndex($args)
 	{
 		if (isset($args[1])) {
-			foreach ($this->getApplication()->getShellActions() as $action) {
+			$app = $this->getApplication();
+			if ($app === null) {
+				return false;
+			}
+			foreach ($app->getShellActions() as $action) {
 				$cmdname = $action->getAction();
 				if (0 === strncasecmp($cmdname, $args[1], strlen($cmdname))) {
 					$action->setWriter($this->getWriter());

@@ -1,16 +1,18 @@
 <?php
 
+namespace Prado\Test\Unit\Web;
+
 use Prado\Web\THttpRequest;
 use Prado\Web\THttpRequestUrlFormat;
 use Prado\Web\TUrlManager;
-use Prado\TApplication;
+use Prado\Test\Unit\Harness\TTestApplication;
 
 /**
  * Test class for TUrlManager.
  */
-class TUrlManagerTest extends PHPUnit\Framework\TestCase
+class TUrlManagerTest extends \PHPUnit\Framework\TestCase
 {
-	protected static $app = null;
+	protected ?TTestApplication $app = null;
 
 	protected function setUp(): void
 	{
@@ -26,14 +28,16 @@ class TUrlManagerTest extends PHPUnit\Framework\TestCase
 		$_SERVER['SCRIPT_FILENAME'] = __FILE__;
 		$_SERVER['PATH_INFO'] = '';
 
-		if (self::$app === null) {
-			self::$app = new TApplication(__DIR__ . '/app/');
-		}
+		$this->app = new TTestApplication(__DIR__ . '/app/');
 	}
 
 	protected function tearDown(): void
 	{
 		parent::tearDown();
+		if ($this->app !== null) {
+			$this->app->restoreApplication();
+			$this->app = null;
+		}
 		$_GET = [];
 		$_POST = [];
 		$_SERVER['PATH_INFO'] = '';

@@ -1,7 +1,7 @@
 # Web/UI/ActiveControls/IActiveControl
 
 ### Directories
-[framework](./INDEX.md) / [Web](./Web/INDEX.md) / [UI](./Web/UI/INDEX.md) / [ActiveControls](./Web/UI/ActiveControls/INDEX.md) / **`IActiveControl`**
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [ActiveControls](INDEX.md) / **`IActiveControl`**
 
 **Location:** `framework/Web/UI/ActiveControls/IActiveControl.php`
 **Namespace:** `Prado\Web\UI\ActiveControls`

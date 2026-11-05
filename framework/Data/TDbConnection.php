@@ -12,6 +12,7 @@ namespace Prado\Data;
 
 use PDO;
 use PDOException;
+use Prado\Data\Common\IDbMetaData;
 use Prado\Data\Common\TDbMetaData;
 use Prado\Data\IDataTransaction;
 use Prado\Data\IDbConnection;
@@ -150,7 +151,7 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	private $_transaction;
 
 	/**
-	 * @var TDbMetaData
+	 * @var ?IDbMetaData
 	 */
 	private $_dbMeta;
 
@@ -367,12 +368,19 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 
 	/**
 	 * Closes the currently active DB connection.
-	 * It does nothing if the connection is already closed.
+	 * It does nothing if the connection is already closed.  An open transaction ends first
+	 * ({@see TDbTransaction::endOnClose()}); when it was rolled back, its
+	 * {@see TDbTransaction::onRollback() OnRollback} is raised after the connection closes.
 	 */
 	protected function close()
 	{
+		$transaction = $this->_transaction;
+		$rolledBack = $transaction instanceof TDbTransaction && $transaction->endOnClose();
 		$this->_pdo = null;
 		$this->_active = false;
+		if ($rolledBack) {
+			$transaction->onRollback();
+		}
 	}
 
 	/**
@@ -800,8 +808,9 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	}
 
 	/**
-	 * Returns the currently active transaction, or null if none is open.
-	 * Use this to check for an active Transaction.
+	 * Returns the transaction begun by {@see beginTransaction()} while it is active,
+	 * or null if none is open.  Use this to check for an active transaction.
+	 * Code that defers work until the commit attaches to its {@see TDbTransaction::onCommit OnCommit} event.
 	 * @return ?TDbTransaction the active transaction, or null.
 	 */
 	public function getCurrentTransaction()
@@ -868,6 +877,13 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 			throw new TDbException('dbconnection_active_transaction');
 		}
 
+		// Create the transaction object before the database transaction begins, so an
+		// invalid TransactionClass never leaves a database transaction open.
+		$transaction = $this->createTransaction();
+		if (!($transaction instanceof TDbTransaction)) {
+			throw new TDbException('dbconnection_transaction_class_invalid', get_debug_type($transaction), TDbTransaction::class);
+		}
+
 		$pdo = $this->getPdoInstance();
 		if (TDbDriverCapabilities::requiresPreBeginTransactionFlush($this->getDriverName())) {
 			// Firebird keeps an implicit transaction alive at all times; commit it
@@ -879,14 +895,17 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 			}
 		}
 		$pdo->beginTransaction();
-		$this->_transaction = $this->createTransaction();
+		$this->_transaction = $transaction;
 		return $this->_transaction;
 	}
 
 	/**
 	 * Commits the currently active transaction.  Issues the underlying
 	 * {@see \PDO::commit()}, then {@see completeTransaction()} runs any
-	 * driver-specific post-flush and deactivates the transaction object.
+	 * driver-specific post-flush and deactivates the transaction object, and
+	 * finally the transaction raises {@see TDataTransaction::onCommit() OnCommit}.
+	 * A commit that throws raises nothing and leaves the transaction active, so it
+	 * can still be rolled back; a handler exception propagates after the commit.
 	 * Returns null if the connection is inactive, false if no transaction is active.
 	 * @return ?bool true on commit, false if no active transaction, null if connection inactive.
 	 * @since 4.3.3
@@ -900,16 +919,23 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 		if ($txn === null || !$txn->getActive()) {
 			return false;
 		}
-		$this->_pdo->commit();
+		$committed = $this->_pdo->commit();
 		$this->completeTransaction();
+		if ($committed !== false && $txn instanceof TDataTransaction) {
+			$txn->onCommit();
+		}
 		return true;
 	}
 
 	/**
 	 * Rolls back the currently active transaction.  Issues the underlying
-	 * {@see \PDO::rollBack()} (swallowing errors from drivers that have already
-	 * closed the handle), then {@see completeTransaction()} runs any
-	 * driver-specific post-flush and deactivates the transaction object.
+	 * {@see \PDO::rollBack()}, then {@see completeTransaction()} runs any
+	 * driver-specific post-flush and deactivates the transaction object, and
+	 * finally the transaction raises {@see TDataTransaction::onRollback() OnRollback}.
+	 * A rollback that throws raises nothing and rethrows; when the database no
+	 * longer holds the transaction (it ended on the PDO instance), the transaction
+	 * object is deactivated first because its outcome is unknown, so a new
+	 * transaction can begin.  A handler exception propagates after the rollback.
 	 * Returns null if the connection is inactive, false if no transaction is active.
 	 * @return ?bool true on rollback, false if no active transaction, null if connection inactive.
 	 * @since 4.3.3
@@ -924,11 +950,17 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 			return false;
 		}
 		try {
-			$this->_pdo->rollBack();
-		} catch (PDOException | \Error $e) {
-			// Swallow errors from any driver where the transaction handle is already closed.
+			$rolledBack = $this->_pdo->rollBack();
+		} catch (PDOException $e) {
+			if (!$this->_pdo->inTransaction()) {
+				$txn->deactivate();
+			}
+			throw $e;
 		}
 		$this->completeTransaction();
+		if ($rolledBack !== false && $txn instanceof TDataTransaction) {
+			$txn->onRollback();
+		}
 		return true;
 	}
 
@@ -975,7 +1007,8 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	 *
 	 * Pass null or an empty string to reset to {@see DEFAULT_TRANSACTION_CLASS}.
 	 * The supplied class must be instantiable with a single {@see TDbConnection}
-	 * argument and should implement {@see IDataTransaction}.
+	 * argument and must extend {@see TDbTransaction}; {@see beginTransaction()}
+	 * throws a {@see TDbException} for any other class.
 	 *
 	 * @param ?string $value fully-qualified transaction class name, or null/empty to reset.
 	 * @since 3.1.7
@@ -1053,18 +1086,26 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	}
 
 	/**
-	 * @return \Prado\Data\Common\TDbMetaData
+	 * Returns the SQL metadata helper of this connection, created on first use.
+	 * The helper must be an {@see IDbMetaData}, because this connection quotes
+	 * table and column names through it.
+	 * @throws TDbException if the driver's metadata handler is not an {@see IDbMetaData}.
+	 * @return IDbMetaData the SQL metadata helper for this connection.
 	 */
 	public function getDbMetaData()
 	{
 		if ($this->_dbMeta === null) {
-			$this->_dbMeta = TDbMetaData::getInstance($this);
+			$meta = TDbMetaData::getInstance($this);
+			if (!($meta instanceof IDbMetaData)) {
+				throw new TDbException('dbmetadata_not_meta_data', get_debug_type($meta), IDbMetaData::class);
+			}
+			$this->_dbMeta = $meta;
 		}
 		return $this->_dbMeta;
 	}
 
 	/**
-	 * @return TDbColumnCaseMode the case of the column names
+	 * @return string|TDbColumnCaseMode the case of the column names
 	 */
 	public function getColumnCase()
 	{
@@ -1080,7 +1121,7 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	}
 
 	/**
-	 * @param TDbColumnCaseMode $value the case of the column names
+	 * @param string|TDbColumnCaseMode $value the case of the column names
 	 */
 	public function setColumnCase($value)
 	{
@@ -1099,7 +1140,7 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	}
 
 	/**
-	 * @return TDbNullConversionMode how the null and empty strings are converted
+	 * @return string|TDbNullConversionMode how the null and empty strings are converted
 	 */
 	public function getNullConversion()
 	{
@@ -1115,7 +1156,7 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	}
 
 	/**
-	 * @param TDbNullConversionMode $value how the null and empty strings are converted
+	 * @param string|TDbNullConversionMode $value how the null and empty strings are converted
 	 */
 	public function setNullConversion($value)
 	{
@@ -1324,7 +1365,7 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	 */
 	protected function extractDriverFromDsn(string $dsn): ?string
 	{
-		if (!is_string($dsn) || strpos($dsn, ':') === false) {
+		if (strpos($dsn, ':') === false) {
 			return null;
 		}
 		[$driver] = explode(':', $dsn, 2);

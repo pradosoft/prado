@@ -11,11 +11,18 @@
 namespace Prado\Web;
 
 use Prado\Exceptions\TExitException;
+use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
+use Prado\IO\TFileStream;
+use Prado\IO\TOutputStream;
+use Prado\IO\Util\TStreamHelper;
 use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Util\Traits\TInitializedTrait;
+use Prado\Web\HttpHeaders\THttpHeaderRange;
+use Prado\Web\HttpHeaders\THttpHeadersManager;
+use Prado\Web\THttpHeaderName;
 
 /**
  * THttpResponse class
@@ -30,6 +37,20 @@ use Prado\Util\Traits\TInitializedTrait;
  * To send cookies to client, use {@see getCookies()}.
  * To redirect client browser to a new URL, use {@see redirect()}.
  * To send a file to client, use {@see writeFile()}.
+ *
+ * {@see writeFile()} serves one byte span of the file to a `GET` request that carries
+ * a `Range` header (RFC 9110 §14); ranges that overlap or adjoin merge into one span.  It sends `Accept-Ranges: bytes`, and a
+ * `Last-Modified` header for a server file, so a client can resume a download or
+ * seek in media.  {@see setAcceptRanges() AcceptRanges} turns range serving off.
+ *
+ * | Request | Response |
+ * |---|---|
+ * | no `Range`, an ignored `Range`, disjoint ranges, or an `If-Range` that does not match | `200` with the full file |
+ * | satisfiable ranges forming one span | `206 Partial Content` with `Content-Range` and the span |
+ * | no range within the file | `416 Range Not Satisfiable` with a `Content-Range` giving the file size, and no body |
+ *
+ * Disjoint ranges, such as those Acrobat requests to open a large PDF, are served by
+ * the web server when a `dyWriteFile` behavior hands it the file.
  *
  * By default, THttpResponse is registered with {@see \Prado\TApplication} as the
  * response module. It can be accessed via {@see \Prado\TApplication::getResponse()}.
@@ -80,26 +101,43 @@ use Prado\Util\Traits\TInitializedTrait;
  * This event handler will sent the 401 status code (Unauthorized) to the browser, with the WWW-Authenticate header field. This
  * will force the browser to ask for a username and a password.
  *
+ * Behaviors extend the response through dynamic events.  {@see flushContent()}
+ * raises `dyFlushContent` before any header is sent, so a behavior can transform the
+ * buffered body and add the headers that describe it.  {@see writeFile()} raises
+ * `dyWriteFile` with a handled flag before it sends any header.  A behavior that sends
+ * the file itself, such as through `X-Sendfile`, returns true and writeFile() sends
+ * nothing.  A behavior that only observes learns that the response declares its own
+ * `Content-Length`.  {@see redirect()} filters its URL through
+ * `dyRedirect`, so a behavior can restrict redirect targets for full-page and callback
+ * redirects alike.  {@see addCookie()} and {@see removeCookie()} filter the cookie through
+ * `dySetCookie`, so a behavior can apply one `Secure`, `HttpOnly`, and `SameSite` policy
+ * to every `Set-Cookie` header.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
+ * @method void dyFlushContent(bool $continueBuffering) Raised by {@see flushContent()} before any header is sent and before the buffer is flushed.
+ * @method bool dyWriteFile(bool $handled, string $fileName, ?string $content, string $mimeType, ?array $headers, ?bool $forceDownload, string $clientFileName, int $fileSize) Raised by {@see writeFile()} before any header is sent; returns true when a behavior sent the file.
+ * @method string dyRedirect(string $url) Filters the URL of {@see redirect()} before the adapter or {@see httpRedirect()} sends it.
+ * @method THttpCookie dySetCookie(THttpCookie $cookie, bool $remove) Filters the cookie of {@see addCookie()} and {@see removeCookie()} before its `Set-Cookie` header is sent.
  */
 class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 {
 	use TInitializedTrait;
 
-	public const DEFAULT_CONTENTTYPE = 'text/html';
+	public const DEFAULT_CONTENTTYPE = TMediaType::HTML;
 	public const DEFAULT_CHARSET = 'UTF-8';
 
 	/**
-	 * @var array<int, string> The status codes defined in RFC 2616
-	 * @see http://www.faqs.org/rfcs/rfc2616
+	 * @var array<int, string> The HTTP status codes and their reason phrases,
+	 *   per the IANA HTTP Status Code Registry (RFC 9110 and related).
+	 * @see https://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
 	 */
 	private static $HTTP_STATUS_CODES = [
-		100 => 'Continue', 101 => 'Switching Protocols',
-		200 => 'OK', 201 => 'Created', 202 => 'Accepted', 203 => 'Non-Authoritative Information', 204 => 'No Content', 205 => 'Reset Content', 206 => 'Partial Content',
-		300 => 'Multiple Choices', 301 => 'Moved Permanently', 302 => 'Found', 303 => 'See Other', 304 => 'Not Modified', 305 => 'Use Proxy', 307 => 'Temporary Redirect',
-		400 => 'Bad Request', 401 => 'Unauthorized', 402 => 'Payment Required', 403 => 'Forbidden', 404 => 'Not Found', 405 => 'Method Not Allowed', 406 => 'Not Acceptable', 407 => 'Proxy Authentication Required', 408 => 'Request Time-out', 409 => 'Conflict', 410 => 'Gone', 411 => 'Length Required', 412 => 'Precondition Failed', 413 => 'Request Entity Too Large', 414 => 'Request-URI Too Large', 415 => 'Unsupported Media Type', 416 => 'Requested range not satisfiable', 417 => 'Expectation Failed',
-		500 => 'Internal Server Error', 501 => 'Not Implemented', 502 => 'Bad Gateway', 503 => 'Service Unavailable', 504 => 'Gateway Time-out', 505 => 'HTTP Version not supported',
+		100 => 'Continue', 101 => 'Switching Protocols', 102 => 'Processing', 103 => 'Early Hints',
+		200 => 'OK', 201 => 'Created', 202 => 'Accepted', 203 => 'Non-Authoritative Information', 204 => 'No Content', 205 => 'Reset Content', 206 => 'Partial Content', 207 => 'Multi-Status', 208 => 'Already Reported', 226 => 'IM Used',
+		300 => 'Multiple Choices', 301 => 'Moved Permanently', 302 => 'Found', 303 => 'See Other', 304 => 'Not Modified', 305 => 'Use Proxy', 307 => 'Temporary Redirect', 308 => 'Permanent Redirect',
+		400 => 'Bad Request', 401 => 'Unauthorized', 402 => 'Payment Required', 403 => 'Forbidden', 404 => 'Not Found', 405 => 'Method Not Allowed', 406 => 'Not Acceptable', 407 => 'Proxy Authentication Required', 408 => 'Request Time-out', 409 => 'Conflict', 410 => 'Gone', 411 => 'Length Required', 412 => 'Precondition Failed', 413 => 'Request Entity Too Large', 414 => 'Request-URI Too Large', 415 => 'Unsupported Media Type', 416 => 'Requested range not satisfiable', 417 => 'Expectation Failed', 421 => 'Misdirected Request', 422 => 'Unprocessable Entity', 423 => 'Locked', 424 => 'Failed Dependency', 425 => 'Too Early', 426 => 'Upgrade Required', 428 => 'Precondition Required', 429 => 'Too Many Requests', 431 => 'Request Header Fields Too Large', 451 => 'Unavailable For Legal Reasons',
+		500 => 'Internal Server Error', 501 => 'Not Implemented', 502 => 'Bad Gateway', 503 => 'Service Unavailable', 504 => 'Gateway Time-out', 505 => 'HTTP Version not supported', 506 => 'Variant Also Negotiates', 507 => 'Insufficient Storage', 508 => 'Loop Detected', 510 => 'Not Extended', 511 => 'Network Authentication Required',
 	];
 
 	/**
@@ -137,11 +175,23 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	/**
 	 * @var bool whether http response header has been sent
 	 */
-	private $_httpHeaderSent;
+	private $_httpHeaderSent = false;
 	/**
 	 * @var bool whether content-type header has been sent
 	 */
 	private $_contentTypeHeaderSent;
+	/**
+	 * @var THttpHeadersManager the headers manager module
+	 */
+	private $_headersManager;
+	/**
+	 * @var string the ID of the headers manager module
+	 */
+	private $_headersManagerID = '';
+	/**
+	 * @var bool whether {@see writeFile()} serves byte ranges
+	 */
+	private $_acceptRanges = true;
 
 	/**
 	 * Destructor.
@@ -182,16 +232,26 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 * Initializes the module.
 	 * This method is required by IModule and is invoked by application.
 	 * It starts output buffer if it is enabled.
-	 * @param \Prado\Xml\TXmlElement $config module configuration
+	 * @param null|array|\Prado\Xml\TXmlElement $config module configuration
 	 */
 	public function init($config)
 	{
 		if ($this->_bufferOutput) {
 			ob_start();
 		}
-		$this->getApplication()->setResponse($this);
+		$this->setAppResponse();
 		parent::init($config);
 		$this->markInitialized();
+	}
+
+	/**
+	 * Registers this module as the application response when an application is available.
+	 * Called during {@see init()}; may also be called by behaviors or subclasses.
+	 * @since 4.4.0
+	 */
+	protected function setAppResponse()
+	{
+		$this->getApplication()?->setResponse($this);
 	}
 
 	/**
@@ -282,11 +342,41 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	}
 
 	/**
+	 * @return bool Whether {@see writeFile()} serves byte ranges, defaults to true.
+	 * @since 4.4.0
+	 */
+	public function getAcceptRanges()
+	{
+		return $this->_acceptRanges;
+	}
+
+	/**
+	 * Sets whether {@see writeFile()} serves byte ranges.  When false, writeFile() adds
+	 * neither `Accept-Ranges` nor `Last-Modified` and ignores a `Range` request header.
+	 * @param bool|string $value Whether to serve byte ranges.
+	 * @since 4.4.0
+	 */
+	public function setAcceptRanges($value)
+	{
+		$this->_acceptRanges = TPropertyValue::ensureBoolean($value);
+	}
+
+	/**
 	 * @return int HTTP status code, defaults to 200
 	 */
 	public function getStatusCode()
 	{
 		return $this->_status;
+	}
+
+	/**
+	 * Returns whether the HTTP status header is sent. The status code cannot change after it is sent.
+	 * @return bool Whether the HTTP status header is sent.
+	 * @since 4.4.0
+	 */
+	public function getHttpHeaderSent(): bool
+	{
+		return $this->_httpHeaderSent;
 	}
 
 	/**
@@ -310,7 +400,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 				throw new TInvalidDataValueException("response_status_reason_missing");
 			}
 			$reason = TPropertyValue::ensureString($reason);
-			if (strpos($reason, "\r") != false || strpos($reason, "\n") != false) {
+			if (str_contains($reason, "\r") || str_contains($reason, "\n")) {
 				throw new TInvalidDataValueException("response_status_reason_barchars");
 			}
 			$this->_reason = $reason;
@@ -354,6 +444,19 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	/**
 	 * Sends a file back to user.
 	 * Make sure not to output anything else after calling this method.
+	 *
+	 * Before any header is sent, this raises `dyWriteFile` with a handled flag of false,
+	 * followed by the parameters with the media type, client file name, and size resolved.
+	 * When the chain returns true, a behavior has sent the file and this method sends
+	 * nothing.  A behavior that sends the file passes true along the chain, so later
+	 * behaviors still see the call; a behavior that only observes passes the flag on
+	 * unchanged.  A file handed to the web server needs `$content` to be null.
+	 *
+	 * With {@see getAcceptRanges() AcceptRanges} on, this sends `Accept-Ranges: bytes`, and
+	 * for a server file a `Last-Modified` header unless `$headers` has one.  A `Range` request
+	 * header then selects the response, as {@see resolveRequestRange()} describes: `200` with
+	 * the full file, `206` with one span, or `416` with no body.  An `ETag` or
+	 * `Last-Modified` in `$headers` is the validator an `If-Range` request header matches.
 	 * @param string $fileName file name
 	 * @param null|string $content content to be set. If null, the content will be read from the server file pointed to by $fileName.
 	 * @param null|string $mimeType mime type of the content.
@@ -366,20 +469,20 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	public function writeFile($fileName, $content = null, $mimeType = null, $headers = null, $forceDownload = true, $clientFileName = null, $fileSize = null)
 	{
 		static $defaultMimeTypes = [
-			'css' => 'text/css',
-			'gif' => 'image/gif',
-			'png' => 'image/png',
-			'jpg' => 'image/jpeg',
-			'jpeg' => 'image/jpeg',
-			'htm' => 'text/html',
-			'html' => 'text/html',
-			'js' => 'text/javascript',
-			'pdf' => 'application/pdf',
-			'xls' => 'application/vnd.ms-excel',
+			'css' => TMediaType::CSS,
+			'gif' => TMediaType::GIF,
+			'png' => TMediaType::PNG,
+			'jpg' => TMediaType::JPEG,
+			'jpeg' => TMediaType::JPEG,
+			'htm' => TMediaType::HTML,
+			'html' => TMediaType::HTML,
+			'js' => TMediaType::JAVASCRIPT,
+			'pdf' => TMediaType::PDF,
+			'xls' => TMediaType::XLS,
 		];
 
 		if ($mimeType === null) {
-			$mimeType = 'text/plain';
+			$mimeType = TMediaType::PLAIN;
 			if (function_exists('mime_content_type')) {
 				$mimeType = mime_content_type($fileName);
 			} elseif (($ext = strrchr($fileName, '.')) !== false) {
@@ -400,37 +503,176 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 			$fileSize = ($content === null ? filesize($fileName) : strlen($content));
 		}
 
+		if ($this->dyWriteFile(false, $fileName, $content, $mimeType, $headers, $forceDownload, $clientFileName, $fileSize) === true) {
+			return;
+		}
+
+		$range = null;
+		$lastModified = null;
+		$sendLastModified = false;
+		if ($this->getAcceptRanges()) {
+			$lastModified = static::findHeaderValue($headers, THttpHeaderName::LastModified);
+			if ($lastModified === null && $content === null) {
+				$lastModified = $this->getFileLastModified($fileName);
+				$sendLastModified = $lastModified !== null;
+			}
+			$range = $this->resolveRequestRange($fileSize, static::findHeaderValue($headers, THttpHeaderName::ETag), $lastModified);
+			if ($range === false) {
+				$this->setStatusCode(416);
+			} elseif ($range !== null) {
+				$this->setStatusCode(206);
+			}
+		}
+
 		$this->sendHttpHeader();
 		if (is_array($headers)) {
 			foreach ($headers as $h) {
 				$this->appendHeader($h);
 			}
 		} else {
-			$this->appendHeader('Pragma: public');
-			$this->appendHeader('Expires: 0');
-			$this->appendHeader('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-			$this->appendHeader("Content-Type: $mimeType");
+			$this->appendHeader(THttpHeaderName::Pragma . ': public');
+			$this->appendHeader(THttpHeaderName::Expires . ': 0');
+			$this->appendHeader(THttpHeaderName::CacheControl . ': must-revalidate, post-check=0, pre-check=0');
+			$this->appendHeader(THttpHeaderName::ContentType . ': ' . $mimeType);
 			$this->_contentTypeHeaderSent = true;
 		}
 
-		$this->appendHeader('Content-Length: ' . $fileSize);
-		$this->appendHeader("Content-Disposition: " . ($forceDownload ? 'attachment' : 'inline') . "; filename=\"$clientFileName\"");
+		if ($this->getAcceptRanges()) {
+			$this->appendHeader(THttpHeaderName::AcceptRanges . ': ' . THttpHeaderRange::UNIT_BYTES);
+		}
+		if ($sendLastModified) {
+			$this->appendHeader(THttpHeaderName::LastModified . ': ' . $lastModified);
+		}
+
+		if ($range === false) {
+			$this->appendHeader(THttpHeaderName::ContentRange . ': ' . THttpHeaderRange::UNIT_BYTES . ' */' . $fileSize);
+			$this->appendHeader(THttpHeaderName::ContentLength . ': 0');
+			return;
+		}
+
+		$offset = 0;
+		$length = $fileSize;
+		if ($range !== null) {
+			[$offset, $end] = $range;
+			$length = $end - $offset + 1;
+			$this->appendHeader(THttpHeaderName::ContentRange . ': ' . THttpHeaderRange::UNIT_BYTES . ' ' . $offset . '-' . $end . '/' . $fileSize);
+		}
+
+		$this->appendHeader(THttpHeaderName::ContentLength . ': ' . $length);
+		$this->appendHeader(THttpHeaderName::ContentDisposition . ': ' . ($forceDownload ? 'attachment' : 'inline') . "; filename=\"$clientFileName\"");
 		$this->appendHeader('Content-Transfer-Encoding: binary');
 		if ($content === null) {
-			$this->appendFile($fileName);
+			if ($range === null) {
+				$this->appendFile($fileName);
+			} else {
+				$this->appendFileRange($fileName, $offset, $length);
+			}
 		} else {
-			echo $content;
+			echo $range === null ? $content : substr($content, $offset, $length);
 		}
+	}
+
+	/**
+	 * Resolves the `Range` request header of a `GET` request against the size being sent.
+	 * The header is ignored, and the full representation is sent, when:
+	 * - the status code is not 200 or the status line is already sent;
+	 * - the request method is not `GET` (RFC 9110 §14.2);
+	 * - an `If-Range` request header does not match the validator, per {@see matchesIfRange()};
+	 * - the header is invalid, has a unit other than `bytes`, or its ranges leave disjoint spans.
+	 * Ranges that overlap or adjoin merge into one span, per {@see THttpHeaderRange::resolve()}.
+	 * @param int $size The size of the representation in bytes.
+	 * @param ?string $etag The `ETag` sent with the representation, or null.
+	 * @param ?string $lastModified The `Last-Modified` date sent with the representation, or null.
+	 * @return null|array{0: int, 1: int}|false The inclusive `[start, end]` span, false when the
+	 *   range is unsatisfiable, or null to send the full representation.
+	 * @since 4.4.0
+	 */
+	protected function resolveRequestRange(int $size, ?string $etag, ?string $lastModified): array|false|null
+	{
+		if ($this->getStatusCode() !== 200 || $this->_httpHeaderSent) {
+			return null;
+		}
+		$request = $this->getRequest();
+		if ($request === null || strcasecmp((string) $request->getRequestType(), 'GET') !== 0) {
+			return null;
+		}
+		$value = $request->getHeader(THttpHeaderName::Range);
+		if ($value === null) {
+			return null;
+		}
+		$ifRange = $request->getHeader(THttpHeaderName::IfRange);
+		if ($ifRange !== null && !$this->matchesIfRange($ifRange, $etag, $lastModified)) {
+			return null;
+		}
+		$range = new THttpHeaderRange();
+		$range->setHeaderValue($value);
+		return $range->resolve($size);
+	}
+
+	/**
+	 * Tests an `If-Range` request header against the representation's validator (RFC 9110
+	 * §13.1.5).  An entity tag matches a strong `ETag` that is the same string; a weak entity
+	 * tag never matches.  A date matches a `Last-Modified` date naming the same second.
+	 * @param string $ifRange The `If-Range` request header value.
+	 * @param ?string $etag The `ETag` sent with the representation, or null.
+	 * @param ?string $lastModified The `Last-Modified` date sent with the representation, or null.
+	 * @return bool Whether the range applies.
+	 * @since 4.4.0
+	 */
+	protected function matchesIfRange(string $ifRange, ?string $etag, ?string $lastModified): bool
+	{
+		$ifRange = trim($ifRange);
+		if (str_starts_with($ifRange, '"') || strncasecmp($ifRange, 'W/', 2) === 0) {
+			return $etag !== null && $ifRange[0] === '"' && $ifRange === $etag;
+		}
+		if ($lastModified === null) {
+			return false;
+		}
+		$since = strtotime($ifRange);
+		return $since !== false && $since === strtotime($lastModified);
+	}
+
+	/**
+	 * Formats the modification time of a server file as an HTTP date.
+	 * @param string $fileName The file name.
+	 * @return ?string The date, such as `Tue, 06 Oct 2026 14:00:00 GMT`, or null when it is unavailable.
+	 * @since 4.4.0
+	 */
+	protected function getFileLastModified(string $fileName): ?string
+	{
+		$time = @filemtime($fileName);
+		return $time === false ? null : gmdate('D, d M Y H:i:s', $time) . ' GMT';
+	}
+
+	/**
+	 * Finds the value of the first header line in a list that has the given name.
+	 * @param ?array $headers The header lines, such as `ETag: "abc"`, or null.
+	 * @param string $name The header name, matched without regard to case.
+	 * @return ?string The trimmed value, or null when no line has the name.
+	 * @since 4.4.0
+	 */
+	protected static function findHeaderValue(?array $headers, string $name): ?string
+	{
+		foreach ($headers ?? [] as $header) {
+			$parts = explode(':', (string) $header, 2);
+			if (count($parts) === 2 && strcasecmp(trim($parts[0]), $name) === 0) {
+				return trim($parts[1]);
+			}
+		}
+		return null;
 	}
 
 	/**
 	 * Redirects the browser to the specified URL.
 	 * The current application will be terminated after this method is invoked.
+	 * The URL passes through the `dyRedirect` filter first, as given and before a relative
+	 * URL gains the base URL.
 	 * @param string $url URL to be redirected to. If the URL is a relative one, the base URL of
 	 * the current request will be inserted at the beginning.
 	 */
 	public function redirect($url)
 	{
+		$url = $this->dyRedirect($url);
 		if ($this->getHasAdapter()) {
 			$this->_adapter->httpRedirect($url);
 		} else {
@@ -456,7 +698,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 
 		// Under IIS, explicitly send an HTTP response including the status code
 		// this is handled automatically by PHP on Apache and others
-		$isIIS = (stripos($this->getRequest()->getServerSoftware(), "microsoft-iis") !== false);
+		$isIIS = (stripos((string) $this->getRequest()->getServerSoftware(), "microsoft-iis") !== false);
 		if ($url[0] === '/') {
 			$url = $this->getRequest()->getBaseUrl() . $url;
 		}
@@ -469,12 +711,12 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 						: 302
 					]);
 			}
-			$this->appendHeader('Location: ' . str_replace('&amp;', '&', $url), true, $this->_status);
+			$this->appendHeader(THttpHeaderName::Location . ': ' . str_replace('&amp;', '&', $url), true, $this->_status);
 		} else {
 			if ($isIIS) {
 				$this->appendHeader('HTTP/1.1 302 ' . self::$HTTP_STATUS_CODES[302]);
 			}
-			$this->appendHeader('Location: ' . str_replace('&amp;', '&', $url));
+			$this->appendHeader(THttpHeaderName::Location . ': ' . str_replace('&amp;', '&', $url));
 		}
 
 		if (!$this->getApplication()->getRequestCompleted()) {
@@ -514,16 +756,22 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	{
 		$this->ensureHttpHeaderSent();
 		$this->ensureContentTypeHeaderSent();
+		$headersManager = $this->getHeadersManagerModule();
+		if ($headersManager !== null) {
+			$headersManager->ensureHeadersSent();
+		}
 	}
 
 	/**
 	 * Outputs the buffered content, sends content-type and charset header.
 	 * This method is used internally. Please use {@see flush} instead.
+	 * Raises `dyFlushContent` before any header is sent.
 	 * @param bool $continueBuffering whether to continue buffering after flush if buffering was active
 	 */
 	public function flushContent($continueBuffering = true)
 	{
 		Prado::trace("Flushing output", THttpResponse::class);
+		$this->dyFlushContent($continueBuffering);
 		$this->ensureHeadersSent();
 		if ($this->_bufferOutput) {
 			// avoid forced send of http headers (ob_flush() does that) if there's no output yet
@@ -584,7 +832,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 		$contentType = $this->_contentType === null ? self::DEFAULT_CONTENTTYPE : $this->_contentType;
 		$charset = $this->getCharset();
 		if ($charset === false) {
-			$this->appendHeader('Content-Type: ' . $contentType);
+			$this->appendHeader(THttpHeaderName::ContentType . ': ' . $contentType);
 			return;
 		}
 
@@ -595,7 +843,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 		if ($charset === '') {
 			$charset = self::DEFAULT_CHARSET;
 		}
-		$this->appendHeader('Content-Type: ' . $contentType . ';charset=' . $charset);
+		$this->appendHeader(THttpHeaderName::ContentType . ': ' . $contentType . ';charset=' . $charset);
 
 		$this->_contentTypeHeaderSent = true;
 	}
@@ -676,6 +924,31 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	}
 
 	/**
+	 * Writes a byte range of a file to the output buffer.  The bytes stream from the
+	 * file to `php://output` in chunks through {@see TStreamHelper::copyRange()}, so
+	 * a range larger than memory is sent without loading it.
+	 * @param string $filename The filename being read.
+	 * @param int $offset The byte offset of the range.
+	 * @param int $length The number of bytes to write.
+	 * @throws \Prado\Exceptions\TIOException When the file cannot be opened.
+	 * @throws \RuntimeException When the file ends before the range does.
+	 * @return int The number of bytes written.
+	 * @since 4.4.0
+	 */
+	public function appendFileRange(string $filename, int $offset, int $length): int
+	{
+		Prado::trace("Sending $length bytes at $offset of file '$filename'", static::class);
+		$source = new TFileStream($filename);
+		$output = new TOutputStream();
+		try {
+			return TStreamHelper::copyRange($source, $offset, $length, $output);
+		} finally {
+			$source->close();
+			$output->close();
+		}
+	}
+
+	/**
 	 * Writes a log message into error log.
 	 * This method is simple wrapper of PHP function error_log.
 	 * @param string $message The error message that should be logged
@@ -692,13 +965,15 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	/**
 	 * Sends a cookie.
 	 * Do not call this method directly. Operate with the result of {@see getCookies} instead.
+	 * The cookie passes through the `dySetCookie` filter before its value is hashed.
 	 * @param THttpCookie $cookie cook to be sent
 	 */
 	public function addCookie($cookie)
 	{
+		$cookie = $this->dySetCookie($cookie, false);
 		$request = $this->getRequest();
 		if ($request->getEnableCookieValidation()) {
-			$value = $this->getApplication()->getSecurityManager()->hashData($cookie->getValue());
+			$value = $this->getApplication()->getSecurityManager()->hashCookieData($cookie->getValue());
 		} else {
 			$value = $cookie->getValue();
 		}
@@ -713,10 +988,13 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	/**
 	 * Deletes a cookie.
 	 * Do not call this method directly. Operate with the result of {@see getCookies} instead.
+	 * The cookie passes through the `dySetCookie` filter first, so the deletion carries the
+	 * same `Path`, `Domain`, and `Secure` policy as the cookie it deletes.
 	 * @param THttpCookie $cookie cook to be deleted
 	 */
 	public function removeCookie($cookie)
 	{
+		$cookie = $this->dySetCookie($cookie, true);
 		$options = $cookie->getPhpOptions();
 		$options['expires'] = 0;
 		$this->responseSetCookie(
@@ -809,5 +1087,48 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	protected function sessionCacheLimiter(?string $value = null): string|false
 	{
 		return session_cache_limiter($value);
+	}
+
+	/**
+	 * @return string the ID of the URL manager module
+	 */
+	public function getHeadersManager()
+	{
+		return $this->_headersManagerID;
+	}
+
+	/**
+	 * Sets the headers manager module.
+	 * By default no header manager module is used
+	 * You may specify a different module for headers managing tasks
+	 * by loading it as an application module and setting this property
+	 * with the module ID.
+	 * @param string $value the ID of the URL manager module
+	 */
+	public function setHeadersManager($value)
+	{
+		$this->_headersManagerID = $value;
+	}
+
+	/**
+	 * @return null|THttpHeadersManager the URL manager module
+	 */
+	public function getHeadersManagerModule()
+	{
+		$headersManagerId = $this->getHeadersManager();
+		if ($headersManagerId === '') {
+			return null;
+		}
+
+		$headersManager = $this->getApplication()->getModule($headersManagerId);
+		if ($headersManager === null) {
+			throw new TConfigurationException('httpresponse_headersmanager_inexist', $headersManagerId);
+		}
+		if (!($headersManager instanceof THttpHeadersManager)) {
+			throw new TConfigurationException('httpresponse_headersmanager_invalid', $headersManagerId);
+		}
+		$this->_headersManager = $headersManager;
+
+		return $this->_headersManager;
 	}
 }

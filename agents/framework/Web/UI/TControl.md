@@ -8,7 +8,10 @@
 **Namespace:** `Prado\Web\UI`
 
 ## Overview
-Base class for all Prado UI components (~57KB). Manages the control tree, IDs, visibility, viewstate, databinding, and the control lifecycle.
+Base class for all Prado UI components (~57KB). Manages the control tree, IDs, visibility, viewstate, databinding, the control lifecycle, and render-output filtering.
+
+**Implements:** `IAdapterControl`, `IFilterRenderable`, `IBindable`
+**Uses trait:** `TFilterRenderableTrait`
 
 ### Control Tree
 
@@ -72,6 +75,15 @@ $control->dataBind();              // evaluates <%# %> expressions
 $control->OnDataBinding->add([$this, 'handleBind']);  // event handler
 ```
 
+### Template Attribute Bindings (`_rf` slots)
+| Tag | Method | Slot | Applied |
+|---|---|---|---|
+| `<%# %>` | `bindProperty()` | `RF_DATA_BINDINGS` | `dataBind()` → `dataBindProperties()` |
+| `<%! %>` | `initBindProperty()` (4.4.0) | `RF_INIT_BINDINGS` | first line of `initRecursive()` → `initDataBindProperties()`, once, then discarded |
+| `<%= %>` | `autoBindProperty()` | `RF_AUTO_BINDINGS` | `preRenderRecursive()` → `autoDataBindProperties()` |
+
+All three slots are applied by `evaluateBoundProperties()` (4.4.0). The expression context is the template control (`getTemplateControl()`), or the control itself when it has none. Each expression is evaluated immediately before its own write, and the paths are written in the order of `TComponent::sortPropertyPaths()`, so a parent path resolves before any path nested beneath it.
+
 ### Control Lifecycle States
 
 ```
@@ -90,6 +102,44 @@ protected function onUnload($param) {}      // cleanup
 public function render($writer) {}          // produce HTML output
 ```
 
+### Adapter Support (`getAdapterControl`)
+
+When `TControl::setAdapter($adapter)` is called, lifecycle dispatching routes through the adapter instead of calling the control's own methods. The `getAdapterControl()` helper returns `$this` when no adapter is set, or the attached [TControlAdapter](./TControlAdapter.md) otherwise. All lifecycle stages (`onInit`, `onLoad`, `onPreRender`, `onUnload`, `render`, `loadState`, `saveState`, `createChildControls`) are dispatched via this pointer.
+
+Both `TControl` and `TControlAdapter` implement [IAdapterControl](./IAdapterControl.md).
+
+### Render-Output Filtering (`onRenderFilter`)
+
+After `renderControl` finishes rendering a control, it raises the `onRenderFilter` event and passes the captured HTML through registered handlers before writing to the page output. Implement [IFilterRenderable](./IFilterRenderable.md) (already done by `TControl` itself) and attach handlers:
+
+```php
+$control->onRenderFilter[] = function ($sender, \Prado\Web\UI\TRenderFilterParameter $param) {
+    // String-based: modify HTML directly
+    $param->setFilterText(strtoupper($param->getFilterText()));
+
+    // Or DOM-based: parse into DOMDocument
+    $dom = $param->getFilterDOM(); // DOMDocument|false
+    if ($dom !== false) {
+        $param->walkElements(function (\DOMElement $el, $p) {
+            if ($el->tagName === 'img' && !$el->hasAttribute('alt')) {
+                $el->setAttribute('alt', '');
+            }
+        });
+    }
+    // DOM → HTML serialisation is automatic
+};
+```
+
+The filter lifecycle is zero-cost when no handlers are registered (no buffer allocation).
+
+**Exemption (@since 4.4.0).** `RenderFilterExempt` (`?bool`, viewstate, default `null`) exempts the control's output from its ancestors' filters (`true`) or re-enables it inside an exempt ancestor (`false`). `renderControl()` wraps the filter lifecycle in `preRenderFilterExempt()` / `processRenderFilterExempt()`, so the control's own handlers see its output. `preRenderFilter()` creates the writer's [TRenderFilterContext](./TRenderFilterContext.md) on the first capture and counts the capture; `processRenderFilter()` ends it, and the outermost capture restores exempt output. The exempt hooks return early when the writer has no context, so pages without filters read no viewstate for them. Markup uses `data-prado-filter-exempt` ([TRenderFilterParameter](./TRenderFilterParameter.md)).
+
+**Callback fragments (@since 4.4.0).** A control re-rendered alone during a callback (`TActivePanel` and others registered with `TActivePageAdapter::registerControlToRender()`) runs its own filters in `TActivePageAdapter::renderDeferredControl()`. `RenderFilterFragments` (`bool`, viewstate, default `false`) has an ancestor's filters also see that re-render, with `TRenderFilterParameter::getIsFragment()` true, inside the elements that enclose it in the ancestor's output (`TActivePageAdapter::getFragmentContext()`); the first `RenderFilterExempt` walking up from the re-rendered control decides for the ancestors above it. Off by default because a filter that wraps, restructures, or counts its output would see only a fragment.
+
+**Depth (@since 4.4.0).** `RenderFilterDepth` (`int`, viewstate, default `0` = all; negative → `control_renderfilterdepth_invalid`) limits a control's filters to the output of the controls at most that many levels below it; each child control is one level. `renderControl()` wraps the exempt and filter hooks in `preRenderFilterDepth()` / `processRenderFilterDepth()`, which write the context's depth markers (`TRenderFilterContext::beginControl()` / `endControl()`). `processRenderFilter()` passes the output through `TRenderFilterContext::filterOutput()`: with a depth limit it raises the event on a parameter that hides the deeper output (`TRenderFilterParameter::getDepthLimit()`), bypassing an `onRenderFilter()` override; without one it calls `onRenderFilter($output)`. The deeper controls' filters and the ancestors' filters see the hidden output.
+
+See [TRenderFilterParameter](./TRenderFilterParameter.md) and [TFilterRenderableTrait](./Traits/TFilterRenderableTrait.md).
+
 ---
 
 ## TPage
@@ -101,7 +151,7 @@ Root control and page container. Accessed via `$this->getPage()` from any contro
 - **Form postback processing** — coordinates `IPostBackDataHandler` and `IPostBackEventHandler` controls.
 - **Validators** — `$page->getValidators($group)` returns the validator collection.
 - **Theme/skin application** — `TThemeManager` applies skin files to controls on `onPreInit`.
-- **Page state** — serialized, HMAC-signed (via [TSecurityManager](../Security/TSecurityManager.md)), optionally encrypted and compressed.
+- **Page state** — serialized, HMAC-signed (via [TSecurityManager](../../Security/TSecurityManager.md)), optionally encrypted and compressed.
 - **`TClientScriptManager`** — accessed via `$page->getClientScript()`.
 
 ### Key Properties
@@ -197,9 +247,10 @@ $cs->registerScriptFile('mykey', '/path/to/script.js');
 | `<com:ClassName ID="..." Prop="value">` | Instantiate a control |
 | `<prop:PropertyName>...</prop:PropertyName>` | Multi-line property value |
 | `<%@ Directive="value" %>` | Template directive (MasterClass, etc.) |
-| `<%= expression %>` | Output PHP expression (HTML-encoded) |
+| `<%= expression %>` | PHP expression; in attributes, applied at PreRender via `autoBindProperty()` |
+| `<%! expression %>` | Attribute-only; applied at the start of the control's `initRecursive()` (4.4.0) |
 | `<%# expression %>` | Databinding expression (evaluated on `dataBind()`) |
-| `<%-- comment --%>` | Template comment (stripped at parse time) |
+| `<!--- comment --->` | Template comment (stripped at parse time) |
 
 ---
 
@@ -208,7 +259,7 @@ $cs->registerScriptFile('mykey', '/path/to/script.js');
 - **Auto-generated IDs change** — adding/removing controls shifts `ctl0`/`ctl1` IDs. Always set explicit IDs for controls referenced in JS.
 - **INamingContainer prefix** — client IDs include the naming container prefix: `container_childId`. Use `$control->ClientID` in templates.
 - **Viewstate size** — set `EnableViewState=false` on read-only/static controls to reduce page weight.
-- **Page state signing** — [TSecurityManager](../Security/TSecurityManager.md) must be configured; set an explicit `ValidationKey` in production.
+- **Page state signing** — [TSecurityManager](../../Security/TSecurityManager.md) must be configured; set an explicit `ValidationKey` in production.
 - **Template caching** — `.tpl` files parsed once and cached. In `Performance` mode, changes won't be picked up without clearing the runtime cache.
 
 (End of file - total 209 lines)

@@ -1,0 +1,17 @@
+<com:TContent ID="Content">
+	<h1>Active Web Template Persist Test Case</h1>
+
+	<com:TActiveWebTemplate ID="rowTemplate" PersistInstances="true">
+		<div class="row"><span class="name">{{name}}</span></div>
+	</com:TActiveWebTemplate>
+
+	<div id="listBody"></div>
+
+	<%-- The stamp happens entirely server-side, in a callback. The client wrapper
+	     updates the persist hidden field as a side effect of the stamp, so the
+	     server-created instance survives a later full-page postback. --%>
+	<com:TActiveButton ID="btnServerStamp" Text="Server Stamp" OnClick="server_stamp" />
+	<com:TButton ID="btnPostBack" Text="Full PostBack" OnClick="noop" />
+
+	<p>Render time: <com:TLabel ID="renderTime" /></p>
+</com:TContent>

@@ -269,6 +269,81 @@ describe('TRangeValidator.evaluateIsValid', () => {
 
 // ─── TRegularExpressionValidator.evaluateIsValid ──────────────────────────────
 
+// ─── TRangeValidator HTML data types and Step ────────────────────────────────
+
+describe('TRangeValidator HTML data types and Step', () => {
+	let env;
+
+	beforeEach(() => {
+		env = makeEnv('rsForm', 'rsInput', 'rsSpan');
+	});
+
+	afterEach(() => teardown(env.form, 'rsForm'));
+
+	function check(options, value) {
+		env.input.value = value;
+		const v = new WebUI.TRangeValidator({
+			ID: 'rsSpan', FormID: 'rsForm', ControlToValidate: 'rsInput', ErrorMessage: '*', Enabled: true,
+			...options,
+		});
+		v.validate();
+		return v.isValid;
+	}
+
+	it('checks Integer and Float steps from MinValue', () => {
+		const opts = { DataType: 'Integer', MinValue: '1', MaxValue: '20', Step: '3' };
+		expect(check(opts, '7')).toBe(true);
+		expect(check(opts, '8')).toBe(false);
+		const floats = { DataType: 'Float', MinValue: '0', MaxValue: '1', Step: '0.1' };
+		expect(check(floats, '0.7')).toBe(true);
+		expect(check(floats, '0.35')).toBe(false);
+	});
+
+	it('counts steps from zero without MinValue, and ignores Step any', () => {
+		expect(check({ DataType: 'Integer', Step: '5' }, '-10')).toBe(true);
+		expect(check({ DataType: 'Integer', Step: '5' }, '12')).toBe(false);
+		expect(check({ DataType: 'Integer', Step: 'any' }, '12')).toBe(true);
+	});
+
+	it('validates Time ranges and steps in seconds', () => {
+		const opts = { DataType: 'Time', MinValue: '09:00', MaxValue: '17:00', Step: '1800' };
+		expect(check(opts, '09:30')).toBe(true);
+		expect(check(opts, '17:00:00')).toBe(true);
+		expect(check(opts, '09:15')).toBe(false);
+		expect(check(opts, '17:30')).toBe(false);
+		expect(check(opts, '9:30')).toBe(false);
+	});
+
+	it('validates Month ranges and steps in months', () => {
+		const opts = { DataType: 'Month', MinValue: '2026-01', MaxValue: '2026-12', Step: '3' };
+		expect(check(opts, '2026-04')).toBe(true);
+		expect(check(opts, '2026-05')).toBe(false);
+		expect(check(opts, '2026-13')).toBe(false);
+	});
+
+	it('validates ISO weeks', () => {
+		const opts = { DataType: 'Week', MinValue: '2026-W01', MaxValue: '2026-W53', Step: '2' };
+		expect(check(opts, '2026-W03')).toBe(true);
+		expect(check(opts, '2026-W53')).toBe(true);
+		expect(check(opts, '2026-W04')).toBe(false);
+		expect(check({ DataType: 'Week' }, '2025-W53')).toBe(false);
+		expect(check({ DataType: 'Week' }, '2020-W53')).toBe(true);
+		expect(check({ DataType: 'Week', Step: '2' }, '1970-W03')).toBe(true);
+	});
+
+	it('validates DateTimeLocal ranges and steps in seconds', () => {
+		const opts = { DataType: 'DateTimeLocal', MinValue: '2026-10-01T08:00', MaxValue: '2026-10-31T18:00', Step: '900' };
+		expect(check(opts, '2026-10-15T09:15')).toBe(true);
+		expect(check(opts, '2026-10-15T09:20')).toBe(false);
+		expect(check(opts, '2026-11-01T09:00')).toBe(false);
+		expect(check(opts, '2026-02-30T09:00')).toBe(false);
+	});
+
+	it('fails when MinValue or MaxValue does not have the format', () => {
+		expect(check({ DataType: 'Time', MinValue: 'noon' }, '12:00')).toBe(false);
+	});
+});
+
 describe('TRegularExpressionValidator.evaluateIsValid', () => {
 	let env;
 
@@ -505,6 +580,35 @@ describe('TValidationSummary', () => {
 		const fakeValidators = [{ getErrorMessage: () => 'Field required', requestDispatched: false }];
 		s.updateSummary(fakeValidators, true);
 		expect(summary.style.visibility).toBe('visible');
+	});
+
+	it('encodes the message of a validator with the Encode option', () => {
+		const s = new WebUI.TValidationSummary({ ID: 'vsSummary', FormID: 'vsForm', ShowSummary: true, DisplayMode: 'BulletList' });
+		const proto = WebUI.TBaseValidator.prototype;
+		const make = (message, encode) => ({
+			options: { ErrorMessage: message, Encode: encode },
+			getErrorMessage: proto.getErrorMessage,
+			getErrorMessageHtml: proto.getErrorMessageHtml,
+			requestDispatched: false,
+		});
+		const validators = [make('<b>raw</b>', false), make('<b>enc</b>', true)];
+		expect(s.getMessages(validators)).toEqual(['<b>raw</b>', '<b>enc</b>']);
+		expect(s.getHtmlMessages(validators)).toEqual(['<b>raw</b>', '&lt;b&gt;enc&lt;/b&gt;']);
+		s.updateSummary(validators, true);
+		expect(summary.innerHTML).toContain('<li><b>raw</b></li>');
+		expect(summary.innerHTML).toContain('<li>&lt;b&gt;enc&lt;/b&gt;</li>');
+	});
+
+	it('setErrorMessage writes text, not HTML, for a validator with the Encode option', () => {
+		const manager = Validation.managers['vsForm'];
+		manager.validators.push({ options: { ID: 'vsSpan', Encode: true } });
+		Validation.setErrorMessage('vsSpan', '<b>x</b>');
+		expect(span.textContent).toBe('<b>x</b>');
+		expect(span.children.length).toBe(0);
+
+		manager.validators[manager.validators.length - 1].options.Encode = false;
+		Validation.setErrorMessage('vsSpan', '<b>y</b>');
+		expect(span.innerHTML).toBe('<b>y</b>');
 	});
 
 	describe('formatSummary', () => {
@@ -790,5 +894,27 @@ describe('Prado.ValidationManager.getValidatorsWithError', () => {
 		});
 		Validation.validate('gveForm');
 		expect(Validation.managers['gveForm'].getValidatorsWithError()).toContain(v);
+	});
+});
+
+// ─── TBaseValidator.updateControlCssClass ─────────────────────────────────────
+
+describe('TBaseValidator.updateControlCssClass', () => {
+	const update = (cssClass, control, valid) =>
+		WebUI.TBaseValidator.prototype.updateControlCssClass.call(
+			{ options: { ID: 'ccsVal', ControlCssClass: cssClass } },
+			control,
+			valid,
+		);
+
+	it('adds and removes a ControlCssClass that holds several names', () => {
+		const control = document.createElement('input');
+		control.className = 'form-control';
+
+		expect(() => update('is-invalid  error', control, false)).not.toThrow();
+		expect(control.className).toBe('form-control is-invalid error');
+
+		update('is-invalid  error', control, true);
+		expect(control.className).toBe('form-control');
 	});
 });

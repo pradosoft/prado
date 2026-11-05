@@ -27,6 +27,15 @@ export default defineConfig({
 	testDir: './tests/playwright',
 	testMatch: '**/*.spec.js',
 
+	/*
+	 * Clear Prado's published asset caches before the run.
+	 * TAssetManager publishes framework JS/CSS into
+	 * vendor/pradosoft/prado-demos/<demo>/assets/<hash>/ once and never
+	 * invalidates that cache on source edits — without this step, tests
+	 * silently run against stale prado.min.js and report false failures.
+	 */
+	globalSetup: './tests/playwright/global-setup.js',
+
 	/* Maximum time one test can run (mirrors phpunit max_execution_time=1200) */
 	timeout: 120_000,
 

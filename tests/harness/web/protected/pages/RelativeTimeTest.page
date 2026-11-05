@@ -1,0 +1,16 @@
+<com:TContent ID="Content">
+	<h1>Relative Time Test Case</h1>
+
+	<div>Past (Long, en): <com:TRelativeTime ID="rtPast" Culture="en" /></div>
+	<div>Future (Long, en): <com:TRelativeTime ID="rtFuture" Culture="en" /></div>
+	<div>Short: <com:TRelativeTime ID="rtShort" Mode="Short" Culture="en" /></div>
+	<div>Narrow: <com:TRelativeTime ID="rtNarrow" Mode="Narrow" Culture="en" /></div>
+	<div>Multi: <com:TRelativeTime ID="rtMulti" SignificantElements="2" Culture="en" /></div>
+	<div>Separator: <com:TRelativeTime ID="rtSep" SignificantElements="2" Separator=", " Culture="en" /></div>
+	<div>Seconds: <com:TRelativeTime ID="rtSeconds" Culture="en" /></div>
+	<div>French: <com:TRelativeTime ID="rtFrench" Culture="fr" /></div>
+	<div>Toggle: <com:TRelativeTime ID="rtToggle" TextFormat="Year" Culture="en" /></div>
+	<div>No click: <com:TRelativeTime ID="rtNoClick" ClickForDateTime="false" TextFormat="Year" Culture="en" /></div>
+	<div>Duration only: <com:TRelativeTime ID="rtDuration" DurationOnly="true" Culture="en" /></div>
+	<div>No JavaScript: <com:TRelativeTime ID="rtNoJs" Culture="en" /></div>
+</com:TContent>

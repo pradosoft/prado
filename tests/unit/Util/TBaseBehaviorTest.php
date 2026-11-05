@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Util;
+
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Util\TBaseBehavior;
 use Prado\Util\TBehavior;
@@ -71,7 +73,7 @@ class TestAssertOwnerClassBehavior extends TClassBehavior
 	}
 }
 
-class TBaseBehaviorTest extends PHPUnit\Framework\TestCase
+class TBaseBehaviorTest extends \PHPUnit\Framework\TestCase
 {
 	// === mergeHandlers ===
 
@@ -109,12 +111,12 @@ class TBaseBehaviorTest extends PHPUnit\Framework\TestCase
 		$closure = function ($sender, $param) {};
 		$result = TBaseBehavior::mergeHandlers(
 			['onEvent2' => $closure],
-			['onEvent1' => 'behaviorHandler', 'onEvent2' => [$this, __METHOD__], 'onEvent3' => ['behaviorHandler2', [$this, __METHOD__]]]
+			['onEvent1' => 'behaviorHandler', 'onEvent2' => [$this, __FUNCTION__], 'onEvent3' => ['behaviorHandler2', [$this, __FUNCTION__]]]
 		);
 		$this->assertEquals([
-			'onEvent2' => [$closure, [$this, __METHOD__]],
+			'onEvent2' => [$closure, [$this, __FUNCTION__]],
 			'onEvent1' => ['behaviorHandler'],
-			'onEvent3' => ['behaviorHandler2', [$this, __METHOD__]],
+			'onEvent3' => ['behaviorHandler2', [$this, __FUNCTION__]],
 		], $result);
 	}
 

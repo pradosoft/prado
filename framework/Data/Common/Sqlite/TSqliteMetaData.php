@@ -69,6 +69,9 @@ class TSqliteMetaData extends TDbMetaData
 
 	/**
 	 * Get the column definitions for given table.
+	 * `PRAGMA table_info` reports each primary key column's 1-based position in the
+	 * key as `pk`, so the primary key list follows that position and a composite key
+	 * lists every column.
 	 * @param string $tableName table name.
 	 * @return \Prado\Data\Common\Sqlite\TSqliteTableInfo table information.
 	 */
@@ -80,17 +83,27 @@ class TSqliteMetaData extends TDbMetaData
 		$sql = "PRAGMA table_info({$table})";
 		$command = $this->getDbConnection()->createCommand($sql);
 		$foreign = $this->getForeignKeys($table);
+		$rows = $command->query()->readAll();
+		$keyCount = 0;
+		foreach ($rows as $col) {
+			if ((int) $col['pk'] > 0) {
+				$keyCount++;
+			}
+		}
 		$index = 0;
 		$columns = [];
 		$primary = [];
-		foreach ($command->query() as $col) {
+		foreach ($rows as $col) {
 			$col['index'] = $index++;
+			$col['key_count'] = $keyCount;
 			$column = $this->processColumn($col, $foreign);
 			$columns[$col['name']] = $column;
 			if ($column->getIsPrimaryKey()) {
-				$primary[] = $col['name'];
+				$primary[(int) $col['pk']] = $col['name'];
 			}
 		}
+		ksort($primary);
+		$primary = array_values($primary);
 		$info['TableName'] = $tableName;
 		if ($this->getIsView($tableName)) {
 			$info['IsView'] = true;
@@ -118,7 +131,11 @@ class TSqliteMetaData extends TDbMetaData
 	}
 
 	/**
-	 * @param array $col column information.
+	 * A column allows null unless `PRAGMA table_info` reports `notnull` as 1.
+	 * A column is a primary key column when its `pk` position is above zero. It
+	 * auto-increments only as a lone `INTEGER PRIMARY KEY`, the one declaration
+	 * SQLite aliases to the rowid; `key_count` holds the number of key columns.
+	 * @param array $col `PRAGMA table_info` row with `index` and `key_count` added.
 	 * @param array $foreign foreign key details.
 	 * @return TSqliteTableColumn column details.
 	 */
@@ -130,11 +147,12 @@ class TSqliteMetaData extends TDbMetaData
 		$info['ColumnId'] = $columnId;
 		$info['ColumnIndex'] = $col['index'];
 
-		if ($col['notnull'] !== '99') {
+		if ((int) $col['notnull'] === 0) {
 			$info['AllowNull'] = true;
 		}
 
-		if ((int) $col['pk'] > 0) {
+		$keyPosition = (int) $col['pk'];
+		if ($keyPosition > 0) {
 			$info['IsPrimaryKey'] = true;
 		}
 		if ($this->isForeignKeyColumn($columnId, $foreign)) {
@@ -146,7 +164,7 @@ class TSqliteMetaData extends TDbMetaData
 		}
 
 		$type = strtolower($col['type']);
-		$info['AutoIncrement'] = $type === 'integer' && (int) $col['pk'] === 1;
+		$info['AutoIncrement'] = $type === 'integer' && $keyPosition === 1 && (int) ($col['key_count'] ?? 1) === 1;
 
 		$info['DbType'] = $type;
 		$match = [];

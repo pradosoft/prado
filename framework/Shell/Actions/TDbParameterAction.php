@@ -80,14 +80,14 @@ class TDbParameterAction extends TShellAction
 	/**
 	 * display the database parameter key values.
 	 * @param array $args parameters
-	 * @return bool is the action handled
+	 * @return ?bool is the action handled
 	 */
 	public function actionIndex($args)
 	{
 		$writer = $this->getWriter();
 		if (!($module = $this->getDbParameterModule())) {
 			$writer->writeError('No TDbParameterModule found to set parameters');
-			return;
+			return null;
 		}
 
 		$params = Prado::getApplication()->getParameters();

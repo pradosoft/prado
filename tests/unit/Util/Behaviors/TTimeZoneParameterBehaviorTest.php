@@ -1,8 +1,11 @@
 <?php
 
-use Prado\Util\Behaviors\TTimeZoneParameterBehavior;
+namespace Prado\Test\Unit\Util\Behaviors;
 
-class TTimeZoneParameterBehaviorTest extends PHPUnit\Framework\TestCase
+use Prado\Util\Behaviors\TTimeZoneParameterBehavior;
+use Prado\Prado;
+
+class TTimeZoneParameterBehaviorTest extends \PHPUnit\Framework\TestCase
 {
 	protected $obj;
 
@@ -51,6 +54,13 @@ class TTimeZoneParameterBehaviorTest extends PHPUnit\Framework\TestCase
 		$params['test:TimeZone'] = 'UTC';
 		self::assertEquals('America/Los_Angeles', $this->obj->getTimeZone());
 		$this->obj->setEnabled(true);
+		$params['test:TimeZone'] = 'Europe/Rome';
+		self::assertEquals('Europe/Rome', $this->obj->getTimeZone());
+		$this->obj->setEnabled('false');
+		self::assertFalse($this->obj->getEnabled());
+		$params['test:TimeZone'] = 'UTC';
+		self::assertEquals('Europe/Rome', $this->obj->getTimeZone());
+		$this->obj->setEnabled('true');
 		$params['test:TimeZone'] = 'Europe/Rome';
 		self::assertEquals('Europe/Rome', $this->obj->getTimeZone());
 		

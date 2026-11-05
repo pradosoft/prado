@@ -1,10 +1,12 @@
 <?php
 
-require_once(__DIR__ . '/../../../../PradoUnit.php');
+namespace Prado\Test\Unit\Data\DbSpecific\Firebird\Common;
 
 use Prado\Exceptions\TDbException;
 use Prado\Data\TDbConnection;
 use Prado\TApplication;
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
+use Prado\TApplicationMode;
 
 /**
  * Integration tests for TDbConnection charset handling — Firebird.
@@ -27,7 +29,7 @@ use Prado\TApplication;
  * FIREBIRD_DB_PATH  Server-side path to the prado_unitest.fdb file.
  *                   Defaults to /var/lib/firebird/data/prado_unitest.fdb.
  */
-class TDbConnectionCharsetFirebirdIntegrationTest extends PHPUnit\Framework\TestCase
+class TDbConnectionCharsetFirebirdIntegrationTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 
@@ -50,7 +52,7 @@ class TDbConnectionCharsetFirebirdIntegrationTest extends PHPUnit\Framework\Test
 	{
 		static $booted = false;
 		if (!$booted) {
-			new TApplication(__DIR__ . '/../../../../Security/app', false, TApplication::CONFIG_TYPE_PHP);
+			(new TApplication(__DIR__ . '/../../../../Security/app', false, TApplication::CONFIG_TYPE_PHP))->setMode(TApplicationMode::Debug);
 			$booted = true;
 		}
 		$this->setUpConnection();

@@ -16,6 +16,6 @@ THotSpotCollection represents a collection of hotspots in an ImageMap control. I
 
 ## See Also
 
-- [TList](../Collections/TList.md)
+- [TList](../../../Collections/TList.md)
 - [THotSpot](./THotSpot.md)
 - [TImageMap](./TImageMap.md)

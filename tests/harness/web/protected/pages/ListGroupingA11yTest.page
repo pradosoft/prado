@@ -1,0 +1,20 @@
+<com:TContent ID="Content">
+	<h1>List Grouping Accessibility Test Case</h1>
+
+	<com:TCheckBoxList ID="cbl" ToolTip="Pick your toppings">
+		<com:TListItem Text="Cheese" />
+		<com:TListItem Text="Mushroom" />
+		<com:TListItem Text="Onion" />
+	</com:TCheckBoxList>
+
+	<com:TRadioButtonList ID="rbl" ToolTip="Choose a size">
+		<com:TListItem Text="Small" />
+		<com:TListItem Text="Medium" />
+		<com:TListItem Text="Large" />
+	</com:TRadioButtonList>
+
+	<com:TCheckBoxList ID="cblNoTip">
+		<com:TListItem Text="A" />
+		<com:TListItem Text="B" />
+	</com:TCheckBoxList>
+</com:TContent>

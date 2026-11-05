@@ -28,15 +28,34 @@ use Prado\Util\Traits\TInitializedTrait;
  * To use TDbUserManager together with TAuthManager, configure them in
  * the application configuration like following:
  * ```xml
- * <module id="db"
- *     class="Prado\Data\TDataSourceConfig" ..../>
- * <module id="users"
- *     class="Prado\Security\TDbUserManager"
- *     UserClass="Path\To\MyUserClass"
- *     ConnectionID="db" />
- * <module id="auth"
- *     class="Prado\Security\TAuthManager"
- *     UserManager="users" LoginPage="Path\To\LoginPage" />
+ * <modules>
+ *     <module id="db"
+ *         class="Prado\Data\TDataSourceConfig" ..../>
+ *     <module id="users"
+ *         class="Prado\Security\TDbUserManager"
+ *         UserClass="Path\To\MyUserClass"
+ *         ConnectionID="db" />
+ *     <module id="auth"
+ *         class="Prado\Security\TAuthManager"
+ *         UserManager="users" LoginPage="Path\To\LoginPage" />
+ * </modules>
+ * ```
+ *
+ * PHP configuration style:
+ * ```php
+ * return [
+ *     'modules' => [
+ *         'db' => ['class' => 'Prado\Data\TDataSourceConfig', ...],
+ *         'users' => [
+ *             'class' => 'Prado\Security\TDbUserManager',
+ *             'properties' => ['UserClass' => 'Path\To\MyUserClass', 'ConnectionID' => 'db'],
+ *         ],
+ *         'auth' => [
+ *             'class' => 'Prado\Security\TAuthManager',
+ *             'properties' => ['UserManager' => 'users', 'LoginPage' => 'Path\To\LoginPage'],
+ *         ],
+ *     ],
+ * ];
  * ```
  *
  * In the above, {@see setUserClass UserClass} specifies what class will be used
@@ -57,7 +76,7 @@ class TDbUserManager extends TDbModule implements IUserManager, IDbModule
 
 	/**
 	 * Initializes.
-	 * @param array|\Prado\Xml\TXmlElement $config module configuration
+	 * @param null|array|\Prado\Xml\TXmlElement $config module configuration
 	 */
 	public function init($config)
 	{
@@ -77,15 +96,16 @@ class TDbUserManager extends TDbModule implements IUserManager, IDbModule
 	 */
 	public function getUserClass()
 	{
-		$this->assertUninitialized('UserClass');
 		return $this->_userClass;
 	}
 
 	/**
 	 * @param string $value the user class name in namespace format. The user class must extend from {@see \Prado\Security\TDbUser}.
+	 * @throws \Prado\Exceptions\TInvalidOperationException when set after the module is initialized.
 	 */
 	public function setUserClass($value)
 	{
+		$this->assertUninitialized('UserClass');
 		$this->_userClass = $value;
 	}
 

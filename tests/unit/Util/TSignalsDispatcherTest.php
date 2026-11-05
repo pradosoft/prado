@@ -1,23 +1,15 @@
 <?php
 
+namespace Prado\Test\Unit\Util;
+
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Exceptions\TExitException;
 use Prado\TEventSubscription;
+use Prado\Test\Unit\Harness\Util\Clock\TTestMonotonicClock;
 use Prado\Util\TSignalsDispatcher;
 use Prado\Util\TSignalParameter;
-
-class TTestSignalsDispatcher extends TSignalsDispatcher {
-	
-	public function setupAlarms($handler)
-	{
-		$now = time();
-		self::$_nextAlarmTime = $now - 1;
-		static::$_alarms[$now - 1] = [$handler];
-		static::$_alarms[$now] = [$handler];
-		static::$_alarms[$now + 2] = [$handler];
-		return $now;
-	}
-}
+use Prado\Collections\TWeakCallableCollection;
+use Prado\Util\Helpers\TProcessHelper;
 
 class TTestSignalInvokable {
 	public $data = null;
@@ -35,7 +27,7 @@ class TTestSignalInvokable {
 	}
 }
 
-class TSignalsDispatcherTest extends PHPUnit\Framework\TestCase
+class TSignalsDispatcherTest extends \PHPUnit\Framework\TestCase
 {
 	public $dispatcher = null;
 	protected function setUp(): void
@@ -264,8 +256,12 @@ class TSignalsDispatcherTest extends PHPUnit\Framework\TestCase
 			self::assertTrue($handlers->contains($handler));
 			self::assertEquals(5, $handlers->priorityOf($handler));
 			
-			$this->dispatcher->detachPidHandler($pid, $handler, 5);
+			self::assertFalse($this->dispatcher->detachPidHandler($pid, function ($sender, $param) {}));
+			self::assertFalse($this->dispatcher->detachPidHandler($pid, $handler, 10));
+			self::assertTrue($this->dispatcher->hasPidHandler($pid));
+			self::assertTrue($this->dispatcher->detachPidHandler($pid, $handler, 5));
 			self::assertFalse($this->dispatcher->hasPidHandler($pid));
+			self::assertFalse($this->dispatcher->detachPidHandler($pid, $handler, 5));
 		}
 		
 		// End the PID
@@ -484,7 +480,82 @@ class TSignalsDispatcherTest extends PHPUnit\Framework\TestCase
 		self::assertLessThan(2, $called[1] - $time);
 		self::assertEquals(2, count($called));
 	}
+
+	public function testAlarmTimesFollowTheMonotonicClock()
+	{
+		if (!TSignalsDispatcher::hasSignals()) {
+			$this->markTestSkipped("skipping " . TSignalsDispatcher::class . " alarm times.");
+			return;
+		}
+		// Alarm times read the wall clock once, as the anchor, so a later wall-clock step cannot move an alarm.
+		$this->dispatcher = new TTestSignalsDispatcher();
+		self::assertSame($this->dispatcher, TTestSignalsDispatcher::singleton(false));
+		$clock = new TTestMonotonicClock(1_000_000_000_000);
+		self::assertSame($this->dispatcher, $this->dispatcher->setMonotonicClock($clock));
+		$base = $this->dispatcher->getAlarmNow();
+		self::assertEqualsWithDelta(time(), $base, 1, 'The alarm time base is anchored to the Unix time.');
+
+		$called = [];
+		$time = TTestSignalsDispatcher::alarm(5, function ($sender, $param) use (&$called) {
+			$called[] = $param->getAlarmTime();
+		});
+		self::assertSame($base + 5, $time);
+		self::assertSame($this->dispatcher->getAlarmNow(), TTestSignalsDispatcher::alarmNow(), 'The static alarmNow() is the singleton\'s.');
+		self::assertSame(5, $time - TTestSignalsDispatcher::alarmNow(), 'The seconds until an alarm.');
+
+		$clock->advance(4);
+		self::assertSame(1, $time - TTestSignalsDispatcher::alarmNow());
+		$this->dispatcher->ring($this->dispatcher, new TSignalParameter(SIGALRM));
+		self::assertSame([], $called, 'The alarm is not due after 4 s on the monotonic clock.');
+
+		$clock->advance(1);
+		$this->dispatcher->ring($this->dispatcher, new TSignalParameter(SIGALRM));
+		self::assertSame([$base + 5], $called, 'The alarm rings after 5 s on the monotonic clock.');
+		self::assertNull(TTestSignalsDispatcher::alarm(), 'No alarm is pending.');
+
+		$this->dispatcher->setMonotonicClock(new TTestMonotonicClock(7_000_000_000));
+		self::assertSame($base + 5, $this->dispatcher->getAlarmNow(), 'A new clock continues the alarm time base.');
+		pcntl_alarm(0);
+	}
 	
+	public function testDisarmKeepsTheOtherAlarmsOfTheTimeAndRearmsForTheNext()
+	{
+		if (!TSignalsDispatcher::hasSignals()) {
+			$this->markTestSkipped("skipping " . TSignalsDispatcher::class . "::disarm.");
+			return;
+		}
+		$this->dispatcher = new TTestSignalsDispatcher();
+		$clock = new TTestMonotonicClock(1_000_000_000_000);
+		$this->dispatcher->setMonotonicClock($clock);
+
+		// Disarming one callback keeps the others of the same alarm time.
+		$called = [];
+		$time = TTestSignalsDispatcher::alarm(5, $f1 = function () use (&$called) { $called[] = 'f1'; });
+		self::assertSame($time, TTestSignalsDispatcher::alarm(5, $f2 = function () use (&$called) { $called[] = 'f2'; }));
+		self::assertSame($time, TTestSignalsDispatcher::disarm($f1));
+		self::assertSame($time, TTestSignalsDispatcher::alarm(), 'f2 is still pending at the same time.');
+		$clock->advance(5);
+		$this->dispatcher->ring($this->dispatcher, new TSignalParameter(SIGALRM));
+		self::assertSame(['f2'], $called);
+		pcntl_alarm(0);
+
+		// Disarming the next alarm arms the OS alarm for the remaining seconds of the following one.
+		$near = TTestSignalsDispatcher::alarm(2, $g1 = function () {});
+		$far = TTestSignalsDispatcher::alarm(10, $g2 = function () {});
+		self::assertSame($near, TTestSignalsDispatcher::disarm($g1));
+		self::assertSame($far, TTestSignalsDispatcher::alarm());
+		self::assertContains(pcntl_alarm(0), [9, 10], 'The OS alarm waits for the far alarm, not 1 s.');
+
+		// A following alarm that is already due arms the OS alarm for 1 s instead of cancelling it.
+		$near = TTestSignalsDispatcher::alarm(2, $h1 = function () {});
+		$clock->advance(20);
+		self::assertSame($near, TTestSignalsDispatcher::disarm($h1));
+		self::assertSame($far, TTestSignalsDispatcher::alarm());
+		self::assertSame(1, pcntl_alarm(0), 'An overdue alarm still rings.');
+		TTestSignalsDispatcher::disarm($g2);
+		pcntl_alarm(0);
+	}
+
 	public function testDelegateChild()
 	{
 		if (!TSignalsDispatcher::hasSignals()) {
@@ -588,4 +659,3 @@ class TSignalsDispatcherTest extends PHPUnit\Framework\TestCase
 	}
 	
 }
-

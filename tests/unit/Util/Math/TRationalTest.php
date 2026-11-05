@@ -1,8 +1,11 @@
 <?php
 
-use Prado\Util\Math\TRational;
+namespace Prado\Test\Unit\Util\Math;
 
-class TRationalTest extends PHPUnit\Framework\TestCase
+use Prado\Util\Math\TRational;
+use Prado\Exceptions\TInvalidDataValueException;
+
+class TRationalTest extends \PHPUnit\Framework\TestCase
 {
 	public $obj;
 	
@@ -69,6 +72,9 @@ class TRationalTest extends PHPUnit\Framework\TestCase
 		$rational = new $class(['55.5']);
 		self::assertEquals(111, $rational->getNumerator());
 		self::assertEquals(2, $rational->getDenominator());
+
+		$rational = new $class([4294967296.0, 0.0]);
+		self::assertTrue(is_nan($rational->getValue()));
 	}
 	
 	public function testConstructSpecific()

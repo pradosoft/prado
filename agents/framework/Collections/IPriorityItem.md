@@ -1,7 +1,7 @@
 # Collections/IPriorityItem
 
 ### Directories
-[framework](./INDEX.md) / [Collections](./Collections/INDEX.md) / **`IPriorityItem`**
+[framework](../INDEX.md) / [Collections](INDEX.md) / **`IPriorityItem`**
 
 **Location:** `framework/Collections/IPriorityItem.php`
 **Namespace:** `Prado\Collections`

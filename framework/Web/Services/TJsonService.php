@@ -15,6 +15,7 @@ use Prado\Prado;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\THttpException;
 use Prado\Web\Javascripts\TJavaScript;
+use Prado\Web\TMediaType;
 use Prado\Xml\TXmlElement;
 
 /**
@@ -39,15 +40,22 @@ use Prado\Xml\TXmlElement;
  *
  * PHP configuration style:
  * ```php
- *  'services' => array(
- *    'get_article' => array(
- *     'class' => 'Path\To\JsonResponseClass1',
- *     'properties' => array(
- *       ...
- *	    )
- *    )
- *  )
+ * return [
+ *     'services' => [
+ *         'json' => [
+ *             'class' => 'Prado\Web\Services\TJsonService',
+ *             'json' => [
+ *                 'get_article' => [
+ *                     'class' => 'Path\To\JsonResponseClass1',
+ *                     'properties' => [...],
+ *                 ],
+ *                 'register_rating' => ['class' => 'Path\To\JsonResponseClass2'],
+ *             ],
+ *         ],
+ *     ],
+ * ];
  * ```
+ * where each JSON response is an entry of the service's `json` key, indexed by its ID.
  *
  * To retrieve the JSON content provided by "get_article", use the URL
  * ```
@@ -68,7 +76,7 @@ class TJsonService extends \Prado\TService
 	/**
 	 * Initializes this module.
 	 * This method is required by the IModule interface.
-	 * @param mixed $config configuration for this module, can be null
+	 * @param null|array|\Prado\Xml\TXmlElement $config configuration for this module, can be null
 	 */
 	public function init($config)
 	{
@@ -84,7 +92,7 @@ class TJsonService extends \Prado\TService
 	{
 		if ($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP) {
 			if (is_array($config)) {
-				foreach ($config['json'] as $id => $json) {
+				foreach ($config['json'] ?? [] as $id => $json) {
 					$this->_services[$id] = $json;
 				}
 			}
@@ -105,6 +113,7 @@ class TJsonService extends \Prado\TService
 	 */
 	public function run()
 	{
+		$this->ensureCsrfToken();
 		$id = $this->getRequest()->getServiceParameter();
 		if (isset($this->_services[$id])) {
 			$serviceConfig = $this->_services[$id];
@@ -148,15 +157,13 @@ class TJsonService extends \Prado\TService
 	protected function createJsonResponse($service, $properties, $config)
 	{
 		// init service properties
-		foreach ($properties as $name => $value) {
-			$service->setSubproperty($name, $value);
-		}
+		$service->setSubProperties($properties);
 		$service->init($config);
 
 		//send content if not null
 		if (($content = $service->getJsonContent()) !== null) {
 			$response = $this->getResponse();
-			$response->setContentType('application/json');
+			$response->setContentType(TMediaType::JSON);
 			$response->setCharset('UTF-8');
 			//send content
 			$response->write(TJavaScript::jsonEncode($content));

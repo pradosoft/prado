@@ -123,3 +123,22 @@ Drop-down mode:
 - **`DropDownList` mode** — renders separate `<select>` elements for day, month, year. `InputMode=DropDownList` hides the text input; `InputMode=TextBox` shows text + drop-downs side by side.
 - **Timestamp vs formatted string** — `getTimeStamp()` returns a Unix timestamp; `getDate()` returns the formatted string. Prefer `getTimeStamp()` for database storage.
 - **Year range** — without `FromYear`/`UpToYear`, the calendar defaults to ±10 years from today. Set explicit ranges for registration forms.
+
+## Native Alternative
+
+A [TTextBox](./TTextBox.md) with `TextMode` `Date`, `DatetimeLocal`, `Month`, `Week`, or `Time` renders the browser's picker.
+
+| | Native `TTextBox` | TDatePicker |
+|---|---|---|
+| Script | None | `datepicker` package |
+| Picker | The platform's; phones show their own | Prado's calendar, the same in every browser |
+| Posted value | Fixed: `yyyy-MM-dd`, `yyyy-MM-ddTHH:mm`, `yyyy-MM`, `yyyy-Www`, `HH:mm` | The text of `DateFormat` |
+| Display | The user's locale | `DateFormat`, `Culture` |
+| Constraints | `Min`, `Max`, `Step` | `FromYear`, `UpToYear` |
+| Server validation | [TRangeValidator](./TRangeValidator.md) `Date` (`DateFormat="yyyy-MM-dd"`), `DateTimeLocal`, `Month`, `Week`, `Time` | `TRangeValidator` with the same `DateFormat` |
+
+## Color Scheme
+
+The calendar panel background uses `Canvas`, and the panel border, button border, and hovered-day border adapt through `light-dark()`. The selected day stays white on blue in both schemes. The shipped stylesheet declares no `color-scheme` of its own, so an
+application that declares none keeps the light rendering it already has. See
+[assets/INDEX.md](./assets/INDEX.md) for the contract.

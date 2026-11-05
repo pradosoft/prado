@@ -14,6 +14,7 @@ use Prado\Exceptions\TIOException;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;
 use Prado\TApplicationMode;
+use Prado\Util\Clock\TApplicationClockAwareTrait;
 
 /**
  * TTheme class
@@ -51,6 +52,8 @@ use Prado\TApplicationMode;
  */
 class TTheme extends \Prado\TApplicationComponent implements ITheme
 {
+	use TApplicationClockAwareTrait;
+
 	/**
 	 * prefix for cache variable name used to store parsed themes
 	 */
@@ -177,7 +180,7 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 			$this->postProcessCssRTL();
 			$this->dyThemeProcess();
 			if ($cache !== null) {
-				$cache->set(self::THEME_CACHE_PREFIX . $themePath, [$this->_skins, $this->_cssFiles, $this->_jsFiles, time()]);
+				$cache->set(self::THEME_CACHE_PREFIX . $themePath, [$this->_skins, $this->_cssFiles, $this->_jsFiles, $this->getClock()->time()]);
 			}
 		}
 	}
@@ -262,7 +265,12 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 			$id = 0;
 		}
 		if (isset($this->_skins[$type][$id])) {
-			foreach ($this->_skins[$type][$id] as $name => $value) {
+			$skin = $this->_skins[$type][$id];
+			if (count($skin) > 1) {
+				// a parent path must be applied before any path nested beneath it
+				$skin = self::sortPropertyPaths($skin);
+			}
+			foreach ($skin as $name => $value) {
 				$propName = $value[TTemplate::PROP_NAME];
 				Prado::trace("Applying skin $propName to $type", \Prado\Web\UI\TThemeManager::class);
 				switch ($value[TTemplate::PROP_TYPE]) {
@@ -282,10 +290,10 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 						}
 						break;
 					case TTemplate::CONFIG_EXPRESSION:
-						$value = $this->evaluateExpression($value[TTemplate::PROP_VALUE]);
+						$control->setSubProperty($propName, $this->evaluateExpression($value[TTemplate::PROP_VALUE]));
 						break;
 					case TTemplate::CONFIG_ASSET:
-						$value = $this->_themeUrl . '/' . ltrim($value[TTemplate::PROP_VALUE], '/');
+						$control->setSubProperty($propName, $this->_themeUrl . '/' . ltrim($value[TTemplate::PROP_VALUE], '/'));
 						break;
 					case TTemplate::CONFIG_DATABIND:
 						$control->bindProperty($propName, $value[TTemplate::PROP_VALUE]);
@@ -301,7 +309,6 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 						break;
 					default:
 						throw new TConfigurationException('theme_tag_unexpected', $propName, $value[TTemplate::PROP_TYPE]);
-						break;
 				}
 			}
 			return true;

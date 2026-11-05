@@ -1,7 +1,10 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI;
+
+use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Prado;
-use Prado\Util\TLogger;
+use Prado\Util\Log\TLogger;
 use Prado\Web\UI\TRenderFilterParameter;
 use PHPUnit\Framework\TestCase;
 
@@ -15,7 +18,7 @@ use PHPUnit\Framework\TestCase;
  */
 class TRenderFilterParameterParseFail extends TRenderFilterParameter
 {
-	protected function htmlToDom(string $html): DOMDocument|false
+	protected function htmlToDom(string $html): \DOMDocument|false
 	{
 		$error = new \LibXMLError();
 		$error->level = LIBXML_ERR_FATAL;
@@ -27,6 +30,42 @@ class TRenderFilterParameterParseFail extends TRenderFilterParameter
 		$this->storeErrors([$error]);
 		Prado::warning('simulated fatal libxml error', static::class);
 		return false;
+	}
+}
+
+/**
+ * Fixture: parses with libxml's HTML parser on any PHP version.
+ */
+class TRenderFilterParameterLibxml extends TRenderFilterParameter
+{
+	protected function getUseHtml5Parser(): bool
+	{
+		return false;
+	}
+}
+
+/**
+ * Fixture: parses with the HTML5 parser of PHP 8.4+.
+ */
+class TRenderFilterParameterHtml5 extends TRenderFilterParameter
+{
+	protected function getUseHtml5Parser(): bool
+	{
+		return true;
+	}
+}
+
+/**
+ * Fixture: counts the parses of the HTML.
+ */
+class TRenderFilterParameterCounting extends TRenderFilterParameter
+{
+	public int $parses = 0;
+
+	protected function htmlToDom(string $html): \DOMDocument|false
+	{
+		$this->parses++;
+		return parent::htmlToDom($html);
 	}
 }
 
@@ -45,9 +84,87 @@ class TRenderFilterParameterParseFail extends TRenderFilterParameter
  *   9.  Extra keys via parent ArrayAccess
  *  10.  getFilterErrors / getHasFilterError
  *  11.  ArrayAccess — 'errors' key
+ *  12.  Parse fidelity of the libxml and HTML5 parsers
+ *  13.  Exempt markup (EXEMPT_ATTRIBUTE)
  */
 class TRenderFilterParameterTest extends TestCase
 {
+	public function testIsFragment()
+	{
+		$param = new TRenderFilterParameter('x');
+		$this->assertFalse($param->getIsFragment());
+		$param->setIsFragment(true);
+		$this->assertTrue($param->getIsFragment());
+	}
+
+	/**
+	 * Output with the markers of levels 2 and 3 of a filter.
+	 */
+	private const DEPTH_HTML = '<p>one<!--m-2--><b>two<!--m-3--><i>three</i><!--/m-3--></b><!--/m-2--></p>';
+
+	public function testDepthLimitDefaultsToZero()
+	{
+		$param = new TRenderFilterParameter(self::DEPTH_HTML);
+		$this->assertSame(0, $param->getDepthLimit());
+		$this->assertSame(self::DEPTH_HTML, $param->getFilterText());
+	}
+
+	public function testDepthMarkerHidesDeeperOutput()
+	{
+		$param = new TRenderFilterParameter(self::DEPTH_HTML);
+		$param->setDepthMarker('m-', 2);
+		$this->assertSame(2, $param->getDepthLimit());
+		$this->assertMatchesRegularExpression('/^<p>one<!--m-2--><b>two<!--m-h\d+--><\/b><!--\/m-2--><\/p>$/', $param->getFilterText());
+		$param->setDepthLimit(1);
+		$this->assertMatchesRegularExpression('/^<p>one<!--m-h\d+--><\/p>$/', $param->getFilterText());
+		$param->setDepthLimit(0);
+		$this->assertSame(self::DEPTH_HTML, $param->getFilterText());
+	}
+
+	public function testPostRaiseEventRestoresDeeperOutput()
+	{
+		$param = new TRenderFilterParameter(self::DEPTH_HTML);
+		$param->setDepthMarker('m-', 1);
+		$param->getFilterDOM()->getElementsByTagName('p')->item(0)->setAttribute('class', 'x');
+		$param->postRaiseEvent([], 'onRenderFilter', null, $param, null, null);
+		$this->assertSame(str_replace('<p>', '<p class="x">', self::DEPTH_HTML), $param->getFilterText());
+		$this->assertSame(0, $param->getDepthLimit());
+	}
+
+	public function testDeeperOutputInsideExemptMarkupIsRestored()
+	{
+		$html = '<div data-prado-filter-exempt="">a<!--m-2-->b<!--/m-2--></div>c';
+		$param = new TRenderFilterParameter($html);
+		$param->setDepthMarker('m-', 2);
+		$param->preRaiseEvent('onRenderFilter', null, $param, null, null);
+		$param->setDepthLimit(1);
+		$this->assertStringNotContainsString('data-prado-filter-exempt', $param->getFilterText());
+		$param->postRaiseEvent([], 'onRenderFilter', null, $param, null, null);
+		$this->assertSame($html, $param->getFilterText());
+	}
+
+	public static function invalidDepthLimitProvider(): array
+	{
+		return [
+			'negative' => [2, -1],
+			'past the control depth' => [2, 3],
+			'without markers' => [0, 1],
+		];
+	}
+
+	/**
+	 * @dataProvider invalidDepthLimitProvider
+	 */
+	public function testDepthLimitOutOfRangeThrows(int $depth, int $limit)
+	{
+		$param = new TRenderFilterParameter(self::DEPTH_HTML);
+		if ($depth > 0) {
+			$param->setDepthMarker('m-', $depth);
+		}
+		$this->expectException(TInvalidDataValueException::class);
+		$param->setDepthLimit($limit);
+	}
+
 	// ================================================================================
 	// Helpers
 	// ================================================================================
@@ -167,7 +284,7 @@ class TRenderFilterParameterTest extends TestCase
 	public function testGetFilterDomReturnsDomDocument()
 	{
 		$p = $this->makeParam('<p>hello</p>');
-		$this->assertInstanceOf(DOMDocument::class, $p->getFilterDOM());
+		$this->assertInstanceOf(\DOMDocument::class, $p->getFilterDOM());
 	}
 
 	public function testGetFilterDomHasNoWrapperElements()
@@ -200,7 +317,7 @@ class TRenderFilterParameterTest extends TestCase
 	public function testSetFilterDomReplacesDom()
 	{
 		$p = $this->makeParam('<p>old</p>');
-		$new = new DOMDocument('1.0', 'UTF-8');
+		$new = new \DOMDocument('1.0', 'UTF-8');
 		$new->loadHTML('<html><body><span>new</span></body></html>');
 
 		$p->setFilterDOM($new);
@@ -210,7 +327,7 @@ class TRenderFilterParameterTest extends TestCase
 	public function testSetFilterDomMakesDomCurrent()
 	{
 		$p = $this->makeParam('<p>old</p>');
-		$new = new DOMDocument('1.0', 'UTF-8');
+		$new = new \DOMDocument('1.0', 'UTF-8');
 		$new->loadHTML('<html><body><span>injected</span></body></html>');
 		$p->setFilterDOM($new);
 
@@ -224,7 +341,7 @@ class TRenderFilterParameterTest extends TestCase
 	{
 		$p = $this->makeParam('');
 		$dom = $p->getFilterDOM();
-		$this->assertInstanceOf(DOMDocument::class, $dom);
+		$this->assertInstanceOf(\DOMDocument::class, $dom);
 		// Empty HTML produces a document with no child nodes
 		$this->assertSame(0, $dom->childNodes->length);
 	}
@@ -249,7 +366,7 @@ class TRenderFilterParameterTest extends TestCase
 		// return a usable DOMDocument rather than throwing.
 		$p = $this->makeParam('<p>unclosed <b>bold');
 		$dom = $p->getFilterDOM();
-		$this->assertInstanceOf(DOMDocument::class, $dom);
+		$this->assertInstanceOf(\DOMDocument::class, $dom);
 		// The content should be accessible via the DOM.
 		$this->assertGreaterThan(0, $dom->getElementsByTagName('b')->length);
 	}
@@ -373,7 +490,7 @@ class TRenderFilterParameterTest extends TestCase
 	{
 		$p = $this->makeParam('<div><p>a</p><span>b</span></div>');
 		$tags = [];
-		$p->walkElements(function (DOMElement $el) use (&$tags) {
+		$p->walkElements(function (\DOMElement $el) use (&$tags) {
 			$tags[] = $el->tagName;
 		});
 
@@ -390,7 +507,7 @@ class TRenderFilterParameterTest extends TestCase
 	{
 		$p = $this->makeParam('<div><p><strong>deep</strong></p></div>');
 		$order = [];
-		$p->walkElements(function (DOMElement $el) use (&$order) {
+		$p->walkElements(function (\DOMElement $el) use (&$order) {
 			$order[] = $el->tagName;
 		});
 
@@ -406,7 +523,7 @@ class TRenderFilterParameterTest extends TestCase
 	{
 		$p = $this->makeParam('<img src="test.png">');
 		$receivedParam = null;
-		$p->walkElements(function (DOMElement $el, $param) use (&$receivedParam) {
+		$p->walkElements(function (\DOMElement $el, $param) use (&$receivedParam) {
 			$receivedParam = $param;
 		});
 		$this->assertSame($p, $receivedParam);
@@ -415,7 +532,7 @@ class TRenderFilterParameterTest extends TestCase
 	public function testWalkElementsModifyDomInCallback()
 	{
 		$p = $this->makeParam('<img src="a.png"><img src="b.png">');
-		$p->walkElements(function (DOMElement $el, $param) {
+		$p->walkElements(function (\DOMElement $el, $param) {
 			if ($el->tagName === 'img' && !$el->hasAttribute('alt')) {
 				$el->setAttribute('alt', '');
 			}
@@ -427,7 +544,7 @@ class TRenderFilterParameterTest extends TestCase
 	public function testWalkElementsMakesDomCurrent()
 	{
 		$p = $this->makeParam('<p>text</p>');
-		$p->walkElements(function (DOMElement $el, $param) {
+		$p->walkElements(function (\DOMElement $el, $param) {
 			// no-op
 		});
 		// After walkElements, DOM should be current;
@@ -440,7 +557,7 @@ class TRenderFilterParameterTest extends TestCase
 	{
 		$p = $this->makeParam('');
 		$tags = [];
-		$p->walkElements(function (DOMElement $el, $param) use (&$tags) {
+		$p->walkElements(function (\DOMElement $el, $param) use (&$tags) {
 			$tags[] = $el->tagName;
 		});
 		$this->assertSame([], $tags, 'Empty HTML should produce no elements to walk');
@@ -451,7 +568,7 @@ class TRenderFilterParameterTest extends TestCase
 		// When getFilterDOM() returns false, walkElements must be a no-op.
 		$p = new TRenderFilterParameterParseFail('<p>x</p>');
 		$called = false;
-		$p->walkElements(function (DOMElement $el) use (&$called) {
+		$p->walkElements(function (\DOMElement $el) use (&$called) {
 			$called = true;
 		});
 		$this->assertFalse($called, 'walkElements must not invoke the callback when DOM parse fails');
@@ -461,7 +578,7 @@ class TRenderFilterParameterTest extends TestCase
 	{
 		$p = $this->makeParam('<div><p>nested</p></div><span>sibling</span>');
 		$tags = [];
-		$p->walkElements(function (DOMElement $el) use (&$tags) {
+		$p->walkElements(function (\DOMElement $el) use (&$tags) {
 			$tags[] = $el->tagName;
 		}, null, false);
 
@@ -474,7 +591,7 @@ class TRenderFilterParameterTest extends TestCase
 	{
 		$p = $this->makeParam('<div><p><strong>deep</strong></p></div>');
 		$depths = [];
-		$p->walkElements(function (DOMElement $el, $param, int $depth) use (&$depths) {
+		$p->walkElements(function (\DOMElement $el, $param, int $depth) use (&$depths) {
 			$depths[$el->tagName] = $depth;
 		});
 
@@ -490,7 +607,7 @@ class TRenderFilterParameterTest extends TestCase
 		$div = $dom->getElementsByTagName('div')->item(0);
 
 		$tags = [];
-		$p->walkElements(function (DOMElement $el) use (&$tags) {
+		$p->walkElements(function (\DOMElement $el) use (&$tags) {
 			$tags[] = $el->tagName;
 		}, $div, false);
 
@@ -506,7 +623,7 @@ class TRenderFilterParameterTest extends TestCase
 		$div = $dom->getElementsByTagName('div')->item(0);
 
 		$depths = [];
-		$p->walkElements(function (DOMElement $el, $param, int $depth) use (&$depths) {
+		$p->walkElements(function (\DOMElement $el, $param, int $depth) use (&$depths) {
 			$depths[$el->tagName] = $depth;
 		}, $div);
 
@@ -521,7 +638,7 @@ class TRenderFilterParameterTest extends TestCase
 		$div = $dom->getElementsByTagName('div')->item(0);
 
 		$tags = [];
-		$p->walkElements(function (DOMElement $el) use (&$tags) {
+		$p->walkElements(function (\DOMElement $el) use (&$tags) {
 			$tags[] = $el->tagName;
 		}, $div);
 
@@ -536,7 +653,7 @@ class TRenderFilterParameterTest extends TestCase
 		// during the walk must NOT appear in the visited set.
 		$p = $this->makeParam('<ul><li>a</li><li>b</li></ul>');
 		$tags = [];
-		$p->walkElements(function (DOMElement $el) use (&$tags, $p) {
+		$p->walkElements(function (\DOMElement $el) use (&$tags, $p) {
 			$tags[] = $el->tagName;
 			// When we visit the <ul>, append a new <li> child.
 			// With a full pre-snapshot the two original <li> children are already
@@ -558,15 +675,15 @@ class TRenderFilterParameterTest extends TestCase
 		// errors, and the removed element must still have been visited.
 		$p = $this->makeParam('<div><p id="a">a</p><p id="b">b</p></div>');
 		$visited = [];
-		$p->walkElements(function (DOMElement $el) use (&$visited) {
+		$p->walkElements(function (\DOMElement $el) use (&$visited) {
 			$visited[] = $el->getAttribute('id') ?: $el->tagName;
 			// When visiting the first <p>, remove the second one from the DOM.
 			if ($el->getAttribute('id') === 'a') {
 				$sibling = $el->nextSibling;
-				while ($sibling && !($sibling instanceof DOMElement)) {
+				while ($sibling && !($sibling instanceof \DOMElement)) {
 					$sibling = $sibling->nextSibling;
 				}
-				if ($sibling instanceof DOMElement) {
+				if ($sibling instanceof \DOMElement) {
 					$sibling->parentNode->removeChild($sibling);
 				}
 			}
@@ -651,7 +768,7 @@ class TRenderFilterParameterTest extends TestCase
 	{
 		$p = $this->makeParam('<p>test</p>');
 		$dom = $p[TRenderFilterParameter::RENDER_FILTER_DOM];
-		$this->assertInstanceOf(DOMDocument::class, $dom);
+		$this->assertInstanceOf(\DOMDocument::class, $dom);
 	}
 
 	public function testOffsetSetHtmlCallsSetFilterText()
@@ -664,7 +781,7 @@ class TRenderFilterParameterTest extends TestCase
 	public function testOffsetSetDomCallsSetFilterDom()
 	{
 		$p = $this->makeParam('<p>old</p>');
-		$dom = new DOMDocument('1.0', 'UTF-8');
+		$dom = new \DOMDocument('1.0', 'UTF-8');
 		$dom->loadHTML('<html><body><span>injected</span></body></html>');
 		$p[TRenderFilterParameter::RENDER_FILTER_DOM] = $dom;
 		$this->assertSame($dom, $p->getFilterDOM());
@@ -811,7 +928,7 @@ class TRenderFilterParameterTest extends TestCase
 		// setFilterDOM on a fresh param (no prior getFilterDOM call) must still
 		// make DOM current and serialise correctly on getFilterText.
 		$p = $this->makeParam('<p>old</p>');
-		$dom = new DOMDocument('1.0', 'UTF-8');
+		$dom = new \DOMDocument('1.0', 'UTF-8');
 		$dom->loadHTML('<html><body><em>fresh</em></body></html>');
 		$p->setFilterDOM($dom);
 		$this->assertStringContainsString('fresh', $p->getFilterText());
@@ -865,7 +982,7 @@ class TRenderFilterParameterTest extends TestCase
 		// Only DOMElement nodes are visited, not text nodes.
 		$p = $this->makeParam('plain text<p>element</p>');
 		$tags = [];
-		$p->walkElements(function (DOMElement $el) use (&$tags) {
+		$p->walkElements(function (\DOMElement $el) use (&$tags) {
 			$tags[] = $el->tagName;
 		});
 		$this->assertContains('p', $tags);
@@ -876,7 +993,7 @@ class TRenderFilterParameterTest extends TestCase
 	{
 		$p = $this->makeParam('<p>a</p><div>b</div><span>c</span>');
 		$tags = [];
-		$p->walkElements(function (DOMElement $el) use (&$tags) {
+		$p->walkElements(function (\DOMElement $el) use (&$tags) {
 			$tags[] = $el->tagName;
 		});
 		$this->assertContains('p', $tags);
@@ -958,7 +1075,7 @@ class TRenderFilterParameterTest extends TestCase
 	{
 		$p = new TRenderFilterParameterParseFail('<p>bad</p>');
 		$p->getFilterDOM(); // populate errors
-		$dom = new DOMDocument('1.0', 'UTF-8');
+		$dom = new \DOMDocument('1.0', 'UTF-8');
 		$p->setFilterDOM($dom);
 		$this->assertNull($p->getFilterErrors());
 		$this->assertFalse($p->getHasFilterError());
@@ -1041,5 +1158,362 @@ class TRenderFilterParameterTest extends TestCase
 		$p->getFilterDOM();
 		unset($p[TRenderFilterParameter::RENDER_FILTER_ERRORS]);
 		$this->assertFalse(isset($p[TRenderFilterParameter::RENDER_FILTER_ERRORS]));
+	}
+
+	// ================================================================================
+	// 12. Parse fidelity of the libxml and HTML5 parsers
+	// ================================================================================
+
+	public static function parserProvider(): array
+	{
+		return [
+			'libxml' => [TRenderFilterParameterLibxml::class],
+			'html5' => [TRenderFilterParameterHtml5::class],
+		];
+	}
+
+	public static function roundTripProvider(): array
+	{
+		$cases = [
+			'leading text' => 'Lead HTML text <b>bold</b> tail',
+			'top-level whitespace' => '<span>A</span> <span>B</span>',
+			'UTF-8 text and attributes' => '<p title="è € 😀">è € 😀</p>',
+			'leading comment' => '<!--keep--><p>x</p>',
+			'comment matching encoding prefix' => '<!--?xml encoding="UTF-8"--><p>x</p>',
+			'indented elements' => "\n\t<h1>T</h1>\n\t<p>x</p>\n",
+			'script with end tag text' => '<script>var s = "</div>"; if (a < b && c) {}</script><p>x</p>',
+			'empty script' => '<script src="a.js"></script>',
+			'style with end tag text' => '<style>p > a::before { content: "</p>"; }</style>',
+			'comment holding a script tag' => '<!-- <script> --><p>c</p>',
+			'nested svg' => '<svg viewBox="0 0 10 10"><svg viewBox="0 0 1 1"><path d="M0 0"></path></svg><text>HTML</text></svg><p>after</p>',
+			'math' => '<math><mi>x</mi></math>',
+			'void elements' => '<input disabled><br><img src="a.png" alt="">',
+			'table rows' => "\n<tr><td>cell</td></tr>",
+			'table cells' => '<td>c</td><th>h</th>',
+			'table head' => '<thead><tr><th>h</th></tr></thead>',
+			'options' => '<option value="1" selected>One</option><optgroup label="g"><option>2</option></optgroup>',
+			'columns' => '<col span="2">',
+			'document' => '<!DOCTYPE html><html lang="en"><head><title>T</title></head><body><p>x</p></body></html>',
+			'document with leading comment' => '<!DOCTYPE html><!--keep--><html><head><title>T</title></head><body><p>x</p></body></html>',
+			'document with encoding comment' => '<!DOCTYPE html><!--?xml encoding="UTF-8"--><html><head><title>T</title></head><body><p>x</p></body></html>',
+			'head' => '<head><title>T</title></head>',
+			'body' => '<body class="b"><p>x</p></body>',
+			'template rows' => '<search><output name="o">1</output></search><template><tr><td>x</td></tr></template>',
+			'shadow root template' => '<template shadowrootmode="open"><slot></slot></template><b>light</b>',
+			'non-XML attribute names' => '<div @click="go()" :class="c" [prop]="v" (event)="e" x-on:click.prevent="z" ü="j">x</div>',
+			'script start tag attribute' => '<script @load="go()">if (a<b) {}</script><p>x</p>',
+		];
+		$data = [];
+		foreach (self::parserProvider() as $parser => [$class]) {
+			foreach ($cases as $name => $html) {
+				$data[$parser . ': ' . $name] = [$class, $html];
+			}
+		}
+		return $data;
+	}
+
+	private function skipUnlessParser(string $class): void
+	{
+		if ($class === TRenderFilterParameterHtml5::class && !class_exists(\Dom\HTMLDocument::class)) {
+			$this->markTestSkipped('The HTML5 parser requires PHP 8.4+.');
+		}
+	}
+
+	/**
+	 * @dataProvider roundTripProvider
+	 */
+	public function testDomRoundTripKeepsMarkup(string $class, string $html)
+	{
+		$this->skipUnlessParser($class);
+		$p = new $class($html);
+		$this->assertInstanceOf(\DOMDocument::class, $p->getFilterDOM());
+		$this->assertSame($html, $p->getFilterText());
+	}
+
+	/**
+	 * @dataProvider parserProvider
+	 */
+	public function testDomRoundTripDecodesEntities(string $class)
+	{
+		$this->skipUnlessParser($class);
+		$p = new $class('<p>Caf&eacute; &amp; &lt;b&gt;</p>');
+		$p->getFilterDOM();
+		$this->assertSame("<p>Caf\u{e9} &amp; &lt;b&gt;</p>", $p->getFilterText());
+	}
+
+	/**
+	 * @dataProvider parserProvider
+	 */
+	public function testLeadingTextIsTopLevelTextNode(string $class)
+	{
+		$this->skipUnlessParser($class);
+		$p = new $class('Lead <b>bold</b>');
+		$dom = $p->getFilterDOM();
+		$this->assertSame(XML_TEXT_NODE, $dom->firstChild->nodeType);
+		$this->assertSame('Lead ', $dom->firstChild->nodeValue);
+	}
+
+	/**
+	 * @dataProvider parserProvider
+	 */
+	public function testDomChangeKeepsScriptAndSvg(string $class)
+	{
+		$this->skipUnlessParser($class);
+		$p = new $class('<p>HTML</p><script>x("</p>")</script><svg viewBox="0 0 1 1"></svg>');
+		$p->walkElements(function (\DOMElement $el) {
+			if ($el->tagName === 'p') {
+				$abbr = $el->ownerDocument->createElement('abbr', 'HTML');
+				$abbr->setAttribute('title', 'HyperText Markup Language');
+				$el->replaceChild($abbr, $el->firstChild);
+			}
+		});
+		$this->assertSame(
+			'<p><abbr title="HyperText Markup Language">HTML</abbr></p><script>x("</p>")</script><svg viewBox="0 0 1 1"></svg>',
+			$p->getFilterText()
+		);
+	}
+
+	/**
+	 * @dataProvider parserProvider
+	 */
+	public function testTableRowsAreElements(string $class)
+	{
+		$this->skipUnlessParser($class);
+		$p = new $class('<tr><td>a</td><td>b</td></tr>');
+		$tags = [];
+		$p->walkElements(function (\DOMElement $el) use (&$tags) {
+			$tags[] = $el->tagName;
+		});
+		$this->assertSame(['tr', 'td', 'td'], $tags);
+	}
+
+	public function testLibxmlKeepsScriptContentAsPlaceholder()
+	{
+		$p = new TRenderFilterParameterLibxml('<script>x("</p>")</script><svg></svg>');
+		$dom = $p->getFilterDOM();
+		$this->assertStringStartsWith('<!--prado-raw-', $dom->firstChild->textContent);
+		$this->assertSame(XML_COMMENT_NODE, $dom->lastChild->nodeType);
+		$this->assertStringNotContainsString('prado-raw', $p->getFilterText());
+	}
+
+	public function testHtml5ScriptContentIsText()
+	{
+		$this->skipUnlessParser(TRenderFilterParameterHtml5::class);
+		$p = new TRenderFilterParameterHtml5('<script>x("</p>")</script>');
+		$this->assertSame('x("</p>")', $p->getFilterDOM()->firstChild->textContent);
+	}
+
+	public function testHtml5TemplateContentIsWalked()
+	{
+		$this->skipUnlessParser(TRenderFilterParameterHtml5::class);
+		$p = new TRenderFilterParameterHtml5('<template><tr><td>x</td></tr></template>');
+		$tags = [];
+		$p->walkElements(function (\DOMElement $el) use (&$tags) {
+			$tags[] = $el->tagName;
+		});
+		$this->assertSame(['template', 'tr', 'td'], $tags);
+	}
+
+	/**
+	 * @dataProvider parserProvider
+	 */
+	public function testDomChangeKeepsNonXmlAttributeNames(string $class)
+	{
+		$this->skipUnlessParser($class);
+		$p = new $class('<button @click="open = !open">HTML</button>');
+		$p->walkElements(function (\DOMElement $el) {
+			$el->setAttribute('type', 'button');
+		});
+		$this->assertSame('<button @click="open = !open" type="button">HTML</button>', $p->getFilterText());
+	}
+
+	public function testHtml5DocumentLeavesOutImpliedElements()
+	{
+		$this->skipUnlessParser(TRenderFilterParameterHtml5::class);
+		$p = new TRenderFilterParameterHtml5('<!DOCTYPE html><p>x</p>');
+		$p->getFilterDOM();
+		$this->assertSame('<!DOCTYPE html><p>x</p>', $p->getFilterText());
+	}
+
+	public function testDoctypeWithIdentifiersSerialized()
+	{
+		$html = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html><body><p>x</p></body></html>';
+		$p = new TRenderFilterParameterLibxml($html);
+		$p->getFilterDOM();
+		$this->assertStringStartsWith('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">', $p->getFilterText());
+	}
+
+	public function testUseHtml5ParserFollowsPhpVersion()
+	{
+		$this->assertSame(class_exists(\Dom\HTMLDocument::class), \Prado\Test\Unit\PradoUnit::invoke(new TRenderFilterParameter(), 'getUseHtml5Parser'));
+	}
+
+	public static function fragmentContextProvider(): array
+	{
+		return [
+			'text' => ['plain text', 'body'],
+			'paragraph' => ['<p>x</p>', 'body'],
+			'comment first' => ['<!-- c --> <tr>', 'tbody'],
+			'doctype' => ['<!DOCTYPE html><html>', '#document'],
+			'html' => ['<HTML lang="en">', '#document'],
+			'head' => ['<head>', 'html'],
+			'body' => ['<body>', 'html'],
+			'row' => ['<tr>', 'tbody'],
+			'cell' => ['<td>', 'tr'],
+			'header cell' => ['<th>', 'tr'],
+			'caption' => ['<caption>', 'table'],
+			'column group' => ['<colgroup>', 'table'],
+			'table body' => ['<tbody>', 'table'],
+			'column' => ['<col>', 'colgroup'],
+			'option' => ['<option>', 'select'],
+			'option group' => ['<optgroup>', 'select'],
+			'header is not head' => ['<header>', 'body'],
+		];
+	}
+
+	/**
+	 * @dataProvider fragmentContextProvider
+	 */
+	public function testGetFragmentContext(string $html, string $context)
+	{
+		$this->assertSame($context, \Prado\Test\Unit\PradoUnit::invoke(new TRenderFilterParameter(), 'getFragmentContext', $html));
+	}
+
+	// ================================================================================
+	// 13. Exempt markup (EXEMPT_ATTRIBUTE)
+	// ================================================================================
+
+	/**
+	 * Raises `onRenderFilter` with `$handler` on a parameter of `$class` and returns the filtered HTML.
+	 */
+	private function raiseFilter(string $class, string $html, callable $handler): string
+	{
+		$source = new \Prado\Web\UI\TControl();
+		$source->onRenderFilter[] = $handler;
+		$param = new $class($html);
+		$source->raiseEvent('onRenderFilter', $source, $param);
+		return $param->getFilterText();
+	}
+
+	private static function replaceTextHandler(): callable
+	{
+		return function ($sender, TRenderFilterParameter $param) {
+			$param->setFilterText(str_replace('HTML', 'X', $param->getFilterText()));
+		};
+	}
+
+	private static function replaceDomHandler(): callable
+	{
+		return function ($sender, TRenderFilterParameter $param) {
+			$xpath = new \DOMXPath($param->getFilterDOM());
+			foreach (iterator_to_array($xpath->query('//text()')) as $text) {
+				$text->data = str_replace('HTML', 'X', $text->data);
+			}
+		};
+	}
+
+	public static function exemptProvider(): array
+	{
+		$cases = [
+			'exempt element' => [
+				'<p>HTML</p><pre data-prado-filter-exempt="">HTML <b>HTML</b></pre><p>HTML</p>',
+				'<p>X</p><pre data-prado-filter-exempt="">HTML <b>HTML</b></pre><p>X</p>',
+			],
+			'true value' => [
+				'<div data-prado-filter-exempt="true">HTML</div>HTML',
+				'<div data-prado-filter-exempt="true">HTML</div>X',
+			],
+			'false outside exempt' => [
+				'<div data-prado-filter-exempt="false">HTML</div>',
+				'<div data-prado-filter-exempt="false">X</div>',
+			],
+			're-enabled element' => [
+				'<div data-prado-filter-exempt="true" title="HTML">HTML <span data-prado-filter-exempt="false">HTML</span> HTML</div>',
+				'<div data-prado-filter-exempt="true" title="HTML">HTML <span data-prado-filter-exempt="false">X</span> HTML</div>',
+			],
+			're-enabled deep inside exempt' => [
+				'<ul data-prado-filter-exempt="true"><li>HTML</li><li><b data-prado-filter-exempt="FALSE">HTML</b></li></ul>',
+				'<ul data-prado-filter-exempt="true"><li>HTML</li><li><b data-prado-filter-exempt="FALSE">X</b></li></ul>',
+			],
+			'exempt inside re-enabled' => [
+				'<div data-prado-filter-exempt="true"><span data-prado-filter-exempt="false">HTML <code data-prado-filter-exempt="true">HTML</code></span></div>',
+				'<div data-prado-filter-exempt="true"><span data-prado-filter-exempt="false">X <code data-prado-filter-exempt="true">HTML</code></span></div>',
+			],
+			'exempt inside exempt' => [
+				'<div data-prado-filter-exempt="true"><p data-prado-filter-exempt="true">HTML</p></div><p>HTML</p>',
+				'<div data-prado-filter-exempt="true"><p data-prado-filter-exempt="true">HTML</p></div><p>X</p>',
+			],
+			'non-XML attribute name' => [
+				'<div data-prado-filter-exempt="true" @click="go()">HTML <span data-prado-filter-exempt="false">HTML</span></div>',
+				'<div data-prado-filter-exempt="true" @click="go()">HTML <span data-prado-filter-exempt="false">X</span></div>',
+			],
+		];
+		$data = [];
+		foreach (self::parserProvider() as $parser => [$class]) {
+			foreach (['string' => 'replaceTextHandler', 'dom' => 'replaceDomHandler'] as $style => $handler) {
+				foreach ($cases as $name => [$html, $expected]) {
+					$data[$parser . ' ' . $style . ': ' . $name] = [$class, $handler, $html, $expected];
+				}
+			}
+		}
+		return $data;
+	}
+
+	/**
+	 * @dataProvider exemptProvider
+	 */
+	public function testExemptMarkupIsHiddenFromHandlers(string $class, string $handler, string $html, string $expected)
+	{
+		$this->skipUnlessParser($class);
+		$this->assertSame($expected, $this->raiseFilter($class, $html, self::$handler()));
+	}
+
+	/**
+	 * @dataProvider parserProvider
+	 */
+	public function testExemptMarkupIsPlaceholderForHandlers(string $class)
+	{
+		$this->skipUnlessParser($class);
+		$seen = '';
+		$this->raiseFilter($class, '<p>a</p><pre data-prado-filter-exempt="">secret</pre>', function ($sender, TRenderFilterParameter $param) use (&$seen) {
+			$seen = $param->getFilterText();
+		});
+		$this->assertStringNotContainsString('secret', $seen);
+		$this->assertStringContainsString('<!--' . \Prado\Web\UI\TRenderFilterContext::EXEMPT_TOKEN, $seen);
+	}
+
+	/**
+	 * @dataProvider parserProvider
+	 */
+	public function testWalkElementsSkipsExemptMarkup(string $class)
+	{
+		$this->skipUnlessParser($class);
+		$tags = [];
+		$this->raiseFilter($class, '<p>a</p><div data-prado-filter-exempt="true"><b>b</b><i data-prado-filter-exempt="false">c</i></div>', function ($sender, TRenderFilterParameter $param) use (&$tags) {
+			$param->walkElements(function (\DOMElement $el) use (&$tags) {
+				$tags[] = $el->tagName;
+			});
+		});
+		$this->assertSame(['p', 'i'], $tags);
+	}
+
+	public function testHtmlWithoutExemptAttributeIsNotParsed()
+	{
+		$param = new TRenderFilterParameterCounting('<p>HTML</p>');
+		$param->preRaiseEvent('onrenderfilter', null, $param, null, null);
+		$this->assertSame(0, $param->parses);
+		$param = new TRenderFilterParameterCounting('<p data-prado-filter-exempt>HTML</p>');
+		$param->preRaiseEvent('onrenderfilter', null, $param, null, null);
+		$this->assertSame(1, $param->parses);
+	}
+
+	public function testExemptRestoredAfterRaise()
+	{
+		$html = '<pre data-prado-filter-exempt="">HTML</pre>';
+		$param = new TRenderFilterParameterLibxml($html);
+		$param->preRaiseEvent('onrenderfilter', null, $param, null, null);
+		$this->assertStringNotContainsString('HTML', $param->getFilterText());
+		$param->postRaiseEvent([], 'onrenderfilter', null, $param, null, null);
+		$this->assertSame($html, $param->getFilterText());
 	}
 }

@@ -12,6 +12,7 @@ namespace Prado\Web\UI;
 
 use Prado\Prado;
 use Prado\TApplicationMode;
+use Prado\TComponentReflection;
 use Prado\TPropertyValue;
 
 /**
@@ -90,23 +91,33 @@ class TTemplateManager extends \Prado\TModule
 	 * Initializes the module.
 	 * This method is required by IModule and is invoked by application.
 	 * It starts output buffer if it is enabled.
-	 * @param \Prado\Xml\TXmlElement $config module configuration
+	 * @param null|array|\Prado\Xml\TXmlElement $config module configuration
 	 */
 	public function init($config)
 	{
-		Prado::getApplication()->setTemplateManager($this);
+		$this->setAppTemplateManager();
 		parent::init($config);
+	}
+
+	/**
+	 * Registers this module as the application template manager when an application is available.
+	 * Called during {@see init()}; may also be called by behaviors or subclasses.
+	 * @since 4.4.0
+	 */
+	protected function setAppTemplateManager()
+	{
+		$this->getApplication()?->setTemplateManager($this);
 	}
 
 	/**
 	 * Loads the template corresponding to the specified class name.
 	 * @param mixed $className
-	 * @return \Prado\Web\UI\TTemplate template for the class name, null if template doesn't exist.
+	 * @return ?ITemplate template for the class name, null if template doesn't exist.
 	 * @todo v4.4 normalize to "ByClass"?
 	 */
 	public function getTemplateByClassName($className)
 	{
-		$class = new \ReflectionClass($className);
+		$class = TComponentReflection::getReflectionClassByType($className);
 		$tplFile = dirname($class->getFileName()) . DIRECTORY_SEPARATOR . $class->getShortName() . self::TEMPLATE_FILE_EXT;
 		return $this->getTemplateByFileName($tplFile);
 	}
@@ -116,7 +127,7 @@ class TTemplateManager extends \Prado\TModule
 	 * @param string $fileName The file path and name of the template.
 	 * @param string $tplClass, default null for the Default Template Class
 	 * @param string $culture culture string, null to use current application culture
-	 * @return \Prado\Web\UI\TTemplate or subclass template parsed from the specified file, null if the file doesn't exist.
+	 * @return ?ITemplate or subclass template parsed from the specified file, null if the file doesn't exist.
 	 */
 	public function getTemplateByFileName($fileName, $tplClass = null, $culture = null)
 	{

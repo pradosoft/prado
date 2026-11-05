@@ -1,10 +1,12 @@
 <?php
 
-require_once(__DIR__ . '/../../PradoUnit.php');
+namespace Prado\Test\Unit\Data\TableGateway;
+
 use Prado\Data\DataGateway\TTableGateway;
 use Prado\Data\TDbConnection;
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
 
-class BaseGateway extends PHPUnit\Framework\TestCase
+class BaseGateway extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 
@@ -43,11 +45,6 @@ class BaseGateway extends PHPUnit\Framework\TestCase
 	protected function getPradoUnitSetup(): ?string
 	{
 		return 'setupMysqlConnection';
-	}
-	
-	protected function getIsForActiveRecord(): bool
-	{
-		return false;
 	}
 	
 	protected function getTestTables(): array

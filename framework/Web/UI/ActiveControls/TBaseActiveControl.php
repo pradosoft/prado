@@ -21,9 +21,20 @@ use Prado\Web\UI\TPage;
  * TBaseActiveCallbackControl is created by {@see \Prado\Web\UI\ActiveControls\TActiveControlAdapter::getBaseActiveControl()}
  * method.
  *
- * The {@see setEnableUpdate EnableUpdate} property determines wether the active
+ * The {@see setEnableUpdate EnableUpdate} property determines whether the active
  * control is allowed to update the contents of the client-side when the callback
- * response returns.
+ * response returns. The {@see setUpdateMode UpdateMode} property determines how a
+ * control that renders again updates its markup: replaced, or morphed so the
+ * existing nodes keep their listeners and focus.
+ * ```html
+ * <com:TActivePanel ID="Results" ActiveControl.UpdateMode="Morph">
+ * ```
+ * The {@see setViewTransition ViewTransition} property applies the client actions of
+ * a callback response that renders the control again inside a view transition, so
+ * the browser animates the update.
+ * ```html
+ * <com:TActivePanel ID="Results" ActiveControl.ViewTransition="true">
+ * ```
  *
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
  * @since 3.1
@@ -120,6 +131,87 @@ class TBaseActiveControl extends \Prado\TComponent
 	}
 
 	/**
+	 * @return string how a callback response updates the control's markup, a
+	 *   {@see TActiveUpdateMode}. Defaults to Default.
+	 * @since 4.4.0
+	 */
+	public function getUpdateMode()
+	{
+		return $this->getOption('UpdateMode', TActiveUpdateMode::Default);
+	}
+
+	/**
+	 * Sets how a callback response updates the control's markup. Morph keeps the
+	 * existing nodes; Default follows the page's
+	 * {@see \Prado\Web\UI\TPage::getCallbackUpdateMode CallbackUpdateMode}.
+	 * A skin sets it for every control of a type.
+	 * @param string $value a {@see TActiveUpdateMode}
+	 * @since 4.4.0
+	 */
+	public function setUpdateMode($value)
+	{
+		$this->setOption('UpdateMode', TPropertyValue::ensureEnum($value, TActiveUpdateMode::class), TActiveUpdateMode::Default);
+	}
+
+	/**
+	 * Returns whether a callback response morphs the control's markup:
+	 * {@see getUpdateMode UpdateMode} is Morph, or Default on a page whose
+	 * CallbackUpdateMode is Morph.
+	 * @return bool whether the update morphs
+	 * @since 4.4.0
+	 */
+	public function getIsMorphUpdate(): bool
+	{
+		$mode = $this->getUpdateMode();
+		if ($mode === TActiveUpdateMode::Default && ($page = $this->getPage()) !== null) {
+			$mode = $page->getCallbackUpdateMode();
+		}
+		return $mode === TActiveUpdateMode::Morph;
+	}
+
+	/**
+	 * @return bool whether a callback response that renders the control again applies
+	 *   its client actions inside a view transition. Defaults to false.
+	 * @since 4.4.0
+	 */
+	public function getViewTransition(): bool
+	{
+		return $this->getOption('ViewTransition', false);
+	}
+
+	/**
+	 * Sets whether a callback response that renders the control again applies its
+	 * client actions inside a view transition (`document.startViewTransition`).
+	 * The whole response transitions, with the updates of every other control in it.
+	 * {@see \Prado\Web\UI\TPage::getCallbackViewTransition() TPage.CallbackViewTransition}
+	 * turns it on for every response. A skin sets it for every control of a type.
+	 * @param bool $value whether the control's updates animate through a view transition.
+	 * @since 4.4.0
+	 */
+	public function setViewTransition($value): void
+	{
+		$this->setOption('ViewTransition', TPropertyValue::ensureBoolean($value), false);
+	}
+
+	/**
+	 * Sends the markup of the control rendered again to the client. The update
+	 * morphs when {@see getIsMorphUpdate()} is true, and a
+	 * {@see getViewTransition ViewTransition} control turns on the response's
+	 * {@see TCallbackClientScript::setViewTransition() view transition}.
+	 * @param \Prado\Web\UI\TControl|string $element the control or HTML element id to replace.
+	 * @param \Prado\Web\UI\TControl|\Prado\Web\UI\THtmlWriter|string $content the HTML, the control to render, or the writer holding it.
+	 * @since 4.4.0
+	 */
+	public function replaceClientContent($element, $content): void
+	{
+		$client = $this->getPage()->getCallbackClient();
+		if ($this->getViewTransition()) {
+			$client->setViewTransition(true);
+		}
+		$client->replaceContent($element, $content, true, $this->getIsMorphUpdate());
+	}
+
+	/**
 	 * Returns true if callback response is allowed to update the browser contents.
 	 * Is is true if the control is initilized, and is a callback request and
 	 * the {@see setEnableUpdate EnableUpdate} property is true and
@@ -131,7 +223,7 @@ class TBaseActiveControl extends \Prado\TComponent
 	public function canUpdateClientSide($bDontRequireVisibility = false)
 	{
 		return 	$this->getControl()->getHasChildInitialized()
-				&& $this->getPage()->getIsLoadingPostData() == false
+				&& !$this->getPage()->getIsLoadingPostData()
 				&& $this->getPage()->getIsCallback()
 				&& $this->getEnableUpdate()
 				&& ($bDontRequireVisibility || $this->getControl()->getVisible());

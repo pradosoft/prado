@@ -1,12 +1,14 @@
 <?php
 
-require_once(__DIR__ . '/../../../../PradoUnit.php');
+namespace Prado\Test\Unit\Data\DbSpecific\Pgsql\Common;
 
 use Prado\Data\Common\Pgsql\TPgsqlMetaData;
 use Prado\Data\Common\TDbCommandBuilder;
 use Prado\Data\Common\TDbMetaData;
 use Prado\Data\TDbConnection;
 use Prado\TApplication;
+use Prado\Test\Unit\PradoUnit;
+use Prado\TApplicationMode;
 
 /**
  * Live integration tests for TDbMetaData — PostgreSQL.
@@ -22,7 +24,7 @@ use Prado\TApplication;
  *     note  VARCHAR(100) DEFAULT 'fallback'
  *   )
  */
-class TDbMetaDataPgsqlIntegrationTest extends PHPUnit\Framework\TestCase
+class TDbMetaDataPgsqlIntegrationTest extends \PHPUnit\Framework\TestCase
 {
 	private ?TDbConnection $_conn = null;
 
@@ -39,7 +41,7 @@ class TDbMetaDataPgsqlIntegrationTest extends PHPUnit\Framework\TestCase
 	{
 		static $booted = false;
 		if (!$booted) {
-			new TApplication(__DIR__ . '/../../../../Security/app', false, TApplication::CONFIG_TYPE_PHP);
+			(new TApplication(__DIR__ . '/../../../../Security/app', false, TApplication::CONFIG_TYPE_PHP))->setMode(TApplicationMode::Debug);
 			$booted = true;
 		}
 		$this->_conn = $this->openPgsql();

@@ -1,0 +1,12 @@
+<%@ MasterClass="" %>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Headers – <%= $this->Action %></title>
+</head>
+<body>
+<div id="action"><%= $this->Action %></div>
+<div id="ready">ready</div>
+</body>
+</html>

@@ -1,7 +1,7 @@
 # Web/UI/IValidatable
 
 ### Directories
-[framework](./INDEX.md) / [Web](./Web/INDEX.md) / [UI](./Web/UI/INDEX.md) / **`IValidatable`**
+[framework](../../INDEX.md) / [Web](../INDEX.md) / [UI](INDEX.md) / **`IValidatable`**
 
 **Location:** `framework/Web/UI/IValidatable.php`
 **Namespace:** `Prado\Web\UI`

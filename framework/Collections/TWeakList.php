@@ -186,15 +186,28 @@ class TWeakList extends TList implements IWeakCollection, ICollectionFilter
 	}
 
 	/**
-	 * When a change in the WeakMap is detected, scrub the list of invalid WeakReference.
+	 * Removes from `_d` every entry whose `WeakReference` has lost its referent.
 	 *
-	 * Re-entrancy guard: PHP's cyclic garbage collector can fire between any two opcodes
-	 * and invoke object destructors mid-loop.  If a destructor removes an entry from this
-	 * list (e.g. via TComponent::__destruct → unlisten → remove → scrubWeakReferences),
-	 * the inner call would shorten $_d and $_c while the outer loop is still iterating,
-	 * making the outer index stale and causing an "Undefined array key" error.  The
-	 * {@see isScrubbing} guard prevents the inner call from executing; any entries the
-	 * inner call would have removed are picked up during the next outer pass.
+	 * **Re-entrancy strategy — snapshot identify, identity-based remove.**
+	 * PHP's cyclic garbage collector can fire between any two opcodes and invoke
+	 * object destructors mid-loop (e.g. `TComponent::__destruct` → `unlisten` →
+	 * `remove`). The scrub runs in two phases to keep destructor-time list
+	 * mutations correct without dropping them:
+	 *
+	 *  - **Pass 1 — Identify.** A `foreach` over `_d` iterates a CoW snapshot
+	 *    of the array, so destructor-triggered mutations cannot disturb the
+	 *    iteration. Every stale `WeakReference` is recorded by
+	 *    `spl_object_id($weakRef)` — the `WeakReference` object itself is
+	 *    still alive, only its referent has been GC'd.
+	 *
+	 *  - **Pass 2 — Remove.** A second walk operates on `_d`'s *current*
+	 *    state and splices out only entries whose `WeakReference` is in the
+	 *    stale set. Live items inserted by destructors during Pass 1 are
+	 *    not in the stale set and are therefore preserved.
+	 *
+	 * `_c` is recomputed from `_d`'s current state because destructor-time
+	 * inserts/removes via {@see insertAt}/{@see removeAt} may have already
+	 * shifted it.
 	 */
 	protected function scrubWeakReferences(): void
 	{
@@ -203,25 +216,39 @@ class TWeakList extends TList implements IWeakCollection, ICollectionFilter
 		}
 		$this->setScrubbing(true);
 		try {
-			for ($i = $this->_c - 1; $i >= 0; $i--) {
-				if (is_object($this->_d[$i])) {
-					$object = $this->_d[$i];
-					if ($isEventHandler = ($object instanceof TEventHandler)) {
-						$object = $object->getHandlerObject(true);
-					}
-					if (($object instanceof WeakReference) && $object->get() === null) {
-						$this->_c--;
-						if ($i === $this->_c) {
-							array_pop($this->_d);
-						} else {
-							array_splice($this->_d, $i, 1);
-						}
-						if ($isEventHandler) {
-							$this->_eventHandlerCount--;
-						}
+			// Pass 1: identify stale WeakReferences. CoW snapshot foreach is
+			// safe against concurrent mutation of $this->_d.
+			$staleRefIds = [];
+			foreach ($this->_d as $entry) {
+				$ref = $entry;
+				if (is_object($ref) && ($ref instanceof TEventHandler)) {
+					$ref = $ref->getHandlerObject(true);
+				}
+				if (($ref instanceof WeakReference) && $ref->get() === null) {
+					$staleRefIds[spl_object_id($ref)] = true;
+				}
+			}
+
+			// Pass 2: splice out only entries whose WeakReference is stale.
+			$ehDelta = 0;
+			for ($i = count($this->_d) - 1; $i >= 0; $i--) {
+				$entry = $this->_d[$i];
+				$ref = $entry;
+				$isEventHandler = is_object($ref) && ($ref instanceof TEventHandler);
+				if ($isEventHandler) {
+					$ref = $ref->getHandlerObject(true);
+				}
+				if (($ref instanceof WeakReference) && isset($staleRefIds[spl_object_id($ref)])) {
+					array_splice($this->_d, $i, 1);
+					if ($isEventHandler) {
+						$ehDelta++;
 					}
 				}
 			}
+
+			// Recount _c and adjust event-handler count from the live data.
+			$this->_c = count($this->_d);
+			$this->_eventHandlerCount -= $ehDelta;
 			$this->weakResetCount();
 		} finally {
 			$this->setScrubbing(false);

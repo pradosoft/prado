@@ -1,7 +1,5 @@
 <?php
 
-require_once(__DIR__ . '/../../../../PradoUnit.php');
-
 /**
  * PgsqlInsertOrIgnoreTest — comprehensive tests for PostgreSQL insertOrIgnore behaviour.
  *
@@ -12,14 +10,17 @@ require_once(__DIR__ . '/../../../../PradoUnit.php');
  *   upsert_test(id SERIAL PK, username VARCHAR(100) UNIQUE NOT NULL, score INT DEFAULT 0)
  */
 
+namespace Prado\Test\Unit\Data\DbSpecific\Pgsql\Common;
+
 use Prado\Data\Common\TDbCommandBuilder;
 use Prado\Data\DataGateway\TDataGatewayEventParameter;
 use Prado\Data\DataGateway\TDataGatewayResultEventParameter;
 use Prado\Data\DataGateway\TTableGateway;
 use Prado\Data\TDbConnection;
 use Prado\Exceptions\TDbException;
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
 
-class PgsqlInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
+class PgsqlInsertOrIgnoreTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 

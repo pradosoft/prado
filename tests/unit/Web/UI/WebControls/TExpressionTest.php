@@ -1,11 +1,12 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI\WebControls;
+
 use Prado\Web\UI\WebControls\TExpression;
 use Prado\Web\UI\TTemplate;
 use Prado\Web\UI\TPage;
-use Prado\Web\UI\THtmlWriter;
-use Prado\IO\TTextWriter;
 use PHPUnit\Framework\TestCase;
+use Prado\Test\Unit\Harness\Traits\TWebControlRenderTrait;
 
 class TExpressionTest extends TestCase
 {
@@ -30,13 +31,7 @@ class TExpressionTest extends TestCase
 		return new TTemplate($template, $this->_contextPath, null, 0, true);
 	}
 
-	private function render($control)
-	{
-		$tw = new TTextWriter();
-		$writer = new THtmlWriter($tw);
-		$control->render($writer);
-		return $tw->flush();
-	}
+	use TWebControlRenderTrait;
 
 	public function testExtendsTControl()
 	{

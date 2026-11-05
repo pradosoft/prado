@@ -24,7 +24,7 @@ use Prado\Exceptions\TInvalidOperationException;
 use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Util\IDbModule;
-use Prado\Util\TLogger;
+use Prado\Util\Log\TLogger;
 
 /**
  * TDbCronManager class.
@@ -84,9 +84,9 @@ use Prado\Util\TLogger;
  *             ],
  *             'jobs' => [
  *                 [
- *                     'Name' => 'dbcacheclean',
- *                     'Schedule' => '0 0 * * * *',
- *                     'Task' => 'dbcache->flushCacheExpired(true)',
+ *                     'name' => 'dbcacheclean',
+ *                     'schedule' => '0 0 * * * *',
+ *                     'task' => 'dbcache->flushCacheExpired(true)',
  *                 ],
  *             ],
  *         ],
@@ -136,7 +136,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 	private $_logCronTasks = true;
 
 	/** @var array[]|TCronTask[] the tasks created from the (parent) application configuration */
-	private $_configTasks;
+	private array $_configTasks = [];
 
 	/** @var bool are the tasks Initialized */
 	private $_tasksInitialized = false;
@@ -147,7 +147,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 	/** @var array[] the row data from the database */
 	private $_taskRows;
 
-	/** @var TCronTask[] */
+	/** @var ?TCronTask[] */
 	private $_runtimeTasks;
 
 	/**
@@ -161,7 +161,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 
 	/**
 	 * Initializes the module. Keeps track of the configured tasks different than db tasks.
-	 * @param array|\Prado\Xml\TXmlElement $config
+	 * @param null|array|\Prado\Xml\TXmlElement $config
 	 */
 	public function init($config)
 	{
@@ -261,7 +261,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 		if ($initConfigTasks) {
 			$this->_configTasks = parent::ensureTasks();
 		}
-		return array_merge($this->_tasks, $this->_configTasks ?? []);
+		return array_merge($this->_tasks, $this->_configTasks);
 	}
 
 	/**
@@ -308,7 +308,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 	protected function createDbTable()
 	{
 		$db = $this->getDbConnection();
-		$driver = $db->getDriverName();
+		$driver = TDbDriverCapabilities::normalizeDriver($db->getDriverName());
 		$autotype = 'INTEGER';
 		$autoidAttributes = '';
 		if ($driver === TDbDriver::DRIVER_MYSQL) {
@@ -434,7 +434,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 	{
 		$runtimeTasks = $this->getRuntimeTasks();
 		if (!$runtimeTasks) {
-			return;
+			return 0;
 		}
 		$numtasks = count($runtimeTasks);
 		$cronlogger = $this->asa(TShellCronLogBehavior::class);
@@ -459,7 +459,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 	public function addRuntimeTask($task)
 	{
 		if ($this->_runtimeTasks === null) {
-			Prado::getApplication()->attachEventHandler('onEndRequest', [$this, 'executeRuntimeTasks']);
+			$this->getApplication()->attachEventHandler('onEndRequest', [$this, 'executeRuntimeTasks']);
 			$this->_runtimeTasks = [];
 		}
 		$this->_runtimeTasks[$task->getName()] = $task;
@@ -488,7 +488,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 		unset($this->_runtimeTasks[$name]);
 		if (!$this->_runtimeTasks) {
 			$this->_runtimeTasks = null;
-			Prado::getApplication()->detachEventHandler('onEndRequest', [$this, 'executeRuntimeTasks']);
+			$this->getApplication()->detachEventHandler('onEndRequest', [$this, 'executeRuntimeTasks']);
 		}
 	}
 
@@ -501,7 +501,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 			return;
 		}
 		$this->_runtimeTasks = null;
-		Prado::getApplication()->detachEventHandler('onEndRequest', [$this, 'executeRuntimeTasks']);
+		$this->getApplication()->detachEventHandler('onEndRequest', [$this, 'executeRuntimeTasks']);
 	}
 
 	/**
@@ -509,6 +509,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 	 * @param string $taskName
 	 * @param bool $checkExisting
 	 * @param bool $asObject returns the database row if false.
+	 * @return null|array|TCronTask the task object, database row, or null when absent.
 	 */
 	public function getTask($taskName, $checkExisting = true, $asObject = true)
 	{
@@ -809,7 +810,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 
 	/**
 	 * @param null|string $name name of the logs to look for, or null for all
-	 * @return int the number of log items of all or of $name
+	 * @return false|int the number of log items of all or of $name
 	 */
 	public function getCronLogCount($name = null)
 	{
@@ -847,7 +848,6 @@ class TDbCronManager extends TCronModule implements IDbModule
 		$this->ensureTable();
 
 		$db = $this->getDbConnection();
-		$driver = TDbDriverCapabilities::normalizeDriver($db->getDriverName());
 
 		$limit = $orderby = $where = '';
 		if (is_string($name)) {
@@ -856,15 +856,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 		$pageSize = (int) $pageSize;
 		$offset = (int) $offset;
 		if ($pageSize !== 0) {
-			if ($offset !== 0) {
-				if ($driver === TDbDriver::DRIVER_PGSQL) {
-					$limit = " LIMIT {$pageSize} OFFSET {$offset}";
-				} else {
-					$limit = " LIMIT {$offset}, {$pageSize}";
-				}
-			} else {
-				$limit = " LIMIT {$pageSize}";
-			}
+			$limit = " LIMIT {$pageSize}" . ($offset !== 0 ? " OFFSET {$offset}" : '');
 			$sortingDesc ??= true;
 		}
 		if ($sortingDesc !== null) {
@@ -936,13 +928,14 @@ class TDbCronManager extends TCronModule implements IDbModule
 	}
 
 	/**
-	 * @param string $table table in the database for cron tasks and logs
+	 * @param string $table table in the database for cron tasks and logs, an SQL identifier
 	 * @throws TInvalidOperationException when trying to set this property but the module is already initialized.
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if the name is not an SQL identifier
 	 */
 	public function setTableName($table)
 	{
 		$this->assertUninitialized('TableName');
-		$this->_tableName = TPropertyValue::ensureString($table);
+		$this->_tableName = $this->ensureSqlIdentifier(TPropertyValue::ensureString($table), 'TableName');
 	}
 
 	/**

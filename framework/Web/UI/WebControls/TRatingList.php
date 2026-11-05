@@ -30,11 +30,6 @@ class TRatingList extends TRadioButtonList
 	public const SCRIPT_PATH = 'ratings';
 
 	/**
-	 * @var array list of published rating images.
-	 */
-	private $_ratingImages = [];
-
-	/**
 	 * Sets the default repeat direction to horizontal.
 	 */
 	public function __construct()
@@ -290,7 +285,7 @@ class TRatingList extends TRadioButtonList
 	{
 		parent::onPreRender($param);
 		$this->publishStyle($this->getRatingStyle());
-		$this->_ratingImages = $this->publishImages($this->getRatingStyle());
+		$this->publishImages($this->getRatingStyle());
 		$this->registerClientScript();
 	}
 
@@ -343,19 +338,30 @@ class TRatingList extends TRadioButtonList
 	}
 
 	/**
-	 * Add rating style class name to the class attribute
-	 * when {@see setReadOnly ReadOnly} property is true and when the
-	 * {@see setCssClass CssClass} property is empty.
+	 * Registers the rating client control and renders the list.
 	 * @param \Prado\Web\UI\THtmlWriter $writer renderer
 	 */
 	public function render($writer)
 	{
-		$writer->addAttribute('id', $this->getClientID());
 		$this->getPage()->getClientScript()->registerPostBackControl(
 			$this->getClientClassName(),
 			$this->getPostBackOptions()
 		);
 		parent::render($writer);
+	}
+
+	/**
+	 * Adds the grouping ARIA attributes to the list container.  TRadioButtonList supplies
+	 * `role="radiogroup"` and the `aria-label`; a read-only rating also renders `aria-readonly`.
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer for rendering purpose.
+	 * @since 4.4.0
+	 */
+	protected function addGroupAttributesToRender($writer)
+	{
+		parent::addGroupAttributesToRender($writer);
+		if ($this->getReadOnly()) {
+			$writer->addAttribute('aria-readonly', 'true');
+		}
 	}
 
 	/**

@@ -21,4 +21,4 @@ TRpcApiProvider is an abstract class for implementing RPC API endpoints. Subclas
 ## See Also
 
 - [TRpcServer](./TRpcServer.md) - Server middleware
-- [TRpcService](../TRpcService.md) - The RPC service
+- [TRpcService](TRpcService.md) - The RPC service

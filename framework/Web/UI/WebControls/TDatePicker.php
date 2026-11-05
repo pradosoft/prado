@@ -65,7 +65,7 @@ use Prado\I18N\core\CultureInfo;
  * for the date picker panel. <b>CalendarStyle</b> property sets the packages
  * styles available. E.g. <b>default</b>.
  *
- * The <b>InputMode</b> property can be set to "TextBox" or "DropDownList" with
+ * The <b>DateInputMode</b> property can be set to "TextBox" or "DropDownList" with
  * default as "TextBox".
  * In <b>DropDownList</b> mode, in addition to the popup date picker, three
  * drop down list (day, month and year) are presented to select the date .
@@ -73,6 +73,14 @@ use Prado\I18N\core\CultureInfo;
  * The <b>PositionMode</b> property can be set to "Top" or "Bottom" with default
  * as "Bottom". It specifies the position of the calendar popup, relative to the
  * input field.
+ *
+ * The browser's own date and time pickers are a {@see TTextBox} with TextMode
+ * `Date`, `DatetimeLocal`, `Month`, `Week`, or `Time`. They need no script, use the
+ * platform picker on phones, and take `Min`, `Max`, and `Step`; they display the
+ * user's locale and post a fixed format, such as `yyyy-MM-dd`, which
+ * {@see TRangeValidator} reads with its Date, Time, Month, Week, and DateTimeLocal
+ * data types. TDatePicker renders the same calendar in every browser and posts the
+ * text of its {@see setDateFormat DateFormat}.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @author Carl G. Mathisen <carlgmathisen@gmail.com>
@@ -154,19 +162,19 @@ class TDatePicker extends TTextBox
 	}
 
 	/**
-	 * @param TDatePickerInputMode $value input method of date values
+	 * @return TDatePickerInputMode input method of date values. Defaults to TDatePickerInputMode::TextBox.
 	 */
-	public function setInputMode($value)
+	public function getDateInputMode()
 	{
-		$this->setViewState('InputMode', TPropertyValue::ensureEnum($value, TDatePickerInputMode::class), TDatePickerInputMode::TextBox);
+		return $this->getViewState('DateInputMode', TDatePickerInputMode::TextBox);
 	}
 
 	/**
-	 * @return TDatePickerInputMode input method of date values. Defaults to TDatePickerInputMode::TextBox.
+	 * @param TDatePickerInputMode $value input method of date values
 	 */
-	public function getInputMode()
+	public function setDateInputMode($value)
 	{
-		return $this->getViewState('InputMode', TDatePickerInputMode::TextBox);
+		$this->setViewState('DateInputMode', TPropertyValue::ensureEnum($value, TDatePickerInputMode::class), TDatePickerInputMode::TextBox);
 	}
 
 	/**
@@ -314,7 +322,7 @@ class TDatePicker extends TTextBox
 	}
 
 	/**
-	 * @return int current selected date from the date picker as timestamp, NULL if timestamp is not set previously.
+	 * @return ?int current selected date from the date picker as timestamp, NULL if timestamp is not set previously.
 	 */
 	public function getTimeStamp()
 	{
@@ -344,7 +352,7 @@ class TDatePicker extends TTextBox
 	 * Returns the timestamp selected by the user.
 	 * This method is required by {@see \Prado\IDataRenderer}.
 	 * It is the same as {@see getTimeStamp()}.
-	 * @return int the timestamp of the TDatePicker control.
+	 * @return ?int the timestamp of the TDatePicker control.
 	 * @see getTimeStamp
 	 * @since 3.1.2
 	 */
@@ -357,7 +365,7 @@ class TDatePicker extends TTextBox
 	 * Sets the timestamp represented by this control.
 	 * This method is required by {@see \Prado\IDataRenderer}.
 	 * It is the same as {@see setTimeStamp()}.
-	 * @param int $value the timestamp of the TDatePicker control.
+	 * @param float|int|string $value the timestamp of the TDatePicker control.
 	 * @see setTimeStamp
 	 * @since 3.1.2
 	 */
@@ -401,7 +409,7 @@ class TDatePicker extends TTextBox
 	}
 
 	/**
-	 * @return TDatePickerClientScript javascript validator event options.
+	 * @return \Prado\Web\UI\ActiveControls\TActiveDatePickerClientScript|TDatePickerClientScript javascript validator event options.
 	 */
 	protected function createClientScript()
 	{
@@ -441,7 +449,7 @@ class TDatePicker extends TTextBox
 	 */
 	public function render($writer)
 	{
-		if ($this->getInputMode() == TDatePickerInputMode::TextBox) {
+		if ($this->getDateInputMode() == TDatePickerInputMode::TextBox) {
 			parent::render($writer);
 			$this->renderDatePickerButtons($writer);
 		} else {
@@ -472,7 +480,7 @@ class TDatePicker extends TTextBox
 	}
 
 	/**
-	 * Loads user input data. Override parent implementation, when InputMode
+	 * Loads user input data. Override parent implementation, when DateInputMode
 	 * is DropDownList call getDateFromPostData to get date data.
 	 * This method is primarly used by framework developers.
 	 * @param string $key the key that can be used to retrieve data from the input data collection
@@ -481,7 +489,7 @@ class TDatePicker extends TTextBox
 	 */
 	public function loadPostData($key, $values)
 	{
-		if ($this->getInputMode() == TDatePickerInputMode::TextBox) {
+		if ($this->getDateInputMode() == TDatePickerInputMode::TextBox) {
 			return parent::loadPostData($key, $values);
 		}
 		$value = $this->getDateFromPostData($key, $values);
@@ -549,7 +557,7 @@ class TDatePicker extends TTextBox
 	protected function getDatePickerOptions()
 	{
 		$options['ID'] = $this->getClientID();
-		$options['InputMode'] = $this->getInputMode();
+		$options['InputMode'] = $this->getDateInputMode();
 		$options['Format'] = $this->getDateFormat();
 		$options['FirstDayOfWeek'] = $this->getFirstDayOfWeek();
 		if (($cssClass = $this->getCssClass()) !== '') {
@@ -570,7 +578,7 @@ class TDatePicker extends TTextBox
 		}
 		$options['PositionMode'] = $this->getPositionMode();
 
-		$options = array_merge($options, $this->getCulturalOptions());
+		$options = array_merge($options, $this->getCulturalOptions(), $this->getAccessibleTextOptions());
 		if ($this->_clientScript !== null) {
 			$options = array_merge(
 				$options,
@@ -595,6 +603,32 @@ class TDatePicker extends TTextBox
 		$options['AbbreviatedMonthNames'] = $info->findInfo('calendar/gregorian/monthNames/format/abbreviated');
 		$options['ShortWeekDayNames'] = $info->findInfo('calendar/gregorian/dayNames/format/abbreviated');
 
+		return $options;
+	}
+
+	/**
+	 * Returns the calendar's assistive-technology labels that
+	 * {@see \Prado\Prado::localize()} translates to something other than the
+	 * client-side English defaults. Untranslated labels are omitted; the
+	 * JavaScript class supplies them.
+	 * @return array translated label options for the client-side calendar
+	 * @since 4.4.0
+	 */
+	protected function getAccessibleTextOptions()
+	{
+		$labels = [
+			'CalendarLabel' => 'Calendar',
+			'MonthLabel' => 'Month',
+			'YearLabel' => 'Year',
+			'PrevMonthLabel' => 'Previous month',
+			'NextMonthLabel' => 'Next month',
+		];
+		$options = [];
+		foreach ($labels as $key => $text) {
+			if (($localized = Prado::localize($text)) !== $text) {
+				$options[$key] = $localized;
+			}
+		}
 		return $options;
 	}
 
@@ -835,11 +869,27 @@ class TDatePicker extends TTextBox
 		$writer->addAttribute('type', 'button');
 		$writer->addAttribute('class', $this->getCssClass() . ' TDatePickerButton');
 		$writer->addAttribute('value', $this->getButtonText());
+		$writer->addAttribute('aria-label', $this->getTriggerAccessibleName());
+		$writer->addAttribute('aria-haspopup', 'dialog');
+		$writer->addAttribute('aria-expanded', 'false');
 		if (!$this->getEnabled(true)) {
 			$writer->addAttribute('disabled', 'disabled');
 		}
 		$writer->renderBeginTag("input");
 		$writer->renderEndTag();
+	}
+
+	/**
+	 * @return string the accessible name for the trigger that opens the calendar.
+	 *   Uses {@see getToolTip ToolTip} when set, otherwise 'Choose date' passed
+	 *   through {@see \Prado\Prado::localize()}. The visible
+	 *   {@see getButtonText ButtonText} (which defaults to "...") is not a useful
+	 *   name for assistive technology.
+	 * @since 4.4.0
+	 */
+	protected function getTriggerAccessibleName(): string
+	{
+		return $this->getToolTip() !== '' ? $this->getToolTip() : Prado::localize('Choose date');
 	}
 
 	/**
@@ -852,7 +902,9 @@ class TDatePicker extends TTextBox
 		$url = empty($url) ? $this->getAssetUrl('calendar.png') : $url;
 		$writer->addAttribute('id', $this->getDatePickerButtonID());
 		$writer->addAttribute('src', $url);
-		$writer->addAttribute('alt', ' ');
+		$writer->addAttribute('alt', $this->getTriggerAccessibleName());
+		$writer->addAttribute('aria-haspopup', 'dialog');
+		$writer->addAttribute('aria-expanded', 'false');
 		$writer->addAttribute('class', $this->getCssClass() . ' TDatePickerImageButton');
 		if (!$this->getEnabled(true)) {
 			$writer->addAttribute('disabled', 'disabled');

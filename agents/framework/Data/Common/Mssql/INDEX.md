@@ -4,7 +4,7 @@ This file provides guidance to Agents when working with code in this repository.
 
 ### Directories
 
-[framework](./INDEX.md) / [Data](./Data/INDEX.md) / [Common](./Data/Common/INDEX.md) / [Mssql](./Data/Common/Mssql/INDEX.md) / **`Mssql/INDEX.md`**
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [Common](../INDEX.md) / **`Mssql`**
 
 | Directory | Purpose |
 |---|---|

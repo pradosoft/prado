@@ -12,8 +12,8 @@ This behavior installs the [TSignalsDispatcher](../TSignalsDispatcher.md) for th
 
 ## Key Properties/Methods
 
-- `attachEventHandlers([TComponent](../TComponent.md) $component)` - Installs the signals dispatcher singleton
-- `detachEventHandlers([TComponent](../TComponent.md) $component)` - Detaches the signals dispatcher
+- `attachEventHandlers([TComponent](../../TComponent.md) $component)` - Installs the signals dispatcher singleton
+- `detachEventHandlers([TComponent](../../TComponent.md) $component)` - Detaches the signals dispatcher
 - `getSignalsDispatcher()` - Gets the [TSignalsDispatcher](../TSignalsDispatcher.md) instance
 - `getSignalsClass()` / `setSignalsClass($value)` - Gets/sets the signals dispatcher class (default: TSignalsDispatcher)
 - `getAsyncSignals()` / `setAsyncSignals($value)` - Gets/sets whether signals are handled asynchronously

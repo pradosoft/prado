@@ -11,12 +11,10 @@
 
 namespace Prado\Web\UI\WebControls;
 
-use Exception;
 use Prado\Exceptions\TNotSupportedException;
 use Prado\TPropertyValue;
 use Prado\Util\TDataFieldAccessor;
 use Prado\Web\THttpUtility;
-use Prado\Exceptions\TInvalidDataValueException;
 
 /**
  * TListControl class
@@ -70,7 +68,7 @@ use Prado\Exceptions\TInvalidDataValueException;
  * the second item's text be 'Cary', value be 28, and so on.
  * The {@see setDataTextFormatString DataTextFormatString} property may be further
  * used to format how the item should be displayed. See {@see formatDataValue()}
- * for an explanation of the format string.
+ * for an explanation of the format string and callable formats.
  *
  * The {@see setPromptText PromptText} and {@see setPromptValue PromptValue} properties can
  * be used to add a dummy list item that will be rendered first.
@@ -80,6 +78,14 @@ use Prado\Exceptions\TInvalidDataValueException;
  */
 abstract class TListControl extends TDataBoundControl implements \Prado\IDataRenderer
 {
+	use TDataValueFormatterTrait;
+
+	/**
+	 * The error code for an invalid `#` expression in {@see setDataTextFormatString DataTextFormatString}.
+	 * @since 4.4.0
+	 */
+	protected const DATA_FORMAT_EXPRESSION_ERROR = 'listcontrol_expression_invalid';
+
 	/**
 	 * @var \Prado\Collections\TListItemCollection item list
 	 */
@@ -96,6 +102,22 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	private $_cachedSelectedValue;
 	private $_cachedSelectedIndices;
 	private $_cachedSelectedValues;
+
+	/**
+	 * Clones the list items into a new collection, so the clone selects items independently.
+	 * @since 4.4.0
+	 */
+	public function __clone()
+	{
+		parent::__clone();
+		if ($this->_items !== null) {
+			$items = $this->_items;
+			$this->_items = $this->createListItemCollection();
+			foreach ($items as $item) {
+				$this->_items->add(clone $item);
+			}
+		}
+	}
 
 	/**
 	 * @return string tag name of the list control
@@ -129,7 +151,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	{
 		$page = $this->getPage();
 		$page->ensureRenderInForm($this);
-		if ($this->getIsMultiSelect()) {
+		if ($this->getIsMultiSelect() && $this->getTagName() === 'select') {
 			$writer->addAttribute('multiple', 'multiple');
 		}
 		if ($this->getEnabled(true)) {
@@ -249,6 +271,9 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 		}
 	}
 
+	/**
+	 * Clears the selections stored for the next databinding.
+	 */
 	private function resetCachedSelections()
 	{
 		$this->_cachedSelectedValue = null;
@@ -374,23 +399,22 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	}
 
 	/**
-	 * @return string the formatting string used to control how data bound to the list control is displayed.
+	 * @return callable|string the format string or callable used to control how data bound to the list control is displayed.
 	 */
 	public function getDataTextFormatString()
 	{
-		return $this->getViewState('DataTextFormatString', '');
+		return $this->getDataFormat('DataTextFormatString');
 	}
 
 	/**
 	 * Sets data text format string.
-	 * The format string is used in {@see TDataValueFormatter::format()} to format the Text property value
-	 * of each item in the list control.
-	 * @param string $value the formatting string used to control how data bound to the list control is displayed.
-	 * @see TDataValueFormatter::format()
+	 * The format is used in {@see formatDataValue()} to format the Text property value
+	 * of each item in the list control.  A callable is kept for the current request only.
+	 * @param callable|string $value the format string or callable used to control how data bound to the list control is displayed.
 	 */
 	public function setDataTextFormatString($value)
 	{
-		$this->setViewState('DataTextFormatString', $value, '');
+		$this->setDataFormat('DataTextFormatString', $value);
 	}
 
 	/**
@@ -482,6 +506,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 				$this->_items->itemAt($index)->setSelected(true);
 			}
 		}
+		$this->resetCachedSelections();
 		$this->_cachedSelectedIndex = $index;
 		if ($this->getAdapter() instanceof IListControlAdapter) {
 			$this->getAdapter()->setSelectedIndex($index);
@@ -520,6 +545,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 					}
 				}
 			}
+			$this->resetCachedSelections();
 			$this->_cachedSelectedIndices = $indices;
 		} else {
 			throw new TNotSupportedException('listcontrol_multiselect_unsupported', $this::class);
@@ -595,6 +621,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 				$this->clearSelection();
 			}
 		}
+		$this->resetCachedSelections();
 		$this->_cachedSelectedValue = $value;
 		if ($this->getAdapter() instanceof IListControlAdapter) {
 			$this->getAdapter()->setSelectedValue($value);
@@ -636,6 +663,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 					}
 				}
 			}
+			$this->resetCachedSelections();
 			$this->_cachedSelectedValues = $values;
 		} else {
 			throw new TNotSupportedException('listcontrol_multiselect_unsupported', $this::class);
@@ -663,10 +691,11 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	}
 
 	/**
-	 * Clears all existing selections.
+	 * Clears all existing selections, including a selection set before databinding.
 	 */
 	public function clearSelection()
 	{
+		$this->resetCachedSelections();
 		if ($this->_items) {
 			foreach ($this->_items as $item) {
 				$item->setSelected(false);
@@ -824,34 +853,6 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 				$writer->renderEndTag();
 				$writer->writeLine();
 			}
-		}
-	}
-
-	/**
-	 * Formats the text value according to a format string.
-	 * If the format string is empty, the original value is converted into
-	 * a string and returned.
-	 * If the format string starts with '#', the string is treated as a PHP expression
-	 * within which the token '{0}' is translated with the data value to be formated.
-	 * Otherwise, the format string and the data value are passed
-	 * as the first and second parameters in {@see sprintf}.
-	 * @param string $formatString format string
-	 * @param mixed $value the data to be formatted
-	 * @return string the formatted result
-	 */
-	protected function formatDataValue($formatString, $value)
-	{
-		if ($formatString === '') {
-			return TPropertyValue::ensureString($value);
-		} elseif ($formatString[0] === '#') {
-			$expression = strtr(substr($formatString, 1), ['{0}' => '$value']);
-			try {
-				return eval("return $expression;");
-			} catch (Exception $e) {
-				throw new TInvalidDataValueException('listcontrol_expression_invalid', $this::class, $expression, $e->getMessage());
-			}
-		} else {
-			return sprintf($formatString, $value);
 		}
 	}
 }

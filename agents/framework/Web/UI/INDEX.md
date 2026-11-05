@@ -1,7 +1,7 @@
 # Web/UI/INDEX.md
 
 ### Directories
-[framework](./INDEX.md) / [Web](./Web/INDEX.md) / **`UI/INDEX.md`**
+[framework](../../INDEX.md) / [Web](../INDEX.md) / **`UI`**
 
 ## Purpose
 
@@ -19,7 +19,7 @@ Core UI component system for the Prado framework: the control hierarchy, templat
   - Implements `IRenderable`, `IBindable`
 
 - **[`TPage`](TPage.md)** — Root control and page container. Manages:
-  - Form postback/callback request processing
+  - Form postback/callback request processing, each refused without the CSRF token while `EnableCsrfValidation` is on (the default)
   - Validator collection
   - Theme/skin application
   - Page state serialization (HMAC-signed, optionally encrypted and compressed)
@@ -42,9 +42,17 @@ Core UI component system for the Prado framework: the control hierarchy, templat
 
 - **[`TThemeManager`](TThemeManager.md)** / **[`TTheme`](TTheme.md)** — Theme management. `TTheme` applies property values (skins) to controls from `.skin` files. Supports per-theme CSS/JS file registration and RTL language variants.
 
-- **[`TControlAdapter`](TControlAdapter.md)** — Adapter pattern for customizing rendering or behaviour of a control without subclassing.
+- **[`TControlAdapter`](TControlAdapter.md)** — Adapter pattern for customizing rendering or behaviour of a control without subclassing. Implements [IAdapterControl](./IAdapterControl.md).
 
-- **[`THtmlWriter`](THtmlWriter.md)** — Writes HTML tags and attributes with proper encoding.
+- **[`THtmlWriter`](THtmlWriter.md)** — Writes HTML tags and attributes with proper encoding. Updated void-element list matches HTML5 spec; legacy elements (`basefont`, `bgsound`, `frame`, `isindex`) deprecated.
+
+- **[`TModuleView`](TModuleView.md)** — Conditionally shows child controls when a named application module is present and an optional condition expression is true. Falls back to a `FallbackTemplate` when inactive. @since 4.3.3
+
+- **[`TRenderFilterContext`](TRenderFilterContext.md)** — Per-`THtmlWriter` state of the capturing render filters and the controls exempt from them (`TControl.RenderFilterExempt`). @since 4.4.0
+
+- **[`TRenderFilterParameter`](TRenderFilterParameter.md)** — Event parameter for the `onRenderFilter` event. Carries rendered HTML as both a raw string and a lazily-parsed `DOMDocument`; libxml parsing removes the injected encoding prefix in processing-instruction or comment form and unwraps the context element while preserving source comments. @since 4.3.3
+
+- **[`TWebColor`](TWebColor.md)** — `TEnumerable` subclass defining all CSS named colors as `#RRGGBB` constants. Replaces the deprecated `TWebColors`. @since 4.3.0
 
 ## Subdirectories
 
@@ -52,6 +60,7 @@ Core UI component system for the Prado framework: the control hierarchy, templat
 |---|---|
 | [`ActiveControls/`](ActiveControls/INDEX.md) | AJAX-enabled controls with callback mechanism |
 | [`JuiControls/`](JuiControls/INDEX.md) | jQuery UI widget wrappers |
+| [`Traits/`](Traits/INDEX.md) | PHP traits for the UI layer (e.g., `TFilterRenderableTrait`) |
 | [`WebControls/`](WebControls/INDEX.md) | Standard HTML input, layout, data display, and validation controls. Contains `assets/` subdirectory with published CSS, images, and the `captcha.php` server-side CAPTCHA generator |
 | [`WebControls/assets/`](WebControls/assets/INDEX.md) | Static assets published to the web by `TAssetManager` |
 
@@ -61,11 +70,19 @@ Core UI component system for the Prado framework: the control hierarchy, templat
 |---|---|
 | `ITemplate` | Template instantiation contract |
 | `IRenderable` | Controls that produce HTML output |
+| [`IFilterRenderable`](IFilterRenderable.md) | Controls supporting `onRenderFilter` render-output filtering. @since 4.3.3 |
+| [`IAdapterControl`](IAdapterControl.md) | Contract for objects returned by `TControl::getAdapterControl()`. @since 4.3.3 |
 | `IBindable` | Data binding support |
 | `INamingContainer` | Uniquely names child controls (prefixes client IDs) |
 | `IPostBackEventHandler` | Receives postback events (buttons, links) |
 | `IPostBackDataHandler` | Processes postback data (inputs, checkboxes) |
+| [`IViewDataModel`](IViewDataModel.md) | Model whose `getViewData()` / `setViewData()` exchange values with a `TTemplateControl`'s controls by ID. @since 4.4.0 |
 | `IPageStatePersister` | Pluggable page state serialization strategy |
+| [`TPageStatePersister`](TPageStatePersister.md) | Default persister: serialises view-state into a hidden `__VIEWSTATE` form field |
+| [`TSessionPageStatePersister`](TSessionPageStatePersister.md) | Session-based persister: stores view-state in the PHP session with a FIFO history queue |
+| [`TPageStateCompressionConfig`](TPageStateCompressionConfig.md) | Page state compression settings, held by each built-in persister as `Compression`, or kept by `TPage` for a persister without them (4.4.0) |
+| [`TCachePageStatePersister`](TCachePageStatePersister.md) | Cache-based persister: stores view-state in a cache module, lifetime set by `CacheTimeoutMode` |
+| [`TCachePageStatePersisterTimeoutMode`](TCachePageStatePersisterTimeoutMode.md) | Where a cached page state's lifetime comes from: `Fixed`, `Session`, `Auth`, `Auto` (4.4.0) |
 
 ## Control Lifecycle (Page Request)
 

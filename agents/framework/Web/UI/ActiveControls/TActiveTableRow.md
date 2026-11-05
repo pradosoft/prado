@@ -8,7 +8,7 @@
 **Namespace:** `Prado\Web\UI\ActiveControls`
 
 ## Overview
-Active counterpart to TTableRow. Clicking the row triggers a callback and raises `OnRowSelected` event. Responds to bubbled `OnCellSelected` events from child [TActiveTableCell](./TActiveTableCell.md) controls. Contents can be updated during callback response.
+Active counterpart to TTableRow. Clicking the row triggers a callback and raises `OnRowSelected` event. Responds to bubbled `OnCellSelected` events from child [TActiveTableCell](./TActiveTableCell.md) controls. A click in one of its cells that has an `OnCellSelected` handler sends only the cell's callback; the client `Prado.WebUI.TActiveTableRow::isCellCallback()` skips the row's own callback, and the server bubble raises `OnRowSelected` once. Contents can be updated during callback response.
 
 ## Key Properties/Methods
 

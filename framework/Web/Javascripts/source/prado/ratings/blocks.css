@@ -2,7 +2,24 @@
 {
 	border-collapse: collapse;
 }
-.TRatingList_blocks input, .TRatingList_blocks label
+/*
+ * Visually hide the radios rather than display:none so they remain in the
+ * accessibility tree and keyboard tab order; see default.css for the rationale.
+ */
+.TRatingList_blocks input
+{
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
+	border: 0;
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	overflow: hidden;
+	white-space: nowrap;
+}
+.TRatingList_blocks label
 {
 	display: none;
 }
@@ -26,4 +43,11 @@
 .TRatingList_blocks td.rating_half
 {
 	background-image: url(blocks_half.gif);
+}
+/* Visible focus indicator on the star that owns keyboard focus. */
+.TRatingList_blocks td.rating_focus
+{
+	outline: 2px solid Highlight;
+	outline: 2px solid -webkit-focus-ring-color;
+	outline-offset: -2px;
 }

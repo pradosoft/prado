@@ -12,6 +12,7 @@ namespace Prado\I18N;
 
 use Prado\I18N\core\TIntlDateFormatterTrait;
 use Prado\Prado;
+use Prado\Util\Clock\TApplicationClockAwareTrait;
 use Prado\Util\TUtf8Converter;
 
 /**
@@ -53,6 +54,7 @@ use Prado\Util\TUtf8Converter;
 class TDateFormat extends TI18NControl implements \Prado\IDataRenderer
 {
 	use TIntlDateFormatterTrait;
+	use TApplicationClockAwareTrait;
 
 	/**
 	 * A set of pattern presets and their respective formatting shorthand.
@@ -95,7 +97,7 @@ class TDateFormat extends TI18NControl implements \Prado\IDataRenderer
 	/**
 	 * For a given string, try and find a preset pattern.
 	 * @param string $string the preset pattern name
-	 * @return string a preset pattern if found, null otherwise.
+	 * @return ?string a preset pattern if found, null otherwise.
 	 */
 	protected function getPreset($string)
 	{
@@ -110,7 +112,7 @@ class TDateFormat extends TI18NControl implements \Prado\IDataRenderer
 
 	/**
 	 * Get the date-time value for this control.
-	 * @return string date time value.
+	 * @return int|string date time value.
 	 */
 	public function getValue()
 	{
@@ -118,7 +120,7 @@ class TDateFormat extends TI18NControl implements \Prado\IDataRenderer
 		if (empty($value)) {
 			$defaultText = $this->getDefaultText();
 			if (empty($defaultText)) {
-				return time();
+				return $this->getClock()->time();
 			}
 		}
 		return $value;

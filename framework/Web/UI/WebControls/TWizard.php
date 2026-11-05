@@ -74,6 +74,11 @@ use Prado\Exceptions\TInvalidDataValueException;
  *   {@see getCancelButtonStyle CancelButtonStyle}.
  * - side bar: {@see getSideBarStyle SideBarStyle} and {@see getSideBarButtonStyle SideBarButtonStyle}.
  *
+ * The default side bar is a step indicator: an `<ol>` of step buttons in which
+ * the button of the active step has `aria-current="step"`. A custom
+ * {@see setSideBarTemplate SideBarTemplate} sets the `RepeatLayout` of its
+ * `SideBarList` data list to OrderedList for the same list structure.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
  */
@@ -187,11 +192,12 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @return TWizardStep the currently active wizard step
+	 * @return ?TWizardStep the currently active wizard step, null if none
 	 */
 	public function getActiveStep()
 	{
-		return $this->getMultiView()->getActiveView();
+		$step = $this->getMultiView()->getActiveView();
+		return $step instanceof TWizardStep ? $step : null;
 	}
 
 	/**
@@ -656,6 +662,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 * This event is raised when a finish navigation button is clicked in the
 	 * current active step.
 	 * @param TWizardNavigationEventParameter $param event parameter
+	 * @phpstan-impure
 	 */
 	public function onCompleteButtonClick($param)
 	{
@@ -670,6 +677,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 * This event is raised when a next navigation button is clicked in the
 	 * current active step.
 	 * @param TWizardNavigationEventParameter $param event parameter
+	 * @phpstan-impure
 	 */
 	public function onNextButtonClick($param)
 	{
@@ -681,6 +689,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 * This event is raised when a previous navigation button is clicked in the
 	 * current active step.
 	 * @param TWizardNavigationEventParameter $param event parameter
+	 * @phpstan-impure
 	 */
 	public function onPreviousButtonClick($param)
 	{
@@ -691,6 +700,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 * Raises <b>OnSideBarButtonClick</b> event.
 	 * This event is raised when a link button in the side bar is clicked.
 	 * @param TWizardNavigationEventParameter $param event parameter
+	 * @phpstan-impure
 	 */
 	public function onSideBarButtonClick($param)
 	{
@@ -844,10 +854,17 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 			$this->_sideBarDataList->setDataSource($this->getWizardSteps());
 			$this->_sideBarDataList->setSelectedItemIndex($this->getActiveStepIndex());
 			$this->_sideBarDataList->dataBind();
-			if (($style = $this->getViewState('SideBarButtonStyle', null)) !== null) {
-				foreach ($this->_sideBarDataList->getItems() as $item) {
-					if (($button = $item->findControl('SideBarButton')) !== null) {
+			$style = $this->getViewState('SideBarButtonStyle', null);
+			$activeIndex = $this->getActiveStepIndex();
+			foreach ($this->_sideBarDataList->getItems() as $item) {
+				if (($button = $item->findControl('SideBarButton')) !== null) {
+					if ($style !== null) {
 						$button->getStyle()->mergeWith($style);
+					}
+					// Mark the current step so assistive technology announces
+					// which step is active within the wizard's side bar.
+					if ($button instanceof TWebControl && $item->getItemIndex() === $activeIndex) {
+						$button->setAttribute('aria-current', 'step');
 					}
 				}
 			}
@@ -997,7 +1014,8 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 
 	/**
 	 * Determines the type of the specified wizard step.
-	 * @param TWizardStep $wizardStep * @return TWizardStepType type of the step
+	 * @param TWizardStep $wizardStep
+	 * @return string|TWizardStepType type of the step
 	 */
 	protected function getStepType($wizardStep)
 	{

@@ -1,25 +1,28 @@
 <?php
 
+namespace Prado\Test\Unit\Security;
+
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Prado;
 use Prado\Security\TUserManager;
-use Prado\TApplication;
 use Prado\Xml\TXmlDocument;
+use Prado\Test\Unit\Harness\TTestApplication;
+use Prado\Security\TUserManagerPasswordMode;
+use Prado\Test\Unit\PradoUnit;
+use Prado\Web\THttpCookie;
 
-class TUserManagerTest extends PHPUnit\Framework\TestCase
+class TUserManagerTest extends \PHPUnit\Framework\TestCase
 {
-	public static $app = null;
+	protected ?TTestApplication $app = null;
 	public static $config = null;
 
 
 	protected function setUp(): void
 	{
-		if (self::$app === null) {
-			self::$app = new TApplication(__DIR__ . '/app');
-			prado::setPathofAlias('App', __DIR__);
-		}
+		$this->app = new TTestApplication(__DIR__ . '/app');
+		Prado::setPathOfAlias('App', __DIR__);
 
 		if (self::$config === null) {
 			// Simulate a config file
@@ -30,6 +33,10 @@ class TUserManagerTest extends PHPUnit\Framework\TestCase
 
 	protected function tearDown(): void
 	{
+		if ($this->app !== null) {
+			$this->app->restoreApplication();
+			$this->app = null;
+		}
 	}
 
 	public function testInit()
@@ -120,7 +127,24 @@ class TUserManagerTest extends PHPUnit\Framework\TestCase
 		$userManager->init(self::$config);
 		$userManager->setPasswordMode('Clear');
 		self::assertTrue($userManager->validateUser('Joe', 'demo'));
+		self::assertTrue($userManager->validateUser('JOE', 'demo'));
 		self::assertFalse($userManager->validateUser('John', 'bad'));
+		self::assertFalse($userManager->validateUser('Joe', 'dem'));
+		self::assertFalse($userManager->validateUser('Joe', 'demo '));
+		self::assertFalse($userManager->validateUser('Joe', ''));
+		self::assertFalse($userManager->validateUser('Nobody', 'demo'));
+	}
+
+	public function testValidateUserHashedModes()
+	{
+		$userManager = new TUserManager();
+		$userManager->init(self::$config);
+		foreach (['MD5' => md5('demo'), 'SHA1' => sha1('demo')] as $mode => $hash) {
+			$userManager->setPasswordMode($mode);
+			PradoUnit::setProp($userManager, '_users', ['joe' => $hash]);
+			self::assertTrue($userManager->validateUser('Joe', 'demo'), $mode);
+			self::assertFalse($userManager->validateUser('Joe', 'Demo'), $mode);
+		}
 	}
 
 	public function testUser()
@@ -136,5 +160,39 @@ class TUserManagerTest extends PHPUnit\Framework\TestCase
 		self::assertEquals(['Writer'], $user->getRoles());
 		self::assertFalse($user->getIsGuest());
 		self::assertNull($userManager->getUser('badUser'));
+	}
+
+	public function testUserCookie()
+	{
+		$userManager = new TUserManager();
+		$userManager->init(self::$config);
+		$userManager->getApplication()->setUser($userManager->getUser('Joe'));
+		$cookie = new THttpCookie('auth', '');
+		$userManager->saveUserToCookie($cookie);
+		$data = json_decode($cookie->getValue(), true);
+		self::assertSame('joe', $data[0]);
+		self::assertStringNotContainsString(sha1('joedemo'), $cookie->getValue());
+		self::assertEquals('joe', $userManager->getUserFromCookie($cookie)->getName());
+
+		$invalid = [
+			'',
+			'not json',
+			json_encode(['joe']),
+			json_encode(['joe', $data[1], 'x']),
+			json_encode(['joe', 'wrong-token']),
+			json_encode(['joe', ['token']]),
+			json_encode(['nobody', $data[1]]),
+			json_encode(['joe', sha1('joedemo')]),
+			serialize(['joe', $data[1]]),
+		];
+		foreach ($invalid as $value) {
+			self::assertNull($userManager->getUserFromCookie(new THttpCookie('auth', $value)), $value);
+		}
+
+		$config = new TXmlDocument('1.0', 'utf8');
+		$config->loadFromString('<users><user name="Joe" password="changed"/></users>');
+		$changed = new TUserManager();
+		$changed->init($config);
+		self::assertNull($changed->getUserFromCookie($cookie), 'A password change invalidates the token.');
 	}
 }

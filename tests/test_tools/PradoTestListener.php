@@ -11,7 +11,13 @@ use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Chrome\ChromeOptions;
 use Facebook\WebDriver\Firefox\FirefoxOptions;
 
-/* These classes register to phpunit events in order to setup
+/**
+ * ## Deprecated Testing Infrastructure
+ * 
+ * These are no longer in use with the upgrade to Playwright for
+ * functional tests.
+ *
+ * These classes register to phpunit events in order to setup
  * and tear down the Webdriver when needed. This approach avoids
  * the driver being destroyed/recreated for every single test.
  */
@@ -69,6 +75,14 @@ class PradoGenericSelenium2TestSession
 	}
 }
 
+/**
+ * PradoTestListener class 
+ * 
+ * ## Deprecated Testing Infrastructure
+ *
+ *
+ *
+ */
 class PradoTestListener implements Runner\Extension\Extension
 {
 	// Default; overridden at bootstrap time by the SELENIUM_TESTSUITE_NAME const in phpunit.xml

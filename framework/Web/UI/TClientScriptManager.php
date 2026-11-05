@@ -17,6 +17,7 @@ use Prado\TEventResults;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Web\Javascripts\TJavaScript;
 use Prado\Web\Javascripts\TJavaScriptAsset;
+use Prado\Web\Javascripts\TStyleSheetHelper;
 use Prado\Web\UI\ActiveControls\ICallbackEventHandler;
 use Prado\Web\THttpUtility;
 
@@ -1001,29 +1002,24 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	}
 
 	/**
+	 * Renders the registered stylesheet files as `<link rel="stylesheet">` tags through
+	 * {@see TStyleSheetHelper::renderStyleSheetFiles()}, with the CSP nonce and, for
+	 * remote URLs, the registered integrity.
 	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function renderStyleSheetFiles($writer)
 	{
-		$str = '';
-		foreach ($this->_styleSheetFiles as $url) {
-			if (is_array($url)) {
-				$str .= "<link rel=\"stylesheet\" type=\"text/css\" media=\"{$url[1]}\" href=\"" . THttpUtility::htmlEncode($url[0]) . "\" />\n";
-			} else {
-				$str .= "<link rel=\"stylesheet\" type=\"text/css\" href=\"" . THttpUtility::htmlEncode($url) . "\" />\n";
-			}
-		}
-		$writer->write($str);
+		$writer->write(TStyleSheetHelper::renderStyleSheetFiles($this->_styleSheetFiles));
 	}
 
 	/**
+	 * Renders the registered CSS blocks in one `<style>` element through
+	 * {@see TStyleSheetHelper::renderStyleBlocks()}, with the CSP nonce.
 	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function renderStyleSheets($writer)
 	{
-		if (count($this->_styleSheets)) {
-			$writer->write("<style type=\"text/css\">\n/*<![CDATA[*/\n" . implode("\n", $this->_styleSheets) . "\n/*]]>*/\n</style>\n");
-		}
+		$writer->write(TStyleSheetHelper::renderStyleBlocks($this->_styleSheets));
 	}
 
 	/**
@@ -1209,7 +1205,8 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	 * Renders hidden fields. To avoid browsers from trying to restore the previous
 	 * state of the fields after a page reload, the autocomplete="off" attribute is used.
 	 * Unfortunately this attribute is invalid for hidden fields, so text fields are
-	 * rendered instead (#642).
+	 * rendered instead (#642). Their container carries `data-prado-dirty-ignore`, so
+	 * {@see \Prado\Web\UI\WebControls\TUnsavedChangesGuard} does not watch them.
 	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
 	 * @param mixed $initial
 	 */
@@ -1234,7 +1231,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 			$this->_renderedHiddenFields[] = $name;
 		}
 		if ($str !== '') {
-			$writer->write("<div style=\"visibility:hidden;\">\n" . $str . "</div>\n");
+			$writer->write("<div style=\"visibility:hidden;\" data-prado-dirty-ignore=\"\">\n" . $str . "</div>\n");
 		}
 	}
 

@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/TComponentTestBase.php';
+namespace Prado\Test\Unit;
 
 use Prado\TComponent;
 
@@ -36,8 +36,8 @@ class TComponentGlobalEventsTest extends TComponentTestBase
 
 		// tests order of class behaviors when a parent and class have class behavior.
 		//	The child should override the parent object-oriented programming style
-		$this->component->attachClassBehavior('Bar', 'BarBehavior', 'NewComponentNoListen');
-		$this->component->attachClassBehavior('FooBar', 'FooBarBehavior', 'NewComponent');
+		$this->component->attachClassBehavior('Bar', BarBehavior::class, NewComponentNoListen::class);
+		$this->component->attachClassBehavior('FooBar', FooBarBehavior::class, NewComponent::class);
 
 		//create new object with new class behaviors built in, defined in the two lines above
 		$component = new NewComponentNoListen;
@@ -48,8 +48,8 @@ class TComponentGlobalEventsTest extends TComponentTestBase
 		$this->assertEquals(8, $component->FooBar->moreFunction(2, 2));
 
 		$component->unlisten();// unwind object and class behaviors
-		$this->component->detachClassBehavior('FooBar', 'NewComponent');
-		$this->component->detachClassBehavior('Bar', 'NewComponentNoListen');
+		$this->component->detachClassBehavior('FooBar', NewComponent::class);
+		$this->component->detachClassBehavior('Bar', NewComponentNoListen::class);
 	}
 
 
@@ -132,5 +132,25 @@ class TComponentGlobalEventsTest extends TComponentTestBase
 		// Already not listening — second unlisten() must return null.
 		$second = $component->unlisten();
 		$this->assertNull($second, 'unlisten() must return null when not listening');
+	}
+
+	public function testCloneOfAListeningComponentListens()
+	{
+		$handlers = $this->component->getEventHandlers('fxAttachClassBehavior');
+		$count = $handlers->getCount();
+		$this->assertTrue($this->component->getListeningToGlobalEvents());
+
+		$copy = clone $this->component;
+		$this->assertTrue($copy->getListeningToGlobalEvents());
+		$this->assertEquals($count + 1, $handlers->getCount(), 'The clone registers its own global event handlers');
+		$this->assertGreaterThan(0, $copy->unlisten());
+		$this->assertEquals($count, $handlers->getCount());
+		$this->assertTrue($this->component->getListeningToGlobalEvents(), 'The original still listens');
+
+		$this->component->unlisten();
+		$copy = clone $this->component;
+		$this->assertFalse($copy->getListeningToGlobalEvents(), 'A clone of a component that does not listen does not listen');
+		$this->assertNull($copy->unlisten());
+		$this->assertEquals($count - 1, $handlers->getCount());
 	}
 }

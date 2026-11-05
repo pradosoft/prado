@@ -229,7 +229,7 @@ class TWebControlDecorator extends \Prado\TComponent
 
 
 	/**
-	 * @return null|TTemplate the template before the open tag in the TWebControl.  Defaults to null.
+	 * @return ?TTemplate the template before the open tag in the TWebControl.  Defaults to null.
 	 */
 	public function getPreTagTemplate()
 	{
@@ -248,7 +248,7 @@ class TWebControlDecorator extends \Prado\TComponent
 
 
 	/**
-	 * @return null|TTemplate the template after the open tag in the TWebControl.  Defaults to null.
+	 * @return ?TTemplate the template after the open tag in the TWebControl.  Defaults to null.
 	 */
 	public function getPreContentsTemplate()
 	{
@@ -267,7 +267,7 @@ class TWebControlDecorator extends \Prado\TComponent
 
 
 	/**
-	 * @return null|TTemplate the template before the close tag in the TWebControl.  Defaults to null.
+	 * @return ?TTemplate the template before the close tag in the TWebControl.  Defaults to null.
 	 */
 	public function getPostContentsTemplate()
 	{
@@ -286,7 +286,7 @@ class TWebControlDecorator extends \Prado\TComponent
 
 
 	/**
-	 * @return null|TTemplate the template after the close tag in the TWebControl.  Defaults to null.
+	 * @return ?TTemplate the template after the close tag in the TWebControl.  Defaults to null.
 	 */
 	public function getPostTagTemplate()
 	{
@@ -308,7 +308,7 @@ class TWebControlDecorator extends \Prado\TComponent
 	 * influence the object hierarchy because they are rendered into into the writer directly.
 	 * This call attaches the ensureTemplateDecoration to the TPage onSaveStateComplete so
 	 * these controls don't have page states.  This is as close to not influencing the page as possible.
-	 * @param null|mixed $outercontrol
+	 * @param mixed $outercontrol
 	 */
 	public function instantiate($outercontrol = null)
 	{
@@ -330,7 +330,7 @@ class TWebControlDecorator extends \Prado\TComponent
 	 * @param \Prado\TComponent $sender this indicates the component or control to get the outer tag elements, just in case it's
 	 * different than attached TWebControl.  If none is provided, the outer templates default to the attached
 	 * control
-	 * @param null|mixed $param
+	 * @param mixed $param
 	 * @return bool returns true if the template decorations have been added
 	 */
 	public function ensureTemplateDecoration($sender = null, $param = null)

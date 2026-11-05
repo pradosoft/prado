@@ -52,7 +52,8 @@ class TActiveLabel extends TLabel implements IActiveControl
 	}
 
 	/**
-	 * On callback response, the inner HTML of the label is updated.
+	 * On callback response, the inner HTML of the label is updated, HTML-encoded when
+	 * {@see getEncode Encode} is true.
 	 * @param string $value the text value of the label
 	 */
 	public function setText($value)
@@ -63,7 +64,7 @@ class TActiveLabel extends TLabel implements IActiveControl
 
 		parent::setText($value);
 		if ($this->getActiveControl()->canUpdateClientSide()) {
-			$this->getPage()->getCallbackClient()->update($this, $value);
+			$this->getPage()->getCallbackClient()->update($this, $this->encodeText($value));
 		}
 	}
 

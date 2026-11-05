@@ -1,8 +1,12 @@
 <?php
 
-use Prado\Util\Behaviors\TPageNoCacheBehavior;
+namespace Prado\Test\Unit\Util\Behaviors;
 
-class TPageNoCacheBehaviorTest extends PHPUnit\Framework\TestCase
+use Prado\Util\Behaviors\TPageNoCacheBehavior;
+use Prado\Web\UI\TPage;
+use Prado\Web\UI\WebControls\THead;
+
+class TPageNoCacheBehaviorTest extends \PHPUnit\Framework\TestCase
 {
 	protected $obj;
 

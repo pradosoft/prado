@@ -1,7 +1,7 @@
 # Web/UI/WebControls/IStyleable
 
 ### Directories
-[framework](./INDEX.md) / [Web](./Web/INDEX.md) / [UI](./Web/UI/INDEX.md) / [WebControls](./Web/UI/WebControls/INDEX.md) / **`IStyleable`**
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](INDEX.md) / **`IStyleable`**
 
 **Location:** `framework/Web/UI/WebControls/IStyleable.php`
 **Namespace:** `Prado\Web\UI\WebControls`

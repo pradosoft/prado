@@ -27,6 +27,7 @@ use Prado\Util\IBehavior;
 use Prado\Util\TCallChain;
 use Prado\Util\IClassBehavior;
 use Prado\Util\IDynamicMethods;
+use Prado\Util\IOwnerVisibleMethods;
 use Prado\Util\TClassBehaviorEventParameter;
 use Prado\Web\Javascripts\TJavaScriptLiteral;
 use Prado\Web\Javascripts\TJavaScriptString;
@@ -398,9 +399,37 @@ class TComponent
 	protected $_behaviorsenabled = true;
 
 	/**
-	 * @var TPriorityMap list of object behaviors
+	 * @var ?TPriorityMap list of object behaviors
 	 */
 	protected $_m;
+
+	/**
+	 * `_bm` is the Behavior Methods cache for the `dy` event chain.
+	 * Populated by {@see getBehaviorsWithMethod}; cleared by {@see flushBehaviorMethodCache}.
+	 * @var array<string, IBaseBehavior[]> behaviors responding to a method, keyed by
+	 *   lowercased method name and in priority order.
+	 * @since 4.4.0
+	 */
+	private array $_bm = [];
+
+	/**
+	 * `_cm` is the Callable Methods cache for owner method calls.
+	 * Populated by {@see getOwnerCallableBehaviors}; cleared by {@see flushBehaviorMethodCache}.
+	 * Depends on {@see $_bv} for the owner-visibility filter.
+	 * @var array<string, IBaseBehavior[]> behaviors exposing a method to the owner, keyed by
+	 *   lowercased method name and in priority order.
+	 * @since 4.4.0
+	 */
+	private array $_cm = [];
+
+	/**
+	 * `_bv` is the Behavior (owner-)Visible methods cache.
+	 * Populated by {@see getBehaviorOwnerVisibleMethods}; cleared by {@see flushBehaviorMethodCache}.
+	 * @var array<int, null|array<string, bool>> owner-visible method sets, keyed by behavior
+	 *   {@see spl_object_id}; `null` for no restriction, else lowercased visible method names as keys.
+	 * @since 4.4.0
+	 */
+	private array $_bv = [];
 
 	/**
 	 * @var array static global class behaviors, these behaviors are added upon instantiation of a class
@@ -441,11 +470,14 @@ class TComponent
 	 * This reattaches the behaviors to the cloned object.
 	 * IBehavior objects are cloned, IClassBehaviors are not.
 	 * Clone object events are scrubbed of the old object behaviors' events.
+	 * A clone of a component that listens to global events listens itself.
 	 * To finalize the behaviors, dyClone is raised.
 	 * @since 4.3.0
 	 */
 	public function __clone()
 	{
+		$listening = $this->_listeningenabled;
+		$this->_listeningenabled = false;
 		foreach ($this->_e as $event => $handlers) {
 			$this->_e[$event] = clone $handlers;
 		}
@@ -472,6 +504,9 @@ class TComponent
 					$this->attachBehavior($name, $behavior, $priority);
 				}
 			}
+		}
+		if ($listening) {
+			$this->listen();
 		}
 		$this->callBehaviorsMethod('dyClone', $return);
 	}
@@ -557,7 +592,7 @@ class TComponent
 	public function __destruct()
 	{
 		$this->clearBehaviors();
-		if ($this->_listeningenabled) {
+		if ($this->getListeningToGlobalEvents()) {
 			$this->unlisten();
 		}
 	}
@@ -637,8 +672,8 @@ class TComponent
 	 */
 	public function listen()
 	{
-		if ($this->_listeningenabled) {
-			return;
+		if ($this->getListeningToGlobalEvents()) {
+			return null;
 		}
 
 		$fx = $this->getClassFxEvents($this);
@@ -676,8 +711,8 @@ class TComponent
 	 */
 	public function unlisten()
 	{
-		if (!$this->_listeningenabled) {
-			return;
+		if (!$this->getListeningToGlobalEvents()) {
+			return null;
 		}
 
 		$fx = $this->getClassFxEvents($this);
@@ -780,7 +815,7 @@ class TComponent
 				$class = $behavior::class;
 				$lclass = strtolower($class);
 				if (!isset($checkedClasses[$lclass])) {
-					if ($behavior->getEnabled() && method_exists($class, $method)) {
+					if ($behavior->getEnabled() && method_exists($class, $method) && self::isStaticBehaviorOwnerVisibleMethod($behavior, $method)) {
 						return forward_static_call_array([$class, $method], $args);
 					}
 					$checkedClasses[$lclass] = true;
@@ -799,7 +834,7 @@ class TComponent
 
 				$lclass = strtolower($class);
 				if (!isset($checkedClasses[$lclass])) {
-					if ((!($behavior instanceof IBaseBehavior) || $behavior->getEnabled()) && method_exists($class, $method)) {
+					if ((!($behavior instanceof IBaseBehavior) || $behavior->getEnabled()) && method_exists($class, $method) && self::isStaticBehaviorOwnerVisibleMethod($behavior, $method)) {
 						return forward_static_call_array([$class, $method], $args);
 					}
 					$checkedClasses[$lclass] = true;
@@ -858,12 +893,12 @@ class TComponent
 				self::$_ue[$name] = new TWeakCallableCollection();
 			}
 			return self::$_ue[$name];
-		} elseif ($this->getBehaviorsEnabled()) {
+		} elseif ($this->_m !== null && $this->getBehaviorsEnabled()) {
 			// getting a behavior property/event (handler list)
 			$name = strtolower($name);
 			if (isset($this->_m[$name])) {
 				return $this->_m[$name];
-			} elseif ($this->_m !== null) {
+			} else {
 				foreach ($this->_m->toArray() as $behavior) {
 					if ($behavior->getEnabled() && (property_exists($behavior, $name) || $behavior->canGetProperty($name) || $behavior->hasEvent($name))) {
 						return $behavior->$name;
@@ -889,6 +924,7 @@ class TComponent
 	 * @param string $name the property name or event name
 	 * @param mixed $value the property value or event handler
 	 * @throws TInvalidOperationException If the property is not defined or read-only.
+	 * @return void
 	 */
 	public function __set($name, $value)
 	{
@@ -896,14 +932,17 @@ class TComponent
 			if (strncasecmp($name, 'js', 2) === 0 && $value && !($value instanceof TJavaScriptLiteral)) {
 				$value = new TJavaScriptLiteral($value);
 			}
-			return $this->$setter($value);
+			$this->$setter($value);
+			return;
 		} elseif (Prado::method_visible($this, $jssetter = 'setjs' . $name)) {
 			if ($value && !($value instanceof TJavaScriptString)) {
 				$value = new TJavaScriptString($value);
 			}
-			return $this->$jssetter($value);
+			$this->$jssetter($value);
+			return;
 		} elseif ((strncasecmp($name, 'on', 2) === 0 && method_exists($this, $name)) || strncasecmp($name, 'fx', 2) === 0) {
-			return $this->attachEventHandler($name, $value);
+			$this->attachEventHandler($name, $value);
+			return;
 		} elseif ($this->_m !== null && $this->_m->getCount() > 0 && $this->getBehaviorsEnabled()) {
 			$sets = 0;
 			foreach ($this->_m->toArray() as $behavior) {
@@ -913,7 +952,7 @@ class TComponent
 				}
 			}
 			if ($sets) {
-				return $value;
+				return;
 			}
 		}
 
@@ -1066,30 +1105,48 @@ class TComponent
 
 	/**
 	 * Evaluates a property path.
-	 * A property path is a sequence of property names concatenated by '.' character.
-	 * For example, 'Parent.Page' refers to the 'Page' property of the component's
-	 * 'Parent' property value (which should be a component also).
-	 * When a property is not defined by an object, this also loops through all
-	 * active behaviors of the object.
+	 * A path is a sequence of names, each introduced by a '.' or '@' separator;
+	 * the first name has an implied '.'.  A '.' reads the named property; a '@'
+	 * reads the named behavior via {@see asa}.  An undefined property throws, while
+	 * an unattached '@' behavior yields null, matching {@see asa}.
+	 * Examples: 'Parent.Page' is the 'Page' of this component's 'Parent';
+	 * '@cache.Expire' is the 'Expire' of the behavior 'cache'; '@outer@inner' is
+	 * the behavior 'inner' on the behavior 'outer'.
 	 * @param string $path property path
-	 * @return mixed the property path value
+	 * @return mixed the value at the property path
 	 */
 	public function getSubProperty($path)
 	{
 		$object = $this;
-		foreach (explode('.', $path) as $property) {
-			$object = $object->$property;
+		$len = strlen($path);
+		$start = 0;
+		$separator = '.'; // the first name is read as a property
+		// A leading '@' makes the first name a behavior instead.
+		if ($len && $path[0] === '@') {
+			$separator = '@';
+			$start = 1;
+		}
+		while ($start <= $len) {
+			$nameLen = strcspn($path, '.@', $start);
+			$name = substr($path, $start, $nameLen);
+			$object = ($separator === '@') ? $object->asa($name) : $object->$name;
+			$next = $start + $nameLen;
+			$separator = $path[$next] ?? '.';
+			$start = $next + 1;
 		}
 		return $object;
 	}
 
 	/**
 	 * Sets a value to a property path.
-	 * A property path is a sequence of property names concatenated by '.' character.
-	 * For example, 'Parent.Page' refers to the 'Page' property of the component's
-	 * 'Parent' property value (which should be a component also).
-	 * When a property is not defined by an object, this also loops through all
-	 * active behaviors of the object.
+	 * The path uses the same '.' and '@' grammar as {@see getSubProperty}.  The
+	 * last '.' splits off the property name to set; the preceding path resolves
+	 * via {@see getSubProperty}, so it may walk behaviors, e.g. '@cache.Expire'
+	 * sets the 'Expire' of the behavior named 'cache'.
+	 *
+	 * A path that terminates in an '@' behavior hop (the segment after the last
+	 * '.' contains an '@', e.g. '@cache' or 'a@cache') addresses a behavior, not a
+	 * settable property, so the call is a no-op.
 	 * @param string $path property path
 	 * @param mixed $value the property path value
 	 */
@@ -1102,7 +1159,118 @@ class TComponent
 			$object = $this->getSubProperty(substr($path, 0, $pos));
 			$property = substr($path, $pos + 1);
 		}
-		$object->$property = $value;
+		if (strpos($property, '@') !== false) {
+			return; // the path terminates in an '@' behavior hop — nothing to set
+		}
+		TPropertyValue::applyProperty($object, $property, $value);
+	}
+
+	/**
+	 * Sets a map of property paths in structural order, so a parent path is always
+	 * applied before any path nested beneath it. The map is `path => value`, each
+	 * path using the '.'/'@' grammar of {@see setSubProperty}.
+	 *
+	 * Application order is a pre-order walk of the path tree: a node's own
+	 * properties precede its descendants; at each node the '@' behavior subtree
+	 * (the inner pattern) precedes the '.' subproperty subtree (the outer pattern);
+	 * paths that share neither separator nor name at a position keep their
+	 * declaration order. This guarantees the object reached by a deeper path
+	 * (`object.inner.child.prop` or `object@behavior@inner.prop`) is already set
+	 * before the deeper write resolves through it.
+	 *
+	 * Configuration sources hand their attributes over as a
+	 * {@see \Prado\Collections\TMap} rather than an array, so any traversable
+	 * `path => value` map is accepted and read into an array first.
+	 * @param array|\Traversable $properties the `path => value` map to apply.
+	 * @since 4.4.0
+	 */
+	public function setSubProperties(array|\Traversable $properties): void
+	{
+		if (!is_array($properties)) {
+			$properties = iterator_to_array($properties);
+		}
+		if (count($properties) > 1) {
+			$properties = self::sortPropertyPaths($properties);
+		}
+		foreach ($properties as $path => $value) {
+			$this->setSubProperty($path, $value);
+		}
+	}
+
+	/**
+	 * Splits a property path into ordered `[separator, name]` segments. The first
+	 * segment's separator is '.' unless the path opens with '@'; each later
+	 * segment carries the '.' or '@' that introduces it.
+	 * @param string $path the property path.
+	 * @return array<int,array{0:string,1:string}> the path segments in order.
+	 * @since 4.4.0
+	 */
+	protected static function tokenizePropertyPath(string $path): array
+	{
+		$segments = [];
+		$len = strlen($path);
+		$start = 0;
+		$sep = '.';
+		if ($len && $path[0] === '@') {
+			$sep = '@';
+			$start = 1;
+		}
+		while ($start <= $len) {
+			$nameLen = strcspn($path, '.@', $start);
+			$segments[] = [$sep, substr($path, $start, $nameLen)];
+			$next = $start + $nameLen;
+			$sep = $path[$next] ?? '.';
+			$start = $next + 1;
+		}
+		return $segments;
+	}
+
+	/**
+	 * Reorders a `path => value` map into the structural application order used by
+	 * {@see setSubProperties}. Each path is keyed by its segment sequence — every
+	 * segment contributing `[separatorRank, siblingOrdinal]` where '@' ranks
+	 * before '.' and the ordinal is the declaration order of that node among its
+	 * siblings — and the keys are compared lexicographically with a shorter
+	 * (ancestor) key sorting before the longer key that extends it.
+	 * @param array $properties the `path => value` map.
+	 * @return array the map reordered for application.
+	 * @since 4.4.0
+	 */
+	protected static function sortPropertyPaths(array $properties): array
+	{
+		$ordinals = [];   // nodeId => ordinal among its parent's children
+		$childCount = []; // parent nodeId => next ordinal
+		$entries = [];
+		foreach ($properties as $path => $value) {
+			$sortKey = [];
+			$prefix = '';
+			foreach (self::tokenizePropertyPath((string) $path) as [$sep, $name]) {
+				$nodeId = $prefix . "\0" . $sep . "\0" . $name;
+				if (!isset($ordinals[$nodeId])) {
+					$ordinals[$nodeId] = $childCount[$prefix] ?? 0;
+					$childCount[$prefix] = $ordinals[$nodeId] + 1;
+				}
+				$sortKey[] = [$sep === '@' ? 0 : 1, $ordinals[$nodeId]];
+				$prefix = $nodeId;
+			}
+			$entries[] = ['path' => $path, 'value' => $value, 'key' => $sortKey];
+		}
+		usort($entries, static function ($a, $b) {
+			$ka = $a['key'];
+			$kb = $b['key'];
+			$n = min(count($ka), count($kb));
+			for ($i = 0; $i < $n; $i++) {
+				if (($r = $ka[$i][0] <=> $kb[$i][0]) !== 0 || ($r = $ka[$i][1] <=> $kb[$i][1]) !== 0) {
+					return $r;
+				}
+			}
+			return count($ka) <=> count($kb); // ancestor (shorter) before descendant
+		});
+		$result = [];
+		foreach ($entries as $entry) {
+			$result[$entry['path']] = $entry['value'];
+		}
+		return $result;
 	}
 
 	/**
@@ -1132,8 +1300,8 @@ class TComponent
 					return true;
 				}
 			} else {
-				foreach ($this->_m->toArray() as $behavior) {
-					if ($behavior->getEnabled() && Prado::method_visible($behavior, $method)) {
+				foreach ($this->getOwnerCallableBehaviors($method) as $behavior) {
+					if ($behavior->getEnabled()) {
 						if ($behavior instanceof IClassBehavior) {
 							array_unshift($args, $this);
 						}
@@ -1169,19 +1337,172 @@ class TComponent
 			return null;
 		}
 		$classArgs = $callchain = null;
-		foreach ($this->_m->toArray() as $behavior) {
-			if ($behavior->getEnabled() && (Prado::method_visible($behavior, $method) || ($behavior instanceof IDynamicMethods))) {
-				if ($classArgs === null) {
-					$classArgs = $args;
-					array_unshift($classArgs, $this);
-				}
-				if (!$callchain) {
-					$callchain = new TCallChain($method);
-				}
-				$callchain->addCall([$behavior, $method], ($behavior instanceof IClassBehavior) ? $classArgs : $args);
+		foreach ($this->getBehaviorsWithMethod($method) as $behavior) {
+			if (!$behavior->getEnabled()) {
+				continue;
 			}
+			if ($classArgs === null) {
+				$classArgs = $args;
+				array_unshift($classArgs, $this);
+			}
+			if (!$callchain) {
+				$callchain = new TCallChain($method);
+			}
+			$callchain->addCall([$behavior, $method], ($behavior instanceof IClassBehavior) ? $classArgs : $args);
 		}
 		return $callchain;
+	}
+
+	/**
+	 * Resolves the behaviors for a `dy` event chain, in priority order, memoized in
+	 * {@see $_bm} keyed by lowercased method name.  A behavior is included when:
+	 *  - the method is visible on it ({@see \Prado\Prado::method_visible}); or
+	 *  - it implements {@see \Prado\Util\IDynamicMethods}, so it receives the event even
+	 *    without defining the method.
+	 * Enabled state is not applied here; {@see getCallChain} skips disabled behaviors.
+	 * Contrast {@see getOwnerCallableBehaviors}, which resolves owner method calls.
+	 * @param string $method the `dy` event method name.
+	 * @return IBaseBehavior[] the chain behaviors in priority order, possibly empty.
+	 * @since 4.4.0
+	 * @see getCallChain for use
+	 * @note _bm is Behavior Methods
+	 */
+	protected function getBehaviorsWithMethod(string $method): array
+	{
+		$key = strtolower($method);
+		if (isset($this->_bm[$key])) {
+			return $this->_bm[$key];
+		}
+		$behaviors = [];
+		if ($this->_m !== null) {
+			foreach ($this->_m->toArray() as $behavior) {
+				if (Prado::method_visible($behavior, $method) || ($behavior instanceof IDynamicMethods)) {
+					$behaviors[] = $behavior;
+				}
+			}
+		}
+		return $this->_bm[$key] = $behaviors;
+	}
+
+	/**
+	 * Clears the three behavior-resolution caches: the `dy` event chain {@see $_bm}, the
+	 * owner method-call set {@see $_cm}, and the owner-visible method sets {@see $_bv}.
+	 * Called when a behavior is attached or detached, the only change that invalidates them.
+	 * @since 4.4.0
+	 */
+	protected function flushBehaviorMethodCache(): void
+	{
+		$this->_bm = [];
+		$this->_cm = [];
+		$this->_bv = [];
+	}
+
+	/**
+	 * Resolves the behaviors that expose a method to the owner, in priority order, memoized
+	 * in {@see $_cm} keyed by lowercased method name.  A behavior is included when both:
+	 *  - the method is visible on it ({@see \Prado\Prado::method_visible}); and
+	 *  - the method is visible to the owner ({@see isBehaviorOwnerVisibleMethod}).
+	 * {@see \Prado\Util\IDynamicMethods} behaviors that lack the method are excluded.  Both
+	 * conditions change only on behavior attach/detach, so the cached list lets dispatch
+	 * skip the reflection and re-check only the volatile {@see \Prado\Util\IBaseBehavior::getEnabled}
+	 * state.  Contrast {@see getBehaviorsWithMethod}, which resolves the `dy` event chain.
+	 * @param string $method the owner-called method name.
+	 * @return IBaseBehavior[] the exposing behaviors in priority order, possibly empty.
+	 * @since 4.4.0
+	 * @see callBehaviorsMethod for use
+	 * @see hasMethod for use
+	 * @note _cm is (Owner) Callable Methods
+	 */
+	protected function getOwnerCallableBehaviors(string $method): array
+	{
+		if ($this->_m === null) {
+			return [];
+		}
+		$key = strtolower($method);
+		if (isset($this->_cm[$key])) {
+			return $this->_cm[$key];
+		}
+		$behaviors = [];
+		foreach ($this->_m->toArray() as $behavior) {
+			if (Prado::method_visible($behavior, $method) && $this->isBehaviorOwnerVisibleMethod($behavior, $method)) {
+				$behaviors[] = $behavior;
+			}
+		}
+		return $this->_cm[$key] = $behaviors;
+	}
+
+	/**
+	 * Tests whether a behavior method is visible to the owner, using the memoized set from
+	 * {@see getBehaviorOwnerVisibleMethods}.  True when the behavior places no restriction
+	 * or names the method.  `dy` and `fx` events bypass this restriction and are handled by
+	 * callers before this check.
+	 * @param IBaseBehavior $behavior the behavior providing the method.
+	 * @param string $method the method name resolved against the behavior.
+	 * @return bool whether the method is visible to the owner.
+	 * @since 4.4.0
+	 */
+	protected function isBehaviorOwnerVisibleMethod(IBaseBehavior $behavior, string $method): bool
+	{
+		$set = $this->getBehaviorOwnerVisibleMethods($behavior);
+		return $set === null || isset($set[strtolower($method)]);
+	}
+
+	/**
+	 * Caches a behavior's {@see \Prado\Util\IOwnerVisibleMethods::getOwnerVisibleMethods}
+	 * result in {@see $_bv}, keyed by behavior {@see spl_object_id} and normalized to a
+	 * lowercased-name lookup set.  `null` means no restriction.
+	 * @param IBaseBehavior $behavior the behavior whose visible methods are resolved.
+	 * @return null|array<string, bool> `null` for no restriction, else the lowercased visible
+	 *   method names as keys.
+	 * @since 4.4.0
+	 * @note _bv is Behavior Visible
+	 */
+	protected function getBehaviorOwnerVisibleMethods(IBaseBehavior $behavior): ?array
+	{
+		$oid = spl_object_id($behavior);
+		if (array_key_exists($oid, $this->_bv)) {
+			return $this->_bv[$oid];
+		}
+		$set = null;
+		if ($behavior instanceof IOwnerVisibleMethods) {
+			$methods = $behavior->getOwnerVisibleMethods();
+			if ($methods !== null) {
+				$set = [];
+				foreach ((array) $methods as $methodName) {
+					$set[strtolower((string) $methodName)] = true;
+				}
+			}
+		}
+		return $this->_bv[$oid] = $set;
+	}
+
+	/**
+	 * Determines whether a behavior method is visible to its owner in a static context.
+	 * Used by {@see __callStatic} where only the behavior is available.  A behavior that
+	 * does not implement {@see \Prado\Util\IOwnerVisibleMethods} or returns `null` places
+	 * no restriction.  Non-object behaviors (class-wide configuration entries) are treated
+	 * as unrestricted.
+	 * @param mixed $behavior the behavior, configuration array, or class name.
+	 * @param string $method the method name resolved against the behavior.
+	 * @return bool whether the method is visible to the owner.
+	 * @since 4.4.0
+	 */
+	protected static function isStaticBehaviorOwnerVisibleMethod($behavior, string $method): bool
+	{
+		if (!($behavior instanceof IOwnerVisibleMethods)) {
+			return true;
+		}
+		$methods = $behavior->getOwnerVisibleMethods();
+		if ($methods === null) {
+			return true;
+		}
+		$lmethod = strtolower($method);
+		foreach ((array) $methods as $methodName) {
+			if (strtolower((string) $methodName) === $lmethod) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -1199,9 +1520,8 @@ class TComponent
 		if (Prado::method_visible($this, $name) || strncasecmp($name, 'dy', 2) === 0) {
 			return true;
 		} elseif ($this->_m !== null && $this->getBehaviorsEnabled()) {
-			foreach ($this->_m->toArray() as $behavior) {
-				//Prado::method_visible($behavior, $name) rather than $behavior->hasMethod($name) b/c only one layer is supported, @4.2.2
-				if ($behavior->getEnabled() && Prado::method_visible($behavior, $name)) {
+			foreach ($this->getOwnerCallableBehaviors($name) as $behavior) {
+				if ($behavior->getEnabled()) {
 					return true;
 				}
 			}
@@ -1359,7 +1679,8 @@ class TComponent
 			try {
 				$this->getEventHandlers($name)->remove($handler, $priority);
 				return true;
-			} catch (\Exception $e) {
+			} catch (TInvalidDataValueException $e) {
+				// The handler is not attached at the given priority; nothing to detach.
 			}
 		}
 		return false;
@@ -1439,6 +1760,16 @@ class TComponent
 	 * {@see \Prado\IEventCycleParameter::postRaiseEvent} are called for pre- and
 	 * post-processing of the event lifecycle.
 	 *
+	 * If `$param` implements {@see \Prado\IEventStoppableParameter} and a handler
+	 * stops it (via {@see \Prado\IEventStoppableParameter::stopImmediatePropagation}), the
+	 * current handler completes and the remaining handlers are skipped. Response
+	 * post-processing still runs on the handlers that already ran. Under
+	 * {@see TEventResults::EVENT_RESULT_FEED_FORWARD}, the stop is read from the
+	 * forwarded value that becomes the current `$param`, not the original parameter.
+	 *
+	 * A handler held by a WeakReference whose object is freed during the raise is
+	 * skipped.
+	 *
 	 * @param string $name the event name
 	 * @param mixed $sender the event sender object
 	 * @param \Prado\TEventParameter $param the event parameter
@@ -1484,33 +1815,25 @@ class TComponent
 			if ($responsetype & TEventResults::EVENT_REVERSE) {
 				$handlerArray = array_reverse($handlerArray);
 			}
+			$stoppable = $param instanceof IEventStoppableParameter;
 			foreach ($handlerArray as $handler) {
+				// A weak handler collected during the raise outputs as null.
+				if ($handler === null) {
+					continue;
+				}
 				$this->callBehaviorsMethod('dyIntraRaiseEventTestHandler', $return, $handler, $sender, $param, $name);
 				if ($return === false) {
 					continue;
 				}
 
 				if (is_string($handler)) {
-					if (($pos = strrpos($handler, '.')) !== false) {
-						$object = $this->getSubProperty(substr($handler, 0, $pos));
-						$method = substr($handler, $pos + 1);
-						if (Prado::method_visible($object, $method) || strncasecmp($method, 'dy', 2) === 0 || strncasecmp($method, 'fx', 2) === 0) {
-							if ($method == '__dycall') {
-								$response = $object->__dycall($name, [$sender, $param]);
-							} else {
-								$response = $object->$method($sender, $param);
-							}
-						} else {
-							throw new TInvalidDataValueException('component_eventhandler_invalid', $this::class, $name, $handler);
-						}
-					} else {
-						$response = call_user_func($handler, $sender, $param);
-					}
+					$response = call_user_func($handler, $sender, $param);
 				} elseif (is_callable($handler, true)) {
 					if (is_object($handler) || is_string($handler[0])) {
 						$response = call_user_func($handler, $sender, $param);
 					} else {
-						[$object, $method] = $handler;
+						$object = $handler[0];
+						$method = $handler[1];
 						if (($pos = strrpos($method, '.')) !== false) {
 							$object = $object->getSubProperty(substr($method, 0, $pos));
 							$method = substr($method, $pos + 1);
@@ -1526,7 +1849,8 @@ class TComponent
 						}
 					}
 				} else {
-					throw new TInvalidDataValueException('component_eventhandler_invalid', $this::class, $name, gettype($handler));
+					// Event handler collections accept only callables.
+					throw new TInvalidDataValueException('component_eventhandler_invalid', $this::class, $name, gettype($handler)); // @codeCoverageIgnore
 				}
 
 				$this->callBehaviorsMethod('dyIntraRaiseEventPostHandler', $return, $name, $sender, $param, $handler, $response);
@@ -1543,6 +1867,12 @@ class TComponent
 
 				if ($response !== null && ($responsetype & TEventResults::EVENT_RESULT_FEED_FORWARD)) {
 					$param = $response;
+					// The forwarded value becomes the current parameter, so re-validate.
+					$stoppable = $param instanceof IEventStoppableParameter;
+				}
+
+				if ($stoppable && $param->getStopped()) {
+					break;
 				}
 			}
 		} elseif (strncasecmp($name, 'on', 2) === 0 && !$this->hasEvent($name)) {
@@ -1574,6 +1904,7 @@ class TComponent
 	 * to be executed when evaluateExpression is called.  All attached behaviors are notified through
 	 * dyEvaluateExpressionFilter.  The chaining is important in this function due to the filtering
 	 * pass-through effect.
+	 * {@see \Prado\Util\Behaviors\TEvaluationFilterBehavior} implements this filter.
 	 *
 	 * @param string $expression PHP expression
 	 * @throws TInvalidOperationException if the expression is invalid
@@ -1585,7 +1916,7 @@ class TComponent
 		try {
 			return eval("return $expression;");
 		} catch (\Throwable $e) {
-			throw new TInvalidOperationException('component_expression_invalid', $this::class, $expression, $e->getMessage());
+			throw new TInvalidOperationException('component_expression_invalid', $this::class, $expression, $e->getMessage(), $e);
 		}
 	}
 
@@ -1601,6 +1932,7 @@ class TComponent
 	 * to be executed when evaluateStatements is called.  All attached behaviors are notified through
 	 * dyEvaluateStatementsFilter.  The chaining is important in this function due to the filtering
 	 * pass-through effect.
+	 * {@see \Prado\Util\Behaviors\TEvaluationFilterBehavior} implements this filter.
 	 *
 	 * @param string $statements PHP statements
 	 * @throws TInvalidOperationException if the statements are invalid
@@ -1619,7 +1951,7 @@ class TComponent
 			return $content;
 		} catch (\Throwable $e) {
 			ob_end_clean();
-			throw new TInvalidOperationException('component_statements_invalid', $this::class, $statements, $e->getMessage());
+			throw new TInvalidOperationException('component_statements_invalid', $this::class, $statements, $e->getMessage(), $e);
 		}
 	}
 
@@ -1736,6 +2068,9 @@ class TComponent
 		if (!($behavior instanceof IBaseBehavior)) {
 			throw new TInvalidDataTypeException('component_not_a_behavior', $behavior::class);
 		}
+		if (!($behavior instanceof TComponent)) {
+			throw new TInvalidDataTypeException('object_not_a_component', $behavior::class);
+		}
 		if ($init) {
 			$behavior->init($config);
 		}
@@ -1773,10 +2108,6 @@ class TComponent
 		if (!$class) {
 			$class = get_called_class();
 		}
-		if (!$class) {
-			throw new TInvalidOperationException('component_no_class_provided_nor_late_binding');
-		}
-
 		$class = strtolower($class);
 		if ($class === strtolower(TComponent::class)) {
 			throw new TInvalidOperationException('component_no_tcomponent_class_behaviors');
@@ -1821,10 +2152,6 @@ class TComponent
 		if (!$class) {
 			$class = get_called_class();
 		}
-		if (!$class) {
-			throw new TInvalidOperationException('component_no_class_provided_nor_late_binding');
-		}
-
 		$class = strtolower($class);
 		$name = strtolower($name);
 		if (empty(self::$_um[$class]) || !isset(self::$_um[$class][$name])) {
@@ -1847,9 +2174,8 @@ class TComponent
 	 * Returns the named behavior object.  If the $behaviorname is not found, but is
 	 * an existing class or interface, this will return the first instanceof.
 	 * The name 'asa' stands for 'as a'.
-	 * @template T of IBaseBehavior
-	 * @param class-string<T> $behaviorname the behavior name or the class name of the behavior.
-	 * @return null|object|T the behavior object of name or class, or null if the behavior does not exist
+	 * @param string $behaviorname the behavior name or the class name of the behavior.
+	 * @return ?object the behavior object of name or class, or null if the behavior does not exist
 	 * @since 3.2.3
 	 */
 	public function asa($behaviorname)
@@ -1886,8 +2212,14 @@ class TComponent
 	 * The behavior {@see \Prado\Util\IInstanceCheck} is to allow a behavior to have the host object
 	 * act as a completely different object.
 	 *
-	 * @param mixed|string $class class or string
+	 * Static analysis narrows $this to $class when this returns true, the same way
+	 * `instanceof` narrows.  The narrowing is carried by the assertion tag below so
+	 * it applies to every subject type, including intersection types.
+	 *
+	 * @template T of object
+	 * @param class-string<T>|T $class class or string
 	 * @return bool whether or not the object or a behavior is an instance of a particular class
+	 * @phpstan-assert-if-true T $this
 	 * @since 3.2.3
 	 */
 	public function isa($class)
@@ -1916,9 +2248,8 @@ class TComponent
 	/**
 	 * Returns all the behaviors attached to the TComponent.  IBaseBehavior[s] may
 	 * be attached but not {@see \Prado\Util\IBaseBehavior::getEnabled Enabled}.
-	 * @template T of object
-	 * @param null|class-string<T> $class Filters the result by class, default null for no filter.
-	 * @return ($class is null ? array<string, IBaseBehavior> : array<string, T>)
+	 * @param ?string $class Filters the result by class, default null for no filter.
+	 * @return array The behaviors [optionally filtered] attached to the TComponent.
 	 * @since 4.2.2
 	 */
 	public function getBehaviors(?string $class = null)
@@ -2003,6 +2334,8 @@ class TComponent
 	 * This method will create the behavior object based on the given
 	 * configuration. After that, the behavior object will be initialized
 	 * by calling its {@see \Prado\Util\IBaseBehavior::attach} method.
+	 * When `attach` throws, the behavior is unregistered and, if it gained this
+	 * component as an owner, detached before the exception propagates.
 	 *
 	 * Already attached behaviors may implement the function:
 	 * ```php
@@ -2037,8 +2370,18 @@ class TComponent
 			$name = $this->_m->getNextIntegerKey();
 		}
 		$this->_m->add($name, $behavior, $priority);
+		$this->flushBehaviorMethodCache();
 		$behavior->setName($name);
-		$behavior->attach($this);
+		try {
+			$behavior->attach($this);
+		} catch (\Throwable $e) {
+			$this->_m->remove($name);
+			$this->flushBehaviorMethodCache();
+			if ($behavior->isOwner($this)) {
+				$behavior->detach($this);
+			}
+			throw $e;
+		}
 		$this->callBehaviorsMethod('dyAttachBehavior', $return, $name, $behavior);
 		return $behavior;
 	}
@@ -2069,6 +2412,7 @@ class TComponent
 			$this->callBehaviorsMethod('dyDetachBehavior', $return, $name, $behavior);
 			$behavior->detach($this);
 			$this->_m->remove($name, $priority);
+			$this->flushBehaviorMethodCache();
 			return $behavior;
 		}
 		return null;
@@ -2090,7 +2434,7 @@ class TComponent
 	 */
 	public function enableBehaviors()
 	{
-		if (!$this->_behaviorsenabled) {
+		if (!$this->getBehaviorsEnabled()) {
 			$this->_behaviorsenabled = true;
 			$this->callBehaviorsMethod('dyEnableBehaviors', $return);
 		}
@@ -2112,7 +2456,7 @@ class TComponent
 	 */
 	public function disableBehaviors()
 	{
-		if ($this->_behaviorsenabled) {
+		if ($this->getBehaviorsEnabled()) {
 			$callchain = $this->getCallChain('dyDisableBehaviors');
 			$this->_behaviorsenabled = false;
 			if ($callchain) { // normal dynamic events won't work because behaviors are disabled.
@@ -2220,13 +2564,16 @@ class TComponent
 	 */
 	protected function _getZappableSleepProps(&$exprops)
 	{
-		if ($this->_listeningenabled === false) {
+		if ($this->getListeningToGlobalEvents() === false) {
 			$exprops[] = "\0*\0_listeningenabled";
 		}
-		if ($this->_behaviorsenabled === true) {
+		if ($this->getBehaviorsEnabled() === true) {
 			$exprops[] = "\0*\0_behaviorsenabled";
 		}
 		$exprops[] = "\0*\0_e";
+		$exprops[] = "\0" . __CLASS__ . "\0_bm";
+		$exprops[] = "\0" . __CLASS__ . "\0_cm";
+		$exprops[] = "\0" . __CLASS__ . "\0_bv";
 		if ($this->_m === null) {
 			$exprops[] = "\0*\0_m";
 		}

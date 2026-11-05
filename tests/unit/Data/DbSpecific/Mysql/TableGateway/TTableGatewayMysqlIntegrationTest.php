@@ -1,12 +1,14 @@
 <?php
 
-require_once(__DIR__ . '/../../../../PradoUnit.php');
+namespace Prado\Test\Unit\Data\DbSpecific\Mysql\TableGateway;
 
 use Prado\Data\Common\TDbMetaData;
 use Prado\Data\DataGateway\TSqlCriteria;
 use Prado\Data\DataGateway\TTableGateway;
 use Prado\Data\TDbConnection;
 use Prado\TApplication;
+use Prado\Test\Unit\PradoUnit;
+use Prado\TApplicationMode;
 
 /**
  * Live integration tests for TTableGateway — MySQL.
@@ -37,7 +39,7 @@ use Prado\TApplication;
  * department_sections has a composite PK (department_id, section_id) and
  * pre-seeded rows.
  */
-class TTableGatewayMysqlIntegrationTest extends PHPUnit\Framework\TestCase
+class TTableGatewayMysqlIntegrationTest extends \PHPUnit\Framework\TestCase
 {
 	private static ?TDbConnection $conn   = null;
 	private static ?TTableGateway $gateway  = null;  // address table
@@ -47,7 +49,7 @@ class TTableGatewayMysqlIntegrationTest extends PHPUnit\Framework\TestCase
 	{
 		static $booted = false;
 		if (!$booted) {
-			new TApplication(__DIR__ . '/../../../../Security/app', false, TApplication::CONFIG_TYPE_PHP);
+			(new TApplication(__DIR__ . '/../../../../Security/app', false, TApplication::CONFIG_TYPE_PHP))->setMode(TApplicationMode::Debug);
 			$booted = true;
 		}
 		$conn = PradoUnit::setupMysqlConnection('prado_unitest');

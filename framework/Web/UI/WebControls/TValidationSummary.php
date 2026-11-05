@@ -11,6 +11,7 @@
 namespace Prado\Web\UI\WebControls;
 
 use Prado\TPropertyValue;
+use Prado\Web\THttpUtility;
 use Prado\Web\Javascripts\TJavaScript;
 
 /**
@@ -26,6 +27,8 @@ use Prado\Web\Javascripts\TJavaScript;
  * The summary can be displayed as a list, as a bulleted list, or as a single
  * paragraph based on the {@see setDisplayMode DisplayMode} property.
  * The messages shown can be prefixed with {@see setHeaderText HeaderText}.
+ * A message renders as HTML, HTML-encoded when its validator's
+ * {@see \Prado\Web\UI\WebControls\TBaseValidator::setEncode Encode} is true.
  *
  * The summary can be displayed on the Web page and in a message box by setting
  * the {@see setShowSummary ShowSummary} and {@see setShowMessageBox ShowMessageBox}
@@ -53,7 +56,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @return TValidationSummaryDisplayStyle the style of displaying the error messages. Defaults to TValidationSummaryDisplayStyle::Fixed.
+	 * @return string|TValidationSummaryDisplayStyle the style of displaying the error messages. Defaults to TValidationSummaryDisplayStyle::Fixed.
 	 */
 	public function getDisplay()
 	{
@@ -61,7 +64,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param TValidationSummaryDisplayStyle $value the style of displaying the error messages
+	 * @param string|TValidationSummaryDisplayStyle $value the style of displaying the error messages
 	 */
 	public function setDisplay($value)
 	{
@@ -227,6 +230,9 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 			}
 		}
 		$writer->addAttribute('id', $this->getClientID());
+		// The summary is an alert region so assistive technology announces the
+		// collected errors when validation fails.
+		$writer->addAttribute('role', 'alert');
 		parent::addAttributesToRender($writer);
 	}
 
@@ -244,7 +250,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 		//need to register the validation manager is validation summary is alone.
 		$formID = $this->getPage()->getForm()->getClientID();
 		$scriptKey = "TBaseValidator:$formID";
-		if ($this->getEnableClientScript() && !$cs->isEndScriptRegistered($scriptKey)) {
+		if (!$cs->isEndScriptRegistered($scriptKey)) {
 			$manager['FormID'] = $formID;
 			$options = TJavaScript::encode($manager);
 			$cs->registerPradoScript('validator');
@@ -309,7 +315,8 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * Get the list of validation error messages.
+	 * Get the list of validation error messages, as HTML.  A message is HTML-encoded
+	 * when its validator's {@see TBaseValidator::getEncode() Encode} is true.
 	 * @return array list of validator error messages.
 	 */
 	protected function getErrorMessages()
@@ -318,7 +325,9 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 		$messages = [];
 		foreach ($validators as $validator) {
 			if (!$validator->getIsValid() && ($msg = $validator->getErrorMessage()) !== '') {
-				//$messages[] = $validator->getAnchoredMessage($msg);
+				if ($validator instanceof TBaseValidator && $validator->getEncode()) {
+					$msg = THttpUtility::htmlEncode($msg);
+				}
 				$messages[] = $msg;
 			}
 		}
@@ -327,7 +336,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Checked if at least one validator failed.
-	 * @return bool wether validation failed
+	 * @return bool whether validation failed
 	 */
 	protected function getValidationFailed()
 	{

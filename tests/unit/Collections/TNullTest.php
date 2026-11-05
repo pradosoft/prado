@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TNullTest class file.
  *
@@ -7,12 +8,13 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
-namespace Prado\Tests\Collections;
+namespace Prado\Test\Unit\Collections;
 
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\ISingleton;
 use Prado\Collections\TNull;
 use PHPUnit\Framework\TestCase;
+use Prado\Test\Unit\PradoUnit;
 
 /**
  * TNullTest
@@ -36,9 +38,7 @@ class TNullTest extends TestCase
 	 */
 	private function resetSingleton(): void
 	{
-		$prop = new \ReflectionProperty(TNull::class, 'null');
-		$prop->setAccessible(true);
-		$prop->setValue(null, null);
+		PradoUnit::setProp(TNull::class, 'null', null);
 	}
 
 	/**

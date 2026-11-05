@@ -1,7 +1,5 @@
 <?php
 
-require_once(__DIR__ . '/../../../../PradoUnit.php');
-
 /**
  * MysqlTableExistsTest — driver-specific tests for {@see TTableGateway::getTableExists()} on MySQL.
  *
@@ -13,11 +11,14 @@ require_once(__DIR__ . '/../../../../PradoUnit.php');
  * Requires: prado_unitest MySQL database with the upsert_test table (tests/initdb_mysql.sql).
  */
 
+namespace Prado\Test\Unit\Data\DbSpecific\Mysql\Common;
+
 use Prado\Data\Common\TDbMetaData;
 use Prado\Data\DataGateway\TTableGateway;
 use Prado\Data\TDbConnection;
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
 
-class MysqlTableExistsTest extends PHPUnit\Framework\TestCase
+class MysqlTableExistsTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 

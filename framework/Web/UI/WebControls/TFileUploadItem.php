@@ -43,15 +43,42 @@ class TFileUploadItem extends \Prado\TComponent
 	 * @var int error code of the current file upload
 	 */
 	protected $_errorCode = UPLOAD_ERR_NO_FILE;
+	/**
+	 * @var string the path of the file within the selected folder
+	 */
+	protected $_fullPath = '';
 
-	public function __construct($fileName, $fileSize, $fileType, $errorCode, $localName)
+	/**
+	 * Creates an uploaded file item from its `$_FILES` entry.
+	 * @param string $fileName the file name on the client
+	 * @param int $fileSize the file size in bytes
+	 * @param string $fileType the MIME type the client sent
+	 * @param int $errorCode the upload error code
+	 * @param string $localName the temporary file on the server
+	 * @param ?string $fullPath the `full_path` the client sent; null for the file name
+	 */
+	public function __construct($fileName, $fileSize, $fileType, $errorCode, $localName, $fullPath = null)
 	{
 		$this->_fileName = $fileName;
 		$this->_fileSize = $fileSize;
 		$this->_fileType = $fileType;
 		$this->_errorCode = $errorCode;
 		$this->_localName = $localName;
+		$this->_fullPath = $fullPath ?? $fileName;
 		parent::__construct();
+	}
+
+	/**
+	 * Returns the path of the file within the folder a
+	 * {@see \Prado\Web\UI\WebControls\TFileUpload::setDirectory Directory} upload
+	 * selected, such as `photos/2026/beach.jpg`; otherwise the file name. The client
+	 * sends the path, so it may hold `..` segments and is not a safe server path.
+	 * @return string the path of the file within the selected folder
+	 * @since 4.4.0
+	 */
+	public function getFullPath()
+	{
+		return $this->_fullPath;
 	}
 
 	/**
@@ -157,6 +184,7 @@ class TFileUploadItem extends \Prado\TComponent
 			'fileType' => $this->_fileType,
 			'errorCode' => $this->_errorCode,
 			'localName' => $this->_localName,
+			'fullPath' => $this->_fullPath,
 		];
 	}
 }

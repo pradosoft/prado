@@ -5,21 +5,36 @@
  * This clas is mainly based on Scriptaculous Slider control (http://script.aculo.us)
  */
 
-Prado.WebUI.TSlider = jQuery.klass(Prado.WebUI.PostBackControl,
+/**
+ * Compute viewport-relative offset of an element (jQuery.fn.offset equivalent).
+ * @since 4.4.0
+ */
+const _sliderOffset = (el) => {
+	const rect = el.getBoundingClientRect();
+	return { top: rect.top + window.pageYOffset, left: rect.left + window.pageXOffset };
+};
+
+/**
+ * Visibility check (jQuery's :visible filter equivalent).
+ * @since 4.4.0
+ */
+const _sliderVisible = (el) =>
+	!!(el && (el.offsetWidth || el.offsetHeight || el.getClientRects().length));
+
+Prado.WebUI.TSlider = Prado.Class(Prado.WebUI.PostBackControl,
 {
-	onInit : function (options)
-	{
-		var slider = this;
+	onInit(options) {
+		const slider = this;
 		this.options=options || {};
-		this.track = jQuery('#'+options.ID+'_track').get(0);
-		this.handle =jQuery('#'+options.ID+'_handle').get(0);
-		this.progress = jQuery('#'+options.ID+'_progress').get(0);
+		this.track = document.getElementById(`${options.ID}_track`);
+		this.handle = document.getElementById(`${options.ID}_handle`);
+		this.progress = document.getElementById(`${options.ID}_progress`);
 		this.axis  = this.options.axis || 'horizontal';
 		this.range = this.options.range || [0, 1];
 		this.value = 0;
 		this.maximum   = this.options.maximum || this.range[1];
 		this.minimum   = this.options.minimum || this.range[0];
-		this.hiddenField=jQuery('#'+this.options.ID+'_1').get(0);
+		this.hiddenField = document.getElementById(`${this.options.ID}_1`);
 		this.trackInitialized=false;
 
 		this.initializeTrack();
@@ -44,6 +59,7 @@ Prado.WebUI.TSlider = jQuery.klass(Prado.WebUI.PostBackControl,
 		// Initialize handle
 		this.setValue(parseFloat(slider.options.sliderValue));
 		this.observe (this.handle, "mousedown", this.eventMouseDown);
+		this.observe (this.handle, "keydown", this.keyPressed.bind(this));
 
 		this.observe (this.track, "mousedown", this.eventMouseDown);
 		if (this.progress) this.observe (this.progress, "mousedown", this.eventMouseDown);
@@ -54,12 +70,11 @@ Prado.WebUI.TSlider = jQuery.klass(Prado.WebUI.PostBackControl,
 		this.initialized=true;
 
 		if(this.options['AutoPostBack']==true)
-			this.observe(this.hiddenField, "change", jQuery.proxy(this.doPostback,this,options));
+			this.observe(this.hiddenField, "change", this.doPostback.bind(this, options));
 	},
 
-	initializeTrack : function()
-	{
-		if(this.trackInitialized || !$(this.track).is(":visible"))
+	initializeTrack() {
+		if(this.trackInitialized || !_sliderVisible(this.track))
 			return;
 
 		// Will be used to align the handle onto the track, if necessary
@@ -75,33 +90,40 @@ Prado.WebUI.TSlider = jQuery.klass(Prado.WebUI.PostBackControl,
 		this.trackInitialized=true;
 	},
 
-	doPostback : function(options, event)
-	{
+	doPostback(options, event) {
 		new Prado.PostBack(options, event);
 	},
 
-	setDisabled: function(){
+	setDisabled() {
 		this.disabled = true;
+		if (this.handle) {
+			this.handle.setAttribute('aria-disabled', 'true');
+			this.handle.removeAttribute('tabindex');
+		}
 	},
-	setEnabled: function(){
+	setEnabled() {
 		this.disabled = false;
+		if (this.handle) {
+			this.handle.removeAttribute('aria-disabled');
+			this.handle.setAttribute('tabindex', '0');
+		}
 	},
-	getNearestValue: function(value){
+	getNearestValue(value) {
 		if(this.allowedValues){
-			var max = Math.max.apply( Math, this.allowedValues );
-			var min = Math.min.apply( Math, this.allowedValues );
+			const max = Math.max.apply( Math, this.allowedValues );
+			const min = Math.min.apply( Math, this.allowedValues );
 			if(value >= max) return(max);
 			if(value <= min) return(min);
 
-			var offset = Math.abs(this.allowedValues[0] - value);
-			var newValue = this.allowedValues[0];
-			jQuery.each(this.allowedValues, function(idx, v) {
-				var currentOffset = Math.abs(v - value);
+			let offset = Math.abs(this.allowedValues[0] - value);
+			let newValue = this.allowedValues[0];
+			for (const v of this.allowedValues) {
+				const currentOffset = Math.abs(v - value);
 				if(currentOffset <= offset){
 					newValue = v;
 					offset = currentOffset;
 				}
-			});
+			}
 			return newValue;
 		}
 		if(value > this.range[1]) return this.range[1];
@@ -109,12 +131,12 @@ Prado.WebUI.TSlider = jQuery.klass(Prado.WebUI.PostBackControl,
 		return value;
 	},
 
-	setValue: function(sliderValue){
+	setValue(sliderValue) {
 		if(!this.active) {
 			this.updateStyles();
 		}
 		this.value = this.getNearestValue(sliderValue);
-		var pixelValue= this.translateToPx(this.value);
+		const pixelValue= this.translateToPx(this.value);
 		this.handle.style[this.isVertical() ? 'top' : 'left'] =	pixelValue;
 		if (this.progress)
 			this.progress.style[this.isVertical() ? 'height' : 'width'] = pixelValue;
@@ -123,24 +145,24 @@ Prado.WebUI.TSlider = jQuery.klass(Prado.WebUI.PostBackControl,
 		if(!this.dragging || !this.event) this.updateFinished();
 	},
 
-	setValueBy: function(delta) {
+	setValueBy(delta) {
     	this.setValue(this.value + delta);
 	},
 
-	translateToPx: function(value) {
-		return Math.round(
-      		((this.trackLength-this.handleLength)/(this.range[1]-this.range[0])) * (value - this.range[0])) + "px";
+	translateToPx(value) {
+		return `${Math.round(
+    ((this.trackLength-this.handleLength)/(this.range[1]-this.range[0])) * (value - this.range[0]))}px`;
 	},
 
-	translateToValue: function(offset) {
+	translateToValue(offset) {
 		return ((offset/(this.trackLength-this.handleLength) * (this.range[1]-this.range[0])) + this.range[0]);
 	},
 
-	minimumOffset: function(){
+	minimumOffset() {
 		return(this.isVertical() ? this.alignY : this.alignX);
   	},
 
-	maximumOffset: function(){
+	maximumOffset() {
 		return(this.isVertical() ?
 			(this.track.offsetHeight != 0 ? this.track.offsetHeight :
 				this.track.style.height.replace(/px$/,"")) - this.alignY :
@@ -148,38 +170,39 @@ Prado.WebUI.TSlider = jQuery.klass(Prado.WebUI.PostBackControl,
 				this.track.style.width.replace(/px$/,"")) - this.alignX);
 	},
 
-	isVertical:  function(){
+	isVertical() {
 		return (this.axis == 'vertical');
 	},
 
-	updateStyles: function() {
+	updateStyles() {
 		if (this.active)
-			jQuery(this.handle).addClass('selected');
+			this.handle.classList.add('selected');
 		else
-			jQuery(this.handle).removeClass('selected');
+			this.handle.classList.remove('selected');
 	},
 
-	startDrag: function(event) {
+	startDrag(event) {
 		if (event.which === 1) {
 			this.initializeTrack();
 			// left click
 			if(!this.disabled){
 				this.active = true;
-				var handle = event.target;
-				var pointer  = [event.pageX, event.pageY];
-				var track = handle;
+				const handle = event.target;
+				const pointer  = [event.pageX, event.pageY];
+				const track = handle;
+				let offsets;
 				if(track==this.track) {
-					var offsets  = jQuery(this.track).offset();
+					offsets = _sliderOffset(this.track);
 					this.event = event;
 					this.setValue(this.translateToValue(
 						(this.isVertical() ? pointer[1]-offsets['top'] : pointer[0]-offsets['left'])-(this.handleLength/2)
 					));
-					var offsets  = jQuery(this.handle).offset();
+					offsets = _sliderOffset(this.handle);
 					this.offsetX = (pointer[0] - offsets['left']);
 					this.offsetY = (pointer[1] - offsets['top']);
 				} else {
 					this.updateStyles();
-					var offsets  = jQuery(this.handle).offset();
+					offsets = _sliderOffset(this.handle);
 					this.offsetX = (pointer[0] - offsets['left']);
 					this.offsetY = (pointer[1] - offsets['top']);
 				}
@@ -188,7 +211,7 @@ Prado.WebUI.TSlider = jQuery.klass(Prado.WebUI.PostBackControl,
 		}
 	},
 
-	update: function(event) {
+	update(event) {
 		if(this.active) {
 			if(!this.dragging) this.dragging = true;
 			this.draw(event);
@@ -196,9 +219,9 @@ Prado.WebUI.TSlider = jQuery.klass(Prado.WebUI.PostBackControl,
 		}
 	},
 
-	draw: function(event) {
-		var pointer = [event.pageX, event.pageY];
-		var offsets = jQuery(this.track).offset();
+	draw(event) {
+		const pointer = [event.pageX, event.pageY];
+		const offsets = _sliderOffset(this.track);
 		pointer[0] -= this.offsetX + offsets['left'];
 		pointer[1] -= this.offsetY + offsets['top'];
 		this.event = event;
@@ -207,7 +230,7 @@ Prado.WebUI.TSlider = jQuery.klass(Prado.WebUI.PostBackControl,
 			this.options.onSlide(this.value, this);
 	},
 
-	endDrag: function(event) {
+	endDrag(event) {
 		if(this.active && this.dragging) {
 			this.finishDrag(event, true);
 			event.stopPropagation();
@@ -216,21 +239,49 @@ Prado.WebUI.TSlider = jQuery.klass(Prado.WebUI.PostBackControl,
 		this.dragging = false;
 	},
 
-	finishDrag: function(event, success) {
+	finishDrag(_event, _success) {
 		this.active = false;
 		this.dragging = false;
 		this.updateFinished();
 	},
 
-	updateFinished: function() {
+	updateFinished() {
 		this.hiddenField.value=this.value;
+		if (this.handle && this.handle.setAttribute)
+			this.handle.setAttribute('aria-valuenow', this.value);
 		this.updateStyles();
 		if(this.initialized && this.options.onChange)
 			this.options.onChange(this.value, this);
 		this.event = null;
 		if (this.options['AutoPostBack']==true)
 		{
-			jQuery(this.hiddenField).trigger("change");
+			this.hiddenField.dispatchEvent(new Event('change', { bubbles: true }));
+		}
+	},
+
+	/**
+	 * Keyboard control for the slider handle: arrow keys nudge the value by one
+	 * step, Page Up/Down by ten steps, and Home/End jump to the range ends.
+	 */
+	keyPressed(event) {
+		if (this.disabled) return;
+		const kc = event.keyCode;
+		// Coerce because option values arrive as strings; string arithmetic would
+		// concatenate rather than add.
+		const optStep = Number(this.options.step);
+		const step = (optStep > 0) ? optStep
+			: (Number(this.range[1]) - Number(this.range[0])) / 100 || 1;
+		let handled = true;
+		if (kc == 39 || kc == 38)      this.setValueBy(step);       // Right / Up
+		else if (kc == 37 || kc == 40) this.setValueBy(-step);      // Left / Down
+		else if (kc == 33)             this.setValueBy(step * 10);  // Page Up
+		else if (kc == 34)             this.setValueBy(-step * 10); // Page Down
+		else if (kc == 36)             this.setValue(Number(this.range[0])); // Home
+		else if (kc == 35)             this.setValue(Number(this.range[1])); // End
+		else handled = false;
+		if (handled) {
+			event.preventDefault();
+			this.updateFinished();
 		}
 	}
 

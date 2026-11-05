@@ -259,7 +259,7 @@ abstract class THotSpot extends \Prado\TComponent
 
 	/**
 	 * @param mixed $name
-	 * @return string attribute value, null if attribute does not exist
+	 * @return ?string attribute value, null if attribute does not exist
 	 */
 	public function getAttribute($name)
 	{
@@ -283,7 +283,7 @@ abstract class THotSpot extends \Prado\TComponent
 	/**
 	 * Removes the named attribute.
 	 * @param string $name the name of the attribute to be removed.
-	 * @return string attribute value removed, null if attribute does not exist.
+	 * @return ?string attribute value removed, null if attribute does not exist.
 	 */
 	public function removeAttribute($name)
 	{

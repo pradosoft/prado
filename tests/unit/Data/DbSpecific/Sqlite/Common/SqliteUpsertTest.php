@@ -1,7 +1,5 @@
 <?php
 
-require_once(__DIR__ . '/../../../../PradoUnit.php');
-
 /**
  * SqliteUpsertTest — comprehensive tests for SQLite upsert behaviour.
  *
@@ -12,6 +10,8 @@ require_once(__DIR__ . '/../../../../PradoUnit.php');
  *   upsert_test(id INTEGER PK AUTOINCREMENT, username TEXT UNIQUE NOT NULL, score INTEGER DEFAULT 0)
  */
 
+namespace Prado\Test\Unit\Data\DbSpecific\Sqlite\Common;
+
 use Prado\Data\Common\Sqlite\TSqliteMetaData;
 use Prado\Data\Common\TDbCommandBuilder;
 use Prado\Data\DataGateway\TDataGatewayEventParameter;
@@ -19,8 +19,9 @@ use Prado\Data\DataGateway\TDataGatewayResultEventParameter;
 use Prado\Data\DataGateway\TTableGateway;
 use Prado\Data\TDbConnection;
 use Prado\Exceptions\TDbException;
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
 
-class SqliteUpsertTest extends PHPUnit\Framework\TestCase
+class SqliteUpsertTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 

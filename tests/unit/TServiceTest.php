@@ -1,11 +1,16 @@
 <?php
 
-require_once __DIR__ . '/PradoUnitRequires.php';
+namespace Prado\Test\Unit;
 
 use PHPUnit\Framework\TestCase;
+use Prado\Exceptions\THttpException;
 use Prado\IService;
 use Prado\Prado;
 use Prado\TService;
+use Prado\Test\Unit\Harness\TTestApplication;
+use Prado\Test\Unit\Harness\Web\TTestCookieResponse;
+use Prado\Test\Unit\PradoUnit;
+use Prado\Web\THttpRequest;
 
 /**
  * Minimal concrete service used as the primary subject under test.
@@ -154,6 +159,12 @@ class TServiceTest extends TestCase
 		$this->assertTrue($this->service->ranRun);
 	}
 
+	public function testBaseRunIsNoOp(): void
+	{
+		$service = new class () extends TService {};
+		$this->assertNull($service->run());
+	}
+
 	// =========================================================================
 	// getInstance() — core behaviour
 	// =========================================================================
@@ -269,5 +280,67 @@ class TServiceTest extends TestCase
 		// getInstance($globalApp) targets globalApp regardless of the current global.
 		$this->assertSame($this->service, TServiceTest_ServiceA::getInstance($globalApp));
 		$this->assertNull(TServiceTest_ServiceB::getInstance($globalApp));
+	}
+
+	// =========================================================================
+	// CSRF validation
+	// =========================================================================
+
+	public function testEnableCsrfValidationDefaultsToFalse(): void
+	{
+		$this->assertFalse($this->service->getEnableCsrfValidation());
+		$this->service->setEnableCsrfValidation('true');
+		$this->assertTrue($this->service->getEnableCsrfValidation());
+	}
+
+	/**
+	 * ensureCsrfToken() is a no-op while validation is off and for GET, HEAD, and
+	 * OPTIONS; otherwise a request without the token is a 400 naming the service.
+	 */
+	public function testEnsureCsrfToken(): void
+	{
+		$app = Prado::getApplication();
+		$obLevel = ob_get_level();
+		$savedResponse = $app->getResponse();
+		$savedMethod = $_SERVER['REQUEST_METHOD'] ?? null;
+		$savedPost = $_POST;
+		$app->setResponse(new TTestCookieResponse());
+		unset($_POST[THttpRequest::CSRF_TOKEN_FIELD]);
+		try {
+			$service = $this->service;
+			$service->setID('api');
+			$ensure = fn () => PradoUnit::invoke($service, 'ensureCsrfToken');
+
+			$_SERVER['REQUEST_METHOD'] = 'POST';
+			$ensure();
+
+			$service->setEnableCsrfValidation(true);
+			foreach (['GET', 'HEAD', 'OPTIONS'] as $method) {
+				$_SERVER['REQUEST_METHOD'] = $method;
+				$ensure();
+			}
+
+			$_SERVER['REQUEST_METHOD'] = 'POST';
+			try {
+				$ensure();
+				$this->fail('a POST without a token was accepted');
+			} catch (THttpException $e) {
+				$this->assertSame(400, $e->getStatusCode());
+				$this->assertSame('service_csrf_token_invalid', $e->getErrorCode());
+				$this->assertStringContainsString("'api'", $e->getMessage());
+			}
+
+			$_POST[THttpRequest::CSRF_TOKEN_FIELD] = $app->getRequest()->getCsrfToken();
+			$ensure();
+			$this->assertTrue(true);
+		} finally {
+			$_POST = $savedPost;
+			$_SERVER['REQUEST_METHOD'] = $savedMethod;
+			$app->setResponse($savedResponse);
+			// the first getResponse() of the run bootstraps the response, which starts a buffer
+			while (ob_get_level() > $obLevel) {
+				ob_end_clean();
+			}
+		}
 	}
 }

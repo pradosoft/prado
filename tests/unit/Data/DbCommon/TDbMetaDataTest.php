@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Data\DbCommon;
+
 use Prado\Data\Common\TDbMetaData;
 use Prado\Data\TDbConnection;
 use Prado\Data\TDbDriver;
@@ -11,7 +13,7 @@ use Prado\Exceptions\TDbException;
  * Tests the getInstance factory method and fxDataGetMetaDataClass event.
  * Does not require a database connection; uses mocked connections.
  */
-class TDbMetaDataTest extends PHPUnit\Framework\TestCase
+class TDbMetaDataTest extends \PHPUnit\Framework\TestCase
 {
 	private function createMockConnection(string $driver): TDbConnection
 	{

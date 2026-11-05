@@ -12,6 +12,7 @@ namespace Prado\Util;
 
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\I18N\core\TIntlDateFormatterTrait;
+use Prado\Util\Clock\TApplicationClockAwareTrait;
 use Prado\Util\TUtf8Converter;
 
 /**
@@ -104,6 +105,7 @@ use Prado\Util\TUtf8Converter;
 class TSimpleDateFormatter
 {
 	use TIntlDateFormatterTrait;
+	use TApplicationClockAwareTrait;
 
 	/**
 	 * Formatting pattern.
@@ -311,7 +313,7 @@ class TSimpleDateFormatter
 	private function applyCultureLocalization($result, $culture)
 	{
 		$hasLocalizedMonth = preg_match('/M{3,4}/', $this->pattern) === 1;
-		$hasLocalizedWeekday = strpos($this->pattern, 'EEEE') !== false || (strpos($this->pattern, 'E') !== false && strpos($this->pattern, 'EEEE') === false);
+		$hasLocalizedWeekday = strpos($this->pattern, 'E') !== false;
 
 		if ($hasLocalizedMonth) {
 			$monthNames = $this->getLocalizedMonthNames($culture, $this->getMonthPattern() === 'MMM' ? 'short' : 'full');
@@ -469,14 +471,14 @@ class TSimpleDateFormatter
 			throw new TInvalidDataValueException('date_to_parse_must_be_string');
 		}
 		if (empty($this->pattern)) {
-			return microtime(true);
+			return $this->getClock()->microtime();
 		}
 		if ($this->length(trim($value)) < 1) {
-			return $defaultToCurrentTime ? time() : null;
+			return $defaultToCurrentTime ? $this->getClock()->time() : null;
 		}
 
 		$hasLocalizedMonth = preg_match('/M{3,4}/', $this->pattern) === 1;
-		$hasLocalizedWeekday = strpos($this->pattern, 'EEEE') !== false || (strpos($this->pattern, 'E') !== false && strpos($this->pattern, 'EEEE') === false);
+		$hasLocalizedWeekday = strpos($this->pattern, 'E') !== false;
 
 		if ($hasLocalizedMonth || $hasLocalizedWeekday) {
 			$culture = $this->getCulture() ?: 'en';
@@ -745,7 +747,16 @@ class TSimpleDateFormatter
 
 		$year = ($year === null) ? (int) date('Y') : (int) $year;
 		$month = ($month === null) ? ($defaultToCurrentTime ? (int) date('m') : 1) : (int) $month;
-		$day = ($day === null) ? ($defaultToCurrentTime ? (int) date('d') : 1) : (int) $day;
+		if ($day === null) {
+			if ($defaultToCurrentTime) {
+				$daysInMonth = (int) date('t', mktime(0, 0, 0, $month, 1, $year));
+				$day = min((int) date('d'), $daysInMonth);
+			} else {
+				$day = 1;
+			}
+		} else {
+			$day = (int) $day;
+		}
 
 		if (!checkdate($month, $day, $year)) {
 			return null;
@@ -812,23 +823,12 @@ class TSimpleDateFormatter
 	}
 
 	/**
-	 * Returns true if char at position equals a particular char.
-	 * @param mixed $string
-	 * @param mixed $pos
-	 * @param mixed $char
-	 */
-	private function charEqual($string, $pos, $char)
-	{
-		return $this->charAt($string, $pos) == $char;
-	}
-
-	/**
 	 * Get integer from a string at a given position.
 	 * @param string $str string to extract integer from.
 	 * @param int $i starting position.
 	 * @param int $minlength minimum length of integer.
 	 * @param int $maxlength maximum length of integer.
-	 * @return false|string integer string if found, false otherwise.
+	 * @return ?string integer string if found, null otherwise.
 	 */
 	private function getInteger($str, $i, $minlength, $maxlength)
 	{

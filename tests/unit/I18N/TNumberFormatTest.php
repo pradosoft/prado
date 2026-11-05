@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\I18N;
+
 use Prado\I18N\TNumberFormat;
 use Prado\Web\UI\THtmlWriter;
 use Prado\IO\TTextWriter;
@@ -816,6 +818,7 @@ class TNumberFormatTest extends TestCase
 	public function testRenderWritesToWriter()
 	{
 		$control = new TNumberFormat();
+		$control->setCulture('en_US');
 		$control->setPattern('#,##0.00');
 		$control->setValue(1234.56);
 		$output = $this->render($control);

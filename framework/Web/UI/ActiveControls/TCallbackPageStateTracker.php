@@ -1,7 +1,7 @@
 <?php
 
 /**
- * TActiveControlAdapter and TCallbackPageStateTracker class file.
+ * TCallbackPageStateTracker class file.
  *
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
  * @link https://github.com/pradosoft/prado
@@ -14,9 +14,21 @@ use Prado\Collections\TMap;
 use stdClass;
 
 /**
- * TCallbackPageStateTracker class.
+ * TCallbackPageStateTracker tracks view state changes on a control during a callback
+ * and propagates those changes to the client.
  *
- * Tracking changes to the page state during callback.
+ * {@see trackChanges} snapshots the control's current view state before page logic runs.
+ * {@see respondToChanges} then diffs the snapshot against the post-execution state and
+ * dispatches the registered client-side update handler for each changed property.
+ *
+ * View states tracked by default:
+ * - Scalar: Visible, Enabled, TabIndex, ToolTip, AccessKey, KeyShortcuts,
+ *   KeyShortcutScope, KeyShortcutAllowReserved, Translate, Lang, Dir,
+ *   Hidden, SpellCheck, Draggable, ContentEditable, InputMode, EnterKeyHint, Inert, Popover,
+ *   Slot
+ * - Map collections: Attributes, Style, Aria, Dataset
+ *
+ * Override {@see addStatesToTrack} in subclasses to register additional view states.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @since 3.1
@@ -36,13 +48,18 @@ class TCallbackPageStateTracker
 	 */
 	protected $_control;
 	/**
-	 * @var object null object.
+	 * @var object sentinel value used to detect the absence of a diff result
 	 */
 	private $_nullObject;
+	/**
+	 * @var bool whether this callback has sent the key shortcut attributes
+	 */
+	private $_keyShortcutsUpdated = false;
 
 	/**
-	 * Constructor. Add a set of default states to track.
-	 * @param \Prado\Web\UI\TControl $control control to track.
+	 * Initializes the tracker for the given control and registers the default view states.
+	 *
+	 * @param \Prado\Web\UI\TControl $control the control whose view state is tracked
 	 */
 	public function __construct($control)
 	{
@@ -54,27 +71,57 @@ class TCallbackPageStateTracker
 	}
 
 	/**
-	 * Add a list of view states to track. Each state is added
-	 * to the StatesToTrack property with the view state name as key.
-	 * The value should be an array with two enteries. The first entery
-	 * is the name of the class that will calculate the state differences.
-	 * The second entry is a php function/method callback that handles
-	 * the changes in the viewstate.
+	 * Registers the default set of view states to track.
+	 *
+	 * Each entry in the StatesToTrack map uses the view state name as key and a
+	 * two-element array as value: the diff class name and the change-handler callable.
 	 */
 	protected function addStatesToTrack()
 	{
 		$states = $this->getStatesToTrack();
 		$states['Visible'] = ['TScalarDiff', [$this, 'updateVisible']];
-		$states['Enabled'] = ['TScalarDiff', [$this, 'updateEnabled']];
+		$states['Enabled'] = ['TScalarDiff', fn ($diff) => $this->updatePresenceAttribute('disabled', $diff === false)];
 		$states['Attributes'] = ['TMapCollectionDiff', [$this, 'updateAttributes']];
 		$states['Style'] = ['TStyleDiff', [$this, 'updateStyle']];
-		$states['TabIndex'] = ['TScalarDiff', [$this, 'updateTabIndex']];
-		$states['ToolTip'] = ['TScalarDiff', [$this, 'updateToolTip']];
-		$states['AccessKey'] = ['TScalarDiff', [$this, 'updateAccessKey']];
+		$states['TabIndex'] = ['TScalarDiff', fn ($diff) => $this->updateAttribute('tabindex', $diff)];
+		$states['ToolTip'] = ['TScalarDiff', fn ($diff) => $this->updateAttribute('title', $diff)];
+		$states['AccessKey'] = ['TScalarDiff', fn ($diff) => $this->updateAttribute('accesskey', $diff)];
+		$states['KeyShortcuts'] = ['TScalarDiff', fn ($diff) => $this->updateKeyShortcuts()];
+		$states['KeyShortcutScope'] = ['TScalarDiff', fn ($diff) => $this->updateKeyShortcuts()];
+		$states['KeyShortcutAllowReserved'] = ['TScalarDiff', fn ($diff) => $this->updateKeyShortcuts()];
+
+		// HTML 5 attributes
+		$states['Translate'] = ['TScalarDiff', fn ($diff) => $this->updateAttribute('translate', $diff)];
+		$states['Lang'] = ['TScalarDiff', fn ($diff) => $this->updateAttribute('lang', $diff)];
+		$states['Dir'] = ['TScalarDiff', fn ($diff) => $this->updateAttribute('dir', $diff)];
+		$states['Hidden'] = ['TScalarDiff', fn ($diff) => $this->updateAttribute('hidden', $diff)];
+		$states['SpellCheck'] = ['TScalarDiff', fn ($diff) => $this->updateAttribute('spellcheck', $diff)];
+		$states['Draggable'] = ['TScalarDiff', fn ($diff) => $this->updateAttribute('draggable', $diff)];
+		$states['ContentEditable'] = ['TScalarDiff', fn ($diff) => $this->updateAttribute('contenteditable', $diff)];
+		$states['InputMode'] = ['TScalarDiff', fn ($diff) => $this->updateAttribute('inputmode', $diff)];
+		$states['EnterKeyHint'] = ['TScalarDiff', fn ($diff) => $this->updateAttribute('enterkeyhint', $diff)];
+		$states['Inert'] = ['TScalarDiff', fn ($diff) => $this->updateAttribute('inert', $diff)];
+		$states['Popover'] = ['TScalarDiff', fn ($diff) => $this->updateAttribute('popover', $diff)];
+		$states['Slot'] = ['TScalarDiff', fn ($diff) => $this->updateAttribute('slot', $diff)];
+		$states['AutoCapitalize'] = ['TScalarDiff', fn ($diff) => $this->updateOptionalAttribute('autocapitalize', $diff === null ? null : strtolower($diff))];
+		$states['AutoCorrect'] = ['TScalarDiff', fn ($diff) => $this->updateOptionalAttribute('autocorrect', $diff === null ? null : ($diff ? 'on' : 'off'))];
+		$states['WritingSuggestions'] = ['TScalarDiff', fn ($diff) => $this->updateOptionalAttribute('writingsuggestions', $diff === null ? null : ($diff ? 'true' : 'false'))];
+		$states['Part'] = ['TScalarDiff', fn ($diff) => $this->updateOptionalAttribute('part', $diff)];
+		$states['ExportParts'] = ['TScalarDiff', fn ($diff) => $this->updateOptionalAttribute('exportparts', $diff)];
+		$states['ItemScope'] = ['TScalarDiff', fn ($diff) => $this->updatePresenceAttribute('itemscope', (bool) $diff)];
+		$states['ItemScopeType'] = ['TScalarDiff', fn ($diff) => $this->updateOptionalAttribute('itemtype', $diff)];
+		$states['ItemProp'] = ['TScalarDiff', fn ($diff) => $this->updateOptionalAttribute('itemprop', $diff)];
+		$states['ItemId'] = ['TScalarDiff', fn ($diff) => $this->updateOptionalAttribute('itemid', $diff)];
+		$states['ItemRef'] = ['TScalarDiff', fn ($diff) => $this->updateOptionalAttribute('itemref', $diff)];
+
+		$states['Aria'] = ['TMapCollectionDiff', [$this, 'updateAttributes']];
+		$states['Dataset'] = ['TMapCollectionDiff', [$this, 'updateAttributes']];
 	}
 
 	/**
-	 * @return TMap list of viewstates to track.
+	 * Returns the map of view state names registered for change tracking.
+	 *
+	 * @return TMap map of view state names to [diffClass, handler] pairs
 	 */
 	protected function getStatesToTrack()
 	{
@@ -82,8 +129,9 @@ class TCallbackPageStateTracker
 	}
 
 	/**
-	 * Start tracking view state changes. The clone function on objects are called
-	 * for those viewstate having an object as value.
+	 * Snapshots the current view state values for all tracked properties.
+	 *
+	 * Object values are cloned to preserve the snapshot.
 	 */
 	public function trackChanges()
 	{
@@ -94,7 +142,7 @@ class TCallbackPageStateTracker
 	}
 
 	/**
-	 * @return array list of viewstate and the changed data.
+	 * @return array list of [handler, [diff]] pairs for each changed view state
 	 */
 	protected function getChanges()
 	{
@@ -113,7 +161,7 @@ class TCallbackPageStateTracker
 	}
 
 	/**
-	 * For each of the changes call the corresponding change handlers.
+	 * Invokes the registered handler for each view state change detected since {@see trackChanges}.
 	 */
 	public function respondToChanges()
 	{
@@ -123,7 +171,8 @@ class TCallbackPageStateTracker
 	}
 
 	/**
-	 * @return TCallbackClientScript callback client scripting
+	 * @return TCallbackClientScript the callback client script helper for this control's page
+	 * @since 4.4.0
 	 */
 	protected function client()
 	{
@@ -131,36 +180,89 @@ class TCallbackPageStateTracker
 	}
 
 	/**
-	 * Updates the tooltip.
-	 * @param string $value new tooltip
+	 * Sets a single HTML attribute on the tracked control via the callback client.
+	 *
+	 * @param string $attrName the HTML attribute name (e.g., `'tabindex'`, `'lang'`)
+	 * @param mixed $value the new attribute value
+	 * @since 4.4.0
 	 */
-	protected function updateToolTip($value)
+	protected function updateAttribute($attrName, $value)
 	{
-		$this->client()->setAttribute($this->_control, 'title', $value);
+		$this->client()->setAttribute($this->_control, $attrName, $value);
 	}
 
 	/**
-	 * Updates the tab index.
-	 * @param int $value tab index
+	 * Sets an attribute on the tracked control, or removes it when the value is null or ''.
+	 *
+	 * @param string $attrName the HTML attribute name
+	 * @param ?string $value the attribute value
+	 * @since 4.4.0
 	 */
-	protected function updateTabIndex($value)
+	protected function updateOptionalAttribute($attrName, $value)
 	{
-		$this->client()->setAttribute($this->_control, 'tabindex', $value);
+		if ($value === null || $value === '') {
+			$this->client()->removeAttribute($this->_control, $attrName);
+		} else {
+			$this->client()->setAttribute($this->_control, $attrName, $value);
+		}
 	}
 
 	/**
-	 * Updates the modifier access key
-	 * @param string $value access key
+	 * Sets or removes the key shortcut attributes of the tracked control.
+	 *
+	 * The attributes come from {@see \Prado\Web\UI\WebControls\TWebControl::getKeyShortcutsAttributes},
+	 * and are sent once per callback when several of the shortcut properties change.
+	 * They target the element of the control's ClientID, which is the input of a
+	 * {@see \Prado\Web\UI\WebControls\TCheckBox}.
+	 * Shortcuts that are set register the `keyshortcuts` script package.
+	 * @since 4.4.0
 	 */
-	protected function updateAccessKey($value)
+	protected function updateKeyShortcuts()
 	{
-		$this->client()->setAttribute($this->_control, 'accesskey', $value);
+		if ($this->_keyShortcutsUpdated || !method_exists($this->_control, 'getKeyShortcutsAttributes')) {
+			return;
+		}
+		$this->_keyShortcutsUpdated = true;
+		$id = $this->_control->getClientID();
+		$attributes = $this->_control->getKeyShortcutsAttributes();
+		if (!$attributes) {
+			foreach (['aria-keyshortcuts', 'data-prado-keyshortcuts', 'data-prado-keyshortcuts-reserved'] as $name) {
+				$this->client()->removeAttribute($id, $name);
+			}
+			return;
+		}
+		foreach ($attributes as $name => $value) {
+			if ($value === null) {
+				$this->client()->removeAttribute($id, $name);
+			} else {
+				$this->client()->setAttribute($id, $name, $value);
+			}
+		}
+		$this->_control->getPage()->getClientScript()->registerPradoScript('keyshortcuts');
 	}
 
 	/**
-	 * Hides or shows the control on the client-side. The control must be
-	 * already rendered on the client-side.
-	 * @param bool $visible true to show the control, false to hide.
+	 * Adds or removes a boolean presence attribute (e.g., `disabled`) on the tracked control.
+	 *
+	 * @param string $attrName the HTML attribute name
+	 * @param bool $isPresent true to set the attribute, false to remove it
+	 * @since 4.4.0
+	 */
+	protected function updatePresenceAttribute($attrName, $isPresent)
+	{
+		if ($isPresent) {
+			$this->client()->setAttribute($this->_control, $attrName, $attrName);
+		} else {
+			$this->client()->removeAttribute($this->_control, $attrName);
+		}
+	}
+
+	/**
+	 * Shows or hides the control by replacing its client-side content.
+	 *
+	 * The control must already be rendered on the client before this is called.
+	 *
+	 * @param bool $visible true to show the control, false to replace with a hidden placeholder
 	 */
 	protected function updateVisible($visible)
 	{
@@ -172,17 +274,9 @@ class TCallbackPageStateTracker
 	}
 
 	/**
-	 * Enables or Disables the control on the client-side.
-	 * @param bool $enable true to enable the control, false to disable.
-	 */
-	protected function updateEnabled($enable)
-	{
-		$this->client()->setAttribute($this->_control, 'disabled', $enable === false);
-	}
-
-	/**
-	 * Updates the CSS style on the control on the client-side.
-	 * @param array $style list of new CSS style declarations.
+	 * Applies changed CSS class and style declarations to the tracked control.
+	 *
+	 * @param array $style diff array with keys 'CssClass' and 'Style'
 	 */
 	protected function updateStyle($style)
 	{
@@ -195,8 +289,9 @@ class TCallbackPageStateTracker
 	}
 
 	/**
-	 * Updates/adds a list of attributes on the control.
-	 * @param array $attributes list of attribute name-value pairs.
+	 * Sets each attribute in the diff map on the tracked control.
+	 *
+	 * @param array $attributes attribute name-value pairs to apply
 	 */
 	protected function updateAttributes($attributes)
 	{

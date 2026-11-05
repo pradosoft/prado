@@ -368,7 +368,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	{
 		if (!$this->_currentViewValid) {
 			if ($this->_currentView && $this->_currentViewIsFromDataSourceID) {
-				$this->_currentView->detachEventHandler('DataSourceViewChanged', [$this, 'dataSourceViewChanged']);
+				$this->_currentView->detachEventHandler('OnDataSourceViewChanged', [$this, 'dataSourceViewChanged']);
 			}
 			if (($dataSource = $this->determineDataSource()) !== null) {
 				if (($view = $dataSource->getView($this->getDataMember())) === null) {
@@ -444,7 +444,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	{
 		$this->_initialized = true;
 		$isPostBack = $this->getPage()->getIsPostBack();
-		if (!$isPostBack || ($isPostBack && (!$this->getEnableViewState(true) || !$this->getIsDataBound()))) {
+		if (!$isPostBack || !$this->getEnableViewState(true) || !$this->getIsDataBound()) {
 			$this->setRequiresDataBinding(true);
 		}
 	}
@@ -466,7 +466,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	 * If it is a string or an array, it will be converted as a TList object.
 	 * @param array|string|\Traversable $value data source to be validated
 	 * @throws TInvalidDataTypeException if the data is neither null nor Traversable
-	 * @return \Traversable the data that is traversable
+	 * @return array|\Traversable the data that is traversable
 	 */
 	protected function validateDataSource($value)
 	{

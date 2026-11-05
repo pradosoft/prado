@@ -1,7 +1,5 @@
 <?php
 
-require_once(__DIR__ . '/../../../../PradoUnit.php');
-
 /**
  * PgsqlUpsertTest — comprehensive tests for PostgreSQL upsert behaviour.
  *
@@ -13,14 +11,17 @@ require_once(__DIR__ . '/../../../../PradoUnit.php');
  * Requires: prado_unitest database with upsert_test table (see tests/initdb_pgsql.sql).
  */
 
+namespace Prado\Test\Unit\Data\DbSpecific\Pgsql\Common;
+
 use Prado\Data\Common\TDbCommandBuilder;
 use Prado\Data\DataGateway\TDataGatewayEventParameter;
 use Prado\Data\DataGateway\TDataGatewayResultEventParameter;
 use Prado\Data\DataGateway\TTableGateway;
 use Prado\Data\TDbConnection;
 use Prado\Exceptions\TDbException;
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
 
-class PgsqlUpsertTest extends PHPUnit\Framework\TestCase
+class PgsqlUpsertTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 

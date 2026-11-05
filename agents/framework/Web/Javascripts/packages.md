@@ -1,7 +1,7 @@
 # Web/Javascripts/packages
 
 ### Directories
-[framework](./INDEX.md) / [Web](./Web/INDEX.md) / [Javascripts](./Web/Javascripts/INDEX.md) / **`packages`**
+[framework](../../INDEX.md) / [Web](../INDEX.md) / [Javascripts](INDEX.md) / **`packages`**
 
 **Location:** `framework/Web/Javascripts/packages.php`
 
@@ -18,12 +18,14 @@ This file defines the JavaScript package registry for PRADO. It declares all JS 
 | `tinymce` | `Vendor\bower-asset\tinymce` |
 | `highlightjs` | `Vendor\bower-asset\highlightjs` |
 | `clipboard` | `Vendor\bower-asset\clipboard\dist` |
+| `teleport` | `prado/controls/teleport.js`: `Prado.WebUI.TTeleport`, the page form association of [TTeleport](../UI/WebControls/TTeleport.md) content |
+| `idiomorph` | `Vendor\npm-asset\idiomorph\dist` |
 
 ## Packages
 
 | Package | Files |
 |---------|-------|
-| `prado` | `prado/prado.js`, `prado/controls/controls.js` |
+| `prado` | `prado/prado.js`, `prado/controls/controls.js`, `prado/controls/browser.js` |
 | `logger` | `prado/logger/logger.js` |
 | `validator` | `prado/validator/validation3.js` |
 | `ajax` | `prado/activecontrols/ajax3.js`, `prado/activecontrols/activecontrols3.js` |
@@ -31,6 +33,9 @@ This file defines the JavaScript package registry for PRADO. It declares all JS 
 | `colorpicker` | `prado/colorpicker/colorpicker.js` |
 | `slider` | `prado/controls/slider.js` |
 | `keyboard` | `prado/controls/keyboard.js` |
+| `keyshortcuts` | `prado/keyshortcuts/keyshortcuts.js`: the `Prado.KeyShortcuts` key-binding registry; [TWebControl](../UI/WebControls/TWebControl.md) `KeyShortcuts` registers it |
+| `rowselect` | `prado/controls/rowselect.js` |
+| `unsavedchanges` | `prado/controls/unsavedchanges.js` |
 | `tabpanel` | `prado/controls/tabpanel.js` |
 | `accordion` | `prado/controls/accordion.js` |
 | `htmlarea` | `prado/controls/htmlarea.js` |
@@ -39,12 +44,14 @@ This file defines the JavaScript package registry for PRADO. It declares all JS 
 | `inlineeditor` | `prado/activecontrols/inlineeditor.js` |
 | `activefileupload` | `prado/activefileupload/activefileupload.js` |
 | `activedatepicker` | `prado/activecontrols/activedatepicker.js` |
+| `proofofwork` | `prado/controls/proofofwork-solver.js`, `prado/controls/proofofwork.js` |
+| `idiomorph` | `idiomorph/idiomorph.js`: DOM morphing for callback updates; `npm-asset/idiomorph`, pinned exactly in composer.json and package.json |
 
 ## Dependencies
 
-Key dependencies include: `prado` requires `jquery`, `ajax` requires `jquery` and `prado`, `activedatepicker` requires `jquery`, `prado`, `datepicker`, and `ajax`.
+Key dependencies include: `prado` requires `jquery`, `ajax` requires `jquery` and `prado`, `activedatepicker` requires `jquery`, `prado`, `datepicker`, and `ajax`. `morph` (no files of its own) requires `jquery`, `prado`, `ajax`, and `idiomorph`; [TActiveControlAdapter](../UI/ActiveControls/TActiveControlAdapter.md) registers it for a control whose callback updates morph.
 
 ## See Also
 
 - [css-packages.php](./css-packages.md) - CSS package registry
-- [TClientScriptManager](../UI/TClientScriptManager.php) - Consumes this registry
+- [TClientScriptManager](../UI/TClientScriptManager.md) — Consumes this registry

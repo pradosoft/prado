@@ -1,20 +1,25 @@
 <?php
 
+namespace Prado\Test\Unit\Caching;
+
 use Prado\Caching\TDbCache;
 use Prado\Data\TDbConnection;
 use Prado\Exceptions\TConfigurationException;
-use Prado\TApplication;
+use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Test\Unit\Harness\TTestApplication;
+use Prado\Test\Unit\PradoUnit;
 
 if (!defined('TEST_CACHE_DB_DIR')) {
 	define('TEST_CACHE_DB_DIR', __DIR__ . '/../Data/db');
 }
 
-class TDbCacheTest extends PHPUnit\Framework\TestCase
+class TDbCacheTest extends \PHPUnit\Framework\TestCase
 {
 	private $_cache;
 	private $_dbDir;
 	private $_dbFile;
 	private $_dbFiles = [];
+	private ?TTestApplication $_app = null;
 
 	protected function setUp(): void
 	{
@@ -25,8 +30,8 @@ class TDbCacheTest extends PHPUnit\Framework\TestCase
 		$this->_dbFile = $this->_dbDir . '/test_cache.db';
 		$this->_dbFiles = [$this->_dbFile];
 
-		$app = new TApplication(__DIR__ . '/../Data/SqlMap/app', false, TApplication::CONFIG_TYPE_PHP);
-		$app->setRuntimePath($this->_dbDir);
+		$this->_app = new TTestApplication();
+		$this->_app->setRuntimePath($this->_dbDir);
 
 		$this->_cache = new TDbCache();
 		$this->_cache->setPrimaryCache(false);
@@ -42,6 +47,8 @@ class TDbCacheTest extends PHPUnit\Framework\TestCase
 		foreach($this->_dbFiles as $dbFile) {
 			@unlink($dbFile);
 		}
+		$this->_app?->restoreApplication();
+		$this->_app = null;
 	}
 
 	protected function initCache(): void
@@ -73,6 +80,12 @@ class TDbCacheTest extends PHPUnit\Framework\TestCase
 	{
 		$this->_cache->setCacheTableName('custom_cache_table');
 		$this->assertEquals('custom_cache_table', $this->_cache->getCacheTableName());
+	}
+
+	public function testCacheTableNameRejectsSql()
+	{
+		$this->expectException(TInvalidDataValueException::class);
+		$this->_cache->setCacheTableName('pradocache; DROP TABLE users');
 	}
 
 	public function testAutoCreateCacheTable()
@@ -259,8 +272,7 @@ class TDbCacheTest extends PHPUnit\Framework\TestCase
 		$this->_cache->set('key2', 'value2');
 		$this->_cache->set('key3', 'value3');
 
-		$result = $this->_cache->flush();
-		$this->assertTrue($result);
+		$this->assertTrue($this->_cache->flush());
 
 		$this->assertFalse($this->_cache->get('key1'));
 		$this->assertFalse($this->_cache->get('key2'));
@@ -318,7 +330,7 @@ class TDbCacheTest extends PHPUnit\Framework\TestCase
 		$this->initCache();
 
 		$key = 'object_key';
-		$value = new stdClass();
+		$value = new \stdClass();
 		$value->prop1 = 'value1';
 		$value->prop2 = 123;
 
@@ -495,11 +507,7 @@ class TDbCacheTest extends PHPUnit\Framework\TestCase
 
 	public function testSqliteDatabaseName()
 	{
-		$reflection = new ReflectionClass($this->_cache);
-		$method = $reflection->getMethod('getSqliteDatabaseName');
-		$method->setAccessible(true);
-
-		$dbName = $method->invoke($this->_cache);
+		$dbName = PradoUnit::invoke($this->_cache, 'getSqliteDatabaseName');
 		$this->assertEquals('sqlite3.cache', $dbName);
 	}
 
@@ -538,14 +546,9 @@ class TDbCacheTest extends PHPUnit\Framework\TestCase
 
 		$this->_cache->set('force_key', 'force_value');
 
-		$reflection = new ReflectionClass($this->_cache);
-		$property = $reflection->getProperty('_cacheInitialized');
-		$property->setAccessible(true);
-		$property->setValue($this->_cache, false);
+		PradoUnit::setProp($this->_cache, '_cacheInitialized', false);
 
-		$method = $reflection->getMethod('initializeCache');
-		$method->setAccessible(true);
-		$method->invoke($this->_cache, true);
+		PradoUnit::invoke($this->_cache, 'initializeCache', true);
 
 		$this->assertEquals('force_value', $this->_cache->get('force_key'));
 	}
@@ -560,6 +563,18 @@ class TDbCacheTest extends PHPUnit\Framework\TestCase
 		$result = $this->_cache->set($key, $value);
 		$result = $this->_cache->get($key);
 		$this->assertEquals($value, $result);
+	}
+
+	public function testSerializedValueBindsKey()
+	{
+		$this->initCache();
+
+		$key = "quote'key";
+		$this->assertTrue(PradoUnit::invoke($this->_cache, 'setSerializedValue', $key, 'stored', 0));
+		$this->assertSame('stored', PradoUnit::invoke($this->_cache, 'getSerializedValue', $key));
+
+		$this->assertTrue(PradoUnit::invoke($this->_cache, 'setSerializedValue', 'other', 'secret', 0));
+		$this->assertFalse(PradoUnit::invoke($this->_cache, 'getSerializedValue', "x' OR itemkey='other"));
 	}
 
 	public function testSpecialCharactersInValue()
@@ -609,10 +624,7 @@ class TDbCacheTest extends PHPUnit\Framework\TestCase
 		$key = 'init_key';
 		$value = 'init_value';
 
-		$reflection = new ReflectionClass($this->_cache);
-		$property = $reflection->getProperty('_cacheInitialized');
-		$property->setAccessible(true);
-		$property->setValue($this->_cache, false);
+		PradoUnit::setProp($this->_cache, '_cacheInitialized', false);
 
 		$this->_cache->doInitializeCache();
 
@@ -634,10 +646,7 @@ class TDbCacheTest extends PHPUnit\Framework\TestCase
 	{
 		$this->initCache();
 
-		$method = new ReflectionMethod($this->_cache, 'getTraitDbConnection');
-		$method->setAccessible(true);
-
-		$db = $method->invoke($this->_cache);
+		$db = PradoUnit::invoke($this->_cache, 'getTraitDbConnection');
 		$this->assertInstanceOf(TDbConnection::class, $db);
 		$this->assertTrue($db->getActive());
 	}
@@ -696,5 +705,26 @@ class TDbCacheTest extends PHPUnit\Framework\TestCase
 		$this->_cache->add($key, 'after_delete');
 		$result = $this->_cache->get($key);
 		$this->assertEquals('after_delete', $result);
+	}
+
+	/**
+	 * @dataProvider frozenSetterProvider
+	 */
+	public function testConfigPropertiesCannotChangeAfterInit($setter, $value)
+	{
+		$this->_cache->init(null);
+		$this->expectException(\Prado\Exceptions\TInvalidOperationException::class);
+		$this->_cache->$setter($value);
+	}
+
+	public static function frozenSetterProvider(): array
+	{
+		return [
+			'ConnectionString'     => ['setConnectionString', 'sqlite::memory:'],
+			'Username'             => ['setUsername', 'user'],
+			'Password'             => ['setPassword', 'pw'],
+			'CacheTableName'       => ['setCacheTableName', 'othertable'],
+			'AutoCreateCacheTable' => ['setAutoCreateCacheTable', false],
+		];
 	}
 }

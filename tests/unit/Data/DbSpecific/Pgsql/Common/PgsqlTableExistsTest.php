@@ -1,7 +1,5 @@
 <?php
 
-require_once(__DIR__ . '/../../../../PradoUnit.php');
-
 /**
  * PgsqlTableExistsTest — driver-specific tests for {@see TTableGateway::getTableExists()} on PostgreSQL.
  *
@@ -13,11 +11,14 @@ require_once(__DIR__ . '/../../../../PradoUnit.php');
  * Requires: prado_unitest PostgreSQL database with the upsert_test table (tests/initdb_pgsql.sql).
  */
 
+namespace Prado\Test\Unit\Data\DbSpecific\Pgsql\Common;
+
 use Prado\Data\Common\TDbMetaData;
 use Prado\Data\DataGateway\TTableGateway;
 use Prado\Data\TDbConnection;
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
 
-class PgsqlTableExistsTest extends PHPUnit\Framework\TestCase
+class PgsqlTableExistsTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 

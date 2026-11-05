@@ -1,10 +1,12 @@
 <?php
 
-require_once(__DIR__ . '/../../../../PradoUnit.php');
+namespace Prado\Test\Unit\Data\DbSpecific\Ibm\Common;
 
 use Prado\Data\TDbConnection;
 use Prado\Data\TDbDataReader;
 use Prado\TApplication;
+use Prado\Test\Unit\PradoUnit;
+use Prado\TApplicationMode;
 
 /**
  * Live integration tests for TDbCommand and TDbDataReader — IBM DB2.
@@ -24,7 +26,7 @@ use Prado\TApplication;
  *   (2, 'Bob',   7.3, 0, NULL)
  *   (3, 'Carol', 8.1, 1, 'third')
  */
-class TDbCommandIbmIntegrationTest extends PHPUnit\Framework\TestCase
+class TDbCommandIbmIntegrationTest extends \PHPUnit\Framework\TestCase
 {
 	private ?TDbConnection $_conn = null;
 
@@ -41,7 +43,7 @@ class TDbCommandIbmIntegrationTest extends PHPUnit\Framework\TestCase
 	{
 		static $booted = false;
 		if (!$booted) {
-			new TApplication(__DIR__ . '/../../../../Security/app', false, TApplication::CONFIG_TYPE_PHP);
+			(new TApplication(__DIR__ . '/../../../../Security/app', false, TApplication::CONFIG_TYPE_PHP))->setMode(TApplicationMode::Debug);
 			$booted = true;
 		}
 		$this->_conn = $this->openIbm();

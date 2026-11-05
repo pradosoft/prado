@@ -22,7 +22,21 @@ $value = $cache->get('key');
 ## Configuration
 
 ```xml
-<module id="cache" class="Prado\Caching\TAPCCache" />
+<modules>
+    <module id="cache" class="Prado\Caching\TAPCCache" />
+</modules>
+```
+
+**PHP equivalent:**
+```php
+return [
+    'modules' => [
+        'cache' => [
+            'class' => 'Prado\Caching\TAPCCache',
+            'properties' => ['KeyPrefix' => 'myapp'],
+        ],
+    ],
+];
 ```
 
 ## Requirements

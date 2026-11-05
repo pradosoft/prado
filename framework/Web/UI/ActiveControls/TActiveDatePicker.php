@@ -30,7 +30,7 @@ use Prado\Web\UI\WebControls\TDatePickerInputMode;
  * @author Bradley Booms <Bradley.Booms@nsighttel.com>
  * @author Christophe Boulain <Christophe.Boulain@gmail.com>
  * @since 3.1.3
- * @method TActiveControlAdapter getAdapter()
+ * @method TActiveControlAdapter<\Prado\Web\UI\ActiveControls\TBaseActiveCallbackControl> getAdapter()
  */
 class TActiveDatePicker extends TDatePicker implements IActiveControl, ICallbackEventHandler
 {
@@ -103,7 +103,7 @@ class TActiveDatePicker extends TDatePicker implements IActiveControl, ICallback
 		if ($this->getActiveControl()->canUpdateClientSide() && $this->getHasLoadedPostData()) {
 			$cb = $this->getPage()->getCallbackClient();
 			$cb->setValue($this, $value);
-			if ($this->getInputMode() == TDatePickerInputMode::DropDownList) {
+			if ($this->getDateInputMode() == TDatePickerInputMode::DropDownList) {
 				$dt = new \DateTime();
 				$dt->setTimeStamp($this->getTimeStampFromText());
 				$id = $this->getClientID();

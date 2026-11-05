@@ -117,7 +117,8 @@ class TSignalParameter extends \Prado\TEventParameter
 	}
 
 	/**
-	 * @return ?int The alarm time.
+	 * @return ?int The alarm time, on the {@see TSignalsDispatcher::alarmNow()} base; compare it
+	 *   with that, not `time()`.
 	 */
 	public function getAlarmTime(): ?int
 	{

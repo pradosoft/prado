@@ -12,7 +12,7 @@ Active counterpart to TLinkButton. Clicking triggers a callback instead of postb
 
 ## Key Properties/Methods
 
-- `setText($value)` - Sets text with client-side update
+- `setText($value)` - Sets text with client-side update, HTML-encoded when `Encode` is true (4.4.0)
 - `setEnabled($value)` - Sets enabled state with client-side update
 - `raiseCallbackEvent($param)` - Raises OnClick then OnCallback
 - `onCallback($param)` - Event raised when callback is requested

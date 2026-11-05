@@ -162,9 +162,6 @@ composer stantest        # PHPUnit tests for the custom PHPStan extensions
 composer functest        # Chromium only (faster for local iteration)
 composer functionaltest  # all three browsers (Chromium, Firefox, WebKit)
 
-# Legacy Selenium functional tests
-composer seleniumtest    # requires a Selenium Server (see below)
-
 # JavaScript
 composer jsfix           # eslint JS code style fix
 composer jstest          # Vitest unit tests for JS assets
@@ -173,11 +170,6 @@ composer jsfull          # eslint fix + Vitest
 
 The Playwright suite starts a PHP built-in server automatically on **port 8037**
 before any test runs and stops it afterwards — no manual server setup is needed.
-
-The legacy Selenium suite (`composer seleniumtest`) requires a running [Selenium Server](https://www.selenium.dev/downloads/) (Java) and the appropriate [browser driver](https://www.selenium.dev/documentation/en/webdriver/driver_requirements/):
-```sh
-java -jar selenium-server-4.x.x.jar standalone
-```
 
 Local Playwright test servers automatically terminate when the parent unit test process exits.
 If a stale Playwright server is left over from a previously killed run, stop it first:

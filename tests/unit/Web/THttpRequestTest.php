@@ -1,20 +1,26 @@
 <?php
 
+namespace Prado\Test\Unit\Web;
+
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Prado;
 use Prado\Security\TSecurityManager;
-use Prado\TApplication;
+use Prado\Test\Unit\Harness\Web\TTestCookieResponse;
+use Prado\Test\Unit\Harness\Web\TTestMemorySession;
+use Prado\Test\Unit\PradoUnit;
 use Prado\Web\TAssetManager;
+use Prado\Web\THttpCookie;
 use Prado\Web\THttpRequest;
 use Prado\Web\THttpRequestUrlFormat;
 use Prado\Web\TUrlManager;
 use Prado\Web\TUrlMapping;
 use Prado\Xml\TXmlDocument;
+use Prado\Test\Unit\Harness\TTestApplication;
 
-class THttpRequestTest extends PHPUnit\Framework\TestCase
+class THttpRequestTest extends \PHPUnit\Framework\TestCase
 {
-	public static $app = null;
+	protected ?TTestApplication $app = null;
 
 	protected function setUp(): void
 	{
@@ -42,8 +48,14 @@ class THttpRequestTest extends PHPUnit\Framework\TestCase
 		$_COOKIE['phpsessid'] = '0123456789abcdef';
 
 		$_FILES['userfile'] = ['name' => 'test.jpg', 'type' => 'image/jpg', 'size' => 10240, 'tmp_name' => 'tmpXXAZECZ', 'error' => 0];
-		if (self::$app === null) {
-			self::$app = new TApplication(__DIR__ . '/app');
+		$this->app = new TTestApplication(__DIR__ . '/app');
+	}
+
+	protected function tearDown(): void
+	{
+		if ($this->app !== null) {
+			$this->app->restoreApplication();
+			$this->app = null;
 		}
 	}
 
@@ -103,7 +115,7 @@ class THttpRequestTest extends PHPUnit\Framework\TestCase
 
 		// Try with valid module id, but not instance of TUrlManager
 		$module = new TAssetManager();
-		self::$app->setModule('badmanager', $module);
+		$this->app->setModule('badmanager', $module);
 		$request = new THttpRequest();
 		$request->setUrlManager('badmanager');
 		try {
@@ -116,7 +128,7 @@ class THttpRequestTest extends PHPUnit\Framework\TestCase
 
 		// Finally, try with a valid manager
 		$module = new TUrlManager();
-		self::$app->setModule('goodmanager', $module);
+		$this->app->setModule('goodmanager', $module);
 		$request = new THttpRequest();
 		$request->setUrlManager('goodmanager');
 		$request->init(null);
@@ -141,6 +153,49 @@ class THttpRequestTest extends PHPUnit\Framework\TestCase
 	{
 		$request = new THttpRequest();
 		self::assertEquals('GET', $request->getRequestType());
+	}
+
+	public static function contentTypeProvider(): array
+	{
+		return [
+			'absent' => [null, true, null],
+			'absent, full' => [null, false, null],
+			'no parameters' => ['application/json', true, 'application/json'],
+			'parameters stripped' => ['text/html; charset=UTF-8', true, 'text/html'],
+			'no space before parameters' => ['text/html;charset=UTF-8', true, 'text/html'],
+			'space before semicolon' => ['text/html ; charset=UTF-8', true, 'text/html'],
+			'multipart boundary stripped' => ['multipart/form-data; boundary=----x', true, 'multipart/form-data'],
+			'full value kept' => ['text/html; charset=UTF-8', false, 'text/html; charset=UTF-8'],
+		];
+	}
+
+	/**
+	 * @dataProvider contentTypeProvider
+	 */
+	public function testGetContentType(?string $serverValue, bool $mimetypeOnly, ?string $expected)
+	{
+		$request = new THttpRequest();
+		if ($serverValue === null) {
+			unset($_SERVER['CONTENT_TYPE']);
+		} else {
+			$_SERVER['CONTENT_TYPE'] = $serverValue;
+		}
+		try {
+			self::assertSame($expected, $request->getContentType($mimetypeOnly));
+		} finally {
+			unset($_SERVER['CONTENT_TYPE']);
+		}
+	}
+
+	public function testGetContentTypeDefaultStripsParameters()
+	{
+		$request = new THttpRequest();
+		$_SERVER['CONTENT_TYPE'] = 'application/json; charset=UTF-8';
+		try {
+			self::assertSame('application/json', $request->getContentType());
+		} finally {
+			unset($_SERVER['CONTENT_TYPE']);
+		}
 	}
 
 	public function testGetIsSecureConnection()
@@ -221,25 +276,14 @@ class THttpRequestTest extends PHPUnit\Framework\TestCase
 
 	public function testGetBrowser()
 	{
-		/*
-		// requires browscap configuration in php.ini
+		if ((string) ini_get('browscap') !== '') {
+			self::markTestSkipped('browscap is configured in php.ini');
+		}
+
 		$request = new THttpRequest();
-		$request->init(null);
-		// Reset UserAgent, because constructor of THttpRequest unset it if called from cli !
-		$_SERVER['HTTP_USER_AGENT'] = 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X; en-US; rv:1.8.1.3) Gecko/20070309 Firefox/2.0.0.3';
-		try {
-			$browser=$request->getBrowser();
-			self::assertInstanceOf ('array', $browser);
-			self::assertEquals('Firefox', $browser['browser']);
-			self::assertEquals('2.0.0.3', $browser['version']);
-		} catch (TPhpErrorException $e) {
-				// If not supported, skip test
-				if (strstr($e->getMessage(),'browscap ini directive not set'))
-					self::markTestSkipped('browscap ini directive not set in php.ini');
-				else
-					self::fail ('Exception raised : '.$e->getMessage());
-		}*/
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$this->expectException(TConfigurationException::class);
+		$this->expectExceptionMessage('THttpRequest requires the browscap directive to be configured in php.ini.');
+		$request->getBrowser();
 	}
 
 	public function testGetUserAgent()
@@ -260,6 +304,26 @@ class THttpRequestTest extends PHPUnit\Framework\TestCase
 		$request = new THttpRequest();
 		$request->init(null);
 		self::assertEquals('localhost', $request->getUserHost());
+	}
+
+	public function testGetHeaders()
+	{
+		$request = new THttpRequest();
+		$headers = $request->getHeaders();
+		self::assertEquals('gzip,deflate', $headers['Accept-Encoding']);
+		self::assertEquals('localhost', $headers['Host']);
+		self::assertEquals('gzip,deflate', $request->getHeaders(CASE_LOWER)['accept-encoding']);
+		self::assertEquals('gzip,deflate', $request->getHeaders(CASE_UPPER)['ACCEPT-ENCODING']);
+	}
+
+	public function testGetHeader()
+	{
+		$request = new THttpRequest();
+		self::assertEquals('gzip,deflate', $request->getHeader('Accept-Encoding'));
+		self::assertEquals('gzip,deflate', $request->getHeader('accept-encoding'));
+		self::assertEquals('gzip,deflate', $request->getHeader('ACCEPT-ENCODING'));
+		self::assertNull($request->getHeader('X-Absent-Header'));
+		self::assertEquals('fallback', $request->getHeader('X-Absent-Header', 'fallback'));
 	}
 
 	public function testGetAcceptTypes()
@@ -284,7 +348,7 @@ class THttpRequestTest extends PHPUnit\Framework\TestCase
 		$acceptLanguages=array('fr', 'en-us','fr-fr','en');
 		self::assertEquals($acceptLanguages, $request->getUserLanguages());
 		*/
-		throw new PHPUnit\Framework\IncompleteTestError();
+		throw new \PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testSetEnableCookieValidation()
@@ -307,14 +371,129 @@ class THttpRequestTest extends PHPUnit\Framework\TestCase
 
 		// Test with cookie validation
 		$security = new TSecurityManager();
-		self::$app->setModule('security', $security);
-		$_COOKIE['phpsessid'] = $security->hashData('0123456789abcdef');
+		$this->app->setModule('security', $security);
+		$_COOKIE['phpsessid'] = $security->hashCookieData('0123456789abcdef');
 		$request = new THttpRequest();
 		$request->init(null);
 		$request->setEnableCookieValidation(true);
 		$cookies = $request->getCookies();
 		self::assertInstanceOf(\Prado\Web\THttpCookieCollection::class, $cookies);
 		self::assertEquals('0123456789abcdef', $cookies->itemAt('phpsessid')->getValue());
+	}
+
+	/**
+	 * Builds a request on a response that records its cookies, without a CSRF cookie or field.
+	 */
+	private function newCsrfRequest(?TTestCookieResponse $response = null): THttpRequest
+	{
+		$this->app->setResponse($response ?? new TTestCookieResponse());
+		unset($_COOKIE[THttpRequest::CSRF_TOKEN_KEY], $_POST[THttpRequest::CSRF_TOKEN_FIELD], $_GET[THttpRequest::CSRF_TOKEN_FIELD]);
+		$request = new THttpRequest();
+		$request->init(null);
+		return $request;
+	}
+
+	public function testCsrfTokenCookie()
+	{
+		$response = new TTestCookieResponse();
+		$request = $this->newCsrfRequest($response);
+		self::assertTrue($request->getEnableCsrfCookie());
+
+		// a request without a secret issues one, signed, in an HttpOnly cookie
+		$token = $request->getCsrfToken();
+		$cookie = $response->getCookies()->itemAt(THttpRequest::CSRF_TOKEN_KEY);
+		self::assertInstanceOf(THttpCookie::class, $cookie);
+		self::assertTrue($cookie->getHttpOnly());
+		self::assertFalse($cookie->getSecure());
+		$secret = $this->app->getSecurityManager()->validateCookieData($cookie->getValue());
+		self::assertSame(32, strlen($secret));
+		self::assertSame($secret, PradoUnit::invoke($request, 'unmaskCsrfToken', $token));
+
+		// every token is masked differently, and each validates
+		$token2 = $request->getCsrfToken();
+		self::assertNotEquals($token, $token2);
+		self::assertTrue($request->validateCsrfToken($token));
+		self::assertTrue($request->validateCsrfToken($token2));
+		self::assertFalse($request->validateCsrfToken(''));
+		self::assertFalse($request->validateCsrfToken('not base64!'));
+		self::assertFalse($request->validateCsrfToken(base64_encode('odd')));
+		self::assertFalse($request->validateCsrfToken(base64_encode(str_repeat('x', 64))));
+		self::assertCount(1, $response->setCookies);
+
+		// a regenerated secret stops the earlier tokens
+		$token3 = $request->getCsrfToken(true);
+		self::assertFalse($request->validateCsrfToken($token));
+		self::assertTrue($request->validateCsrfToken($token3));
+		self::assertCount(2, $response->setCookies);
+
+		// the next request reads the cookie and keeps the secret
+		$_COOKIE[THttpRequest::CSRF_TOKEN_KEY] = $response->setCookies[1][1];
+		$request = new THttpRequest();
+		$request->init(null);
+		self::assertTrue($request->validateCsrfToken($token3));
+		self::assertFalse($request->validateCsrfToken($token));
+		$request->getCsrfToken();
+		self::assertCount(2, $response->setCookies);
+
+		// a tampered cookie is no secret: validation fails and a new secret is issued
+		$_COOKIE[THttpRequest::CSRF_TOKEN_KEY] = 'x' . $response->setCookies[1][1];
+		$request = new THttpRequest();
+		$request->init(null);
+		self::assertFalse($request->validateCsrfToken($token3));
+		$request->getCsrfToken();
+		self::assertCount(3, $response->setCookies);
+		unset($_COOKIE[THttpRequest::CSRF_TOKEN_KEY]);
+	}
+
+	public function testCsrfTokenFromRequest()
+	{
+		$response = new TTestCookieResponse();
+		$request = $this->newCsrfRequest($response);
+		$token = $request->getCsrfToken();
+
+		self::assertFalse($request->validateCsrfToken(), 'no token sent');
+		$_GET[THttpRequest::CSRF_TOKEN_FIELD] = $token;
+		self::assertFalse($request->validateCsrfToken(), 'the query string never supplies the token');
+		$_POST[THttpRequest::CSRF_TOKEN_FIELD] = [$token];
+		self::assertFalse($request->validateCsrfToken(), 'an array is not a token');
+		$_POST[THttpRequest::CSRF_TOKEN_FIELD] = $token;
+		self::assertTrue($request->validateCsrfToken(), 'the POST field');
+		unset($_GET[THttpRequest::CSRF_TOKEN_FIELD], $_POST[THttpRequest::CSRF_TOKEN_FIELD]);
+
+		// the header, read by a request that parses its headers after it is set
+		$_COOKIE[THttpRequest::CSRF_TOKEN_KEY] = $response->setCookies[0][1];
+		$_SERVER['HTTP_X_PRADO_CSRF_TOKEN'] = $token;
+		$request = new THttpRequest();
+		$request->init(null);
+		self::assertTrue($request->validateCsrfToken(), 'the header');
+		unset($_SERVER['HTTP_X_PRADO_CSRF_TOKEN'], $_COOKIE[THttpRequest::CSRF_TOKEN_KEY]);
+	}
+
+	public function testCsrfTokenSession()
+	{
+		$response = new TTestCookieResponse();
+		$session = new TTestMemorySession();
+		$this->app->setSession($session);
+		$request = $this->newCsrfRequest($response);
+		$request->setEnableCsrfCookie(false);
+		self::assertFalse($request->getEnableCsrfCookie());
+
+		$token = $request->getCsrfToken();
+		self::assertTrue($session->opened);
+		$secret = $session->data[THttpRequest::CSRF_TOKEN_KEY];
+		self::assertSame(32, strlen($secret));
+		self::assertTrue($request->validateCsrfToken($token));
+		self::assertCount(0, $response->setCookies);
+
+		// another request of the session reads the secret, and replaces it on regeneration
+		$request = new THttpRequest();
+		$request->init(null);
+		$request->setEnableCsrfCookie(false);
+		self::assertTrue($request->validateCsrfToken($token));
+		$request->getCsrfToken(true);
+		self::assertNotSame($secret, $session->data[THttpRequest::CSRF_TOKEN_KEY]);
+		self::assertFalse($request->validateCsrfToken($token));
+		self::assertCount(0, $response->setCookies);
 	}
 
 	public function testGetUploadedFiles()
@@ -592,7 +771,7 @@ class THttpRequestTest extends PHPUnit\Framework\TestCase
 		$config = new TXmlDocument('1.0', 'utf8');
 		$config->loadFromString($confstr);
 		$module = new TUrlMapping();
-		self::$app->setModule('friendly-url', $module);
+		$this->app->setModule('friendly-url', $module);
 		if (isset($_GET['page'])) {
 			unset($_GET['page']);
 		} // Remove service from a previous test !

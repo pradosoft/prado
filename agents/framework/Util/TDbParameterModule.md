@@ -8,7 +8,7 @@
 **Namespace:** `Prado\Util`
 
 ## Overview
-Database-backed parameter store. Extends `[TModule](TModule.md)` (not `[TParameterModule](TParameterModule.md)`) and implements `[IDbModule](IDbModule.md)` and `IPermissions`. Stores named key-value pairs in a database table, with optional in-memory capture of changes made to `[TApplication](../TApplication.md)::getParameters()` during the request.
+Database-backed parameter store. Extends [`TDbModule`](TDbModule.md) (which provides `ConnectionID` and `getDbConnection()`) and implements `IPermissions`. Stores named key-value pairs in a database table, with optional in-memory capture of changes made to `[TApplication](../TApplication.md)::getParameters()` during the request.
 
 Supports WordPress-style `option_name`/`option_value` schema (configurable), auto-table creation, and custom serialization.
 
@@ -26,16 +26,30 @@ TDbParameterModule::APP_PARAMETER_SET_BEHAVIOR  = 'setTDbParameter'
 ## Configuration
 
 ```xml
-<module id="dbparams" class="Prado\Util\TDbParameterModule"
-        ConnectionID="db"
-        TableName="prado_params"
-        KeyField="param_key"
-        ValueField="param_value"
-        AutoLoadField="auto_load"
-        AutoLoadValue="1"
-        AutoCreateParamTable="true"
-        CaptureParameterChanges="true"
-        Serializer="php" />
+<modules>
+    <module id="dbparams" class="Prado\Util\TDbParameterModule"
+            ConnectionID="db"
+            TableName="prado_params"
+            KeyField="param_key"
+            ValueField="param_value"
+            AutoLoadField="auto_load"
+            AutoLoadValue="1"
+            AutoCreateParamTable="true"
+            CaptureParameterChanges="true"
+            Serializer="php" />
+</modules>
+```
+
+**PHP equivalent:**
+```php
+return [
+    'modules' => [
+        'params' => [
+            'class' => 'Prado\Util\TDbParameterModule',
+            'properties' => ['ConnectionID' => 'db', 'TableName' => 'prado_params'],
+        ],
+    ],
+];
 ```
 
 Default SQLite database is used if `ConnectionID` is not specified.
@@ -49,11 +63,13 @@ Default SQLite database is used if `ConnectionID` is not specified.
 | `KeyField` | string | `param_key` | Column name for parameter key |
 | `ValueField` | string | `param_value` | Column name for parameter value |
 | `AutoLoadField` | string | `auto_load` | Column name for auto-load flag |
-| `AutoLoadValue` | string | `1` | Value in `AutoLoadField` that means "load on init" |
+| `AutoLoadValue` | string | `1` | Value in `AutoLoadField` that means "load on init". Bound as a parameter; a quoted SQL literal such as `'yes'` is bound without its quotes (4.4.0) |
 | `AutoLoadValueFalse` | string | `0` | Value meaning "do not auto-load" |
 | `AutoCreateParamTable` | bool | true | Create table if it doesn't exist |
 | `CaptureParameterChanges` | bool | false | Auto-write changes to `$app->getParameters()` back to DB |
 | `Serializer` | string\|callable | `'php'` | Serialization: `'php'`, `'json'`, or `callable($data, $encode)` |
+
+`TableName`, `KeyField`, `ValueField`, and a non-empty `AutoLoadField` must be SQL identifiers; the setters validate them with `TDbPropertiesTrait::ensureSqlIdentifier()` (4.4.0).
 
 ## Key Methods
 
@@ -71,9 +87,11 @@ $module->getPermissions($manager): array   // IPermissions: registers PERM_PARAM
 Registers the `param_shell` permission with `[TPermissionsManager](../Security/Permissions/TPermissionsManager.md)`, controlling access to the CLI shell action:
 
 ```xml
-<module id="permissions" class="Prado\Security\Permissions\TPermissionsManager">
-    <permission name="param_shell" roles="admin" />
-</module>
+<modules>
+    <module id="permissions" class="Prado\Security\Permissions\TPermissionsManager">
+        <permission name="param_shell" roles="admin" />
+    </module>
+</modules>
 ```
 
 ## Lazy Loading Behavior
@@ -89,15 +107,17 @@ When `CaptureParameterChanges=true`, the module attaches `APP_PARAMETER_SET_BEHA
 To use a WordPress `wp_options` table:
 
 ```xml
-<module id="dbparams" class="Prado\Util\TDbParameterModule"
-        ConnectionID="wp"
-        TableName="wp_options"
-        KeyField="option_name"
-        ValueField="option_value"
-        AutoLoadField="autoload"
-        AutoLoadValue="yes"
-        AutoLoadValueFalse="no"
-        Serializer="php" />
+<modules>
+    <module id="dbparams" class="Prado\Util\TDbParameterModule"
+            ConnectionID="wp"
+            TableName="wp_options"
+            KeyField="option_name"
+            ValueField="option_value"
+            AutoLoadField="autoload"
+            AutoLoadValue="yes"
+            AutoLoadValueFalse="no"
+            Serializer="php" />
+</modules>
 ```
 
 ## CLI Shell Action

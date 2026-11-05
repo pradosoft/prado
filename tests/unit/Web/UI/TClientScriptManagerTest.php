@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI;
+
 use Prado\Collections\TMap;
 use Prado\IO\TTextWriter;
 use Prado\Prado;
@@ -17,23 +19,15 @@ use Prado\Web\UI\ActiveControls\TBaseActiveCallbackControl;
 use Prado\Web\UI\ActiveControls\TCallbackClientSide;
 use Prado\Web\UI\TControl;
 use Prado\Web\UI\WebControls\TButton;
+use Prado\Test\Unit\PradoUnit;
 
 class TClientScriptManagerTestable extends TClientScriptManager
 {
 	public static function resetJavascriptCache()
 	{
-		$reflection = new ReflectionClass(TClientScriptManager::class);
-		$prop = $reflection->getProperty('_scripts');
-		$prop->setAccessible(true);
-		$prop->setValue(null, null);
-
-		$prop = $reflection->getProperty('_scriptsPackages');
-		$prop->setAccessible(true);
-		$prop->setValue(null, null);
-
-		$prop = $reflection->getProperty('_scriptsFolders');
-		$prop->setAccessible(true);
-		$prop->setValue(null, null);
+		PradoUnit::setProp(TClientScriptManager::class, '_scripts', null);
+		PradoUnit::setProp(TClientScriptManager::class, '_scriptsPackages', null);
+		PradoUnit::setProp(TClientScriptManager::class, '_scriptsFolders', null);
 	}
 }
 
@@ -202,7 +196,7 @@ function rrmdir($src) {
 	rmdir($src);
 }
 
-class TClientScriptManagerTest extends PHPUnit\Framework\TestCase
+class TClientScriptManagerTest extends \PHPUnit\Framework\TestCase
 {
 	public static $app;
 
@@ -227,6 +221,7 @@ class TClientScriptManagerTest extends PHPUnit\Framework\TestCase
 			$_SERVER['SCRIPT_FILENAME'] = dirname(__FILE__) . '/../../../harness/features/protected/';
 			$_SERVER['SCRIPT_NAME'] = '/index.php';
 			self::$app = new TApplication(realpath(dirname(__FILE__) . '/../app'));
+			self::$app->setMode(TApplicationMode::Debug);
 
 			self::$app->initApplication();
 		}
@@ -614,6 +609,23 @@ class TClientScriptManagerTest extends PHPUnit\Framework\TestCase
 		$this->assertStringContainsString('/*]]>*/', $output);
 	}
 
+	public function testRenderStyleSheetFilesAndStyleSheetsIncludeNonce()
+	{
+		$this->_cs->registerStyleSheetFile('css1', '/style1.css');
+		$this->_cs->registerStyleSheet('mycss', '.a{}');
+		TJavaScript::setScriptNonce('n0nce');
+		try {
+			$writer = $this->createWriter();
+			$this->_cs->renderStyleSheetFiles($writer);
+			$this->_cs->renderStyleSheets($writer);
+			$output = $writer->flush();
+		} finally {
+			TJavaScript::setScriptNonce(null);
+		}
+		$this->assertStringContainsString('<link rel="stylesheet" type="text/css" href="/style1.css" nonce="n0nce" />', $output);
+		$this->assertStringContainsString('<style type="text/css" nonce="n0nce">', $output);
+	}
+
 	public function testRenderStyleSheetsEmpty()
 	{
 		$writer = $this->createWriter();
@@ -642,7 +654,7 @@ class TClientScriptManagerTest extends PHPUnit\Framework\TestCase
 		$this->_cs->renderHeadScriptFiles($writer);
 		$output = $writer->flush();
 
-		$this->assertStringContainsString('async ', $output);
+		$this->assertStringContainsString(' async', $output);
 		$this->assertStringContainsString('src="http://example.com/script1.js"', $output);
 	}
 
@@ -933,6 +945,7 @@ class TClientScriptManagerTest extends PHPUnit\Framework\TestCase
 		$this->assertStringContainsString('name="field1"', $output);
 		$this->assertStringContainsString('name="field2"', $output);
 		$this->assertStringContainsString('autocomplete="off"', $output);
+		$this->assertStringContainsString('<div style="visibility:hidden;" data-prado-dirty-ignore="">', $output);
 	}
 
 	public function testRenderHiddenFieldsBeginThenEnd()
@@ -1122,10 +1135,7 @@ class TClientScriptManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testRegisterHeadScriptInRenderThrowsException()
 	{
-		$reflection = new ReflectionClass($this->_page);
-		$prop = $reflection->getProperty('_inFormRender');
-		$prop->setAccessible(true);
-		$prop->setValue($this->_page, true);
+		PradoUnit::setProp($this->_page, '_inFormRender', true);
 
 		$this->expectException(\Exception::class);
 		$this->_cs->registerHeadScript('myjs', 'alert("hello");');
@@ -1133,10 +1143,7 @@ class TClientScriptManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testRegisterHeadScriptFileInRenderThrowsException()
 	{
-		$reflection = new ReflectionClass($this->_page);
-		$prop = $reflection->getProperty('_inFormRender');
-		$prop->setAccessible(true);
-		$prop->setValue($this->_page, true);
+		PradoUnit::setProp($this->_page, '_inFormRender', true);
 
 		$this->expectException(\Exception::class);
 		$this->_cs->registerHeadScriptFile('myjs', 'http://example.com/script.js');
@@ -1144,10 +1151,7 @@ class TClientScriptManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testRegisterBeginScriptInRenderThrowsException()
 	{
-		$reflection = new ReflectionClass($this->_page);
-		$prop = $reflection->getProperty('_inFormRender');
-		$prop->setAccessible(true);
-		$prop->setValue($this->_page, true);
+		PradoUnit::setProp($this->_page, '_inFormRender', true);
 
 		$this->expectException(\Exception::class);
 		$this->_cs->registerBeginScript('start', 'console.log("start");');
@@ -1380,17 +1384,12 @@ class TClientScriptManagerTest extends PHPUnit\Framework\TestCase
 
 	private function getPrivateProperty($object, $property)
 	{
-		$reflection = new ReflectionClass($object);
-		$prop = $reflection->getProperty($property);
-		$prop->setAccessible(true);
-		return $prop->getValue($object);
+		return PradoUnit::getProp($object, $property);
 	}
 
 	private function invokePrivateMethod($object, $method, $args = [])
 	{
-		$reflection = new ReflectionClass($object);
-		$method = $reflection->getMethod($method);
-		$method->setAccessible(true);
-		return $method->invokeArgs($object, $args);
+		$rm = PradoUnit::reflectionMethod($object::class, $method);
+		return $rm->invokeArgs($object, $args);
 	}
 }

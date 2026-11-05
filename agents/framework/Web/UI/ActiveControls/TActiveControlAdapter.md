@@ -15,7 +15,7 @@ Adapts any control to add active/callback support. Instantiates [TBaseActiveCont
 - `getBaseActiveControl()` - Returns TBaseActiveCallbackControl or TBaseActiveControl
 - `setBaseActiveControl($control)` - Sets base active control instance
 - `onPreRender($param)` - Registers ajax script
-- `render($writer)` - Renders with visibility handling
+- `render($writer)` - Renders with visibility handling; registers the `ajax` script package, and the `morph` package (idiomorph) when `getIsMorphUpdate()` is true (4.4.0)
 - `onLoad($param)` - Starts viewstate tracking if needed
 - `saveState()` - Responds to viewstate changes
 - `getStateTracker()` - Returns [TCallbackPageStateTracker](./TCallbackPageStateTracker.md)

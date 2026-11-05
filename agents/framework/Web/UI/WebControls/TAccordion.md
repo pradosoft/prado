@@ -26,3 +26,9 @@ TAccordion displays an accordion control where users can click on view headers t
 
 - [TAccordionView](./TAccordionView.md)
 - [TAccordionViewCollection](./TAccordionViewCollection.md)
+
+## Color Scheme
+
+The header and active-header backgrounds, and the active-header text and border, adapt through `light-dark()`. The shipped stylesheet declares no `color-scheme` of its own, so an
+application that declares none keeps the light rendering it already has. See
+[assets/INDEX.md](./assets/INDEX.md) for the contract.

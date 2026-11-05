@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\IO;
+
 use Prado\IO\TStreamNotificationCallback;
 use Prado\IO\TStreamNotificationParameter;
 use Prado\Prado;
@@ -32,7 +34,7 @@ class TTestStreamNotificationCallback extends TStreamNotificationCallback
 	}
 }
 
-class TStreamNotificationCallbackTest extends PHPUnit\Framework\TestCase
+class TStreamNotificationCallbackTest extends \PHPUnit\Framework\TestCase
 {
 	public bool $testNetwork = false;
 	
@@ -251,13 +253,14 @@ class TStreamNotificationCallbackTest extends PHPUnit\Framework\TestCase
 		$params = stream_context_get_params($context);
 		
 		self::assertFalse(array_key_exists('notification', $params));
+		self::assertNull(TStreamNotificationCallback::getContextNotificationCallback($context));
 		self::assertEquals($userAgent, $params['options']['http']['user_agent']);
 	}
 	
 	public function testInvoke()
 	{
 		if (!$this->testNetwork) {
-			throw new PHPUnit\Framework\IncompleteTestError();
+			throw new \PHPUnit\Framework\IncompleteTestError();
 		}
 		
 		$direct = $resolve = $connected = $fileSize = $mimeType = $progress = false;
@@ -299,7 +302,7 @@ class TStreamNotificationCallbackTest extends PHPUnit\Framework\TestCase
 	public function testInvoke_Failure()
 	{
 		if (!$this->testNetwork) {
-			throw new PHPUnit\Framework\IncompleteTestError();
+			throw new \PHPUnit\Framework\IncompleteTestError();
 		}
 		$notification = new TStreamNotificationCallback();
 		

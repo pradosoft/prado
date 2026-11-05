@@ -1,0 +1,142 @@
+/*! PRADO TSafetyCover stylesheet | github.com/pradosoft/prado */
+
+/*
+ * CSS contract — the cover tracks and guards the content only while these hold.
+ * Overriding any of them (via CssClass, a theme, or a replacement CssUrl) breaks it:
+ *
+ *   .safety-cover        must stay a positioned containing block (position:
+ *                        relative | absolute | fixed). position:static makes the
+ *                        slider position against a distant ancestor, so the cover
+ *                        lands somewhere else.
+ *   .safety-cover-content must stay in normal flow and give the panel its size.
+ *                        Taking it out of flow (position:absolute/fixed, float)
+ *                        or display:none collapses the panel to zero, so the
+ *                        cover shrinks to nothing. It also keeps isolation:isolate
+ *                        so its z-indexes cannot rise above the cover.
+ *   .safety-cover-slider must keep overflow:hidden (clips the Slide face) and
+ *                        z-index:1 (stacks the cover above the content).
+ *   .safety-cover-overlay/-face must keep inset:0 (fill the slider) and the guard
+ *                        its pointer-events toggle (auto closed / none open).
+ *
+ * Safe to change: OverlayColor / OverlayCssClass / OverlayTemplate (face looks),
+ * panel padding/border, and any non-positioning CssClass on the control.
+ */
+
+.safety-cover {
+	position: relative;
+}
+
+.safety-cover-slider {
+	position: absolute;
+	inset: 0;
+	overflow: hidden;
+	pointer-events: none;
+	z-index: 1;
+}
+
+/*
+ * The content establishes its own stacking context so a positioned descendant
+ * with a high z-index cannot paint above the cover and escape the guard.
+ * isolation changes stacking only, never layout.
+ */
+.safety-cover-content {
+	isolation: isolate;
+}
+
+/*
+ * The guard: a transparent layer that blocks clicks to the content whenever the
+ * cover is closed. It never moves; only its pointer-events toggle, so the guard
+ * re-blocks the instant the cover starts closing, no matter how the face is
+ * animating. The click that opens the cover lands here.
+ */
+.safety-cover-overlay {
+	position: absolute;
+	inset: 0;
+	cursor: pointer;
+	pointer-events: auto;
+}
+
+/* Open: clicks reach the guarded content. Toggled instantly, never transitioned. */
+.safety-cover-open .safety-cover-overlay {
+	pointer-events: none;
+}
+
+/*
+ * The face: the visible skin (color + template). It animates both open and
+ * close over --safety-cover-animation-duration, and never blocks clicks itself
+ * (the guard does that). The OverlayColor property renders an inline
+ * background-color that wins over this.
+ */
+.safety-cover-face {
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	background-color: rgba(255, 0, 0, 0.65);
+	text-align: center;
+	clip-path: inset(0 0 0 0);
+	transition:
+		transform var(--safety-cover-animation-duration, 250ms) ease-in-out,
+		clip-path var(--safety-cover-animation-duration, 250ms) ease-in-out,
+		opacity var(--safety-cover-animation-duration, 250ms) ease-in-out;
+}
+
+/*
+ * The direction class sets where the face goes; the effect class consumes it.
+ * --safety-cover-translate is comma-form for the translate() function; the slider
+ * clips the face once it moves past an edge. --safety-cover-clip is space-form
+ * for inset(), collapsing the face toward the opposite edge with its content
+ * held in place.
+ */
+.safety-cover-up    { --safety-cover-translate: 0, -101%; --safety-cover-clip: 0 0 100% 0; }
+.safety-cover-down  { --safety-cover-translate: 0, 101%;  --safety-cover-clip: 100% 0 0 0; }
+.safety-cover-left  { --safety-cover-translate: -101%, 0; --safety-cover-clip: 0 100% 0 0; }
+.safety-cover-right { --safety-cover-translate: 101%, 0;  --safety-cover-clip: 0 0 0 100%; }
+
+/*
+ * The effect class is on the panel and the open class is on the slider inside
+ * it, so these are descendant selectors, not compound. The direction custom
+ * properties set on the panel inherit down to the face.
+ */
+.safety-cover-slide .safety-cover-open .safety-cover-face {
+	transform: translate(var(--safety-cover-translate, 0, -101%));
+}
+
+.safety-cover-collapse .safety-cover-open .safety-cover-face {
+	clip-path: inset(var(--safety-cover-clip, 0 0 100% 0));
+}
+
+/* Fade is an independent axis; it layers on any effect, including None. */
+.safety-cover-fade .safety-cover-open .safety-cover-face {
+	opacity: 0;
+}
+
+/* No geometry and no fade: the face snaps hidden with no animation. */
+.safety-cover-none:not(.safety-cover-fade) .safety-cover-open .safety-cover-face {
+	visibility: hidden;
+}
+
+/* The pulse spans OpenDelay: three pulses of one third each. */
+.safety-cover-pulsate {
+	animation: safety-cover-pulsate calc(var(--safety-cover-open-delay, 750ms) / 3) ease-in-out 3;
+}
+
+@keyframes safety-cover-pulsate {
+	0%,
+	100% {
+		opacity: 1;
+	}
+
+	50% {
+		opacity: 0.4;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.safety-cover-face {
+		transition: none;
+	}
+
+	.safety-cover-pulsate {
+		animation: none;
+	}
+}

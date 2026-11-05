@@ -665,6 +665,90 @@ describe('TDatePicker#create — calendar DOM structure', () => {
 		expect(header).not.toBeNull();
 	});
 
+	it('_calDiv is a labeled dialog for assistive technology', () => {
+		expect(picker._calDiv.getAttribute('role')).toBe('dialog');
+		expect(picker._calDiv.getAttribute('aria-label')).toBe('Calendar');
+	});
+
+	it('toggles aria-expanded on the trigger as the calendar shows and hides', () => {
+		picker.show();
+		expect(picker.trigger.getAttribute('aria-expanded')).toBe('true');
+		picker.hide();
+		expect(picker.trigger.getAttribute('aria-expanded')).toBe('false');
+	});
+
+	it('links the trigger to the calendar via aria-controls', () => {
+		expect(picker._calDiv.id).toBe(`${picker.options.ID}_calendar`);
+		expect(picker.trigger.getAttribute('aria-controls')).toBe(picker._calDiv.id);
+	});
+
+	it('the date table is a grid labeled with the visible month and year', () => {
+		expect(picker._gridTable.getAttribute('role')).toBe('grid');
+		const expected = `${picker.MonthNames[picker.selectedDate.getMonth()]} ${picker.selectedDate.getFullYear()}`;
+		expect(picker._gridTable.getAttribute('aria-label')).toBe(expected);
+	});
+
+	it('weekday headers carry scope=col', () => {
+		const heads = picker._calDiv.querySelectorAll('th.weekDayHead');
+		expect(heads.length).toBe(7);
+		heads.forEach((th) => expect(th.getAttribute('scope')).toBe('col'));
+	});
+
+	it('marks the selected date aria-selected and today aria-current', () => {
+		const selected = picker._calDiv.querySelectorAll('td[aria-selected="true"]');
+		expect(selected.length).toBe(1);
+		expect(selected[0].classList.contains('selected')).toBe(true);
+		const current = picker._calDiv.querySelectorAll('td[aria-current="date"]');
+		expect(current.length).toBeLessThanOrEqual(1);
+	});
+
+	it('hides the padding cells from assistive technology', () => {
+		const empties = picker._calDiv.querySelectorAll('td.empty');
+		empties.forEach((td) => {
+			expect(td.getAttribute('aria-hidden')).toBe('true');
+			expect(td.hasAttribute('aria-selected')).toBe(false);
+		});
+	});
+
+	it('labels the month/year selects and the month step buttons', () => {
+		expect(picker._monthSelect.getAttribute('aria-label')).toBe('Month');
+		expect(picker._yearSelect.getAttribute('aria-label')).toBe('Year');
+		expect(picker._calDiv.querySelector('.prevMonthButton').getAttribute('aria-label')).toBe('Previous month');
+		expect(picker._calDiv.querySelector('.nextMonthButton').getAttribute('aria-label')).toBe('Next month');
+	});
+
+	it('server-sent translations override the label defaults', () => {
+		// The PHP side sends these options only when Prado::localize() changes them
+		const id = nextId();
+		buildDOM(id);
+		const localized = new TDatePicker(makeOptions(id, {
+			CalendarLabel: 'Kalender',
+			MonthLabel: 'Monat',
+			YearLabel: 'Jahr',
+			PrevMonthLabel: 'Voriger Monat',
+			NextMonthLabel: 'Nächster Monat',
+		}));
+		localized.create();
+		expect(localized._calDiv.getAttribute('aria-label')).toBe('Kalender');
+		expect(localized._monthSelect.getAttribute('aria-label')).toBe('Monat');
+		expect(localized._yearSelect.getAttribute('aria-label')).toBe('Jahr');
+		expect(localized._calDiv.querySelector('.prevMonthButton').getAttribute('aria-label')).toBe('Voriger Monat');
+		expect(localized._calDiv.querySelector('.nextMonthButton').getAttribute('aria-label')).toBe('Nächster Monat');
+		document.getElementById(`${id}_container`)?.remove();
+		delete global.Prado.Registry[id];
+	});
+
+	it('points aria-activedescendant at the selected cell and announces the date', () => {
+		picker.show();
+		picker.setSelectedDate(new Date(2020, 9, 20)); // Oct 20 2020
+		const cell = picker._calDiv.querySelector('td[aria-selected="true"]');
+		expect(cell.id).toMatch(new RegExp(`^${picker.options.ID}_day\\d+$`));
+		expect(picker.control.getAttribute('aria-activedescendant')).toBe(cell.id);
+		expect(picker._liveRegion.textContent).toBe('October 20, 2020');
+		picker.hide();
+		expect(picker.control.hasAttribute('aria-activedescendant')).toBe(false);
+	});
+
 	it('_calDiv has a calendarBody child', () => {
 		const body = picker._calDiv.querySelector('.calendarBody');
 		expect(body).not.toBeNull();
@@ -927,7 +1011,85 @@ describe('TDatePicker#show and hide', () => {
 	});
 });
 
-// ─── getDateFromInput ─────────────────────────────────────────────────────────
+// ─── document click listener lifecycle ────────────────────────────────────────
+
+describe('TDatePicker document click listener', () => {
+	let picker, addSpy, removeSpy;
+	const id = nextId();
+
+	/** Net number of body click listeners the picker has added. */
+	const netBodyClicks = () =>
+		addSpy.mock.calls.filter(c => c[0] === 'click').length
+		- removeSpy.mock.calls.filter(c => c[0] === 'click').length;
+
+	/** Body click entries in the picker's observer list. */
+	const bodyClickObservers = () =>
+		picker.observers.filter(o => o._element === document.body && o._eventName === 'click');
+
+	beforeEach(() => {
+		vi.useFakeTimers();
+		buildDOM(id);
+		picker = new TDatePicker(makeOptions(id));
+		addSpy = vi.spyOn(document.body, 'addEventListener');
+		removeSpy = vi.spyOn(document.body, 'removeEventListener');
+	});
+
+	afterEach(() => {
+		picker.showing && picker.hide();
+		vi.runAllTimers();
+		vi.useRealTimers();
+		addSpy.mockRestore();
+		removeSpy.mockRestore();
+		document.getElementById(`${id}_container`)?.remove();
+		delete global.Prado.Registry[id];
+	});
+
+	it('attaches one listener on the tick after show()', () => {
+		picker.show();
+		expect(bodyClickObservers()).toHaveLength(0);
+		vi.runAllTimers();
+		expect(bodyClickObservers()).toHaveLength(1);
+		expect(netBodyClicks()).toBe(1);
+	});
+
+	it('removes the listener on hide()', () => {
+		picker.show();
+		vi.runAllTimers();
+		picker.hide();
+		expect(bodyClickObservers()).toHaveLength(0);
+		expect(netBodyClicks()).toBe(0);
+	});
+
+	it('leaves no listener when hide() runs before the deferred attach', () => {
+		picker.show();
+		picker.hide();
+		vi.runAllTimers();
+		expect(bodyClickObservers()).toHaveLength(0);
+		expect(netBodyClicks()).toBe(0);
+	});
+
+	it('attaches one listener when show() runs twice', () => {
+		picker.show();
+		picker.show();
+		vi.runAllTimers();
+		expect(bodyClickObservers()).toHaveLength(1);
+		expect(netBodyClicks()).toBe(1);
+	});
+
+	it('attaches one listener for show(), hide(), show() in one task', () => {
+		picker.show();
+		picker.hide();
+		picker.show();
+		vi.runAllTimers();
+		expect(bodyClickObservers()).toHaveLength(1);
+		expect(bodyClickObservers()[0]._handler).toBe(picker.documentClickEvent);
+		picker.hide();
+		expect(bodyClickObservers()).toHaveLength(0);
+		expect(netBodyClicks()).toBe(0);
+	});
+});
+
+// ─── getDateFromInput─────────────────────────────────────────────────────────
 
 describe('TDatePicker#getDateFromInput', () => {
 	let picker;
@@ -1119,6 +1281,7 @@ describe('TDatePicker#selectDate', () => {
 describe('TDatePicker#mouseWheelChange', () => {
 	let picker;
 	const id = nextId();
+	const wheel = (props) => Object.assign({ preventDefault: vi.fn(), stopPropagation: vi.fn() }, props);
 
 	beforeEach(() => {
 		buildDOM(id);
@@ -1133,24 +1296,38 @@ describe('TDatePicker#mouseWheelChange', () => {
 	});
 
 	it('scrolling forward (wheelDelta positive) moves to next month', () => {
-		picker.mouseWheelChange({ wheelDelta: 120 });
+		picker.mouseWheelChange(wheel({ wheelDelta: 120 }));
 		expect(picker.selectedDate.getMonth()).toBe(6); // July
 	});
 
 	it('scrolling backward (wheelDelta negative) moves to prev month', () => {
-		picker.mouseWheelChange({ wheelDelta: -120 });
+		picker.mouseWheelChange(wheel({ wheelDelta: -120 }));
 		expect(picker.selectedDate.getMonth()).toBe(4); // May
 	});
 
 	it('scrolling forward using detail (Firefox) moves to prev month', () => {
 		// detail > 0 means scroll down → prev month
-		picker.mouseWheelChange({ detail: 3 });
+		picker.mouseWheelChange(wheel({ detail: 3 }));
 		expect(picker.selectedDate.getMonth()).toBe(4); // May
 	});
 
 	it('returns false', () => {
-		const result = picker.mouseWheelChange({ wheelDelta: 120 });
+		const result = picker.mouseWheelChange(wheel({ wheelDelta: 120 }));
 		expect(result).toBe(false);
+	});
+
+	it('keeps a wheel event over the calendar from scrolling the page', () => {
+		const event = new Event('DOMMouseScroll', { bubbles: true, cancelable: true });
+		Object.defineProperty(event, 'detail', { value: -3 });
+		const outer = vi.fn();
+		document.body.addEventListener('DOMMouseScroll', outer);
+
+		picker._calDiv.dispatchEvent(event);
+		document.body.removeEventListener('DOMMouseScroll', outer);
+
+		expect(event.defaultPrevented).toBe(true);
+		expect(outer).not.toHaveBeenCalled();
+		expect(picker.selectedDate.getMonth()).toBe(6); // July
 	});
 });
 
@@ -1378,7 +1555,7 @@ describe('TDatePicker OnDateChanged callback — TextBox mode', () => {
 		picker.create();
 
 		picker.control.value = '2024-07-04';
-		jQuery(picker.control).trigger('change');
+		picker.control.dispatchEvent(new Event('change', { bubbles: true }));
 
 		expect(cb).toHaveBeenCalledTimes(1);
 		const [ref, dateStr] = cb.mock.calls[0];
@@ -1563,6 +1740,147 @@ describe('TDatePicker leap-year and boundary edge cases', () => {
 		picker.prevMonth();
 		expect(picker.selectedDate.getFullYear()).toBe(2023);
 		expect(picker.selectedDate.getMonth()).toBe(11);
+	});
+});
+
+// ─── getPositioningParent ─────────────────────────────────────────────────────
+
+describe('TDatePicker#getPositioningParent', () => {
+	let picker;
+	const id = nextId();
+
+	beforeEach(() => {
+		picker = makePicker(id);
+	});
+
+	afterEach(() => {
+		document.getElementById(`${id}_container`)?.remove();
+		delete global.Prado.Registry[id];
+	});
+
+	it('returns null when no positioned ancestor exists', () => {
+		const el = document.createElement('div');
+		document.body.appendChild(el);
+		expect(picker.getPositioningParent(el)).toBeNull();
+		el.remove();
+	});
+
+	it('returns the nearest ancestor with position:relative', () => {
+		const outer = document.createElement('div');
+		const inner = document.createElement('div');
+		const el    = document.createElement('span');
+		outer.appendChild(inner);
+		inner.appendChild(el);
+		inner.style.position = 'relative';
+		document.body.appendChild(outer);
+
+		expect(picker.getPositioningParent(el)).toBe(inner);
+
+		outer.remove();
+	});
+
+	it('returns the nearest ancestor with position:absolute', () => {
+		const wrapper = document.createElement('div');
+		const el      = document.createElement('span');
+		wrapper.appendChild(el);
+		wrapper.style.position = 'absolute';
+		document.body.appendChild(wrapper);
+
+		expect(picker.getPositioningParent(el)).toBe(wrapper);
+
+		wrapper.remove();
+	});
+
+	it('returns the nearest non-static ancestor when multiple non-static ancestors exist', () => {
+		// Both ancestors are positioned; the nearest one (inner) must win.
+		const outer = document.createElement('div');
+		const inner = document.createElement('div');
+		const el    = document.createElement('span');
+		outer.style.position = 'relative';
+		inner.style.position = 'absolute';
+		outer.appendChild(inner);
+		inner.appendChild(el);
+		document.body.appendChild(outer);
+
+		expect(picker.getPositioningParent(el)).toBe(inner);
+
+		outer.remove();
+	});
+
+	it('returns null when element is a direct child of body', () => {
+		const el = document.createElement('div');
+		document.body.appendChild(el);
+		expect(picker.getPositioningParent(el)).toBeNull();
+		el.remove();
+	});
+});
+
+// ─── show() popup positioning ─────────────────────────────────────────────────
+
+describe('TDatePicker#show — popup positioning', () => {
+	let picker;
+	const id = nextId();
+
+	afterEach(() => {
+		picker?.showing && picker.hide();
+		document.getElementById(`${id}_container`)?.remove();
+		delete global.Prado.Registry[id];
+	});
+
+	it('sets _calDiv.style.top and left to numeric-pixel values after show()', () => {
+		buildDOM(id);
+		picker = new TDatePicker(makeOptions(id));
+		picker.show();
+
+		const top  = picker._calDiv.style.top;
+		const left = picker._calDiv.style.left;
+		// Must be set to a CSS pixel value (e.g. "0px"), not empty or "NaNpx"
+		expect(top).toMatch(/^-?\d+(\.\d+)?px$/);
+		expect(left).toMatch(/^-?\d+(\.\d+)?px$/);
+	});
+
+	it('positions relative to a non-static positioning parent', () => {
+		// Build DOM with a positioned container
+		const container = document.createElement('div');
+		container.id = `${id}_container`;
+		container.style.position = 'relative';
+
+		const input = document.createElement('input');
+		input.type = 'text';
+		input.id = id;
+		container.appendChild(input);
+		document.body.appendChild(container);
+
+		// Stub getBoundingClientRect so the positioned parent has a non-zero offset
+		const origInputRect    = input.getBoundingClientRect.bind(input);
+		const origContainerRect = container.getBoundingClientRect.bind(container);
+		input.getBoundingClientRect     = () => ({ top: 150, left: 80, bottom: 174, right: 200, width: 120, height: 24 });
+		container.getBoundingClientRect = () => ({ top: 100, left: 50, bottom: 400, right: 500, width: 450, height: 300 });
+
+		picker = new TDatePicker(makeOptions(id));
+		picker.show();
+
+		// top = rect.top - parentRect.top = 150 - 100 = 50
+		// left = rect.left - parentRect.left = 80 - 50 = 30
+		// (Bottom mode adds getDatePickerOffsetHeight() - 1, which in jsdom is -1)
+		const expectedLeft = 30;
+		expect(picker._calDiv.style.left).toBe(`${expectedLeft}px`);
+
+		input.getBoundingClientRect     = origInputRect;
+		container.getBoundingClientRect = origContainerRect;
+	});
+
+	it('positions relative to the initial containing block when all ancestors are static', () => {
+		buildDOM(id);
+		picker = new TDatePicker(makeOptions(id));
+
+		const input = picker.control;
+		input.getBoundingClientRect = () => ({ top: 200, left: 40, bottom: 224, right: 160, width: 120, height: 24 });
+
+		picker.show();
+
+		// No positioned ancestor → posParent = null → left = rect.left + pageXOffset = 40 + 0 = 40
+		expect(picker._calDiv.style.left).toBe('40px');
 	});
 });
 

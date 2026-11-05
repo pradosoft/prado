@@ -115,11 +115,15 @@ abstract class TDbMetaData extends \Prado\TComponent implements IDbMetaData
 	 * raised on the connection (with the driver name as the parameter) to allow
 	 * third-party extensions to supply a custom metadata handler class.
 	 *
+	 * The handler is an {@see IDataMetaData}: the built-in SQL drivers return a
+	 * TDbMetaData subclass, and a handler supplied by a Prado Data plugin may
+	 * implement {@see IDataMetaData} without extending TDbMetaData.
+	 *
 	 * @param \Prado\Data\TDbConnection $connection database connection.
 	 * @throws TDbException if no metadata handler can be created for the driver.
-	 * @return ?TDbMetaData database-specific SQL metadata handler.
+	 * @return ?IDataMetaData database-specific metadata handler.
 	 */
-	public static function getInstance($connection): ?TDbMetaData
+	public static function getInstance($connection): ?IDataMetaData
 	{
 		$connection->setActive(true); //must be connected before retrieving driver name
 		$class = TDbDriverCapabilities::getMetaDataClass($connection);

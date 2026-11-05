@@ -1,11 +1,10 @@
 /*! PRADO TActiveDatePicker javascript file | github.com/pradosoft/prado */
 
-Prado.WebUI.TActiveDatePicker = jQuery.klass(Prado.WebUI.TDatePicker,
+Prado.WebUI.TActiveDatePicker = Prado.Class(Prado.WebUI.TDatePicker,
 {
-	onInit : function(options)
-	{
+	onInit(options) {
 		this.options = options || [];
-		this.control = jQuery('#'+options.ID).get(0);
+		this.control = document.getElementById(options.ID);
 		this.dateSlot = new Array(42);
 		this.weekSlot = new Array(6);
 		this.minimalDaysInFirstWeek	= 4;
@@ -14,10 +13,10 @@ Prado.WebUI.TActiveDatePicker = jQuery.klass(Prado.WebUI.TDatePicker,
 
 
 		//which element to trigger to show the calendar
-		var triggerEvent;
+		let triggerEvent;
 		if(this.options.Trigger)
 		{
-			this.trigger = jQuery('#'+this.options.Trigger).get(0) ;
+			this.trigger = document.getElementById(this.options.Trigger);
 			triggerEvent = this.options.TriggerEvent || "click";
 		}
 		else
@@ -32,24 +31,24 @@ Prado.WebUI.TActiveDatePicker = jQuery.klass(Prado.WebUI.TDatePicker,
 			this.positionMode = this.options.PositionMode;
 		}
 
-		jQuery.extend(this,options);
+		Object.assign(this, options);
 
 		if (this.options.ShowCalendar)
-			this.observe(this.trigger, triggerEvent, jQuery.proxy(this.show,this));
+			this.observe(this.trigger, triggerEvent, this.show.bind(this));
 
 		// Listen to change event
 		if(this.options.InputMode == "TextBox")
 		{
-			this.observe(this.control, "change", jQuery.proxy(this.onDateChanged,this));
+			this.observe(this.control, "change", this.onDateChanged.bind(this));
 		}
 		else
 		{
-			var day = Prado.WebUI.TDatePicker.getDayListControl(this.control);
-			var month = Prado.WebUI.TDatePicker.getMonthListControl(this.control);
-			var year = Prado.WebUI.TDatePicker.getYearListControl(this.control);
-			if (day) this.observe (day, "change", jQuery.proxy(this.onDateChanged,this));
-			if (month) this.observe (month, "change", jQuery.proxy(this.onDateChanged,this));
-			if (year) this.observe (year, "change", jQuery.proxy(this.onDateChanged,this));
+			const day = Prado.WebUI.TDatePicker.getDayListControl(this.control);
+			const month = Prado.WebUI.TDatePicker.getMonthListControl(this.control);
+			const year = Prado.WebUI.TDatePicker.getYearListControl(this.control);
+			if (day) this.observe (day, "change", this.onDateChanged.bind(this));
+			if (month) this.observe (month, "change", this.onDateChanged.bind(this));
+			if (year) this.observe (year, "change", this.onDateChanged.bind(this));
 
 		}
 
@@ -58,20 +57,19 @@ Prado.WebUI.TActiveDatePicker = jQuery.klass(Prado.WebUI.TDatePicker,
 	// Respond to change event on the textbox or dropdown list
 	// This method raises OnDateChanged event on client side if it has been defined,
 	// and raise the callback request
-	onDateChanged : function ()
-	{
-		var date;
+	onDateChanged() {
+		let date;
 		if (this.options.InputMode == "TextBox")
 		{
 			date=this.control.value;
 		 }
 		 else
 		 {
-		 	var day = Prado.WebUI.TDatePicker.getDayListControl(this.control);
+		 	let day = Prado.WebUI.TDatePicker.getDayListControl(this.control);
 			if (day) day=day.selectedIndex+1;
-			var month = Prado.WebUI.TDatePicker.getMonthListControl(this.control);
+			let month = Prado.WebUI.TDatePicker.getMonthListControl(this.control);
 			if (month) month=month.selectedIndex;
-			var year = Prado.WebUI.TDatePicker.getYearListControl(this.control);
+			let year = Prado.WebUI.TDatePicker.getYearListControl(this.control);
 			if (year) year=year.value;
 			date=new Date(year, month, day, 0,0,0).SimpleFormat(this.Format, this);
 		}
@@ -80,7 +78,7 @@ Prado.WebUI.TActiveDatePicker = jQuery.klass(Prado.WebUI.TDatePicker,
 		if(this.options['AutoPostBack']==true)
 		{
 			// Make callback request
-			var request = new Prado.CallbackRequest(this.options.EventTarget,this.options);
+			const request = new Prado.CallbackRequest(this.options.EventTarget,this.options);
 			request.dispatch();
 		}
 	}

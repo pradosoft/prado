@@ -31,6 +31,6 @@ None beyond those inherited from [TTemplate](./TTemplate.md).
 - **Identical API to `TTemplate`** — callers use this exactly like `TTemplate`; the only difference is internal validation behavior.
 - **Used by `TTheme`** — [TTheme](./TTheme.md) uses `TSkinTemplate` (not `TTemplate`) when parsing `.skin` files so that themes remain loadable even in environments where some control classes are absent.
 - **`$sourceTemplate = true` default** — skin files are always treated as source templates (loaded from external storage), consistent with `TTemplate`'s usage conventions.
-- **`@since 4.2.0`** — introduced in 4.2.0 as a separation of skin-parsing behavior from regular template parsing.
+- **@since 4.2.0** — introduced in 4.2.0 as a separation of skin-parsing behavior from regular template parsing.
 
 (End of file - total 31 lines)

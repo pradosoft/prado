@@ -20,6 +20,7 @@ use Prado\Data\TDataSourceConfig;
 use Prado\Data\TDbPropertiesTrait;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;
+use Prado\Util\Clock\TApplicationClockAwareTrait;
 
 /**
  * MessageSource_Database class.
@@ -32,6 +33,7 @@ use Prado\Prado;
 class MessageSource_Database extends MessageSource
 {
 	use TDbPropertiesTrait;
+	use TApplicationClockAwareTrait;
 
 	/**
 	 * Constructor.
@@ -156,7 +158,7 @@ class MessageSource_Database extends MessageSource
 	/**
 	 * Retrive catalogue details, array($cat_id, $variant, $count).
 	 * @param string $catalogue
-	 * @return array catalogue details, array($cat_id, $variant, $count).
+	 * @return array|false catalogue details, array($cat_id, $variant, $count).
 	 */
 	private function getCatalogueDetails($catalogue = 'messages')
 	{
@@ -193,13 +195,13 @@ class MessageSource_Database extends MessageSource
 	 */
 	private function updateCatalogueTime($cat_id, $variant)
 	{
-		$time = time();
+		$time = $this->getClock()->time();
 		$command = $this->getDbConnection()->createCommand(
 			'UPDATE catalogue SET date_modified = :moddate WHERE cat_id = :catid'
 		);
 		$command->bindParameter(':moddate', $time, $command->getConnection()::PARAM_INT);
 		$command->bindParameter(':catid', $cat_id, $command->getConnection()::PARAM_INT);
-		$result = $command->execute();
+		$result = ($command->execute() > 0);
 
 		if (!empty($this->cache)) {
 			$this->cache->clean($variant, $this->culture);
@@ -236,7 +238,7 @@ class MessageSource_Database extends MessageSource
 		}
 		$inserted = 0;
 
-		$time = time();
+		$time = $this->getClock()->time();
 
 		$command = $this->getDbConnection()->createCommand(
 			'INSERT INTO trans_unit (cat_id,id,source,date_added) VALUES (:catid,:id,:source,:dateadded)'
@@ -301,7 +303,7 @@ class MessageSource_Database extends MessageSource
 			return false;
 		}
 
-		$time = time();
+		$time = $this->getClock()->time();
 		$command = $this->getDbConnection()->createCommand(
 			'UPDATE trans_unit SET target = :target, comments = :comments, date_modified = :datemod
 					WHERE cat_id = :catid AND source = :source'

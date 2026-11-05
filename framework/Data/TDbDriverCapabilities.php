@@ -11,9 +11,7 @@
 namespace Prado\Data;
 
 use PDO;
-use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TDbException;
-use Prado\Data\ActiveRecord\Scaffold\InputBuilder\IScaffoldInput;
 use Prado\Data\Common\Firebird\TFirebirdMetaData;
 use Prado\Data\Common\Ibm\TIbmMetaData;
 use Prado\Data\Common\IDataMetaData;
@@ -34,9 +32,9 @@ use Prado\Data\Common\Sqlite\TSqliteMetaData;
  * constants are defined in {@see TDbDriver}.
  *
  * This class replaces the driver-branching logic that was previously scattered
- * across {@see TDbConnection}, {@see TDbTransaction},
- * {@see \Prado\Data\Common\TDbMetaData}, and
- * {@see \Prado\Data\ActiveRecord\Scaffold\InputBuilder\TScaffoldInputBase}.
+ * across {@see TDbConnection}, {@see TDbTransaction}, and
+ * {@see \Prado\Data\Common\TDbMetaData}.  Scaffold input selection has moved
+ * with Active Record to the prado-activerecord package.
  *
  * Capability groups:
  *  - **Charset resolution** — {@see resolveCharset}, {@see getCharsetSetSql},
@@ -52,14 +50,12 @@ use Prado\Data\Common\Sqlite\TSqliteMetaData;
  *    {@see requiresUntypedParameters}
  *  - **Post-connect SQL setup** — {@see getPostConnectSql}
  *  - **MetaData factory** — {@see getMetaDataClass}
- *  - **Scaffold input factory** — {@see getScaffoldInputFile},
- *    {@see getScaffoldInputClass}, {@see createScaffoldInput}
  *
- * ## Extensibility via global fx events
+ * ## Extensibility via a global fx event
  *
- * Two `fx` global events allow third-party code to extend the built-in driver
- * tables.  Both are raised on the connection with the driver name string as
- * the parameter, and the raising logic is fully encapsulated in this class so
+ * An `fx` global event allows third-party code to extend the built-in driver
+ * table.  It is raised on the connection with the driver name string as the
+ * parameter, and the raising logic is fully encapsulated in this class so
  * callers never need to call `raiseEvent` themselves:
  *
  * - **`fxDataGetMetaDataClass`** — raised by {@see getMetaDataClass} when no
@@ -67,12 +63,6 @@ use Prado\Data\Common\Sqlite\TSqliteMetaData;
  *   connection; parameter is the driver name string.  Handlers must return a
  *   fully-qualified class name implementing {@see \Prado\Data\Common\IDataMetaData}.
  *   The last returned value wins.
- * - **`fxActiveRecordScaffoldInputClass`** — raised by {@see createScaffoldInput}
- *   when no built-in scaffold input file is registered for the driver.  Sender
- *   is the connection; parameter is the driver name string.  Handlers must
- *   return the **fully-qualified class name** of a class that implements
- *   {@see \Prado\Data\ActiveRecord\Scaffold\InputBuilder\IScaffoldInput}.
- *   The first returned value wins.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0
@@ -1081,114 +1071,5 @@ class TDbDriverCapabilities
 			throw new TDbException('dbmetadata_not_meta_data', is_string($class) ? $class : $class::class, IDataMetaData::class);
 		}
 		return $class;
-	}
-
-	// =========================================================================
-	//  Scaffold input factory
-	// =========================================================================
-
-	/**
-	 * Returns the relative file path (relative to the InputBuilder directory) for
-	 * the scaffold input class appropriate for the given driver, or null when no
-	 * built-in handler exists.
-	 *
-	 * These files are loaded via `require_once` rather than PSR-4 autoloading.
-	 * {@see createScaffoldInput} uses this path together with
-	 * {@see getScaffoldInputClass} to load and instantiate the driver-specific
-	 * class without going through the `fxActiveRecordScaffoldInputClass` event.
-	 *
-	 * @param string $driver PDO driver name (lowercase)
-	 * @return ?string e.g. '/TMysqlScaffoldInput.php', or null
-	 */
-	public static function getScaffoldInputFile(string $driver): ?string
-	{
-		return match ($driver) {
-			TDbDriver::DRIVER_MYSQL => '/TMysqlScaffoldInput.php',
-			TDbDriver::DRIVER_SQLITE2,
-			TDbDriver::DRIVER_SQLITE => '/TSqliteScaffoldInput.php',
-			TDbDriver::DRIVER_PGSQL => '/TPgsqlScaffoldInput.php',
-			TDbDriver::DRIVER_INTERBASE,
-			TDbDriver::DRIVER_FIREBIRD => '/TFirebirdScaffoldInput.php',
-			TDbDriver::DRIVER_DBLIB,
-			TDbDriver::DRIVER_SQLSRV => '/TSqlSrvScaffoldInput.php',
-			TDbDriver::DRIVER_OCI => '/TOracleScaffoldInput.php',
-			TDbDriver::DRIVER_IBM => '/TIbmScaffoldInput.php',
-			default => null,
-		};
-	}
-
-	/**
-	 * Returns the unqualified class name of the scaffold input builder appropriate
-	 * for the given driver, or null when no built-in handler exists.
-	 *
-	 * Use {@see createScaffoldInput} to get a complete scaffold input instance,
-	 * including the `fxActiveRecordScaffoldInputClass` event fallback for
-	 * unknown drivers.
-	 *
-	 * @param string $driver PDO driver name (lowercase)
-	 * @return ?string e.g. 'TMysqlScaffoldInput', or null
-	 */
-	public static function getScaffoldInputClass(string $driver): ?string
-	{
-		return match ($driver) {
-			TDbDriver::DRIVER_MYSQL => 'TMysqlScaffoldInput',
-			TDbDriver::DRIVER_SQLITE2,
-			TDbDriver::DRIVER_SQLITE => 'TSqliteScaffoldInput',
-			TDbDriver::DRIVER_PGSQL => 'TPgsqlScaffoldInput',
-			TDbDriver::DRIVER_INTERBASE,
-			TDbDriver::DRIVER_FIREBIRD => 'TFirebirdScaffoldInput',
-			TDbDriver::DRIVER_DBLIB,
-			TDbDriver::DRIVER_SQLSRV => 'TSqlSrvScaffoldInput',
-			TDbDriver::DRIVER_OCI => 'TOracleScaffoldInput',
-			TDbDriver::DRIVER_IBM => 'TIbmScaffoldInput',
-			default => null,
-		};
-	}
-
-	/**
-	 * Resolves and instantiates the scaffold input builder for a connection.
-	 *
-	 * Built-in drivers (mysql, sqlite[2], pgsql, firebird/interbase, sqlsrv/dblib,
-	 * oci, ibm) are resolved via {@see getScaffoldInputFile} and
-	 * {@see getScaffoldInputClass}; the file is loaded with `require_once`
-	 * (these classes are not PSR-4 autoloaded) and the class is instantiated.
-	 * When the driver is unknown, the **`fxActiveRecordScaffoldInputClass`**
-	 * global event is raised on `$connection` with the lower-cased driver name
-	 * as its single argument; the **first** value returned by any handler wins.
-	 * Handlers must return a fully-qualified class name string implementing
-	 * {@see IScaffoldInput} (the instance is created here, not by the handler).
-	 *
-	 * This method fully encapsulates the `fxActiveRecordScaffoldInputClass`
-	 * event so callers (e.g.
-	 * {@see \Prado\Data\ActiveRecord\Scaffold\InputBuilder\TScaffoldInputBase::createInputBuilder})
-	 * never need to call `raiseEvent` themselves.
-	 *
-	 * @param TDbConnection $connection the active connection; driver name is
-	 *   derived via {@see TDbConnection::getDriverName()}.
-	 * @throws TConfigurationException when the driver is unknown and no handler
-	 *   supplies a valid class name, or a handler returns an instance instead
-	 *   of a class-name string.
-	 * @return IScaffoldInput the scaffold input builder instance.
-	 */
-	public static function createScaffoldInput(TDbConnection $connection): IScaffoldInput
-	{
-		$driver = strtolower($connection->getDriverName());
-		$file = static::getScaffoldInputFile($driver);
-		$class = static::getScaffoldInputClass($driver);
-		if ($file !== null && $class !== null) {
-			require_once(__DIR__ . '/ActiveRecord/Scaffold/InputBuilder' . $file);
-			return new $class();
-		}
-		$inputClasses = $connection->raiseEvent('fxActiveRecordScaffoldInputClass', $connection, $driver);
-		if (empty($inputClasses)) {
-			// @todo v4.4 TActiveRecordConfigurationException, move message
-			throw new TConfigurationException('ar_invalid_database_driver', $driver);
-		}
-		$class = $inputClasses[0];
-		if (!is_string($class) || !is_a($class, IScaffoldInput::class, true)) {
-			// @todo v4.4 TActiveRecordConfigurationException, move message
-			throw new TConfigurationException('ar_not_input_base', is_string($class) ? $class : $class::class, IScaffoldInput::class);
-		}
-		return new $class();
 	}
 }

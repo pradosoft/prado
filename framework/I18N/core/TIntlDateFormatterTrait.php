@@ -32,31 +32,38 @@ trait TIntlDateFormatterTrait
 
 
 	/**
-	 * Formats the localized date and/or time
-	 * If the culture is not specified, the default application
-	 * culture will be used.
-	 * @param string $culture The Culture to get the format information about.
-	 * @param int $datetype The format of the date components, eg \IntlDateFormatter::LONG
-	 * @param int $timetype The format of the date components, eg \IntlDateFormatter::SHORT
-	 * @return \IntlDateFormatter
-	 * @see Format Types - Constants @ https://www.php.net/manual/en/class.intldateformatter.php
+	 * Returns a cached `IntlDateFormatter` for the given locale, date type, time type,
+	 * and optional ICU pattern.
+	 *
+	 * When `$pattern` is `null`, the formatter uses the locale's default format for the
+	 * given `$datetype`/`$timetype` combination. When `$pattern` is a non-empty string,
+	 * `$datetype` and `$timetype` are both treated as `IntlDateFormatter::NONE` and the
+	 * pattern is applied via `IntlDateFormatter::setPattern()`. Returns `null` when the
+	 * `IntlDateFormatter` extension is unavailable.
+	 *
+	 * @param string $culture BCP 47 locale tag (e.g. `'en_US'`)
+	 * @param int $datetype date component format constant (e.g. `\IntlDateFormatter::LONG`)
+	 * @param int $timetype time component format constant (e.g. `\IntlDateFormatter::SHORT`)
+	 * @param ?string $pattern ICU datetime pattern (e.g. `'MMMM d, yyyy'`); `null` for locale default. @since 4.4.0
+	 * @return ?\IntlDateFormatter cached formatter instance, or `null` when unavailable
+	 * @see https://www.php.net/manual/en/class.intldateformatter.php
 	 */
-	protected function getIntlDateFormatter($culture, $datetype, $timetype)
+	protected function getIntlDateFormatter($culture, $datetype, $timetype, $pattern = null)
 	{
 		if (!class_exists('IntlDateFormatter')) {
 			return null;
 		}
 
-		if (!isset(self::$formatters[$culture])) {
-			self::$formatters[$culture] = [];
-		}
-		if (!isset(self::$formatters[$culture][$datetype])) {
-			self::$formatters[$culture][$datetype] = [];
-		}
-		if (!isset(self::$formatters[$culture][$datetype][$timetype])) {
-			self::$formatters[$culture][$datetype][$timetype] = new \IntlDateFormatter($culture, $datetype, $timetype);
+		$patternKey = $pattern ?? '';
+
+		if (!isset(self::$formatters[$culture][$datetype][$timetype][$patternKey])) {
+			$formatter = new \IntlDateFormatter($culture, $datetype, $timetype);
+			if ($pattern !== null) {
+				$formatter->setPattern($pattern);
+			}
+			self::$formatters[$culture][$datetype][$timetype][$patternKey] = $formatter;
 		}
 
-		return self::$formatters[$culture][$datetype][$timetype];
+		return self::$formatters[$culture][$datetype][$timetype][$patternKey];
 	}
 }

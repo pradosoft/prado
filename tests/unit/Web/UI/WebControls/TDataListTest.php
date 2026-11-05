@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI\WebControls;
+
 use PHPUnit\Framework\TestCase;
 use Prado\IO\TTextWriter;
 use Prado\Web\UI\ITemplate;

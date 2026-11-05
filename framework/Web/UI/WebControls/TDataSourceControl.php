@@ -37,7 +37,7 @@ abstract class TDataSourceControl extends \Prado\Web\UI\TControl implements IDat
 
 	public function focus()
 	{
-		throw new TNotSupportedException('datasourcecontrol_focus_unsupported');
+		throw new TNotSupportedException('datasourcecontrol_focus_unsupported', $this::class);
 	}
 
 	public function getEnableTheming()
@@ -47,7 +47,7 @@ abstract class TDataSourceControl extends \Prado\Web\UI\TControl implements IDat
 
 	public function setEnableTheming($value)
 	{
-		throw new TNotSupportedException('datasourcecontrol_enabletheming_unsupported');
+		throw new TNotSupportedException('datasourcecontrol_enabletheming_unsupported', $this::class);
 	}
 
 	public function getSkinID()
@@ -57,7 +57,7 @@ abstract class TDataSourceControl extends \Prado\Web\UI\TControl implements IDat
 
 	public function setSkinID($value)
 	{
-		throw new TNotSupportedException('datasourcecontrol_skinid_unsupported');
+		throw new TNotSupportedException('datasourcecontrol_skinid_unsupported', $this::class);
 	}
 
 	public function getVisible($checkParents = true)
@@ -67,6 +67,6 @@ abstract class TDataSourceControl extends \Prado\Web\UI\TControl implements IDat
 
 	public function setVisible($value)
 	{
-		throw new TNotSupportedException('datasourcecontrol_visible_unsupported');
+		throw new TNotSupportedException('datasourcecontrol_visible_unsupported', $this::class);
 	}
 }

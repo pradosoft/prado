@@ -1,27 +1,23 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI\WebControls;
+
 use Prado\Web\UI\WebControls\TLabel;
 use Prado\Web\UI\WebControls\TTextBox;
 use Prado\Web\UI\THtmlWriter;
 use Prado\IO\TTextWriter;
 use Prado\Exceptions\TInvalidDataValueException;
 use PHPUnit\Framework\TestCase;
+use Prado\Test\Unit\Harness\Traits\TWebControlRenderTrait;
+use Prado\Test\Unit\PradoUnit;
 
 class TLabelTest extends TestCase
 {
-	private function render($control)
-	{
-		$tw = new TTextWriter();
-		$writer = new THtmlWriter($tw);
-		$control->render($writer);
-		return $tw->flush();
-	}
+	use TWebControlRenderTrait;
 
 	private function getTagName($label)
 	{
-		$method = new ReflectionMethod($label, 'getTagName');
-		$method->setAccessible(true);
-		return $method->invoke($label);
+		return PradoUnit::invoke($label, 'getTagName');
 	}
 
 	// ================================================================================
@@ -228,6 +224,18 @@ class TLabelTest extends TestCase
 		$label->renderContents($writer);
 
 		$this->assertEquals('Custom Text', $tw->flush());
+	}
+
+	public function testRenderContentsEncodesTextWhenEncode()
+	{
+		$label = new TLabel();
+		$this->assertFalse($label->getEncode());
+		$label->setText('<b>a & b</b>');
+		$this->assertSame('<b>a & b</b>', $this->renderContents($label));
+
+		$label->setEncode(true);
+		$this->assertTrue($label->getEncode());
+		$this->assertSame('&lt;b&gt;a & b&lt;/b&gt;', $this->renderContents($label));
 	}
 
 	public function testRenderContentsWithEmptyText()

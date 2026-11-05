@@ -175,7 +175,7 @@ class TPageService extends \Prado\TService
 	/**
 	 * Initializes the service.
 	 * This method is required by IService interface and is invoked by application.
-	 * @param \Prado\Xml\TXmlElement $config service configuration
+	 * @param null|array|\Prado\Xml\TXmlElement $config service configuration
 	 */
 	public function init($config)
 	{
@@ -222,7 +222,7 @@ class TPageService extends \Prado\TService
 				$condition = $this->evaluateExpression($condition);
 			}
 			if ($condition) {
-				if (($path = Prado::getPathOfNamespace($filePath, Prado::getApplication()->getConfigurationFileExt())) === null || !is_file($path)) {
+				if (($path = Prado::getPathOfNamespace($filePath, $this->getApplication()->getConfigurationFileExt())) === null || !is_file($path)) {
 					throw new TConfigurationException('pageservice_includefile_invalid', $filePath);
 				}
 				$c = new TPageConfiguration($pagePath);
@@ -325,7 +325,7 @@ class TPageService extends \Prado\TService
 	 */
 	public function getTemplateManager()
 	{
-		return Prado::getApplication()->getTemplateManager();
+		return $this->getApplication()->getTemplateManager();
 	}
 
 	/**
@@ -334,7 +334,7 @@ class TPageService extends \Prado\TService
 	 */
 	public function setTemplateManager(TTemplateManager $value)
 	{
-		Prado::getApplication()->setTemplateManager($value);
+		$this->getApplication()->setTemplateManager($value);
 	}
 
 	/**
@@ -343,7 +343,7 @@ class TPageService extends \Prado\TService
 	 */
 	public function getThemeManager()
 	{
-		return Prado::getApplication()->getThemeManager();
+		return $this->getApplication()->getThemeManager();
 	}
 
 	/**
@@ -352,7 +352,7 @@ class TPageService extends \Prado\TService
 	 */
 	public function setThemeManager(TThemeManager $value)
 	{
-		Prado::getApplication()->setThemeManager($value);
+		$this->getApplication()->setThemeManager($value);
 	}
 
 	/**
@@ -533,7 +533,7 @@ class TPageService extends \Prado\TService
 			$basePageClass = $this->getBasePageClass();
 			$className = Prado::usingClass($basePageClass);
 			if (!is_string($className)) {
-				throw new THttpException(404, 'pageservice_pageclass_unknown', $basePageClass);
+				throw new TConfigurationException('pageservice_pageclass_unknown', $basePageClass);
 			}
 		}
 
@@ -558,9 +558,7 @@ class TPageService extends \Prado\TService
 	 */
 	protected function runPage($page, $properties)
 	{
-		foreach ($properties as $name => $value) {
-			$page->setSubProperty($name, $value);
-		}
+		$page->setSubProperties($properties);
 		$this->onPreRunPage($page);
 		$page->run($this->getResponse()->createHtmlWriter());
 	}

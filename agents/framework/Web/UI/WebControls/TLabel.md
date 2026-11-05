@@ -14,7 +14,7 @@ TLabel implements `IDataRenderer` so it can participate in data-binding scenario
 
 TLabel is the base class for `TBaseValidator` and therefore all validator controls. The `ForControl` property is **blocked** (throws `TNotSupportedException`) in `TBaseValidator`.
 
-**Critical:** `Text` is NOT HTML-encoded before rendering. Avoid putting untrusted input directly into `Text`.
+**Critical:** `Text` renders as HTML unless `Encode` is true (4.4.0). Untrusted input in `Text` needs `Encode`.
 
 ## Inheritance
 
@@ -30,7 +30,8 @@ None specific to TLabel.
 
 | Property | Type | Default | Description |
 |---|---|---|---|
-| `Text` | string | `''` | Text to display. Rendered verbatim — NOT HTML-encoded. If empty, the body content of the label tag is rendered instead. |
+| `Text` | string | `''` | Text to display. Rendered as HTML unless `Encode` is true. If empty, the body content of the label tag is rendered instead. |
+| `Encode` | bool | `false` | Whether `Text` is HTML-encoded when rendered (4.4.0) |
 | `ForControl` | string | `''` | ID of the associated control (within the label's naming container). When set, renders `<label for="clientId">` and suppresses the label if the target is invisible. |
 
 ## Key Methods
@@ -42,7 +43,7 @@ None specific to TLabel.
 | `getForControl()` / `setForControl($value)` | Get/set the associated control ID. |
 | `getTagName()` | Returns `'label'` when `ForControl` is set, `'span'` otherwise. |
 | `render($writer)` | Overrides parent to implement the visibility check: resolves `ForControl` → checks target visibility → only renders if visible. Throws `TInvalidDataValueException` if `ForControl` is set but the control cannot be found. |
-| `renderContents($writer)` | Writes `Text` directly if non-empty; otherwise falls back to rendering child controls. |
+| `renderContents($writer)` | Writes `Text` if non-empty, HTML-encoded when `Encode` is true; otherwise falls back to rendering child controls. |
 | `addAttributesToRender($writer)` | Adds the `for` attribute (using the resolved client ID) when `ForControl` is non-empty. |
 
 ## Events
@@ -54,7 +55,7 @@ None beyond those inherited from `TWebControl`.
 - **`<label>` vs `<span>` tag** — The HTML tag changes dynamically based on whether `ForControl` is set. If `ForControl` is set but the referenced control cannot be found, a `TInvalidDataValueException` is thrown at render time.
 - **Visibility coupling** — When `ForControl` is set, TLabel delegates its own rendering visibility to the associated control's `getVisible(true)`. If the target is hidden (by any ancestor), the label disappears too.
 - **`for` attribute uses client ID** — The `for` attribute is set to `$control->getClientID()`, not the template `ID`. This is the namespaced form used in the DOM.
-- **Text is not encoded** — TLabel writes `Text` directly into the HTML stream. For user-supplied content, HTML-encode before assigning to `Text`.
+- **Text is HTML by default** — TLabel writes `Text` directly into the HTML stream. For user-supplied content, set `Encode="true"` or HTML-encode before assigning to `Text`.
 - **Body content fallback** — If `Text` is empty, child controls in the label's template are rendered as its content. Use this for labels containing mixed content (e.g., text + a `<span>`).
 - **Used as base by validators** — `TBaseValidator` extends TLabel. It overrides `setForControl()` to throw an exception, inherits `Text`/`ErrorMessage` rendering logic, and reuses label's `addAttributesToRender` plumbing.
 - **`IDataRenderer`** — Useful in `TRepeater`/`TDataList` scenarios where a renderer class is expected to expose a `Data` property.

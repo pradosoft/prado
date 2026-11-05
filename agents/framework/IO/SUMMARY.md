@@ -1,6 +1,6 @@
 # IO/SUMMARY.md
 
-Input/output utilities: text writer abstractions, archive extraction, and stream notifications.
+Input/output utilities: text writer abstractions, archive extraction, stream notifications, sockets, and the `Prado\IO\Async` async API (`IEventLoop`, `ITickableEventLoop`, `TRevoltEventLoop` over `revolt/event-loop`, `TLoopSuspension`; `TSocketReactor` is the dependency-free loop) with its primitives `TFuture`, `TDeferred`, `TCancellationToken`, `TFiberContext`, and the `TAsync` facade whose `sleep()` is the framework's one `\usleep()` site.
 
 ## Classes
 
@@ -12,8 +12,8 @@ Input/output utilities: text writer abstractions, archive extraction, and stream
 
 - **`TStdOutWriter`** — Writes to `STDOUT` stream (useful in CLI context).
 
-- **`TTarFileExtractor`** — Extracts TAR archives (local or remote `http://`/`ftp://` URLs); remote archives downloaded to temp file first; `extract($targetPath)` unpacks; `extractModify()` can rewrite extracted paths.
+- **`TTarFileExtractor`** — Extracts TAR archives (local or remote `http://`/`ftp://` URLs); `extract($targetPath)` supports atomic staging or direct rollback. Extraction and manifest-scan cleanup handle every `Throwable`.
 
-- **`TStreamNotificationCallback`** — Stream context notification handler for monitoring file downloads.
+- **`TStreamNotificationCallback`** — Stream context notification handler for monitoring file downloads; context callback lookup returns `null` when the notification key is absent.
 
 - **`TStreamNotificationParameter`** — Event parameter for stream notifications; properties: `notification`, `severity`, `message`, `messageCode`, `bytesTransferred`, `bytesMax`.

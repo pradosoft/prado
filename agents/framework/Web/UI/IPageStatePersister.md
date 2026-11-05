@@ -1,7 +1,7 @@
 # Web/UI/IPageStatePersister
 
 ### Directories
-[framework](./INDEX.md) / [Web](./Web/INDEX.md) / [UI](./Web/UI/INDEX.md) / **`IPageStatePersister`**
+[framework](../../INDEX.md) / [Web](../INDEX.md) / [UI](INDEX.md) / **`IPageStatePersister`**
 
 **Location:** `framework/Web/UI/IPageStatePersister.php`
 **Namespace:** `Prado\Web\UI`

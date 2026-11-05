@@ -158,5 +158,16 @@ Construction order matters: if `$discardInvalid = false` or (`null` + `$readOnly
 - **`getAutoGlobalListen()` is hard-coded false** — Do not override this. Allowing TWeakCallableCollection to listen to global events would cause infinite recursion during `fx` event dispatch.
 - **Inherited `$_d` structure** — Internal storage is `array<priority_string, callable[]>` where each callable may be a WeakReference-wrapped form. Never read `$_d` directly without filtering output; always go through the public API.
 - **`$_fd` flat cache** — Inherited from [TPriorityList](./TPriorityList.md). `scrubWeakReferences()` sets it to `null` after purging dead entries. `flattenPriorities()` regenerates it. The flat cache contains the weakened (un-resolved) callables; `filterItemsForOutput` is always applied before exposing them.
+- **Referent freed after the scrub** — PHP's cycle collector can free a referent between `scrubWeakReferences()` and `filterItemsForOutput`. With `DiscardInvalid` true, the array outputs (`toArray`, `toPriorityArray`, `toArrayBelowPriority`, `toArrayAbovePriority`, `getIterator`, `itemsAtPriority`) drop that entry and reindex. With `DiscardInvalid` false, the entry outputs as `null` so indices match `itemAt`. `TComponent::raiseEvent()` skips a `null` handler.
 - **Read-only + DiscardInvalid** — A read-only list can still have dead WeakReferences purged if `DiscardInvalid` is explicitly set to `true`. This is useful for lists that are fixed in content but still need to exclude GC'd handlers.
 - **Precision** — Priority precision is inherited from [TPriorityList](./TPriorityList.md) (default 8 decimal places). Priorities are stored as string-keyed array keys.
+- **Re-entrancy guard** — `scrubWeakReferences()` uses `isScrubbing()` / `setScrubbing()` from [TWeakCollectionTrait](./TWeakCollectionTrait.md) (added in 4.3.3) to prevent PHP's cyclic GC from triggering a nested scrub mid-loop.
+
+## See Also
+
+- [TPriorityList](./TPriorityList.md) — Base class
+- [TWeakCollectionTrait](./TWeakCollectionTrait.md) — WeakMap bookkeeping (isScrubbing/setScrubbing added 4.3.3)
+- [IWeakCollection](./IWeakCollection.md) — Marker interface
+- [ICollectionFilter](./ICollectionFilter.md) — Input/output conversion contract
+- [TWeakList](./TWeakList.md) — List variant (non-callable) with weak values
+- [TWeakMap](./TWeakMap.md) — Map variant with weak values

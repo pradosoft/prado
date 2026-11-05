@@ -43,6 +43,11 @@ use Prado\TPropertyValue;
  * javascript variable. You can use this event to update on client side a label with the current value
  * - ClientSide.onChange is called when the slider value has changed (at the end of a move).
  *
+ * The browser's own slider is a {@see TTextBox} with TextMode `Range`. It needs no
+ * script, takes `Min`, `Max`, and `Step`, and browsers expose it with the `slider`
+ * role and arrow-key control. TSlider renders a styled track and handle, a list of
+ * {@see setValues Values}, and the ClientSide events.
+ *
  * @author Christophe Boulain <Christophe.Boulain@gmail.com>
  * @since 3.1.1
  */
@@ -50,7 +55,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 {
 	public const MAX_STEPS = 200;
 	/*
-	 * @var boolean Wether the data has changed during postback
+	 * @var boolean Whether the data has changed during postback
 	 */
 	private $_dataChanged = false;
 	/**
@@ -143,7 +148,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @return bool wether to display a progress indicator or not. Defaults to true.
+	 * @return bool whether to display a progress indicator or not. Defaults to true.
 	 */
 	public function getProgressIndicator()
 	{
@@ -151,7 +156,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @param bool $value wether to display a progress indicator or not. Defaults to true.
+	 * @param bool $value whether to display a progress indicator or not. Defaults to true.
 	 */
 	public function setProgressIndicator($value)
 	{
@@ -384,9 +389,23 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 
 		$writer->renderEndTag();
 
-		// Render the 'Handle'
+		// Render the 'Handle' as the focusable slider: it carries the value
+		// semantics and the keyboard adjusts it.
 		$writer->addAttribute('class', 'Handle');
 		$writer->addAttribute('id', $this->getClientID() . '_handle');
+		$writer->addAttribute('role', 'slider');
+		$writer->addAttribute('aria-valuemin', (string) $this->getMinValue());
+		$writer->addAttribute('aria-valuemax', (string) $this->getMaxValue());
+		$writer->addAttribute('aria-valuenow', (string) $this->getValue());
+		$writer->addAttribute('aria-orientation', $this->getDirection() == TSliderDirection::Horizontal ? 'horizontal' : 'vertical');
+		if (($toolTip = $this->getToolTip()) !== '') {
+			$writer->addAttribute('aria-label', $toolTip);
+		}
+		if ($this->getEnabled(true)) {
+			$writer->addAttribute('tabindex', '0');
+		} else {
+			$writer->addAttribute('aria-disabled', 'true');
+		}
 		$writer->renderBeginTag('div');
 		$writer->renderEndTag();
 	}
@@ -450,6 +469,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 		$options['maximum'] = $maxValue;
 		$options['minimum'] = $minValue;
 		$options['range'] = [$minValue, $maxValue];
+		$options['step'] = $this->getStepSize();
 		$options['sliderValue'] = $this->getValue();
 		$options['disabled'] = !$this->getEnabled();
 		$values = $this->getValues();

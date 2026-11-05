@@ -12,17 +12,19 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 
 ### Input Controls
 
-- **`TButton`** — `<input type="submit">` or `<button>`; properties: `ButtonType`, `ButtonTag`, `CausesValidation`, `ValidationGroup`.
+- **`TButton`** — `<input type="submit">` or `<button>`; properties: `ButtonType`, `ButtonTag`, `CausesValidation`, `ValidationGroup`, `CommandFor` and `Command` (an invoker that opens or closes a dialog or popover without script).
 
 - **`TLinkButton`** — `<a>` with postback; same properties as TButton.
 
 - **`TImageButton`** — `<input type="image">`; sends x,y coordinates.
 
-- **`TTextBox`** — `<input>` or `<textarea>`; properties: `TextMode`, `MaxLength`, `ReadOnly`, `AutoPostBack`.
+- **`TTextBox`** — `<input>` or `<textarea>`; properties: `TextMode`, `MaxLength`, `ReadOnly`, `AutoPostBack`, `SuggestionList`.
 
 - **`TCheckBox`** / **`TRadioButton`** — properties: `Checked`, `TextAlign`, `AutoPostBack`, `OnCheckedChanged`.
 
 - **`TDropDownList`** / **`TListBox`** — properties: `SelectedIndex`, `SelectedValue`, `Items`.
+
+- **`TSuggestionList`** — `<datalist>` of suggested values for a `TTextBox`; properties: `Items`, `DataSource`.
 
 - **`TCheckBoxList`** / **`TRadioButtonList`** — properties: `RepeatLayout`, `RepeatColumns`, `RepeatDirection`.
 
@@ -30,11 +32,17 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 
 - **`THiddenField`** — properties: `Value`, `OnValueChanged`.
 
+- **`TUnsavedChangesGuard`** — Marks changed fields of its form or `ControlToWatch` and warns on leave through `beforeunload`, except for the form's own postbacks; `StatusText`, `markClean()`; JS in `controls/unsavedchanges.js`. @since 4.4.0
+
 ### Display Controls
 
 - **`TLabel`** — `<label>` or `<span>`; properties: `Text`, `For`.
 
+- **`TOutput`** — `<output>` result of a calculation; a `status` live region; properties: `Text`, `ForControl`.
+
 - **`TImage`** — `<img>`; properties: `ImageUrl`, `AlternateText`.
+
+- **`TDot`** — SVG status dot as `<img>` or inline `<svg>`; properties: `Color`, `Size`, `Flat`, `PublishStyle`, `AlternateText`.
 
 - **`THyperLink`** — `<a>`; properties: `NavigateUrl`, `Text`, `Target`.
 
@@ -50,15 +58,29 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 
 - **`TConditional`** — conditional rendering based on PHP expression.
 
+- **`TTime`** — HTML5 `<time>` element; localized absolute date/time and duration formatting via `IntlDateFormatter`/`CultureInfo`; properties: `DateTime`, `DateTimeFormat`, `TextFormat`.
+
+- **`TWebTemplate`** — HTML5 `<template>`; client-side stamping with `{{...}}` placeholders, or a declarative shadow root through `ShadowRootMode` (`TShadowRootMode`); JS in `controls/webtemplate.js`.
+
+- **`TSlot`** — HTML5 `<slot>` inside a shadow root; `Name` selects the light DOM children whose `slot` attribute (`TWebControl::Slot`) matches; content is the fallback.
+
+- **`TRelativeTime`** — Live "time ago" (`<time>`); extends `TTime`; client-composed localized relative text via `CultureInfo::getUnitPatterns()` + `Intl.PluralRules`; JS in `controls/relativetime.js`.
+
 ### Layout & Multi-View Controls
 
 - **`TMultiView`** / **`TView`** — Shows one child `TView` at a time; `ActiveViewIndex`.
 
 - **`TAccordion`** / **`TTabPanel`** / **`TSlider`** / **`TColorPicker`** / **`TDatePicker`** / **`TKeyboard`** / **`TRatingList`** — Widget controls with JS implementations.
 
+- **`TDialog`** — `<dialog>`; `Open`, `Modal`, `ClosedBy` (**`TDialogClosedBy`**: `Auto`, `Any`, `CloseRequest`, `None`); opened and closed by TButton invokers without script. @since 4.4.0
+
+- **`TTeleport`** — Renders its content after `</form>`, outside the page form, so a native `<form method="dialog">` works and overlays escape their ancestors; `TForm::registerTeleportContent()`; JS in `controls/teleport.js` joins its fields to the page form. @since 4.4.0
+
+- **`TSafetyCover`** — Panel content behind a click-to-open overlay (slide/collapse/none, optional fade), guarding against accidental clicks; JS in `controls/safetycover.js`. @since 4.4.0
+
 ### Data Controls
 
-- **`TDataGrid`** — Tabular display with paging/sorting/editing; column types: `TBoundColumn`, `TButtonColumn`, `TCheckBoxColumn`, `TDropDownListColumn`, `TTemplateColumn`.
+- **`TDataGrid`** — Tabular display with paging/sorting/editing; column types: `TBoundColumn`, `TButtonColumn`, `TCheckBoxColumn`, `TDropDownListColumn`, `TRowSelectColumn`, `TTemplateColumn`.
 
 - **`TDataList`** — Repeating item list with templates; `EditItemIndex` for inline editing.
 
@@ -70,7 +92,7 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 
 - **`TBaseValidator`** — Base class for all validators; properties: `ControlToValidate`, `ErrorMessage`, `Display`, `ValidationGroup`.
 
-- **`TRequiredFieldValidator`** / **`TCompareValidator`** / **`TRangeValidator`** / **`TRegularExpressionValidator`** / **`TCustomValidator`** / **`TEmailAddressValidator`** / **`TDataTypeValidator`** — Specific validation logic.
+- **`TRequiredFieldValidator`** / **`TCompareValidator`** / **`TRangeValidator`** / **`TRegularExpressionValidator`** / **`TCustomValidator`** / **`TEmailAddressValidator`** / **`TIbanValidator`** / **`TJsonValidator`** / **`TLuhnValidator`** / **`TPasswordStrengthValidator`** / **`TUrlValidator`** / **`TUnicodeValidator`** / **`TUuidValidator`** / **`TDataTypeValidator`** — Specific validation logic.
 
 - **`TValidationSummary`** — Displays all errors in a group; `DisplayMode`: `List`, `BulletList`, `SingleParagraph`.
 

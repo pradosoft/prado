@@ -1,6 +1,9 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI;
+
 use Prado\IO\TTextWriter;
+use Prado\Prado;
 use Prado\Web\UI\IAdapterControl;
 use Prado\Web\UI\TControl;
 use Prado\Web\UI\TControlAdapter;
@@ -8,6 +11,9 @@ use Prado\Web\UI\THtmlWriter;
 use Prado\Web\UI\TPage;
 use Prado\Web\UI\TRenderFilterParameter;
 use Prado\Web\UI\WebControls\TLabel;
+use Prado\Test\Unit\Harness\TTestApplication;
+use Prado\Test\Unit\Harness\Web\UI\TNestedPathControl;
+use Prado\Test\Unit\PradoUnit;
 
 /**
  * Exposes protected getAdapterControl() for white-box testing.
@@ -63,8 +69,70 @@ class TControlAdapterSpy extends TControlAdapter
 	}
 }
 
-class TControlTest extends PHPUnit\Framework\TestCase
+class TControlTestPluginModule extends \Prado\Util\TPluginModule
 {
+	private $_path;
+	public function __construct($path)
+	{
+		parent::__construct();
+		$this->_path = $path;
+	}
+	public function getPluginPath()
+	{
+		return $this->_path;
+	}
+}
+
+class TControlTestPluginControl extends TControl
+{
+}
+
+class TControlTest extends \PHPUnit\Framework\TestCase
+{
+	public function testGetPluginModuleFindsModuleSharingClassPath()
+	{
+		$app = Prado::getApplication();
+		$snap = TTestApplication::snapshotApp($app);
+		try {
+			$module = new TControlTestPluginModule(__DIR__);
+			$app->setModule('TControlTestPlugin', $module);
+			$control = new TControlTestPluginControl();
+			$this->assertSame($module, $control->getPluginModule());
+			$this->assertSame($module, $control->getPluginModule());
+		} finally {
+			TTestApplication::restoreApp($snap, $app);
+		}
+	}
+
+	public function testGetPluginModuleReturnsNullWhenNoPathMatches()
+	{
+		$app = Prado::getApplication();
+		$snap = TTestApplication::snapshotApp($app);
+		try {
+			$app->setModule('TControlTestPlugin', new TControlTestPluginModule(__DIR__ . DIRECTORY_SEPARATOR . 'no-such-dir'));
+			$control = new TControlTestPluginControl();
+			$this->assertNull($control->getPluginModule());
+			$this->assertNull(PradoUnit::getProp($control, '_pluginmodule'));
+		} finally {
+			TTestApplication::restoreApp($snap, $app);
+		}
+	}
+
+	public function testGetPluginModuleSearchesOnlyOnce()
+	{
+		$app = Prado::getApplication();
+		$snap = TTestApplication::snapshotApp($app);
+		try {
+			$control = new TControlTestPluginControl();
+			$this->assertFalse(PradoUnit::getProp($control, '_pluginmodule'));
+			$this->assertNull($control->getPluginModule());
+			$app->setModule('TControlTestPlugin', new TControlTestPluginModule(__DIR__));
+			$this->assertNull($control->getPluginModule());
+		} finally {
+			TTestApplication::restoreApp($snap, $app);
+		}
+	}
+
 	public function testConstruct()
 	{
 		$control = new TControl();
@@ -346,11 +414,65 @@ class TControlTest extends PHPUnit\Framework\TestCase
 	{
 		$label = new TLabel();
 		$label->autoBindProperty('Text', "'auto value'");
-		$ref = new ReflectionObject($label);
-		$method = $ref->getMethod('autoDataBindProperties');
-		$method->setAccessible(true);
-		$method->invoke($label);
+		PradoUnit::invoke($label, 'autoDataBindProperties');
 		$this->assertEquals('auto value', $label->getText());
+	}
+
+	/**
+	 * All three binding slots write a parent path before any path nested beneath
+	 * it, so a nested binding survives whatever order the bindings were declared
+	 * in. Each expression still evaluates immediately before its own write.
+	 */
+	public function testBindingsApplyParentPathBeforeNestedPath()
+	{
+		$orders = [
+			['Cfg.Size' => "'child'", 'Cfg' => "'value'"],
+			['Cfg' => "'value'", 'Cfg.Size' => "'child'"],
+		];
+
+		// <%# %> — RF_DATA_BINDINGS, applied by dataBind()
+		foreach ($orders as $bindings) {
+			$control = new TNestedPathControl();
+			foreach ($bindings as $path => $expression) {
+				$control->bindProperty($path, $expression);
+			}
+			$control->dataBind();
+			$this->assertEquals('child', $control->getCfg()->getSize(), 'dataBind, declared: ' . implode(', ', array_keys($bindings)));
+		}
+
+		// <%! %> — RF_INIT_BINDINGS, applied once at the start of initRecursive()
+		foreach ($orders as $bindings) {
+			$control = new TNestedPathControl();
+			foreach ($bindings as $path => $expression) {
+				$control->initBindProperty($path, $expression);
+			}
+			PradoUnit::invoke($control, 'initDataBindProperties');
+			$this->assertEquals('child', $control->getCfg()->getSize(), 'initBind, declared: ' . implode(', ', array_keys($bindings)));
+		}
+
+		// <%= %> — RF_AUTO_BINDINGS, applied by preRenderRecursive()
+		foreach ($orders as $bindings) {
+			$control = new TNestedPathControl();
+			foreach ($bindings as $path => $expression) {
+				$control->autoBindProperty($path, $expression);
+			}
+			PradoUnit::invoke($control, 'autoDataBindProperties');
+			$this->assertEquals('child', $control->getCfg()->getSize(), 'autoBind, declared: ' . implode(', ', array_keys($bindings)));
+		}
+	}
+
+	/**
+	 * An expression is evaluated immediately before its own write, so a later
+	 * binding reads what an earlier binding wrote rather than the prior state.
+	 */
+	public function testBindingExpressionsEvaluateAgainstEarlierWrites()
+	{
+		$control = new TNestedPathControl();
+		$control->setID('probe');
+		$control->bindProperty('Cfg', "'value'");
+		$control->bindProperty('Cfg.Size', "'saw:' . \$this->getCfg()->getSize()");
+		$control->dataBind();
+		$this->assertEquals('saw:parent:value', $control->getCfg()->getSize());
 	}
 
 	public function testDataBind()
@@ -483,10 +605,7 @@ class TControlTest extends PHPUnit\Framework\TestCase
 		$control = new TControl();
 		$this->assertFalse($control->getHasChildInitialized()); // CS_CONSTRUCTED < CS_CHILD_INITIALIZED
 		// initRecursive() advances the stage to at least CS_CHILD_INITIALIZED
-		$ref = new ReflectionObject($control);
-		$method = $ref->getMethod('initRecursive');
-		$method->setAccessible(true);
-		$method->invoke($control, null);
+		PradoUnit::invoke($control, 'initRecursive', null);
 		$this->assertTrue($control->getHasChildInitialized());
 	}
 

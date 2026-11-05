@@ -1,27 +1,44 @@
 <?php
 
+namespace Prado\Test\Unit\Security\Permissions;
+
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Security\Permissions\TPermissionsManager;
 use Prado\Web\Services\TPageConfiguration;
 use Prado\Security\TUserManager;
 use Prado\Util\TDbParameterModule;
+use Prado\Test\Unit\Harness\TTestApplication;
+use Prado\Prado;
+use Prado\Security\Permissions\TPermissionsBehavior;
+use Prado\Security\Permissions\TPermissionsConfigurationBehavior;
+use Prado\Security\Permissions\TUserOwnerRule;
+use Prado\Security\Permissions\TUserPermissionsBehavior;
+use Prado\Security\TAuthorizationRule;
+use Prado\Security\TAuthorizationRuleCollection;
+use Prado\Security\TUser;
+use Prado\Xml\TXmlDocument;
 
-class TPermissionsManagerTest extends PHPUnit\Framework\TestCase
+class TPermissionsManagerTest extends \PHPUnit\Framework\TestCase
 {
-	public static $app = null;
+	protected ?TTestApplication $app = null;
 	protected $obj;
-	
+
 	protected function setUp(): void
 	{
 		// ini_set('session.use_cookies',0);
 		// ini_set('session.cache_limiter', 'none');
-		if (self::$app === null) {
-			Prado::getApplication()->getEventHandlers('fxattachclassbehavior')->clear();
-			Prado::getApplication()->getEventHandlers('fxdetachclassbehavior')->clear();
-			self::$app = new TApplication(__DIR__ . '/../app');
-		}
-		
+		// IMPORTANT: TTestApplication MUST be constructed BEFORE the fx*
+		// handler clears — the trait's registerApplication() snapshots
+		// TComponent's global static state (including $_ue) inside the
+		// constructor, and restoreApplication() in tearDown writes that
+		// snapshot back. Clearing first would make the snapshot capture
+		// the cleared state and the restore would permanently destroy
+		// the bootstrap handlers for all subsequent test classes.
+		$this->app = new TTestApplication(__DIR__ . '/../app');
+		Prado::getApplication()->getEventHandlers('fxattachclassbehavior')->clear();
+		Prado::getApplication()->getEventHandlers('fxdetachclassbehavior')->clear();
+
 		$this->obj = new TPermissionsManager();
 	}
 
@@ -29,6 +46,10 @@ class TPermissionsManagerTest extends PHPUnit\Framework\TestCase
 	{
 		$this->obj->__destruct();
 		$this->obj = null;
+		if ($this->app !== null) {
+			$this->app->restoreApplication();
+			$this->app = null;
+		}
 	}
 	
 	public function testConstruct()
@@ -733,7 +754,7 @@ class TPermissionsManagerTest extends PHPUnit\Framework\TestCase
 		self::assertEquals($dbparam, $this->obj->getDbParameter());
 		
 		try {
-			$this->obj->setDbParameter($v = new stdClass());
+			$this->obj->setDbParameter($v = new \stdClass());
 			self::fail('failed to throw TConfigurationException when parameter not string and not a TDbParameterModule');
 		} catch (TConfigurationException $e) {}
 		
@@ -944,6 +965,107 @@ class TPermissionsManagerTest extends PHPUnit\Framework\TestCase
 					'class' => 'TFakeAuthRuleClassXYZ99999'],
 			],
 		]);
+	}
+
+	// -----------------------------------------------------------------------
+	// loadPermissionsData() — key case and rule placement
+	// -----------------------------------------------------------------------
+
+	/**
+	 * PHP configuration keys load in any case, matching the XML attribute names.
+	 */
+	public function testLoadPermissionsData_phpKeysAreCaseInsensitive(): void
+	{
+		$this->obj->setAutoAllowWithPermission(false);
+		$this->obj->setAutoPresetRules(false);
+		$this->obj->setAutoDenyAll(false);
+
+		$this->obj->loadPermissionsData([
+			'Roles' => ['Editor' => ['blog_edit']],
+			'permissionRules' => [
+				['Name' => 'blog_edit', 'Action' => 'allow', 'Users' => 'admin', 'Roles' => 'Editor', 'Verb' => 'get', 'IPs' => '127.0.0.1', 'Priority' => '5'],
+				['NAME' => 'blog_update', 'CLASS' => TUserOwnerRule::class, 'ACTION' => 'deny'],
+			],
+		]);
+		$this->obj->init(null);
+		$this->obj->registerPermission('blog_edit', 'edit a post');
+		$this->obj->registerPermission('blog_update', 'update a post');
+
+		self::assertEquals(['blog_edit'], $this->obj->getHierarchyRoleChildren('editor'));
+
+		$rules = $this->obj->getPermissionRules('blog_edit');
+		self::assertNotNull($rules);
+		self::assertEquals(1, count($rules));
+		self::assertEquals('allow', $rules[0]->getAction());
+		self::assertEquals(['admin'], $rules[0]->getUsers());
+		self::assertEquals(['editor'], $rules[0]->getRoles());
+		self::assertEquals('get', $rules[0]->getVerb());
+		self::assertEquals(['127.0.0.1'], $rules[0]->getIPRules());
+		self::assertEquals(5, $rules[0]->getPriority());
+
+		$rules = $this->obj->getPermissionRules('blog_update');
+		self::assertNotNull($rules);
+		self::assertInstanceOf(TUserOwnerRule::class, $rules[0]);
+		self::assertEquals('deny', $rules[0]->getAction());
+	}
+
+	/**
+	 * Rules that are direct children of the module element load beside the roles.
+	 */
+	public function testLoadPermissionsData_xmlRulesBesideRolesLoad(): void
+	{
+		$this->obj->setAutoAllowWithPermission(false);
+		$this->obj->setAutoPresetRules(false);
+		$this->obj->setAutoDenyAll(false);
+
+		$dom = new TXmlDocument();
+		$dom->loadFromString("<module id='permissions'>
+			<role name='Default' children='register_user' />
+			<permissionrule name='register_user' action='allow' users='?' />
+		</module>");
+		$this->obj->loadPermissionsData($dom);
+		$this->obj->init(null);
+		$this->obj->registerPermission('register_user', 'register a user');
+
+		$rules = $this->obj->getPermissionRules('register_user');
+		self::assertNotNull($rules);
+		self::assertEquals(1, count($rules));
+		self::assertEquals('allow', $rules[0]->getAction());
+	}
+
+	/**
+	 * A <permissionrule> inside a <role> throws instead of being ignored.
+	 */
+	public function testLoadPermissionsData_xmlRuleNestedInRole_throws(): void
+	{
+		$dom = new TXmlDocument();
+		$dom->loadFromString("<module id='permissions'>
+			<role name='Default' children='register_user'>
+				<permissionrule name='register_user' action='allow' users='?' />
+			</role>
+		</module>");
+
+		$this->expectException(TConfigurationException::class);
+		$this->expectExceptionMessageMatches("/role 'Default' contains a <permissionrule>/");
+		$this->obj->loadPermissionsData($dom);
+	}
+
+	/**
+	 * A <permissionrule> deeper inside a <role> also throws.
+	 */
+	public function testLoadPermissionsData_xmlRuleDeepInRole_throws(): void
+	{
+		$dom = new TXmlDocument();
+		$dom->loadFromString("<module id='permissions'>
+			<role name='Default' children='register_user'>
+				<rules>
+					<permissionrule name='register_user' action='allow' users='?' />
+				</rules>
+			</role>
+		</module>");
+
+		$this->expectException(TConfigurationException::class);
+		$this->obj->loadPermissionsData($dom);
 	}
 
 	//  The last test because it sets the permissions module in the application

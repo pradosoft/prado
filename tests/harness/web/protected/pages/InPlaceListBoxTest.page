@@ -1,0 +1,19 @@
+<com:TContent ID="Content">
+	<h1>In Place List Box Test Case</h1>
+
+	<div>
+		<com:TInPlaceListBox ID="lb" SelectionMode="Multiple" Rows="4"
+			EmptyDisplayText="(none selected)" SelectionSeparator=" + "
+			OnSelectedIndexChanged="selection_changed">
+			<com:TListItem Value="red" Text="Red" Selected="true" />
+			<com:TListItem Value="green" Text="Green" />
+			<com:TListItem Value="blue" Text="Blue" />
+			<com:TListItem Value="black" Text="Black" />
+		</com:TInPlaceListBox>
+	</div>
+
+	<div>Status: <com:TActiveLabel ID="status" Text="none" /></div>
+
+	<com:TActiveButton ID="btnServerSelect" Text="Select Green+Blue" OnClick="server_select" />
+	<com:TActiveButton ID="btnClear" Text="Clear" OnClick="server_clear" />
+</com:TContent>

@@ -1,0 +1,43 @@
+<com:TContent ID="Content">
+	<h1>HTML Attributes Test Case</h1>
+
+	<com:TLabel ForControl="search" Text="Search" />
+	<com:TTextBox ID="search" AutoFocus="true" EnableClientScript="false" />
+
+	<com:TCheckBox ID="selectAll" Text="Select all" Indeterminate="true" />
+	<com:TCheckBox ID="notify" Text="Notifications" Switch="true" />
+
+	<com:TTable ID="sales" Caption="Sales">
+		<com:TTableRow>
+			<com:TTableHeaderCell ID="region" Text="Region" />
+			<com:TTableHeaderCell ID="q1" Text="Q1" />
+		</com:TTableRow>
+		<com:TTableRow>
+			<com:TTableHeaderCell ID="north" Text="North" />
+			<com:TTableCell ID="northQ1" Text="12" Headers="north q1" />
+		</com:TTableRow>
+	</com:TTable>
+
+	<com:TInlineFrame ID="map" ToolTip="Office map" Sandbox="true" Loading="Lazy" Width="200" Height="80" />
+
+	<com:TImage ID="photo" ImageUrl="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='30'/%3E" AlternateText="The harbor at dawn" IntrinsicWidth="40" IntrinsicHeight="30" Loading="Lazy" Decoding="Async" />
+
+	<com:THyperLink ID="report" NavigateUrl="?page=HtmlAttributesTest" Text="Download report" Download="report.html" Rel="nofollow" />
+
+	<com:TPanel ID="tip" Popover="manual">A manual popover</com:TPanel>
+	<com:TPanel ID="more" Hidden="until-found">Extra details</com:TPanel>
+
+	<com:TLabel ForControl="folder" Text="Folder" />
+	<com:TFileUpload ID="folder" Directory="true" />
+
+	<com:TLabel ForControl="fullName" Text="Full name" />
+	<com:TTextBox ID="fullName" Required="true" MinLength="2" EnableClientScript="false" />
+	<com:TButton ID="cancel" Text="Cancel" CausesValidation="false" OnClick="cancel" />
+
+	<com:TLabel ForControl="code" Text="Code" />
+	<com:TTextBox ID="code" Text="X1" EnableClientScript="false" />
+	<com:TRequiredFieldValidator ControlToValidate="code" ValidationGroup="export" ErrorMessage="Enter a code." />
+	<com:TButton ID="export" Text="Export" ValidationGroup="export" FormAction="?page=HtmlAttributesTest&amp;via=export" OnClick="export" />
+
+	<div>Status: <com:TLabel ID="status" Text="none" /></div>
+</com:TContent>

@@ -26,7 +26,7 @@ use Prado\Web\UI\WebControls\TMultiView;
  * Please refer to the original documentation of the regular counterpart for usage.
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
- * @since 3.1.6
+ * @since 3.1.9
  * @method TActiveControlAdapter getAdapter()
  */
 class TActiveMultiView extends TMultiView implements IActiveControl
@@ -69,7 +69,7 @@ class TActiveMultiView extends TMultiView implements IActiveControl
 		if ($this->getHasPreRendered()) {
 			$this->renderMultiView($writer);
 			if ($this->getActiveControl()->canUpdateClientSide()) {
-				$this->getPage()->getCallbackClient()->replaceContent($this->getContainerID(), $writer);
+				$this->getActiveControl()->replaceClientContent($this->getContainerID(), $writer);
 			}
 		} else {
 			$this->getPage()->getAdapter()->registerControlToRender($this, $writer);

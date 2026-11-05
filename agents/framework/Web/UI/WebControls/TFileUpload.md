@@ -14,6 +14,8 @@ Since Prado 4.0, TFileUpload supports multiple-file uploads via the `Multiple` p
 
 TFileUpload automatically sets `enctype="multipart/form-data"` on the page form during `onPreRender` (via `TForm::setEnctype` or, in callback mode, via `TCallbackClient::setAttribute`).
 
+Since Prado 4.4.0, the `Accept` property renders the HTML5 `accept` attribute to filter the file types offered in the browser file picker, and [TFileValidator](./TFileValidator.md) validates the selected files (size, count, extension, MIME type) on both client and server.
+
 ## Inheritance
 
 `TFileUpload` → `TWebControl` → `TControl` → `TComponent`
@@ -32,6 +34,9 @@ Implements: `IPostBackDataHandler`, `IValidatable`
 |---|---|---|---|
 | `Multiple` | bool | `false` | Enables multi-file upload. Adds `multiple` attribute and `[]` to the `name`. |
 | `MaxFileSize` | int | `1048576` | Advisory maximum size (bytes). Written to a hidden field; enforced by PHP, not the browser. |
+| `Accept` | string | `''` | Comma-separated file type specifiers (`.jpg`, `image/png`, `image/*`) rendered as the `accept` attribute. Advisory; pair with `TFileValidator`. (@since 4.4.0) |
+| `Capture` | string | `''` | `user` or `environment`, rendered as the `capture` attribute so mobile browsers capture new media with that device. Desktop browsers ignore it. (@since 4.4.0) |
+| `Directory` | bool | `false` | Selects a folder and uploads its files (`webkitdirectory`); posts like `Multiple`. `TFileUploadItem::getFullPath()` is each file's path in the folder, from `$_FILES[...]['full_path']`. `Accept` does not filter a folder. (@since 4.4.0) |
 | `IsValid` | bool | `true` | Writeable by validators. |
 
 ## Key Methods

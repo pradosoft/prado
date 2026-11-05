@@ -10,7 +10,7 @@
 ## Overview
 TView is a container control used exclusively inside a `TMultiView`. It holds a group of child controls and is shown or hidden by toggling the `Active` property. Only one `TView` within a `TMultiView` should be active at a time (enforced by `TMultiView`, not by `TView` itself).
 
-TView extends `[TControl](./TControl.md)` directly (not `TWebControl`) — it renders no wrapping HTML element of its own; its children are rendered inline.
+TView extends `[TControl](../TControl.md)` directly (not `TWebControl`) — it renders no wrapping HTML element of its own; its children are rendered inline.
 
 ## Inheritance
 

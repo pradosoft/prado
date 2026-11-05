@@ -1,0 +1,18 @@
+<%@ MasterClass="" %><!DOCTYPE html>
+<html>
+<com:THead Title="Style CSP Test">
+	<com:TStyleSheet>#stylesheet-marker { color: rgb(0, 128, 0); }</com:TStyleSheet>
+	<style id="raw-style">#raw-marker { color: rgb(255, 0, 0); }</style>
+</com:THead>
+<body>
+<com:TForm>
+	<div id="stylesheet-marker">TStyleSheet</div>
+	<div id="registered-marker">registerStyleSheet</div>
+	<div id="callback-marker">callback</div>
+	<div id="raw-marker">raw style</div>
+	<div id="attr-marker" style="color: rgb(1, 2, 3)">style attribute</div>
+	<com:TActiveButton ID="btnStyle" Text="Add style" OnCallback="addStyle" />
+	<com:TActiveLabel ID="status" Text="none" />
+</com:TForm>
+</body>
+</html>

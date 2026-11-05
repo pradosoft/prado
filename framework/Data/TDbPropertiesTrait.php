@@ -15,6 +15,7 @@ use Prado\Data\TDataSourceConfig;
 use Prado\Data\TDbConnection;
 use Prado\Data\DataGateway\TTableGateway;
 use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Prado;
 
 /**
@@ -160,10 +161,11 @@ trait TDbPropertiesTrait
 	 * Creates the DB connection.
 	 *
 	 * If no ConnectionID is available, this will try to start a sqlite database
-	 * if the subclass has a name via getSqliteDatabaseName().
+	 * if the subclass has a name via getSqliteDatabaseName(). The sqlite database
+	 * lives in the application runtime path, so it needs an application.
 	 *
 	 * @param ?string $connectionID the module ID for TDataSourceConfig. If null, uses getConnectionID().
-	 * @throws TConfigurationException if module ID is invalid or empty without a Sqlite database.
+	 * @throws TConfigurationException if the module ID is invalid, or empty without a sqlite database in a runtime path.
 	 * @return IDataConnection the created DB connection
 	 */
 	protected function createDbConnection(?string $connectionID = null): IDataConnection
@@ -181,7 +183,7 @@ trait TDbPropertiesTrait
 			$app = Prado::getApplication();
 		}
 		if ($connectionID !== '') {
-			$conn = $app->getModule($connectionID);
+			$conn = $app?->getModule($connectionID);
 			if ($conn instanceof TDataSourceConfig) {
 				return $conn->getDbConnection();
 			} else {
@@ -195,9 +197,10 @@ trait TDbPropertiesTrait
 			if ($db = $this->getCustomDbConnection()) {
 				return $db;
 			}
-			if ($sqliteFile = $this->getSqliteDatabaseName()) {
+			$runtimePath = $app?->getRuntimePath();
+			if (($sqliteFile = $this->getSqliteDatabaseName()) && $runtimePath !== null) {
 				$db = new TDbConnection();
-				$dbFile = $app->getRuntimePath() . DIRECTORY_SEPARATOR . $sqliteFile;
+				$dbFile = $runtimePath . DIRECTORY_SEPARATOR . $sqliteFile;
 				$db->setConnectionString('sqlite:' . $dbFile);
 				return $db;
 			} else {
@@ -282,5 +285,26 @@ trait TDbPropertiesTrait
 			$this->_gateways[$tableName] = $gateway;
 		}
 		return $gateway;
+	}
+
+	/**
+	 * Validates a configured SQL identifier, such as a table or column name, that is
+	 * written into SQL.  An identifier is one to three parts separated by `.`.  Each part
+	 * is a plain name of letters, digits, `_`, and `$` that does not start with a digit,
+	 * or a name quoted with back-ticks, double quotes, or square brackets that does not
+	 * contain its closing quote.
+	 * @param string $value the identifier.
+	 * @param string $property the property that holds the identifier, for the error message.
+	 * @throws TInvalidDataValueException when the identifier is not valid.
+	 * @return string the identifier.
+	 * @since 4.4.0
+	 */
+	protected function ensureSqlIdentifier(string $value, string $property): string
+	{
+		$part = '(?:[A-Za-z_][A-Za-z0-9_$]*|`[^`\x00]+`|"[^"\x00]+"|\[[^\]\x00]+\])';
+		if (!preg_match('/^' . $part . '(?:\.' . $part . '){0,2}$/D', $value)) {
+			throw new TInvalidDataValueException('dbproperties_identifier_invalid', $property, static::class, $value);
+		}
+		return $value;
 	}
 }

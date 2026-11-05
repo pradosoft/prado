@@ -22,6 +22,11 @@
 			"role" : "Developer"
 		},
 		{
+			"name": "Brad Anderson",
+			"email": "belisoful@icloud.com",
+			"role" : "Developer"
+		},
+		{
 			"name": "Jens Klaer",
 			"email": "kj.landwehr.software@gmail.com",
 			"role" : "Developer"
@@ -34,7 +39,7 @@
 		}
 	],
 	"require": {
-		"php": ">=8.1.0",
+		"php": ">=8.2.0",
 		"ext-ctype": "*",
 		"ext-dom": "*",
 		"ext-intl": "*",
@@ -54,13 +59,26 @@
 		"bower-asset/highlightjs": "^9",
 		"bower-asset/clipboard": "^2",
 		"bower-asset/highlightjs-line-numbers.js": "^2",
-		"psy/psysh": "^0"
+		"npm-asset/idiomorph": "0.8.0",
+		"psy/psysh": "^0",
+		"psr/clock": "^1.0",
+		"psr/http-message": "^2.0",
+		"psr/http-factory": "^1.1",
+		"psr/log": "^3.0",
+		"psr/cache": "^3.0",
+		"psr/simple-cache": "^3.0",
+		"laravel/serializable-closure": "^2.0",
+		"revolt/event-loop": "^1.0"
 	},
 	"require-dev" : {
+		"ext-bcmath": "*",
+		"ext-bz2": "*",
 		"phpunit/phpunit" : "^10",
 		"php-webdriver/webdriver": "^1",
 		"phpdocumentor/shim": "^3",
-		"pradosoft/prado-phpdoc-template": "*"
+		"pradosoft/prado-phpdoc-template": "*",
+		"friendsofphp/php-cs-fixer": "3.95.27",
+		"phpstan/phpstan": "2.3.3"
 	},
 	"suggest" : {
 		"ext-apcu" : "Enables the use of TAPCCache as a cache handler",
@@ -69,22 +87,47 @@
 		"ext-mbstring" : "Prado can use the mbstring extension for locale-aware string operations",
 		"ext-openssl" : "Enables encryption of sensitive data, eg. page viewstate",
 		"ext-memcached" : "Enables the use of TMemCache as a cache handler",
-		"ext-pdo" : "Used by all the Prado\\Data components, eg. TActiveRecord",
+		"ext-pdo" : "Used by all the Prado\\Data components, eg. TDbConnection and TTableGateway",
 		"ext-soap" : "Used by TSoapService to provide a soap backend",
 		"ext-sockets" : "Used by TCaptureForkLog to capture the log of a child process",
+		"ext-sync" : "Enables the use of TSyncMutex, a named lock between the processes of a host, Windows included",
+		"ext-sysvsem" : "Enables the use of TSemaphoreMutex, a System V semaphore lock between the processes of a host",
 		"ext-xdebug": "Useful to get stack traces on Php fatal errors",
 		"ext-xsl" : "Used by the TXmlTransform component",
 		"ext-zlib" : "Enables compression to reduce page size",
-		"pradosoft/prado-demos" : "Demo applications for Prado"
+		"pradosoft/prado-dev-errormessages" : "Translations of the developer-facing exception messages; require ^4.4@dev until PRADO 4.4.0 is released, then ^4.4",
+		"pradosoft/prado-demos" : "Demo applications for Prado",
+		"pradosoft/prado-sqlmap" : "SqlMap data mapper (Prado\\Data\\SqlMap), formerly part of the framework",
+		"pradosoft/prado-activerecord" : "Active Record ORM, Scaffold controls, and the prado-cli activerecord command, formerly part of the framework",
+		"amphp/http-client" : "Non-blocking HTTP/1.1 and HTTP/2 client that schedules on the same Revolt event loop as Prado\\IO\\Async",
+		"amphp/mysql" : "Non-blocking MySQL client on the Revolt event loop",
+		"amphp/postgres" : "Non-blocking PostgreSQL client on the Revolt event loop",
+		"amphp/redis" : "Non-blocking Redis client on the Revolt event loop",
+		"amphp/parallel" : "Worker processes and threads with futures on the Revolt event loop"
+	},
+	"extra": {
+		"branch-alias": {
+			"dev-master": "4.4.x-dev"
+		}
 	},
     "autoload": {
         "psr-4": {
             "Prado\\": "framework"
         }
     },
+	"autoload-dev": {
+		"psr-4": {
+			"Prado\\Test\\Unit\\": "tests/unit/"
+		},
+		"exclude-from-classmap": [
+			"tests/unit/PHPStan/Fixtures/",
+			"tests/unit/Security/app/prado3stubs/",
+			"tests/unit/Exceptions/TErrorHandlerTestGlobalClass.php"
+		]
+	},
     "config": {
         "platform": {
-            "php": "8.1"
+            "php": "8.2"
         },
 		"allow-plugins": {
 			"phpdocumentor/shim": true
@@ -97,8 +140,7 @@
 	},
     "scripts": {
 		"devtools": [
-			"composer require --dev friendsofphp/php-cs-fixer",
-			"composer require --dev phpstan/phpstan",
+			"composer update",
 			"npm install",
 			"npm run playwright:install",
 			"@setup-demos"
@@ -108,14 +150,31 @@
         "gendoc": "phpdoc --template=./vendor/pradosoft/prado-phpdoc-template",
 		"fix": "vendor/bin/php-cs-fixer fix",
 		"stan": "vendor/bin/phpstan analyse --memory-limit=512M",
-        "unittest": "vendor/bin/phpunit --testsuite unit,db-mysql,db-pgsql,db-sqlite",
-		"dbtest": "vendor/bin/phpunit --testsuite db-mysql,db-pgsql,db-sqlite,db-firebird",
+        "unittest": "vendor/bin/phpunit --testsuite unit,db-sqlite,db-mysql,db-pgsql",
+		"coverage": [
+			"@putenv XDEBUG_MODE=coverage",
+			"vendor/bin/phpunit --testsuite unit --coverage-text"
+		],
+		"coverage-html": [
+			"@putenv XDEBUG_MODE=coverage",
+			"vendor/bin/phpunit --testsuite unit --coverage-html build/coverage"
+		],
 		"fulltest": [
 			"@fix",
 			"@stan",
 			"@unittest"
 		],
 		"stantest": "vendor/bin/phpunit --testsuite phpstan",
+
+		"dbtest": "vendor/bin/phpunit --testsuite db-sqlite,db-mysql,db-firebird,db-pgsql",
+		"db-sqlite": "vendor/bin/phpunit --testsuite db-sqlite",
+		"db-mysql": "vendor/bin/phpunit --testsuite db-mysql",
+		"db-pgsql": "vendor/bin/phpunit --testsuite db-pgsql",
+		"db-firebird": "vendor/bin/phpunit --testsuite db-firebird",
+		"db-sqlsrv": "vendor/bin/phpunit --testsuite db-sqlsrv",
+		"db-oracle": "vendor/bin/phpunit --testsuite db-oracle",
+		"db-ibm": "vendor/bin/phpunit --testsuite db-ibm",
+
 		"jslint": "npm run lint",
 		"jsfix": "npm run lint:fix",
 		"jstest": "npm run test",
@@ -133,12 +192,7 @@
         	"Composer\\Config::disableProcessTimeout",
         	"@setup-demos",
         	"npm run playwright"
-        ],
-		"seleniumtest": [
-			"Composer\\Config::disableProcessTimeout",
-			"@setup-demos",
-			"bash tests/FunctionalTests/run-selenium-tests.sh"
-		]
+        ]
     },
 	"bin" : [
 		"bin/prado-cli"

@@ -1,7 +1,5 @@
 <?php
 
-require_once(__DIR__ . '/../../../../PradoUnit.php');
-
 /**
  * MysqlUpsertTest — comprehensive tests for MySQL upsert behaviour.
  *
@@ -13,14 +11,17 @@ require_once(__DIR__ . '/../../../../PradoUnit.php');
  * Requires: prado_unitest database with upsert_test table (see tests/initdb_mysql.sql).
  */
 
+namespace Prado\Test\Unit\Data\DbSpecific\Mysql\Common;
+
 use Prado\Data\Common\TDbCommandBuilder;
 use Prado\Data\DataGateway\TDataGatewayEventParameter;
 use Prado\Data\DataGateway\TDataGatewayResultEventParameter;
 use Prado\Data\DataGateway\TTableGateway;
 use Prado\Data\TDbConnection;
 use Prado\Exceptions\TDbException;
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
 
-class MysqlUpsertTest extends PHPUnit\Framework\TestCase
+class MysqlUpsertTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 

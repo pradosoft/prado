@@ -4,11 +4,13 @@
 
 ### Running Tests
 - **All Unit Tests**: `vendor/bin/phpunit --testsuite unit` - runs all unit tests
-- **Functional Tests**: `composer functionaltest` - runs all functional tests
+- **Playwright Functional Tests**: `composer functest` (Chromium) / `composer functionaltest` (all browsers) — PHP server starts automatically
 - **Test Filter**: `vendor/bin/phpunit --testsuite unit --filter <test function, class, or directory>`
+- **Javascript eslint **: `npm run lint:fix`
+- **Javascript vitest Unit Tests**: `npm run test`
 
 ### Linting and Code Analysis
-- **PHPStan Analysis**: `vendor/bin/phpstan analyse framework/ --memory-limit=512M`
+- **PHPStan Analysis**: `vendor/bin/phpstan analyse --memory-limit=1G`
 - **PHP CS Fixer (Dry-run)**: `vendor/bin/php-cs-fixer fix --dry-run framework/` (check)
 - **PHP CS Fixer (Fix)**: `vendor/bin/php-cs-fixer fix framework/` (apply fixes)
 
@@ -37,8 +39,10 @@
 - Enumerated Constants: `PascalCase` (eg. `DeepSkyBlue`)
 - Class properties: `_camelCase` (eg. `_propertyOfClass`, `_styleFieldNames`)
 - Namespace: `Prado\{Module}` (eg. `Prado\Web\UI\TControl`)
-- MasterClass and Template file extension: ".tpl"
-- Web Page template file extensions: ".page" with ".php" backing
+- Unit test namespace: `Prado\Test\Unit\{Directory}` mirroring `tests/unit/` (eg. `Prado\Test\Unit\Web\UI\TControlTest`)
+- Web Page template file extensions: `.page` with `.php` backing
+- MasterClass and Template file extension: `.tpl` with `.php` backing
+- Prado TControl template tag prefix: `<com:` (eg. `<com:TMain />`)
 
 ### Documentation Standards
 - All public methods must have PHPDoc comments with:
@@ -51,9 +55,26 @@
   - `@method` for dynamic events with prefix 'dy-'; which are called (on "$this->dy-") but not defined.
 - Inline comments should start with `//`
 - Use `?` for single nullable types and in doc blocks
-- **`@since` tag** — use the next release version when adding new methods or classes; omit the method tag when it matches the class tag
-- All comments and documentation must be: **Present Perfect tense**, **American English**, clear, thorough, and technical
-- Method Doc Blocks should be **tight**, and have at minimum one sentence in the description.
+- **`@since` tag** — use the next release version when adding new methods or classes; exception: omit the method tag when it matches the class tag
+- Method Doc Blocks must be **tight**, and have at minimum one sentence in the description.
+- Documentation additions/changes/removals should be integrated into the whole, at each level (of detail).
+
+### Documentation Style (enforced)
+
+Docblocks are technical documentation written with direct technical statements.
+Language and National Variety: English - American
+Qualities of the writing: clear, thorough, easy to comprehend, not verbose (brevity), timeless/always was, integrated, wholistic
+Tense: Present - tune for ease of comprehension
+_Banned constructions_:
+- **Antithesis / "not merely X — it Ys"**: no "does not just X, it Ys", "is not a Y, it's a Z",
+  "rather than X, it Ys". State what it does, once.
+- **Em-dash dramatic asides** used for emphasis or reveal ("— and that's the point", "— never stronger").
+  Use a period or plain clause.
+- **Editorializing / filler** is unnecessary. 
+- **Rule-of-three rhetorical lists** and build-up sentences. One fact per sentence.
+
+Prefer: subject–verb–object declaratives, tables and bullet lists of `condition → result` where appropriate.
+Docblocks inform and describe; it is not persuasive writing.
 
 ### Error Handling
 - Use try/catch blocks for operations that can fail
@@ -61,10 +82,11 @@
 - Return false or null for methods that are designed to fail gracefully
 - All methods should handle edge cases and validate input parameters
 - PRADO Exceptions use errorCodes specified in framework/Exceptions/messages/messages.txt; the master error Code file in American English.  messages.txt is purely for user information display only.
-- framework/Exceptions/messages/messages.txt has language specific versions at framework/Exceptions/messages/messages-<language code>.txt
+- framework/Exceptions/messages/messages-<language code>.txt holds only the keys thrown as `THttpException`, which the visitor sees. Developer-facing translations are the `pradosoft/prado-dev-errormessages` package. In this repository, create, update, and delete keys in the English master only; the package is synced in one batch before each PRADO tag and release, never per change.
 
 ### Imports and Includes
 - Use PSR-4 autoloading - no manual includes required
+- Unit test classes autoload through the Composer `autoload-dev` PSR-4 mapping (`Prado\Test\Unit\` → `tests/unit/`); tests do not `require` class files
 - All framework classes are accessed via namespace prefixes
 - Third-party libraries are loaded via Composer
 - Use proper `use` statements for namespaces at the top of PHP files
@@ -89,13 +111,14 @@
 - 'framework/classes.php' MUST be updated with all new classes.
 - Web Pages are PHP classes with a ".page" TTemplate file with the same base name
 - UI Portlets are PHP classes with a ".tpl" TTemplate file with the same base name
-- Data components should support `TActiveRecord` pattern
+- Data components should stay usable by the `pradosoft/prado-activerecord` package (`TActiveRecord` pattern)
 - All UI controls should have proper template support and state management
 - All changes (eg. method param/return types) in point releases must be backward compatible.
 - Minor releases can be breaking, but minimize the breakages where possible.
 - A full check consists of the 4 checks (in order): `php -l` compile, php-cs-fixer, phpstan, phpunit (all checks must pass successfully)
 - A full check must be done for code to be ready for git commit.
 - The per directory "<dir_path>/" information is found at "agents/<dir_path>/INDEX.md" to keep the framework uncluttered. 
+- All new and changed WebControls must be audited for accessibility at least once during development.
 - **The current version is 4.3.3. The next release version is 4.4.0**.
 
 ### ActiveControls JavaScript
@@ -113,6 +136,7 @@ Client-side JavaScript for ActiveControls and related controls lives at `framewo
 | `prado/controls/accordion.js` | TAccordion | Animated expand/collapse sections |
 | `prado/controls/slider.js` | TSlider | Drag-and-drop range slider (custom, not jQuery-UI) |
 | `prado/controls/keyboard.js` | TKeyboard | Virtual on-screen keyboard overlay |
+| `prado/keyshortcuts/keyshortcuts.js` | TWebControl.KeyShortcuts | `Prado.KeyShortcuts` key-binding registry: one document keydown listener for `aria-keyshortcuts` elements and `register()` bindings |
 | `prado/controls/htmlarea.js` | THtmlArea | TinyMCE v3/v4 wrapper with AJAX lifecycle hooks |
 | `prado/controls/htmlarea5.js` | THtmlArea5 | TinyMCE v5+ wrapper (async init) |
 | `prado/datepicker/datepicker.js` | TDatePicker | Popup calendar, format/parse, dropdown/textbox input modes |
@@ -136,6 +160,7 @@ prado.js
  │    ├── controls/keyboard.js
  │    ├── controls/htmlarea.js
  │    └── controls/htmlarea5.js
+ ├── keyshortcuts/keyshortcuts.js
  ├── datepicker/datepicker.js
  │    └── activecontrols/activedatepicker.js
  ├── colorpicker/colorpicker.js
@@ -161,13 +186,27 @@ Prado.WebUI.TActiveButton = jQuery.klass(Prado.WebUI.CallbackControl, { /* overr
 ```
 All instances self-register in `Prado.Registry[controlId]` on construction and are cleaned up via `deinitialize()`.
 
-## Testing Guidelines
+## Testing
 - The testing platforms are "phpunit", "vitest", and "playwright"
 - All new code must include unit tests
 - Unit test functions must comprehensively assert both typical and edge cases
 - Maximal code coverage is required
 - Test error conditions and exception handling
-- Use PradoUnit infrastructure for access to protected and private object methods/properties.
+- Unit test classes use the `Prado\Test\Unit\` namespace, autoloaded by Composer (`autoload-dev` PSR-4 → `tests/unit/`).
+  - The namespace follows the directory: `tests/unit/Web/UI/TControlTest.php` → `Prado\Test\Unit\Web\UI\TControlTest`.
+  - A class used by another file lives in its own file named after the class. Fixtures used only by one test file stay in that file.
+  - Directories holding classes use PascalCase, except where they mirror a lowercase framework namespace (`I18N/core`).
+  - Class names in strings, templates (`<com:…>`), and XML configuration are fully qualified; use `Foo::class` in PHP.
+  - Global-namespace fixtures (`Security/app/prado3stubs/`, `Exceptions/TErrorHandlerTestGlobalClass.php`) and `PHPStan/Fixtures/` are excluded from the classmap and are not autoloaded.
+  - Test classes are inside `Prado\*`: a default log category is the test class, and a record fixture needs `const TABLE`.
+  - Helper classes in their own file must not end in `Test`; phpunit collects `*Test.php` files as tests.
+- Use `Prado\Test\Unit\PradoUnit` infrastructure for:
+  - access to an object's protected/private properties
+  - invoking protected/private methods
+  - restore global variables to their initial state
+  - save and restore all of an object's properties
+  - `Harness/` (`Prado\Test\Unit\Harness\`) holds test classes designed for reuse across the Prado tests
+  - Traits for unit test classes are in `Harness/Traits/`
 - Use mock objects only where appropriate, and check PradoUnit for a common solution first.
 - Functional tests should verify complete user workflows
 - Tests should be isolated from each other (no shared state)
@@ -175,7 +214,7 @@ All instances self-register in `Prado.Registry[controlId]` on construction and a
 - phpunit DOES NOT have the cli option "--verbose"
 
 ## Development Environment
-- PHP 8.1 or higher required
+- PHP 8.2 or higher required
 - PHP extensions: ctype, dom, intl, json, pcre, spl (required)
 - Optional extensions for additional features: apcu, mbstring, openssl, pdo, soap, xsl, zlib
 - Composer for dependency management
@@ -193,7 +232,6 @@ All instances self-register in `Prado.Registry[controlId]` on construction and a
 │   ├── Caching/                # APC, Database, Etcd, Mem, Redis
 │   ├── Collections/            # TList, TMap, TNull, TPriorityList, TPriorityMap, TQueue, TStack, TWeakList, TArraySubscription
 │   ├── Data/                   # Database classes: TDbCommand, TDbConnection, TDbDataReader, TDbTransaction, TDataSourceConfig
-│   │   └── ActiveRecord/       # The Active Record classes
 │   ├── Exceptions/             # T*Exceptions directory
 │   ├── I18N/                   # Internationalization: TTranslate, TDateFormat
 │   │   ├── TGlobalization      # settings for culture, charset and translation configuration
@@ -205,7 +243,7 @@ All instances self-register in `Prado.Registry[controlId]` on construction and a
 │   ├── Security/               # TAuthManager, TSecurityManager, TUser, TUserManager, TDbUser, TDbUserManager
 │   │   └── Permissions         # TPermissionsManager
 │   ├── Shell/                  # TShellAction, TShellApplication, TShellWriter
-│   │   └── Actions/            # Framework Shell Actions: TWebServerAction, THelpAction, TFlushCachesAction, TDbParameterAction, TActiveRecordAction
+│   │   └── Actions/            # Framework Shell Actions: TWebServerAction, THelpAction, TFlushCachesAction, TDbParameterAction
 │   ├── classes.php             # List of All PRADO classes with namespace; format: PHP Array, by path name order ascending
 │   ├── TComponent.php          # Base class
 │   ├── TApplicationComponent.php      # base class for application components
@@ -219,14 +257,13 @@ All instances self-register in `Prado.Registry[controlId]` on construction and a
 │   │   ├── Behaviors/          # Installable System Behaviors
 │   │   ├── Cron/               # Manages time based processes: TCronModule, TCronTask, TDbCronModule, TTimeScheduler
 │   │   ├── Helpers/            # TBitHelper, TProcessHelper
+│   │   ├── Log/                # TLogger, TLogRouter, TLogRoute subclasses, PSR-3 adapters
 │   │   ├── Math/               # Rational Numbers
 │   │   ├── TBaseBehavior.php   # Base Behavior class
 │   │   ├── TBehavior.php       # Base class for Regular Behaviors
 │   │   ├── TBehaviorsModule.php      # Module for loading Behaviors from Configuration
 │   │   ├── TCallChain.php      # Used by dynamic events to chain Behaviors' methods
 │   │   ├── TClassBehavior.php  # Base class for Class Behaviors
-│   │   ├── TLogger.php         # Logs messages as the app runs
-│   │   ├── TLogRouter.php      # Module for capturing logs
 │   │   ├── TParameterModule.php      # Module for loading parameters
 │   │   ├── TDbParameterModule.php    # Module for loading parameters
 │   │   ├── TPluginModule.php   # Base class for PRADO 4 Extensions (via composer)
@@ -243,7 +280,7 @@ All instances self-register in `Prado.Registry[controlId]` on construction and a
 │   │   ├── THttpResponse.php
 │   │   ├── THttpSession.php
 │   │   ├── TUrlManager.php     # Manages the mapping of URLS
-│   │   ├── TUrlMapping.php     # A specific url mapping 
+│   │   ├── TUrlMapping.php     # A specific url mapping
 │   │   └── UI/                 # Base Page UI directory
 │   │       ├── ActiveControls/    # JUI Controls
 │   │       ├── JuiControls/    # JUI Controls
@@ -267,10 +304,14 @@ All instances self-register in `Prado.Registry[controlId]` on construction and a
 │   └── Xml/                    # TXmlDocument, TXmlElement
 ├── bin/                        # The Command Line Executable `prado-cli`
 ├── tests/                      # Test files
-│   ├── FunctionalTests/        # Functional tests for Active Controls
 │   ├── initdb_*.sql            # Database initialization files
-│   ├── test_tools/             # phpunit, selenium 2 and Test Listener Bootstraps
-│   └── unit/                   # phpunit tests for './framework/' classes
+│   ├── harness/                # Functional test harness
+│   ├── js/                     # vitest js unit tests
+│   ├── playwright/             # Functional tests
+│   ├── test_tools/             # phpunit bootstrap and utilities
+│   └── unit/                   # phpunit tests for './framework/' classes; namespace Prado\Test\Unit (autoload-dev PSR-4)
+│       ├── Harness/            # Reusable test classes and traits (Prado\Test\Unit\Harness)
+│       └── PradoUnit.php       # Unit Test Helper
 ├── CLAUDE.md                   # The Memory file for the directory
 ├── composer.json               # Package configuration
 ├── HISTORY.md                  # Version History of important changes

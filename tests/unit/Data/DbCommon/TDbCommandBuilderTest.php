@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Data\DbCommon;
+
 use Prado\Data\Common\TDbCommandBuilder;
 use Prado\Data\Common\Sqlite\TSqliteMetaData;
 use Prado\Data\TDbConnection;
@@ -15,7 +17,7 @@ use Prado\Data\TDbConnection;
  *
  * Tests that require a live connection are guarded with pdo_sqlite checks.
  */
-class TDbCommandBuilderTest extends PHPUnit\Framework\TestCase
+class TDbCommandBuilderTest extends \PHPUnit\Framework\TestCase
 {
 	private static TDbConnection $conn;
 	private static TSqliteMetaData $meta;
@@ -60,23 +62,23 @@ class TDbCommandBuilderTest extends PHPUnit\Framework\TestCase
 
 	public function test_get_pdo_type_boolean()
 	{
-		$this->assertEquals(PDO::PARAM_BOOL, TDbCommandBuilder::getPdoType(true));
-		$this->assertEquals(PDO::PARAM_BOOL, TDbCommandBuilder::getPdoType(false));
+		$this->assertEquals(\PDO::PARAM_BOOL, TDbCommandBuilder::getPdoType(true));
+		$this->assertEquals(\PDO::PARAM_BOOL, TDbCommandBuilder::getPdoType(false));
 	}
 
 	public function test_get_pdo_type_integer()
 	{
-		$this->assertEquals(PDO::PARAM_INT, TDbCommandBuilder::getPdoType(42));
+		$this->assertEquals(\PDO::PARAM_INT, TDbCommandBuilder::getPdoType(42));
 	}
 
 	public function test_get_pdo_type_string()
 	{
-		$this->assertEquals(PDO::PARAM_STR, TDbCommandBuilder::getPdoType('hello'));
+		$this->assertEquals(\PDO::PARAM_STR, TDbCommandBuilder::getPdoType('hello'));
 	}
 
 	public function test_get_pdo_type_null()
 	{
-		$this->assertEquals(PDO::PARAM_NULL, TDbCommandBuilder::getPdoType(null));
+		$this->assertEquals(\PDO::PARAM_NULL, TDbCommandBuilder::getPdoType(null));
 	}
 
 	public function test_get_pdo_type_float_returns_null()
@@ -222,6 +224,36 @@ class TDbCommandBuilderTest extends PHPUnit\Framework\TestCase
 		$this->assertStringContainsString(' AND ', $result);
 	}
 
+	public function test_get_search_expression_escapes_like_wildcards()
+	{
+		$result = $this->builder()->getSearchExpression(['name'], '50% a_b c\\d');
+		$this->assertStringContainsString("'%50\\%%' ESCAPE '\\'", $result);
+		$this->assertStringContainsString("'%a\\_b%' ESCAPE '\\'", $result);
+		$this->assertStringContainsString("'%c\\\\d%' ESCAPE '\\'", $result);
+	}
+
+	public function test_get_search_expression_matches_wildcards_literally()
+	{
+		self::$conn->createCommand("INSERT INTO items VALUES (3, 'rate 50%', 1.0, NULL)")->execute();
+		self::$conn->createCommand("INSERT INTO items VALUES (4, 'rate 500', 1.0, NULL)")->execute();
+		self::$conn->createCommand("INSERT INTO items VALUES (5, 'a_b', 1.0, NULL)")->execute();
+		self::$conn->createCommand("INSERT INTO items VALUES (6, 'axb', 1.0, NULL)")->execute();
+		try {
+			$builder = $this->builder();
+			$names = static function ($rows) {
+				return array_column($rows, 'name');
+			};
+			$rows = $builder->createFindCommand($builder->getSearchExpression(['name'], '50%'))->query()->readAll();
+			$this->assertSame(['rate 50%'], $names($rows));
+			$rows = $builder->createFindCommand($builder->getSearchExpression(['name'], 'a_b'))->query()->readAll();
+			$this->assertSame(['a_b'], $names($rows));
+			$rows = $builder->createFindCommand($builder->getSearchExpression(['name'], 'rate'))->query()->readAll();
+			$this->assertSame(['rate 50%', 'rate 500'], $names($rows));
+		} finally {
+			self::$conn->createCommand('DELETE FROM items WHERE id > 2')->execute();
+		}
+	}
+
 	// -----------------------------------------------------------------------
 	// getSelectFieldList
 	// -----------------------------------------------------------------------
@@ -265,6 +297,18 @@ class TDbCommandBuilderTest extends PHPUnit\Framework\TestCase
 		// 'id' => 'NULL' → 'NULL AS "id"'
 		$result = $this->builder()->getSelectFieldList(['id' => 'NULL']);
 		$this->assertContains('NULL AS "id"', $result);
+	}
+
+	public function test_get_select_field_list_null_value_selects_the_column()
+	{
+		$result = $this->builder()->getSelectFieldList(['price' => null, 'alias' => null, null]);
+		$this->assertSame(['"price"', 'NULL AS alias', 'NULL'], $result);
+	}
+
+	public function test_get_select_field_list_falsy_values_are_literals()
+	{
+		$result = $this->builder()->getSelectFieldList(['price' => 0, 'note' => '']);
+		$this->assertSame(['0 AS "price"', "'' AS \"note\""], $result);
 	}
 
 	public function test_get_select_field_list_alias()

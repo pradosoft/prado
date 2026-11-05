@@ -1,11 +1,13 @@
 <?php
 
+namespace Prado\Test\Unit\Security;
+
 use Prado\Prado;
 use Prado\Security\TUser;
 use Prado\Security\TUserManager;
-use Prado\TApplication;
 use Prado\Util\TBehavior;
 use Prado\Xml\TXmlDocument;
+use Prado\Test\Unit\Harness\TTestApplication;
 
 class TUserBehavior extends TBehavior {
 	public function dyDefaultRoles($defaultRoles, $callchain){
@@ -20,17 +22,15 @@ class TUserBehavior extends TBehavior {
 	}
 }
 
-class TUserTest extends PHPUnit\Framework\TestCase
+class TUserTest extends \PHPUnit\Framework\TestCase
 {
-	public static $app = null;
+	protected ?TTestApplication $app = null;
 	public static $mgr = null;
 
 	protected function setUp(): void
 	{
-		if (self::$app === null) {
-			self::$app = new TApplication(__DIR__ . '/app');
-			prado::setPathofAlias('App', __DIR__);
-		}
+		$this->app = new TTestApplication(__DIR__ . '/app');
+		Prado::setPathOfAlias('App', __DIR__);
 
 		if (self::$mgr === null) {
 			$config = new TXmlDocument('1.0', 'utf8');
@@ -42,6 +42,10 @@ class TUserTest extends PHPUnit\Framework\TestCase
 
 	protected function tearDown(): void
 	{
+		if ($this->app !== null) {
+			$this->app->restoreApplication();
+			$this->app = null;
+		}
 	}
 
 	public function testConstruct()

@@ -15,30 +15,43 @@ TFeedService provides feed content (RSS/Atom) to end-users. It manages a set of 
 - Configurable through XML or PHP formats
 - Supports different feed types through content type configuration
 - Implements standard feed retrieval pattern
+- `EnableCsrfValidation` (off by default) has `run()` refuse a POST without the CSRF token through `TService::ensureCsrfToken()`; feeds are read with GET, which is never checked (4.4.0)
 
 ## Configuration
-### XML Format
+
+Registered as a service (`<services>` tag, not `<modules>`).
+
+**application.xml:**
 ```xml
-<service id="feed" class="Prado\Web\Services\TFeedService">
-  <feed id="ch1" class="Path\To\FeedClass1" />
-  <feed id="ch2" class="Path\To\FeedClass2" />
-  <feed id="ch3" class="Path\To\FeedClass3" />
-</service>
+<services>
+  <service id="feed" class="Prado\Web\Services\TFeedService">
+    <feed id="ch1" class="Path\To\FeedClass1" />
+    <feed id="ch2" class="Path\To\FeedClass2" />
+    <feed id="ch3" class="Path\To\FeedClass3" />
+  </service>
+</services>
 ```
 
-### PHP Format
+**PHP equivalent:**
 ```php
-array(
-  'feed' => array(
-    'ch1' => array(
-      'class' => 'Path\To\FeedClass1',
-      'properties' => array(
-        ...
-      ),
-    ),
-  ),
-)
+return [
+    'services' => [
+        'feed' => [
+            'class' => 'Prado\Web\Services\TFeedService',
+            'feeds' => [
+                'ch1' => ['class' => 'Path\To\FeedClass1', 'properties' => [...]],
+                'ch2' => ['class' => 'Path\To\FeedClass2'],
+                'ch3' => 'Path\To\FeedClass3',
+            ],
+        ],
+    ],
+];
 ```
+`init()` registers each entry of `feeds`. A string entry is the feed class. `run()` validates the class: a missing class raises `feedservice_class_required`, and a class that is not an `IFeedContentProvider` raises `feedservice_feedtype_invalid`.
+
+**Deprecated 4.3 form:** feeds beside the `class` key. The private `loadLegacyPhpFeeds()` registers such an entry when its key is not reserved (`class`, `feeds`, `properties`, or a `TApplicationConfiguration` key: `application`, `errormessages`, `includes`, `modules`, `parameters`, `paths`, `services`) and its class implements `IFeedContentProvider`. Other entries are skipped without error. A feed under `feeds` takes precedence. Remove the method and its call in `init()` to drop the 4.3 form.
+
+An XML-configured service with a `null` configuration registers no feed.
 
 ## Methods
 

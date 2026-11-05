@@ -10,7 +10,7 @@
 
 namespace Prado\Util\Behaviors;
 
-use Prado\Prado;
+use Prado\TPropertyValue;
 use Prado\Util\TBehavior;
 
 /**
@@ -55,7 +55,7 @@ class TTimeZoneParameterBehavior extends TBehavior
 	private $_timeZoneParameter = self::TIMEZONE_PARAMETER_NAME;
 
 	/**
-	 * @var object {@see \Prado\Util\Behaviors\TMapRouteBehavior} that routes changes to the parameter
+	 * @var ?object {@see \Prado\Util\Behaviors\TMapRouteBehavior} that routes changes to the parameter
 	 * is handled by setTimeZone.
 	 */
 	private $_paramBehavior;
@@ -71,7 +71,7 @@ class TTimeZoneParameterBehavior extends TBehavior
 		if (!$this->getEnabled() || !$this->_timeZoneParameter) {
 			return;
 		}
-		$appParams = Prado::getApplication()->getParameters();
+		$appParams = $this->getApplication()->getParameters();
 		if ($default_timezone = $appParams->itemAt($this->_timeZoneParameter)) {
 			$this->setTimeZone($default_timezone);
 		}
@@ -86,7 +86,7 @@ class TTimeZoneParameterBehavior extends TBehavior
 	public function detach($owner)
 	{
 		if ($this->_paramBehavior) {
-			Prado::getApplication()->getParameters()->detachBehavior(self::APP_PARAM_ROUTE_BEHAVIOR_NAME);
+			$this->getApplication()->getParameters()->detachBehavior(self::APP_PARAM_ROUTE_BEHAVIOR_NAME);
 		}
 		parent::detach($owner);
 	}
@@ -98,11 +98,12 @@ class TTimeZoneParameterBehavior extends TBehavior
 	 */
 	public function setEnabled($enabled)
 	{
-		if ($enabled == true && !$this->_paramBehavior) {
+		$enabled = TPropertyValue::ensureBoolean($enabled);
+		if ($enabled && !$this->_paramBehavior) {
 			$this->_paramBehavior = new TMapRouteBehavior($this->_timeZoneParameter, [$this, 'setTimeZone']);
-			Prado::getApplication()->getParameters()->attachBehavior(self::APP_PARAM_ROUTE_BEHAVIOR_NAME, $this->_paramBehavior);
-		} elseif ($enabled == false && $this->_paramBehavior) {
-			Prado::getApplication()->getParameters()->detachBehavior(self::APP_PARAM_ROUTE_BEHAVIOR_NAME);
+			$this->getApplication()->getParameters()->attachBehavior(self::APP_PARAM_ROUTE_BEHAVIOR_NAME, $this->_paramBehavior);
+		} elseif (!$enabled && $this->_paramBehavior) {
+			$this->getApplication()->getParameters()->detachBehavior(self::APP_PARAM_ROUTE_BEHAVIOR_NAME);
 			$this->_paramBehavior = null;
 		}
 		parent::setEnabled($enabled);

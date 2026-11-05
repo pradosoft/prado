@@ -51,8 +51,9 @@ interface IDataTableInfo
 
 	/**
 	 * Returns all column metadata objects for the table or collection, keyed by column name.
+	 * The SQL implementation, {@see TDbTableInfo}, returns them in a {@see \Prado\Collections\TMap}.
 	 *
-	 * @return IDataColumn[] the column metadata objects.
+	 * @return array<string, IDataColumn>|\Prado\Collections\TMap the column metadata objects.
 	 */
 	public function getColumns();
 

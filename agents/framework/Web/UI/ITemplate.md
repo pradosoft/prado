@@ -1,7 +1,7 @@
 # Web/UI/ITemplate
 
 ### Directories
-[framework](./INDEX.md) / [Web](./Web/INDEX.md) / [UI](./Web/UI/INDEX.md) / **`ITemplate`**
+[framework](../../INDEX.md) / [Web](../INDEX.md) / [UI](INDEX.md) / **`ITemplate`**
 
 **Location:** `framework/Web/UI/ITemplate.php`
 **Namespace:** `Prado\Web\UI`

@@ -10,6 +10,8 @@
 
 namespace Prado\Web\UI\WebControls;
 
+use Prado\Web\Javascripts\TStyleSheetHelper;
+
 /**
  * TStyleSheet class.
  *
@@ -31,6 +33,12 @@ namespace Prado\Web\UI\WebControls;
  * control in the head section of your page to conform to the HTML standard.
  * If only CSS file URL is specified, you may place the control anywhere on your page
  * and the style element will be rendered in the right position.
+ *
+ * The style element and the stylesheet link carry the CSP nonce of
+ * {@see TStyleSheetHelper::getStyleNonce()}. A TStyleSheet with child CSS that a
+ * callback renders again has the nonce of the callback request, which does not
+ * match the page's policy; CSS that changes in a callback is registered with
+ * {@see \Prado\Web\UI\TClientScriptManager::registerStyleSheet()} instead.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @since 3.0.2
@@ -121,9 +129,9 @@ class TStyleSheet extends \Prado\Web\UI\TControl
 	public function render($writer)
 	{
 		if ($this->getHasControls()) {
-			$writer->write("<style type=\"text/css\">\n/*<![CDATA[*/\n");
+			$writer->write(TStyleSheetHelper::renderStyleHeader());
 			$this->renderChildren($writer);
-			$writer->write("\n/*]]>*/\n</style>\n");
+			$writer->write(TStyleSheetHelper::renderStyleFooter());
 		}
 	}
 }

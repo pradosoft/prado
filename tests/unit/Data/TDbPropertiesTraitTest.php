@@ -1,281 +1,317 @@
 <?php
 
-require_once(__DIR__ . '/../PradoUnit.php');
+namespace Prado\Test\Unit\Data;
 
+use Prado\Caching\TDbCache;
+use Prado\Data\TDataSourceConfig;
 use Prado\Data\TDbConnection;
 use Prado\Data\TDbPropertiesTrait;
-use Prado\Data\DataGateway\TTableGateway;
 use Prado\Exceptions\TConfigurationException;
-use Prado\TApplication;
+use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Prado;
 use Prado\TComponent;
+use Prado\Test\Unit\PradoUnit;
 
 /**
- * Minimal concrete class using TDbPropertiesTrait, activation type = false (default).
+ * Minimal user of the trait.
+ *
+ * It has no getApplication(), so createDbConnection() takes its application
+ * from Prado::getApplication().
  */
-class TraitTestBaseClass extends TComponent
+class DbPropertiesTraitFixture extends TComponent
 {
 	use TDbPropertiesTrait;
 }
 
 /**
- * Class that uses activation type null (never auto-activate).
+ * A user of the trait that names its own invalid-connection message key.
  */
-class TraitTestNullActivationClass extends TComponent
+class DbPropertiesTraitCustomKeyFixture extends TComponent
 {
 	use TDbPropertiesTrait;
 
-	protected function getDbConnectionActivationType(): ?bool
+	protected function getConnectionInvalidExceptionKey(): string
 	{
-		return null;
+		return 'dblogroute_connectionid_invalid';
 	}
 }
 
 /**
- * Class that uses activation type true (always activate on get).
+ * A user of the trait that supplies its own connection when no ConnectionID is set.
  */
-class TraitTestAlwaysActivateClass extends TComponent
+class DbPropertiesTraitCustomConnFixture extends TComponent
 {
 	use TDbPropertiesTrait;
 
-	protected function getDbConnectionActivationType(): ?bool
+	public ?TDbConnection $customConnection = null;
+
+	protected function getCustomDbConnection(): ?TDbConnection
 	{
-		return true;
+		return $this->customConnection;
 	}
 }
 
 /**
- * Class that provides a SQLite database name.
+ * A user of the trait that keeps its data in a sqlite file in the runtime path.
  */
-class TraitTestSqliteClass extends TComponent
+class DbPropertiesTraitSqliteFixture extends TComponent
 {
 	use TDbPropertiesTrait;
 
 	protected function getSqliteDatabaseName(): ?string
 	{
-		return 'trait_test.db';
+		return 'dbpropertiestrait.db';
 	}
 }
 
 /**
- * Class that provides a custom DB connection.
+ * Covers createDbConnection() resolving its TDataSourceConfig module.
+ *
+ * The application is reached through Prado::getApplication() when the using
+ * class has none of its own, and that returns null outside of a running
+ * application. createDbConnection() reads the module through the null-safe
+ * operator, so a missing application produces the same TConfigurationException
+ * as an unknown module ID rather than an Error.
  */
-class TraitTestCustomConnectionClass extends TComponent
+class TDbPropertiesTraitTest extends \PHPUnit\Framework\TestCase
 {
-	use TDbPropertiesTrait;
-
-	private TDbConnection $_customConn;
-
-	public function setCustomConn(TDbConnection $conn): void
+	/**
+	 * Runs $fn with no application registered and restores the application after.
+	 * The PRADO_TEST_RUN constant lets setApplication() bypass the singleton guard.
+	 * @param callable $fn the code to run without an application
+	 * @return mixed whatever $fn returns
+	 */
+	private function withoutApplication(callable $fn): mixed
 	{
-		$this->_customConn = $conn;
-	}
+		$app = Prado::getApplication();
+		Prado::setApplication(null);
 
-	protected function getCustomDbConnection(): ?TDbConnection
-	{
-		return $this->_customConn ?? null;
-	}
-}
-
-class TDbPropertiesTraitTest extends PHPUnit\Framework\TestCase
-{
-	private static string $dbFile;
-	private static ?TDbConnection $sharedConn = null;
-
-	public static function setUpBeforeClass(): void
-	{
-		static::$dbFile = __DIR__ . '/db/trait_test.db';
-		// Ensure test application is running
-		if (\Prado\Prado::getApplication() === null) {
-			new TApplication(__DIR__, false, TApplication::CONFIG_TYPE_PHP);
-		}
-		// Create a shared SQLite connection with tables for gateway tests
-		static::$sharedConn = new TDbConnection('sqlite:' . static::$dbFile);
-		static::$sharedConn->setActive(true);
-		foreach (['trait_tbl_a', 'trait_tbl_b', 'trait_tbl_x', 'trait_tbl_y', 'trait_test_table'] as $tbl) {
-			static::$sharedConn->createCommand(
-				"CREATE TABLE IF NOT EXISTS $tbl (id INTEGER PRIMARY KEY, val TEXT)"
-			)->execute();
+		try {
+			return $fn();
+		} finally {
+			Prado::setApplication($app);
 		}
 	}
 
-	public static function tearDownAfterClass(): void
+	/**
+	 * Calls the protected createDbConnection() and returns the exception it throws.
+	 * @param object $subject the object using the trait
+	 * @param ?string $connectionID the argument to pass, null to use the property
+	 * @return ?TConfigurationException the exception thrown, null when none was
+	 */
+	private function connectionException(object $subject, ?string $connectionID = null): ?TConfigurationException
 	{
-		if (static::$sharedConn !== null) {
-			static::$sharedConn->setActive(false);
-			static::$sharedConn = null;
+		try {
+			PradoUnit::invoke($subject, 'createDbConnection', $connectionID);
+		} catch (TConfigurationException $e) {
+			return $e;
+		}
+		return null;
+	}
+
+	// ------- no application, a ConnectionID is set -------
+
+	public function testCreateDbConnectionWithoutApplicationThrowsConfigurationException()
+	{
+		$subject = new DbPropertiesTraitFixture();
+		$subject->setConnectionID('db');
+
+		$e = $this->withoutApplication(fn() => $this->connectionException($subject));
+
+		$this->assertInstanceOf(TConfigurationException::class, $e);
+	}
+
+	public function testCreateDbConnectionWithoutApplicationReportsTheInvalidConnectionKey()
+	{
+		$subject = new DbPropertiesTraitFixture();
+		$subject->setConnectionID('db');
+
+		$e = $this->withoutApplication(fn() => $this->connectionException($subject));
+
+		$this->assertSame('dbproperties_connectionid_invalid', $e->getErrorCode());
+		$this->assertStringContainsString('db', $e->getMessage());
+		$this->assertStringContainsString('DbPropertiesTraitFixture', $e->getMessage());
+	}
+
+	public function testCreateDbConnectionWithoutApplicationHonorsACustomExceptionKey()
+	{
+		$subject = new DbPropertiesTraitCustomKeyFixture();
+		$subject->setConnectionID('db');
+
+		$e = $this->withoutApplication(fn() => $this->connectionException($subject));
+
+		$this->assertSame('dblogroute_connectionid_invalid', $e->getErrorCode());
+	}
+
+	public function testCreateDbConnectionWithoutApplicationAppliesToTheConnectionIDArgument()
+	{
+		$subject = new DbPropertiesTraitFixture();
+
+		$e = $this->withoutApplication(fn() => $this->connectionException($subject, 'argument-db'));
+
+		$this->assertSame('dbproperties_connectionid_invalid', $e->getErrorCode());
+		$this->assertStringContainsString('argument-db', $e->getMessage());
+	}
+
+	/**
+	 * A missing application and an unknown module ID reach the same exception,
+	 * which is what reading the module null-safely buys.
+	 */
+	public function testAMissingApplicationAndAnUnknownModuleGiveTheSameError()
+	{
+		$subject = new DbPropertiesTraitFixture();
+		$subject->setConnectionID('no-such-module');
+
+		$without = $this->withoutApplication(fn() => $this->connectionException($subject));
+		$with = $this->connectionException($subject);
+
+		$this->assertNotNull($with);
+		$this->assertSame($with->getErrorCode(), $without->getErrorCode());
+		$this->assertSame($with->getMessage(), $without->getMessage());
+	}
+
+	// ------- an application is present -------
+
+	public function testCreateDbConnectionReturnsTheConnectionOfTheDataSourceModule()
+	{
+		$app = Prado::getApplication();
+		$modules = PradoUnit::getProp($app, '_modules');
+
+		try {
+			$app->setModule('dbpropertiestrait.datasource', new TDataSourceConfig());
+			$subject = new DbPropertiesTraitFixture();
+			$subject->setConnectionID('dbpropertiestrait.datasource');
+
+			$conn = PradoUnit::invoke($subject, 'createDbConnection');
+
+			$this->assertInstanceOf(TDbConnection::class, $conn);
+			$this->assertFalse($conn->getActive());
+		} finally {
+			PradoUnit::setProp($app, '_modules', $modules);
 		}
 	}
 
-	private function makeSqliteConnection(): TDbConnection
+	public function testCreateDbConnectionRejectsAModuleThatIsNotADataSourceConfig()
 	{
-		// Return a fresh inactive connection to the shared SQLite file
-		return new TDbConnection('sqlite:' . static::$dbFile);
+		$app = Prado::getApplication();
+		$modules = PradoUnit::getProp($app, '_modules');
+
+		try {
+			$app->setModule('dbpropertiestrait.notadatasource', new TDbCache());
+			$subject = new DbPropertiesTraitFixture();
+			$subject->setConnectionID('dbpropertiestrait.notadatasource');
+
+			$e = $this->connectionException($subject);
+
+			$this->assertSame('dbproperties_connectionid_invalid', $e->getErrorCode());
+		} finally {
+			PradoUnit::setProp($app, '_modules', $modules);
+		}
 	}
 
-	private function makeActiveSharedConnection(): TDbConnection
+	// ------- no ConnectionID: the branch that never reads a module -------
+
+	public function testCreateDbConnectionWithoutApplicationUsesTheCustomConnection()
 	{
-		// Return the already-active shared connection
-		return static::$sharedConn;
+		$subject = new DbPropertiesTraitCustomConnFixture();
+		$subject->customConnection = new TDbConnection('sqlite::memory:');
+
+		$conn = $this->withoutApplication(fn() => PradoUnit::invoke($subject, 'createDbConnection'));
+
+		$this->assertSame($subject->customConnection, $conn);
 	}
 
-	// -------  ConnectionID  -------
-
-	public function test_connection_id_defaults_to_empty_string()
+	public function testCreateDbConnectionWithoutApplicationRequiresAConnectionID()
 	{
-		$obj = new TraitTestBaseClass();
-		$this->assertSame('', $obj->getConnectionID());
+		$subject = new DbPropertiesTraitFixture();
+
+		$e = $this->withoutApplication(fn() => $this->connectionException($subject));
+
+		$this->assertSame('dbproperties_property_required', $e->getErrorCode());
+		$this->assertStringContainsString('ConnectionID', $e->getMessage());
 	}
 
-	public function test_set_connection_id()
+	// ------- no ConnectionID: the sqlite database in the runtime path -------
+
+	public function testCreateDbConnectionBuildsTheSqliteFileInTheRuntimePath()
 	{
-		$obj = new TraitTestBaseClass();
-		$obj->setConnectionID('myDB');
-		$this->assertSame('myDB', $obj->getConnectionID());
-	}
+		$subject = new DbPropertiesTraitSqliteFixture();
 
-	// -------  HasDbConnection  -------
+		$conn = PradoUnit::invoke($subject, 'createDbConnection');
 
-	public function test_has_db_connection_initially_false()
-	{
-		$obj = new TraitTestBaseClass();
-		$this->assertFalse($obj->getHasDbConnection());
-	}
-
-	// -------  Custom connection  -------
-
-	public function test_custom_connection_used_when_connection_id_empty()
-	{
-		$conn = $this->makeSqliteConnection();
-		$obj = new TraitTestCustomConnectionClass();
-		$obj->setCustomConn($conn);
-
-		$retrieved = $obj->getDbConnection();
-		$this->assertSame($conn, $retrieved);
-	}
-
-	public function test_has_db_connection_true_after_get()
-	{
-		$conn = $this->makeSqliteConnection();
-		$obj = new TraitTestCustomConnectionClass();
-		$obj->setCustomConn($conn);
-		$obj->getDbConnection();
-		$this->assertTrue($obj->getHasDbConnection());
-	}
-
-	// -------  deactivateDbConnection  -------
-
-	public function test_deactivate_without_connection_is_no_op()
-	{
-		$obj = new TraitTestBaseClass();
-		$result = $obj->deactivateDbConnection();
-		$this->assertInstanceOf(TraitTestBaseClass::class, $result);
-	}
-
-	public function test_deactivate_clears_connection_when_flag_true()
-	{
-		$conn = $this->makeSqliteConnection();
-		$obj = new TraitTestCustomConnectionClass();
-		$obj->setCustomConn($conn);
-		$obj->getDbConnection();
-
-		$this->assertTrue($obj->getHasDbConnection());
-		$obj->deactivateDbConnection(true);
-		$this->assertFalse($obj->getHasDbConnection());
-	}
-
-	public function test_deactivate_returns_static()
-	{
-		$obj = new TraitTestCustomConnectionClass();
-		$result = $obj->deactivateDbConnection();
-		$this->assertSame($obj, $result);
-	}
-
-	// -------  Activation types  -------
-
-	public function test_activation_type_false_activates_on_first_get()
-	{
-		$conn = $this->makeSqliteConnection();
-		$obj = new TraitTestCustomConnectionClass();
-		$obj->setCustomConn($conn);
-
-		$retrieved = $obj->getDbConnection();
-		$this->assertTrue($retrieved->getActive());
-	}
-
-	public function test_activation_type_null_does_not_auto_activate()
-	{
-		$obj = new class extends TraitTestCustomConnectionClass {
-			protected function getDbConnectionActivationType(): ?bool
-			{
-				return null;
-			}
-		};
-
-		$conn = $this->makeSqliteConnection();
-		$obj->setCustomConn($conn);
-
-		$retrieved = $obj->getDbConnection();
-		// null activation: setActive(true) is never called automatically
-		$this->assertFalse($retrieved->getActive());
-	}
-
-	// -------  getTableGateway  -------
-
-	public function test_get_table_gateway_returns_table_gateway()
-	{
-		$obj = new TraitTestCustomConnectionClass();
-		$obj->setCustomConn($this->makeActiveSharedConnection());
-
-		$gateway = $obj->getTableGateway('trait_test_table');
-		$this->assertInstanceOf(TTableGateway::class, $gateway);
-	}
-
-	public function test_get_table_gateway_caches_by_table_name()
-	{
-		$obj = new TraitTestCustomConnectionClass();
-		$obj->setCustomConn($this->makeActiveSharedConnection());
-
-		$gateway1 = $obj->getTableGateway('trait_tbl_a');
-		$gateway2 = $obj->getTableGateway('trait_tbl_a');
-		$this->assertSame($gateway1, $gateway2);
-	}
-
-	public function test_get_table_gateway_no_cache_creates_new_instance()
-	{
-		$obj = new TraitTestCustomConnectionClass();
-		$obj->setCustomConn($this->makeActiveSharedConnection());
-
-		$gateway1 = $obj->getTableGateway('trait_tbl_b', false);
-		$gateway2 = $obj->getTableGateway('trait_tbl_b', false);
-		$this->assertNotSame($gateway1, $gateway2);
-	}
-
-	public function test_get_table_gateway_different_tables_different_instances()
-	{
-		$obj = new TraitTestCustomConnectionClass();
-		$obj->setCustomConn($this->makeActiveSharedConnection());
-
-		$gatewayA = $obj->getTableGateway('trait_tbl_x');
-		$gatewayB = $obj->getTableGateway('trait_tbl_y');
-		$this->assertNotSame($gatewayA, $gatewayB);
-	}
-
-	// -------  Exception when no connection configured  -------
-
-	public function test_no_connection_throws_when_no_sqlite_and_no_custom()
-	{
-		$obj = new TraitTestBaseClass();
-		$this->expectException(TConfigurationException::class);
-		$obj->getDbConnection();
-	}
-
-	// -------  SQLite fallback  -------
-
-	public function test_sqlite_connection_created_from_runtime_path()
-	{
-		$obj = new TraitTestSqliteClass();
-		$conn = $obj->getDbConnection();
+		$expected = 'sqlite:' . Prado::getApplication()->getRuntimePath() . DIRECTORY_SEPARATOR . 'dbpropertiestrait.db';
 		$this->assertInstanceOf(TDbConnection::class, $conn);
-		$this->assertTrue($conn->getActive());
+		$this->assertSame($expected, $conn->getConnectionString());
+	}
+
+	public function testCreateDbConnectionWithoutApplicationRequiresAConnectionIDForASqliteDatabase()
+	{
+		$subject = new DbPropertiesTraitSqliteFixture();
+
+		$e = $this->withoutApplication(fn() => $this->connectionException($subject));
+
+		$this->assertSame('dbproperties_property_required', $e->getErrorCode());
+		$this->assertStringContainsString('ConnectionID', $e->getMessage());
+	}
+
+	/**
+	 * A sqlite database has nowhere to live without a runtime path, so no
+	 * connection is handed back rooted at the file system root.
+	 */
+	public function testCreateDbConnectionWithoutApplicationBuildsNoSqliteConnection()
+	{
+		$subject = new DbPropertiesTraitSqliteFixture();
+		$conn = null;
+
+		$this->withoutApplication(function () use ($subject, &$conn) {
+			try {
+				$conn = PradoUnit::invoke($subject, 'createDbConnection');
+			} catch (TConfigurationException $e) {
+			}
+		});
+
+		$this->assertNull($conn);
+	}
+
+	/**
+	 * An application whose runtime path is not resolved yet is handled the same
+	 * way as no application at all.
+	 */
+	public function testCreateDbConnectionWithoutARuntimePathRequiresAConnectionID()
+	{
+		$app = Prado::getApplication();
+		$runtimePath = PradoUnit::getProp($app, '_runtimePath');
+
+		try {
+			PradoUnit::setProp($app, '_runtimePath', null);
+			$subject = new DbPropertiesTraitSqliteFixture();
+
+			$e = $this->connectionException($subject);
+
+			$this->assertSame('dbproperties_property_required', $e->getErrorCode());
+		} finally {
+			PradoUnit::setProp($app, '_runtimePath', $runtimePath);
+		}
+	}
+
+	public function testEnsureSqlIdentifierAcceptsIdentifiers(): void
+	{
+		$subject = new DbPropertiesTraitFixture();
+		foreach (['pradocache', '_t1', 'my$table', 'main.pradocache', 'db.schema.t', '`my table`', '"My Table"', '[my table]', 'db.`t`'] as $name) {
+			$this->assertSame($name, PradoUnit::invoke($subject, 'ensureSqlIdentifier', $name, 'TableName'));
+		}
+	}
+
+	public function testEnsureSqlIdentifierRejectsSql(): void
+	{
+		$subject = new DbPropertiesTraitFixture();
+		foreach (['', '1table', 't; DROP TABLE x', "t'", 't--', 't x', '`a`b`', 'a.b.c.d', 'a.', '.a', "t\n", "`a\x00`"] as $name) {
+			try {
+				PradoUnit::invoke($subject, 'ensureSqlIdentifier', $name, 'TableName');
+				$this->fail('Accepted ' . json_encode($name));
+			} catch (TInvalidDataValueException $e) {
+				$this->assertStringContainsString('TableName', $e->getMessage());
+			}
+		}
 	}
 }

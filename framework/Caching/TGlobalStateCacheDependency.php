@@ -11,58 +11,90 @@
 namespace Prado\Caching;
 
 use Prado\Prado;
+use Prado\TPropertyValue;
 
 /**
- * TGlobalStateCacheDependency class.
+ * TGlobalStateCacheDependency class
  *
- * TGlobalStateCacheDependency checks if a global state is changed or not.
- * If the global state is changed, the dependency is reported as changed.
- * To specify which global state this dependency should check with,
- * set {@see setStateName StateName} to the name of the global state.
+ * TGlobalStateCacheDependency reports a cache-dependency change when the
+ * value of the global application state named by {@see setStateName StateName}
+ * differs from the value captured when the dependency was created.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.1.0
  */
 class TGlobalStateCacheDependency extends TCacheDependency
 {
-	private $_stateName;
-	private $_stateValue;
+	/** @var string name of the global application state being tracked */
+	private string $_stateName;
+	/** @var mixed value of the global state captured at construction time */
+	private mixed $_stateValue;
 
 	/**
-	 * Constructor.
-	 * @param string $name the name of the global state
+	 * @param string $name the name of the global state to track.
 	 */
-	public function __construct($name)
+	public function __construct(string $name)
 	{
 		$this->setStateName($name);
 		parent::__construct();
 	}
 
 	/**
-	 * @return string the name of the global state
+	 * Returns the stored state name without side effects.
+	 * @return string the tracked global state name.
+	 * @since 4.4.0
 	 */
-	public function getStateName()
+	protected function getStateNameDirect(): string
 	{
 		return $this->_stateName;
 	}
 
 	/**
-	 * @param string $value the name of the global state
-	 * @see TApplication::setGlobalState
+	 * Stores the state name directly without re-capturing the state value.
+	 * @param string $value the global state name.
+	 * @since 4.4.0
 	 */
-	public function setStateName($value)
+	protected function setStateNameDirect(string $value): void
 	{
 		$this->_stateName = $value;
-		$this->_stateValue = Prado::getApplication()->getGlobalState($value);
 	}
 
 	/**
-	 * Performs the actual dependency checking.
-	 * This method returns true if the specified global state is changed.
-	 * @return bool whether the dependency is changed or not.
+	 * @return string the name of the tracked global state.
 	 */
-	public function getHasChanged()
+	public function getStateName(): string
 	{
-		return $this->_stateValue !== Prado::getApplication()->getGlobalState($this->_stateName);
+		return $this->getStateNameDirect();
+	}
+
+	/**
+	 * Sets the global state name and re-captures its current value.
+	 * @param string $value the name of the global state to track.
+	 * @see \Prado\TApplication::setGlobalState()
+	 */
+	public function setStateName($value)
+	{
+		$this->setStateNameDirect(TPropertyValue::ensureString($value));
+		$this->updateStateValue();
+	}
+
+	/**
+	 * Re-captures the current value of the tracked global state.
+	 * Call this after the state has been intentionally updated so that the next
+	 * `getHasChanged()` check uses the refreshed baseline.
+	 * @since 4.4.0
+	 */
+	public function updateStateValue(): void
+	{
+		$this->_stateValue = Prado::getApplication()->getGlobalState($this->getStateName());
+	}
+
+	/**
+	 * @return bool whether the tracked global state's current value differs from
+	 *   the value captured at construction time (or the last {@see updateStateValue()} call).
+	 */
+	public function getHasChanged(): bool
+	{
+		return $this->_stateValue !== Prado::getApplication()->getGlobalState($this->getStateName());
 	}
 }

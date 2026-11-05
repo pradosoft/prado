@@ -11,6 +11,7 @@
 namespace Prado\Web;
 
 use Prado\Exceptions\TConfigurationException;
+use Prado\IModuleDependency;
 use Prado\Prado;
 use Prado\TApplication;
 use Prado\TPropertyValue;
@@ -38,16 +39,38 @@ use Prado\Xml\TXmlElement;
  * Since it is derived from {@see \Prado\Web\TUrlManager}, it should be configured globally
  * in the application configuration like the following,
  * ```xml
- *  <module id="request" class="THttpRequest" UrlManager="friendly-url" />
- *  <module id="friendly-url" class="Prado\Web.TUrlMapping" EnableCustomUrl="true">
- *    <url ServiceParameter="Posts.ViewPost" pattern="post/{id}/" parameters.id="\d+" />
- *    <url ServiceParameter="Posts.ListPost" pattern="archive/{time}/" parameters.time="\d{6}" />
- *    <url ServiceParameter="Posts.ListPost" pattern="category/{cat}/" parameters.cat="\d+" />
- *  </module>
+ * <modules>
+ *     <module id="request" class="Prado\Web\THttpRequest" UrlManager="friendly-url" />
+ *     <module id="friendly-url" class="Prado\Web\TUrlMapping" EnableCustomUrl="true">
+ *         <url ServiceParameter="Posts.ViewPost" pattern="post/{id}/" parameters.id="\d+" />
+ *         <url ServiceParameter="Posts.ListPost" pattern="archive/{time}/" parameters.time="\d{6}" />
+ *     </module>
+ * </modules>
+ * ```
+ *
+ * PHP configuration style:
+ * ```php
+ * return [
+ *     'modules' => [
+ *         'request' => [
+ *             'class' => 'Prado\Web\THttpRequest',
+ *             'properties' => ['UrlManager' => 'friendly-url'],
+ *         ],
+ *         'friendly-url' => [
+ *             'class' => 'Prado\Web\TUrlMapping',
+ *             'properties' => ['EnableCustomUrl' => 'true'],
+ *             'urls' => [
+ *                 ['properties' => ['ServiceParameter' => 'Posts.ViewPost', 'Pattern' => 'post/{id}/', 'parameters.id' => '\d+']],
+ *                 ['properties' => ['ServiceParameter' => 'Posts.ListPost', 'Pattern' => 'archive/{time}/', 'parameters.time' => '\d{6}']],
+ *             ],
+ *         ],
+ *     ],
+ * ];
  * ```
  *
  * In the above, each <tt>&lt;url&gt;</tt> element specifies a URL pattern represented
- * as a {@see \Prado\Web\TUrlMappingPattern} internally. You may create your own pattern classes
+ * as a {@see \Prado\Web\TUrlMappingPattern} internally. In PHP, each `urls` entry holds
+ * the pattern's property values under a `properties` key and an optional `class` key. You may create your own pattern classes
  * by extending {@see \Prado\Web\TUrlMappingPattern} and specifying the <tt>&lt;class&gt;</tt> attribute
  * in the element.
  *
@@ -57,8 +80,11 @@ use Prado\Xml\TXmlElement;
  * the URL will be used. Cascaded mapping can be achieved by placing the URL mappings
  * in particular order. For example, placing the most specific mappings first.
  *
- * Only the PATH_INFO part of the URL is used to match the available patterns. The matching
+ * The PATH_INFO part of the URL is used to match the available patterns. The matching
  * is strict in the sense that the whole pattern must match the whole PATH_INFO of the URL.
+ * A pattern can also match the query string of the URL, see
+ * {@see \Prado\Web\TUrlMappingPattern::setUrlMatchMode UrlMatchMode} and
+ * {@see \Prado\Web\TUrlMappingPattern::getQuery Query}.
  *
  * From PRADO v3.1.1, TUrlMapping also provides support for constructing URLs according to
  * the specified pattern. You may enable this functionality by setting {@see setEnableCustomUrl EnableCustomUrl} to true.
@@ -69,6 +95,15 @@ use Prado\Xml\TXmlElement;
  * to constructUrl() and every parameter in the {@see getPattern Pattern} is found
  * in the GET variables.
  *
+ * Since PRADO 4.4.0, URL patterns can match the query string of the URL. A pattern with
+ * {@see \Prado\Web\TUrlMappingPattern::setUrlMatchMode UrlMatchMode} set to 'Full' matches
+ * the PATH_INFO and the query string, separated by a question mark. A pattern with
+ * {@see \Prado\Web\TUrlMappingPattern::getQuery Query} constraints matches only requests
+ * whose GET variables of the same names match those regular expressions.
+ * For example:
+ * - pattern="post/{id}?mode=edit" UrlMatchMode="Full" - matches <tt>post/5?mode=edit</tt> and nothing else
+ * - pattern="post/{id}" query.mode="edit|preview" - matches <tt>post/5?mode=edit</tt> whatever else the query string holds
+ *
  * Since PRADO 4.3.3, URL patterns support HTTP verb matching via the {@see \Prado\Web\TUrlMappingPattern::getVerbs Verbs} attribute.
  * This allows restricting URL patterns to specific HTTP methods (GET, POST, PUT, DELETE, etc.).
  * Use a comma-separated list for multiple verbs. Use the prefix '~' or '!' to negate a verb.
@@ -78,10 +113,13 @@ use Prado\Xml\TXmlElement;
  * - verbs="~GET" or verbs="!GET" - matches any request except GET requests
  * - verbs="~GET,!PUT" - multiple negative verbs can be matched
  *
+ * A list of negated verbs alone matches every method it does not exclude, and the
+ * comparison ignores case.
+ *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @since 3.0.5
  */
-class TUrlMapping extends TUrlManager
+class TUrlMapping extends TUrlManager implements IModuleDependency
 {
 	/**
 	 * @var TUrlMappingPattern[] list of patterns.
@@ -111,7 +149,7 @@ class TUrlMapping extends TUrlManager
 	/**
 	 * Initializes this module.
 	 * This method is required by the IModule interface.
-	 * @param mixed $config configuration for this module, can be null
+	 * @param null|array|\Prado\Xml\TXmlElement $config configuration for this module, can be null
 	 * @throws TConfigurationException if module is configured in the global scope.
 	 */
 	public function init($config)
@@ -120,11 +158,11 @@ class TUrlMapping extends TUrlManager
 		if ($this->getRequest()->getRequestResolved()) {
 			throw new TConfigurationException('urlmapping_global_required');
 		}
-		if ($this->_configFile !== null) {
+		if ($this->getConfigFile() !== null) {
 			$this->loadConfigFile();
 		}
 		$this->loadUrlMappings($config);
-		if ($this->_urlPrefix === '') {
+		if ($this->getUrlPrefix() === '') {
 			$request = $this->getRequest();
 			if ($request->getUrlFormat() === THttpRequestUrlFormat::HiddenPath) {
 				$this->_urlPrefix = dirname($request->getApplicationUrl());
@@ -132,7 +170,22 @@ class TUrlMapping extends TUrlManager
 				$this->_urlPrefix = $request->getApplicationUrl();
 			}
 		}
-		$this->_urlPrefix = rtrim($this->_urlPrefix, '/');
+		$this->_urlPrefix = rtrim($this->getUrlPrefix(), '/');
+	}
+
+	/**
+	 * Returns the configured THttpRequest module IDs that init() depends on.
+	 * init() reads request state right after parent::init(); a configured
+	 * request registers itself with TApplication only after its own init()
+	 * completes. With no configured request, getRequest() lazily instantiates
+	 * a default and no ordering is needed.
+	 * @param bool $isPreInit true for the dyPreInit pass, false for the init() pass
+	 * @return null|string[] configured request module IDs, or null for pre-init
+	 * @since 4.4.0
+	 */
+	public function getModuleDependencies(bool $isPreInit): null|string|array
+	{
+		return array_keys($this->getApplication()?->getModulesByType(THttpRequest::class));
 	}
 
 	/**
@@ -141,17 +194,18 @@ class TUrlMapping extends TUrlManager
 	 */
 	protected function loadConfigFile()
 	{
-		if (is_file($this->_configFile)) {
+		$configFile = $this->getConfigFile();
+		if (is_file($configFile)) {
 			if ($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP) {
-				$config = include $this->_configFile;
+				$config = include $configFile;
 				$this->loadUrlMappings($config);
 			} else {
 				$dom = new TXmlDocument();
-				$dom->loadFromFile($this->_configFile);
+				$dom->loadFromFile($configFile);
 				$this->loadUrlMappings($dom);
 			}
 		} else {
-			throw new TConfigurationException('urlmapping_configfile_inexistent', $this->_configFile);
+			throw new TConfigurationException('urlmapping_configfile_inexistent', $configFile);
 		}
 	}
 
@@ -213,9 +267,11 @@ class TUrlMapping extends TUrlManager
 	 */
 	public function setConfigFile($value)
 	{
-		if (($this->_configFile = Prado::getPathOfNamespace($value, $this->getApplication()->getConfigurationFileExt())) === null) {
+		$configFile = Prado::getPathOfNamespace($value, $this->getApplication()?->getConfigurationFileExt());
+		if ($configFile === null) {
 			throw new TConfigurationException('urlmapping_configfile_invalid', $value);
 		}
+		$this->_configFile = $configFile;
 	}
 
 	/**
@@ -273,9 +329,7 @@ class TUrlMapping extends TUrlManager
 		if (!($pattern instanceof TUrlMappingPattern)) {
 			throw new TConfigurationException('urlmapping_urlmappingpattern_required');
 		}
-		foreach ($properties as $name => $value) {
-			$pattern->setSubproperty($name, $value);
-		}
+		$pattern->setSubProperties($properties);
 
 		if ($url instanceof TXmlElement) {
 			$text = $url -> getValue();
@@ -361,7 +415,7 @@ class TUrlMapping extends TUrlManager
 	 */
 	public function constructUrl($serviceID, $serviceParam, $getItems, $encodeAmpersand, $encodeGetItems)
 	{
-		if ($this->_customUrl) {
+		if ($this->getEnableCustomUrl()) {
 			if (!(is_array($getItems) || ($getItems instanceof \Traversable))) {
 				$getItems = [];
 			}

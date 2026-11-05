@@ -1,19 +1,19 @@
 <?php
 
-require_once(__DIR__ . '/../../PradoUnit.php');
+namespace Prado\Test\Unit\Data\DataGateway;
 
 use Prado\Data\DataGateway\TDataGatewayEventParameter;
 use Prado\Data\DataGateway\TDataGatewayResultEventParameter;
 
-class TDataGatewayEventParameterTest extends PHPUnit\Framework\TestCase
+class TDataGatewayEventParameterTest extends \PHPUnit\Framework\TestCase
 {
 	// -------  TDataGatewayEventParameter  -------
 
 	public function test_constructor_stores_command_and_criteria()
 	{
-		$command = new stdClass();
+		$command = new \stdClass();
 		$command->name = 'cmd';
-		$criteria = new stdClass();
+		$criteria = new \stdClass();
 		$criteria->where = '1=1';
 
 		$param = new TDataGatewayEventParameter($command, $criteria);
@@ -53,7 +53,7 @@ class TDataGatewayEventParameterTest extends PHPUnit\Framework\TestCase
 
 	public function test_result_constructor_stores_command_and_result()
 	{
-		$command = new stdClass();
+		$command = new \stdClass();
 		$result = ['row1', 'row2'];
 
 		$param = new TDataGatewayResultEventParameter($command, $result);

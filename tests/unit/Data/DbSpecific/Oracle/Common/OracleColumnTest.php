@@ -1,10 +1,12 @@
 <?php
 
-require_once(__DIR__ . '/../../../../PradoUnit.php');
+namespace Prado\Test\Unit\Data\DbSpecific\Oracle\Common;
 
 use Prado\Data\Common\Oracle\TOracleMetaData;
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
+use Prado\Data\TDbConnection;
 
-class OracleColumnTest extends PHPUnit\Framework\TestCase
+class OracleColumnTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 

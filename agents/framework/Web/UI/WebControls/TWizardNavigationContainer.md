@@ -20,4 +20,4 @@ TWizardNavigationContainer represents a control containing wizard navigation but
 ## See Also
 
 - [TWizard](./TWizard.md)
-- [INamingContainer](./INamingContainer.md)
+- [INamingContainer](../INamingContainer.md)

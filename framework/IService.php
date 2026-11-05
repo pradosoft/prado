@@ -22,7 +22,7 @@ interface IService
 {
 	/**
 	 * Initializes the service.
-	 * @param \Prado\Xml\TXmlElement $config the configuration for the service
+	 * @param null|array|\Prado\Xml\TXmlElement $config the configuration for the service
 	 */
 	public function init($config);
 	/**

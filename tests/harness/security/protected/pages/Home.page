@@ -1,0 +1,4 @@
+<com:TContent ID="Content">
+<h1>Security Test Home</h1>
+<p id="current-user"><%=$this->CurrentUser%></p>
+</com:TContent>

@@ -39,6 +39,15 @@ Two built-in protocols are registered by default: `TJsonRpcProtocol` (for `appli
 </service>
 ```
 
+**PHP equivalent:**
+```php
+return [
+    'services' => [
+        'rpc' => ['class' => 'Prado\Web\Services\TRpcService'],
+    ],
+];
+```
+
 The `id` on each `<rpcapi>` is the service parameter that the client must supply in the request URL. The `class` is namespace-format.
 
 ## Key Constants

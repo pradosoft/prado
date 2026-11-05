@@ -15,7 +15,7 @@ use Prado\Collections\TListItemCollection;
 /**
  * TActiveListItemCollection class.
  *
- * Allows TActiveDropDownList and TActiveListBox to add new options
+ * Allows TActiveDropDownList, TActiveListBox, and TActiveSuggestionList to add new options
  * during callback response. New options can only be added <b>after</b> the
  * {@see \Prado\Web\UI\TControl::onLoad OnLoad} event.
  *

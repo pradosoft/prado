@@ -1,0 +1,8 @@
+<%@ MasterClass="" %><!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>HttpHeaders Harness</title></head>
+<body>
+<h1>HttpHeaders Test Harness</h1>
+<div id="ready">ready</div>
+</body>
+</html>

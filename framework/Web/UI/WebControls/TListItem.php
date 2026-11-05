@@ -30,7 +30,7 @@ use Prado\TPropertyValue;
 class TListItem extends \Prado\TComponent
 {
 	/**
-	 * @var TMap list of custom attributes
+	 * @var TAttributeCollection list of custom attributes
 	 */
 	protected $_attributes;
 	/**
@@ -64,6 +64,18 @@ class TListItem extends \Prado\TComponent
 		$this->setEnabled($enabled);
 		$this->setSelected($selected);
 		parent::__construct();
+	}
+
+	/**
+	 * Clones the attributes, so the clone's attributes change independently.
+	 * @since 4.4.0
+	 */
+	public function __clone()
+	{
+		parent::__clone();
+		if ($this->_attributes !== null) {
+			$this->_attributes = clone $this->_attributes;
+		}
 	}
 
 	/**

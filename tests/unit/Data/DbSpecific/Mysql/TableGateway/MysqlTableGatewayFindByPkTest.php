@@ -1,6 +1,6 @@
 <?php
 
-require_once(__DIR__ . '/BaseGateway.php');
+namespace Prado\Test\Unit\Data\DbSpecific\Mysql\TableGateway;
 
 /**
  * MysqlTableGatewayFindByPkTest — TTableGateway::findByPk() and findAllByPks() for MySQL.

@@ -1,5 +1,8 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI;
+
+use Prado\Util\Clock\TMockClock;
 use Prado\Web\UI\TPage;
 use Prado\Web\UI\TSessionPageStatePersister;
 use Prado\Web\UI\IPageStatePersister;
@@ -75,7 +78,7 @@ class TSessionPersisterTestPage extends TPage
 	}
 }
 
-class TSessionPageStatePersisterTest extends PHPUnit\Framework\TestCase
+class TSessionPageStatePersisterTest extends \PHPUnit\Framework\TestCase
 {
 	/**
 	 * Create a page + fake session with all state features disabled for
@@ -192,7 +195,47 @@ class TSessionPageStatePersisterTest extends PHPUnit\Framework\TestCase
 		$this->assertStringStartsWith(TSessionPageStatePersister::STATE_SESSION_KEY, $key);
 		$stored = $session->itemAt($key);
 		$this->assertNotNull($stored);
-		$this->assertEquals($data, unserialize($stored));
+		$sm = $page->getApplication()->getSecurityManager();
+		$this->assertEquals($data, unserialize($sm->validateData($stored)));
+	}
+
+	public function testLoadWithTamperedSessionStateThrows400(): void
+	{
+		$page = $this->newPage();
+		$session = $page->getSession();
+		$persister = new TSessionPageStatePersister();
+		$persister->setPage($page);
+
+		$persister->save(['field' => 'value']);
+		$page->setRequestClientState($page->getClientState());
+		$key = $session->itemAt(TSessionPageStatePersister::QUEUE_SESSION_KEY)[0];
+		$session->add($key, serialize(['field' => 'tampered']));
+
+		try {
+			$persister->load();
+			$this->fail('Expected THttpException to be thrown');
+		} catch (THttpException $e) {
+			$this->assertEquals(400, $e->getStatusCode());
+		}
+	}
+
+	public function testSaveKeyUsesInjectedClock(): void
+	{
+		$page = $this->newPage();
+		$session = $page->getSession();
+		$persister = new TSessionPageStatePersister();
+		$persister->setPage($page);
+
+		$clock = new TMockClock();
+		$clock->setMicrotime(1_000_000.5);
+		$persister->setClock($clock);
+
+		$persister->save(['x' => 1]);
+
+		$expectedKey = TSessionPageStatePersister::STATE_SESSION_KEY . (string) 1_000_000.5;
+		$queue = $session->itemAt(TSessionPageStatePersister::QUEUE_SESSION_KEY);
+		$this->assertSame($expectedKey, $queue[0], 'The state key is timestamped from the injected clock.');
+		$this->assertNotNull($session->itemAt($expectedKey));
 	}
 
 	public function testSaveSetsClientState(): void

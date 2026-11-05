@@ -17,7 +17,7 @@ vendor/bin/php-cs-fixer fix --dry-run framework/
 vendor/bin/php-cs-fixer fix framework/
 
 # Static analysis
-vendor/bin/phpstan analyse framework/ --memory-limit=512M
+vendor/bin/phpstan analyse --memory-limit=1G
 
 # Run all unit tests
 vendor/bin/phpunit --testsuite unit
@@ -25,13 +25,21 @@ vendor/bin/phpunit --testsuite unit
 # Run tests for a specific class, function, or directory
 vendor/bin/phpunit --testsuite unit --filter <test function, class, or directory>
 
-# javascript commands and database commands in composer.json scripts section.
+# Code coverage (phpunit.xml declares framework/ as the source; the script sets XDEBUG_MODE)
+composer coverage            # text summary
+composer coverage-html       # HTML report in build/coverage
+composer coverage -- --filter <class> --coverage-filter <path>   # narrow a run
+
+# javascript commands
+composer jsfix           # js code style fix
+composer jstest          # vitest unit test
 
 # Generate API documentation
 composer gendoc
 
-# Functional tests (require Selenium Server + prado-demos repo)
-composer functionaltest
+# Playwright functional tests (PHP server on port 8037 starts automatically)
+composer functest        # Chromium only (faster for local iteration)
+composer functionaltest  # all three browsers (Chromium, Firefox, WebKit)
 ```
 
 ### Full Check (required before git commit)
@@ -40,10 +48,10 @@ Run these four checks **in order** — all must pass:
 
 1. PHP compile check (`php -l`)
 2. `vendor/bin/php-cs-fixer fix --dry-run framework/`
-3. `vendor/bin/phpstan analyse framework/ --memory-limit=512M`
+3. `vendor/bin/phpstan analyse --memory-limit=1G`
 4. `vendor/bin/phpunit --testsuite unit`
 
-> **Never add or change phpunit command options** when unit testing — only run project unit tests as specified above. When testing a single class or cluster, only run tests for that class/directory.
+> **Never add or change phpunit command options** when unit testing — only run project unit tests as specified above. When testing a single class or cluster, only run tests for that class/directory. Measuring coverage is the exception: use the `composer coverage` scripts, narrowing a run with `--filter` and `--coverage-filter`.
 
 ## Architecture
 
@@ -65,14 +73,12 @@ TApplication
       UI/            (TControl, TPage, TTemplateControl, WebControls/, ActiveControls/, JuiControls/)
  └─ Data Layer     framework/Data/
       TDbConnection  (PDO wrapper)
-      ActiveRecord/  (ORM)
-      SqlMap/        (SQL mapping, iBatis-style)
       DataGateway/
  └─ Caching        framework/Caching/    (APC, Database, Etcd, Memcached, Redis, file-based)
  └─ Security       framework/Security/   (RBAC, TAuthManager, TSecurityManager, TPermissionsManager)
  └─ I18N           framework/I18N/       (TGlobalization, MessageSource, CultureInfo)
  └─ Xml            framework/Xml/        (TXmlDocument/TXmlElement with XPath, DOM compat, ArrayAccess)
- └─ Util           framework/Util/       (logging, behaviors, cron, helpers, TCallChain, TVarDumper)
+ └─ Util           framework/Util/       (logging, behaviors, cron, mutexes, helpers, TCallChain, TVarDumper)
  └─ PHPStan        framework/PHPStan/    (custom static-analysis extensions for dynamic Prado properties)
 ```
 
@@ -110,33 +116,75 @@ TApplication
 | Enumerated Constants | `PascalCase` | `DeepSkyBlue` |
 | Class properties| `_camelCase` | `_propertyOfClass`, `_styleFieldNames` |
 | Namespaces | `Prado\{Module}` | `Prado\Web\UI\TControl` |
-| MasterClass and Template files | `.tpl` | `MyPortlet.tpl` |
+| Unit test namespaces | `Prado\Test\Unit\{Directory}` | `Prado\Test\Unit\Web\UI\TControlTest` |
 | Web Page templates | `.page` with `.php` backing | `Home.page`, `Home.php` |
+| MasterClass and Template files | `.tpl` with `.php` backing | `MyPortlet.tpl`, `MyPortlet.php` |
+| TControl tag prefix |  `<com:` | `<com:TMain />` |
 
 ## Important Rules
 
 - **`framework/classes.php`** — must be updated whenever a new class is added to the framework.
 - **`if` statements** always use a block (`{}`), never a single-line body.
-- **Error codes** for PRADO exceptions are defined in `framework/Exceptions/messages/messages.txt` (English master); language variants are `messages-<lang>.txt` in the same directory.
+- **`@` error suppression** — `Prado::phpErrorHandler` throws `TPhpErrorException` for every unmasked warning. Keep `@` on a call whose failure is expected and whose return value is checked; see [Error Suppression](agents/framework/Prado.md).
+- **Error codes** for PRADO exceptions are defined in `framework/Exceptions/messages/messages.txt` (English master). Framework messages are English; `messages-<lang>.txt` in the same directory holds only the keys thrown as `THttpException`, which the visitor sees (`IUserException` marks visitor-facing exceptions). Translations of the developer-facing messages are the `pradosoft/prado-dev-errormessages` package. In this repository, create, update, and delete keys in the English master only; the package is synced in one batch before each PRADO tag and release, never per change.
 - **Backward compatibility** — all changes must be backward compatible for point releases. Minor releases can have breaking changes, but minimize the breaks.
+- **`HISTORY.md` entries** — an entry's length is proportional to the change's importance. A bug fix or a small or internal change is one short sentence; a major feature takes a few sentences naming its main classes and properties. Keep issue numbers, removed or renamed API, and UPGRADE.md pointers; implementation reasoning belongs in docblocks and `agents/`.
 - **`@since` tag** — use the next release version (`4.4.0`) when adding new methods or classes; omit the method tag when it matches the class tag.
 - **Uniform Access Principal - Self Encapsulation** is required; for an example see framework/TApplication.php
 - **Extract Method → Predicate/Guard Clause (Fowler) is suggested
-- All comments and documentation must be: **Present Perfect tense**, **American English**, clear, thorough, and technical
-- Method Doc Blocks should be **tight**, and have at minimum one sentence in the description.
-- The per directory "<dir_path>/CLAUDE.md" is found at "agents/<dir_path>/INDEX.md" to keep the framework uncluttered. 
+- Method Doc Blocks must be **tight**, and have at minimum one sentence in the description.
+- Documentation additions/changes/removals should be integrated into the whole, at each level (of detail).
+- The per directory "<dir_path>/CLAUDE.md" is found at "agents/<dir_path>/INDEX.md" to keep the framework uncluttered.
+- All new and changed WebControls must be audited for accessibility at least once during development.
 
 ## Test Bootstrap
 
-Tests require a running `TApplication`. The bootstrap (`tests/test_tools/phpunit_bootstrap.php`) instantiates one from `tests/test_tools/Security/app/`. Database tests need MySQL/PostgreSQL initialized from `tests/initdb_mysql.sql` / `tests/initdb_pgsql.sql`.
+Tests require a running `TApplication`. 
+The bootstrap (`tests/test_tools/phpunit_bootstrap.php`) instantiates one from `tests/unit/Security/app/`; it may change through the unit tests.
+Database tests need MySQL/PostgreSQL initialized from `tests/initdb_mysql.sql` / `tests/initdb_pgsql.sql`.
+
+## Testing
+
+- Unit test classes use the `Prado\Test\Unit\` namespace, autoloaded by Composer (`autoload-dev` PSR-4 → `tests/unit/`).
+  - The namespace follows the directory: `tests/unit/Web/UI/TControlTest.php` → `Prado\Test\Unit\Web\UI\TControlTest`.
+  - A class used by another file lives in its own file named after the class. Fixtures used only by one test file stay in that file.
+  - Directories holding classes use PascalCase, except where they mirror a lowercase framework namespace (`I18N/core`).
+  - Class names in strings, templates (`<com:…>`), and XML configuration are fully qualified; use `Foo::class` in PHP.
+  - Global-namespace fixtures (`Security/app/prado3stubs/`, `Exceptions/TErrorHandlerTestGlobalClass.php`) and `PHPStan/Fixtures/` are excluded from the classmap and are not autoloaded.
+  - Test classes are inside `Prado\*`: a default log category is the test class, and a record fixture needs `const TABLE`.
+  - Helper classes in their own file must not end in `Test`; phpunit collects `*Test.php` files as tests.
+- Use `Prado\Test\Unit\PradoUnit` infrastructure for:
+  - access to an object's protected/private properties
+  - invoking protected/private methods
+  - restore global variables to their initial state
+  - save and restore all of an object's properties
+  - `Harness/` (`Prado\Test\Unit\Harness\`) holds test classes designed for reuse across the Prado tests
+  - Traits for unit test classes are in `Harness/Traits/`
 
 ## Code Style
 
 - Indentation: **tabs** (not spaces)
 - Line endings: Unix (`\n`)
-- PHP minimum: 8.1 (CI tests 8.1, 8.2, 8.3)
+- PHP minimum: 8.2 (CI tests 8.2, 8.3, 8.4, 8.5)
 - PSR-12 enforced via php-cs-fixer
 - Use `?` for single nullable types and in doc blocks
+
+### Documentation Style (enforced)
+
+Docblocks are technical documentation written with direct technical statements.
+Language and National Variety: English - American
+Qualities of the writing: clear, thorough, easy to comprehend, not verbose (brevity), timeless/always was, integrated, wholistic
+Tense: Present - tune for ease of comprehension
+_Banned constructions_:
+- **Antithesis / "not merely X — it Ys"**: no "does not just X, it Ys", "is not a Y, it's a Z",
+  "rather than X, it Ys". State what it does, once.
+- **Em-dash dramatic asides** used for emphasis or reveal ("— and that's the point", "— never stronger").
+  Use a period or plain clause.
+- **Editorializing / filler** is unnecessary. 
+- **Rule-of-three rhetorical lists** and build-up sentences. One fact per sentence.
+
+Prefer: subject–verb–object declaratives, tables and bullet lists of `condition → result` where appropriate.
+Docblocks inform and describe; it is not persuasive writing.
 
 ## Working Knowledge (`agents/`)
 
@@ -146,7 +194,6 @@ Working Knowledge (`agents/`)
 
 ## Anti-Patterns (Required Safeguards)
 
-- **Never** run `git clone/checkout/mv/restore/rm/branch/add/commit/merge/rebase/reset/pull/push/fetch` without developer approval first.
-- **Never** run `rm` on any path without developer approval first.
+- **Never** run `rm` on any path without developer approval first; except to clean up prior work.
 - **Never** remove `composer --dev` dependencies.
 - **Never** erase or overwrite files during unit testing — the file changes being tested must be preserved.

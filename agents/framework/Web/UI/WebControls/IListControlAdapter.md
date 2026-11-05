@@ -1,7 +1,7 @@
 # Web/UI/WebControls/IListControlAdapter
 
 ### Directories
-[framework](./INDEX.md) / [Web](./Web/INDEX.md) / [UI](./Web/UI/INDEX.md) / [WebControls](./Web/UI/WebControls/INDEX.md) / **`IListControlAdapter`**
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](INDEX.md) / **`IListControlAdapter`**
 
 **Location:** `framework/Web/UI/WebControls/IListControlAdapter.php`
 **Namespace:** `Prado\Web\UI\WebControls`

@@ -15,7 +15,7 @@ Active counterpart to TCheckBoxList with AutoPostBack enabled. When a checkbox i
 - `createRepeatedControl()` - Creates [TActiveCheckBoxListItem](./TActiveCheckBoxListItem.md) for each item
 - `raiseCallbackEvent($param)` - Raises callback event
 - `onCallback($param)` - Event raised when callback is requested
-- `getSpanNeeded()` - Always returns true to ensure surrounding span is rendered
+- `getSpanNeeded()` - True for the Raw layout or an empty list; an empty list renders a span with the id, so a callback can replace it
 - `getClientClassName()` - Returns `Prado.WebUI.TActiveCheckBoxList`
 
 ## See Also

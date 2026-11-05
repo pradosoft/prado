@@ -1,11 +1,13 @@
 <?php
 
-require_once(__DIR__ . '/../../../../PradoUnit.php');
+namespace Prado\Test\Unit\Data\DbSpecific\Ibm\TableGateway;
 
 use Prado\Data\DataGateway\TSqlCriteria;
 use Prado\Data\DataGateway\TTableGateway;
 use Prado\Data\TDbConnection;
 use Prado\TApplication;
+use Prado\Test\Unit\PradoUnit;
+use Prado\TApplicationMode;
 
 /**
  * Live integration tests for TTableGateway — IBM DB2.
@@ -35,7 +37,7 @@ use Prado\TApplication;
  * Use field4_int=1 to satisfy the FK constraint.
  * Username is the PK (string). IBM DB2 uses double-quote identifiers.
  */
-class TTableGatewayIbmIntegrationTest extends PHPUnit\Framework\TestCase
+class TTableGatewayIbmIntegrationTest extends \PHPUnit\Framework\TestCase
 {
 	private static ?TDbConnection $conn    = null;
 	private static ?TTableGateway $gateway = null;
@@ -44,7 +46,7 @@ class TTableGatewayIbmIntegrationTest extends PHPUnit\Framework\TestCase
 	{
 		static $booted = false;
 		if (!$booted) {
-			new TApplication(__DIR__ . '/../../../../Security/app', false, TApplication::CONFIG_TYPE_PHP);
+			(new TApplication(__DIR__ . '/../../../../Security/app', false, TApplication::CONFIG_TYPE_PHP))->setMode(TApplicationMode::Debug);
 			$booted = true;
 		}
 		$conn = PradoUnit::setupIbmConnection();

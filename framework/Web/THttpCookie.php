@@ -17,6 +17,7 @@ use Prado\TPropertyValue;
  *
  * A THttpCookie instance stores a single cookie, including the cookie name, value,
  * domain, path, expire, and secure.
+ * A cookie is HttpOnly and SameSite=Lax by default.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
@@ -50,9 +51,9 @@ class THttpCookie extends \Prado\TComponent
 	/**
 	 * @var bool if true the cookie value will be unavailable to JavaScript
 	 */
-	private $_httpOnly = false;
+	private $_httpOnly = true;
 	/**
-	 * @var THttpCookieSameSite SameSite prevents the browser from sending this cookie on cross-site requests.
+	 * @var string|THttpCookieSameSite SameSite prevents the browser from sending this cookie on cross-site requests.
 	 * @since 4.1.2
 	 */
 	private $_sameSite = THttpCookieSameSite::Lax;
@@ -102,7 +103,7 @@ class THttpCookie extends \Prado\TComponent
 	}
 
 	/**
-	 * @return bool if true the cookie value will be unavailable to JavaScript
+	 * @return bool if true the cookie value will be unavailable to JavaScript. Defaults to true.
 	 */
 	public function getHttpOnly()
 	{
@@ -182,7 +183,7 @@ class THttpCookie extends \Prado\TComponent
 	}
 
 	/**
-	 * @return THttpCookieSameSite SameSite policy for this cookie. Defaults to THttpCookieSameSite::None.
+	 * @return string|THttpCookieSameSite SameSite policy for this cookie. Defaults to THttpCookieSameSite::None.
 	 */
 	public function getSameSite()
 	{
@@ -190,7 +191,7 @@ class THttpCookie extends \Prado\TComponent
 	}
 
 	/**
-	 * @param THttpCookieSameSite $value SameSite policy for this cookie
+	 * @param string|THttpCookieSameSite $value SameSite policy for this cookie
 	 */
 	public function setSameSite($value)
 	{

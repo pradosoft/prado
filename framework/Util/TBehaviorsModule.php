@@ -26,13 +26,30 @@ use Prado\Xml\TXmlElement;
  *
  * Contents enclosed within the module tag are treated as behaviors, e.g.,
  * ```xml
- * <module class="Prado\Util\TBehaviorsModule" Parameter="AdditionalBehaviors">
- *   <behavior Name="pagethemeparameter" Class="Prado\Util\Behaviors\TParameterizeBehavior" AttachToClass="Prade\Web\UI\TPage" Priority="10" Parameter="ThemeName" Property="Theme"/>
- *   <behavior Name="sharedModuleBehavior" Class="FooModuleBehavior" AttachToClass="Prado\TModule" Attribute1="abc"/>
- *   <behavior name="TimeZoneBehavior" Class="Prado\Util\Behaviors\TTimeZoneParameterBehavior" AttachTo="Application" Priority="10" TimeZone="America/New York" TimeZoneParameter="prop:TimeZone" />
- *   <behavior name="MyModuleBehavior" Class="MyModuleBehavior" AttachTo="Module:page" Property1="Value1" Property2="Value2" ... />
- *   <behavior name="MyPageTitleBehavior" Class="Prado\Util\Behaviors\TParameterizeBehavior" AttachTo="Page" Priority="10" Parameter="PageTitle" Property="Title" Localize="true"/>
- * </module>
+ * <modules>
+ *     <module id="behaviors" class="Prado\Util\TBehaviorsModule">
+ *         <behavior Name="pagethemeparameter" Class="Prado\Util\Behaviors\TParameterizeBehavior" AttachToClass="Prade\Web\UI\TPage" Priority="10" Parameter="ThemeName" Property="Theme"/>
+ *         <behavior Name="sharedModuleBehavior" Class="FooModuleBehavior" AttachToClass="Prado\TModule" Attribute1="abc"/>
+ *         <behavior name="TimeZoneBehavior" Class="Prado\Util\Behaviors\TTimeZoneParameterBehavior" AttachTo="Application" Priority="10" TimeZone="America/New York" TimeZoneParameter="prop:TimeZone" />
+ *         <behavior name="MyModuleBehavior" Class="MyModuleBehavior" AttachTo="Module:page" Property1="Value1" Property2="Value2" ... />
+ *         <behavior name="MyPageTitleBehavior" Class="Prado\Util\Behaviors\TParameterizeBehavior" AttachTo="Page" Priority="10" Parameter="PageTitle" Property="Title" Localize="true"/>
+ *     </module>
+ * </modules>
+ * ```
+ *
+ * PHP configuration style:
+ * ```php
+ * return [
+ *     'modules' => [
+ *         'behaviors' => [
+ *             'class' => 'Prado\Util\TBehaviorsModule',
+ *             'behaviors' => [
+ *                 ['name' => 'pagetheme', 'class' => 'Prado\Util\Behaviors\TParameterizeBehavior',
+ *                  'attachto' => 'page', 'priority' => '10', 'Parameter' => 'ThemeName', 'Property' => 'Theme'],
+ *             ],
+ *         ],
+ *     ],
+ * ];
  * ```
  *
  * When the Service is not TPageService, page behaviors are not installed and have no effect other than be ignored.
@@ -59,12 +76,12 @@ use Prado\Xml\TXmlElement;
 class TBehaviorsModule extends \Prado\TModule
 {
 	/**
-	 * @var IBaseBehavior[] loaded behaviors.
+	 * @var IBaseBehavior[] loaded named behaviors, the targets of `behavior:<name>`.
 	 */
 	private static $_behaviors = [];
 
 	/**
-	 * @var IBaseBehavior[] behaviors attaching to the TPage
+	 * @var IBaseBehavior[] behaviors attaching to the TPage; anonymous behaviors take integer keys.
 	 */
 	private $_pageBehaviors = [];
 
@@ -74,9 +91,9 @@ class TBehaviorsModule extends \Prado\TModule
 	private $_behaviorBehaviors = [];
 
 	/**
-	 * @var array[] additional behaviors in a configuration format: array[], serialized php object, json object, string of xml
+	 * @var array|TXmlDocument additional behaviors in a configuration format: array[], serialized php object, json object, string of xml
 	 */
-	private $_additionalBehaviors;
+	private $_additionalBehaviors = [];
 
 	/**
 	 * Constructor.
@@ -90,7 +107,7 @@ class TBehaviorsModule extends \Prado\TModule
 	 * Initializes the module by loading behaviors.  If there are page behaviors, this
 	 * attaches behaviors to TPage through TApplication::onBeginRequest and then
 	 * TPageService::onPreRunPage.
-	 * @param \Prado\Xml\TXmlElement $config configuration for this module, can be null
+	 * @param null|array|\Prado\Xml\TXmlElement $config configuration for this module, can be null
 	 */
 	public function init($config)
 	{
@@ -208,7 +225,11 @@ class TBehaviorsModule extends \Prado\TModule
 				$behavior = TComponent::attachClassBehavior($name, $properties, $attachToClass, $priority);
 			} else {
 				if (strtolower($attachTo) == "page") {
-					$this->_pageBehaviors[$name] = $properties;
+					if ($name === null) {
+						$this->_pageBehaviors[] = $properties;
+					} else {
+						$this->_pageBehaviors[$name] = $properties;
+					}
 					continue;
 				} elseif (strncasecmp($attachTo, 'module:', 7) === 0) {
 					$owner = $this->getApplication()->getModule(trim(substr($attachTo, 7)));
@@ -226,7 +247,7 @@ class TBehaviorsModule extends \Prado\TModule
 				}
 				$behavior = $owner->attachBehavior($name, $properties, $priority);
 			}
-			if (!is_array($behavior)) {
+			if ($name !== null && !is_array($behavior)) {
 				self::$_behaviors[$name] = \WeakReference::create($behavior);
 			}
 		}
@@ -237,7 +258,7 @@ class TBehaviorsModule extends \Prado\TModule
 	 */
 	public function getAdditionalBehaviors()
 	{
-		return $this->_additionalBehaviors ?? [];
+		return $this->_additionalBehaviors;
 	}
 
 	/**

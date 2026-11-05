@@ -1,24 +1,25 @@
 <?php
 
-require_once(__DIR__ . '/../../../../PradoUnit.php');
-
 /**
  * SqlSrvUpsertTest — comprehensive tests for SQL Server upsert behaviour.
  *
  * SQL Server upsert uses MERGE INTO ... WHEN MATCHED THEN UPDATE ... WHEN NOT MATCHED THEN INSERT.
  * An active transaction is required; TDbException is thrown otherwise.
  *
- * Requires: prado_unitest database on SQL Server (see tests/initdb_mssql.sql).
+ * Requires: prado_unitest database on SQL Server (see tests/initdb_sqlsrv.sql).
  *   upsert_test(username NVARCHAR(100) PK, score INT DEFAULT 0)
  */
+
+namespace Prado\Test\Unit\Data\DbSpecific\SqlSrv\Common;
 
 use Prado\Data\DataGateway\TDataGatewayEventParameter;
 use Prado\Data\DataGateway\TDataGatewayResultEventParameter;
 use Prado\Data\DataGateway\TTableGateway;
 use Prado\Data\TDbConnection;
 use Prado\Exceptions\TDbException;
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
 
-class SqlSrvUpsertTest extends PHPUnit\Framework\TestCase
+class SqlSrvUpsertTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 

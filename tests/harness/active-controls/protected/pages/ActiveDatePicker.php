@@ -41,10 +41,10 @@ class ActiveDatePicker extends TPage
 
 	public function toggleMode($sender, $param)
 	{
-		if ($this->datepicker->getInputMode() == TDatePickerInputMode::DropDownList) {
-			$this->datepicker->setInputMode(TDatePickerInputMode::TextBox);
+		if ($this->datepicker->getDateInputMode() == TDatePickerInputMode::DropDownList) {
+			$this->datepicker->setDateInputMode(TDatePickerInputMode::TextBox);
 		} else {
-			$this->datepicker->setInputMode(TDatePickerInputMode::DropDownList);
+			$this->datepicker->setDateInputMode(TDatePickerInputMode::DropDownList);
 		}
 	}
 }

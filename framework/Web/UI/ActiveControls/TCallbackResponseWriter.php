@@ -71,4 +71,14 @@ class TCallbackResponseWriter extends TTextWriter
 		}
 		return '<!--' . $this->getBoundary() . '-->' . $content . '<!--//' . $this->getBoundary() . '-->';
 	}
+
+	/**
+	 * Flushes the text content without the boundary comments.
+	 * @return string the text content
+	 * @since 4.4.0
+	 */
+	public function flushWithoutBoundary(): string
+	{
+		return parent::flush();
+	}
 }

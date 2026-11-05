@@ -15,17 +15,19 @@ Behavior for [TAuthManager](../Security/TAuthManager.md) that prompts for CLI lo
 Attach to [TAuthManager](../Security/TAuthManager.md) using [TBehaviorsModule](../Util/TBehaviorsModule.md) in application configuration:
 
 ```xml
-<module id="auth" class="Prado\Security\TAuthManager">
-    <auth>
-        <users>
-            <user name="admin" password="secret" roles="admin"/>
-        </users>
-    </auth>
-</module>
+<modules>
+    <module id="auth" class="Prado\Security\TAuthManager">
+        <auth>
+            <users>
+                <user name="admin" password="secret" roles="admin"/>
+            </users>
+        </auth>
+    </module>
 
-<module id="behaviors" class="Prado\Util\TBehaviorsModule">
-    <behavior name="shellLogin" Class="Prado\Shell\TShellLoginBehavior" AttachTo="module:auth"/>
-</module>
+    <module id="behaviors" class="Prado\Util\TBehaviorsModule">
+        <behavior name="shellLogin" Class="Prado\Shell\TShellLoginBehavior" AttachTo="module:auth"/>
+    </module>
+</modules>
 ```
 
 Note: `<behavior>` children are not supported directly within `<module>` configuration. Use `TBehaviorsModule` to attach behaviors.

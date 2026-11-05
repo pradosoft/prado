@@ -8,7 +8,7 @@
 **Namespace:** `Prado\Web\UI\ActiveControls`
 
 ## Overview
-Allows [TActiveDropDownList](./TActiveDropDownList.md) and [TActiveListBox](./TActiveListBox.md) to add new options during callback response. Tracks changes after OnLoad event and updates client-side list items when modified.
+Allows [TActiveDropDownList](./TActiveDropDownList.md), [TActiveListBox](./TActiveListBox.md), and [TActiveSuggestionList](./TActiveSuggestionList.md) to add new options during callback response. Tracks changes after OnLoad event and updates client-side list items when modified.
 
 ## Key Properties/Methods
 
@@ -20,4 +20,4 @@ Allows [TActiveDropDownList](./TActiveDropDownList.md) and [TActiveListBox](./TA
 
 ## See Also
 
-- `TListItemCollection`, [TActiveDropDownList](./TActiveDropDownList.md), [TActiveListBox](./TActiveListBox.md)
+- `TListItemCollection`, [TActiveDropDownList](./TActiveDropDownList.md), [TActiveListBox](./TActiveListBox.md), [TActiveSuggestionList](./TActiveSuggestionList.md)

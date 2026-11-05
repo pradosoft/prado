@@ -1,0 +1,4 @@
+<com:TContent ID="Content">
+<h1>Protected Page</h1>
+<p id="user-info"><%=$this->Application->getUser()->getName()%></p>
+</com:TContent>

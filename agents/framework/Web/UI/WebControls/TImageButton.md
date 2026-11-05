@@ -10,6 +10,8 @@
 ## Overview
 TImageButton creates an image button on a Web page for submitting data. It can be a submit button or a command button with command name and parameter. Click coordinates are captured and available via OnClick event parameter.
 
+It extends [TImage](./TImage.md) and renders `<input type="image">`. The browser posts the click position as `<uniqueID>_x` and `<uniqueID>_y`, which have no direct mapping to the control name, so the control registers itself with `TPage::registerRequiresPostData()` during `onPreRender()`.
+
 ## Key Properties/Methods
 
 - `getCommandName()` / `setCommandName()` - Gets or sets command name for OnCommand event
@@ -19,12 +21,17 @@ TImageButton creates an image button on a Web page for submitting data. It can b
 - `getText()` / `setText()` - Gets or sets button caption (used as alt text)
 - `getIsDefaultButton()` / `setIsDefaultButton()` - Gets or sets whether this is a default button
 - `getEnableClientScript()` / `setEnableClientScript()` - Gets or sets whether to render JavaScript
-- `onClick()` - Raises OnClick event with image click coordinates
-- `onCommand()` - Raises OnCommand event with command name and parameter
-- `raisePostBackEvent()` - Raises postback event, triggers validation if enabled
+- `onClick($param)` - Raises OnClick event with a `TImageClickEventParameter` holding the click coordinates
+- `onCommand($param)` - Raises OnCommand event with command name and parameter, and bubbles it
+- `raisePostBackEvent($param)` - Validates, then raises OnClick and OnCommand; `$param` is unused, the coordinates come from `loadPostData()`
+- `loadPostData($key, $values)` - Reads the click coordinates and makes the button the page's postback event target; always returns false
+- `getDataChanged()` - True when the button was clicked in this postback
+- `needPostBackScript()` - Javascript is rendered only for validation or for a panel default button; a plain image button submits natively
+- `getFormAction()` / `getFormEncType()` / `getFormTarget()` - `formaction`, `formenctype`, `formtarget` from `TFormSubmitterTrait`; `CausesValidation` false renders `formnovalidate` (@since 4.4.0). See [TButton](./TButton.md#form-overrides-since-440).
+- Of the `TImage` loading properties, only `IntrinsicWidth`/`IntrinsicHeight` render; `srcset`, `loading`, and the rest do not apply to `<input type="image">`.
 
 ## See Also
 
 - [TImage](./TImage.md)
 - [TImageClickEventParameter](./TImageClickEventParameter.md)
-- [IPostBackEventHandler](./IPostBackEventHandler.md)
+- [IPostBackEventHandler](../IPostBackEventHandler.md)

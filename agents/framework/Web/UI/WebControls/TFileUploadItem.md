@@ -16,10 +16,11 @@ TFileUploadItem represents a single uploaded file from TFileUpload, used especia
 - `FileSize` - Size in bytes
 - `FileType` - MIME type
 - `LocalName` - Server-side temporary filename
+- `FullPath` - Path within the folder of a `TFileUpload.Directory` upload, from `full_path`; otherwise the file name. Client-sent: may hold `..`, never a server path as-is (@since 4.4.0)
 - `ErrorCode` - Upload error code
 - `HasFile` - Whether file was uploaded successfully
 - `saveAs()` - Saves uploaded file to specified location
-- `toArray()` - Returns array representation
+- `toArray()` - Returns array representation, with `fullPath` (@since 4.4.0)
 
 ## See Also
 

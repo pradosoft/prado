@@ -1,0 +1,29 @@
+<com:TContent ID="Content">
+	<h1>HTML Grouping Test Case</h1>
+
+	<com:TFieldSet ID="shipping" Legend="Shipping address">
+		<com:TLabel ForControl="street" Text="Street" />
+		<com:TTextBox ID="street" Text="1 Harbor Road" />
+		<com:TCheckBox ID="gift" Text="Gift wrap" Checked="true" />
+	</com:TFieldSet>
+	<com:TButton ID="btnDisable" Text="Disable shipping" OnClick="disableShipping" />
+	<com:TButton ID="btnSubmit" Text="Submit" OnClick="submit" />
+	<div>Status: <com:TLabel ID="status" Text="none" /></div>
+
+	<com:TSeparator ID="break" />
+
+	<com:TFieldSet ID="speed" Legend="Delivery speed">
+		<com:TRadioButton ID="standard" GroupName="speed" Text="Standard" Checked="true" />
+		<com:TRadioButton ID="express" GroupName="speed" Text="Express" />
+	</com:TFieldSet>
+
+	<com:TFieldSet ID="contact">
+		<com:TLegend ID="contactLegend">Contact <abbr title="required">*</abbr></com:TLegend>
+		<com:TLabel ForControl="email" Text="Email" />
+		<com:TTextBox ID="email" TextMode="Email" />
+	</com:TFieldSet>
+
+	<com:TNoScript ID="fallback">
+		<p>Scripting is off.</p>
+	</com:TNoScript>
+</com:TContent>

@@ -25,9 +25,6 @@ use Prado\TPropertyValue;
  * - <b>Condition</b>, bool — the condition to display module specific children controls.
  * - <b>FallbackTemplate</b>, ITemplate — template rendered when the module is absent.
  *
- * By leaving out the ModuleId, it becomes like a {@see TConditional}, except this
- * does not create the children when the condition is not met.
- *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.3.3
  */

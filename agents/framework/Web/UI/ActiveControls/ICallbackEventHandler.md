@@ -1,7 +1,7 @@
 # Web/UI/ActiveControls/ICallbackEventHandler
 
 ### Directories
-[framework](./INDEX.md) / [Web](./Web/INDEX.md) / [UI](./Web/UI/INDEX.md) / [ActiveControls](./Web/UI/ActiveControls/INDEX.md) / **`ICallbackEventHandler`**
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [ActiveControls](INDEX.md) / **`ICallbackEventHandler`**
 
 **Location:** `framework/Web/UI/ActiveControls/ICallbackEventHandler.php`
 **Namespace:** `Prado\Web\UI\ActiveControls`

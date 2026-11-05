@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<configuration>
+	<authorization>
+		<!-- allow Administrator role; deny everyone else (including guests) -->
+		<allow roles="Administrator" />
+		<deny users="*" />
+	</authorization>
+</configuration>

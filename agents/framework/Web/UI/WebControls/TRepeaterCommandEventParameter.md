@@ -18,4 +18,4 @@ TRepeaterCommandEventParameter encapsulates event data for the TRepeater ItemCom
 ## See Also
 
 - [TRepeater](./TRepeater.md)
-- [TCommandEventParameter](./TCommandEventParameter.md)
+- [TCommandEventParameter](../TCommandEventParameter.md)

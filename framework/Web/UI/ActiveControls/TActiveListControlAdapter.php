@@ -25,6 +25,7 @@ use Prado\Web\UI\WebControls\IListControlAdapter;
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @since 3.1
  * @method IActiveControl&\Prado\Web\UI\WebControls\TListControl getControl()
+ * @extends TActiveControlAdapter<TBaseActiveCallbackControl>
  */
 class TActiveListControlAdapter extends TActiveControlAdapter implements IListControlAdapter
 {
@@ -50,11 +51,13 @@ class TActiveListControlAdapter extends TActiveControlAdapter implements IListCo
 			if ($promptValue === '') {
 				$promptValue = $this->getControl()->getPromptText();
 			}
+			$n = $this->getControl()->getItemCount();
 			if ($promptValue !== '') {
 				$index++;
+				$n++;
 			}
 
-			if ($index >= 0 && $index <= $this->getControl()->getItemCount()) {
+			if ($index >= 0 && $index < $n) {
 				$this->getPage()->getCallbackClient()->select(
 					$this->getControl(),
 					'Index',
@@ -79,13 +82,17 @@ class TActiveListControlAdapter extends TActiveControlAdapter implements IListCo
 				$promptValue = $this->getControl()->getPromptText();
 			}
 
+			if ($promptValue !== '') {
+				$n++;
+			}
+
 			$list = [];
 			foreach ($indices as $index) {
 				$index = (int) $index;
 				if ($promptValue !== '') {
 					$index++;
 				}
-				if ($index >= 0 && $index <= $n) {
+				if ($index >= 0 && $index < $n) {
 					$list[] = $index;
 				}
 			}

@@ -52,9 +52,11 @@ use Prado\Util\Traits\TInitializedTrait;
  *
  * XML configuration style:
  * ```xml
- * <module id="session" class="Prado\Web\THttpSession" SessionName="SSID" SavePath="/tmp"
+ * <modules>
+ *     <module id="session" class="Prado\Web\THttpSession" SessionName="SSID" SavePath="/tmp"
  *         CookieMode="Allow" UseCustomStorage="false" AutoStart="true" GCProbability="1"
  *         UseTransparentSessionID="true" TimeOut="3600" />
+ * </modules>
  * ```
  *
  * PHP configuration style:
@@ -83,24 +85,27 @@ use Prado\Util\Traits\TInitializedTrait;
  * {@see getUseTransparentSessionID UseTransparentSessionID},
  * and {@see getTimeout TimeOut} are configurable properties of THttpSession.
  *
- * To avoid the possibility of identity theft through some variants of XSS attacks,
- * THttpSession should always be configured to enforce HttpOnly on the session cookie.
- * The HttpOnly setting is disabled by default. To enable it, configure THttpSession
- * as follows:
+ * The session cookie is HttpOnly.  Without a configured {@see getCookie() Cookie}, the
+ * other cookie parameters come from the php.ini `session.cookie_*` settings.  A configured
+ * Cookie supplies all of them, and the php.ini `session.cookie_secure` and
+ * `session.cookie_httponly` settings stay on when they are on.  Cookie.HttpOnly="false"
+ * turns HttpOnly off when php.ini leaves it off.
  *
- * XML configuration style, enabling HttpOnly:
+ * XML configuration style, sending the session cookie only over HTTPS:
  * ```xml
- * <module id="session" class="Prado\Web\THttpSession" Cookie.HttpOnly="true" />
+ * <modules>
+ *     <module id="session" class="Prado\Web\THttpSession" Cookie.Secure="true" />
+ * </modules>
  * ```
  *
- * PHP configuration style, enabling HttpOnly:
+ * PHP configuration style, sending the session cookie only over HTTPS:
  * ```php
  * return [
  *     'modules' => [
  *         'session' => [
  *             'class' => 'Prado\Web\THttpSession',
  *             'properties' => [
- *                 'Cookie.HttpOnly' => 'true',
+ *                 'Cookie.Secure' => 'true',
  *             ],
  *         ],
  *     ],
@@ -155,16 +160,26 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	 * Initializes the module.
 	 * This method is required by IModule.
 	 * If AutoStart is true, the session will be started.
-	 * @param \Prado\Xml\TXmlElement $config module configuration
+	 * @param null|array|\Prado\Xml\TXmlElement $config module configuration
 	 */
 	public function init($config)
 	{
 		if ($this->_autoStart) {
 			$this->open();
 		}
-		$this->getApplication()->setSession($this);
+		$this->setAppSession();
 		register_shutdown_function([$this, "close"]);
 		$this->markInitialized();
+	}
+
+	/**
+	 * Registers this module as the application session when an application is available.
+	 * Called during {@see init()}; may also be called by behaviors or subclasses.
+	 * @since 4.4.0
+	 */
+	protected function setAppSession()
+	{
+		$this->getApplication()?->setSession($this);
 	}
 
 	/**
@@ -177,14 +192,32 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 				$handler = new THttpSessionHandler($this);
 				session_set_save_handler($handler);
 			}
-			if ($this->_cookie !== null) {
-				session_set_cookie_params($this->_cookie->getPhpOptions('lifetime'));
-			}
 			if (static::getSessionIniConfig('auto_start') !== '1') {
+				$this->sessionSetCookieParams($this->getSessionCookieParams());
 				$this->sessionStart();
 			}
 			$this->_started = true;
 		}
+	}
+
+	/**
+	 * Returns the session cookie parameters for {@see open()}.
+	 * - No {@see getCookie() Cookie} → the php.ini parameters with `httponly` on.
+	 * - A Cookie → its parameters; `secure` and `httponly` stay on when php.ini has them on.
+	 * @return array the parameters for `session_set_cookie_params()`.
+	 * @since 4.4.0
+	 */
+	protected function getSessionCookieParams(): array
+	{
+		$params = $this->sessionGetCookieParams();
+		if ($this->_cookie === null) {
+			$params['httponly'] = true;
+			return $params;
+		}
+		$options = $this->_cookie->getPhpOptions('lifetime');
+		$options['secure'] = $options['secure'] || !empty($params['secure']);
+		$options['httponly'] = $options['httponly'] || !empty($params['httponly']);
+		return $options;
 	}
 
 	/**
@@ -331,7 +364,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
-	 * @return THttpSessionCookieMode how to use cookie to store session ID. Defaults to THttpSessionCookieMode::Allow.
+	 * @return string|THttpSessionCookieMode how to use cookie to store session ID. Defaults to THttpSessionCookieMode::Allow.
 	 */
 	public function getCookieMode()
 	{
@@ -345,7 +378,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
-	 * @param THttpSessionCookieMode $value how to use cookie to store session ID
+	 * @param string|THttpSessionCookieMode $value how to use cookie to store session ID
 	 * @throws TInvalidOperationException if session is started already
 	 * @deprecated 4.3.1 Since PHP 8.4 disabling session.use_only_cookies
 	 * INI setting is deprecated; Only THttpSessionCookieMode::Only is supported.
@@ -430,6 +463,8 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	 * THttpSession class for a configuration example.
 	 *
 	 * @param bool $value whether transparent sid support is enabled or not.
+	 * @deprecated 4.4.0 Since PHP 8.4 enabling the session.use_trans_sid INI setting is deprecated;
+	 * it also requires the deprecated {@see setCookieMode CookieMode} None or Allow.
 	 */
 	public function setUseTransparentSessionID($value)
 	{
@@ -716,6 +751,29 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 		} else {
 			return ini_set($key, $value);
 		}
+	}
+
+	/**
+	 * Internal: Call sessionGetCookieParams instead of `session_get_cookie_params`.
+	 * This keeps `session_get_cookie_params` isolated, and subject to children overrides.
+	 * @return array the php.ini session cookie parameters.
+	 * @since 4.4.0
+	 */
+	protected function sessionGetCookieParams(): array
+	{
+		return session_get_cookie_params();
+	}
+
+	/**
+	 * Internal: Call sessionSetCookieParams instead of `session_set_cookie_params`.
+	 * This keeps `session_set_cookie_params` isolated, and subject to children overrides.
+	 * @param array $options the session cookie parameters.
+	 * @return bool Returns true on success or false on failure.
+	 * @since 4.4.0
+	 */
+	protected function sessionSetCookieParams(array $options): bool
+	{
+		return session_set_cookie_params($options);
 	}
 
 	/**

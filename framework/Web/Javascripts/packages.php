@@ -9,6 +9,7 @@ $folders = [
 	'highlightjs' => 'Vendor\\bower-asset\\highlightjs',
 	'highlightjs-line-numbers' => 'Vendor\\bower-asset\\highlightjs-line-numbers.js\\dist',
 	'clipboard' => 'Vendor\\bower-asset\\clipboard\\dist',
+	'idiomorph' => 'Vendor\\npm-asset\\idiomorph\\dist',
 ];
 
 //package names and its contents (files relative to the current directory)
@@ -17,6 +18,7 @@ $packages = [
 	'prado' => [
 		'prado/prado.js',
 		'prado/controls/controls.js',
+		'prado/controls/browser.js',
 	],
 
 	'logger' => [
@@ -44,12 +46,49 @@ $packages = [
 		'prado/controls/slider.js',
 	],
 
+	'relativetime' => [
+		'prado/controls/relativetime.js',
+	],
+
+	'canvas' => [
+		'prado/controls/canvas.js',
+	],
+
+	'proofofwork' => [
+		'prado/controls/proofofwork-solver.js',
+		'prado/controls/proofofwork.js',
+	],
+
 	'keyboard' => [
 		'prado/controls/keyboard.js',
 	],
 
 	'tabpanel' => [
 		'prado/controls/tabpanel.js',
+	],
+
+	'keyshortcuts' => [
+		'prado/keyshortcuts/keyshortcuts.js',
+	],
+
+	'webtemplate' => [
+		'prado/controls/webtemplate.js',
+	],
+
+	'teleport' => [
+		'prado/controls/teleport.js',
+	],
+
+	'safetycover' => [
+		'prado/controls/safetycover.js',
+	],
+
+	'rowselect' => [
+		'prado/controls/rowselect.js',
+	],
+
+	'unsavedchanges' => [
+		'prado/controls/unsavedchanges.js',
 	],
 
 	'activedatepicker' => [
@@ -103,6 +142,11 @@ $packages = [
 	'clipboard' => [
 		'clipboard/clipboard.js',
 	],
+
+	//idiomorph: DOM morphing for callback updates
+	'idiomorph' => [
+		'idiomorph/idiomorph.js',
+	],
 ];
 
 //package names and their dependencies
@@ -112,6 +156,7 @@ $dependencies = [
 	'validator' => ['jquery', 'prado', 'validator'],
 	'tabpanel' => ['jquery', 'prado', 'tabpanel'],
 	'ajax' => ['jquery', 'prado', 'ajax'],
+	'morph' => ['jquery', 'prado', 'ajax', 'idiomorph'],
 	'logger' => ['jquery', 'prado', 'logger'],
 	'activefileupload' => ['jquery', 'prado', 'ajax', 'activefileupload'],
 	'effects' => ['jquery', 'jqueryui'],
@@ -121,7 +166,16 @@ $dependencies = [
 	'htmlarea' => ['jquery', 'prado', 'htmlarea'],
 	'htmlarea5' => ['jquery', 'prado', 'htmlarea5', 'tinymce'],
 	'keyboard' => ['jquery', 'prado', 'keyboard'],
+	'keyshortcuts' => ['jquery', 'prado', 'keyshortcuts'],
 	'slider' => ['jquery', 'prado', 'slider'],
+	'relativetime' => ['jquery', 'prado', 'relativetime'],
+	'canvas' => ['jquery', 'prado', 'canvas'],
+	'proofofwork' => ['jquery', 'prado', 'proofofwork'],
+	'webtemplate' => ['jquery', 'prado', 'webtemplate'],
+	'teleport' => ['jquery', 'prado', 'teleport'],
+	'safetycover' => ['jquery', 'prado', 'safetycover'],
+	'rowselect' => ['jquery', 'prado', 'rowselect'],
+	'unsavedchanges' => ['jquery', 'prado', 'unsavedchanges'],
 	'inlineeditor' => ['jquery', 'prado', 'ajax', 'inlineeditor'],
 	'accordion' => ['jquery', 'prado', 'accordion'],
 	'ratings' => ['jquery', 'prado', 'ajax', 'ratings'],

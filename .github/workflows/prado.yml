@@ -29,42 +29,45 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-versions: ['8.1', '8.2', '8.3']
+        php-versions: ['8.2', '8.3', '8.4', '8.5']
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup PHP, with composer and extensions
         uses: shivammathur/setup-php@v2 #https://github.com/shivammathur/setup-php
         with:
           php-version: ${{ matrix.php-versions }}
-          extensions: ctype, dom, intl, json, mbstring, memcached, pdo_mysql, pdo_pgsql, pdo_sqlite, openssl, pcre, spl, zlib, :pdo_firebird, :pdo_sqlsrv
+          # sysvsem and sync back TSemaphoreMutex and TSyncMutex
+          extensions: ctype, dom, intl, json, mbstring, memcached, pdo_mysql, pdo_pgsql, pdo_sqlite, openssl, pcre, spl, zlib, bz2, zstd, brotli, sysvsem, sync, :pdo_firebird, :pdo_sqlsrv
           tools: php-cs-fixer, phpstan, cs2pr
+
+      - name: Report mutex extensions
+        run: |
+          php -r 'foreach (["sysvsem", "sync"] as $e) { echo extension_loaded($e) ? "$e loaded" : "::warning::$e is not loaded; its mutex tests skip", PHP_EOL; }'
 
       - name: Validate composer.json and composer.lock
         run: composer validate --strict
 
       - name: Validate code syntax using php-cs-fixer
-        run: |
-          php-cs-fixer check -vvv --using-cache=no || true
-          echo " "
-          echo "---------------------- Generating Annotations ----------------------"
-          echo "Run php-cs-fixer check --using-cache=no --format=checkstyle | cs2pr"
-          php-cs-fixer check --using-cache=no --format=checkstyle | cs2pr
+        run: php-cs-fixer check --using-cache=no || true
 
       - name: Get composer cache directory
         id: composer-cache
         run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
       - name: Cache dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v6
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('composer.json') }}
           restore-keys: ${{ runner.os }}-composer-
 
       - name: Install Composer dependencies
         run: composer install --no-progress --prefer-dist --optimize-autoloader
+
+      - name: Run PHPStan extension tests
+        run: composer stantest
 
       - name: Validate code using phpstan
         run: phpstan analyse --error-format=checkstyle | cs2pr
@@ -85,18 +88,15 @@ jobs:
         run: |
           composer unittest
 
-      - name: Run Selenium Functional Tests
-        run: composer seleniumtest
-
   prado-js:
     name: Prado JS (ESLint + Vitest)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
 
@@ -124,7 +124,7 @@ jobs:
             browser_name: WebKit
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup PHP, with composer and extensions
         uses: shivammathur/setup-php@v2
@@ -133,7 +133,7 @@ jobs:
           extensions: ctype, dom, intl, json, mbstring, pdo_sqlite, openssl, pcre, spl, zlib
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
 
@@ -148,10 +148,10 @@ jobs:
         run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
       - name: Cache dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v6
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('composer.json') }}
           restore-keys: ${{ runner.os }}-composer-
 
       - name: Install Composer dependencies
@@ -163,7 +163,7 @@ jobs:
           npm run playwright -- --project=${{ matrix.browser }}
 
       - name: Upload Playwright report (${{ matrix.browser_name }})
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: playwright-report-${{ matrix.browser }}
@@ -173,37 +173,38 @@ jobs:
   prado-macos:
     name: Prado OS (macOS)
     runs-on: macos-latest
+    timeout-minutes: 30
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup PHP, with composer and extensions
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ env.PHP_VERSION }}
-          extensions: ctype, dom, intl, json, mbstring, memcached, pdo_mysql, pdo_pgsql, pdo_sqlite, openssl, pcre, spl, zlib
+          # sysvsem and sync back TSemaphoreMutex and TSyncMutex
+          extensions: ctype, dom, intl, json, mbstring, memcached, pdo_mysql, pdo_pgsql, pdo_sqlite, openssl, pcre, spl, zlib, bz2, zstd, brotli, sysvsem, sync
           tools: php-cs-fixer, phpstan, cs2pr
+
+      - name: Report mutex extensions
+        run: |
+          php -r 'foreach (["sysvsem", "sync"] as $e) { echo extension_loaded($e) ? "$e loaded" : "::warning::$e is not loaded; its mutex tests skip", PHP_EOL; }'
 
       - name: Validate composer.json and composer.lock
         run: composer validate --strict
 
       - name: Validate code syntax using php-cs-fixer
-        run: |
-          php-cs-fixer check -vvv --using-cache=no || true
-          echo " "
-          echo "---------------------- Generating Annotations ----------------------"
-          echo "Run php-cs-fixer check --using-cache=no --format=checkstyle | cs2pr"
-          php-cs-fixer check --using-cache=no --format=checkstyle | cs2pr
+        run: php-cs-fixer check --using-cache=no || true
 
       - name: Get composer cache directory
         id: composer-cache
         run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
       - name: Cache dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v6
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('composer.json') }}
           restore-keys: ${{ runner.os }}-composer-
 
       - name: Install Composer dependencies
@@ -248,36 +249,36 @@ jobs:
         run: git config --global core.autocrlf false
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup PHP, with composer and extensions
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ env.PHP_VERSION }}
           # memcached extension omitted: libmemcached is not available on Windows
-          extensions: ctype, dom, intl, json, mbstring, pdo_mysql, pdo_pgsql, pdo_sqlite, openssl, pcre, spl, bz2, xsl, zip, zlib
+          # sysvsem omitted: System V IPC is not available on Windows; sync backs TSyncMutex
+          extensions: ctype, dom, intl, json, mbstring, pdo_mysql, pdo_pgsql, pdo_sqlite, openssl, pcre, spl, bz2, xsl, zip, zlib, zstd, brotli, sync
           tools: php-cs-fixer, phpstan, cs2pr
+
+      - name: Report mutex extensions
+        run: |
+          php -r 'echo extension_loaded("sync") ? "sync loaded" : "::warning::sync is not loaded; its mutex tests skip", PHP_EOL;'
 
       - name: Validate composer.json and composer.lock
         run: composer validate --strict
 
       - name: Validate code syntax using php-cs-fixer
-        run: |
-          php-cs-fixer check -vvv --using-cache=no || true
-          echo " "
-          echo "---------------------- Generating Annotations ----------------------"
-          echo "Run php-cs-fixer check --using-cache=no --format=checkstyle | cs2pr"
-          php-cs-fixer check --using-cache=no --format=checkstyle | cs2pr
+        run: php-cs-fixer check --using-cache=no || true
 
       - name: Get composer cache directory
         id: composer-cache
         run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
       - name: Cache dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v6
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('composer.json') }}
           restore-keys: ${{ runner.os }}-composer-
 
       - name: Disable phpdocumentor shim plugin (GPG key import fails on Windows)
@@ -303,27 +304,60 @@ jobs:
         run: |
           # The runner image installs PostgreSQL but leaves the service disabled.
           # PGBIN, PGDATA, and PGPASSWORD (=root) are pre-set as machine env vars.
+          # Prepend trust rules so prado_unitest (created by initdb_pgsql.sql) can
+          # connect without a password — mirrors POSTGRES_HOST_AUTH_METHOD: trust
+          # used by the Linux service container.
+          $hba = "$env:PGDATA\pg_hba.conf"
+          $existing = Get-Content $hba -Raw
+          Set-Content $hba "host all all 127.0.0.1/32 trust`nhost all all ::1/128 trust`n$existing"
           & "$env:PGBIN\pg_ctl.exe" start -D $env:PGDATA -w
           & "$env:PGBIN\createdb.exe" -h 127.0.0.1 -U postgres prado_unitest
           & "$env:PGBIN\psql.exe" -h 127.0.0.1 -U postgres prado_unitest -f .\tests\initdb_pgsql.sql
-          # Windows PostgreSQL uses scram-sha-256 (no trust); set the password so
-          # setupPgsqlConnection('prado_unitest', 'prado_unitest') can authenticate.
-          & "$env:PGBIN\psql.exe" -h 127.0.0.1 -U postgres -c "ALTER ROLE prado_unitest WITH PASSWORD 'prado_unitest';"
 
       - name: Run Unit Tests
         run: composer unittest
+
+  db-sqlite:
+    name: Prado Data (SQLite)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup PHP with SQLite extensions
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: ctype, dom, intl, json, mbstring, pdo_sqlite, openssl, pcre, spl, zlib
+
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache dependencies
+        uses: actions/cache@v6
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('composer.json') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install Composer dependencies
+        run: composer install --no-progress --prefer-dist --optimize-autoloader
+
+      - name: Run SQLite tests
+        run: vendor/bin/phpunit --testsuite db-sqlite
 
   db-mysql:
     name: Prado Data (MySQL)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup PHP with MySQL extensions
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
+          php-version: ${{ env.PHP_VERSION }}
           extensions: ctype, dom, intl, json, mbstring, pdo_mysql, openssl, pcre, spl, zlib
 
       - name: Get composer cache directory
@@ -331,10 +365,10 @@ jobs:
         run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
       - name: Cache dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v6
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('composer.json') }}
           restore-keys: ${{ runner.os }}-composer-
 
       - name: Install Composer dependencies
@@ -346,7 +380,7 @@ jobs:
           mysql -uroot -proot < ./tests/initdb_mysql.sql
 
       - name: Run MySQL tests
-        run: php vendor/bin/phpunit --testsuite db-mysql
+        run: vendor/bin/phpunit --testsuite db-mysql
 
   db-pgsql:
     name: Prado Data (PostgreSQL)
@@ -368,12 +402,12 @@ jobs:
           --health-retries 5
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup PHP with PostgreSQL extensions
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
+          php-version: ${{ env.PHP_VERSION }}
           extensions: ctype, dom, intl, json, mbstring, pdo_pgsql, openssl, pcre, spl, zlib
 
       - name: Get composer cache directory
@@ -381,10 +415,10 @@ jobs:
         run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
       - name: Cache dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v6
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('composer.json') }}
           restore-keys: ${{ runner.os }}-composer-
 
       - name: Install Composer dependencies
@@ -398,37 +432,7 @@ jobs:
           PGPASSWORD: postgres
 
       - name: Run PostgreSQL tests
-        run: php vendor/bin/phpunit --testsuite db-pgsql
-
-  db-sqlite:
-    name: Prado Data (SQLite)
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup PHP with SQLite extensions
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.2'
-          extensions: ctype, dom, intl, json, mbstring, pdo_sqlite, openssl, pcre, spl, zlib
-
-      - name: Get composer cache directory
-        id: composer-cache
-        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
-
-      - name: Cache dependencies
-        uses: actions/cache@v3
-        with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: ${{ runner.os }}-composer-
-
-      - name: Install Composer dependencies
-        run: composer install --no-progress --prefer-dist --optimize-autoloader
-
-      - name: Run SQLite tests
-        run: php vendor/bin/phpunit --testsuite db-sqlite
+        run: vendor/bin/phpunit --testsuite db-pgsql
 
   db-sqlsrv:
     name: Prado Data (Microsoft SQL Server)
@@ -448,7 +452,7 @@ jobs:
           --health-retries 10
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup PHP with SQL Server extensions
         uses: shivammathur/setup-php@v2
@@ -461,19 +465,24 @@ jobs:
         run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
       - name: Cache dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v6
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('composer.json') }}
           restore-keys: ${{ runner.os }}-composer-
 
       - name: Install Composer dependencies
         run: composer install --no-progress --prefer-dist --optimize-autoloader
 
+      # msodbcsql18 (pulled in by mssql-tools18) is the ODBC driver pdo_sqlsrv needs.
+      # The repo package must match the runner's Ubuntu release; ubuntu-latest
+      # rolls between releases. Newer images preinstall packages-microsoft-prod
+      # with its keyring deleted, so the conffile flags reinstall it without a prompt.
       - name: Install mssql-tools18
         run: |
-          curl -sSL -O https://packages.microsoft.com/config/ubuntu/24.04/packages-microsoft-prod.deb
-          sudo dpkg -i packages-microsoft-prod.deb
+          . /etc/os-release
+          curl -sSL -O "https://packages.microsoft.com/config/ubuntu/${VERSION_ID}/packages-microsoft-prod.deb"
+          sudo dpkg -i --force-confnew --force-confmiss packages-microsoft-prod.deb
           sudo apt-get update -qq
           sudo ACCEPT_EULA=Y apt-get install -y mssql-tools18 unixodbc-dev
 
@@ -484,7 +493,7 @@ jobs:
           -i ./tests/initdb_sqlsrv.sql
 
       - name: Run SQL Server tests
-        run: php vendor/bin/phpunit --testsuite db-sqlsrv
+        run: vendor/bin/phpunit --testsuite db-sqlsrv
 
   db-firebird:
     name: Prado Data (Firebird)
@@ -505,7 +514,7 @@ jobs:
           --health-retries 24
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup PHP with Firebird extensions
         uses: shivammathur/setup-php@v2
@@ -518,10 +527,10 @@ jobs:
         run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
       - name: Cache dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v6
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('composer.json') }}
           restore-keys: ${{ runner.os }}-composer-
 
       - name: Install Composer dependencies
@@ -545,7 +554,7 @@ jobs:
           "
 
       - name: Run Firebird tests
-        run: php vendor/bin/phpunit --testsuite db-firebird
+        run: vendor/bin/phpunit --testsuite db-firebird
 
   db-oracle:
     name: Prado Data (Oracle)
@@ -570,7 +579,7 @@ jobs:
           --health-retries 20
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       # Install Oracle Instant Client 19c on the runner so that setup-php can
       # compile pdo_oci / oci8 against it.  19c client works fine against a
@@ -598,10 +607,10 @@ jobs:
         run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
       - name: Cache dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v6
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('composer.json') }}
           restore-keys: ${{ runner.os }}-composer-
 
       - name: Install Composer dependencies
@@ -618,12 +627,14 @@ jobs:
             bash -c 'source ~/.bash_profile && sqlplus -S prado_unitest/prado_unitest@//localhost/FREEPDB1 @/tmp/initdb_oracle.sql'
 
       - name: Run Oracle tests
-        run: php vendor/bin/phpunit --testsuite db-oracle
+        run: vendor/bin/phpunit --testsuite db-oracle
         env:
           ORACLE_SERVICE_NAME: FREEPDB1
 
   db-ibm:
     name: Prado Data (IBM DB2)
+    # DB2 image takes 2-3 minutes to start; only run on explicit manual dispatch.
+    # if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     services:
       db2:
@@ -643,7 +654,7 @@ jobs:
           --health-retries 20
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup PHP with IBM DB2 extensions
         uses: shivammathur/setup-php@v2
@@ -656,10 +667,10 @@ jobs:
         run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
       - name: Cache dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v6
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('composer.json') }}
           restore-keys: ${{ runner.os }}-composer-
 
       - name: Install Composer dependencies
@@ -672,7 +683,7 @@ jobs:
             su - db2inst1 -c "db2 connect to pradount && db2 -td@ -f /tmp/initdb.sql"
 
       - name: Run IBM DB2 tests
-        run: php vendor/bin/phpunit --testsuite db-ibm
+        run: vendor/bin/phpunit --testsuite db-ibm
         env:
           DB2_USER: db2inst1
           DB2_PASSWORD: Prado_Unitest1

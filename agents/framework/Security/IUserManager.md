@@ -1,7 +1,7 @@
 # Security/IUserManager
 
 ### Directories
-[framework](./INDEX.md) / [Security](./Security/INDEX.md) / **`IUserManager`**
+[framework](../INDEX.md) / [Security](INDEX.md) / **`IUserManager`**
 
 **Location:** `framework/Security/IUserManager.php`
 **Namespace:** `Prado\Security`

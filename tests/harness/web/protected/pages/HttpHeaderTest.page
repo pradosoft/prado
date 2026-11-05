@@ -1,0 +1,5 @@
+<com:TContent ID="Content">
+<h1>THttpResponse Header Test</h1>
+<div id="status">headers sent</div>
+<div id="content-type-label">Content-Type is <%=$this->Response->ContentType%>; charset=<%=$this->Response->Charset%></div>
+</com:TContent>

@@ -1,12 +1,14 @@
 <?php
 
-require_once(__DIR__ . '/../../../../PradoUnit.php');
+namespace Prado\Test\Unit\Data\DbSpecific\Sqlite\Common;
 
 use Prado\Data\Common\Sqlite\TSqliteMetaData;
 use Prado\Data\Common\TDbMetaData;
 use Prado\Data\TDbConnection;
 use Prado\Data\TDbDriverCapabilities;
 use Prado\TApplication;
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
+use Prado\TApplicationMode;
 
 /**
  * Integration tests for TDbDriverCapabilities — SQLite.
@@ -26,7 +28,7 @@ use Prado\TApplication;
  *
  * Tests are skipped automatically when the pdo_sqlite extension is missing.
  */
-class TDbDriverCapabilitiesSqliteIntegrationTest extends PHPUnit\Framework\TestCase
+class TDbDriverCapabilitiesSqliteIntegrationTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 
@@ -49,7 +51,7 @@ class TDbDriverCapabilitiesSqliteIntegrationTest extends PHPUnit\Framework\TestC
 	{
 		static $booted = false;
 		if (!$booted) {
-			new TApplication(__DIR__ . '/../../../../Security/app', false, TApplication::CONFIG_TYPE_PHP);
+			(new TApplication(__DIR__ . '/../../../../Security/app', false, TApplication::CONFIG_TYPE_PHP))->setMode(TApplicationMode::Debug);
 			$booted = true;
 		}
 		$this->setUpConnection();
@@ -92,7 +94,6 @@ class TDbDriverCapabilitiesSqliteIntegrationTest extends PHPUnit\Framework\TestC
 		// SQLite does not expose PDO::ATTR_AUTOCOMMIT; hasAutoCommitAttribute must return false.
 		$this->assertFalse(TDbDriverCapabilities::hasAutoCommitAttribute('sqlite'));
 	}
-
 
 	public function testSqliteRequiresNoPreBeginTransactionFlush(): void
 	{
@@ -195,28 +196,6 @@ class TDbDriverCapabilitiesSqliteIntegrationTest extends PHPUnit\Framework\TestC
 	public function testSqliteAsciiResolvesToUtf8(): void
 	{
 		$this->assertSame('UTF-8', TDbDriverCapabilities::resolveCharset('ASCII', 'sqlite'));
-	}
-
-	// -----------------------------------------------------------------------
-	// Scaffold factory
-	// -----------------------------------------------------------------------
-
-	public function testSqliteScaffoldInputClass(): void
-	{
-		$this->assertSame('TSqliteScaffoldInput', TDbDriverCapabilities::getScaffoldInputClass('sqlite'));
-	}
-
-	public function testSqliteScaffoldInputFile(): void
-	{
-		$this->assertSame('/TSqliteScaffoldInput.php', TDbDriverCapabilities::getScaffoldInputFile('sqlite'));
-	}
-
-	public function testSqlite2ScaffoldInputMatchesSqlite(): void
-	{
-		$this->assertSame(
-			TDbDriverCapabilities::getScaffoldInputClass('sqlite'),
-			TDbDriverCapabilities::getScaffoldInputClass('sqlite2')
-		);
 	}
 
 	// -----------------------------------------------------------------------

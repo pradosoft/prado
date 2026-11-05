@@ -1,266 +1,92 @@
 /*! PRADO main js file | github.com/pradosoft/prado */
 
 /*
- * Polyfill for ECMAScript5's bind() function.
- * ----------
- * Adds compatible .bind() function; needed for Internet Explorer < 9
- * Source: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind
+ * Prado.Class — minimal class factory backed by native ES classes.
+ *
+ * Usage:
+ *   const A = Prado.Class({ initialize() { ... }, foo() { ... } });
+ *   const B = Prado.Class(A, { initialize($super, opts) { $super(opts); ... } });
+ *   new B(options);
+ *
+ * Properties named `initialize` run as the constructor. Methods whose first
+ * parameter is `$super` receive a bound reference to the parent's same-named
+ * method as their first argument (low-pro-style super injection, retained
+ * for backward compatibility with existing Prado controls).
+ *
+ * Also aliased as `jQuery.klass` for compatibility with the 4.x call sites.
  */
+(() => {
+  const SUPER_RE = /^[\s(]*(?:function[^(]*|[A-Za-z_$][\w$]*)\(\s*\$super\b/;
+  const wantsSuper = (fn) => typeof fn === 'function' && SUPER_RE.test(Function.prototype.toString.call(fn));
 
-if (!Function.prototype.bind) {
-  Function.prototype.bind = function (oThis) {
-    if (typeof this !== "function") {
-      // closest thing possible to the ECMAScript 5 internal IsCallable function
-      throw new TypeError("Function.prototype.bind - what is trying to be bound is not callable");
-    }
-
-    var aArgs = Array.prototype.slice.call(arguments, 1),
-        fToBind = this,
-        fNOP = function () {},
-        fBound = function () {
-          return fToBind.apply(this instanceof fNOP && oThis
-                                 ? this
-                                 : oThis,
-                               aArgs.concat(Array.prototype.slice.call(arguments)));
+  const installMethods = (klass, source) => {
+    const parentProto = klass.superclass && klass.superclass.prototype;
+    for (const name of Object.keys(source)) {
+      const value = source[name];
+      if (parentProto && wantsSuper(value)) {
+        const method = value;
+        klass.prototype[name] = function (...args) {
+          const $super = parentProto[name].bind(this);
+          return method.call(this, $super, ...args);
         };
-
-    fNOP.prototype = this.prototype;
-    fBound.prototype = new fNOP();
-
-    return fBound;
-  };
-}
-
-/*
- * Low Pro JQ
- * ----------
- *
- * Author: Dan Webb (dan@danwebb.net)
- * GIT: github.com:danwrong/low-pro-for-jquery.git
- * Download: http://github.com/danwrong/low-pro-for-jquery/tree/master/src/lowpro.jquery.js?raw=true
- *
- * A jQuery port of the Low Pro behavior framework that was originally written for Prototype.
- *
- * Prado actually uses it as a base to emulate OOP subclassing, inheritance and contructor events.
- * The "behaviour" and the "Remote" bits are not used and have been commented out.
- */
-
-(function($) {
-
-  var addMethods = function(source) {
-    var ancestor   = this.superclass && this.superclass.prototype;
-    var properties = $.keys(source);
-
-    if (!$.keys({ toString: true }).length) properties.push("toString", "valueOf");
-
-    for (var i = 0, length = properties.length; i < length; i++) {
-      var property = properties[i], value = source[property];
-      if (ancestor && $.isFunction(value) && $.argumentNames(value)[0] == "$super") {
-
-        var method = value, value = $.extend($.wrap((function(m) {
-          return function() { return ancestor[m].apply(this, arguments) };
-        })(property), method), {
-          valueOf:  function() { return method },
-          toString: function() { return method.toString() }
-        });
+      } else {
+        klass.prototype[name] = value;
       }
-      this.prototype[property] = value;
     }
-
-    return this;
   };
 
-  $.extend({
-    keys: function(obj) {
-      var keys = [];
-      for (var key in obj) keys.push(key);
-      return keys;
-    },
+  const Class = (...args) => {
+    let parent = null;
+    if (typeof args[0] === 'function') parent = args.shift();
 
-    argumentNames: function(func) {
-      var names = func.toString().match(/^[\s\(]*function[^(]*\((.*?)\)/)[1].split(/, ?/);
-      return names.length == 1 && !names[0] ? [] : names;
-    },
+    // Function constructor (not `class` keyword) so the prototype slot stays
+    // writable — existing controls (ajax3.js, colorpicker.js) do wholesale
+    // `Class.prototype = {...}` assignment and rely on that.
+    const klass = function (...ctorArgs) {
+      this.initialize(...ctorArgs);
+    };
+    // Marker the jQuery.fn.trigger bridge (below) uses to identify
+    // Prado-managed elements. More robust than checking constructor.name,
+    // which would break on minification or a future `class` keyword move.
+    klass.isPradoClass = true;
 
-    bind: function(func, scope) {
-      return function() {
-        return func.apply(scope, $.makeArray(arguments));
-      };
-    },
-
-    wrap: function(func, wrapper) {
-      var __method = func;
-      return function() {
-        return wrapper.apply(this, [$.bind(__method, this)].concat($.makeArray(arguments)));
-      };
-    },
-
-    klass: function() {
-      var parent = null, properties = $.makeArray(arguments);
-      if ($.isFunction(properties[0])) parent = properties.shift();
-
-      var klass = function() {
-        this.initialize.apply(this, arguments);
-      };
-
-      klass.superclass = parent;
-      klass.subclasses = [];
-      klass.addMethods = addMethods;
-
-      if (parent) {
-        var subclass = function() { };
-        subclass.prototype = parent.prototype;
-        klass.prototype = new subclass;
-        parent.subclasses.push(klass);
-      }
-
-      for (var i = 0; i < properties.length; i++)
-        klass.addMethods(properties[i]);
-
-      if (!klass.prototype.initialize)
-        klass.prototype.initialize = function() {};
-
+    if (parent) {
+      klass.prototype = Object.create(parent.prototype);
       klass.prototype.constructor = klass;
+    }
+    klass.superclass = parent;
+    klass.subclasses = [];
+    if (parent) (parent.subclasses ||= []).push(klass);
 
-      return klass;
-    },
-    delegate: function(rules) {
-      return function(e) {
-        var target = $(e.target), parent = null;
-        for (var selector in rules) {
-          if (target.is(selector) || ((parent = target.parents(selector)) && parent.length > 0)) {
-            return rules[selector].apply(this, [parent || target].concat($.makeArray(arguments)));
-          }
-          parent = null;
-        }
+    for (const props of args) installMethods(klass, props);
+
+    if (!klass.prototype.initialize) klass.prototype.initialize = function () {};
+
+    // Native event-dispatch helper. New 4.4 code calls `this.trigger('foo')`
+    // instead of `jQuery(this.element).trigger('foo')` to fire an event
+    // without depending on jQuery. Uses CustomEvent so a `detail` payload is
+    // delivered to listeners. Sub-classes may override.
+    // @since 4.4.0
+    if (!klass.prototype.trigger) {
+      klass.prototype.trigger = function (eventName, detail) {
+        const el = this.element;
+        if (!el || !el.dispatchEvent || !eventName) return;
+        el.dispatchEvent(new CustomEvent(eventName, {
+          bubbles: true,
+          cancelable: true,
+          detail,
+        }));
       };
     }
-  });
-/*
-  var bindEvents = function(instance) {
-    for (var member in instance) {
-      if (member.match(/^on(.+)/) && typeof instance[member] == 'function') {
-        instance.element.live(RegExp.$1, {'behavior': instance}, instance[member]);
-      }
-    }
+
+    return klass;
   };
 
-  var behaviorWrapper = function(behavior) {
-    return $.klass(behavior, {
-      initialize: function($super, element, args) {
-        this.element = element;
-        if ($super) $super.apply(this, args);
-      },
-      trigger: function(eventType, extraParameters) {
-        var parameters = [this].concat(extraParameters);
-        this.element.trigger(eventType, parameters);
-      }
-    });
-  };
-
-  var attachBehavior = function(el, behavior, args) {
-      var wrapper = behaviorWrapper(behavior);
-      var instance = new wrapper(el, args);
-
-      bindEvents(instance);
-
-      if (!behavior.instances) behavior.instances = [];
-
-      behavior.instances.push(instance);
-
-      return instance;
-  };
-
-
-  $.fn.extend({
-    attach: function() {
-      var args = $.makeArray(arguments), behavior = args.shift();
-      attachBehavior(this, behavior, args);
-      return this;
-    },
-    delegate: function(type, rules) {
-      return this.bind(type, $.delegate(rules));
-    },
-    attached: function(behavior) {
-      var instances = [];
-
-      if (!behavior.instances) return instances;
-
-      this.each(function(i, element) {
-        $.each(behavior.instances, function(i, instance) {
-          if (instance.element.get(0) == element) instances.push(instance);
-        });
-      });
-
-      return instances;
-    },
-    firstAttached: function(behavior) {
-      return this.attached(behavior)[0];
-    }
-  });
-
-  Remote = $.klass({
-    initialize: function(options) {
-      if (this.element.attr('nodeName') == 'FORM') this.element.attach(Remote.Form, options);
-      else this.element.attach(Remote.Link, options);
-    }
-  });
-
-  Remote.Base = $.klass({
-    initialize : function(options) {
-      this.options = $.extend(true, {}, options || {});
-    },
-    _makeRequest : function(options) {
-      $.ajax(options);
-      return false;
-    }
-  });
-
-  Remote.Link = $.klass(Remote.Base, {
-    onclick: function(e) {
-      var options = $.extend({
-        url: $(this).attr('href'),
-        type: 'GET'
-      }, this.options);
-      return e.data.behavior._makeRequest(e.data.behavior.options);
-    }
-  });
-
-  Remote.Form = $.klass(Remote.Base, {
-    onclick: function(e) {
-      var target = e.target;
-
-      if ($.inArray(target.nodeName.toLowerCase(), ['input', 'button']) >= 0 && target.type.match(/submit|image/))
-        e.data.behavior._submitButton = target;
-    },
-    onsubmit: function(e) {
-      var elm = $(this), data = elm.serializeArray();
-
-      if (e.data.behavior._submitButton) data.push({
-        name: e.data.behavior._submitButton.name,
-        value: e.data.behavior._submitButton.value
-      });
-
-      var options = $.extend({
-        url : elm.attr('action'),
-        type : elm.attr('method') || 'GET',
-        data : data
-      }, e.data.behavior.options);
-
-      e.data.behavior._makeRequest(options);
-
-      return false;
-    }
-  });
-
-  $.ajaxSetup({
-    beforeSend: function(xhr) {
-      if (!this.dataType)
-        xhr.setRequestHeader("Accept", "text/javascript, text/html, application/xml, text/xml, *\/*");
-    }
-  });
-*/
-})(jQuery);
+  // Public API. Prado namespace doesn't exist yet at this point in the file,
+  // so attach to globalThis and re-export onto Prado after it's defined below.
+  globalThis.__PradoClass = Class;
+  if (typeof jQuery !== 'undefined') jQuery.klass = Class;
+})();
 
 
 /**
@@ -273,14 +99,41 @@ var Prado =
 	 * Version of Prado clientscripts
 	 * @var Version
 	 */
-	Version: '4.3.2',
+	Version: '4.4.0',
 
 	/**
 	 * Registry for Prado components
 	 * @var Registry
 	 */
-	Registry: {}
+	Registry: {},
+
+	/**
+	 * Class factory — native ES class with $super injection support.
+	 * Returns a class that calls initialize(...) from its constructor.
+	 * @var Class
+	 * @since 4.4.0
+	 */
+	Class: globalThis.__PradoClass,
+
+	/**
+	 * Html-encodes text for insertion into element inner html. Mirrors the
+	 * server-side THttpUtility::htmlEncode translation, and additionally
+	 * encodes the ampersand so a re-render of the same text is stable.
+	 * @param {String} text plain text
+	 * @return {String} encoded text
+	 * @since 4.4.0
+	 */
+	htmlEncode(text) {
+		if (text === null || text === undefined) return '';
+		return String(text)
+			.replace(/&/g, '&amp;')
+			.replace(/</g, '&lt;')
+			.replace(/>/g, '&gt;')
+			.replace(/"/g, '&quot;')
+			.replace(/'/g, '&#039;');
+	}
 };
+delete globalThis.__PradoClass;
 
 Prado.RequestManager =
 {
@@ -288,8 +141,157 @@ Prado.RequestManager =
 
 	FIELD_POSTBACK_PARAMETER : 'PRADO_POSTBACK_PARAMETER'
 };
+
+/**
+ * Counts the event observers that Prado control wrappers install on each
+ * element through `Prado.WebUI.Control.observe()`. The jQuery trigger bridge
+ * dispatches native events to an element with observers.
+ * @namespace Prado.Observed
+ * @since 4.4.0
+ */
+Prado.Observed =
+{
+	_counts: new WeakMap(),
+
+	/**
+	 * Records an observer on an element.
+	 * @param {element} el - the observed element
+	 */
+	add(el) {
+		this._counts.set(el, (this._counts.get(el) || 0) + 1);
+	},
+
+	/**
+	 * Removes the record of an observer on an element.
+	 * @param {element} el - the observed element
+	 */
+	remove(el) {
+		const count = (this._counts.get(el) || 0) - 1;
+		if (count > 0)
+			this._counts.set(el, count);
+		else
+			this._counts.delete(el);
+	},
+
+	/**
+	 * @param {element} el - the element to check
+	 * @return {boolean} whether the element has a Prado observer
+	 */
+	has(el) {
+		return this._counts.has(el);
+	}
+};
+
+// jQuery compatibility bridges. Both are installed only when jQuery is
+// available on the page; when the jQuery quarantine plan ships, this whole
+// block moves into the jQuery-loading package only.
+if (typeof jQuery !== 'undefined') {
+	// Bridge jQuery's ajaxComplete event to a native 'prado:ajaxComplete'
+	// event on document. Controls that need to react to AJAX completion
+	// (THtmlArea, THtmlArea5, etc.) listen to the native event so they
+	// don't depend on jQuery directly. When ajax3.js moves off $.ajax
+	// (step 4c), it will dispatch the native event directly and this
+	// bridge will be removed.
+	jQuery(document).on('ajaxComplete', () => {
+		document.dispatchEvent(new CustomEvent('prado:ajaxComplete'));
+	});
+
+	/**
+	 * Bridge `jQuery(el).trigger(name)` to native `dispatchEvent` for
+	 * Prado-managed elements. Pre-4.4 controls registered handlers through
+	 * the jQuery event bus and fired them with `jQuery(el).trigger('name')`.
+	 * The framework's `observe` now uses native `addEventListener`, and
+	 * jQuery `.trigger()` does not reach native listeners (see
+	 * https://github.com/jquery/jquery/issues/2476), so pre-4.4 calls
+	 * become no-ops without this bridge.
+	 *
+	 * A Prado-managed element is registered in `Prado.Registry` under its
+	 * own id, or has an observer in `Prado.Observed`. The second covers an
+	 * element that a wrapper registered under another id observes: the
+	 * control of a validator, the target of a TEventTriggeredCallback, and
+	 * the selects of a TDatePicker.
+	 *
+	 * Behavior:
+	 *   - Elements that are not Prado-managed keep the original jQuery
+	 *     `.trigger()` semantics. No regression for pure-jQuery controls.
+	 *   - Prado-managed elements receive `el.dispatchEvent(CustomEvent)`.
+	 *     This reaches both native `addEventListener` handlers AND any
+	 *     jQuery-bound handlers (because jQuery itself attaches via
+	 *     `addEventListener` under the hood).
+	 *   - Forms get `el.submit()` after the event so they actually submit.
+	 *     `<input type="submit">` / `<button>` clicks call `el.click()` so
+	 *     the browser performs the default activation behavior (submit,
+	 *     toggle, navigate). Synthetic events alone do not fire defaults.
+	 *
+	 * @since 4.4.0
+	 */
+	const originalTrigger = jQuery.fn.trigger;
+	jQuery.fn.trigger = function (type, extraParameters) {
+		const isEventObject = type && typeof type === 'object';
+		const eventType = isEventObject ? type.type : type;
+
+		// Partition the wrapper into Prado-managed (klass) and non-klass
+		// elements. We only deviate from jQuery's behavior for klass
+		// elements; everything else goes through jQuery's own trigger
+		// pipeline exactly as before.
+		const $klass = this.filter(function () {
+			if (Prado.Observed.has(this)) return true;
+			const reg = this.id && Prado.Registry[this.id];
+			return !!(reg && reg.constructor && reg.constructor.isPradoClass);
+		});
+		const $rest = this.not($klass);
+
+		// Klass path: dispatch native events, with the right activation
+		// special-cases so default behavior (form submit, focus, click)
+		// still happens.
+		$klass.each(function () {
+			const el = this;
+			if (!el.dispatchEvent || !eventType) return;
+
+			// Form submit: dispatchEvent does not submit. Match
+			// jQuery .trigger('submit') by firing the cancellable event
+			// then calling native submit() if not preventDefault'd.
+			if (eventType === 'submit' && el.tagName === 'FORM') {
+				const evt = new Event('submit', { bubbles: true, cancelable: true });
+				if (el.dispatchEvent(evt)) el.submit();
+				return;
+			}
+
+			// Activation events: jQuery .trigger('click') / 'focus' /
+			// 'blur' invoke the native method, which fires the real
+			// event AND runs the default action (form submission for
+			// submit buttons, focus state changes, etc.). dispatchEvent
+			// skips defaults because synthetic events have
+			// isTrusted === false.
+			if (
+				(eventType === 'click' || eventType === 'focus' || eventType === 'blur')
+				&& typeof el[eventType] === 'function'
+			) {
+				el[eventType]();
+				return;
+			}
+
+			const nativeEvent = (isEventObject && type instanceof Event)
+				? type
+				: new CustomEvent(eventType, {
+					bubbles: true,
+					cancelable: true,
+					detail: extraParameters,
+				});
+			el.dispatchEvent(nativeEvent);
+		});
+
+		// Non-klass path: one delegation to jQuery's original trigger on
+		// the remaining subset. Preserves all of jQuery's specialized
+		// event hooks (event.special.X) and per-event-type defaults.
+		if ($rest.length) originalTrigger.call($rest, type, extraParameters);
+
+		return this;
+	};
+}
 /**
  * Performs a PostBack using javascript.
+ * Each instance copies its options, so an option one postback omits is unset.
  * @function Prado.PostBack
  * @param options - Postback options
  * @param event - Event that triggered this postback
@@ -298,70 +300,103 @@ Prado.RequestManager =
  * @... {optional string} ValidationGroup - Group to Validate
  * @... {optional string} ID - Validation ID
  * @... {optional string} PostBackUrl - Postback URL
- * @... {optional boolean} TrackFocus - Keep track of focused element if true
  * @... {string} EventTarget - Id of element that triggered PostBack
  * @... {string} EventParameter - EventParameter for PostBack
  */
-Prado.PostBack = jQuery.klass(
+Prado.PostBack = Prado.Class(
 {
-	options : {},
-
-	initialize: function(options, event)
-	{
-		jQuery.extend(this.options, options || {});
+	initialize(options, event) {
+		this.options = Object.assign({}, options || {});
 		this.event = event;
 		this.doPostBack();
 	},
 
-	getForm : function()
-	{
-		return jQuery("#" + this.options['FormID']).get(0);
+	getForm() {
+		return document.getElementById(this.options['FormID']);
 	},
 
-	doPostBack : function()
-	{
-		var form = this.getForm();
+	doPostBack() {
+		const form = this.getForm();
 		if(this.options['CausesValidation'] && typeof(Prado.Validation) != "undefined")
 		{
-			if(!Prado.Validation.validate(this.options['FormID'], this.options['ValidationGroup'], jQuery("#" + this.options['ID'])))
+			if(!Prado.Validation.validate(this.options['FormID'], this.options['ValidationGroup'], document.getElementById(this.options['ID'])))
 				return this.event.preventDefault();
 		}
 
+		if (!form) return;
 		if(this.options['PostBackUrl'] && this.options['PostBackUrl'].length > 0)
 			form.action = this.options['PostBackUrl'];
 
-		if(this.options['TrackFocus'])
-		{
-			var lastFocus = jQuery('#PRADO_LASTFOCUS');
-			if(lastFocus)
-			{
-				var active = document.activeElement; //where did this come from
-				if(active)
-					lastFocus.value = active.id;
-				else
-					lastFocus.value = this.options['EventTarget'];
+		const removeFields = this.addPostBackFields(form);
+		// Match jQuery $(form).trigger('submit'): fire a cancellable submit event
+		// so handlers can preventDefault, then call form.submit() (which skips
+		// HTML5 constraint validation — important because Prado does its own
+		// validation in JS and many emitted forms don't carry HTML5 constraints
+		// that would silently abort form.requestSubmit()).
+		const evt = new Event('submit', { bubbles: true, cancelable: true });
+		if (form.dispatchEvent(evt)) {
+			const restore = this.applySubmitterOverrides(form, document.getElementById(this.options['ID']));
+			form.submit();
+			restore();
+		}
+		removeFields();
+	},
+
+	/**
+	 * Adds the EventTarget and EventParameter hidden fields to the form.
+	 * Submit listeners and form.submit() read them at once, so they are removed
+	 * right after. A cancelled submit, or one to another window, leaves the page
+	 * in place, and a later submit of the form would otherwise post them again.
+	 * @param {HTMLFormElement} form - the form to submit
+	 * @return {function} removes the added fields
+	 */
+	addPostBackFields(form) {
+		const fields = [];
+		for (const [name, value] of [
+			[Prado.RequestManager.FIELD_POSTBACK_TARGET, this.options.EventTarget],
+			[Prado.RequestManager.FIELD_POSTBACK_PARAMETER, this.options.EventParameter]
+		]) {
+			if (value) {
+				const input = document.createElement("input");
+				input.setAttribute("type", "hidden");
+				input.setAttribute("name", name);
+				input.setAttribute("value", value);
+				form.appendChild(input);
+				fields.push(input);
 			}
 		}
+		return () => {
+			for (const input of fields)
+				input.remove();
+		};
+	},
 
-		var input=null;
-		if(this.options.EventTarget)
-		{
-			input = document.createElement("input");
-			input.setAttribute("type", "hidden");
-			input.setAttribute("name", Prado.RequestManager.FIELD_POSTBACK_TARGET);
-			input.setAttribute("value", this.options.EventTarget);
-			form.appendChild(input);
+	/**
+	 * Applies the formaction, formtarget, and formenctype of the submitting
+	 * button to its form, because form.submit() submits without a submitter.
+	 * The submission reads them at once, so they are restored right after it.
+	 * @param {HTMLFormElement} form - the form to submit
+	 * @param {?HTMLElement} submitter - the button that posts back
+	 * @return {function} restores the form attributes
+	 */
+	applySubmitterOverrides(form, submitter) {
+		const saved = [];
+		if (submitter && submitter.form === form) {
+			for (const [attr, prop] of [['formaction', 'action'], ['formtarget', 'target'], ['formenctype', 'enctype']]) {
+				if (submitter.hasAttribute(attr)) {
+					saved.push([prop, form.getAttribute(prop)]);
+					form.setAttribute(prop, submitter.getAttribute(attr));
+				}
+			}
 		}
-		if(this.options.EventParameter)
-		{
-			input = document.createElement("input");
-			input.setAttribute("type", "hidden");
-			input.setAttribute("name", Prado.RequestManager.FIELD_POSTBACK_PARAMETER);
-			input.setAttribute("value", this.options.EventParameter);
-			form.appendChild(input);
-		}
-
-		jQuery(form).trigger('submit');
+		return () => {
+			for (const [prop, value] of saved) {
+				if (value === null)
+					form.removeAttribute(prop);
+				else
+					form.setAttribute(prop, value);
+			}
+		};
 	}
 });
 
@@ -372,15 +407,17 @@ Prado.PostBack = jQuery.klass(
 Prado.Element =
 {
 	/**
-	 * Executes a jQuery method on a particular element.
+	 * Executes a jQuery method on a particular element. Retained as a
+	 * passthrough for PHP-side controls that emit calls like
+	 * Prado.Element.j('foo', 'fadeIn', [200]). Requires jQuery to be
+	 * loaded at the page level.
 	 * @function ?
 	 * @param {string} element - Element id
 	 * @param {string} method - method name
 	 * @param {array} value - method parameters
 	 */
-	j: function(element, method, params)
-	{
-		var obj=jQuery("#" + element);
+	j(element, method, params) {
+		const obj=jQuery(`#${element}`);
 		obj[method].apply(obj, params);
 	},
 
@@ -392,52 +429,82 @@ Prado.Element =
 	 * @param {array|boolean|string} value - Values that should be selected
 	 * @param {int} total - Number of elements
 	 */
-	select : function(element, method, value, total)
-	{
-		var el = jQuery("#" + element).get(0);
+	select(element, method, value, total) {
+		const el = document.getElementById(element);
 		if(!el) return;
-		var selection = Prado.Element.Selection;
+		const selection = Prado.Element.Selection;
 		if(typeof(selection[method]) == "function")
 		{
-			var control = selection.isSelectable(el) ? [el] : selection.getListElements(element,total);
+			const control = selection.isSelectable(el) ? [el] : selection.getListElements(element,total);
 			selection[method](control, value);
 		}
 	},
 
 	/**
-	 * Sets an attribute of a DOM element.
+	 * Splits a CSS class value into its class names for `classList.add()` and
+	 * `classList.remove()`, which throw on a name with whitespace or an empty
+	 * name. Whitespace separates the names, as in jQuery `.addClass()`.
+	 * @function ?
+	 * @param {?string} value - one or more class names separated by whitespace
+	 * @return {string[]} the class names; empty for a null, undefined, or blank value
+	 * @since 4.4.0
+	 */
+	classTokens(value) {
+		if (value === null || value === undefined)
+			return [];
+		return String(value).split(/\s+/).filter(Boolean);
+	},
+
+	/**
+	 * Boolean attributes that a `false` value removes and a `true` value sets
+	 * to their own name, as jQuery `.attr()` does.
+	 * @var BOOLEAN_ATTRIBUTES
+	 * @since 4.4.0
+	 */
+	BOOLEAN_ATTRIBUTES: /^(?:checked|selected|async|autofocus|autoplay|controls|defer|disabled|hidden|ismap|loop|multiple|open|readonly|required|scoped|inert)$/i,
+
+	/**
+	 * Sets an attribute of a DOM element. A null or undefined value removes
+	 * the attribute. A boolean attribute is removed by `false` and set to its
+	 * own name by `true`.
 	 * @function ?
 	 * @param {string} element - Element id
 	 * @param {string} attribute - Name of attribute
-	 * @param {string} value - Value of attribute
+	 * @param {?string} value - Value of attribute
 	 */
-	setAttribute : function(element, attribute, value)
-	{
-		var el = jQuery("#" + element);
+	setAttribute(element, attribute, value) {
+		const el = document.getElementById(element);
 		if(!el) return;
+		const isBoolean = Prado.Element.BOOLEAN_ATTRIBUTES.test(attribute);
 		// "disabled" is for <button>, <fieldset>, <input>, <optgroup>, <option>, <select>, <textarea>
 		// "readonly is for <input>, <textarea>
 		// global presence attributes: hidden, inert, popover
 		// removed 'href' and 'multiple' was a hack - they use removeAttribute now
-		if((attribute == "disabled" || attribute == "readonly" || attribute == "hidden" || attribute == "inert" || attribute == "popover") && value==false)
-			el.removeAttr(attribute);
+		if(value === null || value === undefined || (isBoolean && value === false))
+			el.removeAttribute(attribute);
+		else if((attribute == "disabled" || attribute == "readonly" || attribute == "hidden" || attribute == "inert" || attribute == "popover") && value==false)
+			el.removeAttribute(attribute);
+		else if(isBoolean && value === true)
+			el.setAttribute(attribute, attribute);
 		else if(attribute.match(/^on/i)) //event methods
 		{
 			try
 			{
-				eval("(func = function(event){"+value+"})");
-				el.get(0)[attribute] = func;
+				// Compile the server-emitted handler body as a function of
+				// `event` and assign it to the DOM property (onclick/onchange/etc.).
+				// `new Function` keeps the closure scope local instead of leaking
+				// a global the way `eval` would.
+				el[attribute] = new Function('event', value);
 			}
-			catch(e)
+			catch(_e)
 			{
-				debugger;
-				throw "Error in evaluating '"+value+"' for attribute "+attribute+" for element "+element;
+				throw `Error in evaluating '${value}' for attribute ${attribute} for element ${element}`;
 			}
 		}
 		else
-			el.attr(attribute, value);
+			el.setAttribute(attribute, value);
 	},
-	
+
 	/**
 	 * Removes an attribute of a DOM element.
 	 * @function ?
@@ -445,35 +512,135 @@ Prado.Element =
 	 * @param {string} attribute - Name of attribute
 	 * @since 4.3.3
 	 */
-	removeAttribute : function(element, attribute)
-	{
-		var el = jQuery("#" + element);
+	removeAttribute(element, attribute) {
+		const el = document.getElementById(element);
 		if(!el) return;
-		el.removeAttr(attribute);
+		el.removeAttribute(attribute);
 	},
 
-	scrollTo : function(element, options)
-	{
-		var op = {
-			duration : 500,
-			offset : 50
-		};
-		jQuery.extend(op, options || {});
-		jQuery('html, body').animate({
-			scrollTop: jQuery("#"+element).offset().top - op.offset
-		}, op.duration);
+	/**
+	 * The view transition started by {@link Prado.Element.viewTransition} that has
+	 * not finished, or null.
+	 * @private
+	 */
+	_viewTransition: null,
+
+	/**
+	 * Returns whether {@link Prado.Element.viewTransition} animates an update:
+	 * the browser has `document.startViewTransition`, the page is visible, and
+	 * `prefers-reduced-motion: reduce` does not match.
+	 * @function ?
+	 * @returns {boolean} whether an update runs inside a view transition
+	 * @since 4.4.0
+	 */
+	canViewTransition() {
+		return typeof document.startViewTransition === 'function'
+			&& document.visibilityState !== 'hidden'
+			&& !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
 	},
 
-	focus : function(element)
-	{
-		if(jQuery.active > 0)
-		{
-			setTimeout(function(){
-				jQuery("#"+element).focus();
-			}, 100);
-		} else {
-			jQuery("#"+element).focus();
+	/**
+	 * Runs a DOM update inside a view transition, so the browser animates from the
+	 * old state of the page to the new one.
+	 *
+	 * | Condition | Result |
+	 * |---|---|
+	 * | {@link Prado.Element.canViewTransition} is false | `update` runs at once |
+	 * | A transition started here is running | It is skipped: it jumps to its end state |
+	 * | `update` throws | The returned promise rejects; the browser skips the animation and shows the page |
+	 * | The browser skips the animation (a duplicate `view-transition-name`) | `update` still runs |
+	 *
+	 * `update` runs once in every case. Inside a transition it runs after the
+	 * browser captures the old state, in a later frame.
+	 * @function ?
+	 * @param {function} update - Synchronous function that changes the DOM
+	 * @returns {Promise} settles after `update` ran; rejects with its error
+	 * @since 4.4.0
+	 */
+	viewTransition(update) {
+		const self = Prado.Element;
+		if (!self.canViewTransition()) {
+			try {
+				update();
+			} catch (e) {
+				return Promise.reject(e);
+			}
+			return Promise.resolve();
 		}
+		if (self._viewTransition)
+			self._viewTransition.skipTransition();
+		const transition = document.startViewTransition(update);
+		self._viewTransition = transition;
+		// A skipped animation rejects ready; an update error rejects all three
+		// promises. The caller handles updateCallbackDone.
+		transition.ready.catch(() => {});
+		const done = () => {
+			if (self._viewTransition === transition)
+				self._viewTransition = null;
+		};
+		transition.finished.then(done, done);
+		return transition.updateCallbackDone;
+	},
+
+	/**
+	 * Animation frame id of the scroll in progress, or null.
+	 * @private
+	 */
+	_scrollFrame: null,
+
+	/**
+	 * Scrolls the window until the top of an element is `offset` pixels below the top of the viewport.
+	 * The scroll lasts `duration` milliseconds and eases in and out, like the jQuery `swing` easing.
+	 * A `duration` that is not a positive number jumps to the position at once.
+	 * Under `prefers-reduced-motion: reduce` the scroll always jumps at once.
+	 * A new call stops the scroll in progress.
+	 * @function ?
+	 * @param {string} element - Element id
+	 * @param {object} [options] - Scroll options
+	 * @param {number} [options.duration=500] - Length of the scroll in milliseconds
+	 * @param {number} [options.offset=50] - Distance in pixels from the top of the viewport to the element
+	 */
+	scrollTo(element, options) {
+		const op = { duration : 500, offset : 50, ...(options || {}) };
+		const el = document.getElementById(element);
+		if (!el) return;
+		const self = Prado.Element;
+		if (self._scrollFrame !== null) {
+			cancelAnimationFrame(self._scrollFrame);
+			self._scrollFrame = null;
+		}
+		const left = window.pageXOffset;
+		const from = window.pageYOffset;
+		const top = el.getBoundingClientRect().top + from - op.offset;
+		const duration = Number(op.duration);
+		const reducedMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+		if (!(duration > 0) || reducedMotion) {
+			window.scrollTo({ left, top, behavior: 'instant' });
+			return;
+		}
+		// 'instant' keeps a CSS `scroll-behavior: smooth` from smoothing each frame.
+		let start = null;
+		const step = (now) => {
+			if (start === null) start = now;
+			const progress = Math.min((now - start) / duration, 1);
+			const eased = 0.5 - Math.cos(progress * Math.PI) / 2;
+			window.scrollTo({ left, top: from + (top - from) * eased, behavior: 'instant' });
+			self._scrollFrame = progress < 1 ? requestAnimationFrame(step) : null;
+		};
+		self._scrollFrame = requestAnimationFrame(step);
+	},
+
+	focus(element) {
+		const doFocus = () => {
+			const el = document.getElementById(element);
+			if (el) el.focus();
+		};
+		// If a callback request is in flight, defer briefly so we focus the
+		// post-update DOM. Callbacks are sent with jQuery.ajax (see ajax3.js),
+		// and jQuery.active counts the requests in flight.
+		const pending = typeof jQuery !== 'undefined' && jQuery.active > 0;
+		if (pending) setTimeout(doFocus, 100);
+		else doFocus();
 	},
 
 	/**
@@ -483,40 +650,38 @@ Prado.Element =
 	 * @param {array[]} options - Array of options, each an array of structure
 	 *   [ "optionText" , "optionValue" , "optionGroup" ]
 	 */
-	setOptions : function(element, options)
-	{
-		var el = jQuery("#" + element).get(0);
-		var previousGroup = null;
-		var optGroup=null;
+	setOptions(element, options) {
+		const el = document.getElementById(element);
 		if(el && el.tagName.toLowerCase() == "select")
 		{
 			while(el.childNodes.length > 0)
 				el.removeChild(el.lastChild);
 
-			var optDom = Prado.Element.createOptions(options);
-			for(var i = 0; i < optDom.length; i++)
+			const optDom = Prado.Element.createOptions(options);
+			for(let i = 0; i < optDom.length; i++)
 				el.appendChild(optDom[i]);
 		}
 	},
 
 	/**
-	 * Create opt-group options from an array of options.
+	 * Create opt-group options from an array of options. Option text is set as the page render
+	 * sets it: `<` and `>` are escaped, as THttpUtility::htmlEncode() escapes them, and entities
+	 * decode. The text creates no elements.
 	 * @function {array} ?
 	 * @param {array[]} options - Array of options, each an array of structure
 	 *   [ "optionText" , "optionValue" , "optionGroup" ]
 	 * @returns Array of option DOM elements
 	 */
-	createOptions : function(options)
-	{
-		var previousGroup = null;
-		var optgroup=null;
-		var result = [];
-		for(var i = 0; i<options.length; i++)
+	createOptions(options) {
+		let previousGroup = null;
+		let optgroup=null;
+		const result = [];
+		for(let i = 0; i<options.length; i++)
 		{
-			var option = options[i];
+			const option = options[i];
 			if(option.length > 2)
 			{
-				var group = option[2];
+				const group = option[2];
 				if(group!=previousGroup)
 				{
 					if(previousGroup!=null && optgroup!=null)
@@ -530,9 +695,8 @@ Prado.Element =
 					previousGroup = group;
 				}
 			}
-			var opt = document.createElement('option');
-			opt.text = option[0];
-			opt.innerHTML = option[0];
+			const opt = document.createElement('option');
+			opt.innerHTML = String(option[0]).replace(/</g, '&lt;').replace(/>/g, '&gt;');
 			opt.value = option[1];
 			if(optgroup!=null)
 				optgroup.appendChild(opt);
@@ -545,6 +709,31 @@ Prado.Element =
 	},
 
 	/**
+	 * Replaces the options of a datalist element. Labels are set as the page render sets them:
+	 * `<` and `>` are escaped, as THttpUtility::htmlEncode() escapes them, and entities decode.
+	 * A label creates no elements.
+	 * @function ?
+	 * @param {string} element - Element id
+	 * @param {array[]} options - Array of options, each an array of structure
+	 *   [ "optionValue" , "optionLabel" , { attributeName: "attributeValue" } ];
+	 *   an empty label leaves the option without text
+	 */
+	setDataListOptions(element, options) {
+		const el = document.getElementById(element);
+		if(!el || el.tagName.toLowerCase() != "datalist")
+			return;
+		el.replaceChildren(...options.map(([value, label, attributes]) => {
+			const opt = document.createElement('option');
+			for(const [name, attribute] of Object.entries(attributes || {}))
+				opt.setAttribute(name, attribute);
+			opt.value = value;
+			if(label)
+				opt.innerHTML = String(label).replace(/</g, '&lt;').replace(/>/g, '&gt;');
+			return opt;
+		}));
+	},
+
+	/**
 	 * Replace a DOM element either with given content or
 	 * with content from a CallBack response boundary
 	 * using a replacement method.
@@ -553,35 +742,269 @@ Prado.Element =
 	 * @param {optional string} content - New content of element
 	 * @param {optional string} boundary - Boundary of new content
 	 * @param {optional boolean} self - Whether to replace itself or just the inner content
+	 * @param {optional boolean} morph - Whether to morph the existing nodes through
+	 *   {@link Prado.Element.morph}; it falls back to the replacement when idiomorph is not loaded
 	 */
-	replace : function(element, content, boundary, self)
-	{
+	replace(element, content, boundary, self, morph) {
 		if(boundary)
 		{
-			var result = this.extractContent(boundary);
+			const result = this.extractContent(boundary);
 			if(result != null)
 				content = result;
 		}
+		if(morph && Prado.Element.morph(element, content, self, this && this.focusSnapshot))
+			return;
+		const el = document.getElementById(element);
+		if(!el) return;
+		// innerHTML / insertAdjacentHTML parse <script> tags but the HTML spec
+		// marks them as already-executed, so the browser refuses to run them.
+		// jQuery's .html() / .replaceWith() worked around this by re-creating
+		// script nodes. Mirror that so Prado callback responses that embed
+		// inline JavaScript continue to execute.
 		if(self)
-		  jQuery('#'+element).replaceWith(content);
+		{
+			// The new nodes are inserted before el, then el is removed. Only
+			// the inserted nodes run their scripts; the siblings' scripts do not.
+			const parent = el.parentNode;
+			const before = el.previousSibling;
+			el.insertAdjacentHTML('beforebegin', content);
+			const inserted = [];
+			for (let node = before ? before.nextSibling : parent.firstChild; node !== el; node = node.nextSibling)
+				inserted.push(node);
+			el.remove();
+			Prado.Element.executeScripts(inserted);
+		}
 		else
-		  jQuery('#'+element).html(content);
+		{
+			el.innerHTML = content;
+			Prado.Element.executeScripts(el);
+		}
 	},
 
 	/**
-	 * Appends a javascript block to the document.
+	 * Re-evaluate `root` when it is a <script> element, and every <script>
+	 * element under `root`. Used after Prado.Element.replace() to mimic jQuery
+	 * .html() / .replaceWith() behavior, which executes inline scripts injected
+	 * via innerHTML. The re-created scripts carry the page CSP nonce,
+	 * {@link Prado.Element.getPageNonce}, in place of the callback's nonce.
+	 * A text or comment node has no scripts.
+	 *
+	 * The scripts run in document order. A re-created external script loads
+	 * asynchronously, so the scripts after a classic `<script src>` without
+	 * `async` run once it loads or fails, as jQuery's synchronous load ran them.
+	 * @function ?
+	 * @param {node|node[]} root - DOM node or subtree to scan, or a list of them in document order
+	 * @return {Promise} resolves once every script has run or failed to load
+	 * @since 4.4.0
+	 */
+	executeScripts(root) {
+		const scripts = [];
+		for (const node of Array.isArray(root) ? root : [root]) {
+			if (node.nodeType !== Node.ELEMENT_NODE)
+				continue;
+			scripts.push(...(node.matches('script') ? [node] : node.querySelectorAll('script')));
+		}
+		return Prado.Element.runScripts(scripts, 0);
+	},
+
+	/**
+	 * Re-creates the scripts from `index` on, in order, and waits for each
+	 * classic external script without `async` to load before the next one.
+	 * @function ?
+	 * @param {element[]} scripts - the parsed, inert <script> elements
+	 * @param {number} index - the first script to re-create
+	 * @return {Promise} resolves once every script has run or failed to load
+	 * @since 4.4.0
+	 */
+	runScripts(scripts, index) {
+		const nonce = Prado.Element.getPageNonce();
+		for (let i = index; i < scripts.length; i++) {
+			const oldScript = scripts[i];
+			if (!oldScript.parentNode)
+				continue;
+			const fresh = document.createElement('script');
+			for (const attr of oldScript.attributes) fresh.setAttribute(attr.name, attr.value);
+			if (nonce)
+				fresh.nonce = nonce;
+			fresh.text = oldScript.textContent;
+			if (Prado.Element.isBlockingScript(oldScript))
+			{
+				return new Promise((resolve) => {
+					const next = () => resolve(Prado.Element.runScripts(scripts, i + 1));
+					fresh.addEventListener('load', next, { once: true });
+					fresh.addEventListener('error', next, { once: true });
+					oldScript.parentNode.replaceChild(fresh, oldScript);
+				});
+			}
+			oldScript.parentNode.replaceChild(fresh, oldScript);
+		}
+		return Promise.resolve();
+	},
+
+	/**
+	 * Tells whether a parsed script is a classic external script that the
+	 * parser would load and run before the scripts after it.
+	 * @function ?
+	 * @param {element} script - the <script> element
+	 * @return {boolean} whether the scripts after it wait for it to load
+	 * @since 4.4.0
+	 */
+	isBlockingScript(script) {
+		if (!script.hasAttribute('src') || script.hasAttribute('async') || script.hasAttribute('nomodule'))
+			return false;
+		const type = (script.getAttribute('type') || '').trim();
+		return type === '' || /^(?:text|application)\/(?:x-)?(?:java|ecma)script$/i.test(type);
+	},
+
+	/**
+	 * Morphs an element, or its content, into new markup through idiomorph.
+	 * The existing nodes are patched to match the markup, so they keep their
+	 * event listeners, script references, focus, caret, and scroll position.
+	 * This is the only code that calls idiomorph.
+	 *
+	 * - An element with `data-prado-morph="skip"` and its subtree are left as they are.
+	 * - A new `<script>`, or one whose text changed, runs once with the page CSP
+	 *   nonce, in document order; an unchanged script does not run again.
+	 * - The focused field takes the new value only when it still holds the value
+	 *   of `focus`, the snapshot taken when the callback was sent; otherwise it
+	 *   keeps what the user typed.
+	 * @function ?
+	 * @param {string} element - Element id
+	 * @param {string} content - New markup
+	 * @param {boolean} self - Whether to morph the element itself or only its content
+	 * @param {optional object} focus - {@link Prado.Element.getFocusSnapshot} result
+	 * @returns {boolean} false when idiomorph is not loaded or the element is missing
+	 * @since 4.4.0
+	 */
+	morph(element, content, self, focus) {
+		const el = document.getElementById(element);
+		if (!el || typeof Idiomorph === 'undefined')
+			return false;
+		const active = document.activeElement;
+		const typedSince = !focus || focus.element !== active || active.value !== focus.value;
+		const scripts = new Set();
+		// Each script of added content is inert while inserted, so it runs only
+		// through runScript(); the original type is restored before it runs.
+		const scriptsOf = (node) => node.nodeName === 'SCRIPT' ? [node] :
+			(node.nodeType === Node.ELEMENT_NODE ? node.querySelectorAll('script') : []);
+		Idiomorph.morph(el, content, {
+			morphStyle: self ? 'outerHTML' : 'innerHTML',
+			ignoreActiveValue: typedSince,
+			restoreFocus: true,
+			callbacks: {
+				beforeNodeMorphed(oldNode, newNode) {
+					if (oldNode.nodeType === Node.ELEMENT_NODE && oldNode.getAttribute('data-prado-morph') === 'skip')
+						return false;
+					if (oldNode.nodeName === 'SCRIPT' && oldNode.textContent !== newNode.textContent)
+						scripts.add(oldNode);
+					return true;
+				},
+				beforeNodeAdded(node) {
+					for (const script of scriptsOf(node)) {
+						if (!script.hasAttribute(Prado.Element.MORPH_SCRIPT_TYPE))
+							script.setAttribute(Prado.Element.MORPH_SCRIPT_TYPE, script.getAttribute('type') ?? '');
+						script.setAttribute('type', 'text/x-prado-morph');
+					}
+					return true;
+				},
+				afterNodeAdded(node) {
+					for (const script of scriptsOf(node))
+						scripts.add(script);
+				},
+			},
+		});
+		const ordered = [...scripts].filter((script) => script.isConnected).sort((a, b) =>
+			(a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING) ? -1 : 1);
+		for (const script of ordered) {
+			if (script.hasAttribute(Prado.Element.MORPH_SCRIPT_TYPE)) {
+				const type = script.getAttribute(Prado.Element.MORPH_SCRIPT_TYPE);
+				script.removeAttribute(Prado.Element.MORPH_SCRIPT_TYPE);
+				if (type === '')
+					script.removeAttribute('type');
+				else
+					script.setAttribute('type', type);
+			}
+			Prado.Element.runScript(script);
+		}
+		return true;
+	},
+
+	/**
+	 * Attribute holding the original `type` of a script while
+	 * {@link Prado.Element.morph} keeps it inert.
+	 * @since 4.4.0
+	 */
+	MORPH_SCRIPT_TYPE: 'data-prado-script-type',
+
+	/**
+	 * Runs a `<script>` element by replacing it with a new one that carries its
+	 * attributes, its text, and the page CSP nonce.
+	 * @function ?
+	 * @param {element} script - The script element
+	 * @since 4.4.0
+	 */
+	runScript(script) {
+		const fresh = document.createElement('script');
+		for (const attr of script.attributes)
+			fresh.setAttribute(attr.name, attr.value);
+		const nonce = Prado.Element.getPageNonce();
+		if (nonce)
+			fresh.nonce = nonce;
+		fresh.text = script.textContent;
+		script.parentNode.replaceChild(fresh, script);
+	},
+
+	/**
+	 * Returns the focused form field and its value, or null when no field has
+	 * focus. A callback request records it when sent, for {@link Prado.Element.morph}.
+	 * @function ?
+	 * @returns {?object} `{element, value}`
+	 * @since 4.4.0
+	 */
+	getFocusSnapshot() {
+		const active = document.activeElement;
+		if (!active || !('value' in active) || active === document.body)
+			return null;
+		return { element: active, value: active.value };
+	},
+
+	/**
+	 * Returns the CSP nonce of the page, read from the `nonce` property of the
+	 * first element with a `nonce` attribute. The browser empties the attribute
+	 * once parsed under a CSP header; the property keeps the value.
+	 * A callback response is a new request with its own nonce, while the page
+	 * keeps the policy of its first load. Elements created on the client
+	 * therefore carry the page nonce. The first non-empty nonce is cached, and
+	 * prado.js reads it on load, before any callback markup reaches the page.
+	 * @function ?
+	 * @returns {string} the page nonce, or '' when the page has none
+	 * @since 4.4.0
+	 */
+	getPageNonce() {
+		if (!Prado.Element._pageNonce) {
+			const el = document.querySelector('[nonce]');
+			Prado.Element._pageNonce = el ? (el.nonce || el.getAttribute('nonce') || '') : '';
+		}
+		return Prado.Element._pageNonce;
+	},
+
+	/**
+	 * Appends a javascript block to the document. The block carries the page
+	 * CSP nonce, {@link Prado.Element.getPageNonce}.
 	 * @function ?
 	 * @param {string} boundary - Boundary containing the javascript code
 	 */
-	appendScriptBlock : function(boundary)
-	{
-		var content = this.extractContent(boundary);
+	appendScriptBlock(boundary) {
+		const content = this.extractContent(boundary);
 		if(content == null)
 			return;
 
-		var el   = document.createElement("script");
+		const el   = document.createElement("script");
 		el.type  = "text/javascript";
-		el.id    = 'inline_' + boundary;
+		el.id    = `inline_${boundary}`;
+		const nonce = Prado.Element.getPageNonce();
+		if (nonce)
+			el.nonce = nonce;
 		el.text  = content;
 
 		(document.getElementsByTagName('head')[0] || document.documentElement).appendChild(el);
@@ -589,34 +1012,97 @@ Prado.Element =
 	},
 
 	/**
-	 * Evaluate a javascript snippet from a string.
+	 * Evaluate a javascript snippet from a string as global code.
+	 * The server sends a callback's end scripts and
+	 * `TCallbackClientScript::evaluateScript()` through this method.
+	 *
+	 * | Page | How the snippet runs |
+	 * |---|---|
+	 * | has a nonce, {@link Prado.Element.getPageNonce} | a `<script>` with the page nonce, {@link Prado.Element.evaluateNonceScript} |
+	 * | has a nonce, and the policy blocks that `<script>` | indirect `(0, eval)` |
+	 * | has no nonce | indirect `(0, eval)` |
+	 *
+	 * A nonce-based `script-src` without `'unsafe-eval'` blocks `eval` and allows
+	 * the nonce'd `<script>`. The `<script>` runs as global code like the indirect
+	 * `eval`. This method logs and rethrows an error of the `<script>`, as it does for `eval`.
+	 * The `eval` fallback runs only when the `<script>` did not run, so the
+	 * snippet never runs twice. It succeeds only when the policy allows
+	 * `'unsafe-eval'`; otherwise the browser reports a second CSP violation.
 	 * @function ?
 	 * @param {string} content - String containing the script
 	 * @param {string} boundary - Boundary containing the script
 	 */
-	evaluateScript : function(content, boundary)
-	{
+	evaluateScript(content, boundary) {
 		if(boundary)
 		{
-			var result = this.extractContent(boundary);
+			const result = this.extractContent(boundary);
 			if(result != null)
 				content = result;
 		}
 
 		try
 		{
-			jQuery.globalEval(content);
+			const nonce = Prado.Element.getPageNonce();
+			if(!nonce || !Prado.Element.evaluateNonceScript(content, nonce))
+			{
+				// Evaluate in global scope (jQuery.globalEval equivalent).
+				// The indirect (0, eval) call forces script to run as global code.
+				// eslint-disable-next-line no-eval
+				(0, eval)(content);
+			}
 		}
 		catch(e)
 		{
 			if(typeof(Logger) != "undefined")
-				Logger.error('Error during evaluation of script "'+content+'"');
-			else
-				debugger;
+				Logger.error(`Error during evaluation of script "${content}"`);
 			throw e;
 		}
+	},
+
+	/**
+	 * Runs `content` as global code in a `<script>` element that carries `nonce`.
+	 * The browser runs the inline script during `appendChild` and reports its
+	 * error to the window `error` event; this method throws that error.
+	 * A trailing statement marks the element, `document.currentScript`, as run.
+	 * Without the mark or an error, the policy blocked the script.
+	 * Window `error` listeners and the console also receive the script's error.
+	 * @function {boolean} ?
+	 * @param {string} content - String containing the script
+	 * @param {string} nonce - CSP nonce of the script element
+	 * @returns true when the script ran, false when the policy blocked it
+	 * @since 4.4.0
+	 */
+	evaluateNonceScript(content, nonce) {
+		let error = null;
+		const onError = (event) => {
+			error = event.error || new Error(event.message);
+		};
+
+		const el = document.createElement('script');
+		el.nonce = nonce;
+		el.text = `${content}\n;document.currentScript.dataset.pradoRan = '1';`;
+
+		window.addEventListener('error', onError);
+		try
+		{
+			(document.getElementsByTagName('head')[0] || document.documentElement).appendChild(el);
+		}
+		finally
+		{
+			window.removeEventListener('error', onError);
+			el.remove();
+		}
+
+		if(el.dataset.pradoRan)
+			return true;
+		if(error)
+			throw error;
+		return false;
 	}
 };
+
+// Cache the page nonce while the document holds only page-rendered elements.
+Prado.Element.getPageNonce();
 
 /**
  * Utilities for selections.
@@ -630,8 +1116,7 @@ Prado.Element.Selection =
 	 * @param {element} el - DOM elemet
 	 * @returns true if element is selectable
 	 */
-	isSelectable : function(el)
-	{
+	isSelectable(el) {
 		if(el && el.type)
 		{
 			switch(el.type.toLowerCase())
@@ -654,8 +1139,7 @@ Prado.Element.Selection =
 	 * @param {boolean} value - New value of checked attribute
 	 * @returns New value of checked attribute
 	 */
-	inputValue : function(el, value)
-	{
+	inputValue(el, value) {
 		switch(el.type.toLowerCase())
 		{
 			case 'checkbox':
@@ -672,18 +1156,15 @@ Prado.Element.Selection =
 	 * @param {element[]} elements - Array of selectable DOM elements
 	 * @param {boolean|string} value - Value of options that should be selected or boolean value of selection status
 	 */
-	selectValue : function(elements, value)
-	{
-		jQuery.each(elements, function(idx, el)
-		{
-			jQuery.each(el.options, function(idx, option)
-			{
+	selectValue(elements, value) {
+		for (const el of elements) {
+			for (const option of el.options) {
 				if(typeof(value) == "boolean")
 					option.selected = value;
 				else if(option.value == value)
 					option.selected = true;
-			});
-		})
+			}
+		}
 	},
 
 	/**
@@ -692,13 +1173,8 @@ Prado.Element.Selection =
 	 * @param {element[]} elements - Array of selectable DOM elements
 	 * @param {string[]} value - Array of values to select
 	 */
-	selectValues : function(elements, values)
-	{
-		var selection = this;
-		jQuery.each(values, function(idx, value)
-		{
-			selection.selectValue(elements,value);
-		})
+	selectValues(elements, values) {
+		for (const value of values) this.selectValue(elements, value);
 	},
 
 	/**
@@ -707,21 +1183,19 @@ Prado.Element.Selection =
 	 * @param {element[]} elements - Array of selectable DOM elements
 	 * @param {int} index - Index of option to select
 	 */
-	selectIndex : function(elements, index)
-	{
-		jQuery.each(elements, function(idx, el)
-		{
+	selectIndex(elements, index) {
+		for (const el of elements) {
 			if(el.type.toLowerCase() == 'select-one')
 				el.selectedIndex = index;
 			else
 			{
-				for(var i = 0; i<el.length; i++)
+				for(let i = 0; i<el.length; i++)
 				{
 					if(i == index)
 						el.options[i].selected = true;
 				}
 			}
-		})
+		}
 	},
 
 	/**
@@ -729,18 +1203,11 @@ Prado.Element.Selection =
 	 * @function ?
 	 * @param {element[]} elements - Array of selectable DOM elements
 	 */
-	selectAll : function(elements)
-	{
-		jQuery.each(elements, function(idx, el)
-		{
+	selectAll(elements) {
+		for (const el of elements) {
 			if(el.type.toLowerCase() != 'select-one')
-			{
-				jQuery.each(el.options, function(idx, option)
-				{
-					option.selected = true;
-				})
-			}
-		})
+				for (const option of el.options) option.selected = true;
+		}
 	},
 
 	/**
@@ -748,18 +1215,11 @@ Prado.Element.Selection =
 	 * @function ?
 	 * @param {element[]} elements - Array of selectable DOM elements
 	 */
-	selectInvert : function(elements)
-	{
-		jQuery.each(elements, function(idx, el)
-		{
+	selectInvert(elements) {
+		for (const el of elements) {
 			if(el.type.toLowerCase() != 'select-one')
-			{
-				jQuery.each(el.options, function(idx, option)
-				{
-					option.selected = !option.selected;
-				})
-			}
-		})
+				for (const option of el.options) option.selected = !option.selected;
+		}
 	},
 
 	/**
@@ -768,13 +1228,8 @@ Prado.Element.Selection =
 	 * @param {element[]} elements - Array of selectable DOM elements
 	 * @param {int[]} indices - Array of option indices to select
 	 */
-	selectIndices : function(elements, indices)
-	{
-		var selection = this;
-		jQuery.each(indices, function(idx, index)
-		{
-			selection.selectIndex(elements,index);
-		})
+	selectIndices(elements, indices) {
+		for (const index of indices) this.selectIndex(elements, index);
 	},
 
 	/**
@@ -782,12 +1237,8 @@ Prado.Element.Selection =
 	 * @function ?
 	 * @param {element[]} elements - Array of selectable DOM elements
 	 */
-	selectClear : function(elements)
-	{
-		jQuery.each(elements, function(idx, el)
-		{
-			el.selectedIndex = -1;
-		})
+	selectClear(elements) {
+		for (const el of elements) el.selectedIndex = -1;
 	},
 
 	/**
@@ -797,13 +1248,12 @@ Prado.Element.Selection =
 	 * @param {int} total - Number of list elements to return
 	 * @returns Array of list DOM elements
 	 */
-	getListElements : function(element, total)
-	{
-		var elements = new Array();
-		var el;
-		for(var i = 0; i < total; i++)
+	getListElements(element, total) {
+		const elements = new Array();
+		let el;
+		for(let i = 0; i < total; i++)
 		{
-			el = jQuery("#"+element+"_c"+i).get(0);
+			el = document.getElementById(`${element}_c${i}`);
 			if(el)
 				elements.push(el);
 		}
@@ -819,15 +1269,13 @@ Prado.Element.Selection =
 	 * @param {boolean|String} value - Value that should be checked or boolean value of checked status
 	 *
 	 */
-	checkValue : function(elements, value)
-	{
-		jQuery.each(elements, function(idx, el)
-		{
+	checkValue(elements, value) {
+		for (const el of elements) {
 			if(typeof(value) == "boolean")
 				el.checked = value;
 			else if(el.value == value)
 				el.checked = true;
-		});
+		}
 	},
 
 	/**
@@ -837,13 +1285,8 @@ Prado.Element.Selection =
 	 * @param {string[]} values - Values that should be checked
 	 *
 	 */
-	checkValues : function(elements, values)
-	{
-		var selection = this;
-		jQuery(values).each(function(idx, value)
-		{
-			selection.checkValue(elements, value);
-		})
+	checkValues(elements, values) {
+		for (const value of values) this.checkValue(elements, value);
 	},
 
 	/**
@@ -852,9 +1295,8 @@ Prado.Element.Selection =
 	 * @param {element[]} elements - Array of checkable DOM elements
 	 * @param {int} index - Index of element to set checked
 	 */
-	checkIndex : function(elements, index)
-	{
-		for(var i = 0; i<elements.length; i++)
+	checkIndex(elements, index) {
+		for(let i = 0; i<elements.length; i++)
 		{
 			if(i == index)
 				elements[i].checked = true;
@@ -867,13 +1309,8 @@ Prado.Element.Selection =
 	 * @param {element[]} elements - Array of selectable DOM elements
 	 * @param {int[]} indices - Array of list indices to set checked
 	 */
-	checkIndices : function(elements, indices)
-	{
-		var selection = this;
-		jQuery.each(indices, function(idx, index)
-		{
-			selection.checkIndex(elements, index);
-		})
+	checkIndices(elements, indices) {
+		for (const index of indices) this.checkIndex(elements, index);
 	},
 
 	/**
@@ -881,12 +1318,8 @@ Prado.Element.Selection =
 	 * @function ?
 	 * @param {element[]} elements - Array of checkable DOM elements
 	 */
-	checkClear : function(elements)
-	{
-		jQuery.each(elements, function(idx, el)
-		{
-			el.checked = false;
-		});
+	checkClear(elements) {
+		for (const el of elements) el.checked = false;
 	},
 
 	/**
@@ -894,12 +1327,8 @@ Prado.Element.Selection =
 	 * @function ?
 	 * @param {element[]} elements - Array of checkable DOM elements
 	 */
-	checkAll : function(elements)
-	{
-		jQuery.each(elements, function(idx, el)
-		{
-			el.checked = true;
-		})
+	checkAll(elements) {
+		for (const el of elements) el.checked = true;
 	},
 
 	/**
@@ -907,16 +1336,12 @@ Prado.Element.Selection =
 	 * @function ?
 	 * @param {element[]} elements - Array of selectable DOM elements
 	 */
-	checkInvert : function(elements)
-	{
-		jQuery.each(elements, function(idx, el)
-		{
-			el.checked = !el.checked;
-		})
+	checkInvert(elements) {
+		for (const el of elements) el.checked = !el.checked;
 	}
 };
 
-jQuery.extend(String.prototype, {
+Object.assign(String.prototype, {
 
 	/**
 	 * Add padding to string
@@ -926,10 +1351,10 @@ jQuery.extend(String.prototype, {
 	 * @param {string} chr - Character(s) to pad
 	 * @returns Padded string
 	 */
-	pad : function(side, len, chr) {
+	pad(side, len, chr) {
 		if (!chr) chr = ' ';
-		var s = this;
-		var left = side.toLowerCase()=='left';
+		let s = this;
+		const left = side.toLowerCase()=='left';
 		while (s.length<len) s = left? chr + s : s + chr;
 		return s;
 	},
@@ -941,7 +1366,7 @@ jQuery.extend(String.prototype, {
 	 * @param {string} chr - Character(s) to pad
 	 * @returns Padded string
 	 */
-	padLeft : function(len, chr) {
+	padLeft(len, chr) {
 		return this.pad('left',len,chr);
 	},
 
@@ -952,7 +1377,7 @@ jQuery.extend(String.prototype, {
 	 * @param {string} chr - Character(s) to pad
 	 * @returns Padded string
 	 */
-	padRight : function(len, chr) {
+	padRight(len, chr) {
 		return this.pad('right',len,chr);
 	},
 
@@ -962,7 +1387,7 @@ jQuery.extend(String.prototype, {
 	 * @param {int} len - Minimum string length.
 	 * @returns Padded string
 	 */
-	zerofill : function(len) {
+	zerofill(len) {
 		return this.padLeft(len,'0');
 	},
 
@@ -971,7 +1396,7 @@ jQuery.extend(String.prototype, {
 	 * @function {string} ?
 	 * @returns Trimmed string
 	 */
-	trim : function() {
+	trim() {
 		return this.replace(/^\s+|\s+$/g,'');
 	},
 
@@ -980,7 +1405,7 @@ jQuery.extend(String.prototype, {
 	 * @function {string} ?
 	 * @returns Trimmed string
 	 */
-	trimLeft : function() {
+	trimLeft() {
 		return this.replace(/^\s+/,'');
 	},
 
@@ -989,7 +1414,7 @@ jQuery.extend(String.prototype, {
 	 * @function {string} ?
 	 * @returns Trimmed string
 	 */
-	trimRight : function() {
+	trimRight() {
 		return this.replace(/\s+$/,'');
 	},
 
@@ -1002,15 +1427,13 @@ jQuery.extend(String.prototype, {
 	 * @function {function} ?
 	 * @returns Reference to the corresponding function
 	 */
-	toFunction : function()
-	{
-		var commands = this.split(/\./);
-		var command = window;
-		jQuery(commands).each(function(idx, action)
-		{
+	toFunction() {
+		const commands = this.split(/\./);
+		let command = window;
+		for (const action of commands) {
 			if(command[new String(action)])
 				command=command[new String(action)];
-		});
+		}
 		if(typeof(command) == "function")
 			return command;
 		else
@@ -1018,7 +1441,7 @@ jQuery.extend(String.prototype, {
 			if(typeof Logger != "undefined")
 				Logger.error("Missing function", this);
 
-			throw new Error	("Missing function '"+this+"'");
+			throw new Error	(`Missing function '${this}'`);
 		}
 	},
 
@@ -1027,12 +1450,11 @@ jQuery.extend(String.prototype, {
 	 * @function {int} ?
 	 * @returns Integer, null if string does not represent an integer.
 	 */
-	toInteger : function()
-	{
-		var exp = /^\s*[-\+]?\d+\s*$/;
+	toInteger() {
+		const exp = /^\s*[-+]?\d+\s*$/;
 		if (this.match(exp) == null)
 			return null;
-		var num = parseInt(this, 10);
+		const num = parseInt(this, 10);
 		return (isNaN(num) ? null : num);
 	},
 
@@ -1043,12 +1465,11 @@ jQuery.extend(String.prototype, {
 	 * @param {string} decimalchar - Decimal character, defaults to "."
 	 * @returns Double, null if string does not represent a float value
 	 */
-	toDouble : function(decimalchar)
-	{
+	toDouble(decimalchar) {
 		if(this.length <= 0) return null;
 		decimalchar = decimalchar || ".";
-		var exp = new RegExp("^\\s*([-\\+])?(\\d+)?(\\" + decimalchar + "(\\d+))?\\s*$");
-		var m = this.match(exp);
+		const exp = new RegExp(`^\\s*([-\\+])?(\\d+)?(\\${decimalchar}(\\d+))?\\s*$`);
+		const m = this.match(exp);
 
 		if (m == null)
 			return null;
@@ -1056,8 +1477,8 @@ jQuery.extend(String.prototype, {
 		m[2] = m[2] || "0";
 		m[4] = m[4] || "0";
 
-		var cleanInput = m[1] + (m[2].length>0 ? m[2] : "0") + "." + m[4];
-		var num = parseFloat(cleanInput);
+		const cleanInput = `${m[1] + (m[2].length>0 ? m[2] : "0")}.${m[4]}`;
+		const num = parseFloat(cleanInput);
 		return (isNaN(num) ? null : num);
 	},
 
@@ -1073,25 +1494,22 @@ jQuery.extend(String.prototype, {
 	 * @param {string} decimalchar - Decimal character, defaults to "."
 	 * @returns Double, null if string does not represent a currency value
 	 */
-	toCurrency : function(groupchar, digits, decimalchar)
-	{
+	toCurrency(groupchar, digits, decimalchar) {
 		groupchar = groupchar || ",";
 		decimalchar = decimalchar || ".";
 		digits = typeof(digits) == "undefined" ? 2 : digits;
 
-		var exp = new RegExp("^\\s*([-\\+])?(((\\d+)\\" + groupchar + ")*)(\\d+)"
-			+ ((digits > 0) ? "(\\" + decimalchar + "(\\d{1," + digits + "}))?" : "")
-			+ "\\s*$");
-		var m = this.match(exp);
+		const exp = new RegExp(`^\\s*([-\\+])?(((\\d+)\\${groupchar})*)(\\d+)${(digits > 0) ? `(\\${decimalchar}(\\d{1,${digits}}))?` : ""}\\s*$`);
+		const m = this.match(exp);
 		if (m == null)
 			return null;
 		m[1] = m[1] || "";
 		m[2] = m[2] || "";
-		var intermed = m[2] + m[5] ;
-		var cleanInput = m[1] + intermed.replace(
-				new RegExp("(\\" + groupchar + ")", "g"), "")
-								+ ((digits > 0) ? "." + m[7] : "");
-		var num = parseFloat(cleanInput);
+		const intermed = m[2] + m[5];
+		const cleanInput = m[1] + intermed.replace(
+				new RegExp(`(\\${groupchar})`, "g"), "")
+								+ ((digits > 0) ? `.${m[7]}` : "");
+		const num = parseFloat(cleanInput);
 		return (isNaN(num) ? null : num);
 	},
 	
@@ -1101,12 +1519,12 @@ jQuery.extend(String.prototype, {
 	 * @returns string with 'px' at the end
 	 * @since 4.2.0
 	 */
-	px : function() {
-		return this.endsWith('px') ? this : this + 'px';
+	px() {
+		return this.endsWith('px') ? this : `${this}px`;
 	}
 });
 
-jQuery.extend(Number.prototype,
+Object.assign(Number.prototype,
 {
 	/**
 	 * Appends 'px' at the end of the number.
@@ -1114,12 +1532,12 @@ jQuery.extend(Number.prototype,
 	 * @returns string with number plus 'px' at the end
 	 * @since 4.2.0
 	 */
-	px : function() {
-		return this + 'px';
+	px() {
+		return `${this}px`;
 	}
 });
 
-jQuery.extend(Date.prototype,
+Object.assign(Date.prototype,
 {
 	/**
 	 * SimpleFormat
@@ -1128,10 +1546,9 @@ jQuery.extend(Date.prototype,
 	 * @param {string} data - TODO
 	 * @returns TODO
 	 */
-	SimpleFormat: function(format, data)
-	{
+	SimpleFormat(format, data) {
 		data = data || {};
-		var bits = new Array();
+		const bits = new Array();
 		bits['d'] = this.getDate();
 		bits['dd'] = String(this.getDate()).zerofill(2);
 
@@ -1141,17 +1558,17 @@ jQuery.extend(Date.prototype,
 			bits['MMM'] = data.AbbreviatedMonthNames[this.getMonth()];
 		if(data.MonthNames)
 			bits['MMMM'] = data.MonthNames[this.getMonth()];
-		var yearStr = "" + this.getFullYear();
-		yearStr = (yearStr.length == 2) ? '19' + yearStr: yearStr;
+		let yearStr = `${this.getFullYear()}`;
+		yearStr = (yearStr.length == 2) ? `19${yearStr}`: yearStr;
 		bits['yyyy'] = yearStr;
 		bits['yy'] = bits['yyyy'].toString().substr(2,2);
 
 		// do some funky regexs to replace the format string
 		// with the real values
-		var frm = new String(format);
-		for (var sect in bits)
+		let frm = new String(format);
+		for (const sect in bits)
 		{
-			var reg = new RegExp("\\b"+sect+"\\b" ,"g");
+			const reg = new RegExp(`\\b${sect}\\b` ,"g");
 			frm = frm.replace(reg, bits[sect]);
 		}
 		return frm;
@@ -1162,16 +1579,15 @@ jQuery.extend(Date.prototype,
 	 * @function {string} ?
 	 * @returns TODO
 	 */
-	toISODate : function()
-	{
-		var y = this.getFullYear();
-		var m = String(this.getMonth() + 1).zerofill(2);
-		var d = String(this.getDate()).zerofill(2);
+	toISODate() {
+		const y = this.getFullYear();
+		const m = String(this.getMonth() + 1).zerofill(2);
+		const d = String(this.getDate()).zerofill(2);
 		return String(y) + String(m) + String(d);
 	}
 });
 
-jQuery.extend(Date,
+Object.assign(Date,
 {
 	/**
 	 * SimpleParse
@@ -1180,46 +1596,42 @@ jQuery.extend(Date,
 	 * @param {string} data - TODO
 	 * @returns TODO
 	 */
-	SimpleParse: function(value, format)
-	{
-		var val=String(value);
+	SimpleParse(value, format) {
+		const val=String(value);
 		format=String(format);
 
 		if(val.length <= 0) return null;
 
 		if(format.length <= 0) return new Date(value);
 
-		var isInteger = function (val)
-		{
-			var digits="1234567890";
-			for (var i=0; i < val.length; i++)
+		const isInteger = val => {
+			const digits="1234567890";
+			for (let i=0; i < val.length; i++)
 			{
 				if (digits.indexOf(val.charAt(i))==-1) { return false; }
 			}
 			return true;
 		};
 
-		var getInt = function(str,i,minlength,maxlength)
-		{
-			for (var x=maxlength; x>=minlength; x--)
+		const getInt = (str, i, minlength, maxlength) => {
+			for (let x=maxlength; x>=minlength; x--)
 			{
-				var token=str.substring(i,i+x);
+				const token=str.substring(i,i+x);
 				if (token.length < minlength) { return null; }
 				if (isInteger(token)) { return token; }
 			}
 			return null;
 		};
 
-		var i_val=0;
-		var i_format=0;
-		var c="";
-		var token="";
-		var token2="";
-		var x,y;
-		var now=new Date();
-		var year=now.getFullYear();
-		var month=now.getMonth()+1;
-		var date=1;
+		let i_val=0;
+		let i_format=0;
+		let c="";
+		let token="";
+		let x, y;
+		const now=new Date();
+		let year=now.getFullYear();
+		let month=now.getMonth()+1;
+		let date=1;
 
 		while (i_format < format.length)
 		{
@@ -1284,7 +1696,7 @@ jQuery.extend(Date,
 			if (date > 30) { return null; }
 		}
 
-		var newdate=new Date(year,month-1,date, 0, 0, 0);
+		const newdate = new Date(year,month-1,date, 0, 0, 0);
 		return newdate;
 	}
 });

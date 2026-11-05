@@ -17,4 +17,4 @@ TWizardSideBarListItemTemplate is the default template for each sidebar item in 
 ## See Also
 
 - [TWizard](./TWizard.md)
-- [ITemplate](./ITemplate.md)
+- [ITemplate](../ITemplate.md)

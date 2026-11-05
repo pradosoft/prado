@@ -31,6 +31,10 @@ use Prado\Web\THttpUtility;
  *   <com:TMetaTag Name="keywords" Content="Prado" />
  * </com:THead>
  * ```
+ * The {@see getLinkTags LinkTags} property holds the {@see TLinkTag} `<link>`
+ * elements, such as canonical, alternate, preload, and icon links; a TLinkTag in
+ * the template is added to it. They render after the meta tags and before the
+ * stylesheets and head scripts.
  *
  * Note, {@see \Prado\Web\UI\TPage} has a property {@see \Prado\Web\UI\TPage::getHead Head} that refers to
  * the THead control currently on the page. A page can have at most one THead
@@ -60,7 +64,8 @@ class THead extends \Prado\Web\UI\TControl
 	/**
 	 * Processes an object that is created during parsing template.
 	 * This method adds TMetaTag components into the {@see getMetaTags MetaTags}
-	 * collection of the head control.
+	 * collection, and TLinkTag components into the {@see getLinkTags LinkTags}
+	 * collection, of the head control.
 	 * @param \Prado\TComponent|string $object text string or component parsed and instantiated in template
 	 * @see createdOnTemplate
 	 */
@@ -68,6 +73,8 @@ class THead extends \Prado\Web\UI\TControl
 	{
 		if ($object instanceof TMetaTag) {
 			$this->getMetaTags()->add($object);
+		} elseif ($object instanceof TLinkTag) {
+			$this->getLinkTags()->add($object);
 		} else {
 			parent::addParsedObject($object);
 		}
@@ -137,6 +144,19 @@ class THead extends \Prado\Web\UI\TControl
 	}
 
 	/**
+	 * @return TLinkTagCollection link tag collection
+	 * @since 4.4.0
+	 */
+	public function getLinkTags()
+	{
+		if (($linkTags = $this->getViewState('LinkTags', null)) === null) {
+			$linkTags = new TLinkTagCollection();
+			$this->setViewState('LinkTags', $linkTags, null);
+		}
+		return $linkTags;
+	}
+
+	/**
 	 * Renders the head control.
 	 * @param \Prado\Web\UI\THtmlWriter $writer the writer for rendering purpose.
 	 */
@@ -157,6 +177,10 @@ class THead extends \Prado\Web\UI\TControl
 				$metaTag->render($writer);
 				$writer->writeLine();
 			}
+		}
+		foreach ($this->getLinkTags() as $linkTag) {
+			$linkTag->render($writer);
+			$writer->writeLine();
 		}
 		$cs = $page->getClientScript();
 		$cs->renderStyleSheetFiles($writer);

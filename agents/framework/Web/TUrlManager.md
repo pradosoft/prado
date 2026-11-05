@@ -47,6 +47,26 @@ TUrlManager is the base class for managing URLs that can be recognized by PRADO 
 - Supports [THttpRequest](./THttpRequest.md)'s `UrlParamSeparator` for PATH format parameter separation
 
 ## Configuration
+
+**application.xml:**
+```xml
+<modules>
+  <module id="url" class="Prado\Web\TUrlManager" UrlFormat="Get" />
+</modules>
+```
+
+**PHP equivalent:**
+```php
+return [
+    'modules' => [
+        'url' => [
+            'class' => 'Prado\Web\TUrlManager',
+            'properties' => ['UrlFormat' => 'Get'],
+        ],
+    ],
+];
+```
+
 ### URL Format Settings
 - `[THttpRequestUrlFormat](./THttpRequestUrlFormat.md)::Get`: Standard query string URL format
 - `[THttpRequestUrlFormat](./THttpRequestUrlFormat.md)::Path`: Path-based URL format (e.g., /controller/action/param1,value1)

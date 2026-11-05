@@ -1,7 +1,7 @@
 # I18N/core/TCache_Lite
 
 ### Directories
-[framework](./INDEX.md) / [I18N](./I18N/INDEX.md) / [core](./I18N/core/INDEX.md) / **`TCache_Lite`**
+[framework](../../INDEX.md) / [I18N](../INDEX.md) / [core](INDEX.md) / **`TCache_Lite`**
 
 **Location:** `framework/I18N/core/TCache_Lite.php`
 **Namespace:** `Prado\I18N\core`

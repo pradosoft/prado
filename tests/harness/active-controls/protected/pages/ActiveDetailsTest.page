@@ -1,0 +1,12 @@
+<com:TContent ID="Content">
+	<h1>Active Details Test Case</h1>
+
+	<com:TActiveDetails ID="details1" Summary="Click to expand" OnOpen="details_opened" OnClose="details_closed">
+		<p>Hidden details content.</p>
+	</com:TActiveDetails>
+
+	<p>Status: <com:TActiveLabel ID="label1" Text="waiting" /></p>
+
+	<com:TActiveButton ID="button1" Text="Server Open" OnClick="open_details" />
+	<com:TActiveButton ID="button2" Text="Server Close" OnClick="close_details" />
+</com:TContent>

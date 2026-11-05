@@ -6,24 +6,14 @@
       <exclude>./tests/unit/PHPStan</exclude>
       <exclude>./tests/unit/Data/DbSpecific</exclude>
     </testsuite>
-    <testsuite name="phpstan">
-      <directory suffix="Test.php">./tests/unit/PHPStan</directory>
+    <testsuite name="db-sqlite">
+      <directory suffix="Test.php">./tests/unit/Data/DbSpecific/Sqlite</directory>
     </testsuite>
-    <testsuite name="functional">
-      <directory suffix="TestCase.php">./tests/playwright</directory>
-    </testsuite>
-    <testsuite name="selenium">
-      <directory suffix="TestCase.php">./tests/FunctionalTests</directory>
-    </testsuite>
-    <!-- Driver-specific integration test suites — used by dedicated CI jobs only. -->
     <testsuite name="db-mysql">
       <directory suffix="Test.php">./tests/unit/Data/DbSpecific/Mysql</directory>
     </testsuite>
     <testsuite name="db-pgsql">
       <directory suffix="Test.php">./tests/unit/Data/DbSpecific/Pgsql</directory>
-    </testsuite>
-    <testsuite name="db-sqlite">
-      <directory suffix="Test.php">./tests/unit/Data/DbSpecific/Sqlite</directory>
     </testsuite>
     <testsuite name="db-firebird">
       <directory suffix="Test.php">./tests/unit/Data/DbSpecific/Firebird</directory>
@@ -37,19 +27,36 @@
     <testsuite name="db-ibm">
       <directory suffix="Test.php">./tests/unit/Data/DbSpecific/Ibm</directory>
     </testsuite>
+    <testsuite name="phpstan">
+      <directory suffix="Test.php">./tests/unit/PHPStan</directory>
+    </testsuite>
   </testsuites>
   <logging>
     <testdoxHtml outputFile="./build/tests/index.html"/>
   </logging>
+  <!-- Coverage source. Inert until a run asks for coverage on the command line,
+       as `composer coverage` does. Narrow a run with the coverage-filter option. -->
+  <source>
+    <include>
+      <directory suffix=".php">./framework</directory>
+    </include>
+    <exclude>
+      <directory suffix=".php">./framework/PHPStan</directory>
+    </exclude>
+  </source>
   <extensions>
-    <bootstrap class="Prado\Tests\PradoTestListener"/>
+   <!-- <bootstrap class="Prado\Tests\PradoTestListener"/> -->
+    <!-- Kills a forked test child that returns into PHPUnit instead of exiting. -->
+    <bootstrap class="Prado\Test\Unit\Harness\TForkGuardExtension"/>
   </extensions>
   <php>
     <!-- selenium test cases can take up to 20 mins -->
     <ini name="max_execution_time" value="1200"/>
     <ini name="memory_limit" value="1G"/>
+    <!-- Report every error and deprecation; CI's production php.ini excludes E_DEPRECATED. -->
+    <ini name="error_reporting" value="-1"/>
     <const name="PRADO_TEST_RUN" value="true"/>
-    <!-- indicate Selenium test suite to start/stop Driver -->
-    <const name="SELENIUM_TESTSUITE_NAME" value="selenium"/>
+    <!-- indicate Selenium test suite to start/stop Driver - - >
+    <const name="SELENIUM_TESTSUITE_NAME" value="selenium"/> -->
   </php>
 </phpunit>

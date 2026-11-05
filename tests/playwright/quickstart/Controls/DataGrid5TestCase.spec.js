@@ -21,7 +21,7 @@ test('QuickstartDataGrid5TestCase', async ({ page }) => {
   await h.assertSourceNotContains('ITN006');
 
   // verify paging
-  await h.byLinkText('2').click();
+  await h.byLinkText('Page 2').click();
   await h.assertSourceContains('ITN006');
   await h.assertSourceContains('ITN007');
   await h.assertSourceContains('ITN008');
@@ -30,14 +30,14 @@ test('QuickstartDataGrid5TestCase', async ({ page }) => {
   await h.assertSourceNotContains('ITN011');
   await h.assertSourceNotContains('ITN005');
 
-  await h.byLinkText('4').click();
+  await h.byLinkText('Page 4').click();
   await h.assertSourceContains('ITN016');
   await h.assertSourceContains('ITN017');
   await h.assertSourceContains('ITN018');
   await h.assertSourceContains('ITN019');
   await h.assertSourceNotContains('ITN015');
 
-  await h.byLinkText('1').click();
+  await h.byLinkText('Page 1').click();
   await h.assertSourceContains('ITN001');
   await h.assertSourceContains('ITN002');
   await h.assertSourceContains('ITN003');
@@ -50,7 +50,7 @@ test('QuickstartDataGrid5TestCase', async ({ page }) => {
   await h.pause(50);
   await h.byId('ctl0_body_DataGrid_ctl8_ctl3').click();
   await h.pause(50);
-  await h.byLinkText('1').first().click();  // both top and bottom pagers have "1"
+  await h.byLinkText('Page 1').first().click();  // both top and bottom pagers have "Page 1"
   await h.pause(50);
   // hide top pager
   await h.byXPath("//input[@name='ctl0$body$ctl1$c0' and @value='Top']").click();
@@ -96,7 +96,7 @@ test('QuickstartDataGrid5TestCase', async ({ page }) => {
   await h.assertSourceNotContains('ITN010');
   await h.assertSourceContains('ITN011');
   await h.assertSourceNotContains('ITN016');
-  await h.byLinkText('4').click();
+  await h.byLinkText('Page 4').click();
   await h.assertSourceNotContains('ITN015');
   await h.assertSourceContains('ITN016');
   await h.byLinkText('Prev Page').click();
@@ -113,7 +113,7 @@ test('QuickstartDataGrid5TestCase', async ({ page }) => {
   await h.assertSourceContains('ITN001');
   await h.assertSourceContains('ITN002');
   await h.assertSourceNotContains('ITN003');
-  await h.byLinkText('10').click();
+  await h.byLinkText('Page 10').click();
   await h.assertSourceContains('ITN019');
   await h.assertSourceNotContains('ITN018');
 });

@@ -8,7 +8,7 @@
 **Namespace:** `Prado\Web\UI\ActiveControls`
 
 ## Overview
-Active counterpart to TTableCell. Clicking the cell triggers a callback and raises `OnCellSelected` event. Also bubbles the event to parent [TActiveTableRow](./TActiveTableRow.md). Contents can be updated during callback response.
+Active counterpart to TTableCell. Clicking the cell triggers a callback and raises `OnCellSelected` event. Also bubbles the event to parent [TActiveTableRow](./TActiveTableRow.md), which raises `OnRowSelected` once and sends no second callback for the click. Contents can be updated during callback response.
 
 ## Key Properties/Methods
 

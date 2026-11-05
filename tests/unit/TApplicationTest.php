@@ -1,20 +1,16 @@
 <?php
 
+namespace Prado\Test\Unit;
+
 use Prado\Collections\TCollectionItemChangeParameter;
 use Prado\Exceptions\TConfigurationException;
+use Prado\IO\Async\TAsync;
+use Prado\IO\Async\TFiberContext;
 use Prado\Prado;
 use Prado\TApplication;
 use Prado\TApplicationMode;
 use Prado\TModule;
-
-/**
- * A minimal concrete module for use in module-management tests.
- * TModule is abstract, so we need a concrete subclass.
- */
-class AppTestModule extends TModule
-{
-	public function init($config) {}
-}
+use Prado\Test\Unit\Harness\TTestApplication;
 
 /**
  * Exposes TApplication's protected methods as public wrappers for unit testing
@@ -44,7 +40,7 @@ class TApplicationTestAccessor extends TApplication
  */
 class AppCustomMode extends TApplication
 {
-	public const DEFAULT_APPLICATION_MODE = TApplicationMode::Normal;
+	public const DEFAULT_APPLICATION_MODE = TApplicationMode::Performance;
 }
 
 /**
@@ -100,7 +96,7 @@ class AppTestUser implements \Prado\Security\IUser
  *
  * @package System
  */
-class TApplicationTest extends PHPUnit\Framework\TestCase
+class TApplicationTest extends \PHPUnit\Framework\TestCase
 {
 	private TApplication $_app;
 
@@ -220,11 +216,11 @@ class TApplicationTest extends PHPUnit\Framework\TestCase
 		$this->assertNotEmpty($uid);
 	}
 
-	public function testGetUniqueId_isMd5HashFormat(): void
+	public function testGetUniqueId_IsSha1HashFormat(): void
 	{
 		$uid = $this->_app->getUniqueID();
-		// md5 produces a 32-character hex string
-		$this->assertMatchesRegularExpression('/^[0-9a-f]{32}$/', $uid);
+		// sha1 produces a 40-character hex string
+		$this->assertMatchesRegularExpression('/^[0-9a-f]{40}$/', $uid);
 	}
 
 	public function testGetUniqueId_changesWhenRuntimePathChanges(): void
@@ -242,10 +238,18 @@ class TApplicationTest extends PHPUnit\Framework\TestCase
 	// Mode
 	// -----------------------------------------------------------------------
 
-	public function testGetMode_defaultIsDebug(): void
+	public function testGetMode_defaultIsNormal(): void
 	{
-		// The bootstrap app is created without an explicit mode; default is Debug.
-		$this->assertSame(TApplicationMode::Debug, $this->_app->getMode());
+		// An application created without an explicit mode is in Normal mode. The harness
+		// application defaults to Debug, so this one restores the TApplication default.
+		$app = new class () extends TTestApplication {
+			public const DEFAULT_APPLICATION_MODE = TApplication::DEFAULT_APPLICATION_MODE;
+		};
+		try {
+			$this->assertSame(TApplicationMode::Normal, $app->getMode());
+		} finally {
+			$app->restoreApplication();
+		}
 	}
 
 	public function testSetMode_debug(): void
@@ -311,7 +315,7 @@ class TApplicationTest extends PHPUnit\Framework\TestCase
 
 		$this->_app->setRuntimePath($originalPath . '/variant');
 		$this->assertNotSame($originalUid, $this->_app->getUniqueID());
-		$this->assertSame(md5($originalPath . '/variant'), $this->_app->getUniqueID());
+		$this->assertSame(sha1($originalPath . '/variant'), $this->_app->getUniqueID());
 	}
 
 	public function testSetRuntimePath_updatesCacheFileWhenOneIsSet(): void
@@ -341,6 +345,11 @@ class TApplicationTest extends PHPUnit\Framework\TestCase
 	{
 		$this->_app->setConfigurationType(TApplication::CONFIG_TYPE_PHP);
 		$this->assertSame(TApplication::CONFIG_TYPE_PHP, $this->_app->getConfigurationType());
+		// The snapshot/restore in tearDown should cover this, but other tests
+		// (notably TCronModuleTest::testRunTask, whose TUserManager::init() reads
+		// the global configurationType to pick a loader) misbehave if the type
+		// leaks to PHP. Restore explicitly to be belt-and-suspenders safe.
+		$this->_app->setConfigurationType(TApplication::CONFIG_TYPE_XML);
 	}
 
 	public function testGetConfigurationFileExt_xmlType(): void
@@ -1089,6 +1098,51 @@ class TApplicationTest extends PHPUnit\Framework\TestCase
 		$this->assertSame($user, $receivedUser);
 	}
 
+	public function testGetUser_returnsTheFiberUserFirst(): void
+	{
+		$appUser = new AppTestUser();
+		$this->_app->setUser($appUser);
+		$fiberUser = new AppTestUser();
+		TFiberContext::set(TApplication::USER_CONTEXT_KEY, $fiberUser);
+		try {
+			$this->assertSame($fiberUser, $this->_app->getUser());
+		} finally {
+			TFiberContext::remove(TApplication::USER_CONTEXT_KEY);
+		}
+		$this->assertSame($appUser, $this->_app->getUser());
+
+		$seen = TAsync::run(function () use ($fiberUser) {
+			TFiberContext::set(TApplication::USER_CONTEXT_KEY, $fiberUser);
+			return $this->_app->getUser();
+		})->await();
+		$this->assertSame($fiberUser, $seen);
+		$this->assertSame($appUser, $this->_app->getUser(), 'A user set in a worker fiber stays in that fiber');
+	}
+
+	public function testSetUser_replacesTheFiberUser(): void
+	{
+		$appUser = new AppTestUser();
+		$this->_app->setUser($appUser);
+		$fiberUser = new AppTestUser();
+		$other = new AppTestUser();
+		$received = null;
+		$handler = function ($sender, $param) use (&$received) {
+			$received = $param;
+		};
+		$this->_app->attachEventHandler('onSetUser', $handler);
+		TFiberContext::set(TApplication::USER_CONTEXT_KEY, $fiberUser);
+		try {
+			$this->_app->setUser($other);
+			$this->assertSame($other, TFiberContext::get(TApplication::USER_CONTEXT_KEY));
+			$this->assertSame($other, $this->_app->getUser());
+		} finally {
+			TFiberContext::remove(TApplication::USER_CONTEXT_KEY);
+			$this->_app->detachEventHandler('onSetUser', $handler);
+		}
+		$this->assertSame($other, $received);
+		$this->assertSame($appUser, $this->_app->getUser(), 'The application user is unchanged');
+	}
+
 	public function testOnSetUser_raisesEventDirectly(): void
 	{
 		$received = null;
@@ -1823,7 +1877,7 @@ class TApplicationTest extends PHPUnit\Framework\TestCase
 
 	public function testConstant_defaultApplicationMode(): void
 	{
-		$this->assertSame(TApplicationMode::Debug, TApplication::DEFAULT_APPLICATION_MODE);
+		$this->assertSame(TApplicationMode::Normal, TApplication::DEFAULT_APPLICATION_MODE);
 	}
 
 	public function testConstant_defaultPageServiceClass(): void
@@ -1838,9 +1892,9 @@ class TApplicationTest extends PHPUnit\Framework\TestCase
 	public function testSubclass_defaultApplicationMode_overridable(): void
 	{
 		// The subclass constant is independently defined.
-		$this->assertSame(TApplicationMode::Normal, AppCustomMode::DEFAULT_APPLICATION_MODE);
+		$this->assertSame(TApplicationMode::Performance, AppCustomMode::DEFAULT_APPLICATION_MODE);
 		// The base class constant is unchanged.
-		$this->assertSame(TApplicationMode::Debug, TApplication::DEFAULT_APPLICATION_MODE);
+		$this->assertSame(TApplicationMode::Normal, TApplication::DEFAULT_APPLICATION_MODE);
 	}
 
 	public function testSubclass_defaultPageServiceClass_overridable(): void
@@ -1897,10 +1951,7 @@ class TApplicationTest extends PHPUnit\Framework\TestCase
 		$ref = new \ReflectionClass(AppCustomSteps::class);
 		$app = $ref->newInstanceWithoutConstructor();
 
-		$rm = new \ReflectionMethod(AppCustomSteps::class, 'getSteps');
-		$rm->setAccessible(true);
-
-		$this->assertSame(AppCustomSteps::CUSTOM_STEPS, $rm->invoke($app));
+		$this->assertSame(AppCustomSteps::CUSTOM_STEPS, PradoUnit::invoke($app, 'getSteps'));
 	}
 
 	public function testGetSteps_baseClassStepsUnchangedBySubclass(): void
@@ -1925,20 +1976,15 @@ class TApplicationTest extends PHPUnit\Framework\TestCase
 	public function testSetStep_viaReflection_roundTrip(): void
 	{
 		$acc = $this->newAccessor();
-		$rm  = new \ReflectionMethod(TApplication::class, 'setStep');
-		$rm->setAccessible(true);
-
-		$rm->invoke($acc, 7);
+		PradoUnit::invoke($acc, 'setStep', 7);
 		$this->assertSame(7, $acc->pubGetStep());
 	}
 
 	public function testSetStep_viaReflection_zero(): void
 	{
 		$acc = $this->newAccessor();
-		$rm  = new \ReflectionMethod(TApplication::class, 'setStep');
-		$rm->setAccessible(true);
-		$rm->invoke($acc, 3);
-		$rm->invoke($acc, 0);
+		PradoUnit::invoke($acc, 'setStep', 3);
+		PradoUnit::invoke($acc, 'setStep', 0);
 
 		$this->assertSame(0, $acc->pubGetStep());
 	}
@@ -2028,11 +2074,11 @@ class TApplicationTest extends PHPUnit\Framework\TestCase
 	// generateAppUniqueId()
 	// -----------------------------------------------------------------------
 
-	public function testGenerateAppUniqueId_returnsMd5Format(): void
+	public function testGenerateAppUniqueId_returnsSha1Format(): void
 	{
 		$acc = $this->newAccessor();
 		$id  = $acc->pubGenerateAppUniqueId('/some/path');
-		$this->assertMatchesRegularExpression('/^[0-9a-f]{32}$/', $id);
+		$this->assertMatchesRegularExpression('/^[0-9a-f]{40}$/', $id);
 	}
 
 	public function testGenerateAppUniqueId_samTokenSameResult(): void
@@ -2053,11 +2099,11 @@ class TApplicationTest extends PHPUnit\Framework\TestCase
 		);
 	}
 
-	public function testGenerateAppUniqueId_matchesMd5OfToken(): void
+	public function testGenerateAppUniqueId_matchesSha1OfToken(): void
 	{
 		$acc   = $this->newAccessor();
 		$token = '/runtime/abc';
-		$this->assertSame(md5($token), $acc->pubGenerateAppUniqueId($token));
+		$this->assertSame(sha1($token), $acc->pubGenerateAppUniqueId($token));
 	}
 
 	// -----------------------------------------------------------------------
@@ -2334,9 +2380,12 @@ class TApplicationTest extends PHPUnit\Framework\TestCase
 
 	public function testConstructor_setsApplicationAlias(): void
 	{
-		// The constructor calls Prado::setPathOfAlias('Application', $this->getBasePath()).
+		// The constructor calls Prado::setPathOfAlias('Application', $this->getBasePath()),
+		// and setPathOfAlias() internally runs realpath() — so on platforms where the
+		// configured basePath contains a symlink (macOS /var → /private/var) the stored
+		// alias differs from the raw getBasePath(). Compare canonicalized paths.
 		$this->assertSame(
-			$this->_app->getBasePath(),
+			realpath($this->_app->getBasePath()),
 			\Prado\Prado::getPathOfAlias('Application')
 		);
 	}
@@ -2366,7 +2415,7 @@ class AppConfigurationSpy extends \Prado\TApplicationConfiguration
 		self::$instanceCount++;
 	}
 
-	public function loadFromFile($fname): void {}
+	public function loadFromFile($fname, ?string $type = null): void {}
 
 	public function loadFromXml($dom, $configPath): void {}
 
@@ -2457,7 +2506,7 @@ class InitConfigClassTestApp extends ConfigClassTestApp
  *
  * @package System
  */
-class TApplicationConfigurationClassTest extends PHPUnit\Framework\TestCase
+class TApplicationConfigurationClassTest extends \PHPUnit\Framework\TestCase
 {
 	// -----------------------------------------------------------------------
 	// Shared helpers
@@ -2589,12 +2638,10 @@ class TApplicationConfigurationClassTest extends PHPUnit\Framework\TestCase
 		);
 
 		// Save and patch Prado's static alias table so the external path resolves.
-		$aliasRp = new \ReflectionProperty(\Prado\Prado::class, '_aliases');
-		$aliasRp->setAccessible(true);
-		$savedAliases = $aliasRp->getValue();
+		$savedAliases = PradoUnit::getProp(\Prado\Prado::class, '_aliases');
 		$patchedAliases = $savedAliases;
 		$patchedAliases['PradoExtTest'] = $tmpDir;
-		$aliasRp->setValue(null, $patchedAliases);
+		PradoUnit::setProp(\Prado\Prado::class, '_aliases', $patchedAliases);
 
 		try {
 			$app = $this->newApp(ConfigClassTestApp::class);
@@ -2613,6 +2660,8 @@ class TApplicationConfigurationClassTest extends PHPUnit\Framework\TestCase
 			$outerConfig->method('getIsEmpty')->willReturn(false);
 			$outerConfig->method('getAliases')->willReturn([]);
 			$outerConfig->method('getUsings')->willReturn([]);
+			$outerConfig->method('getClassMap')->willReturn([]);
+			$outerConfig->method('getErrorMessages')->willReturn([]);
 			$outerConfig->method('getProperties')->willReturn([]);
 			$outerConfig->method('getServices')->willReturn([]);
 			$outerConfig->method('getParameters')->willReturn([]);
@@ -2626,7 +2675,7 @@ class TApplicationConfigurationClassTest extends PHPUnit\Framework\TestCase
 			$this->assertSame(1, AppConfigurationSpy::$instanceCount,
 				'applyConfiguration() must instantiate the class returned by getApplicationConfigurationClass() for external include files');
 		} finally {
-			$aliasRp->setValue(null, $savedAliases);
+			PradoUnit::setProp(\Prado\Prado::class, '_aliases', $savedAliases);
 			@unlink($tmpFile);
 		}
 	}
@@ -2647,6 +2696,8 @@ class TApplicationConfigurationClassTest extends PHPUnit\Framework\TestCase
 		$outerConfig->method('getIsEmpty')->willReturn(false);
 		$outerConfig->method('getAliases')->willReturn([]);
 		$outerConfig->method('getUsings')->willReturn([]);
+		$outerConfig->method('getClassMap')->willReturn([]);
+		$outerConfig->method('getErrorMessages')->willReturn([]);
 		$outerConfig->method('getProperties')->willReturn([]);
 		$outerConfig->method('getServices')->willReturn([]);
 		$outerConfig->method('getParameters')->willReturn([]);
@@ -2664,12 +2715,14 @@ class TApplicationConfigurationClassTest extends PHPUnit\Framework\TestCase
 	// -----------------------------------------------------------------------
 
 	/** Returns a minimal no-op config mock with the given properties map. */
-	private function minimalConfigMock(array $properties = [], array $externalConfigs = []): \Prado\TApplicationConfiguration
+	private function minimalConfigMock(array $properties = [], array $externalConfigs = [], array $classMapFiles = [], array $errorMessages = []): \Prado\TApplicationConfiguration
 	{
 		$config = $this->createMock(\Prado\TApplicationConfiguration::class);
 		$config->method('getIsEmpty')->willReturn(false);
 		$config->method('getAliases')->willReturn([]);
 		$config->method('getUsings')->willReturn([]);
+		$config->method('getClassMap')->willReturn($classMapFiles);
+		$config->method('getErrorMessages')->willReturn($errorMessages);
 		$config->method('getProperties')->willReturn($properties);
 		$config->method('getServices')->willReturn([]);
 		$config->method('getParameters')->willReturn([]);

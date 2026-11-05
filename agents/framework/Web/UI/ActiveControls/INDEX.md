@@ -1,7 +1,7 @@
 # Web/UI/ActiveControls/INDEX.md
 
 ### Directories
-[framework](./INDEX.md) / [Web](./Web/INDEX.md) / [UI](./Web/UI/INDEX.md) / **`ActiveControls/INDEX.md`**
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / **`ActiveControls`**
 
 ## Purpose
 
@@ -10,15 +10,17 @@ AJAX-enabled controls for the Prado framework. ActiveControls trigger server-sid
 ## How Callbacks Work
 
 1. User interacts with an ActiveControl (click, change, timer, etc.).
-2. JavaScript (`ajax3.js`) sends an `XMLHttpRequest` to the server with `X-PRADO-CALLBACK` headers identifying the target control and parameters.
+2. JavaScript (`ajax3.js`) sends an `XMLHttpRequest` to the server with `X-PRADO-CALLBACK` headers identifying the target control and parameters. `dispatch()` validates synchronously, then queues the request; the page inputs are serialized when the request leaves the queue. Send gates (`Prado.CallbackRequestManager.addSendGate(fn)`, @since 4.4.0) run first: a gate returns null, or a Promise that holds the request and those queued after it. Without a holding gate the send stays synchronous. [TProofOfWork](../WebControls/TProofOfWork.md) uses a gate to hold validating callbacks until its solution is written.
 3. [`TActivePageAdapter`](TActivePageAdapter.md) intercepts the request: runs the normal page lifecycle but routes to `raiseCallbackEvent()` instead of `raisePostBackEvent()`.
 4. The control's `raiseCallbackEvent()` handler executes server logic and optionally calls [`TCallbackClientScript`](TCallbackClientScript.md) methods to push DOM updates.
 5. Response is sent via `X-PRADO-*` headers (not HTML body):
    - `X-PRADO-ACTIONS` — JSON array of client-side DOM commands
    - `X-PRADO-DATA` — arbitrary return data
    - `X-PRADO-PAGESTATE` — updated page state token
+   - `X-PRADO-CSRF-TOKEN` — fresh CSRF token for the `PRADO_CSRF_TOKEN` hidden field, while `TPage.EnableCsrfValidation` is on (4.4.0)
    - `X-PRADO-SCRIPTLIST` / `X-PRADO-STYLESHEET` — dynamic asset loading
-6. JavaScript processes the response and applies updates without a page reload.
+   - `X-PRADO-VIEWTRANSITION` — the actions run inside a view transition (4.4.0)
+6. JavaScript processes the response and applies updates without a page reload, inside a view transition when the response asks for one ([CallbackViewTransition](CallbackViewTransition.md)).
 
 ## Core Classes
 
@@ -26,16 +28,19 @@ AJAX-enabled controls for the Prado framework. ActiveControls trigger server-sid
 
 - **[`ICallbackEventHandler`](ICallbackEventHandler.md)** — Extends `IActiveControl`. Interface: `raiseCallbackEvent(TCallbackEventParameter $param)`. Implement this on any control that should respond to AJAX callbacks.
 
-- **[`TActiveControlAdapter`](TActiveControlAdapter.md)** — Wraps any control to add active/callback support. Instantiates `TBaseActiveControl` (or `TBaseActiveCallbackControl` for `ICallbackEventHandler` controls). Publishes the `ajax` script package. Tracks viewstate changes via `TCallbackPageStateTracker` to send only changed properties.
+- **[`TActiveControlAdapter`](TActiveControlAdapter.md)** — Wraps any control to add active/callback support. Instantiates `TBaseActiveControl` (or `TBaseActiveCallbackControl` for `ICallbackEventHandler` controls). Publishes the `ajax` script package, and the `morph` package for a control whose updates morph. Tracks viewstate changes via `TCallbackPageStateTracker` to send only changed properties.
 
-- **[`TBaseActiveControl`](TBaseActiveControl.md)** — Options holder (`TMap`). `setOption($name, $value)` / `getOption($name)`. `canUpdateClientSide()` returns `true` when: control initialized, not loading post data, is a callback request, `EnableUpdate=true`, and control is visible.
+- **[`TBaseActiveControl`](TBaseActiveControl.md)** — Options holder (`TMap`). `setOption($name, $value)` / `getOption($name)`. `canUpdateClientSide()` returns `true` when: control initialized, not loading post data, is a callback request, `EnableUpdate=true`, and control is visible. `UpdateMode` and `getIsMorphUpdate()` select a replaced or morphed update (4.4.0).
+
+- **[`TActiveUpdateMode`](TActiveUpdateMode.md)** — Enum: `Default` (the page's `CallbackUpdateMode`), `Replace`, `Morph` (4.4.0).
 
 - **[`TBaseActiveCallbackControl`](TBaseActiveCallbackControl.md)** — Extends `TBaseActiveControl`. Adds `TCallbackClientSide` options and `CausesValidation`, `ValidationGroup` properties.
 
 - **[`TActivePageAdapter`](TActivePageAdapter.md)** — `TPage` adapter. Intercepts callback requests. Handles `X-PRADO-*` response headers. Manages deferred control rendering. Traps errors into the callback error handler.
 
 - **[`TCallbackClientScript`](TCallbackClientScript.md)** — Server-side API for client DOM updates. Key methods:
-  - `update($controlID, $html)` — Replace innerHTML
+  - `update($controlID, $html)` — Set inner HTML; the content is parsed as HTML and its scripts run, so user input is encoded first
+  - `setText($controlID, $text)` — Set text content, not parsed as HTML (4.4.0)
   - `replace($controlID, $html)` — Replace element
   - `insertContent($position, $controlID, $html)` — Insert HTML (before/after/top/bottom)
   - `setAttribute($controlID, $attr, $value)` — Set attribute
@@ -59,18 +64,27 @@ AJAX-enabled controls for the Prado framework. ActiveControls trigger server-sid
 | `TActiveRadioButton` | TRadioButton | Callback on selection |
 | `TActiveCheckBoxList` | TCheckBoxList | Callback on any item check change |
 | `TActiveRadioButtonList` | TRadioButtonList | Callback on selection change |
-| `TActiveTextBox` | TTextBox | Callback on text change (with `AutoPostBack`) |
+| `TActiveTextBox` | TTextBox | Callback on text change (with `AutoPostBack`); updates `list` when `SuggestionList` changes |
 | `TActiveDropDownList` | TDropDownList | Callback on selection change |
 | `TActiveListBox` | TListBox | Callback on selection change |
+| [`TActiveSuggestionList`](TActiveSuggestionList.md) | TSuggestionList | Replaces the `<datalist>` options when items change in a callback; raises no callback (@since 4.4.0) |
+| [`TActiveOutput`](TActiveOutput.md) | TOutput | Replaces the `<output>` text and `for` attribute in a callback; the live region announces the result (@since 4.4.0) |
+| [`TActiveSvg`](TActiveSvg.md) | TSvg | Re-renders the `<svg>` once when its content or attributes change in a callback and morphs it, keeping nodes and listeners (@since 4.4.0) |
+| [`TActiveDialog`](TActiveDialog.md) | TDialog | Callback when the dialog opens or closes (`OnOpen`, `OnClose`); `ReturnValue` holds the closing button's value; a server `Open` shows it modally with `Modal` (@since 4.4.0) |
 | `TActivePanel` | TPanel | Container with `refresh()` method for server-side HTML update |
+| [`TLazyPanel`](TLazyPanel.md) | TActivePanel | Renders a placeholder, then loads its `ContentTemplate` by callback on `Trigger` `Load`, `Visible` (IntersectionObserver), or `Manual`; `OnLoadContent` ([`TLazyPanelTrigger`](TLazyPanelTrigger.md)) (@since 4.4.0) |
 | `TActiveDataGrid` | TDataGrid | Data grid with callback paging/sorting/editing |
 | `TActiveDataList` | TDataList | Data list with callback editing |
 | `TActiveRepeater` | TRepeater | Repeater with callback support |
 | `TActiveFileUpload` | TFileUpload | Async upload via hidden iframe; `OnFileUpload` event |
 | `TActiveDatePicker` | TDatePicker | Date picker with `OnDateChanged` callback |
 | `TInPlaceTextBox` | (custom) | Click-to-edit label; `LoadTextOnEdit` option |
+| `TInPlaceDropDownList` | TActiveDropDownList | Click-to-edit label over a hidden select; `OnLoadingItems` event |
+| `TInPlaceListBox` | TActiveListBox | Click-to-edit label over a hidden multi-select; joins selected texts with `SelectionSeparator` |
+| `TInPlaceControlTrait` | (trait) | Shared in-place surface: `AutoHideEditor`, `DisplayEditor`, `EditTriggerControlID`, `EmptyDisplayText`, label ID |
+| `TInPlaceListControlTrait` | (trait) | Shared select-based in-place surface for the drop down list and list box (label sync, rendering, callback options) |
 | `TActiveCustomValidator` | TCustomValidator | Server-side validation via callback |
-| `TTimeTriggeredCallback` | (no UI) | Timer-based callback; `Interval`, `StartTimerOnLoad` |
+| `TTimeTriggeredCallback` | (no UI) | Timer-based callback; `Interval`, `StartTimerOnLoad`, `PauseWhenHidden` (pauses while hidden or offline, 4.4.0) |
 | `TValueTriggeredCallback` | (no UI) | Polls a JS expression; fires callback when value changes |
 | `TEventTriggeredCallback` | (no UI) | Fires callback on arbitrary DOM event |
 
@@ -79,6 +93,8 @@ AJAX-enabled controls for the Prado framework. ActiveControls trigger server-sid
 - **Implement `ICallbackEventHandler`** on any new active control. The `raiseCallbackEvent()` method is the server-side callback handler.
 - **Use `TActiveControlAdapter`** (not subclassing) to add active behaviour to existing controls. The adapter pattern keeps controls decoupled from the callback mechanism.
 - **`canUpdateClientSide()`** — always check this before calling `TCallbackClientScript` methods to avoid updating the DOM during non-callback requests.
+- **`ActiveControl.UpdateMode`** — `Morph` patches a re-rendered control's existing nodes through idiomorph, so they keep their listeners, focus, and caret; `TPage.CallbackUpdateMode` is the default. Render-in-callback controls send their markup through `getActiveControl()->replaceClientContent()`, which passes `getIsMorphUpdate()` to `replaceContent()`. See [TActiveUpdateMode](TActiveUpdateMode.md) (4.4.0).
+- **`ActiveControl.ViewTransition`** — a response that renders the control again applies its client actions inside a view transition; `TPage.CallbackViewTransition` does it for every response, and `TCallbackClientScript::setViewTransition()` for the current one. Reduced motion and browsers without support apply them at once. See [CallbackViewTransition](CallbackViewTransition.md) (4.4.0).
 - **`TCallbackPageStateTracker`** — tracks which viewstate properties changed during a callback. Only changed properties are sent to the client, minimising payload.
 - **Client-side class** — the JavaScript counterpart lives in `framework/Web/Javascripts/source/prado/activecontrols/activecontrols3.js` under `Prado.WebUI.<ClassName>`.
 
@@ -86,5 +102,7 @@ AJAX-enabled controls for the Prado framework. ActiveControls trigger server-sid
 
 - Callbacks run the **full page lifecycle** (init, load, etc.) — ensure event handlers are idempotent.
 - `TActivePageAdapter` suppresses normal HTML rendering; only `X-PRADO-*` headers are sent. Do not `echo` from callback handlers.
-- `TTimeTriggeredCallback` keeps firing while the page is open — always implement server-side guards against runaway callbacks.
+- `TTimeTriggeredCallback` keeps firing while the page is open and visible — always implement server-side guards against runaway callbacks. It pauses while the page is hidden (`PauseWhenHidden`, default true) or offline, and sends one callback at once when the page is visible and online again, so a handler cannot count on one callback per interval.
 - `TActiveFileUpload` uses a hidden iframe (not XHR) for upload; progress tracking is limited.
+- A view transition runs the actions in a later frame. onComplete and the next callback request wait for them; other code that reads the DOM right after the response sees the old page.
+- A Replace update creates new nodes, so listeners on inner elements, focus, and typing are lost; `UpdateMode="Morph"` keeps them. Under Morph, data-bound rows pair by position, since item IDs follow the index.

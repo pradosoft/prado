@@ -11,6 +11,7 @@
 
 namespace Prado\Web\UI\ActiveControls;
 
+use Prado\Web\Javascripts\TJavaScript;
 use Prado\Web\UI\WebControls\TRatingList;
 
 /**
@@ -21,7 +22,7 @@ use Prado\Web\UI\WebControls\TRatingList;
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @author Bradley Booms <bradley[dot]booms[at]gmail[dot]com>
  * @since 3.1
- * @method TActiveControlAdapter getAdapter()
+ * @method TActiveControlAdapter<\Prado\Web\UI\ActiveControls\TBaseActiveCallbackControl> getAdapter()
  */
 class TActiveRatingList extends TRatingList implements IActiveControl, ICallbackEventHandler
 {
@@ -105,15 +106,16 @@ class TActiveRatingList extends TRatingList implements IActiveControl, ICallback
 	}
 
 	/**
-	 * Calls the client-side static method for this control class.
-	 * @param string $func static method name
-	 * @param mixed $value method parmaeter
+	 * Calls a method of this control's client-side object.  The value is encoded
+	 * as a JavaScript literal.
+	 * @param string $func the method name.
+	 * @param mixed $value the method parameter.
 	 */
 	protected function callClientFunction($func, $value)
 	{
 		if ($this->getActiveControl()->canUpdateClientSide()) {
 			$client = $this->getPage()->getCallbackClient();
-			$code = 'Prado.Registry[\'' . $this->getClientID() . '\'].' . $func . '(' . $value . ')';
+			$code = 'Prado.Registry[\'' . $this->getClientID() . '\'].' . $func . '(' . TJavaScript::encode($value) . ')';
 			$client->evaluateScript($code);
 		}
 	}

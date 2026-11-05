@@ -10,6 +10,7 @@
 
 namespace Prado\Web\UI\WebControls;
 
+use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Web\UI\TCommandEventParameter;
 use Prado\TPropertyValue;
 
@@ -36,23 +37,52 @@ use Prado\TPropertyValue;
  * TButton displays the {@see setText Text} property as the button caption.
  *
  * TButton by default renders an input tag; the {@see setButtonTag ButtonTag}
- * property can be used to render a button tag (introduced in html5).
+ * property can be used to render a button tag (introduced in html5). An input
+ * tag carries the caption in its value attribute; a button tag carries it as
+ * the body content of the tag.
  *
  * TButton can be one of three {@see setButtonType ButtonType}: Submit, Button and Reset.
  * By default, it is a Submit button and the form submission uses the browser's
- * default submission capability. If it is Button or Reset, postback may occur
- * if one of the following conditions is met:
- * - an event handler is attached to {@see onClick OnClick} event;
- * - an event handler is attached to {@see onCommand OnCommand} event;
- * - the button is in a non-empty validation group.
+ * default submission capability.
+ *
+ * When {@see setEnableClientScript EnableClientScript} is true, javascript
+ * handling the postback is rendered if one of the following conditions is met:
+ * - {@see setCausesValidation CausesValidation} is true and the button's
+ *   validation group contains at least one validator;
+ * - the button is the default button of a {@see \Prado\Web\UI\WebControls\TPanel};
+ * - {@see setButtonType ButtonType} is Button or Reset and an event handler is
+ *   attached to the {@see onClick OnClick} or {@see onCommand OnCommand} event.
  * In addition, clicking on a Reset button will clear up all input fields
  * if the button does not cause a postback.
+ *
+ * A Submit button renders the form overrides of {@see TFormSubmitterTrait}:
+ * {@see setFormAction FormAction}, {@see setFormEncType FormEncType}, and
+ * {@see setFormTarget FormTarget}. A button whose CausesValidation is false
+ * renders `formnovalidate`, so the browser does not check the form's
+ * constraint attributes, such as {@see TTextBox::setRequired TTextBox.Required}.
+ *
+ * {@see setCommandFor CommandFor} and {@see setCommand Command} make the button
+ * an invoker (`commandfor`, `command`): a click runs the command on the target
+ * element in the browser, without script. A dialog opens with `show-modal` and
+ * closes with `close`, which sets the dialog's `returnValue` to the button's
+ * `value`. The browser runs commands only from a `<button>` that does not submit,
+ * so with CommandFor set, {@see setButtonTag ButtonTag} and
+ * {@see setButtonType ButtonType} default to Button. Command is unrelated to
+ * {@see setCommandName CommandName}, which names the server OnCommand event.
+ * ```html
+ * <com:TButton Text="Edit" CommandFor="EditDialog" Command="show-modal" />
+ * <com:TDialog ID="EditDialog">
+ *     <com:TButton Text="Cancel" CommandFor="EditDialog" Command="close" Attributes.value="cancel" />
+ * </com:TDialog>
+ * ```
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
  */
 class TButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web\UI\IPostBackEventHandler, \Prado\Web\UI\IButtonControl, \Prado\IDataRenderer
 {
+	use TFormSubmitterTrait;
+
 	/**
 	 * @return string tag name of the button
 	 */
@@ -62,11 +92,12 @@ class TButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @return TButtonTag the tag name of the button. Defaults to TButtonType::Input.
+	 * @return TButtonTag the tag name of the button. Defaults to TButtonTag::Input,
+	 *   or TButtonTag::Button when {@see getCommandFor CommandFor} is set.
 	 */
 	public function getButtonTag()
 	{
-		return $this->getViewState('ButtonTag', TButtonTag::Input);
+		return $this->getViewState('ButtonTag', $this->getCommandFor() === '' ? TButtonTag::Input : TButtonTag::Button);
 	}
 
 	/**
@@ -118,13 +149,24 @@ class TButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 		} elseif ($this->getEnabled()) { // in this case, parent will not render 'disabled'
 			$writer->addAttribute('disabled', 'disabled');
 		}
+		if ($this->getButtonType() === TButtonType::Submit) {
+			$this->addFormSubmitterAttributesToRender($writer);
+		}
+		if (($commandFor = $this->getCommandForClientID()) !== '') {
+			$writer->addAttribute('commandfor', $commandFor);
+			if (($command = $this->getCommand()) !== '') {
+				$writer->addAttribute('command', $command);
+			}
+		}
 
 		parent::addAttributesToRender($writer);
 	}
 
 	/**
 	 * Renders the client-script code.
-	 * @param mixed $writer
+	 * The client ID is rendered and the button is registered with the client
+	 * script manager so that its postback javascript is generated.
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	protected function renderClientControlScript($writer)
 	{
@@ -214,7 +256,9 @@ class TButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 * The method raises 'OnClick' event to fire up the event handlers.
 	 * If you override this method, be sure to call the parent implementation
 	 * so that the event handler can be invoked.
-	 * @param \Prado\TEventParameter $param event parameter to be passed to the event handlers
+	 * {@see raisePostBackEvent()} raises this event with null, in a postback and in
+	 * a callback alike, because a button click posts no payload of its own.
+	 * @param ?\Prado\TEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onClick($param)
 	{
@@ -241,7 +285,11 @@ class TButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 * invoke the page's {@see \Prado\Web\UI\TPage::validate validate} method first.
 	 * It will raise {@see onClick OnClick} and {@see onCommand OnCommand} events.
 	 * This method is mainly used by framework and control developers.
-	 * @param \Prado\TEventParameter $param the event parameter
+	 *
+	 * `$param` is not used. A button click carries no payload, so
+	 * {@see onClick OnClick} is raised with null, while {@see onCommand OnCommand}
+	 * carries the command properties of the button.
+	 * @param \Prado\TEventParameter|string $param the event parameter
 	 */
 	public function raisePostBackEvent($param)
 	{
@@ -359,11 +407,12 @@ class TButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @return TButtonType the type of the button. Defaults to TButtonType::Submit.
+	 * @return TButtonType the type of the button. Defaults to TButtonType::Submit,
+	 *   or TButtonType::Button when {@see getCommandFor CommandFor} is set.
 	 */
 	public function getButtonType()
 	{
-		return $this->getViewState('ButtonType', TButtonType::Submit);
+		return $this->getViewState('ButtonType', $this->getCommandFor() === '' ? TButtonType::Submit : TButtonType::Button);
 	}
 
 	/**
@@ -372,5 +421,70 @@ class TButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	public function setButtonType($value)
 	{
 		$this->setViewState('ButtonType', TPropertyValue::ensureEnum($value, TButtonType::class), TButtonType::Submit);
+	}
+
+	/**
+	 * @return string the ID of the control that receives the {@see getCommand Command}, or ''
+	 * @since 4.4.0
+	 */
+	public function getCommandFor()
+	{
+		return $this->getViewState('CommandFor', '');
+	}
+
+	/**
+	 * Sets the control that receives the {@see getCommand Command} on click (`commandfor`).
+	 * The control must be locatable via {@see \Prado\Web\UI\TControl::findControl}.
+	 * An element outside the control tree takes `Attributes.commandfor` instead.
+	 * @param string $value the control ID, or '' for no invoker
+	 * @since 4.4.0
+	 */
+	public function setCommandFor($value)
+	{
+		$this->setViewState('CommandFor', trim(TPropertyValue::ensureString($value)), '');
+	}
+
+	/**
+	 * @return string the command the button runs on {@see getCommandFor CommandFor}, or ''
+	 * @since 4.4.0
+	 */
+	public function getCommand()
+	{
+		return $this->getViewState('Command', '');
+	}
+
+	/**
+	 * Sets the command the button runs on {@see getCommandFor CommandFor} (`command`).
+	 *
+	 * | Command | Target | Effect |
+	 * |---|---|---|
+	 * | `show-modal` | dialog | opens it modally |
+	 * | `close` | dialog | closes it; its `returnValue` is the button's `value` |
+	 * | `request-close` | dialog | fires `cancel`, then closes it unless the cancel is prevented |
+	 * | `show-popover`, `hide-popover`, `toggle-popover` | popover | shows, hides, or toggles it |
+	 * | `--name` | any | dispatches a `command` event for script |
+	 * @param string $value the command, or '' for none
+	 * @since 4.4.0
+	 */
+	public function setCommand($value)
+	{
+		$this->setViewState('Command', trim(TPropertyValue::ensureString($value)), '');
+	}
+
+	/**
+	 * Resolves {@see getCommandFor CommandFor} to the client ID of its control.
+	 * @throws TInvalidDataValueException if the CommandFor control cannot be found
+	 * @return string the client ID, or '' when CommandFor is empty or its control is invisible
+	 * @since 4.4.0
+	 */
+	protected function getCommandForClientID(): string
+	{
+		if (($id = $this->getCommandFor()) === '') {
+			return '';
+		}
+		if (!($control = $this->findControl($id))) {
+			throw new TInvalidDataValueException('button_commandfor_invalid', $id);
+		}
+		return $control->getVisible(true) ? $control->getClientID() : '';
 	}
 }

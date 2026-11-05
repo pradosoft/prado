@@ -6,98 +6,72 @@
 ## Class Info
 **Location:** `framework/Collections/TWeakCollectionTrait.php`
 **Namespace:** `Prado\Collections`
+**Since:** 4.3.0
 
 ## Overview
-Trait providing WeakMap-based caching for weak collections. Tracks objects using PHP's WeakMap and automatically detects when referenced objects are garbage collected.
 
-## Usage
+Shared WeakMap bookkeeping for all weak collections. Tracks how many times each object is stored, detects GC events by comparing the live WeakMap count to the expected count (`$_weakCount`), and provides utilities for starting, stopping, resetting, and cloning the WeakMap.
 
-Classes using this trait get automatic weak reference tracking:
+## Internal State
 
-```php
-class MyWeakCollection
-{
-    use TWeakCollectionTrait;
-    
-    public function addItem($item): void
-    {
-        $this->weakStart();
-        $this->weakAdd($item);
-    }
-}
-```
+| Field | Type | Description |
+|---|---|---|
+| `$_weakMap` | `?WeakMap` | The PHP 8 WeakMap tracking stored objects. `null` when not active. |
+| `$_weakCount` | `int` | Number of distinct objects known to be in the collection. Compared against `$_weakMap->count()` to detect GC. |
+| `$_scrubbing` | `bool` | Re-entrancy guard for `scrubWeakReferences()`. `true` while a scrub loop is executing. |
+| `$_discardInvalid` | `?bool` | Whether dead entries are automatically removed. `null` = lazy-initialized. |
+| `$_eventHandlerCount` | `int` | Number of `TEventHandler` items currently tracked; used to skip TEventHandler search passes when zero. |
 
-## Key Methods
-
-### weakStart
+## Protected Methods
 
 ```php
-protected function weakStart(): void
+// WeakMap lifecycle:
+protected function weakStart(): void        // create a new WeakMap
+protected function weakRestart(): void      // replace with a fresh WeakMap (clear all entries)
+protected function weakClone(): void        // clone the WeakMap (call in __clone)
+protected function weakStop(): void         // set WeakMap to null (disable tracking)
+
+// Change detection:
+protected function weakChanged(): bool      // true if WeakMap count != $_weakCount (GC occurred)
+protected function weakResetCount(): void   // sync $_weakCount to current WeakMap count (call after scrub)
+
+// Object registration:
+protected function weakAdd(object $object): int     // increment count; adds to WeakMap. Returns new count.
+protected function weakRemove(object $object): int  // decrement count; removes from WeakMap. Returns remaining count.
+protected function weakObjectCount(object $object): ?int  // instance count for one object
+protected function weakCount(): ?int                // total distinct objects in WeakMap
+
+// Re-entrancy guard (since 4.3.3):
+protected function isScrubbing(): bool      // true while scrubWeakReferences() is executing
+protected function setScrubbing(bool $value): void  // set/clear the re-entrancy guard
+
+// Serialization:
+protected function _weakZappableSleepProps(array &$exprops): void
+// Appends to $exprops: $_weakMap, $_weakCount, $_scrubbing, $_eventHandlerCount (always excluded).
+// Also excludes $_discardInvalid when null (lazy-init default).
 ```
 
-Initializes a new WeakMap.
+## Usage Pattern
 
-### weakRestart
+Implementing classes:
 
-```php
-protected function weakRestart(): void
-```
+1. Call `weakStart()` when `DiscardInvalid` is set to `true`.
+2. Call `weakAdd($object)` / `weakRemove($object)` (or the custom variants `weakCustomAdd` / `weakCustomRemove`) whenever an object is inserted or removed.
+3. Before any read or write, call `scrubWeakReferences()` (implemented in the using class), which checks `isScrubbing()`, `getDiscardInvalid()`, and `weakChanged()` before proceeding.
+4. After a scrub loop, call `weakResetCount()`.
+5. In `__clone()`, call `weakClone()`. In `__wakeup()`, call `weakStart()` if `DiscardInvalid` is true.
 
-Resets the WeakMap if it exists.
+## Re-entrancy Guard (since 4.3.3)
 
-### weakClone
+PHP's cyclic GC can fire destructors between any two opcodes, potentially calling back into `scrubWeakReferences()` while it is already executing. The `isScrubbing()` / `setScrubbing()` guard prevents the inner call from modifying the internal array while the outer loop is iterating. Any entries skipped by the inner call are cleaned on the next outer pass.
 
-```php
-protected function weakClone(): void
-```
+## Serialization
 
-Clones the WeakMap when the collection is cloned.
-
-### weakStop
-
-```php
-protected function weakStop(): void
-```
-
-Stops tracking by nullifying the WeakMap.
-
-### weakChanged
-
-```php
-protected function weakChanged(): bool
-```
-
-Returns true if the WeakMap count differs from expected (objects were garbage collected).
-
-### weakResetCount
-
-```php
-protected function weakResetCount(): void
-```
-
-Resets the expected count to match current WeakMap count.
-
-### weakCount
-
-```php
-protected function weakCount(): ?int
-```
-
-Returns the number of tracked objects in the WeakMap.
-
-## Properties
-
-- `$_weakMap` - The WeakMap instance
-- `$_weakCount` - Expected count of tracked objects
-
-## Notes
-
-- Uses PHP's WeakMap (available in PHP 8.0+)
-- WeakMap automatically removes entries when objects are garbage collected
-- When weakChanged() returns true, collection can scrub invalid entries
+`_weakZappableSleepProps()` excludes all WeakMap runtime state. WeakReferences do not survive serialization; weak collections effectively wake up empty with no tracked objects.
 
 ## See Also
 
-- [TWeakList](./TWeakList.md) - List using this trait
-- [TWeakCallableCollection](./TWeakCallableCollection.md) - Callable collection using this trait
-- `WeakReference` - PHP's weak reference class
+- [TWeakList](./TWeakList.md) — Uses this trait
+- [TWeakCallableCollection](./TWeakCallableCollection.md) — Uses this trait
+- [TWeakMap](./TWeakMap.md) — Uses this trait
+- [IWeakCollection](./IWeakCollection.md) — Marker interface for all weak collections

@@ -23,7 +23,7 @@ use Prado\TEnumerable;
  * - {@see TDbConnection} for establishing database connections
  * - {@see TDbDriverCapabilities} for driver-specific capability lookups
  * - {@see \Prado\Data\Common\TDbMetaData} for metadata handler resolution
- * - {@see \Prado\Data\ActiveRecord\Scaffold\InputBuilder\TScaffoldInputBase} for scaffold generation
+ * - the prado-activerecord package's `TScaffoldInputBase` for scaffold generation
  *
  * Each constant value matches the driver name expected by PHP's PDO extension.
  * The class extends {@see TEnumerable} to allow iteration over all driver constants.

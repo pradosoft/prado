@@ -1,7 +1,7 @@
 # I18N/core/MessageSource_XLIFF
 
 ### Directories
-[framework](./INDEX.md) / [I18N](./I18N/INDEX.md) / [core](./I18N/core/INDEX.md) / **`MessageSource_XLIFF`**
+[framework](../../INDEX.md) / [I18N](../INDEX.md) / [core](INDEX.md) / **`MessageSource_XLIFF`**
 
 **Location:** `framework/I18N/core/MessageSource_XLIFF.php`
 **Namespace:** `Prado\I18N\core`

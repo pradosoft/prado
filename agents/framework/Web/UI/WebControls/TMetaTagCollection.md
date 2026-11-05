@@ -18,6 +18,6 @@ TMetaTagCollection represents a collection of meta tags contained in a THead con
 
 ## See Also
 
-- [TList](../Collections/TList.md)
+- [TList](../../../Collections/TList.md)
 - [TMetaTag](./TMetaTag.md)
 - [THead](./THead.md)

@@ -13,7 +13,7 @@ namespace Prado\Util;
 use Prado\Exceptions\TException;
 use Prado\TPropertyValue;
 use Prado\Util\Behaviors\TPageServiceExtraPathsBehavior;
-use ReflectionClass;
+use Prado\Util\Traits\TReflectionClassTrait;
 
 /**
  * TPluginModule class.
@@ -66,22 +66,24 @@ use ReflectionClass;
  */
 class TPluginModule extends \Prado\TModule implements IPluginModule
 {
+	use TReflectionClassTrait;
+
 	/** Module pages directory for finding pages of a module	 */
 	public const PAGES_DIRECTORY = 'Pages';
 
 	/** @var string path of the plugin */
 	private $_pluginPath;
 
-	/** @var string path of the pages folder for the plugin*/
+	/** @var null|false|string path of the pages folder for the plugin*/
 	private $_pagesPath;
 
-	/** @var string relative pages path to $_pluginPath */
+	/** @var ?string relative pages path to $_pluginPath */
 	private $_relativePagesPath = self::PAGES_DIRECTORY;
 
 	/**
 	 * initializes the plugin module, looks for a Pages directory and adds a new {@see \Prado\Util\TBehavior}
 	 * to help TPageService find any plugin module pages
-	 * @param array $config this is the manifest for the plugin module
+	 * @param null|array|\Prado\Xml\TXmlElement $config this is the manifest for the plugin module
 	 */
 	public function init($config)
 	{
@@ -136,7 +138,7 @@ class TPluginModule extends \Prado\TModule implements IPluginModule
 	public function getPluginPath()
 	{
 		if ($this->_pluginPath === null) {
-			$reflect = new ReflectionClass($this::class);
+			$reflect = static::getReflectionClass();
 			$this->_pluginPath = dirname($reflect->getFileName());
 		}
 		return $this->_pluginPath;

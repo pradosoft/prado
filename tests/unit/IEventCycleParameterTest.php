@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit;
+
 use Prado\IEventCycleParameter;
 use Prado\IEventParameter;
 use Prado\TComponent;

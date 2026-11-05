@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Util\Cron;
+
 use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;
 use Prado\TModule;
@@ -16,13 +18,13 @@ class TCTTModule extends TModule
 	
 }
 
-class TCronTaskTest extends PHPUnit\Framework\TestCase
+class TCronTaskTest extends \PHPUnit\Framework\TestCase
 {
 	protected $obj;
 	
 	protected function getTestClass()
 	{
-		return 'TTestCronTask';
+		return TTestCronTask::class;
 	}
 
 	protected function setUp(): void

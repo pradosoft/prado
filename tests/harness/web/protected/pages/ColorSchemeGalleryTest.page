@@ -1,0 +1,83 @@
+<com:TContent ID="Content">
+	<h1>Color Scheme Gallery</h1>
+
+	<%-- Source page for the documentation images. Each .shot wrapper paints the
+	     Canvas and CanvasText system colors, so a wrapper screenshot carries the
+	     page ground of whichever scheme is declared on the root. --%>
+	<com:TClientScript>
+		/* placeholder so the control registers; styling lives in the style block */
+	</com:TClientScript>
+
+	<com:TStyleSheet>
+		/* inline-block so each wrapper shrinks to its control, not the viewport */
+		.shot {
+			display: inline-block;
+			background-color: Canvas;
+			color: CanvasText;
+			padding: 16px;
+			overflow: auto;
+			font-family: -apple-system, "Segoe UI", Arial, sans-serif;
+		}
+		/* TTabPanel is width:100%, so the wrapper has to set the width */
+		#shot-tabpanel { width: 540px; }
+		/* TKeyboard is absolutely positioned and z-indexed over the page. For a
+		   still image put it back in flow so nothing overlaps it and the wrapper
+		   sizes to it. */
+		.shot-keyboard div.Keyboard {
+			position: relative !important;
+			top: auto !important;
+			left: auto !important;
+			visibility: visible !important;
+			margin-top: 8px;
+		}
+		.shot-row { display: flex; gap: 48px; align-items: center; }
+		/* a shorter vertical slider keeps the still image compact */
+		#shot-slider .VerticalSlider { height: 140px; }
+		/* one wrapper per line keeps the inline-blocks from sharing a row */
+		.shot-break { display: block; height: 0; }
+	</com:TStyleSheet>
+
+	<div class="shot-break"></div>
+	<div id="shot-tabpanel" class="shot">
+		<com:TTabPanel ID="tabs">
+			<com:TTabView ID="t1" Caption="Active">Active view content.</com:TTabView>
+			<com:TTabView ID="t2" Caption="Normal">Second view.</com:TTabView>
+			<com:TTabView ID="t3" Caption="Hovered">Third view.</com:TTabView>
+			<com:TTabView ID="t4" Caption="Focused">Fourth view.</com:TTabView>
+			<com:TTabView ID="t5" Caption="Mouse down">Fifth view.</com:TTabView>
+		</com:TTabPanel>
+	</div>
+
+	<div class="shot-break"></div>
+	<div id="shot-accordion" class="shot">
+		<com:TAccordion ID="acc" Width="320px">
+			<com:TAccordionView ID="a1" Caption="Active header">Active panel content.</com:TAccordionView>
+			<com:TAccordionView ID="a2" Caption="Normal header">Second panel.</com:TAccordionView>
+			<com:TAccordionView ID="a3" Caption="Normal header">Third panel.</com:TAccordionView>
+		</com:TAccordion>
+	</div>
+
+	<div class="shot-break"></div>
+	<div id="shot-slider" class="shot">
+		<div class="shot-row">
+			<com:TSlider ID="sliderH" MinValue="0" MaxValue="100" StepSize="5" Value="40" />
+			<com:TSlider ID="sliderV" Direction="Vertical" MinValue="0" MaxValue="100" StepSize="5" Value="60" />
+		</div>
+	</div>
+
+	<div class="shot-break"></div>
+	<div id="shot-keyboard" class="shot shot-keyboard">
+		<com:TTextBox ID="field" Text="abc" />
+		<com:TKeyboard ID="kb" ForControl="field" AutoHide="false" />
+	</div>
+
+	<div class="shot-break"></div>
+	<div id="shot-datepicker" class="shot">
+		<com:TDatePicker ID="date" Mode="ImageButton" />
+	</div>
+
+	<div class="shot-break"></div>
+	<div id="shot-colorpicker" class="shot">
+		<com:TColorPicker ID="color" Text="#FFCC00" Mode="Basic" />
+	</div>
+</com:TContent>

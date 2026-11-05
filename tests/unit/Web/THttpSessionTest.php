@@ -1,14 +1,73 @@
 <?php
 
+namespace Prado\Test\Unit\Web;
+
 use Prado\Web\THttpSession;
 use Prado\Web\THttpSessionCookieMode;
 
-class THttpSessionTest extends PHPUnit\Framework\TestCase
+class THttpSessionTestCookieParams extends THttpSession
+{
+	public array $iniParams = ['lifetime' => 0, 'path' => '/', 'domain' => '', 'secure' => false, 'httponly' => false, 'samesite' => ''];
+	public ?array $setParams = null;
+
+	protected function sessionGetCookieParams(): array
+	{
+		return $this->iniParams;
+	}
+
+	protected function sessionSetCookieParams(array $options): bool
+	{
+		$this->setParams = $options;
+		return true;
+	}
+
+	protected function sessionStart(): bool
+	{
+		return true;
+	}
+}
+
+class THttpSessionTest extends \PHPUnit\Framework\TestCase
 {
 	public function testInit()
 	{
 		$session = new THttpSession();
 		$this->assertFalse($session->getIsStarted());
+	}
+
+	public function testOpenCookieParams()
+	{
+		// Without a Cookie, the php.ini parameters are used with HttpOnly on.
+		$session = new THttpSessionTestCookieParams();
+		$session->iniParams['path'] = '/app';
+		$session->open();
+		$this->assertTrue($session->setParams['httponly']);
+		$this->assertFalse($session->setParams['secure']);
+		$this->assertSame('/app', $session->setParams['path']);
+
+		// A Cookie supplies the parameters; HttpOnly defaults to on.
+		$session = new THttpSessionTestCookieParams();
+		$session->getCookie()->setPath('/sub');
+		$session->open();
+		$this->assertTrue($session->setParams['httponly']);
+		$this->assertFalse($session->setParams['secure']);
+		$this->assertSame('/sub', $session->setParams['path']);
+		$this->assertSame(0, $session->setParams['lifetime']);
+
+		// php.ini Secure and HttpOnly stay on under a Cookie that turns them off.
+		$session = new THttpSessionTestCookieParams();
+		$session->iniParams['secure'] = true;
+		$session->iniParams['httponly'] = true;
+		$session->getCookie()->setHttpOnly(false);
+		$session->open();
+		$this->assertTrue($session->setParams['httponly']);
+		$this->assertTrue($session->setParams['secure']);
+
+		// Cookie.HttpOnly="false" turns HttpOnly off when php.ini leaves it off.
+		$session = new THttpSessionTestCookieParams();
+		$session->getCookie()->setHttpOnly(false);
+		$session->open();
+		$this->assertFalse($session->setParams['httponly']);
 	}
 
 	/**
@@ -234,6 +293,9 @@ class THttpSessionTest extends PHPUnit\Framework\TestCase
 	 */
 	public function testSetUseTransparentSessionID()
 	{
+		if(PHP_VERSION_ID >= 80400) {
+			$this->markTestSkipped('Disabling session.use_only_cookies INI setting is deprecated on PHP => 8.4 ');
+		}
 		$session = new THttpSession();
 		$session->CookieMode = THttpSessionCookieMode::Allow;
 		$this->assertFalse($session->getUseTransparentSessionID());

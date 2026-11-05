@@ -1,3 +1,9 @@
+/*
+ * Colors follow the color-scheme declared by the application; declaring none
+ * renders light, as before. Canvas and CanvasText resolve per scheme on their
+ * own. Each light-dark() line is preceded by its plain light value, which
+ * browsers without light-dark() support use instead.
+ */
 
 div.accordion {
 	position: relative;
@@ -8,8 +14,12 @@ div.accordion-header {
 	z-index: 10; position: relative; 
 	cursor: pointer;
 	background-color: #5577aa;
+	background-color: light-dark(#5577aa, #182e47);
 	color: white; font-weight: bold;
+	color: light-dark(white, #b0b0b0);
 	border: 1px solid;
+	border-color: Canvas;
+	border-color: light-dark(Canvas, #365574);
 }
 
 div.accordion-header-active {
@@ -17,8 +27,11 @@ div.accordion-header-active {
 	z-index: 10; position: relative; 
 	cursor: pointer;
 	background-color: #334477;
-	color: red; font-weight: bold;
-	border: 1px solid red;
+	background-color: light-dark(#334477, #365574);
+	color: #ff9d9d; font-weight: bold;
+	color: light-dark(#ff9d9d, #d0d0d0);
+	border: 1px solid #ff9d9d;
+	border-color: light-dark(#ff9d9d, #d0d0d0);
 }
 
 div.accordion-view {

@@ -25,11 +25,33 @@ use Prado\TPropertyValue;
  * please use regular HTML form tags for those forms that post to different
  * URLs.
  *
+ * | Property | Attribute |
+ * |---|---|
+ * | {@see setMethod Method}, {@see setEnctype Enctype} | `method`, `enctype` |
+ * | {@see setNoValidate NoValidate} | `novalidate`: no browser constraint check on submission |
+ * | {@see setAutoComplete AutoComplete} | `autocomplete`: the default autofill of the form's fields |
+ * | {@see setTarget Target} | `target`: the browsing context that shows the response |
+ * | {@see setAcceptCharset AcceptCharset} | `accept-charset` |
+ * | {@see setRel Rel} | `rel`: link types of the submission, such as `noopener` |
+ *
+ * A button overrides the action, encoding, target, and constraint check of a
+ * submission with {@see \Prado\Web\UI\WebControls\TFormSubmitterTrait}.
+ *
+ * A {@see \Prado\Web\UI\WebControls\TTeleport} in the form registers its content
+ * through {@see registerTeleportContent}. The form renders the content after
+ * `</form>`, and then its end script files and end scripts, so the scripts find the
+ * content.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
  */
 class TForm extends TControl
 {
+	/**
+	 * @var array<string, string> the HTML rendered after `</form>`, by the unique ID of its control
+	 */
+	private array $_teleportContents = [];
+
 	/**
 	 * Registers the form with the page.
 	 * @param mixed $param event parameter
@@ -53,6 +75,18 @@ class TForm extends TControl
 		if (($enctype = $this->getEnctype()) !== '') {
 			$writer->addAttribute('enctype', $enctype);
 		}
+		if ($this->getNoValidate()) {
+			$writer->addAttribute('novalidate', 'novalidate');
+		}
+		if (($autoComplete = $this->getAutoComplete()) !== null) {
+			$writer->addAttribute('autocomplete', $autoComplete ? 'on' : 'off');
+		}
+		foreach (['target' => $this->getTarget(), 'accept-charset' => $this->getAcceptCharset(),
+			'rel' => $this->getRel()] as $name => $value) {
+			if ($value !== '') {
+				$writer->addAttribute($name, $value);
+			}
+		}
 
 		$attributes = $this->getAttributes();
 		$attributes->remove('action');
@@ -68,7 +102,7 @@ class TForm extends TControl
 	}
 
 	/**
-	 * Renders the form.
+	 * Renders the form. Teleported content follows `</form>`, before the end scripts.
 	 * @param \Prado\Web\UI\THtmlWriter $writer writer
 	 */
 	public function render($writer)
@@ -89,8 +123,16 @@ class TForm extends TControl
 			$cs->renderHiddenFieldsEnd($writer);
 			$page->endFormRender($writer);
 
+			$teleported = $this->getHasTeleportContent();
+			if ($teleported) {
+				$writer->renderEndTag();
+				$this->renderTeleportContents($writer);
+			}
 			$cs->renderScriptFilesEnd($writer);
 			$cs->renderEndScripts($writer);
+			if ($teleported) {
+				return;
+			}
 		} else {
 			$cs->renderHiddenFieldsBegin($writer);
 
@@ -102,6 +144,52 @@ class TForm extends TControl
 		}
 
 		$writer->renderEndTag();
+		$this->renderTeleportContents($writer);
+	}
+
+	/**
+	 * Registers HTML that renders after `</form>`, outside the form. A
+	 * {@see \Prado\Web\UI\WebControls\TTeleport} registers its content while the
+	 * form renders its children. A key registered again replaces its content.
+	 * @param string $key the unique ID of the control of the content
+	 * @param string $content the HTML
+	 * @since 4.4.0
+	 */
+	public function registerTeleportContent(string $key, string $content): void
+	{
+		$this->_teleportContents[$key] = $content;
+	}
+
+	/**
+	 * @return array<string, string> the HTML that renders after `</form>`, by key, in
+	 *   the order of registration
+	 * @since 4.4.0
+	 */
+	public function getTeleportContents(): array
+	{
+		return $this->_teleportContents;
+	}
+
+	/**
+	 * @return bool whether HTML is registered to render after `</form>`
+	 * @since 4.4.0
+	 */
+	public function getHasTeleportContent(): bool
+	{
+		return $this->getTeleportContents() !== [];
+	}
+
+	/**
+	 * Writes the registered teleport content and clears it.
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer
+	 * @since 4.4.0
+	 */
+	protected function renderTeleportContents($writer): void
+	{
+		foreach ($this->getTeleportContents() as $content) {
+			$writer->write($content);
+		}
+		$this->_teleportContents = [];
 	}
 
 	/**
@@ -157,6 +245,108 @@ class TForm extends TControl
 	public function setEnctype($value)
 	{
 		$this->setViewState('Enctype', $value, '');
+	}
+
+	/**
+	 * @return bool whether the browser skips the constraint check on submission. Defaults to false.
+	 * @since 4.4.0
+	 */
+	public function getNoValidate()
+	{
+		return $this->getViewState('NoValidate', false);
+	}
+
+	/**
+	 * Sets whether the browser skips the constraint check of the form's fields, such
+	 * as `required` and `pattern`, when the form submits (`novalidate`). The server
+	 * validators still run.
+	 * @param bool|string $value whether the browser skips the check
+	 * @since 4.4.0
+	 */
+	public function setNoValidate($value)
+	{
+		$this->setViewState('NoValidate', TPropertyValue::ensureBoolean($value), false);
+	}
+
+	/**
+	 * @return ?bool whether the browser autofills the form's fields, null for the
+	 *   browser default
+	 * @since 4.4.0
+	 */
+	public function getAutoComplete()
+	{
+		return $this->getViewState('AutoComplete', null);
+	}
+
+	/**
+	 * Sets whether the browser autofills the form's fields by default (`autocomplete`).
+	 * A field's own `autocomplete` takes precedence.
+	 * @param null|bool|string $value true, false, or null or '' for the browser default
+	 * @since 4.4.0
+	 */
+	public function setAutoComplete($value)
+	{
+		$this->setViewState('AutoComplete', ($value === null || $value === '') ? null : TPropertyValue::ensureBoolean($value), null);
+	}
+
+	/**
+	 * @return string the browsing context that shows the response, or '' if not set
+	 * @since 4.4.0
+	 */
+	public function getTarget()
+	{
+		return $this->getViewState('Target', '');
+	}
+
+	/**
+	 * Sets the browsing context that shows the response of a submission (`target`),
+	 * such as `_blank` or a frame name.
+	 * @param string $value the target
+	 * @since 4.4.0
+	 */
+	public function setTarget($value)
+	{
+		$this->setViewState('Target', trim(TPropertyValue::ensureString($value)), '');
+	}
+
+	/**
+	 * @return string the character encodings the server accepts, or '' if not set
+	 * @since 4.4.0
+	 */
+	public function getAcceptCharset()
+	{
+		return $this->getViewState('AcceptCharset', '');
+	}
+
+	/**
+	 * Sets the character encoding of the submission (`accept-charset`). HTML allows
+	 * only `UTF-8`, which is the default.
+	 * @param string $value the encoding
+	 * @since 4.4.0
+	 */
+	public function setAcceptCharset($value)
+	{
+		$this->setViewState('AcceptCharset', trim(TPropertyValue::ensureString($value)), '');
+	}
+
+	/**
+	 * @return string the link types of the submission, or '' if not set
+	 * @since 4.4.0
+	 */
+	public function getRel()
+	{
+		return $this->getViewState('Rel', '');
+	}
+
+	/**
+	 * Sets the link types of the submission (`rel`), such as `noopener noreferrer`
+	 * for a {@see setTarget Target} of `_blank`.
+	 * @param string $value space-separated link types
+	 * @since 4.4.0
+	 */
+	public function setRel($value)
+	{
+		$this->setViewState('Rel', trim(TPropertyValue::ensureString($value)), '');
 	}
 
 	/**

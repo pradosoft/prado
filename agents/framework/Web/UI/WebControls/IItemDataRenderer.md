@@ -1,7 +1,7 @@
 # Web/UI/WebControls/IItemDataRenderer
 
 ### Directories
-[framework](./INDEX.md) / [Web](./Web/INDEX.md) / [UI](./Web/UI/INDEX.md) / [WebControls](./Web/UI/WebControls/INDEX.md) / **`IItemDataRenderer`**
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](INDEX.md) / **`IItemDataRenderer`**
 
 **Location:** `framework/Web/UI/WebControls/IItemDataRenderer.php`
 **Namespace:** `Prado\Web\UI\WebControls`
@@ -16,6 +16,6 @@ IItemDataRenderer defines the interface that item renderers must implement. It e
 
 ## See Also
 
-- [IDataRenderer](./IDataRenderer.md)
+- [IDataRenderer](../../../IDataRenderer.md)
 - [TRepeater](./TRepeater.md)
 - [TRepeaterItem](./TRepeaterItem.md)

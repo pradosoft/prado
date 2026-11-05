@@ -1,7 +1,11 @@
 <?php
 
 
-class ClearCronTest extends PHPUnit\Framework\TestCase
+namespace Prado\Test\Unit\Util\Cron;
+
+use Prado\Prado;
+
+class ClearCronTest extends \PHPUnit\Framework\TestCase
 {
 	protected function setUp(): void
 	{

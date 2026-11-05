@@ -10,9 +10,6 @@
 
 namespace Prado\Web\UI\WebControls;
 
-use Prado\TPropertyValue;
-use Prado\Web\THttpUtility;
-
 /**
  * TLiteralColumn class
  *
@@ -31,6 +28,8 @@ use Prado\Web\THttpUtility;
  */
 class TLiteralColumn extends TDataGridColumn
 {
+	use TEncodeTrait;
+
 	/**
 	 * @return string the field name from the data source to bind to the column
 	 */
@@ -48,19 +47,19 @@ class TLiteralColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @return string the formatting string used to control how the bound data will be displayed.
+	 * @return callable|string the format string or callable used to control how the bound data will be displayed.
 	 */
 	public function getDataFormatString()
 	{
-		return $this->getViewState('DataFormatString', '');
+		return $this->getDataFormat('DataFormatString');
 	}
 
 	/**
-	 * @param string $value the formatting string used to control how the bound data will be displayed.
+	 * @param callable|string $value the format string or callable used to control how the bound data will be displayed.
 	 */
 	public function setDataFormatString($value)
 	{
-		$this->setViewState('DataFormatString', $value, '');
+		$this->setDataFormat('DataFormatString', $value);
 	}
 
 	/**
@@ -79,21 +78,6 @@ class TLiteralColumn extends TDataGridColumn
 		$this->setViewState('Text', $value, '');
 	}
 
-	/**
-	 * @return bool whether the rendered text should be HTML-encoded. Defaults to false.
-	 */
-	public function getEncode()
-	{
-		return $this->getViewState('Encode', false);
-	}
-
-	/**
-	 * @param bool $value whether the rendered text should be HTML-encoded.
-	 */
-	public function setEncode($value)
-	{
-		$this->setViewState('Encode', TPropertyValue::ensureBoolean($value), false);
-	}
 
 	/**
 	 * Initializes the specified cell to its initial values.
@@ -109,9 +93,7 @@ class TLiteralColumn extends TDataGridColumn
 				$cell->attachEventHandler('OnDataBinding', [$this, 'dataBindColumn']);
 			} else {
 				$text = $this->getText();
-				if ($this->getEncode()) {
-					$text = THttpUtility::htmlEncode($text);
-				}
+				$text = $this->encodeText($text);
 				$cell->setText($text);
 			}
 		} else {
@@ -137,9 +119,7 @@ class TLiteralColumn extends TDataGridColumn
 			$value = $this->formatDataValue($formatString, $data);
 		}
 		if ($sender instanceof TTableCell) {
-			if ($this->getEncode()) {
-				$value = THttpUtility::htmlEncode($value);
-			}
+			$value = $this->encodeText($value);
 			$sender->setText($value);
 		}
 	}

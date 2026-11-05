@@ -21,4 +21,4 @@ TXmlTransform uses PHP's XSL extension to perform XSL transformations. It transf
 
 ## See Also
 
-- [TControl](./TControl.md)
+- [TControl](../TControl.md)

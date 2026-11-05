@@ -10,65 +10,189 @@
 
 namespace Prado\Web\UI\WebControls;
 
-use Prado\Prado;
 use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Exceptions\TInvalidOperationException;
 use Prado\TPropertyValue;
+use Prado\Collections\TAttributeCollection;
+use Prado\Collections\TWebAttributeCollection;
 
 /**
  * TWebControl class
  *
- * TWebControl is the base class for controls that share a common set
- * of UI-related properties and methods. TWebControl-derived controls
- * are usually associated with HTML tags. They thus have tag name, attributes
- * and body contents. You can override {@see getTagName} to specify the tag name,
- * {@see addAttributesToRender} to specify the attributes to be rendered,
- * and {@see renderContents} to customize the body content rendering.
- * TWebControl encapsulates a set of properties related with CSS style fields,
- * such as {@see getBackColor BackColor}, {@see getBorderWidth BorderWidth}, etc.
+ * TWebControl is the base class for controls that share a common set of UI-related
+ * properties and methods. TWebControl-derived controls are usually associated with
+ * HTML tags and thus have tag name, attributes, and body contents.
  *
- * Subclasses of TWebControl typically needs to override {@see addAttributesToRender}
- * and {@see renderContents}. The former is used to render the attributes
- * of the HTML tag associated with the control, while the latter is to render
- * the body contents enclosed within the HTML tag.
+ * ## Core Properties
+ *
+ * ### Tag and Rendering
+ *
+ * - {@see getTagName} returns the HTML tag name (default 'span'). Override in subclasses.
+ * - {@see render} outputs the complete tag: opening tag, contents, closing tag
+ * - {@see renderBeginTag} renders the opening tag with attributes
+ * - {@see renderContents} renders child controls and text
+ * - {@see renderEndTag} renders the closing tag
+ *
+ * ### CSS Style Properties
+ *
+ * Style properties are stored in a TStyle object, lazy-created on first access:
+ * ```php
+ * $control->setBackColor('#FF0000');
+ * $control->setWidth('200px');
+ * $control->setCssClass('my-style');
+ * ```
+ *
+ * ### HTML Attributes
+ *
+ * Standard and custom HTML attributes:
+ * ```php
+ * $control->setAttribute('data-custom', 'value');
+ * $control->setAttribute('role', 'button');
+ * ```
+ *
+ * ### HTML 5 Global Attributes
+ *
+ * Additional HTML 5 global attributes:
+ * ```php
+ * $control->setLang('en-US');
+ * $control->setDir('ltr');
+ * $control->setHidden(true);
+ * $control->setSpellCheck(true);
+ * $control->setDraggable(true);
+ * $control->setInert(false);
+ * $control->setContentEditable(true);
+ * $control->setInputMode(TWebInputMode::Email);
+ * $control->setEnterKeyHint(TEnterKeyHint::Next);
+ * $control->setTranslate('yes');
+ * $control->setPopover('manual');
+ * $control->setSlot('title');
+ * $control->setHidden('until-found');
+ * $control->setAutoFocus(true);
+ * $control->setAutoCapitalize(TAutoCapitalize::Words);
+ * $control->setAutoCorrect(false);
+ * $control->setWritingSuggestions(false);
+ * $control->setPart('label');
+ * ```
+ *
+ * ### Keyboard Shortcuts
+ *
+ * KeyShortcuts renders `aria-keyshortcuts` and binds the shortcuts in the
+ * `Prado.KeyShortcuts` client registry. A shortcut clicks a button, link, check
+ * box, or radio button, and focuses any other element:
+ * ```html
+ * <com:TButton Text="Save" KeyShortcuts="Control+S Meta+S" OnClick="save" />
+ * <com:TTextBox ID="search" KeyShortcuts="/" />
+ * ```
+ * KeyShortcutScope limits the shortcuts to focus inside another control, and
+ * KeyShortcutAllowReserved opts in to reserved shortcuts; see {@see TKeyShortcuts}.
+ *
+ * ### Microdata
+ *
+ * ItemScope, ItemScopeType, ItemProp, ItemId, and ItemRef render the microdata
+ * attributes `itemscope`, `itemtype`, `itemprop`, `itemid`, and `itemref`:
+ * ```html
+ * <com:TPanel ItemScope="true" ItemScopeType="https://schema.org/Person">
+ *     <com:TLabel ItemProp="name" Text="Ada Lovelace" />
+ * </com:TPanel>
+ * ```
+ *
+ * ### ARIA Attributes
+ *
+ * WAI-ARIA support for accessibility:
+ * ```php
+ * $control->setRole('button');
+ * $control->getAria()->add('label', 'Submit button');
+ * $control->getAria()['describedby'] = 'help-text';
+ * ```
+ *
+ * ### Data Attributes
+ *
+ * HTML5 data-* attributes:
+ * ```php
+ * $control->getDataset()->add('itemid', '123');
+ * $control->getDataset()['value'] = 'myvalue';
+ * $control->dataset['max'] = '1000';
+ * ```
+ *
+ * - {@see getHasDataset} checks if any data attributes exist
+ * - {@see getDataset} returns TAttributeCollection for data-* attributes
+ *
+ * ## Subclassing
+ *
+ * Override these methods in subclasses:
+ * ```php
+ * class TMyControl extends TWebControl
+ * {
+ *     protected function getTagName(): string
+ *     {
+ *         return 'article';
+ *     }
+ *
+ *     protected function addAttributesToRender($writer)
+ *     {
+ *         parent::addAttributesToRender($writer);
+ *         $writer->addAttribute('custom-attr', 'value');
+ *     }
+ *
+ *     public function renderContents($writer)
+ *     {
+ *         $writer->write('Content here');
+ *     }
+ * }
+ * ```
+ *
+ * ## Decorators
+ *
+ * TWebControlDecorator adds pre/post content around the control tag, used by Prado Skins:
+ * ```php
+ * $control->getDecorator()->setPreTagText('<div class="wrapper">');
+ * $control->getDecorator()->setPostTagText('</div>');
+ * ```
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
+ * @author Brad Anderson <belisoful@icloud.com> TWebControlDecorator, HTML 5 Global Attributes, Dataset, ARIA (Accessibility)
  * @since 3.0
+ * @see https://www.w3schools.com/tags HTML Element Reference
+ * @see https://w3c.github.io/aria/ Accessible Rich Internet Applications (WAI-ARIA)
+ * @see https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles#aria_role_types ARIA Roles
  */
 class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 {
 	/**
-	 *	@var bool ensures the inclusion the id in the tag rendering.
+	 * @var bool ensures the inclusion of id in tag rendering once enabled
 	 */
 	private $_ensureid = false;
 
 	/**
-	 *	@var TWebControlDecorator this render things before and after both the open and close tag
+	 * @var ?TWebControlDecorator decorator for pre/post tag content
 	 */
 	protected $_decorator;
 
-
 	/**
-	 * Subclasses can override getEnsureId or just set this property.  eg. If your subclass
-	 * control does work with javascript and your class wants to flag that it requires an id
-	 * to operate properly.  Once set to true, it stays that way.
-	 * @param bool $value pass true to enable enforcement of the tag attribute id.
+	 * Enforces ID rendering on this control.
+	 *
+	 * Once set to true, it stays true for the lifetime of the control.
+	 *
+	 * @param bool $value true to enforce ID rendering
 	 */
 	public function setEnsureId($value)
 	{
-		$this->_ensureid |= TPropertyValue::ensureBoolean($value);
+		$this->_ensureid = $this->_ensureid || TPropertyValue::ensureBoolean($value);
 	}
 
 	/**
-	 * @return bool whether this web control must have an id
+	 * @return bool whether this control must have an ID rendered
 	 */
 	public function getEnsureId()
 	{
-		return $this->_ensureid;
+		return (bool) $this->_ensureid;
 	}
 
 	/**
-	 * @param bool $create
-	 * @return TWebControlDecorator
+	 * Gets the decorator for this control, creating it if needed.
+	 *
+	 * @param bool $create if true, creates decorator if it doesn't exist
+	 * @return ?TWebControlDecorator the decorator object or null if not created
 	 */
 	public function getDecorator($create = true)
 	{
@@ -79,26 +203,117 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	}
 
 	/**
-	 * Copies basic control attributes from another control.
-	 * Properties including AccessKey, ToolTip, TabIndex, Enabled
-	 * and Attributes are copied.
-	 * @param TWebControl $control source control
+	 * Copies base control attributes from another control.
+	 *
+	 * The bitmask $attrToCopy selects which attribute groups to copy; defaults to all.
+	 *
+	 * @param TWebControl $control source control to copy from
+	 * @param int $attrToCopy bitmask of {@see TWebControlAttribute} constants
 	 */
-	public function copyBaseAttributes(TWebControl $control)
+	public function copyBaseAttributes(TWebControl $control, int $attrToCopy = TWebControlAttribute::All)
 	{
-		$this->setAccessKey($control->getAccessKey());
-		$this->setToolTip($control->getToolTip());
-		$this->setTabIndex($control->getTabIndex());
-		if (!$control->getEnabled()) {
-			$this->setEnabled(false);
+		if ($attrToCopy & TWebControlAttribute::AccessKey) {
+			$this->setAccessKey($control->getAccessKey());
 		}
-		if ($control->getHasAttributes()) {
+		if ($attrToCopy & TWebControlAttribute::Role) {
+			$this->setRole($control->getRole());
+		}
+		if ($attrToCopy & TWebControlAttribute::Disabled) {
+			$this->setEnabled($this->getEnabled() && $control->getEnabled());
+		}
+		if ($attrToCopy & TWebControlAttribute::TabIndex) {
+			$this->setTabIndex($control->getTabIndex());
+		}
+		if ($attrToCopy & TWebControlAttribute::Title) {
+			$this->setToolTip($control->getToolTip());
+		}
+		if ($attrToCopy & TWebControlAttribute::Translate) {
+			$this->setTranslate($control->getTranslate());
+		}
+		if ($attrToCopy & TWebControlAttribute::Lang) {
+			$this->setLang($control->getLang());
+		}
+		if ($attrToCopy & TWebControlAttribute::Dir) {
+			$this->setDir($control->getDir());
+		}
+		if ($attrToCopy & TWebControlAttribute::Hidden) {
+			$this->setHidden($control->getHidden());
+		}
+		if ($attrToCopy & TWebControlAttribute::SpellCheck) {
+			$this->setSpellCheck($control->getSpellCheck());
+		}
+		if ($attrToCopy & TWebControlAttribute::Draggable) {
+			$this->setDraggable($control->getDraggable());
+		}
+		if ($attrToCopy & TWebControlAttribute::ContentEditable) {
+			$this->setContentEditable($control->getContentEditable());
+		}
+		if ($attrToCopy & TWebControlAttribute::InputMode) {
+			$this->setInputMode($control->getInputMode());
+		}
+		if ($attrToCopy & TWebControlAttribute::EnterKeyHint) {
+			$this->setEnterKeyHint($control->getEnterKeyHint());
+		}
+		if ($attrToCopy & TWebControlAttribute::Inert) {
+			$this->setInert($control->getInert());
+		}
+		if ($attrToCopy & TWebControlAttribute::Popover) {
+			$this->setPopover($control->getPopover());
+		}
+		if ($attrToCopy & TWebControlAttribute::Slot) {
+			$this->setSlot($control->getSlot());
+		}
+		if ($attrToCopy & TWebControlAttribute::AutoFocus) {
+			$this->setAutoFocus($control->getAutoFocus());
+		}
+		if ($attrToCopy & TWebControlAttribute::AutoCapitalize) {
+			$this->setAutoCapitalize($control->getAutoCapitalize());
+		}
+		if ($attrToCopy & TWebControlAttribute::AutoCorrect) {
+			$this->setAutoCorrect($control->getAutoCorrect());
+		}
+		if ($attrToCopy & TWebControlAttribute::WritingSuggestions) {
+			$this->setWritingSuggestions($control->getWritingSuggestions());
+		}
+		if ($attrToCopy & TWebControlAttribute::Part) {
+			$this->setPart($control->getPart());
+			$this->setExportParts($control->getExportParts());
+		}
+		if ($attrToCopy & TWebControlAttribute::Microdata) {
+			$this->setItemScope($control->getItemScope());
+			$this->setItemScopeType($control->getItemScopeType());
+			$this->setItemProp($control->getItemProp());
+			$this->setItemId($control->getItemId());
+			$this->setItemRef($control->getItemRef());
+		}
+		if ($attrToCopy & TWebControlAttribute::KeyShortcuts) {
+			$this->setKeyShortcuts($control->getKeyShortcuts());
+			$this->setKeyShortcutScope($control->getKeyShortcutScopeClientID());
+			$this->setKeyShortcutAllowReserved($control->getKeyShortcutAllowReserved());
+		}
+		if ($attrToCopy & TWebControlAttribute::ARIA && $control->getHasAria()) {
+			$this->getAria()->copyFrom($control->getAria());
+		}
+		if ($attrToCopy & TWebControlAttribute::Dataset && $control->getHasDataset()) {
+			$this->getDataset()->copyFrom($control->getDataset());
+		}
+		if ($attrToCopy & TWebControlAttribute::CustomAttributes && $control->getHasAttributes()) {
 			$this->getAttributes()->copyFrom($control->getAttributes());
 		}
 	}
 
 	/**
-	 * @return string the access key of the control
+	 * Returns the HTML tag name for this control; default is 'span'.
+	 *
+	 * @return string tag name rendered for this control
+	 */
+	protected function getTagName()
+	{
+		return 'span';
+	}
+
+	/**
+	 * @return string the access key for keyboard navigation
 	 */
 	public function getAccessKey()
 	{
@@ -106,14 +321,16 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	}
 
 	/**
-	 * Sets the access key of the control.
-	 * Only one-character string can be set, or an exception will be raised.
-	 * Pass in an empty string if you want to disable access key.
-	 * @param string $value the access key to be set
-	 * @throws TInvalidDataValueException if the access key is specified with more than one character
+	 * Sets the access key.
+	 *
+	 * Only one-character strings can be set. Use empty string to disable.
+	 *
+	 * @param string $value the access key (single character)
+	 * @throws TInvalidDataValueException if value is longer than one character
 	 */
 	public function setAccessKey($value)
 	{
+		$value = TPropertyValue::ensureString($value);
 		if (strlen($value) > 1) {
 			throw new TInvalidDataValueException('webcontrol_accesskey_invalid', $this::class, $value);
 		}
@@ -121,95 +338,157 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	}
 
 	/**
-	 * @return string the background color of the control
+	 * @return string the keyboard shortcuts in the normalized `aria-keyshortcuts`
+	 *   syntax, or '' when the control has none
+	 * @since 4.4.0
 	 */
-	public function getBackColor()
+	public function getKeyShortcuts()
 	{
-		if ($style = $this->getViewState('Style', null)) {
-			return $style->getBackColor();
-		} else {
+		return $this->getViewState('KeyShortcuts', '');
+	}
+
+	/**
+	 * Sets the keyboard shortcuts that activate or focus the control.
+	 *
+	 * The value is a space-separated list in the `aria-keyshortcuts` syntax, such
+	 * as 'Control+S Meta+S'. {@see TKeyShortcuts::normalize} validates and
+	 * normalizes it. The control renders `aria-keyshortcuts` and the
+	 * `data-prado-keyshortcuts` marker, and registers the `keyshortcuts` script
+	 * package, whose `Prado.KeyShortcuts` registry handles the keys.
+	 *
+	 * @param ?string $value the shortcuts, or '' for none
+	 * @throws TInvalidDataValueException when a shortcut is not valid
+	 * @since 4.4.0
+	 */
+	public function setKeyShortcuts($value)
+	{
+		$this->setViewState('KeyShortcuts', TKeyShortcuts::normalize($value), '');
+	}
+
+	/**
+	 * @return string the ID of the control whose element bounds where the
+	 *   shortcuts work, or '' when they work page-wide
+	 * @since 4.4.0
+	 */
+	public function getKeyShortcutScope()
+	{
+		return $this->getViewState('KeyShortcutScope', '');
+	}
+
+	/**
+	 * Sets the scope of the keyboard shortcuts.
+	 *
+	 * - '' → the shortcuts work page-wide.
+	 * - a control ID → the shortcuts work while focus is inside that control's
+	 *   element. {@see \Prado\Web\UI\TControl::findControl} locates the control;
+	 *   an ID that names no control is used as the element ID.
+	 *
+	 * @param ?string $value the scope control ID, or ''
+	 * @since 4.4.0
+	 */
+	public function setKeyShortcutScope($value)
+	{
+		$this->setViewState('KeyShortcutScope', trim(TPropertyValue::ensureString($value)), '');
+	}
+
+	/**
+	 * @return string the element ID of the shortcut scope, or '' for page-wide shortcuts
+	 * @since 4.4.0
+	 */
+	public function getKeyShortcutScopeClientID()
+	{
+		if (($scope = $this->getKeyShortcutScope()) === '') {
 			return '';
+		}
+		$control = $this->findControl($scope);
+		return $control ? $control->getClientID() : $scope;
+	}
+
+	/**
+	 * @return bool whether the shortcuts may include reserved shortcuts. Defaults to false.
+	 * @since 4.4.0
+	 */
+	public function getKeyShortcutAllowReserved()
+	{
+		return $this->getViewState('KeyShortcutAllowReserved', false);
+	}
+
+	/**
+	 * Sets whether the shortcuts may include reserved shortcuts.
+	 *
+	 * Reserved shortcuts serve focus navigation, editing, and the browser; see
+	 * {@see TKeyShortcuts::isReserved}. A reserved shortcut without this opt-in
+	 * throws on render.
+	 *
+	 * @param bool $value whether reserved shortcuts are allowed
+	 * @since 4.4.0
+	 */
+	public function setKeyShortcutAllowReserved($value)
+	{
+		$this->setViewState('KeyShortcutAllowReserved', TPropertyValue::ensureBoolean($value), false);
+	}
+
+	/**
+	 * Returns the attributes that bind the shortcuts on the client.
+	 *
+	 * | Attribute | Value |
+	 * |---|---|
+	 * | `aria-keyshortcuts` | {@see getKeyShortcuts} |
+	 * | `data-prado-keyshortcuts` | {@see getKeyShortcutScopeClientID}; '' for page-wide |
+	 * | `data-prado-keyshortcuts-reserved` | 'true' when {@see getKeyShortcutAllowReserved}, otherwise null |
+	 *
+	 * @throws TInvalidOperationException when a shortcut is reserved and reserved
+	 *   shortcuts are not allowed
+	 * @return array<string, ?string> attribute names and values; empty when the
+	 *   control has no shortcuts
+	 * @since 4.4.0
+	 */
+	public function getKeyShortcutsAttributes()
+	{
+		if (($keys = $this->getKeyShortcuts()) === '') {
+			return [];
+		}
+		$allowReserved = $this->getKeyShortcutAllowReserved();
+		if (!$allowReserved) {
+			foreach (explode(' ', $keys) as $shortcut) {
+				if (TKeyShortcuts::isReserved($shortcut)) {
+					throw new TInvalidOperationException('webcontrol_keyshortcuts_reserved', $this::class, $shortcut);
+				}
+			}
+		}
+		return [
+			'aria-keyshortcuts' => $keys,
+			'data-prado-keyshortcuts' => $this->getKeyShortcutScopeClientID(),
+			'data-prado-keyshortcuts-reserved' => $allowReserved ? 'true' : null,
+		];
+	}
+
+	/**
+	 * Adds the shortcut attributes and registers the `keyshortcuts` script package.
+	 *
+	 * Controls that render their shortcuts on an inner element, such as the
+	 * input of {@see TCheckBox}, call this for that element.
+	 *
+	 * @param \Prado\Web\UI\THtmlWriter $writer the HTML writer
+	 * @since 4.4.0
+	 */
+	protected function addKeyShortcutsAttributesToRender($writer)
+	{
+		if (!($attributes = $this->getKeyShortcutsAttributes())) {
+			return;
+		}
+		foreach ($attributes as $name => $value) {
+			if ($value !== null) {
+				$writer->addAttribute($name, $value);
+			}
+		}
+		if ($page = $this->getPage()) {
+			$page->getClientScript()->registerPradoScript('keyshortcuts');
 		}
 	}
 
 	/**
-	 * @param string $value the background color of the control
-	 */
-	public function setBackColor($value)
-	{
-		$this->getStyle()->setBackColor($value);
-	}
-
-	/**
-	 * @return string the border color of the control
-	 */
-	public function getBorderColor()
-	{
-		if ($style = $this->getViewState('Style', null)) {
-			return $style->getBorderColor();
-		} else {
-			return '';
-		}
-	}
-
-	/**
-	 * @param string $value the border color of the control
-	 */
-	public function setBorderColor($value)
-	{
-		$this->getStyle()->setBorderColor($value);
-	}
-
-	/**
-	 * @return string the border style of the control
-	 */
-	public function getBorderStyle()
-	{
-		if ($style = $this->getViewState('Style', null)) {
-			return $style->getBorderStyle();
-		} else {
-			return '';
-		}
-	}
-
-	/**
-	 * @param string $value the border style of the control
-	 */
-	public function setBorderStyle($value)
-	{
-		$this->getStyle()->setBorderStyle($value);
-	}
-
-	/**
-	 * @return string the border width of the control
-	 */
-	public function getBorderWidth()
-	{
-		if ($style = $this->getViewState('Style', null)) {
-			return $style->getBorderWidth();
-		} else {
-			return '';
-		}
-	}
-
-	/**
-	 * @param string $value the border width of the control
-	 */
-	public function setBorderWidth($value)
-	{
-		$this->getStyle()->setBorderWidth($value);
-	}
-
-	/**
-	 * @return TFont the font of the control
-	 */
-	public function getFont()
-	{
-		return $this->getStyle()->getFont();
-	}
-
-	/**
-	 * @return string the foreground color of the control
+	 * @return string CSS color (foreground/text) value, or empty string if not set
 	 */
 	public function getForeColor()
 	{
@@ -221,7 +500,9 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	}
 
 	/**
-	 * @param string $value the foreground color of the control
+	 * Sets the CSS foreground color property.
+	 *
+	 * @param string $value CSS color value (e.g., '#333333', 'red')
 	 */
 	public function setForeColor($value)
 	{
@@ -229,27 +510,103 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	}
 
 	/**
-	 * @return string the height of the control
+	 * @return string CSS background-color value, or empty string if not set
 	 */
-	public function getHeight()
+	public function getBackColor()
 	{
 		if ($style = $this->getViewState('Style', null)) {
-			return $style->getHeight();
+			return $style->getBackColor();
 		} else {
 			return '';
 		}
 	}
 
 	/**
-	 * @param TDisplayStyle $value display style of the control, default is TDisplayStyle::Fixed
+	 * Sets the CSS background-color property.
+	 *
+	 * @param string $value CSS color value (e.g., '#FF0000', 'red')
 	 */
-	public function setDisplay($value)
+	public function setBackColor($value)
 	{
-		$this->getStyle()->setDisplayStyle($value);
+		$this->getStyle()->setBackColor($value);
 	}
 
 	/**
-	 * @return TDisplayStyle display style of the control, default is TDisplayStyle::Fixed
+	 * @return string CSS border-color value, or empty string if not set
+	 */
+	public function getBorderColor()
+	{
+		if ($style = $this->getViewState('Style', null)) {
+			return $style->getBorderColor();
+		} else {
+			return '';
+		}
+	}
+
+	/**
+	 * Sets the CSS border-color property.
+	 *
+	 * @param string $value CSS color value
+	 */
+	public function setBorderColor($value)
+	{
+		$this->getStyle()->setBorderColor($value);
+	}
+
+	/**
+	 * @return string CSS border-style value, or empty string if not set
+	 */
+	public function getBorderStyle()
+	{
+		if ($style = $this->getViewState('Style', null)) {
+			return $style->getBorderStyle();
+		} else {
+			return '';
+		}
+	}
+
+	/**
+	 * Sets the CSS border-style property.
+	 *
+	 * @param string $value border style (e.g., 'solid', 'dashed', 'dotted', 'none')
+	 */
+	public function setBorderStyle($value)
+	{
+		$this->getStyle()->setBorderStyle($value);
+	}
+
+	/**
+	 * @return string CSS border-width value, or empty string if not set
+	 */
+	public function getBorderWidth()
+	{
+		if ($style = $this->getViewState('Style', null)) {
+			return $style->getBorderWidth();
+		} else {
+			return '';
+		}
+	}
+
+	/**
+	 * Sets the CSS border-width property.
+	 *
+	 * @param string $value border width (e.g., '1px', '2px', 'thin')
+	 */
+	public function setBorderWidth($value)
+	{
+		$this->getStyle()->setBorderWidth($value);
+	}
+
+	/**
+	 * @return TFont the font object for this control
+	 */
+	public function getFont()
+	{
+		return $this->getStyle()->getFont();
+	}
+
+	/**
+	 * @return string display style (TDisplayStyle constant)
 	 */
 	public function getDisplay()
 	{
@@ -257,15 +614,22 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	}
 
 	/**
-	 * @param string $value the css class of the control
+	 * Sets the display style.
+	 *
+	 * - TDisplayStyle::Fixed — visible (default)
+	 * - TDisplayStyle::None — hidden (display:none)
+	 * - TDisplayStyle::Dynamic — CSS-controlled
+	 * - TDisplayStyle::Hidden — invisible but occupies space (visibility:hidden)
+	 *
+	 * @param string $value TDisplayStyle constant
 	 */
-	public function setCssClass($value)
+	public function setDisplay($value)
 	{
-		$this->getStyle()->setCssClass($value);
+		$this->getStyle()->setDisplayStyle($value);
 	}
 
 	/**
-	 * @return string the css class of the control
+	 * @return string CSS class name, or empty string if not set
 	 */
 	public function getCssClass()
 	{
@@ -277,62 +641,112 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	}
 
 	/**
-	 * @param string $value the height of the control
+	 * Sets the CSS class name.
+	 *
+	 * @param string $value CSS class name
 	 */
-	public function setHeight($value)
+	public function setCssClass($value)
 	{
-		$this->getStyle()->setHeight($value);
+		$this->getStyle()->setCssClass($value);
 	}
 
 	/**
-	 * @return bool whether the control has defined any style information
+	 * @return string language code following BCP 47, or empty string if not set
+	 * @since 4.4.0
 	 */
-	public function getHasStyle()
+	public function getLang()
 	{
-		return $this->getViewState('Style', null) !== null;
+		return $this->getViewState('Lang', '');
 	}
 
 	/**
-	 * Creates a style object to be used by the control.
-	 * This method may be overriden by controls to provide customized style.
-	 * @return TStyle the default style created for TWebControl
+	 * Sets the language of the element's content.
+	 *
+	 * Values follow BCP 47 (e.g., 'en', 'en-US', 'zh-Hans').
+	 *
+	 * @param string $value language code
+	 * @since 4.4.0
 	 */
-	protected function createStyle()
+	public function setLang($value)
 	{
-		return new TStyle();
+		$this->setViewState('Lang', trim(TPropertyValue::ensureString($value)), '');
 	}
 
 	/**
-	 * @return TStyle the object representing the css style of the control
+	 * @return string text direction ('ltr', 'rtl', 'auto'), or empty string if not set
+	 * @since 4.4.0
 	 */
-	public function getStyle()
+	public function getDir()
 	{
-		if ($style = $this->getViewState('Style', null)) {
-			return $style;
+		return $this->getViewState('Dir', '');
+	}
+
+	/**
+	 * Sets the text directionality of the element.
+	 *
+	 * @param string $value 'ltr' (left-to-right), 'rtl' (right-to-left), or 'auto'
+	 * @throws TInvalidDataValueException if value is invalid
+	 * @since 4.4.0
+	 */
+	public function setDir($value)
+	{
+		$value = strtolower(trim(TPropertyValue::ensureString($value)));
+		if ($value === '' || in_array($value, ['ltr', 'rtl', 'auto'], true)) {
+			$this->setViewState('Dir', $value, '');
 		} else {
-			$style = $this->createStyle();
-			$this->setViewState('Style', $style, null);
-			return $style;
+			throw new TInvalidDataValueException('webcontrol_dir_invalid', $this::class, $value);
 		}
 	}
 
 	/**
-	 * Sets the css style string of the control.
-	 * The style string will be prefixed to the styles set via other control properties (e.g. Height, Width).
-	 * @param string $value the css style string
-	 * @throws TInvalidDataValueException if the parameter is not a string
+	 * @return bool|string whether the control is hidden: false, true, or
+	 *   'until-found' for content the browser reveals on find-in-page and fragment navigation
+	 * @since 4.4.0
 	 */
-	public function setStyle($value)
+	public function getHidden()
 	{
-		if (is_string($value)) {
-			$this->getStyle()->setCustomStyle($value);
-		} else {
-			throw new TInvalidDataValueException('webcontrol_style_invalid', $this::class);
-		}
+		return $this->getViewState('Hidden', false);
 	}
 
 	/**
-	 * Removes all style data.
+	 * Sets whether the control is hidden. The value 'until-found' hides the content
+	 * until find-in-page or fragment navigation reaches it; the browser then removes
+	 * the attribute and fires `beforematch`.
+	 *
+	 * @param bool|string $value true to hide the element, or 'until-found'
+	 * @since 4.4.0
+	 */
+	public function setHidden($value)
+	{
+		if (is_string($value) && strtolower(str_replace(['-', ' '], '', $value)) === 'untilfound') {
+			$this->setViewState('Hidden', 'until-found', false);
+			return;
+		}
+		$this->setViewState('Hidden', TPropertyValue::ensureBoolean($value), false);
+	}
+
+	/**
+	 * @return ?bool whether spellcheck is enabled, null for browser default
+	 * @since 4.4.0
+	 */
+	public function getSpellCheck()
+	{
+		return $this->getViewState('SpellCheck', null);
+	}
+
+	/**
+	 * Sets whether spellcheck is enabled.
+	 *
+	 * @param null|bool|string $value true, false, or null to reset
+	 * @since 4.4.0
+	 */
+	public function setSpellCheck($value)
+	{
+		$this->setViewState('SpellCheck', ($value === null || $value === '') ? null : TPropertyValue::ensureBoolean($value), null);
+	}
+
+	/**
+	 * Removes all style data from the control.
 	 */
 	public function clearStyle()
 	{
@@ -340,36 +754,30 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	}
 
 	/**
-	 * @return int the tab index of the control
+	 * @return ?int tab index, null means not in tab order
 	 */
 	public function getTabIndex()
 	{
-		return $this->getViewState('TabIndex', 0);
+		return $this->getViewState('TabIndex', null);
 	}
 
 	/**
-	 * Sets the tab index of the control.
-	 * Pass 0 if you want to disable tab index.
-	 * @param int $value the tab index to be set
+	 * Sets the tab index for keyboard navigation.
+	 *
+	 * - 0: natural tab order
+	 * - -1: not in tab order but can be focused programmatically
+	 * - null: not rendered as tabable
+	 *
+	 * @param null|int|string $value tab index
 	 */
 	public function setTabIndex($value)
 	{
-		$this->setViewState('TabIndex', TPropertyValue::ensureInteger($value), 0);
+		$value = TPropertyValue::ensureNullIf($value, TPropertyValue::FILTER_NULL | TPropertyValue::FILTER_BLANK);
+		$this->setViewState('TabIndex', $value !== null ? TPropertyValue::ensureInteger($value) : null, null);
 	}
 
 	/**
-	 * Returns the tag name used for this control.
-	 * By default, the tag name is 'span'.
-	 * You can override this method to provide customized tag names.
-	 * @return string tag name of the control to be rendered
-	 */
-	protected function getTagName()
-	{
-		return 'span';
-	}
-
-	/**
-	 * @return string the tooltip of the control
+	 * @return string tooltip text, or empty string if not set
 	 */
 	public function getToolTip()
 	{
@@ -377,17 +785,17 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	}
 
 	/**
-	 * Sets the tooltip of the control.
-	 * Pass an empty string if you want to disable tooltip.
-	 * @param string $value the tooltip to be set
+	 * Sets the tooltip text shown on hover.
+	 *
+	 * @param string $value tooltip text, empty to disable
 	 */
 	public function setToolTip($value)
 	{
-		$this->setViewState('ToolTip', $value, '');
+		$this->setViewState('ToolTip', TPropertyValue::ensureString($value), '');
 	}
 
 	/**
-	 * @return string the width of the control
+	 * @return string CSS width value, or empty string if not set
 	 */
 	public function getWidth()
 	{
@@ -399,35 +807,710 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	}
 
 	/**
-	 * @param string $value the width of the control
+	 * Sets the CSS width property.
+	 *
+	 * @param string $value CSS width (e.g., '200px', '50%', 'auto')
 	 */
 	public function setWidth($value)
 	{
 		$this->getStyle()->setWidth($value);
 	}
 
+	/**
+	 * @return string CSS height value, or empty string if not set
+	 */
+	public function getHeight()
+	{
+		if ($style = $this->getViewState('Style', null)) {
+			return $style->getHeight();
+		} else {
+			return '';
+		}
+	}
 
 	/**
-	 * If your subclass overrides the onPreRender method be sure to call
-	 * this method through parent::onPreRender($param); so your sub-class can be decorated,
-	 * among other things.
-	 * @param \Prado\TEventParameter $param event parameter to be passed to the event handlers
+	 * Sets the CSS height property.
+	 *
+	 * @param string $value CSS height (e.g., '100px', '50%', 'auto')
+	 */
+	public function setHeight($value)
+	{
+		$this->getStyle()->setHeight($value);
+	}
+
+	/**
+	 * @return null|bool|string draggable state, null for browser default
+	 * @since 4.4.0
+	 */
+	public function getDraggable()
+	{
+		return $this->getViewState('Draggable', null);
+	}
+
+	/**
+	 * Sets whether the element is draggable.
+	 *
+	 * @param null|bool|string $value true, false, or null for default
+	 * @since 4.4.0
+	 */
+	public function setDraggable($value)
+	{
+		if ($value === null || $value === '') {
+			$value = null;
+		} else {
+			$value = TPropertyValue::ensureBoolean($value);
+		}
+		$this->setViewState('Draggable', $value, null);
+	}
+
+	/**
+	 * @return bool whether the element is inert (prevents interaction)
+	 * @since 4.4.0
+	 */
+	public function getInert()
+	{
+		return $this->getViewState('Inert', false);
+	}
+
+	/**
+	 * Sets whether the element is inert (prevents user interaction).
+	 *
+	 * @param bool $value true to make inert
+	 * @since 4.4.0
+	 */
+	public function setInert($value)
+	{
+		$this->setViewState('Inert', TPropertyValue::ensureBoolean($value), false);
+	}
+
+	/**
+	 * @return null|bool|string contenteditable state, null for browser default
+	 * @since 4.4.0
+	 */
+	public function getContentEditable()
+	{
+		return $this->getViewState('ContentEditable', null);
+	}
+
+	/**
+	 * Sets whether the element's content is editable.
+	 *
+	 * @param null|bool|string $value true, false, 'plaintext-only', or null for default
+	 * @since 4.4.0
+	 */
+	public function setContentEditable($value)
+	{
+		$value = TPropertyValue::ensureNullIf($value, TPropertyValue::FILTER_NULL | TPropertyValue::FILTER_BLANK | TPropertyValue::FILTER_TRIM | TPropertyValue::FILTER_LOWERCASE);
+		if ($value === null) {
+			$this->setViewState('ContentEditable', null, null);
+		} elseif ($value === 'plaintext-only') {
+			$this->setViewState('ContentEditable', 'plaintext-only', null);
+		} else {
+			$this->setViewState('ContentEditable', TPropertyValue::ensureBoolean($value), null);
+		}
+	}
+
+	/**
+	 * @return ?string input mode hint, null if not set
+	 * @since 4.4.0
+	 */
+	public function getInputMode()
+	{
+		return $this->getViewState('InputMode', null);
+	}
+
+	/**
+	 * Sets the input mode hint for virtual keyboards.
+	 *
+	 * @param ?string $value TWebInputMode constant (e.g., TWebInputMode::Email, TWebInputMode::Url)
+	 * @since 4.4.0
+	 */
+	public function setInputMode($value)
+	{
+		$value = TPropertyValue::ensureNullIf($value, TPropertyValue::FILTER_NULL | TPropertyValue::FILTER_BLANK);
+		$this->setViewState('InputMode', $value !== null ? TPropertyValue::ensureEnum($value, TWebInputMode::class) : null, null);
+	}
+
+	/**
+	 * @return ?string enter key hint, null if not set
+	 * @since 4.4.0
+	 */
+	public function getEnterKeyHint()
+	{
+		return $this->getViewState('EnterKeyHint', null);
+	}
+
+	/**
+	 * Sets the enter key hint for virtual keyboards.
+	 *
+	 * @param ?string $value TEnterKeyHint constant (e.g., TEnterKeyHint::Next, TEnterKeyHint::Done)
+	 * @since 4.4.0
+	 */
+	public function setEnterKeyHint($value)
+	{
+		$value = TPropertyValue::ensureNullIf($value, TPropertyValue::FILTER_NULL | TPropertyValue::FILTER_BLANK);
+		$this->setViewState('EnterKeyHint', $value !== null ? TPropertyValue::ensureEnum($value, TEnterKeyHint::class) : null, null);
+	}
+
+	/**
+	 * @return ?string translation hint ('yes', 'no'), null if not set
+	 * @since 4.4.0
+	 */
+	public function getTranslate()
+	{
+		return $this->getViewState('Translate', null);
+	}
+
+	/**
+	 * Sets whether the content should be translated.
+	 *
+	 * @param null|bool|string $value 'yes', 'no', or boolean
+	 * @since 4.4.0
+	 */
+	public function setTranslate($value)
+	{
+		$value = TPropertyValue::ensureNullIf($value, TPropertyValue::FILTER_NULL | TPropertyValue::FILTER_BLANK | TPropertyValue::FILTER_TRIM | TPropertyValue::FILTER_LOWERCASE);
+		if ($value === null) {
+			$this->setViewState('Translate', null, null);
+			return;
+		}
+		if ($value === 'yes' || $value === 'no') {
+			$this->setViewState('Translate', $value, null);
+			return;
+		}
+		$this->setViewState('Translate', TPropertyValue::ensureBoolean($value) ? 'yes' : 'no', null);
+	}
+
+	/**
+	 * @return string the popover state: 'auto', 'manual', 'hint', or '' when the
+	 *   element is not a popover. Defaults to ''.
+	 * @since 4.4.0
+	 */
+	public function getPopover()
+	{
+		return $this->getViewState('Popover', '');
+	}
+
+	/**
+	 * Sets the popover state.
+	 * - 'auto' or true → light dismiss; opening it closes other auto popovers.
+	 * - 'manual' → closes only by script or an invoker.
+	 * - 'hint' → a tooltip-like popover that does not close auto popovers.
+	 * - '' or false → not a popover.
+	 *
+	 * @param bool|string $value the popover state
+	 * @throws TInvalidDataValueException if the value is not a popover state.
+	 * @since 4.4.0
+	 */
+	public function setPopover($value)
+	{
+		if (!is_string($value)) {
+			$value = $value ? 'auto' : '';
+		} elseif (($value = strtolower(trim($value))) === 'true') {
+			$value = 'auto';
+		} elseif ($value === 'false') {
+			$value = '';
+		} elseif ($value !== 'auto' && $value !== 'manual' && $value !== 'hint' && $value !== '') {
+			throw new TInvalidDataValueException('webcontrol_popover_invalid', $this::class, $value);
+		}
+		$this->setViewState('Popover', $value, '');
+	}
+
+	/**
+	 * @return string the name of the shadow tree slot this element is assigned
+	 *   to, or empty string if not set
+	 * @since 4.4.0
+	 */
+	public function getSlot()
+	{
+		return $this->getViewState('Slot', '');
+	}
+
+	/**
+	 * Sets the name of the shadow tree slot this element is assigned to. The
+	 * element renders in the {@see TSlot} of the same name inside its parent's
+	 * shadow root. An empty value omits the attribute, which assigns the element
+	 * to the default slot.
+	 *
+	 * @param string $value the slot name
+	 * @since 4.4.0
+	 */
+	public function setSlot($value)
+	{
+		$this->setViewState('Slot', trim(TPropertyValue::ensureString($value)), '');
+	}
+
+	/**
+	 * @return bool whether the element takes focus when the page loads or, inside a
+	 *   `<dialog>` or popover, when it opens. Defaults to false.
+	 * @since 4.4.0
+	 */
+	public function getAutoFocus()
+	{
+		return $this->getViewState('AutoFocus', false);
+	}
+
+	/**
+	 * Sets whether the element takes focus when the page loads or, inside a `<dialog>`
+	 * or popover, when it opens. One element per page or dialog takes `autofocus`;
+	 * {@see \Prado\Web\UI\TPage::setFocus} sets the focus of a postback by script.
+	 *
+	 * @param bool $value whether the element takes focus
+	 * @since 4.4.0
+	 */
+	public function setAutoFocus($value)
+	{
+		$this->setViewState('AutoFocus', TPropertyValue::ensureBoolean($value), false);
+	}
+
+	/**
+	 * @return ?string the virtual keyboard capitalization, a {@see TAutoCapitalize},
+	 *   null for the browser default
+	 * @since 4.4.0
+	 */
+	public function getAutoCapitalize()
+	{
+		return $this->getViewState('AutoCapitalize', null);
+	}
+
+	/**
+	 * Sets the capitalization a virtual keyboard or voice input applies.
+	 *
+	 * @param ?string $value a {@see TAutoCapitalize}, or null or '' for the browser default
+	 * @since 4.4.0
+	 */
+	public function setAutoCapitalize($value)
+	{
+		$value = TPropertyValue::ensureNullIf($value, TPropertyValue::FILTER_NULL | TPropertyValue::FILTER_BLANK);
+		$this->setViewState('AutoCapitalize', $value !== null ? TPropertyValue::ensureEnum($value, TAutoCapitalize::class) : null, null);
+	}
+
+	/**
+	 * @return ?bool whether the browser corrects spelling as the user types, null for
+	 *   the browser default
+	 * @since 4.4.0
+	 */
+	public function getAutoCorrect()
+	{
+		return $this->getViewState('AutoCorrect', null);
+	}
+
+	/**
+	 * Sets whether the browser corrects spelling as the user types (`autocorrect`).
+	 *
+	 * @param null|bool|string $value true, false, or null or '' for the browser default
+	 * @since 4.4.0
+	 */
+	public function setAutoCorrect($value)
+	{
+		$this->setViewState('AutoCorrect', ($value === null || $value === '') ? null : TPropertyValue::ensureBoolean($value), null);
+	}
+
+	/**
+	 * @return ?bool whether the browser offers writing suggestions, null for the
+	 *   browser default
+	 * @since 4.4.0
+	 */
+	public function getWritingSuggestions()
+	{
+		return $this->getViewState('WritingSuggestions', null);
+	}
+
+	/**
+	 * Sets whether the browser offers writing suggestions (`writingsuggestions`),
+	 * such as predictive text completion.
+	 *
+	 * @param null|bool|string $value true, false, or null or '' for the browser default
+	 * @since 4.4.0
+	 */
+	public function setWritingSuggestions($value)
+	{
+		$this->setViewState('WritingSuggestions', ($value === null || $value === '') ? null : TPropertyValue::ensureBoolean($value), null);
+	}
+
+	/**
+	 * @return string the shadow part names of the element, or '' if not set
+	 * @since 4.4.0
+	 */
+	public function getPart()
+	{
+		return $this->getViewState('Part', '');
+	}
+
+	/**
+	 * Sets the shadow part names of an element inside a shadow root (`part`). A page
+	 * style selects the element with `::part(name)`.
+	 *
+	 * @param string $value space-separated part names
+	 * @since 4.4.0
+	 */
+	public function setPart($value)
+	{
+		$this->setViewState('Part', trim(TPropertyValue::ensureString($value)), '');
+	}
+
+	/**
+	 * @return string the shadow parts the element's shadow root exports, or '' if not set
+	 * @since 4.4.0
+	 */
+	public function getExportParts()
+	{
+		return $this->getViewState('ExportParts', '');
+	}
+
+	/**
+	 * Sets the parts of the element's shadow root that it exports to the enclosing
+	 * tree (`exportparts`), such as `label, icon: button-icon`.
+	 *
+	 * @param string $value comma-separated part names, each optionally renamed with `inner: outer`
+	 * @since 4.4.0
+	 */
+	public function setExportParts($value)
+	{
+		$this->setViewState('ExportParts', trim(TPropertyValue::ensureString($value)), '');
+	}
+
+	/**
+	 * @return bool whether the element is a microdata item (`itemscope`). Defaults to false.
+	 * @since 4.4.0
+	 */
+	public function getItemScope()
+	{
+		return $this->getViewState('ItemScope', false);
+	}
+
+	/**
+	 * Sets whether the element is a microdata item (`itemscope`). Its descendants'
+	 * {@see setItemProp ItemProp} values are the item's properties.
+	 *
+	 * @param bool $value whether the element is a microdata item
+	 * @since 4.4.0
+	 */
+	public function setItemScope($value)
+	{
+		$this->setViewState('ItemScope', TPropertyValue::ensureBoolean($value), false);
+	}
+
+	/**
+	 * @return string the vocabulary types of the microdata item, or '' if not set
+	 * @since 4.4.0
+	 */
+	public function getItemScopeType()
+	{
+		return $this->getViewState('ItemScopeType', '');
+	}
+
+	/**
+	 * Sets the vocabulary types of the microdata item (`itemtype`), such as
+	 * `https://schema.org/Person`. It applies with {@see setItemScope ItemScope}.
+	 * The property is not named ItemType, which data item controls use for their
+	 * {@see TListItemType}.
+	 *
+	 * @param string $value space-separated absolute type URLs
+	 * @since 4.4.0
+	 */
+	public function setItemScopeType($value)
+	{
+		$this->setViewState('ItemScopeType', trim(TPropertyValue::ensureString($value)), '');
+	}
+
+	/**
+	 * @return string the microdata property names of the element, or '' if not set
+	 * @since 4.4.0
+	 */
+	public function getItemProp()
+	{
+		return $this->getViewState('ItemProp', '');
+	}
+
+	/**
+	 * Sets the microdata property names the element's value provides (`itemprop`).
+	 *
+	 * @param string $value space-separated property names
+	 * @since 4.4.0
+	 */
+	public function setItemProp($value)
+	{
+		$this->setViewState('ItemProp', trim(TPropertyValue::ensureString($value)), '');
+	}
+
+	/**
+	 * @return string the global identifier of the microdata item, or '' if not set
+	 * @since 4.4.0
+	 */
+	public function getItemId()
+	{
+		return $this->getViewState('ItemId', '');
+	}
+
+	/**
+	 * Sets the global identifier of the microdata item (`itemid`), a URL such as
+	 * `urn:isbn:0-330-34032-8`. It applies with {@see setItemScopeType ItemScopeType}.
+	 *
+	 * @param string $value the item URL
+	 * @since 4.4.0
+	 */
+	public function setItemId($value)
+	{
+		$this->setViewState('ItemId', trim(TPropertyValue::ensureString($value)), '');
+	}
+
+	/**
+	 * @return string the IDs of the elements holding more properties of the item, or ''
+	 * @since 4.4.0
+	 */
+	public function getItemRef()
+	{
+		return $this->getViewState('ItemRef', '');
+	}
+
+	/**
+	 * Sets the IDs of elements outside the item that hold more of its properties
+	 * (`itemref`). It applies with {@see setItemScope ItemScope}. The IDs are client IDs.
+	 *
+	 * @param string $value space-separated element IDs
+	 * @since 4.4.0
+	 */
+	public function setItemRef($value)
+	{
+		$this->setViewState('ItemRef', trim(TPropertyValue::ensureString($value)), '');
+	}
+
+	/**
+	 * @return ?string ARIA role, null if not set
+	 * @since 4.4.0
+	 */
+	public function getRole()
+	{
+		return $this->getViewState('Role', null);
+	}
+
+	/**
+	 * Sets the ARIA role for accessibility.
+	 *
+	 * @param ?string $value ARIA role (e.g., 'button', 'menu', 'tooltip')
+	 * @since 4.4.0
+	 *
+	 * @see https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles
+	 */
+	public function setRole($value)
+	{
+		if (!empty($value)) {
+			$value = trim(TPropertyValue::ensureString($value));
+		} else {
+			$value = null;
+		}
+		$this->setViewState('Role', $value, null);
+	}
+
+	/**
+	 * Creates the ARIA attribute collection for this control.
+	 *
+	 * Override in subclasses to provide a custom TWebAttributeCollection subclass.
+	 *
+	 * @return TWebAttributeCollection the ARIA attribute collection
+	 * @since 4.4.0
+	 */
+	protected function createARIA()
+	{
+		return new TWebAttributeCollection('aria');
+	}
+
+	/**
+	 * @return bool whether any ARIA attributes have been set
+	 * @since 4.4.0
+	 */
+	public function getHasAria()
+	{
+		$aria = $this->getViewState('Aria', null);
+		return $aria && $aria->getCount() > 0;
+	}
+
+	/**
+	 * Returns the ARIA attribute collection, creating it if absent.
+	 *
+	 * Common keys: label, describedby, labelledby, hidden.
+	 *
+	 * @return TWebAttributeCollection collection of aria-* attributes
+	 * @since 4.4.0
+	 */
+	public function getAria()
+	{
+		$aria = $this->getViewState('Aria', null);
+		if (!$aria) {
+			$aria = $this->createARIA();
+			$this->setViewState('Aria', $aria, null);
+		}
+		return $aria;
+	}
+
+	/**
+	 * Creates the dataset attribute collection for this control.
+	 *
+	 * Override in subclasses to provide a custom TWebAttributeCollection subclass.
+	 *
+	 * @return TWebAttributeCollection the data-* attribute collection
+	 * @since 4.4.0
+	 */
+	protected function createDataset()
+	{
+		return new TWebAttributeCollection('data');
+	}
+
+	/**
+	 * @return bool whether any data-* attributes have been set
+	 * @since 4.4.0
+	 */
+	public function getHasDataset()
+	{
+		$dataset = $this->getViewState('Dataset', null);
+		return $dataset && $dataset->getCount() > 0;
+	}
+
+	/**
+	 * Returns the data-* attribute collection, creating it if absent.
+	 *
+	 * @return TWebAttributeCollection collection of data-* attributes
+	 * @since 4.4.0
+	 */
+	public function getDataset()
+	{
+		$dataset = $this->getViewState('Dataset', null);
+		if (!$dataset) {
+			$dataset = $this->createDataset();
+			$this->setViewState('Dataset', $dataset, null);
+		}
+		return $dataset;
+	}
+
+	/**
+	 * Sets a custom attribute, routing `data-*` to the dataset and `aria-*` to ARIA.
+	 *
+	 * @param string $name attribute name
+	 * @param string $value attribute value
+	 * @since 4.4.0
+	 */
+	public function setAttribute($name, $value)
+	{
+		if (strncasecmp($name, 'data-', 5) === 0) {
+			$this->getDataset()->add($name, $value);
+		} elseif (strncasecmp($name, 'aria-', 5) === 0) {
+			$this->getAria()->add($name, $value);
+		} else {
+			parent::setAttribute($name, $value);
+		}
+	}
+
+	/**
+	 * Returns a custom attribute value, checking dataset and ARIA collections for `data-*` and `aria-*` names.
+	 *
+	 * @param string $name attribute name
+	 * @return ?string attribute value, null if not found
+	 * @since 4.4.0
+	 */
+	public function getAttribute($name)
+	{
+		if (strncasecmp($name, 'data-', 5) === 0) {
+			return $this->getDataset()->itemAt($name);
+		} elseif (strncasecmp($name, 'aria-', 5) === 0) {
+			return $this->getAria()->itemAt($name);
+		}
+		return parent::getAttribute($name);
+	}
+
+	/**
+	 * Removes a custom attribute, routing `data-*` to the dataset and `aria-*` to ARIA.
+	 *
+	 * @param string $name attribute name
+	 * @return ?string removed value, null if not found
+	 * @since 4.4.0
+	 */
+	public function removeAttribute($name)
+	{
+		if (strncasecmp($name, 'data-', 5) === 0) {
+			return $this->getDataset()->remove($name);
+		} elseif (strncasecmp($name, 'aria-', 5) === 0) {
+			return $this->getAria()->remove($name);
+		}
+		return parent::removeAttribute($name);
+	}
+
+	/**
+	 * Creates the default TStyle object for this control.
+	 *
+	 * Override in subclasses to provide custom TStyle subclasses.
+	 *
+	 * @return TStyle the style object
+	 */
+	protected function createStyle()
+	{
+		return new TStyle();
+	}
+
+	/**
+	 * @return bool whether any style properties have been set
+	 */
+	public function getHasStyle()
+	{
+		return $this->getViewState('Style', null) !== null;
+	}
+
+	/**
+	 * Gets the style object for this control, creating it if necessary.
+	 *
+	 * Style properties (BackColor, Width, CssClass, etc.) are delegated to this object.
+	 *
+	 * @return TStyle the style object
+	 */
+	public function getStyle()
+	{
+		$style = $this->getViewState('Style', null);
+		if (!$style) {
+			$style = $this->createStyle();
+			$this->setViewState('Style', $style, null);
+		}
+		return $style;
+	}
+
+	/**
+	 * Sets the CSS style string directly.
+	 *
+	 * The style string is prefixed to styles set via individual properties.
+	 *
+	 * @param string $value CSS style string (e.g., 'color:red;margin:10px')
+	 * @throws TInvalidDataValueException if value is not a string
+	 */
+	public function setStyle($value)
+	{
+		if (is_string($value)) {
+			$this->getStyle()->setCustomStyle($value);
+		} else {
+			throw new TInvalidDataValueException('webcontrol_style_invalid', $this::class);
+		}
+	}
+
+	/**
+	 * Instantiates any attached decorator before the render phase.
+	 *
+	 * @param \Prado\TEventParameter $param event parameter
 	 */
 	public function onPreRender($param)
 	{
 		if ($decorator = $this->getDecorator(false)) {
 			$decorator->instantiate();
 		}
-
 		parent::onPreRender($param);
 	}
 
 	/**
-	 * Adds attribute name-value pairs to renderer.
-	 * By default, the method will render 'id', 'accesskey', 'disabled',
-	 * 'tabindex', 'title' and all custom attributes.
-	 * The method can be overriden to provide customized attribute rendering.
-	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
+	 * Adds attribute name-value pairs to the writer.
+	 *
+	 * Renders in order: id, accesskey, role, disabled, tabindex, title, translate, lang,
+	 * dir, hidden, spellcheck, draggable, contenteditable, inputmode, enterkeyhint, inert,
+	 * popover, slot, autofocus, autocapitalize, autocorrect, writingsuggestions, part,
+	 * exportparts, microdata, aria-*, key shortcuts, data-*, style, custom attributes.
+	 *
+	 * @param \Prado\Web\UI\THtmlWriter $writer the HTML writer
 	 */
 	protected function addAttributesToRender($writer)
 	{
@@ -437,14 +1520,79 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 		if (($accessKey = $this->getAccessKey()) !== '') {
 			$writer->addAttribute('accesskey', $accessKey);
 		}
+		if (($role = $this->getRole()) !== null) {
+			$writer->addAttribute('role', $role);
+		}
 		if (!$this->getEnabled()) {
 			$writer->addAttribute('disabled', 'disabled');
 		}
-		if (($tabIndex = $this->getTabIndex()) > 0) {
-			$writer->addAttribute('tabindex', "$tabIndex");
+		if (($tabIndex = $this->getTabIndex()) !== null) {
+			$writer->addAttribute('tabindex', (string) $tabIndex);
 		}
 		if (($toolTip = $this->getToolTip()) !== '') {
 			$writer->addAttribute('title', $toolTip);
+		}
+		if (($translate = $this->getTranslate()) !== null) {
+			$writer->addAttribute('translate', $translate);
+		}
+		if (($lang = $this->getLang()) !== '') {
+			$writer->addAttribute('lang', $lang);
+		}
+		if (($dir = $this->getDir()) !== '') {
+			$writer->addAttribute('dir', $dir);
+		}
+		if (($hidden = $this->getHidden()) !== false) {
+			$writer->addAttribute('hidden', $hidden === true ? 'hidden' : $hidden);
+		}
+		if (($spellCheck = $this->getSpellCheck()) !== null) {
+			$writer->addAttribute('spellcheck', $spellCheck ? 'true' : 'false');
+		}
+		if (($draggable = $this->getDraggable()) !== null) {
+			$writer->addAttribute('draggable', $draggable ? 'true' : 'false');
+		}
+		if (($ce = $this->getContentEditable()) !== null) {
+			$writer->addAttribute('contenteditable', ($ce === 'plaintext-only') ? $ce : ($ce ? 'true' : 'false'));
+		}
+		if (($inputMode = $this->getInputMode()) !== null) {
+			$writer->addAttribute('inputmode', strtolower($inputMode));
+		}
+		if (($keyHint = $this->getEnterKeyHint()) !== null) {
+			$writer->addAttribute('enterkeyhint', strtolower($keyHint));
+		}
+		if ($this->getInert()) {
+			$writer->addAttribute('inert', 'inert');
+		}
+		if (($popover = $this->getPopover()) !== '') {
+			$writer->addAttribute('popover', $popover);
+		}
+		if (($slot = $this->getSlot()) !== '') {
+			$writer->addAttribute('slot', $slot);
+		}
+		if ($this->getAutoFocus()) {
+			$writer->addAttribute('autofocus', 'autofocus');
+		}
+		if (($autoCapitalize = $this->getAutoCapitalize()) !== null) {
+			$writer->addAttribute('autocapitalize', strtolower($autoCapitalize));
+		}
+		if (($autoCorrect = $this->getAutoCorrect()) !== null) {
+			$writer->addAttribute('autocorrect', $autoCorrect ? 'on' : 'off');
+		}
+		if (($suggestions = $this->getWritingSuggestions()) !== null) {
+			$writer->addAttribute('writingsuggestions', $suggestions ? 'true' : 'false');
+		}
+		if (($part = $this->getPart()) !== '') {
+			$writer->addAttribute('part', $part);
+		}
+		if (($exportParts = $this->getExportParts()) !== '') {
+			$writer->addAttribute('exportparts', $exportParts);
+		}
+		$this->addMicrodataAttributesToRender($writer);
+		if ($aria = $this->getViewState('Aria', null)) {
+			$aria->addAttributesToRender($writer);
+		}
+		$this->addKeyShortcutsAttributesToRender($writer);
+		if ($dataset = $this->getViewState('Dataset', null)) {
+			$dataset->addAttributesToRender($writer);
 		}
 		if ($style = $this->getViewState('Style', null)) {
 			$style->addAttributesToRender($writer);
@@ -457,13 +1605,42 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	}
 
 	/**
-	 * Renders the control.
-	 * This method overrides the parent implementation by replacing it with
-	 * the following sequence:
-	 * - {@see renderBeginTag}
-	 * - {@see renderContents}
-	 * - {@see renderEndTag}
-	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
+	 * Adds the microdata attributes that are set: itemscope, itemtype, itemid,
+	 * itemref, and itemprop.
+	 *
+	 * @param \Prado\Web\UI\THtmlWriter $writer the HTML writer
+	 * @since 4.4.0
+	 */
+	protected function addMicrodataAttributesToRender($writer)
+	{
+		if ($this->getItemScope()) {
+			$writer->addAttribute('itemscope', 'itemscope');
+		}
+		foreach (['itemtype' => $this->getItemScopeType(), 'itemid' => $this->getItemId(),
+			'itemref' => $this->getItemRef(), 'itemprop' => $this->getItemProp()] as $name => $value) {
+			if ($value !== '') {
+				$writer->addAttribute($name, $value);
+			}
+		}
+	}
+
+	/**
+	 * Renders the complete control: opening tag, contents, and closing tag.
+	 *
+	 * When a {@see TWebControlDecorator} is attached, the full output sequence is:
+	 * - PreTagTemplate (inserted as a sibling before this control by {@see TWebControlDecorator::ensureTemplateDecoration})
+	 * - PreTagText
+	 * - open tag
+	 * - PreContentsText
+	 * - PreContentsTemplate (inserted as first child by {@see TWebControlDecorator::ensureTemplateDecoration})
+	 * - child controls
+	 * - PostContentsTemplate (inserted as last child by {@see TWebControlDecorator::ensureTemplateDecoration})
+	 * - PostContentsText
+	 * - close tag
+	 * - PostTagText
+	 * - PostTagTemplate (inserted as a sibling after this control by {@see TWebControlDecorator::ensureTemplateDecoration})
+	 *
+	 * @param \Prado\Web\UI\THtmlWriter $writer the HTML writer
 	 */
 	public function render($writer)
 	{
@@ -473,8 +1650,13 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	}
 
 	/**
-	 * Renders the openning tag for the control (including attributes)
-	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
+	 * Renders the opening tag with all attributes.
+	 *
+	 * When a {@see TWebControlDecorator} is attached, the output sequence is:
+	 * {@see TWebControlDecorator::renderPreTagText} → open tag → {@see TWebControlDecorator::renderPreContentsText}.
+	 * Without a decorator, only the open tag is written.
+	 *
+	 * @param \Prado\Web\UI\THtmlWriter $writer the HTML writer
 	 */
 	public function renderBeginTag($writer)
 	{
@@ -490,10 +1672,15 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	}
 
 	/**
-	 * Renders the body content enclosed between the control tag.
-	 * By default, child controls and text strings will be rendered.
-	 * You can override this method to provide customized content rendering.
-	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
+	 * Renders the body content enclosed within the HTML tag.
+	 *
+	 * By default renders child controls and text strings.
+	 * Override in subclasses to customize content.
+	 * When a {@see TWebControlDecorator} uses templates, PreContentsTemplate and
+	 * PostContentsTemplate controls are already present as the first and last children,
+	 * so this method renders them as part of the normal child traversal.
+	 *
+	 * @param \Prado\Web\UI\THtmlWriter $writer the HTML writer
 	 */
 	public function renderContents($writer)
 	{
@@ -501,8 +1688,13 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	}
 
 	/**
-	 * Renders the closing tag for the control
-	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
+	 * Renders the closing tag.
+	 *
+	 * When a {@see TWebControlDecorator} is attached, the output sequence is:
+	 * {@see TWebControlDecorator::renderPostContentsText} → close tag → {@see TWebControlDecorator::renderPostTagText}.
+	 * Without a decorator, only the close tag is written.
+	 *
+	 * @param \Prado\Web\UI\THtmlWriter $writer the HTML writer
 	 */
 	public function renderEndTag($writer)
 	{

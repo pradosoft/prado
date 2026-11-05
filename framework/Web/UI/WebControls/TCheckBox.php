@@ -13,6 +13,7 @@ namespace Prado\Web\UI\WebControls;
 use Prado\Collections\TAttributeCollection;
 use Prado\Collections\TMap;
 use Prado\TPropertyValue;
+use Prado\Web\Javascripts\TJavaScript;
 
 /**
  * TCheckBox class
@@ -36,14 +37,22 @@ use Prado\TPropertyValue;
  * is true, validation will also be processed, which can be further restricted within
  * a {@see setValidationGroup ValidationGroup}.
  *
- * Note, {@see setText Text} is rendered as is. Make sure it does not contain unwanted characters
- * that may bring security vulnerabilities.
+ * {@see setText Text} renders as HTML unless {@see setEncode Encode} is true, which
+ * HTML-encodes it.
+ *
+ * {@see setIndeterminate Indeterminate} shows the mixed state, such as a "select
+ * all" box whose list is partly checked. {@see setSwitch Switch} presents the
+ * box as an on/off switch.
+ * Accessibility: browsers expose an indeterminate box as "mixed". A switch is
+ * on or off and has no mixed state, so Switch ignores Indeterminate.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
  */
 class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web\UI\IPostBackDataHandler, \Prado\Web\UI\IValidatable, \Prado\IDataRenderer, \Prado\Web\UI\ISurroundable
 {
+	use TEncodeTrait;
+
 	private $_dataChanged = false;
 	private $_isValid = true;
 
@@ -69,6 +78,9 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 			$this->setValue($values[$key]);
 		}
 		$this->setChecked($newChecked);
+		if ($newChecked !== $checked) {
+			$this->setIndeterminate(false);
+		}
 		return $this->_dataChanged = ($newChecked !== $checked);
 	}
 
@@ -134,14 +146,14 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	/**
 	 * Returns true if this control validated successfully.
 	 * Defaults to true.
-	 * @return bool wether this control validated successfully.
+	 * @return bool whether this control validated successfully.
 	 */
 	public function getIsValid()
 	{
 		return $this->_isValid;
 	}
 	/**
-	 * @param bool $value wether this control is valid.
+	 * @param bool $value whether this control is valid.
 	 */
 	public function setIsValid($value)
 	{
@@ -164,6 +176,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	{
 		$this->setViewState('Text', $value, '');
 	}
+
 
 	/**
 	 * @return string the value of the checkbox. Defaults to empty.
@@ -212,6 +225,49 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	public function setChecked($value)
 	{
 		$this->setViewState('Checked', TPropertyValue::ensureBoolean($value), false);
+	}
+
+	/**
+	 * @return bool whether the check box shows the mixed state. Defaults to false.
+	 * @since 4.4.0
+	 */
+	public function getIndeterminate()
+	{
+		return $this->getViewState('Indeterminate', false);
+	}
+
+	/**
+	 * Sets whether the check box shows the mixed state. HTML has no attribute for
+	 * it, so a page script sets the `indeterminate` DOM property; the box posts its
+	 * {@see setChecked Checked} state. A click clears the mixed state in the browser,
+	 * and a postback that changes Checked clears the property.
+	 * @param bool|string $value whether the check box shows the mixed state
+	 * @since 4.4.0
+	 */
+	public function setIndeterminate($value)
+	{
+		$this->setViewState('Indeterminate', TPropertyValue::ensureBoolean($value), false);
+	}
+
+	/**
+	 * @return bool whether the check box renders as an on/off switch. Defaults to false.
+	 * @since 4.4.0
+	 */
+	public function getSwitch()
+	{
+		return $this->getViewState('Switch', false);
+	}
+
+	/**
+	 * Sets whether the check box renders as an on/off switch: `role="switch"` and
+	 * the `switch` attribute, which Safari draws as a native switch. Other browsers
+	 * draw a check box; CSS styles it as a switch.
+	 * @param bool|string $value whether the check box is a switch
+	 * @since 4.4.0
+	 */
+	public function setSwitch($value)
+	{
+		$this->setViewState('Switch', TPropertyValue::ensureBoolean($value), false);
 	}
 
 	/**
@@ -425,7 +481,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 * Check if we need a span tag to surround this control. The span tag will be created if
 	 * the Text property is set for this control.
 	 *
-	 * @return bool wether this control needs a surrounding span tag
+	 * @return bool whether this control needs a surrounding span tag
 	 */
 	protected function getSpanNeeded()
 	{
@@ -433,7 +489,8 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	}
 
 	/**
-	 * Renders a label beside the checkbox.
+	 * Renders a label beside the checkbox.  The text is HTML-encoded when
+	 * {@see getEncode Encode} is true.
 	 * @param \Prado\Web\UI\THtmlWriter $writer the writer for the rendering purpose
 	 * @param string $clientID checkbox id
 	 * @param string $text label text
@@ -445,7 +502,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 			$writer->addAttributes($attributes);
 		}
 		$writer->renderBeginTag('label');
-		$writer->write($text);
+		$writer->write($this->encodeText($text));
 		$writer->renderEndTag();
 	}
 
@@ -476,6 +533,12 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 		if (!$this->getEnabled(true)) {
 			$writer->addAttribute('disabled', 'disabled');
 		}
+		if ($this->getSwitch()) {
+			$writer->addAttribute('switch', 'switch');
+			$writer->addAttribute('role', 'switch');
+		} elseif ($this->getIndeterminate() && $clientID !== '') {
+			$this->registerIndeterminateScript($clientID);
+		}
 
 		$page = $this->getPage();
 		if ($this->getEnabled(true)
@@ -488,6 +551,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 		if (($accesskey = $this->getAccessKey()) !== '') {
 			$writer->addAttribute('accesskey', $accesskey);
 		}
+		$this->addKeyShortcutsAttributesToRender($writer);
 		if (($tabindex = $this->getTabIndex()) > 0) {
 			$writer->addAttribute('tabindex', "$tabindex");
 		}
@@ -496,6 +560,19 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 		}
 		$writer->renderBeginTag('input');
 		$writer->renderEndTag();
+	}
+
+	/**
+	 * Registers the page script that sets the `indeterminate` DOM property of the box.
+	 * @param string $clientID the ID of the input element
+	 * @since 4.4.0
+	 */
+	protected function registerIndeterminateScript($clientID)
+	{
+		$this->getPage()->getClientScript()->registerEndScript(
+			'prado:indeterminate:' . $clientID,
+			'document.getElementById(' . TJavaScript::encode($clientID) . ').indeterminate = true;'
+		);
 	}
 
 	/**

@@ -22,15 +22,15 @@ use Prado\TPropertyValue;
 class TTableItemStyle extends TStyle
 {
 	/**
-	 * @var THorizontalAlign horizontal alignment of the contents within the table item
+	 * @var ?THorizontalAlign horizontal alignment of the contents within the table item
 	 */
 	protected $_horizontalAlign;
 	/**
-	 * @var TVerticalAlign vertical alignment of the contents within the table item
+	 * @var ?TVerticalAlign vertical alignment of the contents within the table item
 	 */
 	protected $_verticalAlign;
 	/**
-	 * @var bool whether the content wraps within the table item
+	 * @var ?bool whether the content wraps within the table item
 	 */
 	protected $_wrap;
 
@@ -135,7 +135,7 @@ class TTableItemStyle extends TStyle
 	}
 
 	/**
-	 * @return THorizontalAlign the horizontal alignment of the contents within the table item, defaults to THorizontalAlign::NotSet.
+	 * @return string|THorizontalAlign the horizontal alignment of the contents within the table item, defaults to THorizontalAlign::NotSet.
 	 * @deprecated use the CSS text-align property instead
 	 */
 	public function getHorizontalAlign()
@@ -145,7 +145,7 @@ class TTableItemStyle extends TStyle
 
 	/**
 	 * Sets the horizontal alignment of the contents within the table item.
-	 * @param THorizontalAlign $value the horizontal alignment
+	 * @param string|THorizontalAlign $value the horizontal alignment
 	 * @deprecated use the CSS text-align property instead
 	 */
 	public function setHorizontalAlign($value)
@@ -154,7 +154,7 @@ class TTableItemStyle extends TStyle
 	}
 
 	/**
-	 * @return TVerticalAlign the vertical alignment of the contents within the table item, defaults to TVerticalAlign::NotSet.
+	 * @return string|TVerticalAlign the vertical alignment of the contents within the table item, defaults to TVerticalAlign::NotSet.
 	 * @deprecated use the CSS vertical-align property instead
 	 */
 	public function getVerticalAlign()
@@ -164,7 +164,7 @@ class TTableItemStyle extends TStyle
 
 	/**
 	 * Sets the vertical alignment of the contents within the table item.
-	 * @param TVerticalAlign $value the horizontal alignment
+	 * @param string|TVerticalAlign $value the horizontal alignment
 	 * @deprecated use the CSS vertical-align property instead
 	 */
 	public function setVerticalAlign($value)

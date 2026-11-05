@@ -1,15 +1,18 @@
 # Ignore generated content inside every harness web app.
-# Each app (active-controls/, features/, etc.) has:
-#   assets/             — compiled/published asset files
-#   protected/runtime/  — framework cache files
+# Most apps have the shape <app>/protected/runtime/ and <app>/assets/ — but
+# some (e.g. HttpHeaders/web/protected/runtime/) embed an extra directory
+# segment before `protected/`. The `**/` wildcard matches any number of
+# segments so both layouts are covered:
+#   tickets/protected/runtime/         ✓
+#   HttpHeaders/web/protected/runtime/ ✓
 #
 # A .gitkeep file in each directory anchors it in git.
 
-*/assets/**
-!*/assets/.gitkeep
+**/assets/**
+!**/assets/.gitkeep
 
-*/protected/runtime/**
-!*/protected/runtime/.gitkeep
+**/protected/runtime/**
+!**/protected/runtime/.gitkeep
 
-*/protected700/runtime/**
-!*/protected700/runtime/.gitkeep
+**/protected700/runtime/**
+!**/protected700/runtime/.gitkeep

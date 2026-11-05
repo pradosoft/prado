@@ -214,7 +214,7 @@ class TRational implements \ArrayAccess
 			}
 			$max = $unsigned ? TBitHelper::PHP_INT32_UMAX : TBitHelper::PHP_INT32_MAX;
 			if ($numerator > $max || $denominator > $max || (!$unsigned && ($numerator < TBitHelper::PHP_INT32_MIN || $denominator < TBitHelper::PHP_INT32_MIN))) {
-				$value = ($denominator === 0) ? NAN : $numerator / $denominator;
+				$value = ($denominator === 0.0) ? NAN : $numerator / $denominator;
 			} else {
 				$this->setNumerator($numerator);
 				$this->setDenominator($denominator);

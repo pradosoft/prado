@@ -8,6 +8,9 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\Data;
+
+use PDO;
 use Prado\Data\TDataCharset;
 use Prado\Data\TDbConnection;
 use Prado\Data\TDbDriver;
@@ -47,11 +50,8 @@ use Prado\Exceptions\TDbException;
  *  - getSocketDsnConflictParam
  *  - getSocketDsnParamsToRemove
  *  - getMetaDataClass (all drivers + fxDataGetMetaDataClass event)
- *  - getScaffoldInputFile
- *  - getScaffoldInputClass
- *  - createScaffoldInput (all drivers + fxActiveRecordScaffoldInputClass event)
  */
-class TDbDriverCapabilitiesTest extends PHPUnit\Framework\TestCase
+class TDbDriverCapabilitiesTest extends \PHPUnit\Framework\TestCase
 {
 	// =========================================================================
 	//  canonicalizeCharset
@@ -1185,206 +1185,6 @@ class TDbDriverCapabilitiesTest extends PHPUnit\Framework\TestCase
 
 		$result = TDbDriverCapabilities::getMetaDataClass($conn);
 		$this->assertSame(TMysqlMetaData::class, $result);
-	}
-
-	// =========================================================================
-	//  getScaffoldInputFile
-	// =========================================================================
-
-	/** @dataProvider provideScaffoldInputFile */
-	public function testGetScaffoldInputFile(string $driver, ?string $expected): void
-	{
-		$this->assertSame($expected, TDbDriverCapabilities::getScaffoldInputFile($driver));
-	}
-
-	public static function provideScaffoldInputFile(): array
-	{
-		return [
-			'mysql'     => [TDbDriver::DRIVER_MYSQL,    '/TMysqlScaffoldInput.php'],
-			'pgsql'     => [TDbDriver::DRIVER_PGSQL,    '/TPgsqlScaffoldInput.php'],
-			'sqlite'    => [TDbDriver::DRIVER_SQLITE,   '/TSqliteScaffoldInput.php'],
-			'sqlite2'   => [TDbDriver::DRIVER_SQLITE2,  '/TSqliteScaffoldInput.php'],
-			'firebird'  => [TDbDriver::DRIVER_FIREBIRD, '/TFirebirdScaffoldInput.php'],
-			'interbase' => [TDbDriver::DRIVER_INTERBASE,'/TFirebirdScaffoldInput.php'],
-			'sqlsrv'    => [TDbDriver::DRIVER_SQLSRV,   '/TSqlSrvScaffoldInput.php'],
-			'dblib'     => [TDbDriver::DRIVER_DBLIB,    '/TSqlSrvScaffoldInput.php'],
-			'oci'       => [TDbDriver::DRIVER_OCI,      '/TOracleScaffoldInput.php'],
-			'ibm'       => [TDbDriver::DRIVER_IBM,      '/TIbmScaffoldInput.php'],
-			'unknown'   => ['unknown_driver',            null],
-			'odbc'      => [TDbDriver::DRIVER_ODBC,     null],
-		];
-	}
-
-	public function testGetScaffoldInputFileSqlite2SameAsSqlite3(): void
-	{
-		$this->assertSame(
-			TDbDriverCapabilities::getScaffoldInputFile(TDbDriver::DRIVER_SQLITE),
-			TDbDriverCapabilities::getScaffoldInputFile(TDbDriver::DRIVER_SQLITE2)
-		);
-	}
-
-	public function testGetScaffoldInputFileInterbaseSameAsFirebird(): void
-	{
-		$this->assertSame(
-			TDbDriverCapabilities::getScaffoldInputFile(TDbDriver::DRIVER_FIREBIRD),
-			TDbDriverCapabilities::getScaffoldInputFile(TDbDriver::DRIVER_INTERBASE)
-		);
-	}
-
-	public function testGetScaffoldInputFileSqlsrvSameAsDblib(): void
-	{
-		$this->assertSame(
-			TDbDriverCapabilities::getScaffoldInputFile(TDbDriver::DRIVER_SQLSRV),
-			TDbDriverCapabilities::getScaffoldInputFile(TDbDriver::DRIVER_DBLIB)
-		);
-	}
-
-	public function testGetScaffoldInputFileHasPhpExtension(): void
-	{
-		$knownDrivers = [
-			TDbDriver::DRIVER_MYSQL, TDbDriver::DRIVER_PGSQL, TDbDriver::DRIVER_SQLITE,
-			TDbDriver::DRIVER_FIREBIRD, TDbDriver::DRIVER_SQLSRV, TDbDriver::DRIVER_OCI,
-			TDbDriver::DRIVER_IBM,
-		];
-		foreach ($knownDrivers as $driver) {
-			$file = TDbDriverCapabilities::getScaffoldInputFile($driver);
-			$this->assertStringEndsWith('.php', $file, "File for '$driver' must end with .php");
-			$this->assertStringStartsWith('/', $file, "File for '$driver' must start with /");
-		}
-	}
-
-	// =========================================================================
-	//  getScaffoldInputClass
-	// =========================================================================
-
-	/** @dataProvider provideScaffoldInputClass */
-	public function testGetScaffoldInputClass(string $driver, ?string $expected): void
-	{
-		$this->assertSame($expected, TDbDriverCapabilities::getScaffoldInputClass($driver));
-	}
-
-	public static function provideScaffoldInputClass(): array
-	{
-		return [
-			'mysql'     => [TDbDriver::DRIVER_MYSQL,    'TMysqlScaffoldInput'],
-			'pgsql'     => [TDbDriver::DRIVER_PGSQL,    'TPgsqlScaffoldInput'],
-			'sqlite'    => [TDbDriver::DRIVER_SQLITE,   'TSqliteScaffoldInput'],
-			'sqlite2'   => [TDbDriver::DRIVER_SQLITE2,  'TSqliteScaffoldInput'],
-			'firebird'  => [TDbDriver::DRIVER_FIREBIRD, 'TFirebirdScaffoldInput'],
-			'interbase' => [TDbDriver::DRIVER_INTERBASE,'TFirebirdScaffoldInput'],
-			'sqlsrv'    => [TDbDriver::DRIVER_SQLSRV,   'TSqlSrvScaffoldInput'],
-			'dblib'     => [TDbDriver::DRIVER_DBLIB,    'TSqlSrvScaffoldInput'],
-			'oci'       => [TDbDriver::DRIVER_OCI,      'TOracleScaffoldInput'],
-			'ibm'       => [TDbDriver::DRIVER_IBM,      'TIbmScaffoldInput'],
-			'unknown'   => ['unknown_driver',            null],
-			'odbc'      => [TDbDriver::DRIVER_ODBC,     null],
-		];
-	}
-
-	public function testGetScaffoldInputClassMatchesFileBasename(): void
-	{
-		// Class name must be the filename without leading / and .php extension.
-		$knownDrivers = [
-			TDbDriver::DRIVER_MYSQL, TDbDriver::DRIVER_PGSQL, TDbDriver::DRIVER_SQLITE,
-			TDbDriver::DRIVER_FIREBIRD, TDbDriver::DRIVER_SQLSRV, TDbDriver::DRIVER_OCI,
-			TDbDriver::DRIVER_IBM,
-		];
-		foreach ($knownDrivers as $driver) {
-			$file  = TDbDriverCapabilities::getScaffoldInputFile($driver);
-			$class = TDbDriverCapabilities::getScaffoldInputClass($driver);
-			$this->assertNotNull($class);
-			$this->assertSame($class . '.php', ltrim($file, '/'),
-				"Class/file mismatch for '$driver'");
-		}
-	}
-
-	// =========================================================================
-	//  createScaffoldInput
-	// =========================================================================
-
-	/** @dataProvider provideBuiltInScaffoldInputClass */
-	public function testCreateScaffoldInputBuiltInDriverReturnsInstance(string $driver, string $expected): void
-	{
-		$conn = $this->createMock(TDbConnection::class);
-		$conn->method('getDriverName')->willReturn($driver);
-		$conn->expects($this->never())->method('raiseEvent');
-
-		$result = TDbDriverCapabilities::createScaffoldInput($conn);
-		$this->assertInstanceOf($expected, $result);
-	}
-
-	public static function provideBuiltInScaffoldInputClass(): array
-	{
-		return [
-			'mysql'     => [TDbDriver::DRIVER_MYSQL,     'TMysqlScaffoldInput'],
-			'pgsql'     => [TDbDriver::DRIVER_PGSQL,     'TPgsqlScaffoldInput'],
-			'sqlite'    => [TDbDriver::DRIVER_SQLITE,    'TSqliteScaffoldInput'],
-			'sqlite2'   => [TDbDriver::DRIVER_SQLITE2,   'TSqliteScaffoldInput'],
-			'firebird'  => [TDbDriver::DRIVER_FIREBIRD,  'TFirebirdScaffoldInput'],
-			'interbase' => [TDbDriver::DRIVER_INTERBASE, 'TFirebirdScaffoldInput'],
-			'sqlsrv'    => [TDbDriver::DRIVER_SQLSRV,    'TSqlSrvScaffoldInput'],
-			'dblib'     => [TDbDriver::DRIVER_DBLIB,     'TSqlSrvScaffoldInput'],
-			'oci'       => [TDbDriver::DRIVER_OCI,       'TOracleScaffoldInput'],
-			'ibm'       => [TDbDriver::DRIVER_IBM,       'TIbmScaffoldInput'],
-		];
-	}
-
-	public function testCreateScaffoldInputUnknownDriverThrowsWhenNoEventHandlers(): void
-	{
-		// Connection present but raiseEvent returns empty → TConfigurationException.
-		$conn = $this->createMock(TDbConnection::class);
-		$conn->method('getDriverName')->willReturn('unknown_driver');
-		$conn->expects($this->once())
-			->method('raiseEvent')
-			->with('fxActiveRecordScaffoldInputClass', $conn, 'unknown_driver')
-			->willReturn([]);
-
-		$this->expectException(\Prado\Exceptions\TConfigurationException::class);
-		TDbDriverCapabilities::createScaffoldInput($conn);
-	}
-
-	public function testCreateScaffoldInputFxEventRaisedWithCorrectParameters(): void
-	{
-		// The event must be raised on $connection with ($connection, $driver).
-		$conn = $this->createMock(TDbConnection::class);
-		$conn->method('getDriverName')->willReturn('my_custom_driver');
-		$conn->expects($this->once())
-			->method('raiseEvent')
-			->with('fxActiveRecordScaffoldInputClass', $conn, 'my_custom_driver')
-			->willReturn([]);
-
-		$this->expectException(\Prado\Exceptions\TConfigurationException::class);
-		TDbDriverCapabilities::createScaffoldInput($conn);
-	}
-
-	public function testCreateScaffoldInputFxEventFirstHandlerWins(): void
-	{
-		// createScaffoldInput uses $instances[0] — the first event result (class name string).
-		// Using 'sqlite' as a stand-in: it's a known class with no require_once needed here
-		// because TDbDriverCapabilities::createScaffoldInput will instantiate the returned string.
-		$conn = $this->createMock(TDbConnection::class);
-		$conn->method('getDriverName')->willReturn('custom_driver');
-		$conn->method('raiseEvent')->willReturn([
-			\Prado\Data\ActiveRecord\Scaffold\InputBuilder\TSqliteScaffoldInput::class,
-			\Prado\Data\ActiveRecord\Scaffold\InputBuilder\TPgsqlScaffoldInput::class,
-		]);
-
-		$result = TDbDriverCapabilities::createScaffoldInput($conn);
-		$this->assertInstanceOf(\Prado\Data\ActiveRecord\Scaffold\InputBuilder\TSqliteScaffoldInput::class, $result);
-	}
-
-	public function testCreateScaffoldInputFxEventReturningObjectThrowsTConfigurationException(): void
-	{
-		// If a handler accidentally returns an IScaffoldInput instance instead of a class name
-		// string, createScaffoldInput must throw to signal the incorrect usage.
-		$badReturn = $this->createMock(\Prado\Data\ActiveRecord\Scaffold\InputBuilder\IScaffoldInput::class);
-
-		$conn = $this->createMock(TDbConnection::class);
-		$conn->method('getDriverName')->willReturn('custom_driver');
-		$conn->method('raiseEvent')->willReturn([$badReturn]);
-
-		$this->expectException(\Prado\Exceptions\TConfigurationException::class);
-		TDbDriverCapabilities::createScaffoldInput($conn);
 	}
 
 	// =========================================================================

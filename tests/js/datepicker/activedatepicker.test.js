@@ -477,7 +477,7 @@ describe('TActiveDatePicker change-event wiring — TextBox mode', () => {
 		const picker = new TActiveDatePicker(makeOptions(id, { InputMode: 'TextBox', OnDateChanged: cb }));
 
 		picker.control.value = '2024-08-01';
-		jQuery(picker.control).trigger('change');
+		picker.control.dispatchEvent(new Event('change', { bubbles: true }));
 
 		expect(cb).toHaveBeenCalledTimes(1);
 	});
@@ -487,7 +487,7 @@ describe('TActiveDatePicker change-event wiring — TextBox mode', () => {
 		const picker = new TActiveDatePicker(makeOptions(id, { InputMode: 'TextBox', OnDateChanged: cb }));
 
 		picker.control.value = '2025-12-25';
-		jQuery(picker.control).trigger('change');
+		picker.control.dispatchEvent(new Event('change', { bubbles: true }));
 
 		expect(cb.mock.calls[0][1]).toBe('2025-12-25');
 	});
@@ -527,30 +527,30 @@ describe('TActiveDatePicker change-event wiring — DropDownList mode', () => {
 	it('fires OnDateChanged when the day dropdown changes', () => {
 		const cb = vi.fn();
 		makeDropDownPicker(baseId, { OnDateChanged: cb });
-		jQuery(document.getElementById(`${baseId}_day`)).trigger('change');
+		document.getElementById(`${baseId}_day`).dispatchEvent(new Event('change', { bubbles: true }));
 		expect(cb).toHaveBeenCalledTimes(1);
 	});
 
 	it('fires OnDateChanged when the month dropdown changes', () => {
 		const cb = vi.fn();
 		makeDropDownPicker(baseId, { OnDateChanged: cb });
-		jQuery(document.getElementById(`${baseId}_month`)).trigger('change');
+		document.getElementById(`${baseId}_month`).dispatchEvent(new Event('change', { bubbles: true }));
 		expect(cb).toHaveBeenCalledTimes(1);
 	});
 
 	it('fires OnDateChanged when the year dropdown changes', () => {
 		const cb = vi.fn();
 		makeDropDownPicker(baseId, { OnDateChanged: cb });
-		jQuery(document.getElementById(`${baseId}_year`)).trigger('change');
+		document.getElementById(`${baseId}_year`).dispatchEvent(new Event('change', { bubbles: true }));
 		expect(cb).toHaveBeenCalledTimes(1);
 	});
 
 	it('each dropdown fires independently (no cross-contamination)', () => {
 		const cb = vi.fn();
 		makeDropDownPicker(baseId, { OnDateChanged: cb });
-		jQuery(document.getElementById(`${baseId}_day`)).trigger('change');
-		jQuery(document.getElementById(`${baseId}_month`)).trigger('change');
-		jQuery(document.getElementById(`${baseId}_year`)).trigger('change');
+		document.getElementById(`${baseId}_day`).dispatchEvent(new Event('change', { bubbles: true }));
+		document.getElementById(`${baseId}_month`).dispatchEvent(new Event('change', { bubbles: true }));
+		document.getElementById(`${baseId}_year`).dispatchEvent(new Event('change', { bubbles: true }));
 		expect(cb).toHaveBeenCalledTimes(3);
 	});
 });

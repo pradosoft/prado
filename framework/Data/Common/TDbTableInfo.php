@@ -11,6 +11,7 @@
 namespace Prado\Data\Common;
 
 use Prado\Collections\TMap;
+use Prado\Data\Common\IDataTableInfo;
 use Prado\Exceptions\TDbException;
 use Prado\Prado;
 
@@ -150,7 +151,8 @@ class TDbTableInfo extends \Prado\TComponent implements IDataTableInfo
 	}
 
 	/**
-	 * @return string name of the table this column belongs to.
+	 * @return ?string name of the table this column belongs to, or null for a table
+	 *   information stub without a table.
 	 */
 	public function getTableName()
 	{

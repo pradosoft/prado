@@ -1,37 +1,43 @@
-/.buildpath
-/.idea
-/.php-cs-fixer.cache
-/.phpunit.cache
-/.phpunit.result.cache
-/.runtime/
-atlassian-ide-plugin.xml
-/.project
-/.settings
-/.cache
-/build
-/vendor
+# Dependencies
 /composer.lock
-/.cache
-.claude/
-tests/FunctionalTests/results.dat
-tests/unit/Data/db/
+/vendor
 /node_modules
 /package-lock.json
 
-# Composer stuff
-vendor/*
+# Build output
+/build
 
-#OSX
-.DS_Store
-/nbproject
+# Caches
+/.cache
+/.runtime
+/.php-cs-fixer.cache
+/.phpunit.cache
+/.phpunit.result.cache
+/vitest.config.js.timestamp-*
+/playwright/.cache
 
-sauce_connect.log
-tests/unit/Data/SqlMap/sqlite/tests.db
-
-# Vitest cache artefacts
-vitest.config.js.timestamp-*
-
-# Playwright artifacts
+# Test artifacts
+/tests/unit/Data/db/
 /playwright-report
 /test-results
-playwright/.cache
+
+# IDEs and editors
+/.idea
+/.project
+/.buildpath
+/.settings
+/nbproject
+/atlassian-ide-plugin.xml
+
+# OS files
+.DS_Store
+
+# Local configuration
+/phpstan.neon
+
+# AI agent files
+**/AGENTS.md
+!/AGENTS.md
+**/CLAUDE.md
+!/CLAUDE.md
+/.claude

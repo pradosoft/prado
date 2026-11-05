@@ -1,7 +1,7 @@
 # I18N/core/ChoiceFormat
 
 ### Directories
-[framework](./INDEX.md) / [I18N](./I18N/INDEX.md) / [core](./I18N/core/INDEX.md) / **`ChoiceFormat`**
+[framework](../../INDEX.md) / [I18N](../INDEX.md) / [core](INDEX.md) / **`ChoiceFormat`**
 
 **Location:** `framework/I18N/core/ChoiceFormat.php`
 **Namespace:** `Prado\I18N\core`
@@ -44,6 +44,23 @@ echo $choice->format($pattern, 5);  // "5 items"
 ```php
 {n: n % 10 > 1 && n % 10 < 5}  // matches 2,3,4,22,23,24
 ```
+
+`isValidSetNotation()` compiles the expression with `compileSetNotation()` into a closure of `n`; it is never passed to `eval()`. Tokens are numbers, `n`, brackets, and the operators below, at PHP precedence (lowest first):
+
+| Level | Operators |
+|-------|-----------|
+| 0 | `? :` and short `?:` (an unbracketed conditional cannot be the last operand of another, as in PHP 8) |
+| 1 | `\|\|` |
+| 2 | `&&` |
+| 3 | `\|` (bitwise) |
+| 4 | `&` (bitwise) |
+| 5 | `==` `!=` |
+| 6 | `<` `<=` `>` `>=` |
+| 7 | `+` `-` |
+| 8 | `%` (integer; modulo by zero fails) |
+| 9 | unary `!` `-` `+` |
+
+`&&`, `\|\|`, and `? :` short-circuit. Any other token, an incomplete expression, or modulo by zero makes the set match no number.
 
 ## Key Methods
 

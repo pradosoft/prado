@@ -28,7 +28,7 @@ abstract class TJsonResponse extends \Prado\TApplicationComponent
 
 	/**
 	 * Initializes the feed.
-	 * @param \Prado\Xml\TXmlElement $config configurations specified in {@see \Prado\Web\Services\TJsonService}.
+	 * @param null|array|\Prado\Xml\TXmlElement $config configurations specified in {@see \Prado\Web\Services\TJsonService}.
 	 */
 	public function init($config)
 	{

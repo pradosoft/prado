@@ -1,0 +1,4 @@
+<com:TContent ID="Content">
+<h1>THttpRequest Test</h1>
+<div id="request-info"><%=$this->InfoJson%></div>
+</com:TContent>

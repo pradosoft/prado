@@ -6,6 +6,7 @@
 ## Class Info
 **Location:** `framework/Web/UI/WebControls/TReCaptchaValidator.php`
 **Namespace:** `Prado\Web\UI\WebControls`
+**Deprecated:** 4.4.0 with [TReCaptcha](./TReCaptcha.md). Use [TReCaptcha2Validator](./TReCaptcha2Validator.md).
 
 ## Overview
 TReCaptchaValidator validates user input against a TReCaptcha control. It performs server-side validation of the reCAPTCHA response. Note that calling `validate()` invalidates the token, so it should only be called once per submission.

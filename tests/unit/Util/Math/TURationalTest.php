@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Util\Math;
+
 use Prado\Util\Math\TURational;
 
 class TURationalTest extends TRationalTest

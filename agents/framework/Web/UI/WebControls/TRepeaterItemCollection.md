@@ -18,4 +18,4 @@ TRepeaterItemCollection represents a collection of repeater items (TRepeaterItem
 
 - [TRepeater](./TRepeater.md)
 - [TRepeaterItem](./TRepeaterItem.md)
-- [TList](../Collections/TList.md)
+- [TList](../../../Collections/TList.md)

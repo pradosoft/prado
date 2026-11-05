@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Collections;
+
 use Prado\Collections\TList;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidDataValueException;
@@ -13,20 +15,12 @@ class ListItem
 		$this->data = $d;
 	}
 }
-trait TListResetTrait 
-{
-	public function resetReadOnly($value)
-	{
-		$this->setReadOnly($value);
-	}
-}
-
 class TListUnit extends TList
 {
 	use TListResetTrait;
 }
 
-class TListTest extends PHPUnit\Framework\TestCase
+class TListTest extends \PHPUnit\Framework\TestCase
 {
 	protected $list;
 	protected $item1;
@@ -157,7 +151,7 @@ class TListTest extends PHPUnit\Framework\TestCase
 		try {
 			$list->insertAt(1, 2);
 			$this->fail('TInvalidOperationException not raised when inserting into read only beyond bounds');
-		} catch(Prado\Exceptions\TInvalidOperationException $e) {
+		} catch(\Prado\Exceptions\TInvalidOperationException $e) {
 		}
 
 		self::expectException(TInvalidOperationException::class);
@@ -169,7 +163,7 @@ class TListTest extends PHPUnit\Framework\TestCase
 		try {
 			$this->list->insertBefore($this->item4, $this->item3);
 			$this->fail('TInvalidOperationException item4 not in list');
-		} catch(Prado\Exceptions\TInvalidDataValueException $e) {}
+		} catch(\Prado\Exceptions\TInvalidDataValueException $e) {}
 		$this->assertEquals(2, $this->list->getCount());
 		$this->assertEquals(0, $this->list->insertBefore($this->item1, $this->item3));
 		$this->assertEquals(3, $this->list->getCount());
@@ -187,7 +181,7 @@ class TListTest extends PHPUnit\Framework\TestCase
 		try {
 			$list->insertBefore($this->item1, $this->item2);
 			$this->fail('TInvalidOperationException not raised when insertBefore item when read only');
-		} catch(Prado\Exceptions\TInvalidOperationException $e) {
+		} catch(\Prado\Exceptions\TInvalidOperationException $e) {
 		}
 		self::expectException(TInvalidOperationException::class);
 		$list->insertBefore(8, 6);
@@ -216,7 +210,7 @@ class TListTest extends PHPUnit\Framework\TestCase
 		try {
 			$list->insertAfter($this->item1, 6);
 			$this->fail('TInvalidOperationException cannot insertAfter on a read only list');
-		} catch(Prado\Exceptions\TInvalidOperationException $e) {
+		} catch(\Prado\Exceptions\TInvalidOperationException $e) {
 		}
 
 		self::expectException(TInvalidOperationException::class);
@@ -243,7 +237,7 @@ class TListTest extends PHPUnit\Framework\TestCase
 		try {
 			$list->remove($this->item2);
 			$this->fail('TInvalidOperationException cannot insert on a read only list');
-		} catch(Prado\Exceptions\TInvalidOperationException $e) {
+		} catch(\Prado\Exceptions\TInvalidOperationException $e) {
 		}
 
 		$list = new $this->_baseClass([

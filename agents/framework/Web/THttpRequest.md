@@ -25,7 +25,8 @@ THttpRequest provides storage and access scheme for user requests sent via HTTP.
 - `UrlParamSeparator` (string): Separator used for PATH format URL parameters, defaults to comma ','
 - `ServiceID` (string): Requested service ID
 - `ServiceParameter` (string): Requested service parameter
-- `EnableCookieValidation` (bool): Whether cookies should be validated, defaults to false
+- `EnableCookieValidation` (bool): Whether cookies should be validated, defaults to false; cookies are signed with `TSecurityManager::CookieValidationKey`
+- `EnableCsrfCookie` (bool): Whether the CSRF secret is kept in the `PRADO_CSRF` cookie, signed with `CookieValidationKey`, HttpOnly and Secure over HTTPS; defaults to true. False keeps it in the session, which must exist (`httprequest_csrf_session_required`) (@since 4.4.0)
 - `CgiFix` (int): Whether to use ORIG_PATH_INFO and ORIG_SCRIPT_NAME for CGI environments
 
 ## Method Types
@@ -43,11 +44,12 @@ THttpRequest provides storage and access scheme for user requests sent via HTTP.
 
 ### Request Information
 - `getRequestType()`: Returns request type (GET, POST, HEAD, PUT)
-- `getContentType($mimetypeOnly = true)`: Returns content type of request
+- `getContentType($mimetypeOnly = true)`: Returns the request content type; by default only the mimetype, without the `;` parameters
 - `getIsSecureConnection()`: Returns whether request is sent via secure channel (HTTPS)
 - `getPathInfo()`: Returns path part of request URL
 - `getQueryString()`: Returns query string part of request URL  
-- `getHeaders($case = null)`: Returns HTTP request headers
+- `getHeaders($case = null)`: Returns HTTP request headers, cached per module instance
+- `getHeader($name, $default = null)`: Returns one request header, matched without regard to case (@since 4.4.0)
 - `getRequestUri()`: Returns full request URI
 - `getBaseUrl($forceSecureConnection = null)`: Returns base URL (schema + hostname)
 - `getApplicationUrl()`: Returns entry script URL (w/o host part)
@@ -61,6 +63,13 @@ THttpRequest provides storage and access scheme for user requests sent via HTTP.
 - `getUserHost()`: Returns user host name
 - `getAcceptTypes()`: Returns user browser accept types
 - `getUserLanguages()`: Returns list of user preferred languages
+- `getBrowser()`: Returns PHP browser capabilities and throws `TConfigurationException` when the `browscap` directive is not configured
+
+### CSRF Token (@since 4.4.0)
+- `getCsrfToken(bool $regenerate = false)`: The token for forms and scripts of this response: the secret masked with random bytes, so every call differs and a compressed page does not expose the secret. A request without a secret receives one, written to the cookie or session `CSRF_TOKEN_KEY` (`PRADO_CSRF`). `$regenerate` replaces the secret; `TAuthManager::login()` and `logout()` do this
+- `validateCsrfToken(?string $token = null)`: Compares a token with the secret using `hash_equals()`. Without an argument, reads the `CSRF_TOKEN_FIELD` (`PRADO_CSRF_TOKEN`) POST field, then the `CSRF_TOKEN_HEADER` (`X-Prado-Csrf-Token`) header. The query string never supplies the token
+- Protected seams: `getCsrfTokenFromRequest()`, `loadCsrfToken()`, `saveCsrfToken()`, `createCsrfCookie()`, `getCsrfSession()`, `generateCsrfToken()` (32 hex characters), `maskCsrfToken()` / `unmaskCsrfToken()` (base64 of mask + XOR)
+- Enforcement: [TPage](UI/TPage.md) `EnableCsrfValidation` (on by default) checks every postback and callback; [TService](../TService.md) `EnableCsrfValidation` (off by default) checks state-changing requests to the other services
 
 ### Cookie Handling
 - `getCookies()`: Returns [THttpCookieCollection](./THttpCookieCollection.md) of cookies sent by user
@@ -94,14 +103,14 @@ THttpRequest implements ArrayAccess, IteratorAggregate, and Countable interfaces
 
 ## Event Handling
 - `onResolveRequest`: Event for custom request resolution logic
-- Uses [TEventResults](../../Util/TEventResults.md) with EVENT_REVERSE priority for stacking event results
+- Uses [TEventResults](../TEventResults.md) with EVENT_REVERSE priority for stacking event results
 
 ## Integration with Other Components
 - Registered with TApplication as request module via `getApplication()->setRequest()`
 - Works with [TUrlManager](./TUrlManager.md) for URL interpretation and construction  
 - Integrates with [THttpCookieCollection](./THttpCookieCollection.md) for cookie handling
 - Uses [THttpCookie](./THttpCookie.md) for individual cookie objects
-- Interacts with [TSecurityManager](../../Security/TSecurityManager.md) for cookie validation when enabled
+- Interacts with [TSecurityManager](../Security/TSecurityManager.md) for cookie validation when enabled, and to sign the CSRF cookie
 
 ## Usage Example
 ```php

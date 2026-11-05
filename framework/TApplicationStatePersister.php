@@ -47,12 +47,22 @@ class TApplicationStatePersister extends \Prado\TModule implements IStatePersist
 
 	/**
 	 * Initializes module.
-	 * @param \Prado\Xml\TXmlElement $config module configuration (may be null)
+	 * @param null|array|\Prado\Xml\TXmlElement $config module configuration (may be null)
 	 */
 	public function init($config)
 	{
-		$this->getApplication()->setApplicationStatePersister($this);
+		$this->setAppApplicationStatePersister();
 		parent::init($config);
+	}
+
+	/**
+	 * Registers this module as the application state persister when an application is available.
+	 * Called during {@see init()}; may also be called by behaviors or subclasses.
+	 * @since 4.4.0
+	 */
+	protected function setAppApplicationStatePersister()
+	{
+		$this->getApplication()?->setApplicationStatePersister($this);
 	}
 
 	/**

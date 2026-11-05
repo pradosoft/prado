@@ -11,12 +11,18 @@
 namespace Prado\Web\UI\WebControls;
 
 use Prado\Exceptions\TConfigurationException;
+use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Web\Javascripts\TJavaScript;
 use Prado\Web\Javascripts\TJavaScriptLiteral;
 
 /**
  * TReCaptcha class.
+ *
+ * TReCaptcha is deprecated. It uses reCAPTCHA v1, whose script and verify endpoint Google retired,
+ * so it cannot pass validation. It logs a warning when it initializes. Use
+ * {@see \Prado\Web\UI\WebControls\TReCaptcha2} with {@see \Prado\Web\UI\WebControls\TReCaptcha2Validator},
+ * or {@see \Prado\Web\UI\WebControls\TProofOfWork}, instead.
  *
  * TReCaptcha displays a reCAPTCHA (a token displayed as an image) that can be used
  * to determine if the input is entered by a real user instead of some program. It can
@@ -52,6 +58,7 @@ use Prado\Web\Javascripts\TJavaScriptLiteral;
  *
  * @author Bérczi Gábor <gabor.berczi@devworx.hu>
  * @since 3.2
+ * @deprecated 4.4.0 reCAPTCHA v1 is retired; use TReCaptcha2 and TReCaptcha2Validator.
  */
 class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web\UI\IValidatable
 {
@@ -72,14 +79,14 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	/**
 	 * Returns true if this control validated successfully.
 	 * Defaults to true.
-	 * @return bool wether this control validated successfully.
+	 * @return bool whether this control validated successfully.
 	 */
 	public function getIsValid()
 	{
 		return $this->_isValid;
 	}
 	/**
-	 * @param bool $value wether this control is valid.
+	 * @param bool $value whether this control is valid.
 	 */
 	public function setIsValid($value)
 	{
@@ -199,6 +206,17 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 * Checks for API keys
 	 * @param mixed $param event parameter
 	 */
+	/**
+	 * Logs that TReCaptcha is deprecated.
+	 * @param mixed $param event parameter
+	 * @since 4.4.0
+	 */
+	public function onInit($param)
+	{
+		parent::onInit($param);
+		Prado::warning('TReCaptcha is deprecated: reCAPTCHA v1 is retired and cannot validate. Use TReCaptcha2.', static::class);
+	}
+
 	public function onPreRender($param)
 	{
 		parent::onPreRender($param);
@@ -294,9 +312,11 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 			$errorpart = "&amp;error=" . $error;
 		}
 
-		return '<script src="' . $server . '/challenge?k=' . $pubkey . $errorpart . '"></script>
-		<noscript>
-		<iframe src="' . $server . '/noscript?k=' . $pubkey . $errorpart . '" height="300" width="500" frameborder="0"></iframe><br/>
+		$challengeUrl = $server . '/challenge?k=' . $pubkey . $errorpart;
+		$noscriptUrl = $server . '/noscript?k=' . $pubkey . $errorpart;
+		return TJavaScript::renderScriptFile($challengeUrl) .
+		'<noscript>
+		<iframe src="' . $noscriptUrl . '" height="300" width="500" frameborder="0"></iframe><br/>
 		<textarea name="recaptcha_challenge_field" rows="3" cols="40"></textarea>
 		<input type="hidden" name="recaptcha_response_field" value="manual_challenge"/>
 		</noscript>';
@@ -340,7 +360,7 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 		$http_request .= $req;
 
 		$response = '';
-		if (false == ($fs = @fsockopen($host, $port, $errno, $errstr, 10))) {
+		if (($fs = @fsockopen($host, $port, $errno, $errstr, 10)) === false) {
 			die('Could not open socket');
 		}
 

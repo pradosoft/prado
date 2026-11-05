@@ -8,7 +8,7 @@
 **Namespace:** `Prado\Web`
 
 ## Overview
-TCacheHttpSession extends THttpSession and provides session storage using a cache module (e.g., [TMemCache](../../Caching/TMemCache.md), [TDbCache](../../Caching/TDbCache.md)). This enables distributed session management across multiple servers.
+TCacheHttpSession extends THttpSession and provides session storage using a cache module (e.g., [TMemCache](../Caching/TMemCache.md), [TDbCache](../Caching/TDbCache.md)). This enables distributed session management across multiple servers.
 
 ## Key Properties/Methods
 

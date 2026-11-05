@@ -1,5 +1,9 @@
 <?php
 
+namespace Prado\Test\Unit\Data;
+
+use PDO;
+use ReflectionMethod;
 use Prado\Data\TDbColumnCaseMode;
 use Prado\Data\TDbCommand;
 use Prado\Data\TDbConnection;
@@ -8,6 +12,8 @@ use Prado\Data\TDbDriverCapabilities;
 use Prado\Data\TDbNullConversionMode;
 use Prado\Exceptions\TDbException;
 use Prado\TApplication;
+use Prado\Test\Unit\PradoUnit;
+use Prado\TApplicationMode;
 
 if (!defined('TEST_DB_FILE')) {
 	define('TEST_DB_FILE', __DIR__ . '/db/test.db');
@@ -16,7 +22,7 @@ if (!defined('TEST_DB_FILE2')) {
 	define('TEST_DB_FILE2', __DIR__ . '/db/test2.db');
 }
 
-class TDbConnectionTest extends PHPUnit\Framework\TestCase
+class TDbConnectionTest extends \PHPUnit\Framework\TestCase
 {
 	private $_connection1;
 	private $_connection2;
@@ -28,7 +34,7 @@ class TDbConnectionTest extends PHPUnit\Framework\TestCase
 		@unlink(TEST_DB_FILE2);
 
 		// create application just to provide application mode
-		new TApplication(__DIR__, false, TApplication::CONFIG_TYPE_PHP);
+		(new TApplication(__DIR__, false, TApplication::CONFIG_TYPE_PHP))->setMode(TApplicationMode::Debug);
 
 		$this->_connection1 = new TDbConnection('sqlite:' . TEST_DB_FILE);
 		$this->_connection1->Active = true;
@@ -63,7 +69,7 @@ class TDbConnectionTest extends PHPUnit\Framework\TestCase
 		$this->_connection2->Active = true;
 		$this->assertTrue($this->_connection2->Active);
 		$pdo = $this->_connection2->PdoInstance;
-		$this->assertTrue($pdo instanceof PDO);
+		$this->assertTrue($pdo instanceof \PDO);
 		// test setting Active repeatedly doesn't re-connect DB
 		$this->_connection2->Active = true;
 		$this->assertTrue($pdo === $this->_connection2->PdoInstance);
@@ -101,7 +107,7 @@ class TDbConnectionTest extends PHPUnit\Framework\TestCase
 			$this->_connection1->createCommand($sql)->execute();
 			$this->fail('Expected exception not raised');
 			$transaction->commit();
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 			$transaction->rollBack();
 			$reader = $this->_connection1->createCommand('SELECT * FROM foo')->query();
 			$this->assertFalse($reader->read());
@@ -149,13 +155,8 @@ class TDbConnectionTest extends PHPUnit\Framework\TestCase
 	{
 		$conn = new TDbConnection();
 
-		$charsetProp = new \ReflectionProperty(TDbConnection::class, '_charset');
-		$charsetProp->setAccessible(true);
-		$charsetProp->setValue($conn, $charset);
-
-		$activeProp = new \ReflectionProperty(TDbConnection::class, '_active');
-		$activeProp->setAccessible(true);
-		$activeProp->setValue($conn, $active);
+		PradoUnit::setProp($conn, '_charset', $charset);
+		PradoUnit::setProp($conn, '_active', $active);
 
 		return $conn;
 	}
@@ -165,9 +166,7 @@ class TDbConnectionTest extends PHPUnit\Framework\TestCase
 	 */
 	private function injectMockPdo(TDbConnection $conn, \PDO $pdo): void
 	{
-		$prop = new \ReflectionProperty(TDbConnection::class, '_pdo');
-		$prop->setAccessible(true);
-		$prop->setValue($conn, $pdo);
+		PradoUnit::setProp($conn, '_pdo', $pdo);
 	}
 
 	/**
@@ -175,9 +174,7 @@ class TDbConnectionTest extends PHPUnit\Framework\TestCase
 	 */
 	private function callSetConnectionCharset(TDbConnection $conn): void
 	{
-		$method = new \ReflectionMethod(TDbConnection::class, 'setConnectionCharset');
-		$method->setAccessible(true);
-		$method->invoke($conn);
+		PradoUnit::invoke($conn, 'setConnectionCharset');
 	}
 
 	/**
@@ -648,9 +645,7 @@ class TDbConnectionTest extends PHPUnit\Framework\TestCase
 	 */
 	private function callApplyCharsetToDsn(TDbConnection $conn, string $dsn): string
 	{
-		$method = new \ReflectionMethod(TDbConnection::class, 'applyCharsetToDsn');
-		$method->setAccessible(true);
-		return $method->invoke($conn, $dsn);
+		return PradoUnit::invoke($conn, 'applyCharsetToDsn', $dsn);
 	}
 
 	/**
@@ -673,9 +668,7 @@ class TDbConnectionTest extends PHPUnit\Framework\TestCase
 	{
 		$conn = new TDbConnection('', '', '', 'UTF-8');
 
-		$charsetProp = new \ReflectionProperty(TDbConnection::class, '_charset');
-		$charsetProp->setAccessible(true);
-		$charsetProp->setValue($conn, 'UTF-8');
+		PradoUnit::setProp($conn, '_charset', 'UTF-8');
 
 		$result = $this->callApplyCharsetToDsn($conn, '');
 		$this->assertSame('', $result);

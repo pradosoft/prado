@@ -379,7 +379,16 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	}
 
 	/**
-	 * Wether the list should be rendered inside a span or not
+	 * @return string the tag name of the list container: `table` for the Table layout, otherwise `span`.
+	 * @since 4.4.0
+	 */
+	protected function getTagName()
+	{
+		return $this->getRepeatLayout() === TRepeatLayout::Table ? 'table' : 'span';
+	}
+
+	/**
+	 * Whether the list should be rendered inside a span or not
 	 *
 	 *@return bool true if we need a span
 	 */
@@ -389,42 +398,67 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	}
 
 	/**
+	 * @return string the ARIA role that groups the list items. Defaults to
+	 *   `group`; {@see TRadioButtonList} overrides it with `radiogroup`.
+	 * @since 4.4.0
+	 */
+	protected function getGroupRole(): string
+	{
+		return 'group';
+	}
+
+	/**
+	 * Adds the grouping ARIA attributes to the list container so assistive
+	 * technology announces the items as one named set. The accessible name comes
+	 * from {@see getToolTip ToolTip} when set.
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer for rendering purpose.
+	 * @since 4.4.0
+	 */
+	protected function addGroupAttributesToRender($writer)
+	{
+		$writer->addAttribute('role', $this->getGroupRole());
+		if (($toolTip = $this->getToolTip()) !== '') {
+			$writer->addAttribute('aria-label', $toolTip);
+		}
+	}
+
+	/**
 	 * Renders the checkbox list control.
 	 * This method overrides the parent implementation.
 	 * @param \Prado\Web\UI\THtmlWriter $writer writer for rendering purpose.
 	 */
 	public function render($writer)
 	{
+		$accessKey = $this->getAccessKey();
+		$tabIndex = $this->getTabIndex();
+		$this->setAccessKey('');
+		$this->setTabIndex(null);
+		$hasItems = $this->getItemCount() > 0;
 		if ($needSpan = $this->getSpanNeeded()) {
+			if ($hasItems) {
+				$this->addAttributesToRender($writer);
+			}
 			$writer->addAttribute('id', $this->getClientId());
+			$this->addGroupAttributesToRender($writer);
 			$writer->renderBeginTag('span');
 		}
-		if ($this->getItemCount() > 0) {
+		if ($hasItems) {
 			$this->_isEnabled = $this->getEnabled(true);
 			$repeatInfo = $this->getRepeatInfo();
-			$accessKey = $this->getAccessKey();
-			$tabIndex = $this->getTabIndex();
 			$this->_repeatedControl->setTextAlign($this->getTextAlign());
 			$this->_repeatedControl->setAccessKey($accessKey);
 			$this->_repeatedControl->setTabIndex($tabIndex);
-			$this->setAccessKey('');
-			$this->setTabIndex(0);
-			$this->addAttributesToRender($writer);
+			if (!$needSpan) {
+				$this->addAttributesToRender($writer);
+				$this->addGroupAttributesToRender($writer);
+			}
 			$repeatInfo->renderRepeater($writer, $this);
-			$this->setAccessKey($accessKey);
-			$this->setTabIndex($tabIndex);
 		}
 		if ($needSpan) {
 			$writer->renderEndTag();
 		}
-
-		//checkbox skipped the client control script in addAttributesToRender
-		if ($this->getEnabled(true)
-			&& $this->getEnableClientScript()
-			&& $this->getAutoPostBack()
-			&& $this->getPage()->getClientSupportsJavaScript()) {
-			$this->renderClientControlScript($writer);
-		}
+		$this->setAccessKey($accessKey);
+		$this->setTabIndex($tabIndex);
 	}
 
 	/**
@@ -450,14 +484,14 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	/**
 	 * Returns true if this control validated successfully.
 	 * Defaults to true.
-	 * @return bool wether this control validated successfully.
+	 * @return bool whether this control validated successfully.
 	 */
 	public function getIsValid()
 	{
 		return $this->_isValid;
 	}
 	/**
-	 * @param bool $value wether this control is valid.
+	 * @param bool $value whether this control is valid.
 	 */
 	public function setIsValid($value)
 	{

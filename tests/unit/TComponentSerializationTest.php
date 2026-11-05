@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/TComponentTestBase.php';
+namespace Prado\Test\Unit;
 
 /**
  * Tests for TComponent serialization: __clone() and __wakeup() behaviour,

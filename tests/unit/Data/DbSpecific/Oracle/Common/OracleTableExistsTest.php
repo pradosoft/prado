@@ -1,7 +1,5 @@
 <?php
 
-require_once(__DIR__ . '/../../../../PradoUnit.php');
-
 /**
  * OracleTableExistsTest — driver-specific tests for {@see TTableGateway::getTableExists()} on Oracle.
  *
@@ -17,11 +15,14 @@ require_once(__DIR__ . '/../../../../PradoUnit.php');
  *   and the upsert_test table (tests/initdb_oracle.sql).
  */
 
+namespace Prado\Test\Unit\Data\DbSpecific\Oracle\Common;
+
 use Prado\Data\Common\TDbMetaData;
 use Prado\Data\DataGateway\TTableGateway;
 use Prado\Data\TDbConnection;
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
 
-class OracleTableExistsTest extends PHPUnit\Framework\TestCase
+class OracleTableExistsTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 

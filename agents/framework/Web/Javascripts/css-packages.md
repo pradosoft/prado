@@ -1,7 +1,7 @@
 # Web/Javascripts/css-packages
 
 ### Directories
-[framework](./INDEX.md) / [Web](./Web/INDEX.md) / [Javascripts](./Web/Javascripts/INDEX.md) / **`css-packages`**
+[framework](../../INDEX.md) / [Web](../INDEX.md) / [Javascripts](INDEX.md) / **`css-packages`**
 
 **Location:** `framework/Web/Javascripts/css-packages.php`
 
@@ -44,4 +44,4 @@ All jQuery UI component packages depend on `jquery.ui.core`, which depends on `j
 ## See Also
 
 - [packages.php](./packages.md) - JavaScript package registry
-- [TClientScriptManager](../UI/TClientScriptManager.php) - Consumes this registry
+- [TClientScriptManager](../UI/TClientScriptManager.md) — Consumes this registry

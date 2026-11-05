@@ -1,6 +1,6 @@
 # Util/SUMMARY.md
 
-Cross-cutting utilities: behavior/mixin system, logging, scheduled tasks, RPC clients, POSIX signal handling, parameter modules, and helpers.
+Cross-cutting utilities: behavior/mixin system, logging, scheduled tasks, named locks, RPC clients, POSIX signal handling, parameter modules, and helpers.
 
 ## Classes
 
@@ -14,11 +14,9 @@ Cross-cutting utilities: behavior/mixin system, logging, scheduled tasks, RPC cl
 
 - **`TCallChain`** — AOP-style method call chain for `dy*` dynamic events.
 
-- **`TLogger`** — Core logger; methods: `log($message, $level, $category)`; levels: `DEBUG`, `INFO`, `NOTICE`, `WARNING`, `ERROR`, `ALERT`, `FATAL`.
+- **Logging** — `TLogger`, `TLogRouter`, `TLogRoute` outputs, and the PSR-3 adapters `TPsrLogger` / `TPsrLogRoute` are in [Log/](Log/SUMMARY.md) (namespace `Prado\Util\Log`).
 
-- **`TLogRouter`** — Module that routes log entries to multiple `TLogRoute` targets.
-
-- **`TLogRoute`** — Abstract base for log outputs; subclass and implement `processLogs()`.
+- **Mutexes** — Named lock modules `TFileMutex`, `TSemaphoreMutex`, `TSyncMutex`, `TMemoryMutex`, `TCacheMutex`, `TRedisMutex`, `TMysqlMutex`, `TPgsqlMutex`, `TOracleMutex`, `TMssqlMutex`, `TDbTableMutex`, and the routing `TDbMutex` on the `TMutex` base are in [Mutex/](Mutex/SUMMARY.md) (namespace `Prado\Util\Mutex`).
 
 - **`TParameterModule`** — Stores named configuration parameters.
 
@@ -45,5 +43,7 @@ Cross-cutting utilities: behavior/mixin system, logging, scheduled tasks, RPC cl
 - **`TUtf8Converter`** — UTF-8 encoding conversions.
 
 - **`TSimpleDateFormatter`** — Non-locale date formatting.
+
+- **`TSerializableClosure`** — Serializable `\Closure` wrapper (laravel/serializable-closure); HMAC-signable.
 
 - **`TClassBehaviorEventParameter`** — Event parameter when a class behavior is attached/detached.

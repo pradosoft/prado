@@ -63,12 +63,12 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	protected $_localize;
 
 	/**
-	 * @var object {@see \Prado\Util\Behaviors\TMapRouteBehavior} that routes changes from the parameter to the property
+	 * @var ?object {@see \Prado\Util\Behaviors\TMapRouteBehavior} that routes changes from the parameter to the property
 	 */
 	private $_paramBehavior;
 
 	/**
-	 * @var string the name of the installed behavior.
+	 * @var ?string the name of the installed behavior.
 	 */
 	protected $_routeBehaviorName;
 
@@ -100,7 +100,7 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 			}
 		}
 
-		$appParams = Prado::getApplication()->getParameters();
+		$appParams = $this->getApplication()->getParameters();
 		if (($value = $appParams->itemAt($this->_parameter)) !== null || $this->getValidNullValue()) {
 			if ($this->_localize && $value && is_string($value)) {
 				$value = Prado::localize($value);
@@ -134,7 +134,7 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 			} else {
 				$this->_paramBehavior = new TMapRouteBehavior($this->_parameter, [$owner, 'set' . $this->_property]);
 			}
-			$appParams = Prado::getApplication()->getParameters();
+			$appParams = $this->getApplication()->getParameters();
 			$appParams->attachBehavior($this->_routeBehaviorName, $this->_paramBehavior);
 		}
 	}
@@ -146,10 +146,11 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	 */
 	public function setEnabled($enabled)
 	{
-		if ($enabled == true && !$this->_paramBehavior) {
+		$enabled = TPropertyValue::ensureBoolean($enabled);
+		if ($enabled && !$this->_paramBehavior) {
 			$this->attachParamMapRoute();
-		} elseif ($enabled == false && $this->_paramBehavior) {
-			Prado::getApplication()->getParameters()->detachBehavior($this->_routeBehaviorName);
+		} elseif (!$enabled && $this->_paramBehavior) {
+			$this->getApplication()->getParameters()->detachBehavior($this->_routeBehaviorName);
 			$this->_paramBehavior = null;
 		}
 		parent::setEnabled($enabled);
@@ -162,7 +163,7 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	public function detach($owner)
 	{
 		if ($this->_paramBehavior) {
-			Prado::getApplication()->getParameters()->detachBehavior($this->_routeBehaviorName);
+			$this->getApplication()->getParameters()->detachBehavior($this->_routeBehaviorName);
 			$this->_routeBehaviorName = null;
 		}
 		parent::detach($owner);
@@ -181,17 +182,18 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	 */
 	public function setParameter($value)
 	{
-		$this->_parameter = TPropertyValue::ensureString($value);
+		$parameter = TPropertyValue::ensureString($value);
 		if ($this->_paramBehavior) {
 			if (!strlen($value)) {
 				throw new TInvalidOperationException('parameterizebehavior_cannot_set_parameter_to_blank_after_attach');
 			}
 			$this->_paramBehavior->setParameter($value);
 		}
+		$this->_parameter = $parameter;
 	}
 
 	/**
-	 * @return string Application parameter key to set the property.
+	 * @return bool Application parameter key to set the property.
 	 */
 	public function getValidNullValue()
 	{
@@ -242,7 +244,7 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	}
 
 	/**
-	 * @return string should the parameter or defaultValue be localized.
+	 * @return bool should the parameter or defaultValue be localized.
 	 */
 	public function getLocalize()
 	{

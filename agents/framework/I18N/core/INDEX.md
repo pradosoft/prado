@@ -3,7 +3,7 @@
 This file provides guidance to Agents when working with code in this repository.
 
 ### Directories
-[framework](./INDEX.md) / [I18N](./I18N/INDEX.md) / **`core/INDEX.md`**
+[framework](../../INDEX.md) / [I18N](../INDEX.md) / **`core`**
 
 | Directory | Purpose |
 |---|---|
@@ -23,6 +23,8 @@ Core I18N engine: culture information, message source backends, message formatti
 
 - **[`TNumberFormatterTrait`](TNumberFormatterTrait.md)** — Shared trait providing `formatNumber()`, `formatCurrency()`, `formatPercentage()` using ICU pattern strings. Used by [`CultureInfo`](CultureInfo.md) and [`TNumberFormat`](../TNumberFormat.md) (parent directory).
 
+- **[`TIntlDateFormatterTrait`](TIntlDateFormatterTrait.md)** — Trait providing a static cache for `\IntlDateFormatter` instances keyed by `[culture][datetype][timetype]`. Returns `null` when the `intl` extension is absent. Used by [`TDateFormat`](../TDateFormat.md). @since 4.3.3
+
 ### Message Sources
 
 - **[`IMessageSource`](IMessageSource.md)** — Interface for translation backends. Methods: `load($catalogue)`, `translateMessage($catalogue, $message, $params, $locale)`, `setCulture($locale)`, `setCache($cache)`.
@@ -33,9 +35,9 @@ Core I18N engine: culture information, message source backends, message formatti
 
 - **[`MessageSource_PHP`](MessageSource_PHP.md)** — PHP array-based message storage. Each catalogue is a `.php` file returning `['source' => 'translation']`.
 
-- **[`MessageSource_gettext`](MessageSource_gettext.md)** — GNU Gettext `.po`/`.mo` message storage. Uses [`TGettext_MO`](../Gettext/TGettext_MO.md)/[`TGettext_PO`](../Gettext/TGettext_PO.md) from `Gettext/` subdirectory.
+- **[`MessageSource_gettext`](MessageSource_gettext.md)** — GNU Gettext `.po`/`.mo` message storage. Uses [`TGettext_MO`](Gettext/TGettext_MO.md)/[`TGettext_PO`](Gettext/TGettext_PO.md) from `Gettext/` subdirectory.
 
-- **[`MessageSource_Database`](MessageSource_Database.md)** — Database-backed message storage. Uses a [`TDbConnection`](../TDbConnection.md) to store/retrieve translations from a configurable table.
+- **[`MessageSource_Database`](MessageSource_Database.md)** — Database-backed message storage. Uses a [`TDbConnection`](../../Data/TDbConnection.md) to store/retrieve translations from a configurable table.
 
 - **[`TMessageSourceIOException`](TMessageSourceIOException.md)** — Exception thrown on catalogue read/write failures.
 

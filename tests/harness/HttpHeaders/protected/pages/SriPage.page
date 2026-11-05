@@ -1,0 +1,22 @@
+<%@ MasterClass="" %><!DOCTYPE html>
+<html data-page="sri-test">
+<head>
+<meta charset="UTF-8">
+<title>SRI Test – <%= $this->Action %></title>
+
+<!-- Record any CSP violation so the test can prove an SRI failure is NOT a CSP violation. -->
+<script>
+window.__cspViolations = [];
+document.addEventListener('securitypolicyviolation', function (e) {
+	window.__cspViolations.push(e.violatedDirective);
+});
+</script>
+
+<!-- The script under test: integrity matches (runs) or is tampered (blocked). -->
+<%= $this->ScriptTag %>
+</head>
+<body>
+<div id="action"><%= $this->Action %></div>
+<div id="ready">ready</div>
+</body>
+</html>

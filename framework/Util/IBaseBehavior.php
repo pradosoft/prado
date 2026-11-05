@@ -67,7 +67,7 @@ interface IBaseBehavior extends IPriorityProperty
 
 	/**
 	 * Handles behavior configurations from TBehaviorsModule and TBehaviorParameterLoader.
-	 * @param mixed $config The configuration data.
+	 * @param null|array|\Prado\Xml\TXmlElement $config The configuration data.
 	 * @since 4.2.2
 	 */
 	public function init($config);

@@ -1,10 +1,12 @@
 <?php
 
+namespace Prado\Test\Unit\Collections;
+
 use Prado\Collections\TStack;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidOperationException;
 
-class TStackTest extends PHPUnit\Framework\TestCase
+class TStackTest extends \PHPUnit\Framework\TestCase
 {
 	protected function setUp(): void
 	{
@@ -39,7 +41,7 @@ class TStackTest extends PHPUnit\Framework\TestCase
 	public function testCanNotCopyFromNonTraversableTypes()
 	{
 		$stack = new TStack();
-		$data = new stdClass();
+		$data = new \stdClass();
 		self::expectException(TInvalidDataTypeException::class);
 		$stack->copyFrom($data);
 	}

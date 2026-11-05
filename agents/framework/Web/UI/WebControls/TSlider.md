@@ -24,8 +24,18 @@ TSlider displays a slider for numeric input. It consists of a track defining the
 - `getClientSide()` - Gets TSliderClientScript for event handlers
 - `onValueChanged($param)` - Event raised when value changes
 
+## Native Alternative
+
+A [TTextBox](./TTextBox.md) with `TextMode="Range"` renders `<input type="range">`: no script, `Min`/`Max`/`Step`, and the browser exposes the `slider` role with arrow-key control. TSlider adds a styled track and handle, a `Values` list, `ClientSide.onSlide`/`onChange`, and its own `OnValueChanged` postback. [TRangeValidator](./TRangeValidator.md) with `Step` validates either on the server.
+
 ## See Also
 
 - [TSliderClientScript](./TSliderClientScript.md)
 - [TSliderDirection](./TSliderDirection.md)
-- [IDataRenderer](./IDataRenderer.md)
+- [IDataRenderer](../../../IDataRenderer.md)
+
+## Color Scheme
+
+The slider body and track backgrounds adapt through `light-dark()`, as do the body border, the track border and the handle. The progress fill stays red in both schemes. The handle is drawn in CSS rather than loaded as a bitmap, because `light-dark()` resolves colors and not images, so a PNG handle could not follow a declared scheme; `TSliderHandleHorizontal.png` and `TSliderHandleVertical.png` are no longer referenced. The shipped stylesheet declares no `color-scheme` of its own, so an
+application that declares none keeps the light rendering it already has. See
+[assets/INDEX.md](./assets/INDEX.md) for the contract.

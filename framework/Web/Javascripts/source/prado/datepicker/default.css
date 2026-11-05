@@ -1,7 +1,14 @@
+/*
+ * Colors follow the color-scheme declared by the application; declaring none
+ * renders light, as before. Canvas and CanvasText resolve per scheme on their
+ * own. Each light-dark() line is preceded by its plain light value, which
+ * browsers without light-dark() support use instead.
+ */
 .TDatePicker_default
 {
-	border: 1px solid #919EA9;
-	background-color: White;
+	border: 1px solid #85919b;
+	border-color: light-dark(#85919b, #646e78);
+	background-color: Canvas;
 	text-align: center;
 	font-size: 11px;
 	font-family: Tahoma, Arial, Helvetica, sans-serif;
@@ -16,7 +23,8 @@
 .TDatePickerImageButton
 {
 	padding: 2px;
-	border: 1px solid #919EA9;
+	border: 1px solid #85919b;
+	border-color: light-dark(#85919b, #646e78);
 	vertical-align: top;
 	margin-left: 1px;
 }
@@ -25,6 +33,7 @@
 .TDatePickerImageButton:hover
 {
 	border-color: #ddd;
+	border-color: light-dark(#ddd, #555);
 }
 
 .TDatePicker_default select
@@ -41,12 +50,13 @@
 .TDatePicker_default .date
 {
 	padding: 4px 0;
-	border: 1px solid white;
+	border: 1px solid transparent;
 	text-align: center;
 }
 .TDatePicker_default .hover
 {
 	border: 1px solid blue;
+	border-color: light-dark(blue, #6677ff);
 }
 .TDatePicker_default .selected 
 {
@@ -61,7 +71,7 @@
 
 .TDatePicker_default td.empty
 {
-	border: 1px solid white;
+	border: 1px solid transparent;
 	cursor: default;
 	height: 22px;
 }
@@ -86,7 +96,8 @@
 .TDatePicker_default .calendarFooter
 {
 	margin: 2px;
-	border-top: 1px solid #919EA9;
+	border-top: 1px solid #85919b;
+	border-top-color: light-dark(#85919b, #646e78);
 	padding-top: 2px;
 }
 .TDatePicker_default .todayButton

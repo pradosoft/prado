@@ -44,7 +44,7 @@ use Prado\Web\UI\WebControls\TLabel;
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @since 3.1.9
- * @method TActiveControlAdapter getAdapter()
+ * @method TActiveControlAdapter<\Prado\Web\UI\ActiveControls\TBaseActiveControl> getAdapter()
  */
 class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 {
@@ -72,7 +72,7 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 	}
 
 	/**
-	 * @return TBaseActiveCallbackControl standard active control options.
+	 * @return TBaseActiveControl standard active control options.
 	 */
 	public function getActiveControl()
 	{
@@ -139,6 +139,7 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 	protected function createPagerButton($pager, $buttonType, $enabled, $text, $commandName, $commandParameter)
 	{
 		if ($buttonType === TDataGridPagerButtonType::LinkButton) {
+			$text = $this->encodeDefaultPagerText($text);
 			if ($enabled) {
 				$button = new TActiveLinkButton();
 			} else {
@@ -175,6 +176,7 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 	 * Renders the datagrid.
 	 * If the datagrid did not pass the prerender phase yet, it will register itself for rendering later.
 	 * Else it will call the {@see renderDataGrid()} method which will do the rendering of the datagrid.
+	 * After a sort command, the sort button of the replaced content receives focus.
 	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function render($writer)
@@ -182,7 +184,10 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 		if ($this->getHasPreRendered()) {
 			$this->renderDataGrid($writer);
 			if ($this->getActiveControl()->canUpdateClientSide()) {
-				$this->getPage()->getCallbackClient()->replaceContent($this->getSurroundingTagId(), $writer);
+				$this->getActiveControl()->replaceClientContent($this->getSurroundingTagId(), $writer);
+				if (($focus = $this->getSortFocusID()) !== null) {
+					$this->getPage()->getCallbackClient()->focus($focus);
+				}
 			}
 		} else {
 			$this->getPage()->getAdapter()->registerControlToRender($this, $writer);

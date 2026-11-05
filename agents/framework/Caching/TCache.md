@@ -85,11 +85,13 @@ protected abstract function deleteValue($key): bool;
 ## Configuration (application.xml)
 
 ```xml
-<!-- Primary cache using Redis: -->
-<module id="cache" class="Prado\Caching\TRedisCache" Host="localhost" Port="6379"/>
+<modules>
+    <!-- Primary cache using Redis: -->
+    <module id="cache" class="Prado\Caching\TRedisCache" Host="localhost" Port="6379"/>
 
-<!-- Database cache: -->
-<module id="cache" class="Prado\Caching\TDbCache" ConnectionID="db" AutoCreateCacheTable="true"/>
+    <!-- Database cache: -->
+    <module id="cache" class="Prado\Caching\TDbCache" ConnectionID="db" AutoCreateCacheTable="true"/>
+</modules>
 ```
 
 ## ArrayAccess Usage

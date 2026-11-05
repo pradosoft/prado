@@ -80,19 +80,19 @@ class TButtonColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @return string the formatting string used to control how the button caption will be displayed.
+	 * @return callable|string the format string or callable used to control how the button caption will be displayed.
 	 */
 	public function getDataTextFormatString()
 	{
-		return $this->getViewState('DataTextFormatString', '');
+		return $this->getDataFormat('DataTextFormatString');
 	}
 
 	/**
-	 * @param string $value the formatting string used to control how the button caption will be displayed.
+	 * @param callable|string $value the format string or callable used to control how the button caption will be displayed.
 	 */
 	public function setDataTextFormatString($value)
 	{
-		$this->setViewState('DataTextFormatString', $value, '');
+		$this->setDataFormat('DataTextFormatString', $value);
 	}
 
 	/**
@@ -128,19 +128,19 @@ class TButtonColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @return string the formatting string used to control how the button image url will be displayed.
+	 * @return callable|string the format string or callable used to control how the button image url will be displayed.
 	 */
 	public function getDataImageUrlFormatString()
 	{
-		return $this->getViewState('DataImageUrlFormatString', '');
+		return $this->getDataFormat('DataImageUrlFormatString');
 	}
 
 	/**
-	 * @param string $value the formatting string used to control how the button image url will be displayed.
+	 * @param callable|string $value the format string or callable used to control how the button image url will be displayed.
 	 */
 	public function setDataImageUrlFormatString($value)
 	{
-		$this->setViewState('DataImageUrlFormatString', $value, '');
+		$this->setDataFormat('DataImageUrlFormatString', $value);
 	}
 
 	/**

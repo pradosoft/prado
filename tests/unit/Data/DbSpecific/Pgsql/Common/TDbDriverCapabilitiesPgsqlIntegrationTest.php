@@ -1,12 +1,14 @@
 <?php
 
-require_once(__DIR__ . '/../../../../PradoUnit.php');
+namespace Prado\Test\Unit\Data\DbSpecific\Pgsql\Common;
 
 use Prado\Data\Common\Pgsql\TPgsqlMetaData;
 use Prado\Data\Common\TDbMetaData;
 use Prado\Data\TDbConnection;
 use Prado\Data\TDbDriverCapabilities;
 use Prado\TApplication;
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
+use Prado\TApplicationMode;
 
 /**
  * Integration tests for TDbDriverCapabilities — PostgreSQL.
@@ -27,7 +29,7 @@ use Prado\TApplication;
  * Tests are skipped automatically when pdo_pgsql is missing or the
  * prado_unitest database is unreachable.
  */
-class TDbDriverCapabilitiesPgsqlIntegrationTest extends PHPUnit\Framework\TestCase
+class TDbDriverCapabilitiesPgsqlIntegrationTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 
@@ -50,7 +52,7 @@ class TDbDriverCapabilitiesPgsqlIntegrationTest extends PHPUnit\Framework\TestCa
 	{
 		static $booted = false;
 		if (!$booted) {
-			new TApplication(__DIR__ . '/../../../../Security/app', false, TApplication::CONFIG_TYPE_PHP);
+			(new TApplication(__DIR__ . '/../../../../Security/app', false, TApplication::CONFIG_TYPE_PHP))->setMode(TApplicationMode::Debug);
 			$booted = true;
 		}
 		$this->setUpConnection();
@@ -100,7 +102,6 @@ class TDbDriverCapabilitiesPgsqlIntegrationTest extends PHPUnit\Framework\TestCa
 		// throws a PDOException.  hasAutoCommitAttribute must return false.
 		$this->assertFalse(TDbDriverCapabilities::hasAutoCommitAttribute('pgsql'));
 	}
-
 
 	public function testPgsqlRequiresNoPreBeginTransactionFlush(): void
 	{
@@ -204,20 +205,6 @@ class TDbDriverCapabilitiesPgsqlIntegrationTest extends PHPUnit\Framework\TestCa
 	public function testPgsqlUnresolveLATIN1ReturnsLatin1Standard(): void
 	{
 		$this->assertSame('ISO-8859-1', TDbDriverCapabilities::unresolveCharset('LATIN1', 'pgsql'));
-	}
-
-	// -----------------------------------------------------------------------
-	// Scaffold factory
-	// -----------------------------------------------------------------------
-
-	public function testPgsqlScaffoldInputClass(): void
-	{
-		$this->assertSame('TPgsqlScaffoldInput', TDbDriverCapabilities::getScaffoldInputClass('pgsql'));
-	}
-
-	public function testPgsqlScaffoldInputFile(): void
-	{
-		$this->assertSame('/TPgsqlScaffoldInput.php', TDbDriverCapabilities::getScaffoldInputFile('pgsql'));
 	}
 
 	// -----------------------------------------------------------------------

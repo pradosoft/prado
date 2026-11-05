@@ -15,155 +15,188 @@ use Prado\Exceptions\TIOException;
 use Prado\TPropertyValue;
 
 /**
- * TDirectoryCacheDependency class.
+ * TDirectoryCacheDependency class
  *
- * TDirectoryCacheDependency performs dependency checking based on the
- * modification time of the files contained in the specified directory.
- * The directory being checked is specified via {@see setDirectory Directory}.
+ * TDirectoryCacheDependency reports a cache-dependency change when the
+ * modification time of any file under the directory specified via
+ * {@see setDirectory Directory} differs from the snapshot taken when the
+ * dependency was created, or when the number of files in the directory has
+ * changed.
  *
- * By default, all files under the specified directory and subdirectories
- * will be checked. If the last modification time of any of them is changed
- * or if different number of files are contained in a directory, the dependency
- * is reported as changed. By specifying {@see setRecursiveCheck RecursiveCheck}
- * and {@see setRecursiveLevel RecursiveLevel}, one can limit the checking
- * to a certain depth of the subdirectories.
+ * By default all files under the specified directory and its subdirectories
+ * are checked. Set {@see setRecursiveCheck RecursiveCheck} to `false` to
+ * limit checking to the top level, or set {@see setRecursiveLevel RecursiveLevel}
+ * to cap the depth of subdirectory traversal.
+ *
+ * Override {@see validateFile()} or {@see validateDirectory()} in a subclass
+ * to restrict which files or subdirectories are included in the check.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.1.0
  */
 class TDirectoryCacheDependency extends TCacheDependency
 {
-	private $_recursiveCheck = true;
-	private $_recursiveLevel = -1;
-	private $_timestamps;
-	private $_directory;
+	/** @var ?string resolved absolute path of the tracked directory */
+	private ?string $_directory = null;
+	/** @var array<string,int> map of absolute file path to last recorded mtime */
+	private array $_timestamps = [];
+	/** @var bool whether subdirectories are included in the dependency check */
+	private bool $_recursiveCheck = true;
+	/** @var int maximum subdirectory depth to traverse; -1 means unlimited */
+	private int $_recursiveLevel = -1;
 
 	/**
-	 * Constructor.
-	 * @param string $directory the directory to be checked
+	 * @param string $directory path to the directory to be tracked.
 	 */
-	public function __construct($directory)
+	public function __construct(string $directory)
 	{
 		$this->setDirectory($directory);
 		parent::__construct();
 	}
 
 	/**
-	 * @return string the directory to be checked
+	 * Returns the stored directory path without validation.
+	 * @return ?string the resolved directory path, or `null` before initialization.
+	 * @since 4.4.0
 	 */
-	public function getDirectory()
+	protected function getDirectoryDirect(): ?string
 	{
 		return $this->_directory;
 	}
 
 	/**
-	 * @param string $directory the directory to be checked
-	 * @throws TInvalidDataValueException if the directory does not exist
+	 * Stores the resolved directory path without re-scanning.
+	 * @param ?string $value the resolved directory path.
+	 * @since 4.4.0
+	 */
+	protected function setDirectoryDirect(?string $value): void
+	{
+		$this->_directory = $value;
+	}
+
+	/**
+	 * @return string the resolved absolute path of the tracked directory.
+	 */
+	public function getDirectory(): string
+	{
+		return $this->_directory ?? '';
+	}
+
+	/**
+	 * Sets the directory to track and records a fresh snapshot of file mtimes.
+	 * @param string $directory path to the directory.
+	 * @throws TInvalidDataValueException if the path does not exist or is not a directory.
 	 */
 	public function setDirectory($directory)
 	{
+		$directory = TPropertyValue::ensureString($directory);
 		if (($path = realpath($directory)) === false || !is_dir($path)) {
 			throw new TInvalidDataValueException('directorycachedependency_directory_invalid', $directory);
 		}
-		$this->_directory = $path;
+		$this->setDirectoryDirect($path);
 		$this->_timestamps = $this->generateTimestamps($path);
 	}
 
 	/**
-	 * @return bool whether the subdirectories of the directory will also be checked.
-	 * It defaults to true.
+	 * @return bool whether subdirectories are included in the dependency check.
+	 *   Defaults to `true`.
 	 */
-	public function getRecursiveCheck()
+	public function getRecursiveCheck(): bool
 	{
 		return $this->_recursiveCheck;
 	}
 
 	/**
-	 * @param bool $value whether the subdirectories of the directory will also be checked.
+	 * @param bool $value whether subdirectories are included in the dependency check.
 	 */
 	public function setRecursiveCheck($value)
 	{
 		$this->_recursiveCheck = TPropertyValue::ensureBoolean($value);
+		if ($this->getDirectoryDirect() !== null) {
+			$this->_timestamps = $this->generateTimestamps($this->getDirectoryDirect());
+		}
 	}
 
 	/**
-	 * @return int the depth of the subdirectories to be checked.
-	 * It defaults to -1, meaning unlimited depth.
+	 * @return int the maximum subdirectory depth to traverse.
+	 *   `-1` means unlimited depth; `0` means only the top-level directory.
+	 *   Defaults to `-1`.
 	 */
-	public function getRecursiveLevel()
+	public function getRecursiveLevel(): int
 	{
 		return $this->_recursiveLevel;
 	}
 
 	/**
-	 * Sets a value indicating the depth of the subdirectories to be checked.
-	 * This is meaningful only when {@see getRecursiveCheck RecursiveCheck}
-	 * is true.
-	 * @param int $value the depth of the subdirectories to be checked.
-	 * If the value is less than 0, it means unlimited depth.
-	 * If the value is 0, it means checking the files directly under the specified directory.
+	 * Sets the maximum subdirectory depth to traverse when
+	 * {@see getRecursiveCheck RecursiveCheck} is `true`.
+	 * Values less than `0` mean unlimited depth; `0` checks only files directly
+	 * under the tracked directory.
+	 * @param int $value the depth limit.
 	 */
 	public function setRecursiveLevel($value)
 	{
 		$this->_recursiveLevel = TPropertyValue::ensureInteger($value);
+		if ($this->getDirectoryDirect() !== null) {
+			$this->_timestamps = $this->generateTimestamps($this->getDirectoryDirect());
+		}
 	}
 
 	/**
-	 * Performs the actual dependency checking.
-	 * This method returns true if the directory is changed.
-	 * @return bool whether the dependency is changed or not.
+	 * @return bool whether any tracked file's mtime or the file count has changed.
 	 */
-	public function getHasChanged()
+	public function getHasChanged(): bool
 	{
-		return $this->generateTimestamps($this->_directory) != $this->_timestamps;
+		return $this->generateTimestamps($this->getDirectoryDirect()) !== $this->_timestamps;
 	}
 
 	/**
-	 * Checks to see if the file should be checked for dependency.
-	 * This method is invoked when dependency of the whole directory is being checked.
-	 * By default, it always returns true, meaning the file should be checked.
-	 * You may override this method to check only certain files.
-	 * @param string $fileName the name of the file that may be checked for dependency.
-	 * @return bool whether this file should be checked.
+	 * Returns whether the given file should be included in the dependency check.
+	 * Called for each file encountered during the directory scan. Override in a
+	 * subclass to restrict which files are tracked.
+	 * @param string $fileName absolute path to the file.
+	 * @return bool `true` to include the file; `false` to skip it.
 	 */
-	protected function validateFile($fileName)
-	{
-		return true;
-	}
-
-	/**
-	 * Checks to see if the specified subdirectory should be checked for dependency.
-	 * This method is invoked when dependency of the whole directory is being checked.
-	 * By default, it always returns true, meaning the subdirectory should be checked.
-	 * You may override this method to check only certain subdirectories.
-	 * @param string $directory the name of the subdirectory that may be checked for dependency.
-	 * @return bool whether this subdirectory should be checked.
-	 */
-	protected function validateDirectory($directory)
+	protected function validateFile(string $fileName): bool
 	{
 		return true;
 	}
 
 	/**
-	 * Determines the last modification time for files under the directory.
-	 * This method may go recursively into subdirectories if
-	 * {@see setRecursiveCheck RecursiveCheck} is set true.
-	 * @param string $directory the directory name
-	 * @param int $level level of the recursion
-	 * @return array list of file modification time indexed by the file path
+	 * Returns whether the given subdirectory should be descended into.
+	 * Called for each subdirectory encountered during the scan. Override in a
+	 * subclass to restrict which subdirectories are traversed.
+	 * @param string $directory absolute path to the subdirectory.
+	 * @return bool `true` to traverse the subdirectory; `false` to skip it.
 	 */
-	protected function generateTimestamps($directory, $level = 0)
+	protected function validateDirectory(string $directory): bool
+	{
+		return true;
+	}
+
+	/**
+	 * Builds a map of absolute file paths to their modification times for all
+	 * tracked files under `$directory`.
+	 * Recurses into subdirectories when {@see getRecursiveCheck RecursiveCheck}
+	 * is `true` and the current depth is within {@see getRecursiveLevel RecursiveLevel}.
+	 * @param string $directory the directory to scan.
+	 * @param int $level the current recursion depth (0 = top level).
+	 * @throws TIOException if the directory cannot be opened.
+	 * @return array<string, int> map of file path to mtime.
+	 */
+	protected function generateTimestamps(string $directory, int $level = 0): array
 	{
 		if (($dir = opendir($directory)) === false) {
 			throw new TIOException('directorycachedependency_directory_invalid', $directory);
 		}
+		$recursiveLevel = $this->getRecursiveLevel();
 		$timestamps = [];
 		while (($file = readdir($dir)) !== false) {
 			$path = $directory . DIRECTORY_SEPARATOR . $file;
 			if ($file === '.' || $file === '..') {
 				continue;
 			} elseif (is_dir($path)) {
-				if (($this->_recursiveLevel < 0 || $level < $this->_recursiveLevel) && $this->validateDirectory($path)) {
+				if ($this->getRecursiveCheck() && ($recursiveLevel < 0 || $level < $recursiveLevel) && $this->validateDirectory($path)) {
 					$timestamps = array_merge($timestamps, $this->generateTimestamps($path, $level + 1));
 				}
 			} elseif ($this->validateFile($path)) {

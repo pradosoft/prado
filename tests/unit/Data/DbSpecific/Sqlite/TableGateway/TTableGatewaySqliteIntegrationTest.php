@@ -1,11 +1,12 @@
 <?php
 
-require_once(__DIR__ . '/../../../../PradoUnit.php');
+namespace Prado\Test\Unit\Data\DbSpecific\Sqlite\TableGateway;
 
 use Prado\Data\DataGateway\TSqlCriteria;
 use Prado\Data\DataGateway\TTableGateway;
 use Prado\Data\TDbConnection;
 use Prado\TApplication;
+use Prado\TApplicationMode;
 
 /**
  * Live integration tests for TTableGateway — SQLite.
@@ -25,7 +26,7 @@ use Prado\TApplication;
  * The static connection and gateway are shared across tests for performance;
  * each test clears the table in setUp so it starts with a clean slate.
  */
-class TTableGatewaySqliteIntegrationTest extends PHPUnit\Framework\TestCase
+class TTableGatewaySqliteIntegrationTest extends \PHPUnit\Framework\TestCase
 {
 	private static ?TDbConnection $conn = null;
 	private static ?TTableGateway $gw   = null;
@@ -34,7 +35,7 @@ class TTableGatewaySqliteIntegrationTest extends PHPUnit\Framework\TestCase
 	{
 		static $booted = false;
 		if (!$booted) {
-			new TApplication(__DIR__ . '/../../../../Security/app', false, TApplication::CONFIG_TYPE_PHP);
+			(new TApplication(__DIR__ . '/../../../../Security/app', false, TApplication::CONFIG_TYPE_PHP))->setMode(TApplicationMode::Debug);
 			$booted = true;
 		}
 		if (!extension_loaded('pdo_sqlite')) {

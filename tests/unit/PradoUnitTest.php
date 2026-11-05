@@ -8,6 +8,10 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit;
+
+use Prado\Test\Unit\Harness\TTestApplication;
+
 /**
  * Minimal stub that satisfies the $connection parameter contract of
  * {@see PradoUnit::processException()}: provides a {@see getDriverName()} method
@@ -34,6 +38,11 @@ class PradoUnitTestBase
 {
 	private int $_basePrivate = 10;
 	protected string $_baseProtected = 'base';
+
+	private function multiply(int $a, int $b): int
+	{
+		return $a * $b;
+	}
 }
 
 /**
@@ -56,6 +65,11 @@ class PradoUnitStaticTestBase
 {
 	private static int $_baseStaticPrivate = 10;
 	protected static string $_baseStaticProtected = 'base';
+
+	private static function add(int $a, int $b): int
+	{
+		return $a + $b;
+	}
 }
 
 /**
@@ -70,15 +84,85 @@ class PradoUnitStaticTestChild extends PradoUnitStaticTestBase
 }
 
 /**
+ * Repeatable attribute for the PradoUnit attribute lookup tests.
+ */
+#[\Attribute(\Attribute::TARGET_ALL | \Attribute::IS_REPEATABLE)]
+class PradoUnitTestAttribute
+{
+	public function __construct(public string $value)
+	{
+	}
+}
+
+/**
+ * Subclass attribute; matched by `instanceof` when PradoUnitTestAttribute is the filter.
+ */
+#[\Attribute(\Attribute::TARGET_ALL)]
+class PradoUnitTestSubAttribute extends PradoUnitTestAttribute
+{
+}
+
+/**
+ * Unrelated attribute; never matched by the PradoUnitTestAttribute filter.
+ */
+#[\Attribute]
+class PradoUnitTestOtherAttribute
+{
+}
+
+/**
+ * Parent of the attributed hierarchy: a class attribute, a public and a private
+ * attributed property, and an attributed method the child inherits.
+ */
+#[PradoUnitTestAttribute('parent')]
+class PradoUnitAttributeBase
+{
+	#[PradoUnitTestAttribute('parent-prop')]
+	public int $parentProp = 1;
+
+	#[PradoUnitTestAttribute('private-prop')]
+	private int $_privateParentProp = 2;
+
+	#[PradoUnitTestAttribute('inherited-method')]
+	public function inheritedMethod(): void
+	{
+	}
+}
+
+/**
+ * Child of the attributed hierarchy: two repeated class attributes and an
+ * unrelated one, an attributed property, a plain property, a method carrying
+ * the subclass attribute, and a plain method.
+ */
+#[PradoUnitTestAttribute('child-a')]
+#[PradoUnitTestAttribute('child-b')]
+#[PradoUnitTestOtherAttribute]
+class PradoUnitAttributeChild extends PradoUnitAttributeBase
+{
+	#[PradoUnitTestAttribute('child-prop')]
+	public int $childProp = 3;
+
+	public int $plainProp = 4;
+
+	#[PradoUnitTestSubAttribute('sub')]
+	public function subMethod(): void
+	{
+	}
+
+	public function plainMethod(): void
+	{
+	}
+}
+
+/**
  * Tests for {@see PradoUnit}.
  *
  * Covers: snapshot/restore across a two-level hierarchy, partial-snapshot
  * filtering, getProp/setProp for private ancestor fields, and the
  * ReflectionException path for missing properties.
  *
- * @package System
  */
-class PradoUnitTest extends PHPUnit\Framework\TestCase
+class PradoUnitTest extends \PHPUnit\Framework\TestCase
 {
 	// -----------------------------------------------------------------------
 	// snapshot
@@ -224,17 +308,70 @@ class PradoUnitTest extends PHPUnit\Framework\TestCase
 	}
 
 	// -----------------------------------------------------------------------
+	// getProp / setProp — static mode (class-string argument)
+	// -----------------------------------------------------------------------
+
+	public function testGetPropStaticReadsPrivateAncestorField()
+	{
+		$this->assertSame(10, PradoUnit::getProp(PradoUnitStaticTestChild::class, '_baseStaticPrivate'));
+	}
+
+	public function testGetPropStaticReadsProtectedField()
+	{
+		$this->assertSame('base', PradoUnit::getProp(PradoUnitStaticTestChild::class, '_baseStaticProtected'));
+	}
+
+	public function testGetPropStaticReadsChildPrivateField()
+	{
+		$this->assertSame(2.5, PradoUnit::getProp(PradoUnitStaticTestChild::class, '_childStaticPrivate'));
+	}
+
+	public function testGetPropStaticThrowsForMissingProperty()
+	{
+		$this->expectException(\ReflectionException::class);
+		PradoUnit::getProp(PradoUnitStaticTestChild::class, 'doesNotExist');
+	}
+
+	public function testSetPropStaticWritesPrivateAncestorField()
+	{
+		$original = PradoUnit::getProp(PradoUnitStaticTestChild::class, '_baseStaticPrivate');
+		try {
+			PradoUnit::setProp(PradoUnitStaticTestChild::class, '_baseStaticPrivate', 99);
+			$this->assertSame(99, PradoUnit::getProp(PradoUnitStaticTestChild::class, '_baseStaticPrivate'));
+		} finally {
+			PradoUnit::setProp(PradoUnitStaticTestChild::class, '_baseStaticPrivate', $original);
+		}
+	}
+
+	public function testSetPropStaticWritesChildPrivateField()
+	{
+		$original = PradoUnit::getProp(PradoUnitStaticTestChild::class, '_childStaticPrivate');
+		try {
+			PradoUnit::setProp(PradoUnitStaticTestChild::class, '_childStaticPrivate', 6.28);
+			$this->assertSame(6.28, PradoUnit::getProp(PradoUnitStaticTestChild::class, '_childStaticPrivate'));
+		} finally {
+			PradoUnit::setProp(PradoUnitStaticTestChild::class, '_childStaticPrivate', $original);
+		}
+	}
+
+	public function testSetPropStaticThrowsForMissingProperty()
+	{
+		$this->expectException(\ReflectionException::class);
+		PradoUnit::setProp(PradoUnitStaticTestChild::class, 'doesNotExist', 'value');
+	}
+
+	// -----------------------------------------------------------------------
 	// snapshot / restore round-trip on a real TApplication
 	// -----------------------------------------------------------------------
 
 	public function testSnapshotRestoreRoundTripOnRealApp()
 	{
-		$app = Prado::getApplication();
+		$app = \Prado::getApplication();
 		$originalMode = $app->getMode();
 
 		$snap = TTestApplication::snapshotApp($app, ['_mode']);
 
-		$app->setMode(\Prado\TApplicationMode::Normal);
+		$app->setMode($originalMode === \Prado\TApplicationMode::Performance ? \Prado\TApplicationMode::Normal : \Prado\TApplicationMode::Performance);
 		$this->assertNotSame($originalMode, $app->getMode());
 
 		TTestApplication::restoreApp($snap, $app);
@@ -377,6 +514,9 @@ class PradoUnitTest extends PHPUnit\Framework\TestCase
 	/**
 	 * Temporarily override an env variable, run $callback, then restore the original
 	 * value (or unset it if it was not set before).
+	 * @param string $name
+	 * @param false|string $value
+	 * @param callable $callback
 	 */
 	private function withEnv(string $name, string|false $value, callable $callback): void
 	{
@@ -815,55 +955,26 @@ class PradoUnitTest extends PHPUnit\Framework\TestCase
 	}
 
 	// -----------------------------------------------------------------------
-	// processException — setUp / tearDown for map isolation
+	// processException — classification into a [key, message] pair
 	// -----------------------------------------------------------------------
 
-	/** Saved copies of the three static deduplication maps. */
-	private array $_savedDbConnectionException;
-	private array $_savedDbDatabaseException;
-	private array $_savedDbTableException;
-
-	protected function setUp(): void
+	public function testProcessException_isNoConnection_returnsConnectionKeyAndMessage(): void
 	{
-		parent::setUp();
-		// Save and clear the per-driver deduplication maps so processException
-		// tests always start from a clean slate, regardless of test execution order.
-		$this->_savedDbConnectionException = PradoUnit::$dbConnectionException;
-		$this->_savedDbDatabaseException   = PradoUnit::$dbDatabaseException;
-		$this->_savedDbTableException      = PradoUnit::$dbTableException;
-		PradoUnit::$dbConnectionException  = [];
-		PradoUnit::$dbDatabaseException    = [];
-		PradoUnit::$dbTableException       = [];
-	}
-
-	protected function tearDown(): void
-	{
-		PradoUnit::$dbConnectionException = $this->_savedDbConnectionException;
-		PradoUnit::$dbDatabaseException   = $this->_savedDbDatabaseException;
-		PradoUnit::$dbTableException      = $this->_savedDbTableException;
-		parent::tearDown();
-	}
-
-	// -----------------------------------------------------------------------
-	// processException — isNoConnection
-	// -----------------------------------------------------------------------
-
-	public function testProcessException_isNoConnection_firstOccurrence_noSkipDb_returnsException(): void
-	{
-		// Without SKIP_DB the exception is returned unchanged so the caller can
-		// decide whether to rethrow or markTestSkipped.
 		$this->withEnv('PRADO_UNITTEST_SKIP_DB', false, function () {
 			$conn = new PradoUnitMockConnection('mysql');
 			$e = new \Exception("Connection refused");
 
 			$result = PradoUnit::processException($e, $conn);
 
-			$this->assertSame($e, $result, 'First occurrence without SKIP_DB must return the original Exception');
-			$this->assertArrayHasKey('mysql', PradoUnit::$dbConnectionException);
+			$this->assertIsArray($result);
+			$this->assertSame('mysql:connection', $result[0]);
+			$this->assertStringContainsString('mysql', $result[1]);
+			$this->assertStringContainsString('Connection refused', $result[1]);
+			$this->assertStringNotContainsString('PRADO_UNITTEST_SKIP_DB=1', $result[1]);
 		});
 	}
 
-	public function testProcessException_isNoConnection_firstOccurrence_withSkipDb_returnsString(): void
+	public function testProcessException_isNoConnection_withSkipDb_annotatesMessage(): void
 	{
 		$this->withEnv('PRADO_UNITTEST_SKIP_DB', '1', function () {
 			$conn = new PradoUnitMockConnection('mysql');
@@ -871,241 +982,119 @@ class PradoUnitTest extends PHPUnit\Framework\TestCase
 
 			$result = PradoUnit::processException($e, $conn);
 
-			$this->assertIsString($result);
-			$this->assertStringContainsString('mysql', $result);
-			$this->assertStringContainsString('PRADO_UNITTEST_SKIP_DB=1', $result);
-			$this->assertArrayHasKey('mysql', PradoUnit::$dbConnectionException);
+			$this->assertIsArray($result);
+			$this->assertSame('mysql:connection', $result[0]);
+			$this->assertStringContainsString('PRADO_UNITTEST_SKIP_DB=1', $result[1]);
 		});
 	}
-
-	public function testProcessException_isNoConnection_duplicateOccurrence_returnsDuplicatedString(): void
-	{
-		$conn = new PradoUnitMockConnection('pgsql');
-		PradoUnit::$dbConnectionException['pgsql'] = true;   // simulate prior occurrence
-
-		$e = new \Exception("Connection refused");
-		$result = PradoUnit::processException($e, $conn);
-
-		$this->assertIsString($result);
-		$this->assertStringContainsString('Duplicated', $result);
-		$this->assertStringContainsString('pgsql', $result);
-	}
-
-	// -----------------------------------------------------------------------
-	// processException — isNoDatabase (includes the $e .= bug-fix regression test)
-	// -----------------------------------------------------------------------
 
 	/**
-	 * BUG-FIX REGRESSION TEST
-	 *
-	 * The original code in the isNoDatabase branch read:
-	 *
-	 *   $e .= strtr("Database '{0}' Not Found Error ...", [...]);
-	 *
-	 * In PHP 8, concatenating (.=) a string onto an \Exception object throws a
-	 * TypeError:  "Unsupported operand types: Exception .= string".
-	 *
-	 * The fix changes the assignment to:
-	 *
-	 *   $e = strtr("Database '{0}' Not Found Error ...", [...]);
-	 *
-	 * This test asserts that processException() returns a string (not an Exception
-	 * and not a TypeError) when PRADO_UNITTEST_SKIP_DB=1 and the exception matches
-	 * isNoDatabase.  Before the fix this test would fail with a TypeError.
+	 * Regression test: the isNoDatabase branch once concatenated a string onto the
+	 * \Exception object (`$e .= ...`), which throws a TypeError in PHP 8.  The
+	 * branch must classify the error into a `[key, message]` pair instead.
 	 */
-	public function testProcessException_isNoDatabase_firstOccurrence_withSkipDb_returnsString_bugFix(): void
+	public function testProcessException_isNoDatabase_withSkipDb_returnsPair_bugFix(): void
 	{
 		$this->withEnv('PRADO_UNITTEST_SKIP_DB', '1', function () {
-			$conn   = new PradoUnitMockConnection('mysql');
-			$e      = new \Exception("SQLSTATE[HY000] [1049] Unknown database 'prado_unitest'");
+			$conn = new PradoUnitMockConnection('mysql');
+			$e = new \Exception("SQLSTATE[HY000] [1049] Unknown database 'prado_unitest'");
 
-			// Must NOT throw TypeError — that would be the pre-fix behaviour.
 			$result = PradoUnit::processException($e, $conn);
 
-			$this->assertIsString($result, 'processException must return a string when isNoDatabase matches and SKIP_DB=1 (pre-fix threw TypeError: Exception .= string)');
-			$this->assertStringContainsString('mysql', $result);
-			$this->assertStringContainsString('PRADO_UNITTEST_SKIP_DB=1', $result);
-			$this->assertStringNotContainsString('Object', $result);
+			$this->assertIsArray($result);
+			$this->assertSame('mysql:database', $result[0]);
+			$this->assertStringContainsString('PRADO_UNITTEST_SKIP_DB=1', $result[1]);
+			$this->assertStringNotContainsString('Object', $result[1]);
 		});
 	}
 
-	public function testProcessException_isNoDatabase_firstOccurrence_noSkipDb_returnsException(): void
+	public function testProcessException_isNoTable_returnsTableKeyAndMessage(): void
 	{
 		$this->withEnv('PRADO_UNITTEST_SKIP_DB', false, function () {
 			$conn = new PradoUnitMockConnection('mysql');
-			$e    = new \Exception("SQLSTATE[HY000] [1049] Unknown database 'prado_unitest'");
+			$e = new \Exception("Base table or view not found: 1146 Table 'prado_unitest.foo' doesn't exist");
 
 			$result = PradoUnit::processException($e, $conn);
 
-			$this->assertSame($e, $result, 'First occurrence without SKIP_DB must return original Exception unchanged');
-			$this->assertArrayHasKey('mysql', PradoUnit::$dbDatabaseException);
+			$this->assertIsArray($result);
+			$this->assertSame('mysql:table', $result[0]);
+			$this->assertStringContainsString("prado_unitest.foo", $result[1]);
 		});
 	}
 
-	public function testProcessException_isNoDatabase_duplicateOccurrence_returnsDuplicatedString(): void
+	public function testProcessException_isStateless_repeatCallsReturnTheSamePair(): void
 	{
+		// Deduplication lives in failFirstThenSkip(); processException() itself keeps
+		// no state, so the same error classifies identically every time.
 		$conn = new PradoUnitMockConnection('pgsql');
-		PradoUnit::$dbDatabaseException['pgsql'] = true;
+		$first = PradoUnit::processException(new \Exception("Connection refused"), $conn);
+		$second = PradoUnit::processException(new \Exception("Connection refused"), $conn);
 
-		$e      = new \Exception("SQLSTATE[HY000] [1049] Unknown database 'prado_unitest'");
-		$result = PradoUnit::processException($e, $conn);
-
-		$this->assertIsString($result);
-		$this->assertStringContainsString('Duplicated', $result);
-		$this->assertStringContainsString('pgsql', $result);
+		$this->assertSame($first, $second);
 	}
-
-	public function testProcessException_isNoDatabase_duplicateStringDoesNotContainOriginalExceptionMessage(): void
-	{
-		// Duplicate strings are short summaries; they must NOT include the full
-		// exception text that would bloat test output on every file.
-		$conn = new PradoUnitMockConnection('mysql');
-		PradoUnit::$dbDatabaseException['mysql'] = true;
-
-		$e      = new \Exception("SQLSTATE[HY000] [1049] Unknown database 'prado_unitest'");
-		$result = PradoUnit::processException($e, $conn);
-
-		$this->assertIsString($result);
-		$this->assertStringNotContainsString($e->getMessage(), $result);
-	}
-
-	// -----------------------------------------------------------------------
-	// processException — isNoTable
-	// -----------------------------------------------------------------------
-
-	public function testProcessException_isNoTable_firstOccurrence_noSkipDb_returnsException(): void
-	{
-		$this->withEnv('PRADO_UNITTEST_SKIP_DB', false, function () {
-			$conn = new PradoUnitMockConnection('mysql');
-			$e    = new \Exception("Base table or view not found: 1146 Table 'prado_unitest.foo' doesn't exist");
-
-			$result = PradoUnit::processException($e, $conn);
-
-			$this->assertSame($e, $result);
-			$this->assertArrayHasKey('mysql', PradoUnit::$dbTableException);
-		});
-	}
-
-	public function testProcessException_isNoTable_firstOccurrence_withSkipDb_returnsString(): void
-	{
-		$this->withEnv('PRADO_UNITTEST_SKIP_DB', '1', function () {
-			$conn = new PradoUnitMockConnection('mysql');
-			$e    = new \Exception("Base table or view not found: foo");
-
-			$result = PradoUnit::processException($e, $conn);
-
-			$this->assertIsString($result);
-			$this->assertStringContainsString('mysql', $result);
-			$this->assertStringContainsString('PRADO_UNITTEST_SKIP_DB=1', $result);
-		});
-	}
-
-	public function testProcessException_isNoTable_duplicateOccurrence_returnsDuplicatedString(): void
-	{
-		$conn = new PradoUnitMockConnection('sqlite');
-		PradoUnit::$dbTableException['sqlite'] = true;
-
-		$e      = new \Exception("does not exist");
-		$result = PradoUnit::processException($e, $conn);
-
-		$this->assertIsString($result);
-		$this->assertStringContainsString('Duplicated', $result);
-	}
-
-	// -----------------------------------------------------------------------
-	// processException — unrecognised exception passthrough
-	// -----------------------------------------------------------------------
 
 	public function testProcessException_unrecognisedExceptionIsReturnedUnchanged(): void
 	{
-		$conn   = new PradoUnitMockConnection('mysql');
-		$e      = new \RuntimeException("Unexpected PDO error: something weird");
+		$conn = new PradoUnitMockConnection('mysql');
+		$e = new \RuntimeException("Unexpected PDO error: something weird");
 
-		$result = PradoUnit::processException($e, $conn);
+		$this->assertSame($e, PradoUnit::processException($e, $conn));
+	}
 
-		// None of the three maps must be populated — this was not a known category.
-		$this->assertSame($e, $result);
-		$this->assertArrayNotHasKey('mysql', PradoUnit::$dbConnectionException);
-		$this->assertArrayNotHasKey('mysql', PradoUnit::$dbDatabaseException);
-		$this->assertArrayNotHasKey('mysql', PradoUnit::$dbTableException);
+	public function testProcessException_keysAreScopedByDriverAndCategory(): void
+	{
+		$fb = new PradoUnitMockConnection('firebird');
+		$my = new PradoUnitMockConnection('mysql');
+
+		$this->assertSame('firebird:connection', PradoUnit::processException(new \Exception("Connection refused"), $fb)[0]);
+		$this->assertSame('firebird:database', PradoUnit::processException(new \Exception("Unknown database 'test'"), $fb)[0]);
+		$this->assertSame('firebird:table', PradoUnit::processException(new \Exception("Table unknown: FOO"), $fb)[0]);
+		$this->assertSame('mysql:connection', PradoUnit::processException(new \Exception("Connection refused"), $my)[0]);
 	}
 
 	// -----------------------------------------------------------------------
-	// processException — each category populates the right map only
+	// failFirstThenSkip — per-key deduplication
 	// -----------------------------------------------------------------------
 
-	public function testProcessException_isNoConnection_populatesOnlyConnectionMap(): void
+	public function testFailFirstThenSkip_failsFirstThenSkipsSameKey(): void
 	{
-		$conn = new PradoUnitMockConnection('firebird');
-		$e    = new \Exception("Connection refused");
-		PradoUnit::processException($e, $conn);
-
-		$this->assertArrayHasKey('firebird', PradoUnit::$dbConnectionException);
-		$this->assertArrayNotHasKey('firebird', PradoUnit::$dbDatabaseException);
-		$this->assertArrayNotHasKey('firebird', PradoUnit::$dbTableException);
+		$key = 'pradounittest:' . uniqid('', true);
+		try {
+			PradoUnit::failFirstThenSkip($this, $key, null, 'first');
+			$this->fail('The first occurrence of a key must fail');
+		} catch (\PHPUnit\Framework\AssertionFailedError $e) {
+			$this->assertSame('first', $e->getMessage());
+		}
+		try {
+			PradoUnit::failFirstThenSkip($this, $key, null, 'second');
+			$this->fail('A repeated key must skip');
+		} catch (\PHPUnit\Framework\SkippedTest $e) {
+			$this->assertSame('second', $e->getMessage());
+		}
+		$this->assertSame(2, PradoUnit::$suiteFailEmitted[$key]);
+		unset(PradoUnit::$suiteFailEmitted[$key]);
 	}
 
-	public function testProcessException_isNoDatabase_populatesOnlyDatabaseMap(): void
+	public function testFailFirstThenSkip_nullKeyWithoutExceptionDoesNothing(): void
 	{
-		$conn = new PradoUnitMockConnection('firebird');
-		$e    = new \Exception("Unknown database 'test'");
-		PradoUnit::processException($e, $conn);
-
-		$this->assertArrayNotHasKey('firebird', PradoUnit::$dbConnectionException);
-		$this->assertArrayHasKey('firebird', PradoUnit::$dbDatabaseException);
-		$this->assertArrayNotHasKey('firebird', PradoUnit::$dbTableException);
-	}
-
-	public function testProcessException_isNoTable_populatesOnlyTableMap(): void
-	{
-		$conn = new PradoUnitMockConnection('firebird');
-		$e    = new \Exception("Table unknown: FOO");
-		PradoUnit::processException($e, $conn);
-
-		$this->assertArrayNotHasKey('firebird', PradoUnit::$dbConnectionException);
-		$this->assertArrayNotHasKey('firebird', PradoUnit::$dbDatabaseException);
-		$this->assertArrayHasKey('firebird', PradoUnit::$dbTableException);
-	}
-
-	// -----------------------------------------------------------------------
-	// processException — per-driver isolation (different drivers tracked independently)
-	// -----------------------------------------------------------------------
-
-	public function testProcessException_dedupMapsAreKeyedByDriver(): void
-	{
-		$connA = new PradoUnitMockConnection('mysql');
-		$connB = new PradoUnitMockConnection('pgsql');
-		$e     = new \Exception("Connection refused");
-
-		// First occurrence for mysql — returns Exception.
-		$r1 = PradoUnit::processException($e, $connA);
-		// First occurrence for pgsql — also returns Exception (not "Duplicated").
-		$e2 = new \Exception("Connection refused");
-		$r2 = PradoUnit::processException($e2, $connB);
-
-		$this->assertInstanceOf(\Exception::class, $r1);
-		$this->assertInstanceOf(\Exception::class, $r2);
-
-		// Second occurrence for mysql — returns "Duplicated".
-		$e3 = new \Exception("Connection refused");
-		$r3 = PradoUnit::processException($e3, $connA);
-		$this->assertIsString($r3);
-		$this->assertStringContainsString('Duplicated', $r3);
+		$before = PradoUnit::$suiteFailEmitted;
+		PradoUnit::failFirstThenSkip($this, null);
+		$this->assertSame($before, PradoUnit::$suiteFailEmitted);
 	}
 
 	// -----------------------------------------------------------------------
 	// setupSqliteConnection
 	// -----------------------------------------------------------------------
 
-	public function testSetupSqliteConnection_returnsStringWhenExtensionMissing(): void
+	public function testSetupSqliteConnection_returnsPairWhenExtensionMissing(): void
 	{
 		if (extension_loaded('pdo_sqlite')) {
 			// Can't unload an extension at runtime; skip if it is present.
 			$this->markTestSkipped('pdo_sqlite is loaded; cannot test the missing-extension branch.');
 		}
 		$result = PradoUnit::setupSqliteConnection();
-		$this->assertIsString($result);
-		$this->assertStringContainsString('pdo_sqlite', $result);
+		$this->assertIsArray($result);
+		$this->assertSame('extension:pdo_sqlite', $result[0]);
 	}
 
 	public function testSetupSqliteConnection_inMemory_returnsTDbConnection(): void
@@ -1178,14 +1167,13 @@ class PradoUnitTest extends PHPUnit\Framework\TestCase
 
 		$result = PradoUnit::checkForTable($conn, 'nonexistent_table_xyz');
 
-		// On first occurrence with SKIP_DB unset, processException returns the Exception.
-		// On any occurrence with SKIP_DB=1, it returns a string.
-		// Either way it must NOT be null.
-		$this->assertNotNull($result, 'checkForTable must return non-null when the table is missing');
+		// A missing table classifies into a `[key, message]` pair.
+		$this->assertIsArray($result, 'checkForTable must classify a missing table');
+		$this->assertSame('sqlite:table', $result[0]);
 		$conn->setActive(false);
 	}
 
-	public function testCheckForTable_withSkipDb_returnsString_whenTableMissing(): void
+	public function testCheckForTable_withSkipDb_annotatesMessage_whenTableMissing(): void
 	{
 		if (!extension_loaded('pdo_sqlite')) {
 			$this->markTestSkipped('pdo_sqlite extension not available.');
@@ -1193,8 +1181,8 @@ class PradoUnitTest extends PHPUnit\Framework\TestCase
 		$this->withEnv('PRADO_UNITTEST_SKIP_DB', '1', function () {
 			$conn   = PradoUnit::setupSqliteConnection();
 			$result = PradoUnit::checkForTable($conn, 'nonexistent_table_xyz');
-			$this->assertIsString($result);
-			$this->assertStringContainsString('PRADO_UNITTEST_SKIP_DB=1', $result);
+			$this->assertIsArray($result);
+			$this->assertStringContainsString('PRADO_UNITTEST_SKIP_DB=1', $result[1]);
 			$conn->setActive(false);
 		});
 	}
@@ -1259,5 +1247,276 @@ class PradoUnitTest extends PHPUnit\Framework\TestCase
 		$snap = PradoUnit::snapshot($class);
 		$this->assertSame('child-override', $snap['_baseProtected'],
 			'Child-level property must shadow the parent-level declaration of the same name');
+	}
+
+	// -----------------------------------------------------------------------
+	// reflectionClass / reflectionMethod / reflectionProperty (cache)
+	// -----------------------------------------------------------------------
+
+	public function testReflectionClass_returnsReflectionClass_forClassName(): void
+	{
+		$rc = PradoUnit::reflectionClass(PradoUnitTestChild::class);
+		$this->assertInstanceOf(\ReflectionClass::class, $rc);
+		$this->assertSame(PradoUnitTestChild::class, $rc->getName());
+	}
+
+	public function testReflectionClass_returnsReflectionClass_forInstance(): void
+	{
+		$rc = PradoUnit::reflectionClass(new PradoUnitTestChild());
+		$this->assertInstanceOf(\ReflectionClass::class, $rc);
+		$this->assertSame(PradoUnitTestChild::class, $rc->getName());
+	}
+
+	public function testReflectionClass_cachesSameInstance(): void
+	{
+		$first = PradoUnit::reflectionClass(PradoUnitTestChild::class);
+		$second = PradoUnit::reflectionClass(PradoUnitTestChild::class);
+		$this->assertSame($first, $second);
+	}
+
+	public function testReflectionClass_isCaseInsensitive(): void
+	{
+		$lower = PradoUnit::reflectionClass(strtolower(PradoUnitTestChild::class));
+		$exact = PradoUnit::reflectionClass(PradoUnitTestChild::class);
+		$this->assertSame($exact, $lower);
+	}
+
+	public function testReflectionClass_returnsNull_forUnknownClass(): void
+	{
+		$this->assertNull(PradoUnit::reflectionClass('NoSuchClassXyz123'));
+	}
+
+	public function testReflectionClass_cachesNullForUnknownClass(): void
+	{
+		// Second lookup of an unknown class returns the same cached null result
+		// without re-attempting the ReflectionException path.
+		$this->assertNull(PradoUnit::reflectionClass('NoSuchClassXyz456'));
+		$this->assertNull(PradoUnit::reflectionClass('NoSuchClassXyz456'));
+	}
+
+	public function testReflectionMethod_returnsMethod_byClassName(): void
+	{
+		$rm = PradoUnit::reflectionMethod(PradoUnit::class, 'reflectionClass');
+		$this->assertInstanceOf(\ReflectionMethod::class, $rm);
+		$this->assertSame('reflectionClass', $rm->getName());
+	}
+
+	public function testReflectionMethod_cachesSameInstance(): void
+	{
+		$first = PradoUnit::reflectionMethod(PradoUnit::class, 'reflectionClass');
+		$second = PradoUnit::reflectionMethod(PradoUnit::class, 'reflectionClass');
+		$this->assertSame($first, $second);
+	}
+
+	public function testReflectionMethod_returnsNull_forUnknownMethod(): void
+	{
+		$this->assertNull(PradoUnit::reflectionMethod(PradoUnit::class, 'noSuchMethodXyz'));
+	}
+
+	public function testReflectionMethod_returnsNull_forUnknownClass(): void
+	{
+		$this->assertNull(PradoUnit::reflectionMethod('NoSuchClassXyz789', 'anything'));
+	}
+
+	// -----------------------------------------------------------------------
+	// invoke — instance and static modes
+	// -----------------------------------------------------------------------
+
+	public function testInvokeCallsPrivateAncestorMethod(): void
+	{
+		$obj = new PradoUnitTestChild();
+
+		$this->assertSame(12, PradoUnit::invoke($obj, 'multiply', 3, 4));
+	}
+
+	public function testInvokeCallsStaticMethodViaClassString(): void
+	{
+		$this->assertSame(7, PradoUnit::invoke(PradoUnitStaticTestChild::class, 'add', 3, 4));
+	}
+
+	public function testInvokePassesMultipleArgs(): void
+	{
+		$obj = new PradoUnitTestChild();
+
+		$this->assertSame(0, PradoUnit::invoke($obj, 'multiply', 0, 99));
+	}
+
+	public function testInvokeThrowsForMissingMethod(): void
+	{
+		$obj = new PradoUnitTestChild();
+
+		$this->expectException(\ReflectionException::class);
+		PradoUnit::invoke($obj, 'noSuchMethodXyz');
+	}
+
+	public function testInvokeThrowsForMissingMethodOnClass(): void
+	{
+		$this->expectException(\ReflectionException::class);
+		PradoUnit::invoke(PradoUnitStaticTestChild::class, 'noSuchMethodXyz');
+	}
+
+	public function testReflectionProperty_findsPropertyOnConcreteClass(): void
+	{
+		$rp = PradoUnit::reflectionProperty(PradoUnitTestChild::class, 'childPublic');
+		$this->assertInstanceOf(\ReflectionProperty::class, $rp);
+		$this->assertSame('childPublic', $rp->getName());
+		$this->assertSame(PradoUnitTestChild::class, $rp->getDeclaringClass()->getName());
+	}
+
+	public function testReflectionProperty_findsPrivateAncestorProperty(): void
+	{
+		// _basePrivate is declared on the parent — the standard
+		// ReflectionClass::getProperty() called on the child would miss it.
+		$rp = PradoUnit::reflectionProperty(PradoUnitTestChild::class, '_basePrivate');
+		$this->assertInstanceOf(\ReflectionProperty::class, $rp);
+		$this->assertSame(PradoUnitTestBase::class, $rp->getDeclaringClass()->getName());
+	}
+
+	public function testReflectionProperty_cachesSameInstance(): void
+	{
+		$first = PradoUnit::reflectionProperty(PradoUnitTestChild::class, '_basePrivate');
+		$second = PradoUnit::reflectionProperty(PradoUnitTestChild::class, '_basePrivate');
+		$this->assertSame($first, $second);
+	}
+
+	public function testReflectionProperty_returnsNull_forUnknownProperty(): void
+	{
+		$this->assertNull(PradoUnit::reflectionProperty(PradoUnitTestChild::class, 'noSuchProp'));
+	}
+
+	public function testReflectionProperty_returnsNull_forUnknownClass(): void
+	{
+		$this->assertNull(PradoUnit::reflectionProperty('NoSuchClassAbc', 'anything'));
+	}
+
+	// -----------------------------------------------------------------------
+	// classAttributes / methodAttributes / propertyAttributes / *WithAttribute
+	// -----------------------------------------------------------------------
+
+	/**
+	 * Maps attribute instances to their `value` strings.
+	 * @param array<int,object> $attributes
+	 * @return string[]
+	 */
+	private static function attributeValues(array $attributes): array
+	{
+		return array_map(fn ($a) => $a->value, $attributes);
+	}
+
+	public function testClassAttributes_ownThenParent_inDeclarationOrder(): void
+	{
+		$attributes = PradoUnit::classAttributes(PradoUnitAttributeChild::class, PradoUnitTestAttribute::class);
+		$this->assertSame(['child-a', 'child-b', 'parent'], self::attributeValues($attributes));
+		$this->assertContainsOnlyInstancesOf(PradoUnitTestAttribute::class, $attributes);
+	}
+
+	public function testClassAttributes_withoutInherit_returnsOwnOnly(): void
+	{
+		$attributes = PradoUnit::classAttributes(PradoUnitAttributeChild::class, PradoUnitTestAttribute::class, false);
+		$this->assertSame(['child-a', 'child-b'], self::attributeValues($attributes));
+	}
+
+	public function testClassAttributes_filtersByAttributeClass(): void
+	{
+		$attributes = PradoUnit::classAttributes(PradoUnitAttributeChild::class, PradoUnitTestOtherAttribute::class);
+		$this->assertCount(1, $attributes);
+		$this->assertInstanceOf(PradoUnitTestOtherAttribute::class, $attributes[0]);
+	}
+
+	public function testClassAttributes_acceptsInstance(): void
+	{
+		$byName = PradoUnit::classAttributes(PradoUnitAttributeChild::class, PradoUnitTestAttribute::class);
+		$byInstance = PradoUnit::classAttributes(new PradoUnitAttributeChild(), PradoUnitTestAttribute::class);
+		$this->assertSame($byName, $byInstance);
+	}
+
+	public function testClassAttributes_cachesSameInstances_caseInsensitively(): void
+	{
+		$first = PradoUnit::classAttributes(PradoUnitAttributeChild::class, PradoUnitTestAttribute::class);
+		$second = PradoUnit::classAttributes(strtoupper(PradoUnitAttributeChild::class), PradoUnitTestAttribute::class);
+		$this->assertSame($first[0], $second[0]);
+	}
+
+	public function testClassAttributes_returnsEmpty_forClassWithoutAttribute(): void
+	{
+		$this->assertSame([], PradoUnit::classAttributes(PradoUnitTestChild::class, PradoUnitTestAttribute::class));
+	}
+
+	public function testClassAttributes_returnsEmpty_forUnknownClass(): void
+	{
+		$this->assertSame([], PradoUnit::classAttributes('NoSuchClassAttr123', PradoUnitTestAttribute::class));
+	}
+
+	public function testClassAttributes_throwsError_forUnknownAttributeClass(): void
+	{
+		$this->expectException(\Error::class);
+		PradoUnit::classAttributes(PradoUnitAttributeChild::class, 'NoSuchAttributeXyz');
+	}
+
+	public function testMethodAttributes_findsInheritedMethod(): void
+	{
+		$attributes = PradoUnit::methodAttributes(PradoUnitAttributeChild::class, 'inheritedMethod', PradoUnitTestAttribute::class);
+		$this->assertSame(['inherited-method'], self::attributeValues($attributes));
+	}
+
+	public function testMethodAttributes_matchesSubclassAttribute(): void
+	{
+		$attributes = PradoUnit::methodAttributes(PradoUnitAttributeChild::class, 'subMethod', PradoUnitTestAttribute::class);
+		$this->assertCount(1, $attributes);
+		$this->assertInstanceOf(PradoUnitTestSubAttribute::class, $attributes[0]);
+	}
+
+	public function testMethodAttributes_sharesInstances_acrossSubclasses(): void
+	{
+		$parent = PradoUnit::methodAttributes(PradoUnitAttributeBase::class, 'inheritedMethod', PradoUnitTestAttribute::class);
+		$child = PradoUnit::methodAttributes(PradoUnitAttributeChild::class, 'inheritedMethod', PradoUnitTestAttribute::class);
+		$this->assertSame($parent[0], $child[0]);
+	}
+
+	public function testMethodAttributes_returnsEmpty_forPlainOrUnknownMethod(): void
+	{
+		$this->assertSame([], PradoUnit::methodAttributes(PradoUnitAttributeChild::class, 'plainMethod', PradoUnitTestAttribute::class));
+		$this->assertSame([], PradoUnit::methodAttributes(PradoUnitAttributeChild::class, 'noSuchMethod', PradoUnitTestAttribute::class));
+	}
+
+	public function testPropertyAttributes_findsPrivateAncestorProperty(): void
+	{
+		$attributes = PradoUnit::propertyAttributes(PradoUnitAttributeChild::class, '_privateParentProp', PradoUnitTestAttribute::class);
+		$this->assertSame(['private-prop'], self::attributeValues($attributes));
+	}
+
+	public function testPropertyAttributes_returnsEmpty_forPlainOrUnknownProperty(): void
+	{
+		$this->assertSame([], PradoUnit::propertyAttributes(PradoUnitAttributeChild::class, 'plainProp', PradoUnitTestAttribute::class));
+		$this->assertSame([], PradoUnit::propertyAttributes(PradoUnitAttributeChild::class, 'noSuchProp', PradoUnitTestAttribute::class));
+	}
+
+	public function testMethodsWithAttribute_mapsOwnAndInheritedMethods(): void
+	{
+		$map = PradoUnit::methodsWithAttribute(PradoUnitAttributeChild::class, PradoUnitTestAttribute::class);
+		$this->assertSame(['subMethod', 'inheritedMethod'], array_keys($map));
+		$this->assertSame(['sub'], self::attributeValues($map['subMethod']));
+		$this->assertSame(['inherited-method'], self::attributeValues($map['inheritedMethod']));
+	}
+
+	public function testMethodsWithAttribute_sharesInstances_withSingleLookup(): void
+	{
+		$map = PradoUnit::methodsWithAttribute(PradoUnitAttributeChild::class, PradoUnitTestAttribute::class);
+		$single = PradoUnit::methodAttributes(PradoUnitAttributeChild::class, 'subMethod', PradoUnitTestAttribute::class);
+		$this->assertSame($single[0], $map['subMethod'][0]);
+	}
+
+	public function testPropertiesWithAttribute_mapsOwnAndInheritedPublicProperties(): void
+	{
+		$map = PradoUnit::propertiesWithAttribute(PradoUnitAttributeChild::class, PradoUnitTestAttribute::class);
+		$this->assertSame(['childProp', 'parentProp'], array_keys($map));
+		$this->assertSame(['child-prop'], self::attributeValues($map['childProp']));
+		$this->assertArrayNotHasKey('_privateParentProp', $map);
+	}
+
+	public function testPropertiesWithAttribute_returnsEmpty_forUnknownClass(): void
+	{
+		$this->assertSame([], PradoUnit::propertiesWithAttribute('NoSuchClassAttr456', PradoUnitTestAttribute::class));
+		$this->assertSame([], PradoUnit::methodsWithAttribute('NoSuchClassAttr456', PradoUnitTestAttribute::class));
 	}
 }

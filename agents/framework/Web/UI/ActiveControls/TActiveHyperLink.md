@@ -12,7 +12,7 @@ Active counterpart to THyperLink. Text, ImageUrl, NavigateUrl, and Target proper
 
 ## Key Properties/Methods
 
-- `setText($value)` - Sets text with client-side update
+- `setText($value)` - Sets text with client-side update; the text is HTML-encoded, as `THyperLink` renders it (4.4.0)
 - `setImageUrl($value)` - Sets image URL with client-side update
 - `setNavigateUrl($value)` - Sets href with client-side update
 - `setTarget($value)` - Sets target window/frame with client-side update

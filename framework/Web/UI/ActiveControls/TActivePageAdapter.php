@@ -18,7 +18,11 @@ use Prado\Prado;
 use Prado\Web\Javascripts\TJavaScript;
 use Prado\Web\UI\TControl;
 use Prado\Web\UI\TControlAdapter;
+use Prado\Web\UI\THtmlWriter;
 use Prado\Web\UI\TPage;
+use Prado\Web\UI\TRenderFilterContext;
+use Prado\Web\UI\TRenderFilterParameter;
+use Prado\Web\UI\WebControls\THtmlElement;
 
 /**
  * TActivePageAdapter class.
@@ -31,6 +35,11 @@ use Prado\Web\UI\TPage;
  */
 class TActivePageAdapter extends TControlAdapter
 {
+	/**
+	 * The elements with an optional end tag that following content can close.
+	 */
+	private const OPTIONAL_END_TAGS = ['p', 'li', 'dt', 'dd', 'option', 'optgroup', 'rb', 'rt', 'rtc', 'rp'];
+
 	/**
 	 * Callback response data header name.
 	 */
@@ -52,6 +61,11 @@ class TActivePageAdapter extends TControlAdapter
 	 */
 	public const CALLBACK_PAGESTATE_HEADER = 'X-PRADO-PAGESTATE';
 	/**
+	 * Callback response part holding a fresh CSRF token for the page's hidden field.
+	 * @since 4.4.0
+	 */
+	public const CALLBACK_CSRFTOKEN_HEADER = 'X-PRADO-CSRF-TOKEN';
+	/**
 	 * Script list header name.
 	 */
 	public const CALLBACK_SCRIPTLIST_HEADER = 'X-PRADO-SCRIPTLIST';
@@ -67,6 +81,11 @@ class TActivePageAdapter extends TControlAdapter
 	 * Hidden field list header name.
 	 */
 	public const CALLBACK_HIDDENFIELDLIST_HEADER = 'X-PRADO-HIDDENFIELDLIST';
+	/**
+	 * Callback response part present when the client applies the actions inside a view transition.
+	 * @since 4.4.0
+	 */
+	public const CALLBACK_VIEWTRANSITION_HEADER = 'X-PRADO-VIEWTRANSITION';
 
 	/**
 	 * Callback redirect url header name.
@@ -74,7 +93,7 @@ class TActivePageAdapter extends TControlAdapter
 	public const CALLBACK_REDIRECT = 'X-PRADO-REDIRECT';
 
 	/**
-	 * @var ICallbackEventHandler callback event handler.
+	 * @var ?TControl callback event handler, must implement ICallbackEventHandler.
 	 */
 	private $_callbackEventTarget;
 	/**
@@ -128,6 +147,223 @@ class TActivePageAdapter extends TControlAdapter
 	}
 
 	/**
+	 * Renders a control registered by {@see registerControlToRender} with its
+	 * `render()` method. The render filters of the control, then those of its
+	 * ancestors that filter fragments ({@see TControl::getRenderFilterFragments}),
+	 * filter what it renders into a {@see TCallbackResponseWriter}, innermost first.
+	 * An exempt descendant is hidden from them, as in {@see TControl::renderControl}.
+	 * The control is as many levels below each ancestor as in a full render
+	 * ({@see TControl::getRenderFilterDepth}).
+	 * The output stays in the same writer, so the boundary that client functions
+	 * name during the render holds the filtered output.
+	 * @param TControl $control the control to render
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer of the control
+	 * @since 4.4.0
+	 */
+	protected function renderDeferredControl($control, $writer): void
+	{
+		$inner = ($writer instanceof THtmlWriter) ? $writer->getWriter() : null;
+		if (!($inner instanceof TCallbackResponseWriter) || ($filters = $this->getDeferredFilters($control)) === []) {
+			$control->render($writer);
+			return;
+		}
+		$written = $inner->flushWithoutBoundary();
+		if (($context = $writer->getRenderFilterContext()) === null) {
+			$context = new TRenderFilterContext();
+			$writer->setRenderFilterContext($context);
+		}
+		foreach (array_reverse($filters) as $filter) {
+			$context->beginCapture($filter->getRenderFilterDepth(), $this->getControlDepth($filter, $control));
+		}
+		$control->render($writer);
+		$output = $inner->flushWithoutBoundary();
+		foreach ($filters as $filter) {
+			if ($output !== '') {
+				$output = ($filter === $control) ? $context->filterOutput($control, $output) : $this->filterFragment($filter, $control, $output, $context);
+			}
+			$output = $context->endCapture((string) $output);
+		}
+		$inner->write($written . $output);
+	}
+
+	/**
+	 * Returns the controls whose render filters see the callback re-render of a
+	 * control, innermost first: the control, and each ancestor that filters fragments.
+	 * Walking up from the control, the first {@see TControl::getRenderFilterExempt}
+	 * setting decides for the ancestors above it.
+	 * @param TControl $control the control re-rendering
+	 * @return TControl[] the controls with render filters to raise
+	 * @since 4.4.0
+	 */
+	protected function getDeferredFilters($control): array
+	{
+		$filters = $control->hasEventHandler('onRenderFilter') ? [$control] : [];
+		$exempt = $control->getRenderFilterExempt();
+		for ($parent = $control->getParent(); $parent !== null && $exempt !== true; $parent = $parent->getParent()) {
+			if ($parent->getRenderFilterFragments() && $parent->hasEventHandler('onRenderFilter')) {
+				$filters[] = $parent;
+			}
+			$exempt ??= $parent->getRenderFilterExempt();
+		}
+		return $filters;
+	}
+
+	/**
+	 * @param TControl $ancestor the ancestor, or the control
+	 * @param TControl $control the control re-rendering
+	 * @return int the levels of the control below the ancestor
+	 * @since 4.4.0
+	 */
+	protected function getControlDepth($ancestor, $control): int
+	{
+		for ($depth = 0; $control !== $ancestor && $control !== null; $depth++) {
+			$control = $control->getParent();
+		}
+		return $depth;
+	}
+
+	/**
+	 * Raises the `onRenderFilter` event of an ancestor on a fragment of its output.
+	 * The fragment is inside the start tags that enclose it in the output of the
+	 * ancestor ({@see getFragmentContext}), so skipped tags and exempt markup apply
+	 * as in a full render. Marker comments bound the fragment; the handlers see
+	 * them, and a handler that removes one leaves the fragment unfiltered. With
+	 * the context of the capture, the markers of the levels above the control
+	 * enclose its output ({@see TRenderFilterContext::wrapDepth}).
+	 * @param TControl $ancestor the ancestor
+	 * @param TControl $control the control re-rendering
+	 * @param string $html the output of the control re-rendering
+	 * @param ?TRenderFilterContext $context the context capturing for the ancestor
+	 * @return string the filtered output
+	 * @since 4.4.0
+	 */
+	protected function filterFragment($ancestor, $control, string $html, ?TRenderFilterContext $context = null): string
+	{
+		[$open, $close] = $this->getFragmentContext($ancestor, $control);
+		$marker = 'prado-fragment-' . bin2hex(random_bytes(4));
+		$begin = '<!--' . $marker . '-->';
+		$end = '<!--/' . $marker . '-->';
+		$fragment = $open . $begin . ($context !== null ? $context->wrapDepth($html) : $html) . $end . $close;
+		$param = $context?->createDepthParameter($fragment) ?? new TRenderFilterParameter($fragment);
+		$param->setIsFragment(true);
+		$ancestor->raiseEvent('onRenderFilter', $ancestor, $param);
+		$output = $param->getFilterText();
+		if (($start = strpos($output, $begin)) === false || ($stop = strpos($output, $end, $start)) === false) {
+			return $html;
+		}
+		$start += strlen($begin);
+		return substr($output, $start, $stop - $start);
+	}
+
+	/**
+	 * Returns the start tags that enclose a control in the output of an ancestor,
+	 * and their end tags. Each control on the path from the ancestor to the parent
+	 * of the control adds its element and the elements its text opens before the
+	 * next control on the path. A {@see THtmlElement} adds its tag; another control
+	 * adds a `div` only with {@see TRenderFilterParameter::EXEMPT_ATTRIBUTE}.
+	 * The fragment can close an element with an optional end tag, such as `p`, so
+	 * that element is left out, or is a `div` with its exempt attribute.
+	 * @param TControl $ancestor the ancestor
+	 * @param TControl $control the control re-rendering
+	 * @return string[] the start tags and the end tags
+	 * @since 4.4.0
+	 */
+	protected function getFragmentContext($ancestor, $control): array
+	{
+		$path = [];
+		for ($node = $control; $node !== $ancestor; $node = $node->getParent()) {
+			$path[] = $node;
+		}
+		$path[] = $ancestor;
+		$path = array_reverse($path);
+		$tags = [];
+		for ($i = 0, $n = count($path) - 1; $i < $n; $i++) {
+			if (($tag = $this->getFragmentStartTag($path[$i])) !== null) {
+				$tags[] = $tag;
+			}
+			$text = '';
+			foreach ($path[$i]->getControls() as $child) {
+				if ($child === $path[$i + 1]) {
+					break;
+				}
+				if (is_string($child)) {
+					$text .= $child;
+				}
+			}
+			array_push($tags, ...$this->getOpenTags($text));
+		}
+		$tags = array_values(array_filter(array_map([$this, 'getClosableTag'], $tags)));
+		$close = '';
+		foreach (array_reverse($tags) as [$name]) {
+			$close .= '</' . $name . '>';
+		}
+		return [implode('', array_column($tags, 1)), $close];
+	}
+
+	/**
+	 * @param TControl $control a control on the path to the control re-rendering
+	 * @return ?array the name and start tag the control adds to the fragment context, or null
+	 * @since 4.4.0
+	 */
+	protected function getFragmentStartTag($control): ?array
+	{
+		$name = $control instanceof THtmlElement ? strtolower($control->getTagName()) : null;
+		$attribute = '';
+		if ($control->getHasAttributes() && ($value = $control->getAttribute(TRenderFilterParameter::EXEMPT_ATTRIBUTE)) !== null) {
+			$name ??= 'div';
+			$attribute = ' ' . TRenderFilterParameter::EXEMPT_ATTRIBUTE . '="' . htmlspecialchars((string) $value, ENT_QUOTES) . '"';
+		}
+		return $name === null ? null : [$name, '<' . $name . $attribute . '>'];
+	}
+
+	/**
+	 * Replaces an element with an optional end tag, which a fragment can close,
+	 * by a `div` with its {@see TRenderFilterParameter::EXEMPT_ATTRIBUTE}.
+	 * @param array $tag the name and start tag of an element
+	 * @return ?array the tag, the `div`, or null for an element without the attribute
+	 * @since 4.4.0
+	 */
+	protected function getClosableTag(array $tag): ?array
+	{
+		if (!in_array($tag[0], self::OPTIONAL_END_TAGS, true)) {
+			return $tag;
+		}
+		$attribute = '/\s' . TRenderFilterParameter::EXEMPT_ATTRIBUTE . '(?:\s*=\s*(?:"[^"]*"|\'[^\']*\'|[^\s>]*))?/i';
+		return preg_match($attribute, $tag[1], $match) ? ['div', '<div' . $match[0] . '>'] : null;
+	}
+
+	/**
+	 * Returns the elements that markup opens and leaves open. Comments, void
+	 * elements, self-closed tags, and raw text elements open nothing.
+	 * @param string $markup the markup
+	 * @return array[] the name and start tag of each open element, outermost first
+	 * @since 4.4.0
+	 */
+	protected function getOpenTags(string $markup): array
+	{
+		$void = ['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'source', 'track', 'wbr'];
+		$open = [];
+		preg_match_all('/<!--.*?-->|<(script|style|textarea|title)\b[^>]*+>.*?<\/\1\s*>|<(\/?)([a-z][^\s\/>]*+)[^>]*+>/is', $markup, $matches, PREG_SET_ORDER);
+		foreach ($matches as $match) {
+			if (($match[3] ?? '') === '') {
+				continue;
+			}
+			$name = strtolower($match[3]);
+			if ($match[2] === '/') {
+				for ($i = count($open) - 1; $i >= 0; $i--) {
+					if ($open[$i][0] === $name) {
+						array_splice($open, $i);
+						break;
+					}
+				}
+			} elseif (!in_array($name, $void, true) && !str_ends_with($match[0], '/>')) {
+				$open[] = [$name, $match[0]];
+			}
+		}
+		return $open;
+	}
+
+	/**
 	 * Trap errors and exceptions to be handled by TCallbackErrorHandler.
 	 */
 	protected function trapCallbackErrorsExceptions()
@@ -171,7 +407,7 @@ class TActivePageAdapter extends TControlAdapter
 		Prado::trace("ActivePage renderResponse()", TActivePageAdapter::class);
 		//renders all the defered render() calls.
 		foreach ($this->_controlsToRender as $rid => $forRender) {
-			$forRender[0]->render($forRender[1]);
+			$this->renderDeferredControl($forRender[0], $forRender[1]);
 		}
 
 		$response = $this->getResponse();
@@ -194,6 +430,11 @@ class TActivePageAdapter extends TControlAdapter
 			}
 		}
 
+		//sends a fresh CSRF token, since a login or logout during the callback replaces the secret
+		if ($this->getPage()->getEnableCsrfValidation()) {
+			$this->appendContentPart($response, self::CALLBACK_CSRFTOKEN_HEADER, $this->getRequest()->getCsrfToken());
+		}
+
 		//safari must receive at least 1 byte of data.
 		$writer->write(" ");
 
@@ -208,7 +449,9 @@ class TActivePageAdapter extends TControlAdapter
 		$executeJavascript = $this->getCallbackClientHandler()->getClientFunctionsToExecute();
 		$actions = TJavaScript::jsonEncode($executeJavascript);
 		$this->appendContentPart($response, self::CALLBACK_ACTION_HEADER, $actions);
-
+		if ($executeJavascript !== [] && $this->getIsViewTransition()) {
+			$this->appendContentPart($response, self::CALLBACK_VIEWTRANSITION_HEADER, '1');
+		}
 
 		$cs = $this->getPage()->getClientScript();
 
@@ -235,6 +478,18 @@ class TActivePageAdapter extends TControlAdapter
 		if (count($fields) > 0) {
 			$this->appendContentPart($response, self::CALLBACK_HIDDENFIELDLIST_HEADER, TJavaScript::jsonEncode($fields));
 		}
+	}
+
+	/**
+	 * Returns whether the client applies the actions of the response inside a view
+	 * transition: {@see \Prado\Web\UI\TPage::getCallbackViewTransition() TPage.CallbackViewTransition}
+	 * or {@see TCallbackClientScript::getViewTransition()} is true.
+	 * @return bool whether the response asks for a view transition
+	 * @since 4.4.0
+	 */
+	protected function getIsViewTransition(): bool
+	{
+		return $this->getPage()->getCallbackViewTransition() || $this->getCallbackClientHandler()->getViewTransition();
 	}
 
 	/**

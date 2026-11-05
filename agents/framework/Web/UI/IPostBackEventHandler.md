@@ -1,7 +1,7 @@
 # Web/UI/IPostBackEventHandler
 
 ### Directories
-[framework](./INDEX.md) / [Web](./Web/INDEX.md) / [UI](./Web/UI/INDEX.md) / **`IPostBackEventHandler`**
+[framework](../../INDEX.md) / [Web](../INDEX.md) / [UI](INDEX.md) / **`IPostBackEventHandler`**
 
 **Location:** `framework/Web/UI/IPostBackEventHandler.php`
 **Namespace:** `Prado\Web\UI`

@@ -1,14 +1,18 @@
 <?php
 
+namespace Prado\Test\Unit\Util;
+
+use Prado\Util\Clock\TMockClock;
 use Prado\Util\TSimpleDateFormatter;
 
-class TSimpleDateFormatterTest extends PHPUnit\Framework\TestCase
+class TSimpleDateFormatterTest extends \PHPUnit\Framework\TestCase
 {
 	private $formatter;
 
 	protected function setUp(): void
 	{
 		$this->formatter = new TSimpleDateFormatter('yyyy-MM-dd');
+		$this->formatter->setCulture('en_US');
 	}
 
 	protected function tearDown(): void
@@ -19,6 +23,25 @@ class TSimpleDateFormatterTest extends PHPUnit\Framework\TestCase
 	public function test_instance_of_class(): void
 	{
 		$this->assertInstanceOf(TSimpleDateFormatter::class, $this->formatter);
+	}
+
+	public function testEmptyPatternReturnsClockMicrotime(): void
+	{
+		$f = new TSimpleDateFormatter('');
+		$clock = new TMockClock();
+		$clock->setMicrotime(1_000_000.5);
+		$f->setClock($clock);
+		$this->assertSame(1_000_000.5, $f->parseExact('2026-04-17'));
+		$this->assertSame(1_000_000, $f->parse('2026-04-17'));
+	}
+
+	public function testEmptyValueDefaultsToClockTime(): void
+	{
+		$clock = new TMockClock();
+		$clock->setTime(1_700_000_000);
+		$this->formatter->setClock($clock);
+		$this->assertSame(1_700_000_000, $this->formatter->parse(''));
+		$this->assertNull($this->formatter->parse('', false));
 	}
 
 	public function test_constructor_with_charset(): void
@@ -121,7 +144,7 @@ class TSimpleDateFormatterTest extends PHPUnit\Framework\TestCase
 	public function test_parse_object_throws_exception(): void
 	{
 		$this->expectException(\Prado\Exceptions\TInvalidDataValueException::class);
-		$this->formatter->parse(new stdClass());
+		$this->formatter->parse(new \stdClass());
 	}
 
 	public function test_format_year_yyyy_returns_four_digits(): void
@@ -648,7 +671,9 @@ class TSimpleDateFormatterTest extends PHPUnit\Framework\TestCase
 		$this->formatter->setPattern('MM');
 		$currentYear = date('Y');
 		$result = $this->formatter->parse('04', true);
-		$expected = "$currentYear-04" . date('-d');
+		$daysInApril = (int) date('t', mktime(0, 0, 0, 4, 1, (int) $currentYear));
+		$expectedDay = sprintf('%02d', min((int) date('d'), $daysInApril));
+		$expected = "$currentYear-04-$expectedDay";
 		$this->assertSame($expected, date('Y-m-d', $result));
 	}
 

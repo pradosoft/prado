@@ -30,10 +30,38 @@ class CultureInfoUnits
 	public const UNIT_DISPLAY_NAME = 'dnam';
 
 	/**
+	 * Unit Pattern for the CLDR `zero` plural category.
+	 * @var string
+	 * @since 4.4.0
+	 */
+	public const UNIT_ZERO_PATTERN = 'zero';
+
+	/**
 	 * Unit Pattern for one unit - this is the singular format.
 	 * @var string
 	 */
 	public const UNIT_ONE_PATTERN = 'one';
+
+	/**
+	 * Unit Pattern for the CLDR `two` plural category.
+	 * @var string
+	 * @since 4.4.0
+	 */
+	public const UNIT_TWO_PATTERN = 'two';
+
+	/**
+	 * Unit Pattern for the CLDR `few` plural category.
+	 * @var string
+	 * @since 4.4.0
+	 */
+	public const UNIT_FEW_PATTERN = 'few';
+
+	/**
+	 * Unit Pattern for the CLDR `many` plural category.
+	 * @var string
+	 * @since 4.4.0
+	 */
+	public const UNIT_MANY_PATTERN = 'many';
 
 	/**
 	 * Unit Pattern for other than one unit - this is the multiple format.
@@ -46,6 +74,86 @@ class CultureInfoUnits
 	 * @var string
 	 */
 	public const UNIT_PER_UNIT_PATTERN = 'per';
+
+	/**
+	 * The CLDR plural categories a unit pattern set may contain, in CLDR order.
+	 * @var string[]
+	 * @since 4.4.0
+	 */
+	public const UNIT_PLURAL_PATTERNS = [
+		self::UNIT_ZERO_PATTERN,
+		self::UNIT_ONE_PATTERN,
+		self::UNIT_TWO_PATTERN,
+		self::UNIT_FEW_PATTERN,
+		self::UNIT_MANY_PATTERN,
+		self::UNIT_OTHER_PATTERN,
+	];
+
+
+	// --- Unit WIDTHS ---
+
+	/**
+	 * Long unit width, e.g. `5 minutes`.
+	 * @var string
+	 * @since 4.4.0
+	 */
+	public const WIDTH_LONG = 'long';
+
+	/**
+	 * Short unit width, e.g. `5 min`.
+	 * @var string
+	 * @since 4.4.0
+	 */
+	public const WIDTH_SHORT = 'short';
+
+	/**
+	 * Narrow unit width, e.g. `5m`.
+	 * @var string
+	 * @since 4.4.0
+	 */
+	public const WIDTH_NARROW = 'narrow';
+
+	/**
+	 * Maps each unit width to its ICU resource key, ordered from most specific
+	 * to least for per-unit fallback (narrow → short → long).
+	 * @var array<string, string>
+	 * @since 4.4.0
+	 */
+	public const WIDTH_RESOURCE_KEYS = [
+		self::WIDTH_NARROW => 'unitsNarrow',
+		self::WIDTH_SHORT => 'unitsShort',
+		self::WIDTH_LONG => 'units',
+	];
+
+	/**
+	 * Maps each unit width to the CLDR `fields` key suffix used by relative-time
+	 * patterns, ordered from most specific to least for per-unit fallback
+	 * (narrow → short → long).
+	 * @var array<string, string>
+	 * @since 4.4.0
+	 */
+	public const WIDTH_FIELD_SUFFIXES = [
+		self::WIDTH_NARROW => '-narrow',
+		self::WIDTH_SHORT => '-short',
+		self::WIDTH_LONG => '',
+	];
+
+
+	// --- Relative-time DIRECTIONS ---
+
+	/**
+	 * Relative-time direction for an instant before now, e.g. `{0} minutes ago`.
+	 * @var string
+	 * @since 4.4.0
+	 */
+	public const RELATIVE_PAST = 'past';
+
+	/**
+	 * Relative-time direction for an instant after now, e.g. `in {0} minutes`.
+	 * @var string
+	 * @since 4.4.0
+	 */
+	public const RELATIVE_FUTURE = 'future';
 
 
 	// --- Digital Unit TYPES ---

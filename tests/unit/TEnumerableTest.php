@@ -1,10 +1,12 @@
 <?php
 
+namespace Prado\Test\Unit;
+
 use Prado\TEnumerable;
 
 /**
  */
-class TEnumerableTest extends PHPUnit\Framework\TestCase
+class TEnumerableTest extends \PHPUnit\Framework\TestCase
 {
 	protected function setUp(): void
 	{
@@ -305,7 +307,7 @@ class TEnumerableTest extends PHPUnit\Framework\TestCase
 	{
 		$className = $this->createEnumerableClass(['Left' => 'Left', 'Right' => 'Right']);
 
-		$ref = new ReflectionClass($className);
+		$ref = new \ReflectionClass($className);
 
 		$align = 'Left';
 		$value = $ref->getConstant($align);
@@ -315,8 +317,7 @@ class TEnumerableTest extends PHPUnit\Framework\TestCase
 		$value = $ref->getConstant($align);
 		self::assertEquals('Right', $value);
 
-		$value = $ref->getConstant('Center');
-		self::assertFalse($value);
+		self::assertFalse($ref->hasConstant('Center'));
 	}
 
 	public function testConstantOf()

@@ -32,4 +32,4 @@ $criteria->Limit = 10;
 
 ## See Also
 
-- [TTableGateway](./TTableGateway.md) - Table gateway
+- [TTableGateway](../TTableGateway.md) - Table gateway

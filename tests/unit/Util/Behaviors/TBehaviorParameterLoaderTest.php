@@ -1,8 +1,14 @@
 <?php
 
+namespace Prado\Test\Unit\Util\Behaviors;
+
 use Prado\Util\Behaviors\TBehaviorParameterLoader;
 use Prado\Util\TBehavior;
 use Prado\Web\UI\TPage;
+use Prado\Test\Unit\Util\TestModuleBM;
+use Prado\Test\Unit\Util\TestModuleBM2;
+use Prado\Prado;
+use Prado\TModule;
 
 class TestModuleBehaviorLoader1 extends TBehavior
 {
@@ -46,7 +52,7 @@ class TestModuleLoaderBM2 extends TModule
 }
 
 
-class TBehaviorParameterLoaderTest extends PHPUnit\Framework\TestCase
+class TBehaviorParameterLoaderTest extends \PHPUnit\Framework\TestCase
 {
 	protected $obj;
 
@@ -77,19 +83,19 @@ class TBehaviorParameterLoaderTest extends PHPUnit\Framework\TestCase
 		
 		try {
 			$this->obj->BehaviorName = 'test';
-			$this->obj->BehaviorClass = 'TestModuleBehaviorLoader1';
+			$this->obj->BehaviorClass = TestModuleBehaviorLoader1::class;
 			$this->obj->AttachTo = 'module:BPLoaderModuleTest';
 			$this->obj->dyInit(null);
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 			$this->fail($e::class ." should not have been raised on init(null)\n" . $e->__toString());
 		}
 		$this->obj->reset();
 		try {
 			$this->obj->BehaviorName = 'test';
-			$this->obj->BehaviorClass = 'TestModuleBehaviorLoader1';
+			$this->obj->BehaviorClass = TestModuleBehaviorLoader1::class;
 			$this->obj->AttachToClass = 'TPage';
 			$this->obj->dyInit(null);
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 			$this->fail($e::class ." should not have been raised on init(null)\n" . $e->__toString());
 		}
 		$this->obj->reset();
@@ -99,15 +105,15 @@ class TBehaviorParameterLoaderTest extends PHPUnit\Framework\TestCase
 			$this->obj->AttachTo = 'module:module';
 			$this->obj->dyInit(null);
 			$this->fail($e::class ." should have been raised on init(null) without a BehaviorClass");
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 		}
 		$this->obj->reset();
 		try {
 			$this->obj->BehaviorName = 'test';
-			$this->obj->BehaviorClass = 'TestModuleBehaviorLoader1';
+			$this->obj->BehaviorClass = TestModuleBehaviorLoader1::class;
 			$this->obj->dyInit(null);
 			$this->fail($e::class ." should have been raised on init(null) without an AttachTo/Class");
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 		}
 		$this->obj->reset();
 		
@@ -116,13 +122,13 @@ class TBehaviorParameterLoaderTest extends PHPUnit\Framework\TestCase
 			$this->assertEquals(0, count($app->onBeginRequest));
 			
 			$this->obj->BehaviorName = 'testBehavior1';
-			$this->obj->BehaviorClass = 'TestModuleBehaviorLoader1';
+			$this->obj->BehaviorClass = TestModuleBehaviorLoader1::class;
 			$this->obj->AttachTo = 'Application';
 			$this->obj->propertya = 'value1';
 			$this->obj->dyInit(['data123']);
 			
 			//Check was App behavior installed
-			$this->assertInstanceOf('TestModuleBehaviorLoader1', $app->asa('testBehavior1'));
+			$this->assertInstanceOf(TestModuleBehaviorLoader1::class, $app->asa('testBehavior1'));
 			$this->assertEquals('value1', $app->asa('testBehavior1')->propertyA);
 			$this->assertEquals(['data123'], $app->asa('testBehavior1')->config);
 			$app->detachBehavior('testBehavior1');
@@ -136,7 +142,7 @@ class TBehaviorParameterLoaderTest extends PHPUnit\Framework\TestCase
 		$behaviorName = 'testBehavior';
 		$app = Prado::getApplication();
 		$this->obj->BehaviorName = $behaviorName;
-		$this->obj->BehaviorClass = 'TestModuleBehaviorLoader1';
+		$this->obj->BehaviorClass = TestModuleBehaviorLoader1::class;
 		$this->obj->AttachTo = 'module:TBPLoaderTest';
 		$this->obj->propertya = 'value1';
 		$this->assertEquals(0, count($app->onInitComplete));
@@ -152,7 +158,7 @@ class TBehaviorParameterLoaderTest extends PHPUnit\Framework\TestCase
 		$this->obj->attachModuleBehaviors(null, null);
 		$this->assertEquals(1, count($app->onInitComplete));
 		
-		$this->assertInstanceOf('TestModuleBehaviorLoader1', $module->asa($behaviorName));
+		$this->assertInstanceOf(TestModuleBehaviorLoader1::class, $module->asa($behaviorName));
 		$this->assertEquals('value1', $module->asa($behaviorName)->PropertyA);
 		$module->detachBehavior($behaviorName);
 		$module->unlisten();
@@ -162,7 +168,7 @@ class TBehaviorParameterLoaderTest extends PHPUnit\Framework\TestCase
 	{
 		$app = Prado::getApplication();
 		$this->obj->BehaviorName = null;
-		$this->obj->BehaviorClass = 'TestModuleBehaviorLoader1';
+		$this->obj->BehaviorClass = TestModuleBehaviorLoader1::class;
 		$this->obj->AttachTo = 'module:TBPLoaderTest';
 		$this->obj->propertya = 'value1';
 		$this->assertEquals(0, count($app->onInitComplete));
@@ -176,7 +182,7 @@ class TBehaviorParameterLoaderTest extends PHPUnit\Framework\TestCase
 		$this->obj->attachModuleBehaviors(null, null);
 		$this->assertEquals(1, count($app->onInitComplete));
 		
-		$this->assertInstanceOf('TestModuleBehaviorLoader1', $module->asa(0));
+		$this->assertInstanceOf(TestModuleBehaviorLoader1::class, $module->asa(0));
 		$this->assertEquals('value1', $module->asa(0)->PropertyA);
 		$module->detachBehavior(0);
 	}
@@ -186,7 +192,7 @@ class TBehaviorParameterLoaderTest extends PHPUnit\Framework\TestCase
 		$behaviorName = 'testBehavior';
 		$app = Prado::getApplication();
 		$this->obj->BehaviorName = $behaviorName;
-		$this->obj->BehaviorClass = 'TestModuleBehaviorLoader2';
+		$this->obj->BehaviorClass = TestModuleBehaviorLoader2::class;
 		$this->obj->AttachTo = 'page';
 		$this->obj->propertya = 'value';
 		$this->assertEquals(0, count($app->onBeginRequest));
@@ -197,7 +203,7 @@ class TBehaviorParameterLoaderTest extends PHPUnit\Framework\TestCase
 		$page = new TPage;
 		$this->obj->attachTPageBehaviors(null, $page);
 		
-		$this->assertInstanceOf('TestModuleBehaviorLoader2', $page->asa($behaviorName));
+		$this->assertInstanceOf(TestModuleBehaviorLoader2::class, $page->asa($behaviorName));
 		$this->assertEquals('value', $page->asa($behaviorName)->PropertyA);
 		$page->detachBehavior($behaviorName);
 		$page->unlisten();
@@ -207,7 +213,7 @@ class TBehaviorParameterLoaderTest extends PHPUnit\Framework\TestCase
 	{
 		$app = Prado::getApplication();
 		$this->obj->BehaviorName = null;
-		$this->obj->BehaviorClass = 'TestModuleBehaviorLoader2';
+		$this->obj->BehaviorClass = TestModuleBehaviorLoader2::class;
 		$this->obj->AttachTo = 'page';
 		$this->obj->propertya = 'value';
 		$this->assertEquals(0, count($app->onBeginRequest));
@@ -218,7 +224,7 @@ class TBehaviorParameterLoaderTest extends PHPUnit\Framework\TestCase
 		$page = new TPage;
 		$this->obj->attachTPageBehaviors(null, $page);
 		
-		$this->assertInstanceOf('TestModuleBehaviorLoader2', $page->asa(0));
+		$this->assertInstanceOf(TestModuleBehaviorLoader2::class, $page->asa(0));
 		$this->assertEquals('value', $page->asa(0)->PropertyA);
 		$page->detachBehavior(0);
 		$page->unlisten();
@@ -244,7 +250,7 @@ class TBehaviorParameterLoaderTest extends PHPUnit\Framework\TestCase
 	public function testBehaviorClass()
 	{
 		$this->assertNull($this->obj->getBehaviorClass());
-		$class = 'TestModuleBehaviorLoader3';
+		$class = TestModuleBehaviorLoader3::class;
 		$this->obj->setBehaviorClass($class);
 		$this->assertEquals($class, $this->obj->getBehaviorClass());
 	}

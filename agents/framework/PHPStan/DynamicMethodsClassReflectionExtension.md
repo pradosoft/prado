@@ -1,7 +1,7 @@
 # PHPStan/DynamicMethodsClassReflectionExtension
 
 ### Directories
-[framework](./INDEX.md) / [PHPStan](./PHPStan/INDEX.md) / **`DynamicMethodsClassReflectionExtension`**
+[framework](../INDEX.md) / [PHPStan](INDEX.md) / **`DynamicMethodsClassReflectionExtension`**
 
 **Location:** `framework/PHPStan/DynamicMethodsClassReflectionExtension.php`
 **Namespace:** `Prado\PHPStan`

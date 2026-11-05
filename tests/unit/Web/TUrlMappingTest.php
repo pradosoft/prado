@@ -1,19 +1,35 @@
 <?php
 
+namespace Prado\Test\Unit\Web;
+
 use Prado\Web\THttpRequest;
 use Prado\Web\THttpRequestUrlFormat;
 use Prado\Web\TUrlMapping;
 use Prado\Web\TUrlMappingPattern;
 use Prado\Web\TUrlManager;
-use Prado\TApplication;
 use Prado\Xml\TXmlDocument;
+use Prado\Test\Unit\Harness\TTestApplication;
+use Prado\Test\Unit\Harness\Traits\PradoUnitModuleDependencyTrait;
+use Prado\Test\Unit\Harness\Traits\TNestedPathTrait;
+use Prado\Test\Unit\PradoUnit;
+
+/**
+ * A mapping pattern carrying a nested 'Cfg' property, to observe the order the
+ * module applies a pattern's configured attributes in.
+ */
+class TNestedPathUrlMappingPattern extends TUrlMappingPattern
+{
+	use TNestedPathTrait;
+}
 
 /**
  * Test class for TUrlMapping.
  */
-class TUrlMappingTest extends PHPUnit\Framework\TestCase
+class TUrlMappingTest extends \PHPUnit\Framework\TestCase
 {
-	protected static $app = null;
+	use PradoUnitModuleDependencyTrait;
+
+	protected ?TTestApplication $app = null;
 
 	protected function setUp(): void
 	{
@@ -28,19 +44,44 @@ class TUrlMappingTest extends PHPUnit\Framework\TestCase
 		$_SERVER['PATH_INFO'] = '';
 		$_SERVER['REQUEST_METHOD'] = 'GET';
 
-		if (self::$app === null) {
-			self::$app = new TApplication(__DIR__ . '/app');
-		}
+		$this->app = new TTestApplication(__DIR__ . '/app');
 	}
 
 	protected function tearDown(): void
 	{
 		parent::tearDown();
+		if ($this->app !== null) {
+			$this->app->restoreApplication();
+			$this->app = null;
+		}
 		$_GET = [];
 		$_POST = [];
 		$_SERVER['PATH_INFO'] = '';
 		$_SERVER['QUERY_STRING'] = '';
 		$_SERVER['REQUEST_METHOD'] = 'GET';
+	}
+
+	/**
+	 * A pattern's configured attributes apply parent path first, so a nested
+	 * value survives whatever order the `<url>` element declares them in. The
+	 * XML branch supplies a TAttributeCollection rather than an array.
+	 */
+	public function testInitAppliesParentPathBeforeNestedPath()
+	{
+		foreach ([
+			'Cfg.Size="child" Cfg="value"',
+			'Cfg="value" Cfg.Size="child"',
+		] as $attributes) {
+			$confstr = '<config><url class="' . TNestedPathUrlMappingPattern::class . '" ServiceParameter="Posts.ViewPost" pattern="post/{id}/" parameters.id="\d+" ' . $attributes . '/></config>';
+			$config = new TXmlDocument('1.0', 'utf8');
+			$config->loadFromString($confstr);
+
+			$module = new TUrlMapping();
+			$module->init($config);
+
+			$patterns = PradoUnit::getProp($module, '_patterns');
+			$this->assertEquals('child', $patterns[0]->getCfg()->getSize(), "attributes: {$attributes}");
+		}
 	}
 
 	public function testParseUrlWithMatchingPattern()
@@ -262,5 +303,197 @@ class TUrlMappingTest extends PHPUnit\Framework\TestCase
 		$pattern->setPattern('test');
 		$pattern->setVerbs('!GET,POST');
 		$this->assertEquals(['!GET', 'POST'], $pattern->getVerbs());
+	}
+
+	/**
+	 * Removes a module from the shared TApplication module map via reflection.
+	 * TApplication::setModule() throws when overwriting an existing slot, so a
+	 * direct property reset is required for safe per-test cleanup.
+	 */
+	private function unregisterAppModule(string $id): void
+	{
+		$modules = PradoUnit::getProp($this->app, '_modules');
+		unset($modules[$id]);
+		PradoUnit::setProp($this->app, '_modules', $modules);
+	}
+
+	public function testImplementsIModuleDependency()
+	{
+		$this->assertInstanceOf(\Prado\IModuleDependency::class, new TUrlMapping());
+	}
+
+	public function testGetModuleDependencies_noRequestConfigured_returnsNoDeps()
+	{
+		$module = new TUrlMapping();
+		$this->assertModuleDependency(null, $module->getModuleDependencies(false));
+	}
+
+	public function testGetModuleDependencies_singleRequestConfigured_returnsId()
+	{
+		$module = new TUrlMapping();
+		$this->app->setModule('url_map_test_request_a', new THttpRequest());
+		try {
+			$this->assertModuleDependency('url_map_test_request_a', $module->getModuleDependencies(false));
+		} finally {
+			$this->unregisterAppModule('url_map_test_request_a');
+		}
+	}
+
+	public function testGetModuleDependencies_multipleRequestsConfigured_returnsAllIds()
+	{
+		$module = new TUrlMapping();
+		$this->app->setModule('url_map_test_request_b1', new THttpRequest());
+		$this->app->setModule('url_map_test_request_b2', new THttpRequest());
+		try {
+			$this->assertModuleDependency(
+				['url_map_test_request_b1', 'url_map_test_request_b2'],
+				$module->getModuleDependencies(false)
+			);
+		} finally {
+			$this->unregisterAppModule('url_map_test_request_b1');
+			$this->unregisterAppModule('url_map_test_request_b2');
+		}
+	}
+
+	public function testGetModuleDependencies_returnsSameRegardlessOfIsPreInit()
+	{
+		$module = new TUrlMapping();
+		$this->app->setModule('url_map_test_request_c', new THttpRequest());
+		try {
+			$this->assertModuleDependency(
+				$module->getModuleDependencies(true),
+				$module->getModuleDependencies(false)
+			);
+		} finally {
+			$this->unregisterAppModule('url_map_test_request_c');
+		}
+	}
+
+	public function testParseUrlFullMatchModeWithQueryString()
+	{
+		$confstr = '<config><url ServiceParameter="Posts.EditPost" pattern="post/{id}?mode=edit" parameters.id="\d+" UrlMatchMode="Full"/></config>';
+		$config = new TXmlDocument('1.0', 'utf8');
+		$config->loadFromString($confstr);
+
+		$module = new TUrlMapping();
+		$module->init($config);
+
+		$request = new THttpRequest();
+		$_SERVER['PATH_INFO'] = '/post/123';
+		$_SERVER['QUERY_STRING'] = 'mode=edit';
+		$request->setUrlFormat(THttpRequestUrlFormat::Path);
+		$request->init(null);
+
+		$result = $module->parseUrl();
+		$this->assertEquals(['id' => '123', 'page' => 'Posts.EditPost'], $result);
+	}
+
+	public function testParseUrlFullMatchModeQueryStringMismatch()
+	{
+		$confstr = '<config><url ServiceParameter="Posts.EditPost" pattern="post/{id}?mode=edit" parameters.id="\d+" UrlMatchMode="Full"/></config>';
+		$config = new TXmlDocument('1.0', 'utf8');
+		$config->loadFromString($confstr);
+
+		$module = new TUrlMapping();
+		$module->init($config);
+
+		$request = new THttpRequest();
+		$_SERVER['PATH_INFO'] = '/post/123';
+		$_SERVER['QUERY_STRING'] = 'mode=view';
+		$request->setUrlFormat(THttpRequestUrlFormat::Path);
+		$request->init(null);
+
+		$this->assertNull($module->getMatchingPattern());
+		$module->parseUrl();
+		$this->assertNull($module->getMatchingPattern());
+	}
+
+	public function testParseUrlQueryConstraintSelectsPattern()
+	{
+		$confstr = '<config>' .
+			'<url ServiceParameter="Posts.EditPost" pattern="post/{id}" parameters.id="\d+" query.mode="edit"/>' .
+			'<url ServiceParameter="Posts.ViewPost" pattern="post/{id}" parameters.id="\d+"/>' .
+			'</config>';
+		$config = new TXmlDocument('1.0', 'utf8');
+		$config->loadFromString($confstr);
+
+		$module = new TUrlMapping();
+		$module->init($config);
+
+		$request = new THttpRequest();
+		$_SERVER['PATH_INFO'] = '/post/123';
+		$_SERVER['QUERY_STRING'] = 'ref=list&mode=edit';
+		$_GET = ['ref' => 'list', 'mode' => 'edit'];
+		$request->setUrlFormat(THttpRequestUrlFormat::Path);
+		$request->init(null);
+
+		$result = $module->parseUrl();
+		$this->assertEquals(['id' => '123', 'page' => 'Posts.EditPost'], $result);
+	}
+
+	public function testParseUrlQueryConstraintFallsThroughToNextPattern()
+	{
+		$confstr = '<config>' .
+			'<url ServiceParameter="Posts.EditPost" pattern="post/{id}" parameters.id="\d+" query.mode="edit"/>' .
+			'<url ServiceParameter="Posts.ViewPost" pattern="post/{id}" parameters.id="\d+"/>' .
+			'</config>';
+		$config = new TXmlDocument('1.0', 'utf8');
+		$config->loadFromString($confstr);
+
+		$module = new TUrlMapping();
+		$module->init($config);
+
+		$request = new THttpRequest();
+		$_SERVER['PATH_INFO'] = '/post/123';
+		$_SERVER['QUERY_STRING'] = '';
+		$_GET = [];
+		$request->setUrlFormat(THttpRequestUrlFormat::Path);
+		$request->init(null);
+
+		$result = $module->parseUrl();
+		$this->assertEquals(['id' => '123', 'page' => 'Posts.ViewPost'], $result);
+	}
+
+	public function testConstructUrlWithQueryStringInPattern()
+	{
+		$confstr = '<config><url ServiceParameter="Posts.EditPost" pattern="post/{id}?mode=edit" parameters.id="\d+" UrlMatchMode="Full"/></config>';
+		$config = new TXmlDocument('1.0', 'utf8');
+		$config->loadFromString($confstr);
+
+		$module = new TUrlMapping();
+		$module->setEnableCustomUrl(true);
+		$module->init($config);
+
+		$request = new THttpRequest();
+		$request->setUrlFormat(THttpRequestUrlFormat::Path);
+		$request->init(null);
+
+		$url = $module->constructUrl('page', 'Posts.EditPost', ['id' => '123'], false, true);
+		$this->assertEquals('/index.php/post/123?mode=edit', $url);
+
+		$url = $module->constructUrl('page', 'Posts.EditPost', ['id' => '123', 'ref' => 'list'], false, true);
+		$this->assertEquals('/index.php/post/123?mode=edit&ref=list', $url);
+	}
+
+	public function testConstructUrlWithQueryConstraint()
+	{
+		$confstr = '<config><url ServiceParameter="Posts.EditPost" pattern="post/{id}" parameters.id="\d+" query.mode="edit"/></config>';
+		$config = new TXmlDocument('1.0', 'utf8');
+		$config->loadFromString($confstr);
+
+		$module = new TUrlMapping();
+		$module->setEnableCustomUrl(true);
+		$module->init($config);
+
+		$request = new THttpRequest();
+		$request->setUrlFormat(THttpRequestUrlFormat::Path);
+		$request->init(null);
+
+		$url = $module->constructUrl('page', 'Posts.EditPost', ['id' => '123', 'mode' => 'edit'], false, true);
+		$this->assertEquals('/index.php/post/123?mode=edit', $url);
+
+		// the pattern is skipped, the URL falls back to the default format of the request
+		$url = $module->constructUrl('page', 'Posts.EditPost', ['id' => '123', 'mode' => 'view'], false, true);
+		$this->assertEquals('/index.php/page,Posts.EditPost/id,123/mode,view', $url);
 	}
 }

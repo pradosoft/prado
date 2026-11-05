@@ -6,9 +6,12 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\Exceptions;
+
 use Prado\Exceptions\THttpException;
 use Prado\Exceptions\TSystemException;
 use Prado\Exceptions\TException;
+use Prado\Test\Unit\PradoUnit;
 
 /**
  * Comprehensive tests for {@see THttpException}: HTTP status code storage, mixed-type
@@ -16,7 +19,7 @@ use Prado\Exceptions\TException;
  * setErrorCode(), getCode() vs getStatusCode() distinction, throw/catch,
  * exception chaining (getPrevious()), and the full inheritance chain.
  */
-class THttpExceptionTest extends PHPUnit\Framework\TestCase
+class THttpExceptionTest extends \PHPUnit\Framework\TestCase
 {
 	// ── Basic construction and status code ───────────────────────────────────
 
@@ -104,11 +107,11 @@ class THttpExceptionTest extends PHPUnit\Framework\TestCase
 
 	public function testStatusCodeAndMessageTranslation()
 	{
-		$ex = new THttpException(404, 'prado_component_unknown', 'MyComponent', 'Missing');
+		$ex = new THttpException(404, 'component_property_undefined', 'MyComponent', 'Missing');
 
 		$this->assertSame(404, $ex->getStatusCode());
-		$this->assertEquals('prado_component_unknown', $ex->getErrorCode());
-		$this->assertStringStartsWith('Unknown component type', $ex->getMessage());
+		$this->assertEquals('component_property_undefined', $ex->getErrorCode());
+		$this->assertStringStartsWith('Component property', $ex->getMessage());
 		$this->assertStringContainsString('MyComponent', $ex->getMessage());
 		$this->assertStringContainsString('Missing', $ex->getMessage());
 	}
@@ -128,7 +131,7 @@ class THttpExceptionTest extends PHPUnit\Framework\TestCase
 
 	public function testMessageWithMultiplePlaceholders()
 	{
-		$ex = new THttpException(400, 'prado_component_unknown', 'CompA', 'CompB');
+		$ex = new THttpException(400, 'component_property_undefined', 'CompA', 'CompB');
 		$this->assertStringContainsString('CompA', $ex->getMessage());
 		$this->assertStringContainsString('CompB', $ex->getMessage());
 	}
@@ -381,7 +384,7 @@ class THttpExceptionTest extends PHPUnit\Framework\TestCase
 	public function testExceptionChainingWithPlaceholders()
 	{
 		$prev = new \LogicException('root cause');
-		$ex = new THttpException(400, 'prado_component_unknown', 'CompA', 'CompB', $prev);
+		$ex = new THttpException(400, 'component_property_undefined', 'CompA', 'CompB', $prev);
 		$this->assertSame($prev, $ex->getPrevious());
 		$this->assertStringContainsString('CompA', $ex->getMessage());
 		$this->assertStringContainsString('CompB', $ex->getMessage());
@@ -434,25 +437,25 @@ class THttpExceptionTest extends PHPUnit\Framework\TestCase
 
 	public function testGetStatusCodeDirectIsProtected()
 	{
-		$ref = new \ReflectionMethod(THttpException::class, 'getStatusCodeDirect');
+		$ref = PradoUnit::reflectionMethod(THttpException::class, 'getStatusCodeDirect');
 		$this->assertTrue($ref->isProtected());
 	}
 
 	public function testSetStatusCodeDirectIsProtected()
 	{
-		$ref = new \ReflectionMethod(THttpException::class, 'setStatusCodeDirect');
+		$ref = PradoUnit::reflectionMethod(THttpException::class, 'setStatusCodeDirect');
 		$this->assertTrue($ref->isProtected());
 	}
 
 	public function testStatusCodePropertyIsPrivate()
 	{
-		$ref = new \ReflectionProperty(THttpException::class, '_statusCode');
+		$ref = PradoUnit::reflectionProperty(THttpException::class, '_statusCode');
 		$this->assertTrue($ref->isPrivate());
 	}
 
 	public function testGetStatusCodeIsPublic()
 	{
-		$ref = new \ReflectionMethod(THttpException::class, 'getStatusCode');
+		$ref = PradoUnit::reflectionMethod(THttpException::class, 'getStatusCode');
 		$this->assertTrue($ref->isPublic());
 	}
 
@@ -483,9 +486,9 @@ class THttpExceptionTest extends PHPUnit\Framework\TestCase
 	public function testMultipleInstancesHaveIndependentErrorCodes()
 	{
 		$ex1 = new THttpException(404, 'prado_application_singleton_required');
-		$ex2 = new THttpException(500, 'prado_component_unknown', 'X', 'Y');
+		$ex2 = new THttpException(500, 'component_property_undefined', 'X', 'Y');
 		$ex1->setErrorCode('modified');
 		$this->assertSame('modified', $ex1->getErrorCode());
-		$this->assertSame('prado_component_unknown', $ex2->getErrorCode());
+		$this->assertSame('component_property_undefined', $ex2->getErrorCode());
 	}
 }

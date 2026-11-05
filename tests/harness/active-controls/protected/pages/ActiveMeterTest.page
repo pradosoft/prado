@@ -1,0 +1,9 @@
+<com:TContent ID="Content">
+	<h1>Active Meter Test Case</h1>
+
+	<com:TActiveMeter ID="meter1" Value="0.25" />
+
+	<com:TActiveButton ID="button1" Text="Set Segments" OnClick="set_segments" />
+	<com:TActiveButton ID="button2" Text="Clear Segments" OnClick="clear_segments" />
+	<com:TActiveButton ID="button3" Text="Shift Range" OnClick="shift_range" />
+</com:TContent>

@@ -25,14 +25,16 @@ use Prado\TPropertyValue;
  * The associated control must be locatable within the label's naming container.
  * If the associated control is not visible, the label will not be rendered, either.
  *
- * Note, {@see setText Text} will NOT be encoded for rendering.
- * Make sure it does not contain dangerous characters that you want to avoid.
+ * {@see setText Text} renders as HTML unless {@see setEncode Encode} is true, which
+ * HTML-encodes it. Text from user input needs Encode, or encoding before it is assigned.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
  */
 class TLabel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDataRenderer
 {
+	use TEncodeTrait;
+
 	private $_forControl = '';
 
 	/**
@@ -87,7 +89,7 @@ class TLabel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDa
 		if (($text = $this->getText()) === '') {
 			parent::renderContents($writer);
 		} else {
-			$writer->write($text);
+			$writer->write($this->encodeText($text));
 		}
 	}
 
@@ -106,6 +108,7 @@ class TLabel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDa
 	{
 		$this->setViewState('Text', TPropertyValue::ensureString($value), '');
 	}
+
 
 	/**
 	 * Returns the text value of the label.

@@ -6,7 +6,7 @@
 	</paths>
 	<services>
 	  <service id="page" class="TPageService" DefaultPage="FeatureList">
-	    <pages MasterClass="Application.controls.Layout" />
+	    <pages MasterClass="Application.controls.HarnessWebLayout" />
 	  </service>
 	</services>
 </application>

@@ -20,4 +20,4 @@ TWebControlAdapter is the base class for adapters that customize rendering for W
 ## See Also
 
 - [TWebControl](./TWebControl.md)
-- [TControlAdapter](./TControlAdapter.md)
+- [TControlAdapter](../TControlAdapter.md)

@@ -1,0 +1,4 @@
+<com:TContent ID="Content">
+	<h1>Slider Accessibility Test Case</h1>
+	<com:TSlider ID="vol" MinValue="0" MaxValue="100" StepSize="5" Value="40" ToolTip="Volume" />
+</com:TContent>

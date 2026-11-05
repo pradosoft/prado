@@ -1,7 +1,5 @@
 <?php
 
-require_once(__DIR__ . '/../../../../PradoUnit.php');
-
 /**
  * SqliteTableExistsTest — driver-specific tests for {@see TTableGateway::getTableExists()} on SQLite.
  *
@@ -12,11 +10,14 @@ require_once(__DIR__ . '/../../../../PradoUnit.php');
  * (SQL standard identifier quoting), e.g. "upsert_test".
  */
 
+namespace Prado\Test\Unit\Data\DbSpecific\Sqlite\Common;
+
 use Prado\Data\Common\TDbMetaData;
 use Prado\Data\DataGateway\TTableGateway;
 use Prado\Data\TDbConnection;
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
 
-class SqliteTableExistsTest extends PHPUnit\Framework\TestCase
+class SqliteTableExistsTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 

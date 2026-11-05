@@ -15,27 +15,37 @@ TJsonService provides JavaScript content response in JSON format for end-users. 
 - Configurable through XML or PHP formats
 - Supports JSON encoding of content using TJavaScript::jsonEncode
 - Handles service initialization and execution
+- `EnableCsrfValidation` (off by default) has `run()` refuse a POST without the CSRF token through `TService::ensureCsrfToken()` (4.4.0)
 
 ## Configuration
-### XML Format
+
+Registered as a service (`<services>` tag, not `<modules>`).
+
+**application.xml:**
 ```xml
-<service id="json" class="Prado\Web\Services\TJsonService">
-  <json id="get_article" class="Path\To\JsonResponseClass1" />
-  <json id="register_rating" class="Path\To\JsonResponseClass2" />
-</service>
+<services>
+  <service id="json" class="Prado\Web\Services\TJsonService">
+    <json id="get_article" class="Path\To\JsonResponseClass1" />
+    <json id="register_rating" class="Path\To\JsonResponseClass2" />
+  </service>
+</services>
 ```
 
-### PHP Format
+**PHP equivalent:**
 ```php
-'services' => array(
-  'get_article' => array(
-    'class' => 'Path\To\JsonResponseClass1',
-    'properties' => array(
-      ...
-    )
-  )
-)
+return [
+    'services' => [
+        'json' => [
+            'class' => 'Prado\Web\Services\TJsonService',
+            'json' => [
+                'get_article' => ['class' => 'Path\To\JsonResponseClass1'],
+                'register_rating' => ['class' => 'Path\To\JsonResponseClass2'],
+            ],
+        ],
+    ],
+];
 ```
+`loadJsonServices()` reads the responses from the service entry's `json` key. The key is required under PHP configuration.
 
 ## Methods
 

@@ -18,8 +18,29 @@ TRpcServer is middleware layer that sits between TRpcService and the protocol ha
 - **`getPayload()`** - Reads and returns the raw request payload from `php://input`.
 - **`processRequest()`** - Passes the request payload to the protocol handler and returns the RPC response, catching TRpcException errors.
 
+## Configuration
+
+**application.xml:**
+```xml
+<modules>
+  <module id="rpcserver" class="Prado\Web\Services\TRpcServer" />
+</modules>
+```
+
+**PHP equivalent:**
+```php
+return [
+    'modules' => [
+        'rpcserver' => [
+            'class' => 'Prado\Web\Services\TRpcServer',
+            'properties' => ['ID' => 'rpcserver'],
+        ],
+    ],
+];
+```
+
 ## See Also
 
 - [TRpcProtocol](./TRpcProtocol.md) - Protocol base class
 - [TRpcApiProvider](./TRpcApiProvider.md) - API implementation
-- [TRpcService](../TRpcService.md) - The RPC service
+- [TRpcService](TRpcService.md) - The RPC service

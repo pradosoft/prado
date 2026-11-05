@@ -6,6 +6,7 @@
 ## Class Info
 **Location:** `framework/Data/TDbConnection.php`
 **Namespace:** `Prado\Data`
+**Implements:** [`IDbConnection`](./IDbConnection.md) (which extends [`IDataConnection`](./IDataConnection.md))
 
 ## Overview
 Thin PDO wrapper providing a consistent API for database operations. All four classes work together: `TDbConnection` creates `TDbCommand` objects; commands return `TDbDataReader` iterators or scalar results; transactions are managed via [`TDbTransaction`](./TDbTransaction.md).
@@ -31,8 +32,8 @@ $conn->close();        // or $conn->Active = false
 | `ConnectionString` | PDO DSN string |
 | `Username` | DB username |
 | `Password` | DB password |
-| `Charset` | Character set (MySQL: utf8mb4; PostgreSQL: UTF8) |
-| `Active` | Open/close the connection |
+| `Charset` | Character set to use for the connection. Universal IANA-style names (e.g. `UTF-8`, `ISO-8859-1`) are auto-translated per driver. @since 4.3.3 |
+| `Active` | Open/close the connection. Closing with a `TDbTransaction` the database still holds rolls it back and raises its `OnRollback` after the close (4.4.0) |
 | `Attributes` | PDO attributes array (e.g., `[PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]`) |
 | `ColumnCase` | [`TDbColumnCaseMode`](./TDbColumnCaseMode.md): `Preserved`, `LowerCase`, `UpperCase` |
 | `NullConversion` | [`TDbNullConversionMode`](./TDbNullConversionMode.md): `Preserved`, `EmptyStringToNull`, `NullToEmptyString` |
@@ -46,9 +47,11 @@ $tx  = $conn->beginTransaction();          // returns [`TDbTransaction`](./TDbTr
 $conn->quoteTableName('my_table');         // driver-specific quoting
 $conn->quoteColumnName('my_col');
 $conn->getPdoInstance();                   // raw PDO object
-$conn->getDriverName();                    // e.g. 'mysql', 'pgsql'
+$conn->getDriverName();                    // e.g. 'mysql', 'pgsql', 'firebird', 'ibm'
 $conn->getLastInsertID($sequence = '');    // last auto-increment ID
-$conn->getSchema();                        // returns [`TDbMetaData`](../Common/TDbMetaData.md) for schema introspection
+$conn->getDbMetaData();                    // returns [`TDbMetaData`](Common/TDbMetaData.md) for schema introspection
+$conn->getDatabaseCharset();               // charset reported by active connection (@since 4.3.3)
+$conn->getCanCharsetChange();              // true if charset can still be changed (@since 4.3.3)
 ```
 
 ### Event
@@ -120,7 +123,7 @@ try {
 }
 ```
 
-Properties: `Active` (bool — whether transaction is open).
+Properties: `Active` (bool — whether transaction is open). Events: `OnCommit` and `OnRollback`, raised after the database commits or rolls back; see [`TDbTransaction`](./TDbTransaction.md#events-since-440).
 
 ---
 
@@ -128,6 +131,9 @@ Properties: `Active` (bool — whether transaction is open).
 
 - **Always use parameter binding** — never interpolate user input into SQL strings.
 - **DSN format** — standard PDO DSN: `mysql:host=localhost;dbname=mydb`, `pgsql:host=localhost;dbname=mydb`, `sqlite:/path/to/db.sqlite`.
-- **Charset setup** — MySQL sets charset via `SET NAMES`; PostgreSQL via `SET client_encoding`; both handled automatically when `Charset` is set.
-- **One active transaction at a time** — `TDbConnection` tracks one `TDbTransaction`; nested transactions are not natively supported (use SAVEPOINTs manually if needed).
-- **`getSchema()`** returns a cached `TDbMetaData` subclass — the correct driver is selected automatically from `getDriverName()`.
+- **Charset setup** — `Charset` accepts universal IANA-style names (`UTF-8`, `ISO-8859-1`, etc.) translated per-driver via `resolveCharsetForDriver()`. MySQL: `SET NAMES`; PostgreSQL: `SET client_encoding`; SQLite: `PRAGMA encoding`; Firebird/Oracle/MSSQL: injected into the DSN before opening. IBM DB2 has no charset support.
+- **`Charset` cannot be changed after opening** for drivers that only support DSN-level charset (Firebird, Oracle, MSSQL). `getCanCharsetChange()` indicates whether it is still safe to set.
+- **`getDatabaseCharset()`** queries the live connection for the actual charset in use; useful for verification.
+- **One active transaction at a time** — `TDbConnection` tracks one `TDbTransaction`; nested transactions are not natively supported (use SAVEPOINTs manually if needed). `getCurrentTransaction()` returns it only while it is active, so code that defers work until the commit attaches to its `OnCommit` event.
+- **`getDbMetaData()`** returns a cached `TDbMetaData` subclass — the correct driver is selected automatically from `getDriverName()`. Supports MySQL, PostgreSQL, SQLite, MSSQL, Oracle, IBM DB2, and Firebird.
+- **Implements `IDataConnection`** — can be used wherever a [`IDataConnection`](./IDataConnection.md) is expected.

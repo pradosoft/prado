@@ -1,0 +1,20 @@
+<com:TContent ID="Content">
+	<h1>Media Tags Test Case</h1>
+
+	<p>A short silent clip with captions.</p>
+	<com:TVideo ID="video" Src="media/tone.wav" Width="320" Height="180" Preload="Auto" Aria.label="Silent clip">
+		<com:TTextTrack ID="captions" Src="media/captions.vtt" Kind="Captions" SrcLang="en" Label="English" IsDefault="true" />
+		<a href="media/tone.wav">Download the clip</a>
+	</com:TVideo>
+
+	<com:TAudio ID="audio" Preload="Metadata" Aria.label="Silent talk">
+		<com:TMediaSource ID="unsupported" Src="media/tone.xyz" Type="audio/x-unsupported" />
+		<com:TMediaSource ID="wav" Src="media/tone.wav" Type="audio/wav" />
+		<a href="media/tone.wav">Download the talk</a>
+	</com:TAudio>
+	<p><a href="#transcript">Transcript</a>: silence.</p>
+
+	<com:TPicture ID="picture" ImageUrl="media/picture.png" AlternateText="A green bar">
+		<com:TMediaSource Srcset="media/picture.svg" Type="image/svg+xml" />
+	</com:TPicture>
+</com:TContent>

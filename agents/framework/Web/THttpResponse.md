@@ -26,16 +26,32 @@ THttpResponse implements the mechanism for sending output to client users, manag
 - `CacheExpire` (int): TTL for cached session pages in minutes, defaults to 180
 - `CacheControl` (string): Cache control method for session pages
 - `StatusCode` (int): HTTP status code, defaults to 200
+- `HttpHeaderSent` (bool, read-only): Whether the HTTP status header is sent; `setStatusCode()` throws after it is sent (@since 4.4.0)
+- `AcceptRanges` (bool): Whether `writeFile()` serves byte ranges, defaults to true (@since 4.4.0)
 - `StatusReason` (string): Reason phrase for HTTP status code
-- `HtmlWriterType` (string): Type of HTML writer to be used, defaults to [THtmlWriter](../UI/WebControls/THtmlWriter.md)
+- `HtmlWriterType` (string): Type of HTML writer to be used, defaults to [THtmlWriter](UI/THtmlWriter.md)
 
 ## Configuration
 ### XML Format
 ```xml
-<module id="response" class="Prado\Web\THttpResponse" 
-         CacheExpire="20" 
-         CacheControl="nocache" 
-         BufferOutput="true" />
+<modules>
+    <module id="response" class="Prado\Web\THttpResponse" 
+             CacheExpire="20" 
+             CacheControl="nocache" 
+             BufferOutput="true" />
+</modules>
+```
+
+**PHP equivalent:**
+```php
+return [
+    'modules' => [
+        'response' => [
+            'class' => 'Prado\Web\THttpResponse',
+            'properties' => ['ContentType' => 'text/html'],
+        ],
+    ],
+];
 ```
 
 ## Core Methods
@@ -45,11 +61,14 @@ THttpResponse implements the mechanism for sending output to client users, manag
 - `getContents()`: Returns the content in the output buffer
 - `clear()`: Clears any existing buffered content
 - `flush($continueBuffering = true)`: Flushes response contents and headers
-- `flushContent($continueBuffering = true)`: Internal flush implementation  
+- `flushContent($continueBuffering = true)`: Internal flush implementation
+- `appendFile(string $filename, bool $use_include_path = false, mixed $context = null): int|false`: Reads a file and writes it to the output buffer (@since 4.3.3)
+- `appendFileRange(string $filename, int $offset, int $length): int`: Streams a byte range of a file to `php://output` through `TStreamHelper::copyRange()` (@since 4.4.0)
 
 ### HTTP Status and Headers
 - `getStatusCode()`: Gets the current HTTP status code
-- `setStatusCode($status, $reason = null)`: Sets HTTP status code with optional reason
+- `setStatusCode($status, $reason = null)`: Sets HTTP status code with optional reason; throws once the status header is sent
+- `getHttpHeaderSent()`: Whether the HTTP status header is sent (@since 4.4.0)
 - `getStatusReason()`: Gets the HTTP status reason phrase
 - `sendHttpHeader()`: Sends the HTTP status header with the status code
 - `appendHeader($value, $replace = true)`: Sends a custom header
@@ -63,7 +82,7 @@ THttpResponse implements the mechanism for sending output to client users, manag
 - `setCookieValidation($value)`: Enables/disables cookie validation
 
 ### Content and File Handling
-- `writeFile($fileName, $content = null, $mimeType = null)`: Sends a file to client
+- `writeFile($fileName, $content = null, $mimeType = null, $headers = null, $forceDownload = true, $clientFileName = null, $fileSize = null)`: Sends a file or string to client; serves a byte range (see [Byte Ranges](#byte-ranges-since-440))
 - `redirect($url)`: Redirects browser to specified URL
 - `httpRedirect($url)`: Internal redirect implementation
 - `reload()`: Reloads the current page
@@ -79,6 +98,15 @@ THttpResponse implements the mechanism for sending output to client users, manag
 - `getAdapter()`: Gets response adapter
 - `getHasAdapter()`: Checks if adapter exists
 
+### Protected Overridable Helpers (@since 4.3.3)
+- `responseSetCookie(string $name, ...$args): bool` — Isolated wrapper for `setcookie()`. Override in subclasses for testing or custom cookie dispatch.
+- `sessionCacheExpire(?int $value = null): int|false` — Wrapper for `session_cache_expire()`.
+- `sessionCacheLimiter(?string $value = null): string|false` — Wrapper for `session_cache_limiter()`.
+
+## Notes
+
+- **JavaScript MIME type** — `.js` files served via `writeFile()` use MIME type `text/javascript` (the current standard; previously was `application/javascript` in some versions).
+
 ## HTTP Status Codes
 Class supports all standard HTTP status codes defined in RFC 2616 including:
 - 1xx Informational
@@ -91,6 +119,42 @@ Class supports all standard HTTP status codes defined in RFC 2616 including:
 - Implements `ITextWriter` interface for output writing
 - Uses `appendLog()` method for error logging
 - Uses internal `ensureHeadersSent()` and `ensureContentTypeHeaderSent()` to manage header sending
+
+## Dynamic Events (@since 4.4.0)
+
+Behaviors extend the response through dynamic events. A notification ignores the chain's result. A filter uses the result in place of its first argument. A handled flag starts as `false`, and the method skips its own work when the chain returns `true`.
+
+| Event | Kind | Raised by | When |
+|---|---|---|---|
+| `dyFlushContent(bool $continueBuffering)` | notification | `flushContent()` | before any header is sent and before the buffer is flushed, so a behavior can transform the buffered body and add the headers that describe it |
+| `dyWriteFile(bool $handled, string $fileName, ?string $content, string $mimeType, ?array $headers, ?bool $forceDownload, string $clientFileName, int $fileSize): bool` | handled flag | `writeFile()` | before any header is sent, with the media type, client file name, and size resolved; `true` means a behavior sent the file and `writeFile()` sends nothing |
+| `dyRedirect(string $url): string` | filter | `redirect()` | before the adapter or `httpRedirect()` sends the URL, as given and before a relative URL gains the base URL; covers full-page and callback redirects |
+| `dySetCookie(THttpCookie $cookie, bool $remove): THttpCookie` | filter | `addCookie()`, `removeCookie()` | before the `Set-Cookie` header and before `addCookie()` hashes the value; `$remove` is true for a deletion |
+
+`dyWriteFile` hands a file to the web server: an `X-Sendfile` (Apache `mod_xsendfile`), `X-Accel-Redirect` (nginx), or `X-LiteSpeed-Location` behavior sends its own `Content-Type`, `Content-Disposition`, and handoff header, and the server serves the bytes, byte ranges, and conditional requests. It can also redirect to a signed CDN URL. A behavior that sends the file passes `true` along the chain (`$chain->dyWriteFile(true, …)`) so later behaviors still see the call; an observer passes the flag on unchanged and treats `true` as a response with no body to transform. With `$content` set there is no file to hand off, so a handoff behavior passes the call on. The handled-flag shape lets `TPermissionsBehavior` deny a download; the denied response is an empty 200 unless a behavior sets the status.
+
+`dyRedirect` is the place for an app-wide redirect allowlist; it runs in `redirect()` because `TCallbackResponseAdapter::httpRedirect()` never reaches `THttpResponse::httpRedirect()`. `dySetCookie` also runs for deletions because a browser only deletes a cookie whose deletion carries the same `Path`, `Domain`, and, for `__Secure-`/`__Host-` names, `Secure`. A filter may change the cookie it receives; that cookie is the one held by `getCookies()`.
+
+## Byte Ranges (@since 4.4.0)
+
+With `AcceptRanges` on (the default), `writeFile()` sends `Accept-Ranges: bytes` and, for a server file (`$content` null), `Last-Modified` from `filemtime()` unless `$headers` already has one. `resolveRequestRange()` then reads the request through [THttpHeaderRange](HttpHeaders/THttpHeaderRange.md):
+
+| Request | Response |
+|---|---|
+| no `Range`; method other than `GET`; status not 200 or status line already sent | `200`, full file |
+| `Range` invalid, unit other than `bytes`, or ranges leaving disjoint spans | `200`, full file (multipart/byteranges is not built) |
+| `If-Range` does not match the validator (`matchesIfRange()`) | `200`, full file |
+| satisfiable ranges that merge into one span (overlapping or adjoining; unsatisfiable ones dropped) | `206`, `Content-Range: bytes s-e/size`, `Content-Length` of the span |
+| no satisfiable range: all start at or past the end, `bytes=-0`, or any range of an empty body | `416`, `Content-Range: bytes */size`, `Content-Length: 0`, no `Content-Disposition`, no body |
+
+- **Validators**: `If-Range` with an entity tag matches only a strong `ETag` in `$headers` with the same string (weak tags never match). A date matches the `Last-Modified` sent (caller's or the file's) to the second. No validator → the range is ignored.
+- **Streaming**: the full file still goes through `appendFile()` (`readfile()`); a file range goes through `appendFileRange()` in 8 KiB chunks; a `$content` range is a `substr()`.
+- **Status**: `writeFile()` calls `setStatusCode(206|416)`, so `getStatusCode()` reflects the range result afterwards.
+- **`dyWriteFile` handoff** runs first; a handled call skips all of this and the web server serves ranges itself.
+- `AcceptRanges=false` reproduces the pre-4.4 headers exactly: no `Accept-Ranges`, no automatic `Last-Modified`, `Range` ignored.
+- **Disjoint ranges / multipart**: not built; a `dyWriteFile` handoff (`X-Sendfile`, `X-Accel-Redirect`) lets the web server serve them. Use case (large PDFs under Acrobat Fast Web View), reasons for deferral, and the implementation sketch: [multipart-byteranges](./multipart-byteranges.md).
+
+Response compression is left to the web server (`mod_deflate`, `mod_brotli`, nginx `gzip`) or to PHP's `zlib.output_compression`. Both run in C and stream.
 
 ## Usage Examples
 ### Basic Output 

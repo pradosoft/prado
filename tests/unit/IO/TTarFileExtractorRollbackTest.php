@@ -1,8 +1,15 @@
 <?php
 
 
+namespace Prado\Test\Unit\IO;
+
 use PHPUnit\Framework\TestCase;
 use Prado\IO\TTarFileExtractor;
+use Prado\Test\Unit\Harness\IO\TarTestHelper;
+
+class TTarFileExtractorRollbackError extends \Error
+{
+}
 
 /**
  * Non-atomic (direct) extraction tests for TTarFileExtractor introduced in 4.3.3.
@@ -184,6 +191,29 @@ class TTarFileExtractorRollbackTest extends TestCase
 		$result = $extractor->extract($this->extractDir);
 		$this->assertTrue($result);
 		$this->assertFileExists($this->extractDir . '/brand_new.txt');
+	}
+
+	public function testThrowableRestoresOverwrittenFilesAndRemovesBackupDirectory(): void
+	{
+		$tarFile = $this->testDir . '/throwable_rollback.tar';
+		TarTestHelper::writeTar($tarFile, [
+			TarTestHelper::entry('existing.txt', 'new'),
+			TarTestHelper::entry('device', '', '3'),
+		]);
+		file_put_contents($this->extractDir . '/existing.txt', 'original');
+
+		$extractor = $this->newExtractor($tarFile);
+		$extractor->setExceptionClass(TTarFileExtractorRollbackError::class);
+		$extractor->setStrict(true);
+
+		try {
+			$extractor->extract($this->extractDir);
+			self::fail('Expected the configured Error instance.');
+		} catch (TTarFileExtractorRollbackError) {
+		}
+
+		self::assertSame('original', file_get_contents($this->extractDir . '/existing.txt'));
+		self::assertSame([], glob($this->extractDir . '/.~tar_bkp_*~'));
 	}
 
 	public function testConflictErrorDirectoriesAreNeverAConflict()

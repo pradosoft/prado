@@ -11,6 +11,7 @@
 namespace Prado\Web\UI\WebControls;
 
 use Prado\TPropertyValue;
+use Prado\Web\Javascripts\TJavaScript;
 
 /**
  * TClientScript class
@@ -138,7 +139,7 @@ class TClientScript extends \Prado\Web\UI\TControl
 	protected function renderCustomScriptFile($writer)
 	{
 		if (($scriptUrl = $this->getScriptUrl()) !== '') {
-			$writer->write("<script src=\"$scriptUrl\"></script>\n");
+			$writer->write(TJavaScript::renderScriptFile($scriptUrl));
 		}
 	}
 
@@ -149,9 +150,9 @@ class TClientScript extends \Prado\Web\UI\TControl
 	protected function renderCustomScript($writer)
 	{
 		if ($this->getHasControls()) {
-			$writer->write("<script>\n/*<![CDATA[*/\n");
+			$writer->write(TJavaScript::renderScriptHeader());
 			$this->renderChildren($writer);
-			$writer->write("\n/*]]>*/\n</script>\n");
+			$writer->write(TJavaScript::renderScriptFooter());
 		}
 	}
 }

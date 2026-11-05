@@ -17,6 +17,7 @@ use Prado\Data\TDbDriverCapabilities;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidOperationException;
+use Prado\IModuleDependency;
 use Prado\TModule;
 use Prado\TPropertyValue;
 use Prado\Security\Permissions\IPermissions;
@@ -36,9 +37,34 @@ use Prado\Util\Traits\TInitializedTrait;
  *
  * The following will load the options from a WordPress Database:
  * ```xml
- *		<module id="dbparams" class="Prado\Util\TDbParameterModule"
- * ConnectionID="DB" KeyField="option_name" ValueField="option_value" TableName="wp_options" Serializer="php"
- * autoLoadField="autoload" autoLoadValue="'yes'" autoLoadValueFalse="'no'"/>
+ * <modules>
+ *     <module id="dbparams" class="Prado\Util\TDbParameterModule"
+ *         ConnectionID="db" KeyField="option_name" ValueField="option_value"
+ *         TableName="wp_options" Serializer="php"
+ *         AutoLoadField="autoload" AutoLoadValue="'yes'" AutoLoadValueFalse="'no'" />
+ * </modules>
+ * ```
+ *
+ * The key field, value field, table, and autoload field are SQL identifiers; their setters
+ * reject any other value.  The autoload values are bound as query parameters.  A value
+ * quoted as an SQL string literal, such as `'yes'`, is bound without its quotes.
+ *
+ * PHP configuration style:
+ * ```php
+ * return [
+ *     'modules' => [
+ *         'dbparams' => [
+ *             'class' => 'Prado\Util\TDbParameterModule',
+ *             'properties' => [
+ *                 'ConnectionID' => 'db',
+ *                 'KeyField' => 'option_name',
+ *                 'ValueField' => 'option_value',
+ *                 'TableName' => 'wp_options',
+ *                 'Serializer' => 'php',
+ *             ],
+ *         ],
+ *     ],
+ * ];
  * ```
  *
  * This allows for setting and removal of application parameters
@@ -77,7 +103,7 @@ use Prado\Util\Traits\TInitializedTrait;
  * @since 4.2.0
  * @method bool dyRegisterShellAction($returnValue)
  */
-class TDbParameterModule extends TDbModule implements IPermissions
+class TDbParameterModule extends TDbModule implements IPermissions, IModuleDependency
 {
 	use TInitializedTrait;
 
@@ -155,22 +181,38 @@ class TDbParameterModule extends TDbModule implements IPermissions
 
 	/**
 	 * Initializes the module by loading parameters.
-	 * @param mixed $config content enclosed within the module tag
+	 * @param null|array|\Prado\Xml\TXmlElement $config content enclosed within the module tag
 	 */
 	public function init($config)
 	{
 		$this->loadDbParameters();
 
-		if ($this->_autoLoadField) {
-			$this->getApplication()->getParameters()->attachBehavior(self::APP_PARAMETER_LAZY_BEHAVIOR, new TMapLazyLoadBehavior([$this, 'getFromBehavior']));
+		if ($app = $this->getApplication()) {
+			if ($this->getAutoLoadField()) {
+				$app->getParameters()->attachBehavior(self::APP_PARAMETER_LAZY_BEHAVIOR, new TMapLazyLoadBehavior([$this, 'getFromBehavior']));
+			}
+			if ($this->getCaptureParameterChanges()) {
+				$app->attachEventHandler('onBeginRequest', [$this, 'attachTPageServiceHandler']);
+			}
+			$app->attachEventHandler('onAuthenticationComplete', [$this, 'registerShellAction']);
 		}
-		if ($this->_autoCapture) {
-			$this->getApplication()->attachEventHandler('onBeginRequest', [$this, 'attachTPageServiceHandler']);
-		}
-		$app = $this->getApplication();
-		$app->attachEventHandler('onAuthenticationComplete', [$this, 'registerShellAction']);
 		parent::init($config);
 		$this->markInitialized();
+	}
+
+	/**
+	 * Returns the ConnectionID that init() depends on, when set.
+	 * init() issues SELECT queries against the parameter table; the upstream
+	 * TDataSourceConfig::init() must have applied its <database> element
+	 * first. Empty ConnectionID means no dependency — TDbPropertiesTrait may
+	 * fall back to a sqlite store.
+	 * @param bool $isPreInit true for the dyPreInit pass, false for the init() pass
+	 * @return null|string the ConnectionID (empty if unset), or null for pre-init
+	 * @since 4.4.0
+	 */
+	public function getModuleDependencies(bool $isPreInit): null|string|array
+	{
+		return $this->getConnectionID();
 	}
 
 	/**
@@ -194,10 +236,14 @@ class TDbParameterModule extends TDbModule implements IPermissions
 
 		$this->ensureTable();
 
-		$where = ($this->_autoLoadField ? " WHERE {$this->_autoLoadField}={$this->_autoLoadValue}" : '');
+		$autoLoadField = $this->getAutoLoadField();
+		$where = ($autoLoadField ? " WHERE {$autoLoadField}=:auto" : '');
 		$cmd = $db->createCommand(
-			"SELECT {$this->_keyField} as keyField, {$this->_valueField}  as valueField FROM {$this->_tableName}{$where}"
+			"SELECT {$this->getKeyField()} as keyField, {$this->getValueField()}  as valueField FROM {$this->getTableName()}{$where}"
 		);
+		if ($autoLoadField) {
+			$cmd->bindValue(':auto', $this->getAutoLoadBindValue(true), $cmd->getConnection()::PARAM_STR);
+		}
 		$results = $cmd->query();
 
 		$appParameters = $this->getApplication()->getParameters();
@@ -231,7 +277,7 @@ class TDbParameterModule extends TDbModule implements IPermissions
 	public function attachTPageServiceHandler($sender, $param)
 	{
 		$service = $this->getService();
-		if ($service->hasEvent('onPreRunPage')) {
+		if ($service instanceof \Prado\TComponent && $service->hasEvent('onPreRunPage')) {
 			$service->attachEventHandler('onPreRunPage', [$this, 'attachParameterStorage'], 0);
 		}
 	}
@@ -267,10 +313,11 @@ class TDbParameterModule extends TDbModule implements IPermissions
 	{
 		$db = $this->getDbConnection();
 		$driver = TDbDriverCapabilities::normalizeDriver($db->getDriverName());
+		$autoLoadField = $this->getAutoLoadField();
 		$autoidAttributes = '';
 		$autotype = 'INTEGER';
-		$postIndices = '; CREATE UNIQUE INDEX tkey ON ' . $this->_tableName . '(' . $this->_keyField . ');' .
-		($this->_autoLoadField ? ' CREATE INDEX tauto ON ' . $this->_tableName . '(' . $this->_autoLoadField . ');' : '');
+		$postIndices = '; CREATE UNIQUE INDEX tkey ON ' . $this->getTableName() . '(' . $this->getKeyField() . ');' .
+		($autoLoadField ? ' CREATE INDEX tauto ON ' . $this->getTableName() . '(' . $autoLoadField . ');' : '');
 
 		switch ($driver) {
 			case TDbDriver::DRIVER_SQLITE:
@@ -284,11 +331,11 @@ class TDbParameterModule extends TDbModule implements IPermissions
 				break;
 		}
 
-		$sql = 'CREATE TABLE ' . $this->_tableName . ' (
+		$sql = 'CREATE TABLE ' . $this->getTableName() . ' (
 			param_id ' . $autotype . ' PRIMARY KEY ' . $autoidAttributes . ', ' .
-			$this->_keyField . ' VARCHAR(128) NOT NULL,' .
-			$this->_valueField . ' MEDIUMTEXT' .
-			($this->_autoLoadField ? ', ' . $this->_autoLoadField . ' BOOLEAN NOT NULL DEFAULT 1' : '') .
+			$this->getKeyField() . ' VARCHAR(128) NOT NULL,' .
+			$this->getValueField() . ' MEDIUMTEXT' .
+			($autoLoadField ? ', ' . $autoLoadField . ' BOOLEAN NOT NULL DEFAULT 1' : '') .
 			')' . $postIndices;
 		$db->createCommand($sql)->execute();
 	}
@@ -304,7 +351,7 @@ class TDbParameterModule extends TDbModule implements IPermissions
 		}
 		$this->_tableEnsured = true;
 		$db = $this->getDbConnection();
-		$sql = 'SELECT * FROM ' . $this->_tableName . ' WHERE 0=1';
+		$sql = 'SELECT * FROM ' . $this->getTableName() . ' WHERE 0=1';
 		try {
 			$db->createCommand($sql)->query()->close();
 		} catch (Exception $e) {
@@ -312,7 +359,7 @@ class TDbParameterModule extends TDbModule implements IPermissions
 			if ($this->_autoCreate) {
 				$this->createDbTable();
 			} else {
-				throw new TConfigurationException('dbparametermodule_table_nonexistent', $this->_tableName);
+				throw new TConfigurationException('dbparametermodule_table_nonexistent', $this->getTableName());
 			}
 		}
 	}
@@ -343,7 +390,7 @@ class TDbParameterModule extends TDbModule implements IPermissions
 
 		$db = $this->getDbConnection();
 		$cmd = $db->createCommand(
-			"SELECT {$this->_valueField} as valueField FROM {$this->_tableName} WHERE {$this->_keyField}=:key LIMIT 1"
+			"SELECT {$this->getValueField()} as valueField FROM {$this->getTableName()} WHERE {$this->getKeyField()}=:key LIMIT 1"
 		);
 		$cmd->bindParameter(":key", $key, $cmd->getConnection()::PARAM_STR);
 		$results = $cmd->queryRow();
@@ -409,21 +456,22 @@ class TDbParameterModule extends TDbModule implements IPermissions
 		$this->ensureTable();
 		$db = $this->getDbConnection();
 		$driver = TDbDriverCapabilities::normalizeDriver($db->getDriverName());
+		$autoLoadField = $this->getAutoLoadField();
 		$appendix = '';
 		if ($driver === TDbDriver::DRIVER_MYSQL) {
-			$dupl = ($this->_autoLoadField ? ", {$this->_autoLoadField}=values({$this->_autoLoadField})" : '');
-			$appendix = " ON DUPLICATE KEY UPDATE {$this->_valueField}=values({$this->_valueField}){$dupl}";
+			$dupl = ($autoLoadField ? ", {$autoLoadField}=values({$autoLoadField})" : '');
+			$appendix = " ON DUPLICATE KEY UPDATE {$this->getValueField()}=values({$this->getValueField()}){$dupl}";
 		} else {
 			$this->remove($key);
 		}
-		$field = ($this->_autoLoadField ? ", {$this->_autoLoadField}" : '');
-		$values = ($this->_autoLoadField ? ", :auto" : '');
-		$cmd = $db->createCommand("INSERT INTO {$this->_tableName} ({$this->_keyField}, {$this->_valueField}{$field}) " .
+		$field = ($autoLoadField ? ", {$autoLoadField}" : '');
+		$values = ($autoLoadField ? ", :auto" : '');
+		$cmd = $db->createCommand("INSERT INTO {$this->getTableName()} ({$this->getKeyField()}, {$this->getValueField()}{$field}) " .
 					"VALUES (:key, :value{$values})" . $appendix);
 		$cmd->bindParameter(":key", $key, $cmd->getConnection()::PARAM_STR);
 		$cmd->bindParameter(":value", $_value, $cmd->getConnection()::PARAM_STR);
-		if ($this->_autoLoadField) {
-			$alv = $autoLoad ? $this->_autoLoadValue : $this->_autoLoadValueFalse;
+		if ($autoLoadField) {
+			$alv = $this->getAutoLoadBindValue((bool) $autoLoad);
 			$cmd->bindParameter(":auto", $alv, $cmd->getConnection()::PARAM_STR);
 		}
 		$cmd->execute();
@@ -463,7 +511,7 @@ class TDbParameterModule extends TDbModule implements IPermissions
 
 		$db = $this->getDbConnection();
 		$cmd = $db->createCommand(
-			"SELECT COUNT(*) AS count FROM {$this->_tableName} WHERE {$this->_keyField}=:key"
+			"SELECT COUNT(*) AS count FROM {$this->getTableName()} WHERE {$this->getKeyField()}=:key"
 		);
 		$cmd->bindParameter(":key", $key, $cmd->getConnection()::PARAM_STR);
 		$result = $cmd->queryRow();
@@ -487,7 +535,7 @@ class TDbParameterModule extends TDbModule implements IPermissions
 		if ($driver === TDbDriver::DRIVER_MYSQL) {
 			$appendix = ' LIMIT 1';
 		}
-		$cmd = $db->createCommand("DELETE FROM {$this->_tableName} WHERE {$this->_keyField}=:key" . $appendix);
+		$cmd = $db->createCommand("DELETE FROM {$this->getTableName()} WHERE {$this->getKeyField()}=:key" . $appendix);
 		$cmd->bindParameter(":key", $key, $cmd->getConnection()::PARAM_STR);
 		$cmd->execute();
 		return $value;
@@ -539,7 +587,7 @@ class TDbParameterModule extends TDbModule implements IPermissions
 	public function setKeyField($value)
 	{
 		$this->assertUninitialized('KeyField');
-		$this->_keyField = TPropertyValue::ensureString($value);
+		$this->_keyField = $this->ensureSqlIdentifier(TPropertyValue::ensureString($value), 'KeyField');
 	}
 
 	/**
@@ -557,7 +605,7 @@ class TDbParameterModule extends TDbModule implements IPermissions
 	public function setValueField($value)
 	{
 		$this->assertUninitialized('ValueField');
-		$this->_valueField = TPropertyValue::ensureString($value);
+		$this->_valueField = $this->ensureSqlIdentifier(TPropertyValue::ensureString($value), 'ValueField');
 	}
 
 	/**
@@ -575,7 +623,7 @@ class TDbParameterModule extends TDbModule implements IPermissions
 	public function setTableName($value)
 	{
 		$this->assertUninitialized('TableName');
-		$this->_tableName = TPropertyValue::ensureString($value);
+		$this->_tableName = $this->ensureSqlIdentifier(TPropertyValue::ensureString($value), 'TableName');
 	}
 
 	/**
@@ -593,7 +641,8 @@ class TDbParameterModule extends TDbModule implements IPermissions
 	public function setAutoLoadField($value)
 	{
 		$this->assertUninitialized('AutoLoadField');
-		$this->_autoLoadField = TPropertyValue::ensureString($value);
+		$value = TPropertyValue::ensureString($value);
+		$this->_autoLoadField = $value === '' ? '' : $this->ensureSqlIdentifier($value, 'AutoLoadField');
 	}
 
 	/**
@@ -612,6 +661,23 @@ class TDbParameterModule extends TDbModule implements IPermissions
 	{
 		$this->assertUninitialized('AutoLoadValue');
 		$this->_autoLoadValue = TPropertyValue::ensureString($value);
+	}
+
+	/**
+	 * Returns the autoload value bound as a query parameter.  A value quoted as an SQL
+	 * string literal, such as `'yes'`, is returned without its quotes, and a doubled
+	 * quote inside it becomes one quote.
+	 * @param bool $autoLoad true for {@see getAutoLoadValue()}, false for {@see getAutoLoadValueFalse()}.
+	 * @return string the value to bind.
+	 * @since 4.4.0
+	 */
+	protected function getAutoLoadBindValue(bool $autoLoad): string
+	{
+		$value = $autoLoad ? $this->getAutoLoadValue() : $this->getAutoLoadValueFalse();
+		if (strlen($value) >= 2 && $value[0] === "'" && $value[-1] === "'") {
+			$value = str_replace("''", "'", substr($value, 1, -1));
+		}
+		return $value;
 	}
 
 	/**

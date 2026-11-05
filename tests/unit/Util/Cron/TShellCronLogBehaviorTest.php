@@ -1,12 +1,14 @@
 <?php
 
+namespace Prado\Test\Unit\Util\Cron;
+
 use Prado\IO\TTextWriter;
 use Prado\TComponent;
 use Prado\Shell\TShellWriter;
 use Prado\Util\Cron\TShellCronLogBehavior;
 
 
-class TShellCronLogBehaviorTest extends PHPUnit\Framework\TestCase
+class TShellCronLogBehaviorTest extends \PHPUnit\Framework\TestCase
 {
 	protected $obj;
 	protected $writer;
@@ -77,6 +79,9 @@ class TShellCronLogBehaviorTest extends PHPUnit\Framework\TestCase
 		
 		$component->dyLogCronTaskEnd($task);
 		self::assertEquals(1, preg_match("/Ending Task/i", $this->writer->flush()));
+
+		$component->dyLogCronTaskError($task, new \RuntimeException('boom'));
+		self::assertEquals(1, preg_match("/Task testName failed: RuntimeException: boom/", $this->writer->flush()));
 	}
 	
 }

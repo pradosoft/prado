@@ -19,4 +19,4 @@ TDatePickerClientScript extends TClientSideOptions to provide client-side event 
 
 - [TDatePicker](./TDatePicker.md)
 - [TDatePickerMode](./TDatePickerMode.md)
-- [TClientSideOptions](./TClientSideOptions.md)
+- [TClientSideOptions](../TClientSideOptions.md)

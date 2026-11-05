@@ -1,9 +1,11 @@
 <?php
 
-require_once(__DIR__ . '/../../../../PradoUnit.php');
+namespace Prado\Test\Unit\Data\DbSpecific\Sqlite\Common;
 
 use Prado\Data\TDbConnection;
 use Prado\TApplication;
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
+use Prado\TApplicationMode;
 
 /**
  * Integration tests for TDbConnection charset handling — SQLite.
@@ -36,7 +38,7 @@ use Prado\TApplication;
  * Tests are organised in parallel UTF-8 / UTF-16 sections so the two charsets
  * receive equivalent coverage.  Tests are skipped when pdo_sqlite is missing.
  */
-class TDbConnectionCharsetSqliteIntegrationTest extends PHPUnit\Framework\TestCase
+class TDbConnectionCharsetSqliteIntegrationTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 
@@ -59,7 +61,7 @@ class TDbConnectionCharsetSqliteIntegrationTest extends PHPUnit\Framework\TestCa
 	{
 		static $booted = false;
 		if (!$booted) {
-			new TApplication(__DIR__ . '/../../../../Security/app', false, TApplication::CONFIG_TYPE_PHP);
+			(new TApplication(__DIR__ . '/../../../../Security/app', false, TApplication::CONFIG_TYPE_PHP))->setMode(TApplicationMode::Debug);
 			$booted = true;
 		}
 		$this->setUpConnection();

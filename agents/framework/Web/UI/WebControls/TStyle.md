@@ -8,7 +8,20 @@
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-TStyle encapsulates CSS style properties applied to a control. It manages fields like background color, border styles, font, CSS class, and custom styles.
+TStyle encapsulates CSS style properties applied to a control. It manages five distinct stores: named CSS fields (`_fields`), a lazy-created `TFont` object (`_font`), a CSS class name (`_class`), a raw custom style string (`_customStyle`), and a logical display style (`_displayStyle`).
+
+## Render Order
+
+`addAttributesToRender` emits in this order (lowest to highest priority):
+1. Custom style string (parsed field by field)
+2. Named `_fields`
+3. Font CSS from `TFont::addAttributesToRender`
+4. CSS class as `class=` attribute
+
+## copyFrom vs mergeWith
+
+- **`copyFrom`** — source wins. Each source field overwrites the target field; source `_class` and `_customStyle` replace target values when non-null.
+- **`mergeWith`** — target wins. Source fields fill in only what the target lacks; target keeps its own values when already set.
 
 ## Key Properties/Methods
 
@@ -18,17 +31,28 @@ TStyle encapsulates CSS style properties applied to a control. It manages fields
 - `getBorderWidth()` / `setBorderWidth($value)` - Border width
 - `getBorderRadius()` / `setBorderRadius($value)` - Border radius
 - `getCssClass()` / `setCssClass($value)` - CSS class name
-- `getFont()` - Returns TFont object
+- `getHasCssClass(): bool` - Whether CSS class has been explicitly set (@since 4.3.3)
+- `getFont()` - Returns TFont object (lazy-created)
+- `getHasFont(): bool` - Whether a TFont instance has been set (@since 4.3.3)
 - `getForeColor()` / `setForeColor($value)` - Foreground color
 - `getHeight()` / `setHeight($value)` - Height
 - `getWidth()` / `setWidth($value)` - Width
 - `getCustomStyle()` / `setCustomStyle($value)` - Custom CSS style string
-- `getDisplayStyle()` / `setDisplayStyle($value)` - Display style (None, Dynamic, Fixed, Hidden)
-- `getStyleField($name)` / `setStyleField($name, $value)` - Individual style fields
-- `reset()` - Resets to default state
-- `copyFrom($style)` - Copies from another style
-- `mergeWith($style)` - Merges with another style
+- `getHasCustomStyle(): bool` - Whether a custom style string has been set (@since 4.3.3)
+- `getDisplayStyle()` / `setDisplayStyle($value)` - Display style (`TDisplayStyle::Fixed` is the default, @since 4.3.3)
+- `getStyleField($name)` / `setStyleField($name, $value)` / `clearStyleField($name)` - Individual CSS property fields. Array syntax supported: `$style['margin'] = '10px'`.
+- `getHasStyleFields(): bool` - Whether any named CSS property has been set (@since 4.3.3)
+- `reset()` - Resets all state to constructor defaults (including `_displayStyle → DEFAULT_DISPLAY_STYLE`)
+- `copyFrom($style)` - Copies from another style (source wins)
+- `mergeWith($style)` - Merges with another style (target wins)
 - `addAttributesToRender($writer)` - Adds CSS attributes to renderer
+
+## New in 4.3.3
+
+- `DEFAULT_DISPLAY_STYLE` constant (overridable in subclasses via late-static binding)
+- `__wakeup()` restores `_displayStyle` to `static::DEFAULT_DISPLAY_STYLE` when missing from serialized data
+- `getHasCssClass()`, `getHasFont()`, `getHasCustomStyle()`, `getHasStyleFields()` — introspection helpers
+- `setFont(TFont $font)` and `newFont(): TFont` protected methods for subclass customization
 
 ## See Also
 

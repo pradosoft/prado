@@ -13,6 +13,10 @@ namespace Prado\Web\UI;
 use Prado\TPropertyValue;
 use Prado\Exceptions\THttpException;
 use Prado\Exceptions\TInvalidDataValueException;
+use Prado\IO\Compression\ICompressionConfigurable;
+use Prado\IO\Compression\TCompressionConfig;
+use Prado\IO\Compression\TCompressionConfigTrait;
+use Prado\Util\Clock\TApplicationClockAwareTrait;
 
 /**
  * TSessionPageStatePersister class
@@ -24,6 +28,10 @@ use Prado\Exceptions\TInvalidDataValueException;
  * TSessionPageStatePersister keeps limited number of history states in session,
  * mainly to preserve the precious server storage. The number is specified
  * by {@see setHistorySize HistorySize}, which defaults to 10.
+ *
+ * Each stored state is prefixed with an HMAC from the application
+ * {@see \Prado\Security\TSecurityManager::hashData() security manager}.  A state
+ * altered in session storage fails validation and is not unserialized.
  *
  * There are a couple of ways to use TSessionPageStatePersister.
  * One can override the page's {@see \Prado\Web\UI\TPage::getStatePersister()} method and
@@ -45,13 +53,28 @@ use Prado\Exceptions\TInvalidDataValueException;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.1
  */
-class TSessionPageStatePersister extends \Prado\TComponent implements IPageStatePersister
+class TSessionPageStatePersister extends \Prado\TComponent implements IPageStatePersister, ICompressionConfigurable
 {
+	use TApplicationClockAwareTrait;
+	use TCompressionConfigTrait;
+
 	public const STATE_SESSION_KEY = 'PRADO_SESSION_PAGESTATE';
 	public const QUEUE_SESSION_KEY = 'PRADO_SESSION_STATEQUEUE';
 
 	private $_page;
 	private $_historySize = 10;
+
+	/**
+	 * Returns the compression settings this persister starts from: the client token
+	 * compresses by default, under the `deflate` coding and whatever its length.  The
+	 * state kept in the session is stored as is.
+	 * @return TCompressionConfig a new compression configuration.
+	 * @since 4.4.0
+	 */
+	protected function newCompression(): TCompressionConfig
+	{
+		return new TPageStateCompressionConfig();
+	}
 
 	/**
 	 * @return TPage the page that this persister works for
@@ -97,8 +120,8 @@ class TSessionPageStatePersister extends \Prado\TComponent implements IPageState
 	{
 		$session = $this->_page->getSession();
 		$session->open();
-		$data = serialize($state);
-		$timestamp = (string) microtime(true);
+		$data = $this->_page->getApplication()->getSecurityManager()->hashData(serialize($state));
+		$timestamp = (string) $this->getClock()->microtime();
 		$key = self::STATE_SESSION_KEY . $timestamp;
 		$session->add($key, $data);
 		if (($queue = $session->itemAt(self::QUEUE_SESSION_KEY)) === null) {
@@ -124,7 +147,7 @@ class TSessionPageStatePersister extends \Prado\TComponent implements IPageState
 			$session = $this->_page->getSession();
 			$session->open();
 			$key = self::STATE_SESSION_KEY . $timestamp;
-			if (($data = $session->itemAt($key)) !== null) {
+			if (($data = $session->itemAt($key)) !== null && ($data = $this->_page->getApplication()->getSecurityManager()->validateData($data)) !== false) {
 				return unserialize($data);
 			}
 		}

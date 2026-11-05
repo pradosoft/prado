@@ -1,6 +1,9 @@
 <?php
 
-require_once(__DIR__ . '/../../Mysql/TableGateway/BaseGateway.php');
+namespace Prado\Test\Unit\Data\DbSpecific\Pgsql\TableGateway;
+
+use Prado\Data\DataGateway\TTableGateway;
+use Prado\Test\Unit\Data\DbSpecific\Mysql\TableGateway\TTableGatewayTestBase;
 
 class TTableGatewayPgsqlTest extends TTableGatewayTestBase
 {

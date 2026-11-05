@@ -1,7 +1,5 @@
 <?php
 
-require_once(__DIR__ . '/../../../../PradoUnit.php');
-
 /**
  * IbmTableExistsTest — driver-specific tests for {@see TTableGateway::getTableExists()} on IBM DB2.
  *
@@ -15,11 +13,14 @@ require_once(__DIR__ . '/../../../../PradoUnit.php');
  * Requires: IBM DB2 pradount database with the upsert_test table (tests/initdb_ibm.sql).
  */
 
+namespace Prado\Test\Unit\Data\DbSpecific\Ibm\Common;
+
 use Prado\Data\Common\TDbMetaData;
 use Prado\Data\DataGateway\TTableGateway;
 use Prado\Data\TDbConnection;
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
 
-class IbmTableExistsTest extends PHPUnit\Framework\TestCase
+class IbmTableExistsTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 

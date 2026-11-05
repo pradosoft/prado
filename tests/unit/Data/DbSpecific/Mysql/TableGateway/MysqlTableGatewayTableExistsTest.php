@@ -1,10 +1,12 @@
 <?php
 
-require_once(__DIR__ . '/../../../../PradoUnit.php');
+namespace Prado\Test\Unit\Data\DbSpecific\Mysql\TableGateway;
 
 use Prado\Data\Common\TDbMetaData;
 use Prado\Data\DataGateway\TTableGateway;
 use Prado\Data\TDbConnection;
+use Prado\Test\Unit\PradoUnit;
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
 
 /**
  * MysqlTableGatewayTableExistsTest — tests for {@see TTableGateway::getTableExists()}.
@@ -19,7 +21,7 @@ use Prado\Data\TDbConnection;
  *   - SQLite in-memory variant: covers a driver where the probe SQL uses no quoting
  *     characters and table creation/deletion is trivial.
  */
-class MysqlTableGatewayTableExistsTest extends PHPUnit\Framework\TestCase
+class MysqlTableGatewayTableExistsTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 

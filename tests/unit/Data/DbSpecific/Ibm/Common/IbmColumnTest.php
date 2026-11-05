@@ -1,11 +1,13 @@
 <?php
 
-require_once(__DIR__ . '/../../../../PradoUnit.php');
+namespace Prado\Test\Unit\Data\DbSpecific\Ibm\Common;
 
 use Prado\Data\Common\Ibm\TIbmMetaData;
 use Prado\Data\Common\TDbTableColumn;
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
+use Prado\Data\TDbConnection;
 
-class IbmColumnTest extends PHPUnit\Framework\TestCase
+class IbmColumnTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 

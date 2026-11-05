@@ -132,7 +132,7 @@ class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOpt
 	}
 
 	/**
-	 * @return TTextBoxMode the behavior mode of the underlying {@see \Prado\Web\UI\WebControls\TTextBox} component.
+	 * @return string|TTextBoxMode the behavior mode of the underlying {@see \Prado\Web\UI\WebControls\TTextBox} component.
 	 * Fixed to TTextBoxMode::SingleLine for the TJuiDatePicker.
 	 */
 	public function getTextMode()
@@ -142,7 +142,7 @@ class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOpt
 
 	/**
 	 * Setting the behavior mode of the underlying TTextBox component is NOT supported.
-	 * @param TTextBoxMode $value the text mode
+	 * @param string|TTextBoxMode $value the text mode
 	 * @throws TNotSupportedException not supported, fixed to TTextBoxMode::SingleLine.
 	 */
 	public function setTextMode($value)
@@ -199,7 +199,7 @@ class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOpt
 	 * Returns the timestamp selected by the user.
 	 * This method is required by {@see \Prado\IDataRenderer}.
 	 * It is the same as {@see getTimeStamp()}.
-	 * @return int the timestamp of the TDatePicker control.
+	 * @return ?int the timestamp of the TDatePicker control.
 	 * @see getTimeStamp
 	 * @since 3.1.2
 	 */
@@ -212,7 +212,7 @@ class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOpt
 	 * Sets the timestamp represented by this control.
 	 * This method is required by {@see \Prado\IDataRenderer}.
 	 * It is the same as {@see setTimeStamp()}.
-	 * @param int $value the timestamp of the TDatePicker control.
+	 * @param float|int|string $value the timestamp of the TDatePicker control.
 	 * @see setTimeStamp
 	 * @since 3.1.2
 	 */
@@ -238,7 +238,7 @@ class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOpt
 	}
 
 	/**
-	 * @return int current selected date from the date picker as timestamp, NULL if timestamp is not set previously.
+	 * @return ?int current selected date from the date picker as timestamp, NULL if timestamp is not set previously.
 	 */
 	public function getTimeStamp()
 	{
@@ -279,7 +279,7 @@ class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOpt
 	/**
 	 * Returns the value to be validated.
 	 * This methid is required by IValidatable interface.
-	 * @return int the interger timestamp if valid, otherwise the original text.
+	 * @return string the integer timestamp if valid, otherwise the original text.
 	 */
 	public function getValidationPropertyValue()
 	{

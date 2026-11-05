@@ -125,7 +125,7 @@ class TCache_Lite
 	 * better choice)
 	 * 'strlen' for a length only test (fastest)
 	 *
-	 * @var bool $_readControlType
+	 * @var string $_readControlType
 	 */
 	protected $_readControlType = 'crc32';
 
@@ -257,7 +257,7 @@ class TCache_Lite
 	 * @param string $group name of the cache group
 	 * @param bool $doNotTestCacheValidity if set to true, the cache
 	 * validity won't be tested
-	 * @return string data of the cache (or false if no cache available)
+	 * @return false|string data of the cache (or false if no cache available)
 	 * @access public
 	 */
 	public function get($id, $group = 'default', $doNotTestCacheValidity = false)
@@ -354,7 +354,6 @@ class TCache_Lite
 		$this->_setFileName($id, $group);
 		if (!@unlink($this->_file)) {
 			throw new Exception('TCache_Lite: Unable to remove cache');
-			return false;
 		}
 		return true;
 	}
@@ -390,7 +389,6 @@ class TCache_Lite
 		}
 		if (!($dh = opendir($this->_cacheDir))) {
 			throw new Exception('TCache_Lite: Unable to open cache directory');
-			return false;
 		}
 		while ($file = readdir($dh)) {
 			if (($file != '.') && ($file != '..')) {
@@ -399,7 +397,6 @@ class TCache_Lite
 					if (strpos($file, $motif, 0)) {
 						if (!@unlink($file)) {
 							throw new Exception('Cache_Lite: Unable to remove cache');
-							return false;
 						}
 					}
 				}
@@ -465,7 +462,7 @@ class TCache_Lite
 	/**
 	 * Read the cache file and return the content
 	 *
-	 * @return string content of the cache file
+	 * @return false|string content of the cache file
 	 * @access private
 	 */
 	protected function _read()
@@ -498,7 +495,6 @@ class TCache_Lite
 			return $data;
 		}
 		throw new Exception('Cache_Lite: Unable to read cache');
-		return false;
 	}
 
 	/**
@@ -528,7 +524,6 @@ class TCache_Lite
 			return true;
 		}
 		throw new Exception('Cache_Lite: Unable to write cache');
-		return false;
 	}
 
 	/**

@@ -1,7 +1,5 @@
 <?php
 
-require_once(__DIR__ . '/../../../../PradoUnit.php');
-
 /**
  * OracleUpsertTest — comprehensive tests for Oracle upsert behaviour.
  *
@@ -16,13 +14,16 @@ require_once(__DIR__ . '/../../../../PradoUnit.php');
  *   upsert_test(username VARCHAR2(100) PK, score NUMBER(10) DEFAULT 0 NOT NULL)
  */
 
+namespace Prado\Test\Unit\Data\DbSpecific\Oracle\Common;
+
 use Prado\Data\DataGateway\TDataGatewayEventParameter;
 use Prado\Data\DataGateway\TDataGatewayResultEventParameter;
 use Prado\Data\DataGateway\TTableGateway;
 use Prado\Data\TDbConnection;
 use Prado\Exceptions\TDbException;
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
 
-class OracleUpsertTest extends PHPUnit\Framework\TestCase
+class OracleUpsertTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 

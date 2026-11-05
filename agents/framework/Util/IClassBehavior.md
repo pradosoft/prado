@@ -1,7 +1,7 @@
 # Util/IClassBehavior
 
 ### Directories
-[framework](./INDEX.md) / [Util](./Util/INDEX.md) / **`IClassBehavior`**
+[framework](../INDEX.md) / [Util](INDEX.md) / **`IClassBehavior`**
 
 **Location:** `framework/Util/IClassBehavior.php`
 **Namespace:** `Prado\Util`

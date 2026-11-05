@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Collections;
+
 use Prado\Collections\TWeakCallableCollection;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidDataValueException;
@@ -7,6 +9,9 @@ use Prado\Exceptions\TInvalidOperationException;
 use Prado\Exceptions\TPhpErrorException;
 use Prado\TComponent;
 use Prado\TEventHandler;
+use Prado\Collections\IWeakRetainable;
+use Prado\Collections\TPriorityList;
+use Prado\Collections\TPriorityMap;
 
 class TWeakCallableCollectionUnit extends TWeakCallableCollection
 {
@@ -16,6 +21,7 @@ class TWeakCallableCollectionUnit extends TWeakCallableCollection
 	
 	public $_scrubCount = 0;
 	public $_scrubError = false;
+	public $_afterScrub = null;
 	public int $_containWith_fd = 0;
 	public int $_containWithout_fd = 0;
 	
@@ -28,6 +34,11 @@ class TWeakCallableCollectionUnit extends TWeakCallableCollection
 			throw new TInvalidOperationException("Only allowed to scrub once");
 		}
 		parent::scrubWeakReferences();
+		if ($this->_afterScrub) {
+			$afterScrub = $this->_afterScrub;
+			$this->_afterScrub = null;
+			$afterScrub();
+		}
 	}
 	
 	public function setScrubError($value)
@@ -233,7 +244,7 @@ class TWeakCallableCollectionTest extends TPriorityListTest
 		} catch(TInvalidDataValueException $e){}
 		self::assertEquals(10, count($list));
 		try {
-			$list[] = ['CallableListItem', 'noStaticMethod'];
+			$list[] = [CallableListItem::class, 'noStaticMethod'];
 			$this->fail('TInvalidDataValueException [valid static object, \'noStaticMethod\'] that is not a method did not throw error');
 		} catch(TInvalidDataValueException $e){}
 		self::assertEquals(10, count($list));
@@ -243,12 +254,12 @@ class TWeakCallableCollectionTest extends TPriorityListTest
 		} catch(TInvalidDataValueException $e){}
 		self::assertEquals(10, count($list));
 		try {
-			$list[] = 'CallableListItem::noStaticMethod';
+			$list[] = CallableListItem::class . '::noStaticMethod';
 			$this->fail('TInvalidDataValueException string of \'object::nostaticmethod\' that is not a method did not throw error');
 		} catch(TInvalidDataValueException $e){}
 		self::assertEquals(10, count($list));
 		try {
-			$list[] = ['CallableListItemChild','parent::noMethod'];
+			$list[] = [CallableListItemChild::class,'parent::noMethod'];
 			$this->fail('TInvalidDataValueException string of [valid static object, \'parent::nostaticmethod\'] that is not a method did not throw error');
 		} catch(TInvalidDataValueException $e) {// Catch PHP 8.1
 		} catch(TPhpErrorException $e) {} // Catch PHP 8.2+
@@ -265,15 +276,15 @@ class TWeakCallableCollectionTest extends TPriorityListTest
 		
 		// The two objects in the list should be converted into WeakReference
 		$priority = $list->getDefaultPriority();
-		$this->assertInstanceOf(WeakReference::class, $p[$priority][5]);
+		$this->assertInstanceOf(\WeakReference::class, $p[$priority][5]);
 		
 		//The WeakReference should refer to the proper objects
 		$this->assertEquals('foo', $p[$priority][0]);
-		$this->assertEquals(['CallableListItem', 'staticHandler'], $p[$priority][1]);
-		$this->assertInstanceOf(WeakReference::class, $p[$priority][2][0]);
+		$this->assertEquals([CallableListItem::class, 'staticHandler'], $p[$priority][1]);
+		$this->assertInstanceOf(\WeakReference::class, $p[$priority][2][0]);
 		$this->assertEquals($this->item1, $p[$priority][2][0]->get());
 		$this->assertEquals('eventHandler', $p[$priority][2][1]);
-		$this->assertEquals('CallableListItem::staticHandler', $p[$priority][3]);
+		$this->assertEquals(CallableListItem::class . '::staticHandler', $p[$priority][3]);
 		//$this->assertEquals($p[$priority][4], ['CallableListItemChild','parent::staticHandler']);
 		$this->assertEquals($this->item2, $p[$priority][5]->get());
 		$this->assertEquals($item7, $p[$priority][6]);
@@ -311,7 +322,7 @@ class TWeakCallableCollectionTest extends TPriorityListTest
 		$this->item3 = null;
 		$handler2 = $object2 = null;
 		
-		self::assertInstanceof(Closure::class, $closure = $list[1]);
+		self::assertInstanceof(\Closure::class, $closure = $list[1]);
 		self::assertEquals(4, $list->getWeakCount());
 		self::assertEquals(4, $list->getCount());
 		self::assertEquals([$this->item1, $closure, $item1, [$this->item4, 'eventHandler']], $list->toArray());
@@ -402,6 +413,66 @@ class TWeakCallableCollectionTest extends TPriorityListTest
 		$list->setDiscardInvalid(true);
 	}
 	
+	/**
+	 * A weak listener freed between the scrub and the output filter (the cycle
+	 * collector can run there) is dropped from the output instead of returned as null.
+	 */
+	public function testOutputDropsReferentFreedAfterScrub_TWCC()
+	{
+		$outputs = [
+			'toArray' => fn ($list) => $list->toArray(),
+			'toArrayBelowPriority' => fn ($list) => $list->toArrayBelowPriority(100),
+			'toArrayAbovePriority' => fn ($list) => $list->toArrayAbovePriority(0),
+			'getIterator' => fn ($list) => iterator_to_array($list->getIterator()),
+			'itemsAtPriority' => fn ($list) => $list->itemsAtPriority(10),
+		];
+		foreach ($outputs as $name => $output) {
+			$retained = new CallableListItem();
+			$dying = new CallableListItem();
+			$list = new $this->_baseClass();
+			$list->add([$retained, 'eventHandler'], 10);
+			$list->add([$dying, 'eventHandler'], 10);
+			$list->add($dying, 10);
+			$list->_afterScrub = function () use (&$dying) {
+				$dying = null;
+			};
+			self::assertSame([[$retained, 'eventHandler']], $output($list), $name);
+			self::assertNull($dying, $name);
+			self::assertEquals(1, $list->getCount(), $name);
+		}
+
+		$retained = new CallableListItem();
+		$dying = new CallableListItem();
+		$list = new $this->_baseClass();
+		$list->add([$retained, 'eventHandler'], 10);
+		$list->add([$dying, 'eventHandler'], 20);
+		$list->_afterScrub = function () use (&$dying) {
+			$dying = null;
+		};
+		self::assertSame(['10' => [[$retained, 'eventHandler']]], $list->toPriorityArray());
+
+		$dying = new CallableListItem();
+		$list = new $this->_baseClass();
+		$list->add($dying, 20);
+		$list->_afterScrub = function () use (&$dying) {
+			$dying = null;
+		};
+		self::assertNull($list->itemsAtPriority(20));
+	}
+
+	/**
+	 * Lists that keep invalid WeakReferences (DiscardInvalid false) keep null
+	 * placeholders in the output so indices match {@see TWeakCallableCollection::itemAt}.
+	 */
+	public function testOutputKeepsNullWithoutDiscardInvalid_TWCC()
+	{
+		$retained = new CallableListItem();
+		$dying = new CallableListItem();
+		$list = new $this->_baseClass([[$retained, 'eventHandler'], [$dying, 'eventHandler']], true);
+		$dying = null;
+		self::assertSame([[$retained, 'eventHandler'], null], $list->toArray());
+	}
+
 	public function testGetPriorities_TWCC()
 	{
 		$list = new $this->_baseClass();
@@ -993,8 +1064,8 @@ class TWeakCallableCollectionTest extends TPriorityListTest
 		$array = $list->toPriorityArrayWeak();
 		$list->setScrubError(false);
 		
-		self::assertInstanceOf(WeakReference::class, $array[5][0]);
-		self::assertInstanceOf(WeakReference::class, $array[10][0][0]);
+		self::assertInstanceOf(\WeakReference::class, $array[5][0]);
+		self::assertInstanceOf(\WeakReference::class, $array[10][0][0]);
 		self::assertEquals(2, count($array));
 		self::assertEquals(1, count($array[5]));
 		self::assertEquals(1, count($array[10]));

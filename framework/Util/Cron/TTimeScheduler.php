@@ -151,14 +151,16 @@ class TTimeScheduler extends \Prado\TComponent
 			return;
 		}
 		$schedule = trim($schedule);
-		$this->_schedule = $schedule;
 		$this->_attr = [];
 		if (strlen($schedule) > 1 && $schedule[0] == '@') {
 			if (is_numeric($triggerTime = substr($schedule, 1))) {
+				$this->_schedule = $schedule;
 				$this->_triggerTime = (int) $triggerTime;
 				return;
 			}
 		}
+
+		$originalSchedule = $schedule;
 
 		if (self::$_validatorCache) {
 			$minuteValidator = self::$_validatorCache['m'];
@@ -249,6 +251,7 @@ class TTimeScheduler extends \Prado\TComponent
 			}
 		} while ($matches[1]);
 
+		$this->_schedule = $originalSchedule;
 		$this->_attr[self::MINUTE] = [];
 		foreach (explode(',', $matches[2]) as $match) {
 			if (preg_match($minuteValidator, $match, $m2)) {
@@ -459,7 +462,6 @@ class TTimeScheduler extends \Prado\TComponent
 	{
 		$daysinmonth = $this->days_in_month($month, $year);
 		$domStar = false;
-		$dowStar = false;
 		$da = array_pad([], $daysinmonth + 1, null);
 		unset($da[0]);
 		$dwa = array_pad([], $daysinmonth + 1, null);
@@ -532,9 +534,7 @@ class TTimeScheduler extends \Prado\TComponent
 				}
 			}
 		}
-		if ($dowStar) {
-			return $da;
-		} elseif ($domStar) {
+		if ($domStar) {
 			return $dwa;
 		}
 		foreach ($da as $key => $value) {
@@ -593,7 +593,7 @@ class TTimeScheduler extends \Prado\TComponent
 	 * This calculates the next trigger time for the schedule based on the $priortime
 	 * If no parameter time is given, the current system time is used.
 	 * @param false|numeric|string $priortime the time or date/time from which to compute the next Trigger Time
-	 * @return numeric the unix time of the next trigger event.
+	 * @return ?numeric the unix time of the next trigger event.
 	 */
 	public function getNextTriggerTime($priortime = false)
 	{

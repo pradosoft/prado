@@ -28,6 +28,36 @@ describe('Prado.Element.createOptions', () => {
 		expect(opts[1].value).toBe('banana');
 	});
 
+	it('escapes markup in option text, as the page render does', () => {
+		const markup = '<img src=x onerror="window.__createOptionsXss=1">';
+		const opts = Element.createOptions([[markup, 'm']]);
+		expect(opts[0].text).toBe(markup);
+		expect(opts[0].textContent).toBe(markup);
+		expect(opts[0].children).toHaveLength(0);
+		expect(window.__createOptionsXss).toBeUndefined();
+	});
+
+	it('decodes entities in option text, as the page render does', () => {
+		const opts = Element.createOptions([
+			['Tom &amp; Jerry', 'tj'],
+			['&nbsp;&nbsp;Child', 'c'],
+			['&lt;b&gt;', 'lt'],
+			['Tom & Jerry', 'amp'],
+		]);
+		expect(opts[0].text).toBe('Tom & Jerry');
+		expect(opts[1].textContent).toBe('\u00a0\u00a0Child');
+		expect(opts[2].textContent).toBe('<b>');
+		expect(opts[2].children).toHaveLength(0);
+		expect(opts[3].text).toBe('Tom & Jerry');
+	});
+
+	it('escapes markup in grouped option text', () => {
+		const opts = Element.createOptions([['<b>Red</b>', 'red', 'Colors']]);
+		const option = opts[0].children[0];
+		expect(option.textContent).toBe('<b>Red</b>');
+		expect(option.children).toHaveLength(0);
+	});
+
 	it('groups options under <optgroup> when a third array element is present', () => {
 		const opts = Element.createOptions([
 			['Red',   'red',   'Colors'],
@@ -55,7 +85,101 @@ describe('Prado.Element.createOptions', () => {
 	});
 });
 
+// ─── Prado.Element.setDataListOptions ─────────────────────────────────────────
+
+describe('Prado.Element.setDataListOptions', () => {
+	let el;
+
+	beforeEach(() => {
+		el = document.createElement('datalist');
+		el.id = 'test-datalist';
+		el.innerHTML = '<option value="Old"></option>';
+		document.body.appendChild(el);
+	});
+
+	afterEach(() => {
+		document.body.removeChild(el);
+	});
+
+	it('replaces the existing options', () => {
+		Element.setDataListOptions('test-datalist', [['Paris', '', []], ['London', '', []]]);
+		expect(el.children).toHaveLength(2);
+		expect(el.children[0].value).toBe('Paris');
+		expect(el.children[1].value).toBe('London');
+	});
+
+	it('leaves an option without text when the label is empty', () => {
+		Element.setDataListOptions('test-datalist', [['Paris', '', []]]);
+		expect(el.children[0].textContent).toBe('');
+	});
+
+	it('escapes markup in the label, as the page render does', () => {
+		Element.setDataListOptions('test-datalist', [['P', '<img src=x onerror="window.__xss=1">', []]]);
+		expect(el.children[0].textContent).toBe('<img src=x onerror="window.__xss=1">');
+		expect(el.querySelector('img')).toBeNull();
+	});
+
+	it('decodes entities in the label, as the page render does', () => {
+		Element.setDataListOptions('test-datalist', [['cafe', 'Caf&eacute; &amp; Bar', []], ['lt', '&lt;i&gt;', []]]);
+		expect(el.children[0].textContent).toBe('Caf\u00e9 & Bar');
+		expect(el.children[1].textContent).toBe('<i>');
+		expect(el.children[1].children).toHaveLength(0);
+	});
+
+	it('sets the option attributes', () => {
+		Element.setDataListOptions('test-datalist', [['Paris', 'Paris, France', { 'data-country': 'FR' }]]);
+		expect(el.children[0].getAttribute('data-country')).toBe('FR');
+		expect(el.children[0].textContent).toBe('Paris, France');
+	});
+
+	it('clears the options for an empty list', () => {
+		Element.setDataListOptions('test-datalist', []);
+		expect(el.children).toHaveLength(0);
+	});
+
+	it('ignores an element that is not a datalist', () => {
+		const select = document.createElement('select');
+		select.id = 'test-datalist-select';
+		select.innerHTML = '<option value="a">a</option>';
+		document.body.appendChild(select);
+		Element.setDataListOptions('test-datalist-select', [['b', '', []]]);
+		expect(select.children).toHaveLength(1);
+		document.body.removeChild(select);
+	});
+});
+
 // ─── Prado.Element.setAttribute ───────────────────────────────────────────────
+
+describe('Prado.Element.focus', () => {
+	let input;
+
+	beforeEach(() => {
+		vi.useFakeTimers();
+		input = document.createElement('input');
+		input.id = 'test-focus';
+		document.body.appendChild(input);
+	});
+
+	afterEach(() => {
+		jQuery.active = 0;
+		vi.useRealTimers();
+		input.remove();
+	});
+
+	it('focuses the element at once when no callback is in flight', () => {
+		jQuery.active = 0;
+		Element.focus('test-focus');
+		expect(document.activeElement).toBe(input);
+	});
+
+	it('defers the focus while a callback is in flight', () => {
+		jQuery.active = 1;
+		Element.focus('test-focus');
+		expect(document.activeElement).not.toBe(input);
+		vi.advanceTimersByTime(100);
+		expect(document.activeElement).toBe(input);
+	});
+});
 
 describe('Prado.Element.setAttribute', () => {
 	let el;

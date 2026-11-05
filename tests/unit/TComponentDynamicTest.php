@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/TComponentTestBase.php';
+namespace Prado\Test\Unit;
 
 use Prado\TComponent;
 use Prado\TEventResults;
@@ -21,7 +21,7 @@ class TComponentDynamicTest extends TComponentTestBase
 		$this->component->attachBehavior('TDynamicBehavior', new TDynamicBehavior);
 
 		//Check that the behavior is working as it should
-		$this->assertTrue($this->component->isa('TDynamicBehavior'));
+		$this->assertTrue($this->component->isa(TDynamicBehavior::class));
 		$this->assertEquals('dyAttachBehavior', $this->component->getLastBehaviorDynamicMethodCalled());
 
 		// call basic behavior implemented method from object (containing behavior)
@@ -48,7 +48,7 @@ class TComponentDynamicTest extends TComponentTestBase
 		$this->assertEquals(2420, $this->component->dyTestIntraEvent(121, 10));
 
 		$this->component->detachBehavior('TDynamicBehavior');
-		$this->assertFalse($this->component->isa('TDynamicBehavior'));
+		$this->assertFalse($this->component->isa(TDynamicBehavior::class));
 
 
 
@@ -56,7 +56,7 @@ class TComponentDynamicTest extends TComponentTestBase
 		$this->component->attachBehavior('TDynamicClassBehavior', new TDynamicClassBehavior);
 
 		//Check that the behavior is working as it should
-		$this->assertTrue($this->component->isa('TDynamicClassBehavior'));
+		$this->assertTrue($this->component->isa(TDynamicClassBehavior::class));
 		$this->assertEquals('dyAttachBehavior', $this->component->getLastBehaviorDynamicMethodCalled());
 
 		// call basic behavior implemented method from object (containing behavior)
@@ -83,7 +83,7 @@ class TComponentDynamicTest extends TComponentTestBase
 		$this->assertEquals(2420, $this->component->dyTestIntraEvent(121, 10));
 
 		$this->component->detachBehavior('TDynamicClassBehavior');
-		$this->assertFalse($this->component->isa('TDynamicClassBehavior'));
+		$this->assertFalse($this->component->isa(TDynamicClassBehavior::class));
 	}
 
 	// This also tests the priority of the common global raiseEvent events
@@ -162,6 +162,51 @@ class TComponentDynamicTest extends TComponentTestBase
 		} catch (\Prado\Exceptions\TInvalidOperationException $e) {
 		}
 		$this->assertSame($levelBefore, ob_get_level(), 'ob_start() leaked after \Error in evaluateStatements()');
+	}
+
+	/**
+	 * Statements that return false are treated as invalid and close the output buffer.
+	 */
+	public function testEvaluateStatementsReturningFalseIsInvalid()
+	{
+		$levelBefore = ob_get_level();
+		try {
+			$this->component->evaluateStatements('echo "discarded"; return false;');
+			$this->fail('TInvalidOperationException not raised for statements returning false');
+		} catch (\Prado\Exceptions\TInvalidOperationException $e) {
+		}
+		$this->assertSame($levelBefore, ob_get_level());
+	}
+
+	public function testEvaluateExpressionScopeAndClosure()
+	{
+		$this->assertSame($this->component, $this->component->evaluateExpression('$this'));
+		$closure = $this->component->evaluateExpression('fn ($value) => $value * 2');
+		$this->assertInstanceOf(\Closure::class, $closure);
+		$this->assertSame(10, $closure(5));
+	}
+
+	public function testEvaluateExceptionsKeepThePreviousThrowable()
+	{
+		foreach (['{{{' => \ParseError::class, 'intdiv(1, 0)' => \DivisionByZeroError::class] as $expression => $class) {
+			try {
+				$this->component->evaluateExpression($expression);
+				$this->fail("TInvalidOperationException not raised for $expression");
+			} catch (\Prado\Exceptions\TInvalidOperationException $e) {
+				$this->assertSame('component_expression_invalid', $e->getErrorCode());
+				$this->assertInstanceOf($class, $e->getPrevious());
+				$this->assertStringContainsString($e->getPrevious()->getMessage(), $e->getMessage());
+			}
+		}
+
+		try {
+			$this->component->evaluateStatements('throw new \RuntimeException("statement failed");');
+			$this->fail('TInvalidOperationException not raised for a throwing statement');
+		} catch (\Prado\Exceptions\TInvalidOperationException $e) {
+			$this->assertSame('component_statements_invalid', $e->getErrorCode());
+			$this->assertInstanceOf(\RuntimeException::class, $e->getPrevious());
+			$this->assertStringContainsString('statement failed', $e->getMessage());
+		}
 	}
 
 	public function testDynamicFunctionCall()

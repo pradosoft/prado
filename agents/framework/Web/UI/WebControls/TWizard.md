@@ -134,4 +134,5 @@ The wizard maintains a history stack of visited step indices in viewstate. The P
 - **Step validation** — validators inside a step should use a `ValidationGroup` matching the step's Next button. The built-in navigation templates do this automatically with default layouts.
 - **`ActiveStepIndex` vs `ActiveStep`** — use index for serializable state; use `ActiveStep` for the control reference.
 - **Sidebar requires `ShowSideBar=true`** — enabled by default. The sidebar renders a list of step titles with click-through navigation (subject to `AllowReturn`).
+- **Sidebar step indicator** — the default `TWizardSideBarTemplate` sets the `SideBarList` `TDataList` to `TRepeatLayout::OrderedList`, so the steps render as an `<ol>` (a `<table>` before 4.4.0). `applySideBarProperties()` puts `aria-current="step"` on the active step's button. A custom `SideBarTemplate` sets `RepeatLayout="OrderedList"` on its data list for the same structure.
 - **`UseDefaultLayout=false`** — when using fully custom navigation templates, disable this to avoid double-rendering default layout containers.

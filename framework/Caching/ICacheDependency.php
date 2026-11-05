@@ -11,12 +11,13 @@
 namespace Prado\Caching;
 
 /**
- * ICacheDependency interface.
+ * ICacheDependency interface
  *
- * This interface must be implemented by classes meant to be used as
- * cache dependencies.
+ * Implemented by all cache dependency classes. A dependency determines whether
+ * a cached item has become stale since it was stored.
  *
- * Classes implementing this interface must support serialization and unserialization.
+ * Implementations must support serialization so that dependency state can persist
+ * across requests.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
@@ -24,7 +25,7 @@ namespace Prado\Caching;
 interface ICacheDependency
 {
 	/**
-	 * @return bool whether the dependency has changed. Defaults to false.
+	 * @return bool whether the cached item's dependency has changed since it was stored.
 	 */
-	public function getHasChanged();
+	public function getHasChanged(): bool;
 }

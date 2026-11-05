@@ -32,8 +32,9 @@ cleanup() {
 }
 trap cleanup EXIT SIGTERM SIGINT SIGHUP
 
-# Start the PHP server, capturing its PID.
-php -q -S 127.0.0.1:8037 -t ./ &
+# Start the PHP server, capturing its PID.  error_reporting=-1 reports every
+# deprecation, which CI's production php.ini otherwise excludes.
+php -d error_reporting=-1 -q -S 127.0.0.1:8037 -t ./ &
 PHP_PID=$!
 
 # Record the PID of the process that launched this script.

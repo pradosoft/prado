@@ -17,8 +17,10 @@ use Prado\Data\IDataConnection;
 /**
  * IDataCommandBuilder interface
  *
- * IDataCommandBuilder defines the interface for building command objects for
- * CRUD operations on a single database table.
+ * IDataCommandBuilder defines the contract for building CRUD commands against a
+ * specific table. Implementations are returned by
+ * {@see IDataMetaData::createCommandBuilder()} and used throughout the Active
+ * Record and DataGateway layers.
  *
  * The interface is shaped after {@see TDbCommandBuilder}, which is the canonical
  * SQL implementation, but is intentionally decoupled from it so that application

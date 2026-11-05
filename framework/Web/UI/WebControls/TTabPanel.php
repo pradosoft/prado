@@ -60,6 +60,7 @@ use Prado\Web\Javascripts\TJavaScript;
  *
  * @author Tomasz Wolny <tomasz.wolny@polecam.to.pl> and Qiang Xue <qiang.xue@gmail.com>
  * @since 3.1.1
+ * @method TTabViewCollection getControls()
  */
 class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web\UI\IPostBackDataHandler
 {
@@ -500,11 +501,18 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 		$views = $this->getViews();
 		if ($views->getCount() > 0) {
 			$writer->writeLine();
-			// render tab bar
+			// render tab bar as a tablist so assistive technology groups the tabs
+			$writer->addAttribute('role', 'tablist');
+			if (($toolTip = $this->getToolTip()) !== '') {
+				$writer->addAttribute('aria-label', $toolTip);
+			}
+			$writer->renderBeginTag('div');
 			foreach ($views as $view) {
 				$view->renderTab($writer);
 				$writer->writeLine();
 			}
+			$writer->renderEndTag();
+			$writer->writeLine();
 			// render tab views
 			foreach ($views as $view) {
 				$view->renderControl($writer);

@@ -1,12 +1,14 @@
 <?php
 
-require_once(__DIR__ . '/../../../../PradoUnit.php');
+namespace Prado\Test\Unit\Data\DbSpecific\SqlSrv\Common;
 
 use Prado\Data\Common\SqlSrv\TSqlSrvMetaData;
 use Prado\Data\Common\TDbTableColumn;
 use Prado\Data\DataGateway\TTableGateway;
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
+use Prado\Data\TDbConnection;
 
-class SqlSrvColumnTest extends PHPUnit\Framework\TestCase
+class SqlSrvColumnTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 
@@ -53,7 +55,7 @@ class SqlSrvColumnTest extends PHPUnit\Framework\TestCase
 	{
 		$table = $this->meta_data()->getTableInfo('table1');
 
-		// Schema: see tests/initdb_mssql.sql
+		// Schema: see tests/initdb_sqlsrv.sql
 		$this->assertCount(13, $table->getColumns());
 		$this->assertEquals('dbo', $table->getSchemaName());
 		$this->assertEquals('prado_unitest', $table->getCatalogName());

@@ -1,12 +1,14 @@
 <?php
 
-require_once(__DIR__ . '/../../../../PradoUnit.php');
+namespace Prado\Test\Unit\Data\DbSpecific\Oracle\Common;
 
 use Prado\Data\Common\Oracle\TOracleMetaData;
 use Prado\Data\Common\TDbMetaData;
 use Prado\Data\TDbConnection;
 use Prado\Data\TDbDriverCapabilities;
 use Prado\TApplication;
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
+use Prado\TApplicationMode;
 
 /**
  * Integration tests for TDbDriverCapabilities — Oracle (OCI).
@@ -31,7 +33,7 @@ use Prado\TApplication;
  * ---------------------
  * ORACLE_SERVICE_NAME  Oracle service name. Defaults to FREEPDB1.
  */
-class TDbDriverCapabilitiesOracleIntegrationTest extends PHPUnit\Framework\TestCase
+class TDbDriverCapabilitiesOracleIntegrationTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 
@@ -54,7 +56,7 @@ class TDbDriverCapabilitiesOracleIntegrationTest extends PHPUnit\Framework\TestC
 	{
 		static $booted = false;
 		if (!$booted) {
-			new TApplication(__DIR__ . '/../../../../Security/app', false, TApplication::CONFIG_TYPE_PHP);
+			(new TApplication(__DIR__ . '/../../../../Security/app', false, TApplication::CONFIG_TYPE_PHP))->setMode(TApplicationMode::Debug);
 			$booted = true;
 		}
 		$this->setUpConnection();
@@ -102,7 +104,6 @@ class TDbDriverCapabilitiesOracleIntegrationTest extends PHPUnit\Framework\TestC
 	{
 		$this->assertTrue(TDbDriverCapabilities::hasAutoCommitAttribute('oci'));
 	}
-
 
 	public function testOracleRequiresNoPreBeginTransactionFlush(): void
 	{
@@ -268,20 +269,6 @@ class TDbDriverCapabilitiesOracleIntegrationTest extends PHPUnit\Framework\TestC
 		$conn = $this->openOci('UTF-8');
 		$this->assertFalse(TDbDriverCapabilities::supportsRuntimeCharsetSet($conn->getDriverName()));
 		$conn->Active = false;
-	}
-
-	// -----------------------------------------------------------------------
-	// Scaffold factory
-	// -----------------------------------------------------------------------
-
-	public function testOracleScaffoldInputClass(): void
-	{
-		$this->assertSame('TOracleScaffoldInput', TDbDriverCapabilities::getScaffoldInputClass('oci'));
-	}
-
-	public function testOracleScaffoldInputFile(): void
-	{
-		$this->assertSame('/TOracleScaffoldInput.php', TDbDriverCapabilities::getScaffoldInputFile('oci'));
 	}
 
 	// -----------------------------------------------------------------------

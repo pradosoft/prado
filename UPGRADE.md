@@ -1,4 +1,4 @@
-# Upgrading Instructions for PRADO Framework v4.3.3
+# Upgrading Instructions for PRADO Framework v4.4.0
 
 ### !!!IMPORTANT!!!
 
@@ -7,9 +7,164 @@ if you want to upgrade from version A to version C and there is
 version B between A and C, you need to following the instructions
 for both A and B.
 
+Upgrading from v4.3.3
+---------------------
+- PHP 8.2 is now required. Applications running PHP 8.1 stay on Prado 4.3.
+- The default application mode is `Normal`; in 4.3 it was `Debug`. An application that does not set `Mode` gets the
+  Normal behavior: the error page shows no exception details to visitors, client scripts are served minified,
+  `Prado::debug()` is dropped and `Prado::trace()` logs at `INFO`, `TMemoryCache` keys are hashed, serialized closures
+  are encrypted, an Auto `THttpHeadersManager.ReportOnly` sends an enforcing CSP, an Auto `TDot`/`TSvg` publish style
+  publishes, and `prado-cli http` needs the `Prado:PhpWebServer` parameter. A development application sets
+  `<application Mode="Debug">` or calls `$app->setMode('Debug')`; the `pradosoft/prado-app` starter already does.
+- Only Performance mode keeps class fx-event lists in `runtime/fxevent.cache`; Normal mode computes them per process.
+  The file is refreshed when Composer installs, updates, or removes a package. A Performance-mode deployment that
+  changes an application class's `fx` handlers runs `prado-cli cache/flush-all`, which now deletes the file.
+- Framework exception messages are English (#1292). `messages-<lang>.txt` in `framework/Exceptions/messages/` now holds
+  only the `THttpException` messages the visitor sees; every other exception is English unless a registered message
+  file defines the key. Developers who want translated exception pages and logs add the language pack:
+  `composer require pradosoft/prado-dev-errormessages`. Message files registered with `TException::addMessageFile()`,
+  the `errormessages` configuration, or an extension's `extra.prado.error-messages` now override the framework text.
+  `messages.txt` holds exactly the keys the framework throws; an application that throws one of the removed keys
+  defines it in its own message file.
+- Error message file entries are ICU MessageFormat patterns, formatted with `MessageFormatter` in the file's language.
+  ICU quotes literal text with apostrophes, so an apostrophe before or after a brace is doubled: an application or
+  extension message file that writes `'{0}'` renders the literal `{0}` and changes it to `''{0}''`. A literal brace is
+  written `'{'`. An apostrophe elsewhere, as in "can't", is unchanged. An exception message that no file defines keeps
+  plain `{0}` substitution.
+- In Normal and Performance mode the error page shows the message of an `IUserException` (`THttpException`,
+  `TUserException`, or an application exception implementing it) and the sentence "An internal server error occurred."
+  for every other exception, which is logged; in 4.3 it showed every exception's message. An application that relied on
+  the 500 page to show a message to the visitor throws a `TUserException`. With a globalization module configured for
+  translation, the error page looks the error code up in the `prado` catalogue first. `TApplication::startService()`
+  throws `TConfigurationException` for an invalid or disabled service and a 404 `THttpException` for an unknown one.
+  A `TSoapServer` fault follows the same rule for an exception its provider throws; a provider that faults with a
+  message for the client throws a `SoapFault` or a `TUserException`.
+- SqlMap (`Prado\Data\SqlMap`) is no longer part of the framework; it is the `pradosoft/prado-sqlmap` package (#1168).
+  An application that does not use SqlMap needs no change. An application using `TSqlMapConfig`, `TSqlMapGateway`, or
+  `TSqlMapManager` adds the package: `composer require pradosoft/prado-sqlmap`. Namespaces, class names, short names
+  in configuration (`class="TSqlMapConfig"`), `TSqlMapConfig` properties, the XML mapping formats, the `TSqlMapGateway`
+  API, and the `sqlmap_*` error codes are unchanged; Prado registers the package's class map and error messages from
+  its Composer `extra.prado` section. After installing the package, compare `TSqlMapException::getErrorCode()` with
+  the message code rather than the message text. The package's migration guide lists every behavior difference:
+  https://github.com/pradosoft/prado-sqlmap/blob/master/docs/migration.md
+- Active Record (`Prado\Data\ActiveRecord`) is no longer part of the framework; it is the `pradosoft/prado-activerecord`
+  package (#1168). An application that does not use Active Record needs no change. An application using
+  `TActiveRecordConfig`, `TActiveRecord`, the Scaffold controls, or `prado-cli activerecord` adds the package:
+  `composer require pradosoft/prado-activerecord`. Namespaces, class names, short names in configuration and templates
+  (`class="TActiveRecordConfig"`, `<com:TScaffoldListView>`), `TActiveRecordConfig` properties, record classes and
+  their `$RELATIONS`, the Scaffold controls, the `prado-cli activerecord generate` and `generate-all` commands, and the
+  `ar_*` error codes are unchanged; Prado registers the package's class map and error messages from its Composer
+  `extra.prado` section. The package's `TActiveRecordConfig` registers `TActiveRecordAction` with the shell
+  application itself, so `TShellApplication::hasActiveRecordConfig()` is deprecated and `installShellActions()` no
+  longer calls it. `TTemplateControl::tryToUpdateView()` and `tryToUpdateAR()` bind through the record's `getViewData()`
+  and `setViewData()` (the new `IViewDataModel` contract) instead of reading `TActiveRecord` constants; a record binds
+  as before, and an `IDataRenderer` control such as a `TDropDownList` named after a column now binds as well. The
+  package's migration guide lists every behavior difference:
+  https://github.com/pradosoft/prado-activerecord/blob/main/docs/migration.md
+- `TSecurityManager::UseEncryptionHmac` defaults to `true`; it was `false`. `decrypt()` reads data with or without the
+  HMAC, so existing encrypted data still decrypts. Prado versions before 4.3.3 cannot decrypt the new output; an
+  application sharing encrypted data with them sets `UseEncryptionHmac="false"`.
+- `TDbParameterModule` binds `AutoLoadValue` and `AutoLoadValueFalse` as parameters. A value quoted as an SQL literal,
+  such as `'yes'`, is bound without its quotes; an SQL expression is no longer evaluated. `TableName`, `KeyField`,
+  `ValueField`, and `AutoLoadField` must be SQL identifiers.
+- A page with `EnableStateValidation="false"` restores its state without objects; an object in the state becomes
+  `__PHP_Incomplete_Class`. Such a page enables validation (the default) or uses a server-side persister such as
+  `TSessionPageStatePersister`. igbinary serializes only validated state.
+- `TAuthManager::getUserKey()`, the session variable and auto-login cookie name, is an HMAC keyed by the
+  security manager's `ValidationKey`; it was a SHA-1 of the application ID. Users are signed out once after the
+  upgrade, and existing auto-login cookies are ignored. Keep `ValidationKey` stable across servers and deployments.
+- `THttpCookie::HttpOnly` defaults to `true`; it was `false`. JavaScript reading a cookie set by the server needs
+  `setHttpOnly(false)` on that cookie. The `THttpSession` cookie is HttpOnly unless `Cookie.HttpOnly="false"` and
+  php.ini's `session.cookie_httponly` is off.
+- A postback or callback must carry the CSRF token the page renders in its `PRADO_CSRF_TOKEN` hidden field, or in
+  the `X-Prado-Csrf-Token` header, or it is refused with HTTP 400. A postback through the query string is refused.
+  Prado forms and callbacks send the token on their own. A form or script outside Prado that posts to a page adds
+  the token from `THttpRequest::getCsrfToken()`, or the page sets `EnableCsrfValidation="false"`, also available on
+  `<pages>` for every page. The secret lives in the `PRADO_CSRF` cookie, signed with `CookieValidationKey`; set
+  `THttpRequest.EnableCsrfCookie="false"` to keep it in the session instead. A form left open until the browser
+  restarts, or until the session ends with session storage, is refused on submit.
+- Cookies are signed with `TSecurityManager::CookieValidationKey`, which derives from `ValidationKey` unless set. Cookies
+  signed by `EnableCookieValidation` before the upgrade are dropped once. The `TAuthManager` auto-login cookie is always
+  signed and HttpOnly; an `IUserManager` reading it receives the unsigned value as before.
+- `TSecurityManager::EncryptionKeyAlgorithm` defaults to `sha256`; it was `md5`. Data encrypted under the old
+  default, such as auto-login cookies and encrypted page state, no longer decrypts. Set
+  `EncryptionKeyAlgorithm="md5"` on the security manager module to keep reading it.
+- A PHP-configured `TFeedService` lists its feeds under a `feeds` key. Feeds beside the service `class` key still load when their class implements `IFeedContentProvider`; that form is deprecated.
+- `Prado::exceptionHandler()` and `Prado::fatalError()` return `never`. A subclass overriding either must declare `never`.
+- TTemplate applies a template attribute name as written instead of replacing its dashes with underscores.
+  An `Attributes.<name>` subproperty now stores the hyphenated name it was given, so
+  `<com:TNav Attributes.aria-label="Primary" />` renders `aria-label="Primary"` where it previously rendered
+  `aria_label="Primary"`. Remove any code-behind workaround that set such attributes through
+  `getAttributes()->add()` only because the template form was wrong. `Style.<css-name>` is unaffected: an
+  underscore and the dash it stands for reach the same CSS field. The protected
+  `TTemplate::attributeToMethodName()` is removed; a subclass overriding it no longer changes any name.
+- Logging classes moved from `Prado\Util` to `Prado\Util\Log` (`TLogger`, `TLogRouter`, `TLogRoute`, `IOutputLogRoute`, and
+  every `*LogRoute` class). The old fully-qualified names are not aliased. Update `use` statements, `instanceof`
+  checks, and configuration `class=` attributes that spell out `Prado\Util\TLogRouter` and the route classes.
+  Short class names in configuration (`class="TLogRouter"`) continue to resolve through `classes.php`.
+- TTabView renders the captions of JavaScript-switching tabs (tabs without a NavigateUrl) as plain
+  text on the `role="tab"` element, so the tab bar follows the WAI-ARIA tabs pattern. The caption was
+  previously wrapped in an `<a href="javascript://">` anchor; that fake, no-op link has been removed
+  (it also violated strict Content-Security-Policy). Tabs that set NavigateUrl still render a real
+  `<a>`. This is a breaking change only for custom CSS that styled the caption through the anchor:
+  retarget those rules at the tab element itself — `.tab-normal a` becomes `.tab-normal`,
+  `.tab-active a` becomes `.tab-active`, and `.tab-normal a:hover` becomes `.tab-normal:hover`. The
+  bundled `tabpanel.css` has been updated accordingly and now also shows a visible `:focus-visible`
+  outline on the focused tab for keyboard users.
+- TPropertyValue::ensureEnum normalizes the case of the enum constant name.
+- TReCaptcha2::getResponse changed to TReCaptcha2::getCaptchaResponse - no longer overrides TApplicationComponent::getResponse (#1132)
+- Prado JS dispatches `prado:ajaxComplete` event with jQuery.onAjaxComplete for non-dependence on jQuery. Use this event instead of the jQuery event.
+- The listener class of the `logger` package, the global `CustomEvent`, is renamed `LogEvent`. The browser's native `CustomEvent` is no longer replaced when the logger loads.
+- `Prado.WebUI.Control.observe()` attaches a native listener: it takes a DOM element or an element id and one event name. A jQuery object, a `#id`
+  selector, several or namespaced event names, and an event-data argument are no longer accepted; custom controls that pass them call `observe()` once per element and event.
+- The `invoker` passed to a validator's client-side `OnValidate`, `OnValidationSuccess`, and `OnValidationError` handlers is a DOM element in place of a jQuery object.
+- `jQuery(el).trigger()` on an element that a Prado control registers or observes dispatches a native event. A jQuery handler on that element receives the trigger's
+  extra parameters in `event.detail` in place of handler arguments. Only `click`, `focus`, `blur`, and a form's `submit` run the element's native method.
+- A TColorPicker in `Basic` mode stays open after a palette color is clicked; it closes on a click outside the picker or on Escape.
+- TAccordion animates for `AnimationDuration` seconds, default 1; in 4.3 every animation took jQuery's default 400 ms.
+- A `<script src>` in content a callback replaces (`TCallbackClientScript::replaceContent()` and active control re-renders) loads asynchronously.
+  The inline scripts after it in that content wait for it to load. The later actions of the same callback response do not wait, as they did under jQuery's
+  synchronous load, so an `evaluateScript()` that uses what the file defines can run first. Call that code from an inline script after the `<script src>`,
+  or load the file with the page.
+- `Prado\Web\TUri` is now a PSR-7 `UriInterface`: scheme/host are lower-cased, path/query/fragment are
+  percent-encoded, and `getPort()` returns `?int` (`null` when absent or scheme default).
+- TDatePicker::InputMode changed to TDatePicker::DateInputMode - due to conflict with TWebControl::InputMode
+- TActiveFileUpload now validates by default: attached validators run client side before the upload starts, and the page
+  validates the ValidationGroup during the upload callback before OnFileUpload is raised. Set CausesValidation=false to
+  restore the previous behavior.
+- TPermissionsManager throws `permissions_role_rule_nested` when a `<permissionrule>` sits inside a `<role>`.
+  Such a rule was previously ignored. Move each `<permissionrule>` out of its `<role>` to be a direct child of
+  the module, permission file, or page `<permissions>` element, and review the rule, which now takes effect.
+  PHP configuration keys are case-insensitive, so a key such as `permissionRules` or `IPs` that previously
+  loaded nothing now loads.
+- TCaptcha tokens are single-use by default: a solved token passes validation in one request, and a later postback
+  with the same page state fails. A page that validates the same token over several postbacks either validates once
+  or sets `SingleUse="false"`. The claim needs a cache: the primary cache, or the module named by
+  `TCaptcha.CacheModuleID`. Without one, TCaptcha logs a warning and a solved token passes as before.
+- TCaptcha derives tokens and signs the image options with HMAC-SHA256 instead of MD5. A page rendered before the
+  upgrade shows a token that no longer validates; the user receives a new one on the next postback. Republish
+  `captcha.php`, which the asset manager does when the framework version changes.
+- TReCaptcha and TReCaptchaValidator are deprecated and log a warning. Google retired reCAPTCHA v1, so they
+  cannot validate. Replace them with TReCaptcha2 and TReCaptcha2Validator, using reCAPTCHA v2 keys:
+  `PublicKey` becomes `SiteKey` and `PrivateKey` becomes `SecretKey`.
+- TReCaptcha2 verifies the response token with Google's siteverify, so validation needs the correct `SecretKey`
+  and outbound HTTPS from the server to `www.google.com`, through cURL or `allow_url_fopen`. Before, any non-empty
+  response passed. A token verifies once, so validate it in one request.
+- TCaptchaValidator no longer sends the client a hash of the token, which leaked the answer. Client-side validation
+  checks that the input is not empty; the server compares the token.
+- `psr/cache` and `psr/simple-cache` are required. `TPsrSimpleCache` (PSR-16) and `TPsrCacheItemPool` (PSR-6) present a
+  Prado cache to a PSR consumer, and `TPsrCache` stores a Prado cache in a PSR cache. All caching in Prado 5 is PSR
+  compliant, so a new application reaches its cache through `TPsrSimpleCache` or `TPsrCacheItemPool`, and an
+  application that intends to upgrade to Prado 5 moves its cache access to them; that code carries over unchanged.
+- Pager and wizard markup changed for accessibility (#1407). `TPager` renders a `<nav>` instead of a `<span>`, and the
+  `TDataGrid` pager renders a `<nav>` instead of a `<div>`; both carry `aria-label="Pagination"`. CSS that selects
+  `span` or `div` pagers selects `nav`; a pager placed inline in text styles `nav` with `display: inline`. The default
+  `TWizard` side bar renders its steps as an `<ol>` instead of a `<table>`; CSS for the side bar table, or
+  `list-style: none`, restores the previous look. A custom `SideBarTemplate` is unchanged.
+
 Upgrading from v4.3.2
 ---------------------
-- Prado\TEventParameter adds a second constructor $readOnly
+- Prado\TEventParameter adds a second constructor $readOnly.
 
 Upgrading from v4.2.2
 ---------------------

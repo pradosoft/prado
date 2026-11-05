@@ -1,7 +1,5 @@
 <?php
 
-require_once(__DIR__ . '/../../../../PradoUnit.php');
-
 /**
  * FirebirdUpsertTest — comprehensive tests for Firebird upsert behaviour.
  *
@@ -16,13 +14,16 @@ require_once(__DIR__ . '/../../../../PradoUnit.php');
  *   upsert_test(username VARCHAR(100) PK, score INTEGER DEFAULT 0 NOT NULL)
  */
 
+namespace Prado\Test\Unit\Data\DbSpecific\Firebird\Common;
+
 use Prado\Data\DataGateway\TDataGatewayEventParameter;
 use Prado\Data\DataGateway\TDataGatewayResultEventParameter;
 use Prado\Data\DataGateway\TTableGateway;
 use Prado\Data\TDbConnection;
 use Prado\Exceptions\TDbException;
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
 
-class FirebirdUpsertTest extends PHPUnit\Framework\TestCase
+class FirebirdUpsertTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 

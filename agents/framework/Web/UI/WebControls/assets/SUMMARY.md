@@ -16,6 +16,6 @@ Static assets (CSS, fonts, images) and server-side CAPTCHA image generator publi
 
 - **`TSlider/TSliderHandleVertical.png`** — Vertical slider handle graphic.
 
-- **`captcha.php`** — CAPTCHA image generator with themes: `opaque_bubble`, `noisy`, `grid`, `scribble`, `morph`, `shadowed`; requires `verase.ttf`.
+- **`captcha.php`** — Standalone CAPTCHA image generator (no autoloader, no framework classes); theme bits for opacity, noise, grid, scribbles, morph, and shadow; requires `verase.ttf`.
 
 - **`verase.ttf`** — TrueType font for CAPTCHA text rendering.

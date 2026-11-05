@@ -19,5 +19,5 @@ TLiteral displays static text on a Web page without any style properties. Unlike
 
 ## See Also
 
-- [TControl](./TControl.md)
+- [TControl](../TControl.md)
 - [TLabel](./TLabel.md)

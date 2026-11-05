@@ -10,7 +10,7 @@ AJAX-enabled controls triggering server-side processing via XMLHttpRequest callb
 
 - **`TActiveControlAdapter`** — Wraps any control to add active/callback support; publishes `ajax` script package.
 
-- **`TBaseActiveControl`** — Options holder (`TMap`); `setOption($name, $value)` / `getOption($name)`; `canUpdateClientSide()`.
+- **`TBaseActiveControl`** — Options holder (`TMap`); `setOption($name, $value)` / `getOption($name)`; `canUpdateClientSide()`; `UpdateMode` and `ViewTransition` for re-rendered markup.
 
 - **`TBaseActiveCallbackControl`** — Extends `TBaseActiveControl`; adds `TCallbackClientSide` options and `CausesValidation`, `ValidationGroup` properties.
 
@@ -29,8 +29,14 @@ AJAX-enabled controls triggering server-side processing via XMLHttpRequest callb
 - **`TActiveCheckBoxList`** / **`TActiveRadioButtonList`** — Callback on any item check change.
 
 - **`TActiveTextBox`** / **`TActiveDropDownList`** / **`TActiveListBox`** — Callback on text change or selection change.
+- **`TActiveSuggestionList`** — `<datalist>` whose options update when items change in a callback.
+- **`TActiveOutput`** — `<output>` whose text and `for` attribute update in a callback; the live region announces the result.
+- **`TActiveDialog`** — `<dialog>` that raises `OnOpen` and `OnClose` by callback; `ReturnValue` is the closing button's value.
+- **`TActiveSvg`** — Inline `<svg>` that morphs when its content or attributes change in a callback; nodes keep their listeners.
 
 - **`TActivePanel`** — Container with `refresh()` method for server-side HTML update.
+
+- **`TLazyPanel`** — Renders a placeholder, then loads its content by callback when the page loads, the panel becomes visible, or the client asks; `OnLoadContent`. **`TLazyPanelTrigger`** — enum `Load`, `Visible`, `Manual`.
 
 - **`TActiveDataGrid`** / **`TActiveDataList`** / **`TActiveRepeater`** — Data controls with callback paging/sorting/editing.
 
@@ -39,6 +45,10 @@ AJAX-enabled controls triggering server-side processing via XMLHttpRequest callb
 - **`TActiveDatePicker`** — Date picker with `OnDateChanged` callback.
 
 - **`TInPlaceTextBox`** — Click-to-edit label; `LoadTextOnEdit` option.
+
+- **`TInPlaceDropDownList`** — Click-to-edit label over a hidden select; `OnLoadingItems` event.
+
+- **`TInPlaceListBox`** — Click-to-edit label over a hidden multi-select; joins selected texts with `SelectionSeparator`.
 
 - **`TActiveCustomValidator`** — Server-side validation via callback.
 

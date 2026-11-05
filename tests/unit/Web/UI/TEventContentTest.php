@@ -1,10 +1,13 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI;
+
 use Prado\Web\UI\TEventContent;
+use Prado\Prado;
 
 
 
-class TEventContentTest extends PHPUnit\Framework\TestCase
+class TEventContentTest extends \PHPUnit\Framework\TestCase
 {
 	protected $obj;
 	

@@ -1,0 +1,7 @@
+<com:TContent ID="Content">
+	<h1>Ruby Test Case</h1>
+
+	<p lang="ja">This is <com:TRuby ID="word" Lang="ja" Base="漢字" Annotation="かんじ" />.</p>
+	<p lang="ja"><com:TRuby ID="kan" Lang="ja" Base="漢" Annotation="かん" /><com:TRuby ID="ji" Lang="ja" Base="字" Annotation="じ" /></p>
+	<p lang="ja"><com:TRuby ID="children" Lang="ja">東<com:TRubyParenthesis>（</com:TRubyParenthesis><com:TRubyText>とう</com:TRubyText><com:TRubyParenthesis>）</com:TRubyParenthesis></com:TRuby></p>
+</com:TContent>

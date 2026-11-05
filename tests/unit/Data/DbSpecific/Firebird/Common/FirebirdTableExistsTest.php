@@ -1,7 +1,5 @@
 <?php
 
-require_once(__DIR__ . '/../../../../PradoUnit.php');
-
 /**
  * FirebirdTableExistsTest — driver-specific tests for {@see TTableGateway::getTableExists()} on Firebird.
  *
@@ -18,11 +16,14 @@ require_once(__DIR__ . '/../../../../PradoUnit.php');
  *   (tests/initdb_firebird.sql). Override the path via the FIREBIRD_DB_PATH environment variable.
  */
 
+namespace Prado\Test\Unit\Data\DbSpecific\Firebird\Common;
+
 use Prado\Data\Common\TDbMetaData;
 use Prado\Data\DataGateway\TTableGateway;
 use Prado\Data\TDbConnection;
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
 
-class FirebirdTableExistsTest extends PHPUnit\Framework\TestCase
+class FirebirdTableExistsTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 

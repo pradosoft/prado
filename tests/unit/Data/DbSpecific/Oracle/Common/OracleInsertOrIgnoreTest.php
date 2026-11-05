@@ -1,7 +1,5 @@
 <?php
 
-require_once(__DIR__ . '/../../../../PradoUnit.php');
-
 /**
  * OracleInsertOrIgnoreTest — comprehensive tests for Oracle insertOrIgnore behaviour.
  *
@@ -21,13 +19,16 @@ require_once(__DIR__ . '/../../../../PradoUnit.php');
  * See tests/initdb_oracle.sql for schema.
  */
 
+namespace Prado\Test\Unit\Data\DbSpecific\Oracle\Common;
+
 use Prado\Data\DataGateway\TDataGatewayEventParameter;
 use Prado\Data\DataGateway\TDataGatewayResultEventParameter;
 use Prado\Data\DataGateway\TTableGateway;
 use Prado\Data\TDbConnection;
 use Prado\Exceptions\TDbException;
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
 
-class OracleInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
+class OracleInsertOrIgnoreTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 

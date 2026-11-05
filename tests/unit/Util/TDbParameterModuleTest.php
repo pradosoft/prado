@@ -1,8 +1,16 @@
 <?php
 
+namespace Prado\Test\Unit\Util;
+
 use Prado\Exceptions\TInvalidDataTypeException;
+use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Test\Unit\PradoUnit;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Util\TDbParameterModule;
+use Prado\Test\Unit\Harness\Traits\PradoUnitModuleDependencyTrait;
+use Prado\Data\TDbConnection;
+use Prado\Util\Behaviors\TMapLazyLoadBehavior;
+use Prado\Util\Behaviors\TMapRouteBehavior;
 
 function dbParamTestFunction($data, $encode)
 {
@@ -12,8 +20,10 @@ function dbParamTestFunction($data, $encode)
 		return unserialize($data);
 }
 
-class TDbParameterModuleTest extends PHPUnit\Framework\TestCase
+class TDbParameterModuleTest extends \PHPUnit\Framework\TestCase
 {
+	use PradoUnitModuleDependencyTrait;
+
 	protected $obj;
 
 	protected function setUp(): void
@@ -23,9 +33,9 @@ class TDbParameterModuleTest extends PHPUnit\Framework\TestCase
 
 	protected function tearDown(): void
 	{
-		Prado::getApplication()->getParameters()->detachBehavior(TDbParameterModule::APP_PARAMETER_SET_BEHAVIOR);
-		Prado::getApplication()->getParameters()->detachBehavior(TDbParameterModule::APP_PARAMETER_LAZY_BEHAVIOR);
-		Prado::getApplication()->onBeginRequest->clear();
+		\Prado::getApplication()->getParameters()->detachBehavior(TDbParameterModule::APP_PARAMETER_SET_BEHAVIOR);
+		\Prado::getApplication()->getParameters()->detachBehavior(TDbParameterModule::APP_PARAMETER_LAZY_BEHAVIOR);
+		\Prado::getApplication()->onBeginRequest->clear();
 		$key = 'testparam';
 		$key2 = 'testparam2';
 		$key3 = 'testparam3';
@@ -47,7 +57,7 @@ class TDbParameterModuleTest extends PHPUnit\Framework\TestCase
 		$key3 = 'testparam3';
 		$key4 = 'testparam4';
 		
-		$app = Prado::getApplication();
+		$app = \Prado::getApplication();
 		$params = $app->getParameters();
 		
 		self::assertNull($params->asa(TDbParameterModule::APP_PARAMETER_LAZY_BEHAVIOR));
@@ -56,7 +66,7 @@ class TDbParameterModuleTest extends PHPUnit\Framework\TestCase
 		
 		self::assertNull($this->obj->get($key, false));
 		self::assertInstanceOf(TMapLazyLoadBehavior::class, $params->asa(TDbParameterModule::APP_PARAMETER_LAZY_BEHAVIOR));
-		self::assertEquals(1, Prado::getApplication()->onBeginRequest->count());
+		self::assertEquals(1, \Prado::getApplication()->onBeginRequest->count());
 		
 		try {
 			$this->obj->setConnectionID('db');
@@ -109,8 +119,8 @@ class TDbParameterModuleTest extends PHPUnit\Framework\TestCase
 		//makes sure the behavior is working for setting the parameter when 
 		self::assertEquals($value, $this->obj->get($key, false));
 		
-		Prado::getApplication()->getParameters()->detachBehavior(TDbParameterModule::APP_PARAMETER_SET_BEHAVIOR);
-		Prado::getApplication()->getParameters()->detachBehavior(TDbParameterModule::APP_PARAMETER_LAZY_BEHAVIOR);
+		\Prado::getApplication()->getParameters()->detachBehavior(TDbParameterModule::APP_PARAMETER_SET_BEHAVIOR);
+		\Prado::getApplication()->getParameters()->detachBehavior(TDbParameterModule::APP_PARAMETER_LAZY_BEHAVIOR);
 		unset($params[$key]);
 		
 		//******   setting parameters from database
@@ -124,14 +134,14 @@ class TDbParameterModuleTest extends PHPUnit\Framework\TestCase
 		$this->obj->set($key2, $value2, false);
 		
 		$arrayValue = ['propA' => 'data1', 'propB' => 'data2'];
-		$objValue = new stdClass;
+		$objValue = new \stdClass;
 		$objValue->propA = 'data1';
 		$objValue->propB = 'data2';
 		$this->obj->set($key3, $arrayValue);
 		$this->obj->set($key4, $objValue);
 		
-		Prado::getApplication()->getParameters()->detachBehavior(TDbParameterModule::APP_PARAMETER_SET_BEHAVIOR);
-		Prado::getApplication()->getParameters()->detachBehavior(TDbParameterModule::APP_PARAMETER_LAZY_BEHAVIOR);
+		\Prado::getApplication()->getParameters()->detachBehavior(TDbParameterModule::APP_PARAMETER_SET_BEHAVIOR);
+		\Prado::getApplication()->getParameters()->detachBehavior(TDbParameterModule::APP_PARAMETER_LAZY_BEHAVIOR);
 		unset($params[$key]);
 		unset($params[$key2]);
 		unset($params[$key3]);
@@ -168,8 +178,8 @@ class TDbParameterModuleTest extends PHPUnit\Framework\TestCase
 		self::assertEquals($arrayValue, $this->obj->remove($key3));
 		self::assertEquals($objValue, $this->obj->remove($key4));
 		
-		Prado::getApplication()->getParameters()->detachBehavior(TDbParameterModule::APP_PARAMETER_SET_BEHAVIOR);
-		Prado::getApplication()->getParameters()->detachBehavior(TDbParameterModule::APP_PARAMETER_LAZY_BEHAVIOR);
+		\Prado::getApplication()->getParameters()->detachBehavior(TDbParameterModule::APP_PARAMETER_SET_BEHAVIOR);
+		\Prado::getApplication()->getParameters()->detachBehavior(TDbParameterModule::APP_PARAMETER_LAZY_BEHAVIOR);
 		unset($params[$key]);
 		$this->obj->remove($key2);
 		unset($params[$key2]);
@@ -182,7 +192,7 @@ class TDbParameterModuleTest extends PHPUnit\Framework\TestCase
 	
 	public function testGet()
 	{
-		$app = Prado::getApplication();
+		$app = \Prado::getApplication();
 		
 		$key = 'testparam';
 		$value = 'test_value';
@@ -317,6 +327,60 @@ class TDbParameterModuleTest extends PHPUnit\Framework\TestCase
 		self::assertEquals("\'yes\'", $this->obj->getAutoLoadValue());
 	}
 
+	public function testIdentifierPropertiesRejectSql()
+	{
+		$tableName = $this->obj->getTableName();
+		$autoLoadField = $this->obj->getAutoLoadField();
+		foreach (['setKeyField', 'setValueField', 'setTableName', 'setAutoLoadField'] as $setter) {
+			try {
+				$this->obj->$setter('name; DROP TABLE parameters');
+				self::fail("$setter accepted an SQL fragment.");
+			} catch (TInvalidDataValueException $e) {
+			}
+		}
+		$this->obj->setTableName('main.parameters');
+		self::assertEquals('main.parameters', $this->obj->getTableName());
+		$this->obj->setTableName('`my params`');
+		self::assertEquals('`my params`', $this->obj->getTableName());
+		$this->obj->setAutoLoadField('');
+		self::assertEquals('', $this->obj->getAutoLoadField());
+		$this->obj->setTableName($tableName);
+		$this->obj->setAutoLoadField($autoLoadField);
+	}
+
+	public function testAutoLoadBindValueUnquotesSqlLiteral()
+	{
+		$this->obj->setAutoLoadValue("'yes'");
+		$this->obj->setAutoLoadValueFalse("'it''s'");
+		self::assertSame('yes', PradoUnit::invoke($this->obj, 'getAutoLoadBindValue', true));
+		self::assertSame("it's", PradoUnit::invoke($this->obj, 'getAutoLoadBindValue', false));
+		$this->obj->setAutoLoadValue('1');
+		self::assertSame('1', PradoUnit::invoke($this->obj, 'getAutoLoadBindValue', true));
+	}
+
+	public function testAutoLoadValueIsBound()
+	{
+		$params = \Prado::getApplication()->getParameters();
+		$this->obj->init(null);
+		$this->obj->set('bindtest_on', 'on', true, false);
+		$this->obj->set('bindtest_off', 'off', false, false);
+		try {
+			foreach (["0 OR 1=1" => false, "'1'" => true] as $autoLoadValue => $loaded) {
+				$params->detachBehavior(TDbParameterModule::APP_PARAMETER_LAZY_BEHAVIOR);
+				unset($params['bindtest_on'], $params['bindtest_off']);
+				$module = new TDbParameterModule();
+				$module->setAutoLoadValue($autoLoadValue);
+				$module->init(null);
+				self::assertSame($loaded, isset($params['bindtest_on']), $autoLoadValue);
+				self::assertFalse(isset($params['bindtest_off']), $autoLoadValue);
+			}
+		} finally {
+			unset($params['bindtest_on'], $params['bindtest_off']);
+			$this->obj->remove('bindtest_on');
+			$this->obj->remove('bindtest_off');
+		}
+	}
+
 	public function testAutoLoadValueFalse()
 	{
 		$this->obj->setAutoLoadValueFalse('0');
@@ -346,7 +410,7 @@ class TDbParameterModuleTest extends PHPUnit\Framework\TestCase
 	{
 		$key = 'testparam';
 		$value = ['propA' => 'data1', 'propB' => 'data2'];
-		$value2 = new stdClass;
+		$value2 = new \stdClass;
 		$value2->propA = 'data1';
 		$value2->propB = 'data2';
 		
@@ -368,8 +432,8 @@ class TDbParameterModuleTest extends PHPUnit\Framework\TestCase
 		$this->obj->set($key, $value2);
 		self::assertEquals($value2, $this->obj->get($key, false));
 		
-		$this->obj->setSerializer('dbParamTestFunction');
-		self::assertEquals('dbParamTestFunction', $this->obj->getSerializer());
+		$this->obj->setSerializer(__NAMESPACE__ . '\\dbParamTestFunction');
+		self::assertEquals(__NAMESPACE__ . '\\dbParamTestFunction', $this->obj->getSerializer());
 		
 		$this->obj->set($key, $value);
 		self::assertTrue($this->obj->exists($key));
@@ -396,5 +460,38 @@ class TDbParameterModuleTest extends PHPUnit\Framework\TestCase
 		self::assertFalse($this->obj->getCaptureParameterChanges());
 		$this->obj->setCaptureParameterChanges('true');
 		self::assertTrue($this->obj->getCaptureParameterChanges());
+	}
+
+	// -----------------------------------------------------------------------
+	// IModuleDependency contract
+	// -----------------------------------------------------------------------
+
+	public function testImplementsIModuleDependency()
+	{
+		$this->assertInstanceOf(\Prado\IModuleDependency::class, $this->obj);
+	}
+
+	public function testGetModuleDependencies_noConnectionID_returnsNoDeps()
+	{
+		$this->assertModuleDependency(null, $this->obj->getModuleDependencies(false));
+	}
+
+	public function testGetModuleDependencies_connectionIDSet_returnsIt()
+	{
+		// Use a local instance so the shared tearDown's $this->obj->remove()
+		// doesn't try to materialize a connection against a non-existent module.
+		$module = new TDbParameterModule();
+		$module->setConnectionID('db');
+		$this->assertModuleDependency('db', $module->getModuleDependencies(false));
+	}
+
+	public function testGetModuleDependencies_returnsSameRegardlessOfIsPreInit()
+	{
+		$module = new TDbParameterModule();
+		$module->setConnectionID('db');
+		$this->assertModuleDependency(
+			$module->getModuleDependencies(true),
+			$module->getModuleDependencies(false)
+		);
 	}
 }

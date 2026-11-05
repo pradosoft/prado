@@ -63,7 +63,7 @@ class TRadioButton extends TCheckBox
 	 */
 	private $_previousUniqueID;
 	/**
-	 * @var string the name used to fetch radiobutton post data
+	 * @var ?string the name used to fetch radiobutton post data
 	 */
 	private $_uniqueGroupName;
 
@@ -273,6 +273,7 @@ class TRadioButton extends TCheckBox
 		if (($accesskey = $this->getAccessKey()) !== '') {
 			$writer->addAttribute('accesskey', $accesskey);
 		}
+		$this->addKeyShortcutsAttributesToRender($writer);
 		if (($tabindex = $this->getTabIndex()) > 0) {
 			$writer->addAttribute('tabindex', "$tabindex");
 		}

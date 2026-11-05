@@ -1,9 +1,13 @@
 <?php
 
+namespace Prado\Test\Unit\Util;
+
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Util\TBehaviorsModule;
 use Prado\Util\TBehavior;
 use Prado\Web\UI\TPage;
+use Prado\Util\TClassBehavior;
+use Prado\Xml\TXmlDocument;
 
 class TestModuleBehavior1 extends TBehavior
 {
@@ -53,15 +57,7 @@ class TestModuleBehavior5 extends TestModuleBehavior4
 {
 }
 
-class TestModuleBM extends TModule
-{
-}
-
-class TestModuleBM2 extends TModule
-{
-}
-
-class TBehaviorsModuleTest extends PHPUnit\Framework\TestCase
+class TBehaviorsModuleTest extends \PHPUnit\Framework\TestCase
 {
 	protected $tearDownScripts = [];
 	
@@ -79,7 +75,7 @@ class TBehaviorsModuleTest extends PHPUnit\Framework\TestCase
 			$closure();
 		}
 		$this->tearDownScripts = [];
-		Prado::getApplication()->onBeginRequest->clear();
+		\Prado::getApplication()->onBeginRequest->clear();
 	}
 
 	public function testConstruct()
@@ -91,21 +87,21 @@ class TBehaviorsModuleTest extends PHPUnit\Framework\TestCase
 	{
 		try {
 			$this->obj->init(null);
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 			$this->fail($e::class .' should not have been raised on init(null)');
 		}
 		$behaviors = '<module id="bmod">
-		<behavior name="testBehavior5" class="TestModuleBehavior5" attachto="behavior:testBehavior1" Priority="19" PropertyA="value5"/>
-		<behavior name="testBehavior6" class="TestModuleBehavior5" attachto="behavior:testClassBehavior3" Priority="19" PropertyA="value6"/>
-		<behavior name="testBehavior1" class="TestModuleBehavior1" attachto="Application" Priority="1" PropertyA="value1"/>
-		<behavior name="testBehavior2" class="TestModuleBehavior2" attachto="Page" Priority="2" PropertyA="value2"/>
-		<behavior name="testClassBehavior3" class="TestModuleClassBehavior1" attachtoclass="TestModuleBM2" Priority="3" PropertyA="value3"/>
-		<behavior name="testBehavior4" class="TestModuleBehavior4" attachto="module:modB" Priority="4" PropertyA="value4"/>
+		<behavior name="testBehavior5" class="Prado\Test\Unit\Util\TestModuleBehavior5" attachto="behavior:testBehavior1" Priority="19" PropertyA="value5"/>
+		<behavior name="testBehavior6" class="Prado\Test\Unit\Util\TestModuleBehavior5" attachto="behavior:testClassBehavior3" Priority="19" PropertyA="value6"/>
+		<behavior name="testBehavior1" class="Prado\Test\Unit\Util\TestModuleBehavior1" attachto="Application" Priority="1" PropertyA="value1"/>
+		<behavior name="testBehavior2" class="Prado\Test\Unit\Util\TestModuleBehavior2" attachto="Page" Priority="2" PropertyA="value2"/>
+		<behavior name="testClassBehavior3" class="Prado\Test\Unit\Util\TestModuleClassBehavior1" attachtoclass="Prado\Test\Unit\Util\TestModuleBM2" Priority="3" PropertyA="value3"/>
+		<behavior name="testBehavior4" class="Prado\Test\Unit\Util\TestModuleBehavior4" attachto="module:modB" Priority="4" PropertyA="value4"/>
 			</module>';
 		$xmldoc = new TXmlDocument('1.0', 'utf-8');
 		$xmldoc->loadFromString($behaviors);
 		
-		$app = Prado::getApplication();
+		$app = \Prado::getApplication();
 		$log = new TestModuleBM2();
 		$log->init(null);
 		$app->setModule('logger', $log);
@@ -122,12 +118,12 @@ class TBehaviorsModuleTest extends PHPUnit\Framework\TestCase
 			$this->obj->init($xmldoc);
 			
 			//Check was App behavior installed
-			$this->assertInstanceOf('TestModuleBehavior1', $b1 = $app->asa('testBehavior1'));
+			$this->assertInstanceOf(TestModuleBehavior1::class, $b1 = $app->asa('testBehavior1'));
 			$this->assertEquals('value1', $app->asa('testBehavior1')->propertyA);
 			$this->assertInstanceOf('\Prado\Xml\TXmlElement', $b1->getBehaviorInitConfig());
 			$this->assertEquals('behavior', $b1->getBehaviorInitConfig()->getTagName());
 			
-			$this->assertInstanceOf('TestModuleBehavior5', $b5 = $b1->asa('testBehavior5'));
+			$this->assertInstanceOf(TestModuleBehavior5::class, $b5 = $b1->asa('testBehavior5'));
 			$this->assertEquals('value5', $b1->asa('testBehavior5')->propertyA);
 			
 			
@@ -136,11 +132,11 @@ class TBehaviorsModuleTest extends PHPUnit\Framework\TestCase
 			$app->onBeginRequest->clear();
 			
 			//This behavior is added via class behaviors for already instanced objects.
-			$this->assertInstanceOf('TestModuleClassBehavior1', $b3 = $log->asa('testClassBehavior3'));
+			$this->assertInstanceOf(TestModuleClassBehavior1::class, $b3 = $log->asa('testClassBehavior3'));
 			$this->assertEquals('value3', $log->asa('testClassBehavior3')->propertyA);
 			$this->assertEquals('value6', $b3->asa('testBehavior6')->propertyA);
 			
-			$this->assertInstanceOf('TestModuleBehavior4', $modB->asa('testBehavior4'));
+			$this->assertInstanceOf(TestModuleBehavior4::class, $modB->asa('testBehavior4'));
 			$this->assertEquals('value4', $modB->asa('testBehavior4')->propertyA);
 			$app->detachBehavior('testBehavior1');
 			$log->detachClassBehavior('testClassBehavior3');
@@ -150,22 +146,22 @@ class TBehaviorsModuleTest extends PHPUnit\Framework\TestCase
 			$this->assertNull($modB->asa('testBehavior4'));
 		}
 		$phpconfig = ['class' => 'TBehaviorsModule', 'properties' => [], 'behaviors' => [
-			['name' => 'testBehavior1', 'class' => 'TestModuleBehavior1', 'attachto' => 'Application', 'priority' => 1, 'propertya' => 'value1'],
-			['class' => 'TestModuleBehavior1', 'properties' => ['name' => 'propBehaviorName', 'attachto' => 'Application', 'priority' => 8, 'propertya' => 'abc'], 
+			['name' => 'testBehavior1', 'class' => TestModuleBehavior1::class, 'attachto' => 'Application', 'priority' => 1, 'propertya' => 'value1'],
+			['class' => TestModuleBehavior1::class, 'properties' => ['name' => 'propBehaviorName', 'attachto' => 'Application', 'priority' => 8, 'propertya' => 'abc'], 
 					'complexProp' => 'complexValue'
 				],
-			['name' => 'testBehavior2', 'class' => 'TestModuleBehavior2', 'attachto' => 'Page', 'priority' => '2', 'propertya' => 'value2'],
-			['name' => 'testClassBehavior3', 'class' => 'TestModuleBehavior3', 'attachtoclass' => 'TestModuleBM2', 'priority' => 3.0, 'propertya' => 'value3'],
-			['name' => 'testBehavior4', 'class' => 'TestModuleBehavior4', 'attachto' => 'module:modB', 'priority' => 4, 'propertya' => 'value4'],
-			['name' => '', 'class' => 'TestModuleBehavior1', 'attachto' => 'Application', 'priority' => 11, 'propertya' => 'blankname'],
-			['name' => '11', 'class' => 'TestModuleBehavior2', 'attachto' => 'Application', 'priority' => 12, 'propertya' => 'numericname'],
-			['class' => 'TestModuleBehavior3', 'attachto' => 'Application', 'priority' => 13, 'propertya' => 'noName'],
+			['name' => 'testBehavior2', 'class' => TestModuleBehavior2::class, 'attachto' => 'Page', 'priority' => '2', 'propertya' => 'value2'],
+			['name' => 'testClassBehavior3', 'class' => TestModuleBehavior3::class, 'attachtoclass' => TestModuleBM2::class, 'priority' => 3.0, 'propertya' => 'value3'],
+			['name' => 'testBehavior4', 'class' => TestModuleBehavior4::class, 'attachto' => 'module:modB', 'priority' => 4, 'propertya' => 'value4'],
+			['name' => '', 'class' => TestModuleBehavior1::class, 'attachto' => 'Application', 'priority' => 11, 'propertya' => 'blankname'],
+			['name' => '11', 'class' => TestModuleBehavior2::class, 'attachto' => 'Application', 'priority' => 12, 'propertya' => 'numericname'],
+			['class' => TestModuleBehavior3::class, 'attachto' => 'Application', 'priority' => 13, 'propertya' => 'noName'],
 		]];
 		$this->tearDownScripts[] = function() use ($log) {$log->detachClassBehavior('testClassBehavior3');};
 		
 		{ // PHP
 			$this->obj->init($phpconfig);
-			$this->assertInstanceOf('TestModuleBehavior1', $app->asa('testBehavior1'));
+			$this->assertInstanceOf(TestModuleBehavior1::class, $app->asa('testBehavior1'));
 			$this->assertEquals('value1', $app->asa('testBehavior1')->propertyA);
 			$this->assertEquals(['propertya' => 'value1'], $app->testBehavior1->getBehaviorInitConfig());
 			$this->assertEquals(['complexProp' => 'complexValue'], $app->propBehaviorName->getBehaviorInitConfig());
@@ -176,10 +172,10 @@ class TBehaviorsModuleTest extends PHPUnit\Framework\TestCase
 			$app->onBeginRequest->clear();
 			
 			//This behavior is added via class behaviors for already instanced objects.
-			$this->assertInstanceOf('TestModuleBehavior3', $log->asa('testClassBehavior3'));
+			$this->assertInstanceOf(TestModuleBehavior3::class, $log->asa('testClassBehavior3'));
 			$this->assertEquals('value3', $log->asa('testClassBehavior3')->propertyA);
 			
-			$this->assertInstanceOf('TestModuleBehavior4', $modB->asa('testBehavior4'));
+			$this->assertInstanceOf(TestModuleBehavior4::class, $modB->asa('testBehavior4'));
 			$this->assertEquals('value4', $modB->asa('testBehavior4')->propertyA);
 			$app->detachBehavior('testBehavior1');
 			$app->detachBehavior('propBehaviorName');
@@ -193,16 +189,16 @@ class TBehaviorsModuleTest extends PHPUnit\Framework\TestCase
 		{ // Additional Behaviors
 			$this->obj->setAdditionalBehaviors($phpconfig['behaviors']);
 			$this->obj->init(null);
-			$this->assertInstanceOf('TestModuleBehavior1', $app->asa('testBehavior1'));
+			$this->assertInstanceOf(TestModuleBehavior1::class, $app->asa('testBehavior1'));
 			$this->assertEquals('value1', $app->asa('testBehavior1')->propertyA);
 			$this->assertEquals(1, count($app->onBeginRequest));
 			$app->onBeginRequest->clear();
 			
 			//This behavior is added via class behaviors for already instanced objects.
-			$this->assertInstanceOf('TestModuleBehavior3', $log->asa('testClassBehavior3'));
+			$this->assertInstanceOf(TestModuleBehavior3::class, $log->asa('testClassBehavior3'));
 			$this->assertEquals('value3', $log->asa('testClassBehavior3')->propertyA);
 			
-			$this->assertInstanceOf('TestModuleBehavior4', $modB->asa('testBehavior4'));
+			$this->assertInstanceOf(TestModuleBehavior4::class, $modB->asa('testBehavior4'));
 			$this->assertEquals('value4', $modB->asa('testBehavior4')->propertyA);
 			$app->detachBehavior('testBehavior1');
 			array_pop($this->tearDownScripts);
@@ -218,11 +214,11 @@ class TBehaviorsModuleTest extends PHPUnit\Framework\TestCase
 
 	public function testAttachTPageBehaviors()
 	{
-		$this->obj->init(['behaviors' => [['name' => 'testBehavior', 'class' => 'TestModuleBehavior1', 'attachto' => 'page', 'priority' => 12, 'propertya' => 'value']] ]);
+		$this->obj->init(['behaviors' => [['name' => 'testBehavior', 'class' => TestModuleBehavior1::class, 'attachto' => 'page', 'priority' => 12, 'propertya' => 'value']] ]);
 		$page = new TPage;
 		$this->obj->attachTPageBehaviors(null, $page);
 		
-		$this->assertInstanceOf('TestModuleBehavior1', $page->asa('testBehavior'));
+		$this->assertInstanceOf(TestModuleBehavior1::class, $page->asa('testBehavior'));
 		$this->assertEquals('value', $page->asa('testBehavior')->PropertyA);
 	}
 	
@@ -246,7 +242,7 @@ class TBehaviorsModuleTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals([], $this->obj->getAdditionalBehaviors());
 		
 		//Behavior becomes array of behaviors.
-		$behaviors = ['name' => 'testBehavior', 'class' => 'TestModuleBehavior1', 'attachto' => 'Application', 'priority' => 12, 'propertya' => 'value'];
+		$behaviors = ['name' => 'testBehavior', 'class' => TestModuleBehavior1::class, 'attachto' => 'Application', 'priority' => 12, 'propertya' => 'value'];
 		$this->obj->setAdditionalBehaviors($behaviors);
 		$this->assertEquals([$behaviors], $this->obj->getAdditionalBehaviors());
 		
@@ -265,7 +261,7 @@ class TBehaviorsModuleTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals($behaviors, $this->obj->getAdditionalBehaviors());
 		
 		// serialized array of behaviors is an array of behaviors
-		$this->obj->setAdditionalBehaviors('<module id="bmod"><behavior name="testBehavior" class="TestModuleBehavior1" attachto="Application" Priority="12" PropertyA="value2"/></module>');
+		$this->obj->setAdditionalBehaviors('<module id="bmod"><behavior name="testBehavior" class="Prado\Test\Unit\Util\TestModuleBehavior1" attachto="Application" Priority="12" PropertyA="value2"/></module>');
 		$this->assertInstanceOf(\Prado\Xml\TXmlDocument::class, $this->obj->getAdditionalBehaviors());
 		
 	}

@@ -15,6 +15,7 @@ TRepeatLayout defines the enumerable type for specifying how repeated content is
 - `Table` - Items organized in an HTML table
 - `Flow` - Items organized using spans and breaks
 - `Raw` - Items stacked without decorations
+- `OrderedList` / `UnorderedList` - Items in an `<ol>` / `<ul>`, each in an `<li>` (@since 4.4.0)
 
 ## See Also
 

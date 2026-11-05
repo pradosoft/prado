@@ -61,7 +61,7 @@
  * @module validation
  */
 
-Prado.Validation =  jQuery.klass();
+Prado.Validation =  Prado.Class();
 
 /**
  * Global Validation Object.
@@ -81,7 +81,7 @@ Prado.Validation =  jQuery.klass();
  *
  * @object {static} Prado.Validation
  */
-jQuery.extend(Prado.Validation,
+Object.assign(Prado.Validation,
 {
 	/**
 	 * Hash of registered validation managers
@@ -100,8 +100,7 @@ jQuery.extend(Prado.Validation,
 	 * @param {element} invoker - DOM element that calls for validation
 	 * @returns true if validation succeeded
 	 */
-	validate : function(formID, groupID, invoker)
-	{
+	validate(formID, groupID, invoker) {
 		formID = formID || this.getForm();
 		if(this.managers[formID])
 		{
@@ -109,7 +108,7 @@ jQuery.extend(Prado.Validation,
 		}
 		else
 		{
-			throw new Error("Form '"+formID+"' is not registered with Prado.Validation");
+			throw new Error(`Form '${formID}' is not registered with Prado.Validation`);
 		}
 	},
 
@@ -119,9 +118,8 @@ jQuery.extend(Prado.Validation,
 	 * @param {string} id - ID of DOM element to validate
 	 * @return true if all validators are valid or no validators present, false otherwise.
 	 */
-    validateControl : function(id)
-    {
-        var formId=this.getForm();
+    validateControl(id) {
+        const formId=this.getForm();
 
 		if (this.managers[formId])
         {
@@ -136,11 +134,8 @@ jQuery.extend(Prado.Validation,
 	 * @function {string} ?
 	 * @returns ID of first form.
 	 */
-	getForm : function()
-	{
-		var keys = jQuery.map(this.managers, function(value, key) {
-			return key;
-		});
+	getForm() {
+		const keys = Object.keys(this.managers);
 		return keys.length>0 ? keys[0] : null;
 	},
 
@@ -153,8 +148,7 @@ jQuery.extend(Prado.Validation,
 	 * @param {string} groupID - ID of the ValiationGroup to validate.
 	 * @return true if form is valid
 	 */
-	isValid : function(formID, groupID)
-	{
+	isValid(formID, groupID) {
 		formID = formID || this.getForm();
 		if(this.managers[formID])
 			return this.managers[formID].isValid(groupID);
@@ -167,9 +161,8 @@ jQuery.extend(Prado.Validation,
 	 * @function ?
 	 * @param {string} groupID - ID of the ValidationGroup to reset.
 	 */
-	reset : function(groupID)
-	{
-		var formID = this.getForm();
+	reset(groupID) {
+		const formID = this.getForm();
 		if(this.managers[formID])
 			this.managers[formID].reset(groupID);
 	},
@@ -181,12 +174,11 @@ jQuery.extend(Prado.Validation,
 	 * @param {TBaseValidator} validator - Validator object
 	 * @return ValidationManager for the form
 	 */
-	addValidator : function(formID, validator)
-	{
+	addValidator(formID, validator) {
 		if(this.managers[formID])
 			this.managers[formID].addValidator(validator);
 		else
-			throw new Error("A validation manager for form '"+formID+"' needs to be created first.");
+			throw new Error(`A validation manager for form '${formID}' needs to be created first.`);
 		return this.managers[formID];
 	},
 
@@ -197,44 +189,131 @@ jQuery.extend(Prado.Validation,
 	 * @param {TValidationSummary} validator - TValidationSummary object
 	 * @return ValidationManager for the form
 	 */
-	addSummary : function(formID, validator)
-	{
+	addSummary(formID, validator) {
 		if(this.managers[formID])
 			this.managers[formID].addSummary(validator);
 		else
-			throw new Error("A validation manager for form '"+formID+"' needs to be created first.");
+			throw new Error(`A validation manager for form '${formID}' needs to be created first.`);
 		return this.managers[formID];
 	},
 
-	setErrorMessage : function(validatorID, message)
-	{
-		jQuery.each(Prado.Validation.managers, function(idx, manager)
-		{
-			jQuery.each(manager.validators, function(idx, validator)
-			{
+	setErrorMessage(validatorID, message) {
+		for (const manager of Object.values(Prado.Validation.managers)) {
+			for (const validator of manager.validators) {
 				if(validator.options.ID == validatorID)
 				{
 					validator.options.ErrorMessage = message;
-					jQuery("#" + validatorID).get(0).innerHTML = message;
+					const el = document.getElementById(validatorID);
+					if (el)
+					{
+						if (validator.options.Encode)
+							el.textContent = message;
+						else
+							el.innerHTML = message;
+					}
 				}
-			});
-		});
+			}
+		}
 	},
 
-	updateActiveCustomValidator : function(validatorID, isValid)
-	{
-		jQuery.each(Prado.Validation.managers, function(idx, manager)
-		{
-			jQuery.each(manager.validators, function(idx, validator)
-			{
+	updateActiveCustomValidator(validatorID, isValid) {
+		for (const manager of Object.values(Prado.Validation.managers)) {
+			for (const validator of manager.validators) {
 				if(validator.options.ID == validatorID)
 				{
 					validator.updateIsValid(isValid);
 				}
-			});
-		});
+			}
+		}
+	},
+
+	/**
+	 * Whether the primary mouse button is held down in the document.
+	 * @var {boolean} pressing
+	 */
+	pressing : false,
+
+	/**
+	 * Callbacks waiting for the primary mouse button to be released.
+	 * @var {function[]} pressCallbacks
+	 */
+	pressCallbacks : [],
+
+	/**
+	 * Estimates the entropy of a password in bits from its characters, as the
+	 * server side TPasswordStrengthValidator::estimateEntropy() does. The pool
+	 * size is the sum of the character classes present: 26 lower case letters,
+	 * 26 upper case letters, 10 digits, 33 other ASCII characters, and 100
+	 * non-ASCII characters. Each distinct character adds log2 of the pool size,
+	 * and each repeated character adds log2 of the distinct count.
+	 * @function {number} ?
+	 * @param {string} password - The password.
+	 * @return The estimated entropy in bits.
+	 */
+	estimatePasswordEntropy(password) {
+		const chars = Array.from(password);
+		if (chars.length == 0)
+			return 0;
+		const sizes = { lower: 26, upper: 26, digit: 10, symbol: 33, other: 100 };
+		const classes = new Set(chars.map((char) => {
+			const code = char.codePointAt(0);
+			if (code > 127)
+				return 'other';
+			if (code >= 97 && code <= 122)
+				return 'lower';
+			if (code >= 65 && code <= 90)
+				return 'upper';
+			if (code >= 48 && code <= 57)
+				return 'digit';
+			return 'symbol';
+		}));
+		let pool = 0;
+		classes.forEach((name) => { pool += sizes[name]; });
+		const distinct = new Set(chars).size;
+		return distinct * Math.log2(pool) + (chars.length - distinct) * Math.log2(distinct);
+	},
+
+	/**
+	 * Runs a callback now, or after the primary mouse button is released.
+	 * A control's change event fires on blur when the mouse goes down on another
+	 * element, such as a submit button. Re-validation that hides a Dynamic message
+	 * or summary moves that element. Waiting for the release keeps the element under
+	 * the pointer until its click is dispatched.
+	 * @function ?
+	 * @param {function} callback - Function to run.
+	 */
+	afterPress(callback) {
+		if(this.pressing)
+			this.pressCallbacks.push(callback);
+		else
+			callback();
+	},
+
+	/**
+	 * Tracks the primary mouse button. A release, a drag end, or the window losing
+	 * focus ends the press; the waiting callbacks run after the click dispatches.
+	 * @function ?
+	 */
+	observePress() {
+		const release = () => {
+			if(!this.pressing)
+				return;
+			this.pressing = false;
+			const callbacks = this.pressCallbacks.splice(0);
+			if(callbacks.length > 0)
+				setTimeout(() => callbacks.forEach((callback) => callback()), 0);
+		};
+		document.addEventListener('mousedown', (event) => {
+			if(event.button === 0)
+				this.pressing = true;
+		}, true);
+		document.addEventListener('mouseup', release, true);
+		document.addEventListener('dragend', release, true);
+		window.addEventListener('blur', release);
 	}
 });
+
+Prado.Validation.observePress();
 
 /**
  * Manages validators for a particular HTML form.
@@ -246,7 +325,7 @@ jQuery.extend(Prado.Validation,
  *
  * @class Prado.ValidationManager
  */
-Prado.ValidationManager = jQuery.klass();
+Prado.ValidationManager = Prado.Class();
 Prado.ValidationManager.prototype =
 {
 	/**
@@ -261,8 +340,7 @@ Prado.ValidationManager.prototype =
 	 * @param {object} options - Options for initialization
 	 * @... {string} FormID - ID of form of this manager
 	 */
-	initialize : function(options)
-	{
+	initialize(options) {
 		if(!Prado.Validation.managers[options.FormID])
 		{
 			/**
@@ -292,7 +370,7 @@ Prado.ValidationManager.prototype =
 		}
 		else
 		{
-			var manager = Prado.Validation.managers[options.FormID];
+			const manager = Prado.Validation.managers[options.FormID];
 			this.validators = manager.validators;
 			this.summaries = manager.summaries;
 			this.groups = manager.groups;
@@ -306,10 +384,9 @@ Prado.ValidationManager.prototype =
 	 * @function ?
 	 * @param {string} group - ID of ValidationGroup
 	 */
-	reset : function(group)
-	{
-		var vals = this.validatorPartition(group)[0];
-		for(var i = 0; i < vals.length; i++)
+	reset(group) {
+		const vals = this.validatorPartition(group)[0];
+		for(let i = 0; i < vals.length; i++)
 			vals[i].reset();
 
 		this.updateSummary(group, true);
@@ -323,17 +400,22 @@ Prado.ValidationManager.prototype =
 	 * @param {element} source - DOM element that calls for validation
 	 * @return true if all validators are valid, false otherwise.
 	 */
-	validate : function(group, source)
-	{
-		var partition = this.validatorPartition(group);
-		var valid=true;
-		for(var i = 0; i < partition[0].length; i++)
+	validate(group, source) {
+		const partition = this.validatorPartition(group);
+		let valid=true;
+		for(let i = 0; i < partition[0].length; i++)
 		{
 			if(!partition[0][i].validate(source))
 				valid=false;
 		}
 		this.focusOnError(partition[0]);
-		jQuery(partition[1]).hide();
+		// The original implementation here was `jQuery(partition[1]).hide()`.
+		// partition[1] is an array of TBaseValidator instances, not DOM nodes;
+		// jQuery iterated them and tried to set style.display on each but
+		// validators aren't DOM elements so the call was effectively a no-op.
+		// Validators outside the current group keep their existing visibility,
+		// which is the behavior the test suite relies on. Intentionally
+		// leaving this as a no-op to preserve that semantics.
 		this.updateSummary(group, true);
 		return valid;
 	},
@@ -344,15 +426,14 @@ Prado.ValidationManager.prototype =
 	 * @param {string} id - ID of DOM element to validate
 	 * @return true if all validators are valid or no validators present, false otherwise.
 	 */
-    validateControl : function (id)
-    {
-        var valid = true;
+    validateControl(id) {
+        let valid = true;
         if(this.controls[id])
         {
-          jQuery.each(this.controls[id], function (idx, element) {
+          for (const element of this.controls[id]) {
             if(!element.validate(null))
               valid = false;
-          });
+          }
         }
 
         return valid;
@@ -363,9 +444,8 @@ Prado.ValidationManager.prototype =
 	 * @function ?
 	 * @param {TBaseValidator[]} validators - Array of validator objects
 	 */
-	focusOnError : function(validators)
-	{
-		for(var i = 0; i < validators.length; i++)
+	focusOnError(validators) {
+		for(let i = 0; i < validators.length; i++)
 		{
 			if(!validators[i].isValid && validators[i].options.FocusOnError)
 				return Prado.Element.focus(validators[i].options.FocusElementID);
@@ -382,8 +462,7 @@ Prado.ValidationManager.prototype =
 	 * @param {optional string} group - ID of ValidationGroup
 	 * @return Array with two arrays of validators.
 	 */
-	validatorPartition : function(group)
-	{
+	validatorPartition(group) {
 		return group ? this.validatorsInGroup(group) : this.validatorsWithoutGroup();
 	},
 
@@ -396,17 +475,16 @@ Prado.ValidationManager.prototype =
 	 * @param {optional string} groupID - ID of ValidationGroup
 	 * @return Array with two arrays of validators.
 	 */
-	validatorsInGroup : function(groupID)
-	{
-		if(jQuery.inArray(groupID, this.groups)!=-1)
+	validatorsInGroup(groupID) {
+		if(this.groups.includes(groupID))
 		{
-			var trues = [], falses = [];
-			jQuery.each(this.validators, function(idx, val) {
+			const trues = [], falses = [];
+			for (const val of this.validators) {
 				if(val.group == groupID)
 					trues.push(val);
 				else
 					falses.push(val);
-			});
+			}
 			return [trues, falses];
 		}
 		else
@@ -422,15 +500,14 @@ Prado.ValidationManager.prototype =
 	 * @return Array with two arrays of validators: Array[0] has all
 	 * validators without a group, Array[1] all other validators.
 	 */
-	validatorsWithoutGroup : function()
-	{
-		var trues = [], falses = [];
-		jQuery.each(this.validators, function(idx, val) {
+	validatorsWithoutGroup() {
+		const trues = [], falses = [];
+		for (const val of this.validators) {
 			if(!val.group)
 				trues.push(val);
 			else
 				falses.push(val);
-		});
+		}
 		return [trues, falses];
 	},
 
@@ -442,9 +519,8 @@ Prado.ValidationManager.prototype =
 	 * @param {optional string} group - ID of ValidationGroup
 	 * @return true if all validators (in a group, if supplied) are valid.
 	 */
-	isValid : function(group)
-	{
-		for(var i = 0; i < this.validatorPartition(group)[0].length; i++)
+	isValid(group) {
+		for(let i = 0; i < this.validatorPartition(group)[0].length; i++)
 		{
 			if(!this.validatorPartition(group)[0][i].isValid)
 				return false;
@@ -458,14 +534,13 @@ Prado.ValidationManager.prototype =
 	 * @function ?
 	 * @param {TBaseValidator} validator - Validator object
 	 */
-	addValidator : function(validator)
-	{
+	addValidator(validator) {
 		// Remove previously registered validator with same ID
     // to prevent stale validators created by AJAX updates
     this.removeValidator(validator);
 
 		this.validators.push(validator);
-		if(validator.group && jQuery.inArray(validator.group, this.groups)==-1)
+		if(validator.group && !this.groups.includes(validator.group))
 			this.groups.push(validator.group);
 
     if(typeof this.controls[validator.control.id] === 'undefined')
@@ -478,8 +553,7 @@ Prado.ValidationManager.prototype =
 	 * @function ?
 	 * @param {TValidationSummary} summary - Validation summary.
 	 */
-	addSummary : function(summary)
-	{
+	addSummary(summary) {
 		this.summaries.push(summary);
 	},
 
@@ -488,20 +562,13 @@ Prado.ValidationManager.prototype =
 	 * @function ?
 	 * @param {TBaseValidator} validator - Validator object
 	 */
-  removeValidator : function(validator)
-  {
+  removeValidator(validator) {
     // Remove from list of validators
-  	this.validators = jQuery.grep(this.validators, function(v)
-  	{
-  		return (v.options.ID!=validator.options.ID);
-  	});
+  	this.validators = this.validators.filter(v => v.options.ID!=validator.options.ID);
 	  // Remove from global list of validators per control
     if (this.controls[validator.control.id])
     {
-      this.controls[validator.control.id] = jQuery.grep(this.controls[validator.control.id], function(v)
-      {
-        return (v.options.ID!=validator.options.ID)
-      });
+      this.controls[validator.control.id] = this.controls[validator.control.id].filter(v => v.options.ID!=validator.options.ID);
       // Delete array if empty
       if(this.controls[validator.control.id].length == 0)
         delete this.controls[validator.control.id];
@@ -516,12 +583,8 @@ Prado.ValidationManager.prototype =
 	 * @param {optional string} group - ID of ValidationGroup
 	 * @return array list of validators with error.
 	 */
-	getValidatorsWithError : function(group)
-	{
-		return jQuery.grep(this.validatorPartition(group)[0], function(validator)
-		{
-			return !validator.isValid;
-		});
+	getValidatorsWithError(group) {
+		return this.validatorPartition(group)[0].filter(validator => !validator.isValid);
 	},
 
 	/**
@@ -531,20 +594,18 @@ Prado.ValidationManager.prototype =
 	 * without a group is updated.
 	 * @function ?
 	 * @param {optional string} group - ID of ValidationGroup
-	 * @param {boolean} refresh - Wether the summary should be refreshed
+	 * @param {boolean} refresh - Whether the summary should be refreshed
 	 */
-	updateSummary : function(group, refresh)
-	{
-		var validators = this.getValidatorsWithError(group);
-		jQuery.each(this.summaries, function(idx, summary)
-		{
-			var inGroup = group && summary.group == group;
-			var noGroup = !group || !summary.group;
+	updateSummary(group, refresh) {
+		const validators = this.getValidatorsWithError(group);
+		for (const summary of this.summaries) {
+			const inGroup = group && summary.group == group;
+			const noGroup = !group || !summary.group;
 			if(inGroup || noGroup)
 				summary.updateSummary(validators, refresh);
 			else
 				summary.hideSummary(true);
-		});
+		}
 	}
 };
 
@@ -567,7 +628,7 @@ Prado.ValidationManager.prototype =
  *
  * @class Prado.WebUI.TValidationSummary
  */
-Prado.WebUI.TValidationSummary = jQuery.klass();
+Prado.WebUI.TValidationSummary = Prado.Class();
 Prado.WebUI.TValidationSummary.prototype =
 {
 	/**
@@ -587,8 +648,7 @@ Prado.WebUI.TValidationSummary.prototype =
 	 * @... {optional function} OnHideSummary - Called on hide event.
 	 * @... {optional function} OnShowSummary - Called on show event.
 	 */
-	initialize : function(options)
-	{
+	initialize(options) {
 		/**
 		 * Validator options
 		 * @var {object} options
@@ -603,7 +663,7 @@ Prado.WebUI.TValidationSummary.prototype =
 		 * Summary DOM element
 		 * @var {element} messages
 		 */
-		this.messages = jQuery("#" + options.ID).get(0);
+		this.messages = document.getElementById(options.ID);
 		Prado.Registry[options.ID] = this;
 		if(this.messages)
 		{
@@ -623,8 +683,7 @@ Prado.WebUI.TValidationSummary.prototype =
 	 * @param {TBaseValidator[]} validators - List of validators that failed validation.
 	 * @param {boolean} update - true if visible summary should be updated
 	 */
-	updateSummary : function(validators, update)
-	{
+	updateSummary(validators, update) {
 		if(validators.length <= 0)
 		{
 			if(update || this.options.Refresh != false)
@@ -634,10 +693,10 @@ Prado.WebUI.TValidationSummary.prototype =
 			return;
 		}
 
-		var refresh = update || this.visible == false || this.options.Refresh != false;
+		let refresh = update || this.visible == false || this.options.Refresh != false;
 		// Also, do not refresh summary if at least 1 validator is waiting for callback response.
 		// This will avoid the flickering of summary if the validator passes its test
-		for(var i = 0; i < validators.length; i++)
+		for(let i = 0; i < validators.length; i++)
 		{
 			if(validators[i].requestDispatched)
 			{
@@ -648,7 +707,7 @@ Prado.WebUI.TValidationSummary.prototype =
 
 		if(this.options.ShowSummary != false && refresh)
 		{
-			this.updateHTMLMessages(this.getMessages(validators));
+			this.updateHTMLMessages(this.getHtmlMessages(validators));
 			this.showSummary(validators);
 		}
 
@@ -667,11 +726,10 @@ Prado.WebUI.TValidationSummary.prototype =
 	 * @function ?
 	 * @param {string[]} messages - Array of error messages.
 	 */
-	updateHTMLMessages : function(messages)
-	{
+	updateHTMLMessages(messages) {
 		while(this.messages.childNodes.length > 0)
 			this.messages.removeChild(this.messages.lastChild);
-		jQuery(this.messages).append(this.formatSummary(messages));
+		this.messages.insertAdjacentHTML('beforeend', this.formatSummary(messages));
 	},
 
 	/**
@@ -679,10 +737,9 @@ Prado.WebUI.TValidationSummary.prototype =
 	 * @function ?
 	 * @param {string[]} messages - Array of error messages.
 	 */
-	alertMessages : function(messages)
-	{
-		var text = this.formatMessageBox(messages);
-		setTimeout(function(){ alert(text); },20);
+	alertMessages(messages) {
+		const text = this.formatMessageBox(messages);
+		setTimeout(() => { alert(text); },20);
 	},
 
 	/**
@@ -691,15 +748,30 @@ Prado.WebUI.TValidationSummary.prototype =
 	 * @param {TBaseValidator[]} validators - Array of validators.
 	 * @return Array of validator error messages.
 	 */
-	getMessages : function(validators)
-	{
-		var messages = [];
-		jQuery.each(validators, function(idx, validator)
-		{
-			var message = validator.getErrorMessage();
+	getMessages(validators) {
+		const messages = [];
+		for (const validator of validators) {
+			const message = validator.getErrorMessage();
 			if(typeof(message) == 'string' && message.length > 0)
 				messages.push(message);
-		})
+		}
+		return messages;
+	},
+
+	/**
+	 * Get messages from validators as HTML: a validator with the Encode option
+	 * has its message HTML-encoded.
+	 * @function {string[]} ?
+	 * @param {TBaseValidator[]} validators - Array of validators.
+	 * @return Array of validator error messages as HTML.
+	 */
+	getHtmlMessages(validators) {
+		const messages = [];
+		for (const validator of validators) {
+			const message = validator.getErrorMessageHtml ? validator.getErrorMessageHtml() : validator.getErrorMessage();
+			if(typeof(message) == 'string' && message.length > 0)
+				messages.push(message);
+		}
 		return messages;
 	},
 
@@ -708,8 +780,7 @@ Prado.WebUI.TValidationSummary.prototype =
 	 * @function ?
 	 * @param {TBaseValidator[]} validators - Array of validators.
 	 */
-	hideSummary : function(validators)
-	{	if(typeof(this.options.OnHideSummary) == "function")
+	hideSummary(validators) {	if(typeof(this.options.OnHideSummary) == "function")
 		{
 			this.messages.style.visibility="visible";
 			this.options.OnHideSummary(this,validators)
@@ -718,7 +789,7 @@ Prado.WebUI.TValidationSummary.prototype =
 		{
 			this.messages.style.visibility="hidden";
 			if(this.options.Display == "None" || this.options.Display == "Dynamic")
-				jQuery(this.messages).hide();
+				this.messages.style.display = 'none';
 		}
 		this.visible = false;
 	},
@@ -728,13 +799,12 @@ Prado.WebUI.TValidationSummary.prototype =
 	 * @function ?
 	 * @param {TBaseValidator[]} validators - Array of validators.
 	 */
-	showSummary : function(validators)
-	{
+	showSummary(validators) {
 		this.messages.style.visibility="visible";
 		if(typeof(this.options.OnShowSummary) == "function")
 			this.options.OnShowSummary(this,validators);
 		else
-			jQuery(this.messages).show();
+			this.messages.style.display = '';
 		this.visible = true;
 	},
 
@@ -749,8 +819,7 @@ Prado.WebUI.TValidationSummary.prototype =
 	 * @... {string} post - Text to append after each message
 	 * @... {string} first - Text to append after message list
 	 */
-	formats : function(type)
-	{
+	formats(type) {
 		switch(type)
 		{
 			case "SimpleList":
@@ -771,15 +840,13 @@ Prado.WebUI.TValidationSummary.prototype =
 	 * @param {string[]} messages - Array of error messages.
 	 * @return Formatted message
 	 */
-	formatSummary : function(messages)
-	{
-		var format = this.formats(this.options.DisplayMode);
-		var output = this.options.HeaderText ? this.options.HeaderText + format.header : "";
+	formatSummary(messages) {
+		const format = this.formats(this.options.DisplayMode);
+		let output = this.options.HeaderText ? this.options.HeaderText + format.header : "";
 		output += format.first;
-		jQuery.each(messages, function(idx, message)
-		{
+		for (const message of messages) {
 			output += message.length > 0 ? format.pre + message + format.post : "";
-		});
+		}
 //		for(var i = 0; i < messages.length; i++)
 	//		output += (messages[i].length>0) ? format.pre + messages[i] + format.post : "";
 		output += format.last;
@@ -791,25 +858,24 @@ Prado.WebUI.TValidationSummary.prototype =
 	 * @param {string[]} messages - Array of error messages.
 	 * @return Formatted message for alert
 	 */
-	formatMessageBox : function(messages)
-	{
+	formatMessageBox(messages) {
 		if(this.options.DisplayMode == 'HeaderOnly' && this.options.HeaderText)
 			return this.options.HeaderText;
 
-		var output = this.options.HeaderText ? this.options.HeaderText + "\n" : "";
-		for(var i = 0; i < messages.length; i++)
+		let output = this.options.HeaderText ? `${this.options.HeaderText}\n` : "";
+		for(let i = 0; i < messages.length; i++)
 		{
 			switch(this.options.DisplayMode)
 			{
 				case "List":
-					output += messages[i] + "\n";
+					output += `${messages[i]}\n`;
 					break;
 				case "BulletList":
                 default:
-					output += "  - " + messages[i] + "\n";
+					output += `  - ${messages[i]}\n`;
 					break;
 				case "SingleParagraph":
-					output += messages[i] + " ";
+					output += `${messages[i]} `;
 					break;
 			}
 		}
@@ -828,7 +894,7 @@ Prado.WebUI.TValidationSummary.prototype =
  *
  * @class Prado.WebUI.TBaseValidator
  */
-Prado.WebUI.TBaseValidator = jQuery.klass(Prado.WebUI.Control,
+Prado.WebUI.TBaseValidator = Prado.Class(Prado.WebUI.Control,
 {
 	/**
 	 * Initialize TBaseValidator.
@@ -849,8 +915,7 @@ Prado.WebUI.TBaseValidator = jQuery.klass(Prado.WebUI.Control,
 	 * @... {optional function} OnValidationSuccess - Called after successful validation.
 	 * @... {optional function} OnValidationError - Called after validation error.
 	 */
-	initialize : function(options)
-	{
+	initialize(options) {
 		this.observers = new Array();
 		this.intervals = new Array();
 
@@ -859,7 +924,7 @@ Prado.WebUI.TBaseValidator = jQuery.klass(Prado.WebUI.Control,
 		options.OnError = options.OnError || Prototype.emptyFunction;
 	*/
 		/**
-		 * Wether the validator is enabled (default true)
+		 * Whether the validator is enabled (default true)
 		 * @var {boolean} enabled
 		 */
 		this.enabled = options.Enabled;
@@ -884,7 +949,7 @@ Prado.WebUI.TBaseValidator = jQuery.klass(Prado.WebUI.Control,
 		 */
 		this.group = null;
 		/**
-		 * Wether a request was dispatched (default false)
+		 * Whether a request was dispatched (default false)
 		 * @var {boolean} requestDispatched
 		 */
 		this.requestDispatched = false;
@@ -898,12 +963,12 @@ Prado.WebUI.TBaseValidator = jQuery.klass(Prado.WebUI.Control,
 		 * DOM element of control to validate
 		 * @var {element} control
 		 */
-		this.control = jQuery("#" + options.ControlToValidate).get(0);
+		this.control = document.getElementById(options.ControlToValidate);
 		/**
 		 * DOM element of validator
 		 * @var {element} message
 		 */
-		this.message = jQuery("#" + options.ID).get(0);
+		this.message = document.getElementById(options.ID);
 
 		Prado.Registry[options.ID] = this;
 
@@ -912,6 +977,11 @@ Prado.WebUI.TBaseValidator = jQuery.klass(Prado.WebUI.Control,
 		if(this.control && this.message)
 		{
 			this.group = options.ValidationGroup;
+
+			// Point the field's accessible description at this validator's
+			// message, so assistive technology reads the error with the field.
+			this.linkDescribedBy();
+			this.claimServerAria();
 
 			/**
 			 * ValidationManager of this validator
@@ -922,13 +992,68 @@ Prado.WebUI.TBaseValidator = jQuery.klass(Prado.WebUI.Control,
 	},
 
 	/**
+	 * Adds this validator's message id to the aria-describedby of the control it
+	 * validates, keeping any existing tokens and avoiding duplicates.
+	 */
+	linkDescribedBy() {
+		if(!this.control || !this.message || !this.message.id)
+			return;
+		const existing = (this.control.getAttribute('aria-describedby') || '').split(/\s+/).filter(Boolean);
+		if(existing.indexOf(this.message.id) === -1)
+		{
+			existing.push(this.message.id);
+			this.control.setAttribute('aria-describedby', existing.join(' '));
+		}
+	},
+
+	/**
+	 * Takes ownership of an aria-invalid="true" that the server rendered when
+	 * this validator failed on the server (the IsValid option is false). The
+	 * attribute then clears once this validator passes on the client.
+	 */
+	claimServerAria() {
+		if(this.options.IsValid === false && this.control.getAttribute('aria-invalid') == 'true' && !this.control.lastAriaValidator)
+			this.control.lastAriaValidator = this.options.ID;
+	},
+
+	/**
+	 * Reflects the validity on the control's aria-invalid. Mirrors the CSS-class
+	 * ownership rule so a field failing several validators only clears when its
+	 * last-failing validator passes.
+	 */
+	updateControlAria(control, valid) {
+		if(valid)
+		{
+			if(control.lastAriaValidator == this.options.ID)
+			{
+				control.lastAriaValidator = null;
+				control.setAttribute('aria-invalid', 'false');
+			}
+		}
+		else
+		{
+			control.lastAriaValidator = this.options.ID;
+			control.setAttribute('aria-invalid', 'true');
+		}
+	},
+
+	/**
 	 * Get error message.
 	 * @function {string} ?
 	 * @return Validation error message.
 	 */
-	getErrorMessage : function()
-	{
+	getErrorMessage() {
 		return this.options.ErrorMessage;
+	},
+
+	/**
+	 * Get the error message as HTML: encoded when the Encode option is set.
+	 * @function {string} ?
+	 * @return Validation error message as HTML.
+	 */
+	getErrorMessageHtml() {
+		const message = this.getErrorMessage();
+		return this.options.Encode ? Prado.htmlEncode(message) : message;
 	},
 
 	/**
@@ -937,8 +1062,7 @@ Prado.WebUI.TBaseValidator = jQuery.klass(Prado.WebUI.Control,
 	 * <tt>visible</tt> property to true.
 	 * @function ?
 	 */
-	updateControl: function()
-	{
+	updateControl() {
 		this.refreshControlAndMessage();
 
 		//if(this.options.FocusOnError && !this.isValid )
@@ -951,20 +1075,22 @@ Prado.WebUI.TBaseValidator = jQuery.klass(Prado.WebUI.Control,
 	 * Updates span and input CSS class.
 	 * @function ?
 	 */
-	refreshControlAndMessage : function()
-	{
+	refreshControlAndMessage() {
 		this.visible = true;
 		if(this.message)
 		{
 			if(this.options.Display == "Dynamic")
 			{
-				var msg=this.message;
-				this.isValid ? jQuery(msg).hide() : jQuery(msg).show();
+				const msg=this.message;
+				msg.style.display = this.isValid ? 'none' : '';
 			}
 			this.message.style.visibility = this.isValid ? "hidden" : "visible";
 		}
 		if(this.control)
+		{
 			this.updateControlCssClass(this.control, this.isValid);
+			this.updateControlAria(this.control, this.isValid);
+		}
 	},
 
 	/**
@@ -975,23 +1101,23 @@ Prado.WebUI.TBaseValidator = jQuery.klass(Prado.WebUI.Control,
 	 * @param {element} control - DOM element of control to validate
 	 * @param {boolean} valid - Validation state of control
 	 */
-	updateControlCssClass : function(control, valid)
-	{
-		var CssClass = this.options.ControlCssClass;
+	updateControlCssClass(control, valid) {
+		const CssClass = this.options.ControlCssClass;
 		if(typeof(CssClass) == "string" && CssClass.length > 0)
 		{
+			const classNames = Prado.Element.classTokens(CssClass);
 			if(valid)
 			{
 				if (control.lastValidator == this.options.ID)
 				{
 					control.lastValidator = null;
-					jQuery(control).removeClass(CssClass);
+					control.classList.remove(...classNames);
 				}
 			}
 			else
 			{
 				control.lastValidator = this.options.ID;
-				jQuery(control).addClass(CssClass);
+				control.classList.add(...classNames);
 			}
 		}
 	},
@@ -1000,8 +1126,7 @@ Prado.WebUI.TBaseValidator = jQuery.klass(Prado.WebUI.Control,
 	 * Hide the validator messages and remove any validation changes.
 	 * @function ?
 	 */
-	hide : function()
-	{
+	hide() {
 		this.reset();
 		this.visible = false;
 	},
@@ -1011,8 +1136,7 @@ Prado.WebUI.TBaseValidator = jQuery.klass(Prado.WebUI.Control,
 	 * Sets isValid = true and updates the validator display.
 	 * @function ?
 	 */
-	reset : function()
-	{
+	reset() {
 		this.isValid = true;
 		this.updateControl();
 	},
@@ -1025,13 +1149,12 @@ Prado.WebUI.TBaseValidator = jQuery.klass(Prado.WebUI.Control,
 	 * @param {element} invoker - DOM element that triggered validation
 	 * @return Valdation state of control.
 	 */
-	validate : function(invoker)
-	{
+	validate(invoker) {
 		//try to find the control.
 		if(!this.control)
-			this.control = jQuery("#" + this.options.ControlToValidate).get(0);
+			this.control = document.getElementById(this.options.ControlToValidate);
 
-		if(!this.control || this.control.disabled || !jQuery.contains(document, this.control))
+		if(!this.control || this.control.disabled || !document.contains(this.control))
 		{
 			this.isValid = true;
 			return this.isValid;
@@ -1059,8 +1182,7 @@ Prado.WebUI.TBaseValidator = jQuery.klass(Prado.WebUI.Control,
 	 * Updates the validation messages and the control to validate.
 	 * @param {element} invoker - DOM element that triggered validation
 	 */
-	updateValidationDisplay : function(invoker)
-	{
+	updateValidationDisplay(invoker) {
 		if(this.isValid)
 		{
 			if(typeof(this.options.OnValidationSuccess) == "function")
@@ -1092,28 +1214,29 @@ Prado.WebUI.TBaseValidator = jQuery.klass(Prado.WebUI.Control,
 	/**
 	 * Add control to observe for changes.
 	 * Re-validates upon change. If the validator is not visible,
-	 * no updates are propagated.
+	 * no updates are propagated. During a mouse press the re-validation
+	 * waits for the release (see {@see Prado.Validation.afterPress}).
 	 * @function ?
 	 * @param {element} control - DOM element of control to observe
 	 */
-	observeChanges : function(control)
-	{
+	observeChanges(control) {
 		if(!control) return;
 
-		var canObserveChanges = this.options.ObserveChanges != false;
-		var currentlyObserving = this._isObserving[control.id+this.options.ID];
+		const canObserveChanges = this.options.ObserveChanges != false;
+		const currentlyObserving = this._isObserving[control.id+this.options.ID];
 
 		if(canObserveChanges && !currentlyObserving)
 		{
-			var validator = this;
+			const validator = this;
 
-			this.observe(control, 'change', function()
-			{
-				if(validator.visible)
-				{
-					validator.validate();
-					validator.manager.updateSummary(validator.group);
-				}
+			this.observe(control, 'change', () => {
+				Prado.Validation.afterPress(() => {
+					if(validator.visible)
+					{
+						validator.validate();
+						validator.manager.updateSummary(validator.group);
+					}
+				});
 			});
 			this._isObserving[control.id+this.options.ID] = true;
 		}
@@ -1125,8 +1248,7 @@ Prado.WebUI.TBaseValidator = jQuery.klass(Prado.WebUI.Control,
 	 * @param {string} value - String that should be trimmed.
 	 * @return Trimmed string, empty string if value is not string.
 	 */
-	trim : function(value)
-	{
+	trim(value) {
 		return typeof(value) == "string" ? value.trim() : "";
 	},
 
@@ -1137,11 +1259,10 @@ Prado.WebUI.TBaseValidator = jQuery.klass(Prado.WebUI.Control,
 	 * @param {mixed} value - Value to convert.
 	 * @return Converted data value.
 	 */
-	convert : function(dataType, value)
-	{
+	convert(dataType, value) {
 		if(typeof(value) == "undefined")
 			value = this.getValidationValue();
-		var string = new String(value);
+		const string = new String(value);
 		switch(dataType)
 		{
 			case "Integer":
@@ -1154,7 +1275,7 @@ Prado.WebUI.TBaseValidator = jQuery.klass(Prado.WebUI.Control,
 					return value;
 				else
 				{
-					var value = Date.SimpleParse(string, this.options.DateFormat);
+					value = Date.SimpleParse(string, this.options.DateFormat);
 					if(value && typeof(value.getTime) == "function")
 						return value.getTime();
 					else
@@ -1174,8 +1295,7 @@ Prado.WebUI.TBaseValidator = jQuery.klass(Prado.WebUI.Control,
 	 * @param {optional element} control - Control to get value from (default: this.control)
 	 * @return Control value to validate
 	 */
-	 getRawValidationValue : function(control)
-	 {
+	 getRawValidationValue(control) {
 	 	if(!control)
 	 		control = this.control;
 	 	switch(this.options.ControlType)
@@ -1185,11 +1305,11 @@ Prado.WebUI.TBaseValidator = jQuery.klass(Prado.WebUI.Control,
 	 		case 'TDatePicker':
 	 			if(control.type == "text")
 	 			{
-	 				var value = this.trim(jQuery(control).val());
+	 				const value = this.trim(control.value);
 
 					if(this.options.DateFormat)
 	 				{
-	 					var date = Date.SimpleParse(value, this.options.DateFormat);
+	 					const date = Date.SimpleParse(value, this.options.DateFormat);
 	 					return date == null ? value : date;
 	 				}
 	 				else
@@ -1212,9 +1332,10 @@ Prado.WebUI.TBaseValidator = jQuery.klass(Prado.WebUI.Control,
 			case 'TRadioButton':
 				if(this.options.GroupName)
 					return this.getRadioButtonGroupValue();
+				// falls through
 			case 'TReCaptcha2':
  			default:
-	 			return jQuery(control).val();
+	 			return control.value;
 	 	}
 	 },
 
@@ -1226,9 +1347,8 @@ Prado.WebUI.TBaseValidator = jQuery.klass(Prado.WebUI.Control,
 	 * @param {optional element} control - Control to get value fron (default: this.control)
 	 * @return Control value to validate
 	 */
-	 getValidationValue : function(control)
-	 {
-	 	var value = this.getRawValidationValue(control);
+	 getValidationValue(control) {
+	 	const value = this.getRawValidationValue(control);
 		if(!control)
 			control = this.control;
 		switch(this.options.ControlType)
@@ -1253,15 +1373,13 @@ Prado.WebUI.TBaseValidator = jQuery.klass(Prado.WebUI.Control,
 	 * @function {string} ?
 	 * @return Value of a radio button group
 	 */
-	getRadioButtonGroupValue : function()
-	{
-		var name = this.control.name;
-		var value = "";
-		jQuery.each(document.getElementsByName(name), function(idx, el)
-		{
+	getRadioButtonGroupValue() {
+		const name = this.control.name;
+		let value = "";
+		for (const el of document.getElementsByName(name)) {
 			if(el.checked)
 				value =  el.value;
-		});
+		}
 		return value;
 	},
 
@@ -1269,9 +1387,8 @@ Prado.WebUI.TBaseValidator = jQuery.klass(Prado.WebUI.Control,
 	  * Observe changes in the drop down list date picker, IE only.
 	  * @function ?
 	  */
-	 observeDatePickerChanges : function()
-	 {
- 		var DatePicker = Prado.WebUI.TDatePicker;
+	 observeDatePickerChanges() {
+ 		const DatePicker = Prado.WebUI.TDatePicker;
  		this.observeChanges(DatePicker.getDayListControl(this.control));
 		this.observeChanges(DatePicker.getMonthListControl(this.control));
 		this.observeChanges(DatePicker.getYearListControl(this.control));
@@ -1286,19 +1403,17 @@ Prado.WebUI.TBaseValidator = jQuery.klass(Prado.WebUI.Control,
 	 * @... {mixed[]} values - Array of selected values
 	 * @... {int} checks - Number of selections
 	 */
-	getSelectedValuesAndChecks : function(elements, initialValue)
-	{
-		var checked = 0;
-		var values = [];
-		var isSelected = this.isCheckBoxType(elements[0]) ? 'checked' : 'selected';
-		jQuery.each(elements, function(idx, element)
-		{
+	getSelectedValuesAndChecks(elements, initialValue) {
+		let checked = 0;
+		const values = [];
+		const isSelected = this.isCheckBoxType(elements[0]) ? 'checked' : 'selected';
+		for (const element of elements) {
 			if(element[isSelected] && element.value != initialValue)
 			{
 				checked++;
 				values.push(element.value);
 			}
-		});
+		}
 		return {'checks' : checked, 'values' : values};
 	},
 
@@ -1310,24 +1425,25 @@ Prado.WebUI.TBaseValidator = jQuery.klass(Prado.WebUI.Control,
 	 * @function {element[]} ?
 	 * @return Array of list control option DOM elements.
 	 */
-	getListElements : function()
-	{
+	getListElements() {
+		// Locals hoisted to the top of the function body so each switch arm
+		// can assign without retriggering no-redeclare across cases.
+		var elements, element, type;
 		switch(this.options.ControlType)
 		{
 			case 'TCheckBoxList':
 			case 'TRadioButtonList':
-				var elements = [];
-				for(var i = 0; i < this.options.TotalItems; i++)
+				elements = [];
+				for(let i = 0; i < this.options.TotalItems; i++)
 				{
-					var element = jQuery("#" + this.options.ControlToValidate+"_c"+i).get(0);
+					element = document.getElementById(`${this.options.ControlToValidate}_c${i}`);
 					if(this.isCheckBoxType(element))
 						elements.push(element);
 				}
 				return elements;
 			case 'TListBox':
-				var elements = [];
-				var element = jQuery("#" + this.options.ControlToValidate).get(0);
-				var type;
+				elements = [];
+				element = document.getElementById(this.options.ControlToValidate);
 				if(element && (type = element.type.toLowerCase()))
 				{
 					if(type == "select-one" || type == "select-multiple")
@@ -1345,11 +1461,10 @@ Prado.WebUI.TBaseValidator = jQuery.klass(Prado.WebUI.Control,
 	 * @param {element} element - DOM element to check.
 	 * @return True if element is of checkbox or radio type.
 	 */
-	isCheckBoxType : function(element)
-	{
+	isCheckBoxType(element) {
 		if(element && element.type)
 		{
-			var type = element.type.toLowerCase();
+			const type = element.type.toLowerCase();
 			return type == "checkbox" || type == "radio";
 		}
 		return false;
@@ -1360,13 +1475,12 @@ Prado.WebUI.TBaseValidator = jQuery.klass(Prado.WebUI.Control,
 	 * @function {string} ?
 	 * @return First selected list value, initial value if none found.
 	 */
-	getFirstSelectedListValue : function()
-	{
-		var initial = "";
+	getFirstSelectedListValue() {
+		let initial = "";
 		if(typeof(this.options.InitialValue) != "undefined")
 			initial = this.options.InitialValue;
-		var elements = this.getListElements();
-		var selection = this.getSelectedValuesAndChecks(elements, initial);
+		const elements = this.getListElements();
+		const selection = this.getSelectedValuesAndChecks(elements, initial);
 		return selection.values.length > 0 ? selection.values[0] : initial;
 	}
 });
@@ -1381,17 +1495,16 @@ Prado.WebUI.TBaseValidator = jQuery.klass(Prado.WebUI.Control,
  * @class Prado.WebUI.TRequiredFieldValidator
  * @extends Prado.WebUI.TBaseValidator
  */
-Prado.WebUI.TRequiredFieldValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
+Prado.WebUI.TRequiredFieldValidator = Prado.Class(Prado.WebUI.TBaseValidator,
 {
 	/**
 	 * Evaluate validation state
 	 * @function {boolean} ?
 	 * @return True if the input value is not empty nor equal to the initial value.
 	 */
-	evaluateIsValid : function()
-	{
-    	var a = this.getValidationValue();
-    	var b = this.trim(this.options.InitialValue);
+	evaluateIsValid() {
+    	const a = this.getValidationValue();
+    	const b = this.trim(this.options.InitialValue);
     	return(a != b);
 	}
 });
@@ -1422,7 +1535,7 @@ Prado.WebUI.TRequiredFieldValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
  * @class Prado.WebUI.TCompareValidator
  * @extends Prado.WebUI.TBaseValidator
  */
-Prado.WebUI.TCompareValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
+Prado.WebUI.TCompareValidator = Prado.Class(Prado.WebUI.TBaseValidator,
 {
 	/**
 	 * Additional constructor options.
@@ -1443,20 +1556,20 @@ Prado.WebUI.TCompareValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
 	 * @function {boolean} ?
 	 * @return True if comparision condition is met.
 	 */
-	evaluateIsValid : function()
-	{
-		var value = this.getValidationValue();
+	evaluateIsValid() {
+		const value = this.getValidationValue();
 	    if (value.length <= 0)
 	    	return true;
 
-    	var comparee = jQuery("#" + this.options.ControlToCompare).get(0);
+    	const comparee = document.getElementById(this.options.ControlToCompare);
 
+		let compareTo;
 		if(comparee)
-			var compareTo = this.getValidationValue(comparee);
+			compareTo = this.getValidationValue(comparee);
 		else
-			var compareTo = this.options.ValueToCompare || "";
+			compareTo = this.options.ValueToCompare || "";
 
-	    var isValid =  this.compare(value, compareTo);
+	    const isValid =  this.compare(value, compareTo);
 
 		if(comparee)
 		{
@@ -1477,9 +1590,8 @@ Prado.WebUI.TCompareValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
 	 * @param {mixed} operand1 - First operand.
 	 * @param {mixed} operand2 - Second operand.
 	 */
-	compare : function(operand1, operand2)
-	{
-		var op1, op2;
+	compare(operand1, operand2) {
+		let op1, op2;
 		if((op1 = this.convert(this.options.DataType, operand1)) == null)
 			return false;
 		if ((op2 = this.convert(this.options.DataType, operand2)) == null)
@@ -1499,6 +1611,58 @@ Prado.WebUI.TCompareValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
 	        default:
 	            return (op1 == op2);
 	    }
+	}
+});
+
+/**
+ * TLuhnValidator validates whether the value of an associated input component
+ * passes the Luhn (mod 10) checksum. The checks match the server side
+ * TLuhnValidator.
+ *
+ * @class Prado.WebUI.TLuhnValidator
+ * @extends Prado.WebUI.TBaseValidator
+ */
+Prado.WebUI.TLuhnValidator = Prado.Class(Prado.WebUI.TBaseValidator,
+{
+	/**
+	 * Additional constructor options.
+	 * @constructor initialize
+	 * @param {object} options - Additional constructor options:
+	 * @... {boolean} AllowSeparators - Whether spaces and hyphens between the digits are ignored.
+	 */
+
+	/**
+	 * Evaluate validation state
+	 * @function {boolean} ?
+	 * @return True if the value passes the Luhn checksum or the value is empty.
+	 */
+	evaluateIsValid() {
+		let value = this.getRawValidationValue();
+		if (value.length <= 0)
+			return true;
+		if (this.options.AllowSeparators)
+			value = value.replace(/[ -]/g, '');
+		return this.isValidLuhn(value);
+	},
+
+	/**
+	 * Checks a string of digits against the Luhn checksum.
+	 * @function {boolean} ?
+	 * @param {string} digits - The digits.
+	 * @return True if the string has 2 or more digits only and passes the checksum.
+	 */
+	isValidLuhn(digits) {
+		if (!/^[0-9]{2,}$/.test(digits))
+			return false;
+		let sum = 0, double = false;
+		for (let i = digits.length - 1; i >= 0; i--) {
+			let digit = digits.charCodeAt(i) - 48;
+			if (double && (digit *= 2) > 9)
+				digit -= 9;
+			sum += digit;
+			double = !double;
+		}
+		return sum % 10 == 0;
 	}
 });
 
@@ -1529,7 +1693,7 @@ Prado.WebUI.TCompareValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
  * @class Prado.WebUI.TCustomValidator
  * @extends Prado.WebUI.TBaseValidator
  */
-Prado.WebUI.TCustomValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
+Prado.WebUI.TCustomValidator = Prado.Class(Prado.WebUI.TBaseValidator,
 {
 	/**
 	 * Additional constructor options.
@@ -1544,13 +1708,12 @@ Prado.WebUI.TCustomValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
 	 * @function {boolean} ?
 	 * @return True if custom validation returned true.
 	 */
-	evaluateIsValid : function()
-	{
-		var value = this.getValidationValue();
-		var clientFunction = this.options.ClientValidationFunction;
+	evaluateIsValid() {
+		const value = this.getValidationValue();
+		const clientFunction = this.options.ClientValidationFunction;
 		if(typeof(clientFunction) == "string" && clientFunction.length > 0)
 		{
-			var validate = clientFunction.toFunction();
+			const validate = clientFunction.toFunction();
 			return validate(this, value);
 		}
 		return true;
@@ -1563,7 +1726,7 @@ Prado.WebUI.TCustomValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
  * @class Prado.WebUI.TActiveCustomValidator
  * @extends Prado.WebUI.TBaseValidator
  */
-Prado.WebUI.TActiveCustomValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
+Prado.WebUI.TActiveCustomValidator = Prado.Class(Prado.WebUI.TBaseValidator,
 {
 	/**
 	 * Override the parent implementation to store the invoker, in order to
@@ -1574,13 +1737,12 @@ Prado.WebUI.TActiveCustomValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
 	 * @param {element} invoker - DOM element that triggered validation
 	 * @return True if valid.
 	 */
-	validate : function(invoker)
-	{
+	validate(invoker) {
 		this.invoker = invoker;
 
 		//try to find the control.
 		if(!this.control)
-			this.control = jQuery("#" + this.options.ControlToValidate).get(0);
+			this.control = document.getElementById(this.options.ControlToValidate);
 
 		if(!this.control || this.control.disabled)
 		{
@@ -1602,8 +1764,7 @@ Prado.WebUI.TActiveCustomValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
 	 * @function {boolean} ?
 	 * @return True if valid.
 	 */
-	evaluateIsValid : function()
-	{
+	evaluateIsValid() {
 		return this.isValid;
 	},
 
@@ -1613,8 +1774,7 @@ Prado.WebUI.TActiveCustomValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
 	 * @param {CallbackRequest} request - CallbackRequest.
 	 * @param {string} data - Response data.
 	 */
-	updateIsValid : function(data)
-	{
+	updateIsValid(data) {
 		this.isValid = data;
 		this.requestDispatched = false;
 		if(typeof(this.options.onSuccess) == "function")
@@ -1642,11 +1802,18 @@ Prado.WebUI.TActiveCustomValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
  *   setting <tt>DateFormat</tt> option, which must be recognizable
  *   by <tt>Date.SimpleParse</tt> javascript function.
  * - <b>String</b> A string data type.
+ * - <b>Time</b>, <b>Month</b>, <b>Week</b>, <b>DateTimeLocal</b> The values of the
+ *   matching HTML input types: <tt>HH:mm[:ss[.sss]]</tt>, <tt>yyyy-MM</tt>,
+ *   <tt>yyyy-Www</tt>, and <tt>yyyy-MM-ddTHH:mm[:ss[.sss]]</tt>.
+ *
+ * <p>The <tt>Step</tt> option requires the value to be <tt>MinValue</tt> plus a
+ * whole number of steps, in the unit of the data type: a number, days for Date,
+ * seconds for Time and DateTimeLocal, months for Month, and weeks for Week.</p>
  *
  * @class Prado.WebUI.TRangeValidator
  * @extends Prado.WebUI.TBaseValidator
  */
-Prado.WebUI.TRangeValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
+Prado.WebUI.TRangeValidator = Prado.Class(Prado.WebUI.TBaseValidator,
 {
 	/**
 	 * Additional constructor options.
@@ -1656,6 +1823,7 @@ Prado.WebUI.TRangeValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
 	 * @... {string} MaxValue - Maximum range value
 	 * @... {string} DataType - Value data type: "Integer", "Float", "Date" or "String"
 	 * @... {string} DateFormat - Date format for data type Date.
+	 * @... {string} Step - Step between valid values, in the unit of the data type.
 	 */
 
 	/**
@@ -1664,37 +1832,140 @@ Prado.WebUI.TRangeValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
 	 * @return True if value is in range or value is empty,
 	 * false otherwhise and when type conversion failed.
 	 */
-	evaluateIsValid : function()
-	{
-		var value = this.getValidationValue();
+	evaluateIsValid() {
+		let value = this.getValidationValue();
 		if(value.length <= 0)
 			return true;
 		if(typeof(this.options.DataType) == "undefined")
 			this.options.DataType = "String";
+		const raw = value;
 
-		if(this.options.DataType != "StringLength")
+		let min, max;
+		if(this.isHtmlType(this.options.DataType))
 		{
-			var min = this.convert(this.options.DataType, this.options.MinValue || null);
-			var max = this.convert(this.options.DataType, this.options.MaxValue || null);
+			min = this.options.MinValue ? this.convertHtml(this.options.DataType, this.options.MinValue) : null;
+			max = this.options.MaxValue ? this.convertHtml(this.options.DataType, this.options.MaxValue) : null;
+			value = this.convertHtml(this.options.DataType, value);
+			if((this.options.MinValue && min == null) || (this.options.MaxValue && max == null))
+				return false;
+		}
+		else if(this.options.DataType != "StringLength")
+		{
+			min = this.convert(this.options.DataType, this.options.MinValue || null);
+			max = this.convert(this.options.DataType, this.options.MaxValue || null);
 			value = this.convert(this.options.DataType, value);
 		}
 		else
 		{
-			var min = this.options.MinValue || 0;
-			var max = this.options.MaxValue || Number.POSITIVE_INFINITY;
+			min = this.options.MinValue || 0;
+			max = this.options.MaxValue || Number.POSITIVE_INFINITY;
 			value = value.length;
 		}
 
 		if(value == null)
 			return false;
 
-		var valid = true;
+		let valid = true;
 
 		if(min != null)
 			valid = valid && (this.options.StrictComparison ? value > min : value >= min);
 		if(max != null)
 			valid = valid && (this.options.StrictComparison ? value < max : value <= max);
-		return valid;
+		return valid && this.isValidStep(raw);
+	},
+
+	/**
+	 * @function {boolean} ?
+	 * @param {string} dataType - Data type
+	 * @return True for the HTML input data types Time, Month, Week, and DateTimeLocal.
+	 */
+	isHtmlType(dataType) {
+		return dataType == "Time" || dataType == "Month" || dataType == "Week" || dataType == "DateTimeLocal";
+	},
+
+	/**
+	 * Converts a Time, Month, Week, or DateTimeLocal value to a number: seconds since
+	 * midnight, months since 1970-01, weeks since 1970-W01, or seconds since
+	 * 1970-01-01T00:00.
+	 * @function {?number} ?
+	 * @param {string} dataType - Data type
+	 * @param {string} value - Value
+	 * @return The number, or null when the value does not have the format.
+	 */
+	convertHtml(dataType, value) {
+		const v = String(value).trim();
+		let m;
+		switch(dataType)
+		{
+			case "Time":
+				m = /^([01]\d|2[0-3]):([0-5]\d)(?::([0-5]\d)(?:\.(\d{1,3}))?)?$/.exec(v);
+				return m ? m[1] * 3600 + m[2] * 60 + Number(m[3] || 0) + Number(`0.${m[4] || 0}`) : null;
+			case "Month":
+				m = /^(\d{4,})-(0[1-9]|1[0-2])$/.exec(v);
+				return m ? (m[1] - 1970) * 12 + (m[2] - 1) : null;
+			case "Week": {
+				m = /^(\d{4,})-W(\d{2})$/.exec(v);
+				if(!m || Number(m[2]) < 1)
+					return null;
+				const year = Number(m[1]);
+				const jan4 = Date.UTC(year, 0, 4);
+				const monday = jan4 - ((new Date(jan4).getUTCDay() + 6) % 7) * 86400000 + (Number(m[2]) - 1) * 604800000;
+				if(new Date(monday + 3 * 86400000).getUTCFullYear() != year)
+					return null;
+				return (monday - Date.UTC(1969, 11, 29)) / 604800000;
+			}
+			case "DateTimeLocal": {
+				m = /^(\d{4,})-(\d{2})-(\d{2})[T ]([01]\d|2[0-3]):([0-5]\d)(?::([0-5]\d)(?:\.(\d{1,3}))?)?$/.exec(v);
+				if(!m)
+					return null;
+				const time = Date.UTC(m[1], m[2] - 1, m[3], m[4], m[5], m[6] || 0);
+				const date = new Date(time);
+				if(date.getUTCFullYear() != m[1] || date.getUTCMonth() != m[2] - 1 || date.getUTCDate() != m[3])
+					return null;
+				return time / 1000 + Number(`0.${m[7] || 0}`);
+			}
+		}
+		return null;
+	},
+
+	/**
+	 * Converts a value to a number in the step unit of the data type.
+	 * @function {?number} ?
+	 * @param {string} value - Value
+	 * @return The number, or null when the value does not convert.
+	 */
+	convertStep(value) {
+		const dataType = this.options.DataType;
+		if(this.isHtmlType(dataType))
+			return this.convertHtml(dataType, value);
+		const number = this.convert(dataType, value);
+		if(number == null || isNaN(number))
+			return null;
+		if(dataType == "Date")
+		{
+			const date = new Date(number);
+			return Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) / 86400000;
+		}
+		return (dataType == "Integer" || dataType == "Float" || dataType == "Double") ? number : null;
+	},
+
+	/**
+	 * @function {boolean} ?
+	 * @param {string} value - Value
+	 * @return True when there is no Step, or the value is MinValue plus a whole number of steps.
+	 */
+	isValidStep(value) {
+		const step = Number(this.options.Step);
+		if(!this.options.Step || !(step > 0))
+			return true;
+		if(this.options.DataType == "String" || this.options.DataType == "StringLength")
+			return true;
+		const number = this.convertStep(value);
+		if(number == null)
+			return false;
+		const min = this.options.MinValue ? this.convertStep(this.options.MinValue) : null;
+		const steps = (number - (min == null ? 0 : min)) / step;
+		return Math.abs(steps - Math.round(steps)) <= 1e-9 * Math.max(1, Math.abs(steps));
 	}
 });
 
@@ -1705,7 +1976,7 @@ Prado.WebUI.TRangeValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
  * @class Prado.WebUI.TRegularExpressionValidator
  * @extends Prado.WebUI.TBaseValidator
  */
-Prado.WebUI.TRegularExpressionValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
+Prado.WebUI.TRegularExpressionValidator = Prado.Class(Prado.WebUI.TBaseValidator,
 {
 	/**
 	 * Additional constructor option.
@@ -1720,14 +1991,13 @@ Prado.WebUI.TRegularExpressionValidator = jQuery.klass(Prado.WebUI.TBaseValidato
 	 * @function {boolean} ?
 	 * @return True if value matches regular expression or value is empty.
 	 */
-	evaluateIsValid : function()
-	{
-		var value = this.getRawValidationValue();
+	evaluateIsValid() {
+		const value = this.getRawValidationValue();
 		if (value.length <= 0)
 	    	return true;
 
-		var rx = new RegExp('^'+this.options.ValidationExpression+'$',this.options.PatternModifiers);
-		var matches = rx.exec(value);
+		const rx = new RegExp(`^${this.options.ValidationExpression}$`,this.options.PatternModifiers);
+		const matches = rx.exec(value);
 		return (matches != null && value == matches[0]);
 	}
 });
@@ -1741,6 +2011,121 @@ Prado.WebUI.TRegularExpressionValidator = jQuery.klass(Prado.WebUI.TBaseValidato
  */
 Prado.WebUI.TEmailAddressValidator = Prado.WebUI.TRegularExpressionValidator;
 
+/**
+ * TUrlValidator validates whether the value of an associated input component
+ * is an absolute URL with an allowed scheme and a valid host. The checks
+ * match the server side TUrlValidator.
+ *
+ * @class Prado.WebUI.TUrlValidator
+ * @extends Prado.WebUI.TBaseValidator
+ */
+Prado.WebUI.TUrlValidator = Prado.Class(Prado.WebUI.TBaseValidator,
+{
+	/**
+	 * Additional constructor options.
+	 * @constructor initialize
+	 * @param {object} options - Additional constructor options:
+	 * @... {string[]} ValidSchemes - Lower case allowed schemes; empty allows every scheme.
+	 * @... {boolean} AllowIdn - Whether the host may be an internationalized domain name.
+	 * @... {boolean} RequireTld - Whether a domain name host requires a top-level label.
+	 */
+
+	/**
+	 * Evaluate validation state
+	 * @function {boolean} ?
+	 * @return True if the value is a valid URL or the value is empty.
+	 */
+	evaluateIsValid() {
+		const value = this.getRawValidationValue();
+		if (value.length <= 0)
+			return true;
+		return this.isValidUrl(value);
+	},
+
+	/**
+	 * Checks a URL against the scheme, host, and port restrictions.
+	 * @function {boolean} ?
+	 * @param {string} value - The URL.
+	 * @return True if the URL is valid.
+	 */
+	isValidUrl(value) {
+		// The control characters are matched on purpose: a URL must not contain them.
+		// eslint-disable-next-line no-control-regex
+		const m = /^([a-z][a-z0-9+.-]*):\/\/(?:[^\x00-\x20\x7f/?#@[\]]+@)?(\[[0-9a-f:.]+\]|[^\x00-\x20\x7f/?#@:[\]%]+)(?::([0-9]{1,5}))?(?:[/?#][^\x00-\x20\x7f]*)?$/iu.exec(value);
+		if (m == null)
+			return false;
+		const schemes = this.options.ValidSchemes || [];
+		if (schemes.length > 0 && schemes.indexOf(m[1].toLowerCase()) < 0)
+			return false;
+		if (m[3] !== undefined && parseInt(m[3], 10) > 65535)
+			return false;
+		return this.isValidHost(m[2]);
+	},
+
+	/**
+	 * Checks the host of a URL: a bracketed IPv6 address, an IPv4 address, or a domain name.
+	 * An internationalized domain name is converted to ASCII by the browser URL parser.
+	 * @function {boolean} ?
+	 * @param {string} host - The host.
+	 * @return True if the host is valid.
+	 */
+	isValidHost(host) {
+		if (host.charAt(0) == '[')
+			return this.isIPv6(host.slice(1, -1));
+		if (/^[0-9.]+$/.test(host))
+			return this.isIPv4(host);
+		if (/[^ -~]/.test(host)) {
+			if (!this.options.AllowIdn)
+				return false;
+			try {
+				host = new URL(`http://${host}/`).hostname;
+			} catch {
+				return false;
+			}
+		}
+		host = host.toLowerCase();
+		const label = '[a-z0-9_](?:[a-z0-9_\\-]{0,61}[a-z0-9_])?';
+		if (host.length > 253 || !new RegExp(`^${label}(?:\\.${label})*$`).test(host))
+			return false;
+		if (this.options.RequireTld) {
+			const labels = host.split('.');
+			return labels.length > 1 && /^(?:[a-z]{2,63}|xn--[a-z0-9-]{1,59})$/.test(labels[labels.length - 1]);
+		}
+		return true;
+	},
+
+	/**
+	 * @function {boolean} ?
+	 * @param {string} value - The address.
+	 * @return True if the value is a dotted decimal IPv4 address without leading zeros.
+	 */
+	isIPv4(value) {
+		return /^(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)\.){3}(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)$/.test(value);
+	},
+
+	/**
+	 * @function {boolean} ?
+	 * @param {string} value - The address.
+	 * @return True if the value is an IPv6 address, optionally ending in an IPv4 address.
+	 */
+	isIPv6(value) {
+		if (value.indexOf('.') >= 0) {
+			const last = value.lastIndexOf(':');
+			if (last < 0 || !this.isIPv4(value.substring(last + 1)))
+				return false;
+			value = `${value.substring(0, last + 1)}0:0`;
+		}
+		const halves = value.split('::');
+		if (halves.length > 2)
+			return false;
+		const groups = (half) => half === '' ? [] : half.split(':');
+		const all = halves.length == 2 ? groups(halves[0]).concat(groups(halves[1])) : groups(halves[0]);
+		if (!all.every((group) => /^[0-9a-f]{1,4}$/i.test(group)))
+			return false;
+		return halves.length == 2 ? all.length < 8 : all.length == 8;
+	}
+});
+
 
 /**
  * TListControlValidator checks the number of selection and their values
@@ -1749,22 +2134,21 @@ Prado.WebUI.TEmailAddressValidator = Prado.WebUI.TRegularExpressionValidator;
  * @class Prado.WebUI.TListControlValidator
  * @extends Prado.WebUI.TBaseValidator
  */
-Prado.WebUI.TListControlValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
+Prado.WebUI.TListControlValidator = Prado.Class(Prado.WebUI.TBaseValidator,
 {
 	/**
 	 * Evaluate validation state
 	 * @function {boolean} ?
 	 * @return True if number of selections and/or their values match requirements.
 	 */
-	evaluateIsValid : function()
-	{
-		var elements = this.getListElements();
+	evaluateIsValid() {
+		const elements = this.getListElements();
 		if(elements && elements.length <= 0)
 			return true;
 
 		this.observeListElements(elements);
 
-		var selection = this.getSelectedValuesAndChecks(elements);
+		const selection = this.getSelectedValuesAndChecks(elements);
 		return this.isValidList(selection.checks, selection.values);
 	},
 
@@ -1773,15 +2157,12 @@ Prado.WebUI.TListControlValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
 	 * @function ?
 	 * @param {element[]} elements - Array of DOM elements to observe
 	 */
-	 observeListElements : function(elements)
-	 {
+	 observeListElements(elements) {
 		if(this.isCheckBoxType(elements[0]))
 		{
-			var validator = this;
-			jQuery.each(elements, function(idx, element)
-			{
-				validator.observeChanges(element);
-			});
+			for (const element of elements) {
+				this.observeChanges(element);
+			}
 		}
 	 },
 
@@ -1795,25 +2176,23 @@ Prado.WebUI.TListControlValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
 	 * @param {string[]} values - Array of required checked values
 	 * @return True if checked values and number of checks are satisfied.
 	 */
-	isValidList : function(checked, values)
-	{
-		var exists = true;
+	isValidList(checked, values) {
+		let exists = true;
 
 		//check the required values
-		var required = this.getRequiredValues();
+		const required = this.getRequiredValues();
 		if(required.length > 0)
 		{
 			if(values.length < required.length)
 				return false;
-			jQuery.each(required, function(idx, requiredValue)
-			{
-				exists = exists && (jQuery.inArray(requiredValue, values)!=-1);
-			});
+			for (const requiredValue of required) {
+				exists = exists && values.includes(requiredValue);
+			}
 		}
 
-		var min = typeof(this.options.Min) == "undefined" ?
+		const min = typeof(this.options.Min) == "undefined" ?
 					Number.NEGATIVE_INFINITY : this.options.Min;
-		var max = typeof(this.options.Max) == "undefined" ?
+		const max = typeof(this.options.Max) == "undefined" ?
 					Number.POSITIVE_INFINITY : this.options.Max;
 		return exists && checked >= min && checked <= max;
 	},
@@ -1823,15 +2202,91 @@ Prado.WebUI.TListControlValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
 	 * @function {string[]} ?
 	 * @return Array of required values that must be selected.
 	 */
-	getRequiredValues : function()
-	{
-		var required = [];
+	getRequiredValues() {
+		let required = [];
 		if(this.options.Required && this.options.Required.length > 0)
 			required = this.options.Required.split(/,\s*/);
 		return required;
 	}
 });
 
+
+/**
+ * TJsonValidator validates whether the value of an associated input component
+ * is JSON text. The checks match the server side TJsonValidator: JSON.parse()
+ * syntax, no unpaired UTF-16 surrogate escape, and arrays and objects nested
+ * fewer than MaxDepth levels.
+ *
+ * @class Prado.WebUI.TJsonValidator
+ * @extends Prado.WebUI.TBaseValidator
+ */
+Prado.WebUI.TJsonValidator = Prado.Class(Prado.WebUI.TBaseValidator,
+{
+	/**
+	 * Additional constructor options.
+	 * @constructor initialize
+	 * @param {object} options - Additional constructor options:
+	 * @... {number} MaxDepth - The PHP JSON depth; at most MaxDepth - 1 arrays and objects nest.
+	 */
+
+	/**
+	 * Evaluate validation state
+	 * @function {boolean} ?
+	 * @return True if the value is JSON text or the value is empty.
+	 */
+	evaluateIsValid() {
+		const value = this.getRawValidationValue();
+		if (value.length <= 0)
+			return true;
+		return this.isValidJson(value);
+	},
+
+	/**
+	 * Checks whether a string is JSON text.
+	 * @function {boolean} ?
+	 * @param {string} value - The string.
+	 * @return True if the string is JSON text.
+	 */
+	isValidJson(value) {
+		let wellFormed = true;
+		try {
+			JSON.parse(value, (key, item) => {
+				if (/\p{Cs}/u.test(key) || (typeof item == 'string' && /\p{Cs}/u.test(item)))
+					wellFormed = false;
+				return item;
+			});
+		} catch {
+			return false;
+		}
+		return wellFormed && this.nestingDepth(value) < (this.options.MaxDepth || 512);
+	},
+
+	/**
+	 * Measures the deepest nesting of arrays and objects in parsed JSON text.
+	 * @function {number} ?
+	 * @param {string} value - JSON text that JSON.parse() accepts.
+	 * @return The deepest nesting level; 0 for a scalar.
+	 */
+	nestingDepth(value) {
+		let depth = 0, max = 0, inString = false;
+		for (let i = 0; i < value.length; i++) {
+			const c = value.charAt(i);
+			if (inString) {
+				if (c == '\\')
+					i++;
+				else if (c == '"')
+					inString = false;
+			} else if (c == '"') {
+				inString = true;
+			} else if (c == '[' || c == '{') {
+				max = Math.max(max, ++depth);
+			} else if (c == ']' || c == '}') {
+				depth--;
+			}
+		}
+		return max;
+	}
+});
 
 /**
  * TDataTypeValidator verifies if the input data is of the type specified
@@ -1850,7 +2305,7 @@ Prado.WebUI.TListControlValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
  * @class Prado.WebUI.TDataTypeValidator
  * @extends Prado.WebUI.TBaseValidator
  */
-Prado.WebUI.TDataTypeValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
+Prado.WebUI.TDataTypeValidator = Prado.Class(Prado.WebUI.TBaseValidator,
 {
 	/**
 	 * Additional constructor option.
@@ -1865,9 +2320,8 @@ Prado.WebUI.TDataTypeValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
 	 * @function {boolean} ?
 	 * @return True if value matches required data type.
 	 */
-	evaluateIsValid : function()
-	{
-		var value = this.getValidationValue();
+	evaluateIsValid() {
+		const value = this.getValidationValue();
 		if(value.length <= 0)
 			return true;
 		return this.convert(this.options.DataType, value) != null;
@@ -1875,40 +2329,175 @@ Prado.WebUI.TDataTypeValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
 });
 
 /**
- * TCaptchaValidator verifies if the input data is the same as
- * the token shown in the associated CAPTCHA control.
+ * TUnicodeValidator checks for suspicious Unicode characters on the server
+ * only, with the intl Spoofchecker. The client side validator always succeeds,
+ * so a value the server rejected is checked again on the next postback.
  *
- * @class Prado.WebUI.TCaptchaValidator
+ * @class Prado.WebUI.TUnicodeValidator
  * @extends Prado.WebUI.TBaseValidator
  */
-Prado.WebUI.TCaptchaValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
+Prado.WebUI.TUnicodeValidator = Prado.Class(Prado.WebUI.TBaseValidator,
 {
 	/**
 	 * Evaluate validation state
 	 * @function {boolean} ?
-	 * @return True if value matches captcha text
+	 * @return Always true; the server validates.
 	 */
-	evaluateIsValid : function()
-	{
-		var a = this.getValidationValue();
-		var h = 0;
-		if (this.options.CaseSensitive==false)
-			a = a.toUpperCase();
-		for(var i = a.length-1; i >= 0; --i)
-			h += a.charCodeAt(i);
-		return h == this.options.TokenHash;
+	evaluateIsValid() {
+		return true;
+  }
+});
+
+/**
+ * TPasswordStrengthValidator validates whether the value of an associated
+ * input component is a password with enough estimated entropy. The estimate
+ * matches the server side TPasswordStrengthValidator::estimateEntropy(); the
+ * compromised password check runs on the server only.
+ *
+ * @class Prado.WebUI.TPasswordStrengthValidator
+ * @extends Prado.WebUI.TBaseValidator
+ */
+Prado.WebUI.TPasswordStrengthValidator = Prado.Class(Prado.WebUI.TBaseValidator,
+{
+	/**
+	 * Additional constructor options.
+	 * @constructor initialize
+	 * @param {object} options - Additional constructor options:
+	 * @... {number} MinEntropy - Minimum estimated entropy in bits.
+	 */
+
+	/**
+	 * Evaluate validation state
+	 * @function {boolean} ?
+	 * @return True if the password has enough estimated entropy or the value is empty.
+	 */
+	evaluateIsValid() {
+		const value = this.getRawValidationValue();
+		if (value.length <= 0)
+			return true;
+		return this.estimateEntropy(value) >= this.options.MinEntropy;
 	},
 
-	crc32 : function(str)
-	{
+	/**
+	 * Estimates the entropy of a password in bits.
+	 * @function {number} ?
+	 * @param {string} password - The password.
+	 * @return The estimated entropy in bits; see {@see Prado.Validation.estimatePasswordEntropy}.
+	 */
+	estimateEntropy(password) {
+		return Prado.Validation.estimatePasswordEntropy(password);
+	}
+});
+
+/**
+ * TPasswordStrengthMeter shows the estimated strength of the password typed in
+ * a control: the fill of its bar grows from the left and shifts from red to
+ * green as the estimated entropy grows toward MaxEntropy. Optional texts name
+ * the strength level and show the bits. The element is a role="meter" whose aria-valuenow is the
+ * entropy in bits and whose aria-valuetext is the level name.
+ *
+ * @class Prado.WebUI.TPasswordStrengthMeter
+ * @extends Prado.WebUI.Control
+ */
+Prado.WebUI.TPasswordStrengthMeter = Prado.Class(Prado.WebUI.Control,
+{
+	/**
+	 * Constructor options.
+	 * @constructor onInit
+	 * @param {object} options - Constructor options:
+	 * @... {string} ID - Client ID of the meter.
+	 * @... {string} ControlToMeasure - Client ID of the password control.
+	 * @... {number} MaxEntropy - Entropy in bits that fills the bar.
+	 * @... {string[]} LevelTexts - Level names from VeryWeak to VeryStrong.
+	 * @... {number[]} LevelEntropy - Entropy in bits at which each level starts.
+	 * @... {string} Culture - Culture of the bits text, such as "de-DE"; empty uses the browser.
+	 * @... {object} BitsPatterns - Bits text patterns keyed by CLDR plural category; "{0}" is the number.
+	 */
+	onInit(options) {
+		this.options = options;
+		this.control = document.getElementById(options.ControlToMeasure);
+		if (!this.element || !this.control)
+			return;
+		this.bar = this.element.querySelector('.prado-password-meter-bar');
+		this.fill = this.element.querySelector('.prado-password-meter-fill');
+		this.text = this.element.querySelector('.prado-password-meter-text');
+		this.bits = this.element.querySelector('.prado-password-meter-bits');
+		const culture = options.Culture || undefined;
+		try {
+			this.pluralRules = new Intl.PluralRules(culture);
+			this.numberFormat = new Intl.NumberFormat(culture);
+		} catch {
+			this.pluralRules = new Intl.PluralRules();
+			this.numberFormat = new Intl.NumberFormat();
+		}
+		this.observe(this.control, 'input', () => this.update());
+		this.update();
+	},
+
+	/**
+	 * Measures the password and updates the fill, the color, the texts, and the meter values.
+	 * @function ?
+	 */
+	update() {
+		const value = this.control.value || '';
+		const bits = Prado.Validation.estimatePasswordEntropy(value);
+		const fraction = Math.min(bits / this.options.MaxEntropy, 1);
+		this.fill.style.width = `${(fraction * 100).toFixed(2)}%`;
+		this.bar.style.setProperty('--prado-meter-hue', String(Math.round(fraction * 120)));
+		let level = 0;
+		this.options.LevelEntropy.forEach((start, i) => {
+			if (bits >= start)
+				level = i;
+		});
+		const name = this.options.LevelTexts[level];
+		if (this.text)
+			this.text.textContent = value.length > 0 ? name : '';
+		if (this.bits)
+			this.bits.textContent = value.length > 0 ? this.formatBits(Math.round(bits)) : '';
+		this.element.setAttribute('aria-valuenow', String(Math.round(Math.min(bits, this.options.MaxEntropy))));
+		this.element.setAttribute('aria-valuetext', name);
+	},
+
+	/**
+	 * Formats a number of bits with the plural pattern of the culture.
+	 * @function {string} ?
+	 * @param {number} bits - The whole number of bits.
+	 * @return The bits text, such as "62 bits".
+	 */
+	formatBits(bits) {
+		const patterns = this.options.BitsPatterns || {};
+		const pattern = patterns[this.pluralRules.select(bits)] || patterns.other || patterns.one || '{0}';
+		return pattern.replace('{0}', this.numberFormat.format(bits));
+	}
+});
+
+/**
+ * TCaptchaValidator requires an input for the associated CAPTCHA control.
+ * The server compares the input with the token; the token never reaches the client.
+ *
+ * @class Prado.WebUI.TCaptchaValidator
+ * @extends Prado.WebUI.TBaseValidator
+ */
+Prado.WebUI.TCaptchaValidator = Prado.Class(Prado.WebUI.TBaseValidator,
+{
+	/**
+	 * Evaluate validation state
+	 * @function {boolean} ?
+	 * @return True if the input is not empty
+	 */
+	evaluateIsValid() {
+		return this.getValidationValue().trim().length > 0;
+	},
+
+	crc32(str) {
 	    function Utf8Encode(string)
 		{
 	        string = string.replace(/\r\n/g,"\n");
-	        var utftext = "";
+	        let utftext = "";
 
-	        for (var n = 0; n < string.length; n++)
+	        for (let n = 0; n < string.length; n++)
 			{
-	            var c = string.charCodeAt(n);
+	            const c = string.charCodeAt(n);
 
 	            if (c < 128) {
 	                utftext += String.fromCharCode(c);
@@ -1929,16 +2518,16 @@ Prado.WebUI.TCaptchaValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
 
 	    str = Utf8Encode(str);
 
-	    var table = "00000000 77073096 EE0E612C 990951BA 076DC419 706AF48F E963A535 9E6495A3 0EDB8832 79DCB8A4 E0D5E91E 97D2D988 09B64C2B 7EB17CBD E7B82D07 90BF1D91 1DB71064 6AB020F2 F3B97148 84BE41DE 1ADAD47D 6DDDE4EB F4D4B551 83D385C7 136C9856 646BA8C0 FD62F97A 8A65C9EC 14015C4F 63066CD9 FA0F3D63 8D080DF5 3B6E20C8 4C69105E D56041E4 A2677172 3C03E4D1 4B04D447 D20D85FD A50AB56B 35B5A8FA 42B2986C DBBBC9D6 ACBCF940 32D86CE3 45DF5C75 DCD60DCF ABD13D59 26D930AC 51DE003A C8D75180 BFD06116 21B4F4B5 56B3C423 CFBA9599 B8BDA50F 2802B89E 5F058808 C60CD9B2 B10BE924 2F6F7C87 58684C11 C1611DAB B6662D3D 76DC4190 01DB7106 98D220BC EFD5102A 71B18589 06B6B51F 9FBFE4A5 E8B8D433 7807C9A2 0F00F934 9609A88E E10E9818 7F6A0DBB 086D3D2D 91646C97 E6635C01 6B6B51F4 1C6C6162 856530D8 F262004E 6C0695ED 1B01A57B 8208F4C1 F50FC457 65B0D9C6 12B7E950 8BBEB8EA FCB9887C 62DD1DDF 15DA2D49 8CD37CF3 FBD44C65 4DB26158 3AB551CE A3BC0074 D4BB30E2 4ADFA541 3DD895D7 A4D1C46D D3D6F4FB 4369E96A 346ED9FC AD678846 DA60B8D0 44042D73 33031DE5 AA0A4C5F DD0D7CC9 5005713C 270241AA BE0B1010 C90C2086 5768B525 206F85B3 B966D409 CE61E49F 5EDEF90E 29D9C998 B0D09822 C7D7A8B4 59B33D17 2EB40D81 B7BD5C3B C0BA6CAD EDB88320 9ABFB3B6 03B6E20C 74B1D29A EAD54739 9DD277AF 04DB2615 73DC1683 E3630B12 94643B84 0D6D6A3E 7A6A5AA8 E40ECF0B 9309FF9D 0A00AE27 7D079EB1 F00F9344 8708A3D2 1E01F268 6906C2FE F762575D 806567CB 196C3671 6E6B06E7 FED41B76 89D32BE0 10DA7A5A 67DD4ACC F9B9DF6F 8EBEEFF9 17B7BE43 60B08ED5 D6D6A3E8 A1D1937E 38D8C2C4 4FDFF252 D1BB67F1 A6BC5767 3FB506DD 48B2364B D80D2BDA AF0A1B4C 36034AF6 41047A60 DF60EFC3 A867DF55 316E8EEF 4669BE79 CB61B38C BC66831A 256FD2A0 5268E236 CC0C7795 BB0B4703 220216B9 5505262F C5BA3BBE B2BD0B28 2BB45A92 5CB36A04 C2D7FFA7 B5D0CF31 2CD99E8B 5BDEAE1D 9B64C2B0 EC63F226 756AA39C 026D930A 9C0906A9 EB0E363F 72076785 05005713 95BF4A82 E2B87A14 7BB12BAE 0CB61B38 92D28E9B E5D5BE0D 7CDCEFB7 0BDBDF21 86D3D2D4 F1D4E242 68DDB3F8 1FDA836E 81BE16CD F6B9265B 6FB077E1 18B74777 88085AE6 FF0F6A70 66063BCA 11010B5C 8F659EFF F862AE69 616BFFD3 166CCF45 A00AE278 D70DD2EE 4E048354 3903B3C2 A7672661 D06016F7 4969474D 3E6E77DB AED16A4A D9D65ADC 40DF0B66 37D83BF0 A9BCAE53 DEBB9EC5 47B2CF7F 30B5FFE9 BDBDF21C CABAC28A 53B39330 24B4A3A6 BAD03605 CDD70693 54DE5729 23D967BF B3667A2E C4614AB8 5D681B02 2A6F2B94 B40BBE37 C30C8EA1 5A05DF1B 2D02EF8D";
-		var crc = 0;
-	    var x = 0;
-	    var y = 0;
+	    const table = "00000000 77073096 EE0E612C 990951BA 076DC419 706AF48F E963A535 9E6495A3 0EDB8832 79DCB8A4 E0D5E91E 97D2D988 09B64C2B 7EB17CBD E7B82D07 90BF1D91 1DB71064 6AB020F2 F3B97148 84BE41DE 1ADAD47D 6DDDE4EB F4D4B551 83D385C7 136C9856 646BA8C0 FD62F97A 8A65C9EC 14015C4F 63066CD9 FA0F3D63 8D080DF5 3B6E20C8 4C69105E D56041E4 A2677172 3C03E4D1 4B04D447 D20D85FD A50AB56B 35B5A8FA 42B2986C DBBBC9D6 ACBCF940 32D86CE3 45DF5C75 DCD60DCF ABD13D59 26D930AC 51DE003A C8D75180 BFD06116 21B4F4B5 56B3C423 CFBA9599 B8BDA50F 2802B89E 5F058808 C60CD9B2 B10BE924 2F6F7C87 58684C11 C1611DAB B6662D3D 76DC4190 01DB7106 98D220BC EFD5102A 71B18589 06B6B51F 9FBFE4A5 E8B8D433 7807C9A2 0F00F934 9609A88E E10E9818 7F6A0DBB 086D3D2D 91646C97 E6635C01 6B6B51F4 1C6C6162 856530D8 F262004E 6C0695ED 1B01A57B 8208F4C1 F50FC457 65B0D9C6 12B7E950 8BBEB8EA FCB9887C 62DD1DDF 15DA2D49 8CD37CF3 FBD44C65 4DB26158 3AB551CE A3BC0074 D4BB30E2 4ADFA541 3DD895D7 A4D1C46D D3D6F4FB 4369E96A 346ED9FC AD678846 DA60B8D0 44042D73 33031DE5 AA0A4C5F DD0D7CC9 5005713C 270241AA BE0B1010 C90C2086 5768B525 206F85B3 B966D409 CE61E49F 5EDEF90E 29D9C998 B0D09822 C7D7A8B4 59B33D17 2EB40D81 B7BD5C3B C0BA6CAD EDB88320 9ABFB3B6 03B6E20C 74B1D29A EAD54739 9DD277AF 04DB2615 73DC1683 E3630B12 94643B84 0D6D6A3E 7A6A5AA8 E40ECF0B 9309FF9D 0A00AE27 7D079EB1 F00F9344 8708A3D2 1E01F268 6906C2FE F762575D 806567CB 196C3671 6E6B06E7 FED41B76 89D32BE0 10DA7A5A 67DD4ACC F9B9DF6F 8EBEEFF9 17B7BE43 60B08ED5 D6D6A3E8 A1D1937E 38D8C2C4 4FDFF252 D1BB67F1 A6BC5767 3FB506DD 48B2364B D80D2BDA AF0A1B4C 36034AF6 41047A60 DF60EFC3 A867DF55 316E8EEF 4669BE79 CB61B38C BC66831A 256FD2A0 5268E236 CC0C7795 BB0B4703 220216B9 5505262F C5BA3BBE B2BD0B28 2BB45A92 5CB36A04 C2D7FFA7 B5D0CF31 2CD99E8B 5BDEAE1D 9B64C2B0 EC63F226 756AA39C 026D930A 9C0906A9 EB0E363F 72076785 05005713 95BF4A82 E2B87A14 7BB12BAE 0CB61B38 92D28E9B E5D5BE0D 7CDCEFB7 0BDBDF21 86D3D2D4 F1D4E242 68DDB3F8 1FDA836E 81BE16CD F6B9265B 6FB077E1 18B74777 88085AE6 FF0F6A70 66063BCA 11010B5C 8F659EFF F862AE69 616BFFD3 166CCF45 A00AE278 D70DD2EE 4E048354 3903B3C2 A7672661 D06016F7 4969474D 3E6E77DB AED16A4A D9D65ADC 40DF0B66 37D83BF0 A9BCAE53 DEBB9EC5 47B2CF7F 30B5FFE9 BDBDF21C CABAC28A 53B39330 24B4A3A6 BAD03605 CDD70693 54DE5729 23D967BF B3667A2E C4614AB8 5D681B02 2A6F2B94 B40BBE37 C30C8EA1 5A05DF1B 2D02EF8D";
+		let crc = 0;
+	    let x = 0;
+	    let y = 0;
 
 	    crc = crc ^ (-1);
-	    for( var i = 0, iTop = str.length; i < iTop; i++ )
+	    for( let i = 0, iTop = str.length; i < iTop; i++ )
 		{
 	        y = ( crc ^ str.charCodeAt( i ) ) & 0xFF;
-	        x = "0x" + table.substr( y * 9, 8 );
+	        x = `0x${table.substr( y * 9, 8 )}`;
 	        crc = ( crc >>> 8 ) ^ x;
 	    }
 	    return crc ^ (-1);
@@ -1947,28 +2536,104 @@ Prado.WebUI.TCaptchaValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
 
 
 /**
+ * TIbanValidator validates whether the value of an associated input component
+ * is an International Bank Account Number. The checks match the server side
+ * TIbanValidator, which supplies the country formats.
+ *
+ * @class Prado.WebUI.TIbanValidator
+ * @extends Prado.WebUI.TBaseValidator
+ */
+Prado.WebUI.TIbanValidator = Prado.Class(Prado.WebUI.TBaseValidator,
+{
+	/**
+	 * Additional constructor options.
+	 * @constructor initialize
+	 * @param {object} options - Additional constructor options:
+	 * @... {object} CountryFormats - BBAN format of each allowed country code, such as "4a,6n,8c".
+	 */
+
+	/**
+	 * Evaluate validation state
+	 * @function {boolean} ?
+	 * @return True if the value is a valid IBAN or the value is empty.
+	 */
+	evaluateIsValid() {
+		const value = this.getRawValidationValue();
+		if (value.length <= 0)
+			return true;
+		return this.isValidIban(value);
+	},
+
+	/**
+	 * Checks an IBAN against the country formats and the mod 97-10 checksum.
+	 * @function {boolean} ?
+	 * @param {string} value - The IBAN; spaces are ignored and letters compared upper case.
+	 * @return True if the IBAN is valid.
+	 */
+	isValidIban(value) {
+		const iban = value.replace(/ /g, '').toUpperCase();
+		const formats = this.options.CountryFormats || {};
+		const m = /^([A-Z]{2})[0-9]{2}([A-Z0-9]+)$/.exec(iban);
+		if (m == null || !Object.prototype.hasOwnProperty.call(formats, m[1]))
+			return false;
+		if (!this.bbanPattern(formats[m[1]]).test(m[2]))
+			return false;
+		return this.mod97(iban.slice(4) + iban.slice(0, 4)) == 1;
+	},
+
+	/**
+	 * Builds the regular expression of a BBAN format.
+	 * @function {RegExp} ?
+	 * @param {string} format - A BBAN format, such as "4a,6n,8c".
+	 * @return The anchored regular expression.
+	 */
+	bbanPattern(format) {
+		const classes = { n: '[0-9]', a: '[A-Z]', c: '[A-Z0-9]' };
+		const runs = format.split(',').map((run) => `${classes[run.slice(-1)]}{${parseInt(run, 10)}}`);
+		return new RegExp(`^${runs.join('')}$`);
+	},
+
+	/**
+	 * Computes the ISO 7064 mod 97-10 remainder of digits and upper case
+	 * letters; each letter counts as two digits, A as 10 to Z as 35.
+	 * @function {number} ?
+	 * @param {string} value - The digits and letters.
+	 * @return The remainder, 0 to 96.
+	 */
+	mod97(value) {
+		let remainder = 0;
+		for (const char of value) {
+			const digits = /[0-9]/.test(char) ? char : String(char.charCodeAt(0) - 55);
+			for (const digit of digits)
+				remainder = (remainder * 10 + Number(digit)) % 97;
+		}
+		return remainder;
+	}
+});
+
+/**
  * TReCaptchaValidator client-side control.
+ * Deprecated with TReCaptcha (reCAPTCHA v1); use Prado.WebUI.TReCaptcha2Validator.
  *
  * @class Prado.WebUI.TReCaptchaValidator
  * @extends Prado.WebUI.TBaseValidator
+ * @deprecated 4.4.0
  */
-Prado.WebUI.TReCaptchaValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
+Prado.WebUI.TReCaptchaValidator = Prado.Class(Prado.WebUI.TBaseValidator,
 {
-	onInit : function()
-	{
-		var obj = this;
-		var elements = document.getElementsByName(this.options.ResponseFieldName);
+	onInit() {
+		const obj = this;
+		const elements = document.getElementsByName(this.options.ResponseFieldName);
 		if (elements)
 		 if (elements.length>=1)
 		 {
-		  this.observe(elements[0],'change',function() { obj.responseChanged() });
-		  this.observe(elements[0],'keydown',function() { obj.responseChanged() });
+		  this.observe(elements[0],'change',() => { obj.responseChanged() });
+		  this.observe(elements[0],'keydown',() => { obj.responseChanged() });
 		 }
 	},
 
-	responseChanged: function()
-	{
-		var field = jQuery("#" + this.options.ID+'_1').get(0);
+	responseChanged() {
+		const field = document.getElementById(`${this.options.ID}_1`);
 		if (field.value=='1') return;
 		field.value = '1';
 		Prado.Validation.validateControl(this.options.ID);
@@ -1979,9 +2644,8 @@ Prado.WebUI.TReCaptchaValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
 	 * @function {boolean} ?
 	 * @return True if the captcha has validate, False otherwise.
 	 */
-	evaluateIsValid : function()
-	{
-		return (jQuery("#" + this.options.ID+'_1').get(0).value=='1');
+	evaluateIsValid() {
+		return document.getElementById(`${this.options.ID}_1`).value=='1';
 	}
 });
 
@@ -1992,11 +2656,10 @@ Prado.WebUI.TReCaptcha2Instances = {};
 /**
  * Render callback; called by google's js when loaded
  */
-TReCaptcha2_onloadCallback = function()
-{
-	jQuery.each(Prado.WebUI.TReCaptcha2Instances, function(index, item) {
-    	item.build();
-	});
+TReCaptcha2_onloadCallback = () => {
+	for (const item of Object.values(Prado.WebUI.TReCaptcha2Instances)) {
+		item.build();
+	}
 }
 
 /**
@@ -2005,41 +2668,37 @@ TReCaptcha2_onloadCallback = function()
  * @class Prado.WebUI.TReCaptcha2
  * @extends Prado.WebUI.Control
  */
-Prado.WebUI.TReCaptcha2 = jQuery.klass(Prado.WebUI.Control,
+Prado.WebUI.TReCaptcha2 = Prado.Class(Prado.WebUI.Control,
 {
-    onInit: function(options)
-    {
-        for (key in options) { this[key] = options[key]; }
-        this.options['callback'] = jQuery.proxy(this.callback,this);
-        this.options['expired-callback'] = jQuery.proxy(this.callbackExpired,this);
+    onInit(options) {
+        for (const key in options) { this[key] = options[key]; }
+        this.options['callback'] = this.callback.bind(this);
+        this.options['expired-callback'] = this.callbackExpired.bind(this);
 
         Prado.WebUI.TReCaptcha2Instances[this.element.id] = this;
     },
-    build: function()
-    {
+    build() {
        if (grecaptcha !== undefined) this.widgetId = grecaptcha.render(this.element, this.options);
     },
-    callback: function(response)
-    {
-        var responseField = jQuery('#' + this.ID + ' textarea').attr('id');
-        var params = {
+    callback(response) {
+        const responseField = document.querySelector(`#${this.ID} textarea`)?.id;
+        const params = {
             widgetId: this.widgetId,
-            response: response,
-            responseField: responseField,
+            response,
+            responseField,
             onCallback: this.onCallback
         };
-        var request = new Prado.CallbackRequest(this.EventTarget,this);
+        const request = new Prado.CallbackRequest(this.EventTarget,this);
         request.setCallbackParameter(params);
         request.dispatch();
     },
-    callbackExpired: function()
-    {
-        var responseField = jQuery('#' + this.ID + ' textarea').attr('id');
-        var params = {
-            responseField: responseField,
+    callbackExpired() {
+        const responseField = document.querySelector(`#${this.ID} textarea`)?.id;
+        const params = {
+            responseField,
             onCallbackExpired: this.onCallbackExpired
         };
-        var request = new Prado.CallbackRequest(this.EventTarget,this);
+        const request = new Prado.CallbackRequest(this.EventTarget,this);
         request.setCallbackParameter(params);
         request.dispatch();
     }
@@ -2051,17 +2710,399 @@ Prado.WebUI.TReCaptcha2 = jQuery.klass(Prado.WebUI.Control,
  * @class Prado.WebUI.TReCaptcha2Validator
  * @extends Prado.WebUI.TBaseValidator
  */
-Prado.WebUI.TReCaptcha2Validator = jQuery.klass(Prado.WebUI.TBaseValidator,
+Prado.WebUI.TReCaptcha2Validator = Prado.Class(Prado.WebUI.TBaseValidator,
 {
     /**
      * Evaluate validation state
      * @function {boolean} ?
      * @return True if the captcha has validate, False otherwise.
      */
-    evaluateIsValid : function()
-    {
-        var a = this.getValidationValue();
-        var b = this.trim(this.options.InitialValue);
+    evaluateIsValid() {
+        const a = this.getValidationValue();
+        const b = this.trim(this.options.InitialValue);
         return(a != b);
     }
+});
+
+/**
+ * TFileValidator validates the files selected in a TFileUpload control
+ * through the HTML5 File API.
+ *
+ * <p>Each selected file is checked against the <tt>MinFileSize</tt>,
+ * <tt>MaxFileSize</tt>, <tt>AllowedFileExtensions</tt> and
+ * <tt>AllowedFileTypes</tt> options. The number of selected files is checked
+ * against <tt>MinFileCount</tt> and <tt>MaxFileCount</tt>. The
+ * <tt>{files}</tt> token of the error message is replaced with the names of
+ * the invalid files.</p>
+ *
+ * @class Prado.WebUI.TFileValidator
+ * @extends Prado.WebUI.TBaseValidator
+ */
+Prado.WebUI.TFileValidator = Prado.Class(Prado.WebUI.TBaseValidator,
+{
+	/**
+	 * Additional constructor options.
+	 * @constructor initialize
+	 * @param {object} options - Additional constructor options:
+	 * @... {int} MaxFileSize - Maximum file size in bytes, 0 for no limit.
+	 * @... {int} MinFileSize - Minimum file size in bytes, 0 for no minimum.
+	 * @... {int} TotalMaxFileSize - Maximum combined size of the files in bytes, 0 for no limit.
+	 * @... {int} MaxFileCount - Maximum number of files, 0 for no limit.
+	 * @... {int} MinFileCount - Minimum number of files, 0 for no minimum.
+	 * @... {string[]} AllowedFileExtensions - Allowed lower case file name extensions.
+	 * @... {string[]} AllowedFileTypes - Allowed lower case MIME types, "image/*" matches every subtype.
+	 * @... {boolean} MatchAnyType - True to accept a file matching any of the extension
+	 *   or MIME type lists, false to require a match in every non-empty list.
+	 */
+
+	/**
+	 * Evaluate validation state
+	 * @function {boolean} ?
+	 * @return True if every selected file satisfies the file restrictions.
+	 */
+	evaluateIsValid() {
+		this.invalidFiles = [];
+		const files = this.getFileList();
+		if(!files || files.length <= 0)
+			return true;
+		let valid = true;
+		if(this.options.MaxFileCount > 0 && files.length > this.options.MaxFileCount)
+			valid = false;
+		if(this.options.MinFileCount > 0 && files.length < this.options.MinFileCount)
+			valid = false;
+		if(this.options.TotalMaxFileSize > 0 && this.getTotalFileSize(files) > this.options.TotalMaxFileSize)
+			valid = false;
+		for(const file of files)
+		{
+			if(!this.isValidFile(file))
+			{
+				this.invalidFiles.push(file.name);
+				valid = false;
+			}
+		}
+		this.updateErrorMessage();
+		return valid;
+	},
+
+	/**
+	 * Get the files selected in the control to validate.
+	 * @function {FileList} ?
+	 * @return List of selected files, null if the File API is unavailable.
+	 */
+	getFileList() {
+		return this.control.files || null;
+	},
+
+	/**
+	 * Get the combined size of the selected files.
+	 * @function {int} ?
+	 * @param {FileList} files - Selected files.
+	 * @return Combined size of the files in bytes.
+	 */
+	getTotalFileSize(files) {
+		let total = 0;
+		for(const file of files)
+			total += file.size;
+		return total;
+	},
+
+	/**
+	 * Check one file against the file size and file type restrictions.
+	 * @function {boolean} ?
+	 * @param {File} file - Selected file to check.
+	 * @return True if the file satisfies the restrictions.
+	 */
+	isValidFile(file) {
+		if(this.options.MaxFileSize > 0 && file.size > this.options.MaxFileSize)
+			return false;
+		if(this.options.MinFileSize > 0 && file.size < this.options.MinFileSize)
+			return false;
+		return this.isValidFileType(file);
+	},
+
+	/**
+	 * Check the extension and MIME type of one file.
+	 * With <tt>MatchAnyType</tt> the file must match any of the extension or
+	 * MIME type lists, otherwise it must match every non-empty list.
+	 * @function {boolean} ?
+	 * @param {File} file - Selected file to check.
+	 * @return True if the file satisfies the type restrictions.
+	 */
+	isValidFileType(file) {
+		const extensions = this.options.AllowedFileExtensions || [];
+		const types = this.options.AllowedFileTypes || [];
+		if(extensions.length <= 0 && types.length <= 0)
+			return true;
+		const extensionValid = extensions.length > 0 && extensions.indexOf(this.getFileExtension(file)) != -1;
+		const typeValid = types.length > 0 && this.matchesAnyMimeType(file, types);
+		if(this.options.MatchAnyType)
+			return extensionValid || typeValid;
+		return (extensions.length <= 0 || extensionValid) && (types.length <= 0 || typeValid);
+	},
+
+	/**
+	 * Get the lower case file name extension of a file.
+	 * @function {string} ?
+	 * @param {File} file - Selected file.
+	 * @return Extension without the dot, empty string if the file name has no extension.
+	 */
+	getFileExtension(file) {
+		const index = file.name.lastIndexOf('.');
+		return index < 0 ? '' : file.name.substring(index + 1).toLowerCase();
+	},
+
+	/**
+	 * Check the MIME type of a file against a list of MIME type patterns.
+	 * @function {boolean} ?
+	 * @param {File} file - Selected file to check.
+	 * @param {string[]} types - Lower case MIME type patterns, "image/*" matches every subtype.
+	 * @return True if the file type matches any of the patterns.
+	 */
+	matchesAnyMimeType(file, types) {
+		const type = (file.type || '').toLowerCase();
+		for(const pattern of types)
+		{
+			if(pattern == '*' || pattern == '*/*')
+				return true;
+			if(pattern.substring(pattern.length - 2) == '/*')
+			{
+				if(type.substring(0, pattern.length - 1) == pattern.substring(0, pattern.length - 1))
+					return true;
+			}
+			else if(type == pattern)
+				return true;
+		}
+		return false;
+	},
+
+	/**
+	 * Get the error message with the {files} token replaced by the names of
+	 * the invalid files.
+	 * @function {string} ?
+	 * @return Validation error message.
+	 */
+	getErrorMessage() {
+		const message = this.options.ErrorMessage;
+		if(typeof(message) == "string" && message.indexOf('{files}') != -1)
+			return message.replace('{files}', (this.invalidFiles || []).join(', '));
+		return message;
+	},
+
+	/**
+	 * Update the validator message element when the error message uses the
+	 * {files} token.
+	 * @function ?
+	 */
+	updateErrorMessage() {
+		if(this.message && typeof(this.options.ErrorMessage) == "string" && this.options.ErrorMessage.indexOf('{files}') != -1)
+			this.message.textContent = this.getErrorMessage();
+	}
+});
+
+/**
+ * TImageValidator validates the image files selected in a TFileUpload control.
+ *
+ * <p>Every restriction of Prado.WebUI.TFileValidator applies, and each file
+ * must be a decodable image whose pixel dimensions satisfy the
+ * <tt>MinImageWidth</tt>, <tt>MaxImageWidth</tt>, <tt>MinImageHeight</tt> and
+ * <tt>MaxImageHeight</tt> options.</p>
+ *
+ * <p>Image decoding is asynchronous: the dimensions are read into a cache when
+ * the selection changes, and a file whose dimensions are not yet decoded
+ * passes the validation. The validator re-validates when the decoding
+ * completes. The server-side validation is authoritative.</p>
+ *
+ * @class Prado.WebUI.TImageValidator
+ * @extends Prado.WebUI.TFileValidator
+ */
+Prado.WebUI.TImageValidator = Prado.Class(Prado.WebUI.TFileValidator,
+{
+	/**
+	 * Additional constructor options.
+	 * @constructor initialize
+	 * @param {object} options - Additional constructor options:
+	 * @... {int} MinImageWidth - Minimum image width in pixels, 0 for no minimum.
+	 * @... {int} MaxImageWidth - Maximum image width in pixels, 0 for no limit.
+	 * @... {int} MinImageHeight - Minimum image height in pixels, 0 for no minimum.
+	 * @... {int} MaxImageHeight - Maximum image height in pixels, 0 for no limit.
+	 */
+
+	/**
+	 * Start decoding the image dimensions when the selection changes.
+	 * @function ?
+	 */
+	onInit() {
+		this._imageInfo = {};
+		if(this.control)
+		{
+			const validator = this;
+			this.observe(this.control, 'change', () => validator.preloadImageInfo());
+			this.preloadImageInfo();
+		}
+	},
+
+	/**
+	 * Get the cache key identifying a selected file.
+	 * @function {string} ?
+	 * @param {File} file - Selected file.
+	 * @return Cache key of the file.
+	 */
+	fileKey(file) {
+		return [file.name, file.size, file.lastModified].join('|');
+	},
+
+	/**
+	 * Check that the browser can decode selected files into images.
+	 * @function {boolean} ?
+	 * @return True if object URLs are available for image decoding.
+	 */
+	canReadImages() {
+		return typeof(URL) != "undefined" && typeof(URL.createObjectURL) == "function";
+	},
+
+	/**
+	 * Drop the stale dimension cache and decode the current selection.
+	 * @function ?
+	 */
+	preloadImageInfo() {
+		this._imageInfo = {};
+		const files = this.getFileList();
+		if(!files || !this.canReadImages())
+			return;
+		for(const file of files)
+			this.readImageInfo(file);
+	},
+
+	/**
+	 * Decode the dimensions of one file into the cache and re-validate on
+	 * completion.
+	 * @function ?
+	 * @param {File} file - Selected file to decode.
+	 */
+	readImageInfo(file) {
+		const key = this.fileKey(file);
+		if(this._imageInfo[key])
+			return;
+		const info = this._imageInfo[key] = { pending: true, notImage: false, width: 0, height: 0 };
+		const url = URL.createObjectURL(file);
+		const image = new Image();
+		const validator = this;
+		const done = function(notImage) {
+			URL.revokeObjectURL(url);
+			info.pending = false;
+			info.notImage = notImage;
+			info.width = image.naturalWidth || image.width;
+			info.height = image.naturalHeight || image.height;
+			validator.revalidate();
+		};
+		image.onload = () => done(false);
+		image.onerror = () => done(true);
+		image.src = url;
+	},
+
+	/**
+	 * Re-validate and update the summary after an asynchronous decode, once a
+	 * validation has displayed results.
+	 * @function ?
+	 */
+	revalidate() {
+		if(this.visible)
+		{
+			this.validate();
+			if(this.manager)
+				this.manager.updateSummary(this.group);
+		}
+	},
+
+	/**
+	 * Check one file against the parent restrictions and the image dimension
+	 * restrictions. A file with undecoded dimensions passes.
+	 * @function {boolean} ?
+	 * @param {File} file - Selected file to check.
+	 * @return True if the file satisfies the restrictions.
+	 */
+	isValidFile($super, file) {
+		if(!$super(file))
+			return false;
+		if(!this.canReadImages())
+			return true;
+		const info = this._imageInfo[this.fileKey(file)];
+		if(!info)
+		{
+			this.readImageInfo(file);
+			return true;
+		}
+		if(info.pending)
+			return true;
+		if(info.notImage)
+			return false;
+		if(this.options.MinImageWidth > 0 && info.width < this.options.MinImageWidth)
+			return false;
+		if(this.options.MaxImageWidth > 0 && info.width > this.options.MaxImageWidth)
+			return false;
+		if(this.options.MinImageHeight > 0 && info.height < this.options.MinImageHeight)
+			return false;
+		if(this.options.MaxImageHeight > 0 && info.height > this.options.MaxImageHeight)
+			return false;
+		return true;
+	}
+});
+
+/**
+ * TUuidValidator validates whether the value of an associated input component
+ * is an RFC 9562 UUID. The checks match the server side TUuidValidator.
+ *
+ * @class Prado.WebUI.TUuidValidator
+ * @extends Prado.WebUI.TBaseValidator
+ */
+Prado.WebUI.TUuidValidator = Prado.Class(Prado.WebUI.TBaseValidator,
+{
+	/**
+	 * Additional constructor options.
+	 * @constructor initialize
+	 * @param {object} options - Additional constructor options:
+	 * @... {number[]} Versions - Allowed versions from 1 to 8; empty allows every version.
+	 * @... {boolean} Strict - Whether only the hyphenated 8-4-4-4-12 form is accepted.
+	 * @... {boolean} AllowNil - Whether the nil UUID is valid.
+	 */
+
+	/**
+	 * Evaluate validation state
+	 * @function {boolean} ?
+	 * @return True if the value is a valid UUID or the value is empty.
+	 */
+	evaluateIsValid() {
+		const value = this.getRawValidationValue();
+		if (value.length <= 0)
+			return true;
+		return this.isValidUuid(value);
+	},
+
+	/**
+	 * Checks a UUID against the form, version, variant, and nil restrictions.
+	 * @function {boolean} ?
+	 * @param {string} value - The UUID.
+	 * @return True if the UUID is valid.
+	 */
+	isValidUuid(value) {
+		const canonical = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+		if (!this.options.Strict) {
+			if (value.slice(0, 9).toLowerCase() == 'urn:uuid:')
+				value = value.slice(9);
+			if (value.length > 2 && value.charAt(0) == '{' && value.charAt(value.length - 1) == '}')
+				value = value.slice(1, -1);
+			if (!canonical.test(value) && !/^[0-9a-f]{32}$/i.test(value))
+				return false;
+		} else if (!canonical.test(value)) {
+			return false;
+		}
+		const hex = value.replace(/-/g, '').toLowerCase();
+		if (hex == '0'.repeat(32))
+			return !!this.options.AllowNil;
+		const version = parseInt(hex.charAt(12), 16);
+		if (version < 1 || version > 8 || '89ab'.indexOf(hex.charAt(16)) < 0)
+			return false;
+		const versions = this.options.Versions || [];
+		return versions.length == 0 || versions.indexOf(version) >= 0;
+	}
 });

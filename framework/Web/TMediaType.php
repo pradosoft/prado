@@ -1,0 +1,803 @@
+<?php
+
+/**
+ * TMediaType class file
+ *
+ * @author Brad Anderson <belisoful@icloud.com>
+ * @link https://github.com/pradosoft/prado
+ * @license https://github.com/pradosoft/prado/blob/master/LICENSE
+ */
+
+namespace Prado\Web;
+
+use Prado\Web\HttpHeaders\THeaderParametersTrait;
+
+/**
+ * TMediaType class
+ *
+ * TMediaType is a mutable value object that parses, represents, and renders
+ * an HTTP media type — the structured value carried by headers such as
+ * `Content-Type` and `Accept` — as defined by RFC 9110 §8.3.1:
+ *
+ * ```
+ * media-type = type "/" subtype *( OWS ";" OWS parameter )
+ * parameter  = token "=" ( token / quoted-string )
+ * ```
+ *
+ * Properties:
+ * - {@see getType() Type} — the top-level type, e.g. `text`.
+ * - {@see getSubtype() Subtype} — the subtype, e.g. `html`.
+ * - {@see getMimeType() MimeType} — combined `type/subtype`, e.g. `text/html`.
+ *   Assigning this property parses both type and subtype from the string.
+ * - {@see getParameters() Parameters} — associative array of parameter
+ *   names (lowercase) to values, e.g. `['charset' => 'UTF-8']`.
+ * - {@see getCharset() Charset} — convenience accessor for the `charset`
+ *   parameter; returns `null` when absent.
+ *
+ * ```php
+ * $mt = new TMediaType('text/html; charset=UTF-8');
+ * $mt->getType();          // 'text'
+ * $mt->getSubtype();       // 'html'
+ * $mt->getMimeType();      // 'text/html'
+ * $mt->getCharset();       // 'UTF-8'
+ * (string) $mt;            // 'text/html; charset=UTF-8'
+ *
+ * $mt->setCharset('ISO-8859-1');
+ * (string) $mt;            // 'text/html; charset=ISO-8859-1'
+ *
+ * // Use named constants instead of bare strings
+ * $mt = new TMediaType(TMediaType::JSON);
+ * ```
+ *
+ * **Named constants.** Commonly used media type strings are available as
+ * class constants for IDE completion and typo prevention:
+ *
+ * *Text:* {@see HTML}, {@see PLAIN}, {@see CSS}, {@see JAVASCRIPT},
+ * {@see EVENT_STREAM}, {@see XML_TEXT}, {@see CSV}, {@see MARKDOWN},
+ * {@see CALENDAR}
+ *
+ * *Application:* {@see JSON}, {@see JSON_LD}, {@see XML}, {@see XHTML},
+ * {@see FORM}, {@see OCTET_STREAM}, {@see PDF}, {@see ZIP},
+ * {@see GZIP}, {@see TAR}, {@see BZIP2}, {@see XZ}, {@see SEVEN_ZIP},
+ * {@see RAR}, {@see ZSTD}, {@see RTF}, {@see WASM}, {@see EPUB}
+ *
+ * *Application, obsolete tokens:* {@see JAVASCRIPT_APPLICATION},
+ * {@see JAVASCRIPT_X} — superseded registrations, kept so an incoming header
+ * carrying one is recognized
+ *
+ * *Multipart:* {@see MULTIPART}
+ *
+ * *Syndication / feeds:* {@see RSS}, {@see ATOM}, {@see RDF}
+ *
+ * *Office documents:* {@see DOCX}, {@see XLSX}, {@see PPTX},
+ * {@see DOC}, {@see XLS}, {@see PPT}
+ *
+ * *CSP / Reporting API:* {@see CSP_REPORT}, {@see REPORTS_JSON}
+ *
+ * *Image:* {@see PNG}, {@see JPEG}, {@see GIF}, {@see WEBP}, {@see AVIF},
+ * {@see SVG}, {@see ICON}, {@see ICON_MICROSOFT}, {@see BMP}, {@see TIFF},
+ * {@see APNG}
+ *
+ * *Audio:* {@see AUDIO_MPEG}, {@see AUDIO_OGG}, {@see AUDIO_WAV},
+ * {@see AUDIO_WEBM}, {@see AUDIO_AAC}, {@see AUDIO_FLAC}
+ *
+ * *Video:* {@see VIDEO_MP4}, {@see VIDEO_WEBM}, {@see VIDEO_OGG},
+ * {@see VIDEO_MPEG}, {@see VIDEO_QUICKTIME}, {@see VIDEO_AVI}, {@see VIDEO_MATROSKA}
+ *
+ * *Font:* {@see WOFF}, {@see WOFF2}, {@see TTF}, {@see OTF}, {@see EOT}
+ *
+ * *Defaults:* {@see DEFAULT_TYPE} (`'text'`), {@see DEFAULT_SUBTYPE} (`'html'`) —
+ * override in a subclass to change the no-argument default.
+ *
+ * **File extension lookup.** {@see mimeTypeFromFilename()} and
+ * {@see mimeTypeFromExtension()} map a file name or extension to its media type
+ * string through {@see EXTENSION_MIME_TYPES}:
+ *
+ * ```php
+ * TMediaType::mimeTypeFromFilename('report.pdf');   // 'application/pdf'
+ * new TMediaType(TMediaType::mimeTypeFromExtension('json') ?? TMediaType::OCTET_STREAM);
+ * ```
+ *
+ * **Pattern matching.** {@see matchesPattern()}, {@see matchesAnyPattern()} and the
+ * instance {@see matches()} test a media type against a pattern, where `*` stands for any
+ * run of characters within one part of the type:
+ *
+ * ```php
+ * TMediaType::matchesPattern('text/html', 'text/*');                 // true
+ * TMediaType::matchesPattern('application/ld+json', 'application/*+json');   // true
+ * (new TMediaType('text/css'))->matches(['text/*', 'application/json']);     // true
+ * ```
+ *
+ * **ArrayAccess.** Parameters are also accessible via array syntax via
+ * {@see THeaderParametersTrait}, making `TMediaType` a transparent pipe to
+ * its parameter map:
+ *
+ * ```php
+ * $mt = new TMediaType('text/html; charset=UTF-8');
+ * $mt['charset'];            // 'UTF-8'    (offsetGet  → getParameter)
+ * isset($mt['charset']);     // true       (offsetExists → hasParameter)
+ * $mt['charset'] = 'ASCII'; //            (offsetSet  → setParameter)
+ * unset($mt['charset']);     //            (offsetUnset → removeParameter)
+ * ```
+ *
+ * Parameter names are normalized to lowercase by the underlying methods,
+ * so `$mt['Charset']` and `$mt['charset']` address the same entry.
+ *
+ * @author Brad Anderson <belisoful@icloud.com>
+ * @since 4.4.0
+ * @see https://www.rfc-editor.org/rfc/rfc9110#section-8.3.1 RFC 9110 §8.3.1 (Content-Type / media-type)
+ * @see https://www.rfc-editor.org/rfc/rfc7231#section-3.1.1 RFC 7231 §3.1.1 (superseded by RFC 9110)
+ */
+class TMediaType implements \ArrayAccess
+{
+	use THeaderParametersTrait;
+
+	// =========================================================================
+	// Named constants
+	// =========================================================================
+
+	// ---- Text ----
+
+	/** `text/html` — HTML document. */
+	public const HTML = 'text/html';
+
+	/** `text/plain` — Plain text. */
+	public const PLAIN = 'text/plain';
+
+	/** `text/css` — CSS stylesheet. */
+	public const CSS = 'text/css';
+
+	/** `text/javascript` — JavaScript source file (current IANA registration). */
+	public const JAVASCRIPT = 'text/javascript';
+
+	/** `text/xml` — XML document sent as text. Prefer {@see XML} for API responses. */
+	public const XML_TEXT = 'text/xml';
+
+	/** `text/csv` — Comma-separated values. */
+	public const CSV = 'text/csv';
+
+	/** `text/event-stream` — Server-sent events (SSE). */
+	public const EVENT_STREAM = 'text/event-stream';
+
+	/** `text/markdown` — Markdown document (RFC 7763). */
+	public const MARKDOWN = 'text/markdown';
+
+	/** `text/calendar` — iCalendar data (RFC 5545), e.g. `.ics` files. */
+	public const CALENDAR = 'text/calendar';
+
+	// ---- Application ----
+
+	/** `application/json` — JSON document. */
+	public const JSON = 'application/json';
+
+	/** `application/xml` — XML document (preferred over {@see XML_TEXT} for APIs). */
+	public const XML = 'application/xml';
+
+	/** `application/xhtml+xml` — XHTML document. */
+	public const XHTML = 'application/xhtml+xml';
+
+	/** `application/x-www-form-urlencoded` — HTML form submission body. */
+	public const FORM = 'application/x-www-form-urlencoded';
+
+	/** `application/octet-stream` — Arbitrary binary data / file download. */
+	public const OCTET_STREAM = 'application/octet-stream';
+
+	/** `application/pdf` — PDF document. */
+	public const PDF = 'application/pdf';
+
+	/** `application/zip` — ZIP archive. */
+	public const ZIP = 'application/zip';
+
+	/** `application/gzip` — Gzip-compressed data (`.gz`, `.tar.gz`, `.tgz`). */
+	public const GZIP = 'application/gzip';
+
+	/** `application/x-tar` — Uncompressed tar archive (`.tar`). */
+	public const TAR = 'application/x-tar';
+
+	/** `application/x-bzip2` — Bzip2-compressed data (`.bz2`, `.tar.bz2`, `.tbz2`). */
+	public const BZIP2 = 'application/x-bzip2';
+
+	/** `application/x-xz` — XZ/LZMA-compressed data (`.xz`, `.tar.xz`, `.txz`). */
+	public const XZ = 'application/x-xz';
+
+	/** `application/x-7z-compressed` — 7-Zip archive (`.7z`). */
+	public const SEVEN_ZIP = 'application/x-7z-compressed';
+
+	/** `application/vnd.rar` — RAR archive (`.rar`). */
+	public const RAR = 'application/vnd.rar';
+
+	/** `application/zstd` — Zstandard-compressed data (`.zst`, `.tar.zst`). */
+	public const ZSTD = 'application/zstd';
+
+	/** `application/ld+json` — JSON-LD structured data. */
+	public const JSON_LD = 'application/ld+json';
+
+	/** `application/wasm` — WebAssembly module. */
+	public const WASM = 'application/wasm';
+
+	/** `application/rtf` — Rich Text Format document. */
+	public const RTF = 'application/rtf';
+
+	/** `application/epub+zip` — EPUB electronic publication (`.epub`). */
+	public const EPUB = 'application/epub+zip';
+
+	// ---- Application, obsolete tokens ----
+	//
+	// These registrations are superseded. A value here is present so an incoming header
+	// carrying the older token is recognized, and so a response that must serve it names
+	// it rather than spelling the string out. New code sends the current token.
+
+	/**
+	 * `application/javascript` — JavaScript source file. **Obsolete:** RFC 9239 made
+	 * {@see JAVASCRIPT} the registration and marked this one obsolete. Servers and older
+	 * tooling still send it.
+	 */
+	public const JAVASCRIPT_APPLICATION = 'application/javascript';
+
+	/**
+	 * `application/x-javascript` — JavaScript source file. **Obsolete:** an unregistered
+	 * `x-` token that predates both {@see JAVASCRIPT} and {@see JAVASCRIPT_APPLICATION}.
+	 */
+	public const JAVASCRIPT_X = 'application/x-javascript';
+
+	// ---- Multipart ----
+
+	/** `multipart/form-data` — Multipart form upload (HTML forms with file input). */
+	public const MULTIPART = 'multipart/form-data';
+
+	// ---- Syndication / feeds ----
+
+	/**
+	 * `application/rss+xml` — RSS 2.0 syndication feed.
+	 * @see \Prado\Web\Services\IFeedContentProvider
+	 */
+	public const RSS = 'application/rss+xml';
+
+	/**
+	 * `application/atom+xml` — Atom syndication feed (RFC 4287).
+	 * @see \Prado\Web\Services\IFeedContentProvider
+	 */
+	public const ATOM = 'application/atom+xml';
+
+	/**
+	 * `application/rdf+xml` — RDF document; used for RSS 1.0 feeds.
+	 * @see \Prado\Web\Services\IFeedContentProvider
+	 */
+	public const RDF = 'application/rdf+xml';
+
+	// ---- Office documents ----
+
+	/** `application/vnd.openxmlformats-officedocument.wordprocessingml.document` — Word (.docx). */
+	public const DOCX = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+
+	/** `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet` — Excel (.xlsx). */
+	public const XLSX = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+
+	/** `application/vnd.openxmlformats-officedocument.presentationml.presentation` — PowerPoint (.pptx). */
+	public const PPTX = 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
+
+	/** `application/msword` — Legacy Word (.doc). */
+	public const DOC = 'application/msword';
+
+	/** `application/vnd.ms-excel` — Legacy Excel (.xls). */
+	public const XLS = 'application/vnd.ms-excel';
+
+	/** `application/vnd.ms-powerpoint` — Legacy PowerPoint (.ppt). */
+	public const PPT = 'application/vnd.ms-powerpoint';
+
+	// ---- CSP / Reporting API ----
+
+	/**
+	 * `application/csp-report` — Legacy CSP violation report format.
+	 * Payload: `{"csp-report": { "blocked-uri": "…", … }}`
+	 */
+	public const CSP_REPORT = 'application/csp-report';
+
+	/**
+	 * `application/reports+json` — Modern Reporting API format (W3C).
+	 * Payload: `[{"type": "csp-violation", "body": { … }}]`
+	 */
+	public const REPORTS_JSON = 'application/reports+json';
+
+	// ---- Image ----
+
+	/** `image/png` — PNG image. */
+	public const PNG = 'image/png';
+
+	/** `image/jpeg` — JPEG image. */
+	public const JPEG = 'image/jpeg';
+
+	/** `image/gif` — GIF image. */
+	public const GIF = 'image/gif';
+
+	/** `image/webp` — WebP image. */
+	public const WEBP = 'image/webp';
+
+	/** `image/svg+xml` — SVG vector image. */
+	public const SVG = 'image/svg+xml';
+
+	/**
+	 * `image/x-icon` — Favicon / icon file. An unregistered `x-` token, and the one
+	 * browsers send and accept; {@see ICON_MICROSOFT} is the IANA registration.
+	 */
+	public const ICON = 'image/x-icon';
+
+	/**
+	 * `image/vnd.microsoft.icon` — Favicon / icon file, the IANA registration for the
+	 * Microsoft ICO format. {@see ICON} is the token seen on the wire far more often.
+	 */
+	public const ICON_MICROSOFT = 'image/vnd.microsoft.icon';
+
+	/** `image/avif` — AVIF image (AV1 Image File Format). */
+	public const AVIF = 'image/avif';
+
+	/** `image/bmp` — BMP bitmap image. */
+	public const BMP = 'image/bmp';
+
+	/** `image/tiff` — TIFF image. */
+	public const TIFF = 'image/tiff';
+
+	/** `image/apng` — Animated Portable Network Graphics (`.apng`). */
+	public const APNG = 'image/apng';
+
+	// ---- Audio ----
+
+	/** `audio/mpeg` — MP3 and other MPEG audio. */
+	public const AUDIO_MPEG = 'audio/mpeg';
+
+	/** `audio/ogg` — Ogg Vorbis audio. */
+	public const AUDIO_OGG = 'audio/ogg';
+
+	/** `audio/wav` — WAV audio. */
+	public const AUDIO_WAV = 'audio/wav';
+
+	/** `audio/webm` — WebM audio. */
+	public const AUDIO_WEBM = 'audio/webm';
+
+	/** `audio/aac` — AAC audio. */
+	public const AUDIO_AAC = 'audio/aac';
+
+	/** `audio/flac` — Free Lossless Audio Codec (`.flac`). */
+	public const AUDIO_FLAC = 'audio/flac';
+
+	// ---- Video ----
+
+	/** `video/mp4` — MP4 video. */
+	public const VIDEO_MP4 = 'video/mp4';
+
+	/** `video/webm` — WebM video. */
+	public const VIDEO_WEBM = 'video/webm';
+
+	/** `video/ogg` — Ogg video. */
+	public const VIDEO_OGG = 'video/ogg';
+
+	/** `video/mpeg` — MPEG-1/2 video (`.mpeg`, `.mpg`). */
+	public const VIDEO_MPEG = 'video/mpeg';
+
+	/** `video/quicktime` — QuickTime video (`.mov`). */
+	public const VIDEO_QUICKTIME = 'video/quicktime';
+
+	/** `video/x-msvideo` — Audio Video Interleave (`.avi`). */
+	public const VIDEO_AVI = 'video/x-msvideo';
+
+	/** `video/x-matroska` — Matroska multimedia container (`.mkv`). */
+	public const VIDEO_MATROSKA = 'video/x-matroska';
+
+	// ---- Font ----
+
+	/** `font/woff` — Web Open Font Format. */
+	public const WOFF = 'font/woff';
+
+	/** `font/woff2` — Web Open Font Format 2. */
+	public const WOFF2 = 'font/woff2';
+
+	/** `font/ttf` — TrueType font. */
+	public const TTF = 'font/ttf';
+
+	/** `font/otf` — OpenType font. */
+	public const OTF = 'font/otf';
+
+	/** `application/vnd.ms-fontobject` — Embedded OpenType font (`.eot`). */
+	public const EOT = 'application/vnd.ms-fontobject';
+
+	// ---- Defaults ----
+
+	/**
+	 * Default top-level type used when the constructor receives no argument.
+	 * Subclasses may override this constant to change the default media type,
+	 * but must also supply a matching {@see DEFAULT_SUBTYPE}.
+	 */
+	public const DEFAULT_TYPE = 'text';
+
+	/**
+	 * Default subtype used when the constructor receives no argument.
+	 * Subclasses may override this constant to change the default media type,
+	 * but must also supply a matching {@see DEFAULT_TYPE}.
+	 */
+	public const DEFAULT_SUBTYPE = 'html';
+
+	/**
+	 * The lowercased file extension to media type map, used by
+	 * {@see mimeTypeFromExtension()} and {@see mimeTypeFromFilename()}. Entries reference
+	 * the named constants above where one exists, so each media type string is defined once.
+	 * @var array<string, string>
+	 */
+	protected const EXTENSION_MIME_TYPES = [
+		'7z' => self::SEVEN_ZIP,
+		'aac' => self::AUDIO_AAC,
+		'apng' => self::APNG,
+		'avi' => self::VIDEO_AVI,
+		'avif' => self::AVIF,
+		'bmp' => self::BMP,
+		'bz2' => self::BZIP2,
+		'css' => self::CSS,
+		'csv' => self::CSV,
+		'doc' => self::DOC,
+		'docx' => self::DOCX,
+		'eot' => self::EOT,
+		'epub' => self::EPUB,
+		'flac' => self::AUDIO_FLAC,
+		'gif' => self::GIF,
+		'gz' => self::GZIP,
+		'htm' => self::HTML,
+		'html' => self::HTML,
+		'ico' => self::ICON,
+		'ics' => self::CALENDAR,
+		'jpeg' => self::JPEG,
+		'jpg' => self::JPEG,
+		'js' => self::JAVASCRIPT,
+		'json' => self::JSON,
+		'jsonld' => self::JSON_LD,
+		'md' => self::MARKDOWN,
+		'mjs' => self::JAVASCRIPT,
+		'mkv' => self::VIDEO_MATROSKA,
+		'mov' => self::VIDEO_QUICKTIME,
+		'mp3' => self::AUDIO_MPEG,
+		'mp4' => self::VIDEO_MP4,
+		'mpeg' => self::VIDEO_MPEG,
+		'oga' => self::AUDIO_OGG,
+		'ogg' => self::AUDIO_OGG,
+		'ogv' => self::VIDEO_OGG,
+		'otf' => self::OTF,
+		'pdf' => self::PDF,
+		'png' => self::PNG,
+		'ppt' => self::PPT,
+		'pptx' => self::PPTX,
+		'rar' => self::RAR,
+		'rtf' => self::RTF,
+		'svg' => self::SVG,
+		'tar' => self::TAR,
+		'tif' => self::TIFF,
+		'tiff' => self::TIFF,
+		'ttf' => self::TTF,
+		'txt' => self::PLAIN,
+		'wasm' => self::WASM,
+		'wav' => self::AUDIO_WAV,
+		'weba' => self::AUDIO_WEBM,
+		'webm' => self::VIDEO_WEBM,
+		'webp' => self::WEBP,
+		'woff' => self::WOFF,
+		'woff2' => self::WOFF2,
+		'xhtml' => self::XHTML,
+		'xls' => self::XLS,
+		'xlsx' => self::XLSX,
+		'xml' => self::XML,
+		'xz' => self::XZ,
+		'zip' => self::ZIP,
+		'zst' => self::ZSTD,
+	];
+
+	// =========================================================================
+	// Backing fields
+	// =========================================================================
+
+	/**
+	 * @var string The top-level type, always lowercase (e.g. `text`).
+	 */
+	private string $_type = '';
+
+	/**
+	 * @var string The subtype, always lowercase (e.g. `html`).
+	 */
+	private string $_subtype = '';
+
+	// =========================================================================
+	// Constructor
+	// =========================================================================
+
+	/**
+	 * Constructs a TMediaType by parsing a media type string.
+	 *
+	 * When called with no argument, {@see DEFAULT_TYPE} and {@see DEFAULT_SUBTYPE}
+	 * are applied via late static binding, allowing subclasses to change the default
+	 * by overriding those constants without overriding the constructor.
+	 *
+	 * ```php
+	 * new TMediaType('text/html; charset=UTF-8')
+	 * new TMediaType(TMediaType::JSON)
+	 * new TMediaType()  // → type/subtype from DEFAULT_TYPE / DEFAULT_SUBTYPE
+	 * ```
+	 *
+	 * @param ?string $mediaType full media type string to parse, with or without
+	 *   parameters; pass `null` (or omit) to use {@see DEFAULT_TYPE}/{@see DEFAULT_SUBTYPE}.
+	 */
+	public function __construct(?string $mediaType = null)
+	{
+		$this->_type = static::DEFAULT_TYPE;
+		$this->_subtype = static::DEFAULT_SUBTYPE;
+		if ($mediaType === null) {
+			return;
+		}
+		$mediaType = trim($mediaType);
+		$semicolon = strpos($mediaType, ';');
+		if ($semicolon !== false) {
+			$this->setMimeType(substr($mediaType, 0, $semicolon));
+			$this->setParameters(substr($mediaType, $semicolon + 1));
+		} else {
+			$this->setMimeType($mediaType);
+		}
+	}
+
+	// =========================================================================
+	// File extension lookup
+	// =========================================================================
+
+	/**
+	 * Maps a file name to its media type string by extension.
+	 * @param string $filename the file name or path.
+	 * @return ?string the media type string, or `null` when the extension is unknown.
+	 */
+	public static function mimeTypeFromFilename(string $filename): ?string
+	{
+		return static::mimeTypeFromExtension(pathinfo($filename, PATHINFO_EXTENSION));
+	}
+
+	/**
+	 * Maps a file extension to its media type string via {@see EXTENSION_MIME_TYPES}.
+	 * @param string $extension the extension, with or without a leading dot, any case.
+	 * @return ?string the media type string, or `null` when the extension is unknown.
+	 */
+	public static function mimeTypeFromExtension(string $extension): ?string
+	{
+		return static::EXTENSION_MIME_TYPES[strtolower(ltrim($extension, '.'))] ?? null;
+	}
+
+	// =========================================================================
+	// Pattern matching
+	// =========================================================================
+
+	/**
+	 * Matches a media type against a pattern, where `*` stands for any run of characters
+	 * within one part of the type.  A pattern is how a configuration names a family of
+	 * media types that no single token covers:
+	 *
+	 * | Pattern | Matches |
+	 * |---------|---------|
+	 * | `text/html` | that media type alone |
+	 * | `text/*` | every text subtype, {@see HTML} and {@see CSS} among them |
+	 * | `application/*+json` | every JSON-structured syntax, {@see JSON_LD} among them |
+	 * | `*` or `*` and `/*` | every media type |
+	 *
+	 * A `*` never crosses the `/`, so `text/*` does not match `application/json`.  Both
+	 * arguments are trimmed and lowercased, since a media type is case insensitive, and
+	 * every other character of the pattern is literal.
+	 *
+	 * The `type/*` and `*` + `/*` forms are the wildcards RFC 9110 §12.5.1 defines for an
+	 * `Accept` header; the structured-suffix form is the wider grammar a server
+	 * configuration uses, and carries no meaning in `Accept`.
+	 * @param string $mediaType the media type, without parameters.
+	 * @param string $pattern the media type pattern.
+	 * @return bool whether the media type matches the pattern.
+	 * @since 4.4.0
+	 */
+	public static function matchesPattern(string $mediaType, string $pattern): bool
+	{
+		$mediaType = strtolower(trim($mediaType));
+		$pattern = strtolower(trim($pattern));
+		if ($pattern === '*' || $pattern === '*/*') {
+			return true;
+		}
+		if (!str_contains($pattern, '*')) {
+			return $mediaType === $pattern;
+		}
+		return preg_match('/^' . str_replace('\\*', '[^\\/]*', preg_quote($pattern, '/')) . '$/', $mediaType) === 1;
+	}
+
+	/**
+	 * Matches a media type against a list of patterns, as {@see matchesPattern()} reads
+	 * one.  An empty list matches nothing, so a caller that treats no restriction as
+	 * "allow everything" checks for the empty list itself.
+	 * @param string $mediaType the media type, without parameters.
+	 * @param string[] $patterns the media type patterns.
+	 * @return bool whether the media type matches any of the patterns.
+	 * @since 4.4.0
+	 */
+	public static function matchesAnyPattern(string $mediaType, array $patterns): bool
+	{
+		foreach ($patterns as $pattern) {
+			if (static::matchesPattern($mediaType, (string) $pattern)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Matches this media type, its parameters left out, against a pattern or a list of
+	 * them, as {@see matchesPattern()} reads one.
+	 *
+	 * ```php
+	 * $mt = new TMediaType('text/html; charset=UTF-8');
+	 * $mt->matches('text/*');                        // true
+	 * $mt->matches(['application/json', 'text/*']);  // true
+	 * ```
+	 * @param array|string $pattern the media type pattern, or a list of them.
+	 * @return bool whether this media type matches.
+	 * @since 4.4.0
+	 */
+	public function matches(array|string $pattern): bool
+	{
+		if (is_array($pattern)) {
+			return static::matchesAnyPattern($this->getMimeType(), $pattern);
+		}
+		return static::matchesPattern($this->getMimeType(), $pattern);
+	}
+
+	// =========================================================================
+	// Type / Subtype / MimeType
+	// =========================================================================
+
+	/**
+	 * Returns the top-level type, always lowercase (e.g. `text`).
+	 * @return string the top-level type.
+	 */
+	public function getType(): string
+	{
+		return $this->_type;
+	}
+
+	/**
+	 * Sets the top-level type; normalized to lowercase and trimmed.
+	 * @param string $type e.g. `text`, `application`, `image`
+	 */
+	public function setType(string $type): void
+	{
+		$this->_type = strtolower(trim($type));
+	}
+
+	/**
+	 * Returns the subtype, always lowercase (e.g. `html`, `json`).
+	 * @return string the subtype.
+	 */
+	public function getSubtype(): string
+	{
+		return $this->_subtype;
+	}
+
+	/**
+	 * Sets the subtype; normalized to lowercase and trimmed.
+	 * @param string $subtype e.g. `html`, `json`, `plain`
+	 */
+	public function setSubtype(string $subtype): void
+	{
+		$this->_subtype = strtolower(trim($subtype));
+	}
+
+	/**
+	 * Returns the `type/subtype` portion without parameters,
+	 * e.g. `text/html` or `application/json`. When the subtype is empty,
+	 * only the type is returned.
+	 * @return string the MIME type without parameters.
+	 */
+	public function getMimeType(): string
+	{
+		$sub = $this->getSubtype();
+		return $sub !== '' ? $this->getType() . '/' . $sub : $this->getType();
+	}
+
+	/**
+	 * Sets {@see getType() Type} and {@see getSubtype() Subtype} by parsing a
+	 * `type/subtype` string. Existing parameters are left unchanged.
+	 *
+	 * When no `/` is present the entire string is treated as the type and the
+	 * subtype is cleared to `''`. Each component is normalized to lowercase.
+	 *
+	 * ```php
+	 * $mt->setMimeType('application/json');
+	 * $mt->getType();    // 'application'
+	 * $mt->getSubtype(); // 'json'
+	 * ```
+	 *
+	 * @param string $mimeType e.g. `text/html` or `application/json`
+	 */
+	public function setMimeType(string $mimeType): void
+	{
+		if (str_contains($mimeType, '/')) {
+			[$type, $subtype] = explode('/', $mimeType, 2);
+			$this->setType($type);
+			$this->setSubtype($subtype);
+		} else {
+			$this->setType($mimeType);
+			$this->setSubtype('');
+		}
+	}
+
+	// =========================================================================
+	// Charset convenience
+	// =========================================================================
+
+	/**
+	 * Returns the `charset` parameter value, or `null` when absent.
+	 * @return ?string e.g. `'UTF-8'`, or `null`.
+	 */
+	public function getCharset(): ?string
+	{
+		return $this->getParameter('charset');
+	}
+
+	/**
+	 * Sets the `charset` parameter. Pass `null` to remove it.
+	 * @param ?string $charset e.g. `'UTF-8'`, or `null` to remove.
+	 */
+	public function setCharset(?string $charset): void
+	{
+		if ($charset === null) {
+			$this->removeParameter('charset');
+		} else {
+			$this->setParameter('charset', $charset);
+		}
+	}
+
+	// =========================================================================
+	// Boundary convenience
+	// =========================================================================
+
+	/**
+	 * Returns the `boundary` parameter value, or `null` when absent.
+	 * The `boundary` parameter is required by `multipart/*` types
+	 * (e.g. `multipart/form-data; boundary=----WebKitFormBoundaryXYZ`).
+	 * @return ?string e.g. `'----WebKitFormBoundaryXYZ'`, or `null`.
+	 */
+	public function getBoundary(): ?string
+	{
+		return $this->getParameter('boundary');
+	}
+
+	/**
+	 * Sets the `boundary` parameter. Pass `null` to remove it.
+	 * @param ?string $boundary e.g. `'----WebKitFormBoundaryXYZ'`, or `null` to remove.
+	 */
+	public function setBoundary(?string $boundary): void
+	{
+		if ($boundary === null) {
+			$this->removeParameter('boundary');
+		} else {
+			$this->setParameter('boundary', $boundary);
+		}
+	}
+
+	// =========================================================================
+	// Rendering
+	// =========================================================================
+
+	/**
+	 * Renders the full media type string, e.g. `text/html; charset=UTF-8`.
+	 * Parameters are appended in insertion order, each separated by `'; '`.
+	 * Parameter values are emitted as stored (not re-quoted); values that are
+	 * valid RFC 9110 tokens render without quotes, which is correct for all
+	 * standard parameters (`charset`, `boundary`, etc.).
+	 * @return string the rendered media type.
+	 */
+	public function __toString(): string
+	{
+		$params = $this->getParameters();
+		if (empty($params)) {
+			return $this->getMimeType();
+		}
+		$parts = [$this->getMimeType()];
+		foreach ($params as $name => $value) {
+			$parts[] = $name . '=' . $value;
+		}
+		return implode('; ', $parts);
+	}
+}

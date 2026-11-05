@@ -1,12 +1,15 @@
 <?php
 
+namespace Prado\Test\Unit\Util\Helpers;
+
 use Prado\Exceptions\TNotSupportedException;
 use Prado\Prado;
 use Prado\TEventSubscription;
 use Prado\Util\Helpers\TProcessHelper;
 use Prado\Util\TSignalsDispatcher;
+use Prado\Test\Unit\Util\TTestSignalsDispatcher;
 
-class TProcessHelperTest extends PHPUnit\Framework\TestCase
+class TProcessHelperTest extends \PHPUnit\Framework\TestCase
 {
 	public $dispatcher = null;
 	protected function setUp(): void
@@ -72,8 +75,13 @@ class TProcessHelperTest extends PHPUnit\Framework\TestCase
 		$pid = TProcessHelper::fork();
 			
 		if ($pid === 0) {
-			usleep(50_000); // time for isRunning by parent.  delay of start is usually enough.
-			exit();
+			// The child always exits; it must never return into PHPUnit.
+			try {
+				usleep(50_000); // time for isRunning by parent.  delay of start is usually enough.
+				exit();
+			} catch (\Throwable $e) {
+				exit(1);
+			}
 		} else if ($pid === -1) {
 			self::fail('Failed to fork with pid = -1');
 			return;
@@ -117,26 +125,39 @@ class TProcessHelperTest extends PHPUnit\Framework\TestCase
 	{
 		self::assertTrue(TProcessHelper::isRunning(getmypid()));
 		
-		$command = TProcessHelper::filterCommand(['@php', '-r', 'sleep(5);']);
+		// The child outlives the priority calls; on Windows each one starts PowerShell, which can take seconds.
+		$command = TProcessHelper::filterCommand(['@php', '-r', 'sleep(60);']);
 		
 		$descriptorspec = [];
 		
 		$process = proc_open($command, $descriptorspec, $pipes);
 		$info = proc_get_status($process);
 		$pid = $info['pid'];
-		usleep(50_000); // Allow time for the process to appear in the OS task list (needed on Windows).
-		self::assertTrue(TProcessHelper::isRunning($pid));
-		
-		self::assertTrue(is_int($processPriority = TProcessHelper::getProcessPriority($pid)));
-		self::assertTrue(TProcessHelper::setProcessPriority(TProcessHelper::WINDOWS_BELOW_NORMAL_PRIORITY, $pid));
-		self::assertEquals(TProcessHelper::WINDOWS_BELOW_NORMAL_PRIORITY, TProcessHelper::getProcessPriority($pid));
-		
-		self::assertTrue(TProcessHelper::setProcessPriority(TProcessHelper::WINDOWS_IDLE_PRIORITY, $pid));
-		self::assertEquals(TProcessHelper::WINDOWS_IDLE_PRIORITY, TProcessHelper::getProcessPriority($pid));
-		
-		self::assertTrue(TProcessHelper::kill($pid)); // kill pid despite sleeping.
-		proc_close($process);
-		self::assertFalse(TProcessHelper::isRunning($pid));
+		try {
+			// A loaded Windows runner can take well over 50ms to list the child in TASKLIST.
+			$deadline = microtime(true) + 10;
+			while (!($running = TProcessHelper::isRunning($pid)) && microtime(true) < $deadline) {
+				usleep(50_000);
+			}
+			self::assertTrue($running, "Child process $pid did not appear in the OS process list.");
+			
+			self::assertTrue(is_int($processPriority = TProcessHelper::getProcessPriority($pid)));
+			self::assertTrue(TProcessHelper::setProcessPriority(TProcessHelper::WINDOWS_BELOW_NORMAL_PRIORITY, $pid));
+			self::assertEquals(TProcessHelper::WINDOWS_BELOW_NORMAL_PRIORITY, TProcessHelper::getProcessPriority($pid));
+			
+			self::assertTrue(TProcessHelper::setProcessPriority(TProcessHelper::WINDOWS_IDLE_PRIORITY, $pid));
+			self::assertEquals(TProcessHelper::WINDOWS_IDLE_PRIORITY, TProcessHelper::getProcessPriority($pid));
+			
+			self::assertTrue(TProcessHelper::kill($pid)); // kill pid despite sleeping.
+			proc_close($process);
+			$process = null;
+			self::assertFalse(TProcessHelper::isRunning($pid));
+		} finally {
+			if ($process !== null) {
+				proc_terminate($process, 9);
+				proc_close($process);
+			}
+		}
 	}
 	
 	public function testEscapeShellArg()

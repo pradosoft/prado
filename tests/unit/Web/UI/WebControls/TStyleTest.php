@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI\WebControls;
+
 use Prado\Web\UI\TControl;
 use Prado\Web\UI\TPage;
 use Prado\Web\UI\TTemplate;
@@ -10,6 +12,7 @@ use Prado\Web\UI\WebControls\TDisplayStyle;
 use Prado\Web\UI\THtmlWriter;
 use Prado\IO\TTextWriter;
 use PHPUnit\Framework\TestCase;
+use Prado\Test\Unit\PradoUnit;
 
 // ---------------------------------------------------------------------------
 // Fixture subclasses for Section 23 — DEFAULT_DISPLAY_STYLE subclass override
@@ -2339,19 +2342,20 @@ class TStyleTest extends TestCase
 	// ================================================================================
 	// 22. setSubProperty / TTemplate integration — Style.<attr> all forms
 	//
-	// TTemplate calls attributeToMethodName(attr) — replacing '-' with '_' — then
-	// setSubProperty('Style.<converted>', value).  setSubProperty resolves to
-	// $control->getStyle()-><converted> = value, which invokes TStyle::__set or
-	// __call (both now preserve leading dashes).
+	// TTemplate calls setSubProperty('Style.<attr>', value) with the attribute name
+	// as written in the template.  setSubProperty resolves to
+	// $control->getStyle()-><attr> = value, which invokes TStyle::__set or __call.
+	// The underscore forms reach the same CSS fields, because methodToAttributeName
+	// maps an underscore to a dash.
 	//
-	//   Template attribute      attributeToMethodName      CSS field resolved
-	//   ─────────────────────── ────────────────────── ──────────────────────
-	//   Style.Width             Style.Width             width  (real setter)
-	//   Style.FontSize          Style.FontSize          font-size  (magic)
-	//   Style.font-size         Style.font_size         font-size
-	//   Style.--web-color       Style.__web_color       --web-color
-	//   Style.--safari-*        Style.__safari_*        --safari-*
-	//   Style.-webkit-*         Style._webkit_*         -webkit-*
+	//   Template attribute      CSS field resolved      Equivalent underscore form
+	//   ─────────────────────── ────────────────────── ─────────────────────────
+	//   Style.Width             width  (real setter)    —
+	//   Style.FontSize          font-size  (magic)      —
+	//   Style.font-size         font-size               Style.font_size
+	//   Style.--web-color       --web-color             Style.__web_color
+	//   Style.--safari-*        --safari-*              Style.__safari_*
+	//   Style.-webkit-*         -webkit-*               Style._webkit_*
 	// ================================================================================
 
 	private function newTemplate(string $html): TTemplate
@@ -2361,7 +2365,7 @@ class TStyleTest extends TestCase
 
 	private function newTemplateUnvalidated(string $html): TTemplate
 	{
-		$ref = new \ReflectionClass(TTemplate::class);
+		$ref = PradoUnit::reflectionClass(TTemplate::class);
 		$tplObj = $ref->newInstanceWithoutConstructor();
 		$props = [
 			'_sourceTemplate' => true,
@@ -2373,17 +2377,11 @@ class TStyleTest extends TestCase
 			'_hashCode' => md5($html),
 		];
 		foreach ($props as $name => $val) {
-			$p = $ref->getProperty($name);
-			$p->setAccessible(true);
-			$p->setValue($tplObj, $val);
+			PradoUnit::setProp($tplObj, $name, $val);
 		}
 		$ref->getParentClass()->getParentClass()->getConstructor()->invoke($tplObj);
-		$parse = $ref->getMethod('parse');
-		$parse->setAccessible(true);
-		$parse->invoke($tplObj, $html);
-		$c = $ref->getProperty('_content');
-		$c->setAccessible(true);
-		$c->setValue($tplObj, null);
+		PradoUnit::invoke($tplObj, 'parse', $html);
+		PradoUnit::setProp($tplObj, '_content', null);
 		return $tplObj;
 	}
 
@@ -2437,16 +2435,16 @@ class TStyleTest extends TestCase
 		$this->assertEquals('14px', $control->getSubProperty('Style.FontSize'));
 	}
 
-	public function testSetSubPropertyStyleDashConvertedToUnderscore()
+	public function testSetSubPropertyStyleUnderscoreName()
 	{
-		// TTemplate converts 'font-size' → 'font_size' via attributeToMethodName before
-		// calling setSubProperty.  'font_size' → methodToAttributeName → 'font-size'.
+		// 'font_size' → methodToAttributeName → 'font-size'.  Equivalent to the
+		// template's 'Style.font-size', which reaches the same CSS field directly.
 		$control = new THeader();
 		$control->setSubProperty('Style.font_size', '16px');
 		$this->assertEquals('16px', $control->getStyle()->getStyleField('font-size'));
 	}
 
-	public function testGetSubPropertyStyleDashConvertedToUnderscore()
+	public function testGetSubPropertyStyleUnderscoreName()
 	{
 		$control = new THeader();
 		$control->getStyle()->setStyleField('font-size', '16px');
@@ -2455,9 +2453,8 @@ class TStyleTest extends TestCase
 
 	public function testSetSubPropertyStyleCssCustomProperty()
 	{
-		// Template 'Style.--web-color' → attributeToMethodName → 'Style.__web_color'
-		// → setSubProperty → $style->__web_color = 'red' → methodToAttributeName →
-		// '--web-color' → setStyleField('--web-color', 'red')
+		// '$style->__web_color = 'red'' → methodToAttributeName → '--web-color' →
+		// setStyleField('--web-color', 'red').  Equivalent to 'Style.--web-color'.
 		$control = new THeader();
 		$control->setSubProperty('Style.__web_color', 'red');
 		$this->assertEquals('red', $control->getStyle()->getStyleField('--web-color'));
@@ -2472,7 +2469,7 @@ class TStyleTest extends TestCase
 
 	public function testSetSubPropertyStyleSafariCssCustomProperty()
 	{
-		// Template 'Style.--safari-transform' → '__safari_transform'
+		// Underscore form of 'Style.--safari-transform'
 		$control = new THeader();
 		$control->setSubProperty('Style.__safari_transform', 'none');
 		$this->assertEquals('none', $control->getStyle()->getStyleField('--safari-transform'));
@@ -2480,7 +2477,7 @@ class TStyleTest extends TestCase
 
 	public function testSetSubPropertyStyleWebkitVendorPrefix()
 	{
-		// Template 'Style.-webkit-transform' → '_webkit_transform'
+		// Underscore form of 'Style.-webkit-transform'
 		$control = new THeader();
 		$control->setSubProperty('Style._webkit_transform', 'rotate(45deg)');
 		$this->assertEquals('rotate(45deg)', $control->getStyle()->getStyleField('-webkit-transform'));
@@ -2535,7 +2532,7 @@ class TStyleTest extends TestCase
 	public function testTemplateStyleDashInAttributeName()
 	{
 		// <com:THeader Style.font-size="16px" />
-		// TTemplate converts 'font-size' → 'font_size' → resolves to 'font-size' field
+		// 'font-size' carries through verbatim and resolves to the 'font-size' field
 		$tpl = $this->newTemplateUnvalidated('<com:THeader ID="h1" Style.font-size="16px" />');
 		$parent = $this->createControlWithPage();
 		$tpl->instantiateIn($parent);
@@ -2546,7 +2543,7 @@ class TStyleTest extends TestCase
 	public function testTemplateStyleCssCustomPropertyDoubleDash()
 	{
 		// <com:THeader Style.--web-color="red" />
-		// '--web-color' → '__web_color' → resolves to '--web-color' field
+		// '--web-color' carries through verbatim and resolves to the '--web-color' field
 		$tpl = $this->newTemplateUnvalidated('<com:THeader ID="h1" Style.--web-color="red" />');
 		$parent = $this->createControlWithPage();
 		$tpl->instantiateIn($parent);
@@ -2567,7 +2564,7 @@ class TStyleTest extends TestCase
 	public function testTemplateStyleWebkitVendorPrefix()
 	{
 		// <com:THeader Style.-webkit-transform="rotate(45deg)" />
-		// '-webkit-transform' → '_webkit_transform' → '-webkit-transform' field
+		// '-webkit-transform' carries through verbatim to the '-webkit-transform' field
 		$tpl = $this->newTemplateUnvalidated('<com:THeader ID="h1" Style.-webkit-transform="rotate(45deg)" />');
 		$parent = $this->createControlWithPage();
 		$tpl->instantiateIn($parent);

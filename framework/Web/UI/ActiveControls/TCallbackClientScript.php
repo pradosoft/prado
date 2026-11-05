@@ -18,6 +18,7 @@ use Prado\Web\UI\THtmlWriter;
 use Prado\Web\UI\WebControls\TCheckBox;
 use Prado\Web\UI\WebControls\TCheckBoxList;
 use Prado\Web\UI\WebControls\TListControl;
+use Prado\Web\UI\WebControls\TSuggestionList;
 
 /**
  * TCallbackClientScript class.
@@ -61,6 +62,26 @@ use Prado\Web\UI\WebControls\TListControl;
  * $this->getPage()->getClientScript()->registerPradoScript('jqueryui');
  * ```
  *
+ * The content methods {@see update()}, {@see appendContent()}, {@see prependContent()},
+ * {@see insertContentAfter()}, {@see insertContentBefore()}, and {@see replaceContent()}
+ * insert their content as HTML, and the client runs any inline script in it, as jQuery
+ * `.html()` does.  Text from user input goes through {@see setText()}, which sets text
+ * content, or through {@see \Prado\Web\THttpUtility::htmlEncode()} before a content method.
+ *
+ * {@see setViewTransition ViewTransition} applies the client functions of this response
+ * inside a view transition (`document.startViewTransition`), so the browser animates
+ * from the old page to the updated one:
+ * ```php
+ * $this->getPage()->getCallbackClient()->setViewTransition(true);
+ * ```
+ * *
+ * The browser methods reach outside the page: {@see notify()} shows a system
+ * notification, {@see setAppBadge()} and {@see clearAppBadge()} set the badge of an
+ * installed web app, {@see setDocumentTitle()} sets the document title, and
+ * {@see vibrate()} vibrates the device. Each does nothing in a browser without the API.
+ * A notification needs permission, which the page asks for from a user interaction
+ * with `Prado.Notification.requestPermission()`.
+ *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
  * @since 3.1
@@ -71,6 +92,10 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * @var TList list of client functions to execute.
 	 */
 	private $_actions;
+	/**
+	 * @var bool whether the response applies its client functions in a view transition
+	 */
+	private $_viewTransition = false;
 
 	/**
 	 * Constructor.
@@ -88,6 +113,29 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	public function getClientFunctionsToExecute()
 	{
 		return $this->_actions->toArray();
+	}
+
+	/**
+	 * @return bool whether the client applies the functions of this response inside
+	 *   a view transition. Defaults to false.
+	 * @since 4.4.0
+	 */
+	public function getViewTransition(): bool
+	{
+		return $this->_viewTransition;
+	}
+
+	/**
+	 * Sets whether the client applies the functions of this response inside a view
+	 * transition. The client applies them directly under `prefers-reduced-motion: reduce`
+	 * or without view transition support. {@see \Prado\Web\UI\TPage::getCallbackViewTransition()
+	 * TPage.CallbackViewTransition} turns it on for every response.
+	 * @param bool $value whether the response animates through a view transition.
+	 * @since 4.4.0
+	 */
+	public function setViewTransition($value): void
+	{
+		$this->_viewTransition = TPropertyValue::ensureBoolean($value);
 	}
 
 	/**
@@ -109,6 +157,87 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 			}
 		}
 		$this->_actions->add([$function => $params]);
+	}
+
+	/**
+	 * Shows a system notification through the Notification API (`Prado.Notification.show`).
+	 * The client shows it with permission granted; with permission not asked, it asks, which
+	 * the browser grants only from a recent user interaction; with permission denied or
+	 * without the API, nothing is shown. A click on the notification focuses the window and
+	 * raises the callback of `$clickTarget` with `$clickParameter`.
+	 *
+	 * `$options` are those of the Notification constructor: `body`, `icon`, `tag`, `lang`,
+	 * `dir`, `badge`, `image`, `silent`, `requireInteraction`, `renotify`, and `data`, plus
+	 * `focus` (whether a click focuses the window, default true) and `closeAfter`
+	 * (milliseconds until the notification closes).
+	 * @param string $title the notification title
+	 * @param array $options the notification options
+	 * @param null|string|TControl $clickTarget the callback control a click raises, or its unique ID
+	 * @param mixed $clickParameter the parameter of that callback
+	 * @since 4.4.0
+	 */
+	public function notify($title, array $options = [], $clickTarget = null, $clickParameter = null): void
+	{
+		if ($clickTarget !== null) {
+			$options['EventTarget'] = $clickTarget instanceof TControl ? $clickTarget->getUniqueID() : TPropertyValue::ensureString($clickTarget);
+			if ($clickParameter !== null) {
+				$options['CallbackParameter'] = $clickParameter;
+			}
+		}
+		$this->callClientFunction('Prado.Notification.show', [TPropertyValue::ensureString($title), $options]);
+	}
+
+	/**
+	 * Sets the badge on the icon of the installed web app through the Badging API
+	 * (`Prado.Browser.setAppBadge`). Null shows a flag without a number, and 0 clears the badge.
+	 * @param ?int $count the number to show, or null for a flag
+	 * @throws \InvalidArgumentException when the count is negative
+	 * @since 4.4.0
+	 */
+	public function setAppBadge($count = null): void
+	{
+		if ($count !== null) {
+			$count = TPropertyValue::ensureInteger($count);
+			if ($count < 0) {
+				throw new \InvalidArgumentException('The app badge count must be 0 or more.');
+			}
+		}
+		$this->callClientFunction('Prado.Browser.setAppBadge', [$count]);
+	}
+
+	/**
+	 * Clears the badge on the icon of the installed web app (`Prado.Browser.clearAppBadge`).
+	 * @since 4.4.0
+	 */
+	public function clearAppBadge(): void
+	{
+		$this->callClientFunction('Prado.Browser.clearAppBadge', []);
+	}
+
+	/**
+	 * Sets the document title (`Prado.Browser.setTitle`), which the browser shows on
+	 * the tab and the window.
+	 * @param string $title the new title
+	 * @since 4.4.0
+	 */
+	public function setDocumentTitle($title): void
+	{
+		$this->callClientFunction('Prado.Browser.setTitle', [TPropertyValue::ensureString($title)]);
+	}
+
+	/**
+	 * Vibrates the device through the Vibration API (`Prado.Browser.vibrate`). A pattern
+	 * alternates vibration and pause lengths in milliseconds; 0 or an empty pattern cancels
+	 * a vibration in progress. The browser ignores the call without a recent user interaction.
+	 * @param int|int[] $pattern milliseconds, or a pattern of them
+	 * @since 4.4.0
+	 */
+	public function vibrate($pattern): void
+	{
+		$pattern = is_array($pattern)
+			? array_values(array_map(TPropertyValue::ensureInteger(...), $pattern))
+			: TPropertyValue::ensureInteger($pattern);
+		$this->callClientFunction('Prado.Browser.vibrate', [$pattern]);
 	}
 
 	/**
@@ -265,11 +394,16 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 
 	/**
 	 * Sets the options of a select input element.
+	 * A {@see TSuggestionList} uses {@see setSuggestionListItems} instead.
 	 * @param \Prado\Web\UI\TControl $control control element or element id
 	 * @param array|TListControl $items a list of new options
 	 */
 	public function setListItems($control, $items)
 	{
+		if ($control instanceof TSuggestionList) {
+			$this->setSuggestionListItems($control, $items);
+			return;
+		}
 		$options = [];
 		if ($control instanceof TListControl) {
 			$promptText = $control->getPromptText();
@@ -292,6 +426,26 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 			}
 		}
 		$this->callClientFunction('Prado.Element.setOptions', [$control, $options]);
+	}
+
+	/**
+	 * Replaces the options of a `<datalist>` element.
+	 * Each option is the `[value, label, attributes]` of
+	 * {@see \Prado\Web\UI\WebControls\TSuggestionList::getOptionData}; items without
+	 * option data are skipped.
+	 * @param TSuggestionList $control the suggestion list
+	 * @param iterable $items the list items
+	 * @since 4.4.0
+	 */
+	public function setSuggestionListItems($control, $items)
+	{
+		$options = [];
+		foreach ($items as $item) {
+			if (($option = $control->getOptionData($item)) !== null) {
+				$options[] = $option;
+			}
+		}
+		$this->callClientFunction('Prado.Element.setDataListOptions', [$control, $options]);
 	}
 
 	/**
@@ -348,14 +502,27 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * Update the element's innerHTML with new content.
-	 * @param \Prado\Web\UI\TControl $element control element or element id
-	 * @param \Prado\Web\UI\TControl $content new HTML content, if content is of a TControl, the
-	 * controls render method is called.
+	 * Sets the element's inner HTML, through jQuery `.html()`.  The content is parsed as HTML
+	 * and its inline scripts run, so user input is HTML-encoded first or goes through
+	 * {@see setText()}.  {@see replaceContent()} inserts a rendered control.
+	 * @param \Prado\Web\UI\TControl|string $element control element or element id
+	 * @param string $content new HTML content
 	 */
 	public function update($element, $content)
 	{
 		$this->jQuery($element, 'html', $content);
+	}
+
+	/**
+	 * Sets the element's text content, through jQuery `.text()`.  The text is not parsed as
+	 * HTML, so it is the method for text from user input; {@see update()} sets HTML.
+	 * @param \Prado\Web\UI\TControl|string $element control element or element id
+	 * @param string $text new text content
+	 * @since 4.4.0
+	 */
+	public function setText($element, $text)
+	{
+		$this->jQuery($element, 'text', [TPropertyValue::ensureString($text)]);
 	}
 
 	/**
@@ -381,9 +548,11 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	/**
 	 * Scroll the top of the browser viewing area to the location of the
 	 * element.
+	 * The scroll lasts 'duration' milliseconds. A 'duration' of 0, or a
+	 * browser preferring reduced motion, jumps to the element at once.
 	 *
 	 * @param \Prado\Web\UI\TControl $element control element or element id
-	 * @param array $options additional options: 'duration' in ms, 'offset' from the top in pixels
+	 * @param array $options additional options: 'duration' in ms (default 500), 'offset' from the top in pixels (default 50)
 	 */
 	public function scrollTo($element, $options = [])
 	{
@@ -411,9 +580,10 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * Append a HTML fragement to the element.
-	 * @param \Prado\Web\UI\TControl $element control element or element id
-	 * @param string $content HTML fragement or the control to be rendered
+	 * Appends an HTML fragment to the element's content, as HTML.  The fragment is parsed and its inline
+	 * scripts run, so user input is HTML-encoded first.
+	 * @param \Prado\Web\UI\TControl|string $element control element or element id
+	 * @param string $content HTML fragment
 	 */
 	public function appendContent($element, $content)
 	{
@@ -421,9 +591,10 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * Prepend a HTML fragement to the element.
-	 * @param \Prado\Web\UI\TControl $element control element or element id
-	 * @param string $content HTML fragement or the control to be rendered
+	 * Prepends an HTML fragment to the element's content, as HTML.  The fragment is parsed and its inline
+	 * scripts run, so user input is HTML-encoded first.
+	 * @param \Prado\Web\UI\TControl|string $element control element or element id
+	 * @param string $content HTML fragment
 	 */
 	public function prependContent($element, $content)
 	{
@@ -431,9 +602,10 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * Insert a HTML fragement after the element.
-	 * @param \Prado\Web\UI\TControl $element control element or element id
-	 * @param string $content HTML fragement or the control to be rendered
+	 * Inserts an HTML fragment after the element, as HTML.  The fragment is parsed and its inline
+	 * scripts run, so user input is HTML-encoded first.
+	 * @param \Prado\Web\UI\TControl|string $element control element or element id
+	 * @param string $content HTML fragment
 	 */
 	public function insertContentAfter($element, $content)
 	{
@@ -441,9 +613,10 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * Insert a HTML fragement in before the element.
-	 * @param \Prado\Web\UI\TControl $element control element or element id
-	 * @param string $content HTML fragement or the control to be rendered
+	 * Inserts an HTML fragment before the element, as HTML.  The fragment is parsed and its inline
+	 * scripts run, so user input is HTML-encoded first.
+	 * @param \Prado\Web\UI\TControl|string $element control element or element id
+	 * @param string $content HTML fragment
 	 */
 	public function insertContentBefore($element, $content)
 	{
@@ -451,19 +624,14 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * Replace the content of an element with new content. The new content can
-	 * be a string or a TControl component. If the <tt>content</tt> parameter is
-	 * a TControl component, its rendered method will be called and its contents
-	 * will be used for replacement.
-	 * @param \Prado\Web\UI\TControl $element control element or HTML element id.
-	 * @param string $content HTML fragement or the control to be rendered.
+	 * Replaces the element, or its content, through `Prado.Element.replace`.  A control is
+	 * rendered and a writer's content is sent inside a response boundary; a string is sent as is.
+	 * @param \Prado\Web\UI\TControl|string $element control element or HTML element id.
+	 * @param \Prado\Web\UI\TControl|\Prado\Web\UI\THtmlWriter|string $content HTML fragment, the control to be rendered, or the writer holding the content.
 	 * @param bool $self whether to fully replace the element or just its inner content.
-	 * @see insertAbout
-	 * @see insertBelow
-	 * @see insertBefore
-	 * @see insertAfter
+	 * @param bool $morph whether the client morphs the existing nodes; see {@see replaceContent()}.
 	 */
-	protected function replace($element, $content, $self)
+	protected function replace($element, $content, $self, $morph = false)
 	{
 		if ($content instanceof TControl) {
 			$boundary = $this->getRenderedContentBoundary($content);
@@ -475,23 +643,36 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 			$boundary = null;
 		}
 
-		$this->callClientFunction('Prado.Element.replace', [$element, $content, $boundary, $self]);
+		$params = [$element, $content, $boundary, $self];
+		if ($morph) {
+			$params[] = true;
+		}
+		$this->callClientFunction('Prado.Element.replace', $params);
 	}
 
 	/**
-	 * Replace the content of an element with new content contained in writer.
-	 * @param \Prado\Web\UI\TControl $element control element or HTML element id.
-	 * @param string $content HTML fragement or the control to be rendered.
+	 * Replaces the element, or its content, with HTML: a string, a control that is rendered,
+	 * or the content of a writer.  The HTML is parsed and its inline scripts run, so user
+	 * input in a string is HTML-encoded first.
+	 * @param \Prado\Web\UI\TControl|string $element control element or HTML element id.
+	 * @param \Prado\Web\UI\TControl|\Prado\Web\UI\THtmlWriter|string $content HTML fragment, the control to be rendered, or the writer holding the content.
 	 * @param bool $self whether to fully replace the element or just its inner content, defaults to true.
+	 * @param bool $morph whether the client patches the existing nodes to match the HTML
+	 *   through `Prado.Element.morph`, so they keep their listeners, focus, and caret;
+	 *   defaults to false. The `morph` script package loads idiomorph; without it the
+	 *   client replaces. An active control passes its
+	 *   {@see TBaseActiveControl::getIsMorphUpdate() ActiveControl.IsMorphUpdate}.
 	 */
-	public function replaceContent($element, $content, $self = true)
+	public function replaceContent($element, $content, $self = true, $morph = false)
 	{
-		$this->replace($element, $content, $self);
+		$this->replace($element, $content, $self, $morph);
 	}
 
 
 	/**
 	 * Evaluate a block of javascript enclosed in a boundary.
+	 * On a page with a CSP nonce, the client runs the script in a `<script>` element
+	 * that carries the page nonce; see `Prado.Element.evaluateScript()` in prado.js.
 	 * @param \Prado\Web\UI\THtmlWriter|string $writer writer for the content.
 	 */
 	public function evaluateScript($writer)
@@ -544,7 +725,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 
 	/**
 	 * @param \Prado\Web\UI\THtmlWriter $html the writer responsible for rendering html content.
-	 * @return string content boundary.
+	 * @return ?string content boundary.
 	 */
 	private function getResponseContentBoundary($html)
 	{

@@ -1326,17 +1326,10 @@ class TTarFileExtractor
 			}
 
 			$extractionManifest = [];
-			$v_exception = null;
 			try {
 				$this->_extractList(null, $extractionManifest, null, null);
-			} catch (\Exception $e) {
-				$v_exception = $e;
-			}
-
-			$this->_close();
-
-			if ($v_exception !== null) {
-				throw $v_exception;
+			} finally {
+				$this->_close();
 			}
 
 			$this->_sortManifest($extractionManifest);
@@ -1811,17 +1804,14 @@ class TTarFileExtractor
 			if (is_dir($p_checkPath)) {
 				if (!is_writable($p_checkPath)) {
 					$this->_error("Extraction destination '$p_checkPath' is not writable");
-					return false;
 				}
 			} else {
 				$parentDir = dirname($p_checkPath);
 				if (!is_dir($parentDir)) {
 					$this->_error("Extraction destination parent '$parentDir' does not exist");
-					return false;
 				}
 				if (!is_writable($parentDir)) {
 					$this->_error("Extraction destination parent '$parentDir' is not writable");
-					return false;
 				}
 			}
 			if ($this->getAtomic()) {
@@ -1867,10 +1857,6 @@ class TTarFileExtractor
 		// letting callers distinguish security violations from conflict skips.
 		// ------------------------------------------------------------------
 		$recordEntryDetail = function (array $fileInfo, ?string $extractedPath, ?string $reason = null, ?string $security = null) use (&$p_manifest): void {
-			if (!is_array($p_manifest)) {
-				return;
-			}
-
 			/*
 			$normKey = $fileInfo['filepath_norm'] ?? rtrim($fileInfo['filepath'] ?? '', '/\\');
 			if (($fileInfo['typeflag'] ?? 0) === self::TYPE_DIRECTORY) {
@@ -1967,7 +1953,7 @@ class TTarFileExtractor
 				$v_header['tarpath_norm'] = substr($v_header['tarpath_norm'], $p_remove_path_prefix_length);
 				$v_header['filepath'] = substr($v_header['filepath'], $p_remove_path_prefix_length);
 				$v_header['filepath_norm'] = substr($v_header['filepath_norm'], $p_remove_path_prefix_length);
-				$v_header['filesafe'] = $this->_isRelativePathSafe((string) ($v_header['tarpath_norm'] ?? ''));
+				$v_header['filesafe'] = $this->_isRelativePathSafe((string) $v_header['tarpath_norm']);
 			}
 
 			$typeFlag = $v_header['typeflag'];
@@ -2021,7 +2007,6 @@ class TTarFileExtractor
 				$message = "Zip Slip path traversal attempt detected: '$extractedPath'";
 				if ($this->getStrict()) {
 					$this->_error($message);
-					return false;
 				}
 				$recordEntryDetail($v_header, null, self::REASON_ZIP_SLIP, self::SECURITY_ZIP_SLIP_ATTACK);
 				if (($v_header['size'] ?? 0) > 0) {
@@ -2035,7 +2020,6 @@ class TTarFileExtractor
 				$message = "'Special' file type cannot be extracted: '$extractedPath'";
 				if ($this->getStrict()) {
 					$this->_error($message);
-					return false;
 				}
 				$recordEntryDetail($v_header, null, self::REASON_DEVICE, self::SECURITY_IS_DEVICE);
 				if (($v_header['size'] ?? 0) > 0) {
@@ -2083,7 +2067,6 @@ class TTarFileExtractor
 			if (!$v_preexisted || $typeFlag === self::TYPE_DIRECTORY) {
 				if (!$this->_dirCheck(dirname($extractedPath), self::WORKING_DIR_MODE)) {
 					$this->_error("Unable to create path for '$extractedPath'");
-					return false;
 				}
 			}
 
@@ -2107,7 +2090,6 @@ class TTarFileExtractor
 					// loop below, which is only executed when $applyPermissions is true.
 					if (!@mkdir($extractedPath, self::WORKING_DIR_MODE)) {
 						$this->_error("Unable to create directory {$extractedPath}");
-						return false;
 					}
 					$v_created = true;
 				}
@@ -2146,7 +2128,6 @@ class TTarFileExtractor
 					$message = "$linkType target outside extraction directory: $v_linkpath";
 					if ($this->getStrict()) {
 						$this->_error($message);
-						return false;
 					}
 					$v_linkViolation = $isSymLink ? self::REASON_SYMLINK : self::REASON_HARDLINK;
 					$recordEntryDetail($v_header, null, $v_linkViolation, self::SECURITY_LINKPATH_OUTSIDE_DESTINATION);
@@ -2174,7 +2155,6 @@ class TTarFileExtractor
 
 				if (!@$linkMethod($v_resolvedLinkpath, $extractedPath)) {
 					$this->_error('Unable to create ' . strtolower($linkType) . ": $extractedPath");
-					return false;
 				}
 				$recordEntryDetail($v_header, $extractedPath);
 
@@ -2185,7 +2165,6 @@ class TTarFileExtractor
 				$v_dest_file = @fopen($extractedPath, 'wb');
 				if ($v_dest_file === false) {
 					$this->_error("Error while opening {$extractedPath} in write binary mode");
-					return false;
 				}
 
 				$n = (int) floor($v_header['size'] / 512);
@@ -2217,7 +2196,6 @@ class TTarFileExtractor
 						. filesize($extractedPath) . ' (' . $v_header['size'] . ' expected). '
 						. 'Archive may be corrupted.'
 					);
-					return false;
 				}
 
 				$recordEntryDetail($v_header, $extractedPath);
@@ -2306,7 +2284,7 @@ class TTarFileExtractor
 				true,  // applyPermissions
 				$preWriteHook
 			);
-		} catch (\Exception $e) {
+		} catch (\Throwable $e) {
 			$v_result = false;
 			$v_exception = $e;
 		}
@@ -2417,7 +2395,6 @@ class TTarFileExtractor
 		$stagingDir = $this->_staging_directory($p_destPath) . DIRECTORY_SEPARATOR . $this->_staging_dir_name($p_destPath);
 		if (!@mkdir($stagingDir, self::WORKING_DIR_MODE, true)) {
 			$this->_error("Unable to create atomic staging directory '$stagingDir'");
-			return false;
 		}
 
 		// Backup directory is adjacent to the destination — the same structure used
@@ -2445,7 +2422,7 @@ class TTarFileExtractor
 				self::CONFLICT_OVERWRITE,  // staging is always fresh
 				false                      // $applyPermissions: handled by _mergeStaging
 			);
-		} catch (\Exception $e) {
+		} catch (\Throwable $e) {
 			$v_result = false;
 			$v_exception = $e;
 		}
@@ -2469,7 +2446,7 @@ class TTarFileExtractor
 		$backups = [];
 		try {
 			$this->_mergeStaging($stagingDir, $p_destPath, $stagingManifest, $backups, $backupDir);
-		} catch (\Exception $e) {
+		} catch (\Throwable $e) {
 			// Restore overwritten files from backups, then clean up both dirs.
 			foreach ($backups as $origPath => $backupPath) {
 				if (file_exists($backupPath)) {
@@ -2793,7 +2770,7 @@ class TTarFileExtractor
 	 * @throws \Exception
 	 * @return never
 	 */
-	protected function _error($p_message)
+	protected function _error($p_message): never
 	{
 		$cls = $this->getExceptionClass();
 		if (!empty($cls) && $cls !== '\Exception' && $cls !== 'Exception') {
@@ -2835,13 +2812,11 @@ class TTarFileExtractor
 				$v_file_from = @fopen($v_filepath, 'rb', false, $ctx);
 				if (!$v_file_from) {
 					$this->_error("Unable to open in read mode '{$v_filepath}'");
-					return false;
 				}
 				$v_file_to = @fopen($v_temppath, 'wb');
 				if (!$v_file_to) {
 					@fclose($v_file_from);
 					$this->_error("Unable to open in write mode '{$v_temppath}'");
-					return false;
 				}
 				while ($v_data = @fread($v_file_from, 1024)) {
 					@fwrite($v_file_to, $v_data);
@@ -2862,7 +2837,6 @@ class TTarFileExtractor
 		}
 		if (is_string($fileHandle)) {
 			$this->_error($fileHandle);
-			return false;
 		}
 
 		$this->_file = $fileHandle;
@@ -3186,7 +3160,7 @@ class TTarFileExtractor
 			$v_block = @fread($this->_file, 512);
 		}
 
-		if ($v_block === '' || $v_block === null) {
+		if ($v_block === '') {
 			return null;
 		}
 		return $v_block;
@@ -3298,7 +3272,6 @@ class TTarFileExtractor
 		if (strlen($v_binary_data) !== 512) {
 			$v_header['filepath'] = '';
 			$this->_error('Invalid block size : ' . strlen($v_binary_data));
-			return false;
 		}
 
 		// Compute unsigned-sum checksum (bytes 148-155 treated as spaces).
@@ -3330,7 +3303,6 @@ class TTarFileExtractor
 				. '" : ' . $v_checksum . ' calculated, '
 				. $v_header['checksum'] . ' expected'
 			);
-			return false;
 		}
 
 		// Decode typeflag.
@@ -3791,7 +3763,6 @@ class TTarFileExtractor
 		$v_dirMode = $workingMode ?? $this->getDirModeOverride() ?? static::DEFAULT_DIR_MODE;
 		if (!@mkdir($p_dir, $v_dirMode)) {
 			$this->_error("Unable to create directory '$p_dir'");
-			return false;
 		}
 		@chmod($p_dir, $v_dirMode);
 

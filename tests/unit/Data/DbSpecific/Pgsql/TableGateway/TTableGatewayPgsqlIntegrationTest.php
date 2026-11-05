@@ -1,11 +1,13 @@
 <?php
 
-require_once(__DIR__ . '/../../../../PradoUnit.php');
+namespace Prado\Test\Unit\Data\DbSpecific\Pgsql\TableGateway;
 
 use Prado\Data\DataGateway\TSqlCriteria;
 use Prado\Data\DataGateway\TTableGateway;
 use Prado\Data\TDbConnection;
 use Prado\TApplication;
+use Prado\Test\Unit\PradoUnit;
+use Prado\TApplicationMode;
 
 /**
  * Live integration tests for TTableGateway — PostgreSQL.
@@ -36,7 +38,7 @@ use Prado\TApplication;
  * We reset the sequence to 0 before each test so the first insert always gets id=1
  * and the self-reference (field4_integer=1) is always satisfiable.
  */
-class TTableGatewayPgsqlIntegrationTest extends PHPUnit\Framework\TestCase
+class TTableGatewayPgsqlIntegrationTest extends \PHPUnit\Framework\TestCase
 {
 	private static ?TDbConnection $conn = null;
 	private static ?TTableGateway $gateway = null;
@@ -45,7 +47,7 @@ class TTableGatewayPgsqlIntegrationTest extends PHPUnit\Framework\TestCase
 	{
 		static $booted = false;
 		if (!$booted) {
-			new TApplication(__DIR__ . '/../../../../Security/app', false, TApplication::CONFIG_TYPE_PHP);
+			(new TApplication(__DIR__ . '/../../../../Security/app', false, TApplication::CONFIG_TYPE_PHP))->setMode(TApplicationMode::Debug);
 			$booted = true;
 		}
 		$conn = PradoUnit::setupPgsqlConnection('prado_unitest');

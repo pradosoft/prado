@@ -132,7 +132,7 @@ class TTextHighlighter extends TTextProcessor
 	}
 
 	/**
-	 * @return bool wether the contents are html encoded. Defaults to true.
+	 * @return bool whether the contents are html encoded. Defaults to true.
 	 */
 	public function getEncodeHtml()
 	{
@@ -140,7 +140,7 @@ class TTextHighlighter extends TTextProcessor
 	}
 
 	/**
-	 * @param bool $value wether to html-encode the contents using {@see \Prado\Web\THttpUtility::htmlEncode}.
+	 * @param bool $value whether to html-encode the contents using {@see \Prado\Web\THttpUtility::htmlEncode}.
 	 */
 	public function setEncodeHtml($value)
 	{

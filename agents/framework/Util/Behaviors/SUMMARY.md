@@ -10,6 +10,8 @@ Pre-built installable behaviors for common Prado application concerns; each beha
 
 - **`TCaptureForkLog`** — Attaches to `TApplication`; captures log entries from forked child processes.
 
+- **`TEvaluationFilterBehavior`** — Attaches to `TApplicationComponent` and `TApplication`; opt-in check of `evaluateExpression()` and `evaluateStatements()` code before `eval()`.
+
 - **`TForkable`** — Trait providing `fork()` helper for safe process forking with log capture.
 
 - **`TGlobalClassAware`** — Attaches to any class; checks class availability across the application.

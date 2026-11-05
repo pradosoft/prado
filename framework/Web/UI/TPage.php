@@ -18,15 +18,71 @@ use Prado\Exceptions\THttpException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidOperationException;
+use Prado\IO\Compression\ICompressionConfigurable;
+use Prado\IO\Compression\TCompressionConfig;
 use Prado\Prado;
 use Prado\TPropertyValue;
+use Prado\Web\THttpRequest;
 use Prado\Web\Javascripts\TJavaScript;
 use Prado\Web\UI\ActiveControls\TActivePageAdapter;
+use Prado\Web\UI\ActiveControls\TActiveUpdateMode;
 use Prado\Web\UI\ActiveControls\TCallbackClientScript;
 use Prado\Web\UI\WebControls\THead;
 
 /**
  * TPage class
+ *
+ * TPage is the root of the control tree serving a page request. It is created
+ * by {@see \Prado\Web\Services\TPageService}, which calls {@see run()} to
+ * execute the page life cycles. The life cycle taken depends on the request
+ * type: a normal request, a postback ({@see getIsPostBack IsPostBack}) or a
+ * callback ({@see getIsCallback IsCallback}). A callback delegates its event
+ * processing and its response rendering to {@see TActivePageAdapter}.
+ *
+ * A page contains at most one {@see TForm} and at most one
+ * {@see \Prado\Web\UI\WebControls\THead}. Controls that post back call
+ * {@see ensureRenderInForm()} while rendering to verify they are within the form.
+ *
+ * Post data is dispatched to the controls implementing
+ * {@see \Prado\Web\UI\IPostBackDataHandler} by {@see processPostData()}.
+ * The control named by the post data as the event target receives
+ * {@see \Prado\Web\UI\IPostBackEventHandler::raisePostBackEvent()}.
+ *
+ * The state of the page and its controls is written to the client through
+ * {@see getStatePersister StatePersister}. The state can be HMAC validated,
+ * encrypted, compressed and serialized with igbinary, controlled by
+ * {@see setEnableStateValidation EnableStateValidation},
+ * {@see setEnableStateEncryption EnableStateEncryption},
+ * {@see setEnableStateCompression EnableStateCompression} and
+ * {@see setEnableStateIGBinary EnableStateIGBinary}.  Compression is a storage concern:
+ * {@see getStateCompression() StateCompression} returns the settings of a persister that
+ * holds its own, through {@see \Prado\IO\Compression\ICompressionConfigurable}, and
+ * settings the page keeps for one that does not.
+ * {@see setEnableStateCompression EnableStateCompression} reads and writes their
+ * `Enabled`.
+ *
+ * A postback or callback must carry the CSRF token of
+ * {@see \Prado\Web\THttpRequest::getCsrfToken()} while
+ * {@see setEnableCsrfValidation EnableCsrfValidation} is on. The form renders the token
+ * in the {@see FIELD_CSRF_TOKEN} hidden field, and a callback response returns a fresh
+ * one. A request without a valid token is refused with HTTP 400 before its state is
+ * loaded; a postback through the query string is refused, since the token is read from
+ * the POST body and the request header only.
+ *
+ * {@see setCallbackUpdateMode CallbackUpdateMode} is how a callback response updates
+ * the markup of an active control that renders again, when the control's
+ * `ActiveControl.UpdateMode` is Default: Replace (the default) or Morph.
+ * {@see setCallbackViewTransition CallbackViewTransition} applies the client actions
+ * of every callback response inside a view transition (`document.startViewTransition`).
+ *
+ * Validators add themselves to {@see getValidators Validators}. {@see validate()}
+ * runs them, either all of them or those of a single validation group, and
+ * {@see getIsValid IsValid} reports the outcome.
+ *
+ * {@see setTheme Theme} and {@see setStyleSheetTheme StyleSheetTheme} apply skins
+ * to the controls of the page and contribute their stylesheet and javascript
+ * files. {@see getClientScript ClientScript} collects the client-side scripts,
+ * stylesheets and hidden fields to be rendered.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
@@ -40,10 +96,18 @@ class TPage extends TTemplateControl
 	 */
 	public const FIELD_POSTBACK_TARGET = 'PRADO_POSTBACK_TARGET';
 	public const FIELD_POSTBACK_PARAMETER = 'PRADO_POSTBACK_PARAMETER';
+	/**
+	 * @deprecated since 4.4.0. No client script posts this field, and the page ignores it.
+	 */
 	public const FIELD_LASTFOCUS = 'PRADO_LASTFOCUS';
 	public const FIELD_PAGESTATE = 'PRADO_PAGESTATE';
 	public const FIELD_CALLBACK_TARGET = 'PRADO_CALLBACK_TARGET';
 	public const FIELD_CALLBACK_PARAMETER = 'PRADO_CALLBACK_PARAMETER';
+	/**
+	 * The hidden field carrying the CSRF token, {@see \Prado\Web\THttpRequest::CSRF_TOKEN_FIELD}.
+	 * @since 4.4.0
+	 */
+	public const FIELD_CSRF_TOKEN = THttpRequest::CSRF_TOKEN_FIELD;
 
 	/**
 	 * @var array system post fields
@@ -51,10 +115,11 @@ class TPage extends TTemplateControl
 	private static $_systemPostFields = [
 		'PRADO_POSTBACK_TARGET' => true,
 		'PRADO_POSTBACK_PARAMETER' => true,
-		'PRADO_LASTFOCUS' => true,
+		'PRADO_LASTFOCUS' => true, // deprecated since 4.4.0
 		'PRADO_PAGESTATE' => true,
 		'PRADO_CALLBACK_TARGET' => true,
 		'PRADO_CALLBACK_PARAMETER' => true,
+		'PRADO_CSRF_TOKEN' => true,
 	];
 	/**
 	 * @var TForm form instance
@@ -79,7 +144,7 @@ class TPage extends TTemplateControl
 	/**
 	 * @var string page title set when Head is not in page yet
 	 */
-	private $_title;
+	private ?string $_title = null;
 	/**
 	 * @var TTheme page stylesheet theme
 	 */
@@ -89,7 +154,7 @@ class TPage extends TTemplateControl
 	 */
 	private $_clientScript;
 	/**
-	 * @var TMap data post back by user
+	 * @var ?\Prado\Web\THttpRequest data post back by user, null if not a postback
 	 */
 	protected $_postData;
 	/**
@@ -137,14 +202,22 @@ class TPage extends TTemplateControl
 	 */
 	private $_enableStateValidation = true;
 	/**
+	 * @var bool whether a postback or callback must carry a valid CSRF token
+	 * @since 4.4.0
+	 */
+	private $_enableCsrfValidation = true;
+	/**
+	 * @var string how a callback updates re-rendered active controls, a TActiveUpdateMode
+	 */
+	private $_callbackUpdateMode = TActiveUpdateMode::Replace;
+	/**
+	 * @var bool whether every callback response applies its client actions in a view transition
+	 */
+	private $_callbackViewTransition = false;
+	/**
 	 * @var bool whether page state should be encrypted
 	 */
 	private $_enableStateEncryption = false;
-	/**
-	 * @var bool whether page state should be compressed
-	 * @since 3.1.6
-	 */
-	private $_enableStateCompression = true;
 	/**
 	 * @var bool whether to use the igbinary serializer if available
 	 * @since 4.1
@@ -158,6 +231,13 @@ class TPage extends TTemplateControl
 	 * @var mixed page state persister
 	 */
 	private $_statePersister;
+	/**
+	 * @var ?TCompressionConfig compression settings the page holds: for a persister that
+	 *   holds none, and for the next persister when {@see setStatePersisterClass()}
+	 *   replaces the class
+	 * @since 4.4.0
+	 */
+	private $_stateCompression;
 	/**
 	 * @var TStack stack used to store currently active caching controls
 	 */
@@ -175,7 +255,7 @@ class TPage extends TTemplateControl
 	 */
 	private $_enableJavaScript = true;
 	/**
-	 * @var THtmlWriter current html render writer
+	 * @var ?THtmlWriter current html render writer
 	 */
 	private $_writer;
 
@@ -203,6 +283,7 @@ class TPage extends TTemplateControl
 
 	/**
 	 * Runs through the page lifecycles.
+	 * The life cycle run depends on the request type: normal, postback or callback.
 	 * @param \Prado\Web\UI\THtmlWriter $writer the HTML writer
 	 */
 	public function run($writer)
@@ -270,6 +351,7 @@ class TPage extends TTemplateControl
 		Prado::trace("Page onInitComplete()", TPage::class);
 		$this->onInitComplete(null);
 
+		$this->ensureCsrfToken();
 		$this->_restPostData = new TMap();
 		Prado::trace("Page loadPageState()", TPage::class);
 		$this->loadPageState();
@@ -319,9 +401,11 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * Sets Adapter to TActivePageAdapter and calls apter to process the
-	 * callback request.
-	 * @param mixed $writer
+	 * Sets the Adapter to a TActivePageAdapter and runs the callback life cycle.
+	 * The callback parameter is JSON decoded and the post data is decoded from
+	 * UTF-8 to the application charset. The adapter raises the callback event
+	 * and renders the callback response.
+	 * @param \Prado\Web\UI\THtmlWriter $writer the HTML writer
 	 */
 	protected function processCallbackRequest($writer)
 	{
@@ -349,6 +433,7 @@ class TPage extends TTemplateControl
 		Prado::trace("Page onInitComplete()", TPage::class);
 		$this->onInitComplete(null);
 
+		$this->ensureCsrfToken();
 		$this->_restPostData = new TMap();
 		Prado::trace("Page loadPageState()", TPage::class);
 		$this->loadPageState();
@@ -429,7 +514,7 @@ class TPage extends TTemplateControl
 
 	/**
 	 * Callback parameter is decoded assuming JSON encoding.
-	 * @return string callback event parameter
+	 * @return mixed callback event parameter
 	 */
 	public function getCallbackEventParameter()
 	{
@@ -445,7 +530,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * @return TForm the form on the page
+	 * @return ?TForm the form on the page, null if no form is registered yet
 	 */
 	public function getForm()
 	{
@@ -495,7 +580,7 @@ class TPage extends TTemplateControl
 	 * Performs input validation.
 	 * This method will invoke the registered validators to perform the actual validation.
 	 * If validation group is specified, only the validators in that group will be invoked.
-	 * @param string $validationGroup validation group. If null, all validators will perform validation.
+	 * @param ?string $validationGroup validation group. If null, all validators will perform validation.
 	 */
 	public function validate($validationGroup = null)
 	{
@@ -539,7 +624,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * @return TTheme the theme used for the page. Defaults to null.
+	 * @return ?TTheme the theme used for the page. Defaults to null.
 	 */
 	public function getTheme()
 	{
@@ -560,7 +645,7 @@ class TPage extends TTemplateControl
 
 
 	/**
-	 * @return TTheme the stylesheet theme used for the page. Defaults to null.
+	 * @return ?TTheme the stylesheet theme used for the page. Defaults to null.
 	 */
 	public function getStyleSheetTheme()
 	{
@@ -612,7 +697,7 @@ class TPage extends TTemplateControl
 			$className = $classPath = $this->getService()->getClientScriptManagerClass();
 
 			if ($className !== TClientScriptManager::class && !is_subclass_of($className, TClientScriptManager::class)) {
-				throw new THttpException(404, 'page_csmanagerclass_invalid', $className);
+				throw new TConfigurationException('page_csmanagerclass_invalid', $className);
 			}
 
 			$this->_clientScript = new $className($this);
@@ -678,8 +763,12 @@ class TPage extends TTemplateControl
 	 * This method is invoked right after {@see onPreRender OnPreRender} stage.
 	 * You may override this method to provide additional preparation for page rendering
 	 * that should be done after {@see onPreRender OnPreRender}.
+	 * The parent implementation registers the stylesheet and javascript files of
+	 * the {@see setTheme Theme} and the {@see setStyleSheetTheme StyleSheetTheme}
+	 * with the client script manager.
 	 * Remember to call the parent implementation to ensure OnPreRenderComplete event is raised.
 	 * @param mixed $param event parameter
+	 * @throws TConfigurationException if a THead is required by the registered client scripts and the page has none.
 	 */
 	public function onPreRenderComplete($param)
 	{
@@ -714,6 +803,7 @@ class TPage extends TTemplateControl
 	 * The media type is determined according to the following file name pattern:
 	 *        xxx.media-type.extension
 	 * For example, 'mystyle.print.css' means its media type is 'print'.
+	 * A theme overrides the outcome by handling the `dyCssMediaType` event.
 	 * @param string $url CSS URL
 	 * @param object $theme the theme being applied
 	 * @return string media type of the CSS file
@@ -804,7 +894,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * Saves page state from persistent storage.
+	 * Saves page state to persistent storage.
 	 */
 	protected function savePageState()
 	{
@@ -827,7 +917,7 @@ class TPage extends TTemplateControl
 	 * This method needs to be invoked if the control to load post data
 	 * may not have a post variable in some cases. For example, a checkbox,
 	 * if not checked, will not have a post value.
-	 * @param \Prado\Web\UI\TControl $control control registered for loading post data
+	 * @param \Prado\Web\UI\TControl|string $control control, or the unique ID of the control, registered for loading post data
 	 */
 	public function registerRequiresPostData($control)
 	{
@@ -885,7 +975,10 @@ class TPage extends TTemplateControl
 
 	/**
 	 * Processes post data.
-	 * @param TMap $postData post data to be processed
+	 * Controls implementing {@see \Prado\Web\UI\IPostBackDataHandler} are given
+	 * their post data and are collected for {@see raiseChangedEvents()}. Data of
+	 * unknown controls is kept for the second invocation, after {@see onLoad OnLoad}.
+	 * @param \Prado\Web\THttpRequest|TMap $postData post data to be processed
 	 * @param bool $beforeLoad whether this method is invoked before {@see onLoad OnLoad}.
 	 */
 	protected function processPostData($postData, $beforeLoad)
@@ -947,7 +1040,8 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * Raises PostBack event.
+	 * Raises PostBack event on the control registered as the postback event target.
+	 * When no control is registered, the page performs validation instead.
 	 */
 	protected function raisePostBackEvent()
 	{
@@ -968,6 +1062,7 @@ class TPage extends TTemplateControl
 
 	/**
 	 * Ensures the control is rendered within a form.
+	 * The check is skipped during a callback request, where the form is not rendered.
 	 * @param \Prado\Web\UI\TControl $control the control to be rendered
 	 * @throws TConfigurationException if the control is outside of the form
 	 */
@@ -980,7 +1075,8 @@ class TPage extends TTemplateControl
 
 	/**
 	 * @internal This method is invoked by TForm at the beginning of its rendering
-	 * @param mixed $writer
+	 * @param \Prado\Web\UI\THtmlWriter $writer the HTML writer
+	 * @throws TConfigurationException if more than one form is rendered on the page.
 	 */
 	public function beginFormRender($writer)
 	{
@@ -989,12 +1085,16 @@ class TPage extends TTemplateControl
 		}
 		$this->_formRendered = true;
 		$this->getClientScript()->registerHiddenField(self::FIELD_PAGESTATE, $this->getClientState());
+		if ($this->getEnableCsrfValidation()) {
+			$this->getClientScript()->registerHiddenField(self::FIELD_CSRF_TOKEN, $this->getRequest()->getCsrfToken());
+		}
 		$this->_inFormRender = true;
 	}
 
 	/**
-	 * @internal This method is invoked by TForm  at the end of its rendering
-	 * @param mixed $writer
+	 * Registers the {@see setFocus} target, if any, as the control focused on page load.
+	 * @internal This method is invoked by TForm at the end of its rendering
+	 * @param \Prado\Web\UI\THtmlWriter $writer the HTML writer
 	 */
 	public function endFormRender($writer)
 	{
@@ -1005,8 +1105,6 @@ class TPage extends TTemplateControl
 				$focus = $this->_focus;
 			}
 			$this->getClientScript()->registerFocusControl($focus);
-		} elseif ($this->_postData && ($lastFocus = $this->_postData->itemAt(self::FIELD_LASTFOCUS)) !== null) {
-			$this->getClientScript()->registerFocusControl($lastFocus);
 		}
 		$this->_inFormRender = false;
 	}
@@ -1037,7 +1135,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * @return THead page head, null if not available
+	 * @return ?THead page head, null if not available
 	 */
 	public function getHead()
 	{
@@ -1108,7 +1206,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * @return string the state postback from client side
+	 * @return ?string the state postback from client side, null if not present
 	 */
 	public function getRequestClientState()
 	{
@@ -1124,29 +1222,67 @@ class TPage extends TTemplateControl
 	}
 
 	/**
+	 * Sets the class of the page state persister.  A persister already built under the
+	 * previous class is dropped and the {@see getStateCompression() StateCompression} in
+	 * effect is carried to its replacement, so state settings applied before this one are
+	 * not lost when a configuration names the class after them.
 	 * @param string $value class name of the page state persister.
 	 */
 	public function setStatePersisterClass($value)
 	{
+		if ($this->_statePersister !== null && $value !== $this->_statePersisterClass) {
+			$this->_stateCompression = $this->getStateCompression();
+			$this->_statePersister = null;
+		}
 		$this->_statePersisterClass = $value;
 	}
 
 	/**
+	 * Builds the persister on first read.  Compression settings the page holds pass to a
+	 * persister that implements {@see ICompressionConfigurable}; see
+	 * {@see getStateCompression() StateCompression}.
+	 * @throws TInvalidDataTypeException if the persister class does not implement IPageStatePersister.
 	 * @return IPageStatePersister page state persister
 	 */
 	public function getStatePersister()
 	{
 		if ($this->_statePersister === null) {
-			$this->_statePersister = Prado::createComponent($this->_statePersisterClass);
+			$this->_statePersister = Prado::createComponent($this->getStatePersisterClass());
 			if (!($this->_statePersister instanceof IPageStatePersister)) {
 				throw new TInvalidDataTypeException('page_statepersister_invalid');
 			}
 			$this->_statePersister->setPage($this);
+			if ($this->_stateCompression !== null && $this->_statePersister instanceof ICompressionConfigurable) {
+				$this->_statePersister->setCompression($this->_stateCompression);
+				$this->_stateCompression = null;
+			}
 		}
 		return $this->_statePersister;
 	}
 
 	/**
+	 * Returns the compression settings the page state is written and read under.  A
+	 * persister that implements {@see ICompressionConfigurable} holds them, reached as
+	 * `StatePersister.Compression`; the built-in persisters all do.  For any other
+	 * persister the page keeps a {@see TPageStateCompressionConfig}, so a persister
+	 * written before 4.4.0 compresses as it always has.
+	 * @return TCompressionConfig the page state compression settings.
+	 * @since 4.4.0
+	 */
+	public function getStateCompression(): TCompressionConfig
+	{
+		$persister = $this->getStatePersister();
+		if ($persister instanceof ICompressionConfigurable) {
+			return $persister->getCompression();
+		}
+		if ($this->_stateCompression === null) {
+			$this->_stateCompression = new TPageStateCompressionConfig();
+		}
+		return $this->_stateCompression;
+	}
+
+	/**
+	 * Unvalidated page state is restored without its objects, since the client controls it.
 	 * @return bool whether page state should be HMAC validated. Defaults to true.
 	 */
 	public function getEnableStateValidation()
@@ -1160,6 +1296,88 @@ class TPage extends TTemplateControl
 	public function setEnableStateValidation($value)
 	{
 		$this->_enableStateValidation = TPropertyValue::ensureBoolean($value);
+	}
+
+	/**
+	 * @return bool whether a postback or callback must carry a valid CSRF token. Defaults to true.
+	 * @since 4.4.0
+	 */
+	public function getEnableCsrfValidation(): bool
+	{
+		return $this->_enableCsrfValidation;
+	}
+
+	/**
+	 * Set this in a page or the `<pages>` configuration. A page that turns it off in
+	 * {@see onPreInit()} or {@see onInit()} skips the check of the current request.
+	 * @param bool $value whether a postback or callback must carry a valid CSRF token.
+	 * @since 4.4.0
+	 */
+	public function setEnableCsrfValidation($value)
+	{
+		$this->_enableCsrfValidation = TPropertyValue::ensureBoolean($value);
+	}
+
+	/**
+	 * @return string how a callback response updates the markup of an active control
+	 *   whose `ActiveControl.UpdateMode` is Default, a {@see TActiveUpdateMode}:
+	 *   Replace or Morph. Defaults to Replace.
+	 * @since 4.4.0
+	 */
+	public function getCallbackUpdateMode()
+	{
+		return $this->_callbackUpdateMode;
+	}
+
+	/**
+	 * Sets how a callback response updates the markup of an active control whose
+	 * `ActiveControl.UpdateMode` is Default. Morph keeps the existing nodes, so
+	 * they keep their listeners, focus, and caret. Set it in a page or the
+	 * `<pages>` configuration.
+	 * @param string $value a {@see TActiveUpdateMode}; Default is Replace.
+	 * @since 4.4.0
+	 */
+	public function setCallbackUpdateMode($value)
+	{
+		$value = TPropertyValue::ensureEnum($value, TActiveUpdateMode::class);
+		$this->_callbackUpdateMode = $value === TActiveUpdateMode::Default ? TActiveUpdateMode::Replace : $value;
+	}
+
+	/**
+	 * @return bool whether every callback response with client actions applies them
+	 *   inside a view transition. Defaults to false.
+	 * @since 4.4.0
+	 */
+	public function getCallbackViewTransition()
+	{
+		return $this->_callbackViewTransition;
+	}
+
+	/**
+	 * Sets whether every callback response with client actions applies them inside
+	 * a view transition (`document.startViewTransition`). The client applies them
+	 * directly under `prefers-reduced-motion: reduce` or without view transition
+	 * support. Set it in a page or the `<pages>` configuration.
+	 * @param bool $value whether callback updates animate through a view transition.
+	 * @since 4.4.0
+	 */
+	public function setCallbackViewTransition($value)
+	{
+		$this->_callbackViewTransition = TPropertyValue::ensureBoolean($value);
+	}
+
+	/**
+	 * Refuses a postback or callback without a valid CSRF token while
+	 * {@see getEnableCsrfValidation() EnableCsrfValidation} is on.  Runs after
+	 * {@see onInitComplete()} and before the page state is loaded.
+	 * @throws THttpException 400 when the token is missing or invalid.
+	 * @since 4.4.0
+	 */
+	protected function ensureCsrfToken(): void
+	{
+		if ($this->getEnableCsrfValidation() && !$this->getRequest()->validateCsrfToken()) {
+			throw new THttpException(400, 'page_csrf_token_invalid');
+		}
 	}
 
 	/**
@@ -1179,24 +1397,31 @@ class TPage extends TTemplateControl
 	}
 
 	/**
+	 * Reads the `Enabled` of {@see getStateCompression() StateCompression}.  The coding,
+	 * its level, and the rest of {@see TPageStateCompressionConfig} are set there.
 	 * @return bool whether page state should be compressed. Defaults to true.
 	 * @since 3.1.6
 	 */
 	public function getEnableStateCompression()
 	{
-		return $this->_enableStateCompression;
+		return $this->getStateCompression()->getEnabled();
 	}
 
 	/**
+	 * Writes the `Enabled` of {@see getStateCompression() StateCompression}.  This reads
+	 * {@see getStatePersister() StatePersister}, which builds the persister when it does
+	 * not exist yet; {@see setStatePersisterClass()} carries the settings over when the
+	 * class changes afterwards.
 	 * @param bool $value whether page state should be compressed.
 	 * @since 3.1.6
 	 */
 	public function setEnableStateCompression($value)
 	{
-		$this->_enableStateCompression = TPropertyValue::ensureBoolean($value);
+		$this->getStateCompression()->setEnabled(TPropertyValue::ensureBoolean($value));
 	}
 
 	/**
+	 * igbinary serializes only HMAC validated state; see {@see getEnableStateValidation()}.
 	 * @return bool whether page state should be serialized using igbinary if available. Defaults to true.
 	 * @since 4.1
 	 */
@@ -1260,7 +1485,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * Flushes output
+	 * Flushes the content rendered so far to the response.
 	 */
 	public function flushWriter()
 	{

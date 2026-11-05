@@ -22,7 +22,7 @@ use Prado\TEventParameter;
 use Prado\TPropertyValue;
 use Prado\Web\UI\ActiveControls\IActiveControl;
 use Prado\Web\UI\Traits\TFilterRenderableTrait;
-use ReflectionClass;
+use Prado\Util\Traits\TReflectionClassTrait;
 
 /**
  * TControl class
@@ -108,6 +108,7 @@ use ReflectionClass;
 class TControl extends \Prado\TApplicationComponent implements IAdapterControl, IFilterRenderable, IBindable
 {
 	use TFilterRenderableTrait;
+	use TReflectionClassTrait;
 
 	/**
 	 * format of control ID
@@ -162,33 +163,35 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	public const RF_NAMED_OBJECTS = 8;		// controls declared with ID on template
 	public const RF_ADAPTER = 9;			// adapter
 	public const RF_AUTO_BINDINGS = 10;		// auto data bindings
+	public const RF_INIT_BINDINGS = 11;		// init bindings, applied once at the start of initRecursive
 
 	/**
 	 * @var string control ID
 	 */
 	private $_id = '';
 	/**
-	 * @var string control unique ID
+	 * @var ?string control unique ID
 	 */
 	private $_uid;
 	/**
-	 * @var \Prado\Web\UI\TControl parent of the control
+	 * @var ?\Prado\Web\UI\TControl parent of the control
 	 */
 	private $_parent;
 	/**
-	 * @var TPage page that the control resides in
+	 * @var ?TPage page that the control resides in
 	 */
 	private $_page;
 	/**
-	 * @var \Prado\Util\TPluginModule that the control share in their path
+	 * @var null|false|\Prado\Util\IPluginModule plugin module sharing the control's class path.
+	 * `false` means not yet searched; `null` means searched and none found.
 	 */
-	private $_pluginmodule;
+	private $_pluginmodule = false;
 	/**
-	 * @var \Prado\Web\UI\TControl naming container of the control
+	 * @var ?\Prado\Web\UI\TControl naming container of the control
 	 */
 	private $_namingContainer;
 	/**
-	 * @var TTemplateControl control whose template contains the control
+	 * @var ?TTemplateControl control whose template contains the control
 	 */
 	private $_tplControl;
 	/**
@@ -267,7 +270,7 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	 * the control ID will take the precedence.
 	 *
 	 * @param string $name the property name or control ID
-	 * @return bool wether the control or property exists
+	 * @return bool whether the control or property exists
 	 * @see __get
 	 */
 	public function __isset($name)
@@ -313,7 +316,7 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	}
 
 	/**
-	 * @return \Prado\Web\UI\TControl the parent of this control
+	 * @return ?\Prado\Web\UI\TControl the parent of this control
 	 */
 	public function getParent()
 	{
@@ -400,7 +403,11 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	/**
 	 * Returns the module associated with the class path of the control.  This is for Composer
 	 * extensions adding their own Controls to access their associated Module.
-	 * @return ?mixed the module associated with this TControl
+	 * The search runs once per control instance and the result is cached.
+	 * PHPStan sees the result as `mixed` so callers can use their own plugin
+	 * module's methods without a cast.
+	 * @return ?\Prado\Util\IPluginModule the plugin module sharing the control's class path, or null
+	 * @phpstan-return mixed
 	 * @since 4.2.0
 	 */
 	public function getPluginModule()
@@ -408,7 +415,7 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 		if ($this->_pluginmodule === false) {
 			$this->_pluginmodule = null;
 
-			$reflect = new ReflectionClass($this::class);
+			$reflect = static::getReflectionClass();
 			$folder = $reflect->getFileName();
 
 			foreach ($this->getApplication()->getModulesByType(\Prado\Util\IPluginModule::class) as $id => $module) {
@@ -564,7 +571,7 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	 */
 	public function getIsSkinApplied()
 	{
-		return ($this->_flags & self::IS_SKIN_APPLIED);
+		return ($this->_flags & self::IS_SKIN_APPLIED) !== 0;
 	}
 
 	/**
@@ -676,6 +683,93 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	}
 
 	/**
+	 * Returns whether the control's output is exempt from the render filters of its
+	 * ancestors ({@see TRenderFilterContext}). The nearest setting between a filter
+	 * and the output decides whether the filter sees the output.
+	 *
+	 * | Value | Output |
+	 * |---|---|
+	 * | `null` (default) | follows the nearest ancestor setting |
+	 * | `true` | exempt from the filters of the ancestors |
+	 * | `false` | seen by the filters of the ancestors, inside an exempt ancestor |
+	 *
+	 * The control's own `onRenderFilter` handlers see its output.
+	 * @return ?bool whether the output is exempt, or null to follow the ancestors
+	 * @since 4.4.0
+	 */
+	public function getRenderFilterExempt(): ?bool
+	{
+		return $this->getViewState('RenderFilterExempt');
+	}
+
+	/**
+	 * Sets whether the control's output is exempt from the render filters of its ancestors.
+	 * @param ?bool $value whether the output is exempt; null or '' follows the ancestors
+	 * @since 4.4.0
+	 */
+	public function setRenderFilterExempt($value)
+	{
+		$value = TPropertyValue::ensureNullIf($value, TPropertyValue::FILTER_NULL | TPropertyValue::FILTER_TRIM | TPropertyValue::FILTER_BLANK);
+		$this->setViewState('RenderFilterExempt', $value === null ? null : TPropertyValue::ensureBoolean($value));
+	}
+
+	/**
+	 * Returns whether the control's render filters also filter a descendant that
+	 * re-renders alone during a callback, such as a
+	 * {@see \Prado\Web\UI\ActiveControls\TActivePanel}. The handlers receive the output
+	 * of the descendant inside the elements that enclose it in this control's output,
+	 * and {@see TRenderFilterParameter::getIsFragment} is true.
+	 * {@see getRenderFilterExempt} applies as in a full render. Defaults to false, since
+	 * a handler that wraps, restructures, or counts its output sees only a fragment.
+	 * @return bool whether the render filters filter the callback re-renders of descendants
+	 * @see \Prado\Web\UI\ActiveControls\TActivePageAdapter::renderDeferredControl()
+	 * @since 4.4.0
+	 */
+	public function getRenderFilterFragments(): bool
+	{
+		return $this->getViewState('RenderFilterFragments', false);
+	}
+
+	/**
+	 * Sets whether the control's render filters also filter a descendant that
+	 * re-renders alone during a callback.
+	 * @param bool|string $value whether the render filters filter the callback re-renders of descendants
+	 * @since 4.4.0
+	 */
+	public function setRenderFilterFragments($value)
+	{
+		$this->setViewState('RenderFilterFragments', TPropertyValue::ensureBoolean($value), false);
+	}
+
+	/**
+	 * Returns the levels of controls below this control whose output its render
+	 * filters see. Each child control is one level. The output of a deeper control
+	 * is hidden from the filters of this control
+	 * ({@see TRenderFilterParameter::getDepthLimit}); the filters of the deeper control
+	 * and of the ancestors see it. Defaults to 0, all output.
+	 * @return int the depth of the output the render filters see; 0 for all output
+	 * @since 4.4.0
+	 */
+	public function getRenderFilterDepth(): int
+	{
+		return $this->getViewState('RenderFilterDepth', 0);
+	}
+
+	/**
+	 * Sets the levels of controls below this control whose output its render filters see.
+	 * @param int|string $value the depth of the output the render filters see; 0 for all output
+	 * @throws TInvalidDataValueException if the value is negative
+	 * @since 4.4.0
+	 */
+	public function setRenderFilterDepth($value)
+	{
+		if (($value = TPropertyValue::ensureInteger($value)) < 0) {
+			throw new TInvalidDataValueException('control_renderfilterdepth_invalid', get_class($this), $value);
+		}
+		$this->setViewState('RenderFilterDepth', $value, 0);
+	}
+
+	/**
 	 * Returns a value indicating whether the control is enabled.
 	 * A control is enabled if it allows client user interaction.
 	 * If $checkParents is true, all parent controls will be checked,
@@ -751,7 +845,7 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 
 	/**
 	 * @param mixed $name
-	 * @return string attribute value, null if attribute does not exist
+	 * @return ?string attribute value, null if attribute does not exist
 	 */
 	public function getAttribute($name)
 	{
@@ -775,7 +869,7 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	/**
 	 * Removes the named attribute.
 	 * @param string $name the name of the attribute to be removed.
-	 * @return string attribute value removed, null if attribute does not exist.
+	 * @return ?string attribute value removed, null if attribute does not exist.
 	 */
 	public function removeAttribute($name)
 	{
@@ -881,7 +975,7 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	public function getViewState($key, $defaultValue = null)
 	{
 		if (isset($this->_viewState[$key])) {
-			return $this->_viewState[$key] !== null ? $this->_viewState[$key] : $defaultValue;
+			return $this->_viewState[$key];
 		} elseif (isset($this->_tempState[$key])) {
 			if (is_object($this->_tempState[$key]) && $this->_trackViewState) {
 				$this->_viewState[$key] = $this->_tempState[$key];
@@ -977,12 +1071,59 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	{
 		Prado::trace("Data bind properties", TControl::class);
 		if (isset($this->_rf[self::RF_DATA_BINDINGS])) {
-			if (($context = $this->getTemplateControl()) === null) {
-				$context = $this;
-			}
-			foreach ($this->_rf[self::RF_DATA_BINDINGS] as $property => $expression) {
-				$this->setSubProperty($property, $context->evaluateExpression($expression));
-			}
+			$this->evaluateBoundProperties($this->_rf[self::RF_DATA_BINDINGS]);
+		}
+	}
+
+	/**
+	 * Evaluates a map of bound expressions and writes each result to its property
+	 * path. The paths are applied in the structural order of
+	 * {@see \Prado\TComponent::setSubProperties}, so a parent path is written
+	 * before any path nested beneath it; each expression is evaluated immediately
+	 * before its own write. The context of the expressions is the template control,
+	 * or the control itself when it has none.
+	 * @param array $bindings the `property path => expression` map to evaluate.
+	 * @since 4.4.0
+	 */
+	protected function evaluateBoundProperties(array $bindings): void
+	{
+		if (($context = $this->getTemplateControl()) === null) {
+			$context = $this;
+		}
+		if (count($bindings) > 1) {
+			$bindings = self::sortPropertyPaths($bindings);
+		}
+		foreach ($bindings as $property => $expression) {
+			$this->setSubProperty($property, $context->evaluateExpression($expression));
+		}
+	}
+
+	/**
+	 * Sets up a one-time binding between a property (or property path) and an expression.
+	 * The expression is evaluated once at the start of {@see initRecursive()} and the
+	 * result is passed to the property setter. This is the mechanism behind the
+	 * template `<%! %>` attribute tag. The binding runs before {@see onInit()},
+	 * before theme skins are applied, and before viewstate or postback data are loaded.
+	 * The context of the expression is the template control (or the control itself if it is a page).
+	 * @param string $name the property name, or property path
+	 * @param string $expression the expression
+	 * @since 4.4.0
+	 */
+	public function initBindProperty($name, $expression)
+	{
+		$this->_rf[self::RF_INIT_BINDINGS][$name] = $expression;
+	}
+
+	/**
+	 * Applies the init bindings of the control and discards them.
+	 * @since 4.4.0
+	 */
+	protected function initDataBindProperties()
+	{
+		if (isset($this->_rf[self::RF_INIT_BINDINGS])) {
+			$bindings = $this->_rf[self::RF_INIT_BINDINGS];
+			unset($this->_rf[self::RF_INIT_BINDINGS]);
+			$this->evaluateBoundProperties($bindings);
 		}
 	}
 
@@ -992,12 +1133,7 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	protected function autoDataBindProperties()
 	{
 		if (isset($this->_rf[self::RF_AUTO_BINDINGS])) {
-			if (($context = $this->getTemplateControl()) === null) {
-				$context = $this;
-			}
-			foreach ($this->_rf[self::RF_AUTO_BINDINGS] as $property => $expression) {
-				$this->setSubProperty($property, $context->evaluateExpression($expression));
-			}
+			$this->evaluateBoundProperties($this->_rf[self::RF_AUTO_BINDINGS]);
 		}
 	}
 
@@ -1257,6 +1393,18 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	}
 
 	/**
+	 * Returns the objects registered with this control by name.
+	 * A control declared with an `ID` in a template is registered with its naming
+	 * container under that ID; {@see registerObject()} adds any other object.
+	 * @return array<string, object> the registered objects keyed by name
+	 * @since 4.4.0
+	 */
+	public function getRegisteredObjects(): array
+	{
+		return $this->_rf[self::RF_NAMED_OBJECTS] ?? [];
+	}
+
+	/**
 	 * @todo v4.4 param $inTemplate for whether or not its for template or for creating control
 	 *					This can be used by TModuleView.
 	 * @return bool whether body contents are allowed for this control. Defaults to true.
@@ -1374,11 +1522,14 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 
 	/**
 	 * Performs the Init step for the control and all its child controls.
+	 * Init bindings ({@see initBindProperty()}) are applied first, so
+	 * {@see createChildControls()} and {@see onInit()} see their values.
 	 * Only framework developers should use this method.
 	 * @param \Prado\Web\UI\TControl $namingContainer the naming container control
 	 */
 	protected function initRecursive($namingContainer = null)
 	{
+		$this->initDataBindProperties();
 		$this->ensureChildControls();
 		if ($this->getHasControls()) {
 			if ($this instanceof INamingContainer) {
@@ -1649,15 +1800,21 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	 * {@see TRenderFilterParameter} (accessible via {@see TRenderFilterParameter::RENDER_FILTER_TEXT}
 	 * / {@see TRenderFilterParameter::RENDER_FILTER_DOM} or the getter/setter API), and the
 	 * modified HTML is written to `$writer`.  Handlers may exchange state via extra array keys.
+	 * {@see getRenderFilterExempt} exempts the output from the filters of the ancestors.
+	 * {@see getRenderFilterDepth} limits the levels of output the filters of a control see.
 	 *
 	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for rendering
 	 */
 	public function renderControl($writer)
 	{
 		if ($this instanceof IActiveControl || $this->getVisible(false)) {
+			$depth = $this->preRenderFilterDepth($writer);
+			$exempt = $this->preRenderFilterExempt($writer);
 			$oldWriter = $this->preRenderFilter($writer);
 			$this->getAdapterControl()->render($writer);
 			$this->processRenderFilter($writer, $oldWriter);
+			$this->processRenderFilterExempt($writer, $exempt);
+			$this->processRenderFilterDepth($writer, $depth);
 		}
 	}
 
@@ -1722,6 +1879,14 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 		if (!$control->hasEventHandler('onRenderFilter')) {
 			return null;
 		}
+		if ($writer instanceof THtmlWriter) {
+			$context = $writer->getRenderFilterContext();
+			if ($context === null) {
+				$context = new TRenderFilterContext();
+				$writer->setRenderFilterContext($context);
+			}
+			$context->beginCapture($control instanceof TControl ? $control->getRenderFilterDepth() : 0);
+		}
 		$oldWriter = $writer->getWriter();
 		$writer->setWriter($this->newRenderFilterWriter());
 		return $oldWriter;
@@ -1744,7 +1909,8 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	 *
 	 * No-op when `$oldWriter` is `null`.  Otherwise flushes the capture buffer,
 	 * passes the HTML through `onRenderFilter`, writes the result to `$oldWriter`,
-	 * and restores the original writer.
+	 * and restores the original writer.  The outermost filter restores the exempt
+	 * output ({@see TRenderFilterContext::endCapture}).
 	 *
 	 * @param \Prado\Web\UI\THtmlWriter $writer writer holding the capture buffer
 	 * @param ?ITextWriter $oldWriter original writer to restore, or `null` when filtering is disabled
@@ -1758,20 +1924,103 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 			return;
 		}
 		$output = $writer->getWriter()->flush();
+		$context = ($writer instanceof THtmlWriter) ? $writer->getRenderFilterContext() : null;
 		if (!empty($output)) {
 			$control ??= $this;
-			$output = $control->onRenderFilter($output);
-			if (!empty($output)) {
-				$oldWriter->write($output);
-			}
+			$output = ($context !== null) ? $context->filterOutput($control, $output) : $control->onRenderFilter($output);
+		}
+		if ($context !== null) {
+			$output = $context->endCapture((string) $output);
+		}
+		if (!empty($output)) {
+			$oldWriter->write($output);
 		}
 		$writer->setWriter($oldWriter);
+	}
+
+	/**
+	 * Starts this control's output one level further below the filters with a
+	 * depth limit ({@see getRenderFilterDepth}), and writes the markers that bound it.
+	 *
+	 * Returns false (no-op) when no filter has captured output of `$writer`.
+	 *
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer currently in use
+	 * @return bool whether the output started a level
+	 * @see processRenderFilterDepth()
+	 * @since 4.4.0
+	 */
+	protected function preRenderFilterDepth($writer): bool
+	{
+		if (!($writer instanceof THtmlWriter) || ($context = $writer->getRenderFilterContext()) === null) {
+			return false;
+		}
+		if (($markers = $context->beginControl()) !== '') {
+			$writer->write($markers);
+		}
+		return true;
+	}
+
+	/**
+	 * Ends the level that {@see preRenderFilterDepth} started, and writes the markers that bound it.
+	 *
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer currently in use
+	 * @param bool $depth the value {@see preRenderFilterDepth} returned
+	 * @since 4.4.0
+	 */
+	protected function processRenderFilterDepth($writer, bool $depth): void
+	{
+		if ($depth && ($markers = $writer->getRenderFilterContext()->endControl()) !== '') {
+			$writer->write($markers);
+		}
+	}
+
+	/**
+	 * Starts the exemption of this control's output from the render filters of its
+	 * ancestors, or its re-enabling inside an exempt ancestor ({@see getRenderFilterExempt}).
+	 *
+	 * Returns `null` (no-op) when no filter has captured output of `$writer`.
+	 *
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer currently in use
+	 * @return ?bool the RenderFilterExempt value started, or `null` when nothing started
+	 * @see processRenderFilterExempt()
+	 * @since 4.4.0
+	 */
+	protected function preRenderFilterExempt($writer): ?bool
+	{
+		if (!($writer instanceof THtmlWriter) || ($context = $writer->getRenderFilterContext()) === null) {
+			return null;
+		}
+		$exempt = $this->getRenderFilterExempt();
+		if ($exempt === true && $context->beginExempt($writer)) {
+			return true;
+		}
+		if ($exempt === false && $context->beginFilter($writer)) {
+			return false;
+		}
+		return null;
+	}
+
+	/**
+	 * Ends what {@see preRenderFilterExempt} started.
+	 *
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer currently in use
+	 * @param ?bool $exempt the value {@see preRenderFilterExempt} returned
+	 * @since 4.4.0
+	 */
+	protected function processRenderFilterExempt($writer, ?bool $exempt): void
+	{
+		if ($exempt === true) {
+			$writer->getRenderFilterContext()->endExempt($writer);
+		} elseif ($exempt === false) {
+			$writer->getRenderFilterContext()->endFilter($writer);
+		}
 	}
 
 	/**
 	 * This method is invoked when control state is to be saved.
 	 * You can override this method to do last step state saving.
 	 * Parent implementation must be invoked.
+	 * @phpstan-impure
 	 */
 	public function saveState()
 	{
@@ -1781,6 +2030,7 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	 * This method is invoked right after the control has loaded its state.
 	 * You can override this method to initialize data from the control state.
 	 * Parent implementation must be invoked.
+	 * @phpstan-impure
 	 */
 	public function loadState()
 	{

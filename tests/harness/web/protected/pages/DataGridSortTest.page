@@ -1,0 +1,24 @@
+<com:TContent ID="Content">
+	<h1>DataGrid Sort Test Case</h1>
+
+	<com:TDataGrid
+		ID="grid"
+		Caption="Cities"
+		AutoGenerateColumns="false"
+		AllowSorting="true"
+		OnSortCommand="sortGrid">
+		<com:TBoundColumn HeaderText="Name" DataField="name" SortExpression="name" />
+		<com:TBoundColumn HeaderText="City" DataField="city" SortExpression="city" />
+		<com:TBoundColumn HeaderText="Note" DataField="note" />
+	</com:TDataGrid>
+
+	<com:TActiveDataGrid
+		ID="activeGrid"
+		Caption="Active cities"
+		AutoGenerateColumns="false"
+		AllowSorting="true"
+		OnSortCommand="sortActiveGrid">
+		<com:TActiveBoundColumn HeaderText="Name" DataField="name" SortExpression="name" />
+		<com:TActiveBoundColumn HeaderText="City" DataField="city" SortExpression="city" />
+	</com:TActiveDataGrid>
+</com:TContent>

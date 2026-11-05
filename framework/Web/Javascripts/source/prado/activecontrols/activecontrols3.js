@@ -3,44 +3,64 @@
 /**
  * Generic postback control.
  */
-Prado.WebUI.CallbackControl = jQuery.klass(Prado.WebUI.PostBackControl,
+Prado.WebUI.CallbackControl = Prado.Class(Prado.WebUI.PostBackControl,
 {
-	onPostBack : function(options, event)
-	{
-		var request = new Prado.CallbackRequest(options.EventTarget, options);
-		request.dispatch();
-		event.preventDefault();
+	onPostBack(options, event) {
+		// Deliberate fallback: when dispatch() throws — typically from a
+		// ClientSide hook — the element's default action is NOT prevented, so a
+		// submit button degrades to a full-page postback instead of dead-ending
+		// the click. The error is logged and rethrown; note the request reaches
+		// the server without whatever the failed hook was preparing.
+		// An invoker button (`commandfor`) runs its command as the click's default
+		// action: a sent callback lets the command run, a failed validation cancels it.
+		try {
+			const request = new Prado.CallbackRequest(options.EventTarget, options);
+			const sent = request.dispatch() !== false;
+			if (!sent || !this.element.hasAttribute('commandfor'))
+				event.preventDefault();
+		} catch (e) {
+			if (typeof Logger != "undefined")
+				Logger.error("Callback dispatch failed; falling back to the default action", e.message);
+			throw e;
+		}
 	}
 });
 
 /**
  * TActiveButton control.
  */
-Prado.WebUI.TActiveButton = jQuery.klass(Prado.WebUI.CallbackControl);
+Prado.WebUI.TActiveButton = Prado.Class(Prado.WebUI.CallbackControl);
 /**
  * TActiveLinkButton control.
  */
-Prado.WebUI.TActiveLinkButton = jQuery.klass(Prado.WebUI.CallbackControl);
+Prado.WebUI.TActiveLinkButton = Prado.Class(Prado.WebUI.CallbackControl);
 
-Prado.WebUI.TActiveImageButton = jQuery.klass(Prado.WebUI.TImageButton,
+Prado.WebUI.TActiveImageButton = Prado.Class(Prado.WebUI.TImageButton,
 {
-	onPostBack : function(options, event)
-	{
+	onPostBack(options, event) {
+		// Deliberate fallback, as in CallbackControl. On failure the coordinate
+		// inputs are left in the form on purpose: the fallback full-page submit
+		// needs them to carry the click position.
 		this.addXYInput(options, event);
-		var request = new Prado.CallbackRequest(options.EventTarget, options);
-		request.dispatch();
-		event.preventDefault();
+		try {
+			const request = new Prado.CallbackRequest(options.EventTarget, options);
+			request.dispatch();
+			event.preventDefault();
+		} catch (e) {
+			if (typeof Logger != "undefined")
+				Logger.error("Callback dispatch failed; falling back to the default action", e.message);
+			throw e;
+		}
 		this.removeXYInput(options, event);
 	}
 });
 /**
  * Active check box.
  */
-Prado.WebUI.TActiveCheckBox = jQuery.klass(Prado.WebUI.CallbackControl,
+Prado.WebUI.TActiveCheckBox = Prado.Class(Prado.WebUI.CallbackControl,
 {
-	onPostBack : function(options, event)
-	{
-		var request = new Prado.CallbackRequest(options.EventTarget, options);
+	onPostBack(options, event) {
+		const request = new Prado.CallbackRequest(options.EventTarget, options);
 		if(request.dispatch()==false)
 			event.preventDefault();
 	}
@@ -49,20 +69,19 @@ Prado.WebUI.TActiveCheckBox = jQuery.klass(Prado.WebUI.CallbackControl,
 /**
  * TActiveRadioButton control.
  */
-Prado.WebUI.TActiveRadioButton = jQuery.klass(Prado.WebUI.TActiveCheckBox);
+Prado.WebUI.TActiveRadioButton = Prado.Class(Prado.WebUI.TActiveCheckBox);
 
 
-Prado.WebUI.TActiveCheckBoxList = jQuery.klass(Prado.WebUI.Control,
+Prado.WebUI.TActiveCheckBoxList = Prado.Class(Prado.WebUI.Control,
 {
-	onInit : function(options)
-	{
-		for(var i = 0; i<options.ItemCount; i++)
+	onInit(options) {
+		for(let i = 0; i<options.ItemCount; i++)
 		{
-			var checkBoxOptions = jQuery.extend({}, options,
-			{
-				ID : options.ID+"_c"+i,
-				EventTarget : options.ListName+"$c"+i
-			});
+			const checkBoxOptions = {
+				...options,
+				ID : `${options.ID}_c${i}`,
+				EventTarget : `${options.ListName}$c${i}`
+			};
 			new Prado.WebUI.TActiveCheckBox(checkBoxOptions);
 		}
 	}
@@ -73,20 +92,18 @@ Prado.WebUI.TActiveRadioButtonList = Prado.WebUI.TActiveCheckBoxList;
 /**
  * TActiveTextBox control, handles onchange event.
  */
-Prado.WebUI.TActiveTextBox = jQuery.klass(Prado.WebUI.TTextBox,
+Prado.WebUI.TActiveTextBox = Prado.Class(Prado.WebUI.TTextBox,
 {
-	onInit : function(options)
-	{
+	onInit(options) {
 		this.options=options;
 		if(options['TextMode'] != 'MultiLine')
 			this.observe(this.element, "keydown", this.handleReturnKey.bind(this));
 		if(this.options['AutoPostBack']==true)
-			this.observe(this.element, "change", jQuery.proxy(this.doCallback,this,options));
+			this.observe(this.element, "change", this.doCallback.bind(this, options));
 	},
 
-	doCallback : function(options, event)
-	{
-		var request = new Prado.CallbackRequest(options.EventTarget, options);
+	doCallback(options, event) {
+		const request = new Prado.CallbackRequest(options.EventTarget, options);
 		request.dispatch();
 	    event.preventDefault();
 	}
@@ -96,29 +113,26 @@ Prado.WebUI.TActiveTextBox = jQuery.klass(Prado.WebUI.TTextBox,
  * TJuiAutoComplete control.
  */
 
-Prado.WebUI.TJuiAutoComplete = jQuery.klass(Prado.WebUI.TActiveTextBox,
+Prado.WebUI.TJuiAutoComplete = Prado.Class(Prado.WebUI.TActiveTextBox,
 {
-	initialize : function(options)
-	{
+	initialize(options) {
 		this.options = options;
 		this.observers = new Array();
 		this.hasResults = false;
-		jQuery.extend(this.options, {
+		Object.assign(this.options, {
 			source: this.getUpdatedChoices.bind(this),
 			select: this.selectEntry.bind(this),
-			focus: function () {
+			focus() {
 				return false;
 			},
 			minLength: this.options.minLength,
 			frequency: this.options.frequency
 		});
-		jQuery('#'+options.ID).autocomplete(this.options)
-		.data( "ui-autocomplete")._renderItem = function( ul, item ) {
-			return jQuery( "<li>" )
-			.attr( "data-value", item.value )
-			.append( jQuery( "<div>" ).html( item.label ) )
-			.appendTo( ul );
-		};
+		jQuery(`#${options.ID}`).autocomplete(this.options)
+		.data( "ui-autocomplete")._renderItem = (ul, item) => jQuery( "<li>" )
+        .attr( "data-value", item.value )
+        .append( jQuery( "<div>" ).html( item.label ) )
+        .appendTo( ul );
 
 		if(options.AutoPostBack)
 			this.onInit(options);
@@ -126,63 +140,67 @@ Prado.WebUI.TJuiAutoComplete = jQuery.klass(Prado.WebUI.TActiveTextBox,
 		Prado.Registry[options.ID] = this;
 	},
 
-	doCallback : function(event, options)
-	{
+	doCallback(event, options) {
 		if(!this.active)
 		{
-			var request = new Prado.CallbackRequest(this.options.EventTarget, options);
+			const request = new Prado.CallbackRequest(this.options.EventTarget, options);
 			request.dispatch();
 			event.stopPropagation();
 		}
 	},
 
-	getUpdatedChoices : function(request, callback)
-	{
-        var lastTerm = this.extractLastTerm(request.term);
-		var params = new Array(lastTerm, "__TJuiAutoComplete_onSuggest__");
-		var options = jQuery.extend(this.options, {
-			'autocompleteCallback' : callback
-		});
+	getUpdatedChoices(request, callback) {
+        const lastTerm = this.extractLastTerm(request.term);
+		const params = new Array(lastTerm, "__TJuiAutoComplete_onSuggest__");
+		// Stash the autocomplete-widget callback on this.options so onComplete
+		// can invoke it after the server round-trip resolves.
+		Object.assign(this.options, { autocompleteCallback: callback });
 		Prado.Callback(this.options.EventTarget, params, this.onComplete.bind(this), this.options);
 	},
 
-	extractLastTerm: function(string)
-	{
-		var re = new RegExp("[" + (this.options.Separators || '') + "]");
+	extractLastTerm(string) {
+		const re = new RegExp(`[${this.options.Separators || ''}]`);
 		return string.split(re).pop().trim();
 	},
 
 	/**
 	 * Overrides parent implements, don't update if no results.
 	 */
-	selectEntry: function(event, ui) {
-		var value = event.target.value;
-		var lastTerm = this.extractLastTerm(value);
+	selectEntry(event, ui) {
+		const value = event.target.value;
+		const lastTerm = this.extractLastTerm(value);
 
 		// strip (possibly) incomplete last part
-		var previousTerms = value.substr(0, value.length - lastTerm.length);
+		const previousTerms = value.substr(0, value.length - lastTerm.length);
 		// and append selected value
 		ui.item.value = previousTerms + ui.item.value;
 
 		//ui.item.value = event.target.value;
-		var options = [ui.item.id, "__TJuiAutoComplete_onSuggestionSelected__"];
+		const options = [ui.item.id, "__TJuiAutoComplete_onSuggestionSelected__"];
 		Prado.Callback(this.options.EventTarget, options, null, this.options);
 	},
 
 
-	onComplete : function(request, result)
-  	{
-  		var that = this;
-  		if(that.options.textCssClass===undefined)
-  		{
-			jQuery.each(result, function(idx, item) {
-				result[idx]['value']=jQuery.trim(jQuery('<div/>').html(item['label']).text());
-			});
-  		} else {
-			jQuery.each(result, function(idx, item) {
-				result[idx]['value']=jQuery.trim(jQuery('<div/>').html(item['label']).find('.'+that.options.textCssClass).text());
-			});
-  		}
+	onComplete(request, result) {
+		// Decode the HTML in `label` to plain text for the underlying value.
+		// Uses a detached <div> as the HTML parser; matches the old
+		// jQuery('<div/>').html(label).text() pattern.
+		const decode = (html) => {
+			const div = document.createElement('div');
+			div.innerHTML = html;
+			return div;
+		};
+		if(this.options.textCssClass === undefined) {
+			for (const item of result) {
+				item.value = decode(item.label).textContent.trim();
+			}
+		} else {
+			const sel = `.${this.options.textCssClass}`;
+			for (const item of result) {
+				const node = decode(item.label).querySelector(sel);
+				item.value = (node ? node.textContent : '').trim();
+			}
+		}
 
 		request.options.autocompleteCallback(result);
 	}
@@ -190,95 +208,157 @@ Prado.WebUI.TJuiAutoComplete = jQuery.klass(Prado.WebUI.TActiveTextBox,
 
 /**
  * Time Triggered Callback class.
+ *
+ * Sends a callback request every Interval seconds while the timer runs.
+ * The timer pauses while the page is hidden (`document.visibilityState`),
+ * unless the PauseWhenHidden option is false, and while the browser is
+ * offline (`navigator.onLine`). When the page is visible and online again
+ * it sends one callback at once if an interval passed since the last one,
+ * then resumes the interval.
  */
-Prado.WebUI.TTimeTriggeredCallback = jQuery.klass(Prado.WebUI.Control,
+Prado.WebUI.TTimeTriggeredCallback = Prado.Class(Prado.WebUI.Control,
 {
-	onInit : function(options)
-	{
-		this.options = jQuery.extend({ Interval : 1	}, options || {});
+	onInit(options) {
+		this.options = { Interval : 1, PauseWhenHidden : true, ...(options || {}) };
+		this.active = false;
+		this.lastTick = null;
 		Prado.WebUI.TTimeTriggeredCallback.registerTimer(this);
+		this.observe(document, 'visibilitychange', this.onVisibilityChange.bind(this));
+		this.observe(window, 'online', this.resume.bind(this));
+		this.observe(window, 'offline', this.unschedule.bind(this));
 	},
 
-	startTimer : function()
-	{
-		if(typeof(this.timer) == 'undefined' || this.timer == null)
-			this.timer = this.setInterval(this.onTimerEvent.bind(this),this.options.Interval*1000);
+	/**
+	 * Starts the timer. The interval waits while the timer is paused.
+	 */
+	startTimer() {
+		this.active = true;
+		this.schedule();
 	},
 
-	stopTimer : function()
-	{
-		if(typeof(this.timer) != 'undefined')
-		{
+	/**
+	 * Stops the timer.
+	 */
+	stopTimer() {
+		this.active = false;
+		this.unschedule();
+	},
+
+	/**
+	 * Restarts the interval of a started timer.
+	 */
+	resetTimer() {
+		this.unschedule();
+		this.schedule();
+	},
+
+	/**
+	 * Returns whether the timer is paused: the page is hidden and PauseWhenHidden
+	 * is true, or the browser is offline.
+	 * @returns {boolean} whether the timer is paused
+	 */
+	isPaused() {
+		return (this.options.PauseWhenHidden && document.visibilityState === 'hidden')
+			|| navigator.onLine === false;
+	},
+
+	/**
+	 * Sets the interval when the timer is started, not paused, and has no interval.
+	 */
+	schedule() {
+		if (!this.active || this.isPaused() || (this.timer !== undefined && this.timer !== null))
+			return;
+		this.timer = this.setInterval(this.onTimerEvent.bind(this), this.options.Interval * 1000);
+	},
+
+	/**
+	 * Clears the interval; the timer stays started.
+	 */
+	unschedule() {
+		if (this.timer !== undefined && this.timer !== null)
 			this.clearInterval(this.timer);
+		if (this.timer !== undefined)
 			this.timer = null;
-		}
 	},
 
-	resetTimer : function()
-	{
-		if(typeof(this.timer) != 'undefined')
-		{
-			this.clearInterval(this.timer);
-			this.timer = null;
-			this.timer = this.setInterval(this.onTimerEvent.bind(this),this.options.Interval*1000);
-		}
+	/**
+	 * Resumes a started timer after a pause: sends a callback at once when an
+	 * interval passed since the last one, and sets the interval again.
+	 */
+	resume() {
+		if (!this.active || this.isPaused() || (this.timer !== undefined && this.timer !== null))
+			return;
+		const due = this.lastTick === null || Date.now() - this.lastTick >= this.options.Interval * 1000;
+		this.schedule();
+		if (due)
+			this.onTimerEvent();
 	},
 
-	onTimerEvent : function()
-	{
-		var request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
+	/**
+	 * Pauses the timer when the page is hidden and resumes it when visible.
+	 */
+	onVisibilityChange() {
+		if (!this.options.PauseWhenHidden)
+			return;
+		if (document.visibilityState === 'hidden')
+			this.unschedule();
+		else
+			this.resume();
+	},
+
+	/**
+	 * Sends the callback request, unless the timer is paused.
+	 */
+	onTimerEvent() {
+		if (this.isPaused())
+			return;
+		this.lastTick = Date.now();
+		const request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
 		request.dispatch();
 	},
 
-	setTimerInterval : function(value)
-	{
+	setTimerInterval(value) {
 		if (this.options.Interval != value){
 			this.options.Interval = value;
 			this.resetTimer();
 		}
 	},
 
-	onDone: function()
-	{
+	onDone() {
 		this.stopTimer();
 	}
 });
 
-jQuery.extend(Prado.WebUI.TTimeTriggeredCallback,
+Object.assign(Prado.WebUI.TTimeTriggeredCallback,
 {
 
 	//class methods
 
 	timers : {},
 
-	registerTimer : function(timer)
-	{
+	registerTimer(timer) {
 		Prado.WebUI.TTimeTriggeredCallback.timers[timer.options.ID] = timer;
 	},
 
-	start : function(id)
-	{
+	start(id) {
 		if(Prado.WebUI.TTimeTriggeredCallback.timers[id])
 			Prado.WebUI.TTimeTriggeredCallback.timers[id].startTimer();
 	},
 
-	stop : function(id)
-	{
+	stop(id) {
 		if(Prado.WebUI.TTimeTriggeredCallback.timers[id])
 			Prado.WebUI.TTimeTriggeredCallback.timers[id].stopTimer();
 	},
 
-	setTimerInterval : function (id,value)
-	{
+	setTimerInterval(id, value) {
 		if(Prado.WebUI.TTimeTriggeredCallback.timers[id])
 			Prado.WebUI.TTimeTriggeredCallback.timers[id].setTimerInterval(value);
 	}
 });
 
-Prado.WebUI.ActiveListControl = jQuery.klass(Prado.WebUI.Control,
+Prado.WebUI.ActiveListControl = Prado.Class(Prado.WebUI.Control,
 {
-	onInit : function(options)
-	{
+	onInit(options) {
 		if(this.element)
 		{
 			this.options = options;
@@ -286,33 +366,30 @@ Prado.WebUI.ActiveListControl = jQuery.klass(Prado.WebUI.Control,
 		}
 	},
 
-	doCallback : function(event)
-	{
-		var request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
+	doCallback(event) {
+		const request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
 		request.dispatch();
 		event.preventDefault();
 	}
 });
 
-Prado.WebUI.TActiveDropDownList = jQuery.klass(Prado.WebUI.ActiveListControl);
-Prado.WebUI.TActiveListBox = jQuery.klass(Prado.WebUI.ActiveListControl);
+Prado.WebUI.TActiveDropDownList = Prado.Class(Prado.WebUI.ActiveListControl);
+Prado.WebUI.TActiveListBox = Prado.Class(Prado.WebUI.ActiveListControl);
 
 /**
  * Observe event of a particular control to trigger a callback request.
  */
-Prado.WebUI.TEventTriggeredCallback = jQuery.klass(Prado.WebUI.Control,
+Prado.WebUI.TEventTriggeredCallback = Prado.Class(Prado.WebUI.Control,
 {
-	onInit : function(options)
-	{
+	onInit(options) {
 		this.options = options || {} ;
-		var element = jQuery('#'+options['ControlID']).get(0);
+		const element = document.getElementById(options['ControlID']);
 		if(element)
 			this.observe(element, this.getEventName(element), this.doCallback.bind(this));
 	},
 
-	getEventName : function(element)
-	{
-		var name = this.options.EventName;
+	getEventName(element) {
+		const name = this.options.EventName;
    		if(typeof(name) == "undefined" && element.type)
 		{
       		switch (element.type.toLowerCase())
@@ -328,9 +405,8 @@ Prado.WebUI.TEventTriggeredCallback = jQuery.klass(Prado.WebUI.Control,
 		return typeof(name) == "undefined"  || name == "undefined" ? 'click' : name;
     },
 
-	doCallback : function(event)
-	{
-		var request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
+	doCallback(event) {
+		const request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
 		request.dispatch();
 		if(this.options.StopEvent == true)
 			event.preventDefault();
@@ -340,39 +416,35 @@ Prado.WebUI.TEventTriggeredCallback = jQuery.klass(Prado.WebUI.Control,
 /**
  * Observe changes to a property of a particular control to trigger a callback.
  */
-Prado.WebUI.TValueTriggeredCallback = jQuery.klass(Prado.WebUI.Control,
+Prado.WebUI.TValueTriggeredCallback = Prado.Class(Prado.WebUI.Control,
 {
 	count : 1,
 
 	observing : true,
 
-	onInit : function(options)
-	{
+	onInit(options) {
 		this.options = options || {} ;
 		this.options.PropertyName = this.options.PropertyName || 'value';
-		var element = jQuery('#'+options['ControlID']).get(0);
+		const element = document.getElementById(options['ControlID']);
 		this.value = element ? element[this.options.PropertyName] : undefined;
 		Prado.WebUI.TValueTriggeredCallback.register(this);
 		this.startObserving();
 	},
 
-	stopObserving : function()
-	{
+	stopObserving() {
 		this.clearTimeout(this.timer);
 		this.observing = false;
 	},
 
-	startObserving : function()
-	{
+	startObserving() {
 		this.timer = this.setTimeout(this.checkChanges.bind(this), this.options.Interval*1000);
 	},
 
-	checkChanges : function()
-	{
-		var element = jQuery('#'+this.options.ControlID).get(0);
+	checkChanges() {
+		const element = document.getElementById(this.options.ControlID);
 		if(element)
 		{
-			var value = element[this.options.PropertyName];
+			const value = element[this.options.PropertyName];
 			if(this.value != value)
 			{
 				this.doCallback(this.value, value);
@@ -387,37 +459,325 @@ Prado.WebUI.TValueTriggeredCallback = jQuery.klass(Prado.WebUI.Control,
 		}
 	},
 
-	doCallback : function(oldValue, newValue)
-	{
-		var request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
-		var param = {'OldValue' : oldValue, 'NewValue' : newValue};
+	doCallback(oldValue, newValue) {
+		const request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
+		const param = {'OldValue' : oldValue, 'NewValue' : newValue};
 		request.setCallbackParameter(param);
 		request.dispatch();
 	},
 
-	onDone : function()
-	{
+	onDone() {
 		if (this.observing)
 			this.stopObserving();
 	}
 });
 
-jQuery.extend(Prado.WebUI.TValueTriggeredCallback,
+Object.assign(Prado.WebUI.TValueTriggeredCallback,
 {
 	//class methods
 
 	timers : {},
 
-	register : function(timer)
-	{
+	register(timer) {
 		Prado.WebUI.TValueTriggeredCallback.timers[timer.options.ID] = timer;
 	},
 
-	stop : function(id)
-	{
+	stop(id) {
 		Prado.WebUI.TValueTriggeredCallback.timers[id].stopObserving();
 	}
 });
 
-Prado.WebUI.TActiveTableCell = jQuery.klass(Prado.WebUI.CallbackControl);
-Prado.WebUI.TActiveTableRow = jQuery.klass(Prado.WebUI.CallbackControl);
+Prado.WebUI.TActiveTableCell = Prado.Class(Prado.WebUI.CallbackControl);
+
+/**
+ * TActiveTableRow control.
+ *
+ * A click in a cell of this row that dispatches its own TActiveTableCell
+ * callback dispatches no row callback. The server bubbles the cell's
+ * OnCellSelected to the row as OnRowSelected, so one click raises one callback.
+ */
+Prado.WebUI.TActiveTableRow = Prado.Class(Prado.WebUI.CallbackControl,
+{
+	onPostBack($super, options, event) {
+		if (this.isCellCallback(event))
+			return;
+		$super(options, event);
+	},
+
+	/**
+	 * @param event the click event
+	 * @return bool whether the click is in a cell of this row with its own registered callback
+	 */
+	isCellCallback(event) {
+		let cell = event.target;
+		while (cell && cell !== this.element && cell.parentElement !== this.element)
+			cell = cell.parentElement;
+		if (!cell || cell === this.element)
+			return false;
+		const control = Prado.Registry[cell.id];
+		return control instanceof Prado.WebUI.TActiveTableCell && control.registered;
+	}
+});
+
+/**
+ * TActiveDetails control.
+ *
+ * Listens for the native `toggle` event on the `<details>` element and fires
+ * a callback with parameter `'open'` or `'close'` so the server can raise the
+ * corresponding OnOpen / OnClose event.
+ *
+ * Server-initiated changes go through setOpen(), which toggles the element
+ * without echoing a callback back to the server.
+ */
+Prado.WebUI.TActiveDetails = Prado.Class(Prado.WebUI.Control,
+{
+	onInit : function(options)
+	{
+		this.options = options;
+		this._suppressToggle = false;
+		this.observe(this.element, 'toggle', jQuery.proxy(this.onToggle, this, options));
+	},
+
+	/**
+	 * Opens or closes the details widget on behalf of the server, without
+	 * dispatching an open/close callback back to the server.
+	 */
+	setOpen : function(open)
+	{
+		open = !!open;
+		if (this.element.open !== open) {
+			this._suppressToggle = true;
+			this.element.open = open;
+		}
+	},
+
+	onToggle : function(options, event)
+	{
+		if (this._suppressToggle) {
+			this._suppressToggle = false;
+			return;
+		}
+		var param = this.element.open ? 'open' : 'close';
+		var mergedOptions = jQuery.extend({}, options, { CallbackParameter: param });
+		var request = new Prado.CallbackRequest(options.EventTarget, mergedOptions);
+		request.dispatch();
+	}
+});
+
+/**
+ * Server-side entry point: resolves the control instance by client ID and
+ * forwards to its setOpen() instance method.
+ */
+Prado.WebUI.TActiveDetails.setOpen = function(id, open)
+{
+	var control = Prado.Registry[id];
+	if (control && control.setOpen) {
+		control.setOpen(open);
+	}
+};
+
+/**
+ * TActiveDialog control.
+ *
+ * Listens for the native `close` event on the `<dialog>` element (fired when
+ * the dialog is dismissed) and also for an `open` attribute mutation so that
+ * opening via showModal() / show() or an invoker button is detected. Fires a
+ * callback with parameter `'open'`, or `['close', returnValue]`, so the server
+ * can raise the corresponding OnOpen / OnClose event. Opening resets the
+ * dialog's `returnValue` to '', so a close by Esc does not report the value of
+ * an earlier close.
+ *
+ * The ShowModal option shows the dialog modally when the control initializes.
+ * Server-initiated changes go through setOpen(), which opens or closes the
+ * dialog without echoing a callback back to the server.
+ */
+Prado.WebUI.TActiveDialog = Prado.Class(Prado.WebUI.Control,
+{
+	onInit : function(options)
+	{
+		this.options = options;
+		this._suppressClose = false;
+		if (options.ShowModal && !this.element.open) {
+			this.element.showModal();
+		}
+		this.observe(this.element, 'close', jQuery.proxy(this.onDialogClose, this, options));
+
+		// Use a MutationObserver to detect programmatic open (showModal/show)
+		var self = this;
+		this._lastOpen = this.element.hasAttribute('open');
+		this._observer = new MutationObserver(function(mutations) {
+			mutations.forEach(function(mutation) {
+				if (mutation.attributeName === 'open') {
+					var isOpen = self.element.hasAttribute('open');
+					if (isOpen !== self._lastOpen) {
+						self._lastOpen = isOpen;
+						if (isOpen) {
+							self.element.returnValue = '';
+							self.dispatchCallback(options, 'open');
+						}
+					}
+				}
+			});
+		});
+		this._observer.observe(this.element, { attributes: true, attributeFilter: ['open'] });
+	},
+
+	/**
+	 * Opens or closes the dialog on behalf of the server, without dispatching
+	 * an open/close callback back to the server.
+	 * @param {boolean} open - whether the dialog is open
+	 * @param {boolean} modal - whether an opening dialog shows modally
+	 */
+	setOpen : function(open, modal)
+	{
+		if (open) {
+			if (!this.element.open) {
+				this._lastOpen = true;
+				this.element.returnValue = '';
+				if (modal) {
+					this.element.showModal();
+				} else {
+					this.element.show();
+				}
+			}
+		} else {
+			if (this.element.open) {
+				this._lastOpen = false;
+				this._suppressClose = true;
+				this.element.close();
+			}
+		}
+	},
+
+	onDialogClose : function(options, event)
+	{
+		if (this._suppressClose) {
+			this._suppressClose = false;
+			return;
+		}
+		this.dispatchCallback(options, ['close', this.element.returnValue]);
+	},
+
+	dispatchCallback : function(options, param)
+	{
+		var mergedOptions = jQuery.extend({}, options, { CallbackParameter: param });
+		var request = new Prado.CallbackRequest(options.EventTarget, mergedOptions);
+		request.dispatch();
+	},
+
+	onDone : function()
+	{
+		if (this._observer) {
+			this._observer.disconnect();
+			this._observer = null;
+		}
+		if (this.observing)
+			this.stopObserving();
+	}
+});
+
+/**
+ * Server-side entry point: resolves the control instance by client ID and
+ * forwards to its setOpen() instance method.
+ */
+Prado.WebUI.TActiveDialog.setOpen = function(id, open, modal)
+{
+	var control = Prado.Registry[id];
+	if (control && control.setOpen) {
+		control.setOpen(open, modal);
+	}
+};
+
+/**
+ * TLazyPanel control.
+ *
+ * Requests the panel content by callback once: when the page loads (Trigger
+ * Load), when the panel enters the viewport (Visible), or when load() is called
+ * (Manual). Visible uses an IntersectionObserver with the RootMargin option;
+ * without IntersectionObserver the content is requested at once.
+ *
+ * The callback response replaces the panel with its content, which renders
+ * without aria-busy. A failed request leaves the placeholder, removes aria-busy,
+ * and sets data-prado-lazy="failed"; load() requests the content again.
+ */
+Prado.WebUI.TLazyPanel = Prado.Class(Prado.WebUI.Control,
+{
+	onInit(options) {
+		this.options = options;
+		this.loading = false;
+		if (!this.element || options.Trigger === 'Manual')
+			return;
+		if (options.Trigger === 'Visible' && typeof IntersectionObserver !== 'undefined') {
+			this.observer = new IntersectionObserver(this.onIntersect.bind(this), { rootMargin: options.RootMargin || '0px' });
+			this.observer.observe(this.element);
+		} else {
+			this.load();
+		}
+	},
+
+	/**
+	 * Loads the content when the panel intersects the extended viewport.
+	 * @param {IntersectionObserverEntry[]} entries the observed changes
+	 */
+	onIntersect(entries) {
+		if (entries.some((entry) => entry.isIntersecting))
+			this.load();
+	},
+
+	/**
+	 * Dispatches the load callback, unless one is in flight.
+	 */
+	load() {
+		if (this.loading || !this.element)
+			return;
+		this.loading = true;
+		this.disconnect();
+		this.element.setAttribute('aria-busy', 'true');
+		this.element.removeAttribute('data-prado-lazy');
+		const userFailure = this.options.onFailure;
+		const options = {
+			...this.options,
+			onFailure: (request, status) => {
+				this.onFailure();
+				if (typeof userFailure === 'function')
+					userFailure(request, status);
+			}
+		};
+		const request = new Prado.CallbackRequest(this.options.EventTarget, options);
+		if (request.dispatch() === false)
+			this.onFailure();
+	},
+
+	/**
+	 * Leaves the placeholder after a failed request, marked as failed and no longer busy.
+	 */
+	onFailure() {
+		this.loading = false;
+		if (this.element) {
+			this.element.removeAttribute('aria-busy');
+			this.element.setAttribute('data-prado-lazy', 'failed');
+		}
+	},
+
+	disconnect() {
+		if (this.observer) {
+			this.observer.disconnect();
+			this.observer = null;
+		}
+	},
+
+	onDone() {
+		this.disconnect();
+	}
+});
+
+/**
+ * Requests the content of the lazy panel with the client ID, as for Trigger Manual or a retry.
+ * @param {string} id the client ID of the panel
+ */
+Prado.WebUI.TLazyPanel.load = function(id)
+{
+	const control = Prado.Registry[id];
+	if (control instanceof Prado.WebUI.TLazyPanel)
+		control.load();
+};

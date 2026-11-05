@@ -1,0 +1,31 @@
+<com:TContent ID="Content">
+<h1>Prado ImageValidator Tests</h1>
+<div>
+	<p>Images of at most 100x100 pixels</p>
+	<div>
+		<com:TFileUpload ID="upload1" />
+		<com:TImageValidator
+			ID="validator1"
+			ControlToValidate="upload1"
+			ErrorMessage="Image too large: {files}"
+			MaxImageWidth="100"
+			MaxImageHeight="100"
+			ControlCssClass="required" />
+	</div>
+
+	<p>Server side only, images of at least 10x10 pixels</p>
+	<div>
+		<com:TFileUpload ID="upload2" />
+		<com:TImageValidator
+			ID="validator2"
+			ControlToValidate="upload2"
+			ErrorMessage="Image too small"
+			MinImageWidth="10"
+			MinImageHeight="10"
+			EnableClientScript="false"
+			ControlCssClass="required" />
+	</div>
+
+	<com:TButton ID="submit1" Text="Test" />
+</div>
+</com:TContent>

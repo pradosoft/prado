@@ -1,10 +1,12 @@
 <?php
 
+namespace Prado\Test\Unit\Shell;
+
 use Prado\IO\TTextWriter;
 use Prado\Shell\TShellWriter;
 
 
-class TShellWriterTest extends PHPUnit\Framework\TestCase
+class TShellWriterTest extends \PHPUnit\Framework\TestCase
 {
 	protected $writer;
 	protected $obj;

@@ -14,13 +14,14 @@ use Prado\Collections\TList;
 use Prado\Exceptions\TInvalidDataTypeException;
 
 /**
- * TCacheDependencyList class.
+ * TCacheDependencyList class
  *
- * TCacheDependencyList represents a list of cache dependency objects.
- * Only objects implementing {@see \Prado\Caching\ICacheDependency} can be added into this list.
+ * TCacheDependencyList is a typed list that only accepts objects implementing
+ * {@see \Prado\Caching\ICacheDependency}. It is used by
+ * {@see \Prado\Caching\TChainedCacheDependency} to hold a chain of dependencies.
  *
- * TCacheDependencyList can be used like an array. See {@see \Prado\Collections\TList}
- * for more details.
+ * The list supports all standard {@see \Prado\Collections\TList} operations
+ * (add, remove, count, iterate, array-access).
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.1.0
@@ -29,11 +30,11 @@ class TCacheDependencyList extends TList
 {
 	/**
 	 * Inserts an item at the specified position.
-	 * This overrides the parent implementation by performing additional type checking
-	 * for each newly added item.
-	 * @param int $index the specified position.
-	 * @param mixed $item new item
-	 * @throws TInvalidDataTypeException if the item to be inserted is not a dependency instance
+	 * Overrides the parent to enforce that every item implements
+	 * {@see \Prado\Caching\ICacheDependency}.
+	 * @param int $index the zero-based position at which to insert.
+	 * @param mixed $item the dependency to insert.
+	 * @throws TInvalidDataTypeException if `$item` does not implement {@see \Prado\Caching\ICacheDependency}.
 	 */
 	public function insertAt($index, $item)
 	{

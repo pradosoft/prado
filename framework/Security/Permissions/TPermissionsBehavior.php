@@ -14,7 +14,7 @@ use Prado\Prado;
 use Prado\TApplicationMode;
 use Prado\Util\IDynamicMethods;
 use Prado\Util\TBehavior;
-use Prado\Util\TLogger;
+use Prado\Util\Log\TLogger;
 
 /**
  * TPermissionsBehavior class.
@@ -81,7 +81,7 @@ class TPermissionsBehavior extends TBehavior implements IDynamicMethods
 	private $_permissionEvents;
 
 	/** @var \Prado\Security\Permissions\TPermissionEvent[] */
-	private $_events;
+	private array $_events = [];
 
 	/**
 	 * @param \Prado\TComponent $owner the object being attached to
@@ -123,7 +123,7 @@ class TPermissionsBehavior extends TBehavior implements IDynamicMethods
 
 		$event = strtolower($method);
 		/** @var TUserPermissionsBehavior $user */
-		$user = Prado::getApplication()->getUser();
+		$user = $this->getApplication()->getUser();
 		if (isset($this->_permissionEvents[$event]) && $user) {
 			$can = true;
 			$extra = array_slice($args, -1)[0] ?? null;
@@ -145,7 +145,7 @@ class TPermissionsBehavior extends TBehavior implements IDynamicMethods
 	 */
 	public function getPermissionEvents()
 	{
-		return $this->_events ?? [];
+		return $this->_events;
 	}
 
 	/**
@@ -160,7 +160,7 @@ class TPermissionsBehavior extends TBehavior implements IDynamicMethods
 	 */
 	public function dyLogPermissionFailed($permission, $action, $callchain)
 	{
-		$app = Prado::getApplication();
+		$app = $this->getApplication();
 		$user = $app->getUser();
 		$name = '(undefined)';
 		if ($user) {

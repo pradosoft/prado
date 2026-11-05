@@ -1,7 +1,7 @@
 # Caching/ICacheDependency
 
 ### Directories
-[framework](./INDEX.md) / [Caching](./Caching/INDEX.md) / **`ICacheDependency`**
+[framework](../INDEX.md) / [Caching](INDEX.md) / **`ICacheDependency`**
 
 **Location:** `framework/Caching/ICacheDependency.php`
 **Namespace:** `Prado\Caching`

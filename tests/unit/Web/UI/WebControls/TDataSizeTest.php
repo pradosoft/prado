@@ -1,10 +1,12 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI\WebControls;
+
 use Prado\IO\TTextWriter;
 use Prado\Web\UI\WebControls\TDataSize;
 use Prado\Exceptions\TInvalidDataValueException;
 
-class TDataSizeTest extends PHPUnit\Framework\TestCase
+class TDataSizeTest extends \PHPUnit\Framework\TestCase
 {
 	protected $obj;
 

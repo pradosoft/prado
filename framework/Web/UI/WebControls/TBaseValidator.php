@@ -12,6 +12,7 @@ namespace Prado\Web\UI\WebControls;
 
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TNotSupportedException;
+use Prado\TComponentReflection;
 use Prado\TPropertyValue;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Web\Javascripts\TJavaScript;
@@ -47,6 +48,9 @@ use Prado\Web\UI\IValidator;
  * property is set, it will be displayed instead. If both {@see setErrorMessage ErrorMessage}
  * and {@see setText Text} are empty, the body content of the validator will
  * be displayed. Error display is controlled by {@see setDisplay Display} property.
+ * {@see setText Text} and {@see setErrorMessage ErrorMessage} render as HTML unless
+ * {@see setEncode Encode} (from {@see TEncodeTrait}) is true, which HTML-encodes them
+ * in the validator, in {@see \Prado\Web\UI\WebControls\TValidationSummary}, and on the client.
  *
  * You can also customized the client-side behaviour by adding javascript
  * code to the subproperties of the {@see getClientSide ClientSide}
@@ -91,7 +95,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	/**
 	 * Controls for which the client-side validation3.js file needs to handle
 	 * them specially.
-	 * @var array list of control class names
+	 * @var array<class-string<\Prado\Web\UI\TControl>, string> list of control class names
 	 */
 	private static $_clientClass = [
 		// normal controls needing special handling to extract their values
@@ -155,6 +159,9 @@ abstract class TBaseValidator extends TLabel implements IValidator
 			$writer->addStyleAttribute('visibility', 'hidden');
 		}
 		$writer->addAttribute('id', $this->getClientID());
+		// The message is an alert so assistive technology announces it when a
+		// failed validation makes it visible.
+		$writer->addAttribute('role', 'alert');
 		parent::addAttributesToRender($writer);
 		$this->renderClientControlScript($writer);
 	}
@@ -182,6 +189,12 @@ abstract class TBaseValidator extends TLabel implements IValidator
 
 		$options['ControlType'] = $this->getClientControlClass($control);
 		$options['Enabled'] = $this->getEnabled(true);
+		if ($this->getEncode()) {
+			$options['Encode'] = true;
+		}
+		if (!$this->getIsValid()) {
+			$options['IsValid'] = false;
+		}
 
 		//get date format from date picker target control
 		if ($control instanceof TDatePicker) {
@@ -207,7 +220,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 				return $shortName;
 			}
 		}
-		$reflectionClass = new \ReflectionClass($control);
+		$reflectionClass = TComponentReflection::getReflectionClassByType($control::class);
 		return $reflectionClass->getShortName();
 	}
 
@@ -225,7 +238,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 *
 	 * You can attach custom javascript code to each of these events
 	 *
-	 * @return TValidatorClientSide javascript validator event options.
+	 * @return \Prado\Web\UI\ActiveControls\TCallbackClientSide|TValidatorClientSide javascript validator event options.
 	 */
 	public function getClientSide()
 	{
@@ -276,6 +289,25 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	{
 		parent::onPreRender($param);
 		$this->updateControlCssClass();
+		$this->updateControlAria();
+	}
+
+	/**
+	 * Marks the validated control with aria-invalid="true" when it failed
+	 * validation on the server, and removes the attribute when it is valid, so
+	 * assistive technology reports a server side failure. The client validator
+	 * that failed takes over the attribute and clears it when it passes.
+	 */
+	protected function updateControlAria()
+	{
+		if (($id = $this->getControlToValidate()) === '' || !(($control = $this->findControl($id)) instanceof TWebControl) || !($control instanceof \Prado\Web\UI\IValidatable)) {
+			return;
+		}
+		if (!$control->getIsValid()) {
+			$control->getAttributes()->add('aria-invalid', 'true');
+		} elseif ($control->getHasAttributes()) {
+			$control->getAttributes()->remove('aria-invalid');
+		}
 	}
 
 	/**
@@ -346,7 +378,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	}
 
 	/**
-	 * @return TValidatorDisplayStyle the style of displaying the error message. Defaults to TValidatorDisplayStyle::Fixed.
+	 * @return string|TValidatorDisplayStyle the style of displaying the error message. Defaults to TValidatorDisplayStyle::Fixed.
 	 */
 	public function getDisplay()
 	{
@@ -354,7 +386,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	}
 
 	/**
-	 * @param TValidatorDisplayStyle $value the style of displaying the error message
+	 * @param string|TValidatorDisplayStyle $value the style of displaying the error message
 	 */
 	public function setDisplay($value)
 	{
@@ -532,9 +564,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 		if ($this->getVisible(true) && $this->getEnabled(true)) {
 			$target = $this->getValidationTarget();
 			// if the target is not a disabled web control
-			if ($target === null ||
-				($target !== null &&
-				!($target instanceof TWebControl && !$target->getEnabled(true)))) {
+			if ($target === null || !($target instanceof TWebControl && !$target->getEnabled(true))) {
 				if ($this->evaluateIsValid()) {
 					$this->setIsValid(true);
 					$this->onValidationSuccess();
@@ -607,17 +637,19 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	}
 
 	/**
-	 * Renders the validator control.
+	 * Renders the validator control: {@see getText Text}, else {@see getErrorMessage ErrorMessage},
+	 * else the body content.  The text is HTML-encoded when {@see getEncode Encode} is true.
 	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function renderContents($writer)
 	{
-		if (($text = $this->getText()) !== '') {
-			$writer->write($text);
-		} elseif (($text = $this->getErrorMessage()) !== '') {
-			$writer->write($text);
+		if (($text = $this->getText()) === '') {
+			$text = $this->getErrorMessage();
+		}
+		if ($text !== '') {
+			$writer->write($this->encodeText($text));
 		} else {
-			parent::renderContents($writer);
+			TLabel::renderContents($writer);
 		}
 	}
 }

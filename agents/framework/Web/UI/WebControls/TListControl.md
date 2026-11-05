@@ -8,7 +8,7 @@
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-TListControl is the base class for list controls like TListBox, TDropDownList, TCheckBoxList, and TRadioButtonList. It manages items, selections, data binding, and auto-postback behavior.
+TListControl is the base class for list controls like TListBox, TDropDownList, TCheckBoxList, TRadioButtonList, and [TSuggestionList](./TSuggestionList.md) (`<datalist>`, no selection). It manages items, selections, data binding, and auto-postback behavior.
 
 ## Key Properties/Methods
 
@@ -18,14 +18,14 @@ TListControl is the base class for list controls like TListBox, TDropDownList, T
 - `getSelectedValue()` / `setSelectedValue()` - Gets or sets selected item value
 - `getSelectedValues()` / `setSelectedValues()` - Gets or sets array of selected values (multi-select)
 - `getSelectedIndices()` / `setSelectedIndices()` - Gets or sets array of selected indices
-- `clearSelection()` - Clears all selections
+- `clearSelection()` - Clears all selections, including one stored for the next databinding
 - `getAutoPostBack()` / `setAutoPostBack()` - Gets or sets auto postback on change
 - `getCausesValidation()` / `setCausesValidation()` - Gets or sets whether validation triggers on postback
 - `getValidationGroup()` / `setValidationGroup()` - Gets or sets validation group
 - `getDataSource()` / `setDataSource()` - Gets or sets data source for items
 - `getDataTextField()` / `setDataTextField()` - Gets or sets data field for item text
 - `getDataValueField()` / `setDataValueField()` - Gets or sets data field for item value
-- `getDataTextFormatString()` / `setDataTextFormatString()` - Gets or sets text format string
+- `getDataTextFormatString()` / `setDataTextFormatString()` - Gets or sets the item text format: a format string or a callable ([TDataValueFormatterTrait](./TDataValueFormatterTrait.md))
 - `getDataGroupField()` / `setDataGroupField()` - Gets or sets data field for item grouping
 - `getPromptText()` / `setPromptText()` - Gets or sets prompt text for first item
 - `getPromptValue()` / `setPromptValue()` - Gets or sets prompt selection value
@@ -33,9 +33,16 @@ TListControl is the base class for list controls like TListBox, TDropDownList, T
 - `onSelectedIndexChanged()` - Raises OnSelectedIndexChanged event
 - `onTextChanged()` - Raises OnTextChanged event
 - `dataBind()` - Binds data source to items
+- `__clone()` - Clones each item into a new collection; a clone selects items independently ([TDropDownListColumn](./TDropDownListColumn.md) clones its list for each edit cell)
+
+## Selection Before Databinding
+Each selection setter also stores its selection; `performDataBinding()` and `addParsedObject()` apply the stored selection to the new items, then clear it.
+- Each setter replaces any selection stored by another setter, so the last one set is applied.
+- `clearSelection()` clears the stored selection.
 
 ## See Also
 
 - [TDataBoundControl](./TDataBoundControl.md)
 - [TListItem](./TListItem.md)
 - [TListSelectionMode](./TListSelectionMode.md)
+- [TDataValueFormatterTrait](./TDataValueFormatterTrait.md)

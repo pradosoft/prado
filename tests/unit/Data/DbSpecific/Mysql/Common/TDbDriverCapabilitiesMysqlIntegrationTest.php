@@ -1,12 +1,14 @@
 <?php
 
-require_once(__DIR__ . '/../../../../PradoUnit.php');
+namespace Prado\Test\Unit\Data\DbSpecific\Mysql\Common;
 
 use Prado\Data\Common\Mysql\TMysqlMetaData;
 use Prado\Data\Common\TDbMetaData;
 use Prado\Data\TDbConnection;
 use Prado\Data\TDbDriverCapabilities;
 use Prado\TApplication;
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
+use Prado\TApplicationMode;
 
 /**
  * Integration tests for TDbDriverCapabilities — MySQL.
@@ -28,7 +30,7 @@ use Prado\TApplication;
  * Tests are skipped automatically when pdo_mysql is missing or the
  * prado_unitest database is unreachable.
  */
-class TDbDriverCapabilitiesMysqlIntegrationTest extends PHPUnit\Framework\TestCase
+class TDbDriverCapabilitiesMysqlIntegrationTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 
@@ -51,7 +53,7 @@ class TDbDriverCapabilitiesMysqlIntegrationTest extends PHPUnit\Framework\TestCa
 	{
 		static $booted = false;
 		if (!$booted) {
-			new TApplication(__DIR__ . '/../../../../Security/app', false, TApplication::CONFIG_TYPE_PHP);
+			(new TApplication(__DIR__ . '/../../../../Security/app', false, TApplication::CONFIG_TYPE_PHP))->setMode(TApplicationMode::Debug);
 			$booted = true;
 		}
 		$this->setUpConnection();
@@ -98,7 +100,6 @@ class TDbDriverCapabilitiesMysqlIntegrationTest extends PHPUnit\Framework\TestCa
 	{
 		$this->assertTrue(TDbDriverCapabilities::hasAutoCommitAttribute('mysql'));
 	}
-
 
 	public function testMysqlRequiresNoPreBeginTransactionFlush(): void
 	{
@@ -202,20 +203,6 @@ class TDbDriverCapabilitiesMysqlIntegrationTest extends PHPUnit\Framework\TestCa
 	public function testMysqlUnresolveLatin1ReturnsLatin1Standard(): void
 	{
 		$this->assertSame('ISO-8859-1', TDbDriverCapabilities::unresolveCharset('latin1', 'mysql'));
-	}
-
-	// -----------------------------------------------------------------------
-	// Scaffold factory
-	// -----------------------------------------------------------------------
-
-	public function testMysqlScaffoldInputClass(): void
-	{
-		$this->assertSame('TMysqlScaffoldInput', TDbDriverCapabilities::getScaffoldInputClass('mysql'));
-	}
-
-	public function testMysqlScaffoldInputFile(): void
-	{
-		$this->assertSame('/TMysqlScaffoldInput.php', TDbDriverCapabilities::getScaffoldInputFile('mysql'));
 	}
 
 	// -----------------------------------------------------------------------

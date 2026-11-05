@@ -1,12 +1,14 @@
 <?php
 
-require_once(__DIR__ . '/../../../../PradoUnit.php');
+namespace Prado\Test\Unit\Data\DbSpecific\Firebird\Common;
 
 use Prado\Data\Common\Firebird\TFirebirdMetaData;
 use Prado\Data\Common\TDbMetaData;
 use Prado\Data\TDbConnection;
 use Prado\Data\TDbDriverCapabilities;
 use Prado\TApplication;
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
+use Prado\TApplicationMode;
 
 /**
  * Integration tests for TDbDriverCapabilities — Firebird.
@@ -35,7 +37,7 @@ use Prado\TApplication;
  * FIREBIRD_DB_PATH  Server-side path to the prado_unitest.fdb file.
  *                   Defaults to /var/lib/firebird/data/prado_unitest.fdb.
  */
-class TDbDriverCapabilitiesFirebirdIntegrationTest extends PHPUnit\Framework\TestCase
+class TDbDriverCapabilitiesFirebirdIntegrationTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 
@@ -58,7 +60,7 @@ class TDbDriverCapabilitiesFirebirdIntegrationTest extends PHPUnit\Framework\Tes
 	{
 		static $booted = false;
 		if (!$booted) {
-			new TApplication(__DIR__ . '/../../../../Security/app', false, TApplication::CONFIG_TYPE_PHP);
+			(new TApplication(__DIR__ . '/../../../../Security/app', false, TApplication::CONFIG_TYPE_PHP))->setMode(TApplicationMode::Debug);
 			$booted = true;
 		}
 		// Static-capability tests (the majority of this class) exercise pure
@@ -271,28 +273,6 @@ class TDbDriverCapabilitiesFirebirdIntegrationTest extends PHPUnit\Framework\Tes
 		$this->assertSame(
 			TDbDriverCapabilities::unresolveCharset('UTF8', 'firebird'),
 			TDbDriverCapabilities::unresolveCharset('UTF8', 'interbase')
-		);
-	}
-
-	// -----------------------------------------------------------------------
-	// Scaffold factory
-	// -----------------------------------------------------------------------
-
-	public function testFirebirdScaffoldInputClass(): void
-	{
-		$this->assertSame('TFirebirdScaffoldInput', TDbDriverCapabilities::getScaffoldInputClass('firebird'));
-	}
-
-	public function testFirebirdScaffoldInputFile(): void
-	{
-		$this->assertSame('/TFirebirdScaffoldInput.php', TDbDriverCapabilities::getScaffoldInputFile('firebird'));
-	}
-
-	public function testInterbaseScaffoldInputMatchesFirebird(): void
-	{
-		$this->assertSame(
-			TDbDriverCapabilities::getScaffoldInputClass('firebird'),
-			TDbDriverCapabilities::getScaffoldInputClass('interbase')
 		);
 	}
 

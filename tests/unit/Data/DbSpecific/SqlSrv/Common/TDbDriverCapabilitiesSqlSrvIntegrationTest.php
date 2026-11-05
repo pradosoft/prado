@@ -1,12 +1,14 @@
 <?php
 
-require_once(__DIR__ . '/../../../../PradoUnit.php');
+namespace Prado\Test\Unit\Data\DbSpecific\SqlSrv\Common;
 
 use Prado\Data\Common\SqlSrv\TSqlSrvMetaData;
 use Prado\Data\Common\TDbMetaData;
 use Prado\Data\TDbConnection;
 use Prado\Data\TDbDriverCapabilities;
 use Prado\TApplication;
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
+use Prado\TApplicationMode;
 
 /**
  * Integration tests for TDbDriverCapabilities — Microsoft SQL Server.
@@ -28,7 +30,7 @@ use Prado\TApplication;
  * Tests are skipped automatically when pdo_sqlsrv is missing or the
  * SQL Server at localhost:1433 is unreachable.
  */
-class TDbDriverCapabilitiesSqlSrvIntegrationTest extends PHPUnit\Framework\TestCase
+class TDbDriverCapabilitiesSqlSrvIntegrationTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 
@@ -51,7 +53,7 @@ class TDbDriverCapabilitiesSqlSrvIntegrationTest extends PHPUnit\Framework\TestC
 	{
 		static $booted = false;
 		if (!$booted) {
-			new TApplication(__DIR__ . '/../../../../Security/app', false, TApplication::CONFIG_TYPE_PHP);
+			(new TApplication(__DIR__ . '/../../../../Security/app', false, TApplication::CONFIG_TYPE_PHP))->setMode(TApplicationMode::Debug);
 			$booted = true;
 		}
 		$this->setUpConnection();
@@ -100,7 +102,6 @@ class TDbDriverCapabilitiesSqlSrvIntegrationTest extends PHPUnit\Framework\TestC
 		// throws a PDOException.  hasAutoCommitAttribute must return false.
 		$this->assertFalse(TDbDriverCapabilities::hasAutoCommitAttribute('sqlsrv'));
 	}
-
 
 	public function testSqlsrvRequiresNoPreBeginTransactionFlush(): void
 	{
@@ -179,7 +180,6 @@ class TDbDriverCapabilitiesSqlSrvIntegrationTest extends PHPUnit\Framework\TestC
 		// throws a PDOException.  hasAutoCommitAttribute must return false.
 		$this->assertFalse(TDbDriverCapabilities::hasAutoCommitAttribute('dblib'));
 	}
-
 
 	public function testDblibRequiresNoPreBeginTransactionFlush(): void
 	{
@@ -270,28 +270,6 @@ class TDbDriverCapabilitiesSqlSrvIntegrationTest extends PHPUnit\Framework\TestC
 	public function testDblibResolveKoi8rReturnsKoi8R(): void
 	{
 		$this->assertSame('KOI8-R', TDbDriverCapabilities::resolveCharset('KOI8-R', 'dblib'));
-	}
-
-	// -----------------------------------------------------------------------
-	// Scaffold factory
-	// -----------------------------------------------------------------------
-
-	public function testSqlsrvScaffoldInputClass(): void
-	{
-		$this->assertSame('TSqlSrvScaffoldInput', TDbDriverCapabilities::getScaffoldInputClass('sqlsrv'));
-	}
-
-	public function testSqlsrvScaffoldInputFile(): void
-	{
-		$this->assertSame('/TSqlSrvScaffoldInput.php', TDbDriverCapabilities::getScaffoldInputFile('sqlsrv'));
-	}
-
-	public function testDblibScaffoldInputMatchesSqlsrv(): void
-	{
-		$this->assertSame(
-			TDbDriverCapabilities::getScaffoldInputClass('sqlsrv'),
-			TDbDriverCapabilities::getScaffoldInputClass('dblib')
-		);
 	}
 
 	// -----------------------------------------------------------------------

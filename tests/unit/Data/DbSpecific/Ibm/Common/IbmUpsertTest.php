@@ -1,7 +1,5 @@
 <?php
 
-require_once(__DIR__ . '/../../../../PradoUnit.php');
-
 /**
  * IbmUpsertTest — comprehensive tests for IBM DB2 upsert behaviour.
  *
@@ -21,13 +19,16 @@ require_once(__DIR__ . '/../../../../PradoUnit.php');
  *   upsert_test(username VARCHAR(100) PK, score INTEGER DEFAULT 0 NOT NULL)
  */
 
+namespace Prado\Test\Unit\Data\DbSpecific\Ibm\Common;
+
 use Prado\Data\DataGateway\TDataGatewayEventParameter;
 use Prado\Data\DataGateway\TDataGatewayResultEventParameter;
 use Prado\Data\DataGateway\TTableGateway;
 use Prado\Data\TDbConnection;
 use Prado\Exceptions\TDbException;
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
 
-class IbmUpsertTest extends PHPUnit\Framework\TestCase
+class IbmUpsertTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 

@@ -1,13 +1,16 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI;
+
 use Prado\Prado;
 use Prado\Web\UI\TThemeManager;
 use Prado\Web\UI\TTheme;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
+use Prado\Test\Unit\PradoUnit;
 
-class TThemeManagerTest extends PHPUnit\Framework\TestCase
+class TThemeManagerTest extends \PHPUnit\Framework\TestCase
 {
 	/** @var string[] temp directories created during tests */
 	private array $_tmpDirs = [];
@@ -51,9 +54,7 @@ class TThemeManagerTest extends PHPUnit\Framework\TestCase
 	 */
 	private function setBasePath(TThemeManager $manager, string $path): void
 	{
-		$ref = new ReflectionProperty(TThemeManager::class, '_basePath');
-		$ref->setAccessible(true);
-		$ref->setValue($manager, $path);
+		PradoUnit::setProp($manager, '_basePath', $path);
 	}
 
 	/**
@@ -61,9 +62,7 @@ class TThemeManagerTest extends PHPUnit\Framework\TestCase
 	 */
 	private function getBasePathValue(TThemeManager $manager): ?string
 	{
-		$ref = new ReflectionProperty(TThemeManager::class, '_basePath');
-		$ref->setAccessible(true);
-		return $ref->getValue($manager);
+		return PradoUnit::getProp($manager, '_basePath');
 	}
 
 	// -----------------------------------------------------------------------
@@ -312,5 +311,21 @@ class TThemeManagerTest extends PHPUnit\Framework\TestCase
 
 		$theme = $manager->getTheme('ATheme');
 		$this->assertStringStartsWith('/custom/themes', $theme->getBaseUrl());
+	}
+
+	public function testGetThemeRejectsPathNames(): void
+	{
+		$manager = new TThemeManager();
+		$this->setBasePath($manager, $this->createTmpDir('prado_themes_path_'));
+		$rejected = 0;
+		$names = ['', '.', '..', '../secret', 'a/b', 'a\\b', "a\0b", '/etc'];
+		foreach ($names as $name) {
+			try {
+				$manager->getTheme($name);
+			} catch (TInvalidDataValueException $e) {
+				$rejected++;
+			}
+		}
+		$this->assertSame(count($names), $rejected);
 	}
 }

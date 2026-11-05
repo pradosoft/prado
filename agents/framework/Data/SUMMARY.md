@@ -1,6 +1,6 @@
 # Data/SUMMARY.md
 
-Database access layer providing PDO wrapper plus three complementary data-access patterns: raw commands, stateless table gateway, stateful active record, and XML-based SQL mapping.
+Database access layer providing PDO wrapper plus two complementary data-access patterns: raw commands and a stateless table gateway. The Active Record ORM is the `pradosoft/prado-activerecord` package; the SqlMap data mapper is the `pradosoft/prado-sqlmap` package.
 
 ## Classes
 
@@ -10,7 +10,7 @@ Database access layer providing PDO wrapper plus three complementary data-access
 
 - **`TDbDataReader`** — Iterator over PDO result set; methods: `read()`, `readAll()`, `nextResult()`; implements `Iterator` and `Countable`.
 
-- **`TDbTransaction`** — Transaction wrapper; methods: `commit()`, `rollBack()`; property: `Active`.
+- **`TDbTransaction`** — Transaction wrapper; methods: `commit()`, `rollBack()`; property: `Active`; events: `OnCommit`, `OnRollback` (after the database commits or rolls back).
 
 - **`TDataSourceConfig`** — Configuration holder for connection pooling and datasource settings.
 

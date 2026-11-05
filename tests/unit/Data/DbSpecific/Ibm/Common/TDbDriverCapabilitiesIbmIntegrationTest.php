@@ -1,12 +1,14 @@
 <?php
 
-require_once(__DIR__ . '/../../../../PradoUnit.php');
+namespace Prado\Test\Unit\Data\DbSpecific\Ibm\Common;
 
 use Prado\Data\Common\Ibm\TIbmMetaData;
 use Prado\Data\Common\TDbMetaData;
 use Prado\Data\TDbConnection;
 use Prado\Data\TDbDriverCapabilities;
 use Prado\TApplication;
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
+use Prado\TApplicationMode;
 
 /**
  * Integration tests for TDbDriverCapabilities — IBM DB2.
@@ -34,7 +36,7 @@ use Prado\TApplication;
  * DB2_PASSWORD  IBM DB2 password.  Defaults to Prado_Unitest1.
  * DB2_DATABASE  IBM DB2 database name.  Defaults to pradount.
  */
-class TDbDriverCapabilitiesIbmIntegrationTest extends PHPUnit\Framework\TestCase
+class TDbDriverCapabilitiesIbmIntegrationTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 
@@ -57,7 +59,7 @@ class TDbDriverCapabilitiesIbmIntegrationTest extends PHPUnit\Framework\TestCase
 	{
 		static $booted = false;
 		if (!$booted) {
-			new TApplication(__DIR__ . '/../../../../Security/app', false, TApplication::CONFIG_TYPE_PHP);
+			(new TApplication(__DIR__ . '/../../../../Security/app', false, TApplication::CONFIG_TYPE_PHP))->setMode(TApplicationMode::Debug);
 			$booted = true;
 		}
 		$this->setUpConnection();
@@ -109,7 +111,6 @@ class TDbDriverCapabilitiesIbmIntegrationTest extends PHPUnit\Framework\TestCase
 	{
 		$this->assertTrue(TDbDriverCapabilities::hasAutoCommitAttribute('ibm'));
 	}
-
 
 	public function testIbmRequiresNoPreBeginTransactionFlush(): void
 	{
@@ -184,20 +185,6 @@ class TDbDriverCapabilitiesIbmIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertNull(TDbDriverCapabilities::getCharsetQuerySql('ibm'));
 		$this->assertFalse(TDbDriverCapabilities::supportsRuntimeCharsetSet('ibm'));
 		$this->assertFalse(TDbDriverCapabilities::requiresPostConnectCharset('ibm'));
-	}
-
-	// -----------------------------------------------------------------------
-	// Scaffold factory
-	// -----------------------------------------------------------------------
-
-	public function testIbmScaffoldInputClass(): void
-	{
-		$this->assertSame('TIbmScaffoldInput', TDbDriverCapabilities::getScaffoldInputClass('ibm'));
-	}
-
-	public function testIbmScaffoldInputFile(): void
-	{
-		$this->assertSame('/TIbmScaffoldInput.php', TDbDriverCapabilities::getScaffoldInputFile('ibm'));
 	}
 
 	// -----------------------------------------------------------------------

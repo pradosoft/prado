@@ -11,6 +11,7 @@
 namespace Prado;
 
 use Prado\Util\Traits\TConstantReflectionTrait;
+use Prado\Util\Traits\TArrayCopyIteratorTrait;
 
 /**
  * TEnumerable class.
@@ -30,9 +31,10 @@ use Prado\Util\Traits\TConstantReflectionTrait;
  * Then, one can use the enumerable values such as TTextAlign::Left and
  * TTextAlign::Right.
  *
- * As of 4.3.3, to access a constant value by name, check its presence,
- * or get the constant name by value, use {@see valueOfConstant()},
- * {@see hasConstant()}, and {@see constantOfValue()}.  For example:
+ * As of 4.3.3, to access a constant value by name, check its presence by name
+ * or value, or get the constant name by value, use {@see valueOfConstant()},
+ * {@see hasConstant()}, {@see hasConstantValue()}, and {@see constantOfValue()}.
+ * For example:
  * ```php
  * $alignConstant = 'Left';
  * $value = TTextAlign::valueOfConstant($alignConstant);  // returns 'Left'
@@ -41,72 +43,17 @@ use Prado\Util\Traits\TConstantReflectionTrait;
  * $hasLeft = TTextAlign::hasConstant($alignConstant);    // true
  * ```
  *
+ * Classes that cannot extend TEnumerable can implement {@see IEnumerable} and
+ * {@see \Iterator} by using {@see \Prado\Util\Traits\TConstantReflectionTrait}
+ * and {@see \Prado\Util\Traits\TArrayCopyIteratorTrait} together.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
+ * @see \Prado\Util\Traits\TArrayCopyIteratorTrait
  * @see \Prado\Util\Traits\TConstantReflectionTrait
  * @since 3.0
  */
-class TEnumerable implements \Iterator
+class TEnumerable implements IEnumerable, \Iterator
 {
+	use TArrayCopyIteratorTrait;
 	use TConstantReflectionTrait;
-
-	private $_enums = [];
-
-	/**
-	 * Constructor.
-	 *
-	 * Initializes the enumerable constants from the class definition.
-	 */
-	public function __construct()
-	{
-		$reflection = self::getReflectionClass();
-		$this->_enums = $reflection->getConstants();
-	}
-
-	/**
-	 * Returns the current enumerable value.
-	 *
-	 * @return mixed The current value.
-	 */
-	#[\ReturnTypeWillChange]
-	public function current()
-	{
-		return current($this->_enums);
-	}
-
-	/**
-	 * Returns the key of the current enumerable value.
-	 *
-	 * @return mixed The current key.
-	 */
-	#[\ReturnTypeWillChange]
-	public function key()
-	{
-		return key($this->_enums);
-	}
-
-	/**
-	 * Advances the internal pointer to the next element.
-	 */
-	public function next(): void
-	{
-		next($this->_enums);
-	}
-
-	/**
-	 * Rewinds the internal pointer to the first element.
-	 */
-	public function rewind(): void
-	{
-		reset($this->_enums);
-	}
-
-	/**
-	 * Checks if the current position is valid.
-	 *
-	 * @return bool True if the current position is valid, false otherwise.
-	 */
-	public function valid(): bool
-	{
-		return $this->current() !== false;
-	}
 }

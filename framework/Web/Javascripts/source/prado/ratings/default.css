@@ -2,7 +2,26 @@
 {
 	border-collapse: collapse;
 }
-.TRatingList_default input, .TRatingList_default label
+/*
+ * The radio inputs stay in the accessibility tree and the keyboard tab order:
+ * they are visually hidden rather than display:none so screen readers announce
+ * the rating radio group and arrow keys move between the stars. The labels are
+ * redundant with the per-radio aria-label the script sets, so they are removed.
+ */
+.TRatingList_default input
+{
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
+	border: 0;
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	overflow: hidden;
+	white-space: nowrap;
+}
+.TRatingList_default label
 {
 	display: none;
 }
@@ -26,4 +45,11 @@
 .TRatingList_default td.rating_half
 {
 	background-image: url(default_half.gif);
+}
+/* Visible focus indicator on the star that owns keyboard focus. */
+.TRatingList_default td.rating_focus
+{
+	outline: 2px solid Highlight;
+	outline: 2px solid -webkit-focus-ring-color;
+	outline-offset: -2px;
 }

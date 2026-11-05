@@ -8,7 +8,11 @@
 **Namespace:** `Prado\Data\DataGateway`
 
 ## Overview
-`TDataGatewayCommand` is the command builder and executor for [`TTableGateway`](./TTableGateway.md) and [`TActiveRecordGateway`](../ActiveRecord/TActiveRecordGateway.md).
+`TDataGatewayCommand` is the command builder and executor for [`TTableGateway`](../TTableGateway.md). The `pradosoft/prado-activerecord` package's `TActiveRecordGateway` uses it the same way.
+
+## Index Conditions
+
+`getIndexKeyCondition($table, $fields, $values)` builds `(table.col1, table.col2) IN ((v1, v2), ...)` for `findAllByIndex()`, `findAllByPk()`, and `deleteByPk()`. An empty value list gives `1=0`, which every driver accepts as a false predicate (a bare `FALSE` is not one in Oracle, SQL Server, Firebird, or DB2).
 
 ## Events
 
@@ -17,6 +21,6 @@
 
 ## See Also
 
-- [TTableGateway](./TTableGateway.md) - Table gateway
+- [TTableGateway](../TTableGateway.md) - Table gateway
 - [TDataGatewayEventParameter](./TDataGatewayEventParameter.md) - Event parameter
 - [TSqlCriteria](./TSqlCriteria.md) - Query criteria

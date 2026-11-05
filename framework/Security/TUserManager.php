@@ -23,13 +23,15 @@ use Prado\Xml\TXmlDocument;
  * TUserManager manages a static list of users {@see \Prado\Security\TUser}.
  * XML configuration style:
  * ```xml
- * <module id="users" class="Prado\Security\TUserManager" PasswordMode="Clear">
- *   <user name="Joe" password="demo" />
- *   <user name="John" password="demo" />
- *   <user name="Jerry" password="demo" roles="Writer,Administrator" />
- *   <role name="Administrator" users="John" />
- *   <role name="Writer" users="Joe,John" />
- * </module>
+ * <modules>
+ *     <module id="users" class="Prado\Security\TUserManager" PasswordMode="Clear">
+ *         <user name="Joe" password="demo" />
+ *         <user name="John" password="demo" />
+ *         <user name="Jerry" password="demo" roles="Writer,Administrator" />
+ *         <role name="Administrator" users="John" />
+ *         <role name="Writer" users="Joe,John" />
+ *     </module>
+ * </modules>
  * ```
  *
  * PHP configuration style:
@@ -85,9 +87,9 @@ class TUserManager extends \Prado\TModule implements IUserManager
 	 */
 	private $_guestName = 'Guest';
 	/**
-	 * @var TUserManagerPasswordMode password mode
+	 * @var string|TUserManagerPasswordMode password mode
 	 */
-	private $_passwordMode = TUserManagerPasswordMode::MD5;
+	private $_passwordMode = TUserManagerPasswordMode::SHA1;
 	/**
 	 * @var bool whether the module has been initialized
 	 */
@@ -101,7 +103,7 @@ class TUserManager extends \Prado\TModule implements IUserManager
 	 * Initializes the module.
 	 * This method is required by IModule and is invoked by application.
 	 * It loads user/role information from the module configuration.
-	 * @param mixed $config module configuration
+	 * @param null|array|\Prado\Xml\TXmlElement $config module configuration
 	 */
 	public function init($config)
 	{
@@ -257,7 +259,7 @@ class TUserManager extends \Prado\TModule implements IUserManager
 	}
 
 	/**
-	 * @return TUserManagerPasswordMode how password is stored, clear text, or MD5 or SHA1 hashed. Default to TUserManagerPasswordMode::MD5.
+	 * @return string|TUserManagerPasswordMode how password is stored, clear text, or MD5 or SHA1 hashed. Default to TUserManagerPasswordMode::MD5.
 	 */
 	public function getPasswordMode()
 	{
@@ -265,7 +267,7 @@ class TUserManager extends \Prado\TModule implements IUserManager
 	}
 
 	/**
-	 * @param TUserManagerPasswordMode $value how password is stored, clear text, or MD5 or SHA1 hashed.
+	 * @param string|TUserManagerPasswordMode $value how password is stored, clear text, or MD5 or SHA1 hashed.
 	 */
 	public function setPasswordMode($value)
 	{
@@ -273,7 +275,9 @@ class TUserManager extends \Prado\TModule implements IUserManager
 	}
 
 	/**
-	 * Validates if the username and password are correct.
+	 * Validates if the username and password are correct.  The password is compared
+	 * with `hash_equals()`, so the comparison time does not depend on where the
+	 * password first differs.
 	 * @param string $username user name
 	 * @param string $password password
 	 * @return bool true if validation is successful, false otherwise.
@@ -286,13 +290,16 @@ class TUserManager extends \Prado\TModule implements IUserManager
 			$password = sha1($password);
 		}
 		$username = strtolower($username);
-		return (isset($this->_users[$username]) && $this->_users[$username] === $password);
+		if (!isset($this->_users[$username]) || !is_string($password)) {
+			return false;
+		}
+		return hash_equals((string) $this->_users[$username], $password);
 	}
 
 	/**
 	 * Returns a user instance given the user name.
 	 * @param null|string $username user name, null if it is a guest.
-	 * @return TUser the user instance, null if the specified username is not in the user database.
+	 * @return ?TUser the user instance, null if the specified username is not in the user database.
 	 */
 	public function getUser($username = null)
 	{
@@ -318,20 +325,20 @@ class TUserManager extends \Prado\TModule implements IUserManager
 
 	/**
 	 * Returns a user instance according to auth data stored in a cookie.
+	 * The cookie value is the JSON `[username, token]` written by {@see saveUserToCookie()}.
 	 * @param \Prado\Web\THttpCookie $cookie the cookie storing user authentication information
-	 * @return TUser the user instance generated based on the cookie auth data, null if the cookie does not have valid auth data.
+	 * @return ?TUser the user instance generated based on the cookie auth data, null if the cookie does not have valid auth data.
 	 * @since 3.1.1
 	 */
 	public function getUserFromCookie($cookie)
 	{
-		if (($data = $cookie->getValue()) !== '') {
-			$data = unserialize($data);
-			if (is_array($data) && count($data) === 2) {
-				[$username, $token] = $data;
-				if (isset($this->_users[$username]) && $token === md5($username . $this->_users[$username])) {
-					return $this->getUser($username);
-				}
-			}
+		$data = json_decode($cookie->getValue(), true);
+		if (!is_array($data) || count($data) !== 2 || !is_string($data[0] ?? null) || !is_string($data[1] ?? null)) {
+			return null;
+		}
+		[$username, $token] = $data;
+		if (isset($this->_users[$username]) && hash_equals($this->generateCookieToken($username), $token)) {
+			return $this->getUser($username);
 		}
 		return null;
 	}
@@ -346,8 +353,22 @@ class TUserManager extends \Prado\TModule implements IUserManager
 		$user = $this->getApplication()->getUser();
 		$username = strtolower($user->getName());
 		if (isset($this->_users[$username])) {
-			$data = [$username, md5($username . $this->_users[$username])];
-			$cookie->setValue(serialize($data));
+			$cookie->setValue(json_encode([$username, $this->generateCookieToken($username)]));
 		}
+	}
+
+	/**
+	 * Generates the auto-login token of a user.  The token is an HMAC of the username and
+	 * password keyed by the security manager's
+	 * {@see \Prado\Security\TSecurityManager::getCookieValidationKey() CookieValidationKey}.
+	 * A password change invalidates the token.
+	 * @param string $username the lowercase name of a user in the user database.
+	 * @return string the auto-login token.
+	 * @since 4.4.0
+	 */
+	protected function generateCookieToken(string $username): string
+	{
+		$securityManager = $this->getApplication()->getSecurityManager();
+		return hash_hmac($securityManager->getHashAlgorithm(), $username . "\0" . $this->_users[$username], $securityManager->getCookieValidationKey());
 	}
 }

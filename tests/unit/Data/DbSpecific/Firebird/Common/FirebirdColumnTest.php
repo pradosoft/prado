@@ -1,11 +1,13 @@
 <?php
 
-require_once(__DIR__ . '/../../../../PradoUnit.php');
+namespace Prado\Test\Unit\Data\DbSpecific\Firebird\Common;
 
 use Prado\Data\Common\Firebird\TFirebirdMetaData;
 use Prado\Data\Common\TDbTableColumn;
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
+use Prado\Data\TDbConnection;
 
-class FirebirdColumnTest extends PHPUnit\Framework\TestCase
+class FirebirdColumnTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 

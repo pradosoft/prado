@@ -32,6 +32,7 @@ class TDataGridPagerStyle extends TPanelStyle
 	protected $_position;
 	protected $_visible;
 	protected $_buttonType;
+	protected $_listLayout;
 
 	/**
 	 * Returns an array with the names of all variables of this object that should NOT be serialized
@@ -69,6 +70,9 @@ class TDataGridPagerStyle extends TPanelStyle
 		}
 		if ($this->_buttonType === null) {
 			$exprops[] = "\0*\0_buttonType";
+		}
+		if ($this->_listLayout === null) {
+			$exprops[] = "\0*\0_listLayout";
 		}
 	}
 
@@ -221,6 +225,24 @@ class TDataGridPagerStyle extends TPanelStyle
 	}
 
 	/**
+	 * @return bool whether the pager buttons render as a `<ul>` list. Defaults to false.
+	 * @since 4.4.0
+	 */
+	public function getListLayout()
+	{
+		return $this->_listLayout === null ? false : $this->_listLayout;
+	}
+
+	/**
+	 * @param bool $value whether the pager buttons render as a `<ul>` list.
+	 * @since 4.4.0
+	 */
+	public function setListLayout($value)
+	{
+		$this->_listLayout = TPropertyValue::ensureBoolean($value);
+	}
+
+	/**
 	 * Resets the style to the original empty state.
 	 */
 	public function reset()
@@ -231,8 +253,11 @@ class TDataGridPagerStyle extends TPanelStyle
 		$this->_buttonCount = null;
 		$this->_prevText = null;
 		$this->_nextText = null;
+		$this->_firstText = null;
+		$this->_lastText = null;
 		$this->_mode = null;
 		$this->_buttonType = null;
+		$this->_listLayout = null;
 	}
 
 	/**
@@ -260,11 +285,20 @@ class TDataGridPagerStyle extends TPanelStyle
 			if ($style->_nextText !== null) {
 				$this->_nextText = $style->_nextText;
 			}
+			if ($style->_firstText !== null) {
+				$this->_firstText = $style->_firstText;
+			}
+			if ($style->_lastText !== null) {
+				$this->_lastText = $style->_lastText;
+			}
 			if ($style->_mode !== null) {
 				$this->_mode = $style->_mode;
 			}
 			if ($style->_buttonType !== null) {
 				$this->_buttonType = $style->_buttonType;
+			}
+			if ($style->_listLayout !== null) {
+				$this->_listLayout = $style->_listLayout;
 			}
 		}
 	}
@@ -294,11 +328,20 @@ class TDataGridPagerStyle extends TPanelStyle
 			if ($this->_nextText === null) {
 				$this->_nextText = $style->_nextText;
 			}
+			if ($this->_firstText === null) {
+				$this->_firstText = $style->_firstText;
+			}
+			if ($this->_lastText === null) {
+				$this->_lastText = $style->_lastText;
+			}
 			if ($this->_mode === null) {
 				$this->_mode = $style->_mode;
 			}
 			if ($this->_buttonType === null) {
 				$this->_buttonType = $style->_buttonType;
+			}
+			if ($this->_listLayout === null) {
+				$this->_listLayout = $style->_listLayout;
 			}
 		}
 	}

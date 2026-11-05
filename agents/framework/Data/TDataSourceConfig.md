@@ -8,7 +8,7 @@
 **Namespace:** `Prado\Data`
 
 ## Overview
-`TDataSourceConfig` is a module class that provides configuration for database connections in application.xml.
+`TDataSourceConfig` is a module class that provides configuration for database connections in application.xml. It uses [`TDbPropertiesTrait`](./TDbPropertiesTrait.md) to manage the underlying connection.
 
 ## Configuration
 
@@ -19,6 +19,22 @@
             Username="dbuser" Password="dbpass" />
     </module>
 </modules>
+```
+
+**PHP equivalent:**
+```php
+return [
+    'modules' => [
+        'db' => [
+            'class' => 'Prado\Data\TDataSourceConfig',
+            'properties' => [
+                'ConnectionString' => 'mysql:host=localhost;dbname=mydb',
+                'Username' => 'dbuser',
+                'Password' => 'secret',
+            ],
+        ],
+    ],
+];
 ```
 
 ## Usage
@@ -35,4 +51,5 @@ $db->createCommand('SELECT * FROM users');
 
 ## See Also
 
+- [TDbPropertiesTrait](./TDbPropertiesTrait.md) - Connection management trait used by this class
 - [TDbConnection](./TDbConnection.md) - Database connection class

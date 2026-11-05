@@ -1,9 +1,11 @@
 <?php
 
-require_once __DIR__ . '/TComponentTestBase.php';
+namespace Prado\Test\Unit;
 
+use Prado\Collections\TAttributeCollection;
 use Prado\Collections\TPriorityList;
 use Prado\Exceptions\TInvalidOperationException;
+use Prado\Web\Javascripts\TJavaScriptString;
 
 /**
  * Tests for TComponent's property system: hasProperty(), canGetProperty(),
@@ -414,6 +416,127 @@ class TComponentPropertyTest extends TComponentTestBase
 		$this->assertEquals('new object text', $this->component->getSubProperty('Object.Text'));
 	}
 
+	/**
+	 * The '@' separator reads an attached behavior via {@see TComponent::asa}.
+	 */
+	public function testGetSubPropertyBehaviorPath()
+	{
+		$behavior = new BehaviorTestBehavior();
+		$this->component->attachBehavior('beh', $behavior);
+
+		// A leading '@' resolves the first name as a behavior on this component.
+		$this->assertEquals('faa', $this->component->getSubProperty('@beh.Excitement'));
+
+		// Behavior name resolution is case-insensitive, like asa().
+		$this->assertEquals('faa', $this->component->getSubProperty('@BEH.Excitement'));
+
+		// '@' chains: a behavior attached to a behavior, with no '.' between.
+		$inner = new BehaviorTestBehavior();
+		$inner->setExcitement('deep');
+		$behavior->attachBehavior('sub', $inner);
+		$this->assertEquals('deep', $this->component->getSubProperty('@beh@sub.Excitement'));
+
+		// A '.' property hop into a '@' behavior hop.
+		$inner2 = new BehaviorTestBehavior();
+		$inner2->setExcitement('objbeh');
+		$this->component->getObject()->attachBehavior('ob', $inner2);
+		$this->assertEquals('objbeh', $this->component->getSubProperty('Object@ob.Excitement'));
+
+		// A missing behavior as the final name resolves to null (asa() miss).
+		$this->assertNull($this->component->getSubProperty('@missing'));
+	}
+
+	/**
+	 * setSubProperty resolves a '@' behavior prefix before writing the property.
+	 */
+	public function testSetSubPropertyBehaviorPath()
+	{
+		$behavior = new BehaviorTestBehavior();
+		$this->component->attachBehavior('beh', $behavior);
+
+		$this->component->setSubProperty('@beh.Excitement', 'set-on-behavior');
+		$this->assertEquals('set-on-behavior', $behavior->Excitement);
+		$this->assertEquals('set-on-behavior', $this->component->getSubProperty('@beh.Excitement'));
+
+		// Property hop then behavior hop, then write.
+		$inner = new BehaviorTestBehavior();
+		$this->component->getObject()->attachBehavior('ob', $inner);
+		$this->component->setSubProperty('Object@ob.Excitement', 'set-deep');
+		$this->assertEquals('set-deep', $inner->Excitement);
+	}
+
+	/**
+	 * A path terminating in an '@' behavior hop addresses a behavior, not a
+	 * settable property, so setSubProperty is a no-op.
+	 */
+	public function testSetSubPropertyTerminalAtIsNoop()
+	{
+		$this->component->setText('default');
+		$this->component->setSubProperty('Text@foo', 'changed'); // terminal '@' segment
+		$this->assertSame('default', $this->component->getText());
+		// Bare behavior address and a deeper behavior terminal also no-op.
+		$this->component->setSubProperty('@beh', 'x');
+		$this->component->setSubProperty('Object@ob', 'x');
+		$this->assertTrue(true); // no exception raised
+	}
+
+	public function testSetSubPropertiesAppliesAll()
+	{
+		$behavior = new BehaviorTestBehavior();
+		$this->component->attachBehavior('beh', $behavior);
+		$this->component->setSubProperties([
+			'Object.Text' => 'deep',
+			'Text' => 'top',
+			'@beh.Excitement' => 'e',
+		]);
+		$this->assertSame('top', $this->component->getText());
+		$this->assertSame('deep', $this->component->getObject()->getText());
+		$this->assertSame('e', $behavior->Excitement);
+	}
+
+	/**
+	 * Configuration sources supply their attributes as a TMap, so a traversable
+	 * map applies the same way an array does, ancestors first.
+	 */
+	public function testSetSubPropertiesAcceptsTraversableMap()
+	{
+		$map = new TAttributeCollection();
+		$map->add('Object.Text', 'deep');
+		$map->add('Text', 'top');
+		$this->component->setSubProperties($map);
+		$this->assertSame('top', $this->component->getText());
+		$this->assertSame('deep', $this->component->getObject()->getText());
+	}
+
+	/**
+	 * sortPropertyPaths orders ancestors before descendants, '@' before '.' at a
+	 * divergence, and same-separator siblings in declaration order.
+	 */
+	public function testSortPropertyPathsStructuralOrder()
+	{
+		$sorted = PradoUnit::invoke($this->component, 'sortPropertyPaths', [
+			'a.b' => 1,
+			'a' => 2,
+			'c' => 3,
+			'a@x.p' => 4,
+			'a.b.c' => 5,
+		]);
+		$this->assertSame(['a', 'a@x.p', 'a.b', 'a.b.c', 'c'], array_keys($sorted));
+	}
+
+	public function testSortPropertyPathsPreservesSiblingDeclarationOrder()
+	{
+		$sorted = PradoUnit::invoke($this->component, 'sortPropertyPaths', [
+			'Width' => 1, 'Height' => 2, 'Color' => 3,
+		]);
+		$this->assertSame(['Width', 'Height', 'Color'], array_keys($sorted));
+
+		$reversed = PradoUnit::invoke($this->component, 'sortPropertyPaths', [
+			'Color' => 1, 'Height' => 2, 'Width' => 3,
+		]);
+		$this->assertSame(['Color', 'Height', 'Width'], array_keys($reversed));
+	}
+
 	public function testHasMethod()
 	{
 		$behaviorTestBehaviorName = 'BehaviorTestBehaviorName';
@@ -500,6 +623,48 @@ class TComponentPropertyTest extends TComponentTestBase
 
 		$this->assertFalse(isset($this->component->ColorAttribute));
 		$this->assertFalse(isset($this->component->JsColorAttribute));
+	}
+
+	/**
+	 * Calling getXxx()/setXxx() for a js property dispatches through __call to getjsXxx()/setjsXxx().
+	 * The setter wraps a non-empty value in TJavaScriptString and passes TJavaScriptString and
+	 * empty values through unchanged.
+	 */
+	public function testJavascriptPropertyMethodCalls()
+	{
+		$this->component->setColorAttribute("['#112233']");
+		$value = $this->component->getColorAttribute();
+		$this->assertInstanceOf(TJavaScriptString::class, $value);
+		$this->assertEquals("['#112233']", (string) $value);
+
+		$jsString = new TJavaScriptString('[1, 2]');
+		$this->component->setColorAttribute($jsString);
+		$this->assertSame($jsString, $this->component->getColorAttribute());
+
+		$this->component->setColorAttribute(null);
+		$this->assertNull($this->component->getColorAttribute());
+
+		try {
+			$this->component->setReadOnlyJsProperty('value');
+			$this->fail('TInvalidOperationException not raised when calling the setter of a read-only js property');
+		} catch (TInvalidOperationException $e) {
+		}
+	}
+
+	/**
+	 * Unsetting a read-only property throws when behaviors are attached but none is enabled.
+	 */
+	public function testUnsetReadOnlyPropertyWithDisabledBehaviors()
+	{
+		$behaviorName = 'BehaviorTestBehaviorName';
+		$this->component->attachBehavior($behaviorName, new BehaviorTestBehavior());
+		$this->component->disableBehavior($behaviorName);
+		try {
+			unset($this->component->ReadOnlyProperty);
+			$this->fail('TInvalidOperationException not raised when unsetting a read-only property');
+		} catch (TInvalidOperationException $e) {
+		}
+		$this->component->detachBehavior($behaviorName);
 	}
 
 	public function testProtectedSetter()

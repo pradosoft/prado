@@ -1,0 +1,8 @@
+<com:TContent ID="Content">
+	<h1>Form Guard Test</h1>
+	<com:TLabel ForControl="Comment" Text="Comment" />
+	<com:TTextBox ID="Comment" />
+	<com:TFormGuard ID="Guard" MinFillTime="2" ErrorMessage="Submission rejected." />
+	<com:TButton ID="Send" Text="Send" OnClick="sendClicked" />
+	<p><com:TLabel ID="Result" /></p>
+</com:TContent>

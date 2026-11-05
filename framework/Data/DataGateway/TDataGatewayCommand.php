@@ -17,15 +17,13 @@ use Prado\Data\Common\TDbTableInfo;
 use Prado\Exceptions\TDbException;
 
 /**
- * TDataGatewayCommand class
+ * TDataGatewayCommand is the command builder and executor class for
+ * TTableGateway. The prado-activerecord package's TActiveRecordGateway uses
+ * it in the same way.
  *
- * TDataGatewayCommand is command builder and executor class for
- * TTableGateway and TActiveRecordGateway.
- *
- * TDataGatewayCommand builds the TDbCommand for TTableGateway
- * and TActiveRecordGateway commands such as find(), update(), insert(), etc,
- * using the TDbCommandBuilder classes (database specific TDbCommandBuilder
- * classes are used).
+ * TDataGatewayCommand builds the TDbCommand for TTableGateway commands such
+ * as find(), update(), insert(), etc, using the TDbCommandBuilder classes
+ * (database specific TDbCommandBuilder classes are used).
  *
  * Once the command is built and the query parameters are binded, the
  * {@see OnCreateCommand} event is raised. Event handlers for the OnCreateCommand
@@ -144,7 +142,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	}
 	/**
 	 * @param mixed $keys primary key value, or composite key values as array.
-	 * @return array matching record.
+	 * @return ?array matching record.
 	 */
 	public function findByPk($keys)
 	{
@@ -197,17 +195,20 @@ class TDataGatewayCommand extends \Prado\TComponent
 	}
 
 	/**
-	 * Builds a SQL `(col1, col2) IN ((v1,v2), ...)` predicate.
+	 * Constructs a "(col1, col2) IN ((v1, v2), ...)" condition over the index columns.
+	 * An empty value list yields `1=0`, which matches no row in every driver; a bare
+	 * `FALSE` is not a predicate in Oracle, SQL Server, Firebird, and DB2.
 	 * @deprecated 4.3.3 — use {@see \Prado\Data\Common\IDataCommandBuilder::createIndexCriteria}
 	 *   for a portable equivalent that works across SQL and non-SQL drivers.
-	 * @param mixed $table
-	 * @param mixed $fields
-	 * @param mixed $values
+	 * @param \Prado\Data\Common\TDbTableInfo $table table information.
+	 * @param array $fields index column ids.
+	 * @param array $values index values, one value or one value array per row.
+	 * @return string SQL condition.
 	 */
 	public function getIndexKeyCondition($table, $fields, $values)
 	{
 		if (!count($values)) {
-			return 'FALSE';
+			return '1=0';
 		}
 		$columns = [];
 		$tableName = $table->getTableFullName();
@@ -438,7 +439,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	 * @param string $method __call method name
 	 * @param string $condition criteria conditions
 	 * @param array $args method arguments
-	 * @return \Prado\Data\ActiveRecord\TActiveRecordCriteria criteria created from the method name and its arguments.
+	 * @return TSqlCriteria criteria created from the method name and its arguments.
 	 */
 	public function createCriteriaFromString($method, $condition, $args)
 	{

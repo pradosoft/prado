@@ -33,6 +33,8 @@ use Prado\Web\UI\WebControls\TTableRow;
  *
  * It will also respond to a bubbled {@see onCellSelected OnCellSelected} event of a
  * {@see \Prado\Web\UI\ActiveControls\TActiveTableCell} child control and fire a {@see onRowSelected OnRowSelected} event.
+ * A click in a cell with an OnCellSelected handler sends only the cell's callback.
+ * The row raises {@see onRowSelected OnRowSelected} once, from the bubbled event.
  *
  * TActiveTableRow allows the client-side row contents to be updated during a
  * callback response by getting a new writer, invoking the render method and flushing the
@@ -48,7 +50,7 @@ use Prado\Web\UI\WebControls\TTableRow;
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @since 3.1.9
- * @method TActiveControlAdapter getAdapter()
+ * @method TActiveControlAdapter<\Prado\Web\UI\ActiveControls\TBaseActiveCallbackControl> getAdapter()
  */
 class TActiveTableRow extends TTableRow implements IActiveControl, ICallbackEventHandler
 {
@@ -161,7 +163,7 @@ class TActiveTableRow extends TTableRow implements IActiveControl, ICallbackEven
 		if ($this->getHasPreRendered()) {
 			parent::render($writer);
 			if ($this->getActiveControl()->canUpdateClientSide()) {
-				$this->getPage()->getCallbackClient()->replaceContent($this, $writer);
+				$this->getActiveControl()->replaceClientContent($this, $writer);
 			}
 		} else {
 			$this->getPage()->getAdapter()->registerControlToRender($this, $writer);

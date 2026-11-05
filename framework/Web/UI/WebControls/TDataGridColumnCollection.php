@@ -30,7 +30,7 @@ class TDataGridColumnCollection extends \Prado\Collections\TList
 {
 	/**
 	 * the control that owns this collection.
-	 * @var \Prado\Web\UI\TControl
+	 * @var TDataGrid
 	 */
 	private $_o;
 

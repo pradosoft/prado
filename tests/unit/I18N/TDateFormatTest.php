@@ -1,6 +1,9 @@
 <?php
 
+namespace Prado\Test\Unit\I18N;
+
 use Prado\I18N\TDateFormat;
+use Prado\Util\Clock\TMockClock;
 use Prado\Web\UI\THtmlWriter;
 use Prado\IO\TTextWriter;
 use PHPUnit\Framework\TestCase;
@@ -58,6 +61,15 @@ class TDateFormatTest extends TestCase
 		$value = $control->getValue();
 		$this->assertNotEmpty($value);
 		$this->assertIsInt($value);
+	}
+
+	public function testValueDefaultReadsInjectedClock()
+	{
+		$control = new TDateFormat();
+		$clock = new TMockClock();
+		$clock->setTime(1_700_000_000);
+		$control->setClock($clock);
+		$this->assertSame(1_700_000_000, $control->getValue());
 	}
 
 	public function testSetValueWithNumericTimestamp()
@@ -310,6 +322,7 @@ class TDateFormatTest extends TestCase
 	public function testCustomPatternMmmmYyyy()
 	{
 		$control = new TDateFormat();
+		$control->setCulture('en_US');
 		$control->setPattern('MMMM yyyy');
 		$control->setValue('2026-04-19');
 		$output = $this->render($control);
@@ -320,6 +333,7 @@ class TDateFormatTest extends TestCase
 	public function testCustomPatternEeee()
 	{
 		$control = new TDateFormat();
+		$control->setCulture('en_US');
 		$control->setPattern('EEEE, MMMM d, yyyy');
 		$control->setValue('2026-04-19');
 		$output = $this->render($control);

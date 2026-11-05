@@ -79,7 +79,7 @@ class TActivePanel extends TPanel implements IActiveControl
 		if ($this->getHasPreRendered()) {
 			parent::render($writer);
 			if ($this->getActiveControl()->canUpdateClientSide()) {
-				$this->getPage()->getCallbackClient()->replaceContent($this, $writer);
+				$this->getActiveControl()->replaceClientContent($this, $writer);
 			}
 		} else {
 			$this->getPage()->getAdapter()->registerControlToRender($this, $writer);

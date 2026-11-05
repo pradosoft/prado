@@ -17,6 +17,7 @@ use Prado\Data\IDataCommand;
 use Prado\Data\TDbCommand;
 use Prado\Data\TDbConnection;
 use Prado\Exceptions\TDbException;
+use Prado\Data\Common\IDataCommandBuilder;
 
 /**
  * TDbCommandBuilder class
@@ -102,6 +103,12 @@ use Prado\Exceptions\TDbException;
  */
 class TDbCommandBuilder extends \Prado\TComponent implements IDbCommandBuilder
 {
+	/**
+	 * LIKE escape character named by the `ESCAPE` clause of a search pattern.
+	 * @since 4.4.0
+	 */
+	public const SEARCH_ESCAPE_CHAR = '\\';
+
 	private $_connection;
 	private $_tableInfo;
 
@@ -141,7 +148,7 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDbCommandBuilder
 	}
 
 	/**
-	 * @return TDbTableInfo table information.
+	 * @return ?TDbTableInfo table information, or null when none was given.
 	 */
 	public function getTableInfo()
 	{
@@ -207,7 +214,8 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDbCommandBuilder
 	/**
 	 * Computes the SQL condition for search a set of column using regular expression
 	 * (or LIKE, depending on database implementation) to match a string of
-	 * keywords (default matches all keywords).
+	 * keywords (default matches all keywords). The LIKE wildcards `%` and `_` in a
+	 * keyword match themselves; see {@see getSearchPattern()}.
 	 * @param array $fields list of column id for potential search condition.
 	 * @param string $keywords string of keywords
 	 * @return string SQL search condition matching on a set of columns.
@@ -235,9 +243,37 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDbCommandBuilder
 	{
 		$conditions = [];
 		foreach ($words as $word) {
-			$conditions[] = $column . ' LIKE ' . $this->getDbConnection()->quoteString('%' . $word . '%');
+			$conditions[] = $column . ' LIKE ' . $this->getSearchPattern($word);
 		}
 		return '(' . implode(' AND ', $conditions) . ')';
+	}
+
+	/**
+	 * Builds the quoted LIKE operand that contains a keyword, `'%word%' ESCAPE '\'`.
+	 * The keyword's `%`, `_`, and `\` are escaped with {@see SEARCH_ESCAPE_CHAR} so
+	 * they match literally; the `ESCAPE` clause names that character for every driver.
+	 * @param string $word keyword.
+	 * @return string quoted pattern with its ESCAPE clause.
+	 * @since 4.4.0
+	 */
+	protected function getSearchPattern($word)
+	{
+		$conn = $this->getDbConnection();
+		return $conn->quoteString('%' . $this->escapeSearchWord($word) . '%')
+			. ' ESCAPE ' . $conn->quoteString(self::SEARCH_ESCAPE_CHAR);
+	}
+
+	/**
+	 * Escapes the LIKE wildcards `%` and `_` and the escape character itself in a
+	 * keyword, each prefixed with {@see SEARCH_ESCAPE_CHAR}.
+	 * @param string $word keyword.
+	 * @return string keyword that LIKE matches literally.
+	 * @since 4.4.0
+	 */
+	protected function escapeSearchWord($word)
+	{
+		$escape = self::SEARCH_ESCAPE_CHAR;
+		return strtr((string) $word, [$escape => $escape . $escape, '%' => $escape . '%', '_' => $escape . '_']);
 	}
 
 	/**
@@ -266,6 +302,13 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDbCommandBuilder
 	 * ```php
 	 * array('col1' => 'my custom string', 'col2' => 1.0, 'col3' => 'NULL')
 	 * // SELECT "my custom string" AS `col1`, 1.0 AS `col2`, NULL AS `col3` FROM...
+	 * ```
+	 *
+	 * - A null value selects the column named by its key; for a key that is not a column,
+	 *   it selects NULL under that alias
+	 * ```php
+	 * array('col1' => null, 'alias' => null)
+	 * // SELECT `col1`, NULL AS alias FROM...
 	 * ```
 	 *
 	 * - If the *-wildcard char is used as key or value, add the full list of quoted table column names
@@ -315,6 +358,15 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDbCommandBuilder
 					continue;
 				}
 
+				if ($value === null) {
+					if (is_string($key) && isset($columns[$key])) {
+						$result[] = $columns[$key]->getColumnName();
+					} else {
+						$result[] = 'NULL' . (is_string($key) ? ' AS ' . $key : '');
+					}
+					continue;
+				}
+
 				if (preg_match('/\bAS\b/i', $value)) {
 					$result[] = $value;
 					continue;
@@ -347,11 +399,6 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDbCommandBuilder
 
 				if ($v && $key == $value) {
 					$result[] = $columns[$value]->getColumnName();
-					continue;
-				}
-
-				if ($k && $value == null) {
-					$result[] = $columns[$key]->getColumnName();
 					continue;
 				}
 
@@ -760,7 +807,7 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDbCommandBuilder
 	 * Create a name-value or position-value if $position=true binding strings.
 	 * @param array $values data for binding.
 	 * @param bool $position true to bind as position values.
-	 * @return string update column names with corresponding binding substrings.
+	 * @return string[] update column names with corresponding binding substrings.
 	 */
 	protected function getColumnBindings($values, $position = false)
 	{

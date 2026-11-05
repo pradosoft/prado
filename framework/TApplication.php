@@ -13,15 +13,19 @@ namespace Prado;
 use Prado\Caching\ICache;
 use Prado\Collections\TCollectionItemChangeParameter;
 use Prado\Collections\TMap;
-use Prado\Exceptions\{TConfigurationException, TExitException, THttpException};
+use Prado\Exceptions\{TConfigurationException, TException, TExitException, THttpException};
 use Prado\Exceptions\TErrorHandler;
 use Prado\I18N\TGlobalization;
+use Prado\IO\Async\TFiberContext;
 use Prado\Security\IUser;
 use Prado\Security\TAuthorizationRuleCollection;
 use Prado\Security\TSecurityManager;
 use Prado\Web\{THttpRequest, THttpResponse, THttpSession};
 use Prado\Web\TAssetManager;
-use Prado\Util\TLogger;
+use Prado\Util\TComposerReflection;
+use Prado\Util\Clock\TClockAwareTrait;
+use Prado\Util\Clock\TNativeClock;
+use Prado\Util\Log\TLogger;
 use Prado\Web\Services\TPageService;
 use Prado\Web\UI\TTemplateManager;
 use Prado\Web\UI\TThemeManager;
@@ -51,7 +55,8 @@ use Prado\Xml\TXmlElement;
  * composer extension module.  The ID of the module is the name of the package.
  *
  * TApplication has four modes that can be changed by setting {@see setMode Mode}
- * property (in the application configuration file).
+ * property (in the application configuration file).  The default is <b>Normal</b>
+ * ({@see DEFAULT_APPLICATION_MODE}); an application in development sets <b>Debug</b>.
  * - <b>Off</b> mode will prevent the application from serving user requests.
  * - <b>Debug</b> mode is mainly used during application development. It ensures
  *   the cache is always up-to-date if caching is enabled. It also allows
@@ -60,7 +65,8 @@ use Prado\Xml\TXmlElement;
  *   will only be recorded in system error logs. The cache is ensured to be
  *   up-to-date if it is enabled.
  * - <b>Performance</b> mode is similar to <b>Normal</b> mode except that it
- *   does not ensure the cache is up-to-date.
+ *   does not ensure the cache is up-to-date.  It keeps class fx-event lists in a
+ *   runtime file that a deployment clears with `prado-cli cache/flush-all`.
  *
  * TApplication dispatches each user request to a particular service which
  * finishes the actual work for the request with the aid from the application
@@ -101,6 +107,17 @@ use Prado\Xml\TXmlElement;
  * in the above order. To terminate an application before the whole lifecycle
  * completes, call {@see completeRequest}.
  *
+ * ## Module Dependency Ordering
+ *
+ * Each configuration batch is sorted into dependency-first initialization order
+ * before initialization phases 2–4 (dyPreInit, init, dyPostInit) run.
+ * Dependencies are declared via the {@see IModuleDependency} interface — either
+ * directly on the module or on any attached behavior that also implements
+ * {@see IModuleDependency}. Kahn's topological sort is used; a
+ * {@see Exceptions\TConfigurationException} is thrown when a dependency cycle
+ * is detected. See {@see TModule} for a full description of all declaration
+ * mechanisms.
+ *
  * Examples:
  * - Create and run a Prado application:
  * ```php
@@ -109,10 +126,14 @@ use Prado\Xml\TXmlElement;
  * ```
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
+ * @author Brad Anderson <belisoful@icloud.com> Self-encapsulation, module dependencies.
  * @since 3.0
+ * @method array dyFilterModuleDependencies(array $moduleRecords, array $pending, bool $isPreInit) Filters the complete module dependency map before topological sorting; the (possibly modified) map is returned.
  */
 class TApplication extends TComponent implements ISingleton
 {
+	use TClockAwareTrait;
+
 	/**
 	 * Page service ID
 	 */
@@ -154,15 +175,63 @@ class TApplication extends TComponent implements ISingleton
 	 */
 	public const GLOBAL_FILE = 'global.cache';
 	/**
-	 * Default Application Mode
+	 * Default Application Mode.  Normal shows visitors no exception details, so an
+	 * application opts into {@see TApplicationMode::Debug} for development.
 	 * @since 4.3.3
 	 */
-	public const DEFAULT_APPLICATION_MODE = TApplicationMode::Debug;
+	public const DEFAULT_APPLICATION_MODE = TApplicationMode::Normal;
 	/**
 	 * Default Page Service Class
 	 * @since 4.3.3
 	 */
 	public const DEFAULT_PAGE_SERVICE_CLASS = TPageService::class;
+	/**
+	 * Default clock class held by the application when none is configured or set.
+	 * @since 4.4.0
+	 */
+	public const DEFAULT_CLOCK_CLASS = TNativeClock::class;
+
+	/**
+	 * The {@see \Prado\IO\Async\TFiberContext} key of the user a fiber runs as; {@see getUser} returns it before the application user.
+	 * @since 4.4.0
+	 */
+	public const USER_CONTEXT_KEY = 'user';
+	/**
+	 * Key used within the dependency cache array to store sort results,
+	 * distinct from the integer spl_object_id keys used for per-instance data.
+	 * @since 4.4.0
+	 */
+	public const DEP_SORT_CACHE_KEY = '_sort';
+
+	/**
+	 * Canonical IDs assigned to lazily-created default-core modules by
+	 * {@see bootstrapModule()}, and the registry keys
+	 * {@see bootstrapDefaultModules()} writes into `$_modules`.
+	 * @since 4.4.0
+	 */
+	public const DEFAULT_REQUEST_ID = 'request';
+	public const DEFAULT_RESPONSE_ID = 'response';
+	public const DEFAULT_SESSION_ID = 'session';
+	public const DEFAULT_ERROR_HANDLER_ID = 'errorHandler';
+	public const DEFAULT_SECURITY_MANAGER_ID = 'securityManager';
+	public const DEFAULT_ASSET_MANAGER_ID = 'assetManager';
+	public const DEFAULT_GLOBALIZATION_ID = 'globalization';
+	public const DEFAULT_TEMPLATE_MANAGER_ID = 'templateManager';
+	public const DEFAULT_THEME_MANAGER_ID = 'themeManager';
+
+	/**
+	 * Set by {@see bootstrapDefaultModules()} on completion; while set,
+	 * {@see bootstrapModule()} also registers late-arrival defaults
+	 * in `$_modules`.
+	 * @since 4.4.0
+	 */
+	public const STATE_DEFAULT_MODULES_BOOTSTRAPPED = (1 << 0);
+
+	/**
+	 * Set by {@see initApplication()} after {@see onInitComplete} returns.
+	 * @since 4.4.0
+	 */
+	public const STATE_INITIALIZED = (1 << 1);
 
 	/**
 	 * @var string[] ordered list of lifecycle method names executed by {@see run()}.
@@ -191,7 +260,12 @@ class TApplication extends TComponent implements ISingleton
 	/**
 	 * @var string unique application ID
 	 */
-	private $_uniqueID;
+	private ?string $_uniqueID = null;
+	/**
+	 * @var ?string the default clock class from configuration, or null for {@see DEFAULT_CLOCK_CLASS}
+	 * @since 4.4.0
+	 */
+	private ?string $_clockClass = null;
 	/**
 	 * @var bool whether the request is completed
 	 */
@@ -199,11 +273,11 @@ class TApplication extends TComponent implements ISingleton
 	/**
 	 * @var int application state
 	 */
-	private $_step;
+	private $_step = 0;
 	/**
 	 * @var array available services and their configurations indexed by service IDs
 	 */
-	private $_services;
+	private array $_services = [];
 	/**
 	 * @var IService current service instance
 	 */
@@ -320,6 +394,14 @@ class TApplication extends TComponent implements ISingleton
 	private $_pageServiceID;
 
 	/**
+	 * @var int Bit field of TApplication internal state flags. Set via
+	 *   {@see setStateFlag()}, queried via {@see hasStateFlag()} or
+	 *   {@see getStateFlags()}. See the `STATE_*` constants for valid bits.
+	 * @since 4.4.0
+	 */
+	private int $_stateFlags = 0;
+
+	/**
 	 * Constructor.
 	 * Sets application base path and initializes the application singleton.
 	 * Application base path refers to the root directory storing application
@@ -415,6 +497,44 @@ class TApplication extends TComponent implements ISingleton
 	private function setStep(int $value): void
 	{
 		$this->_step = $value;
+	}
+
+	/**
+	 * Returns the raw `$_stateFlags` bit field. See the `STATE_*` constants
+	 * for which bits are defined.
+	 * @return int the raw bit field of internal state flags.
+	 * @since 4.4.0
+	 */
+	public function getStateFlags(): int
+	{
+		return $this->_stateFlags;
+	}
+
+	/**
+	 * Returns true when every bit in `$flag` is set on `$_stateFlags`.
+	 * @param int $flag one or more `STATE_*` bits to test for.
+	 * @return bool true when all of `$flag`'s bits are currently set.
+	 * @since 4.4.0
+	 */
+	public function hasStateFlag(int $flag): bool
+	{
+		return ($this->_stateFlags & $flag) === $flag;
+	}
+
+	/**
+	 * Sets (`$on = true`) or clears (`$on = false`) every bit in `$flag` on
+	 * `$_stateFlags`.
+	 * @param int  $flag one or more `STATE_*` bits to mutate.
+	 * @param bool $on   true to set the bits, false to clear them.
+	 * @since 4.4.0
+	 */
+	protected function setStateFlag(int $flag, bool $on = true): void
+	{
+		if ($on) {
+			$this->_stateFlags |= $flag;
+		} else {
+			$this->_stateFlags &= ~$flag;
+		}
 	}
 
 	/**
@@ -527,6 +647,7 @@ class TApplication extends TComponent implements ISingleton
 	 * process termination (e.g. capture the code in tests instead of exiting).
 	 * @param int $exitCode exit status passed to the OS.
 	 * @since 4.3.3
+	 * @codeCoverageIgnore Exits the process.
 	 */
 	protected function exit(int $exitCode): void
 	{
@@ -801,7 +922,7 @@ class TApplication extends TComponent implements ISingleton
 	}
 
 	/**
-	 * @return string|TApplicationMode application mode. Defaults to static::DEFAULT_APPLICATION_MODE - TApplicationMode::Debug.
+	 * @return string|TApplicationMode application mode. Defaults to static::DEFAULT_APPLICATION_MODE - TApplicationMode::Normal.
 	 */
 	public function getMode()
 	{
@@ -945,11 +1066,10 @@ class TApplication extends TComponent implements ISingleton
 	 * @param string $token the value to hash; normally the absolute runtime path.
 	 * @return string a unique ID derived from the token.
 	 * @since 4.3.3
-	 * @todo v4.4 change md5 to sha1
 	 */
 	protected function generateAppUniqueId(string $token): string
 	{
-		return md5($token);
+		return sha1($token);
 	}
 
 	/**
@@ -1034,25 +1154,54 @@ class TApplication extends TComponent implements ISingleton
 		$this->_cache = $cache;
 	}
 
+	/**
+	 * The default clock class {@see createClock} instantiates when no clock is set. Reads the
+	 * configured {@see setClockClass} value, defaulting to {@see DEFAULT_CLOCK_CLASS}.
+	 * @return string the clock class name; names an {@see \Prado\Util\Clock\IClock}
+	 * @since 4.4.0
+	 */
+	protected function getClockClass(): string
+	{
+		return $this->_clockClass ?? static::DEFAULT_CLOCK_CLASS;
+	}
+
+	/**
+	 * Sets the default clock class, settable in the application configuration. A clock instance passed
+	 * to {@see setClock} takes precedence over this class.
+	 * @param string $value the clock class name; must name an {@see \Prado\Util\Clock\IClock}
+	 * @since 4.4.0
+	 */
+	public function setClockClass(string $value): void
+	{
+		$this->_clockClass = $value;
+	}
+
 	// =========================================================================
 	// User API
 	// =========================================================================
 
 	/**
+	 * Returns the user of the current fiber when its {@see \Prado\IO\Async\TFiberContext} holds one under
+	 * {@see USER_CONTEXT_KEY}, as a cron task fiber does, otherwise the application user.
 	 * @return IUser the application user
 	 */
 	public function getUser()
 	{
-		return $this->_user;
+		return TFiberContext::get(self::USER_CONTEXT_KEY) ?? $this->_user;
 	}
 
 	/**
-	 * This sets the application user and raises the onSetUser event.
+	 * This sets the application user and raises the onSetUser event.  In a fiber whose
+	 * {@see \Prado\IO\Async\TFiberContext} holds a user, the fiber's user is replaced and the application user is unchanged.
 	 * @param IUser $user the application user
 	 */
 	public function setUser(IUser $user)
 	{
-		$this->_user = $user;
+		if (TFiberContext::has(self::USER_CONTEXT_KEY)) {
+			TFiberContext::set(self::USER_CONTEXT_KEY, $user);
+		} else {
+			$this->_user = $user;
+		}
 		$this->onSetUser($user);
 	}
 
@@ -1099,15 +1248,15 @@ class TApplication extends TComponent implements ISingleton
 	 * {@see getRegisteredServiceByClass()} / {@see getRegisteredServicesByClass()}.
 	 *
 	 * ```php
-	 * $app->registerService('csp-reporter', TCspReporterService::class);
-	 * $app->registerService('csp-reporter', TCspReporterService::class, ['AutoRegistered' => true]);
+	 * $app->registerService('csp-reporting', TCspReportingService::class);
+	 * $app->registerService('csp-reporting', TCspReportingService::class, ['AutoRegistered' => true]);
 	 * ```
 	 *
 	 * @param string $id service ID to register; any existing entry under the same ID is overwritten.
 	 * @param ?string $class fully-qualified class name of the service. Must be non-empty and must
 	 *   implement {@see IService}; a null or empty value throws {@see TConfigurationException}.
 	 * @param array $properties name → value map of initial properties applied to the service instance
-	 *   via {@see TComponent::setSubProperty()} before {@see TService::init()} is called.
+	 *   via {@see TComponent::setSubProperties()} before {@see TService::init()} is called.
 	 * @param null|array|TXmlElement $config optional extra configuration element passed to
 	 *   {@see TService::init()}. Pass `null` (the default) for no extra configuration.
 	 * @throws TConfigurationException if `$class` is empty, does not exist, or does not implement {@see IService}.
@@ -1200,7 +1349,7 @@ class TApplication extends TComponent implements ISingleton
 	 */
 	public function getRegisteredServices(): array
 	{
-		return $this->_services ?? [];
+		return $this->_services;
 	}
 
 	/**
@@ -1350,22 +1499,30 @@ class TApplication extends TComponent implements ISingleton
 	}
 
 	/**
-	 * Returns the module registered under `$id`, or `null` if no module with that ID exists.
-	 * Lazy modules are deferred at startup and loaded on first request via {@see internalLoadModule()}
-	 * and `init()`, then cached for subsequent calls.
-	 * @param string $id module ID
-	 * @return ?TModule the module with the specified ID, null if not found
+	 * Returns the module registered under `$id`, or `null` if no module with that ID
+	 * exists.
+	 *
+	 * Lazy modules are deferred at startup and loaded on first access. When a lazy
+	 * module is loaded, its full four-phase sequence is run inline:
+	 * {@see TModule::dyPreInit()}, dependency initialization (each declared dependency
+	 * is loaded recursively via a nested `getModule()` call before `init()` runs),
+	 * {@see IModule::init()}, and {@see TModule::dyPostInit()}.
+	 *
+	 * @param ?string $id module ID
+	 * @return ?TModule the module with the specified ID, null if not found or `$id` is null
 	 */
 	public function getModule($id)
 	{
-		if (!array_key_exists($id, $this->_modules)) {
+		if ($id === null || !array_key_exists($id, $this->_modules)) {
 			return null;
 		}
 
 		// force loading of a lazy module
 		if ($this->_modules[$id] === null) {
 			$module = $this->internalLoadModule($id, true);
-			$module[0]->init($module[1]);
+			if ($module) {
+				$this->runModuleLifecycle($module[0], $module[1]);
+			}
 		}
 
 		return $this->_modules[$id];
@@ -1429,6 +1586,113 @@ class TApplication extends TComponent implements ISingleton
 		return $m;
 	}
 
+	/**
+	 * Runs the four post-construction lifecycle phases on `$module`:
+	 *  - `dyPreInit($config)`
+	 *  - dependency resolution — force-loads lazy deps via
+	 *    {@see getModule()}; missing required deps throw
+	 *    {@see TConfigurationException}
+	 *  - `init($config)`
+	 *  - `dyPostInit($config)`
+	 *
+	 * Single source of truth for both the lazy-load path in
+	 * {@see getModule()} and {@see bootstrapModule()}.
+	 * @param IModule $module the module to bring online.
+	 * @param mixed   $config configuration forwarded to every phase; `null`
+	 *   for default-bootstrapped modules.
+	 * @throws TConfigurationException when a required dependency is missing.
+	 * @since 4.4.0
+	 */
+	protected function runModuleLifecycle(IModule $module, mixed $config): void
+	{
+		$isComponent = $module instanceof TComponent;
+		if ($isComponent) {
+			$module->dyPreInit($config);
+		}
+		foreach ($this->collectModuleDependencies($module, false)['deps'] as $dep) {
+			if (!array_key_exists($dep['id'], $this->_modules)) {
+				if ($dep['required']) {
+					throw new TConfigurationException(
+						'application_module_required_dep_missing',
+						$module->getID(),
+						$dep['id']
+					);
+				}
+				continue; // advisory dep absent — skip silently
+			}
+			$this->getModule($dep['id']); // force-load if lazy
+		}
+		$module->init($config);
+		if ($isComponent) {
+			$module->dyPostInit($config);
+		}
+	}
+
+	/**
+	 * Assigns the module's ID, runs its lifecycle via
+	 * {@see runModuleLifecycle()}, and — when `$register` is true —
+	 * enrolls it in `$_modules` under `$module->getID()`.
+	 * @param IModule $module   freshly-constructed module instance.
+	 * @param string  $id       ID to assign.
+	 * @param bool    $register write to `$_modules` after the lifecycle; `true` by default.
+	 * @throws TConfigurationException when a required dependency is missing.
+	 * @since 4.4.0
+	 */
+	protected function bootstrapModule(IModule $module, string $id, bool $register = true): void
+	{
+		$module->setID($id);
+		$this->runModuleLifecycle($module, null);
+		if ($register) {
+			$this->_modules[$module->getID()] = $module;
+		}
+	}
+
+	/**
+	 * Returns true when {@see bootstrapModule()} should register a
+	 * default-core module of `$type`: the
+	 * {@see STATE_DEFAULT_MODULES_BOOTSTRAPPED} flag is set AND no
+	 * same-type module is already in `$_modules`.
+	 * @param string $type FQN of the default's canonical class.
+	 * @since 4.4.0
+	 */
+	protected function shouldRegisterDefault(string $type): bool
+	{
+		return $this->hasStateFlag(static::STATE_DEFAULT_MODULES_BOOTSTRAPPED)
+			&& empty($this->getModulesByType($type));
+	}
+
+	/**
+	 * Enrols each instanced default-core module in `$_modules` unless a
+	 * same-type module is already registered; never instantiates. Sets
+	 * {@see STATE_DEFAULT_MODULES_BOOTSTRAPPED} on completion so later
+	 * defaults register immediately via {@see bootstrapModule()}.
+	 * @since 4.4.0
+	 */
+	protected function bootstrapDefaultModules(): void
+	{
+		$defaults = [
+			static::DEFAULT_REQUEST_ID => [THttpRequest::class,    $this->getRequestDirect()],
+			static::DEFAULT_RESPONSE_ID => [THttpResponse::class,   $this->getResponseDirect()],
+			static::DEFAULT_SESSION_ID => [THttpSession::class,    $this->getSessionDirect()],
+			static::DEFAULT_ERROR_HANDLER_ID => [TErrorHandler::class,   $this->getErrorHandlerDirect()],
+			static::DEFAULT_SECURITY_MANAGER_ID => [TSecurityManager::class, $this->getSecurityManagerDirect()],
+			static::DEFAULT_ASSET_MANAGER_ID => [TAssetManager::class,   $this->getAssetManagerDirect()],
+			static::DEFAULT_GLOBALIZATION_ID => [TGlobalization::class,  $this->getGlobalizationDirect()],
+			static::DEFAULT_TEMPLATE_MANAGER_ID => [TTemplateManager::class, $this->getTemplateManagerDirect()],
+			static::DEFAULT_THEME_MANAGER_ID => [TThemeManager::class,   $this->getThemeManagerDirect()],
+		];
+		foreach ($defaults as $id => [$type, $module]) {
+			if ($module === null) {
+				continue;
+			}
+			if (!empty($this->getModulesByType($type))) {
+				continue;
+			}
+			$this->_modules[$module->getID()] = $module;
+		}
+		$this->setStateFlag(static::STATE_DEFAULT_MODULES_BOOTSTRAPPED);
+	}
+
 	// =========================================================================
 	// Request API
 	// =========================================================================
@@ -1460,7 +1724,8 @@ class TApplication extends TComponent implements ISingleton
 	}
 
 	/**
-	 * Returns the request module, auto-creating it via {@see newRequest()} and calling `init(null)` if not yet set.
+	 * Returns the request module, lazily bootstrapping a default via
+	 * {@see newRequest()} + {@see bootstrapModule()} when not yet set.
 	 * @return THttpRequest the request module
 	 */
 	public function getRequest()
@@ -1468,7 +1733,11 @@ class TApplication extends TComponent implements ISingleton
 		$request = $this->getRequestDirect();
 		if (!$request && ($request = $this->newRequest())) {
 			$this->setRequest($request);
-			$request->init(null);
+			$this->bootstrapModule(
+				$request,
+				static::DEFAULT_REQUEST_ID,
+				$this->shouldRegisterDefault(THttpRequest::class)
+			);
 			$request = $this->getRequestDirect();
 		}
 		return $request;
@@ -1497,7 +1766,8 @@ class TApplication extends TComponent implements ISingleton
 	}
 
 	/**
-	 * Returns the response module, auto-creating it via {@see newResponse()} and calling `init(null)` if not yet set.
+	 * Returns the response module, lazily bootstrapping a default via
+	 * {@see newResponse()} + {@see bootstrapModule()} when not yet set.
 	 * @return THttpResponse the response module
 	 */
 	public function getResponse()
@@ -1505,7 +1775,11 @@ class TApplication extends TComponent implements ISingleton
 		$response = $this->getResponseDirect();
 		if (!$response && ($response = $this->newResponse())) {
 			$this->setResponse($response);
-			$response->init(null);
+			$this->bootstrapModule(
+				$response,
+				static::DEFAULT_RESPONSE_ID,
+				$this->shouldRegisterDefault(THttpResponse::class)
+			);
 			$response = $this->getResponseDirect();
 		}
 		return $response;
@@ -1542,7 +1816,8 @@ class TApplication extends TComponent implements ISingleton
 	}
 
 	/**
-	 * Returns the session module, auto-creating it via {@see newSession()} and calling `init(null)` if not yet set.
+	 * Returns the session module, lazily bootstrapping a default via
+	 * {@see newSession()} + {@see bootstrapModule()} when not yet set.
 	 * @return THttpSession the session module, null if session module is not installed
 	 */
 	public function getSession()
@@ -1550,7 +1825,11 @@ class TApplication extends TComponent implements ISingleton
 		$session = $this->getSessionDirect();
 		if (!$session && ($session = $this->newSession())) {
 			$this->setSession($session);
-			$session->init(null);
+			$this->bootstrapModule(
+				$session,
+				static::DEFAULT_SESSION_ID,
+				$this->shouldRegisterDefault(THttpSession::class)
+			);
 			$session = $this->getSessionDirect();
 		}
 		return $session;
@@ -1587,7 +1866,8 @@ class TApplication extends TComponent implements ISingleton
 	}
 
 	/**
-	 * Returns the error handler module, auto-creating it via {@see newErrorHandler()} and calling `init(null)` if not yet set.
+	 * Returns the error handler module, lazily bootstrapping a default via
+	 * {@see newErrorHandler()} + {@see bootstrapModule()} when not yet set.
 	 * @return TErrorHandler the error handler module
 	 */
 	public function getErrorHandler()
@@ -1595,7 +1875,11 @@ class TApplication extends TComponent implements ISingleton
 		$errorHandler = $this->getErrorHandlerDirect();
 		if (!$errorHandler && ($errorHandler = $this->newErrorHandler())) {
 			$this->setErrorHandler($errorHandler);
-			$errorHandler->init(null);
+			$this->bootstrapModule(
+				$errorHandler,
+				static::DEFAULT_ERROR_HANDLER_ID,
+				$this->shouldRegisterDefault(TErrorHandler::class)
+			);
 			$errorHandler = $this->getErrorHandlerDirect();
 		}
 		return $errorHandler;
@@ -1632,7 +1916,8 @@ class TApplication extends TComponent implements ISingleton
 	}
 
 	/**
-	 * Returns the security manager module, auto-creating it via {@see newSecurityManager()} and calling `init(null)` if not yet set.
+	 * Returns the security manager module, lazily bootstrapping a default via
+	 * {@see newSecurityManager()} + {@see bootstrapModule()} when not yet set.
 	 * @return TSecurityManager the security manager module
 	 */
 	public function getSecurityManager()
@@ -1640,7 +1925,11 @@ class TApplication extends TComponent implements ISingleton
 		$securityManager = $this->getSecurityManagerDirect();
 		if (!$securityManager && ($securityManager = $this->newSecurityManager())) {
 			$this->setSecurityManager($securityManager);
-			$securityManager->init(null);
+			$this->bootstrapModule(
+				$securityManager,
+				static::DEFAULT_SECURITY_MANAGER_ID,
+				$this->shouldRegisterDefault(TSecurityManager::class)
+			);
 			$securityManager = $this->getSecurityManagerDirect();
 		}
 		return $securityManager;
@@ -1677,7 +1966,8 @@ class TApplication extends TComponent implements ISingleton
 	}
 
 	/**
-	 * Returns the asset manager module, auto-creating it via {@see newAssetManager()} and calling `init(null)` if not yet set.
+	 * Returns the asset manager module, lazily bootstrapping a default via
+	 * {@see newAssetManager()} + {@see bootstrapModule()} when not yet set.
 	 * @return TAssetManager asset manager
 	 */
 	public function getAssetManager()
@@ -1685,7 +1975,11 @@ class TApplication extends TComponent implements ISingleton
 		$assetManager = $this->getAssetManagerDirect();
 		if (!$assetManager && ($assetManager = $this->newAssetManager())) {
 			$this->setAssetManager($assetManager);
-			$assetManager->init(null);
+			$this->bootstrapModule(
+				$assetManager,
+				static::DEFAULT_ASSET_MANAGER_ID,
+				$this->shouldRegisterDefault(TAssetManager::class)
+			);
 			$assetManager = $this->getAssetManagerDirect();
 		}
 		return $assetManager;
@@ -1722,7 +2016,8 @@ class TApplication extends TComponent implements ISingleton
 	}
 
 	/**
-	 * Returns the template manager module, auto-creating it via {@see newTemplateManager()} and calling `init(null)` if not yet set.
+	 * Returns the template manager module, lazily bootstrapping a default via
+	 * {@see newTemplateManager()} + {@see bootstrapModule()} when not yet set.
 	 * @return TTemplateManager template manager
 	 */
 	public function getTemplateManager()
@@ -1730,7 +2025,11 @@ class TApplication extends TComponent implements ISingleton
 		$templateManager = $this->getTemplateManagerDirect();
 		if (!$templateManager && ($templateManager = $this->newTemplateManager())) {
 			$this->setTemplateManager($templateManager);
-			$templateManager->init(null);
+			$this->bootstrapModule(
+				$templateManager,
+				static::DEFAULT_TEMPLATE_MANAGER_ID,
+				$this->shouldRegisterDefault(TTemplateManager::class)
+			);
 			$templateManager = $this->getTemplateManagerDirect();
 		}
 		return $templateManager;
@@ -1767,7 +2066,8 @@ class TApplication extends TComponent implements ISingleton
 	}
 
 	/**
-	 * Returns the theme manager module, auto-creating it via {@see newThemeManager()} and calling `init(null)` if not yet set.
+	 * Returns the theme manager module, lazily bootstrapping a default via
+	 * {@see newThemeManager()} + {@see bootstrapModule()} when not yet set.
 	 * @return TThemeManager theme manager
 	 */
 	public function getThemeManager()
@@ -1775,7 +2075,11 @@ class TApplication extends TComponent implements ISingleton
 		$themeManager = $this->getThemeManagerDirect();
 		if (!$themeManager && ($themeManager = $this->newThemeManager())) {
 			$this->setThemeManager($themeManager);
-			$themeManager->init(null);
+			$this->bootstrapModule(
+				$themeManager,
+				static::DEFAULT_THEME_MANAGER_ID,
+				$this->shouldRegisterDefault(TThemeManager::class)
+			);
 			$themeManager = $this->getThemeManagerDirect();
 		}
 		return $themeManager;
@@ -1812,7 +2116,12 @@ class TApplication extends TComponent implements ISingleton
 	}
 
 	/**
-	 * Returns the application state persister, auto-creating it via {@see newApplicationStatePersister()} and calling `init(null)` if not yet set.
+	 * Returns the application state persister, auto-creating it via
+	 * {@see newApplicationStatePersister()} when not yet set. The persister
+	 * is an `IStatePersister` rather than an application module, so it is
+	 * not routed through {@see bootstrapModule()}; a direct
+	 * `init(null)` is invoked when the implementation also happens to be an
+	 * {@see IModule} (the default `TApplicationStatePersister` is).
 	 * @return IStatePersister application state persister
 	 */
 	public function getApplicationStatePersister()
@@ -1859,18 +2168,22 @@ class TApplication extends TComponent implements ISingleton
 	}
 
 	/**
-	 * Returns the globalization module, auto-creating and initialising it via {@see newGlobalization()} when
-	 * `$createIfNotExists` is `true` (the default) and no module has been set yet. Pass `false` to return
-	 * `null` rather than auto-creating.
-	 * @param bool $createIfNotExists whether to create globalization if it does not exist
-	 * @return ?TGlobalization globalization module
+	 * Returns the globalization module, lazily bootstrapping a default via
+	 * {@see newGlobalization()} + {@see bootstrapModule()} when not yet set
+	 * and `$createIfNotExists` is true; otherwise returns `null`.
+	 * @param bool $createIfNotExists whether to create on first access.
+	 * @return ?TGlobalization globalization module, or null when none exists and creation is disabled.
 	 */
 	public function getGlobalization($createIfNotExists = true)
 	{
 		$globalization = $this->getGlobalizationDirect();
 		if (!$globalization && $createIfNotExists && ($globalization = $this->newGlobalization())) {
 			$this->setGlobalization($globalization);
-			$globalization->init(null);
+			$this->bootstrapModule(
+				$globalization,
+				static::DEFAULT_GLOBALIZATION_ID,
+				$this->shouldRegisterDefault(TGlobalization::class)
+			);
 			$globalization = $this->getGlobalizationDirect();
 		}
 		return $globalization;
@@ -1913,19 +2226,20 @@ class TApplication extends TComponent implements ISingleton
 	}
 
 	/**
-	 * Loads and initializes a single module from its lazy-module registration tuple.
+	 * Instantiates a single module from its lazy-module registration tuple and
+	 * applies its configuration properties (Phase 1 of module initialization).
 	 *
 	 * If the module's `lazy` property is `true` and `$force` is `false`, the module
 	 * is registered as a null placeholder in `$_modules` and this method returns `null`.
-	 * Otherwise the module is instantiated, its properties are applied, and it is stored
-	 * in `$_modules`. The lazy-module slot is nullified to prevent ID reuse.
-	 * The caller is responsible for calling `init()` on the returned module.
+	 * Otherwise the module is instantiated, its properties are applied via setXxx()
+	 * calls, and it is stored in `$_modules`. The lazy-module slot is nullified to
+	 * prevent ID reuse.
 	 *
-	 * @param string $id module ID registered with {@see setLazyModule()}.
+	 * @param string $id module ID registered in `$_lazyModules`.
 	 * @param bool $force when `true`, forces loading even if the `lazy` property is set. Defaults to `false`.
 	 * @return null|array{0: IModule, 1: mixed}|false a two-element array `[$module, $configElement]`
-	 *   ready for `$module->init($configElement)`, `null` if the module was deferred, or
-	 *   `false` if `$id` is not registered in `$_lazyModules`.
+	 *   ready for `dyPreInit($configElement)` and `$module->init($configElement)`,
+	 *   `null` if the module was deferred, or `false` if `$id` is not registered in `$_lazyModules`.
 	 */
 	protected function internalLoadModule($id, $force = false)
 	{
@@ -1941,18 +2255,356 @@ class TApplication extends TComponent implements ISingleton
 
 		Prado::trace("Loading module $id ({$moduleClass})", TApplication::class);
 		$module = Prado::createComponent($moduleClass);
-		foreach ($initProperties as $name => $value) {
-			if ($name === 'lazy') {
-				continue;
-			}
-			$module->setSubProperty($name, $value);
-		}
+		$moduleProperties = $initProperties;
+		unset($moduleProperties['lazy']);
+		$module->setSubProperties($moduleProperties);
 		$this->setModule($id, $module);
 		// keep the key to avoid reuse of the old module id
 		$this->setLazyModule($id, null);
-		$module->dyPreInit($configElement);
 
 		return [$module, $configElement];
+	}
+
+	/**
+	 * Sorts a set of pending module entries into initialization order using
+	 * Kahn's topological sort algorithm, respecting declared module dependencies.
+	 *
+	 * Both `$pending` and the return value are arrays of entries with the same
+	 * structure — the output is the input reordered so each module appears after
+	 * all of its in-batch dependencies:
+	 * ```php
+	 * [
+	 *     'id'     => 'moduleA',   // registration ID
+	 *     'module' => $moduleA,    // IModule instance
+	 *     'config' => $config,     // configuration element passed to init()
+	 * ]
+	 * ```
+	 *
+	 * Dependencies that reference module IDs outside of `$pending` (already
+	 * initialized or not present in this configuration batch) are silently
+	 * ignored for ordering purposes. The caller is responsible for ensuring
+	 * those modules are already live.
+	 *
+	 * `$cache` is a sort-result cache passed by reference, keyed by dependency-graph
+	 * fingerprint under {@see DEP_SORT_CACHE_KEY}. Passing the same array across both
+	 * phase-sort calls within a single configuration run avoids redundant sorts when
+	 * the dependency graph is unchanged between phases.
+	 *
+	 * `$isPreInit` is forwarded to {@see collectModuleDependencies()} and from there
+	 * to each module's {@see IModuleDependency::getModuleDependencies()}, allowing
+	 * modules to declare different dependencies for the dyPreInit and init() passes.
+	 *
+	 * @param array  $pending list of pending module entries.
+	 * @param array &$cache  sort-result cache, keyed by graph fingerprint.
+	 * @param bool $isPreInit `true` when sorting the dyPreInit pass,
+	 *   `false` for the init() pass (default).
+	 * @throws \Prado\Exceptions\TConfigurationException if a dependency cycle is detected.
+	 * @return array the entries of `$pending` in dependency-first order.
+	 * @since 4.4.0
+	 */
+	protected function sortModulesByDependency(array $pending, array &$cache = [], bool $isPreInit = false): array
+	{
+		if (count($pending) <= 1) {
+			return $pending;
+		}
+
+		// Build index: id → entry.
+		$byId = [];
+		foreach ($pending as $entry) {
+			$byId[$entry['id']] = $entry;
+		}
+
+		// Collect all dependencies for this phase — fully re-evaluated on every call (no caching).
+		$moduleRecords = [];
+		foreach ($byId as $id => $entry) {
+			// $moduleRecords[$id] = ['id' => string, 'module' => IModule, 'deps' => array<depId, array{id:string,required:bool}>].
+			$moduleRecords[$id] = $this->collectModuleDependencies($entry['module'], $isPreInit);
+		}
+
+		$moduleRecords = $this->filterModuleDependencies($moduleRecords, $pending, $isPreInit);
+
+		// Build a fingerprint of the in-batch dependency graph.
+		// Only intra-batch edges influence the sort, so out-of-batch deps are excluded.
+		// The fingerprint is stored under DEP_SORT_CACHE_KEY in $cache.
+		$depGraph = [];
+		foreach ($moduleRecords as $id => $record) {
+			$inBatch = array_values(array_filter(
+				array_keys($record['deps']),
+				fn (string $depId) => isset($moduleRecords[$depId])
+			));
+			sort($inBatch);
+			$depGraph[$id] = $inBatch;
+		}
+		ksort($depGraph);
+		$fingerprint = sha1(serialize($depGraph));
+
+		if (isset($cache[self::DEP_SORT_CACHE_KEY][$fingerprint])) {
+			return array_map(fn (string $id) => $byId[$id], $cache[self::DEP_SORT_CACHE_KEY][$fingerprint]);
+		}
+
+		// Build in-degree table and successor adjacency list (intra-batch edges only).
+		// Both required and advisory deps influence ordering when they reference an
+		// in-batch module; the required flag only governs error handling, not sort order.
+		$depMap = [];   // id → [dep_id, ...]  (used for cycle reporting)
+		$inDegree = [];   // id → int
+		$successors = [];   // dep_id → [dependent_id, ...]
+		foreach ($moduleRecords as $id => $_) {
+			$inDegree[$id] = 0;
+			$successors[$id] = [];
+			$depMap[$id] = [];
+		}
+		foreach ($moduleRecords as $id => $record) {
+			foreach ($record['deps'] as $depId => $_dep) {
+				if (!isset($moduleRecords[$depId])) {
+					continue; // dep is outside this batch — already satisfied or truly external
+				}
+				$depMap[$id][] = $depId;
+				$inDegree[$id]++;
+				$successors[$depId][] = $id;
+			}
+		}
+
+		// Kahn's algorithm: seed the queue with all zero-in-degree nodes.
+		$queue = [];
+		foreach ($inDegree as $id => $deg) {
+			if ($deg === 0) {
+				$queue[] = $id;
+			}
+		}
+
+		$sorted = [];
+		while ($queue !== []) {
+			$id = array_shift($queue);
+			$sorted[] = $id;
+			foreach ($successors[$id] as $succId) {
+				if (--$inDegree[$succId] === 0) {
+					$queue[] = $succId;
+				}
+			}
+		}
+
+		if (count($sorted) < count($moduleRecords)) {
+			$cycleIds = array_diff(array_keys($moduleRecords), $sorted);
+			$cyclePath = $this->findCyclePath($cycleIds, $depMap);
+			throw new TConfigurationException(
+				'application_module_dependency_cycle',
+				implode(' -> ', $cyclePath)
+			);
+		}
+
+		$cache[self::DEP_SORT_CACHE_KEY][$fingerprint] = $sorted;
+		return array_map(fn (string $id) => $byId[$id], $sorted);
+	}
+
+	/**
+	 * Collects all dependencies that `$module` declares for the given lifecycle
+	 * `$isPreInit`, merging two sources in priority order — module first, then
+	 * behaviors — and deduplicating by module ID. When the same ID appears in
+	 * both sources, the module-level declaration wins.
+	 *
+	 * Sources:
+	 * 1. {@see IModuleDependency::getModuleDependencies()} on the module itself —
+	 *    fully dynamic, re-evaluated on every call. The return value is cast to
+	 *    an array, so implementations may return a single string as shorthand.
+	 * 2. Any behavior attached to the module that also implements
+	 *    {@see IModuleDependency} — fully dynamic, the behavior list is re-scanned
+	 *    and each behavior's `getModuleDependencies()` is re-evaluated on every call,
+	 *    because behaviors may be attached or detached between initialization phases.
+	 *    Behavior return values are cast to array by the same rule.
+	 *
+	 * {@see IModuleDependency::getModuleDependencies()} may return dependencies in
+	 * any of four forms, all of which are normalized to the `deps` map format:
+	 *
+	 * - **String return** — a bare `$depId` string: cast to an indexed array before
+	 *   before processing; the dependency ID is the string value; `required`
+	 *   defaults to `true`.
+	 * - **Indexed array** — `[$depId]`: a non-empty string value with an integer key;
+	 *   the dependency ID is the value; `required` defaults to `true`.
+	 * - **Key-value** — `[$depId => $required]`: a non-empty string key is the
+	 *   dependency ID; the value is cast to `bool` via
+	 *   {@see TPropertyValue::ensureBoolean()} as the `required` flag.
+	 * - **Verbose array** — `[['id' => $depId, 'required' => $bool]]`: `'id'` may
+	 *   be any value, but entries where `'id'` is `null`, `''`, or not a string are
+	 *   silently skipped; `'required'` is optional and defaults to `true`.
+	 *
+	 * Entries that resolve to a `null`, `false`, `0`, or empty-string dependency ID
+	 * are silently skipped. This lets implementations return a fixed-shape array
+	 * where a dep ID that is not set or known is represented as `null`.
+	 *
+	 * Both sources are re-evaluated on every call with no caching.
+	 *
+	 * Example return value:
+	 * ```php
+	 * [
+	 *     'id'     => 'moduleA',             // the module's registration ID
+	 *     'module' => $moduleA,              // the IModule instance
+	 *     'deps'   => [                      // keyed by dependency module ID
+	 *         'moduleB' => ['id' => 'moduleB', 'required' => true],
+	 *         'moduleC' => ['id' => 'moduleC', 'required' => false],
+	 *     ],
+	 * ]
+	 * ```
+	 *
+	 * Each returned dependency (`deps`) is an associative array with keys:
+	 * - `'id'`       (string) — the dependency module ID
+	 * - `'required'` (bool)   — `true` if the dependency is mandatory (default),
+	 *                           `false` if advisory (influences order when present
+	 *                           but raises no error when absent).
+	 *
+	 * @param IModule $module the module to inspect.
+	 * @param bool $isPreInit `true` when collecting for the dyPreInit pass,
+	 *   `false` when collecting for the init() pass (default). Passed verbatim to
+	 *   {@see IModuleDependency::getModuleDependencies()}.
+	 * @return array{id:string,module:IModule,deps:array<string,array{id:string,required:bool}>} record containing the module ID, the module instance, and its dependency map keyed by dep ID.
+	 * @since 4.4.0
+	 * @see IModuleDependency
+	 */
+	protected function collectModuleDependencies(IModule $module, bool $isPreInit = false): array
+	{
+		// Keyed by dep ID so that module-level declarations take priority over
+		// behavior-level ones when the same dep ID appears in both sources.
+		$ownId = $module->getID();
+		$deps = [];
+
+		// Source 1: IModuleDependency on the module itself.
+		// Processed first so module-level declarations take priority over behaviors.
+		if ($module instanceof IModuleDependency) {
+			foreach ((array) ($module->getModuleDependencies($isPreInit) ?? []) as $key => $dep) {
+				$required = true;
+				if (is_string($key) && $key !== '') {
+					$required = TPropertyValue::ensureBoolean($dep);
+					$dep = $key;
+				} elseif (is_string($dep) && $dep !== '') {
+					$key = $dep;
+				} elseif (is_array($dep) && is_string($dep['id'] ?? null) && $dep['id'] !== '') {
+					$required = TPropertyValue::ensureBoolean($dep['required'] ?? true);
+					$key = $dep = $dep['id'];
+				} else {
+					continue; // no valid dep ID resolved — silently skip
+				}
+				if ($dep === $ownId) {
+					throw new TConfigurationException('application_module_dependency_self_reference', $ownId);
+				}
+				$deps[$key] = ['id' => $dep, 'required' => $required];
+			}
+		}
+
+		// Source 2: IModuleDependency behaviors attached to the module.
+		// Re-scanned every call — behaviors may be attached or detached between phases.
+		// Only adds IDs not already contributed by the module (Source 1 takes priority).
+		if ($module instanceof TComponent) {
+			foreach ($module->getBehaviors(IModuleDependency::class) as $behavior) {
+				foreach ((array) ($behavior->getModuleDependencies($isPreInit) ?? []) as $key => $dep) {
+					$required = true;
+					if (is_string($key) && $key !== '') {
+						$required = TPropertyValue::ensureBoolean($dep);
+						$dep = $key;
+					} elseif (is_string($dep) && $dep !== '') {
+						$key = $dep;
+					} elseif (is_array($dep) && is_string($dep['id'] ?? null) && $dep['id'] !== '') {
+						$required = TPropertyValue::ensureBoolean($dep['required'] ?? true);
+						$key = $dep = $dep['id'];
+					} else {
+						continue; // no valid dep ID resolved — silently skip
+					}
+					if ($dep === $ownId) {
+						throw new TConfigurationException('application_module_dependency_self_reference', $ownId);
+					}
+					if (!isset($deps[$key])) {
+						$deps[$key] = ['id' => $dep, 'required' => $required];
+					}
+				}
+			}
+			$deps = $module->dyFilterDependencies($deps);
+		}
+
+		return ['id' => $ownId, 'module' => $module, 'deps' => $deps];
+	}
+
+	/**
+	 * Filters the complete dependency map for all pending modules after every
+	 * module's own sources have been collected. Called once per sort pass, so
+	 * implementations can see — and cross-reference — the full set of edges at
+	 * once. Subclasses may override this method to inject configuration-sourced
+	 * edges or apply global ordering policies. Attached behaviors may implement
+	 * {@see dyFilterModuleDependencies()} to participate without subclassing.
+	 *
+	 * This is the application-level counterpart to
+	 * {@see \Prado\TModule::dyFilterDependencies()}, which lets each module's own
+	 * behaviors filter its individual dep list before this method is reached.
+	 *
+	 * The `$moduleRecords` map has the following structure:
+	 * ```php
+	 * [
+	 *     'moduleA' => [
+	 *         'id'     => 'moduleA',         // the module's registration ID
+	 *         'module' => $moduleA,          // the IModule instance
+	 *         'deps'   => [                  // keyed by dependency module ID
+	 *             'moduleB' => ['id' => 'moduleB', 'required' => true],
+	 *             'moduleC' => ['id' => 'moduleC', 'required' => false],
+	 *         ],
+	 *     ],
+	 *     'moduleB' => [
+	 *         'id'     => 'moduleB',
+	 *         'module' => $moduleB,
+	 *         'deps'   => [],
+	 *     ],
+	 * ]
+	 * ```
+	 *
+	 * @param array<string,array{id:string,module:IModule,deps:array<string,array{id:string,required:bool}>}> $moduleRecords map of module ID → record from {@see collectModuleDependencies()}
+	 * @param array $pending the pending module entries being sorted, each with keys
+	 *   `'id'` (string), `'module'` (IModule), and `'config'` (mixed)
+	 * @param bool $isPreInit `true` when sorting the dyPreInit pass,
+	 *   `false` for the init() pass
+	 * @return array<string,array{id:string,module:IModule,deps:array<string,array{id:string,required:bool}>}> the filtered map, keyed by module ID
+	 * @since 4.4.0
+	 */
+	protected function filterModuleDependencies(array $moduleRecords, array $pending, bool $isPreInit = false): array
+	{
+		return $this->dyFilterModuleDependencies($moduleRecords, $pending, $isPreInit);
+	}
+
+	/**
+	 * Finds and returns a representative cycle path within a known set of
+	 * cycle node IDs by following dependency edges via DFS until a node is
+	 * revisited.
+	 *
+	 * Returns a closed-loop array where the first and last elements are the
+	 * same module ID (e.g. `['a', 'b', 'c', 'a']`). Self-cycles — where a
+	 * module lists itself as a dependency — produce a two-element path
+	 * (e.g. `['a', 'a']`) and are detected the same way as multi-node cycles.
+	 *
+	 * @param array $cycleIds IDs known to participate in a cycle.
+	 * @param array $depMap   dependency map: id → [dep_id, ...].
+	 * @return array the cycle path with the entry node repeated at the end.
+	 * @since 4.4.0
+	 */
+	private function findCyclePath(array $cycleIds, array $depMap): array
+	{
+		$inCycle = array_flip($cycleIds);
+		$start = (string) array_key_first($inCycle);
+		$visited = [];
+		$path = [];
+
+		$current = $start;
+		while (!isset($visited[$current])) {
+			$visited[$current] = count($path);
+			$path[] = $current;
+			// Every unsorted node has an unsorted dependency, so the walk
+			// reaches a visited node and the loop ends.
+			foreach ($depMap[$current] ?? [] as $depId) {
+				if (isset($inCycle[$depId])) {
+					$current = $depId;
+					break;
+				}
+			}
+		}
+
+		$cycleStart = $visited[$current];
+		$loop = array_slice($path, $cycleStart);
+		$loop[] = $current; // close the loop
+		return $loop;
 	}
 
 	/**
@@ -1961,7 +2613,12 @@ class TApplication extends TComponent implements ISingleton
 	 * 2. Application properties (skipped when `$withinService` is true)
 	 * 3. Services
 	 * 4. Parameters
-	 * 5. Modules (instantiated and initialized)
+	 * 5. Modules — four phases:
+	 *    a. Instantiate all modules and apply configuration properties via {@see setSubProperties()}
+	 *    b. Sort by dependency (pre-init pass), then raise {@see TModule::dyPreInit()} in order
+	 *    c. Sort by dependency (init pass), then call {@see IModule::init()} in order
+	 *    d. Raise {@see TModule::dyPostInit()} in the same order as step c — no re-sort
+	 *    Steps b–c share a sort-result cache ({@see DEP_SORT_CACHE_KEY}) if they remain the same.
 	 * 6. External configuration files (evaluated conditionally and applied recursively)
 	 * @param TApplicationConfiguration $config the configuration
 	 * @param bool $withinService whether the configuration is specified within a service.
@@ -1980,11 +2637,15 @@ class TApplication extends TComponent implements ISingleton
 			Prado::using($using);
 		}
 
+		// register extension class map (data, no code execution) and extra message files
+		Prado::registerClassMap($config->getClassMap());
+		foreach ($config->getErrorMessages() as $messageFile) {
+			TException::addMessageFile($messageFile);
+		}
+
 		// set application properties
 		if (!$withinService) {
-			foreach ($config->getProperties() as $name => $value) {
-				$this->setSubProperty($name, $value);
-			}
+			$this->setSubProperties($config->getProperties());
 		}
 
 		// load services, provide for modules
@@ -2000,9 +2661,7 @@ class TApplication extends TComponent implements ISingleton
 		foreach ($config->getParameters() as $id => $parameter) {
 			if (is_array($parameter)) {
 				$component = Prado::createComponent($parameter[0]);
-				foreach ($parameter[1] as $name => $value) {
-					$component->setSubProperty($name, $value);
-				}
+				$component->setSubProperties($parameter[1]);
 				$component->dyInit($parameter[2]);
 				$appParams->add($id, $component);
 			} else {
@@ -2010,19 +2669,38 @@ class TApplication extends TComponent implements ISingleton
 			}
 		}
 
-		// load and init modules specified in app config
-		$modules = [];
+		// Phase 1: Instantiate all modules and apply configuration properties via setXxx().
+		$pending = [];
 		foreach ($config->getModules() as $id => $moduleConfig) {
 			if (!is_string($id)) {
 				$id = '_module' . $this->getLazyModuleCount();
 			}
 			$this->setLazyModule($id, $moduleConfig);
-			if ($module = $this->internalLoadModule($id)) {
-				$modules[] = $module;
+			if ($entry = $this->internalLoadModule($id)) {
+				$pending[] = ['id' => $id, 'module' => $entry[0], 'config' => $entry[1]];
 			}
 		}
-		foreach ($modules as $module) {
-			$module[0]->init($module[1]);
+
+		if ($pending !== []) {
+			// Sort-result cache shared across both sort passes in this config run.
+			// All dependency sources are re-evaluated on every pass.
+			$depCache = [];
+
+			// Phase 2: sort → dyPreInit in dependency order.
+			foreach ($this->sortModulesByDependency($pending, $depCache, true) as $entry) {
+				$entry['module']->dyPreInit($entry['config']);
+			}
+
+			// Phase 3: sort → init() in dependency order; save result for post-init.
+			$initOrder = $this->sortModulesByDependency($pending, $depCache, false);
+			foreach ($initOrder as $entry) {
+				$entry['module']->init($entry['config']);
+			}
+
+			// Phase 4: dyPostInit in the same order as init() — no re-sort.
+			foreach ($initOrder as $entry) {
+				$entry['module']->dyPostInit($entry['config']);
+			}
 		}
 
 		// external configurations
@@ -2047,14 +2725,16 @@ class TApplication extends TComponent implements ISingleton
 	// =========================================================================
 
 	/**
-	 * Loads configuration and initializes application.
-	 * Configuration file will be read and parsed (if a valid cached version exists,
-	 * it will be used instead). Then, modules are created and initialized;
-	 * Afterwards, the requested service is created and initialized.
-	 * After all configuration is applied, the onConfiguration event is
-	 * raised so that listeners may register additional services before the
-	 * request is resolved. Lastly, the onInitComplete event is raised.
-	 * @throws TConfigurationException if module is redefined of invalid type, or service not defined or of invalid type
+	 * Loads configuration and initializes the application. Reads the
+	 * configuration file (or its cached form when current), applies it via
+	 * {@see applyConfiguration()} so configured modules are created and
+	 * initialized, raises {@see onConfiguration} for late-stage service
+	 * registration, runs {@see bootstrapDefaultModules()} to enroll any
+	 * lazily-created default-core modules in `$_modules`, runs
+	 * {@see initService()} to resolve and start the requested service,
+	 * and finally raises {@see onInitComplete}.
+	 * @throws TConfigurationException when a module is redefined or
+	 *   invalid, or when the requested service is undefined or invalid.
 	 * @see onConfiguration
 	 * @see onInitComplete
 	 */
@@ -2065,9 +2745,15 @@ class TApplication extends TComponent implements ISingleton
 		$configFile = $this->getConfigurationFile();
 		if ($configFile !== null) {
 			$cacheFile = $this->getCacheFile();
-			if ($cacheFile === null || @filemtime($cacheFile) < filemtime($configFile)) {
+			// The cached config bakes in the installed extensions' error-message and
+			// class-map files, so it is also stale when any Composer installed.json
+			// changes (a package installed, updated, or removed), not just the config file.
+			if ($cacheFile === null
+					|| ($cacheTime = @filemtime($cacheFile)) < filemtime($configFile)
+					|| (($manifestsTime = TComposerReflection::getInstalledManifestsTime()) !== null && $cacheTime < $manifestsTime)) {
 				$cn = $this->getApplicationConfigurationClass();
 				$config = new $cn();
+				$config->captureComposerExtensions();
 				$config->loadFromFile($configFile);
 				if ($cacheFile !== null) {
 					file_put_contents($cacheFile, serialize($config), LOCK_EX);
@@ -2079,9 +2765,11 @@ class TApplication extends TComponent implements ISingleton
 			$this->applyConfiguration($config, false);
 		}
 
+		$this->bootstrapDefaultModules();
 		$this->onConfiguration();
 		$this->initService();
 		$this->onInitComplete();
+		$this->setStateFlag(static::STATE_INITIALIZED);
 
 		Prado::trace('Initializing application complete', TApplication::class);
 	}
@@ -2114,23 +2802,20 @@ class TApplication extends TComponent implements ISingleton
 	public function startService($serviceID)
 	{
 		if (!$this->hasRegisteredService($serviceID)) {
-			throw new THttpException(500, 'application_service_unknown', $serviceID);
+			throw new THttpException(404, 'application_service_unknown', $serviceID);
 		}
 
 		[$serviceClass, $initProperties, $configElement] = $this->getRegisteredService($serviceID);
 		$service = Prado::createComponent($serviceClass);
 		if (!($service instanceof IService && $service instanceof TComponent)) {
-			throw new THttpException(500, 'application_service_invalid', $serviceClass);
+			throw new TConfigurationException('application_service_invalid', $serviceClass);
 		}
 		if (!$service->getEnabled()) {
-			throw new THttpException(500, 'application_service_unavailable', $serviceClass);
+			throw new TConfigurationException('application_service_unavailable', $serviceClass);
 		}
 		$service->setID($serviceID);
 		$this->setService($service);
-
-		foreach ($initProperties as $name => $value) {
-			$service->setSubProperty($name, $value);
-		}
+		$service->setSubProperties($initProperties);
 
 		if ($configElement !== null) {
 			$cn = $this->getApplicationConfigurationClass();

@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Util\Cron;
+
 use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;
 use Prado\TModule;

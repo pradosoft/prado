@@ -1,7 +1,5 @@
 <?php
 
-require_once(__DIR__ . '/../../../../PradoUnit.php');
-
 /**
  * IbmInsertOrIgnoreTest — comprehensive tests for IBM DB2 insertOrIgnore behaviour.
  *
@@ -25,13 +23,16 @@ require_once(__DIR__ . '/../../../../PradoUnit.php');
  * Requires: IBM DB2 with pradount database (see tests/initdb_ibm.sql).
  */
 
+namespace Prado\Test\Unit\Data\DbSpecific\Ibm\Common;
+
 use Prado\Data\DataGateway\TDataGatewayEventParameter;
 use Prado\Data\DataGateway\TDataGatewayResultEventParameter;
 use Prado\Data\DataGateway\TTableGateway;
 use Prado\Data\TDbConnection;
 use Prado\Exceptions\TDbException;
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
 
-class IbmInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
+class IbmInsertOrIgnoreTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 

@@ -1,8 +1,11 @@
 <?php
 
+namespace Prado\Test\Unit\IO;
 
 use PHPUnit\Framework\TestCase;
 use Prado\IO\TTarFileExtractor;
+use Prado\Test\Unit\Harness\IO\TarTestHelper;
+use Prado\Test\Unit\PradoUnit;
 
 /**
  * Comprehensive tests for the tarPathInfoMap / tarPathMap API introduced in 4.3.3.
@@ -59,10 +62,7 @@ class TTarFileExtractorManifestTest extends TestCase
 	/** Use reflection to simulate a completed URL download by injecting _temp_tarpath. */
 	private function injectTempTarPath(TTarFileExtractor $extractor, string $path): void
 	{
-		$ref = new \ReflectionClass($extractor);
-		$prop = $ref->getProperty('_temp_tarpath');
-		$prop->setAccessible(true);
-		$prop->setValue($extractor, $path);
+		PradoUnit::setProp($extractor, '_temp_tarpath', $path);
 	}
 
 	// ---------------------------------------------------------------------------
@@ -143,8 +143,7 @@ class TTarFileExtractorManifestTest extends TestCase
 			'a_file.txt'     => ['tarpath_norm' => 'a_file.txt',     'typeflag' => TTarFileExtractor::TYPE_FILE],
 		];
 
-		$method = new \ReflectionMethod(TTarFileExtractor::class, '_sortManifest');
-		$method->setAccessible(true);
+		$method = PradoUnit::reflectionMethod(TTarFileExtractor::class, '_sortManifest');
 		$method->invokeArgs($extractor, [&$manifest]);
 
 		$keys = array_keys($manifest);
@@ -190,14 +189,11 @@ class TTarFileExtractorManifestTest extends TestCase
 
 		$extractor = new TTarFileExtractor($tarFile);
 
-		$ref = new \ReflectionClass($extractor);
-		$prop = $ref->getProperty('_tarManifest');
-		$prop->setAccessible(true);
-		$this->assertNull($prop->getValue($extractor), '_tarManifest should be null before first access');
+		$this->assertNull(PradoUnit::getProp($extractor, '_tarManifest'), '_tarManifest should be null before first access');
 
 		// Access triggers lazy scan.
 		$extractor->getManifest();
-		$this->assertNotNull($prop->getValue($extractor));
+		$this->assertNotNull(PradoUnit::getProp($extractor, '_tarManifest'));
 	}
 
 	public function testgetManifestIsKeysOfInfoMap()
@@ -789,10 +785,7 @@ class TTarFileExtractorManifestTest extends TestCase
 		// Scan first — this should set _retainTempFile to true.
 		$extractor->getManifest();
 
-		$ref = new \ReflectionClass($extractor);
-		$retain = $ref->getProperty('_retainTempFile');
-		$retain->setAccessible(true);
-		$this->assertTrue($retain->getValue($extractor), '_retainTempFile must be true after scan of URL archive');
+		$this->assertTrue(PradoUnit::getProp($extractor, '_retainTempFile'), '_retainTempFile must be true after scan of URL archive');
 	}
 
 	// ---------------------------------------------------------------------------
@@ -1600,10 +1593,7 @@ class TTarFileExtractorManifestTest extends TestCase
 		// extractModify is protected; call via extract + reflection to confirm the
 		// map keys are relative to the *stripped* path.
 		$extractor = new TTarFileExtractor($tarFile);
-		$ref = new \ReflectionClass($extractor);
-		$method = $ref->getMethod('extractModify');
-		$method->setAccessible(true);
-		$result = $method->invoke($extractor, $this->extractDir, 'prefix');
+		$result = PradoUnit::invoke($extractor, 'extractModify', $this->extractDir, 'prefix');
 
 		$this->assertTrue($result);
 		$this->assertFileExists($this->extractDir . '/subdir/file.txt');
@@ -1674,6 +1664,36 @@ class TTarFileExtractorManifestTest extends TestCase
 		$map2 = $extractor->getManifest();  // second call should return cached map
 
 		$this->assertSame($map1, $map2);
+	}
+
+	public function testManifestScanClosesArchiveWhenErrorIsThrown(): void
+	{
+		$tarFile = $this->testDir . '/error.tar';
+		TarTestHelper::writeTar($tarFile, [TarTestHelper::entry('file.txt', 'content')]);
+
+		$extractor = new class ($tarFile) extends TTarFileExtractor {
+			protected function _extractList(
+				?string $p_destPath,
+				array &$p_manifest,
+				?array $p_file_list,
+				?string $p_remove_path_prefix,
+				mixed $conflictMode = null,
+				bool $applyPermissions = true,
+				?callable $preWriteHook = null
+			): bool {
+				throw new \Error('Manifest scan failed.');
+			}
+		};
+
+		try {
+			$extractor->getManifest();
+			self::fail('Expected the manifest scan Error.');
+		} catch (\Error $error) {
+			self::assertSame('Manifest scan failed.', $error->getMessage());
+		}
+
+		self::assertNull(PradoUnit::getProp($extractor, '_file'));
+		self::assertSame(TTarFileExtractor::COMPRESSION_NONE, PradoUnit::getProp($extractor, '_workingCompression'));
 	}
 
 	public function testContiguousFileTypeExtractedAsRegularFile()

@@ -1,0 +1,4 @@
+<com:TContent ID="Content">
+<h1>Admin Only</h1>
+<p id="user-info"><%=$this->CurrentUser%></p>
+</com:TContent>

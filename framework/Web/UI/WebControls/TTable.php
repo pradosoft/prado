@@ -19,7 +19,8 @@ use Prado\TPropertyValue;
  * TTable displays an HTML table on a Web page.
  *
  * A table may have {@see setCaption Caption}, whose alignment is specified
- * via {@see setCaptionAlign CaptionAlign}. The table cellpadding and cellspacing
+ * via {@see setCaptionAlign CaptionAlign} and which is HTML-encoded when
+ * {@see setEncode Encode} is true. The table cellpadding and cellspacing
  * are specified via {@see setCellPadding CellPadding} and {@see setCellSpacing CellSpacing}
  * properties, respectively. The {@see setGridLines GridLines} specifies how
  * the table should display its borders. The horizontal alignment of the table
@@ -30,11 +31,19 @@ use Prado\TPropertyValue;
  * {@see getRows Rows} property. Each {@see \Prado\Web\UI\WebControls\TTableRow} represents
  * an HTML table row.
  *
+ * The {@see getColumnGroups ColumnGroups} property holds
+ * {@see \Prado\Web\UI\WebControls\TTableColumnGroup} (`<colgroup>`) elements for
+ * column-scoped styling. Column groups render between the caption and the rows.
+ *
  * To populate the table {@see getRows Rows}, you may either use control template
  * or dynamically create {@see \Prado\Web\UI\WebControls\TTableRow} in code.
  * In template, do as follows to create the table rows and cells,
  * ```php
  *   <com:TTable>
+ *     <com:TTableColumnGroup>
+ *       <com:TTableColumn Width="8em" />
+ *       <com:TTableColumn Span="2" CssClass="numeric" />
+ *     </com:TTableColumnGroup>
  *     <com:TTableRow>
  *       <com:TTableCell Text="content" />
  *       <com:TTableCell Text="content" />
@@ -61,9 +70,12 @@ use Prado\TPropertyValue;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
  * @method TTableStyle getStyle()
+ * @method TTableRowCollection getControls()
  */
 class TTable extends \Prado\Web\UI\WebControls\TWebControl
 {
+	use TEncodeTrait;
+
 	/**
 	 * @return string tag name for the table
 	 */
@@ -74,14 +86,17 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Adds object parsed from template to the control.
-	 * This method adds only {@see \Prado\Web\UI\WebControls\TTableRow} objects into the {@see getRows Rows} collection.
-	 * All other objects are ignored.
+	 * This method adds {@see \Prado\Web\UI\WebControls\TTableRow} objects into the {@see getRows Rows}
+	 * collection and {@see \Prado\Web\UI\WebControls\TTableColumnGroup} objects into the
+	 * {@see getColumnGroups ColumnGroups} collection. All other objects are ignored.
 	 * @param mixed $object object parsed from template
 	 */
 	public function addParsedObject($object)
 	{
 		if ($object instanceof TTableRow) {
 			$this->getRows()->add($object);
+		} elseif ($object instanceof TTableColumnGroup) {
+			$this->getColumnGroups()->add($object);
 		}
 	}
 
@@ -135,6 +150,20 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
+	 * @return TTableColumnGroupCollection list of {@see \Prado\Web\UI\WebControls\TTableColumnGroup}
+	 *   (`<colgroup>`) elements rendered between the caption and the table rows
+	 * @since 4.4.0
+	 */
+	public function getColumnGroups()
+	{
+		if (($groups = $this->getViewState('ColumnGroups', null)) === null) {
+			$groups = new TTableColumnGroupCollection();
+			$this->setViewState('ColumnGroups', $groups);
+		}
+		return $groups;
+	}
+
+	/**
 	 * @return string table caption
 	 */
 	public function getCaption()
@@ -150,8 +179,9 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 		$this->setViewState('Caption', $value, '');
 	}
 
+
 	/**
-	 * @return TTableCaptionAlign table caption alignment. Defaults to TTableCaptionAlign::NotSet.
+	 * @return string|TTableCaptionAlign table caption alignment. Defaults to TTableCaptionAlign::NotSet.
 	 */
 	public function getCaptionAlign()
 	{
@@ -159,7 +189,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param TTableCaptionAlign $value table caption alignment.
+	 * @param string|TTableCaptionAlign $value table caption alignment.
 	 */
 	public function setCaptionAlign($value)
 	{
@@ -211,7 +241,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @return THorizontalAlign the horizontal alignment of the table content. Defaults to THorizontalAlign::NotSet.
+	 * @return string|THorizontalAlign the horizontal alignment of the table content. Defaults to THorizontalAlign::NotSet.
 	 */
 	public function getHorizontalAlign()
 	{
@@ -223,7 +253,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param THorizontalAlign $value the horizontal alignment of the table content.
+	 * @param string|THorizontalAlign $value the horizontal alignment of the table content.
 	 */
 	public function setHorizontalAlign($value)
 	{
@@ -231,7 +261,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @return TTableGridLines the grid line setting of the table. Defaults to TTableGridLines::None.
+	 * @return string|TTableGridLines the grid line setting of the table. Defaults to TTableGridLines::None.
 	 * @deprecated use CSS to style the borders of individual elements
 	 */
 	public function getGridLines()
@@ -244,7 +274,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param TTableGridLines $value the grid line setting of the table
+	 * @param string|TTableGridLines $value the grid line setting of the table
 	 * @deprecated use CSS to style the borders of individual elements
 	 */
 	public function setGridLines($value)
@@ -274,7 +304,8 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * Renders the openning tag for the table control which will render table caption if present.
+	 * Renders the openning tag for the table control which will render table caption
+	 * and column groups if present.
 	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderBeginTag($writer)
@@ -285,8 +316,16 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 				$writer->addStyleAttribute('caption-side', strtolower($align));
 			}
 			$writer->renderBeginTag('caption');
-			$writer->write($caption);
+			$writer->write($this->encodeText($caption));
 			$writer->renderEndTag();
+		}
+		$groups = $this->getViewState('ColumnGroups', null);
+		if ($groups !== null && $groups->getCount() > 0) {
+			$writer->writeLine();
+			foreach ($groups as $group) {
+				$group->render($writer);
+				$writer->writeLine();
+			}
 		}
 	}
 

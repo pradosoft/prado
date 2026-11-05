@@ -19,7 +19,37 @@ $control->setToolTip('Hover text');
 $control->setAttributes(['data-id' => '42']);
 ```
 
-Properties: `CssClass`, `Style`, `AccessKey`, `TabIndex`, `ToolTip`, `Attributes` (TAttributeCollection).
+Properties: `CssClass`, `Style`, `AccessKey`, `KeyShortcuts`, `TabIndex`, `ToolTip`, `Attributes` (TAttributeCollection).
+
+### HTML Global Attributes
+
+| Property | Attribute | Values |
+|---|---|---|
+| `Lang`, `Dir`, `Translate` | `lang`, `dir`, `translate` | language tag; `ltr`/`rtl`/`auto`; `yes`/`no` |
+| `Hidden` | `hidden` | false, true, or `until-found` (find-in-page reveals it) |
+| `Inert` | `inert` | bool |
+| `Popover` | `popover` | `''`, `auto` (or true), `manual`, `hint` |
+| `SpellCheck`, `Draggable`, `ContentEditable` | same | ?bool; ContentEditable also `plaintext-only` |
+| `InputMode`, `EnterKeyHint` | same | `TWebInputMode`, `TEnterKeyHint` |
+| `AutoCapitalize` | `autocapitalize` | `TAutoCapitalize`: None, Sentences, Words, Characters |
+| `AutoCorrect` | `autocorrect` | ?bool → `on`/`off` |
+| `WritingSuggestions` | `writingsuggestions` | ?bool |
+| `AutoFocus` | `autofocus` | bool; one per page or dialog |
+| `Slot`, `Part`, `ExportParts` | `slot`, `part`, `exportparts` | shadow DOM names |
+| `ItemScope`, `ItemScopeType`, `ItemProp`, `ItemId`, `ItemRef` | `itemscope`, `itemtype`, `itemprop`, `itemid`, `itemref` | microdata |
+| `Role`, `Aria`, `Dataset` | `role`, `aria-*`, `data-*` | |
+
+### Keyboard Shortcuts (4.4.0, #1408)
+
+| Property | Renders | Values |
+|---|---|---|
+| `KeyShortcuts` | `aria-keyshortcuts`, `data-prado-keyshortcuts` | normalized by [TKeyShortcuts](TKeyShortcuts.md), e.g. `Control+S Meta+S` |
+| `KeyShortcutScope` | value of `data-prado-keyshortcuts` | control ID → its ClientID; an unknown ID is used as an element ID; `''` page-wide |
+| `KeyShortcutAllowReserved` | `data-prado-keyshortcuts-reserved` | bool; a reserved shortcut without it throws `webcontrol_keyshortcuts_reserved` on render |
+
+Rendering registers the `keyshortcuts` package; the `Prado.KeyShortcuts` registry clicks a button or link and focuses a field. `TCheckBox` and `TRadioButton` render the attributes on their `<input>` (`addKeyShortcutsAttributesToRender()`). `getKeyShortcutsAttributes()` returns the attribute map that `TCallbackPageStateTracker` sends when a callback changes the properties. `Aria['keyshortcuts']` alone only announces keys; the property wins when both are set.
+
+`ItemScopeType` is not named `ItemType` because data items (`TRepeaterItem`, `TDataGridItem`, `TDataListItem`) use `ItemType` for their `TListItemType`. `copyBaseAttributes()` copies each group by its `TWebControlAttribute` bit; `TCallbackPageStateTracker` updates them on the client during a callback, except `AutoFocus`, which applies only on load.
 
 ---
 
@@ -38,7 +68,7 @@ $text = $this->username->Text;
 | Property | Description |
 |----------|-------------|
 | `TextMode` | `SingleLine`, `MultiLine`, `Password` |
-| `MaxLength` | Max characters (not applied in MultiLine) |
+| `MaxLength`, `MinLength` | Character limits (`maxlength`, `minlength`) |
 | `ReadOnly` | Render as readonly input |
 | `AutoPostBack` | Post form on change |
 | `AutoCompleteType` | HTML autocomplete hint |

@@ -72,6 +72,23 @@ describe('Prado.WebUI validator classes exist', () => {
 	});
 });
 
+// ─── TCaptchaValidator — the token stays on the server ───────────────────────
+
+describe('TCaptchaValidator.prototype.evaluateIsValid', () => {
+	function evaluate(value) {
+		return WebUI.TCaptchaValidator.prototype.evaluateIsValid.call({ getValidationValue: () => value });
+	}
+
+	it('requires an input', () => {
+		expect(evaluate('')).toBe(false);
+		expect(evaluate('   ')).toBe(false);
+	});
+
+	it('accepts any input for the server to compare', () => {
+		expect(evaluate('aBcD')).toBe(true);
+	});
+});
+
 // ─── TBaseValidator.convert — type conversion (pure logic, no DOM) ────────────
 //
 // convert() delegates to String.prototype.toInteger / toDouble / SimpleParse
@@ -292,6 +309,255 @@ describe('TRequiredFieldValidator', () => {
 		input.value = 'placeholder';
 		v.validate();
 		expect(v.isValid).toBe(false);
+	});
+});
+
+// ─── Validator ARIA wiring (aria-describedby / aria-invalid) ─────────────────
+//
+// A validator links its message to the validated control with aria-describedby
+// and toggles aria-invalid on the control as validity changes.  When several
+// validators share a control, aria-invalid only clears once the validator that
+// last marked it invalid passes (mirrors the CSS lastValidator ownership).
+
+describe('validator ARIA wiring', () => {
+	let form, input, span, span2;
+
+	beforeEach(() => {
+		form  = document.createElement('form');
+		form.id = 'ariaForm';
+
+		input = document.createElement('input');
+		input.id   = 'ariaInput';
+		input.type = 'text';
+
+		span  = document.createElement('span');
+		span.id = 'ariaValidator';
+
+		span2 = document.createElement('span');
+		span2.id = 'ariaValidator2';
+
+		form.appendChild(input);
+		form.appendChild(span);
+		form.appendChild(span2);
+		document.body.appendChild(form);
+
+		new ValidationManager({ FormID: 'ariaForm' });
+	});
+
+	afterEach(() => {
+		document.body.removeChild(form);
+		delete Validation.managers['ariaForm'];
+	});
+
+	function makeValidator(id) {
+		return new WebUI.TRequiredFieldValidator({
+			ID:               id,
+			FormID:           'ariaForm',
+			ControlToValidate:'ariaInput',
+			ErrorMessage:     '*',
+			Enabled:          true,
+		});
+	}
+
+	it('links the message to the control via aria-describedby on construction', () => {
+		makeValidator('ariaValidator');
+		expect(input.getAttribute('aria-describedby')).toBe('ariaValidator');
+	});
+
+	it('appends to an existing aria-describedby without duplicating', () => {
+		input.setAttribute('aria-describedby', 'existingHelp');
+		makeValidator('ariaValidator');
+		expect(input.getAttribute('aria-describedby')).toBe('existingHelp ariaValidator');
+		// A second construction with the same message id must not duplicate.
+		makeValidator('ariaValidator');
+		expect(input.getAttribute('aria-describedby')).toBe('existingHelp ariaValidator');
+	});
+
+	it('sets aria-invalid=true on the control when validation fails', () => {
+		const v = makeValidator('ariaValidator');
+		input.value = '';
+		v.validate();
+		expect(input.getAttribute('aria-invalid')).toBe('true');
+	});
+
+	it('clears aria-invalid to false when validation passes', () => {
+		const v = makeValidator('ariaValidator');
+		input.value = '';
+		v.validate();
+		expect(input.getAttribute('aria-invalid')).toBe('true');
+		input.value = 'ok';
+		v.validate();
+		expect(input.getAttribute('aria-invalid')).toBe('false');
+	});
+
+	it('keeps aria-invalid=true when a non-owning validator passes while the owner fails', () => {
+		// A required validator (owner of the invalid state) plus a datatype
+		// validator that treats an empty value as valid.
+		const required = makeValidator('ariaValidator');
+		const dataType = new WebUI.TDataTypeValidator({
+			ID:               'ariaValidator2',
+			FormID:           'ariaForm',
+			ControlToValidate:'ariaInput',
+			ErrorMessage:     '*',
+			Enabled:          true,
+			DataType:         'Integer',
+		});
+
+		input.value = '';
+		required.validate();   // fails: empty -> owner of aria-invalid
+		expect(input.getAttribute('aria-invalid')).toBe('true');
+
+		dataType.validate();   // passes: empty is a valid Integer field
+		// The datatype validator does not own the invalid state, so it must not
+		// clear the required validator's aria-invalid.
+		expect(input.getAttribute('aria-invalid')).toBe('true');
+
+		// Supplying a valid integer satisfies both: aria-invalid clears.
+		input.value = '42';
+		required.validate();
+		dataType.validate();
+		expect(input.getAttribute('aria-invalid')).toBe('false');
+	});
+});
+
+// ─── change re-validation during a mouse press ──────────────────────────────
+
+describe('change re-validation during a mouse press', () => {
+	let form, input, span, button;
+
+	beforeEach(() => {
+		vi.useFakeTimers();
+		form  = document.createElement('form');
+		form.id = 'pressForm';
+
+		input = document.createElement('input');
+		input.id   = 'pressInput';
+		input.type = 'text';
+
+		span  = document.createElement('span');
+		span.id = 'pressValidator';
+
+		button = document.createElement('input');
+		button.type = 'submit';
+
+		form.appendChild(input);
+		form.appendChild(span);
+		form.appendChild(button);
+		document.body.appendChild(form);
+
+		new ValidationManager({ FormID: 'pressForm' });
+	});
+
+	afterEach(() => {
+		document.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+		vi.runAllTimers();
+		vi.useRealTimers();
+		document.body.removeChild(form);
+		delete Validation.managers['pressForm'];
+	});
+
+	/**
+	 * Builds a required field validator, fails it, then fixes the value.
+	 */
+	function failThenFix(display) {
+		const v = new WebUI.TRequiredFieldValidator({
+			ID:               'pressValidator',
+			FormID:           'pressForm',
+			ControlToValidate:'pressInput',
+			ErrorMessage:     '*',
+			Enabled:          true,
+			Display:          display,
+		});
+		input.value = '';
+		v.validate();
+		expect(v.isValid).toBe(false);
+		input.value = 'fixed';
+		return v;
+	}
+
+	function press(target, buttonIndex = 0) {
+		target.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, button: buttonIndex }));
+	}
+
+	function change() {
+		input.dispatchEvent(new Event('change', { bubbles: true }));
+	}
+
+	it('afterPress runs the callback at once without a press', () => {
+		const callback = vi.fn();
+		Validation.afterPress(callback);
+		expect(callback).toHaveBeenCalledTimes(1);
+	});
+
+	it('re-validates at once on change without a press', () => {
+		const v = failThenFix('Dynamic');
+		change();
+		expect(v.isValid).toBe(true);
+		expect(span.style.display).toBe('none');
+	});
+
+	it('keeps a Dynamic message in place until the press ends', () => {
+		const v = failThenFix('Dynamic');
+		press(button);
+		change();
+		expect(v.isValid).toBe(false);
+		expect(span.style.display).toBe('');
+
+		button.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+		// The click dispatches before the waiting re-validation runs
+		expect(span.style.display).toBe('');
+		vi.runAllTimers();
+		expect(v.isValid).toBe(true);
+		expect(span.style.display).toBe('none');
+		expect(input.getAttribute('aria-invalid')).toBe('false');
+	});
+
+	it('keeps a Fixed message visible until the press ends', () => {
+		failThenFix('Fixed');
+		press(button);
+		change();
+		expect(span.style.visibility).toBe('visible');
+		document.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+		vi.runAllTimers();
+		expect(span.style.visibility).toBe('hidden');
+	});
+
+	it('updates the validation summary after the press ends', () => {
+		const summary = document.createElement('div');
+		summary.id = 'pressSummary';
+		form.appendChild(summary);
+		new WebUI.TValidationSummary({ ID: 'pressSummary', FormID: 'pressForm', Display: 'Dynamic', ShowSummary: true });
+		failThenFix('None');
+		Validation.managers['pressForm'].updateSummary();
+		expect(summary.style.display).toBe('');
+
+		press(button);
+		change();
+		expect(summary.style.display).toBe('');
+		document.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+		vi.runAllTimers();
+		expect(summary.style.display).toBe('none');
+	});
+
+	it('does not wait for a secondary mouse button', () => {
+		const v = failThenFix('Dynamic');
+		press(button, 2);
+		change();
+		expect(v.isValid).toBe(true);
+	});
+
+	it.each([
+		['a drag end', () => document.dispatchEvent(new Event('dragend', { bubbles: true }))],
+		['the window losing focus', () => window.dispatchEvent(new Event('blur'))],
+	])('ends the press on %s', (_name, release) => {
+		const v = failThenFix('Dynamic');
+		press(button);
+		change();
+		expect(v.isValid).toBe(false);
+		release();
+		expect(Validation.pressing).toBe(false);
+		vi.runAllTimers();
+		expect(v.isValid).toBe(true);
 	});
 });
 

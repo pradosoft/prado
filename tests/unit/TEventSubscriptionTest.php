@@ -1,7 +1,11 @@
 <?php
 
+namespace Prado\Test\Unit;
+
 use Prado\TEventSubscription;
 use Prado\TComponent;
+use Prado\Collections\TMap;
+use Prado\Exceptions\TInvalidOperationException;
 
 
 class EventSubscriptionComponent extends TComponent
@@ -16,7 +20,7 @@ class TTestEventSubscription extends TEventSubscription
 }
 
 
-class TEventSubscriptionTest extends PHPUnit\Framework\TestCase
+class TEventSubscriptionTest extends \PHPUnit\Framework\TestCase
 {
 	public $component = null;
 	
@@ -75,7 +79,7 @@ class TEventSubscriptionTest extends PHPUnit\Framework\TestCase
 		$this->subscription = new $this->_baseClass();
 		
 		$this->subscription->setComponent($this->component);
-		self::assertInstanceOf(WeakReference::class, $this->subscription->getComponent(true));
+		self::assertInstanceOf(\WeakReference::class, $this->subscription->getComponent(true));
 	}
 
 	public function testCollection_Array()
@@ -108,6 +112,28 @@ class TEventSubscriptionTest extends PHPUnit\Framework\TestCase
 		
 		self::expectException(TInvalidOperationException::class);
 		$this->subscription->setCollection(new TMap());
+	}
+
+	public function testGetArray_UnknownEvent_ReturnsNull()
+	{
+		$this->subscription = new $this->_baseClass($this->component, 'onNoSuchEvent');
+		self::assertNull($this->subscription->getArray());
+	}
+
+	public function testSetComponentAndEvent_WhileSubscribed_Throws()
+	{
+		$this->subscription = new $this->_baseClass($this->component, 'onEvent', function ($sender, $param) {});
+		self::assertTrue($this->subscription->getIsSubscribed());
+
+		try {
+			$this->subscription->setComponent(new EventSubscriptionComponent());
+			self::fail('setComponent() did not throw while subscribed.');
+		} catch (TInvalidOperationException $e) {
+			self::assertEquals('eventsubscription_no_change', $e->getErrorCode());
+		}
+
+		self::expectException(TInvalidOperationException::class);
+		$this->subscription->setEvent('onEvent');
 	}
 
 }

@@ -1,0 +1,15 @@
+<%@ MasterClass="" %><!DOCTYPE html>
+<html data-page="csp-report-test">
+<head>
+<meta charset="UTF-8">
+<title>CSP Reporting Test – <%= $this->Action %></title>
+</head>
+<body>
+<div id="action"><%= $this->Action %></div>
+
+<!-- Inline script: violates script-src 'self'; triggers report-uri POST -->
+<script id="inline-script">document.documentElement.dataset.inlineScriptRan = '1';</script>
+
+<div id="ready">ready</div>
+</body>
+</html>

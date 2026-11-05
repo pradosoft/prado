@@ -12,7 +12,7 @@ Active counterpart to TCheckBox with AutoPostBack enabled by default. Text and C
 
 ## Key Properties/Methods
 
-- `setText($value)` - Sets text with client-side update
+- `setText($value)` - Sets text with client-side update, HTML-encoded when `Encode` is true (4.4.0)
 - `setChecked($value)` - Sets checked state with client-side update
 - `raiseCallbackEvent($param)` - Raises callback event
 - `onCallback($param)` - Event raised when callback is requested

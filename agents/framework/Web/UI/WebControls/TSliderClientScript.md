@@ -18,4 +18,4 @@ TSliderClientScript manages client-side slider events. It extends TClientSideOpt
 ## See Also
 
 - [TSlider](./TSlider.md)
-- [TClientSideOptions](./TClientSideOptions.md)
+- [TClientSideOptions](../TClientSideOptions.md)

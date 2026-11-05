@@ -23,5 +23,5 @@ THiddenField displays a hidden input field on a Web page. The value can be acces
 
 ## See Also
 
-- [TControl](./TControl.md)
-- [IPostBackDataHandler](./IPostBackDataHandler.md)
+- [TControl](../TControl.md)
+- [IPostBackDataHandler](../IPostBackDataHandler.md)

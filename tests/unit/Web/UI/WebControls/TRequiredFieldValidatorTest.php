@@ -1,17 +1,22 @@
 <?php
 
+
+namespace Prado\Test\Unit\Web\UI\WebControls;
+
 use Prado\Web\UI\WebControls\TRequiredFieldValidator;
 use Prado\Web\UI\WebControls\TTextBox;
 use Prado\Web\UI\WebControls\TDropDownList;
 use Prado\Web\UI\WebControls\TListItem;
 use Prado\Web\UI\WebControls\TRadioButton;
-use Prado\Web\UI\THtmlWriter;
-use Prado\IO\TTextWriter;
 use Prado\Exceptions\TConfigurationException;
 use PHPUnit\Framework\TestCase;
+use Prado\Test\Unit\Harness\Traits\TWebControlRenderTrait;
+use Prado\Test\Unit\PradoUnit;
 
 class TRequiredFieldValidatorTest extends TestCase
 {
+	use TWebControlRenderTrait;
+
 	private function createPageWithControls()
 	{
 		$page = new \Prado\Web\UI\TPage();
@@ -30,45 +35,51 @@ class TRequiredFieldValidatorTest extends TestCase
 		return $validator;
 	}
 
-	private function render($control)
-	{
-		$tw = new TTextWriter();
-		$writer = new THtmlWriter($tw);
-		$control->render($writer);
-		return $tw->flush();
-	}
-
 	private function invokeEvaluateIsValid($validator)
 	{
-		$method = new ReflectionMethod($validator, 'evaluateIsValid');
-		$method->setAccessible(true);
-		return $method->invoke($validator);
+		return PradoUnit::invoke($validator, 'evaluateIsValid');
 	}
 
 	private function invokeGetClientScriptOptions($validator)
 	{
-		$method = new ReflectionMethod($validator, 'getClientScriptOptions');
-		$method->setAccessible(true);
-		return $method->invoke($validator);
+		return PradoUnit::invoke($validator, 'getClientScriptOptions');
 	}
 
 	private function getControlPromptValue($validator)
 	{
-		$method = new ReflectionMethod($validator, 'getControlPromptValue');
-		$method->setAccessible(true);
-		return $method->invoke($validator);
+		return PradoUnit::invoke($validator, 'getControlPromptValue');
 	}
 
 	private function getClientClassName($validator)
 	{
-		$method = new ReflectionMethod($validator, 'getClientClassName');
-		$method->setAccessible(true);
-		return $method->invoke($validator);
+		return PradoUnit::invoke($validator, 'getClientClassName');
 	}
 
 	// ================================================================================
 	// Constructor and Default State Tests
 	// ================================================================================
+
+	public function testEncodeRendersAndSendsEncodedMessages()
+	{
+		[$page, $textbox] = $this->createPageWithControls();
+		$form = new \Prado\Web\UI\TForm();
+		$form->setID('form1');
+		$page->setForm($form);
+		$validator = $this->createValidator($page, $textbox);
+		$validator->setErrorMessage('<b>a & b</b>');
+		$this->assertFalse($validator->getEncode());
+		$this->assertSame('<b>a & b</b>', $this->renderContents($validator));
+		$this->assertArrayNotHasKey('Encode', $this->invokeGetClientScriptOptions($validator));
+
+		$validator->setEncode(true);
+		$this->assertTrue($validator->getEncode());
+		$this->assertSame('&lt;b&gt;a & b&lt;/b&gt;', $this->renderContents($validator));
+		$this->assertTrue($this->invokeGetClientScriptOptions($validator)['Encode']);
+
+		// Text takes precedence over ErrorMessage, and is encoded too
+		$validator->setText('<i>');
+		$this->assertSame('&lt;i&gt;', $this->renderContents($validator));
+	}
 
 	public function testSetForeColorToRed()
 	{

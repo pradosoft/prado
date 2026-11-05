@@ -1,7 +1,7 @@
 # Web/UI/JuiControls/IJuiOptions
 
 ### Directories
-[framework](./INDEX.md) / [Web](./Web/INDEX.md) / [UI](./Web/UI/INDEX.md) / [JuiControls](./Web/UI/JuiControls/INDEX.md) / **`IJuiOptions`**
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [JuiControls](INDEX.md) / **`IJuiOptions`**
 
 **Location:** `framework/Web/UI/JuiControls/IJuiOptions.php`
 **Namespace:** `Prado\Web\UI\JuiControls`

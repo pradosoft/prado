@@ -24,7 +24,7 @@ THttpCookie class stores a single HTTP cookie, including properties such as name
 - `Path` (string): The path on the server where the cookie will be available (default: '/')
 - `Expire` (int): The time the cookie expires as Unix timestamp (default: 0 - session cookie)
 - `Secure` (bool): Whether the cookie should only be transmitted over HTTPS (default: false)
-- `HttpOnly` (bool): Whether the cookie value will be unavailable to JavaScript (default: false)
+- `HttpOnly` (bool): Whether the cookie value will be unavailable to JavaScript (default: true since 4.4.0; false before)
 - `SameSite` ([THttpCookieSameSite](./THttpCookieSameSite.md)): SameSite policy for cross-site requests (default: Lax)
 
 ## Constructor
@@ -60,6 +60,5 @@ $cookie->setDomain('.example.com');
 $cookie->setPath('/');
 $cookie->setExpire(time() + 3600); // 1 hour from now
 $cookie->setSecure(true);
-$cookie->setHttpOnly(true);
 $cookie->setSameSite([THttpCookieSameSite](./THttpCookieSameSite.md)::Strict);
 ```

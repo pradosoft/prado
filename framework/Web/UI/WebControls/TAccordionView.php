@@ -53,6 +53,12 @@ class TAccordionView extends \Prado\Web\UI\WebControls\TWebControl
 		parent::addAttributesToRender($writer);
 
 		$writer->addAttribute('id', $this->getClientID());
+		// The view body is the disclosure region its header controls. Navigation
+		// headers (NavigateUrl) are plain links, not part of the pattern.
+		if ($this->getNavigateUrl() === '') {
+			$writer->addAttribute('role', 'region');
+			$writer->addAttribute('aria-labelledby', $this->getClientID() . '_0');
+		}
 	}
 
 	/**
@@ -144,6 +150,15 @@ class TAccordionView extends \Prado\Web\UI\WebControls\TWebControl
 	{
 		if ($this->getVisible(false) && $this->getPage()->getClientSupportsJavaScript()) {
 			$writer->addAttribute('id', $this->getClientID() . '_0');
+
+			// A JS-toggling header is the focusable disclosure button for its
+			// region; each header is independently reachable by Tab.
+			if ($this->getNavigateUrl() === '') {
+				$writer->addAttribute('role', 'button');
+				$writer->addAttribute('aria-expanded', $this->getActive() ? 'true' : 'false');
+				$writer->addAttribute('aria-controls', $this->getClientID());
+				$writer->addAttribute('tabindex', '0');
+			}
 
 			$style = $this->getActive() ? $this->getParent()->getActiveHeaderStyle() : $this->getParent()->getHeaderStyle();
 

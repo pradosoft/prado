@@ -12,6 +12,10 @@ namespace Prado\Caching;
 
 use Prado\TPropertyValue;
 use Prado\Exceptions\TConfigurationException;
+use Prado\IO\HttpClient\THttpClient;
+use Prado\IO\HttpClient\THttpClientException;
+use Prado\Web\THttpHeaderName;
+use Prado\Web\TMediaType;
 
 /**
  * TEtcdCache class
@@ -22,15 +26,17 @@ use Prado\Exceptions\TConfigurationException;
  * consensus algorithm to manage a highly-available replicated log.
  *
  * By definition, cache does not ensure the existence of a value
- * even if it never expires. Cache is not meant to be an persistent storage.
+ * even if it never expires. Cache is not meant to be a persistent storage.
  *
  * To use this module, an etcd instance must be running and reachable on the host
  * specified by {@see setHost} and the port specified by {@see setPort} which
  * default to 'localhost:2379'. All values are stored within a directory set by
  * {@see setDir} which defaults to 'pradocache'.
  *
- * TEtcdCache only supports etcd API v2 and uses cURL to fire the HTTP
- * GET/PUT/DELETE commands, thus the PHP cURL extension is also needed.
+ * TEtcdCache only supports etcd API v2. It sends the HTTP GET/PUT/DELETE
+ * commands through a {@see THttpClient}, which uses cURL when the extension is
+ * loaded and PHP stream wrappers (`allow_url_fopen`) otherwise. Set
+ * {@see setDownloader Downloader} to configure the transport, such as its Timeout.
  *
  * Some usage examples of TEtcdCache are as follows,
  * ```php
@@ -43,41 +49,76 @@ use Prado\Exceptions\TConfigurationException;
  * If loaded, TEtcdCache will register itself with {@see \Prado\TApplication} as the
  * cache module. It can be accessed via {@see \Prado\TApplication::getCache()}.
  *
- * TEtcdCache may be configured in application configuration file as follows
+ * XML configuration style:
+ * ```xml
+ * <modules>
+ *   <module id="cache" class="Prado\Caching\TEtcdCache" Host="localhost" Port="2379" Dir="pradocache" />
+ * </modules>
+ * ```
+ *
+ * PHP configuration style:
  * ```php
- * <module id="cache" class="Prado\Caching\TEtcdCache" Host="localhost" Port="2379" Dir="pradocache" />
+ * return [
+ *     'modules' => [
+ *         'cache' => [
+ *             'class' => 'Prado\Caching\TEtcdCache',
+ *             'properties' => [
+ *                 'Host' => 'localhost',
+ *                 'Port' => '2379',
+ *                 'Dir' => 'pradocache',
+ *             ],
+ *         ],
+ *     ],
+ * ];
  * ```
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @since 4.0
  */
-class TEtcdCache extends TCache
+class TEtcdCache extends TSerializingCache
 {
 	/**
 	 * @var string the etcd host
 	 */
-	protected $_host = 'localhost';
+	private $_host = 'localhost';
 
 	/**
 	 * @var int the etcd port
 	 */
-	protected $_port = 2379;
+	private $_port = 2379;
 
 	/**
 	 * @var string the directory to store values in
 	 */
-	protected $_dir = 'pradocache';
+	private $_dir = 'pradocache';
+
+	/**
+	 * @var ?THttpClient the transport for etcd requests, created on first use when null.
+	 */
+	private ?THttpClient $_downloader = null;
+
+	/**
+	 * @return bool whether {@see THttpClient::create()} has a transport to build, so the
+	 *   default {@see getDownloader() Downloader} can be created.
+	 * @since 4.4.0
+	 */
+	public static function getIsAvailable(): bool
+	{
+		return THttpClient::getHasAvailableTransport();
+	}
 
 	/**
 	 * Initializes this module.
-	 * This method is required by the IModule interface.
-	 * @param \Prado\Xml\TXmlElement $config configuration for this module, can be null
-	 * @throws TConfigurationException if cURL extension is not installed
+	 * This method is required by the IModule interface.  A configured
+	 * {@see setDownloader() Downloader} is taken as able to run; without one, the default
+	 * transport must be available.
+	 * @param null|array|\Prado\Xml\TXmlElement $config configuration for this module, can be null
+	 * @throws TConfigurationException if no Downloader is set and no HTTP transport is available
 	 */
 	public function init($config)
 	{
-		if (!function_exists('curl_version')) {
-			throw new TConfigurationException('curl_extension_required');
+		if ($this->_downloader === null && !static::getIsAvailable()) {
+			throw new TConfigurationException('etcdcache_transport_required');
 		}
 		parent::init($config);
 	}
@@ -97,6 +138,7 @@ class TEtcdCache extends TCache
 	 */
 	public function setHost($value)
 	{
+		$this->assertUninitialized('Host');
 		$this->_host = TPropertyValue::ensureString($value);
 	}
 
@@ -115,12 +157,12 @@ class TEtcdCache extends TCache
 	 */
 	public function setPort($value)
 	{
+		$this->assertUninitialized('Port');
 		$this->_port = TPropertyValue::ensureInteger($value);
 	}
 
 	/**
-	 * Sets the directory to store values in, defaults to 'pradocache'.
-	 * @return string the directory to store values in
+	 * @return string the directory to store values in. Defaults to 'pradocache'.
 	 */
 	public function getDir()
 	{
@@ -128,108 +170,138 @@ class TEtcdCache extends TCache
 	}
 
 	/**
-	 * Gets the directory to store values in.
 	 * @param string $value the directory to store values in
 	 */
 	public function setDir($value)
 	{
+		$this->assertUninitialized('Dir');
 		$this->_dir = TPropertyValue::ensureString($value);
 	}
 
 	/**
-	 * Retrieves a value from cache with a specified key.
-	 * This is the implementation of the method declared in the parent class.
+	 * Returns the HTTP client for etcd requests, creating one with {@see createDownloader()} on first access.
+	 * @return THttpClient the transport for etcd requests.
+	 * @since 4.4.0
+	 */
+	public function getDownloader(): THttpClient
+	{
+		if ($this->_downloader === null) {
+			$this->_downloader = $this->createDownloader();
+		}
+		return $this->_downloader;
+	}
+
+	/**
+	 * Sets the HTTP client for etcd requests.
+	 * @param THttpClient $value the transport for etcd requests.
+	 * @since 4.4.0
+	 */
+	public function setDownloader(THttpClient $value): void
+	{
+		$this->_downloader = $value;
+	}
+
+	/**
+	 * Creates the default HTTP client from {@see THttpClient::create()} with redirects disabled.
+	 * @return THttpClient the default transport for etcd requests.
+	 * @since 4.4.0
+	 */
+	protected function createDownloader(): THttpClient
+	{
+		$client = THttpClient::create();
+		$client->setFollowRedirects(false);
+		return $client;
+	}
+
+	/**
 	 * @param string $key a unique key identifying the cached value
-	 * @return false|string the value stored in cache, false if the value is not in the cache or expired.
+	 * @return false|string the serialized value on a hit, or `false` on a miss or expiry.
+	 * @since 4.4.0
 	 */
-	protected function getValue($key)
+	protected function getSerializedValue(string $key): false|string
 	{
-		$result = $this->request('GET', $this->_dir . '/' . $key);
-		return property_exists($result, 'errorCode') ? false : unserialize($result->node->value);
+		$result = $this->request('GET', $this->getDir() . '/' . $key);
+		return property_exists($result, 'errorCode') ? false : $result->node->value;
 	}
 
 	/**
-	 * Stores a value identified by a key in cache.
-	 * This is the implementation of the method declared in the parent class.
-	 *
 	 * @param string $key the key identifying the value to be cached
-	 * @param string $value the value to be cached
+	 * @param string $value the serialized value to store
 	 * @param int $expire the number of seconds in which the cached value will expire. 0 means never expire.
 	 * @return bool true if the value is successfully stored into cache, false otherwise
+	 * @since 4.4.0
 	 */
-	protected function setValue($key, $value, $expire)
+	protected function setSerializedValue(string $key, string $value, int $expire): bool
 	{
-		$value = ['value' => serialize($value)];
+		$params = ['value' => $value];
 		if ($expire > 0) {
-			$value['ttl'] = $expire;
+			$params['ttl'] = $expire;
 		}
-		$result = $this->request('PUT', $this->_dir . '/' . $key, $value);
+		$result = $this->request('PUT', $this->getDir() . '/' . $key, $params);
 		return !property_exists($result, 'errorCode');
 	}
 
 	/**
-	 * Stores a value identified by a key into cache if the cache does not contain this key.
-	 * This is the implementation of the method declared in the parent class.
-	 *
 	 * @param string $key the key identifying the value to be cached
-	 * @param string $value the value to be cached
+	 * @param string $value the serialized value to store
 	 * @param int $expire the number of seconds in which the cached value will expire. 0 means never expire.
 	 * @return bool true if the value is successfully stored into cache, false otherwise
+	 * @since 4.4.0
 	 */
-	protected function addValue($key, $value, $expire)
+	protected function addSerializedValue(string $key, string $value, int $expire): bool
 	{
-		$value = ['value' => serialize($value), 'prevExist' => 'false'];
+		$params = ['value' => $value, 'prevExist' => 'false'];
 		if ($expire > 0) {
-			$value['ttl'] = $expire;
+			$params['ttl'] = $expire;
 		}
-		$result = $this->request('PUT', $this->_dir . '/' . $key, $value);
+		$result = $this->request('PUT', $this->getDir() . '/' . $key, $params);
 		return !property_exists($result, 'errorCode');
 	}
 
 	/**
-	 * Deletes a value with the specified key from cache
-	 * This is the implementation of the method declared in the parent class.
 	 * @param string $key the key of the value to be deleted
-	 * @return bool if no error happens during deletion
+	 * @return bool true if no error happens during deletion
 	 */
 	protected function deleteValue($key)
 	{
-		$this->request('DELETE', $this->_dir . '/' . $key);
+		$this->request('DELETE', $this->getDir() . '/' . $key);
 		return true;
 	}
 
 	/**
 	 * Deletes all values from cache.
-	 * Be careful of performing this operation if the cache is shared by multiple applications.
-	 * @return bool if no error happens during flush
 	 */
 	public function flush()
 	{
-		$this->request('DELETE', $this->_dir . '?recursive=true');
+		$this->request('DELETE', $this->getDir() . '?recursive=true');
 		return true;
 	}
 
 	/**
-	 * This method does the actual cURL request by generating the method specific
-	 * URL, setting the cURL options and adding additional request parameters.
-	 * The etcd always returns a JSON string which is decoded and returned to
-	 * the calling method.
+	 * Sends a request to the etcd v2 keys API and returns the decoded JSON response.
+	 * Parameters are sent as an `application/x-www-form-urlencoded` body.
+	 * A response body that is not a JSON object decodes to an object whose `errorCode`
+	 * is the HTTP status code, so callers treat it as an etcd error.
 	 * @param string $method the HTTP method for the request (GET,PUT,DELETE)
-	 * @param string $key the the key to perform the action on (includes the directory)
-	 * @param array $value the additional post data to send with the request
+	 * @param string $key the key to perform the action on (includes the directory)
+	 * @param array $value the additional form parameters to send with the request
+	 * @throws THttpClientException when the etcd instance cannot be reached
 	 * @return \stdClass the response from the etcd instance
 	 */
 	protected function request($method, $key, $value = [])
 	{
-		$curl = curl_init("http://{$this->_host}:{$this->_port}/v2/keys/{$key}");
-		curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
-		curl_setopt($curl, CURLOPT_HEADER, false);
-		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($curl, CURLOPT_FOLLOWLOCATION, false);
-		curl_setopt($curl, CURLOPT_HTTPHEADER, ['Content-Type: application/x-www-form-urlencoded']);
-		curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($value));
-		$response = curl_exec($curl);
-		curl_close($curl);
-		return json_decode($response);
+		$headers = [];
+		$body = null;
+		if ($value !== []) {
+			$headers[THttpHeaderName::ContentType] = TMediaType::FORM;
+			$body = http_build_query($value);
+		}
+		$url = "http://{$this->getHost()}:{$this->getPort()}/v2/keys/{$key}";
+		$response = $this->getDownloader()->download($method, $url, $headers, $body);
+		$result = json_decode($response->getBody());
+		if (!($result instanceof \stdClass)) {
+			$result = (object) ['errorCode' => $response->getStatusCode(), 'message' => 'Invalid etcd response.'];
+		}
+		return $result;
 	}
 }

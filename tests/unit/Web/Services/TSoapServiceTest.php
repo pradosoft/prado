@@ -1,0 +1,156 @@
+<?php
+
+/**
+ * TSoapServiceTest
+ *
+ * Unit tests for {@see \Prado\Web\Services\TSoapService}.
+ *
+ * Covers configuring a soap server from a PHP application configuration, which
+ * the XML configuration has always supported.
+ *
+ * @author Brad Anderson <belisoful@icloud.com>
+ */
+
+namespace Prado\Test\Unit\Web\Services;
+
+use Prado\Web\Services\TSoapServer;
+use Prado\Web\Services\TSoapService;
+use Prado\Test\Unit\Harness\Traits\TNestedPathTrait;
+
+/**
+ * Provider named by the configurations under test.
+ */
+class TTestSoapServiceProvider
+{
+	/**
+	 * Returns a quote.
+	 * @param string $symbol the symbol to quote
+	 * @return float the quote
+	 * @soapmethod
+	 */
+	public function getQuote($symbol)
+	{
+		return 0.0;
+	}
+}
+
+/**
+ * Server named by a PHP configuration, to show the class key is honored.
+ */
+class TTestSoapServiceServer extends TSoapServer
+{
+}
+
+/**
+ * A soap server carrying a nested 'Cfg' property, to observe the order the
+ * service applies a server's configured properties in.
+ */
+class TNestedPathSoapServer extends TSoapServer
+{
+	use TNestedPathTrait;
+}
+
+class TSoapServiceTest extends \PHPUnit\Framework\TestCase
+{
+	private string $configurationType;
+
+	protected function setUp(): void
+	{
+		$application = \Prado\Prado::getApplication();
+		$this->configurationType = $application->getConfigurationType();
+		$application->setConfigurationType(\Prado\TApplication::CONFIG_TYPE_PHP);
+	}
+
+	protected function tearDown(): void
+	{
+		\Prado\Prado::getApplication()->setConfigurationType($this->configurationType);
+	}
+
+	/**
+	 * Builds the server a PHP configuration describes.
+	 * @param array $config the configuration to load
+	 * @param string $id the server to build
+	 */
+	protected function buildServer(array $config, string $id): TSoapServer
+	{
+		$service = new TSoapService();
+		$reflection = new \ReflectionClass(TSoapService::class);
+
+		$load = $reflection->getMethod('loadConfig');
+		$load->invoke($service, $config);
+
+		$serverID = $reflection->getProperty('_serverID');
+		$serverID->setValue($service, $id);
+
+		$create = $reflection->getMethod('createServer');
+		return $create->invoke($service);
+	}
+
+	/**
+	 * A PHP configuration used to store a plain array, which createServer() could
+	 * not read, so configuring a soap server in PHP raised an Error.
+	 */
+	public function testAPhpConfigurationBuildsTheServer()
+	{
+		$server = $this->buildServer(['soap' => ['stockquote' => ['properties' => [
+			'provider' => TTestSoapServiceProvider::class,
+			'sessionpersistent' => 'true',
+			'wsdlstyle' => 'document',
+		]]]], 'stockquote');
+
+		$this->assertInstanceOf(TSoapServer::class, $server);
+		$this->assertSame(TTestSoapServiceProvider::class, $server->getProvider());
+		$this->assertTrue($server->getSessionPersistent());
+		$this->assertSame('document', $server->getWsdlStyle());
+	}
+
+	/**
+	 * A server's configured properties apply parent path first, so a nested value
+	 * survives whatever order the configuration declares them in.
+	 */
+	public function testAConfigurationAppliesParentPathBeforeNestedPath()
+	{
+		foreach ([
+			['Cfg.Size' => 'child', 'Cfg' => 'value'],
+			['Cfg' => 'value', 'Cfg.Size' => 'child'],
+		] as $properties) {
+			$server = $this->buildServer(['soap' => ['quote' => [
+				'class' => TNestedPathSoapServer::class,
+				'properties' => ['provider' => TTestSoapServiceProvider::class] + $properties,
+			]]], 'quote');
+
+			$this->assertSame('child', $server->getCfg()->getSize(), 'declared: ' . implode(', ', array_keys($properties)));
+		}
+	}
+
+	public function testAPhpConfigurationHonorsTheServerClass()
+	{
+		$server = $this->buildServer(['soap' => ['quote' => [
+			'class' => TTestSoapServiceServer::class,
+			'properties' => ['provider' => TTestSoapServiceProvider::class],
+		]]], 'quote');
+
+		$this->assertInstanceOf(TTestSoapServiceServer::class, $server);
+	}
+
+	public function testAPhpConfigurationWithoutAServerIsAccepted()
+	{
+		$service = new TSoapService();
+		$load = new \ReflectionMethod(TSoapService::class, 'loadConfig');
+		$load->invoke($service, ['other' => []]);
+
+		$servers = new \ReflectionProperty(TSoapService::class, '_servers');
+		$this->assertSame([], $servers->getValue($service));
+	}
+
+	public function testADuplicatedServerIdIsRefused()
+	{
+		$this->expectException(\Prado\Exceptions\TConfigurationException::class);
+
+		$service = new TSoapService();
+		$load = new \ReflectionMethod(TSoapService::class, 'loadConfig');
+		$config = ['soap' => ['quote' => ['properties' => []]]];
+		$load->invoke($service, $config);
+		$load->invoke($service, $config);
+	}
+}

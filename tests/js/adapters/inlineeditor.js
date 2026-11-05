@@ -21,5 +21,9 @@ loadScript('framework/Web/Javascripts/source/prado/activecontrols/inlineeditor.j
 export const CallbackRequest    = global.Prado.CallbackRequest;
 export const Registry           = global.Prado.Registry;
 
-// The control under test
-export const TInPlaceTextBox    = global.Prado.WebUI.TInPlaceTextBox;
+// The controls under test
+export const TInPlaceControlBase   = global.Prado.WebUI.TInPlaceControlBase;
+export const EMPTY_ATTRIBUTE       = global.Prado.WebUI.TInPlaceControlBase.EMPTY_ATTRIBUTE;
+export const TInPlaceTextBox       = global.Prado.WebUI.TInPlaceTextBox;
+export const TInPlaceDropDownList  = global.Prado.WebUI.TInPlaceDropDownList;
+export const TInPlaceListBox       = global.Prado.WebUI.TInPlaceListBox;

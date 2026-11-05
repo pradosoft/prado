@@ -18,8 +18,8 @@ use Prado\TPropertyValue;
  * TTableCell displays a table cell on a Web page. Content of the table cell
  * is specified by the {@see setText Text} property. If {@see setText Text}
  * is empty, the body contents enclosed by the table cell component tag are rendered.
- * Note, {@see setText Text} is not HTML-encoded when displayed. So make sure
- * it does not contain dangerous characters.
+ * {@see setText Text} renders as HTML unless {@see setEncode Encode} is true, which
+ * HTML-encodes it.
  *
  * The horizontal and vertical alignments of the contents in the cell
  * are specified via {@see setHorizontalAlign HorizontalAlign} and
@@ -29,12 +29,19 @@ use Prado\TPropertyValue;
  * and {@see setRowSpan RowSpan} properties. And the {@see setWrap Wrap} property
  * indicates whether the contents in the cell should be wrapped.
  *
+ * {@see setHeaders Headers} lists the header cells of a cell (`headers`), for a
+ * table whose headers a {@see TTableHeaderCell::setScope Scope} cannot describe,
+ * such as a header over a few columns of a few rows. Screen readers read those
+ * headers with the cell.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
  * @method TTableItemStyle getStyle()
  */
 class TTableCell extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDataRenderer
 {
+	use TEncodeTrait;
+
 	/**
 	 * @return string tag name for the table cell
 	 */
@@ -170,6 +177,7 @@ class TTableCell extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 		$this->setViewState('Text', $value, '');
 	}
 
+
 	/**
 	 * Returns the text content of the table cell.
 	 * This method is required by {@see \Prado\IDataRenderer}.
@@ -209,6 +217,46 @@ class TTableCell extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 		if (($rowspan = $this->getRowSpan()) > 0) {
 			$writer->addAttribute('rowspan', "$rowspan");
 		}
+		if (($headers = $this->getHeaders()) !== '') {
+			$writer->addAttribute('headers', $this->resolveHeaders($headers));
+		}
+	}
+
+	/**
+	 * Returns the client IDs of the header cells. An ID that finds a control
+	 * becomes its client ID; another ID is a client ID already.
+	 * @param string $headers space-separated header cell IDs
+	 * @return string space-separated client IDs
+	 * @since 4.4.0
+	 */
+	protected function resolveHeaders($headers)
+	{
+		$ids = [];
+		foreach (explode(' ', $headers) as $id) {
+			$ids[] = ($control = $this->findControl($id)) !== null ? $control->getClientID() : $id;
+		}
+		return implode(' ', $ids);
+	}
+
+	/**
+	 * @return string the IDs of the header cells of this cell, or '' if not set
+	 * @since 4.4.0
+	 */
+	public function getHeaders()
+	{
+		return $this->getViewState('Headers', '');
+	}
+
+	/**
+	 * Sets the header cells of this cell (`headers`). The IDs are the control IDs
+	 * of {@see TTableHeaderCell} controls, which render their client IDs, or client
+	 * IDs of other header cells.
+	 * @param string $value space-separated header cell IDs
+	 * @since 4.4.0
+	 */
+	public function setHeaders($value)
+	{
+		$this->setViewState('Headers', trim(preg_replace('/\s+/', ' ', TPropertyValue::ensureString($value))), '');
 	}
 
 	/**
@@ -218,7 +266,7 @@ class TTableCell extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	public function renderContents($writer)
 	{
 		if (($text = $this->getText()) !== '') {
-			$writer->write($text);
+			$writer->write($this->encodeText($text));
 		} elseif ($this->getHasControls()) {
 			parent::renderContents($writer);
 		} else {

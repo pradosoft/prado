@@ -46,49 +46,59 @@ use Prado\Xml\TXmlElement;
  *
  * Module XML configurations (and similarly PermissionFile) follows the format, eg:
  * ```xml
- * <module id="permissions" class="Prado\Security\Permissions\TPermissionsManager" DefaultRoles="Default" SuperRoles="Administrator">
- *	<role name="Developer" children="all, param_shell_permission, cron" />
- *	<role name="Manager" children="editor, change_user_role_permission, cron_shell" />
- *	<role name="cron_shell" children="cron_add_task, cron_update_task, cron_remove_task" />
- *	<role name="cron" children="cron_shell, cron_manage_log, cron_add_task, cron_update_task, cron_remove_task" />
- *  <role name="Default" children="register_user, blog_read_posts, blog_comment">
- *	<permissionrule name="param_shell_permission" action="deny" users="*" roles="" verb="*" IPs="" />
- *	<permissionrule name="cron_shell" action="allow" users="*" roles="Developer,cron_shell,cron_manage_log" verb="*" IPs="" />
- *	<permissionrule name="register_user" action="allow" users="?" />
- *	<permissionrule name="register_user" action="allow" roles="Manager" />
- *	<permissionrule name="change_profile" action="deny" users="?" priority="0" />
- *	<permissionrule name="blog_update_posts" class="Prado\Security\Permissions\TUserOwnerRule" Priority="5" />
- *	<permissionrule name="cron" action="allow" users="admin, user1, user2" roles="*" verb="*" IPs="*"  />
- *	<permissionrule name="blog_*" action="allow" users="admin, user1, user2" roles="*" verb="*" IPs="*"  />
- *	<permissionrule name="*" action="deny" priority="1000" />
- * </module>
+ * <modules>
+ *     <module id="permissions" class="Prado\Security\Permissions\TPermissionsManager" DefaultRoles="Default" SuperRoles="Administrator">
+ *         <role name="Developer" children="all, param_shell_permission, cron" />
+ *         <role name="Manager" children="editor, change_user_role_permission, cron_shell" />
+ *         <role name="cron_shell" children="cron_add_task, cron_update_task, cron_remove_task" />
+ *         <role name="cron" children="cron_shell, cron_manage_log, cron_add_task, cron_update_task, cron_remove_task" />
+ *         <role name="Default" children="register_user, blog_read_posts, blog_comment" />
+ *         <permissionrule name="param_shell_permission" action="deny" users="*" roles="" verb="*" IPs="" />
+ *         <permissionrule name="cron_shell" action="allow" users="*" roles="Developer,cron_shell,cron_manage_log" verb="*" IPs="" />
+ *         <permissionrule name="register_user" action="allow" users="?" />
+ *         <permissionrule name="register_user" action="allow" roles="Manager" />
+ *         <permissionrule name="change_profile" action="deny" users="?" priority="0" />
+ *         <permissionrule name="blog_update_posts" class="Prado\Security\Permissions\TUserOwnerRule" action="allow" priority="5" />
+ *         <permissionrule name="cron" action="allow" users="admin, user1, user2" roles="*" verb="*" IPs="*" />
+ *         <permissionrule name="blog_*" action="allow" users="admin, user1, user2" roles="*" verb="*" IPs="*" />
+ *         <permissionrule name="*" action="deny" priority="1000" />
+ *     </module>
+ * </modules>
  * ```
  *
  * and in PHP the same file would follow the following format, eg:
  * ```php
  * 'modules' => [
- * 'permissions' => ['class' => 'Prado\Security\Permissions\TPermissionsManager',
- * 		'properties' => ['DefaultRoles' => 'Default', 'SuperRoles' => "Administrator"],
- *		'roles' => [
- *			'Developer' => ['all', 'param_shell_permission', 'cron'],
- *			'Manager' => ['editor', 'change_user_role_permission', 'cron_shell'],
- *			'cron_shell' => ['cron_add_task', 'cron_update_task', 'cron_remove_task'],
- *			'cron' => ['cron_shell', 'cron_manage_log', 'cron_add_task', 'cron_update_task', 'cron_remove_task'],
- *			'Default' => ['register_user', 'blog_read_posts', 'blog_comment'],
- *		],
- * 		'permissionRules' => [
- *			[name => 'param_shell_permission', 'action' => 'deny', 'users' => '*', roles => '*', 'verb' => '*', 'IPs' =>''],
- *			[name => 'cron_shell', 'action' => 'allow', 'users' => 'Developer,cron_shell,cron_manage_log', roles => 'cron_shell', 'verb' => '*', 'IPs' =>''],
- *			[name => 'register_user', 'action' => 'allow', 'users' => '?'],
- *			[name => 'register_user', 'action' => 'allow', 'roles' => 'Manager'],
- *			[name => 'change_profile', 'action' => 'deny', 'users' => '?', 'priority' => '0'],
- *			[name => 'blog_update_posts', 'class' => 'Prado\Security\Permissions\TUserOwnerRule', 'priority' => '5'],
- *			[name => 'cron', 'action' => 'allow', 'users' => 'admin, user1, user2'],
- *			[name => 'blog_*', 'action' => 'allow', 'users' => 'admin, user1, user2'],
- *			[name => '*', 'action' => 'deny', 'priority' => 1000]
- *		]
- * ]
+ *     'permissions' => [
+ *         'class' => 'Prado\Security\Permissions\TPermissionsManager',
+ *         'properties' => ['DefaultRoles' => 'Default', 'SuperRoles' => 'Administrator'],
+ *         'roles' => [
+ *             'Developer' => ['all', 'param_shell_permission', 'cron'],
+ *             'Manager' => ['editor', 'change_user_role_permission', 'cron_shell'],
+ *             'cron_shell' => ['cron_add_task', 'cron_update_task', 'cron_remove_task'],
+ *             'cron' => ['cron_shell', 'cron_manage_log', 'cron_add_task', 'cron_update_task', 'cron_remove_task'],
+ *             'Default' => ['register_user', 'blog_read_posts', 'blog_comment'],
+ *         ],
+ *         'permissionrules' => [
+ *             ['name' => 'param_shell_permission', 'action' => 'deny', 'users' => '*', 'roles' => '', 'verb' => '*', 'ips' => ''],
+ *             ['name' => 'cron_shell', 'action' => 'allow', 'users' => '*', 'roles' => 'Developer,cron_shell,cron_manage_log', 'verb' => '*', 'ips' => ''],
+ *             ['name' => 'register_user', 'action' => 'allow', 'users' => '?'],
+ *             ['name' => 'register_user', 'action' => 'allow', 'roles' => 'Manager'],
+ *             ['name' => 'change_profile', 'action' => 'deny', 'users' => '?', 'priority' => '0'],
+ *             ['name' => 'blog_update_posts', 'class' => 'Prado\Security\Permissions\TUserOwnerRule', 'action' => 'allow', 'priority' => '5'],
+ *             ['name' => 'cron', 'action' => 'allow', 'users' => 'admin, user1, user2', 'roles' => '*', 'verb' => '*', 'ips' => '*'],
+ *             ['name' => 'blog_*', 'action' => 'allow', 'users' => 'admin, user1, user2', 'roles' => '*', 'verb' => '*', 'ips' => '*'],
+ *             ['name' => '*', 'action' => 'deny', 'priority' => '1000'],
+ *         ],
+ *     ],
+ * ],
  * ```
+ * XML attribute names and PHP keys are case-insensitive. The PHP keys are
+ * `roles`, `permissionrules`, and the rule keys `name`, `class`, `action`,
+ * `users`, `roles`, `verb`, `ips`, and `priority`. `<role>` and `<permissionrule>`
+ * elements are direct children of the module element. A `<permissionrule>` inside
+ * a `<role>` throws a {@see \Prado\Exceptions\TConfigurationException}. Every rule
+ * requires an `action` of "allow" or "deny", including a rule that names a `class`.
  *
  * In this example, "cron" is not a permission, but when used as a permission,
  * all children roles/permissions will receive the rule.  Permissions with children,
@@ -214,7 +224,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 	/** @var \Prado\Util\TDbParameterModule the database module providing runtime roles and rules */
 	private $_dbParameter;
 
-	/** @var numeric the priority of the module Rule, usually these are Allow User As Owner */
+	/** @var string default name of the parameter to load */
 	private $_parameter = 'configuration:TPermissionsManager:runtime';
 
 	/**
@@ -246,7 +256,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 	}
 
 	/**
-	 * @param array|TXmlElement $config the application configuration
+	 * @param null|array|TXmlElement $config the application configuration
 	 */
 	public function init($config)
 	{
@@ -352,7 +362,9 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 
 	/**
 	 * Loads the roles, children, and permission rules.
+	 * Keys and attribute names are case-insensitive in both PHP and XML configurations.
 	 * @param array|\Prado\Xml\TXmlElement $config configurations to parse
+	 * @throws TConfigurationException when a `<role>` contains a `<permissionrule>`.
 	 */
 	public function loadPermissionsData($config)
 	{
@@ -366,13 +378,18 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 			$roles = $config->getElementsByTagName('role');
 			$permissions = $config->getElementsByTagName('permissionrule');
 		} elseif (is_array($config)) {
+			$config = array_change_key_case($config);
 			$roles = $config['roles'] ?? [];
 			$permissions = $config['permissionrules'] ?? [];
 		}
 		foreach ($roles as $role => $properties) {
 			if ($isXml) {
-				$properties = array_change_key_case($properties->getAttributes()->toArray());
+				$element = $properties;
+				$properties = array_change_key_case($element->getAttributes()->toArray());
 				$role = $properties['name'] ?? '';
+				if ($element->getElementsByTagName('permissionrule', TXmlElement::SEARCH_DEPTH_FIRST)->getCount()) {
+					throw new TConfigurationException('permissions_role_rule_nested', $role);
+				}
 				$children = array_map('trim', explode(',', $properties['children'] ?? ''));
 			} else {
 				$children = $properties;
@@ -396,6 +413,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 				if (!is_array($properties)) {
 					throw new TConfigurationException('permissions_rule_invalid', $name);
 				}
+				$properties = array_change_key_case($properties);
 			}
 			if (is_numeric($name) && (!isset($properties[0]) || !$properties[0] instanceof TAuthorizationRule)) {
 				$name = strtolower($properties['name'] ?? '');
@@ -700,7 +718,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 	/**
 	 * Gets the children for a specific role in the hierarchy.
 	 * @param string $role the role to return its children
-	 * @return null|string[] the children of a specific role.
+	 * @return null|array<string, string[]>|string[] the children of a specific role.
 	 */
 	public function getHierarchyRoleChildren($role)
 	{

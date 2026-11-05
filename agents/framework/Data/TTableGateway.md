@@ -70,12 +70,12 @@ $rowsAffected = $gateway->deleteByPk(42);
 
 | Event | Parameter | Purpose |
 |-------|-----------|---------|
-| `OnCreateCommand` | [`TDataGatewayEventParameter`](./TDataGatewayEventParameter.md) | Inspect/modify [`TDbCommand`](../TDbCommand.md) before execution |
-| `OnExecuteCommand` | [`TDataGatewayResultEventParameter`](./TDataGatewayResultEventParameter.md) | Inspect command and result after execution |
+| `OnCreateCommand` | [`TDataGatewayEventParameter`](DataGateway/TDataGatewayEventParameter.md) | Inspect/modify [`TDbCommand`](TDbCommand.md) before execution |
+| `OnExecuteCommand` | [`TDataGatewayResultEventParameter`](DataGateway/TDataGatewayResultEventParameter.md) | Inspect command and result after execution |
 
 ```php
 $gateway->attachEventHandler('OnCreateCommand', function($sender, $param) {
-    // $param->getCommand() → [`TDbCommand`](../TDbCommand.md)
+    // $param->getCommand() → [`TDbCommand`](TDbCommand.md)
     Prado::log($param->getCommand()->getText(), TLogger::DEBUG);
 });
 ```
@@ -84,7 +84,7 @@ $gateway->attachEventHandler('OnCreateCommand', function($sender, $param) {
 
 ## TSqlCriteria
 
-Query criteria value object. Used by both [`TTableGateway`](./TTableGateway.md) and [`TActiveRecord`](../ActiveRecord/TActiveRecord.md).
+Query criteria value object. Used by [`TTableGateway`](./TTableGateway.md); the `pradosoft/prado-activerecord` package's `TActiveRecordCriteria` extends it.
 
 ```php
 // Constructor shorthand:
@@ -115,8 +115,8 @@ $c->Select = 'id, name, email';  // replaces SELECT *
 
 ## Patterns & Gotchas
 
-- **Stateless** — [`TTableGateway`](./TTableGateway.md) holds no row data. Use [`TActiveRecord`](../ActiveRecord/TActiveRecord.md) when you need object identity or lazy relations.
+- **Stateless** — [`TTableGateway`](./TTableGateway.md) holds no row data. Use `TActiveRecord` (the `pradosoft/prado-activerecord` package) when you need object identity or lazy relations.
 - **Always parameterize** — never interpolate user input into `Condition`. Use `:name` style binding.
-- **`findAll()` returns [`TDbDataReader`](../TDbDataReader.md)** — iterate it or call `readAll()`. It is a forward-only cursor; you cannot rewind.
+- **`findAll()` returns [`TDbDataReader`](TDbDataReader.md)** — iterate it or call `readAll()`. It is a forward-only cursor; you cannot rewind.
 - **`findByPk()` composite PKs** — pass an associative array when the table has a composite primary key.
 - **`OnCreateCommand` hook** — ideal for query logging, multi-tenancy scoping (appending a tenant WHERE clause), or debugging. Attach before any gateway call.

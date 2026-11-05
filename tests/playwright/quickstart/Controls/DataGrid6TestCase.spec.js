@@ -21,7 +21,7 @@ test('QuickstartDataGrid6TestCase', async ({ page }) => {
   await h.assertSourceNotContains('ITN006');
 
   // verify paging
-  await h.byLinkText('2').click();
+  await h.byLinkText('Page 2').click();
   await h.assertSourceContains('ITN006');
   await h.assertSourceContains('ITN007');
   await h.assertSourceContains('ITN008');
@@ -30,14 +30,14 @@ test('QuickstartDataGrid6TestCase', async ({ page }) => {
   await h.assertSourceNotContains('ITN011');
   await h.assertSourceNotContains('ITN005');
 
-  await h.byLinkText('4').click();
+  await h.byLinkText('Page 4').click();
   await h.assertSourceContains('ITN016');
   await h.assertSourceContains('ITN017');
   await h.assertSourceContains('ITN018');
   await h.assertSourceContains('ITN019');
   await h.assertSourceNotContains('ITN015');
 
-  await h.byLinkText('1').click();
+  await h.byLinkText('Page 1').click();
   await h.assertSourceContains('ITN001');
   await h.assertSourceContains('ITN002');
   await h.assertSourceContains('ITN003');

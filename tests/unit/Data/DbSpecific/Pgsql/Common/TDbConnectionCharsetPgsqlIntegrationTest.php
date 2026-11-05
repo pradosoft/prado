@@ -1,9 +1,11 @@
 <?php
 
-require_once(__DIR__ . '/../../../../PradoUnit.php');
+namespace Prado\Test\Unit\Data\DbSpecific\Pgsql\Common;
 
 use Prado\Data\TDbConnection;
 use Prado\TApplication;
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
+use Prado\TApplicationMode;
 
 /**
  * Integration tests for TDbConnection charset handling — PostgreSQL.
@@ -18,7 +20,7 @@ use Prado\TApplication;
  * On Scrutinizer CI the user/password is 'scrutinizer'; elsewhere both default
  * to 'prado_unitest'.
  */
-class TDbConnectionCharsetPgsqlIntegrationTest extends PHPUnit\Framework\TestCase
+class TDbConnectionCharsetPgsqlIntegrationTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 
@@ -41,7 +43,7 @@ class TDbConnectionCharsetPgsqlIntegrationTest extends PHPUnit\Framework\TestCas
 	{
 		static $booted = false;
 		if (!$booted) {
-			new TApplication(__DIR__ . '/../../../../Security/app', false, TApplication::CONFIG_TYPE_PHP);
+			(new TApplication(__DIR__ . '/../../../../Security/app', false, TApplication::CONFIG_TYPE_PHP))->setMode(TApplicationMode::Debug);
 			$booted = true;
 		}
 		$this->setUpConnection();

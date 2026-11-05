@@ -10,7 +10,6 @@
 
 namespace Prado\Security\Permissions;
 
-use Prado\Prado;
 use Prado\Util\TBehavior;
 
 /**
@@ -41,7 +40,7 @@ class TUserPermissionsBehavior extends TBehavior
 		if (!$rules) {
 			return true; //Default from TAuthorizationRuleCollection::isUserAllowed
 		}
-		$request = Prado::getApplication()->getRequest();
+		$request = $this->getApplication()->getRequest();
 		return $rules->isUserAllowed($this->getOwner(), $request->getRequestType(), $request->getUserHostAddress(), $extraData);
 	}
 

@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit;
+
 use PHPUnit\Framework\TestCase;
 use Prado\TComponent;
 use Prado\TComponentReflection;
@@ -178,6 +180,126 @@ class SortedMethodsComponent extends TComponent
 	}
 
 	public function mango(): void
+	{
+	}
+}
+
+// ---------------------------------------------------------------------------
+// Additional fixtures for getReflectionClassByType tests
+// ---------------------------------------------------------------------------
+
+/** Plain interface — used to verify reflection works for interface types. */
+interface ReflectionTestInterface
+{
+	public function doThing(): void;
+}
+
+/** Abstract class — used to verify reflection works for abstract types. */
+abstract class ReflectionTestAbstract
+{
+	abstract public function doThing(): void;
+}
+
+/** Concrete plain (non-TComponent) class — used for cache and type tests. */
+class ReflectionTestConcrete
+{
+	public function doThing(): void
+	{
+	}
+}
+
+// ---------------------------------------------------------------------------
+// Fixtures for getReflectionMethodByType behavior discovery
+// ---------------------------------------------------------------------------
+
+class ReflectionTestBehavior extends \Prado\Util\TBehavior
+{
+	public function behaviorOnlyMethod(): string
+	{
+		return 'from behavior';
+	}
+
+	public function getDynamicProp(): string
+	{
+		return 'dynamic';
+	}
+}
+
+// ---------------------------------------------------------------------------
+// Fixtures for getReflectionPropertyByType hierarchy walking
+// ---------------------------------------------------------------------------
+
+class ReflectionPropertyAncestor
+{
+	private string $privateAncestorProp = 'secret';
+}
+
+class ReflectionPropertyChild extends ReflectionPropertyAncestor
+{
+	private string $privateChildProp = 'child_secret';
+}
+
+// ---------------------------------------------------------------------------
+// Fixtures for attribute lookup (4.4.0)
+// ---------------------------------------------------------------------------
+
+#[\Attribute(\Attribute::TARGET_ALL | \Attribute::IS_REPEATABLE)]
+class ReflectionTestAttribute
+{
+	public function __construct(public string $value = '')
+	{
+	}
+}
+
+#[\Attribute(\Attribute::TARGET_ALL)]
+class ReflectionTestSubAttribute extends ReflectionTestAttribute
+{
+}
+
+#[\Attribute]
+class ReflectionTestOtherAttribute
+{
+}
+
+#[ReflectionTestAttribute('parent')]
+class ReflectionAttributeParent
+{
+	#[ReflectionTestAttribute('parent-prop')]
+	public string $parentProp = '';
+
+	#[ReflectionTestAttribute('private-prop')]
+	private string $privateParentProp = '';
+
+	#[ReflectionTestAttribute('inherited-method')]
+	public function inheritedMethod(): void
+	{
+	}
+}
+
+#[ReflectionTestAttribute('child-a')]
+#[ReflectionTestAttribute('child-b')]
+#[ReflectionTestOtherAttribute]
+class ReflectionAttributeChild extends ReflectionAttributeParent
+{
+	#[ReflectionTestAttribute('child-prop')]
+	protected int $childProp = 0;
+
+	public int $plainProp = 0;
+
+	#[ReflectionTestSubAttribute('sub')]
+	public function subMethod(): void
+	{
+	}
+
+	public function plainMethod(): void
+	{
+	}
+}
+
+class ReflectionAttributeBehavior extends \Prado\Util\TBehavior
+{
+	#[ReflectionTestAttribute('behavior')]
+	public function behaviorAttributedMethod(): void
 	{
 	}
 }
@@ -682,5 +804,732 @@ class TComponentReflectionTest extends TestCase
 		// getMethods() must work correctly when _className is a Prado3 alias.
 		$r = new TComponentReflection('Prado3Alias_TList');
 		$this->assertIsArray($r->getMethods());
+	}
+
+	// ========================================================================
+	// getReflectionClassByType — static reflection cache (4.4.0)
+	// ========================================================================
+
+	public function testGetReflectionClassByTypeNullThrowsTypeError(): void
+	{
+		$this->expectException(\TypeError::class);
+		TComponentReflection::getReflectionClassByType(null);
+	}
+
+	public function testGetReflectionClassByTypeReturnsReflectionClassInstance(): void
+	{
+		$ref = TComponentReflection::getReflectionClassByType(ReflectionTestConcrete::class);
+		$this->assertInstanceOf(\ReflectionClass::class, $ref);
+	}
+
+	public function testGetReflectionClassByTypeReturnsCorrectClassName(): void
+	{
+		$ref = TComponentReflection::getReflectionClassByType(ReflectionTestConcrete::class);
+		$this->assertSame(ReflectionTestConcrete::class, $ref->getName());
+	}
+
+	public function testGetReflectionClassByTypeNonExistentClassReturnsNull(): void
+	{
+		$this->assertNull(
+			TComponentReflection::getReflectionClassByType('ThisClassAbsolutelyDoesNotExist_XYZ_99999')
+		);
+	}
+
+	public function testGetReflectionClassByTypeReturnsSameInstanceOnRepeatedCall(): void
+	{
+		// Two calls with the same name must return the identical cached object.
+		$first  = TComponentReflection::getReflectionClassByType(ReflectionFixtureComponent::class);
+		$second = TComponentReflection::getReflectionClassByType(ReflectionFixtureComponent::class);
+		$this->assertSame($first, $second);
+	}
+
+	public function testGetReflectionClassByTypeIsCaseInsensitive(): void
+	{
+		// PHP class names are case-insensitive; the cache must normalise to
+		// lowercase so different casings share one entry.
+		$canonical = TComponentReflection::getReflectionClassByType(ReflectionTestConcrete::class);
+		$uppercase = TComponentReflection::getReflectionClassByType(strtoupper(ReflectionTestConcrete::class));
+		$lowercase = TComponentReflection::getReflectionClassByType(strtolower(ReflectionTestConcrete::class));
+
+		$this->assertSame($canonical, $uppercase);
+		$this->assertSame($canonical, $lowercase);
+	}
+
+	public function testGetReflectionClassByTypeWorksForInterface(): void
+	{
+		$ref = TComponentReflection::getReflectionClassByType(ReflectionTestInterface::class);
+		$this->assertInstanceOf(\ReflectionClass::class, $ref);
+		$this->assertTrue($ref->isInterface());
+		$this->assertSame(ReflectionTestInterface::class, $ref->getName());
+	}
+
+	public function testGetReflectionClassByTypeWorksForAbstractClass(): void
+	{
+		$ref = TComponentReflection::getReflectionClassByType(ReflectionTestAbstract::class);
+		$this->assertInstanceOf(\ReflectionClass::class, $ref);
+		$this->assertTrue($ref->isAbstract());
+	}
+
+	public function testGetReflectionClassByTypeWorksForTComponentSubclass(): void
+	{
+		$ref = TComponentReflection::getReflectionClassByType(ReflectionFixtureComponent::class);
+		$this->assertInstanceOf(\ReflectionClass::class, $ref);
+		$this->assertTrue($ref->isSubclassOf(TComponent::class));
+	}
+
+	public function testGetReflectionClassByTypeWorksForTComponentItself(): void
+	{
+		$ref = TComponentReflection::getReflectionClassByType(TComponent::class);
+		$this->assertInstanceOf(\ReflectionClass::class, $ref);
+		$this->assertSame(TComponent::class, $ref->getName());
+	}
+
+	public function testGetReflectionClassByTypeWorksForTComponentReflectionItself(): void
+	{
+		// The class uses getReflectionClassByType internally in reflect(); verify
+		// that reflecting TComponentReflection itself does not cause recursion or error.
+		$ref = TComponentReflection::getReflectionClassByType(TComponentReflection::class);
+		$this->assertInstanceOf(\ReflectionClass::class, $ref);
+		$this->assertSame(TComponentReflection::class, $ref->getName());
+	}
+
+	public function testGetReflectionClassByTypeInterfaceSameInstanceOnRepeatedCall(): void
+	{
+		$first  = TComponentReflection::getReflectionClassByType(ReflectionTestInterface::class);
+		$second = TComponentReflection::getReflectionClassByType(ReflectionTestInterface::class);
+		$this->assertSame($first, $second);
+	}
+
+	public function testGetReflectionClassByTypeNonExistentClassDoesNotCacheFailure(): void
+	{
+		// Failed lookups (ReflectionException caught) must NOT be cached so that
+		// subsequent calls retry reflection rather than returning a stale null.
+		$missing = 'ThisClassWillNeverExist_Cache_Test_ABC123';
+
+		$first  = TComponentReflection::getReflectionClassByType($missing);
+		$second = TComponentReflection::getReflectionClassByType($missing);
+
+		// Both calls must return null (no stale cached value).
+		$this->assertNull($first);
+		$this->assertNull($second);
+
+		// A valid lookup immediately following the failed ones must still succeed —
+		// the null result must not have corrupted an adjacent cache slot.
+		$valid = TComponentReflection::getReflectionClassByType(ReflectionTestConcrete::class);
+		$this->assertInstanceOf(\ReflectionClass::class, $valid);
+		$this->assertSame(ReflectionTestConcrete::class, $valid->getName());
+
+		// And the same-instance guarantee must still hold after the failed lookups.
+		$validAgain = TComponentReflection::getReflectionClassByType(ReflectionTestConcrete::class);
+		$this->assertSame($valid, $validAgain);
+	}
+
+	public function testGetReflectionClassByTypeUsedInternallyByReflect(): void
+	{
+		// Constructing a TComponentReflection triggers reflect(), which calls
+		// getReflectionClassByType() internally.  Verify the returned object
+		// is then also available via the static cache — i.e. the constructor
+		// populates the shared cache as a side-effect.
+		$r = new TComponentReflection(ReflectionFixtureChild::class);
+		$this->assertSame(ReflectionFixtureChild::class, $r->getClassName());
+
+		$cached = TComponentReflection::getReflectionClassByType(ReflectionFixtureChild::class);
+		$this->assertInstanceOf(\ReflectionClass::class, $cached);
+		$this->assertSame(ReflectionFixtureChild::class, $cached->getName());
+	}
+
+	public function testGetReflectionClassByTypePrado3AliasResolvesCorrectly(): void
+	{
+		// A Prado3 alias is a class_alias() target; PHP treats it as valid for
+		// ReflectionClass, so getReflectionClassByType must return non-null.
+		$ref = TComponentReflection::getReflectionClassByType('Prado3Alias_TComponent');
+		$this->assertInstanceOf(\ReflectionClass::class, $ref);
+	}
+
+	// ========================================================================
+	// getReflectionClassByType — object parameter (4.4.0)
+	// ========================================================================
+
+	public function testGetReflectionClassByTypeAcceptsObject(): void
+	{
+		$obj = new ReflectionFixtureComponent();
+		$ref = TComponentReflection::getReflectionClassByType($obj);
+		$this->assertInstanceOf(\ReflectionClass::class, $ref);
+		$this->assertSame(ReflectionFixtureComponent::class, $ref->getName());
+	}
+
+	public function testGetReflectionClassByTypeSameInstanceForStringAndObject(): void
+	{
+		$byString = TComponentReflection::getReflectionClassByType(ReflectionTestConcrete::class);
+		$obj = new ReflectionTestConcrete();
+		$byObject = TComponentReflection::getReflectionClassByType($obj);
+		$this->assertSame($byString, $byObject);
+	}
+
+	// ========================================================================
+	// getReflectionMethodByType — string class name (4.4.0)
+	// ========================================================================
+
+	public function testGetReflectionMethodByTypeWithStringExistingMethod(): void
+	{
+		$rm = TComponentReflection::getReflectionMethodByType(ReflectionFixtureComponent::class, 'doWork');
+		$this->assertInstanceOf(\ReflectionMethod::class, $rm);
+		$this->assertSame('doWork', $rm->getName());
+	}
+
+	public function testGetReflectionMethodByTypeWithStringMissingMethod(): void
+	{
+		$rm = TComponentReflection::getReflectionMethodByType(ReflectionFixtureComponent::class, 'noSuchMethod');
+		$this->assertNull($rm);
+	}
+
+	public function testGetReflectionMethodByTypeWithStringMissingClass(): void
+	{
+		$rm = TComponentReflection::getReflectionMethodByType('NonExistentClass_XYZ', 'doWork');
+		$this->assertNull($rm);
+	}
+
+	public function testGetReflectionMethodByTypeStringCachingSameInstance(): void
+	{
+		$first = TComponentReflection::getReflectionMethodByType(ReflectionFixtureComponent::class, 'doWork');
+		$second = TComponentReflection::getReflectionMethodByType(ReflectionFixtureComponent::class, 'doWork');
+		$this->assertSame($first, $second);
+	}
+
+	public function testGetReflectionMethodByTypeStringCachesNull(): void
+	{
+		$first = TComponentReflection::getReflectionMethodByType(ReflectionFixtureComponent::class, 'missingMethod_XYZ');
+		$this->assertNull($first);
+
+		// Second call must return the same cached null
+		$second = TComponentReflection::getReflectionMethodByType(ReflectionFixtureComponent::class, 'missingMethod_XYZ');
+		$this->assertNull($second);
+	}
+
+	public function testGetReflectionMethodByTypeStringCaseInsensitive(): void
+	{
+		$canonical = TComponentReflection::getReflectionMethodByType(ReflectionTestConcrete::class, 'doThing');
+		$upper = TComponentReflection::getReflectionMethodByType(strtoupper(ReflectionTestConcrete::class), 'doThing');
+		$this->assertInstanceOf(\ReflectionMethod::class, $canonical);
+		$this->assertSame($canonical, $upper);
+	}
+
+	// ========================================================================
+	// getReflectionMethodByType — object parameter (4.4.0)
+	// ========================================================================
+
+	public function testGetReflectionMethodByTypeWithObject(): void
+	{
+		$obj = new ReflectionFixtureComponent();
+		$rm = TComponentReflection::getReflectionMethodByType($obj, 'doWork');
+		$this->assertInstanceOf(\ReflectionMethod::class, $rm);
+		$this->assertSame('doWork', $rm->getName());
+	}
+
+	public function testGetReflectionMethodByTypeWithNonTComponentObject(): void
+	{
+		$obj = new PlainPhpClass();
+		$rm = TComponentReflection::getReflectionMethodByType($obj, 'getFoo');
+		$this->assertInstanceOf(\ReflectionMethod::class, $rm);
+		$this->assertSame('getFoo', $rm->getName());
+	}
+
+	// ========================================================================
+	// getReflectionMethodByType — behavior discovery (4.4.0)
+	// ========================================================================
+
+	public function testGetReflectionMethodByTypeDiscoversBehaviorMethod(): void
+	{
+		$component = new ReflectionFixtureComponent();
+		$behavior = new ReflectionTestBehavior();
+		$component->attachBehavior('test', $behavior);
+
+		$rm = TComponentReflection::getReflectionMethodByType($component, 'behaviorOnlyMethod');
+		$this->assertInstanceOf(\ReflectionMethod::class, $rm);
+		$this->assertSame('behaviorOnlyMethod', $rm->getName());
+		$this->assertSame(ReflectionTestBehavior::class, $rm->getDeclaringClass()->getName());
+	}
+
+	public function testGetReflectionMethodByTypeClassMethodTakesPriorityOverBehavior(): void
+	{
+		$component = new ReflectionFixtureComponent();
+		$behavior = new ReflectionTestBehavior();
+		$component->attachBehavior('test', $behavior);
+
+		// 'getName' exists on the component class itself — behavior should not shadow it
+		$rm = TComponentReflection::getReflectionMethodByType($component, 'getName');
+		$this->assertInstanceOf(\ReflectionMethod::class, $rm);
+		$this->assertSame('getName', $rm->getName());
+		$this->assertSame(ReflectionFixtureComponent::class, $rm->getDeclaringClass()->getName());
+	}
+
+	public function testGetReflectionMethodByTypeBehaviorMethodCachedByBehaviorId(): void
+	{
+		$component1 = new ReflectionFixtureComponent();
+		$behavior1 = new ReflectionTestBehavior();
+		$component1->attachBehavior('test', $behavior1);
+
+		$component2 = new ReflectionFixtureComponent();
+		$behavior2 = new ReflectionTestBehavior();
+		$component2->attachBehavior('test', $behavior2);
+
+		$rm1 = TComponentReflection::getReflectionMethodByType($component1, 'behaviorOnlyMethod');
+		$rm2 = TComponentReflection::getReflectionMethodByType($component2, 'behaviorOnlyMethod');
+
+		// Both return valid ReflectionMethod instances reflecting the same behavior class method.
+		// Each behavior instance has its own cache key (spl_object_id of the behavior).
+		$this->assertInstanceOf(\ReflectionMethod::class, $rm1);
+		$this->assertInstanceOf(\ReflectionMethod::class, $rm2);
+		$this->assertSame('behaviorOnlyMethod', $rm1->getName());
+		$this->assertSame('behaviorOnlyMethod', $rm2->getName());
+		$this->assertSame(ReflectionTestBehavior::class, $rm1->getDeclaringClass()->getName());
+		$this->assertSame(ReflectionTestBehavior::class, $rm2->getDeclaringClass()->getName());
+		// Different behavior objects → different ReflectionMethod objects
+		$this->assertNotSame($rm1, $rm2);
+	}
+
+	public function testGetReflectionMethodByTypeClassMethodSharedAcrossInstances(): void
+	{
+		$obj1 = new ReflectionFixtureComponent();
+		$obj2 = new ReflectionFixtureComponent();
+
+		$rm1 = TComponentReflection::getReflectionMethodByType($obj1, 'doWork');
+		$rm2 = TComponentReflection::getReflectionMethodByType($obj2, 'doWork');
+
+		// Class methods are cached by class name, so both objects share the same
+		// cached ReflectionMethod instance.
+		$this->assertSame($rm1, $rm2);
+	}
+
+	public function testGetReflectionMethodByTypeStringAndObjectShareClassMethodCache(): void
+	{
+		$byString = TComponentReflection::getReflectionMethodByType(ReflectionFixtureComponent::class, 'doWork');
+		$obj = new ReflectionFixtureComponent();
+		$byObject = TComponentReflection::getReflectionMethodByType($obj, 'doWork');
+
+		// Both string and object resolve to the same class-name cache key.
+		$this->assertSame($byString, $byObject);
+	}
+
+	public function testGetReflectionMethodByTypeSameBehaviorAttachedTwiceSharesCache(): void
+	{
+		$behavior = new ReflectionTestBehavior();
+
+		$component1 = new ReflectionFixtureComponent();
+		$component1->attachBehavior('test', $behavior);
+
+		$rm1 = TComponentReflection::getReflectionMethodByType($component1, 'behaviorOnlyMethod');
+
+		// Detach and re-attach the same behavior to a different component
+		$component1->detachBehavior('test');
+		$component2 = new ReflectionFixtureComponent();
+		$component2->attachBehavior('test', $behavior);
+
+		$rm2 = TComponentReflection::getReflectionMethodByType($component2, 'behaviorOnlyMethod');
+
+		// Same behavior object → same spl_object_id → same cache entry → same ReflectionMethod
+		$this->assertSame($rm1, $rm2);
+	}
+
+	public function testGetReflectionMethodByTypeTComponentMissingMethodReturnsNull(): void
+	{
+		$component = new ReflectionFixtureComponent();
+		$behavior = new ReflectionTestBehavior();
+		$component->attachBehavior('test', $behavior);
+
+		$rm = TComponentReflection::getReflectionMethodByType($component, 'noSuchMethodAnywhere_XYZ');
+		$this->assertNull($rm);
+	}
+
+	public function testGetReflectionMethodByTypeTComponentWithoutBehaviors(): void
+	{
+		$component = new ReflectionFixtureComponent();
+		// No behaviors attached
+		$rm = TComponentReflection::getReflectionMethodByType($component, 'doWork');
+		$this->assertInstanceOf(\ReflectionMethod::class, $rm);
+		$this->assertSame('doWork', $rm->getName());
+	}
+
+	public function testGetReflectionMethodByTypeBehaviorDisabledSkipsBehaviors(): void
+	{
+		$component = new ReflectionFixtureComponent();
+		$behavior = new ReflectionTestBehavior();
+		$component->attachBehavior('test', $behavior);
+		$component->disableBehaviors();
+
+		$rm = TComponentReflection::getReflectionMethodByType($component, 'behaviorOnlyMethod');
+		$this->assertNull($rm, 'Disabled behaviors should not contribute methods');
+	}
+
+	// ========================================================================
+	// getReflectionPropertyByType — string class name (4.4.0)
+	// ========================================================================
+
+	public function testGetReflectionPropertyByTypeWithStringExistingProperty(): void
+	{
+		$rp = TComponentReflection::getReflectionPropertyByType(ReflectionPropertyChild::class, 'privateChildProp');
+		$this->assertInstanceOf(\ReflectionProperty::class, $rp);
+		$this->assertSame('privateChildProp', $rp->getName());
+	}
+
+	public function testGetReflectionPropertyByTypeFindsPrivateAncestorProperty(): void
+	{
+		// privateAncestorProp is declared in ReflectionPropertyAncestor, not in
+		// ReflectionPropertyChild. Walking the hierarchy must find it.
+		$rp = TComponentReflection::getReflectionPropertyByType(ReflectionPropertyChild::class, 'privateAncestorProp');
+		$this->assertInstanceOf(\ReflectionProperty::class, $rp);
+		$this->assertSame('privateAncestorProp', $rp->getName());
+		$this->assertSame(ReflectionPropertyAncestor::class, $rp->getDeclaringClass()->getName());
+	}
+
+	public function testGetReflectionPropertyByTypeMissingPropertyReturnsNull(): void
+	{
+		$rp = TComponentReflection::getReflectionPropertyByType(ReflectionFixtureComponent::class, 'noSuchProperty_XYZ');
+		$this->assertNull($rp);
+	}
+
+	public function testGetReflectionPropertyByTypeCachingSameInstance(): void
+	{
+		$first = TComponentReflection::getReflectionPropertyByType(ReflectionPropertyChild::class, 'privateChildProp');
+		$second = TComponentReflection::getReflectionPropertyByType(ReflectionPropertyChild::class, 'privateChildProp');
+		$this->assertSame($first, $second);
+	}
+
+	public function testGetReflectionPropertyByTypeCachesNull(): void
+	{
+		$first = TComponentReflection::getReflectionPropertyByType(ReflectionFixtureComponent::class, 'missingProp_XYZ');
+		$this->assertNull($first);
+		$second = TComponentReflection::getReflectionPropertyByType(ReflectionFixtureComponent::class, 'missingProp_XYZ');
+		$this->assertNull($second);
+	}
+
+	public function testGetReflectionPropertyByTypeCaseInsensitive(): void
+	{
+		$canonical = TComponentReflection::getReflectionPropertyByType(ReflectionPropertyChild::class, 'privateChildProp');
+		$upper = TComponentReflection::getReflectionPropertyByType(strtoupper(ReflectionPropertyChild::class), 'privateChildProp');
+		$this->assertInstanceOf(\ReflectionProperty::class, $canonical);
+		$this->assertSame($canonical, $upper);
+	}
+
+	public function testGetReflectionPropertyByTypeMissingClassReturnsNull(): void
+	{
+		$rp = TComponentReflection::getReflectionPropertyByType('NonExistentClass_XYZ', 'anyProp');
+		$this->assertNull($rp);
+	}
+
+	// ========================================================================
+	// getReflectionPropertyByType — object parameter (4.4.0)
+	// ========================================================================
+
+	public function testGetReflectionPropertyByTypeWithObject(): void
+	{
+		$obj = new ReflectionPropertyChild();
+		$rp = TComponentReflection::getReflectionPropertyByType($obj, 'privateChildProp');
+		$this->assertInstanceOf(\ReflectionProperty::class, $rp);
+	}
+
+	public function testGetReflectionPropertyByTypeWithNonTComponentObject(): void
+	{
+		$obj = new ReflectionPropertyChild();
+		$rp = TComponentReflection::getReflectionPropertyByType($obj, 'privateAncestorProp');
+		$this->assertInstanceOf(\ReflectionProperty::class, $rp);
+		$this->assertSame(ReflectionPropertyAncestor::class, $rp->getDeclaringClass()->getName());
+	}
+
+	public function testGetReflectionPropertyByTypeTComponentInstance(): void
+	{
+		$obj = new ReflectionFixtureComponent();
+		// TComponent subclasses have private properties inherited from parent classes
+		// Just verify no exception is thrown and result is an array/null
+		$rp = TComponentReflection::getReflectionPropertyByType($obj, '_className');
+		// '_className' is declared in TComponentReflection, not in the fixture
+		$this->assertNull($rp);
+	}
+
+	public function testGetReflectionPropertyByTypeObjectCachesByClassName(): void
+	{
+		$obj1 = new ReflectionPropertyChild();
+		$obj2 = new ReflectionPropertyChild();
+
+		$rp1 = TComponentReflection::getReflectionPropertyByType($obj1, 'privateChildProp');
+		$rp2 = TComponentReflection::getReflectionPropertyByType($obj2, 'privateChildProp');
+
+		$this->assertInstanceOf(\ReflectionProperty::class, $rp1);
+		$this->assertInstanceOf(\ReflectionProperty::class, $rp2);
+		// Properties are cached by class name, so different instances share the same cache entry
+		$this->assertSame($rp1, $rp2);
+	}
+
+	public function testGetReflectionPropertyByTypeTComponentNullNotCachedWhenBehaviorsEnabled(): void
+	{
+		$component = new ReflectionFixtureComponent();
+
+		// Behaviors are enabled by default — null is not cached at class level,
+		// so subsequent calls re-walk the hierarchy (behaviors may later contribute a getter).
+		$this->assertNull(TComponentReflection::getReflectionPropertyByType($component, '_className'));
+		$this->assertNull(TComponentReflection::getReflectionPropertyByType($component, '_className'));
+	}
+
+	public function testGetReflectionPropertyByTypeTComponentNullCachedWhenBehaviorsDisabled(): void
+	{
+		$component = new ReflectionFixtureComponent();
+		$component->disableBehaviors();
+
+		// Behaviors disabled — null IS cached at class level.
+		$this->assertNull(TComponentReflection::getReflectionPropertyByType($component, '_className'));
+		$this->assertNull(TComponentReflection::getReflectionPropertyByType($component, '_className'));
+	}
+
+	public function testGetReflectionPropertyByTypeStringCachesNull(): void
+	{
+		// String class name — null is always cached (no behaviors possible).
+		$this->assertNull(TComponentReflection::getReflectionPropertyByType(ReflectionFixtureComponent::class, '_className'));
+		$this->assertNull(TComponentReflection::getReflectionPropertyByType(ReflectionFixtureComponent::class, '_className'));
+	}
+
+	public function testGetReflectionPropertyByTypeNonTComponentObjectCachesNull(): void
+	{
+		$obj = new PlainPhpClass();
+		$this->assertNull(TComponentReflection::getReflectionPropertyByType($obj, 'noSuchProp_XYZ'));
+		$this->assertNull(TComponentReflection::getReflectionPropertyByType($obj, 'noSuchProp_XYZ'));
+	}
+
+	// ========================================================================
+	// Cross-method cache independence (4.4.0)
+	// ========================================================================
+
+	public function testMethodAndPropertyCachesAreIndependent(): void
+	{
+		// Caching a method should not affect property lookups and vice versa
+		TComponentReflection::getReflectionMethodByType(ReflectionFixtureComponent::class, 'doWork');
+		$rp = TComponentReflection::getReflectionPropertyByType(ReflectionFixtureComponent::class, '_className');
+		// '_className' is private on TComponentReflection, not the fixture
+		$this->assertNull($rp);
+	}
+
+	// ========================================================================
+	// Non-caching of class-not-found results (4.4.0)
+	// ========================================================================
+
+	public function testGetReflectionMethodByTypeMissingClassDoesNotCache(): void
+	{
+		$missing = 'ThisClassWillNeverExist_Method_Test_XYZ999';
+
+		// Two calls to a non-existent class both return null
+		$this->assertNull(TComponentReflection::getReflectionMethodByType($missing, 'doWork'));
+		$this->assertNull(TComponentReflection::getReflectionMethodByType($missing, 'doWork'));
+
+		// The missing class did NOT corrupt the cache — a valid lookup still succeeds
+		$rm = TComponentReflection::getReflectionMethodByType(ReflectionTestConcrete::class, 'doThing');
+		$this->assertInstanceOf(\ReflectionMethod::class, $rm);
+		$this->assertSame('doThing', $rm->getName());
+	}
+
+	public function testGetReflectionPropertyByTypeMissingClassDoesNotCache(): void
+	{
+		$missing = 'ThisClassWillNeverExist_Prop_Test_XYZ999';
+
+		// Two calls to a non-existent class both return null
+		$this->assertNull(TComponentReflection::getReflectionPropertyByType($missing, 'anyProp'));
+		$this->assertNull(TComponentReflection::getReflectionPropertyByType($missing, 'anyProp'));
+
+		// The missing class did NOT corrupt the cache — a valid lookup still succeeds
+		$rp = TComponentReflection::getReflectionPropertyByType(ReflectionPropertyChild::class, 'privateChildProp');
+		$this->assertInstanceOf(\ReflectionProperty::class, $rp);
+		$this->assertSame('privateChildProp', $rp->getName());
+	}
+
+	// ========================================================================
+	// getClassAttributesByType (4.4.0)
+	// ========================================================================
+
+	/** @return string[] the `value` of each attribute instance */
+	private static function values(array $instances): array
+	{
+		return array_map(fn ($a) => $a->value, $instances);
+	}
+
+	public function testGetClassAttributesByTypeReturnsOwnThenParent(): void
+	{
+		$found = TComponentReflection::getClassAttributesByType(ReflectionAttributeChild::class, ReflectionTestAttribute::class);
+		$this->assertCount(3, $found);
+		$this->assertContainsOnlyInstancesOf(ReflectionTestAttribute::class, $found);
+		$this->assertSame(['child-a', 'child-b', 'parent'], self::values($found));
+	}
+
+	public function testGetClassAttributesByTypeWithoutInherit(): void
+	{
+		$found = TComponentReflection::getClassAttributesByType(ReflectionAttributeChild::class, ReflectionTestAttribute::class, false);
+		$this->assertSame(['child-a', 'child-b'], self::values($found));
+	}
+
+	public function testGetClassAttributesByTypeFiltersByAttribute(): void
+	{
+		$found = TComponentReflection::getClassAttributesByType(ReflectionAttributeChild::class, ReflectionTestOtherAttribute::class);
+		$this->assertCount(1, $found);
+		$this->assertInstanceOf(ReflectionTestOtherAttribute::class, $found[0]);
+	}
+
+	public function testGetClassAttributesByTypeAcceptsObject(): void
+	{
+		$found = TComponentReflection::getClassAttributesByType(new ReflectionAttributeChild(), ReflectionTestAttribute::class);
+		$this->assertSame(['child-a', 'child-b', 'parent'], self::values($found));
+	}
+
+	public function testGetClassAttributesByTypeReturnsSharedInstances(): void
+	{
+		$first = TComponentReflection::getClassAttributesByType(ReflectionAttributeChild::class, ReflectionTestAttribute::class);
+		$second = TComponentReflection::getClassAttributesByType(strtoupper(ReflectionAttributeChild::class), ReflectionTestAttribute::class);
+		$this->assertSame($first[0], $second[0]);
+		$this->assertSame($first[2], $second[2]);
+	}
+
+	public function testGetClassAttributesByTypeEmptyWhenNone(): void
+	{
+		$this->assertSame([], TComponentReflection::getClassAttributesByType(PlainPhpClass::class, ReflectionTestAttribute::class));
+		$this->assertSame([], TComponentReflection::getClassAttributesByType(PlainPhpClass::class, ReflectionTestAttribute::class));
+	}
+
+	public function testGetClassAttributesByTypeThrowsForUnknownAttributeClass(): void
+	{
+		$this->expectException(\Error::class);
+		TComponentReflection::getClassAttributesByType(ReflectionAttributeChild::class, 'NoSuchAttribute_XYZ');
+	}
+
+	public function testGetClassAttributesByTypeMissingClassDoesNotCache(): void
+	{
+		$missing = 'ThisClassWillNeverExist_Attr_Test_XYZ999';
+		$this->assertSame([], TComponentReflection::getClassAttributesByType($missing, ReflectionTestAttribute::class));
+		$this->assertSame([], TComponentReflection::getClassAttributesByType($missing, ReflectionTestAttribute::class));
+
+		$found = TComponentReflection::getClassAttributesByType(ReflectionAttributeParent::class, ReflectionTestAttribute::class);
+		$this->assertSame(['parent'], self::values($found));
+	}
+
+	// ========================================================================
+	// getMethodAttributesByType (4.4.0)
+	// ========================================================================
+
+	public function testGetMethodAttributesByTypeFindsInheritedMethod(): void
+	{
+		$found = TComponentReflection::getMethodAttributesByType(ReflectionAttributeChild::class, 'inheritedMethod', ReflectionTestAttribute::class);
+		$this->assertSame(['inherited-method'], self::values($found));
+	}
+
+	public function testGetMethodAttributesByTypeMatchesSubclassAttribute(): void
+	{
+		$found = TComponentReflection::getMethodAttributesByType(ReflectionAttributeChild::class, 'subMethod', ReflectionTestAttribute::class);
+		$this->assertCount(1, $found);
+		$this->assertInstanceOf(ReflectionTestSubAttribute::class, $found[0]);
+		$this->assertSame('sub', $found[0]->value);
+	}
+
+	public function testGetMethodAttributesByTypeSharedAcrossSubclasses(): void
+	{
+		$parent = TComponentReflection::getMethodAttributesByType(ReflectionAttributeParent::class, 'inheritedMethod', ReflectionTestAttribute::class);
+		$child = TComponentReflection::getMethodAttributesByType(ReflectionAttributeChild::class, 'inheritedMethod', ReflectionTestAttribute::class);
+		$this->assertSame($parent[0], $child[0]);
+	}
+
+	public function testGetMethodAttributesByTypeEmptyWhenNoneOrMissing(): void
+	{
+		$this->assertSame([], TComponentReflection::getMethodAttributesByType(ReflectionAttributeChild::class, 'plainMethod', ReflectionTestAttribute::class));
+		$this->assertSame([], TComponentReflection::getMethodAttributesByType(ReflectionAttributeChild::class, 'noSuchMethod', ReflectionTestAttribute::class));
+		$this->assertSame([], TComponentReflection::getMethodAttributesByType('NoSuchClass_Attr_XYZ', 'plainMethod', ReflectionTestAttribute::class));
+	}
+
+	public function testGetMethodAttributesByTypeFindsBehaviorMethod(): void
+	{
+		$component = new ReflectionFixtureComponent();
+		$component->attachBehavior('attributed', new ReflectionAttributeBehavior());
+
+		$found = TComponentReflection::getMethodAttributesByType($component, 'behaviorAttributedMethod', ReflectionTestAttribute::class);
+		$this->assertSame(['behavior'], self::values($found));
+		$this->assertSame([], TComponentReflection::getMethodAttributesByType(ReflectionFixtureComponent::class, 'behaviorAttributedMethod', ReflectionTestAttribute::class));
+	}
+
+	// ========================================================================
+	// getPropertyAttributesByType (4.4.0)
+	// ========================================================================
+
+	public function testGetPropertyAttributesByTypeFindsOwnAndInherited(): void
+	{
+		$own = TComponentReflection::getPropertyAttributesByType(ReflectionAttributeChild::class, 'childProp', ReflectionTestAttribute::class);
+		$this->assertSame(['child-prop'], self::values($own));
+		$inherited = TComponentReflection::getPropertyAttributesByType(ReflectionAttributeChild::class, 'parentProp', ReflectionTestAttribute::class);
+		$this->assertSame(['parent-prop'], self::values($inherited));
+		$private = TComponentReflection::getPropertyAttributesByType(ReflectionAttributeChild::class, 'privateParentProp', ReflectionTestAttribute::class);
+		$this->assertSame(['private-prop'], self::values($private));
+	}
+
+	public function testGetPropertyAttributesByTypeEmptyWhenNoneOrMissing(): void
+	{
+		$this->assertSame([], TComponentReflection::getPropertyAttributesByType(ReflectionAttributeChild::class, 'plainProp', ReflectionTestAttribute::class));
+		$this->assertSame([], TComponentReflection::getPropertyAttributesByType(ReflectionAttributeChild::class, 'noSuchProp', ReflectionTestAttribute::class));
+	}
+
+	// ========================================================================
+	// getMethodsWithAttributeByType / getPropertiesWithAttributeByType (4.4.0)
+	// ========================================================================
+
+	public function testGetMethodsWithAttributeByTypeMapsMethodsToInstances(): void
+	{
+		$map = TComponentReflection::getMethodsWithAttributeByType(ReflectionAttributeChild::class, ReflectionTestAttribute::class);
+		$this->assertEqualsCanonicalizing(['subMethod', 'inheritedMethod'], array_keys($map));
+		$this->assertSame(['sub'], self::values($map['subMethod']));
+		$this->assertSame(['inherited-method'], self::values($map['inheritedMethod']));
+	}
+
+	public function testGetMethodsWithAttributeByTypeSharesMemberCache(): void
+	{
+		$map = TComponentReflection::getMethodsWithAttributeByType(ReflectionAttributeChild::class, ReflectionTestAttribute::class);
+		$single = TComponentReflection::getMethodAttributesByType(ReflectionAttributeChild::class, 'inheritedMethod', ReflectionTestAttribute::class);
+		$this->assertSame($single[0], $map['inheritedMethod'][0]);
+		$this->assertSame($map, TComponentReflection::getMethodsWithAttributeByType(new ReflectionAttributeChild(), ReflectionTestAttribute::class));
+	}
+
+	public function testGetMethodsWithAttributeByTypeEmptyWhenNoneOrMissing(): void
+	{
+		$this->assertSame([], TComponentReflection::getMethodsWithAttributeByType(PlainPhpClass::class, ReflectionTestAttribute::class));
+		$this->assertSame([], TComponentReflection::getMethodsWithAttributeByType('NoSuchClass_Attr_XYZ', ReflectionTestAttribute::class));
+	}
+
+	public function testGetPropertiesWithAttributeByTypeMapsPropertiesToInstances(): void
+	{
+		$map = TComponentReflection::getPropertiesWithAttributeByType(ReflectionAttributeChild::class, ReflectionTestAttribute::class);
+		$this->assertEqualsCanonicalizing(['childProp', 'parentProp'], array_keys($map));
+		$this->assertSame(['child-prop'], self::values($map['childProp']));
+		$this->assertSame(['parent-prop'], self::values($map['parentProp']));
+	}
+
+	public function testGetPropertiesWithAttributeByTypeEmptyWhenNoneOrMissing(): void
+	{
+		$this->assertSame([], TComponentReflection::getPropertiesWithAttributeByType(PlainPhpClass::class, ReflectionTestAttribute::class));
+		$this->assertSame([], TComponentReflection::getPropertiesWithAttributeByType('NoSuchClass_Attr_XYZ', ReflectionTestAttribute::class));
+	}
+
+	// ========================================================================
+	// getAttributes (4.4.0)
+	// ========================================================================
+
+	public function testGetAttributesListsOwnThenParentWithoutInstantiating(): void
+	{
+		$reflection = new TComponentReflection(ReflectionAttributeChild::class);
+		$attributes = $reflection->getAttributes();
+		$this->assertCount(4, $attributes);
+		$this->assertSame(['name', 'arguments', 'class'], array_keys($attributes[0]));
+		$this->assertSame(ReflectionTestAttribute::class, $attributes[0]['name']);
+		$this->assertSame(['child-a'], $attributes[0]['arguments']);
+		$this->assertSame(ReflectionAttributeChild::class, $attributes[0]['class']);
+		$this->assertSame(ReflectionTestOtherAttribute::class, $attributes[2]['name']);
+		$this->assertSame([], $attributes[2]['arguments']);
+		$this->assertSame(['parent'], $attributes[3]['arguments']);
+		$this->assertSame(ReflectionAttributeParent::class, $attributes[3]['class']);
+	}
+
+	public function testGetAttributesEmptyForPlainClass(): void
+	{
+		$reflection = new TComponentReflection(PlainPhpClass::class);
+		$this->assertSame([], $reflection->getAttributes());
 	}
 }

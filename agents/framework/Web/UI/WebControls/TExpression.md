@@ -17,4 +17,4 @@ TExpression evaluates a PHP expression and renders the result during the renderi
 
 ## See Also
 
-- [TControl](./TControl.md)
+- [TControl](../TControl.md)

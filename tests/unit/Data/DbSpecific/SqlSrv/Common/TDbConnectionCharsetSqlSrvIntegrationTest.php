@@ -1,9 +1,12 @@
 <?php
 
-require_once(__DIR__ . '/../../../../PradoUnit.php');
+namespace Prado\Test\Unit\Data\DbSpecific\SqlSrv\Common;
 
 use Prado\Data\TDbConnection;
 use Prado\TApplication;
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
+use Prado\Exceptions\TDbException;
+use Prado\TApplicationMode;
 
 /**
  * Integration tests for TDbConnection charset handling — SQL Server (sqlsrv).
@@ -24,7 +27,7 @@ use Prado\TApplication;
  * TrustServerCertificate=yes is required for ODBC Driver 18+ which enforces
  * encrypted connections and rejects self-signed certificates.
  */
-class TDbConnectionCharsetSqlSrvIntegrationTest extends PHPUnit\Framework\TestCase
+class TDbConnectionCharsetSqlSrvIntegrationTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 
@@ -47,7 +50,7 @@ class TDbConnectionCharsetSqlSrvIntegrationTest extends PHPUnit\Framework\TestCa
 	{
 		static $booted = false;
 		if (!$booted) {
-			new TApplication(__DIR__ . '/../../../../Security/app', false, TApplication::CONFIG_TYPE_PHP);
+			(new TApplication(__DIR__ . '/../../../../Security/app', false, TApplication::CONFIG_TYPE_PHP))->setMode(TApplicationMode::Debug);
 			$booted = true;
 		}
 		$this->setUpConnection();

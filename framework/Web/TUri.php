@@ -11,13 +11,14 @@
 namespace Prado\Web;
 
 use Prado\Exceptions\TInvalidDataValueException;
+use Prado\IO\TResourceUri;
 
 /**
  * TUri class
  *
- * TUri represents a URI. Given a URI
+ * Represents a URI. Given a URI
  * http://joe:whatever@example.com:8080/path/to/script.php?param=value#anchor
- * it will be decomposed as follows,
+ * it is decomposed as follows:
  * - scheme: http
  * - host: example.com
  * - port: 8080
@@ -27,155 +28,64 @@ use Prado\Exceptions\TInvalidDataValueException;
  * - query: param=value
  * - fragment: anchor
  *
+ * As of 4.4.0, TUri is the Prado-specific PSR-7 URI: it extends
+ * {@see \Prado\IO\TResourceUri} and is fully PSR-7
+ * {@see \Psr\Http\Message\UriInterface} compliant (scheme and host normalize to
+ * lower case, default ports suppressed, path/query/fragment percent-encoded).
+ * Change a component with the inherited `with*` clone-methods.
+ *
+ * It has retained three Prado conveniences over the bare interface: {@see getUri()}
+ * returns the recomposed URI string, and {@see getUser()}/{@see getPassword()}
+ * expose the (decoded) user and password separately, complementing the PSR-7
+ * {@see getUserInfo()}.
+ *
+ * BACKWARD-COMPATIBILITY NOTE (4.4.0): the legacy accessors now return PSR-7
+ * normalized values; {@see getPort()} returns null when the port is absent or
+ * matches the scheme default (it formerly returned the raw port or empty string).
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
  */
-class TUri extends \Prado\TComponent
+class TUri extends TResourceUri
 {
 	/**
-	 * @var array list of default ports for known schemes
+	 * Throws the Prado-conventional exception when a URI cannot be parsed.
+	 * @param string $uri The offending URI.
+	 * @return \Throwable The exception to throw.
 	 */
-	private static $_defaultPort = [
-		'ftp' => 21,
-		'gopher' => 70,
-		'http' => 80,
-		'https' => 443,
-		'news' => 119,
-		'nntp' => 119,
-		'wais' => 210,
-		'telnet' => 23,
-	];
-	/**
-	 * @var string scheme of the URI
-	 */
-	private $_scheme;
-	/**
-	 * @var string host name of the URI
-	 */
-	private $_host;
-	/**
-	 * @var int port of the URI
-	 */
-	private $_port;
-	/**
-	 * @var string user of the URI
-	 */
-	private $_user;
-	/**
-	 * @var string password of the URI
-	 */
-	private $_pass;
-	/**
-	 * @var string path of the URI
-	 */
-	private $_path;
-	/**
-	 * @var string query string of the URI
-	 */
-	private $_query;
-	/**
-	 * @var string fragment of the URI
-	 */
-	private $_fragment;
-	/**
-	 * @var string the URI
-	 */
-	private $_uri;
-
-	/**
-	 * Constructor.
-	 * Decomposes the specified URI into parts.
-	 * @param string $uri URI to be represented
-	 * @throws TInvalidDataValueException if URI is of bad format
-	 */
-	public function __construct($uri)
+	protected function createParseException(string $uri): \Throwable
 	{
-		if (($ret = @parse_url($uri)) !== false) {
-			// decoding???
-			$this->_scheme = $ret['scheme'] ?? '';
-			$this->_host = $ret['host'] ?? '';
-			$this->_port = $ret['port'] ?? '';
-			$this->_user = $ret['user'] ?? '';
-			$this->_pass = $ret['pass'] ?? '';
-			$this->_path = $ret['path'] ?? '';
-			$this->_query = $ret['query'] ?? '';
-			$this->_fragment = $ret['fragment'] ?? '';
-			$this->_uri = $uri;
-		} else {
-			throw new TInvalidDataValueException('uri_format_invalid', $uri);
-		}
-		parent::__construct();
+		return new TInvalidDataValueException('uri_format_invalid', $uri);
 	}
 
 	/**
-	 * @return string URI
+	 * Returns the recomposed URI string (alias of {@see __toString()}).
+	 * @return string the URI
 	 */
 	public function getUri()
 	{
-		return $this->_uri;
+		return (string) $this;
 	}
 
 	/**
-	 * @return string scheme of the URI, such as 'http', 'https', 'ftp', etc.
-	 */
-	public function getScheme()
-	{
-		return $this->_scheme;
-	}
-
-	/**
-	 * @return string hostname of the URI
-	 */
-	public function getHost()
-	{
-		return $this->_host;
-	}
-
-	/**
-	 * @return int port number of the URI
-	 */
-	public function getPort()
-	{
-		return $this->_port;
-	}
-
-	/**
+	 * Returns the decoded user component, complementing {@see getUserInfo()}.
 	 * @return string username of the URI
 	 */
 	public function getUser()
 	{
-		return $this->_user;
+		$info = $this->getUserInfo();
+		$pos = strpos($info, ':');
+		return rawurldecode($pos === false ? $info : substr($info, 0, $pos));
 	}
 
 	/**
+	 * Returns the decoded password component, complementing {@see getUserInfo()}.
 	 * @return string password of the URI
 	 */
 	public function getPassword()
 	{
-		return $this->_pass;
-	}
-
-	/**
-	 * @return string path of the URI
-	 */
-	public function getPath()
-	{
-		return $this->_path;
-	}
-
-	/**
-	 * @return string query string of the URI
-	 */
-	public function getQuery()
-	{
-		return $this->_query;
-	}
-
-	/**
-	 * @return string fragment of the URI
-	 */
-	public function getFragment()
-	{
-		return $this->_fragment;
+		$info = $this->getUserInfo();
+		$pos = strpos($info, ':');
+		return $pos === false ? '' : rawurldecode(substr($info, $pos + 1));
 	}
 }

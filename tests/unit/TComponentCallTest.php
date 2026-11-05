@@ -1,8 +1,9 @@
 <?php
 
-require_once __DIR__ . '/TComponentTestBase.php';
+namespace Prado\Test\Unit;
 
 use Prado\Exceptions\TUnknownMethodException;
+use Prado\Util\TClassBehavior;
 
 /**
  * Tests for TComponent magic dispatch: __call() (behavior method forwarding)
@@ -46,7 +47,7 @@ class TComponentCallTest extends TComponentTestBase
 
 
 		// test object instance behaviors implemented through class-wide behaviors
-		$this->component->attachClassBehavior('FooFooBehaviorAsClass', 'FooFooBehavior');
+		$this->component->attachClassBehavior('FooFooBehaviorAsClass', FooFooBehavior::class);
 
 		$component = new NewComponent;
 
@@ -165,5 +166,83 @@ class TComponentCallTest extends TComponentTestBase
 
 
 		unset($this->tearDownScripts[$behaviorName]);
+	}
+
+	/**
+	 * IOwnerVisibleMethods restricts the __callStatic class-behavior path.  A class
+	 * behavior attached as an instance that hides its methods makes its static method
+	 * unreachable through the owner class, while an unrestricted one resolves normally.
+	 */
+	public function testCallStatic_classBehaviorOwnerVisibility()
+	{
+		$behaviorName = 'aHiddenStaticMethodBehavior';
+		NewComponent::attachClassBehavior($behaviorName, new NewComponentStaticHiddenClassBehavior());
+		$this->tearDownScripts[$behaviorName] = function () use ($behaviorName) { NewComponent::detachClassBehavior($behaviorName); };
+
+		try {
+			NewComponent::aStaticMethod(3);
+			self::fail("failed to raise TUnknownMethodException for an owner-hidden static class-behavior method.");
+		} catch (TUnknownMethodException $e) {
+		}
+
+		NewComponent::detachClassBehavior($behaviorName);
+		unset($this->tearDownScripts[$behaviorName]);
+
+		// An unrestricted class behavior still resolves its static method.
+		NewComponent::attachClassBehavior($behaviorName, new NewComponentStaticClassBehavior());
+		$this->tearDownScripts[$behaviorName] = function () use ($behaviorName) { NewComponent::detachClassBehavior($behaviorName); };
+
+		self::assertEquals(9, NewComponent::aStaticMethod(3));
+
+		NewComponent::detachClassBehavior($behaviorName);
+		unset($this->tearDownScripts[$behaviorName]);
+	}
+
+	/**
+	 * A per-instance class behavior registered as a configuration array resolves its
+	 * static method through the configured 'class' without owner-visibility restriction.
+	 */
+	public function testCallStatic_instanceClassBehaviorAsArray()
+	{
+		$behaviorName = 'aStaticConfigBehavior';
+		NewComponent::attachClassBehavior($behaviorName, ['class' => NewComponentStaticBehavior::class]);
+		$this->tearDownScripts[$behaviorName] = function () use ($behaviorName) { NewComponent::detachClassBehavior($behaviorName); };
+
+		self::assertEquals(6, NewComponent::aStaticMethod(3));
+
+		NewComponent::detachClassBehavior($behaviorName);
+		unset($this->tearDownScripts[$behaviorName]);
+	}
+
+	/**
+	 * A class behavior naming its static method in getOwnerVisibleMethods() exposes it
+	 * to the owner class; the name match is case-insensitive.
+	 */
+	public function testCallStatic_classBehaviorOwnerVisibleStaticMethod()
+	{
+		$behaviorName = 'aVisibleStaticMethodBehavior';
+		NewComponent::attachClassBehavior($behaviorName, new TComponentCallTestVisibleStaticClassBehavior());
+		$this->tearDownScripts[$behaviorName] = function () use ($behaviorName) { NewComponent::detachClassBehavior($behaviorName); };
+
+		self::assertEquals(7, NewComponent::aStaticMethod(3));
+
+		NewComponent::detachClassBehavior($behaviorName);
+		unset($this->tearDownScripts[$behaviorName]);
+	}
+}
+
+/**
+ * Class behavior whose static method is listed in its owner-visible methods.
+ */
+class TComponentCallTestVisibleStaticClassBehavior extends TClassBehavior
+{
+	public static function aStaticMethod(int $value)
+	{
+		return $value + 4;
+	}
+
+	public function getOwnerVisibleMethods(): null|string|array
+	{
+		return ['otherMethod', 'ASTATICMETHOD'];
 	}
 }

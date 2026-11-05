@@ -12,6 +12,7 @@ namespace Prado\Web\UI\WebControls;
 
 use Prado\Exceptions\TConfigurationException;
 use Prado\TPropertyValue;
+use Prado\Web\THttpUtility;
 use Prado\Exceptions\TInvalidDataValueException;
 
 /**
@@ -48,11 +49,21 @@ use Prado\Exceptions\TInvalidDataValueException;
  *
  * Multiple pagers can be associated with the same data-bound control.
  *
+ * TPager renders a `<nav>` landmark named "Pagination". An `aria-label` or
+ * `aria-labelledby` attribute on the pager replaces the name; two pagers on a
+ * page need distinct names. The default page texts (`<<`, `<`, `>`, `>>`)
+ * carry the names "First page", "Previous page", "Next page", and "Last page".
+ * A numeric page button is named "Page N", and the current page has
+ * `aria-current="page"`. {@see setListLayout ListLayout} renders the buttons
+ * as a `<ul>` list; see {@see TPagerAccessibilityTrait}.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0.2
  */
 class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web\UI\INamingContainer
 {
+	use TPagerAccessibilityTrait;
+
 	/**
 	 * Command name that TPager understands.
 	 */
@@ -61,6 +72,10 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	public const CMD_PAGE_PREV = 'Previous';
 	public const CMD_PAGE_FIRST = 'First';
 	public const CMD_PAGE_LAST = 'Last';
+	/**
+	 * @var array<string, true> the default page texts, HTML-encoded in link button and label pager buttons.
+	 */
+	private const DEFAULT_PAGER_TEXTS = ['<' => true, '>' => true, '<<' => true, '>>' => true];
 
 	private $_pageCount = 0;
 
@@ -75,6 +90,58 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 		if ($this->getEnableViewState(true)) {
 			$this->getControls()->clear();
 			$this->buildPager();
+		}
+	}
+
+	/**
+	 * @return string the tag name of the pager, `nav`.
+	 * @since 4.4.0
+	 */
+	protected function getTagName()
+	{
+		return 'nav';
+	}
+
+	/**
+	 * Adds the default accessible name of the pager.
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer
+	 * @since 4.4.0
+	 */
+	protected function addAttributesToRender($writer)
+	{
+		parent::addAttributesToRender($writer);
+		$this->addPagerLabelToRender($writer);
+	}
+
+	/**
+	 * @return bool whether the pager buttons render as a `<ul>` list. Defaults to false.
+	 * @since 4.4.0
+	 */
+	public function getListLayout()
+	{
+		return $this->getViewState('ListLayout', false);
+	}
+
+	/**
+	 * @param bool $value whether the pager buttons render as a `<ul>` list.
+	 * @since 4.4.0
+	 */
+	public function setListLayout($value)
+	{
+		$this->setViewState('ListLayout', TPropertyValue::ensureBoolean($value), false);
+	}
+
+	/**
+	 * Renders the pager buttons, as a `<ul>` list when {@see getListLayout ListLayout} is true.
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer
+	 * @since 4.4.0
+	 */
+	public function renderContents($writer)
+	{
+		if ($this->getListLayout()) {
+			$this->renderPagerList($writer);
+		} else {
+			parent::renderContents($writer);
 		}
 	}
 
@@ -443,6 +510,19 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	}
 
 	/**
+	 * Returns the text of a link button or label pager button.  A default page text
+	 * (`<`, `>`, `<<`, `>>`) is HTML-encoded; any other text renders as HTML, as in
+	 * {@see TLinkButton} and {@see TLabel}.
+	 * @param string $text the page text.
+	 * @return string the button text.
+	 * @since 4.4.0
+	 */
+	protected function encodeDefaultPagerText($text)
+	{
+		return isset(self::DEFAULT_PAGER_TEXTS[$text]) ? THttpUtility::htmlEncode($text) : $text;
+	}
+
+	/**
 	 * Creates a pager button.
 	 * Depending on the button type, a TLinkButton or a TButton may be created.
 	 * If it is enabled (clickable), its command name and parameter will also be set.
@@ -457,6 +537,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	protected function createPagerButton($buttonType, $enabled, $text, $commandName, $commandParameter)
 	{
 		if ($buttonType === TPagerButtonType::LinkButton) {
+			$text = $this->encodeDefaultPagerText($text);
 			if ($enabled) {
 				$button = new TLinkButton();
 			} else {
@@ -518,35 +599,43 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 		if ($this->getIsFirstPage()) {
 			if (($text = $this->getFirstPageText()) !== '') {
 				$label = $this->createPagerButton($buttonType, false, $text, self::CMD_PAGE_FIRST, '');
+				$this->labelPagerButton($label, $text, 'First page');
 				$controls->add($label);
 				$controls->add("\n");
 			}
-			$label = $this->createPagerButton($buttonType, false, $this->getPrevPageText(), self::CMD_PAGE_PREV, '');
+			$label = $this->createPagerButton($buttonType, false, $text = $this->getPrevPageText(), self::CMD_PAGE_PREV, '');
+			$this->labelPagerButton($label, $text, 'Previous page');
 			$controls->add($label);
 		} else {
 			if (($text = $this->getFirstPageText()) !== '') {
 				$button = $this->createPagerButton($buttonType, true, $text, self::CMD_PAGE_FIRST, '');
+				$this->labelPagerButton($button, $text, 'First page');
 				$controls->add($button);
 				$controls->add("\n");
 			}
-			$button = $this->createPagerButton($buttonType, true, $this->getPrevPageText(), self::CMD_PAGE_PREV, '');
+			$button = $this->createPagerButton($buttonType, true, $text = $this->getPrevPageText(), self::CMD_PAGE_PREV, '');
+			$this->labelPagerButton($button, $text, 'Previous page');
 			$controls->add($button);
 		}
 		$controls->add("\n");
 		if ($this->getIsLastPage()) {
-			$label = $this->createPagerButton($buttonType, false, $this->getNextPageText(), self::CMD_PAGE_NEXT, '');
+			$label = $this->createPagerButton($buttonType, false, $text = $this->getNextPageText(), self::CMD_PAGE_NEXT, '');
+			$this->labelPagerButton($label, $text, 'Next page');
 			$controls->add($label);
 			if (($text = $this->getLastPageText()) !== '') {
 				$controls->add("\n");
 				$label = $this->createPagerButton($buttonType, false, $text, self::CMD_PAGE_LAST, '');
+				$this->labelPagerButton($label, $text, 'Last page');
 				$controls->add($label);
 			}
 		} else {
-			$button = $this->createPagerButton($buttonType, true, $this->getNextPageText(), self::CMD_PAGE_NEXT, '');
+			$button = $this->createPagerButton($buttonType, true, $text = $this->getNextPageText(), self::CMD_PAGE_NEXT, '');
+			$this->labelPagerButton($button, $text, 'Next page');
 			$controls->add($button);
 			if (($text = $this->getLastPageText()) !== '') {
 				$controls->add("\n");
 				$button = $this->createPagerButton($buttonType, true, $text, self::CMD_PAGE_LAST, '');
+				$this->labelPagerButton($button, $text, 'Last page');
 				$controls->add($button);
 			}
 		}
@@ -580,11 +669,13 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 		if ($startPageIndex > 1) {
 			if (($text = $this->getFirstPageText()) !== '') {
 				$button = $this->createPagerButton($buttonType, true, $text, self::CMD_PAGE_FIRST, '');
+				$this->labelPagerButton($button, $text, 'First page');
 				$controls->add($button);
 				$controls->add("\n");
 			}
 			$prevPageIndex = $startPageIndex - 1;
-			$button = $this->createPagerButton($buttonType, true, $this->getPrevPageText(), self::CMD_PAGE, "$prevPageIndex");
+			$button = $this->createPagerButton($buttonType, true, $text = $this->getPrevPageText(), self::CMD_PAGE, "$prevPageIndex");
+			$this->labelPagerButton($button, $text, 'Previous pages');
 			$controls->add($button);
 			$controls->add("\n");
 		}
@@ -592,9 +683,11 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 		for ($i = $startPageIndex; $i <= $endPageIndex; ++$i) {
 			if ($i === $pageIndex) {
 				$label = $this->createPagerButton($buttonType, false, "$i", self::CMD_PAGE, '');
+				$this->labelPageNumberButton($label, $i, true);
 				$controls->add($label);
 			} else {
 				$button = $this->createPagerButton($buttonType, true, "$i", self::CMD_PAGE, "$i");
+				$this->labelPageNumberButton($button, $i, false);
 				$controls->add($button);
 			}
 			if ($i < $endPageIndex) {
@@ -605,11 +698,13 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 		if ($pageCount > $endPageIndex) {
 			$controls->add("\n");
 			$nextPageIndex = $endPageIndex + 1;
-			$button = $this->createPagerButton($buttonType, true, $this->getNextPageText(), self::CMD_PAGE, "$nextPageIndex");
+			$button = $this->createPagerButton($buttonType, true, $text = $this->getNextPageText(), self::CMD_PAGE, "$nextPageIndex");
+			$this->labelPagerButton($button, $text, 'Next pages');
 			$controls->add($button);
 			if (($text = $this->getLastPageText()) !== '') {
 				$controls->add("\n");
 				$button = $this->createPagerButton($buttonType, true, $text, self::CMD_PAGE_LAST, '');
+				$this->labelPagerButton($button, $text, 'Last page');
 				$controls->add($button);
 			}
 		}
@@ -621,6 +716,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	protected function buildListPager()
 	{
 		$list = new TDropDownList();
+		$this->labelPageList($list);
 		$this->getControls()->add($list);
 		$list->setDataSource(range(1, $this->getPageCount()));
 		$list->dataBind();

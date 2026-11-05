@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI\WebControls;
+
 use Prado\Web\UI\WebControls\TConditional;
 use Prado\Web\UI\TTemplate;
 use Prado\Web\UI\TPage;

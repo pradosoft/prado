@@ -14,61 +14,112 @@
  * http://creativecommons.org/licenses/by-sa/3.0/us/
  */
 
-Prado.WebUI.TAccordion = jQuery.klass(Prado.WebUI.Control,
+/**
+ * Small native height-animation helper. Animates element height between two
+ * values using requestAnimationFrame; calls done() on completion. Used where
+ * the accordion previously called jQuery.fn.animate({height}, duration[, cb]).
+ * @since 4.4.0
+ */
+const _accAnimateHeight = (el, from, to, duration, done) => {
+	if (!duration || duration <= 0) {
+		el.style.height = `${to}px`;
+		if (done) done();
+		return;
+	}
+	const start = performance.now();
+	const step = (now) => {
+		const t = Math.min(1, (now - start) / duration);
+		el.style.height = `${from + (to - from) * t}px`;
+		if (t < 1) requestAnimationFrame(step);
+		else if (done) done();
+	};
+	requestAnimationFrame(step);
+};
+
+Prado.WebUI.TAccordion = Prado.Class(Prado.WebUI.Control,
 {
-    	onInit : function(options)
-	{
-		this.accordion = jQuery('#'+options.ID).get(0);
-		this.options = options;
-		this.hiddenField = jQuery('#'+options.ID+'_1').get(0);
+    	onInit(options) {
+            this.accordion = document.getElementById(options.ID);
+            this.options = options;
+            this.hiddenField = document.getElementById(`${options.ID}_1`);
 
-		if (this.options.maxHeight)
+            if (this.options.maxHeight)
+            {
+                this.maxHeight = this.options.maxHeight;
+            } else {
+                this.maxHeight = 0;
+                this.checkMaxHeight();
+            }
+
+            this.currentView = null;
+            this.oldView = null;
+
+            let i = 0;
+            for(const view in this.options.Views)
+            {
+                const header = document.getElementById(`${view}_0`);
+                if(header)
+                {
+                    this.observe(header, "click", this.elementClicked.bind(this, view));
+                    this.observe(header, "keydown", this.keyPressed.bind(this, view));
+                    if(this.hiddenField.value == i)
+                    {
+                        this.currentView = view;
+                        const cur = document.getElementById(this.currentView);
+                        if(cur && cur.offsetHeight != this.maxHeight)
+                            cur.style.height = `${this.maxHeight}px`;
+                    }
+                }
+                i++;
+            }
+        },
+
+	checkMaxHeight() {
+		for(const viewID in this.options.Views)
 		{
-			this.maxHeight = this.options.maxHeight;
-		} else {
-			this.maxHeight = 0;
-			this.checkMaxHeight();
-		}
-
-		this.currentView = null;
-		this.oldView = null;
-
-		var i = 0;
-		for(var view in this.options.Views)
-		{
-			var header = jQuery('#'+view+'_0').get(0);
-			if(header)
-			{
-				this.observe(header, "click", jQuery.proxy(this.elementClicked,this,view));
-				if(this.hiddenField.value == i)
-				{
-					this.currentView = view;
-					if(jQuery('#'+this.currentView).height() != this.maxHeight)
-						jQuery('#'+this.currentView).css({height: this.maxHeight+"px"});
-				}
-			}
-			i++;
+			const view = document.getElementById(viewID);
+			const height = view ? this.measureHeight(view) : 0;
+			if(height > this.maxHeight)
+ 				this.maxHeight = height;
 		}
 	},
 
-	checkMaxHeight: function()
-	{
-		for(var viewID in this.options.Views)
-		{
-			var view = jQuery('#'+viewID);
-			if(view.height() > this.maxHeight)
- 				this.maxHeight = view.height();
-		}
+	/**
+	 * Measures the height of a view. A view hidden with an inline
+	 * `display:none`, which TAccordionView renders for each inactive view, is
+	 * displayed invisibly for the measurement, as jQuery `.height()` did.
+	 * @param {element} view - the view element
+	 * @return {number} the offset height of the view in pixels
+	 */
+	measureHeight(view) {
+		const style = view.style;
+		if (style.display !== 'none')
+			return view.offsetHeight;
+		const display = style.display;
+		const visibility = style.visibility;
+		style.visibility = 'hidden';
+		style.display = '';
+		const height = view.offsetHeight;
+		style.display = display;
+		style.visibility = visibility;
+		return height;
 	},
 
-	elementClicked : function(viewID, event)
-	{
-		var i = 0;
-		for(var index in this.options.Views)
+	/**
+	 * Converts the Duration option, the AnimationDuration in seconds, to milliseconds.
+	 * @return {number} the animation length in milliseconds; 0 for no animation
+	 */
+	getDurationMs() {
+		const seconds = parseFloat(this.options.Duration);
+		return seconds > 0 ? seconds * 1000 : 0;
+	},
+
+	elementClicked(viewID, _event) {
+		let i = 0;
+		for(const index in this.options.Views)
 		{
-			if (jQuery('#'+index).get(0))
+			if (document.getElementById(index))
 			{
-				var header = jQuery('#'+index+'_0').get(0);
 				if(index == viewID)
 				{
 					this.oldView = this.currentView;
@@ -81,35 +132,89 @@ Prado.WebUI.TAccordion = jQuery.klass(Prado.WebUI.Control,
 		}
 		if(this.oldView != this.currentView)
 		{
-			if(this.options.Duration > 0)
+			const cur = document.getElementById(this.currentView);
+			const old = document.getElementById(this.oldView);
+			const oldHdr = document.getElementById(`${this.oldView}_0`);
+			const curHdr = document.getElementById(`${this.currentView}_0`);
+			if(this.getDurationMs() > 0)
 			{
 				this.animate();
 			} else {
-				jQuery('#'+this.currentView).css({ height: this.maxHeight+"px" });
-				jQuery('#'+this.currentView).show();
-				jQuery('#'+this.oldView).hide();
+				if (cur) {
+					cur.style.height = `${this.maxHeight}px`;
+					cur.style.display = '';
+				}
+				if (old) old.style.display = 'none';
 
-				jQuery('#'+this.oldView+'_0').removeClass().addClass(this.options.HeaderCssClass);
-				jQuery('#'+this.currentView+'_0').removeClass().addClass(this.options.ActiveHeaderCssClass);
+				this.setHeaderState(oldHdr, false);
+				this.setHeaderState(curHdr, true);
 			}
 		}
 	},
 
-	animate: function() {
-		jQuery('#'+this.oldView+'_0').removeClass().addClass(this.options.HeaderCssClass);
-		jQuery('#'+this.currentView+'_0').removeClass().addClass(this.options.ActiveHeaderCssClass);
+	/**
+	 * Replaces the class of a header with HeaderCssClass or ActiveHeaderCssClass,
+	 * which may hold several class names, and reflects its open state.
+	 * @param {?element} header - the header element
+	 * @param {boolean} active - whether the header's view is the open one
+	 */
+	setHeaderState(header, active) {
+		if (!header) return;
+		header.className = Prado.Element.classTokens(active ? this.options.ActiveHeaderCssClass : this.options.HeaderCssClass).join(' ');
+		this.setExpanded(header, active);
+	},
 
-		jQuery('#'+this.oldView).animate(
-			{height: 0},
-			this.options.Duration,
-			function() {
-				jQuery(this).hide()
-			}
-		);
-		jQuery('#'+this.currentView).css({height: 0}).show().animate(
-			{height: this.maxHeight+'px'},
-			this.options.Duration
-		);
+	/** Reflects the open/closed state of a header for assistive technology. */
+	setExpanded(header, expanded) {
+		if (header && header.hasAttribute('role'))
+			header.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+	},
+
+	/**
+	 * Keyboard for the header buttons: Enter/Space toggles the region, the arrow
+	 * keys move between headers, and Home/End jump to the first or last.
+	 */
+	keyPressed(viewID, event) {
+		const kc = event.keyCode;
+		if (kc == 13 || kc == 32) { // Enter or Space
+			event.preventDefault();
+			this.elementClicked(viewID, event);
+			return;
+		}
+		if (kc < 35 || kc > 40) return; // not Home/End/arrows
+
+		const headers = [];
+		for (const view in this.options.Views) {
+			const h = document.getElementById(`${view}_0`);
+			if (h) headers.push(h);
+		}
+		let pos = headers.findIndex((h) => h.id == `${viewID}_0`);
+		if (pos === -1) return;
+
+		if (kc == 37 || kc == 38)      pos = (pos - 1 + headers.length) % headers.length;
+		else if (kc == 39 || kc == 40) pos = (pos + 1) % headers.length;
+		else if (kc == 36)             pos = 0;
+		else if (kc == 35)             pos = headers.length - 1;
+
+		event.preventDefault();
+		headers[pos].focus();
+	},
+
+	animate() {
+		const oldHdr = document.getElementById(`${this.oldView}_0`);
+		const curHdr = document.getElementById(`${this.currentView}_0`);
+		this.setHeaderState(oldHdr, false);
+		this.setHeaderState(curHdr, true);
+
+		const old = document.getElementById(this.oldView);
+		const cur = document.getElementById(this.currentView);
+		if (old) {
+			_accAnimateHeight(old, old.offsetHeight, 0, this.getDurationMs(), () => { old.style.display = 'none'; });
+		}
+		if (cur) {
+			cur.style.height = '0px';
+			cur.style.display = '';
+			_accAnimateHeight(cur, 0, this.maxHeight, this.getDurationMs());
+		}
 	}
 });
-

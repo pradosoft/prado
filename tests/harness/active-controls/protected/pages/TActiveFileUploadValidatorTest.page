@@ -1,0 +1,22 @@
+<com:TContent ID="Content">
+
+	<h1 id="heading">TActiveFileUpload Validator Functional Test</h1>
+
+	<com:TActiveFileUpload ID="uploader" OnFileUpload="uploadComplete" />
+	<com:TFileValidator
+		ID="validator1"
+		ControlToValidate="uploader"
+		ErrorMessage="Wrong type: {files}"
+		AllowedFileExtensions="txt"
+		Display="Dynamic" />
+	<com:TFileValidator
+		ID="validator2"
+		ControlToValidate="uploader"
+		ErrorMessage="Content does not match extension"
+		CheckExtensionMimeType="true"
+		EnableClientScript="false"
+		Display="Dynamic" />
+
+	<com:TActiveLabel ID="label1" Text="No upload" />
+
+</com:TContent>

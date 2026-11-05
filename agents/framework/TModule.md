@@ -50,8 +50,10 @@ class MyModule extends TModule
 ```
 
 ```xml
-<!-- application.xml -->
-<module id="mymodule" class="MyModule" ApiKey="abc123" />
+<modules>
+    <!-- application.xml -->
+    <module id="mymodule" class="MyModule" ApiKey="abc123" />
+</modules>
 ```
 
 Access at runtime:
@@ -61,8 +63,12 @@ $module = Prado::getApplication()->getModule('mymodule');
 
 ### Dynamic Events
 
-- `dyPreInit($config, $chain)` — fired after module is loaded but before `init()`. Behaviors can intercept.
-- `dyInit($config, $chain)` — fired inside `init()` after `parent::init()`.
+| Event | Signature | When |
+|-------|-----------|------|
+| `dyPreInit` | `dyPreInit(mixed $config)` | Fired by `TApplication` after loading the module but **before** calling `init()`. Behaviors can intercept to modify `$config` or perform setup. |
+| `dyInit` | `dyInit(mixed $config)` | Fired inside `TModule::init()`. Behaviors hook here to participate in module initialization. Always call `parent::init($config)` to trigger this. |
+
+Both events are declared in the class doc-block PHPDoc so IDEs and static analysis see them.
 
 ### IDbModule
 

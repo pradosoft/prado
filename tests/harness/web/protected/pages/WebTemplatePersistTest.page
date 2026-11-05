@@ -1,0 +1,31 @@
+<com:TContent ID="Content">
+	<h1>Web Template Persist Test Case</h1>
+
+	<com:TWebTemplate ID="rowTemplate" PersistInstances="true">
+		<div class="row"><span class="name">{{name}}</span></div>
+	</com:TWebTemplate>
+
+	<div id="listBody"></div>
+
+	<button type="button" id="btnStampAda" onclick="stamp('Ada')">Stamp Ada</button>
+	<button type="button" id="btnStampGrace" onclick="stamp('Grace')">Stamp Grace</button>
+	<button type="button" id="btnUpdateFirst" onclick="updateFirst()">Update First</button>
+
+	<com:TButton ID="btnPostBack" Text="Full PostBack" OnClick="noop" />
+
+	<p>Render time: <com:TLabel ID="renderTime" /></p>
+
+	<com:TClientScript>
+		function stamp(name) {
+			Prado.WebUI.TWebTemplate.get('<%= $this->rowTemplate->ClientID %>')
+				.appendTo('listBody', {name: name});
+		}
+		function updateFirst() {
+			var node = document.querySelector('#listBody [data-prado-instance]');
+			if (node) {
+				Prado.WebUI.TWebTemplate.get('<%= $this->rowTemplate->ClientID %>')
+					.updateInstance(node.getAttribute('data-prado-instance'), {name: 'Updated'});
+			}
+		}
+	</com:TClientScript>
+</com:TContent>

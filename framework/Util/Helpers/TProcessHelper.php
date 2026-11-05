@@ -11,6 +11,8 @@
 namespace Prado\Util\Helpers;
 
 use Prado\Exceptions\TNotSupportedException;
+use Prado\IO\Async\IEventLoop;
+use Prado\IO\Async\TAsync;
 use Prado\Prado;
 use Prado\TComponent;
 use Prado\TEventParameter;
@@ -156,11 +158,51 @@ class TProcessHelper
 			Prado::info("Fork child: $pid", static::class);
 		} elseif ($pid === 0) {
 			Prado::info("Executing child fork", static::class);
+			TAsync::resetLoopForChild();
 			TSignalsDispatcher::singleton();
 		} elseif ($pid === -1) {
 			Prado::notice("failed fork", static::class);
 		}
 		return $pid;
+	}
+
+	/**
+	 * Calls a callback from the event loop each time the process receives `SIGCHLD`.  With the
+	 * {@see TSignalsDispatcher} installed the dispatcher keeps the signal: its
+	 * {@see TSignalsDispatcher::FX_SIGNAL_CHILD} handler {@see IEventLoop::defer() defers} the
+	 * callback to the next loop iteration, as the handler runs inside `pcntl_signal_dispatch()`,
+	 * which a loop calls from within its own dispatch where a resume or a cancel is not acted on.
+	 * Without the dispatcher the callback is a {@see IEventLoop::onSignal()} callback.  Without
+	 * pcntl nothing is watched and the returned closure does nothing.  The caller keeps a timer
+	 * on the loop as well, so the loop's wait stays finite and a signal is never the only wake-up.
+	 * @param IEventLoop $loop The loop the signal callback is registered on.
+	 * @param callable $callback Called as `()` on each `SIGCHLD`.
+	 * @return \Closure A closure that stops watching.
+	 */
+	public static function watchChildSignal(IEventLoop $loop, callable $callback): \Closure
+	{
+		if (!TSignalsDispatcher::hasSignals()) {
+			return static function (): void {
+			};
+		}
+		$dispatcher = TSignalsDispatcher::singleton(false);
+		if ($dispatcher !== null) {
+			$handler = static function () use ($loop, $callback): void {
+				$loop->defer(static function () use ($callback): void {
+					$callback();
+				});
+			};
+			$dispatcher->attachEventHandler(TSignalsDispatcher::FX_SIGNAL_CHILD, $handler);
+			return static function () use ($dispatcher, $handler): void {
+				$dispatcher->detachEventHandler(TSignalsDispatcher::FX_SIGNAL_CHILD, $handler);
+			};
+		}
+		$id = $loop->onSignal(SIGCHLD, static function () use ($callback): void {
+			$callback();
+		});
+		return static function () use ($loop, $id): void {
+			$loop->cancel($id);
+		};
 	}
 
 	/**

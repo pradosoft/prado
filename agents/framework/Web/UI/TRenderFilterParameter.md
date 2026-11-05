@@ -1,0 +1,162 @@
+# Web/UI/TRenderFilterParameter
+
+### Directories
+[framework](../../INDEX.md) / [Web](../INDEX.md) / [UI](./INDEX.md) / **`TRenderFilterParameter`**
+
+## Class Info
+**Location:** `framework/Web/UI/TRenderFilterParameter.php`
+**Namespace:** `Prado\Web\UI`
+**Extends:** `TEventParameter`
+**Implements:** `IEventCycleParameter`
+**Since:** 4.3.3
+
+## Overview
+
+Event parameter for the `onRenderFilter` event raised by `TControl::renderControl`. Carries the rendered HTML and exposes two transparently-switchable representations — an HTML string and a `DOMDocument` — plus the libxml parse error list. All three are stored in the parent `TEventParameter` array under reserved keys.
+
+## Constants
+
+| Constant | Value | Description |
+|---|---|---|
+| `RENDER_FILTER_TEXT` | `'html'` | Array key for the HTML string |
+| `RENDER_FILTER_DOM` | `'dom'` | Array key for the DOMDocument |
+| `RENDER_FILTER_ERRORS` | `'errors'` | Array key for the libxml error list |
+| `EXEMPT_ATTRIBUTE` | `'data-prado-filter-exempt'` | Attribute exempting an element and its content from the handlers (@since 4.4.0) |
+
+## Resource switching
+
+The parameter tracks which representation is *current*:
+- `getFilterDOM()` (or `$param['dom']`) → parses HTML into DOM, makes DOM current.
+- `getFilterText()` (or `$param['html']`) while DOM is current → serialises DOM back to HTML, makes string current.
+- `setFilterText()` / `setFilterDOM()` makes the set representation current and discards the other.
+- `postRaiseEvent` automatically serialises DOM → HTML after all handlers run, so `processRenderFilter` always receives a valid string.
+
+## Parsing
+
+`htmlToDom()` parses in the context of the element holding the first tag (`getFragmentContext()`):
+
+| First tag | Context |
+|---|---|
+| `<!DOCTYPE>`, `<html>` | `#document` |
+| `<head>`, `<body>` | `html` |
+| `<tr>` | `tbody` |
+| `<td>`, `<th>` | `tr` |
+| `<caption>`, `<colgroup>`, `<thead>`, `<tbody>`, `<tfoot>` | `table` |
+| `<col>` | `colgroup` |
+| `<option>`, `<optgroup>` | `select` |
+| other, or text | `body` |
+
+| PHP (`getUseHtml5Parser()`) | Parser |
+|---|---|
+| 8.4+ | `Dom\HTMLDocument` (HTML5); nodes import into the legacy `DOMDocument`. `<template>` content re-parses from its `innerHTML` (the HTML5 DOM keeps it outside the child nodes). `<html>`/`<head>`/`<body>` without a start tag in the source are left out. Non-XML names (`@click`, `[prop]`) import under a placeholder name. |
+| 8.2, 8.3 | libxml `loadHTML()` inside a wrapper of the context element, then unwrapped. `<script>`/`<style>` content and `<svg>`/`<math>` elements become placeholder comments (`protectRawMarkup()`); handlers do not see or change them. Attribute names that are not ASCII XML names (`@click`, `[prop]`, `ü`), which libxml drops, get a placeholder name before the parse (`protectAttributeNames()`). The start-tag scan copies only the tags it changes. |
+
+`domToHtml()` serializes with `saveHTML()`, writes the doctype itself, and restores placeholders. Placeholders carry a per-parse random nonce.
+
+`parseLibxml()` removes its injected UTF-8 prefix as either a processing instruction or an exact matching comment, skipping a leading doctype when locating it. Only that first non-doctype node is checked, preserving source comments with the same content; the temporary context wrapper is located through `documentElement`.
+
+Before 4.4.0 the parse used `LIBXML_HTML_NOIMPLIED` with no context: leading text gained a `<p>`, whitespace between top-level elements was dropped, `</` ended script content, SVG names were lowercased, and the `<head>` tag and doctype were lost.
+
+## Exempt markup (@since 4.4.0)
+
+`preRaiseEvent()` calls `protectExemptMarkup()`; `postRaiseEvent()` restores. The nearest `data-prado-filter-exempt` of an element or its ancestors decides, like `translate`:
+
+| Nearest attribute | Handlers see |
+|---|---|
+| none | the element |
+| present, `""`, any value but `false` (case-insensitive) | a placeholder comment `<!--prado-exempt-{nonce}-{n}-->` |
+| `false` | the element, inside an exempt ancestor |
+
+- `stripos()` precheck: HTML without the attribute is not parsed.
+- An exempt root (`getIsExemptRoot()`: exempt, in the document, no exempt ancestor) without re-enabled descendants becomes one placeholder.
+- With re-enabled descendants it is flattened (`collectExemptNodes()`): the start/end tags of the root and of the exempt ancestors of each re-enabled element go into placeholders, and each re-enabled element moves into place among them. Handlers do not see those exempt ancestors (TAbbr does not see an exempt `<pre>` around a re-enabled span).
+- Exempt markup serializes from the DOM with the parse placeholders (`_rawMarkup`) resolved, so it is equivalent, not byte-identical, to the rendered HTML.
+- After the restore, the DOM slot is cleared (it holds placeholders).
+- The attribute stays in the output; an enclosing filter protects the same markup again.
+- A string handler that rewrites `prado-exempt` text in comments breaks the restore; a handler that deletes a placeholder deletes the exempt markup.
+
+Control-level exemption: [TRenderFilterContext](./TRenderFilterContext.md). Markup re-enables only inside exempt markup, and a control re-enables only inside an exempt control: markup inside an exempt control's output is already a placeholder, and a control inside exempt markup is markup by the time the filter runs.
+
+## Key Methods
+
+### HTML accessor
+
+| Method | Description |
+|---|---|
+| `getFilterText(): string` | Current HTML (serialises from DOM first if DOM is current) |
+| `setFilterText(string $html): void` | Replace HTML; discard DOM and errors |
+
+### DOM accessor
+
+| Method | Description |
+|---|---|
+| `getFilterDOM(): DOMDocument\|false` | Parsed DOM (lazy parse on first call); `false` on fatal libxml failure |
+| `setFilterDOM(DOMDocument $dom): void` | Replace DOM; clear errors |
+
+### Error accessors
+
+| Method | Description |
+|---|---|
+| `getFilterErrors(): ?array` | `LibXMLError[]` from the most recent parse, or `null` when no errors |
+| `getHasFilterError(): bool` | `true` when at least one libxml error was captured |
+| `getIsFragment(): bool` / `setIsFragment(bool)` | `true` when the HTML is a callback re-render of a descendant (`TControl.RenderFilterFragments`): its enclosing start tags, `<!--prado-fragment-…-->` markers around its output, and the end tags. A handler that counts or restructures the whole output checks it (@since 4.4.0) |
+| `getDepthLimit(): int` / `setDepthLimit($value)` | Levels of controls below the filtering control whose output the handlers see; 0 → all. Starts at the control's `TControl.RenderFilterDepth`. A handler sets 0 or 1 through that depth (else `renderfilterparameter_depthlimit_invalid`) for the handlers that follow; setting it discards the DOM. Deeper output is a `<!--{marker}h{n}-->` placeholder; `postRaiseEvent()` restores it with the exempt markup, repeating `strtr` while nested placeholders appear (@since 4.4.0) |
+| `setDepthMarker(string $marker, int $limit)` | Called by `TRenderFilterContext::createDepthParameter()`: the marker prefix of the capture and the control's `RenderFilterDepth`; hides the deeper output (@since 4.4.0) |
+
+### DOM walker
+
+```php
+$param->walkElements(function (\DOMElement $el, $param, int $depth) {
+    if ($el->tagName === 'img' && !$el->hasAttribute('alt')) {
+        $el->setAttribute('alt', '');
+    }
+});
+```
+
+`walkElements(callable, ?DOMNode $node = null, bool $recursive = true)` — depth-first traversal of every `DOMElement`. The visit list is snapshotted before the first callback, so DOM mutations during the walk do not affect which elements are visited.
+
+## Array-access
+
+All three reserved keys are proxied through the getters/setters:
+
+```php
+$param[TRenderFilterParameter::RENDER_FILTER_TEXT]           // → getFilterText()
+$param[TRenderFilterParameter::RENDER_FILTER_TEXT] = $html;  // → setFilterText()
+$param[TRenderFilterParameter::RENDER_FILTER_DOM]            // → getFilterDOM()
+$param[TRenderFilterParameter::RENDER_FILTER_DOM] = $dom;    // → setFilterDOM() (must be DOMDocument)
+$param[TRenderFilterParameter::RENDER_FILTER_ERRORS]         // → getFilterErrors() (null or array)
+$param[TRenderFilterParameter::RENDER_FILTER_ERRORS] = $v;   // no-op — errors are read-only
+unset($param[TRenderFilterParameter::RENDER_FILTER_ERRORS]); // clears errors → null
+```
+
+Extra keys (not one of the three reserved ones) pass through to the parent `TEventParameter` array and can be used for handler-to-handler state passing.
+
+## Error semantics
+
+`RENDER_FILTER_ERRORS` stores `null` when no errors have been captured (fresh instance, clean parse, or after `setFilterText`/`setFilterDOM`). A non-null value means the last parse produced at least one libxml error. Use `getHasFilterError()` as the canonical check.
+
+## Subclassing
+
+Override `htmlToDom(string $html): DOMDocument|false` to substitute a custom parser. Call `$this->storeErrors($errors)` inside the override to keep the errors slot consistent (it bypasses the public no-op on `offsetSet('errors', ...)`).
+
+## Typical handler
+
+```php
+$control->onRenderFilter[] = function ($sender, TRenderFilterParameter $param) {
+    // String API
+    $param->setFilterText(strtoupper($param->getFilterText()));
+
+    // DOM API
+    $dom = $param->getFilterDOM(); // DOMDocument|false
+    if ($dom !== false) {
+        $param->walkElements(function (\DOMElement $el, $p) {
+            if ($el->tagName === 'img' && !$el->hasAttribute('alt')) {
+                $el->setAttribute('alt', '');
+            }
+        });
+    }
+
+    // Extra state for a downstream handler
+    $param['processed-by'] = 'my-filter';
+};
+```

@@ -168,6 +168,40 @@ describe('Prado.CallbackRequest.extractContent', () => {
 	});
 });
 
+// ─── updateCsrfToken ──────────────────────────────────────────────────────────
+
+describe('Prado.CallbackRequest.updateCsrfToken', () => {
+	const FIELD = 'PRADO_CSRF_TOKEN';
+	const PART  = 'X-PRADO-CSRF-TOKEN';
+
+	afterEach(() => {
+		document.body.innerHTML = '';
+	});
+
+	function update(data) {
+		const req = makeRequest();
+		req.data  = data;
+		return req.updateCsrfToken();
+	}
+
+	it('replaces the field value with the token of the response', () => {
+		document.body.innerHTML = `<input type="hidden" id="${FIELD}" name="${FIELD}" value="old" />`;
+		expect(update(`<!--${PART}-->fresh<!--//${PART}-->`)).toBe(true);
+		expect(document.getElementById(FIELD).value).toBe('fresh');
+	});
+
+	it('leaves the field alone when the response carries no token', () => {
+		document.body.innerHTML = `<input type="hidden" id="${FIELD}" name="${FIELD}" value="old" />`;
+		expect(update('<!--X-PRADO-PAGESTATE-->state<!--//X-PRADO-PAGESTATE-->')).toBe(false);
+		expect(update(`<!--${PART}--><!--//${PART}-->`)).toBe(false);
+		expect(document.getElementById(FIELD).value).toBe('old');
+	});
+
+	it('does nothing for a page without the field', () => {
+		expect(update(`<!--${PART}-->fresh<!--//${PART}-->`)).toBe(false);
+	});
+});
+
 // ─── Prado.AssetManagerClass — isAssetLoaded / markAssetAsLoaded ─────────────
 
 describe('Prado.AssetManagerClass isAssetLoaded / markAssetAsLoaded', () => {
@@ -202,5 +236,71 @@ describe('Prado.AssetManagerClass isAssetLoaded / markAssetAsLoaded', () => {
 	it('returns false for a different asset after only one is marked', () => {
 		mgr.markAssetAsLoaded('http://example.com/a.js');
 		expect(mgr.isAssetLoaded('http://example.com/b.js')).toBe(false);
+	});
+});
+
+// ─── Prado.CallbackRequest_serializePageInputs ───────────────────────────────
+
+describe('Prado.CallbackRequest_serializePageInputs', () => {
+	afterEach(() => {
+		document.body.innerHTML = '';
+	});
+
+	it('matches jQuery serialize() for line breaks, disabled fieldsets, and disabled options', () => {
+		document.body.innerHTML = `
+			<textarea name="ta"></textarea>
+			<fieldset disabled><input name="infs" value="v"></fieldset>
+			<select name="sel" multiple>
+				<option value="1" selected disabled>1</option>
+				<optgroup disabled><option value="2" selected>2</option></optgroup>
+				<option value="3" selected>3</option>
+			</select>`;
+		document.querySelector('textarea').value = 'a\nb';
+
+		const expected = jQuery('input, select, textarea').serialize();
+
+		expect(Prado.CallbackRequest_serializePageInputs()).toBe(expected);
+		expect(expected).toBe('ta=a%0D%0Ab&sel=3');
+	});
+
+	it('keeps a CRLF line break as one CRLF', () => {
+		document.body.innerHTML = '<input type="hidden" name="h">';
+		document.querySelector('input').value = 'a\r\nb';
+		expect(Prado.CallbackRequest_serializePageInputs()).toBe('h=a%0D%0Ab');
+	});
+});
+
+// ─── getForm() ────────────────────────────────────────────────────────────────
+
+describe('Prado.CallbackRequest — getForm()', () => {
+	beforeEach(() => {
+		document.body.innerHTML =
+			'<form id="PageForm" method="post"><input id="PRADO_PAGESTATE" name="PRADO_PAGESTATE"><input id="inside"></form>' +
+			'<div><input id="outside" form="PageForm"><span id="loose"></span>' +
+			'<form id="Other" method="post"><input id="inOther"></form>' +
+			'<dialog><form id="DialogForm" method="dialog"><button id="inDialog">OK</button></form></dialog></div>';
+	});
+
+	afterEach(() => {
+		document.body.innerHTML = '';
+	});
+
+	const formOf = (id) => new CallbackRequest(id, { ID: id }).getForm().id;
+
+	it('is the form that holds the target', () => {
+		expect(formOf('inside')).toBe('PageForm');
+		expect(formOf('inOther')).toBe('Other');
+	});
+
+	it('is the form owner of a target with the form attribute', () => {
+		expect(formOf('outside')).toBe('PageForm');
+	});
+
+	it('is the page form for a target outside any form', () => {
+		expect(formOf('loose')).toBe('PageForm');
+	});
+
+	it('is the page form for a target inside a dialog form', () => {
+		expect(formOf('inDialog')).toBe('PageForm');
 	});
 });

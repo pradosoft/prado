@@ -1,7 +1,7 @@
 # Web/UI/WebControls/IDataSource
 
 ### Directories
-[framework](./INDEX.md) / [Web](./Web/INDEX.md) / [UI](./Web/UI/INDEX.md) / [WebControls](./Web/UI/WebControls/INDEX.md) / **`IDataSource`**
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](INDEX.md) / **`IDataSource`**
 
 **Location:** `framework/Web/UI/WebControls/IDataSource.php`
 **Namespace:** `Prado\Web\UI\WebControls`

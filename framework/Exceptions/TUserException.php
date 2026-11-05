@@ -13,12 +13,15 @@ namespace Prado\Exceptions;
 /**
  * TUserException class
  *
- * The TUserException is the base class for designed for display to end users.
- * These are usually thrown because of a mistake made by the end user.
+ * TUserException is the base class for exceptions whose message is written for the
+ * site visitor, usually because of a mistake the visitor made. It implements
+ * {@see IUserException}, so {@see TErrorHandler} shows its message on the error page
+ * in every application mode. The application translates the message at the throw
+ * site, for example `new TUserException(Prado::localize('Your session has expired.'))`.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.3.0
  */
-class TUserException extends TApplicationException
+class TUserException extends TApplicationException implements IUserException
 {
 }

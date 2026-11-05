@@ -17,7 +17,7 @@ import { loadScript } from '../helpers/loadScript.js';
 loadScript('framework/Web/Javascripts/source/prado/prado.js');
 loadScript('framework/Web/Javascripts/source/prado/logger/logger.js');
 
-export const CustomEvent   = global.CustomEvent;
+export const LogEvent      = global.LogEvent;
 export const Cookie        = global.Cookie;
 export const Logger        = global.Logger;
 export const LogEntry      = global.LogEntry;

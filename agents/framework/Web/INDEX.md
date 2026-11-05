@@ -1,7 +1,7 @@
 # Web/INDEX.md
 
 ### Directories
-[framework](./INDEX.md) / **`Web/INDEX.md`**
+[framework](../INDEX.md) / **`Web`**
 
 ## Purpose
 
@@ -12,31 +12,32 @@ HTTP layer, URL routing, asset management, session handling, and all web UI comp
 | Directory | Purpose |
 |---|---|
 | [Behaviors/](Behaviors/INDEX.md) | `TRequestConnectionUpgrade` — WebSocket HTTP 101 upgrade handler |
-| [Javascripts/](Javascripts/INDEX.md) | JS/CSS package registry and asset utilities. PHP classes: `TJavaScript`, `TJavaScriptAsset`, `TJavaScriptLiteral`, `TJavaScriptString`. Package manifests: `packages.php` (JS) and `css-packages.php` (CSS) consumed by `TClientScriptManager`. Source packages include: prado core, ajax/callbacks, validator, datepicker, colorpicker, ratings, accordion, tabpanel, slider, keyboard, htmlarea (v3/v4 and v5+), activefileupload. External packages: jQuery, jQuery UI, TinyMCE, HighlightJS, Clipboard. Always register packages via `TClientScriptManager::registerPackage()` — never reference JS files directly. Use `TJavaScriptLiteral` for raw JS expressions and `TJavaScript::quoteJsLiteral()` for safe PHP→JS encoding. |
+| [Javascripts/](Javascripts/INDEX.md) | JS/CSS package registry and asset utilities. PHP classes: `TJavaScript`, `TJavaScriptAsset`, `TJavaScriptLiteral`, `TJavaScriptString`, `TStyleSheetHelper` (style nonce and SRI). Package manifests: `packages.php` (JS) and `css-packages.php` (CSS) consumed by `TClientScriptManager`. Source packages include: prado core, ajax/callbacks, validator, datepicker, colorpicker, ratings, accordion, tabpanel, slider, keyboard, htmlarea (v3/v4 and v5+), activefileupload. External packages: jQuery, jQuery UI, TinyMCE, HighlightJS, Clipboard. Always register packages via `TClientScriptManager::registerPackage()` — never reference JS files directly. Use `TJavaScriptLiteral` for raw JS expressions and `TJavaScript::quoteJsLiteral()` for safe PHP→JS encoding. |
 | [Services/](Services/INDEX.md) | `TPageService`, `TJsonService`, `TRpcService`, `TSoapService`, `TFeedService` |
 | [UI/](UI/INDEX.md) | All UI controls: `TControl`, `TPage`, `TTemplateControl`, `TTemplate`, theming/skins, client scripts |
 
 ## Top-Level Classes
 
-- **[THttpRequest](Web/THttpRequest.md)** — Encapsulates the incoming HTTP request. Implements `ArrayAccess`/`IteratorAggregate` for unified GET+POST access. Manages URL parsing, path-info extraction, service routing, and cookie access. Lazily loads `TUrlManager`. Properties: `RequestType`, `Url`, `ServerPort`, `IsSecureConnection`, `PathInfo`.
+- **[THttpRequest](THttpRequest.md)** — Encapsulates the incoming HTTP request. Implements `ArrayAccess`/`IteratorAggregate` for unified GET+POST access. Manages URL parsing, path-info extraction, service routing, and cookie access. Lazily loads `TUrlManager`. Properties: `RequestType`, `Url`, `ServerPort`, `IsSecureConnection`, `PathInfo`. Issues and checks the CSRF token (`getCsrfToken()`, `validateCsrfToken()`); the secret lives in the signed `PRADO_CSRF` cookie, or in the session when `EnableCsrfCookie` is false.
 
-- **[THttpResponse](Web/THttpResponse.md)** — HTTP response output. Manages status codes, headers, cookies, content type, charset, output buffering, file downloads (`writeFile()`), and redirects. Extended by `THttpResponseAdapter` for callback/AJAX responses.
+- **[THttpResponse](THttpResponse.md)** — HTTP response output. Manages status codes, headers, cookies, content type, charset, output buffering, file downloads (`writeFile()`, with byte-range `206`/`416` serving; contiguous ranges merge), and redirects. Extended by `THttpResponseAdapter` for callback/AJAX responses.
 
-- **[THttpSession](Web/THttpSession.md)** — PHP session wrapper implementing `ArrayAccess`. Properties: `AutoStart`, `SessionName`, `CookieMode`, `GCProbability`. Supports custom storage via `THttpSessionHandler`. Cookie attributes: `HttpOnly`, `SameSite`.
+- **[THttpSession](THttpSession.md)** — PHP session wrapper implementing `ArrayAccess`. Properties: `AutoStart`, `SessionName`, `CookieMode`, `GCProbability`. Supports custom storage via `THttpSessionHandler`. The session cookie is always HttpOnly unless `Cookie.HttpOnly="false"`; a configured `Cookie` keeps php.ini's Secure/HttpOnly when on.
 
-- **[TAssetManager](Web/TAssetManager.md)** — Publishes private `framework/` and application assets to a web-accessible `assets/` directory. Uses timestamp-based caching. Handles recursive directory publishing and TAR extraction. Access via `$app->getAssetManager()`.
+- **[TAssetManager](TAssetManager.md)** — Publishes private `framework/` and application assets to a web-accessible `assets/` directory. Uses timestamp-based caching. Handles recursive directory publishing and TAR extraction. Access via `$app->getAssetManager()`.
 
-- **[TUrlManager](Web/TUrlManager.md)** — Base URL manager. Constructs URLs in `Get`, `Path`, and `HiddenPath` formats. Parses incoming URLs into GET variables.
+- **[TUrlManager](TUrlManager.md)** — Base URL manager. Constructs URLs in `Get`, `Path`, and `HiddenPath` formats. Parses incoming URLs into GET variables.
 
-- **[TUrlMapping](Web/TUrlMapping.md)** — Advanced SEF (Search Engine Friendly) URL routing. Defines regex-based patterns (`TUrlMappingPattern`) with named parameter extraction and optional secure-connection enforcement.
+- **[TUrlMapping](TUrlMapping.md)** — Advanced SEF (Search Engine Friendly) URL routing. Defines regex-based patterns (`TUrlMappingPattern`) with named parameter extraction and optional secure-connection enforcement. Patterns match the PATH_INFO, and, through `UrlMatchMode` or `query` constraints, the query string.
 
-- **[TUri](Web/TUri.md)** — URI parsing and construction (scheme, host, port, path, query string).
+- **[TUri](TUri.md)** — URI parsing and construction (scheme, host, port, path, query string).
 
-- **[THttpCookie](Web/THttpCookie.md)** / **[THttpCookieCollection](Web/THttpCookieCollection.md)** — Cookie objects with `Domain`, `Path`, `ExpireTime`, `HttpOnly`, `SameSite` attributes.
+- **[THttpCookie](THttpCookie.md)** / **[THttpCookieCollection](THttpCookieCollection.md)** — Cookie objects with `Domain`, `Path`, `ExpireTime`, `HttpOnly` (default true), `SameSite` (default Lax) attributes.
 
 ## Key Patterns
 
 - **Lazy TUrlManager init** — URL manager is loaded on first URL construction or request parse; don't assume it's available before `TApplication::onBeginRequest`.
 - **TAssetManager path publishing** — Publish a directory once; the manager caches decisions by timestamp. Call `$assetMgr->getPublishedPath($dir)` to get the public URL.
 - **THttpResponse buffering** — Output is buffered; call `flush()` to send to client. The page lifecycle does this automatically.
+- **Byte ranges** — `writeFile()` serves one merged span; disjoint ranges get the full file unless a `dyWriteFile` handoff lets the web server serve them. Multipart research and plan: [multipart-byteranges](multipart-byteranges.md).
 - **Session lazy start** — `THttpSession` does not start PHP's session until `open()` is called or a value is accessed. Set `AutoStart=true` in config to start eagerly.

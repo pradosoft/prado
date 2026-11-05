@@ -4,7 +4,7 @@ Cron-style scheduled task engine supporting both file-configured and database-ba
 
 ## Classes
 
-- **`TCronModule`** — Main cron scheduler `TModule`; parses cron schedule expressions (standard Linux `minute hour day month dayOfWeek` format).
+- **`TCronModule`** — Main cron scheduler `TModule`; parses cron schedule expressions (standard Linux `minute hour day month dayOfWeek` format); runs each due task in its own fiber, `Concurrency` at once, with a per-task deadline and exception boundary.
 
 - **`TDbCronModule`** — Extends `TCronModule` with database-backed task storage, execution logging, and failed-task retry logic.
 
@@ -14,7 +14,7 @@ Cron-style scheduled task engine supporting both file-configured and database-ba
 
 - **`TCronTaskInfo`** — Task metadata: name, schedule, task class, last run time.
 
-- **`TTimeScheduler`** — Cron expression parser supporting multi-language expressions and special tokens (`@daily`, `@hourly`, etc.); method: `getNextTriggerTime($lastRun)`.
+- **`TTimeScheduler`** — Cron expression parser supporting multi-language expressions and special tokens (`@daily`, `@hourly`, etc.); normalized day-of-week wildcards are evaluated through the numeric day branch.
 
 - **`TDbCronCleanLogTask`** — Pre-built task that auto-purges old cron log entries from the database.
 

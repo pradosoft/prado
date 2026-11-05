@@ -1,8 +1,10 @@
 <?php
 
+namespace Prado\Test\Unit\Web;
+
 use Prado\Web\THttpCookie;
 
-class THttpCookieTest extends PHPUnit\Framework\TestCase
+class THttpCookieTest extends \PHPUnit\Framework\TestCase
 {
 	public function testConstruct()
 	{
@@ -52,5 +54,15 @@ class THttpCookieTest extends PHPUnit\Framework\TestCase
 		$cookie = new THttpCookie('name', 'value');
 		$cookie->setSecure(true);
 		self::assertTrue($cookie->getSecure());
+	}
+
+	public function testHttpOnly()
+	{
+		$cookie = new THttpCookie('name', 'value');
+		self::assertTrue($cookie->getHttpOnly());
+		self::assertFalse($cookie->getSecure());
+		self::assertTrue($cookie->getPhpOptions()['httponly']);
+		$cookie->setHttpOnly(false);
+		self::assertFalse($cookie->getHttpOnly());
 	}
 }

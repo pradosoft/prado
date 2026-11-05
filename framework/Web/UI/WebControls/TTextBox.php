@@ -37,6 +37,31 @@ use Prado\Exceptions\TConfigurationException;
  * of characters, set the {@see setMaxLength MaxLength} property.
  * To use AutoComplete feature, set the {@see setAutoCompleteType AutoCompleteType} property.
  *
+ * ## Constraints
+ * The HTML constraint properties render as attributes for the text modes that
+ * define them:
+ * | Property | Attribute | Text modes |
+ * |---|---|---|
+ * | {@see setMin Min}, {@see setMax Max}, {@see setStep Step} | `min`, `max`, `step` | Date, DatetimeLocal, Month, Number, Range, Time, Week |
+ * | {@see setMinLength MinLength} | `minlength` | SingleLine, Email, MultiLine, Password, Search, Tel, Url |
+ * | {@see setMaxLength MaxLength} | `maxlength` | every mode; browsers apply it to the modes of MinLength |
+ * | {@see setPattern Pattern} | `pattern` | SingleLine, Email, Password, Search, Tel, Url |
+ * | {@see setMultiple Multiple} | `multiple` | Email |
+ * | {@see setPlaceholder Placeholder} | `placeholder` | SingleLine, Email, MultiLine, Number, Password, Search, Tel, Url |
+ * | {@see setRequired Required} | `required` | every mode except Color and Range |
+ * The browser checks the constraints when a submit button posts the form, and a
+ * script postback skips them. The server checks none of them; validators do:
+ * {@see TRequiredFieldValidator} for Required, {@see TRangeValidator} with `Step`
+ * for Min, Max, and Step, and {@see TRegularExpressionValidator} for Pattern.
+ * TRangeValidator's Time, Month, Week, and DateTimeLocal data types read the values
+ * of those text modes.
+ * {@see setDirName DirName} renders `dirname` for the same text modes as MinLength:
+ * the browser posts the text direction, `ltr` or `rtl`, in a field of that name.
+ * Accessibility: browsers expose Required as a required field. A Placeholder is
+ * not a label; the text box keeps its {@see TLabel}.
+ * To suggest predefined values, set the {@see setSuggestionList SuggestionList} property
+ * to the ID of a {@see \Prado\Web\UI\WebControls\TSuggestionList}.
+ *
  * If {@see setAutoPostBack AutoPostBack} is set true, updating the text box
  * and then changing the focus out of it will cause postback action.
  * And if {@see setCausesValidation CausesValidation} is true, validation will
@@ -69,7 +94,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	 */
 	private static $_safeTextParser;
 	/**
-	 * @var string safe textbox content with javascript stripped off
+	 * @var ?string safe textbox content with javascript stripped off
 	 */
 	private $_safeText;
 	private $_dataChanged = false;
@@ -123,6 +148,9 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 			if (!$this->getWrap()) {
 				$writer->addAttribute('wrap', 'off');
 			}
+			if (($maxLength = $this->getMaxLength()) > 0) {
+				$writer->addAttribute('maxlength', "$maxLength");
+			}
 		} else {
 			switch ($textMode) {
 				case TTextBoxMode::Password:
@@ -134,7 +162,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 				case TTextBoxMode::Date:
 					$writer->addAttribute('type', 'date');
 					break;
-				case TTextBoxMode::Datetime:
+				case TTextBoxMode::Datetime: // deprecated; HTML removed the type
 					$writer->addAttribute('type', 'datetime');
 					break;
 				case TTextBoxMode::DatetimeLocal:
@@ -188,6 +216,10 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 					break;
 			}
 
+			if (($list = $this->getListAttributeValue()) !== '') {
+				$writer->addAttribute('list', $list);
+			}
+
 			if (($cols = $this->getColumns()) > 0) {
 				$writer->addAttribute('size', "$cols");
 			}
@@ -195,6 +227,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 				$writer->addAttribute('maxlength', "$maxLength");
 			}
 		}
+		$this->addConstraintAttributesToRender($writer, $textMode);
 		if ($this->getReadOnly()) {
 			$writer->addAttribute('readonly', 'readonly');
 		}
@@ -291,14 +324,14 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	/**
 	 * Returns true if this control validated successfully.
 	 * Defaults to true.
-	 * @return bool wether this control validated successfully.
+	 * @return bool whether this control validated successfully.
 	 */
 	public function getIsValid()
 	{
 		return $this->_isValid;
 	}
 	/**
-	 * @param bool $value wether this control is valid.
+	 * @param bool $value whether this control is valid.
 	 */
 	public function setIsValid($value)
 	{
@@ -372,6 +405,50 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	public function setAutoCompleteType($value)
 	{
 		$this->setViewState('AutoCompleteType', TPropertyValue::ensureEnum($value, TTextBoxAutoCompleteType::class), TTextBoxAutoCompleteType::None);
+	}
+
+	/**
+	 * @return string the ID of the {@see TSuggestionList} whose values the text box suggests.
+	 *   Defaults to '', no suggestions.
+	 * @since 4.4.0
+	 */
+	public function getSuggestionList()
+	{
+		return $this->getViewState('SuggestionList', '');
+	}
+
+	/**
+	 * Sets the ID of the {@see TSuggestionList} whose values the text box suggests.
+	 * The list must be locatable via {@see \Prado\Web\UI\TControl::findControl} using the ID.
+	 * The `list` attribute renders for every {@see setTextMode TextMode} except MultiLine and Password.
+	 * @param string $value the suggestion list ID
+	 * @since 4.4.0
+	 */
+	public function setSuggestionList($value)
+	{
+		$this->setViewState('SuggestionList', TPropertyValue::ensureString($value), '');
+	}
+
+	/**
+	 * Resolves the `list` attribute value from {@see getSuggestionList SuggestionList}.
+	 * @throws TInvalidDataValueException if the suggestion list cannot be found
+	 * @return string the client ID of the list; '' when no list is set, the list is
+	 *   not visible, or the {@see getTextMode TextMode} is MultiLine or Password
+	 * @since 4.4.0
+	 */
+	protected function getListAttributeValue(): string
+	{
+		if (($id = $this->getSuggestionList()) === '') {
+			return '';
+		}
+		$textMode = $this->getTextMode();
+		if ($textMode === TTextBoxMode::MultiLine || $textMode === TTextBoxMode::Password) {
+			return '';
+		}
+		if (($list = $this->findControl($id)) === null) {
+			throw new TInvalidDataValueException('textbox_suggestionlist_invalid', $id);
+		}
+		return $list->getVisible(true) ? $list->getClientID() : '';
 	}
 
 	/**
@@ -463,6 +540,219 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	}
 
 	/**
+	 * @return int the minimum number of characters, 0 when not set. Defaults to 0.
+	 * @since 4.4.0
+	 */
+	public function getMinLength()
+	{
+		return $this->getViewState('MinLength', 0);
+	}
+
+	/**
+	 * Sets the minimum number of characters of a non-empty value (`minlength`). An
+	 * empty value passes unless {@see setRequired Required} is set.
+	 * @param int|string $value the minimum length; 0 or less clears it
+	 * @since 4.4.0
+	 */
+	public function setMinLength($value)
+	{
+		$this->setViewState('MinLength', max(0, TPropertyValue::ensureInteger($value)), 0);
+	}
+
+	/**
+	 * @return string the name of the field that posts the text direction, or '' if not set
+	 * @since 4.4.0
+	 */
+	public function getDirName()
+	{
+		return $this->getViewState('DirName', '');
+	}
+
+	/**
+	 * Sets the name of the field in which the browser posts the direction of the
+	 * text, `ltr` or `rtl` (`dirname`). The page reads it from the request, such as
+	 * `$this->Request['comment.dir']`.
+	 * @param string $value the field name
+	 * @since 4.4.0
+	 */
+	public function setDirName($value)
+	{
+		$this->setViewState('DirName', trim(TPropertyValue::ensureString($value)), '');
+	}
+
+	/**
+	 * @return string the minimum value, in the format of the text mode, such as `2026-01-01`
+	 *   for Date. Defaults to ''.
+	 * @since 4.4.0
+	 */
+	public function getMin()
+	{
+		return $this->getViewState('Min', '');
+	}
+
+	/**
+	 * @param string $value the minimum value, in the format of the text mode.
+	 * @since 4.4.0
+	 */
+	public function setMin($value)
+	{
+		$this->setViewState('Min', trim(TPropertyValue::ensureString($value)), '');
+	}
+
+	/**
+	 * @return string the maximum value, in the format of the text mode. Defaults to ''.
+	 * @since 4.4.0
+	 */
+	public function getMax()
+	{
+		return $this->getViewState('Max', '');
+	}
+
+	/**
+	 * @param string $value the maximum value, in the format of the text mode.
+	 * @since 4.4.0
+	 */
+	public function setMax($value)
+	{
+		$this->setViewState('Max', trim(TPropertyValue::ensureString($value)), '');
+	}
+
+	/**
+	 * @return string the step between allowed values, a number in the unit of the text mode
+	 *   (days for Date, seconds for Time and DatetimeLocal), or `any`. Defaults to ''.
+	 * @since 4.4.0
+	 */
+	public function getStep()
+	{
+		return $this->getViewState('Step', '');
+	}
+
+	/**
+	 * @param string $value the step between allowed values, or `any`.
+	 * @since 4.4.0
+	 */
+	public function setStep($value)
+	{
+		$this->setViewState('Step', trim(TPropertyValue::ensureString($value)), '');
+	}
+
+	/**
+	 * @return string the regular expression the whole value matches. Defaults to ''.
+	 * @since 4.4.0
+	 */
+	public function getPattern()
+	{
+		return $this->getViewState('Pattern', '');
+	}
+
+	/**
+	 * @param string $value the regular expression the whole value matches, without delimiters.
+	 * @since 4.4.0
+	 */
+	public function setPattern($value)
+	{
+		$this->setViewState('Pattern', TPropertyValue::ensureString($value), '');
+	}
+
+	/**
+	 * @return string the hint shown in the empty text box. Defaults to ''.
+	 * @since 4.4.0
+	 */
+	public function getPlaceholder()
+	{
+		return $this->getViewState('Placeholder', '');
+	}
+
+	/**
+	 * @param string $value the hint shown in the empty text box.
+	 * @since 4.4.0
+	 */
+	public function setPlaceholder($value)
+	{
+		$this->setViewState('Placeholder', TPropertyValue::ensureString($value), '');
+	}
+
+	/**
+	 * @return bool whether the browser requires a value before submitting. Defaults to false.
+	 * @since 4.4.0
+	 */
+	public function getRequired()
+	{
+		return $this->getViewState('Required', false);
+	}
+
+	/**
+	 * @param bool $value whether the browser requires a value before submitting.
+	 * @since 4.4.0
+	 */
+	public function setRequired($value)
+	{
+		$this->setViewState('Required', TPropertyValue::ensureBoolean($value), false);
+	}
+
+	/**
+	 * @return bool whether an Email text box accepts a comma-separated list of addresses.
+	 *   Defaults to false.
+	 * @since 4.4.0
+	 */
+	public function getMultiple()
+	{
+		return $this->getViewState('Multiple', false);
+	}
+
+	/**
+	 * @param bool $value whether an Email text box accepts a comma-separated list of addresses.
+	 * @since 4.4.0
+	 */
+	public function setMultiple($value)
+	{
+		$this->setViewState('Multiple', TPropertyValue::ensureBoolean($value), false);
+	}
+
+	/**
+	 * Adds the constraint attributes that the text mode defines; see the class
+	 * documentation for the table.
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
+	 * @param string $textMode the text mode.
+	 * @since 4.4.0
+	 */
+	protected function addConstraintAttributesToRender($writer, $textMode)
+	{
+		$ranged = [TTextBoxMode::Date, TTextBoxMode::Datetime, TTextBoxMode::DatetimeLocal, TTextBoxMode::Month,
+			TTextBoxMode::Number, TTextBoxMode::Range, TTextBoxMode::Time, TTextBoxMode::Week];
+		$textual = [TTextBoxMode::SingleLine, TTextBoxMode::Email, TTextBoxMode::Password, TTextBoxMode::Search,
+			TTextBoxMode::Tel, TTextBoxMode::Url];
+		if (in_array($textMode, $ranged, true)) {
+			foreach (['min' => $this->getMin(), 'max' => $this->getMax(), 'step' => $this->getStep()] as $name => $value) {
+				if ($value !== '') {
+					$writer->addAttribute($name, $value);
+				}
+			}
+		}
+		if (in_array($textMode, $textual, true) || $textMode === TTextBoxMode::MultiLine) {
+			if (($minLength = $this->getMinLength()) > 0) {
+				$writer->addAttribute('minlength', "$minLength");
+			}
+			if (($dirName = $this->getDirName()) !== '') {
+				$writer->addAttribute('dirname', $dirName);
+			}
+		}
+		if (in_array($textMode, $textual, true) && ($pattern = $this->getPattern()) !== '') {
+			$writer->addAttribute('pattern', $pattern);
+		}
+		if ($textMode === TTextBoxMode::Email && $this->getMultiple()) {
+			$writer->addAttribute('multiple', 'multiple');
+		}
+		if ((in_array($textMode, $textual, true) || $textMode === TTextBoxMode::MultiLine || $textMode === TTextBoxMode::Number)
+			&& ($placeholder = $this->getPlaceholder()) !== '') {
+			$writer->addAttribute('placeholder', $placeholder);
+		}
+		if ($textMode !== TTextBoxMode::Color && $textMode !== TTextBoxMode::Range && $this->getRequired()) {
+			$writer->addAttribute('required', 'required');
+		}
+	}
+
+	/**
 	 * @return bool whether the textbox is read only, default is false.
 	 */
 	public function getReadOnly()
@@ -533,7 +823,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	 * Returns the text content of the TTextBox control.
 	 * This method is required by {@see \Prado\IDataRenderer}.
 	 * It is the same as {@see getText()}.
-	 * @return string the text content of the TTextBox control.
+	 * @return mixed the text content of the TTextBox control as string.
 	 * @see getText
 	 * @since 3.1.0
 	 */
@@ -546,7 +836,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	 * Sets the text content of the TTextBox control.
 	 * This method is required by {@see \Prado\IDataRenderer}.
 	 * It is the same as {@see setText()}.
-	 * @param string $value the text content of the TTextBox control.
+	 * @param mixed $value the text content of the TTextBox control as string.
 	 * @see setText
 	 * @since 3.1.0
 	 */
@@ -578,7 +868,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	}
 
 	/**
-	 * @return TTextBoxMode the behavior mode of the TTextBox component. Defaults to TTextBoxMode::SingleLine.
+	 * @return string|TTextBoxMode the behavior mode of the TTextBox component. Defaults to TTextBoxMode::SingleLine.
 	 */
 	public function getTextMode()
 	{
@@ -587,7 +877,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 
 	/**
 	 * Sets the behavior mode of the TTextBox component.
-	 * @param TTextBoxMode $value the text mode
+	 * @param string|TTextBoxMode $value the text mode
 	 * @throws TInvalidDataValueException if the input value is not a valid text mode.
 	 */
 	public function setTextMode($value)
@@ -644,7 +934,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	{
 		$config = $this->getViewState('Config', null);
 		if ($config === null) {
-			$path = Prado::getApplication()->getRuntimePath() . DIRECTORY_SEPARATOR . 'htmlpurifier';
+			$path = $this->getApplication()->getRuntimePath() . DIRECTORY_SEPARATOR . 'htmlpurifier';
 			if (!is_dir($path)) {
 				if (@mkdir($path) === false) {
 					throw new TConfigurationException(

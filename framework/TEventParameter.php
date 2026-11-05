@@ -41,6 +41,12 @@ use Prado\Exceptions\TInvalidOperationException;
  * {@see offsetUnset} — will throw a {@see \Prado\Exceptions\TInvalidOperationException}.
  * Reads are always permitted regardless of ReadOnly state.
  *
+ * As an {@see IEventStoppableParameter}, a handler can call {@see stopImmediatePropagation}
+ * (or set the {@see setStopped Stopped} property) to halt the remaining event handlers of
+ * a {@see TComponent::raiseEvent} call. The stop flag is control flow rather than
+ * parameter data, so it is settable even when ReadOnly is true, and it resets to false
+ * at the start of each raise via {@see setEventName}.
+ *
  * Subclasses may implement {@see IEventCycleParameter} to participate in the event raising
  * process via {@see IEventCycleParameter::preRaiseEvent} and
  * {@see IEventCycleParameter::postRaiseEvent} lifecycle hooks.
@@ -49,11 +55,12 @@ use Prado\Exceptions\TInvalidOperationException;
  * @author Brad Anderson <belisoful@icloud.com> ArrayAccess, ParameterChanged, Event Life Cycle
  * @since 3.0
  */
-class TEventParameter extends \Prado\TComponent implements IEventParameter, ArrayAccess
+class TEventParameter extends \Prado\TComponent implements IEventParameter, IEventStoppableParameter, ArrayAccess
 {
 	private string $_eventName = '';
 	private mixed $_param = null;
 	private bool $_parameterChanged = false;
+	private bool $_stopped = false;
 	private ?bool $_readOnly = null;
 
 	/**
@@ -80,16 +87,28 @@ class TEventParameter extends \Prado\TComponent implements IEventParameter, Arra
 	}
 
 	/**
-	 * Setting the Event Name also resets the ParameterChanged back to false.
-	 * This method is called by {@see TComponent::raiseEvent} to set the EventName
-	 * before the event handlers are processed.
+	 * Setting the Event Name also resets the per-raise event properties through
+	 * {@see resetEventProperties}. This method is called by {@see TComponent::raiseEvent}
+	 * to set the EventName before the event handlers are processed.
 	 * @param string $value name of the event
 	 * @since 4.3.0
 	 */
 	public function setEventName(string $value)
 	{
 		$this->_eventName = $value;
+		$this->resetEventProperties();
+	}
+
+	/**
+	 * Resets the per-raise event properties to their defaults at the start of each
+	 * {@see TComponent::raiseEvent}: {@see resetParameterChanged ParameterChanged} back
+	 * to false and {@see setStopped Stopped} back to false.
+	 * @since 4.4.0
+	 */
+	public function resetEventProperties()
+	{
 		$this->resetParameterChanged();
+		$this->setStopped(false);
 	}
 
 	/**
@@ -142,6 +161,40 @@ class TEventParameter extends \Prado\TComponent implements IEventParameter, Arra
 	public function resetParameterChanged()
 	{
 		$this->_parameterChanged = false;
+	}
+
+	/**
+	 * @return bool whether propagation to the remaining event handlers is stopped.
+	 * @since 4.4.0
+	 */
+	public function getStopped(): bool
+	{
+		return $this->_stopped;
+	}
+
+	/**
+	 * Sets whether propagation to the remaining event handlers is stopped.
+	 * This flag is control flow, not parameter data, so it is settable regardless
+	 * of the {@see getReadOnly ReadOnly} state. It is reset to false at the start
+	 * of each {@see TComponent::raiseEvent} through {@see setEventName}.
+	 * @param bool $value whether to stop propagation to the remaining handlers.
+	 * @since 4.4.0
+	 */
+	public function setStopped(bool $value)
+	{
+		$this->_stopped = $value;
+	}
+
+	/**
+	 * Stops propagation to the remaining event handlers. The handler that calls
+	 * this still completes; handlers still queued for the event are skipped by
+	 * {@see TComponent::raiseEvent}. Equivalent to setting {@see setStopped Stopped}
+	 * to true.
+	 * @since 4.4.0
+	 */
+	public function stopImmediatePropagation(): void
+	{
+		$this->setStopped(true);
 	}
 
 	/**
@@ -230,6 +283,18 @@ class TEventParameter extends \Prado\TComponent implements IEventParameter, Arra
 	//	----- ArrayAccess -----
 
 	/**
+	 * Maps a null offset to the empty-string key when the parameter is a PHP array, as PHP array keys do.
+	 * An ArrayAccess parameter receives the offset unchanged.
+	 * @param mixed $offset the offset to normalize
+	 * @return mixed the offset for indexing the parameter
+	 * @since 4.4.0
+	 */
+	private function normalizeOffset(mixed $offset): mixed
+	{
+		return ($offset === null && is_array($this->_param)) ? '' : $offset;
+	}
+
+	/**
 	 * This method is required by the interface \ArrayAccess.
 	 * @param mixed $offset the offset to check on
 	 * @return bool if not an array, then false, otherwise check _param.
@@ -241,7 +306,7 @@ class TEventParameter extends \Prado\TComponent implements IEventParameter, Arra
 			return false;
 		}
 
-		return isset($this->_param[$offset]);
+		return isset($this->_param[$this->normalizeOffset($offset)]);
 	}
 
 	/**
@@ -258,7 +323,7 @@ class TEventParameter extends \Prado\TComponent implements IEventParameter, Arra
 			return null;
 		}
 
-		return $this->_param[$offset] ?? null;
+		return $this->_param[$this->normalizeOffset($offset)] ?? null;
 	}
 
 	/**
@@ -280,6 +345,7 @@ class TEventParameter extends \Prado\TComponent implements IEventParameter, Arra
 			return;
 		}
 
+		$offset = $this->normalizeOffset($offset);
 		$changed = true;
 		if (isset($this->_param[$offset])) {
 			$changed = ($item !== $this->_param[$offset]);
@@ -303,6 +369,7 @@ class TEventParameter extends \Prado\TComponent implements IEventParameter, Arra
 	public function offsetUnset($offset): void
 	{
 		$this->assertMutable();
+		$offset = $this->normalizeOffset($offset);
 		if (!$this->getParameterIsArray() || !isset($this->_param[$offset])) {
 			return;
 		}

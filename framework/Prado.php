@@ -17,7 +17,7 @@ use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Exceptions\TPhpErrorException;
 use Prado\Exceptions\TPhpFatalErrorException;
-use Prado\Util\TLogger;
+use Prado\Util\Log\TLogger;
 use Prado\Util\TVarDumper;
 use Prado\I18N\Translation;
 
@@ -25,6 +25,13 @@ use Prado\I18N\Translation;
 if (empty($_SERVER["REQUEST_TIME_FLOAT"])) {
 	$time = $_SERVER["REQUEST_TIME_FLOAT"] = microtime(true);
 	$_SERVER["REQUEST_TIME"] = (int) $time;
+}
+
+// Defines the request start on the monotonic clock, in hrtime() nanoseconds, if none is defined.
+// The wall-clock time elapsed since REQUEST_TIME_FLOAT is read once here; later durations
+// measured from this reading are immune to wall-clock changes.
+if (empty($_SERVER["PRADO_REQUEST_HRTIME"])) {
+	$_SERVER["PRADO_REQUEST_HRTIME"] = hrtime(true) - (int) round((microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]) * 1_000_000_000);
 }
 
 // Defines the PRADO framework installation path.
@@ -109,7 +116,7 @@ class Prado
 	 */
 	public static function getVersion(): string
 	{
-		return '4.3.2';
+		return '4.4.0';
 	}
 
 	/**
@@ -129,6 +136,18 @@ class Prado
 		self::$classMap = require(__DIR__ . '/classes.php');
 
 		spl_autoload_register([static::class, 'autoload']);
+	}
+
+	/**
+	 * Merges a Prado3-namespace class map (short/dot name → PHP FQN) into the
+	 * autoloader's map, the way an extension joins its own `classes.php` with
+	 * Prado's. Existing entries win, so an extension cannot shadow a core class.
+	 * @param array $map the class map to merge, keyed by Prado3 namespace.
+	 * @since 4.4.0
+	 */
+	public static function registerClassMap(array $map): void
+	{
+		self::$classMap += $map;
 	}
 
 	/**
@@ -185,8 +204,15 @@ class Prado
 	/**
 	 * PHP error handler.
 	 * This method should be registered as PHP error handler using
-	 * {@see set_error_handler}. The method throws an exception that
-	 * contains the error information.
+	 * {@see set_error_handler}. An error that {@see error_reporting} reports
+	 * throws a {@see TPhpErrorException}. A masked error returns true, and
+	 * execution continues.
+	 *
+	 * The `@` operator masks the warnings and notices of one expression. Code
+	 * uses `@` on a call whose failure is expected, such as reading a missing
+	 * file, so the call returns its failure value instead of throwing. Since
+	 * PHP 8.0, `@` does not mask `E_ERROR`, `E_CORE_ERROR`, `E_COMPILE_ERROR`,
+	 * `E_USER_ERROR`, `E_RECOVERABLE_ERROR`, or `E_PARSE`.
 	 * @param int $errno the level of the error raised
 	 * @param string $errstr the error message
 	 * @param string $errfile the filename that the error was raised in
@@ -212,7 +238,8 @@ class Prado
 		if ($error &&
 			TPhpErrorException::isFatalError($error) &&
 			error_reporting() & $error['type']) {
-			self::exceptionHandler(new TPhpFatalErrorException($error['type'], $error['message'], $error['file'], $error['line']));
+			// exceptionHandler() exits the process.
+			self::exceptionHandler(new TPhpFatalErrorException($error['type'], $error['message'], $error['file'], $error['line'])); // @codeCoverageIgnore
 		}
 	}
 
@@ -224,8 +251,9 @@ class Prado
 	 * If the application or the module does not exist, it simply echoes the
 	 * exception.
 	 * @param \Throwable $exception exception that is not caught
+	 * @codeCoverageIgnore Exits the process.
 	 */
-	public static function exceptionHandler($exception): void
+	public static function exceptionHandler($exception): never
 	{
 		if (self::$_application !== null && ($errorHandler = self::$_application->getErrorHandler()) !== null) {
 			$errorHandler->handleError(null, $exception);
@@ -247,7 +275,8 @@ class Prado
 	public static function setApplication($application): void
 	{
 		if (self::$_application !== null && !defined('PRADO_TEST_RUN')) {
-			throw new TInvalidOperationException('prado_application_singleton_required');
+			// Tests define PRADO_TEST_RUN.
+			throw new TInvalidOperationException('prado_application_singleton_required'); // @codeCoverageIgnore
 		}
 		self::$_application = $application;
 	}
@@ -266,6 +295,19 @@ class Prado
 	public static function getFrameworkPath(): string
 	{
 		return PRADO_DIR;
+	}
+
+	/**
+	 * Returns the request start on the monotonic clock: `$_SERVER["PRADO_REQUEST_HRTIME"]`,
+	 * the counterpart of `$_SERVER["REQUEST_TIME_FLOAT"]`.  Measure a duration from the request
+	 * start with {@see \Prado\Util\Clock\TMonotonicClock::elapsed()}.  A server that runs
+	 * several requests in one process sets both keys at the start of each request.
+	 * @return int the request start, in {@see \hrtime()} nanoseconds
+	 * @since 4.4.0
+	 */
+	public static function getRequestStartNanoseconds(): int
+	{
+		return (int) $_SERVER["PRADO_REQUEST_HRTIME"];
 	}
 
 	/**
@@ -361,9 +403,7 @@ class Prado
 			$object = new $type();
 		}
 		if ($properties) {
-			foreach ($properties as $property => $value) {
-				$object->setSubProperty($property, $value);
-			}
+			$object->setSubProperties($properties);
 		}
 		return $object;
 	}
@@ -411,7 +451,6 @@ class Prado
 	 * If the namespace corresponds to a directory, the directory will be appended
 	 * to the include path. If the namespace corresponds to a file, it will be included (include_once).
 	 * @param string $namespace namespace to be used
-	 * @throws TInvalidDataValueException if the namespace is invalid
 	 * @return ?string The resolved PHP fully-qualified class, interface, or trait name when the
 	 *   namespace identifies a loadable class. Returns a string ending in '\' when a directory
 	 *   namespace is successfully registered (e.g. 'Prado\Web\UI\'). Returns null when the
@@ -429,6 +468,14 @@ class Prado
 		if (class_exists($namespace, false) ||
 			interface_exists($namespace, false) ||
 			trait_exists($namespace, false)) {
+			if (($shortPos = strrpos($namespace, '\\')) !== false) {
+				$shortName = substr($namespace, $shortPos + 1);
+				if (!class_exists($shortName, false) &&
+					!interface_exists($shortName, false) &&
+					!trait_exists($shortName, false)) {
+					class_alias($namespace, $shortName);
+				}
+			}
 			return $namespace;
 		}
 
@@ -515,17 +562,21 @@ class Prado
 	 */
 	public static function method_visible($object_or_class, string $method): bool
 	{
-		if (method_exists($object_or_class, $method)) {
-			$trace = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT | DEBUG_BACKTRACE_IGNORE_ARGS, 3);
-			$reflection = new \ReflectionMethod($object_or_class, $method);
-			if (empty($trace[2]) || empty($trace[1]['object']) || empty($trace[2]['object']) || $trace[1]['object'] !== $trace[2]['object']) {
-				return $reflection->isPublic();
-			} elseif ($reflection->isPrivate()) {
-				return $trace[2]['class'] === $reflection->class;
-			}
+		$className = is_object($object_or_class) ? $object_or_class::class : $object_or_class;
+		$reflection = TComponentReflection::getReflectionMethodByType($className, $method);
+		if ($reflection === null) {
+			return false;
+		}
+		if ($reflection->isPublic()) {
 			return true;
 		}
-		return false;
+		$trace = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT | DEBUG_BACKTRACE_IGNORE_ARGS, 3);
+		if (empty($trace[2]) || empty($trace[1]['object']) || empty($trace[2]['object']) || $trace[1]['object'] !== $trace[2]['object']) {
+			return false;
+		} elseif ($reflection->isPrivate()) {
+			return $trace[2]['class'] === $reflection->class;
+		}
+		return true;
 	}
 
 	/**
@@ -630,7 +681,8 @@ class Prado
 	public static function setPathOfAlias($alias, $path): void
 	{
 		if (isset(self::$_aliases[$alias]) && !defined('PRADO_TEST_RUN')) {
-			throw new TInvalidOperationException('prado_alias_redefined', $alias);
+			// Tests define PRADO_TEST_RUN.
+			throw new TInvalidOperationException('prado_alias_redefined', $alias); // @codeCoverageIgnore
 		} elseif (($rp = realpath($path)) !== false && is_dir($rp)) {
 			if (strpos($alias, '.') === false) {
 				self::$_aliases[$alias] = $rp;
@@ -647,14 +699,12 @@ class Prado
 	 * This method displays an error message together with the current call stack.
 	 * The application will exit after calling this method.
 	 * @param string $msg error message
+	 * @codeCoverageIgnore Exits the process.
 	 */
-	public static function fatalError($msg): void
+	public static function fatalError($msg): never
 	{
 		echo '<h1>Fatal Error</h1>';
 		echo '<p>' . $msg . '</p>';
-		if (!function_exists('debug_backtrace')) {
-			return;
-		}
 		echo '<h2>Debug Backtrace</h2>';
 		echo '<pre>';
 		$index = -1;
@@ -714,28 +764,47 @@ class Prado
 	 * The languages are returned as an array. Each array element
 	 * represents a single language preference. The languages are ordered
 	 * according to user preferences. The first language is the most preferred.
+	 * Empty language tags are skipped. The list is `['en']` when the
+	 * `Accept-Language` header is absent or names no language.
 	 * @return array<string> list of user preferred languages.
 	 */
 	public static function getUserLanguages(): array
 	{
 		static $languages = null;
 		if ($languages === null) {
-			if (!isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
-				$languages[0] = 'en';
-			} else {
-				$languages = [];
-				foreach (explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']) as $language) {
-					$array = explode(';q=', trim($language));
-					$languages[trim($array[0])] = isset($array[1]) ? (float) $array[1] : 1.0;
+			$languages = [];
+			foreach (explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? '') as $language) {
+				$array = explode(';q=', trim($language));
+				if (($tag = trim($array[0])) === '') {
+					continue;
 				}
-				arsort($languages);
-				$languages = array_keys($languages);
-				if (count($languages) == 0) {
-					$languages[0] = 'en';
-				}
+				$languages[$tag] = isset($array[1]) ? (float) $array[1] : 1.0;
 			}
+			arsort($languages);
+			$languages = array_keys($languages) ?: ['en'];
 		}
 		return $languages;
+	}
+
+	/**
+	 * Returns the language of the application culture: the two-letter language of
+	 * {@see \Prado\I18N\TGlobalization::getCulture()} when the application has a
+	 * globalization module, otherwise {@see getPreferredLanguage()}. The error
+	 * handler and {@see \Prado\Exceptions\THttpException} select the visitor-facing
+	 * language with it.
+	 * @return string the two-letter application language, defaults to English.
+	 * @since 4.4.0
+	 */
+	public static function getApplicationLanguage(): string
+	{
+		$globalization = self::$_application?->getGlobalization(false);
+		if ($globalization !== null) {
+			$lang = strtolower(explode('_', str_replace('-', '_', $globalization->getCulture()))[0]);
+			if ($lang !== '' && ctype_alpha($lang)) {
+				return $lang;
+			}
+		}
+		return self::getPreferredLanguage();
 	}
 
 	/**
@@ -925,9 +994,9 @@ class Prado
 
 	/**
 	 * Logs a message.
-	 * Messages logged by this method may be retrieved via {@see \Prado\Util\TLogger::getLogs}
+	 * Messages logged by this method may be retrieved via {@see \Prado\Util\Log\TLogger::getLogs}
 	 * and may be recorded in different media, such as file, email, database, using
-	 * {@see \Prado\Util\TLogRouter}.
+	 * {@see \Prado\Util\Log\TLogRouter}.
 	 * @param string $msg message to be logged
 	 * @param int $level level of the message. Valid values include
 	 * TLogger::DEBUG, TLogger::INFO, TLogger::NOTICE, TLogger::WARNING,

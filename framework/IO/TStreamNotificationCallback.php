@@ -154,12 +154,14 @@ class TStreamNotificationCallback extends \Prado\TComponent
 				}
 			}
 			if ($notification instanceof TStreamNotificationCallback) {
+				$properties = [];
 				foreach ($context as $property => $value) {
 					if (property_exists($notification, $property) || $notification->canSetProperty($property) || $notification->hasEvent($property)) {
-						$notification->setSubProperty($property, $value);
+						$properties[$property] = $value;
 						unset($context[$property]);
 					}
 				}
+				$notification->setSubProperties($properties);
 			}
 			$param = null;
 			if ($notification) {
@@ -183,6 +185,7 @@ class TStreamNotificationCallback extends \Prado\TComponent
 	{
 		$params = stream_context_get_params($context);
 
+		// @phpstan-ignore nullCoalesce.offset (PHP omits this key when no callback is configured.)
 		return $params[self::NOTIFICATION] ?? null;
 	}
 

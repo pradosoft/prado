@@ -104,7 +104,7 @@ class TGlobalization extends \Prado\TModule
 	private $_translateDefaultCulture = true;
 
 	/**
-	 * @var bool whether the current culture is Right to Left.
+	 * @var ?bool whether the current culture is Right to Left.
 	 */
 	private $_cultureRTL;
 
@@ -113,7 +113,7 @@ class TGlobalization extends \Prado\TModule
 	 * You should override this method if you want a different way of
 	 * setting the Culture and/or Charset for your application.
 	 * If you override this method, call parent::init($xml) first.
-	 * @param mixed $config application configuration
+	 * @param null|array|\Prado\Xml\TXmlElement $config application configuration
 	 */
 	public function init($config)
 	{
@@ -135,12 +135,22 @@ class TGlobalization extends \Prado\TModule
 				$this->setTranslationConfiguration($translation);
 			}
 		}
-		$this->getApplication()->setGlobalization($this);
+		$this->setAppGlobalization();
 		parent::init($config);
 	}
 
 	/**
-	 * @return string default culture
+	 * Registers this module as the application globalization handler when an application is available.
+	 * Called during {@see init()}; may also be called by behaviors or subclasses.
+	 * @since 4.4.0
+	 */
+	protected function setAppGlobalization()
+	{
+		$this->getApplication()?->setGlobalization($this);
+	}
+
+	/**
+	 * @return bool whether to translate from default culture
 	 */
 	public function getTranslateDefaultCulture()
 	{
@@ -148,7 +158,7 @@ class TGlobalization extends \Prado\TModule
 	}
 
 	/**
-	 * @param bool $value default culture, e.g. <tt>en_US</tt> for American English
+	 * @param bool $value whether to translate from default culture
 	 */
 	public function setTranslateDefaultCulture($value)
 	{

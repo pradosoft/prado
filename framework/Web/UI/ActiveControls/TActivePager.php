@@ -31,7 +31,7 @@ use Prado\Web\UI\WebControls\TWebControl;
  *
  * @author "gevik" (forum contributor) and Christophe Boulain (Christophe.Boulain@gmail.com)
  * @since 3.1.2
- * @method TActiveControlAdapter getAdapter()
+ * @method TActiveControlAdapter<\Prado\Web\UI\ActiveControls\TBaseActiveCallbackControl> getAdapter()
  */
 class TActivePager extends TPager implements IActiveControl, ICallbackEventHandler
 {
@@ -92,6 +92,7 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 	protected function buildListPager()
 	{
 		$list = new TActiveDropDownList();
+		$this->labelPageList($list);
 
 		$list->getActiveControl()->setClientSide(
 			$this->getClientSide()
@@ -121,6 +122,7 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 	protected function createPagerButton($buttonType, $enabled, $text, $commandName, $commandParameter)
 	{
 		if ($buttonType === TPagerButtonType::LinkButton) {
+			$text = $this->encodeDefaultPagerText($text);
 			if ($enabled) {
 				$button = new TActiveLinkButton();
 			} else {
@@ -192,7 +194,7 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 			$this->setDisplay(($this->getPageCount() == 1) ? TDisplayStyle::None : TDisplayStyle::Dynamic);
 			TWebControl::render($writer);
 			if ($this->getActiveControl()->canUpdateClientSide()) {
-				$this->getPage()->getCallbackClient()->replaceContent($this, $writer);
+				$this->getActiveControl()->replaceClientContent($this, $writer);
 			}
 		} else {
 			$this->getPage()->getAdapter()->registerControlToRender($this, $writer);

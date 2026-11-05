@@ -1,7 +1,5 @@
 <?php
 
-require_once(__DIR__ . '/../../../../PradoUnit.php');
-
 /**
  * SqlSrvInsertOrIgnoreTest — comprehensive tests for SQL Server insertOrIgnore behaviour.
  *
@@ -12,16 +10,19 @@ require_once(__DIR__ . '/../../../../PradoUnit.php');
  * upsert_test table uses username as natural-key PK (no identity) so MERGE ON
  * clauses can reference the PK column that is always present in $data.
  *
- * Requires: prado_unitest database on SQL Server (see tests/initdb_mssql.sql).
+ * Requires: prado_unitest database on SQL Server (see tests/initdb_sqlsrv.sql).
  */
+
+namespace Prado\Test\Unit\Data\DbSpecific\SqlSrv\Common;
 
 use Prado\Data\DataGateway\TDataGatewayEventParameter;
 use Prado\Data\DataGateway\TDataGatewayResultEventParameter;
 use Prado\Data\DataGateway\TTableGateway;
 use Prado\Data\TDbConnection;
 use Prado\Exceptions\TDbException;
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
 
-class SqlSrvInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
+class SqlSrvInsertOrIgnoreTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 

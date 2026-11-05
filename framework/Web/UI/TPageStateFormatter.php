@@ -10,6 +10,8 @@
 
 namespace Prado\Web\UI;
 
+use Prado\Exceptions\TIOException;
+
 /**
  * TPageStateFormatter class.
  *
@@ -22,6 +24,20 @@ namespace Prado\Web\UI;
  * the state data from being tampered or viewed.
  * The private keys and hashing/encryption methods are determined by
  * {@see \Prado\TApplication::getSecurityManager() SecurityManager}.
+ *
+ * State without HMAC validation is client controlled, so it is restored with
+ * `unserialize()` and `allowed_classes` false: objects in it are not instantiated.
+ * igbinary has no class filter, so {@see \Prado\Web\UI\TPage::getEnableStateIGBinary() EnableStateIGBinary}
+ * applies only to validated state.  A page that disables validation either keeps
+ * objects out of its state or uses a server-side persister such as
+ * {@see \Prado\Web\UI\TSessionPageStatePersister}.
+ *
+ * The page's {@see \Prado\Web\UI\TPage::getStateCompression() StateCompression} compresses
+ * the state, so an application selects a codec such as `zstd` or `br` where the extension
+ * is installed.
+ * The coding carries no marker in the state, so the state is read back under the coding
+ * that wrote it: the setting names the coding for both directions, and its length
+ * threshold plays no part.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.1
@@ -36,22 +52,11 @@ class TPageStateFormatter
 	public static function serialize($page, $data)
 	{
 		$sm = $page->getApplication()->getSecurityManager();
-		if ($page->getEnableStateIGBinary() && extension_loaded('igbinary')) {
-			if ($page->getEnableStateValidation()) {
-				$str = $sm->hashData(igbinary_serialize($data));
-			} else {
-				$str = igbinary_serialize($data);
-			}
-		} else {
-			if ($page->getEnableStateValidation()) {
-				$str = $sm->hashData(serialize($data));
-			} else {
-				$str = serialize($data);
-			}
+		$str = static::getUseIGBinary($page) ? igbinary_serialize($data) : serialize($data);
+		if ($page->getEnableStateValidation()) {
+			$str = $sm->hashData($str);
 		}
-		if ($page->getEnableStateCompression() && extension_loaded('zlib')) {
-			$str = gzcompress($str);
-		}
+		$str = static::compress($page, $str);
 		if ($page->getEnableStateEncryption()) {
 			$str = $sm->encrypt($str);
 		}
@@ -59,43 +64,91 @@ class TPageStateFormatter
 	}
 
 	/**
+	 * Restores the state data from the string produced by {@see self::serialize()}.
+	 * A missing or empty state is treated as a corrupted state, as is a state that
+	 * fails to decrypt or to decompress.
 	 * @param TPage $page
-	 * @param string $data serialized data
-	 * @return mixed unserialized state data, null if data is corrupted
+	 * @param ?string $data serialized data
+	 * @return mixed unserialized state data, null if the data is missing or corrupted
 	 */
 	public static function unserialize($page, $data)
 	{
-		$str = base64_decode($data);
-		if ($str === '') {
+		if ($data === null || $data === '') {
 			return null;
 		}
-		if ($str !== false) {
-			$sm = $page->getApplication()->getSecurityManager();
-			if ($page->getEnableStateEncryption()) {
-				$str = $sm->decrypt($str);
-			}
-			if ($page->getEnableStateCompression() && extension_loaded('zlib')) {
-				$str = @gzuncompress($str);
-			}
-
-			if ($page->getEnableStateIGBinary() && extension_loaded('igbinary')) {
-				if ($page->getEnableStateValidation()) {
-					if (($str = $sm->validateData($str)) !== false) {
-						return igbinary_unserialize($str);
-					}
-				} else {
-					return igbinary_unserialize($str);
-				}
-			} else {
-				if ($page->getEnableStateValidation()) {
-					if (($str = $sm->validateData($str)) !== false) {
-						return unserialize($str);
-					}
-				} else {
-					return unserialize($str);
-				}
+		$str = base64_decode($data);
+		if ($str === '' || $str === false) {
+			return null;
+		}
+		$sm = $page->getApplication()->getSecurityManager();
+		if ($page->getEnableStateEncryption()) {
+			if (($str = $sm->decrypt($str)) === false) {
+				return null;
 			}
 		}
-		return null;
+		if (($str = static::decompress($page, $str)) === false) {
+			return null;
+		}
+
+		if (!$page->getEnableStateValidation()) {
+			return unserialize($str, ['allowed_classes' => false]);
+		}
+		if (($str = $sm->validateData($str)) === false) {
+			return null;
+		}
+		return static::getUseIGBinary($page) ? igbinary_unserialize($str) : unserialize($str);
+	}
+
+	/**
+	 * Whether the state is serialized with igbinary.  Only validated state uses igbinary,
+	 * since `igbinary_unserialize()` cannot exclude classes from client-controlled state.
+	 * @param TPage $page the page the state belongs to.
+	 * @return bool whether igbinary serializes the page state.
+	 * @since 4.4.0
+	 */
+	protected static function getUseIGBinary($page): bool
+	{
+		return $page->getEnableStateValidation() && $page->getEnableStateIGBinary() && extension_loaded('igbinary');
+	}
+
+	/**
+	 * Compresses the state under the page's state content coding. The state is returned
+	 * unchanged when compression is off or the coding's codec cannot run here.  The
+	 * length threshold plays no part: a state carries no marker naming its coding, so a
+	 * state that skipped compression could not be told from one that did not.
+	 * @param TPage $page the page the state belongs to.
+	 * @param string $str the uncompressed state.
+	 * @return string the state, compressed when the settings ask for it.
+	 * @since 4.4.0
+	 */
+	protected static function compress($page, string $str): string
+	{
+		$compression = $page->getStateCompression();
+		if (!$compression->getShouldCompress()) {
+			return $str;
+		}
+		return $compression->compress($str);
+	}
+
+	/**
+	 * Decompresses the state under the page's state content coding, the inverse of
+	 * {@see compress()}. A state that is corrupt, or written under another coding,
+	 * fails to decode and is reported as corrupted.
+	 * @param TPage $page the page the state belongs to.
+	 * @param string $str the compressed state.
+	 * @return false|string the decompressed state, or false when it cannot be decoded.
+	 * @since 4.4.0
+	 */
+	protected static function decompress($page, string $str): false|string
+	{
+		$compression = $page->getStateCompression();
+		if (!$compression->getShouldCompress()) {
+			return $str;
+		}
+		try {
+			return $compression->decompress($str);
+		} catch (TIOException $e) {
+			return false;
+		}
 	}
 }

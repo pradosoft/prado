@@ -8,7 +8,7 @@
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-TReCaptcha2Validator validates user input against a TReCaptcha2 control. It performs server-side validation of the reCAPTCHA response token. The validation fails if the user does not pass the humanity test.
+TReCaptcha2Validator validates the TReCaptcha2 named by `ControlToValidate` (not `CaptchaControl`). It calls `TReCaptcha2::validate()`, which verifies the response token with Google's siteverify, and caches the result in `_isvalid` for the request.
 
 ## Key Properties/Methods
 

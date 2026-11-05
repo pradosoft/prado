@@ -10,7 +10,7 @@
 ## Overview
 Base class for the Adapter pattern applied to [TControl](./TControl.md). An adapter is attached to a control to override or extend specific lifecycle or rendering behaviors without subclassing the control itself.
 
-Extends [TApplicationComponent](../TApplicationComponent.md). Holds a reference to the control it is adapting (`$_control`) and provides default pass-through implementations of every lifecycle and render method — each simply delegates to the corresponding method on the attached control. Subclasses override only the methods they need to customize.
+Extends [TApplicationComponent](../../TApplicationComponent.md) and implements [IAdapterControl](./IAdapterControl.md). Holds a reference to the control it is adapting (`$_control`) and provides default pass-through implementations of every lifecycle and render method — each simply delegates to the corresponding method on the attached control. Subclasses override only the methods they need to customize.
 
 Access the page via `getPage()` which delegates to `$_control->getPage()` (returns `null` if no control is set).
 

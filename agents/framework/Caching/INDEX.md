@@ -3,7 +3,7 @@
 This file provides guidance to Agents when working with code in this repository.
 
 ### Directories
-[framework](./INDEX.md) / **`Caching/INDEX.md`**
+[framework](../INDEX.md) / **`Caching`**
 
 ## Purpose
 
@@ -26,6 +26,8 @@ Cache backends and dependency system providing unified `ICache` interface over m
 
 - **[`TCacheDependency`](TCacheDependency.md)** — Abstract base for all dependencies; extends [`TComponent`](../TComponent.md).
 
+- **[`TCacheModuleIDTrait`](TCacheModuleIDTrait.md)** — `CacheModuleID` property, `resolveCacheModule()`, and `claimCacheKey()` for single-use keys (@since 4.4.0). Used by TCaptcha, TFormGuard, and TProofOfWork.
+
 ## Storage Backends
 
 - **[`TAPCCache`](TAPCCache.md)** — APCu in-memory cache. Requires `apcu` PHP extension. Fast but single-server only; data lost on PHP-FPM restart. Wraps `apcu_fetch()`, `apcu_store()`, `apcu_add()`, `apcu_delete()`.
@@ -36,7 +38,17 @@ Cache backends and dependency system providing unified `ICache` interface over m
 
 - **[`TDbCache`](TDbCache.md)** — PDO-backed persistent cache. Auto-creates a `pradocache` table if `AutoCreateCacheTable=true`. Supports MySQL, PostgreSQL, SQLite, Oracle, MSSQL, IBM DB2 (each with driver-specific upsert syntax). Properties: `ConnectionID`, `ConnectionString`, `CacheTableName`, `FlushInterval`. Registers a cron task via `fxGetCronTaskInfos()` for periodic expired-entry cleanup.
 
-- **[`TEtcdCache`](TEtcdCache.md)** — etcd distributed cache using the HTTP v2 API via cURL. Properties: `Host`, `Port` (default `2379`), `Dir` (etcd directory, default `'pradocache'`). Values stored as JSON with optional TTL.
+- **[`TEtcdCache`](TEtcdCache.md)** — etcd distributed cache using the HTTP v2 API via `THttpClient` (cURL or stream wrappers). Properties: `Host`, `Port` (default `2379`), `Dir` (etcd directory, default `'pradocache'`), `Downloader`. Values stored as JSON with optional TTL.
+
+## PSR-6 and PSR-16 Adapters (since 4.4.0)
+
+- **[`TPsrSimpleCache`](TPsrSimpleCache.md)** — `Psr\SimpleCache\CacheInterface` module over an [`ICache`](ICache.md). Hand it to a library that accepts a PSR-16 cache.
+- **[`TPsrCacheItemPool`](TPsrCacheItemPool.md)** — `Psr\Cache\CacheItemPoolInterface` module over an [`ICache`](ICache.md), with [`TPsrCacheItem`](TPsrCacheItem.md) as its item. Deferred items commit before a read, at `OnEndRequest`, and on destruction.
+- **[`TPsrCacheBackingTrait`](TPsrCacheBackingTrait.md)** — Shared by both modules: `BackingCacheId` (declared as an `IModuleDependency`), `BackingCache`, the primary-cache default, `KeyPrefix`, `DefaultExpire`, key validation, TTL conversion, and the value envelope that keeps `null`, `false`, `0`, `''`, and `[]` cached.
+- **[`TPsrCache`](TPsrCache.md)** — The reverse: a [`TCache`](TCache.md) module stored in a PSR-16 or PSR-6 cache named by `BackingCacheId` or set as `BackingCache`. Rejects an adapter of itself.
+- **[`TPsrCacheException`](TPsrCacheException.md)**, **[`TPsrCacheInvalidArgumentException`](TPsrCacheInvalidArgumentException.md)** — The `TConfigurationException` and `TInvalidDataValueException` that also implement the PSR cache exception interfaces.
+
+All caching in Prado 5 is PSR compliant. A new application reaches its cache through `TPsrSimpleCache` or `TPsrCacheItemPool`, and an application that intends to upgrade moves its cache access to them; that code carries over unchanged.
 
 ## Cache Dependencies
 
@@ -51,6 +63,6 @@ Cache backends and dependency system providing unified `ICache` interface over m
 
 - **Template Method pattern** — [`TCache`](TCache.md) defines the public API flow; subclasses only implement the four backend-specific protected methods.
 - **Serialisation** — Values and dependencies are serialised together before storage. Ensure all objects stored in cache are serialisable.
-- **`add()` vs `set()`** — `add()` is a conditional set (no-op if the key already exists); `set()` always overwrites.
+- **`add()` vs `set()`** — `add()` is a conditional set (no-op if the key already exists); `set()` always overwrites. `add()` is atomic on TAPCCache, TMemCache, TRedisCache, and TEtcdCache; TFileCache and TDbCache leave a race window. [`TCacheMutex`](../Util/Mutex/TCacheMutex.md) locks through `add()`. There is no increment.
 - **Key prefix** — Two apps sharing the same Memcached/Redis instance are isolated by default via the key prefix. Override `KeyPrefix` if intentional sharing is needed.
 - **`TDbCache` cleanup** — Expired entries are cleaned on a configurable interval (`FlushInterval`), not on every read. For aggressive cleanup, register the cron task explicitly.

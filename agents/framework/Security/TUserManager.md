@@ -48,23 +48,25 @@ Returns `['lowercased_username' => ['Role1', 'Role2'], ...]`.
 ```php
 public function getUserFromCookie([THttpCookie](../Web/THttpCookie.md) $cookie): ?TUser
 ```
-Verifies a cookie containing `[username, md5(username . password)]`. Returns a user on match, `null` otherwise.
+Verifies a cookie containing the JSON `[username, token]` with `hash_equals()`. Returns a user on match, `null` otherwise.
 
 ```php
 public function saveUserToCookie([THttpCookie](../Web/THttpCookie.md) $cookie): void
 ```
-Stores `serialize([username, md5(username . password)])` in the cookie for auto-login.
+Stores the JSON `[username, token]` in the cookie for auto-login. `generateCookieToken()` (protected, @since 4.4.0) computes the token as an HMAC of `username . "\0" . storedPassword` keyed by `TSecurityManager::CookieValidationKey`.
 
 ## Configuration (XML)
 
 ```xml
-<module id="users" class="Prado\Security\TUserManager" PasswordMode="Clear">
-    <user name="Joe"   password="demo" />
-    <user name="John"  password="demo" />
-    <user name="Jerry" password="demo" roles="Writer,Administrator" />
-    <role name="Administrator" users="John" />
-    <role name="Writer"        users="Joe,John" />
-</module>
+<modules>
+    <module id="users" class="Prado\Security\TUserManager" PasswordMode="Clear">
+        <user name="Joe"   password="demo" />
+        <user name="John"  password="demo" />
+        <user name="Jerry" password="demo" roles="Writer,Administrator" />
+        <role name="Administrator" users="John" />
+        <role name="Writer"        users="Joe,John" />
+    </module>
+</modules>
 ```
 
 PHP array format:
@@ -86,7 +88,9 @@ PHP array format:
 
 External user file (set `UserFile` to a namespace path matching the config format above):
 ```xml
-<module id="users" class="Prado\Security\TUserManager" UserFile="Application.config.users" />
+<modules>
+    <module id="users" class="Prado\Security\TUserManager" UserFile="Application.config.users" />
+</modules>
 ```
 
 ## Patterns & Gotchas
@@ -94,6 +98,7 @@ External user file (set `UserFile` to a namespace path matching the config forma
 - **Usernames are normalized to lowercase** during load and lookup — `Joe` and `joe` are the same user.
 - **`UserFile` cannot be changed after `init()`** — throws [TInvalidOperationException](../Exceptions/TInvalidOperationException.md).
 - **Roles can be declared on `<user>` elements AND on `<role>` elements** — both are merged into the same per-user role list.
-- **Cookie auto-login token is `md5(username . storedPassword)`** — if the stored password changes, all existing cookies are immediately invalidated. This is intentional.
-- **`PasswordMode::MD5` is the default** — applications that require stronger hashing should use `TDbUserManager` with bcrypt/Argon2 in the custom `TDbUser`.
+- **Cookie auto-login token is an HMAC of the username and stored password** keyed by `CookieValidationKey` — a password or `CookieValidationKey` change invalidates existing cookies. `TAuthManager` signs the cookie itself.
+- **`PasswordMode::MD5` is the default** — applications that require stronger hashing should use [TDbUserManager](./TDbUserManager.md) with bcrypt/Argon2 in the custom `TDbUser`.
 - **Not suitable for large user bases** — the entire user list is loaded into memory on every request.
+- **`validateUser()` uses `#[\SensitiveParameter]`** on the password argument, so it is redacted from stack traces. It compares the stored and supplied passwords with `hash_equals()` (4.4.0).

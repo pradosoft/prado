@@ -10,7 +10,7 @@
 ## Overview
 TBaseValidator is the abstract base class for all validator controls. It extends TLabel and implements `IValidator`. Validators run on every postback (or when `TPage::validate()` is called manually) and check the value of a target input control. If client-side scripting is enabled, validation is also performed in the browser before the form is submitted.
 
-Error display is controlled by the `Display` property. The displayed text is chosen from: `Text` property → `ErrorMessage` property → body content of the validator tag (in that priority order). Error messages also feed into `TValidationSummary` controls via `ErrorMessage`.
+Error display is controlled by the `Display` property. The displayed text is chosen from: `Text` property → `ErrorMessage` property → body content of the validator tag (in that priority order). Error messages also feed into `TValidationSummary` controls via `ErrorMessage`. Both are HTML unless `Encode` is true (4.4.0).
 
 Validators self-register with `TPage::getValidators()` on `onInit` and remove themselves on `onUnload`.
 
@@ -34,6 +34,7 @@ Implements: `IValidator`
 | `ControlToValidate` | string | `''` | Dot-path ID of the input control to validate (relative to the validator's naming container) |
 | `ErrorMessage` | string | `''` | Text shown in `TValidationSummary`; also shown in the validator if `Text` is empty |
 | `Text` | string | `''` | Text displayed inline by the validator when invalid (inherited from TLabel) |
+| `Encode` | bool | `false` | From [TEncodeTrait](./TEncodeTrait.md) through TLabel. Whether `Text` and `ErrorMessage` are HTML-encoded: in the validator, in `TValidationSummary`, and on the client (the `Encode` client option; `Prado.Validation.setErrorMessage()` writes text). `TFileValidator` encodes its `{files}` names regardless. @since 4.4.0 |
 | `Display` | TValidatorDisplayStyle | `Fixed` | How the validator element behaves in layout when valid |
 | `EnableClientScript` | bool | `true` | Whether to emit JavaScript for browser-side validation |
 | `IsValid` | bool | `true` | Whether the last validation passed; set to `true` automatically when disabled |
@@ -71,7 +72,9 @@ Note: `ForControl` (inherited from TLabel) is **not supported** and throws `TNot
 - **Disabled validator** — Setting `Enabled=false` immediately sets `IsValid=true` and skips validation.
 - **Disabled target control** — If the target `TWebControl` has `Enabled=false`, the validator skips evaluation and reports valid.
 - **`ControlCssClass`** — Applied to the target control's `CssClass` when invalid; stripped on success. Only works when the target is a `TWebControl`.
+- **`aria-invalid` from the server** (4.4.0) — `updateControlAria()` in `onPreRender()` adds `aria-invalid="true"` to a `TWebControl` target whose `IsValid` is false, and removes it otherwise. A failed validator sends the client option `IsValid: false`; its client validator then owns the attribute (`claimServerAria()`) and clears it when it passes, which matters for server-only validators.
 - **`TValidationSummary`** — Reads `ErrorMessage` (not `Text`) from each validator in the same `ValidationGroup`.
+- **Client re-validation on change** — After its first validation, a client validator re-validates when the control's `change` event fires and updates its summary. A text box fires `change` on blur, which a mouse press on a button causes. While the primary mouse button is held, `Prado.Validation.afterPress()` delays the re-validation until after the release and click. Hiding a `Dynamic` message or summary then moves the button only after its click lands.
 - **Subclassing** — Must implement both `evaluateIsValid()` and `getClientClassName()`. Call `parent::getClientScriptOptions()` and merge in subclass-specific keys.
 - **Constructor** — Sets `ForeColor` to `'red'` by default.
 - **Client-side special controls** — `TCheckBox`, `TDatePicker`, `THtmlArea`, `THtmlArea5`, `TReCaptcha2`, `TCheckBoxList`, `TListBox`, `TRadioButton` receive special handling in `validation3.js`. New controls needing custom JS extraction must be added to both `$_clientClass` and the JS file.

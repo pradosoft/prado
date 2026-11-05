@@ -1,13 +1,19 @@
 <?php
 
-require_once __DIR__ . '/TComponentTestFixtures.php';
+namespace Prado\Test\Unit;
+
+require_once __DIR__ . '/TComponentTestFunctions.php';
 
 use Prado\Collections\TPriorityList;
+use Prado\Collections\TWeakCallableCollection;
 use Prado\Exceptions\TApplicationException;
 use Prado\Exceptions\TInvalidDataTypeException;
+use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Exceptions\TUnknownMethodException;
+use Prado\IEventCycleParameter;
 use Prado\TComponent;
+use Prado\TEventParameter;
 use Prado\TEventResults;
 use Prado\Util\IDynamicMethods;
 use Prado\Util\IInstanceCheck;
@@ -17,7 +23,7 @@ use Prado\Util\TClassBehavior;
 /**
  * @package System
  */
-class TComponentRaiseEventTest extends PHPUnit\Framework\TestCase
+class TComponentRaiseEventTest extends \PHPUnit\Framework\TestCase
 {
 	protected $tearDownScripts = [];
 	protected $component;
@@ -111,13 +117,13 @@ class TComponentRaiseEventTest extends PHPUnit\Framework\TestCase
 		try {
 			$this->component->attachEventHandler('onBehaviorEvent', [$this->component, 'myEventHandler']);
 			$this->fail('exception not raised when getting event handlers for undefined event');
-		} catch (Prado\Exceptions\TInvalidOperationException $e) {
+		} catch (\Prado\Exceptions\TInvalidOperationException $e) {
 		}
 		$this->assertFalse($this->component->isEventHandled());
 		try {
 			$this->component->raiseEvent('onBehaviorEvent', $this, null);
 			$this->fail('exception not raised when getting event handlers for undefined event');
-		} catch (Prado\Exceptions\TInvalidOperationException $e) {
+		} catch (\Prado\Exceptions\TInvalidOperationException $e) {
 		}
 		$this->assertFalse($this->component->isEventHandled());
 
@@ -212,9 +218,359 @@ class TComponentRaiseEventTest extends PHPUnit\Framework\TestCase
 		return $param * 4;
 	}
 
+	public function testRaiseEventStopPropagationSkipsRemainingHandlers()
+	{
+		$component = new NewComponent();
+		$order = [];
+
+		$component->attachEventHandler('OnMyEvent', function ($sender, $param) use (&$order) {
+			$order[] = 1;
+			return 'r1';
+		});
+		$component->attachEventHandler('OnMyEvent', function ($sender, $param) use (&$order) {
+			$order[] = 2;
+			$param->stopImmediatePropagation();
+			return 'r2';
+		});
+		$component->attachEventHandler('OnMyEvent', function ($sender, $param) use (&$order) {
+			$order[] = 3;
+			return 'r3';
+		});
+
+		$param = new \Prado\TEventParameter();
+		$responses = $component->raiseEvent('OnMyEvent', $this, $param);
+
+		// The third handler is skipped once the second stops propagation.
+		$this->assertEquals([1, 2], $order);
+		$this->assertEquals(['r1', 'r2'], $responses);
+		$this->assertTrue($param->getStopped());
+	}
+
+	public function testRaiseEventStopResetsForEachRaise()
+	{
+		$component = new NewComponent();
+		$count = 0;
+		$component->attachEventHandler('OnMyEvent', function () use (&$count) {
+			$count++;
+		});
+		$component->attachEventHandler('OnMyEvent', function () use (&$count) {
+			$count++;
+		});
+
+		$param = new \Prado\TEventParameter();
+		// A stale stop flag must not carry into a fresh raise; setEventName clears it.
+		$param->setStopped(true);
+		$component->raiseEvent('OnMyEvent', $this, $param);
+
+		$this->assertEquals(2, $count);
+		$this->assertFalse($param->getStopped());
+	}
+
+	public function testRaiseEventStopPropagationHonorsReverseOrder()
+	{
+		$component = new NewComponent();
+		$order = [];
+
+		$component->attachEventHandler('OnMyEvent', function () use (&$order) {
+			$order[] = 1;
+		});
+		$component->attachEventHandler('OnMyEvent', function ($sender, $param) use (&$order) {
+			$order[] = 2;
+			$param->stopImmediatePropagation();
+		});
+		$component->attachEventHandler('OnMyEvent', function () use (&$order) {
+			$order[] = 3;
+		});
+
+		$param = new \Prado\TEventParameter();
+		$component->raiseEvent('OnMyEvent', $this, $param, TEventResults::EVENT_REVERSE);
+
+		// Reversed order is 3, 2, 1; handler 2 stops before handler 1 runs.
+		$this->assertEquals([3, 2], $order);
+	}
+
+	public function testRaiseEventNonStoppableParameterRunsAllHandlers()
+	{
+		$component = new NewComponent();
+		$count = 0;
+		$component->attachEventHandler('OnMyEvent', function () use (&$count) {
+			$count++;
+		});
+		$component->attachEventHandler('OnMyEvent', function () use (&$count) {
+			$count++;
+		});
+
+		// A null (non-stoppable) parameter is unaffected by the stop mechanism.
+		$component->raiseEvent('OnMyEvent', $this, null);
+		$this->assertEquals(2, $count);
+	}
+
+	public function testRaiseEventFeedForwardStopReadsForwardedValue()
+	{
+		$component = new NewComponent();
+		$order = [];
+
+		// This forwarded parameter is already stopped; setEventName only resets the
+		// original parameter, so the forwarded value keeps its stopped flag.
+		$forwarded = new \Prado\TEventParameter();
+		$forwarded->setStopped(true);
+
+		$component->attachEventHandler('OnMyEvent', function ($sender, $param) use (&$order, $forwarded) {
+			$order[] = 1;
+			return $forwarded;
+		});
+		$component->attachEventHandler('OnMyEvent', function ($sender, $param) use (&$order) {
+			$order[] = 2;
+		});
+
+		$param = new \Prado\TEventParameter();
+		$component->raiseEvent('OnMyEvent', $this, $param, TEventResults::EVENT_RESULT_FEED_FORWARD);
+
+		// The stop is read from the forwarded value (the current $param), not the
+		// original parameter, so the second handler is skipped.
+		$this->assertEquals([1], $order);
+		$this->assertFalse($param->getStopped());
+		$this->assertTrue($forwarded->getStopped());
+	}
+
+	public function testRaiseEventFeedForwardHandlerStopsForwardedParam()
+	{
+		$component = new NewComponent();
+		$order = [];
+
+		// Each handler returns the parameter it received, so the same stoppable
+		// object is fed forward through the chain.
+		$component->attachEventHandler('OnMyEvent', function ($sender, $param) use (&$order) {
+			$order[] = 1;
+			return $param;
+		});
+		$component->attachEventHandler('OnMyEvent', function ($sender, $param) use (&$order) {
+			$order[] = 2;
+			$param->stopImmediatePropagation();
+			return $param;
+		});
+		$component->attachEventHandler('OnMyEvent', function ($sender, $param) use (&$order) {
+			$order[] = 3;
+			return $param;
+		});
+
+		$param = new \Prado\TEventParameter();
+		$component->raiseEvent('OnMyEvent', $this, $param, TEventResults::EVENT_RESULT_FEED_FORWARD);
+
+		$this->assertEquals([1, 2], $order);
+		$this->assertTrue($param->getStopped());
+	}
+
+	public function testRaiseEventFeedForwardScalarResponseDoesNotStop()
+	{
+		$component = new NewComponent();
+		$count = 0;
+
+		// A scalar forwarded value has no stop flag, so the chain runs to the end.
+		$component->attachEventHandler('OnMyEvent', function () use (&$count) {
+			$count++;
+			return 'r1';
+		});
+		$component->attachEventHandler('OnMyEvent', function () use (&$count) {
+			$count++;
+			return 'r2';
+		});
+
+		$param = new \Prado\TEventParameter();
+		$component->raiseEvent('OnMyEvent', $this, $param, TEventResults::EVENT_RESULT_FEED_FORWARD);
+		$this->assertEquals(2, $count);
+	}
+
+	public function testRaiseEventStopWithResultAllResponseType()
+	{
+		$component = new NewComponent();
+		$order = [];
+
+		$component->attachEventHandler('OnMyEvent', function ($sender, $param) use (&$order) {
+			$order[] = 1;
+			return 'r1';
+		});
+		$component->attachEventHandler('OnMyEvent', function ($sender, $param) use (&$order) {
+			$order[] = 2;
+			$param->stopImmediatePropagation();
+			return 'r2';
+		});
+		$component->attachEventHandler('OnMyEvent', function ($sender, $param) use (&$order) {
+			$order[] = 3;
+			return 'r3';
+		});
+
+		$param = new \Prado\TEventParameter();
+		$responses = $component->raiseEvent('OnMyEvent', $this, $param, TEventResults::EVENT_RESULT_ALL);
+
+		// EVENT_RESULT_ALL records a per-handler structure; only the two that ran appear.
+		$this->assertEquals([1, 2], $order);
+		$this->assertCount(2, $responses);
+		$this->assertEquals('r1', $responses[0]['response']);
+		$this->assertEquals('r2', $responses[1]['response']);
+	}
+
+	/**
+	 * A handler for which dyIntraRaiseEventTestHandler returns false is skipped.
+	 */
+	public function testRaiseEventSkipsHandlerRejectedByBehavior()
+	{
+		$component = new NewComponent();
+		$order = [];
+		$skipped = function () use (&$order) {
+			$order[] = 'skipped';
+			return 'skipped';
+		};
+		$component->attachEventHandler('OnMyEvent', $skipped);
+		$component->attachEventHandler('OnMyEvent', function () use (&$order) {
+			$order[] = 'run';
+			return 'run';
+		});
+		$component->attachBehavior('skipper', new TComponentRaiseEventSkipBehavior($skipped));
+
+		$this->assertEquals(['run'], $component->raiseEvent('OnMyEvent', $this, null));
+		$this->assertEquals(['run'], $order);
+		$component->detachBehavior('skipper');
+	}
+
+	/**
+	 * A weak listener freed between the scrub and the output filter (the cycle
+	 * collector can run there) is skipped instead of raised as an invalid handler.
+	 */
+	public function testRaiseEventSkipsListenerFreedDuringRaise()
+	{
+		$component = new NewComponent();
+		$dying = new NewComponent();
+		$handlers = new TComponentRaiseEventFreeingCollection();
+		$handlers->add([$dying, 'myEventHandler']);
+		$handlers->add([$this->component, 'myEventHandler']);
+		$handlers->afterFlatten = function () use (&$dying) {
+			$dying = null;
+		};
+		PradoUnit::setProp($component, '_e', ['onmyevent' => $handlers]);
+
+		$component->raiseEvent('OnMyEvent', $this, null);
+		$this->assertNull($dying);
+		$this->assertTrue($this->component->isEventHandled());
+	}
+
+	/**
+	 * A null entry from a handler collection that keeps invalid WeakReferences is skipped.
+	 */
+	public function testRaiseEventSkipsNullHandler()
+	{
+		$component = new NewComponent();
+		$dying = new NewComponent();
+		$handlers = new TWeakCallableCollection(null, null, null, null, false);
+		$handlers->add([$dying, 'myEventHandler']);
+		$handlers->add([$this->component, 'myEventHandler']);
+		$dying = null;
+		PradoUnit::setProp($component, '_e', ['onmyevent' => $handlers]);
+
+		$component->raiseEvent('OnMyEvent', $this, null);
+		$this->assertTrue($this->component->isEventHandled());
+	}
+
+	/**
+	 * A string handler naming a static method is called with the sender and parameter.
+	 */
+	public function testRaiseEventStaticMethodStringHandler()
+	{
+		$component = new NewComponent();
+		$component->attachEventHandler('OnMyEvent', self::class . '::staticEventHandler');
+
+		$this->assertEquals(['static:handled'], $component->raiseEvent('OnMyEvent', $this, 'handled'));
+	}
+
+	public static function staticEventHandler($sender, $param)
+	{
+		return 'static:' . $param;
+	}
+
+	/**
+	 * An object handler whose method is not visible throws TInvalidDataValueException.
+	 */
+	public function testRaiseEventInvalidObjectMethodHandlerThrows()
+	{
+		$component = new NewComponent();
+		$component->attachEventHandler('OnMyEvent', [$this->component, 'undefinedEventHandler']);
+
+		try {
+			$component->raiseEvent('OnMyEvent', $this, null);
+			$this->fail('TInvalidDataValueException not raised for an undefined handler method');
+		} catch (TInvalidDataValueException $e) {
+		}
+	}
+
+	/**
+	 * An IEventCycleParameter is notified before and after the handlers run.
+	 */
+	public function testRaiseEventCycleParameter()
+	{
+		$component = new NewComponent();
+		$component->attachEventHandler('OnMyEvent', function ($sender, $param) {
+			$param->calls[] = 'handler';
+			return 'response';
+		});
+		$param = new class () extends TEventParameter implements IEventCycleParameter {
+			public array $calls = [];
+			public function preRaiseEvent($name, $sender, $param, $responsetype, $postfunction)
+			{
+				$this->calls[] = 'pre:' . $name;
+			}
+			public function postRaiseEvent($responses, $name, $sender, $param, $responsetype, $postfunction)
+			{
+				$this->calls[] = 'post:' . implode(',', $responses);
+			}
+		};
+
+		$this->assertEquals(['response'], $component->raiseEvent('OnMyEvent', $this, $param));
+		$this->assertEquals(['pre:onmyevent', 'handler', 'post:response'], $param->calls);
+	}
+
 	public function testGlobalEventListenerInRaiseEvent()
 	{
 		//TODO Test the Global Event Listener
-		throw new PHPUnit\Framework\IncompleteTestError();
+		throw new \PHPUnit\Framework\IncompleteTestError();
+	}
+}
+
+/**
+ * Rejects one handler through dyIntraRaiseEventTestHandler so raiseEvent skips it.
+ */
+class TComponentRaiseEventSkipBehavior extends TBehavior
+{
+	private $_skip;
+
+	public function __construct($skip)
+	{
+		$this->_skip = $skip;
+		parent::__construct();
+	}
+
+	public function dyIntraRaiseEventTestHandler($handler, $sender, $param, $name, $chain)
+	{
+		if ($handler === $this->_skip) {
+			return false;
+		}
+		return $chain->dyIntraRaiseEventTestHandler($handler, $sender, $param, $name);
+	}
+}
+
+/**
+ * Runs a callback after flattening, between the scrub and the output filter of {@see toArray}.
+ */
+class TComponentRaiseEventFreeingCollection extends TWeakCallableCollection
+{
+	public $afterFlatten;
+
+	protected function flattenPriorities(): void
+	{
+		parent::flattenPriorities();
+		if ($this->afterFlatten) {
+			$afterFlatten = $this->afterFlatten;
+			$this->afterFlatten = null;
+			$afterFlatten();
+		}
 	}
 }

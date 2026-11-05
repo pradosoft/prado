@@ -1,20 +1,31 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI;
+
 use Prado\Web\UI\TPage;
 use Prado\Web\UI\TPageStatePersister;
 use Prado\Web\UI\TSessionPageStatePersister;
 use Prado\Web\UI\IPageStatePersister;
 use Prado\Web\UI\TTemplateControl;
 use Prado\Web\UI\TForm;
+use Prado\Web\UI\TClientScriptManager;
+use Prado\Web\UI\TControl;
 use Prado\Web\UI\WebControls\THead;
 use Prado\Web\UI\TTheme;
 use Prado\Collections\TList;
+use Prado\Collections\TMap;
 use Prado\Collections\TStack;
 use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\THttpException;
 use Prado\Exceptions\TInvalidOperationException;
+use Prado\Prado;
+use Prado\Web\Services\TPageService;
+use Prado\Web\THttpRequest;
 use Prado\Web\UI\ActiveControls\TCallbackClientScript;
+use Prado\Test\Unit\Harness\Web\TTestCookieResponse;
+use Prado\Test\Unit\PradoUnit;
 
-class TPageTest extends PHPUnit\Framework\TestCase
+class TPageTest extends \PHPUnit\Framework\TestCase
 {
 	// -----------------------------------------------------------------------
 	// Construction and inheritance
@@ -188,47 +199,37 @@ class TPageTest extends PHPUnit\Framework\TestCase
 	{
 		$page = new TPage();
 		// setTheme has not been called → _theme is null; getTheme does not call service
-		$reflection = new ReflectionProperty(TPage::class, '_theme');
-		$reflection->setAccessible(true);
-		$this->assertNull($reflection->getValue($page));
+		$this->assertNull(PradoUnit::getProp($page, '_theme'));
 	}
 
-	public function testSetThemeWithTThemeObject(): void
+public function testSetThemeWithTThemeObject(): void
 	{
 		$page = new TPage();
 		$theme = $this->createMock(TTheme::class);
 		$page->setTheme($theme);
 
 		// getTheme() only resolves a string; with an object it returns it directly
-		$reflection = new ReflectionProperty(TPage::class, '_theme');
-		$reflection->setAccessible(true);
-		$this->assertSame($theme, $reflection->getValue($page));
+		$this->assertSame($theme, PradoUnit::getProp($page, '_theme'));
 	}
 
 	public function testSetThemeToEmptyStringStoresNull(): void
 	{
 		$page = new TPage();
 		$page->setTheme('');
-		$reflection = new ReflectionProperty(TPage::class, '_theme');
-		$reflection->setAccessible(true);
-		$this->assertNull($reflection->getValue($page));
+		$this->assertNull(PradoUnit::getProp($page, '_theme'));
 	}
 
-	public function testSetThemeToNonEmptyStringStoresString(): void
+public function testSetThemeToNonEmptyStringStoresString(): void
 	{
 		$page = new TPage();
 		$page->setTheme('SomeTheme');
-		$reflection = new ReflectionProperty(TPage::class, '_theme');
-		$reflection->setAccessible(true);
-		$this->assertEquals('SomeTheme', $reflection->getValue($page));
+		$this->assertEquals('SomeTheme', PradoUnit::getProp($page, '_theme'));
 	}
 
 	public function testGetStyleSheetThemeIsNullByDefault(): void
 	{
 		$page = new TPage();
-		$reflection = new ReflectionProperty(TPage::class, '_styleSheet');
-		$reflection->setAccessible(true);
-		$this->assertNull($reflection->getValue($page));
+		$this->assertNull(PradoUnit::getProp($page, '_styleSheet'));
 	}
 
 	public function testSetStyleSheetThemeWithTThemeObject(): void
@@ -236,9 +237,7 @@ class TPageTest extends PHPUnit\Framework\TestCase
 		$page = new TPage();
 		$theme = $this->createMock(TTheme::class);
 		$page->setStyleSheetTheme($theme);
-		$reflection = new ReflectionProperty(TPage::class, '_styleSheet');
-		$reflection->setAccessible(true);
-		$this->assertSame($theme, $reflection->getValue($page));
+		$this->assertSame($theme, PradoUnit::getProp($page, '_styleSheet'));
 	}
 
 	// -----------------------------------------------------------------------
@@ -630,14 +629,183 @@ class TPageTest extends PHPUnit\Framework\TestCase
 		$page = new TPage();
 		$page->setFocus('myElementId');
 
-		$reflection = new ReflectionProperty(TPage::class, '_focus');
-		$reflection->setAccessible(true);
-		$this->assertEquals('myElementId', $reflection->getValue($page));
+		$this->assertEquals('myElementId', PradoUnit::getProp($page, '_focus'));
+	}
+
+	// -----------------------------------------------------------------------
+	// endFormRender — focus registration
+	// -----------------------------------------------------------------------
+
+	/**
+	 * Returns a page whose client script manager records focus registrations.
+	 */
+	private function createPageWithClientScript(): TPage
+	{
+		$page = new TPage();
+		PradoUnit::setProp($page, '_clientScript', new TPageFocusClientScriptManager($page));
+		return $page;
+	}
+
+	public function testEndFormRenderWithoutFocusRegistersNoFocus(): void
+	{
+		$page = $this->createPageWithClientScript();
+		$page->endFormRender(null);
+
+		$this->assertSame([], $page->getClientScript()->focusTargets);
+	}
+
+	public function testEndFormRenderRegistersFocusElementId(): void
+	{
+		$page = $this->createPageWithClientScript();
+		$page->setFocus('myElementId');
+		$page->endFormRender(null);
+
+		$this->assertSame(['myElementId'], $page->getClientScript()->focusTargets);
+	}
+
+	public function testEndFormRenderRegistersFocusControlClientId(): void
+	{
+		$page = $this->createPageWithClientScript();
+		$control = new TControl();
+		$control->setID('myControl');
+		$control->setPage($page);
+		$page->setFocus($control);
+		$page->endFormRender(null);
+
+		$this->assertSame([$control->getClientID()], $page->getClientScript()->focusTargets);
+	}
+
+	public function testEndFormRenderIgnoresPostedLastFocus(): void
+	{
+		$page = $this->createPageWithClientScript();
+		PradoUnit::setProp($page, '_postData', new TMap([TPage::FIELD_LASTFOCUS => "x');alert(1);//"]));
+		$page->endFormRender(null);
+
+		$this->assertSame([], $page->getClientScript()->focusTargets);
+	}
+
+	public function testEndFormRenderPrefersSetFocusOverPostedLastFocus(): void
+	{
+		$page = $this->createPageWithClientScript();
+		PradoUnit::setProp($page, '_postData', new TMap([TPage::FIELD_LASTFOCUS => 'postedId']));
+		$page->setFocus('myElementId');
+		$page->endFormRender(null);
+
+		$this->assertSame(['myElementId'], $page->getClientScript()->focusTargets);
+	}
+
+	public function testEndFormRenderEndsFormRender(): void
+	{
+		$page = $this->createPageWithClientScript();
+		PradoUnit::setProp($page, '_inFormRender', true);
+		$page->endFormRender(null);
+
+		$this->assertFalse($page->getInFormRender());
+	}
+
+	// -----------------------------------------------------------------------
+	// CSRF validation
+	// -----------------------------------------------------------------------
+
+	public function testGetEnableCsrfValidationDefaultIsTrue(): void
+	{
+		$page = new TPage();
+		$this->assertTrue($page->getEnableCsrfValidation());
+		$page->setEnableCsrfValidation(false);
+		$this->assertFalse($page->getEnableCsrfValidation());
+		$page->setEnableCsrfValidation('true');
+		$this->assertTrue($page->getEnableCsrfValidation());
+	}
+
+	/**
+	 * Runs the test with a response that records cookies, a fresh CSRF secret, and
+	 * no token in the request, restoring the globals afterwards.
+	 * @param callable $test receives the request and a token of the secret
+	 */
+	private function withCsrfSecret(callable $test): void
+	{
+		$app = Prado::getApplication();
+		$obLevel = ob_get_level();
+		$savedResponse = $app->getResponse();
+		$savedService = $app->getService();
+		$savedPost = $_POST;
+		$savedGet = $_GET;
+		$app->setResponse(new TTestCookieResponse());
+		$app->setService(new TPageService());
+		unset($_POST[THttpRequest::CSRF_TOKEN_FIELD], $_GET[THttpRequest::CSRF_TOKEN_FIELD]);
+		try {
+			$request = $app->getRequest();
+			$test($request, $request->getCsrfToken(true));
+		} finally {
+			$_POST = $savedPost;
+			$_GET = $savedGet;
+			$app->setResponse($savedResponse);
+			$app->setService($savedService);
+			// the first getResponse() of the run bootstraps the response, which starts a buffer
+			while (ob_get_level() > $obLevel) {
+				ob_end_clean();
+			}
+		}
+	}
+
+	public function testEnsureCsrfTokenRefusesAMissingOrInvalidToken(): void
+	{
+		$this->withCsrfSecret(function (THttpRequest $request, string $token) {
+			$page = new TPage();
+			foreach ([null, 'bad', $token] as $sent) {
+				unset($_POST[THttpRequest::CSRF_TOKEN_FIELD]);
+				if ($sent === $token) {
+					$_GET[THttpRequest::CSRF_TOKEN_FIELD] = $sent;
+				} elseif ($sent !== null) {
+					$_POST[THttpRequest::CSRF_TOKEN_FIELD] = $sent;
+				}
+				try {
+					PradoUnit::invoke($page, 'ensureCsrfToken');
+					$this->fail('the token ' . var_export($sent, true) . ' was accepted');
+				} catch (THttpException $e) {
+					$this->assertSame(400, $e->getStatusCode());
+					$this->assertSame('page_csrf_token_invalid', $e->getErrorCode());
+				}
+			}
+			unset($_GET[THttpRequest::CSRF_TOKEN_FIELD]);
+
+			// the POST field passes, and a page without validation skips the check
+			$_POST[THttpRequest::CSRF_TOKEN_FIELD] = $token;
+			PradoUnit::invoke($page, 'ensureCsrfToken');
+			$_POST[THttpRequest::CSRF_TOKEN_FIELD] = 'bad';
+			$page->setEnableCsrfValidation(false);
+			PradoUnit::invoke($page, 'ensureCsrfToken');
+			$this->assertTrue(true);
+		});
+	}
+
+	public function testBeginFormRenderRegistersTheCsrfToken(): void
+	{
+		$this->withCsrfSecret(function (THttpRequest $request, string $token) {
+			$page = new TPage();
+			$page->beginFormRender(null);
+			$fields = $page->getClientScript()->getHiddenFields();
+			$this->assertArrayHasKey(TPage::FIELD_PAGESTATE, $fields);
+			$this->assertArrayHasKey(TPage::FIELD_CSRF_TOKEN, $fields);
+			$this->assertNotEquals($token, $fields[TPage::FIELD_CSRF_TOKEN]);
+			$this->assertTrue($request->validateCsrfToken($fields[TPage::FIELD_CSRF_TOKEN]));
+
+			$page = new TPage();
+			$page->setEnableCsrfValidation(false);
+			$page->beginFormRender(null);
+			$this->assertArrayNotHasKey(TPage::FIELD_CSRF_TOKEN, $page->getClientScript()->getHiddenFields());
+		});
 	}
 
 	// -----------------------------------------------------------------------
 	// System post field constants
 	// -----------------------------------------------------------------------
+
+	public function testFieldCsrfTokenConstant(): void
+	{
+		$this->assertEquals('PRADO_CSRF_TOKEN', TPage::FIELD_CSRF_TOKEN);
+		$this->assertTrue(PradoUnit::invoke(new TPage(), 'isSystemPostField', TPage::FIELD_CSRF_TOKEN));
+	}
 
 	public function testFieldPostbackTargetConstant(): void
 	{
@@ -647,6 +815,12 @@ class TPageTest extends PHPUnit\Framework\TestCase
 	public function testFieldPostbackParameterConstant(): void
 	{
 		$this->assertEquals('PRADO_POSTBACK_PARAMETER', TPage::FIELD_POSTBACK_PARAMETER);
+	}
+
+	public function testDeprecatedFieldLastFocusConstantIsStillReserved(): void
+	{
+		$this->assertEquals('PRADO_LASTFOCUS', TPage::FIELD_LASTFOCUS);
+		$this->assertTrue(PradoUnit::invoke(new TPage(), 'isSystemPostField', TPage::FIELD_LASTFOCUS));
 	}
 
 	public function testFieldPageStateConstant(): void
@@ -662,5 +836,18 @@ class TPageTest extends PHPUnit\Framework\TestCase
 	public function testFieldCallbackParameterConstant(): void
 	{
 		$this->assertEquals('PRADO_CALLBACK_PARAMETER', TPage::FIELD_CALLBACK_PARAMETER);
+	}
+}
+
+/**
+ * Records the targets passed to registerFocusControl() without registering scripts.
+ */
+class TPageFocusClientScriptManager extends TClientScriptManager
+{
+	public array $focusTargets = [];
+
+	public function registerFocusControl($target)
+	{
+		$this->focusTargets[] = $target;
 	}
 }

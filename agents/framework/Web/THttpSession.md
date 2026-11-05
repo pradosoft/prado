@@ -34,21 +34,38 @@ THttpSession provides session-level data management and the related configuratio
 ## Configuration
 ### XML Format
 ```xml
-<module id="session" class="THttpSession" 
-        SessionName="SSID" 
-        SavePath="/tmp"
-        CookieMode="Allow" 
-        UseCustomStorage="false" 
-        AutoStart="true" 
-        GCProbability="1"
-        UseTransparentSessionID="true" 
-        TimeOut="3600" />
+<modules>
+    <module id="session" class="THttpSession" 
+            SessionName="SSID" 
+            SavePath="/tmp"
+            CookieMode="Allow" 
+            UseCustomStorage="false" 
+            AutoStart="true" 
+            GCProbability="1"
+            UseTransparentSessionID="true" 
+            TimeOut="3600" />
+</modules>
+```
+
+**PHP equivalent:**
+```php
+return [
+    'modules' => [
+        'session' => [
+            'class' => 'Prado\Web\THttpSession',
+            'properties' => [
+                'AutoStart' => 'true',
+                'CookieMode' => 'Allow',
+            ],
+        ],
+    ],
+];
 ```
 
 ## Core Methods
 
 ### Session Management
-- `open()`: Starts the session if not already started
+- `open()`: Starts the session if not already started; sets the session cookie parameters from `getSessionCookieParams()` (protected, @since 4.4.0) through the `sessionSetCookieParams()`/`sessionGetCookieParams()` wrappers
 - `close()`: Ends session and stores data
 - `destroy()`: Destroys all data registered to session
 - `regenerate($deleteOld = false)`: Update session ID with new one
@@ -95,7 +112,7 @@ THttpSession implements ArrayAccess, IteratorAggregate, and Countable interfaces
 - `getKeys()`: Returns key list
 
 ## Security Considerations
-- HttpOnly flag can be set on session cookie for security
+- The session cookie is HttpOnly. Without a configured `Cookie`, the other parameters come from php.ini. A configured `Cookie` supplies all of them, and php.ini's `session.cookie_secure`/`session.cookie_httponly` stay on when on. `Cookie.HttpOnly="false"` turns HttpOnly off only when php.ini leaves it off.
 - Session IDs are protected from modification after start
 - Custom storage enables specialized security considerations
 - Configurable session timeouts for automatic cleanup

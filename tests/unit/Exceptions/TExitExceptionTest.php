@@ -6,16 +6,19 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\Exceptions;
+
 use Prado\Exceptions\TExitException;
 use Prado\Exceptions\TSystemException;
 use Prado\Exceptions\TException;
+use Prado\Test\Unit\PradoUnit;
 
 /**
  * Comprehensive tests for {@see TExitException}: exit code storage and edge values,
  * message translation, variadic placeholders, getErrorMessage(), setErrorCode(),
  * throw/catch, exception chaining (getPrevious()), and the full inheritance chain.
  */
-class TExitExceptionTest extends PHPUnit\Framework\TestCase
+class TExitExceptionTest extends \PHPUnit\Framework\TestCase
 {
 	// ── Construction and exit code ────────────────────────────────────────────
 
@@ -117,8 +120,8 @@ class TExitExceptionTest extends PHPUnit\Framework\TestCase
 
 	public function testVariadicPlaceholdersReplacedInMessage()
 	{
-		// prado_component_unknown uses {0} and {1}
-		$ex = new TExitException(2, 'prado_component_unknown', 'MyClass', 'SomeContext');
+		// component_property_undefined uses {0} and {1}
+		$ex = new TExitException(2, 'component_property_undefined', 'MyClass', 'SomeContext');
 		$this->assertStringContainsString('MyClass', $ex->getMessage());
 		$this->assertStringContainsString('SomeContext', $ex->getMessage());
 	}
@@ -338,7 +341,7 @@ class TExitExceptionTest extends PHPUnit\Framework\TestCase
 	public function testExceptionChainingWithPlaceholders()
 	{
 		$prev = new \LogicException('root cause');
-		$ex = new TExitException(2, 'prado_component_unknown', 'CompA', 'CompB', $prev);
+		$ex = new TExitException(2, 'component_property_undefined', 'CompA', 'CompB', $prev);
 		$this->assertSame($prev, $ex->getPrevious());
 		$this->assertStringContainsString('CompA', $ex->getMessage());
 		$this->assertStringContainsString('CompB', $ex->getMessage());
@@ -391,25 +394,25 @@ class TExitExceptionTest extends PHPUnit\Framework\TestCase
 
 	public function testGetExitCodeDirectIsProtected()
 	{
-		$ref = new \ReflectionMethod(TExitException::class, 'getExitCodeDirect');
+		$ref = PradoUnit::reflectionMethod(TExitException::class, 'getExitCodeDirect');
 		$this->assertTrue($ref->isProtected());
 	}
 
 	public function testSetExitCodeDirectIsProtected()
 	{
-		$ref = new \ReflectionMethod(TExitException::class, 'setExitCodeDirect');
+		$ref = PradoUnit::reflectionMethod(TExitException::class, 'setExitCodeDirect');
 		$this->assertTrue($ref->isProtected());
 	}
 
 	public function testExitCodePropertyIsPrivate()
 	{
-		$ref = new \ReflectionProperty(TExitException::class, '_exitCode');
+		$ref = PradoUnit::reflectionProperty(TExitException::class, '_exitCode');
 		$this->assertTrue($ref->isPrivate());
 	}
 
 	public function testGetExitCodeIsPublic()
 	{
-		$ref = new \ReflectionMethod(TExitException::class, 'getExitCode');
+		$ref = PradoUnit::reflectionMethod(TExitException::class, 'getExitCode');
 		$this->assertTrue($ref->isPublic());
 	}
 
@@ -440,9 +443,9 @@ class TExitExceptionTest extends PHPUnit\Framework\TestCase
 	public function testMultipleInstancesHaveIndependentErrorCodes()
 	{
 		$ex1 = new TExitException(1, 'prado_application_singleton_required');
-		$ex2 = new TExitException(2, 'prado_component_unknown', 'X', 'Y');
+		$ex2 = new TExitException(2, 'component_property_undefined', 'X', 'Y');
 		$ex1->setErrorCode('modified');
 		$this->assertSame('modified', $ex1->getErrorCode());
-		$this->assertSame('prado_component_unknown', $ex2->getErrorCode());
+		$this->assertSame('component_property_undefined', $ex2->getErrorCode());
 	}
 }

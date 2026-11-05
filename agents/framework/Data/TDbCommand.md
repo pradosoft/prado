@@ -8,7 +8,7 @@
 **Namespace:** `Prado\Data`
 
 ## Overview
-`TDbCommand` represents an SQL statement to execute against a database. It is created by calling [`TDbConnection::createCommand()`](./TDbConnection.md).
+`TDbCommand` represents an SQL statement to execute against a database. It is created by calling [`TDbConnection::createCommand()`](./TDbConnection.md). Implements [`IDataCommand`](./IDataCommand.md).
 
 ## Key Methods
 
@@ -47,6 +47,7 @@ $user = $reader->read();
 
 ## See Also
 
+- [IDataCommand](./IDataCommand.md) - Interface this class implements
 - [TDbConnection](./TDbConnection.md) - Database connection
 - [TDbDataReader](./TDbDataReader.md) - Result set iterator
 - [TDbTransaction](./TDbTransaction.md) - Transaction support

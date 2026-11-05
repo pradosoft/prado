@@ -1,0 +1,863 @@
+<%@ MasterClass="" Title="TDot Test colors and sizes" %>
+<html>
+<com:THead>
+<style>
+	.inline {
+		display: inline-block;
+	}
+	.inline div {
+		text-align: center;
+	}
+	.colorBox {
+		height: 40px;
+		font-size:11px;
+		font-family:sans-serif;
+	}
+	.dark {
+		color: white;
+	}
+</style>
+</com:THead>
+<body>
+<div class="container">
+	<p><center><h1>TDot Test</h1></center></center></p>
+	<p>
+		<div class="inline">
+			<div class="inline">
+				<div><com:TDot Size="100" Color="white" PublishStyle="Publish" /></div>
+				<div class="colorBox" style="background-color: #FFFFFF;"> White </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="100" Color="silver"/></div>
+				<div class="colorBox" style="background-color: #C0C0C0"> Silver </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="100" Color="gray"/></div>
+				<div class="colorBox dark" style="background-color: #808080"> Gray </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="100" Color="black"/></div>
+				<div class="colorBox dark" style="background-color: #000000">Black</div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="100" MainColor="blue" HighlightColor="red" ShadowOpacity="1.0"/></div>
+				<div class="colorBox dark" style="background: radial-gradient(circle, red 0%, blue 100%);">red -> blue<br/> dark shadow</div>
+			</div>
+
+			<div class="inline">
+				<div><com:TDot Size="100" Color="#AA66EE" ShadowOpacity="0.25"/></div>
+				<div class="colorBox dark" style="background: #AA66EE;">#AA66EE<br>light shadow</div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="100" Depth="80" Color="#0808D8"/></div>
+				<div class="colorBox dark" style="background: #0808D8;">#0808d8<br>Depth=80</div>
+			</div>
+			
+			<div class="inline">
+				<div><com:TDot Size="100" Color="#6633BB" Flat="true" /></div>
+				<div class="colorBox dark" style="background: #6633BB;">#6633BB</div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="100" Color="#66CC99" Flat="true" /></div>
+				<div class="colorBox dark" style="background: #66CC99;">#66CC99</div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="100" Color="#BB2299" Flat="true" FlatBorder="false" /></div>
+				<div class="colorBox dark" style="background: #BB2299;">#BB2299</div>
+			</div>
+			<div class="inline">
+			<com:TDot Size="75" Color="#808080" Flat="true" />
+			<com:TDot Size="50" Color="#808080" Flat="true" />
+			<com:TDot Size="33" Color="#808080" Flat="true" />
+			<com:TDot Size="22" Color="#808080" Flat="true" />
+			<com:TDot Size="17" Color="#808080" Flat="true" />
+			<com:TDot Size="13" Color="#808080" Flat="true" />
+			<com:TDot Size="11" Color="#808080" Flat="true" />
+			<com:TDot Size="9" Color="#808080" Flat="true" />
+			<com:TDot Size="7" Color="#808080" Flat="true" />
+			</div>
+		</div>
+	</p>
+	<p>
+		<div class="inline">
+			<div class="inline">
+				<div><com:TDot Size="100" Color="Red"/></div>
+				<div class="colorBox" style="background-color: #FF0000;"> Red </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="100" Color="Maroon"/></div>
+				<div class="colorBox dark" style="background-color: #800000"> Maroon </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="100" Color="Orange"/></div>
+				<div class="colorBox" style="background-color: #FFA500"> Orange </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="100" Color="yellow"/></div>
+				<div class="colorBox" style="background-color: #FFFF00">Yellow</div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="100" Color="Olive"/></div>
+				<div class="colorBox dark" style="background-color: #808000">Olive</div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="100" Color="Lime"/></div>
+				<div class="colorBox" style="background-color: #00FF00">Lime</div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="100" Color="Green"/></div>
+				<div class="colorBox dark" style="background-color: #008000">Green</div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="100" Color="Aqua"/></div>
+				<div class="colorBox" style="background-color: #00FFFF">Aqua & Cyan</div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="100" Color="Teal"/></div>
+				<div class="colorBox dark" style="background-color: #008080">Teal</div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="100" Color="Blue"/></div>
+				<div class="colorBox dark" style="background-color: #0000FF">Blue</div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="100" Color="Navy"/></div>
+				<div class="colorBox dark" style="background-color: #000080">Navy</div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="100" Color="Fuchsia"/></div>
+				<div class="colorBox" style="background-color: #FF00FF">Fuchsia & Magenta</div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="100" Color="Purple"/></div>
+				<div class="colorBox dark" style="background-color: #800080">Purple</div>
+			</div>
+		</div>
+	</p>
+	
+	<p>
+		<div class="inline">
+			<div class="inline">
+				<div><com:TDot Size="100" Color="Black"/></div>
+				<div class="colorBox dark" style="background-color: #000000;"> * Black </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="100" Color="DarkSlateGray"/></div>
+				<div class="colorBox dark" style="background-color: #2F4F4F;"> DarkSlateGray </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="100" Color="DimGray"/></div>
+				<div class="colorBox dark" style="background-color: #696969"> DimGray </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="100" Color="Gray"/></div>
+				<div class="colorBox" style="background-color: #808080"> * Gray </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="100" Color="SlateGray"/></div>
+				<div class="colorBox" style="background-color: #708090"> SlateGray </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="100" Color="LightSlateGray"/></div>
+				<div class="colorBox" style="background-color: #778899">LightSlateGray</div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="100" Color="DarkGray"/></div>
+				<div class="colorBox" style="background-color: #A9A9A9">DarkGray</div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="100" Color="Silver"/></div>
+				<div class="colorBox" style="background-color: #C0C0C0">* Silver</div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="100" Color="LightGray"/></div>
+				<div class="colorBox" style="background-color: #D3D3D3">LightGrey</div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="100" Color="Gainsboro"/></div>
+				<div class="colorBox" style="background-color: #DCDCDC">Gainsboro</div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="100" Color="WhiteSmoke"/></div>
+				<div class="colorBox" style="background-color: #F5F5F5">* WhiteSmoke</div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="100" Color="White"/></div>
+				<div class="colorBox" style="background-color: #FFFFFF">* White</div>
+			</div>
+		</div>
+	</p>
+	<p>
+		<div class="inline">
+			<div class="inline">
+				<div><com:TDot Size="70" Color="MistyRose"/></div>
+				<div class="colorBox" style="background-color: #FFE4E1;"> MistyRose </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="AntiqueWhite"/></div>
+				<div class="colorBox" style="background-color: #FAEBD7"> AntiqueWhite </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="Linen"/></div>
+				<div class="colorBox" style="background-color: #FAF0E6"> Linen </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="OldLace"/></div>
+				<div class="colorBox" style="background-color: #FDF5E6">OldLace</div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="SeaShell"/></div>
+				<div class="colorBox" style="background-color: #FFF5EE">SeaShell</div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="FloralWhite"/></div>
+				<div class="colorBox" style="background-color: #FFFAF0">FloralWhite</div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="Beige"/></div>
+				<div class="colorBox" style="background-color: #F5F5DC">Beige</div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="LavenderBlush"/></div>
+				<div class="colorBox" style="background-color: #FFF0F5">LavenderBlush</div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="AliceBlue"/></div>
+				<div class="colorBox" style="background-color: #F0F8FF">AliceBlue</div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="Honeydew"/></div>
+				<div class="colorBox" style="background-color: #F0FFF0">Honeydew</div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="Azure"/></div>
+				<div class="colorBox" style="background-color: #F0FFFF">Azure</div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="MintCream"/></div>
+				<div class="colorBox" style="background-color: #F5FFFA">MintCream</div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="Ivory"/></div>
+				<div class="colorBox" style="background-color: #FFFFF0">Ivory</div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="Snow"/></div>
+				<div class="colorBox" style="background-color: #FFFAFA">Snow</div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="GhostWhite"/></div>
+				<div class="colorBox" style="background-color: #F8F8FF">GhostWhite</div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="WhiteSmoke"/></div>
+				<div class="colorBox" style="background-color: #F5F5F5">WhiteSmoke</div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="White"/></div>
+				<div class="colorBox" style="background-color: #FFFFFF">* White</div>
+			</div>
+		</div>
+	</p>
+	<p>
+		<div class="inline">
+			<div class="inline">
+				<div><com:TDot Size="70" Color="MediumVioletRed"/></div>
+				<div class="colorBox" style="background-color: #C71585;"> MediumVioletRed </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="DeepPink"/></div>
+				<div class="colorBox" style="background-color: #FF1493;"> DeepPink </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="PaleVioletRed"/></div>
+				<div class="colorBox" style="background-color: #DB7093;"> PaleVioletRed </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="HotPink"/></div>
+				<div class="colorBox" style="background-color: #FF69B4;"> HotPink </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="LightPink"/></div>
+				<div class="colorBox" style="background-color: #FFB6C1;"> LightPink </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="Pink"/></div>
+				<div class="colorBox" style="background-color: #FFC0CB;"> Pink </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="MistyRose"/></div>
+				<div class="colorBox" style="background-color: #FFE4E1;"> * MistyRose </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="LavenderBlush"/></div>
+				<div class="colorBox" style="background-color: #FFF0F5">* LavenderBlush</div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="Snow"/></div>
+				<div class="colorBox" style="background-color: #FFFAFA">* Snow</div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="White"/></div>
+				<div class="colorBox" style="background-color: #FFFFFF">* White</div>
+			</div>
+		</div>
+	</p>
+	<p>
+		<div class="inline">
+			<div class="inline">
+				<div><com:TDot Size="70" Color="Maroon"/></div>
+				<div class="colorBox dark" style="background-color: #800000"> * Maroon </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="DarkRed"/></div>
+				<div class="colorBox dark" style="background-color: #8B0000;"> DarkRed </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="FireBrick"/></div>
+				<div class="colorBox dark" style="background-color: #B22222;"> FireBrick </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="Red"/></div>
+				<div class="colorBox" style="background-color: #FF0000;"> * Red </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="Crimson"/></div>
+				<div class="colorBox" style="background-color: #DC143C;"> Crimson </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="IndianRed"/></div>
+				<div class="colorBox" style="background-color: #CD5C5C;"> IndianRed </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="LightCoral"/></div>
+				<div class="colorBox" style="background-color: #F08080;"> LightCoral </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="Salmon"/></div>
+				<div class="colorBox" style="background-color: #FA8072;"> Salmon </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="DarkSalmon"/></div>
+				<div class="colorBox" style="background-color: #E9967A;"> DarkSalmon </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="LightSalmon"/></div>
+				<div class="colorBox" style="background-color: #FFA07A;"> LightSalmon </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="PeachPuff"/></div>
+				<div class="colorBox" style="background-color: #FFDAB9;"> PeachPuff </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="Moccasin"/></div>
+				<div class="colorBox" style="background-color: #FFE4B5;"> Mocassin </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="AntiqueWhite"/></div>
+				<div class="colorBox" style="background-color: #FAEBD7"> * AntiqueWhite </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="PapayaWhip"/></div>
+				<div class="colorBox" style="background-color: #FFEFD5;"> PapayaWhip </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="OldLace"/></div>
+				<div class="colorBox" style="background-color: #FDF5E6"> * OldLace</div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="FloralWhite"/></div>
+				<div class="colorBox" style="background-color: #FFFAF0"> * FloralWhite</div>
+			</div>
+		</div>
+	</p>
+	<p>
+		<div class="inline">
+			<div class="inline">
+				<div><com:TDot Size="70" Color="Red"/></div>
+				<div class="colorBox" style="background-color: #FF0000;"> * Red </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="OrangeRed"/></div>
+				<div class="colorBox" style="background-color: #FF4500"> OrangeRed </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="Tomato"/></div>
+				<div class="colorBox" style="background-color: #FF6347"> Tomato </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="DarkOrange"/></div>
+				<div class="colorBox" style="background-color: #FF8C00"> DarkOrange </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="Coral"/></div>
+				<div class="colorBox" style="background-color: #FF7F50"> Coral </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="Orange"/></div>
+				<div class="colorBox" style="background-color: #FFA500"> * Orange </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="Gold"/></div>
+				<div class="colorBox" style="background-color: #FFD700;"> Gold </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="Yellow"/></div>
+				<div class="colorBox" style="background-color: #FFFF00;"> * Yellow </div>
+			</div>
+		</div>
+	</p>
+	<p>
+		<div class="inline">
+			<div class="inline">
+				<div><com:TDot Size="70" Color="DarkKhaki"/></div>
+				<div class="colorBox" style="background-color: #BDB76B;"> DarkKhaki </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="Khaki"/></div>
+				<div class="colorBox" style="background-color: #F0E68C;"> Khaki </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="PaleGoldenrod"/></div>
+				<div class="colorBox" style="background-color: #EEE8AA;"> PaleGoldenrod </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="Beige"/></div>
+				<div class="colorBox" style="background-color: #F5F5DC"> * Beige</div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="LightGoldenrodYellow"/></div>
+				<div class="colorBox" style="background-color: #FAFAD2;"> LightGoldenrodYellow </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="LemonChiffon"/></div>
+				<div class="colorBox" style="background-color: #FFFACD;"> LemonChiffon </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="LightYellow"/></div>
+				<div class="colorBox" style="background-color: #FFFFE0;"> LightYellow </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="Ivory"/></div>
+				<div class="colorBox" style="background-color: #FFFFF0">* Ivory</div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="White"/></div>
+				<div class="colorBox" style="background-color: #FFFFFF">* White</div>
+			</div>
+		</div>
+	</p>
+	<p>
+		<div class="inline">
+			<div class="inline">
+				<div><com:TDot Size="67" Color="Maroon"/></div>
+				<div class="colorBox dark" style="background-color: #800000"> * Maroon </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="67" Color="Brown"/></div>
+				<div class="colorBox dark" style="background-color: #A52A2A;"> Brown </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="67" Color="SaddleBrown"/></div>
+				<div class="colorBox dark" style="background-color: #8B4513;"> SaddleBrown </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="67" Color="Sienna"/></div>
+				<div class="colorBox dark" style="background-color: #A0522D;"> Sienna </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="67" Color="Chocolate"/></div>
+				<div class="colorBox" style="background-color: #D2691E;"> Chocolate </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="67" Color="DarkGoldenrod"/></div>
+				<div class="colorBox" style="background-color: #B8860B;"> DarkGoldenrod </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="67" Color="Peru"/></div>
+				<div class="colorBox" style="background-color: #CD853F;"> Peru </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="67" Color="RosyBrown"/></div>
+				<div class="colorBox" style="background-color: #BC8F8F;"> RosyBrown </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="67" Color="Goldenrod"/></div>
+				<div class="colorBox" style="background-color: #DAA520;"> Goldenrod </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="67" Color="SandyBrown"/></div>
+				<div class="colorBox" style="background-color: #F4A460;"> SandyBrown </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="67" Color="Tan"/></div>
+				<div class="colorBox" style="background-color: #D2B48C;"> Tan </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="67" Color="Burlywood"/></div>
+				<div class="colorBox" style="background-color: #DEB887;"> Burlywood </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="67" Color="Wheat"/></div>
+				<div class="colorBox" style="background-color: #F5DEB3;"> Wheat </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="67" Color="NavajoWhite"/></div>
+				<div class="colorBox" style="background-color: #FFDEAD;"> NavajoWhite </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="67" Color="Bisque"/></div>
+				<div class="colorBox" style="background-color: #FFE4C4;"> Bisque </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="67" Color="BlanchedAlmond"/></div>
+				<div class="colorBox" style="background-color: #FFEBCD;"> BlanchedAlmond </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="67" Color="Cornsilk"/></div>
+				<div class="colorBox" style="background-color: #FFF8DC;"> Cornsilk </div>
+			</div>
+		</div>
+	</p>
+	<p>
+		<div class="inline">
+			<div class="inline">
+				<div><com:TDot Size="67" Color="DarkGreen"/></div>
+				<div class="colorBox dark" style="background-color: #006400"> DarkGreen </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="67" Color="DarkOliveGreen"/></div>
+				<div class="colorBox dark" style="background-color: #556B2F"> DarkOliveGreen </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="67" Color="Green"/></div>
+				<div class="colorBox dark" style="background-color: #008000"> * Green </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="67" Color="ForestGreen"/></div>
+				<div class="colorBox dark" style="background-color: #228B22"> ForestGreen </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="67" Color="SeaGreen"/></div>
+				<div class="colorBox dark" style="background-color: #2E8B57"> SeaGreen </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="67" Color="OliveDrab"/></div>
+				<div class="colorBox dark" style="background-color: #6B8E23"> OliveDrab </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="67" Color="MediumSeaGreen"/></div>
+				<div class="colorBox dark" style="background-color: #3CB371"> MediumSeaGreen </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="67" Color="LimeGreen"/></div>
+				<div class="colorBox dark" style="background-color: #32CD32"> LimeGreen </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="67" Color="Lime"/></div>
+				<div class="colorBox" style="background-color: #00FF00"> * Lime </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="67" Color="SpringGreen"/></div>
+				<div class="colorBox" style="background-color: #00FF7F"> Springgreen </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="67" Color="MediumSpringGreen"/></div>
+				<div class="colorBox" style="background-color: #00FA9A"> MediumSpringGreen </div>
+			</div>
+		</div>
+		<div style="margin-left: 100px; margin-top:20px">
+			<div class="inline">
+				<div><com:TDot Size="67" Color="DarkSeaGreen"/></div>
+				<div class="colorBox" style="background-color: #8FBC8F"> DarkSeaGreen </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="67" Color="MediumAquamarine"/></div>
+				<div class="colorBox" style="background-color: #66CDAA"> MediumAquamarine </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="67" Color="YellowGreen"/></div>
+				<div class="colorBox" style="background-color: #9ACD32"> YellowGreen </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="67" Color="LawnGreen"/></div>
+				<div class="colorBox" style="background-color: #7CFC00"> LawnGreen </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="67" Color="Chartreuse"/></div>
+				<div class="colorBox" style="background-color: #7FFF00"> Chartreuse </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="67" Color="LightGreen"/></div>
+				<div class="colorBox" style="background-color: #90EE90"> LightGreen </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="67" Color="GreenYellow"/></div>
+				<div class="colorBox" style="background-color: #ADFF2F"> GreenYellow </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="67" Color="PaleGreen"/></div>
+				<div class="colorBox" style="background-color: #98FB98"> PaleGreen </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="67" Color="HoneyDew"/></div>
+				<div class="colorBox" style="background-color: #F0FFF0"> * HoneyDew </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="67" Color="MintCream"/></div>
+				<div class="colorBox" style="background-color: #F5FFFA"> * MintCream </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="67" Color="White"/></div>
+				<div class="colorBox" style="background-color: #FFFFFF"> * White </div>
+			</div>
+		</div>
+	</p>
+	<p>
+		<div class="inline">
+			<div class="inline">
+				<div><com:TDot Size="67" Color="Teal"/></div>
+				<div class="colorBox dark" style="background-color: #008080"> Teal </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="67" Color="DarkCyan"/></div>
+				<div class="colorBox dark" style="background-color: #008B8B"> DarkCyan </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="67" Color="LightSeaGreen"/></div>
+				<div class="colorBox dark" style="background-color: #20B2AA"> LightSeaGreen </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="67" Color="CadetBlue"/></div>
+				<div class="colorBox dark" style="background-color: #5F9EA0"> CadetBlue </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="67" Color="DarkTurquoise"/></div>
+				<div class="colorBox" style="background-color: #00CED1"> DarkTurquoise </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="67" Color="MediumTurquoise"/></div>
+				<div class="colorBox" style="background-color: #48D1CC"> MediumTurquoise </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="67" Color="Turquoise"/></div>
+				<div class="colorBox" style="background-color: #40E0D0"> Turquoise </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="67" Color="Aquamarine"/></div>
+				<div class="colorBox" style="background-color: #7FFFD4"> Aquamarine </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="67" Color="PaleTurquoise"/></div>
+				<div class="colorBox" style="background-color: #AFEEEE"> PaleTurquoise </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="67" Color="LightCyan"/></div>
+				<div class="colorBox" style="background-color: #E0FFFF"> LightCyan </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="70" Color="AliceBlue"/></div>
+				<div class="colorBox" style="background-color: #F0F8FF"> * AliceBlue</div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="67" Color="White"/></div>
+				<div class="colorBox" style="background-color: #FFFFFF"> * White </div>
+			</div>
+		</div>
+	</p>
+	<p>
+		<div class="inline">
+			<div class="inline">
+				<div><com:TDot Size="64" Color="MidnightBlue"/></div>
+				<div class="colorBox dark" style="background-color: #191970"> MidnightBlue </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="64" Color="Navy"/></div>
+				<div class="colorBox dark" style="background-color: #000080"> * Navy </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="64" Color="DarkBlue"/></div>
+				<div class="colorBox dark" style="background-color: #00008b"> DarkBlue </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="64" Color="MediumBlue"/></div>
+				<div class="colorBox dark" style="background-color: #0000cd"> MediumBlue </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="64" Color="Blue"/></div>
+				<div class="colorBox dark" style="background-color: #0000FF"> Blue </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="64" Color="RoyalBlue"/></div>
+				<div class="colorBox dark" style="background-color: #4169E1"> RoyalBlue </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="64" Color="SteelBlue"/></div>
+				<div class="colorBox dark" style="background-color: #4682B4"> SteelBlue </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="64" Color="DodgerBlue"/></div>
+				<div class="colorBox" style="background-color: #1e90ff"> DodgerBlue </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="64" Color="DeepSkyBlue"/></div>
+				<div class="colorBox" style="background-color: #00BFFF"> DeepSkyBlue </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="64" Color="CornflowerBlue"/></div>
+				<div class="colorBox" style="background-color: #6495ed"> CornflowerBlue </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="64" Color="SkyBlue"/></div>
+				<div class="colorBox" style="background-color: #87CEEB"> SkyBlue </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="64" Color="LightSkyBlue"/></div>
+				<div class="colorBox" style="background-color: #87CEFA"> LightSkyBlue </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="64" Color="LightSteelBlue"/></div>
+				<div class="colorBox" style="background-color: #B0C4DE"> LightSteelBlue </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="64" Color="LightBlue"/></div>
+				<div class="colorBox" style="background-color: #ADD8E6"> LightBlue </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="64" Color="PowderBlue"/></div>
+				<div class="colorBox" style="background-color: #B0E0E6"> PowderBlue </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="64" Color="Azure"/></div>
+				<div class="colorBox" style="background-color: #F0FFFF"> * Azure</div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="64" Color="White"/></div>
+				<div class="colorBox" style="background-color: #FFFFFF"> * White</div>
+			</div>
+		</div>
+	</p>
+	<p>
+		<div class="inline">
+			<div class="inline">
+				<div><com:TDot Size="51" Color="Indigo"/></div>
+				<div class="colorBox dark" style="background-color: #4B0082"> Indigo </div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="51" Color="DarkSlateBlue"/></div>
+				<div class="colorBox dark" style="background-color: #483D8B">DarkSlateBlue</div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="51" Color="RebeccaPurple"/></div>
+				<div class="colorBox dark" style="background-color: #663399">RebeccaPurple</div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="51" Color="Purple"/></div>
+				<div class="colorBox dark" style="background-color: #800080">Purple</div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="51" Color="DarkMagenta"/></div>
+				<div class="colorBox dark" style="background-color: #8B008B">DarkMagenta</div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="51" Color="DarkViolet"/></div>
+				<div class="colorBox dark" style="background-color: #9400D3">DarkViolet</div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="51" Color="BlueViolet"/></div>
+				<div class="colorBox dark" style="background-color: #8A2BE2">BlueViolet</div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="51" Color="DarkOrchid"/></div>
+				<div class="colorBox dark" style="background-color: #9932CC">DarkOrchid</div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="51" Color="Magenta"/></div>
+				<div class="colorBox" style="background-color: #FF00FF">* Fuchsia & Magenta</div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="51" Color="SlateBlue"/></div>
+				<div class="colorBox" style="background-color: #6A5ACD">SlateBlue</div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="51" Color="MediumSlateBlue"/></div>
+				<div class="colorBox" style="background-color: #7B68EE">MediumSlateBlue</div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="51" Color="MediumOrchid"/></div>
+				<div class="colorBox" style="background-color: #BA55D3">MediumOrchid</div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="51" Color="MediumPurple"/></div>
+				<div class="colorBox" style="background-color: #9370DB">MediumPurple</div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="51" Color="Orchid"/></div>
+				<div class="colorBox" style="background-color: #DA70D6">Orchid</div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="51" Color="Violet"/></div>
+				<div class="colorBox" style="background-color: #EE82EE">Violet</div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="51" Color="Plum"/></div>
+				<div class="colorBox" style="background-color: #DDA0DD">Plum</div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="51" Color="Thistle"/></div>
+				<div class="colorBox" style="background-color: #D8BFD8">Thistle</div>
+			</div>
+			<div class="inline">
+				<div><com:TDot Size="51" Color="Lavender"/></div>
+				<div class="colorBox" style="background-color: #E6E6FA">Lavender</div>
+			</div>
+		</div>
+	</p>
+	<p>
+		<div class="inline">
+			<div><com:TDot Size="10"/></div>
+		</div>
+		<div class="inline">
+			<div><com:TDot Size="13"/></div>
+		</div>
+		<div class="inline">
+			<div><com:TDot Size="18"/></div>
+		</div>
+		<div class="inline">
+			<div><com:TDot Size="24"/></div>
+		</div>
+		<div class="inline">
+			<div><com:TDot Size="32"/></div>
+		</div>
+		<div class="inline">
+			<div><com:TDot Size="41"/></div>
+		</div>
+		<div class="inline">
+			<div><com:TDot Size="50"/></div>
+		</div>
+		<div class="inline">
+			<div><com:TDot Size="61"/></div>
+		</div>
+		<div class="inline">
+			<div><com:TDot Size="78"/></div>
+		</div>
+		<div class="inline">
+			<div><com:TDot Size="100"/></div>
+		</div>
+		<div class="inline">
+			<div><com:TDot Size="135"/></div>
+		</div>
+		<div class="inline">
+			<div><com:TDot Size="175"/></div>
+		</div>
+		<div class="inline">
+			<div><com:TDot Size="215"/></div>
+		</div>
+		<div class="inline">
+			<div><com:TDot Size="250"/></div>
+		</div>
+	</p>
+</div>
+</body>
+
+</html>

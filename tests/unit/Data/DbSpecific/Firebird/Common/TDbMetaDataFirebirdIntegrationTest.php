@@ -1,12 +1,14 @@
 <?php
 
-require_once(__DIR__ . '/../../../../PradoUnit.php');
+namespace Prado\Test\Unit\Data\DbSpecific\Firebird\Common;
 
 use Prado\Data\Common\Firebird\TFirebirdMetaData;
 use Prado\Data\Common\TDbCommandBuilder;
 use Prado\Data\Common\TDbMetaData;
 use Prado\Data\TDbConnection;
 use Prado\TApplication;
+use Prado\Test\Unit\PradoUnit;
+use Prado\TApplicationMode;
 
 /**
  * Live integration tests for TDbMetaData — Firebird.
@@ -24,7 +26,7 @@ use Prado\TApplication;
  *     NOTE  VARCHAR(100) DEFAULT 'fallback'
  *   )
  */
-class TDbMetaDataFirebirdIntegrationTest extends PHPUnit\Framework\TestCase
+class TDbMetaDataFirebirdIntegrationTest extends \PHPUnit\Framework\TestCase
 {
 	private ?TDbConnection $_conn = null;
 
@@ -41,7 +43,7 @@ class TDbMetaDataFirebirdIntegrationTest extends PHPUnit\Framework\TestCase
 	{
 		static $booted = false;
 		if (!$booted) {
-			new TApplication(__DIR__ . '/../../../../Security/app', false, TApplication::CONFIG_TYPE_PHP);
+			(new TApplication(__DIR__ . '/../../../../Security/app', false, TApplication::CONFIG_TYPE_PHP))->setMode(TApplicationMode::Debug);
 			$booted = true;
 		}
 		$this->_conn = $this->openFirebird();

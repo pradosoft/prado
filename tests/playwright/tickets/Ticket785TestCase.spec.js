@@ -6,25 +6,33 @@ import { genericHelper } from '../helpers.js';
 function localPhpDate(fmt, ts = null) {
 	const d = ts !== null ? new Date(ts * 1000) : new Date();
 	const pad = n => String(n).padStart(2, '0');
-	return fmt
-		.replace('m', pad(d.getMonth() + 1))
-		.replace('d', pad(d.getDate()))
-		.replace('Y', String(d.getFullYear()))
-		.replace('F', d.toLocaleString('en-US', { month: 'long' }))
-		.replace('n', String(d.getMonth() + 1))
-		.replace('j', String(d.getDate()));
+	// Single-pass substitution so an already-inserted token value (e.g. the "n"
+	// in the month name "June") is not reprocessed by a later token replacement.
+	const map = {
+		m: pad(d.getMonth() + 1),
+		d: pad(d.getDate()),
+		Y: String(d.getFullYear()),
+		F: d.toLocaleString('en-US', { month: 'long' }),
+		n: String(d.getMonth() + 1),
+		j: String(d.getDate()),
+	};
+	return fmt.replace(/[mdYFnj]/g, ch => map[ch]);
 }
 
 function phpDate(fmt, ts = null) {
 	const d = ts !== null ? new Date(ts * 1000) : new Date();
 	const pad = n => String(n).padStart(2, '0');
-	return fmt
-		.replace('m', pad(d.getUTCMonth() + 1))
-		.replace('d', pad(d.getUTCDate()))
-		.replace('Y', String(d.getUTCFullYear()))
-		.replace('F', d.toLocaleString('en-US', { month: 'long', timeZone: 'UTC' }))
-		.replace('n', String(d.getUTCMonth() + 1))
-		.replace('j', String(d.getUTCDate()));
+	// Single-pass substitution so an already-inserted token value (e.g. the "n"
+	// in the month name "June") is not reprocessed by a later token replacement.
+	const map = {
+		m: pad(d.getUTCMonth() + 1),
+		d: pad(d.getUTCDate()),
+		Y: String(d.getUTCFullYear()),
+		F: d.toLocaleString('en-US', { month: 'long', timeZone: 'UTC' }),
+		n: String(d.getUTCMonth() + 1),
+		j: String(d.getUTCDate()),
+	};
+	return fmt.replace(/[mdYFnj]/g, ch => map[ch]);
 }
 
 test('Ticket785TestCase', async ({ page }) => {

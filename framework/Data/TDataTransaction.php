@@ -22,6 +22,11 @@ use Prado\Exceptions\TDbException;
  * implementation; {@see TDbTransaction} is the SQL/PDO subclass kept for
  * backward compatibility.
  *
+ * The owning connection raises {@see onCommit OnCommit} after it commits the
+ * transaction and {@see onRollback OnRollback} after it rolls the transaction
+ * back; the transaction is already inactive when the handlers run.  See
+ * {@see TDbTransaction} for the full event behavior.
+ *
  * Typical use:
  * ```php
  * try {
@@ -123,6 +128,27 @@ class TDataTransaction extends \Prado\TComponent implements IDataTransaction
 	{
 		$this->assertActive();
 		$this->_connection->rollback();
+	}
+
+	/**
+	 * Raises the OnCommit event after the connection commits the transaction.
+	 * The sender is this inactive transaction, and the parameter is null.
+	 * @since 4.4.0
+	 */
+	public function onCommit()
+	{
+		$this->raiseEvent('OnCommit', $this, null);
+	}
+
+	/**
+	 * Raises the OnRollback event after the connection rolls back the transaction,
+	 * by {@see rollback()} or by the closing of the connection.
+	 * The sender is this inactive transaction, and the parameter is null.
+	 * @since 4.4.0
+	 */
+	public function onRollback()
+	{
+		$this->raiseEvent('OnRollback', $this, null);
 	}
 
 	/**

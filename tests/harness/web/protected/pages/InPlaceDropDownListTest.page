@@ -1,0 +1,26 @@
+<com:TContent ID="Content">
+	<h1>In Place Drop Down List Test Case</h1>
+
+	<div>
+		<com:TInPlaceDropDownList ID="ddl" EmptyDisplayText="(pick a color)" OnSelectedIndexChanged="selection_changed">
+			<com:TListItem Value="red" Text="Red" Selected="true" />
+			<com:TListItem Value="green" Text="Green" />
+			<com:TListItem Value="blue" Text="Blue" />
+		</com:TInPlaceDropDownList>
+	</div>
+
+	<div>Status: <com:TActiveLabel ID="status" Text="none" /></div>
+
+	<com:TActiveButton ID="btnServerSelect" Text="Select Blue" OnClick="server_select" />
+	<com:TActiveButton ID="btnRenameItem" Text="Rename Selected" OnClick="rename_item" />
+	<com:TActiveButton ID="btnEmptyText" Text="Change Empty Text" OnClick="change_empty_text" />
+	<com:TActiveButton ID="btnReadOnly" Text="Make ReadOnly" OnClick="make_readonly" />
+
+	<h2>Load items on edit</h2>
+	<div>
+		<com:TInPlaceDropDownList ID="lazy" EmptyDisplayText="(empty)" OnLoadingItems="load_items" OnSelectedIndexChanged="lazy_changed">
+			<com:TListItem Value="stale" Text="Stale" Selected="true" />
+		</com:TInPlaceDropDownList>
+	</div>
+	<div>Lazy: <com:TActiveLabel ID="lazyStatus" Text="none" /></div>
+</com:TContent>

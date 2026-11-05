@@ -25,6 +25,26 @@ namespace Prado\Web;
  * as an application module and set {@see \Prado\Web\THttpRequest::setUrlManager THttpRequest.UrlManager}
  * with the ID of your URL manager module.
  *
+ * ```xml
+ * <modules>
+ *     <module id="request" class="Prado\Web\THttpRequest" UrlManager="url" />
+ *     <module id="url" class="Prado\Web\TUrlManager" />
+ * </modules>
+ * ```
+ *
+ * PHP configuration style:
+ * ```php
+ * return [
+ *     'modules' => [
+ *         'request' => [
+ *             'class' => 'Prado\Web\THttpRequest',
+ *             'properties' => ['UrlManager' => 'url'],
+ *         ],
+ *         'url' => ['class' => 'Prado\Web\TUrlManager'],
+ *     ],
+ * ];
+ * ```
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0.6
  */

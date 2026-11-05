@@ -1,12 +1,14 @@
 <?php
 
+namespace Prado\Test\Unit\Xml;
+
 use Prado\Collections\TMap;
 use Prado\Xml\TXmlElement;
 
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidDataValueException;
 
-class TXmlElementTest extends PHPUnit\Framework\TestCase
+class TXmlElementTest extends \PHPUnit\Framework\TestCase
 {
 	protected function setUp(): void
 	{

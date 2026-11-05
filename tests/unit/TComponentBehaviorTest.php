@@ -1,13 +1,17 @@
 <?php
 
-require_once __DIR__ . '/TComponentTestBase.php';
+namespace Prado\Test\Unit;
 
 use Prado\Exceptions\TApplicationException;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Exceptions\TUnknownMethodException;
+use Prado\TComponent;
+use Prado\Util\IBaseBehavior;
 use Prado\Util\IDynamicMethods;
 use Prado\Util\IInstanceCheck;
+use Prado\Util\TBehavior;
+use Prado\Util\TClassBehaviorEventParameter;
 
 /**
  * Tests for TComponent instance-behavior management:
@@ -253,14 +257,14 @@ class TComponentBehaviorTest extends TComponentTestBase
 
 	public function testIsA_with_IInstanceCheck()
 	{
-		$this->assertTrue($this->component->isa('NewComponent'));
+		$this->assertTrue($this->component->isa(NewComponent::class));
 		$this->assertFalse($this->component->isa(PreBarBehavior::class));
 
 		$this->component->attachBehavior('BarBehaviorName', $behavior = new BarBehavior);
 
 		$behavior->setInstanceReturn(null);
 
-		$this->assertTrue($this->component->isa('NewComponent'));
+		$this->assertTrue($this->component->isa(NewComponent::class));
 		$this->assertTrue($this->component->isa(PreBarBehavior::class));
 		$this->assertFalse($this->component->isa(FooBehavior::class));
 
@@ -383,7 +387,7 @@ class TComponentBehaviorTest extends TComponentTestBase
 		// Instance from string, replace first behavior.
 
 		$behavior->detached = 0;
-		$this->component->attachBehavior('FooBehavior', 'FooBehavior');
+		$this->component->attachBehavior('FooBehavior', FooBehavior::class);
 		$this->assertEquals(1, $behavior->detached,  "Attaching a behavior over an existing behavior did not call detach on the prior behavior.");
 
 		$this->component->detachBehavior('FooBehavior');
@@ -394,7 +398,7 @@ class TComponentBehaviorTest extends TComponentTestBase
 		$this->assertFalse($this->component->isa(BarBehavior::class));
 
 
-		$this->component->attachBehavior(strtoupper('FooBehavior'), 'FooBehavior');
+		$this->component->attachBehavior(strtoupper('FooBehavior'), FooBehavior::class);
 
 		$this->assertNotNull($this->component->asa(strtoupper('FooBehavior')));
 		$this->assertNotNull($this->component->asa('FooBehavior'));
@@ -411,7 +415,7 @@ class TComponentBehaviorTest extends TComponentTestBase
 		$this->assertFalse($this->component->isa(BarBehavior::class));
 
 		// Anonymous null named behavior
-		$this->component->attachBehavior(null, ['class' => 'FooBehavior', 'PropertyA'=>'anon_name_null']);
+		$this->component->attachBehavior(null, ['class' => FooBehavior::class, 'PropertyA'=>'anon_name_null']);
 
 		$this->assertNotNull($this->component->asa(0));
 		$this->assertTrue($this->component->isa(FooBehavior::class));
@@ -428,7 +432,7 @@ class TComponentBehaviorTest extends TComponentTestBase
 
 
 		// Anonymous number behavior
-		$this->component->attachBehavior(11, ['class' => 'FooBehavior', 'PropertyA'=>'anon_name']);
+		$this->component->attachBehavior(11, ['class' => FooBehavior::class, 'PropertyA'=>'anon_name']);
 
 		$this->assertNotNull($this->component->asa(1));
 		$this->assertTrue($this->component->isa(FooBehavior::class));
@@ -574,6 +578,99 @@ class TComponentBehaviorTest extends TComponentTestBase
 		$this->assertNull($this->component->asa($barBehaviorName));
 		$this->assertNull($this->component->asa($fooBarBehaviorName));
 		$this->assertNull($this->component->asa($preBarBehaviorName));
+	}
+
+	/**
+	 * A behavior whose attach() throws is unregistered, so the component never
+	 * detaches it and destroying the component raises nothing.
+	 */
+	public function testAttachBehavior_failedAttachUnregistersBehavior(): void
+	{
+		$component = new TComponent();
+		$component->attachBehavior('keep', $keep = new BarBehavior());
+		$this->assertTrue($component->hasMethod('moreFunction'));
+
+		try {
+			$component->attachBehavior('failing', new AttachFailingBehavior());
+			$this->fail('attachBehavior() did not propagate the attach() exception.');
+		} catch (TInvalidOperationException $e) {
+			$this->assertEquals(AttachFailingBehavior::MESSAGE, $e->getErrorCode());
+		}
+
+		$this->assertNull($component->asa('failing'));
+		$this->assertFalse($component->hasMethod('attachFailingMethod'));
+		$this->assertSame(['keep' => $keep], $component->getBehaviors());
+
+		$component->clearBehaviors();
+		$this->assertNull($keep->getOwner());
+	}
+
+	/**
+	 * Destroying a component after a failed attach() raises nothing.
+	 */
+	public function testAttachBehavior_failedAttachDestructsCleanly(): void
+	{
+		$component = new TComponent();
+		try {
+			$component->attachBehavior('failing', new AttachFailingBehavior());
+			$this->fail('attachBehavior() did not propagate the attach() exception.');
+		} catch (TInvalidOperationException $e) {
+		}
+		unset($e, $component);
+		$this->assertTrue(true);
+	}
+
+	/**
+	 * A behavior whose attach() throws after gaining the owner is detached and
+	 * unregistered, so it attaches again once the failure is resolved.
+	 */
+	public function testAttachBehavior_failedAttachAfterOwnerDetaches(): void
+	{
+		$component = new TComponent();
+		$behavior = new AttachFailingOwnedBehavior();
+
+		try {
+			$component->attachBehavior('failing', $behavior);
+			$this->fail('attachBehavior() did not propagate the attach() exception.');
+		} catch (TInvalidOperationException $e) {
+			$this->assertEquals(AttachFailingOwnedBehavior::MESSAGE, $e->getErrorCode());
+		}
+
+		$this->assertNull($component->asa('failing'));
+		$this->assertFalse($behavior->hasOwner());
+		$this->assertFalse($component->hasMethod('attachFailingMethod'));
+
+		$behavior->fail = false;
+		$this->assertSame($behavior, $component->attachBehavior('failing', $behavior));
+		$this->assertTrue($behavior->isOwner($component));
+		$this->assertTrue($component->attachFailingMethod());
+		unset($e, $component);
+		$this->assertFalse($behavior->hasOwner());
+	}
+
+	/**
+	 * A behavior owned by another component fails TBehavior::attach() with
+	 * behavior_has_owner and stays attached to its first owner only.
+	 */
+	public function testAttachBehavior_ownedBehaviorFailsWithoutDangling(): void
+	{
+		$owner = new TComponent();
+		$owner->attachBehavior('shared', $behavior = new BarBehavior());
+		$other = new TComponent();
+
+		try {
+			$other->attachBehavior('shared', $behavior);
+			$this->fail('attachBehavior() did not propagate behavior_has_owner.');
+		} catch (TInvalidOperationException $e) {
+			$this->assertEquals('behavior_has_owner', $e->getErrorCode());
+		}
+
+		$this->assertNull($other->asa('shared'));
+		$this->assertSame($owner, $behavior->getOwner());
+		unset($e, $other);
+		$this->assertSame($owner, $behavior->getOwner());
+		unset($owner);
+		$this->assertNull($behavior->getOwner());
 	}
 
 	public function testEnableDisableBehavior()
@@ -986,5 +1083,354 @@ class TComponentBehaviorTest extends TComponentTestBase
 		$this->assertSame([], $result);
 
 		$this->component->detachBehavior('fooUnknownB');
+	}
+
+	/**
+	 * A behavior implementing IOwnerVisibleMethods restricts which of its methods
+	 * the owner may call.  Declared methods are reachable; undeclared ones are not.
+	 */
+	public function testOwnerVisibleMethods_restrictsInstanceBehavior(): void
+	{
+		$this->component->attachBehavior('ownerVisible', new OwnerVisibleMethodsBehavior());
+
+		$this->assertTrue($this->component->hasMethod('visibleMethod'));
+		$this->assertFalse($this->component->hasMethod('hiddenMethod'));
+		$this->assertEquals('visible', $this->component->visibleMethod());
+
+		try {
+			$this->component->hiddenMethod();
+			$this->fail('TUnknownMethodException not raised for an owner-hidden behavior method');
+		} catch (TUnknownMethodException $e) {
+		}
+
+		$this->component->detachBehavior('ownerVisible');
+	}
+
+	/**
+	 * IOwnerVisibleMethods also restricts class behaviors, and accepts the single
+	 * string shorthand for the visible method name.
+	 */
+	public function testOwnerVisibleMethods_restrictsClassBehavior(): void
+	{
+		$this->component->attachBehavior('ownerVisibleClass', new OwnerVisibleMethodsClassBehavior());
+
+		$this->assertTrue($this->component->hasMethod('visibleClassMethod'));
+		$this->assertFalse($this->component->hasMethod('hiddenClassMethod'));
+		$this->assertEquals('visibleClass', $this->component->visibleClassMethod());
+
+		try {
+			$this->component->hiddenClassMethod();
+			$this->fail('TUnknownMethodException not raised for an owner-hidden class behavior method');
+		} catch (TUnknownMethodException $e) {
+		}
+
+		$this->component->detachBehavior('ownerVisibleClass');
+	}
+
+	/**
+	 * The behavior-method resolution caches ($_cm, $_bv) hold live behavior object
+	 * references and spl_object_id keys, so they must be excluded from serialization.
+	 * After a populate-then-round-trip the caches reset and the owner restriction
+	 * still holds against the reattached behavior, not a stale serialized copy.
+	 */
+	public function testOwnerVisibleMethods_cachesExcludedFromSerialization(): void
+	{
+		$this->component->attachBehavior('ownerVisibleSerial', new OwnerVisibleMethodsBehavior());
+
+		// Populate both caches: $_cm (method resolution) and $_bv (owner-visible set).
+		$this->assertEquals('visible', $this->component->visibleMethod());
+		$this->assertFalse($this->component->hasMethod('hiddenMethod'));
+		$this->assertNotEmpty(PradoUnit::getProp($this->component, '_cm'));
+		$this->assertNotEmpty(PradoUnit::getProp($this->component, '_bv'));
+
+		$restored = unserialize(serialize($this->component));
+
+		// The caches are rebuilt lazily, never carried across serialization.
+		$this->assertSame([], PradoUnit::getProp($restored, '_cm'));
+		$this->assertSame([], PradoUnit::getProp($restored, '_bv'));
+
+		// The restriction still applies through the reattached behavior.
+		$this->assertTrue($restored->hasMethod('visibleMethod'));
+		$this->assertFalse($restored->hasMethod('hiddenMethod'));
+		$this->assertEquals('visible', $restored->visibleMethod());
+
+		try {
+			$restored->hiddenMethod();
+			$this->fail('TUnknownMethodException not raised for an owner-hidden behavior method after unserialize');
+		} catch (TUnknownMethodException $e) {
+		}
+
+		$this->component->detachBehavior('ownerVisibleSerial');
+	}
+
+	/**
+	 * The default TBaseBehavior returns null from getOwnerVisibleMethods, placing
+	 * no restriction so every public behavior method remains visible to the owner.
+	 */
+	public function testOwnerVisibleMethods_nullPlacesNoRestriction(): void
+	{
+		$foo = new FooBehavior();
+		$this->assertNull($foo->getOwnerVisibleMethods());
+
+		$this->component->attachBehavior('fooNoRestriction', $foo);
+		$this->assertTrue($this->component->hasMethod('faaEverMore'));
+		$this->assertTrue($this->component->faaEverMore(true, true));
+
+		$this->component->detachBehavior('fooNoRestriction');
+	}
+
+	/**
+	 * An empty array from getOwnerVisibleMethods hides every behavior method from the
+	 * owner.  This is the 5.0 opt-in default expressed explicitly.
+	 */
+	public function testOwnerVisibleMethods_emptyArrayHidesAllMethods(): void
+	{
+		$this->component->attachBehavior('hiddenAll', new OwnerHiddenAllBehavior());
+
+		$this->assertFalse($this->component->hasMethod('visibleMethod'));
+
+		try {
+			$this->component->visibleMethod();
+			$this->fail('TUnknownMethodException not raised when all behavior methods are hidden');
+		} catch (TUnknownMethodException $e) {
+		}
+
+		$this->component->detachBehavior('hiddenAll');
+	}
+
+	/**
+	 * dy dynamic events are the behavior-to-owner protocol and bypass owner-method
+	 * visibility.  A behavior hiding all methods still receives its dy events.
+	 */
+	public function testOwnerVisibleMethods_dyEventBypassesRestriction(): void
+	{
+		$behavior = new OwnerHiddenAllBehavior();
+		$this->component->attachBehavior('hiddenAllDy', $behavior);
+
+		// The normal method is hidden ...
+		$this->assertFalse($this->component->hasMethod('visibleMethod'));
+		// ... but the dy event still reaches the behavior.
+		$this->assertEquals('bbb', $this->component->dyTextFilter('aaa'));
+		$this->assertTrue($behavior->isDyCalled());
+
+		$this->component->detachBehavior('hiddenAllDy');
+	}
+
+	/**
+	 * Enabled state is excluded from the $_cm cache and re-checked on each dispatch.
+	 * Disabling an attached behavior hides its visible method without flushing the
+	 * cache; re-enabling restores it.  This guards the cache design where only the
+	 * structural resolution is memoized.
+	 */
+	public function testOwnerVisibleMethods_enabledCheckedLiveNotCached(): void
+	{
+		$this->component->attachBehavior('ownerVisibleLive', new OwnerVisibleMethodsBehavior());
+
+		// Populate the $_cm cache for visibleMethod.
+		$this->assertEquals('visible', $this->component->visibleMethod());
+		$this->assertNotEmpty(PradoUnit::getProp($this->component, '_cm'));
+
+		$this->component->disableBehavior('ownerVisibleLive');
+
+		// The cache still holds the candidate (disable does not flush) ...
+		$this->assertNotEmpty(PradoUnit::getProp($this->component, '_cm'));
+		// ... but the live getEnabled() check hides the method.
+		$this->assertFalse($this->component->hasMethod('visibleMethod'));
+		try {
+			$this->component->visibleMethod();
+			$this->fail('TUnknownMethodException not raised for a disabled behavior method');
+		} catch (TUnknownMethodException $e) {
+		}
+
+		$this->component->enableBehavior('ownerVisibleLive');
+		$this->assertTrue($this->component->hasMethod('visibleMethod'));
+		$this->assertEquals('visible', $this->component->visibleMethod());
+
+		$this->component->detachBehavior('ownerVisibleLive');
+	}
+
+	/**
+	 * Detaching a behavior flushes $_cm so a previously resolved owner method no
+	 * longer resolves.
+	 */
+	public function testOwnerVisibleMethods_cacheFlushedOnDetach(): void
+	{
+		$this->component->attachBehavior('ownerVisibleFlush', new OwnerVisibleMethodsBehavior());
+
+		$this->assertEquals('visible', $this->component->visibleMethod());
+		$this->assertNotEmpty(PradoUnit::getProp($this->component, '_cm'));
+
+		$this->component->detachBehavior('ownerVisibleFlush');
+
+		$this->assertSame([], PradoUnit::getProp($this->component, '_cm'));
+		$this->assertFalse($this->component->hasMethod('visibleMethod'));
+	}
+
+	/**
+	 * Declared visible method names match case-insensitively, the names being
+	 * normalized to a lowercased lookup set.
+	 */
+	public function testOwnerVisibleMethods_matchingIsCaseInsensitive(): void
+	{
+		$this->component->attachBehavior('ownerVisibleCase', new OwnerVisibleMethodsBehavior());
+
+		$this->assertTrue($this->component->hasMethod('VISIBLEMETHOD'));
+		$this->assertEquals('visible', $this->component->VisibleMethod());
+
+		$this->component->detachBehavior('ownerVisibleCase');
+	}
+
+	/**
+	 * A subclass composes its visible methods with the parent result via parent::,
+	 * so both the inherited and the added methods are visible to the owner.
+	 */
+	public function testOwnerVisibleMethods_overrideComposesWithParent(): void
+	{
+		$this->component->attachBehavior('ownerVisibleComposed', new OwnerVisibleComposedBehavior());
+
+		$this->assertTrue($this->component->hasMethod('visibleMethod'));
+		$this->assertTrue($this->component->hasMethod('anotherVisibleMethod'));
+		$this->assertFalse($this->component->hasMethod('hiddenMethod'));
+		$this->assertEquals('visible', $this->component->visibleMethod());
+		$this->assertEquals('another', $this->component->anotherVisibleMethod());
+
+		$this->component->detachBehavior('ownerVisibleComposed');
+	}
+
+	/**
+	 * A component without behaviors has no owner-callable behaviors for any method.
+	 */
+	public function testGetOwnerCallableBehaviors_noBehaviors(): void
+	{
+		$this->assertNull(PradoUnit::getProp($this->component, '_m'));
+		$this->assertSame([], PradoUnit::invoke($this->component, 'getOwnerCallableBehaviors', 'anyMethod'));
+	}
+
+	/**
+	 * An IBaseBehavior that is not a TComponent is rejected with TInvalidDataTypeException.
+	 */
+	public function testAttachBehavior_nonComponentBaseBehaviorThrows(): void
+	{
+		$behavior = new class () implements IBaseBehavior {
+			public function init($config)
+			{
+			}
+			public function attach($component)
+			{
+			}
+			public function detach($component)
+			{
+			}
+			public function getName(): ?string
+			{
+				return null;
+			}
+			public function setName($value)
+			{
+			}
+			public function getEnabled(): bool
+			{
+				return true;
+			}
+			public function setEnabled($value)
+			{
+			}
+			public function getOwners(): array
+			{
+				return [];
+			}
+			public function hasOwner(): bool
+			{
+				return false;
+			}
+			public function isOwner(object $component): bool
+			{
+				return false;
+			}
+			public function syncEventHandlers(?object $component = null, $attachOverride = 0)
+			{
+			}
+			public function getPriority()
+			{
+				return null;
+			}
+			public function setPriority($value)
+			{
+			}
+		};
+		try {
+			$this->component->attachBehavior('nonComponent', $behavior);
+			$this->fail('TInvalidDataTypeException not raised when attaching a non-TComponent IBaseBehavior');
+		} catch (TInvalidDataTypeException $e) {
+			$this->assertStringContainsString('object_not_a_component', $e->getErrorCode());
+		}
+		$this->assertNull($this->component->asa('nonComponent'));
+	}
+
+	/**
+	 * attachBehaviors() clones an IBehavior held by a TClassBehaviorEventParameter when
+	 * $cloneIBehavior is true, and detachBehaviors() detaches by the parameter's name.
+	 */
+	public function testAttachDetachBehaviors_classBehaviorEventParameter(): void
+	{
+		$behavior = new FooBehavior();
+		$param = new TClassBehaviorEventParameter(NewComponent::class, 'paramBehavior', $behavior, 5);
+
+		$this->component->attachBehaviors([$param], true);
+		$attached = $this->component->asa('paramBehavior');
+		$this->assertInstanceOf(FooBehavior::class, $attached);
+		$this->assertNotSame($behavior, $attached);
+		$this->assertFalse($behavior->hasOwner());
+
+		$this->component->detachBehaviors([$param]);
+		$this->assertNull($this->component->asa('paramBehavior'));
+
+		$this->component->attachBehaviors(['plainBehavior' => $behavior], true);
+		$attached = $this->component->asa('plainBehavior');
+		$this->assertInstanceOf(FooBehavior::class, $attached);
+		$this->assertNotSame($behavior, $attached);
+		$this->assertFalse($behavior->hasOwner());
+		$this->component->detachBehavior('plainBehavior');
+	}
+}
+
+/**
+ * Throws from attach() before gaining an owner, as an owner validation does.
+ */
+class AttachFailingBehavior extends TBehavior
+{
+	public const MESSAGE = 'attach_failing_behavior_rejected';
+
+	public function attachFailingMethod()
+	{
+		return true;
+	}
+
+	public function attach($owner)
+	{
+		throw new TInvalidOperationException(self::MESSAGE);
+	}
+}
+
+/**
+ * Throws from attach() after gaining an owner, as a configuration validation does.
+ */
+class AttachFailingOwnedBehavior extends TBehavior
+{
+	public const MESSAGE = 'attach_failing_owned_behavior_rejected';
+
+	public bool $fail = true;
+
+	public function attachFailingMethod()
+	{
+		return true;
+	}
+
+	public function attach($owner)
+	{
+		parent::attach($owner);
+		if ($this->fail) {
+			throw new TInvalidOperationException(self::MESSAGE);
+		}
 	}
 }

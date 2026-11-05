@@ -1,0 +1,5 @@
+<com:TContent ID="Content">
+<h1>Redirect Target</h1>
+<div id="result">redirect-ok</div>
+<div id="from">from:<%=$this->Request->itemAt('from') ?? 'direct'%></div>
+</com:TContent>

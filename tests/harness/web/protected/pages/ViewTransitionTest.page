@@ -1,0 +1,23 @@
+<com:TContent ID="Content">
+	<h1>View Transition Test Case</h1>
+
+	<com:TActiveButton ID="refresh" Text="Refresh" OnCallback="refresh"
+		ClientSide.OnSuccess="window.successSaw = document.getElementById('ctl0_Content_count').textContent;"
+		ClientSide.OnComplete="window.completeSaw = document.getElementById('ctl0_Content_count').textContent;" />
+	<com:TActiveButton ID="plain" Text="Plain refresh" OnCallback="plainRefresh" />
+	<com:TActiveButton ID="handler" Text="Handler transition" OnCallback="handlerTransition" />
+	<com:TActiveButton ID="broken" Text="Broken action" OnCallback="broken"
+		ClientSide.OnException="window.exceptions = (window.exceptions || 0) + 1;" />
+	<div>Status: <com:TActiveLabel ID="status" Text="idle" /></div>
+
+	<com:TActivePanel ID="results" ActiveControl.ViewTransition="true" Style="view-transition-name: results">
+		<p>Refresh count: <com:TLabel ID="count" Text="<%= $this->Page->RefreshCount %>" /></p>
+		<com:TLabel ForControl="seen" Text="Seen" />
+		<com:TTextBox ID="seen" />
+		<script>window.panelRuns = (window.panelRuns || 0) + 1;</script>
+	</com:TActivePanel>
+
+	<com:TActivePanel ID="other">
+		<span id="otherMarker">other <%= $this->Page->PlainCount %></span>
+	</com:TActivePanel>
+</com:TContent>

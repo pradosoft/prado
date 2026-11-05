@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<application id="HttpHeadersHarness" Mode="Debug">
+	<modules>
+		<module id="httpHeaders" class="Prado\Web\HttpHeaders\THttpHeadersManager"
+			ReportingServiceMode="false" />
+		<module id="response" class="Prado\Web\THttpResponse" HeadersManager="httpHeaders" />
+	</modules>
+	<services>
+		<service id="page" class="Prado\Web\Services\TPageService" DefaultPage="Home" />
+	</services>
+</application>

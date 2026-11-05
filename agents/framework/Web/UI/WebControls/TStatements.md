@@ -17,4 +17,4 @@ TStatements executes PHP statements during the rendering stage and displays the 
 
 ## See Also
 
-- [TControl](./TControl.md)
+- [TControl](../TControl.md)

@@ -1,7 +1,5 @@
 <?php
 
-require_once(__DIR__ . '/../../../../PradoUnit.php');
-
 /**
  * SqlSrvTableExistsTest — driver-specific tests for {@see TTableGateway::getTableExists()} on SQL Server.
  *
@@ -13,14 +11,17 @@ require_once(__DIR__ . '/../../../../PradoUnit.php');
  * SQL Server does not support DROP TABLE IF EXISTS before SQL Server 2016; using
  * OBJECT_ID guards is the portable approach used throughout this test suite.
  *
- * Requires: prado_unitest SQL Server database with the upsert_test table (tests/initdb_mssql.sql).
+ * Requires: prado_unitest SQL Server database with the upsert_test table (tests/initdb_sqlsrv.sql).
  */
+
+namespace Prado\Test\Unit\Data\DbSpecific\SqlSrv\Common;
 
 use Prado\Data\Common\TDbMetaData;
 use Prado\Data\DataGateway\TTableGateway;
 use Prado\Data\TDbConnection;
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
 
-class SqlSrvTableExistsTest extends PHPUnit\Framework\TestCase
+class SqlSrvTableExistsTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 

@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit;
+
 use Prado\TEventParameter;
 use Prado\Collections\TAttributeCollection;
 use PHPUnit\Framework\TestCase;
@@ -56,7 +58,7 @@ class TEventParameterTest extends TestCase
 
 	public function testConstructorWithObjectParameter()
 	{
-		$obj = new stdClass();
+		$obj = new \stdClass();
 		$obj->key = 'value';
 		$param = new TEventParameter($obj);
 		$this->assertSame($obj, $param->getParameter());
@@ -238,7 +240,7 @@ class TEventParameterTest extends TestCase
 
 	public function testOffsetExistsWithObjectParameter()
 	{
-		$param = new TEventParameter(new stdClass());
+		$param = new TEventParameter(new \stdClass());
 		$this->assertFalse($param->offsetExists('anyKey'));
 	}
 
@@ -348,13 +350,13 @@ class TEventParameterTest extends TestCase
 
 	public function testOffsetGetWithNullKey()
 	{
-		$param = new TEventParameter([null => 'nullKey']);
+		$param = new TEventParameter(['' => 'nullKey']);
 		$this->assertEquals('nullKey', $param->offsetGet(null));
 	}
 
 	public function testOffsetExistsWithNullKey()
 	{
-		$param = new TEventParameter([null => 'nullKey']);
+		$param = new TEventParameter(['' => 'nullKey']);
 		$this->assertTrue($param->offsetExists(null));
 	}
 
@@ -385,7 +387,7 @@ class TEventParameterTest extends TestCase
 
 	public function testOffsetUnsetWithNullKey()
 	{
-		$param = new TEventParameter([null => 'nullValue', 'key1' => 'value1']);
+		$param = new TEventParameter(['' => 'nullValue', 'key1' => 'value1']);
 		$param->offsetUnset(null);
 		$this->assertFalse($param->offsetExists(null));
 		$this->assertTrue($param->offsetExists('key1'));
@@ -405,7 +407,7 @@ class TEventParameterTest extends TestCase
 	public function testImplementsArrayAccess()
 	{
 		$param = new TEventParameter();
-		$this->assertInstanceOf(ArrayAccess::class, $param);
+		$this->assertInstanceOf(\ArrayAccess::class, $param);
 	}
 
 	// ================================================================================
@@ -479,7 +481,7 @@ class TEventParameterTest extends TestCase
 		$param = new TEventParameter([
 			'string' => 'stringValue',
 			0 => 'zeroValue',
-			null => 'nullValue',
+			'' => 'nullValue',
 			'bool' => true,
 		]);
 
@@ -712,7 +714,7 @@ class TEventParameterTest extends TestCase
 
 	public function testGetParameterIsArrayWithObject()
 	{
-		$param = new TEventParameter(new stdClass());
+		$param = new TEventParameter(new \stdClass());
 		$this->assertFalse($param->getParameterIsArray());
 	}
 
@@ -749,6 +751,27 @@ class TEventParameterTest extends TestCase
 		$param = new TEventParameter('value');
 		$this->expectException(\Prado\Exceptions\TInvalidOperationException::class);
 		$param->setReadOnly(true);
+	}
+
+	public function testSetReadOnlyThrowsWhenUnsetAndCalledExternally()
+	{
+		$param = new TEventParameter('value');
+		PradoUnit::setProp($param, '_readOnly', null);
+		try {
+			$param->setReadOnly(true);
+			$this->fail('setReadOnly() did not throw when called externally.');
+		} catch (\Prado\Exceptions\TInvalidOperationException $e) {
+			$this->assertEquals('eventparam_readonly_not_self', $e->getErrorCode());
+		}
+		$this->assertFalse($param->getReadOnly());
+	}
+
+	public function testPreAndPostRaiseEventAreNoOps()
+	{
+		$param = new TEventParameter('value');
+		$this->assertNull($param->preRaiseEvent('onEvent', $this, $param, null, null));
+		$this->assertNull($param->postRaiseEvent([], 'onEvent', $this, $param, null, null));
+		$this->assertSame('value', $param->getParameter());
 	}
 
 	public function testSetReadOnlyThrowsWhenAlreadySet()
@@ -882,5 +905,72 @@ class TEventParameterTest extends TestCase
 		$param = $this->makeExposed(['key' => 'value'], true);
 		$this->expectException(\Prado\Exceptions\TInvalidOperationException::class);
 		$param->offsetUnset('key');
+	}
+
+	// ================================================================================
+	// Stopped / stopImmediatePropagation Tests
+	// ================================================================================
+
+	public function testStoppedDefaultIsFalse()
+	{
+		$param = new TEventParameter();
+		$this->assertFalse($param->getStopped());
+	}
+
+	public function testImplementsIEventStoppableParameter()
+	{
+		$param = new TEventParameter();
+		$this->assertInstanceOf(\Prado\IEventStoppableParameter::class, $param);
+	}
+
+	public function testSetStopped()
+	{
+		$param = new TEventParameter();
+		$param->setStopped(true);
+		$this->assertTrue($param->getStopped());
+		$param->setStopped(false);
+		$this->assertFalse($param->getStopped());
+	}
+
+	public function testStopPropagationSetsStopped()
+	{
+		$param = new TEventParameter();
+		$param->stopImmediatePropagation();
+		$this->assertTrue($param->getStopped());
+	}
+
+	public function testSetEventNameResetsStopped()
+	{
+		$param = new TEventParameter();
+		$param->stopImmediatePropagation();
+		$this->assertTrue($param->getStopped());
+		// raiseEvent sets the event name at the start of each raise.
+		$param->setEventName('OnSomething');
+		$this->assertFalse($param->getStopped());
+	}
+
+	public function testSetStoppedIsNotGatedByReadOnly()
+	{
+		// A read-only parameter forbids data mutation but still allows stopping,
+		// which is control flow rather than parameter data.
+		$param = $this->makeExposed('value', true);
+		$this->assertTrue($param->getReadOnly());
+		$param->stopImmediatePropagation();
+		$this->assertTrue($param->getStopped());
+		$param->setStopped(false);
+		$this->assertFalse($param->getStopped());
+	}
+
+	public function testResetEventPropertiesResetsChangedAndStopped()
+	{
+		$param = new TEventParameter();
+		$param->setParameterChanged(true);
+		$param->stopImmediatePropagation();
+		$this->assertTrue($param->getParameterChanged());
+		$this->assertTrue($param->getStopped());
+
+		$param->resetEventProperties();
+		$this->assertFalse($param->getParameterChanged());
+		$this->assertFalse($param->getStopped());
 	}
 }

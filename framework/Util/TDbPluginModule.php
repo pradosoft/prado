@@ -20,6 +20,24 @@ use Prado\Util\IDbModule;
  * the Database Connectivity for Plugins. Also TParameterizeBehavior can be used to set
  * all TDbPluginModule::ConnectionID with one setting.
  *
+ * ```xml
+ * <modules>
+ *     <module id="myplugin" class="MyVendor\MyPlugin\MyPluginModule" ConnectionID="db" />
+ * </modules>
+ * ```
+ *
+ * PHP configuration style:
+ * ```php
+ * return [
+ *     'modules' => [
+ *         'myplugin' => [
+ *             'class' => 'MyVendor\MyPlugin\MyPluginModule',
+ *             'properties' => ['ConnectionID' => 'db'],
+ *         ],
+ *     ],
+ * ];
+ * ```
+ *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.2.0
  */

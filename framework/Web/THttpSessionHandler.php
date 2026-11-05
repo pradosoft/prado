@@ -64,11 +64,12 @@ class THttpSessionHandler implements \SessionHandlerInterface
 	/**
 	 * Session GC (garbage collection) handler.
 	 * @param int $max_lifetime the number of seconds after which data will be seen as 'garbage' and cleaned up.
-	 * @return false|int whether session is GCed successfully
+	 * @return false|int returns the number of deleted sessions on success, or false on failure.
 	 */
 	public function gc(int $max_lifetime): int|false
 	{
-		return $this->_session->_gc($max_lifetime);
+		$result = $this->_session->_gc($max_lifetime);
+		return $result === true ? 0 : $result;
 	}
 
 	/**

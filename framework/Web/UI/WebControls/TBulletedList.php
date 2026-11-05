@@ -40,11 +40,6 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 	 * @var bool cached property value of Enabled
 	 */
 	private $_isEnabled;
-	/**
-	 * @var array postback options
-	 */
-	private $_postBackOptions;
-
 	private $_currentRenderItemIndex;
 
 	/**
@@ -54,7 +49,7 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 	 * invoke the page's {@see \Prado\Web\UI\TPage::validate validate} method first.
 	 * It will raise {@see onClick OnClick} events.
 	 * This method is mainly used by framework and control developers.
-	 * @param mixed $param the event parameter
+	 * @param string $param the index of the clicked item
 	 */
 	public function raisePostBackEvent($param)
 	{
@@ -259,7 +254,6 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 	public function renderContents($writer)
 	{
 		$this->_isEnabled = $this->getEnabled(true);
-		$this->_postBackOptions = $this->getPostBackOptions();
 		$writer->writeLine();
 		foreach ($this->getItems() as $index => $item) {
 			if ($item->getHasAttributes()) {

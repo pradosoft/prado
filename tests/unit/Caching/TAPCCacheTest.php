@@ -1,11 +1,14 @@
 <?php
 
+namespace Prado\Test\Unit\Caching;
+
 use Prado\Caching\TAPCCache;
 use Prado\Exceptions\TConfigurationException;
-use Prado\Exceptions\TNotSupportedException;
 use Prado\TApplication;
+use Prado\Exceptions\TNotSupportedException;
+use Prado\TApplicationMode;
 
-class TAPCCacheTest extends PHPUnit\Framework\TestCase
+class TAPCCacheTest extends \PHPUnit\Framework\TestCase
 {
 	protected $app;
 	protected static $cache = null;
@@ -18,10 +21,11 @@ class TAPCCacheTest extends PHPUnit\Framework\TestCase
 			$basePath = __DIR__ . '/mockapp';
 			$runtimePath = $basePath . '/runtime';
 			if (!is_writable($runtimePath)) {
-				self::markTestSkipped("'$runtimePath' is writable");
+				self::markTestSkipped("'$runtimePath' is not writable");
 			}
 			try {
 				$this->app = new TApplication($basePath);
+				$this->app->setMode(TApplicationMode::Debug);
 				self::$cache = new TAPCCache();
 				self::$cache->init(null);
 			} catch (TConfigurationException $e) {

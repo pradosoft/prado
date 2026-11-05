@@ -20,4 +20,4 @@ TValidatorClientSide provides client-side event options for validators. It exten
 ## See Also
 
 - [TBaseValidator](./TBaseValidator.md)
-- [TClientSideOptions](./TClientSideOptions.md)
+- [TClientSideOptions](../TClientSideOptions.md)
