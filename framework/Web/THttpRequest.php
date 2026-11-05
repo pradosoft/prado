@@ -12,6 +12,7 @@ namespace Prado\Web;
 
 use Prado\Caching\TFileCacheDependency;
 use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\THttpException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Prado;
 use Prado\TPropertyValue;
@@ -191,6 +192,18 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 * @since 4.4.0
 	 */
 	private $_headers;
+
+	/**
+	 * @var ?string the raw request body; null until first read
+	 * @since 4.4.0
+	 */
+	private $_rawBody;
+
+	/**
+	 * @var ?array the request body decoded by media type; null until first parse
+	 * @since 4.4.0
+	 */
+	private $_parsedBody;
 
 	/**
 	 * @var string module id
@@ -592,6 +605,154 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	public function getHeader($name, $default = null)
 	{
 		return $this->getHeaders(CASE_LOWER)[strtolower((string) $name)] ?? $default;
+	}
+
+	/**
+	 * Returns the raw request body, read once from `php://input` through {@see readRawBody()}
+	 * and cached for the life of the module. The body is read whole into memory;
+	 * `post_max_size` bounds a form body and `memory_limit` any other.
+	 * @return string the raw request body; empty when the request has none, when PHP
+	 *   consumed a `multipart/form-data` POST body, or when the stream cannot be opened.
+	 * @since 4.4.0
+	 */
+	public function getRawBody(): string
+	{
+		$body = $this->getRawBodyDirect();
+		if ($body === null) {
+			$body = $this->readRawBody();
+			$this->setRawBodyDirect($body);
+		}
+		return $body;
+	}
+
+	/**
+	 * @return ?string the cached raw request body; null until {@see getRawBody()} reads it.
+	 * @since 4.4.0
+	 */
+	protected function getRawBodyDirect(): ?string
+	{
+		return $this->_rawBody;
+	}
+
+	/**
+	 * Sets the cached raw request body.  Null makes {@see getRawBody()} read the body again.
+	 * @param ?string $value the raw request body.
+	 * @since 4.4.0
+	 */
+	protected function setRawBodyDirect(?string $value): void
+	{
+		$this->_rawBody = $value;
+	}
+
+	/**
+	 * Reads the request body from `php://input`.  A subclass overrides this to supply the body.
+	 * @return string the raw request body; empty when the stream yields nothing.
+	 * @since 4.4.0
+	 */
+	protected function readRawBody(): string
+	{
+		return (string) file_get_contents('php://input');
+	}
+
+	/**
+	 * Returns the request body decoded by its media type, parsed once through
+	 * {@see parseBody()} and cached for the life of the module.
+	 *
+	 * | {@see getContentType()} | Result |
+	 * |---|---|
+	 * | `application/json`, `application/*+json` | `json_decode()` of the raw body, big integers as strings; a blank body or a scalar gives `[]` |
+	 * | `application/x-www-form-urlencoded` | `$_POST` for POST; `parse_str()` of the raw body for other methods |
+	 * | `multipart/form-data` | `$_POST`, which PHP fills for POST only |
+	 * | absent or other | `[]` |
+	 *
+	 * @throws THttpException 400 when a JSON body is malformed.
+	 * @return array the decoded request body.
+	 * @since 4.4.0
+	 */
+	public function getParsedBody(): array
+	{
+		$body = $this->getParsedBodyDirect();
+		if ($body === null) {
+			$body = $this->parseBody();
+			$this->setParsedBodyDirect($body);
+		}
+		return $body;
+	}
+
+	/**
+	 * @return ?array the cached decoded request body; null until {@see getParsedBody()} parses it.
+	 * @since 4.4.0
+	 */
+	protected function getParsedBodyDirect(): ?array
+	{
+		return $this->_parsedBody;
+	}
+
+	/**
+	 * Sets the cached decoded request body.  Null makes {@see getParsedBody()} parse the body again.
+	 * @param ?array $value the decoded request body.
+	 * @since 4.4.0
+	 */
+	protected function setParsedBodyDirect(?array $value): void
+	{
+		$this->_parsedBody = $value;
+	}
+
+	/**
+	 * Decodes the request body by the media type of {@see getContentType()}, as
+	 * {@see getParsedBody()} documents.
+	 * @throws THttpException 400 when a JSON body is malformed.
+	 * @return array the decoded request body.
+	 * @since 4.4.0
+	 */
+	protected function parseBody(): array
+	{
+		$type = strtolower((string) $this->getContentType());
+		if ($type === TMediaType::JSON || TMediaType::matchesPattern($type, 'application/*+json')) {
+			return $this->parseJsonBody($this->getRawBody());
+		}
+		if ($type === TMediaType::FORM) {
+			if ($this->getRequestType() === 'POST') {
+				return $_POST;
+			}
+			parse_str($this->getRawBody(), $data);
+			return $data;
+		}
+		if ($type === TMediaType::MULTIPART) {
+			return $_POST;
+		}
+		return [];
+	}
+
+	/**
+	 * Decodes a JSON request body. An integer beyond `PHP_INT_MAX` is decoded as a
+	 * string (`JSON_BIGINT_AS_STRING`), so an identifier keeps its digits.
+	 * @param string $raw the raw request body.
+	 * @throws THttpException 400 when the body is malformed JSON.
+	 * @return array the decoded body; `[]` for a blank body or a scalar.
+	 * @since 4.4.0
+	 */
+	protected function parseJsonBody(string $raw): array
+	{
+		if (trim($raw) === '') {
+			return [];
+		}
+		$data = json_decode($raw, true, 512, JSON_BIGINT_AS_STRING);
+		if (json_last_error() !== JSON_ERROR_NONE) {
+			throw new THttpException(400, 'httprequest_body_json_invalid');
+		}
+		return is_array($data) ? $data : [];
+	}
+
+	/**
+	 * Returns the query-string variables alone, `$_GET`; {@see itemAt()} merges the URL
+	 * manager route parameters, `$_GET` and `$_POST`.
+	 * @return array the query-string variables.
+	 * @since 4.4.0
+	 */
+	public function getQueryParameters(): array
+	{
+		return $_GET;
 	}
 
 	/**

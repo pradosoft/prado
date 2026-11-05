@@ -94,7 +94,7 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 
 - **`TBaseValidator`** — Base class for all validators; properties: `ControlToValidate`, `ErrorMessage`, `Display`, `ValidationGroup`.
 
-- **`TRequiredFieldValidator`** / **`TCompareValidator`** / **`TRangeValidator`** / **`TRegularExpressionValidator`** / **`TCustomValidator`** / **`TEmailAddressValidator`** / **`TIbanValidator`** / **`TJsonValidator`** / **`TLuhnValidator`** / **`TPasswordStrengthValidator`** / **`TUrlValidator`** / **`TUnicodeValidator`** / **`TUuidValidator`** / **`TDataTypeValidator`** — Specific validation logic.
+- **`TRequiredFieldValidator`** / **`TCompareValidator`** / **`TRangeValidator`** / **`TRegularExpressionValidator`** / **`TCustomValidator`** / **`TEmailAddressValidator`** / **`TIbanValidator`** / **`TIpAddressValidator`** / **`TJsonValidator`** / **`TLuhnValidator`** / **`TPasswordStrengthValidator`** / **`TUrlValidator`** / **`TUnicodeValidator`** / **`TUuidValidator`** / **`TDataTypeValidator`** — Specific validation logic.
 
 - **`TValidationSummary`** — Displays all errors in a group; `DisplayMode`: `List`, `BulletList`, `SingleParagraph`.
 

@@ -3,6 +3,8 @@
 namespace Prado\Test\Unit\Util;
 
 use Prado\Util\Clock\TMockClock;
+use Prado\Test\Unit\PradoUnit;
+use Prado\Util\TMultibyteString;
 use Prado\Util\TSimpleDateFormatter;
 
 class TSimpleDateFormatterTest extends \PHPUnit\Framework\TestCase
@@ -924,6 +926,20 @@ class TSimpleDateFormatterTest extends \PHPUnit\Framework\TestCase
 		$this->formatter->setPattern("yyyy'年'MM'月'dd'日'");
 		$result = $this->formatter->parse('2026年04月17日', false);
 		$this->assertSame('2026-04-17', date('Y-m-d', $result));
+	}
+
+	public function test_parse_multibyte_literal_strings_without_mbstring(): void
+	{
+		$mbstring = PradoUnit::getStaticProp(TMultibyteString::class, '_mbstring');
+		PradoUnit::setStaticProp(TMultibyteString::class, '_mbstring', false);
+		try {
+			$this->formatter->setPattern("yyyy'年'MM'月'dd'日'");
+			$result = $this->formatter->parse('2026年04月17日', false);
+			$this->assertSame('2026-04-17', date('Y-m-d', $result));
+			$this->assertSame('2026年04月17日', $this->formatter->format($result));
+		} finally {
+			PradoUnit::setStaticProp(TMultibyteString::class, '_mbstring', $mbstring);
+		}
 	}
 
 	public function test_parse_multibyte_charset(): void

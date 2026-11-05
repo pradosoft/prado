@@ -18,6 +18,8 @@ Cross-cutting utilities: behavior/mixin system, logging, scheduled tasks, named 
 
 - **Mutexes** — Named lock modules `TFileMutex`, `TSemaphoreMutex`, `TSyncMutex`, `TMemoryMutex`, `TCacheMutex`, `TRedisMutex`, `TMysqlMutex`, `TPgsqlMutex`, `TOracleMutex`, `TMssqlMutex`, `TDbTableMutex`, and the routing `TDbMutex` on the `TMutex` base are in [Mutex/](Mutex/SUMMARY.md) (namespace `Prado\Util\Mutex`).
 
+- **`TInputValidator`** — Rule-string validation of input arrays (`required|integer|min:0`), extensible with `addRule()`; `TInputValidationException` carries the field errors.
+
 - **`TParameterModule`** — Stores named configuration parameters.
 
 - **`TDbParameterModule`** — DB-backed parameter store; supports auto-capture of parameter changes.
@@ -33,6 +35,8 @@ Cross-cutting utilities: behavior/mixin system, logging, scheduled tasks, named 
 - **`TRpcClient`** — Base RPC implementation.
 
 - **`TVarDumper`** — Human-readable variable dump for `TComponent` objects.
+
+- **`TMultibyteString`** — Character-based `length()`, `substr()`, `upper()`, `lower()` with mbstring, else pcre and intl.
 
 - **`TDataFieldAccessor`** — Dot-notation property path accessor (e.g., `"User.Profile.Name"`).
 

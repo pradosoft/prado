@@ -103,6 +103,16 @@ class THttpHeaderNameTest extends \PHPUnit\Framework\TestCase
 		self::assertSame('Access-Control-Max-Age', THttpHeaderName::AccessControlMaxAge);
 	}
 
+	public function testAccessControlRequestMethod()
+	{
+		self::assertSame('Access-Control-Request-Method', THttpHeaderName::AccessControlRequestMethod);
+	}
+
+	public function testAccessControlRequestHeaders()
+	{
+		self::assertSame('Access-Control-Request-Headers', THttpHeaderName::AccessControlRequestHeaders);
+	}
+
 	// -----------------------------------------------------------------------
 	// Reporting headers
 	// -----------------------------------------------------------------------
@@ -498,6 +508,7 @@ class THttpHeaderNameTest extends \PHPUnit\Framework\TestCase
 			'Access-Control-Allow-Origin', 'Access-Control-Allow-Methods',
 			'Access-Control-Allow-Headers', 'Access-Control-Allow-Credentials',
 			'Access-Control-Expose-Headers', 'Access-Control-Max-Age',
+			'Access-Control-Request-Method', 'Access-Control-Request-Headers',
 			// Reporting
 			'Reporting-Endpoints', 'Report-To', 'NEL',
 			// Caching
