@@ -6,6 +6,7 @@ use Prado\Data\Common\Mysql\TMysqlMetaData;
 use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
 use Prado\Data\Common\TDbTableColumn;
 use Prado\Data\TDbConnection;
+use Prado\Data\TDbDriver;
 
 class MysqlColumnTest extends \PHPUnit\Framework\TestCase
 {

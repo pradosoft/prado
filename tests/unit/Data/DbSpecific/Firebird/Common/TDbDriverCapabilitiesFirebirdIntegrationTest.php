@@ -9,6 +9,7 @@ use Prado\Data\TDbDriverCapabilities;
 use Prado\TApplication;
 use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
 use Prado\TApplicationMode;
+use Prado\Test\Unit\PradoUnit;
 
 /**
  * Integration tests for TDbDriverCapabilities — Firebird.
@@ -527,6 +528,7 @@ class TDbDriverCapabilitiesFirebirdIntegrationTest extends \PHPUnit\Framework\Te
 
 	public function testFirebirdRollbackDataIsNotVisibleAfterFlush(): void
 	{
+		PradoUnit::skipFirebirdRollbackBeforePhp84($this);
 		// A rolled-back INSERT must not be visible even with the post-flush.
 		$conn = $this->openFirebird('UTF-8');
 
@@ -554,6 +556,7 @@ class TDbDriverCapabilitiesFirebirdIntegrationTest extends \PHPUnit\Framework\Te
 
 	public function testFirebirdThreeSequentialTransactionsWithDataPersistCorrectly(): void
 	{
+		PradoUnit::skipFirebirdRollbackBeforePhp84($this);
 		// Verify that the pre-begin flush (clearing the implicit Firebird transaction
 		// before beginTransaction()) works correctly across three commit/rollback cycles.
 		// Each cycle calls beginTransaction() afresh; the pre-begin flush clears the

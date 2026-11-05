@@ -209,8 +209,11 @@ class TOracleCommandBuilder extends TDbCommandBuilder
 				  ") WHERE {$pradoNUMLIN} >= {$offset} ";
 
 		************************* */
-		$offset = (int) $offset;
-		$toReg = $offset + $limit;
+		// An unset offset arrives as -1 and an unset limit as -1: the row window starts
+		// at row 0 without an offset, and has no upper bound without a limit.
+		$offset = max(0, (int) $offset);
+		$limit = (int) $limit;
+		$upperBound = $limit > 0 ? " AND nn.{$pradoNUMLIN} < " . ($offset + $limit) : '';
 		$fullTableName = $this->getTableInfo()->getTableFullName();
 		if (empty($sORDERBY)) {
 			$sORDERBY = "ROWNUM";
@@ -221,7 +224,7 @@ class TOracleCommandBuilder extends TDbCommandBuilder
 					"		SELECT ROW_NUMBER() OVER ( ORDER BY {$sORDERBY} ) -1 as {$pradoNUMLIN} {$aliasedFields} " .
 					"		FROM {$fullTableName} {$fieldsALIAS} $WhereInSubSelect" .
 					") nn					" .
-					" WHERE nn.{$pradoNUMLIN} >= {$offset} AND nn.{$pradoNUMLIN} < {$toReg} ";
+					" WHERE nn.{$pradoNUMLIN} >= {$offset}{$upperBound} ";
 		//echo $newSql."\n<br>\n";
 		return $newSql;
 	}

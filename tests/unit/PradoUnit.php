@@ -1073,6 +1073,21 @@ class PradoUnit
 	}
 
 	/**
+	 * Skips a test that rolls back Firebird work when pdo_firebird cannot roll it back.
+	 * Before PHP 8.4 (PHP PR #12741), pdo_firebird calls `isc_commit_retaining()` after
+	 * every statement inside an explicit transaction, so a rollback has no uncommitted
+	 * work to undo.
+	 * @param \PHPUnit\Framework\TestCase $test the test to skip.
+	 * @since 4.4.0
+	 */
+	public static function skipFirebirdRollbackBeforePhp84(\PHPUnit\Framework\TestCase $test): void
+	{
+		if (PHP_VERSION_ID < 80400) {
+			$test->markTestSkipped('pdo_firebird before PHP 8.4 commits each statement inside a transaction (PHP PR #12741), so a rollback cannot undo it.');
+		}
+	}
+
+	/**
 	 * Opens a MySQL connection and wraps it in a `TMysqlMetaData` instance.
 	 *
 	 * This is a convenience shortcut for metadata-specific tests that need both a

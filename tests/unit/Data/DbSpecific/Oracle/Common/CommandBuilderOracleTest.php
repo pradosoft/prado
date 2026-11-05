@@ -66,6 +66,30 @@ class CommandBuilderOracleTest extends \PHPUnit\Framework\TestCase
 		$this->assertStringContainsString('nn.pradoNUMLIN < 5', $result);
 	}
 
+	public function test_oracle_limit_with_unset_offset_starts_at_row_zero()
+	{
+		$builder = $this->make_builder();
+		$sql = 'SELECT id FROM accounts';
+
+		// A criteria without an offset passes -1; the window still starts at row 0.
+		$result = $builder->applyLimitOffset($sql, 1, -1);
+
+		$this->assertStringContainsString('nn.pradoNUMLIN >= 0', $result);
+		$this->assertStringContainsString('nn.pradoNUMLIN < 1', $result);
+		$this->assertStringNotContainsString('>= -1', $result);
+	}
+
+	public function test_oracle_offset_without_limit_has_no_upper_bound()
+	{
+		$builder = $this->make_builder();
+		$sql = 'SELECT id FROM accounts';
+
+		$result = $builder->applyLimitOffset($sql, -1, 5);
+
+		$this->assertStringContainsString('nn.pradoNUMLIN >= 5', $result);
+		$this->assertStringNotContainsString('nn.pradoNUMLIN <', $result);
+	}
+
 	public function test_oracle_order_by_is_preserved_in_row_number()
 	{
 		$builder = $this->make_builder();

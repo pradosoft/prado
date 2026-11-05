@@ -32,7 +32,7 @@ class CommandBuilderIbmTest extends \PHPUnit\Framework\TestCase
 	{
 		$builder = new TIbmCommandBuilder();
 
-		// offset=0 satisfies offset <= 0: uses FETCH FIRST, not ROW_NUMBER()
+		// offset=0 has no rows to skip: uses FETCH FIRST
 		$sql = $builder->applyLimitOffset(self::$sql['simple'], 10, 0);
 		$this->assertEquals(self::$sql['simple'] . ' FETCH FIRST 10 ROWS ONLY', $sql);
 	}
@@ -42,11 +42,8 @@ class CommandBuilderIbmTest extends \PHPUnit\Framework\TestCase
 		$builder = new TIbmCommandBuilder();
 
 		$sql = $builder->applyLimitOffset(self::$sql['simple'], 10, 5);
-		$lower = 6;   // offset + 1
-		$upper = 15;  // offset + limit
-		$expect = 'SELECT * FROM (SELECT prado_inner.*, ROW_NUMBER() OVER() AS prado_rownum '
-			. 'FROM (' . self::$sql['simple'] . ') AS prado_inner) AS prado_outer '
-			. 'WHERE prado_rownum BETWEEN ' . $lower . ' AND ' . $upper;
+		// DB2 LUW 11.1+ native syntax: OFFSET 5 ROWS FETCH NEXT 10 ROWS ONLY
+		$expect = self::$sql['simple'] . ' OFFSET 5 ROWS FETCH NEXT 10 ROWS ONLY';
 		$this->assertEquals($expect, $sql);
 	}
 
@@ -56,11 +53,8 @@ class CommandBuilderIbmTest extends \PHPUnit\Framework\TestCase
 
 		// page 2 of 3 results per page
 		$sql = $builder->applyLimitOffset(self::$sql['multiple'], 3, 3);
-		$lower = 4;  // 3 + 1
-		$upper = 6;  // 3 + 3
-		$expect = 'SELECT * FROM (SELECT prado_inner.*, ROW_NUMBER() OVER() AS prado_rownum '
-			. 'FROM (' . self::$sql['multiple'] . ') AS prado_inner) AS prado_outer '
-			. 'WHERE prado_rownum BETWEEN ' . $lower . ' AND ' . $upper;
+		// DB2 LUW 11.1+ native syntax: OFFSET 3 ROWS FETCH NEXT 3 ROWS ONLY
+		$expect = self::$sql['multiple'] . ' OFFSET 3 ROWS FETCH NEXT 3 ROWS ONLY';
 		$this->assertEquals($expect, $sql);
 	}
 
@@ -69,11 +63,8 @@ class CommandBuilderIbmTest extends \PHPUnit\Framework\TestCase
 		$builder = new TIbmCommandBuilder();
 
 		$sql = $builder->applyLimitOffset(self::$sql['ordering'], 5, 10);
-		$lower = 11;
-		$upper = 15;
-		$expect = 'SELECT * FROM (SELECT prado_inner.*, ROW_NUMBER() OVER() AS prado_rownum '
-			. 'FROM (' . self::$sql['ordering'] . ') AS prado_inner) AS prado_outer '
-			. 'WHERE prado_rownum BETWEEN ' . $lower . ' AND ' . $upper;
+		// DB2 LUW 11.1+ native syntax: OFFSET 10 ROWS FETCH NEXT 5 ROWS ONLY
+		$expect = self::$sql['ordering'] . ' OFFSET 10 ROWS FETCH NEXT 5 ROWS ONLY';
 		$this->assertEquals($expect, $sql);
 	}
 
@@ -82,11 +73,8 @@ class CommandBuilderIbmTest extends \PHPUnit\Framework\TestCase
 		$builder = new TIbmCommandBuilder();
 
 		$sql = $builder->applyLimitOffset(self::$sql['simple'], 20, 1);
-		$lower = 2;
-		$upper = 21;
-		$expect = 'SELECT * FROM (SELECT prado_inner.*, ROW_NUMBER() OVER() AS prado_rownum '
-			. 'FROM (' . self::$sql['simple'] . ') AS prado_inner) AS prado_outer '
-			. 'WHERE prado_rownum BETWEEN ' . $lower . ' AND ' . $upper;
+		// DB2 LUW 11.1+ native syntax: OFFSET 1 ROWS FETCH NEXT 20 ROWS ONLY
+		$expect = self::$sql['simple'] . ' OFFSET 1 ROWS FETCH NEXT 20 ROWS ONLY';
 		$this->assertEquals($expect, $sql);
 	}
 }

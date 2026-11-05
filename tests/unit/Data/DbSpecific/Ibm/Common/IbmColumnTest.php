@@ -208,8 +208,7 @@ class IbmColumnTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals($query . ' FETCH FIRST 5 ROWS ONLY', $limit);
 
 		$limit = $builder->applyLimitOffset($query, 5, 10);
-		$this->assertStringContainsString('ROW_NUMBER() OVER()', $limit);
-		$this->assertStringContainsString('BETWEEN 11 AND 15', $limit);
+		$this->assertEquals($query . ' OFFSET 10 ROWS FETCH NEXT 5 ROWS ONLY', $limit);
 	}
 
 	public function assertColumn($columns, $table)

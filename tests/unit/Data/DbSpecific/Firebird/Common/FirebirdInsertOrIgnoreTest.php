@@ -26,6 +26,7 @@ use Prado\Data\DataGateway\TTableGateway;
 use Prado\Data\TDbConnection;
 use Prado\Exceptions\TDbException;
 use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
+use Prado\Test\Unit\PradoUnit;
 
 class FirebirdInsertOrIgnoreTest extends \PHPUnit\Framework\TestCase
 {
@@ -231,6 +232,7 @@ class FirebirdInsertOrIgnoreTest extends \PHPUnit\Framework\TestCase
 
 	public function test_firebird_transaction_rollback_undoes_insert(): void
 	{
+		PradoUnit::skipFirebirdRollbackBeforePhp84($this);
 		$txn = self::$conn->beginTransaction();
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 10]);
 		$txn->rollback();
