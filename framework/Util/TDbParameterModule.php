@@ -11,7 +11,6 @@
 namespace Prado\Util;
 
 use Exception;
-use PDO;
 use Prado\Data\TDataSourceConfig;
 use Prado\Data\TDbDriver;
 use Prado\Data\TDbDriverCapabilities;
@@ -346,7 +345,7 @@ class TDbParameterModule extends TDbModule implements IPermissions
 		$cmd = $db->createCommand(
 			"SELECT {$this->_valueField} as valueField FROM {$this->_tableName} WHERE {$this->_keyField}=:key LIMIT 1"
 		);
-		$cmd->bindParameter(":key", $key, PDO::PARAM_STR);
+		$cmd->bindParameter(":key", $key, $cmd->getConnection()::PARAM_STR);
 		$results = $cmd->queryRow();
 		$serializer = $this->getSerializer();
 		if (is_array($results) && ($value = $results['valueField']) !== null) {
@@ -421,11 +420,11 @@ class TDbParameterModule extends TDbModule implements IPermissions
 		$values = ($this->_autoLoadField ? ", :auto" : '');
 		$cmd = $db->createCommand("INSERT INTO {$this->_tableName} ({$this->_keyField}, {$this->_valueField}{$field}) " .
 					"VALUES (:key, :value{$values})" . $appendix);
-		$cmd->bindParameter(":key", $key, PDO::PARAM_STR);
-		$cmd->bindParameter(":value", $_value, PDO::PARAM_STR);
+		$cmd->bindParameter(":key", $key, $cmd->getConnection()::PARAM_STR);
+		$cmd->bindParameter(":value", $_value, $cmd->getConnection()::PARAM_STR);
 		if ($this->_autoLoadField) {
 			$alv = $autoLoad ? $this->_autoLoadValue : $this->_autoLoadValueFalse;
-			$cmd->bindParameter(":auto", $alv, PDO::PARAM_STR);
+			$cmd->bindParameter(":auto", $alv, $cmd->getConnection()::PARAM_STR);
 		}
 		$cmd->execute();
 
@@ -466,7 +465,7 @@ class TDbParameterModule extends TDbModule implements IPermissions
 		$cmd = $db->createCommand(
 			"SELECT COUNT(*) AS count FROM {$this->_tableName} WHERE {$this->_keyField}=:key"
 		);
-		$cmd->bindParameter(":key", $key, PDO::PARAM_STR);
+		$cmd->bindParameter(":key", $key, $cmd->getConnection()::PARAM_STR);
 		$result = $cmd->queryRow();
 		return $result['count'] > 0;
 	}
@@ -489,7 +488,7 @@ class TDbParameterModule extends TDbModule implements IPermissions
 			$appendix = ' LIMIT 1';
 		}
 		$cmd = $db->createCommand("DELETE FROM {$this->_tableName} WHERE {$this->_keyField}=:key" . $appendix);
-		$cmd->bindParameter(":key", $key, PDO::PARAM_STR);
+		$cmd->bindParameter(":key", $key, $cmd->getConnection()::PARAM_STR);
 		$cmd->execute();
 		return $value;
 	}

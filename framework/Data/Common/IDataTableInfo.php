@@ -28,6 +28,7 @@ use Prado\Data\IDataConnection;
  * {@see TPgsqlTableInfo}, {@see TMssqlTableInfo}, {@see TOracleTableInfo},
  * {@see TIbmTableInfo}, {@see TFirebirdTableInfo}).
  *
+ * Required for portability — see {@see \Prado\Data\IDataConnection} for the full driver-portability roadmap.
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.3.3
  */
@@ -69,6 +70,16 @@ interface IDataTableInfo
 	 * @return string[] the column names.
 	 */
 	public function getColumnNames();
+
+	/**
+	 * Returns a map of lower-cased column name to actual column name.
+	 * Consumed by the driver-agnostic dynamic-finder path
+	 * ({@see \Prado\Data\DataGateway\TDataGatewayCommand::extractMatchingConditions()})
+	 * to resolve case-insensitive property substrings against known columns.
+	 * @return array<string, string> lower-cased column name mapped to actual column name.
+	 * @since 4.3.3
+	 */
+	public function getLowerCaseColumnNames();
 
 	/**
 	 * Returns the names of the primary-key columns.

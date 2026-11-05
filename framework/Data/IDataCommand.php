@@ -17,6 +17,7 @@ namespace Prado\Data;
  *
  * Implementations include {@see TDbCommand} for SQL/PDO databases.
  *
+ * Required for portability — see {@see \Prado\Data\IDataConnection} for the full driver-portability roadmap.
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.3.3
  */
@@ -84,52 +85,6 @@ interface IDataCommand
 	 *   direct mapping in this driver.
 	 */
 	public function getColumnTypeFromValue($value);
-
-	// -------------------------------------------------------------------------
-	// SQL/PDO-oriented methods.
-	// SQL drivers implement these fully.  Non-SQL drivers should provide no-op
-	// stubs (return null or a sensible default) for any method that does not
-	// apply to their underlying store.
-	// -------------------------------------------------------------------------
-
-	/**
-	 * Returns the query text of this command.
-	 *
-	 * For SQL drivers this is the SQL statement string.  Non-SQL drivers may
-	 * return a serialised query representation or an empty string.
-	 *
-	 * @return string the query text.
-	 */
-	public function getText();
-
-	/**
-	 * Sets the query text of this command.
-	 *
-	 * For SQL drivers, setting the text cancels any active prepared statement.
-	 * Non-SQL drivers may no-op this method or use it to update the internal
-	 * query representation.
-	 *
-	 * @param string $value the query text.
-	 */
-	public function setText($value);
-
-	/**
-	 * Prepares the command for repeated execution.
-	 *
-	 * For SQL/PDO drivers this compiles the statement and caches the result
-	 * until {@see cancel()} or {@see setText()} is called.  Calling this
-	 * explicitly is optional; parameter binding triggers it automatically.
-	 * Non-SQL drivers may no-op this method.
-	 */
-	public function prepare();
-
-	/**
-	 * Cancels the prepared statement, releasing its resources.
-	 *
-	 * The next call to {@see execute()} or {@see query()} will re-prepare.
-	 * Non-SQL drivers may no-op this method.
-	 */
-	public function cancel();
 
 	/**
 	 * Binds a value to a named or positional parameter.

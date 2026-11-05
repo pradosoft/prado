@@ -83,11 +83,8 @@ class TDataGatewayCommand extends \Prado\TComponent
 	 */
 	public function delete($criteria)
 	{
-		$where = $criteria->getCondition();
-		$parameters = $criteria->getParameters()->toArray();
-		$command = $this->getBuilder()->createDeleteCommand($where, $parameters);
+		$command = $this->getBuilder()->createDeleteCommandFromCriteria($criteria);
 		$this->onCreateCommand($command, $criteria);
-		$command->prepare();
 		return $command->execute();
 	}
 	/**
@@ -98,11 +95,8 @@ class TDataGatewayCommand extends \Prado\TComponent
 	 */
 	public function update($data, $criteria)
 	{
-		$where = $criteria->getCondition();
-		$parameters = $criteria->getParameters()->toArray();
-		$command = $this->getBuilder()->createUpdateCommand($data, $where, $parameters);
+		$command = $this->getBuilder()->createUpdateCommandFromCriteria($data, $criteria);
 		$this->onCreateCommand($command, $criteria);
-		$command->prepare();
 		return $this->onExecuteCommand($command, $command->execute());
 	}
 	/**
@@ -112,8 +106,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	 */
 	public function updateByPk($data, $keys)
 	{
-		[$where, $parameters] = $this->getPrimaryKeyCondition((array) $keys);
-		return $this->update($data, new TSqlCriteria($where, $parameters));
+		return $this->update($data, $this->getBuilder()->createPrimaryKeyCriteria($keys));
 	}
 	/**
 	 * Find one record matching the critera.
@@ -145,13 +138,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 		if ($criteria === null) {
 			return $this->getBuilder()->createFindCommand();
 		}
-		$where = $criteria->getCondition();
-		$parameters = $criteria->getParameters()->toArray();
-		$ordering = $criteria->getOrdersBy();
-		$limit = $criteria->getLimit();
-		$offset = $criteria->getOffset();
-		$select = $criteria->getSelect();
-		$command = $this->getBuilder()->createFindCommand($where, $parameters, $ordering, $limit, $offset, $select);
+		$command = $this->getBuilder()->createFindCommandFromCriteria($criteria);
 		$this->onCreateCommand($command, $criteria);
 		return $command;
 	}
@@ -164,9 +151,9 @@ class TDataGatewayCommand extends \Prado\TComponent
 		if ($keys === null) {
 			return null;
 		}
-		[$where, $parameters] = $this->getPrimaryKeyCondition((array) $keys);
-		$command = $this->getBuilder()->createFindCommand($where, $parameters);
-		$this->onCreateCommand($command, new TSqlCriteria($where, $parameters));
+		$criteria = $this->getBuilder()->createPrimaryKeyCriteria($keys);
+		$command = $this->getBuilder()->createFindCommandFromCriteria($criteria);
+		$this->onCreateCommand($command, $criteria);
 		return $this->onExecuteCommand($command, $command->queryRow());
 	}
 	/**
@@ -175,21 +162,16 @@ class TDataGatewayCommand extends \Prado\TComponent
 	 */
 	public function findAllByPk($keys)
 	{
-		$where = $this->getCompositeKeyCondition((array) $keys);
-		$command = $this->getBuilder()->createFindCommand($where);
-		$this->onCreateCommand($command, new TSqlCriteria($where, $keys));
+		$primary = $this->getTableInfo()->getPrimaryKeys();
+		$keyValues = $this->normalizeCompositeKeyValues($primary, (array) $keys);
+		$criteria = $this->getBuilder()->createIndexCriteria($primary, $keyValues);
+		$command = $this->getBuilder()->createFindCommandFromCriteria($criteria);
+		$this->onCreateCommand($command, $criteria);
 		return $this->onExecuteCommand($command, $command->query());
 	}
 	public function findAllByIndex($criteria, $fields, $values)
 	{
-		$index = $this->getIndexKeyCondition($this->getTableInfo(), $fields, $values);
-		$where = $criteria->getCondition();
-		if ($where !== null && strlen($where) > 0) {
-			$criteria->setCondition("({$index}) AND ({$where})");
-		} else {
-			$criteria->setCondition($index);
-		}
-		$command = $this->getFindCommand($criteria);
+		$command = $this->getBuilder()->createIndexedFindCommand($criteria, $fields, $values);
 		$this->onCreateCommand($command, $criteria);
 		return $this->onExecuteCommand($command, $command->query());
 	}
@@ -206,13 +188,22 @@ class TDataGatewayCommand extends \Prado\TComponent
 		if (count($keys) === 0) {
 			return 0;
 		}
-		$where = $this->getCompositeKeyCondition($keys);
-		$command = $this->getBuilder()->createDeleteCommand($where);
-		$this->onCreateCommand($command, new TSqlCriteria($where, $keys));
-		$command->prepare();
+		$primary = $this->getTableInfo()->getPrimaryKeys();
+		$keyValues = $this->normalizeCompositeKeyValues($primary, $keys);
+		$criteria = $this->getBuilder()->createIndexCriteria($primary, $keyValues);
+		$command = $this->getBuilder()->createDeleteCommandFromCriteria($criteria);
+		$this->onCreateCommand($command, $criteria);
 		return $this->onExecuteCommand($command, $command->execute());
 	}
 
+	/**
+	 * Builds a SQL `(col1, col2) IN ((v1,v2), ...)` predicate.
+	 * @deprecated 4.3.3 — use {@see \Prado\Data\Common\IDataCommandBuilder::createIndexCriteria}
+	 *   for a portable equivalent that works across SQL and non-SQL drivers.
+	 * @param mixed $table
+	 * @param mixed $fields
+	 * @param mixed $values
+	 */
 	public function getIndexKeyCondition($table, $fields, $values)
 	{
 		if (!count($values)) {
@@ -230,38 +221,53 @@ class TDataGatewayCommand extends \Prado\TComponent
 	 * Construct a "pk IN ('key1', 'key2', ...)" criteria.
 	 * @param array $values values for IN predicate
 	 * @return string SQL string for primary keys IN a list.
+	 * @deprecated 4.3.3 — use {@see \Prado\Data\Common\IDataCommandBuilder::createIndexCriteria}
+	 *   with the table's primary-key columns for a portable equivalent.
 	 */
 	protected function getCompositeKeyCondition($values)
 	{
 		$primary = $this->getTableInfo()->getPrimaryKeys();
+		$keyValues = $this->normalizeCompositeKeyValues($primary, $values);
+		return $this->getIndexKeyCondition($this->getTableInfo(), $primary, $keyValues);
+	}
+
+	/**
+	 * Validates and normalizes a list of primary-key values for batched
+	 * operations.  Wraps a single composite-PK tuple in a list, validates
+	 * arity, and throws if the table has no PK or no values were supplied.
+	 *
+	 * @param array $primary the table's primary-key column names.
+	 * @param array $values the supplied PK value(s).
+	 * @throws TDbException on PK absence, missing values, or arity mismatch.
+	 * @return array list of value-arrays suitable for {@see \Prado\Data\Common\IDataCommandBuilder::createIndexCriteria}.
+	 * @since 4.3.3
+	 */
+	protected function normalizeCompositeKeyValues(array $primary, array $values): array
+	{
 		$count = count($primary);
+		$tableName = $this->getTableInfo()->getTableFullName();
 		if ($count === 0) {
-			throw new TDbException(
-				'dbtablegateway_no_primary_key_found',
-				$this->getTableInfo()->getTableFullName()
-			);
+			throw new TDbException('dbtablegateway_no_primary_key_found', $tableName);
 		}
-		if (!is_array($values) || count($values) === 0) {
-			throw new TDbException(
-				'dbtablegateway_missing_pk_values',
-				$this->getTableInfo()->getTableFullName()
-			);
+		if (count($values) === 0) {
+			throw new TDbException('dbtablegateway_missing_pk_values', $tableName);
 		}
 		if ($count > 1 && (!isset($values[0]) || !is_array($values[0]))) {
 			$values = [$values];
 		}
 		if ($count > 1 && count($values[0]) !== $count) {
-			throw new TDbException(
-				'dbtablegateway_pk_value_count_mismatch',
-				$this->getTableInfo()->getTableFullName()
-			);
+			throw new TDbException('dbtablegateway_pk_value_count_mismatch', $tableName);
 		}
-		return $this->getIndexKeyCondition($this->getTableInfo(), $primary, $values);
+		return $values;
 	}
 
 	/**
 	 * @param array $array values
 	 * @return string quoted recursive tuple values, e.g. "('val1', 'val2')".
+	 * @deprecated 4.3.3 — internal SQL-quoting helper for the legacy
+	 *   {@see getIndexKeyCondition} path; no replacement (the portable
+	 *   {@see \Prado\Data\Common\IDataCommandBuilder::createIndexCriteria}
+	 *   handles quoting internally).
 	 */
 	protected function quoteTuple($array)
 	{
@@ -277,6 +283,8 @@ class TDataGatewayCommand extends \Prado\TComponent
 	 * Create the condition and parameters for find by primary.
 	 * @param array $values primary key values
 	 * @return array tuple($where, $parameters)
+	 * @deprecated 4.3.3 — use {@see \Prado\Data\Common\IDataCommandBuilder::createPrimaryKeyCriteria}
+	 *   for a portable equivalent that works across SQL and non-SQL drivers.
 	 */
 	protected function getPrimaryKeyCondition($values)
 	{
@@ -352,12 +360,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 		if ($criteria === null) {
 			return (int) $this->getBuilder()->createCountCommand()->queryScalar();
 		}
-		$where = $criteria->getCondition();
-		$parameters = $criteria->getParameters()->toArray();
-		$ordering = $criteria->getOrdersBy();
-		$limit = $criteria->getLimit();
-		$offset = $criteria->getOffset();
-		$command = $this->getBuilder()->createCountCommand($where, $parameters, $ordering, $limit, $offset);
+		$command = $this->getBuilder()->createCountCommandFromCriteria($criteria);
 		$this->onCreateCommand($command, $criteria);
 		return $this->onExecuteCommand($command, (int) $command->queryScalar());
 	}

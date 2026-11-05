@@ -10,9 +10,12 @@
 
 namespace Prado\Data\Common;
 
-use PDO;
 use Traversable;
+use Prado\Data\DataGateway\IDataCriteria;
+use Prado\Data\DataGateway\TSqlCriteria;
+use Prado\Data\IDataCommand;
 use Prado\Data\TDbCommand;
+use Prado\Data\TDbConnection;
 use Prado\Exceptions\TDbException;
 
 /**
@@ -97,7 +100,7 @@ use Prado\Exceptions\TDbException;
  * @author Brad Anderson <belisoful@icloud.com> insertOrIgnore, upsert
  * @since 3.1
  */
-class TDbCommandBuilder extends \Prado\TComponent implements IDataCommandBuilder
+class TDbCommandBuilder extends \Prado\TComponent implements IDbCommandBuilder
 {
 	private $_connection;
 	private $_tableInfo;
@@ -789,9 +792,9 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDataCommandBuilder
 		foreach ($values as $name => $value) {
 			$column = $this->getTableInfo()->getColumn($name);
 			if ($value === null && $column->getAllowNull()) {
-				$command->bindValue(':' . $name, null, PDO::PARAM_NULL);
+				$command->bindValue(':' . $name, null, $this->_connection::PARAM_NULL);
 			} else {
-				$command->bindValue(':' . $name, $value, $column->getPdoType());
+				$command->bindValue(':' . $name, $value, $column->getParamType());
 			}
 		}
 	}
@@ -826,22 +829,35 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDataCommandBuilder
 	}
 
 	/**
-	 * Maps a PHP value's runtime type to the corresponding PDO parameter-type constant.
+	 * Maps a PHP value's runtime type to the SQL/PDO bind-parameter token.
+	 * Returns one of {@see TDbConnection::PARAM_*}; null for types that have
+	 * no direct mapping.
 	 *
-	 * @param mixed $value PHP value
-	 * @return null|int PDO::PARAM_* constant, or null for unconvertible types.
-	 * @deprecated since 4.3.3 — use {@see \Prado\Data\TDbCommand::getColumnTypeFromValue()} instead.
-	 * @todo 4.4 — remove this static method.
+	 * @param mixed $value PHP value.
+	 * @return null|int the bind-parameter token, or null if no mapping.
+	 * @since 4.3.3
+	 */
+	public static function getParamType($value)
+	{
+		switch (gettype($value)) {
+			case 'boolean': return TDbConnection::PARAM_BOOL;
+			case 'integer': return TDbConnection::PARAM_INT;
+			case 'string': return TDbConnection::PARAM_STR;
+			case 'NULL': return TDbConnection::PARAM_NULL;
+		}
+		return null;
+	}
+
+	/**
+	 * Maps a PHP value's runtime type to the PDO parameter-type token.
+	 *
+	 * @param mixed $value PHP value.
+	 * @return null|int the PDO `PARAM_*` integer, or null if no mapping.
+	 * @deprecated 4.3.3 — use {@see getParamType()} or {@see \Prado\Data\TDbCommand::getColumnTypeFromValue()}.
 	 */
 	public static function getPdoType($value)
 	{
-		switch (gettype($value)) {
-			case 'boolean': return PDO::PARAM_BOOL;
-			case 'integer': return PDO::PARAM_INT;
-			case 'string': return PDO::PARAM_STR;
-			case 'NULL': return PDO::PARAM_NULL;
-		}
-		return null;
+		return static::getParamType($value);
 	}
 
 	/**
@@ -856,5 +872,170 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDataCommandBuilder
 			}
 		}
 		return false;
+	}
+
+	//	-----   Driver-agnostic factories (4.3.3+) — IDataCriteria-based.
+
+	/**
+	 * {@inheritdoc}
+	 * @since 4.3.3
+	 */
+	public function createFindCommandFromCriteria(IDataCriteria $criteria)
+	{
+		return $this->createFindCommand(
+			$this->getCriteriaCondition($criteria),
+			$criteria->getParameters()->toArray(),
+			$criteria->getOrdersBy()->toArray(),
+			(int) ($criteria->getLimit() ?? -1),
+			(int) ($criteria->getOffset() ?? -1),
+			$criteria->getSelect() ?? '*'
+		);
+	}
+
+	/**
+	 * {@inheritdoc}
+	 * @since 4.3.3
+	 */
+	public function createCountCommandFromCriteria(IDataCriteria $criteria)
+	{
+		return $this->createCountCommand(
+			$this->getCriteriaCondition($criteria),
+			$criteria->getParameters()->toArray(),
+			$criteria->getOrdersBy()->toArray(),
+			(int) ($criteria->getLimit() ?? -1),
+			(int) ($criteria->getOffset() ?? -1)
+		);
+	}
+
+	/**
+	 * {@inheritdoc}
+	 * @since 4.3.3
+	 */
+	public function createUpdateCommandFromCriteria(array $data, IDataCriteria $criteria)
+	{
+		return $this->createUpdateCommand(
+			$data,
+			$this->getCriteriaCondition($criteria),
+			$criteria->getParameters()->toArray()
+		);
+	}
+
+	/**
+	 * {@inheritdoc}
+	 * @since 4.3.3
+	 */
+	public function createDeleteCommandFromCriteria(IDataCriteria $criteria)
+	{
+		return $this->createDeleteCommand(
+			$this->getCriteriaCondition($criteria),
+			$criteria->getParameters()->toArray()
+		);
+	}
+
+	/**
+	 * Returns the SQL WHERE condition for a criteria; defaults to `1=1` for
+	 * non-SQL criteria or empty conditions.
+	 * @param IDataCriteria $criteria the criteria.
+	 * @return string the SQL WHERE clause.
+	 * @since 4.3.3
+	 */
+	protected function getCriteriaCondition(IDataCriteria $criteria): string
+	{
+		$where = $criteria instanceof TSqlCriteria ? (string) $criteria->getCondition() : '';
+		return $where === '' ? '1=1' : $where;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 * @since 4.3.3
+	 */
+	public function createPrimaryKeyCriteria($keyValues)
+	{
+		$primary = $this->getTableInfo()->getPrimaryKeys();
+		if (count($primary) === 0) {
+			throw new TDbException('dbtablegateway_no_primary_key_found', $this->getTableInfo()->getTableFullName());
+		}
+		$values = (array) $keyValues;
+		$conditions = [];
+		$bindings = [];
+		$i = 0;
+		foreach ($primary as $key) {
+			$column = $this->getTableInfo()->getColumn($key)->getColumnName();
+			$conditions[] = $column . ' = :' . $key;
+			$bindings[$key] = $values[$key] ?? $values[$i++];
+		}
+		return new TSqlCriteria(implode(' AND ', $conditions), $bindings);
+	}
+
+	/**
+	 * {@inheritdoc}
+	 * @since 4.3.3
+	 */
+	public function createIndexCriteria(array $fields, array $values)
+	{
+		if (!count($values)) {
+			return new TSqlCriteria('FALSE');
+		}
+		$table = $this->getTableInfo();
+		$tableName = $table->getTableFullName();
+		$columns = [];
+		foreach ($fields as $field) {
+			$columns[] = $tableName . '.' . $table->getColumn($field)->getColumnName();
+		}
+		$condition = '(' . implode(', ', $columns) . ') IN ' . $this->quoteTuple($values);
+		return new TSqlCriteria($condition);
+	}
+
+	/**
+	 * {@inheritdoc}
+	 * @since 4.3.3
+	 */
+	public function tableExists(): bool
+	{
+		$sql = 'SELECT * FROM ' . $this->getTableInfo()->getTableFullName() . ' WHERE 0=1';
+		try {
+			$this->getDbConnection()->createCommand($sql)->query()->close();
+			return true;
+		} catch (TDbException $e) {
+			return false;
+		}
+	}
+
+	/**
+	 * {@inheritdoc}
+	 * @since 4.3.3
+	 */
+	public function createIndexedFindCommand(IDataCriteria $criteria, array $fields, array $values)
+	{
+		$index = $this->createIndexCriteria($fields, $values);
+		$baseWhere = $this->getCriteriaCondition($criteria);
+		$indexWhere = $this->getCriteriaCondition($index);
+		$combined = new TSqlCriteria(
+			"({$indexWhere}) AND ({$baseWhere})",
+			$criteria->getParameters()->toArray()
+		);
+		foreach ($criteria->getOrdersBy() as $column => $direction) {
+			$combined->getOrdersBy()->add($column, $direction);
+		}
+		$combined->setLimit($criteria->getLimit());
+		$combined->setOffset($criteria->getOffset());
+		$combined->setSelect($criteria->getSelect());
+		return $this->createFindCommandFromCriteria($combined);
+	}
+
+	/**
+	 * Quotes a (possibly nested) value tuple using the connection's quote function.
+	 * @param array $array values to quote.
+	 * @return string the quoted tuple (e.g. `('a','b')`).
+	 * @since 4.3.3
+	 */
+	protected function quoteTuple(array $array): string
+	{
+		$conn = $this->getDbConnection();
+		$data = [];
+		foreach ($array as $v) {
+			$data[] = is_array($v) ? $this->quoteTuple($v) : $conn->quoteString($v);
+		}
+		return '(' . implode(', ', $data) . ')';
 	}
 }

@@ -22,7 +22,9 @@ use Traversable;
  * TSqlCriteria encapsulates a SQL WHERE condition together with its bound
  * parameters, an ORDER BY specification, and LIMIT / OFFSET values.  It is
  * the primary object passed to `find()`, `findAll()`, `count()`, `update()`,
- * and `deleteAll()`.
+ * and `deleteAll()`.  Implements {@see IDataCriteria} (since 4.3.3) so that
+ * portable consumers such as {@see TDataGatewayCommand} and
+ * {@see \Prado\Data\ActiveRecord\TActiveRecord} accept it transparently.
  *
  * ## Constructor forms
  *
@@ -81,7 +83,7 @@ use Traversable;
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @since 3.1
  */
-class TSqlCriteria extends \Prado\TComponent
+class TSqlCriteria extends \Prado\TComponent implements IDataCriteria
 {
 	/**
 	 * @var mixed

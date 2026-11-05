@@ -193,6 +193,18 @@ abstract class TActiveRecordRelation
 			}
 		}
 
+		// Fallback for stores with no foreign-key constraint metadata (e.g. a
+		// document store): when the relation explicitly declares its foreign-key
+		// field(s), map them positionally onto the referenced record's primary
+		// key.  This lets relations work without schema-introspected FK metadata,
+		// mirroring the column fallback in TActiveRecordGateway.
+		if (!$loose && $this->getContext()->hasFkField()) {
+			$key = $this->buildDeclaredForeignKeys($recordTableInfo);
+			if (!empty($key)) {
+				return $key;
+			}
+		}
+
 		//none found
 		$matching = $gateway->getRecordTableInfo($matchesRecord)->getTableFullName();
 		throw new TActiveRecordException(
@@ -200,6 +212,31 @@ abstract class TActiveRecordRelation
 			$tableInfo->getTableFullName(),
 			$matching
 		);
+	}
+
+	/**
+	 * Builds the foreign-key map from the FK field(s) declared in the relation,
+	 * mapping each declared field onto the referenced table's primary key(s) by
+	 * position.  Used as a fallback when no schema FK metadata is available.
+	 *
+	 * @param \Prado\Data\Common\IDataTableInfo $referencedTableInfo metadata of
+	 *   the table the foreign key references.
+	 * @return array foreign-key field => referenced primary-key field pairs.
+	 * @since 4.3.3
+	 */
+	protected function buildDeclaredForeignKeys($referencedTableInfo): array
+	{
+		preg_match_all('/\s*(\S+\.)?([\w-]+)\s*/', $this->getContext()->getFkField(), $matching);
+		$fkFields = $matching[2];
+		$primary = array_values($referencedTableInfo->getPrimaryKeys());
+		if (count($fkFields) === 0 || count($fkFields) !== count($primary)) {
+			return [];
+		}
+		$keys = [];
+		foreach ($fkFields as $i => $fkField) {
+			$keys[$fkField] = $primary[$i];
+		}
+		return $keys;
 	}
 
 	/**

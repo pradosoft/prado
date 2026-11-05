@@ -13,38 +13,31 @@ namespace Prado\Data\Common;
 /**
  * IDbColumn interface
  *
- * IDbColumn extends {@see IDataColumn} with PDO-specific binding support,
- * providing access to the PDO parameter-type token for this column.
+ * Discovery marker for column metadata classes whose bind-parameter tokens
+ * are PDO `PARAM_*` integers.  All `IDbColumn` implementations are also
+ * {@see IDataColumn}; the driver-agnostic accessors (including the canonical
+ * bind-token method {@see IDataColumn::getParamType()}) live there.
  *
- * This interface is implemented by {@see TDbTableColumn} and should be used
- * as the type hint wherever code needs to call PDO-specific methods directly
- * (e.g. {@see TDbCommandBuilder::bindColumnValues()}).
+ * The legacy {@see getPdoType()} method is retained for backward compatibility
+ * and now forwards to {@see IDataColumn::getParamType()}.  New code should
+ * call `getParamType()` directly.
  *
- * Code that does not require PDO parameter binding should use {@see IDataColumn}
- * so that non-PDO driver implementations remain compatible.
+ * Implemented by {@see TDbTableColumn}.  Mirrors the
+ * {@see \Prado\Data\IDataConnection} / {@see \Prado\Data\IDbConnection}
+ * discovery-marker pattern.
  *
- * This follows the same layering pattern as
- * {@see \Prado\Data\IDataConnection} / {@see \Prado\Data\IDbConnection}:
- * the driver-agnostic interface carries the portable contract; the Db-prefixed
- * sub-interface adds the PDO-specific extension.
- *
+ * Optional SQL/PDO discovery marker — see {@see \Prado\Data\IDataConnection} for the full driver-portability roadmap.
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.3.3
  */
 interface IDbColumn extends IDataColumn
 {
 	/**
-	 * Returns a PDO parameter-type token that best represents this column's
-	 * declared database type, for use when binding parameter values.
+	 * Returns the PDO parameter-type token for this column.  Equivalent to
+	 * {@see IDataColumn::getParamType()}.
 	 *
-	 * The returned integer is one of the stable PDO type constants:
-	 * `PDO::PARAM_BOOL` (5), `PDO::PARAM_INT` (1), `PDO::PARAM_STR` (2).
-	 * Used by {@see \Prado\Data\Common\TDbCommandBuilder::bindColumnValues()}
-	 * when constructing INSERT and UPDATE commands.
-	 *
-	 * Prefer {@see getPHPType()} for new code that must remain driver-agnostic.
-	 *
-	 * @return int the PDO parameter-type token.
+	 * @return int the PDO `PARAM_*` integer.
+	 * @deprecated 4.3.3 — use {@see IDataColumn::getParamType()}.
 	 */
 	public function getPdoType();
 }

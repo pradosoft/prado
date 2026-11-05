@@ -125,13 +125,28 @@ class TDbTransactionTest extends PHPUnit\Framework\TestCase
 		// because the C-level constructor was suppressed.  The stub subclass
 		// overrides __construct() and the relevant methods at the PHP level,
 		// so no C-level state is needed.
+		//
+		// The connection is the source of truth for transaction control:
+		// TDbConnection::rollback() runs the PDO call and invokes
+		// completeTransaction(), which performs the Firebird-specific post-flush.
+		// TDbTransaction::rollback() simply delegates here, so we test the
+		// flush behaviour against the connection directly.
 		$pdo = new FirebirdPdoStub();
 
-		$conn = $this->createMock(TDbConnection::class);
-		$conn->method('getActive')->willReturn(true);
-		$conn->method('getPdoInstance')->willReturn($pdo);
+		$conn = new TDbConnection();
+		$ref = new ReflectionClass($conn);
+		$pdoProp = $ref->getProperty('_pdo');
+		$pdoProp->setAccessible(true);
+		$pdoProp->setValue($conn, $pdo);
+		$activeProp = $ref->getProperty('_active');
+		$activeProp->setAccessible(true);
+		$activeProp->setValue($conn, true);
 
 		$transaction = new TDbTransaction($conn);
+		$txnProp = $ref->getProperty('_transaction');
+		$txnProp->setAccessible(true);
+		$txnProp->setValue($conn, $transaction);
+
 		$transaction->rollBack();
 
 		self::assertTrue(

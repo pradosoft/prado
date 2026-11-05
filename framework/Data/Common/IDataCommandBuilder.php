@@ -10,6 +10,7 @@
 
 namespace Prado\Data\Common;
 
+use Prado\Data\DataGateway\IDataCriteria;
 use Prado\Data\IDataCommand;
 use Prado\Data\IDataConnection;
 
@@ -35,6 +36,7 @@ use Prado\Data\IDataConnection;
  * {@see TOracleCommandBuilder}, {@see TIbmCommandBuilder},
  * {@see TFirebirdCommandBuilder}).
  *
+ * Required for portability — see {@see \Prado\Data\IDataConnection} for the full driver-portability roadmap.
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.3.3
  */
@@ -55,6 +57,15 @@ interface IDataCommandBuilder
 	public function getTableInfo();
 
 	/**
+	 * Binds the table (collection) metadata this builder targets.  Called by
+	 * the ActiveRecord gateway to re-point a cached builder at the current
+	 * record's table.
+	 * @param IDataTableInfo $value the table metadata.
+	 * @since 4.3.3
+	 */
+	public function setTableInfo($value);
+
+	/**
 	 * Returns the last inserted ID for the table, using any sequence column
 	 * defined in the table metadata.
 	 *
@@ -64,62 +75,11 @@ interface IDataCommandBuilder
 	public function getLastInsertID();
 
 	// -----------------------------------------------------------------------
-	// Query-building helpers
-	// -----------------------------------------------------------------------
-
-	/**
-	 * Appends LIMIT and OFFSET clauses to a SQL string.
-	 *
-	 * @param string $sql the SQL string to modify.
-	 * @param int $limit maximum rows to return; negative means no limit.
-	 * @param int $offset number of rows to skip; negative means no offset.
-	 * @return string the SQL string with LIMIT/OFFSET applied.
-	 */
-	public function applyLimitOffset($sql, $limit = -1, $offset = -1);
-
-	/**
-	 * Appends an ORDER BY clause to a SQL string.
-	 *
-	 * @param string $sql the SQL string to modify.
-	 * @param array $ordering column-name → direction ('asc'|'desc') pairs.
-	 * @return string the SQL string with ORDER BY applied.
-	 */
-	public function applyOrdering($sql, $ordering);
-
-	/**
-	 * Builds a SQL WHERE expression that searches a set of columns for keywords.
-	 *
-	 * @param array $fields column IDs to search.
-	 * @param string $keywords space-separated search terms.
-	 * @return string a SQL condition string (may be empty if no terms or fields given).
-	 */
-	public function getSearchExpression($fields, $keywords);
-
-	/**
-	 * Returns the list of column expressions to use in a SELECT clause.
-	 *
-	 * @param mixed $data '*' for all columns, null for the table's default column
-	 *   list, a comma-separated column name string, or an associative data array
-	 *   whose keys are column names.
-	 * @return string[] fully-quoted column expressions suitable for SELECT.
-	 */
-	public function getSelectFieldList($data = '*');
-
-	/**
-	 * Applies ordering, limit, offset, and bound parameters to a SQL string and
-	 * returns the resulting command.
-	 *
-	 * @param string $sql the base SQL string.
-	 * @param array $parameters name-value pairs (or positional values) to bind.
-	 * @param array $ordering column → direction pairs.
-	 * @param int $limit maximum rows; negative means no limit.
-	 * @param int $offset rows to skip; negative means no offset.
-	 * @return IDataCommand the command ready for execution.
-	 */
-	public function applyCriterias($sql, $parameters = [], $ordering = [], $limit = -1, $offset = -1);
-
-	// -----------------------------------------------------------------------
 	// Command factories
+	//
+	// SQL-string composition helpers (applyLimitOffset, applyOrdering,
+	// applyCriterias, getSearchExpression, getSelectFieldList) live on the
+	// {@see IDbCommandBuilder} sub-interface.
 	// -----------------------------------------------------------------------
 
 	/**
@@ -227,4 +187,77 @@ interface IDataCommandBuilder
 	 * @param array $values positional values or name → value pairs.
 	 */
 	public function bindArrayValues($command, $values);
+
+	// -----------------------------------------------------------------------
+	// Driver-agnostic factories (4.3.3+).  Each driver consumes the portable
+	// fields of {@see IDataCriteria} plus its own native predicate (SQL
+	// condition, Mongo filter doc, etc.).  Used by DataGateway and
+	// ActiveRecord so non-SQL drivers can substitute transparently.
+	// -----------------------------------------------------------------------
+
+	/**
+	 * Builds a SELECT command from a portable criteria.
+	 * @since 4.3.3
+	 * @param IDataCriteria $criteria
+	 */
+	public function createFindCommandFromCriteria(IDataCriteria $criteria);
+
+	/**
+	 * Builds a COUNT command from a portable criteria.
+	 * @since 4.3.3
+	 * @param IDataCriteria $criteria
+	 */
+	public function createCountCommandFromCriteria(IDataCriteria $criteria);
+
+	/**
+	 * Builds an UPDATE command for `$data` against rows matched by `$criteria`.
+	 * @since 4.3.3
+	 * @param array $data
+	 * @param IDataCriteria $criteria
+	 */
+	public function createUpdateCommandFromCriteria(array $data, IDataCriteria $criteria);
+
+	/**
+	 * Builds a DELETE command for rows matched by `$criteria`.
+	 * @since 4.3.3
+	 * @param IDataCriteria $criteria
+	 */
+	public function createDeleteCommandFromCriteria(IDataCriteria $criteria);
+
+	/**
+	 * Builds a criteria that selects rows by primary-key value(s).  Single PK
+	 * accepts a scalar or single-element array; composite PK accepts an
+	 * associative `column => value` row or a list of such rows.
+	 * @param mixed $keyValues primary-key value(s).
+	 * @since 4.3.3
+	 */
+	public function createPrimaryKeyCriteria($keyValues);
+
+	/**
+	 * Builds a criteria for relation batch-loading: matches rows whose
+	 * `$fields` columns are in the `$values` tuples.  SQL drivers emit an
+	 * `IN`-tuple; document drivers emit a `$in` filter.
+	 * @param array $fields column names to match.
+	 * @param array $values list of value-tuples (one per matching row).
+	 * @since 4.3.3
+	 */
+	public function createIndexCriteria(array $fields, array $values);
+
+	/**
+	 * @return bool whether the builder's table (collection) exists in the
+	 *   underlying store.
+	 * @since 4.3.3
+	 */
+	public function tableExists(): bool;
+
+	/**
+	 * Builds a SELECT command that matches `$criteria` AND an index criteria
+	 * (`$fields` IN `$values`).  Used by relation batch-loading.  SQL drivers
+	 * AND-combine the conditions; document drivers merge filter docs.
+	 * @since 4.3.3
+	 * @param IDataCriteria $criteria
+	 * @param array $fields
+	 * @param array $values
+	 */
+	public function createIndexedFindCommand(IDataCriteria $criteria, array $fields, array $values);
 }

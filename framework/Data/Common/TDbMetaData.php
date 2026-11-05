@@ -79,7 +79,7 @@ use Prado\Prado;
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @since 3.1
  */
-abstract class TDbMetaData extends \Prado\TComponent implements IDataMetaData
+abstract class TDbMetaData extends \Prado\TComponent implements IDbMetaData
 {
 	private $_tableInfoCache = [];
 	private $_connection;
@@ -117,9 +117,9 @@ abstract class TDbMetaData extends \Prado\TComponent implements IDataMetaData
 	 *
 	 * @param \Prado\Data\TDbConnection $connection database connection.
 	 * @throws TDbException if no metadata handler can be created for the driver.
-	 * @return IDataMetaData database-specific metadata handler.
+	 * @return ?TDbMetaData database-specific SQL metadata handler.
 	 */
-	public static function getInstance($connection)
+	public static function getInstance($connection): ?TDbMetaData
 	{
 		$connection->setActive(true); //must be connected before retrieving driver name
 		$class = TDbDriverCapabilities::getMetaDataClass($connection);
@@ -151,6 +151,28 @@ abstract class TDbMetaData extends \Prado\TComponent implements IDataMetaData
 			$this->_tableInfoCache[$key] = $tableInfo;
 		}
 		return $this->_tableInfoCache[$key];
+	}
+
+	/**
+	 * Invalidates one or all cached {@see TDbTableInfo} entries.
+	 *
+	 * The table-info cache is populated by {@see getTableInfo()} and held for
+	 * the lifetime of this metadata object.  Call this method after a DDL
+	 * change (e.g. `ALTER TABLE`, `CREATE TABLE`, drop/rename) so that the
+	 * next {@see getTableInfo()} call rebuilds from the live schema.
+	 *
+	 * @param ?string $tableName the table name to evict; pass `null` (the
+	 *   default) to clear the entire cache.  The bare table name must match
+	 *   the value originally passed to {@see getTableInfo()}.
+	 * @since 4.3.3
+	 */
+	public function clearTableInfo(?string $tableName = null): void
+	{
+		if ($tableName === null) {
+			$this->_tableInfoCache = [];
+		} else {
+			unset($this->_tableInfoCache[$tableName]);
+		}
 	}
 
 	/**

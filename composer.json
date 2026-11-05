@@ -109,7 +109,7 @@
 		"fix": "vendor/bin/php-cs-fixer fix",
 		"stan": "vendor/bin/phpstan analyse --memory-limit=512M",
         "unittest": "vendor/bin/phpunit --testsuite unit,db-mysql,db-pgsql,db-sqlite",
-		"dbtest": "vendor/bin/phpunit --testsuite db-mysql,db-pgsql,db-sqlite",
+		"dbtest": "vendor/bin/phpunit --testsuite db-mysql,db-pgsql,db-sqlite,db-firebird",
 		"fulltest": [
 			"@fix",
 			"@stan",

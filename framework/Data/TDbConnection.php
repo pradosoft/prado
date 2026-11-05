@@ -13,6 +13,7 @@ namespace Prado\Data;
 use PDO;
 use PDOException;
 use Prado\Data\Common\TDbMetaData;
+use Prado\Data\IDataTransaction;
 use Prado\Data\IDbConnection;
 use Prado\Exceptions\TDbException;
 use Prado\Prado;
@@ -126,6 +127,16 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	 * @since 3.1.7
 	 */
 	public const DEFAULT_TRANSACTION_CLASS = \Prado\Data\TDbTransaction::class;
+
+	/**
+	 * PDO bindings for the {@see IDataConnection} parameter-type tokens.
+	 * @since 4.3.3
+	 */
+	public const PARAM_NULL = PDO::PARAM_NULL;
+	public const PARAM_INT = PDO::PARAM_INT;
+	public const PARAM_STR = PDO::PARAM_STR;
+	public const PARAM_LOB = PDO::PARAM_LOB;
+	public const PARAM_BOOL = PDO::PARAM_BOOL;
 
 	private $_dsn = '';
 	private $_username = '';
@@ -873,14 +884,11 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	}
 
 	/**
-	 * Convenience method: commits the current transaction on this connection.
-	 *
-	 * Delegates to the active transaction's {@see TDbTransaction::commit()} method.
-	 * If no transaction is currently active (i.e. {@see getCurrentTransaction()}
-	 * returns null), this method is a safe no-op and returns false.
-	 *
-	 * @return ?bool true if a transaction was committed, false if none was active,
-	 *   null if the connection itself is not active.
+	 * Commits the currently active transaction.  Issues the underlying
+	 * {@see \PDO::commit()}, then {@see completeTransaction()} runs any
+	 * driver-specific post-flush and deactivates the transaction object.
+	 * Returns null if the connection is inactive, false if no transaction is active.
+	 * @return ?bool true on commit, false if no active transaction, null if connection inactive.
 	 * @since 4.3.3
 	 */
 	public function commit(): ?bool
@@ -888,23 +896,22 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 		if (!$this->getActive()) {
 			return null;
 		}
-		$txn = $this->getCurrentTransaction();
+		$txn = $this->_transaction;
 		if ($txn === null || !$txn->getActive()) {
 			return false;
 		}
-		$txn->commit();
+		$this->_pdo->commit();
+		$this->completeTransaction();
 		return true;
 	}
 
 	/**
-	 * Convenience method: rolls back the current transaction on this connection.
-	 *
-	 * Delegates to the active transaction's {@see TDbTransaction::rollback()} method.
-	 * If no transaction is currently active (i.e. {@see getCurrentTransaction()}
-	 * returns null), this method is a safe no-op and returns false.
-	 *
-	 * @return ?bool true if a transaction was rolled back, false if none was active,
-	 *   null if the connection itself is not active.
+	 * Rolls back the currently active transaction.  Issues the underlying
+	 * {@see \PDO::rollBack()} (swallowing errors from drivers that have already
+	 * closed the handle), then {@see completeTransaction()} runs any
+	 * driver-specific post-flush and deactivates the transaction object.
+	 * Returns null if the connection is inactive, false if no transaction is active.
+	 * @return ?bool true on rollback, false if no active transaction, null if connection inactive.
 	 * @since 4.3.3
 	 */
 	public function rollback(): ?bool
@@ -912,12 +919,40 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 		if (!$this->getActive()) {
 			return null;
 		}
-		$txn = $this->getCurrentTransaction();
+		$txn = $this->_transaction;
 		if ($txn === null || !$txn->getActive()) {
 			return false;
 		}
-		$txn->rollback();
+		try {
+			$this->_pdo->rollBack();
+		} catch (PDOException | \Error $e) {
+			// Swallow errors from any driver where the transaction handle is already closed.
+		}
+		$this->completeTransaction();
 		return true;
+	}
+
+	/**
+	 * Deactivates the current transaction and runs any driver-specific
+	 * post-completion flush.  For pdo_firebird this commits the implicit
+	 * transaction that the driver opens immediately after every commit or
+	 * rollback, so the next snapshot reflects the completed work.  Called by
+	 * {@see commit()} and {@see rollback()} after the PDO call succeeds.
+	 */
+	protected function completeTransaction(): void
+	{
+		try {
+			$driver = $this->_pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+		} catch (PDOException | \Error $e) {
+			$driver = null;
+		}
+		if ($driver !== null && TDbDriverCapabilities::requiresPostTransactionFlush($driver)) {
+			try {
+				$this->_pdo->commit();
+			} catch (PDOException | \Error $e) {
+			}
+		}
+		$this->_transaction->deactivate();
 	}
 
 	/**

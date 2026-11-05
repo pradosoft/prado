@@ -15,19 +15,69 @@ use Prado\Data\Common\IDataMetaData;
 /**
  * IDataConnection interface
  *
- * IDataConnection defines the interface for a data-store connection.
+ * IDataConnection defines the interface for a data-store connection.  It is the
+ * driver-agnostic entry point: SQL/PDO connections ({@see TDbConnection}) and
+ * non-SQL connections (e.g. `Prado\Data\TMongoConnection` from the prado-mongodb
+ * plugin) both implement it, so framework consumers — DataGateway, ActiveRecord,
+ * caching, cron, i18n — can target this single contract.
  *
- * This interface provides a common abstraction over SQL connections
- * ({@see TDbConnection} via PDO), allowing PRADO plugins to supply their own
- * connection implementations through a unified API.
+ * For SQL drivers the `$query` argument to {@see createCommand} is a SQL string;
+ * non-SQL drivers interpret it according to their own semantics.
  *
- * For SQL drivers the $query argument to {@see createCommand} is a SQL string.
+ * ## Portability roadmap
+ *
+ * The `IData*` family of interfaces forms a complete driver-agnostic contract
+ * for the Data layer.  A third-party driver becomes a drop-in replacement for
+ * the SQL/PDO stack by implementing the **required** interfaces; the
+ * **optional** `IDb*` markers advertise PDO-specific capabilities and only
+ * apply to SQL-backed drivers.
+ *
+ * **Required interfaces** — every driver must implement these:
+ * - {@see IDataConnection} — this interface; the connection itself.
+ * - {@see IDataCommand} — query/command execution and parameter binding.
+ * - {@see IDataReader} — forward-only iteration over result rows.
+ * - {@see IDataTransaction} — commit/rollback control.
+ * - {@see \Prado\Data\Common\IDataMetaData} — schema introspection.
+ * - {@see \Prado\Data\Common\IDataTableInfo} — per-table metadata.
+ * - {@see \Prado\Data\Common\IDataColumn} — per-column metadata.
+ * - {@see \Prado\Data\Common\IDataCommandBuilder} — CRUD command factories.
+ * - {@see \Prado\Data\DataGateway\IDataCriteria} — portable query criteria.
+ *
+ * **Capability markers** — implement only if applicable:
+ * - {@see \Prado\Data\Common\IDataHasSchema} — table-info classes whose engine
+ *   supports a schema/namespace concept.
+ *
+ * **Optional PDO-discovery markers** — SQL/PDO drivers only:
+ * - {@see IDbConnection} — exposes the raw `\PDO` handle via `getPdoInstance()`.
+ * - {@see \Prado\Data\Common\IDbCommand} — SQL statement-text + lifecycle.
+ * - {@see \Prado\Data\Common\IDbMetaData} — SQL identifier-quoting helpers.
+ * - {@see \Prado\Data\Common\IDbCommandBuilder} — SQL-string composition.
+ * - {@see \Prado\Data\Common\IDbColumn} — exposes the column's PDO `PARAM_*` token.
+ *
+ * Non-SQL drivers must NOT implement the `IDb*` markers; code that needs them
+ * uses `instanceof` and falls back appropriately when absent.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.3.3
  */
 interface IDataConnection
 {
+	/**
+	 * Parameter-type tokens for {@see IDataCommand::bindValue()} and
+	 * {@see IDataCommand::bindParameter()}.  Values default to the PDO
+	 * `PARAM_*` integers so SQL drivers can re-declare them with the
+	 * `PDO::PARAM_*` constants directly; non-SQL drivers may override with
+	 * their own routing tokens.  Callers should reference them on the
+	 * connection instance (e.g. `$conn::PARAM_INT`) so the runtime class's
+	 * value is used.
+	 * @since 4.3.3
+	 */
+	public const PARAM_NULL = 0;
+	public const PARAM_INT = 1;
+	public const PARAM_STR = 2;
+	public const PARAM_LOB = 3;
+	public const PARAM_BOOL = 5;
+
 	/**
 	 * @return string the driver name (e.g. 'mysql', 'pgsql', 'sqlite').
 	 */

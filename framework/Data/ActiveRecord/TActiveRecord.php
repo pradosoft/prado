@@ -14,6 +14,7 @@ use Prado\Data\TDbConnection;
 use Prado\Data\Common\TDbTableInfo;
 use Prado\Data\ActiveRecord\Exceptions\TActiveRecordException;
 use Prado\Data\ActiveRecord\Relations\TActiveRecordRelationContext;
+use Prado\Data\DataGateway\IDataCriteria;
 use Prado\Data\DataGateway\TSqlCriteria;
 use Prado\Prado;
 use Prado\TPropertyValue;
@@ -1123,7 +1124,9 @@ abstract class TActiveRecord extends \Prado\TComponent
 		if (is_string($criteria)) {
 			$useArgs = !is_array($parameters) && is_array($args);
 			return new TActiveRecordCriteria($criteria, $useArgs ? $args : $parameters);
-		} elseif ($criteria instanceof TSqlCriteria) {
+		} elseif ($criteria instanceof IDataCriteria) {
+			// Pass through any driver-agnostic criteria (TSqlCriteria for SQL,
+			// TMongoQueryCriteria for MongoDB, etc.) unchanged.
 			return $criteria;
 		} else {
 			return new TActiveRecordCriteria();

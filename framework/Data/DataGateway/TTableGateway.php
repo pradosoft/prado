@@ -164,13 +164,7 @@ class TTableGateway extends \Prado\TComponent
 	 */
 	public function getTableExists(): bool
 	{
-		$sql = 'SELECT * FROM ' . $this->getTableInfo()->getTableFullName() . ' WHERE 0=1';
-		try {
-			$this->getDbConnection()->createCommand($sql)->query()->close();
-			return true;
-		} catch (TDbException $e) {
-			return false;
-		}
+		return $this->getCommand()->getBuilder()->tableExists();
 	}
 
 	/**

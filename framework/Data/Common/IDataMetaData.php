@@ -23,22 +23,23 @@ use Prado\Data\IDataConnection;
  * supported data store through a single, stable API — including future NoSQL or
  * third-party implementations that do not extend {@see TDbMetaData}.
  *
- * The interface covers four areas:
+ * The interface covers three areas:
  * - **Table introspection** — {@see getTableInfo()} returns a structured
  *   {@see IDataTableInfo} describing the columns, keys, and constraints of a
  *   named table.
  * - **Command builder factory** — {@see createCommandBuilder()} returns an
  *   {@see IDataCommandBuilder} ready to generate CRUD commands for a table.
- * - **Identifier quoting** — {@see quoteTableName()}, {@see quoteColumnName()},
- *   and {@see quoteColumnAlias()} wrap identifiers in driver-specific delimiters.
  * - **Table discovery** — {@see findTableNames()} enumerates all tables in a
  *   schema.
+ *
+ * SQL-specific identifier quoting lives on the {@see IDbMetaData} sub-interface.
  *
  * Concrete implementations: {@see TDbMetaData} and its driver-specific
  * subclasses ({@see TMysqlMetaData}, {@see TSqliteMetaData},
  * {@see TPgsqlMetaData}, {@see TMssqlMetaData}, {@see TOracleMetaData},
  * {@see TIbmMetaData}, {@see TFirebirdMetaData}).
  *
+ * Required for portability — see {@see \Prado\Data\IDataConnection} for the full driver-portability roadmap.
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.3.3
  */
@@ -63,27 +64,6 @@ interface IDataMetaData
 	 * @return IDataCommandBuilder the command builder instance for the given table.
 	 */
 	public function createCommandBuilder($tableName = null);
-
-	/**
-	 * Quotes a table name for use in SQL queries.
-	 * @param string $name the table name to quote.
-	 * @return string the properly quoted table name.
-	 */
-	public function quoteTableName($name);
-
-	/**
-	 * Quotes a column name for use in SQL queries.
-	 * @param string $name the column name to quote.
-	 * @return string the properly quoted column name.
-	 */
-	public function quoteColumnName($name);
-
-	/**
-	 * Quotes a column alias for use in SQL queries.
-	 * @param string $name the column alias to quote.
-	 * @return string the properly quoted column alias.
-	 */
-	public function quoteColumnAlias($name);
 
 	/**
 	 * Returns all table names in the database or schema.

@@ -12,7 +12,6 @@ namespace Prado\Data\ActiveRecord;
 
 use Prado\Data\ActiveRecord\Exceptions\TActiveRecordException;
 use Prado\Data\ActiveRecord\Relations\TActiveRecordRelationContext;
-use Prado\Data\Common\TDbMetaData;
 use Prado\Data\Common\TDbTableColumn;
 use Prado\Data\Common\TDbTableInfo;
 use Prado\Data\DataGateway\TDataGatewayCommand;
@@ -166,9 +165,11 @@ class TActiveRecordGateway extends \Prado\TComponent
 		$key = $connStr . $tableName;
 		if (!isset($this->_tables[$key])) {
 			//call this first to ensure that unserializing the cache
-			//will find the correct driver dependent classes.
+			//will find the correct driver dependent classes.  Uses the
+			//connection's own metadata factory so any IDataConnection driver
+			//(SQL or non-SQL) resolves the correct IDataMetaData implementation.
 			if (!isset($this->_meta[$connStr])) {
-				$this->_meta[$connStr] = TDbMetaData::getInstance($connection);
+				$this->_meta[$connStr] = $connection->getDbMetaData();
 			}
 
 			$tableInfo = null;
@@ -392,7 +393,14 @@ class TActiveRecordGateway extends \Prado\TComponent
 	{
 		$values = [];
 		$tableInfo = $this->getCommand($record)->getTableInfo();
-		foreach ($tableInfo->getColumns() as $name => $column) {
+		$columns = $tableInfo->getColumns();
+		if (!$this->hasWritableColumns($columns)) {
+			// Schemaless store (e.g. a document collection with no validator):
+			// the metadata declares no writable columns, so derive the data
+			// from the record's public, non-relation properties.
+			return $this->getRecordPropertyValues($record);
+		}
+		foreach ($columns as $name => $column) {
 			if ($column->getIsExcluded()) {
 				continue;
 			}
@@ -466,8 +474,24 @@ class TActiveRecordGateway extends \Prado\TComponent
 	{
 		$values = [];
 		$tableInfo = $this->getCommand($record)->getTableInfo();
+		$columns = $tableInfo->getColumns();
 		$primary = [];
-		foreach ($tableInfo->getColumns() as $name => $column) {
+		if (!$this->hasWritableColumns($columns)) {
+			// Schemaless store: split the record's properties into primary-key
+			// values (from the metadata's key columns) and the rest.
+			foreach ($columns as $name => $column) {
+				if ($column->getIsPrimaryKey()) {
+					$primary[$name] = $record->getColumnValue($name);
+				}
+			}
+			foreach ($this->getRecordPropertyValues($record) as $name => $value) {
+				if (!isset($primary[$name])) {
+					$values[$name] = $value;
+				}
+			}
+			return [$values, $primary];
+		}
+		foreach ($columns as $name => $column) {
 			if ($column->getIsExcluded()) {
 				continue;
 			}
@@ -487,6 +511,55 @@ class TActiveRecordGateway extends \Prado\TComponent
 			}
 		}
 		return [$values, $primary];
+	}
+
+	/**
+	 * Returns whether the table/collection metadata declares at least one
+	 * writable (non-primary-key) column.  When it does not — as for a
+	 * schemaless document store with no schema validator — the ActiveRecord
+	 * write path falls back to {@see getRecordPropertyValues}.
+	 *
+	 * @param array $columns the {@see \Prado\Data\Common\IDataColumn} list.
+	 * @return bool true if at least one non-primary-key column exists.
+	 * @since 4.3.3
+	 */
+	protected function hasWritableColumns($columns): bool
+	{
+		foreach ($columns as $column) {
+			if (!$column->getIsPrimaryKey()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Returns the record's persistable values keyed by field name, derived
+	 * from its public, non-relation properties (nulls omitted).  Used as the
+	 * fallback when the metadata declares no writable columns, so ActiveRecord
+	 * remains usable against a schemaless store with no predefined schema.
+	 *
+	 * Relation properties (declared in the record's static `$RELATIONS`) are
+	 * excluded.  Property names are used verbatim as field names.
+	 *
+	 * @param TActiveRecord $record the record.
+	 * @return array field-name => value pairs.
+	 * @since 4.3.3
+	 */
+	protected function getRecordPropertyValues(TActiveRecord $record): array
+	{
+		$relations = [];
+		foreach (array_keys((array) $record::$RELATIONS) as $rel) {
+			$relations[strtolower((string) $rel)] = true;
+		}
+		$values = [];
+		foreach (get_object_vars($record) as $name => $value) {
+			if ($value === null || isset($relations[strtolower($name)])) {
+				continue;
+			}
+			$values[$name] = $value;
+		}
+		return $values;
 	}
 
 	protected function updateAssociatedRecords(TActiveRecord $record, $updateBelongsTo = false)

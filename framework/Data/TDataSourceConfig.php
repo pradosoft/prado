@@ -70,7 +70,27 @@ class TDataSourceConfig extends TModule
 {
 	use TDbPropertiesTrait;
 
-	private $_connClass = \Prado\Data\TDbConnection::class;
+	/**
+	 * The default database connection class created by {@see getDbConnection}
+	 * when no {@see setConnectionID ConnectionID} is supplied and
+	 * {@see setConnectionClass ConnectionClass} has not been overridden.
+	 * Subclasses override this constant to default to a different connection
+	 * class (e.g. a non-SQL driver).
+	 * @since 4.3.3
+	 */
+	public const DEFAULT_CONNECTION_CLASS = \Prado\Data\TDbConnection::class;
+
+	private $_connClass;
+
+	/**
+	 * Initializes the default connection class from {@see DEFAULT_CONNECTION_CLASS}.
+	 * @since 4.3.3
+	 */
+	public function __construct()
+	{
+		$this->_connClass = static::DEFAULT_CONNECTION_CLASS;
+		parent::__construct();
+	}
 
 	/**
 	 * Initalize the database connection properties from attributes in <database> tag.
