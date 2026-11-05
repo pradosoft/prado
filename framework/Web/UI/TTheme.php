@@ -282,10 +282,10 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 						}
 						break;
 					case TTemplate::CONFIG_EXPRESSION:
-						$value = $this->evaluateExpression($value[TTemplate::PROP_VALUE]);
+						$control->setSubProperty($propName, $this->evaluateExpression($value[TTemplate::PROP_VALUE]));
 						break;
 					case TTemplate::CONFIG_ASSET:
-						$value = $this->_themeUrl . '/' . ltrim($value[TTemplate::PROP_VALUE], '/');
+						$control->setSubProperty($propName, $this->_themeUrl . '/' . ltrim($value[TTemplate::PROP_VALUE], '/'));
 						break;
 					case TTemplate::CONFIG_DATABIND:
 						$control->bindProperty($propName, $value[TTemplate::PROP_VALUE]);
