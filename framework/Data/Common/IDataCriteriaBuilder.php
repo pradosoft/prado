@@ -37,26 +37,22 @@ interface IDataCriteriaBuilder
 {
 	/**
 	 * Builds a SELECT command from a portable criteria.
-	 * @since 4.3.3
 	 * @param IDataCriteria $criteria
 	 */
 	public function createFindCommandFromCriteria(IDataCriteria $criteria);
 	/**
 	 * Builds a COUNT command from a portable criteria.
-	 * @since 4.3.3
 	 * @param IDataCriteria $criteria
 	 */
 	public function createCountCommandFromCriteria(IDataCriteria $criteria);
 	/**
 	 * Builds an UPDATE command for `$data` against rows matched by `$criteria`.
-	 * @since 4.3.3
 	 * @param array $data
 	 * @param IDataCriteria $criteria
 	 */
 	public function createUpdateCommandFromCriteria(array $data, IDataCriteria $criteria);
 	/**
 	 * Builds a DELETE command for rows matched by `$criteria`.
-	 * @since 4.3.3
 	 * @param IDataCriteria $criteria
 	 */
 	public function createDeleteCommandFromCriteria(IDataCriteria $criteria);
@@ -65,7 +61,6 @@ interface IDataCriteriaBuilder
 	 * accepts a scalar or single-element array; composite PK accepts an
 	 * associative `column => value` row or a list of such rows.
 	 * @param mixed $keyValues primary-key value(s).
-	 * @since 4.3.3
 	 */
 	public function createPrimaryKeyCriteria($keyValues);
 	/**
@@ -74,14 +69,12 @@ interface IDataCriteriaBuilder
 	 * `IN`-tuple; document drivers emit a `$in` filter.
 	 * @param array $fields column names to match.
 	 * @param array $values list of value-tuples (one per matching row).
-	 * @since 4.3.3
 	 */
 	public function createIndexCriteria(array $fields, array $values);
 	/**
 	 * Builds a SELECT command that matches `$criteria` AND an index criteria
 	 * (`$fields` IN `$values`).  Used by relation batch-loading.  SQL drivers
 	 * AND-combine the conditions; document drivers merge filter docs.
-	 * @since 4.3.3
 	 * @param IDataCriteria $criteria
 	 * @param array $fields
 	 * @param array $values

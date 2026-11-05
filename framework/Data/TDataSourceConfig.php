@@ -76,7 +76,7 @@ class TDataSourceConfig extends TModule
 	 * {@see setConnectionClass ConnectionClass} has not been overridden.
 	 * Subclasses override this constant to default to a different connection
 	 * class (e.g. a non-SQL driver).
-	 * @since 4.3.3
+	 * @since 4.4.0
 	 */
 	public const DEFAULT_CONNECTION_CLASS = \Prado\Data\TDbConnection::class;
 
@@ -84,7 +84,7 @@ class TDataSourceConfig extends TModule
 
 	/**
 	 * Initializes the default connection class from {@see DEFAULT_CONNECTION_CLASS}.
-	 * @since 4.3.3
+	 * @since 4.4.0
 	 */
 	public function __construct()
 	{

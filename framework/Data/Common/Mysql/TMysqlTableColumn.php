@@ -50,7 +50,7 @@ class TMysqlTableColumn extends TDbTableColumn
 	 *
 	 * @return null|string raw type string, or null for columns introspected before
 	 *                     this field was added to the metadata.
-	 * @since 4.3.3
+	 * @since 4.4.0
 	 */
 	public function getColumnType(): ?string
 	{

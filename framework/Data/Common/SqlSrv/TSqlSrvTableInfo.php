@@ -20,7 +20,7 @@ use Prado\Data\Common\TDbTableInfo;
  * TSqlSrvTableInfo class provides additional table information for SqlSrv database.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @since 3.1
+ * @since 4.4.0
  */
 class TSqlSrvTableInfo extends TDbTableInfo implements IDataHasSchema
 {

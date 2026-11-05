@@ -65,7 +65,7 @@ interface IDataCommandBuilder extends IDataCriteriaBuilder
 	 * the ActiveRecord gateway to re-point a cached builder at the current
 	 * record's table.
 	 * @param IDataTableInfo $value the table metadata.
-	 * @since 4.3.3
+	 * @since 4.4.0
 	 */
 	public function setTableInfo($value);
 
@@ -202,7 +202,7 @@ interface IDataCommandBuilder extends IDataCriteriaBuilder
 	/**
 	 * @return bool whether the builder's table (collection) exists in the
 	 *   underlying store.
-	 * @since 4.3.3
+	 * @since 4.4.0
 	 */
 	public function tableExists(): bool;
 

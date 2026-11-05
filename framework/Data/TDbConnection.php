@@ -205,7 +205,7 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	 * needed in the current process.
 	 *
 	 * @param array $exprops by reference, list of property names to exclude.
-	 * @since 4.3.3
+	 * @since 4.4.0
 	 */
 	protected function _getZappableSleepProps(&$exprops)
 	{
@@ -343,7 +343,7 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	 *
 	 * @param string $dsn the DSN string to inspect
 	 * @return ?string the charset value from the DSN, or null if not present
-	 * @since 4.3.3
+	 * @since 4.4.0
 	 */
 	protected function extractCharsetFromDsn(string $dsn): ?string
 	{
@@ -842,7 +842,7 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	 * Creates a new {@see IDataTransaction} for this connection.
 	 *
 	 * @return IDataTransaction A new transaction from this connection.
-	 * @since 4.3.3
+	 * @since 4.4.0
 	 */
 	protected function createTransaction(): IDataTransaction
 	{
@@ -1219,7 +1219,7 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	 * include mysql, pgsql, oci, sqlsrv, dblib, and ibm.
 	 *
 	 * @return bool true if the driver exposes `PDO::ATTR_AUTOCOMMIT`.
-	 * @since 4.3.3
+	 * @since 4.4.0
 	 */
 	public function getHasAutoCommit(): bool
 	{
@@ -1349,7 +1349,7 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	 * Call this at the top of any method that requires an open connection.
 	 *
 	 * @throws TDbException if the connection is not active.
-	 * @since 4.3.3
+	 * @since 4.4.0
 	 */
 	public function assertActive()
 	{
@@ -1361,7 +1361,7 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	/**
 	 * @param string $dsn
 	 * @return ?string Driver name from dsn, or null if invalid or not found.
-	 * @since 4.3.3
+	 * @since 4.4.0
 	 */
 	protected function extractDriverFromDsn(string $dsn): ?string
 	{

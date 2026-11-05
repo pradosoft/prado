@@ -21,7 +21,7 @@ use Prado\Data\TDbCommand;
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @author Brad Anderson <belisoful@icloud.com> insertOrIgnore, upsert
- * @since 3.1
+ * @since 4.4.0
  */
 class TSqlSrvCommandBuilder extends TDbCommandBuilder
 {
@@ -31,7 +31,6 @@ class TSqlSrvCommandBuilder extends TDbCommandBuilder
 	 * Uses the MERGE statement since SQL Server has no native INSERT OR IGNORE.
 	 * @param array $data name-value pairs of data to be inserted.
 	 * @return TDbCommand insert-or-ignore MERGE command.
-	 * @since 4.3.3
 	 */
 	public function createInsertOrIgnoreCommand(array $data): TDbCommand
 	{
@@ -55,7 +54,6 @@ class TSqlSrvCommandBuilder extends TDbCommandBuilder
 	 * @param null|array $updateData null, column-name list, explicit col=>value map, or mixed; controls what is updated on conflict.
 	 * @param null|array $conflictColumns conflict target columns; null = primary key columns.
 	 * @return TDbCommand upsert MERGE command.
-	 * @since 4.3.3
 	 */
 	public function createUpsertCommand(array $data, ?array $updateData = null, ?array $conflictColumns = null): TDbCommand
 	{
@@ -68,7 +66,6 @@ class TSqlSrvCommandBuilder extends TDbCommandBuilder
 	 * SQL Server has a ';' at the end of a merge.
 	 * @param string $sql the sql to change before creating the command.
 	 * @return ?string null if no change, or a string if there is a change.
-	 * @since 4.3.3
 	 */
 	protected function postProcessMerge($sql): ?string
 	{

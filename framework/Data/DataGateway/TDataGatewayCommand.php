@@ -241,7 +241,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	 * @param array $values the supplied PK value(s).
 	 * @throws TDbException on PK absence, missing values, or arity mismatch.
 	 * @return array list of value-arrays suitable for {@see \Prado\Data\Common\IDataCommandBuilder::createIndexCriteria}.
-	 * @since 4.3.3
+	 * @since 4.4.0
 	 */
 	protected function normalizeCompositeKeyValues(array $primary, array $values): array
 	{
@@ -389,7 +389,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	 * Inserts a new record, silently ignoring if a duplicate key conflict occurs.
 	 * @param array $data new record data.
 	 * @return mixed last insert id, true on ignore, or false on failure.
-	 * @since 4.3.3
+	 * @since 4.4.0
 	 */
 	public function insertOrIgnore(array $data): mixed
 	{
@@ -411,7 +411,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	 * @param null|array $updateData column=>value pairs to update on conflict; null = all non-PK columns.
 	 * @param null|array $conflictColumns conflict target columns; null = primary key.
 	 * @return mixed last insert id, true on update, or false on failure.
-	 * @since 4.3.3
+	 * @since 4.4.0
 	 */
 	public function upsert(array $data, ?array $updateData = null, ?array $conflictColumns = null): mixed
 	{

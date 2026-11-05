@@ -66,7 +66,7 @@ class TDbCommand extends \Prado\TComponent implements IDbCommand
 	 * The statement is not serializable and will be recreated on demand
 	 * by {@see prepare()} after deserialization.
 	 * @param array $exprops by reference, list of property names to exclude.
-	 * @since 4.3.3
+	 * @since 4.4.0
 	 */
 	protected function _getZappableSleepProps(&$exprops)
 	{
@@ -103,7 +103,7 @@ class TDbCommand extends \Prado\TComponent implements IDbCommand
 
 	/**
 	 * @param \Prado\Data\TDbConnection $value the connection associated with this command
-	 * @since 4.3.3
+	 * @since 4.4.0
 	 */
 	protected function setConnection($value)
 	{
@@ -121,7 +121,7 @@ class TDbCommand extends \Prado\TComponent implements IDbCommand
 
 	/**
 	 * @param ?PDOStatement  $value the underlying PDOStatement for this command
-	 * @since 4.3.3
+	 * @since 4.4.0
 	 */
 	protected function setPdoStatement($value)
 	{
@@ -232,7 +232,7 @@ class TDbCommand extends \Prado\TComponent implements IDbCommand
 	 * @param mixed $value the PHP value to inspect.
 	 * @return mixed the PDO::PARAM_* constant for this driver, or null when the
 	 *   PHP type has no direct mapping.
-	 * @since 4.3.3
+	 * @since 4.4.0
 	 */
 	public function getColumnTypeFromValue($value)
 	{

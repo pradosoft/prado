@@ -801,7 +801,6 @@ class TDbDriverCapabilities
 	 *
 	 * @param string $driver PDO driver name
 	 * @return bool
-	 * @since 4.3.3
 	 */
 	public static function requiresUntypedParameters(string $driver): bool
 	{
@@ -829,7 +828,6 @@ class TDbDriverCapabilities
 	 * @param string $driver PDO driver name
 	 * @return ?string the DSN parameter name (e.g. `'unix_socket'`, `'host'`),
 	 *   or null when the driver does not support a DSN socket path.
-	 * @since 4.3.3
 	 */
 	public static function getSocketDsnParam(string $driver): ?string
 	{
@@ -855,7 +853,6 @@ class TDbDriverCapabilities
 	 * @param string $driver PDO driver name
 	 * @return ?string the parameter name to check (e.g. `'unix_socket'`),
 	 *   or null when the DSN should always be rewritten for this driver.
-	 * @since 4.3.3
 	 */
 	public static function getSocketDsnConflictParam(string $driver): ?string
 	{
@@ -878,7 +875,6 @@ class TDbDriverCapabilities
 	 *
 	 * @param string $driver PDO driver name
 	 * @return string[] parameter names to strip (lowercase, no trailing `=`)
-	 * @since 4.3.3
 	 */
 	public static function getSocketDsnParamsToRemove(string $driver): array
 	{
@@ -921,7 +917,6 @@ class TDbDriverCapabilities
 	 *
 	 * @param string $driver PDO driver name (lowercase)
 	 * @return array<int, mixed> map of `PDO::ATTR_*` constant to value
-	 * @since 4.3.3
 	 */
 	public static function getPostConnectAttributes(string $driver): array
 	{

@@ -533,7 +533,7 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDbCommandBuilder
 	 * @param array $data name-value pairs of data to be inserted.
 	 * @throws TDbException always, in the base implementation.
 	 * @return TDbCommand insert-or-ignore command.
-	 * @since 4.3.3
+	 * @since 4.4.0
 	 */
 	public function createInsertOrIgnoreCommand(array $data): TDbCommand
 	{
@@ -550,7 +550,7 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDbCommandBuilder
 	 * @param null|array $conflictColumns conflict target columns; null = primary key columns.
 	 * @throws TDbException always, in the base implementation.
 	 * @return TDbCommand upsert command.
-	 * @since 4.3.3
+	 * @since 4.4.0
 	 */
 	public function createUpsertCommand(array $data, ?array $updateData = null, ?array $conflictColumns = null): TDbCommand
 	{
@@ -561,7 +561,7 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDbCommandBuilder
 	 * Resolves the conflict columns, defaulting to the table's primary keys.
 	 * @param null|array $conflictColumns explicit conflict columns, or null to use primary keys.
 	 * @return array resolved conflict column names.
-	 * @since 4.3.3
+	 * @since 4.4.0
 	 */
 	protected function resolveConflictColumns(?array $conflictColumns): array
 	{
@@ -587,7 +587,7 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDbCommandBuilder
 	 *   mix of both.
 	 * @param array $conflictColumns the resolved conflict columns.
 	 * @return array resolved column→value pairs to use in the UPDATE branch.
-	 * @since 4.3.3
+	 * @since 4.4.0
 	 */
 	protected function resolveUpdateData(array $data, ?array $updateData, array $conflictColumns): array
 	{
@@ -613,7 +613,7 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDbCommandBuilder
 	 * Checks that an active transaction exists on the current connection.
 	 * Called by MERGE-based drivers (SQL Server, Oracle, DB2, Firebird) before building MERGE statements.
 	 * @throws TDbException if no active transaction is found.
-	 * @since 4.3.3
+	 * @since 4.4.0
 	 */
 	protected function assertActiveTransaction(): void
 	{
@@ -642,7 +642,7 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDbCommandBuilder
 	 * @param string $dualSource dual/dummy table source, e.g. 'FROM DUAL', 'FROM SYSIBM.SYSDUMMY1', '' for SQL Server.
 	 * @param bool $useAsAlias true to emit 'AS t'/'AS s'; false to emit bare 't'/'s' (Oracle, Firebird).
 	 * @return TDbCommand prepared MERGE command with bound parameters.
-	 * @since 4.3.3
+	 * @since 4.4.0
 	 */
 	protected function buildMergeStatement(array $data, ?array $updateData, array $conflictColumns, string $dualSource, bool $useAsAlias): TDbCommand
 	{
@@ -744,7 +744,7 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDbCommandBuilder
 	 * Children override this if there is something specific about the column Name.
 	 * @param string $columnName The name of the column to place in the sql.
 	 * @return string null if no change, or a string if there is a change.
-	 * @since 4.3.3
+	 * @since 4.4.0
 	 */
 	protected function processMergeColumn(string $columnName): string
 	{
@@ -755,7 +755,7 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDbCommandBuilder
 	 * Children override this if there is something specific about the sql, eg adding a ';' to the end for SQL Server.
 	 * @param string $sql the sql to change before creating the command.
 	 * @return ?string null if no change, or a string if there is a change.
-	 * @since 4.3.3
+	 * @since 4.4.0
 	 */
 	protected function postProcessMerge(string $sql): ?string
 	{
@@ -925,7 +925,7 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDbCommandBuilder
 
 	/**
 	 * {@inheritdoc}
-	 * @since 4.3.3
+	 * @since 4.4.0
 	 */
 	public function createFindCommandFromCriteria(IDataCriteria $criteria)
 	{
@@ -941,7 +941,7 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDbCommandBuilder
 
 	/**
 	 * {@inheritdoc}
-	 * @since 4.3.3
+	 * @since 4.4.0
 	 */
 	public function createCountCommandFromCriteria(IDataCriteria $criteria)
 	{
@@ -956,7 +956,7 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDbCommandBuilder
 
 	/**
 	 * {@inheritdoc}
-	 * @since 4.3.3
+	 * @since 4.4.0
 	 */
 	public function createUpdateCommandFromCriteria(array $data, IDataCriteria $criteria)
 	{
@@ -969,7 +969,7 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDbCommandBuilder
 
 	/**
 	 * {@inheritdoc}
-	 * @since 4.3.3
+	 * @since 4.4.0
 	 */
 	public function createDeleteCommandFromCriteria(IDataCriteria $criteria)
 	{
@@ -984,7 +984,7 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDbCommandBuilder
 	 * non-SQL criteria or empty conditions.
 	 * @param IDataCriteria $criteria the criteria.
 	 * @return string the SQL WHERE clause.
-	 * @since 4.3.3
+	 * @since 4.4.0
 	 */
 	protected function getCriteriaCondition(IDataCriteria $criteria): string
 	{
@@ -994,7 +994,7 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDbCommandBuilder
 
 	/**
 	 * {@inheritdoc}
-	 * @since 4.3.3
+	 * @since 4.4.0
 	 */
 	public function createPrimaryKeyCriteria($keyValues)
 	{
@@ -1016,7 +1016,7 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDbCommandBuilder
 
 	/**
 	 * {@inheritdoc}
-	 * @since 4.3.3
+	 * @since 4.4.0
 	 */
 	public function createIndexCriteria(array $fields, array $values)
 	{
@@ -1035,7 +1035,7 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDbCommandBuilder
 
 	/**
 	 * {@inheritdoc}
-	 * @since 4.3.3
+	 * @since 4.4.0
 	 */
 	public function tableExists(): bool
 	{
@@ -1050,7 +1050,7 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDbCommandBuilder
 
 	/**
 	 * {@inheritdoc}
-	 * @since 4.3.3
+	 * @since 4.4.0
 	 */
 	public function createIndexedFindCommand(IDataCriteria $criteria, array $fields, array $values)
 	{
@@ -1074,7 +1074,7 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDbCommandBuilder
 	 * Quotes a (possibly nested) value tuple using the connection's quote function.
 	 * @param array $array values to quote.
 	 * @return string the quoted tuple (e.g. `('a','b')`).
-	 * @since 4.3.3
+	 * @since 4.4.0
 	 */
 	protected function quoteTuple(array $array): string
 	{

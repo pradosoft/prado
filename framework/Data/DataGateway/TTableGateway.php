@@ -160,7 +160,7 @@ class TTableGateway extends \Prado\TComponent
 	 * a missing or inaccessible table is caught as `TDbException` and returns `false`.
 	 *
 	 * @return bool true if the table (or view) exists and is accessible, false otherwise.
-	 * @since 4.3.3
+	 * @since 4.4.0
 	 */
 	public function getTableExists(): bool
 	{
@@ -443,7 +443,7 @@ class TTableGateway extends \Prado\TComponent
 	 * Inserts a new record, silently ignoring if a duplicate key conflict occurs.
 	 * @param array $data new record data.
 	 * @return mixed last insert id, true on ignore, or false on failure.
-	 * @since 4.3.3
+	 * @since 4.4.0
 	 */
 	public function insertOrIgnore(array $data): mixed
 	{
@@ -460,7 +460,7 @@ class TTableGateway extends \Prado\TComponent
 	 *   string-keyed column→value pairs: explicit override values; mixed: both.
 	 * @param null|array $conflictColumns conflict target columns; null = primary key.
 	 * @return mixed last insert id, true on update, or false on failure.
-	 * @since 4.3.3
+	 * @since 4.4.0
 	 */
 	public function upsert(array $data, ?array $updateData = null, ?array $conflictColumns = null): mixed
 	{

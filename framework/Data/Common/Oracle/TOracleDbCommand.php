@@ -38,7 +38,7 @@ use Prado\Exceptions\TDbException;
  * automatically for pdo_oci connections.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @since 4.3.3
+ * @since 4.4.0
  */
 class TOracleDbCommand extends TDbCommand
 {

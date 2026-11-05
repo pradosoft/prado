@@ -23,7 +23,7 @@ namespace Prado\Data\DataGateway;
  *
  * Required for portability — see {@see \Prado\Data\IDataConnection} for the full driver-portability roadmap.
  * @author Brad Anderson <belisoful@icloud.com>
- * @since 4.3.3
+ * @since 4.4.0
  */
 interface IDataCriteria
 {

@@ -78,7 +78,7 @@ interface IDataTableInfo
 	 * ({@see \Prado\Data\DataGateway\TDataGatewayCommand::extractMatchingConditions()})
 	 * to resolve case-insensitive property substrings against known columns.
 	 * @return array<string, string> lower-cased column name mapped to actual column name.
-	 * @since 4.3.3
+	 * @since 4.4.0
 	 */
 	public function getLowerCaseColumnNames();
 

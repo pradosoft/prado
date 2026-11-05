@@ -75,7 +75,7 @@ class TDbDataReader extends \Prado\TComponent implements IDataReader
 	 * The statement is not reconstructable after deserialization; the reader
 	 * should not be serialized while data is being consumed.
 	 * @param array $exprops by reference, list of property names to exclude.
-	 * @since 4.3.3
+	 * @since 4.4.0
 	 */
 	protected function _getZappableSleepProps(&$exprops)
 	{
@@ -87,7 +87,7 @@ class TDbDataReader extends \Prado\TComponent implements IDataReader
 	 * Returns the underlying PDO statement.
 	 *
 	 * @return PDOStatement the active PDO statement.
-	 * @since 4.3.3
+	 * @since 4.4.0
 	 */
 	public function getStatement(): PDOStatement
 	{
@@ -101,7 +101,7 @@ class TDbDataReader extends \Prado\TComponent implements IDataReader
 	 *
 	 * @param null|PDOStatement $statement the PDO statement to wrap.
 	 * @return static
-	 * @since 4.3.3
+	 * @since 4.4.0
 	 */
 	protected function setStatement(?PDOStatement $statement): static
 	{
@@ -230,7 +230,7 @@ class TDbDataReader extends \Prado\TComponent implements IDataReader
 	 * Managed internally by {@see close()}; not intended for external use.
 	 *
 	 * @param bool $value true to mark closed, false to mark open.
-	 * @since 4.3.3
+	 * @since 4.4.0
 	 */
 	protected function setIsClosed(bool $value): void
 	{

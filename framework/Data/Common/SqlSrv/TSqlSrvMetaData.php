@@ -21,7 +21,7 @@ use Prado\Exceptions\TDbException;
  * TSqlSrvMetaData loads SQL Server database table and column information.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @since 3.1
+ * @since 4.4.0
  */
 class TSqlSrvMetaData extends TDbMetaData
 {

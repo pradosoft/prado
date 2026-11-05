@@ -22,7 +22,7 @@ use Prado\Prado;
  * Describes the column metadata of the schema for a SqlSrv database table.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @since 3.1
+ * @since 4.4.0
  */
 class TSqlSrvTableColumn extends TDbTableColumn
 {
