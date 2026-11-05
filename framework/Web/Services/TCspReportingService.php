@@ -215,31 +215,13 @@ class TCspReportingService extends TService
 	}
 
 	/**
-	 * Returns the raw HTTP request body.
-	 *
-	 * The default implementation reads from `php://input`, which is the
-	 * standard PHP stream for the raw POST body. Override this method in a
-	 * subclass to supply a synthetic body for unit testing without needing a
-	 * live HTTP request:
-	 *
-	 * ```php
-	 * class TestableCspReportingService extends TCspReportingService
-	 * {
-	 *     public false|string $body = '';
-	 *
-	 *     protected function readBody(): false|string
-	 *     {
-	 *         return $this->body;
-	 *     }
-	 * }
-	 * ```
-	 *
-	 * @return false|string the raw request body, or `false` when the stream
-	 *   cannot be opened
+	 * Returns the raw HTTP request body from {@see \Prado\Web\THttpRequest::getRawBody()}.
+	 * A subclass overrides this to supply a synthetic body.
+	 * @return false|string the raw request body
 	 */
 	protected function readBody(): false|string
 	{
-		return file_get_contents('php://input');
+		return $this->getRequest()->getRawBody();
 	}
 
 	/**

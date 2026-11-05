@@ -62,7 +62,7 @@ class TTestCspResponse
  * Testable subclass of TCspReportingService.
  *
  * Overrides:
- * - readBody()    — returns $body instead of php://input
+ * - readBody()    — returns $body in place of getRequest()->getRawBody()
  * - getRequest()  — returns a TTestCspRequest with settable requestType
  * - getResponse() — returns a TTestCspResponse that captures status / headers
  *
@@ -286,7 +286,7 @@ class TCspReportingServiceTest extends \PHPUnit\Framework\TestCase
 
 	public function testRunFalseBodyReturns204(): void
 	{
-		// readBody() may return false when php://input cannot be opened.
+		// The readBody() contract keeps false for a subclass whose source cannot be opened.
 		$svc = $this->makeService('POST', false);
 		$svc->run();
 		self::assertSame(204, $svc->getStatusCode());
