@@ -34,6 +34,8 @@ Authentication, authorization, user management, and role-based access control (R
 
 - **`TAuthorizationRuleCollection`** — Ordered collection of [`TAuthorizationRule`](TAuthorizationRule.md) objects; first matching rule wins.
 
+- [`TAuthView`](../Web/UI/WebControls/TAuthView.md) (WebControls) renders content by user; its [`TAuthViewTemplate`](../Web/UI/WebControls/TAuthViewTemplate.md) cases match `Users` and `Roles` with `TAuthorizationRule`, and `Permissions` with `can()`.
+
 ### Cryptography
 
 - **`TSecurityManager`** — Hash computation (`computeHash()`), encryption/decryption (`encrypt()` / `decrypt()`), HMAC token generation and validation. Used by `TPage` for page-state signing.

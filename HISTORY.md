@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+NEW: Issue #1404 - `TAuthView` renders content by the current user: the first `TAuthViewTemplate` child whose `Users`, `Roles`, and `Permissions` match, then its own body. Only the chosen case joins the control tree, and a login or logout during a postback renders the new case. (belisoful)
 ENH: Issue #1404 - `TAuthManager::getReturnUrl()` prefers a local `ReturnUrl` request parameter to the session value; `constructLoginUrl()` builds a login link carrying it, and `isLocalReturnUrl()` rejects other hosts and schemes. (belisoful)
 ENH: Issue #1405 - `TJsonLd` renders structured data as an `application/ld+json` data block from its JSON body or a `StructuredData` PHP array, and `TOpenGraph` renders the Open Graph `og:*` and X Card `twitter:*` meta tags of a page; `TMetaTag` gains `Property`. (belisoful)
 NEW: Issue #1399 - `TSkipLink` renders a skip link to the main content, hidden until focused (WCAG 2.4.1); `TargetID` names the target control or element. (belisoful)

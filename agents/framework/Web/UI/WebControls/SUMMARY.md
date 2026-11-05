@@ -61,6 +61,8 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 
 - **`TConditional`** — conditional rendering based on PHP expression.
 
+- **`TAuthView`** — content by the current user's users, roles, and permissions; cases are `TAuthViewTemplate` children, then its own body.
+
 - **`TTime`** — HTML5 `<time>` element; localized absolute date/time and duration formatting via `IntlDateFormatter`/`CultureInfo`; properties: `DateTime`, `DateTimeFormat`, `TextFormat`.
 
 - **`TWebTemplate`** — HTML5 `<template>`; client-side stamping with `{{...}}` placeholders, or a declarative shadow root through `ShadowRootMode` (`TShadowRootMode`); JS in `controls/webtemplate.js`.

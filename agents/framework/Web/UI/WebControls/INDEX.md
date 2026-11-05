@@ -77,6 +77,7 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 | `TTable` | `<table>` | `Rows` collection; `TTableRow` → `TTableCell` hierarchy |
 | `TImage` | `<img>` | `ImageUrl`, `AlternateText` |
 | `TConditional` | (conditional) | `Condition` PHP expression; renders `TrueTemplate` or `FalseTemplate` |
+| [`TAuthView`](TAuthView.md) | (none) | Content by user: the first matching [`TAuthViewTemplate`](TAuthViewTemplate.md) child, then its own body; `Users`, `Roles`, `Permissions` (@since 4.4.0) |
 
 ## Layout & Multi-View Controls
 
@@ -260,3 +261,4 @@ declares, through `light-dark()` and the `Canvas`/`CanvasText` system colors. Se
 - `TOutputCache` caches the rendered HTML; dynamic controls inside it will not update until the cache expires.
 - `TAbbr`, `TDfn`, and `TVar` filter their parent by default; a large parent, such as a `TContent`, is parsed whenever it holds an unmarked term. Set `TargetControl` to a small container, and exempt markup with `data-prado-filter-exempt`.
 - `TConditional` evaluates the `Condition` PHP expression on every render; keep it lightweight.
+- `TAuthView` hides content; it does not authorize. Pages and actions behind its links need their own rules.

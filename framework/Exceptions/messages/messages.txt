@@ -732,6 +732,9 @@ cachepagestatepersister_pagestate_corrupted = Page state is corrupted.
 
 conditional_condition_invalid			= TConditional.Condition ''{0}'' is not a valid PHP expression: {1}
 
+authviewtemplate_parent_invalid			= TAuthViewTemplate must be a child of TAuthView.
+authviewtemplate_permissions_unsupported	= TAuthViewTemplate.Permissions ''{0}'' requires users with can(). Load TPermissionsManager.
+
 dbparametermodule_table_nonexistent		= TDbParameterModule cannot find DB table ''{0}'' to store parameter data.
 dbparametermodule_get_no_blank_key		= TDbParameterModule cannot get an empty key.
 dbparametermodule_set_no_blank_key		= TDbParameterModule cannot set an empty key with a value.
