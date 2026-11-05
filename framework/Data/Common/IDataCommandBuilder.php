@@ -30,7 +30,9 @@ use Prado\Data\IDataConnection;
  *
  * All method signatures are SQL-centric: WHERE clause strings, column-name →
  * value parameter arrays, column-name → direction ordering arrays, integer
- * limit/offset values, and a column-select descriptor.
+ * limit/offset values, and a column-select descriptor.  The portable criteria
+ * methods, which take an {@see \Prado\Data\DataGateway\IDataCriteria}, are
+ * inherited from {@see IDataCriteriaBuilder}.
  *
  * Concrete implementations: {@see TDbCommandBuilder} and its driver-specific
  * subclasses ({@see TMysqlCommandBuilder}, {@see TSqliteCommandBuilder},
@@ -42,7 +44,7 @@ use Prado\Data\IDataConnection;
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.3.3
  */
-interface IDataCommandBuilder
+interface IDataCommandBuilder extends IDataCriteriaBuilder
 {
 	// -----------------------------------------------------------------------
 	// Accessors
@@ -198,68 +200,10 @@ interface IDataCommandBuilder
 	// -----------------------------------------------------------------------
 
 	/**
-	 * Builds a SELECT command from a portable criteria.
-	 * @since 4.3.3
-	 * @param IDataCriteria $criteria
-	 */
-	public function createFindCommandFromCriteria(IDataCriteria $criteria);
-
-	/**
-	 * Builds a COUNT command from a portable criteria.
-	 * @since 4.3.3
-	 * @param IDataCriteria $criteria
-	 */
-	public function createCountCommandFromCriteria(IDataCriteria $criteria);
-
-	/**
-	 * Builds an UPDATE command for `$data` against rows matched by `$criteria`.
-	 * @since 4.3.3
-	 * @param array $data
-	 * @param IDataCriteria $criteria
-	 */
-	public function createUpdateCommandFromCriteria(array $data, IDataCriteria $criteria);
-
-	/**
-	 * Builds a DELETE command for rows matched by `$criteria`.
-	 * @since 4.3.3
-	 * @param IDataCriteria $criteria
-	 */
-	public function createDeleteCommandFromCriteria(IDataCriteria $criteria);
-
-	/**
-	 * Builds a criteria that selects rows by primary-key value(s).  Single PK
-	 * accepts a scalar or single-element array; composite PK accepts an
-	 * associative `column => value` row or a list of such rows.
-	 * @param mixed $keyValues primary-key value(s).
-	 * @since 4.3.3
-	 */
-	public function createPrimaryKeyCriteria($keyValues);
-
-	/**
-	 * Builds a criteria for relation batch-loading: matches rows whose
-	 * `$fields` columns are in the `$values` tuples.  SQL drivers emit an
-	 * `IN`-tuple; document drivers emit a `$in` filter.
-	 * @param array $fields column names to match.
-	 * @param array $values list of value-tuples (one per matching row).
-	 * @since 4.3.3
-	 */
-	public function createIndexCriteria(array $fields, array $values);
-
-	/**
 	 * @return bool whether the builder's table (collection) exists in the
 	 *   underlying store.
 	 * @since 4.3.3
 	 */
 	public function tableExists(): bool;
 
-	/**
-	 * Builds a SELECT command that matches `$criteria` AND an index criteria
-	 * (`$fields` IN `$values`).  Used by relation batch-loading.  SQL drivers
-	 * AND-combine the conditions; document drivers merge filter docs.
-	 * @since 4.3.3
-	 * @param IDataCriteria $criteria
-	 * @param array $fields
-	 * @param array $values
-	 */
-	public function createIndexedFindCommand(IDataCriteria $criteria, array $fields, array $values);
 }

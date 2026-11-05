@@ -26,9 +26,13 @@ Driver-agnostic base classes for database schema introspection and SQL query bui
 
 - **[`IDataMetaData`](./IDataMetaData.md)** — Interface for database metadata handlers. Implemented by `TDbMetaData` and all its driver subclasses. Third-party drivers register a class name implementing this interface via the `fxDataGetMetaDataClass` event. (@since 4.3.3)
 
-- **[`IDataCommandBuilder`](./IDataCommandBuilder.md)** — Interface for CRUD command builders. Implemented by `TDbCommandBuilder` and all driver-specific subclasses. Defines `createFindCommand()`, `createInsertCommand()`, `createUpdateCommand()`, `createDeleteCommand()`, `createCountCommand()`, and `applyLimitOffset()`. (@since 4.3.3)
+- **[`IDataCommandBuilder`](./IDataCommandBuilder.md)** — Interface for CRUD command builders. Implemented by `TDbCommandBuilder` and all driver-specific subclasses. Defines `createFindCommand()`, `createInsertCommand()`, `createUpdateCommand()`, `createDeleteCommand()`, `createCountCommand()`, and `applyLimitOffset()`. Extends `IDataCriteriaBuilder`. (@since 4.3.3)
+
+- **`IDataCriteriaBuilder`** — Interface for building commands and criteria from a portable `IDataCriteria`, shared by SQL and document drivers. Defines `createFindCommandFromCriteria()`, `createCountCommandFromCriteria()`, `createUpdateCommandFromCriteria()`, `createDeleteCommandFromCriteria()`, `createPrimaryKeyCriteria()`, `createIndexCriteria()`, and `createIndexedFindCommand()`. `IDataCommandBuilder` extends it. (@since 4.4.0)
 
 - **[`IDataTableInfo`](./IDataTableInfo.md)** — Interface for table schema metadata. Implemented by `TDbTableInfo` and driver-specific subclasses. Defines `getTableName()`, `getColumns()`, `getPrimaryKeys()`, `getForeignKeys()`, `createCommandBuilder()`. (@since 4.3.3)
+
+- **`IDataSchemalessTableInfo`** — Optional capability of a table info from a store without fixed columns, such as a MongoDB collection. When `isSchemaless()` is true, the record's own properties define the persisted fields; the prado-activerecord package's `TActiveRecordGateway` checks it. Differs from `IDataHasSchema`, which marks a schema namespace (absent on SQLite and Firebird). (@since 4.4.0)
 
 - **`TDbMetaData`** — Abstract base for schema introspection. Implements `IDataMetaData`. Key method: `getTableInfo($tableName)` returns a `TDbTableInfo` (cached per connection). Static factory: `TDbMetaData::getInstance($connection)` returns the correct driver subclass based on the PDO driver name. Subclasses implement `createTableInfo($tableName)` and `findTableNames()`.
 
