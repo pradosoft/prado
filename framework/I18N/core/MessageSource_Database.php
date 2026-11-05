@@ -82,14 +82,15 @@ class MessageSource_Database extends MessageSource
 	 */
 	protected function &loadData($variant)
 	{
-		$command = $this->getDbConnection()->createCommand(
+		$db = $this->getDbConnection();
+		$command = $db->createCommand(
 			'SELECT t.id, t.source, t.target, t.comments
 				FROM trans_unit t, catalogue c
 				WHERE c.cat_id =  t.cat_id
 					AND c.name = :variant
 				ORDER BY id ASC'
 		);
-		$command->bindParameter(':variant', $variant, $command->getConnection()::PARAM_STR);
+		$command->bindParameter(':variant', $variant, $db::PARAM_STR);
 		$dataReader = $command->query();
 
 		$result = [];
@@ -109,10 +110,11 @@ class MessageSource_Database extends MessageSource
 	 */
 	protected function getLastModified($source)
 	{
-		$command = $this->getDbConnection()->createCommand(
+		$db = $this->getDbConnection();
+		$command = $db->createCommand(
 			'SELECT date_modified FROM catalogue WHERE name = :source'
 		);
-		$command->bindParameter(':source', $source, $command->getConnection()::PARAM_STR);
+		$command->bindParameter(':source', $source, $db::PARAM_STR);
 		$result = $command->queryScalar();
 		return $result ? $result : 0;
 	}
@@ -126,10 +128,11 @@ class MessageSource_Database extends MessageSource
 	 */
 	protected function isValidSource($variant)
 	{
-		$command = $this->getDbConnection()->createCommand(
+		$db = $this->getDbConnection();
+		$command = $db->createCommand(
 			'SELECT COUNT(*) FROM catalogue WHERE name = :variant'
 		);
-		$command->bindParameter(':variant', $variant, $command->getConnection()::PARAM_STR);
+		$command->bindParameter(':variant', $variant, $db::PARAM_STR);
 		return $command->queryScalar() == 1;
 	}
 
@@ -168,20 +171,21 @@ class MessageSource_Database extends MessageSource
 
 		$variant = $catalogue . '.' . $this->culture;
 
-		$command = $this->getDbConnection()->createCommand(
+		$db = $this->getDbConnection();
+		$command = $db->createCommand(
 			'SELECT cat_id FROM catalogue WHERE name = :variant'
 		);
-		$command->bindParameter(':variant', $variant, $command->getConnection()::PARAM_STR);
+		$command->bindParameter(':variant', $variant, $db::PARAM_STR);
 		$cat_id = $command->queryScalar();
 
 		if ($cat_id === null) {
 			return false;
 		}
 
-		$command = $this->getDbConnection()->createCommand(
+		$command = $db->createCommand(
 			'SELECT COUNT(msg_id) FROM trans_unit WHERE cat_id = :catid '
 		);
-		$command->bindParameter(':catid', $cat_id, $command->getConnection()::PARAM_INT);
+		$command->bindParameter(':catid', $cat_id, $db::PARAM_INT);
 		$count = $command->queryScalar();
 
 		return [$cat_id, $variant, $count];
@@ -196,11 +200,12 @@ class MessageSource_Database extends MessageSource
 	private function updateCatalogueTime($cat_id, $variant)
 	{
 		$time = $this->getClock()->time();
-		$command = $this->getDbConnection()->createCommand(
+		$db = $this->getDbConnection();
+		$command = $db->createCommand(
 			'UPDATE catalogue SET date_modified = :moddate WHERE cat_id = :catid'
 		);
-		$command->bindParameter(':moddate', $time, $command->getConnection()::PARAM_INT);
-		$command->bindParameter(':catid', $cat_id, $command->getConnection()::PARAM_INT);
+		$command->bindParameter(':moddate', $time, $db::PARAM_INT);
+		$command->bindParameter(':catid', $cat_id, $db::PARAM_INT);
 		$result = ($command->execute() > 0);
 
 		if (!empty($this->cache)) {
@@ -240,19 +245,20 @@ class MessageSource_Database extends MessageSource
 
 		$time = $this->getClock()->time();
 
-		$command = $this->getDbConnection()->createCommand(
+		$db = $this->getDbConnection();
+		$command = $db->createCommand(
 			'INSERT INTO trans_unit (cat_id,id,source,date_added) VALUES (:catid,:id,:source,:dateadded)'
 		);
-		$command->bindParameter(':catid', $cat_id, $command->getConnection()::PARAM_INT);
-		$command->bindParameter(':id', $count, $command->getConnection()::PARAM_INT);
-		$command->bindParameter(':dateadded', $time, $command->getConnection()::PARAM_INT);
+		$command->bindParameter(':catid', $cat_id, $db::PARAM_INT);
+		$command->bindParameter(':id', $count, $db::PARAM_INT);
+		$command->bindParameter(':dateadded', $time, $db::PARAM_INT);
 		foreach ($messages as $message) {
 			if (empty($message)) {
 				continue;
 			}
 			$count++;
 			$inserted++;
-			$command->bindParameter(':source', $message, $command->getConnection()::PARAM_STR);
+			$command->bindParameter(':source', $message, $db::PARAM_STR);
 			$command->execute();
 		}
 		if ($inserted > 0) {
@@ -277,11 +283,12 @@ class MessageSource_Database extends MessageSource
 			return false;
 		}
 
-		$command = $this->getDbConnection()->createCommand(
+		$db = $this->getDbConnection();
+		$command = $db->createCommand(
 			'DELETE FROM trans_unit WHERE cat_id = :catid AND source = :message'
 		);
-		$command->bindParameter(':catid', $cat_id, $command->getConnection()::PARAM_INT);
-		$command->bindParameter(':message', $message, $command->getConnection()::PARAM_STR);
+		$command->bindParameter(':catid', $cat_id, $db::PARAM_INT);
+		$command->bindParameter(':message', $message, $db::PARAM_STR);
 
 		return ($command->execute() == 1) ? $this->updateCatalogueTime($cat_id, $variant) : false;
 	}
@@ -304,15 +311,16 @@ class MessageSource_Database extends MessageSource
 		}
 
 		$time = $this->getClock()->time();
-		$command = $this->getDbConnection()->createCommand(
+		$db = $this->getDbConnection();
+		$command = $db->createCommand(
 			'UPDATE trans_unit SET target = :target, comments = :comments, date_modified = :datemod
 					WHERE cat_id = :catid AND source = :source'
 		);
-		$command->bindParameter(':target', $target, $command->getConnection()::PARAM_STR);
-		$command->bindParameter(':comments', $comments, $command->getConnection()::PARAM_STR);
-		$command->bindParameter(':datemod', $time, $command->getConnection()::PARAM_INT);
-		$command->bindParameter(':catid', $cat_id, $command->getConnection()::PARAM_INT);
-		$command->bindParameter(':source', $text, $command->getConnection()::PARAM_STR);
+		$command->bindParameter(':target', $target, $db::PARAM_STR);
+		$command->bindParameter(':comments', $comments, $db::PARAM_STR);
+		$command->bindParameter(':datemod', $time, $db::PARAM_INT);
+		$command->bindParameter(':catid', $cat_id, $db::PARAM_INT);
+		$command->bindParameter(':source', $text, $db::PARAM_STR);
 
 		return ($command->execute() == 1) ? $this->updateCatalogueTime($cat_id, $variant) : false;
 	}
@@ -323,7 +331,8 @@ class MessageSource_Database extends MessageSource
 	 */
 	public function catalogues()
 	{
-		$command = $this->getDbConnection()->createCommand('SELECT name FROM catalogue ORDER BY name');
+		$db = $this->getDbConnection();
+		$command = $db->createCommand('SELECT name FROM catalogue ORDER BY name');
 		$dataReader = $command->query();
 
 		$result = [];

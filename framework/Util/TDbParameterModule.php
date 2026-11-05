@@ -242,7 +242,7 @@ class TDbParameterModule extends TDbModule implements IPermissions, IModuleDepen
 			"SELECT {$this->getKeyField()} as keyField, {$this->getValueField()}  as valueField FROM {$this->getTableName()}{$where}"
 		);
 		if ($autoLoadField) {
-			$cmd->bindValue(':auto', $this->getAutoLoadBindValue(true), $cmd->getConnection()::PARAM_STR);
+			$cmd->bindValue(':auto', $this->getAutoLoadBindValue(true), $db::PARAM_STR);
 		}
 		$results = $cmd->query();
 
@@ -392,7 +392,7 @@ class TDbParameterModule extends TDbModule implements IPermissions, IModuleDepen
 		$cmd = $db->createCommand(
 			"SELECT {$this->getValueField()} as valueField FROM {$this->getTableName()} WHERE {$this->getKeyField()}=:key LIMIT 1"
 		);
-		$cmd->bindParameter(":key", $key, $cmd->getConnection()::PARAM_STR);
+		$cmd->bindParameter(":key", $key, $db::PARAM_STR);
 		$results = $cmd->queryRow();
 		$serializer = $this->getSerializer();
 		if (is_array($results) && ($value = $results['valueField']) !== null) {
@@ -468,11 +468,11 @@ class TDbParameterModule extends TDbModule implements IPermissions, IModuleDepen
 		$values = ($autoLoadField ? ", :auto" : '');
 		$cmd = $db->createCommand("INSERT INTO {$this->getTableName()} ({$this->getKeyField()}, {$this->getValueField()}{$field}) " .
 					"VALUES (:key, :value{$values})" . $appendix);
-		$cmd->bindParameter(":key", $key, $cmd->getConnection()::PARAM_STR);
-		$cmd->bindParameter(":value", $_value, $cmd->getConnection()::PARAM_STR);
+		$cmd->bindParameter(":key", $key, $db::PARAM_STR);
+		$cmd->bindParameter(":value", $_value, $db::PARAM_STR);
 		if ($autoLoadField) {
 			$alv = $this->getAutoLoadBindValue((bool) $autoLoad);
-			$cmd->bindParameter(":auto", $alv, $cmd->getConnection()::PARAM_STR);
+			$cmd->bindParameter(":auto", $alv, $db::PARAM_STR);
 		}
 		$cmd->execute();
 
@@ -513,7 +513,7 @@ class TDbParameterModule extends TDbModule implements IPermissions, IModuleDepen
 		$cmd = $db->createCommand(
 			"SELECT COUNT(*) AS count FROM {$this->getTableName()} WHERE {$this->getKeyField()}=:key"
 		);
-		$cmd->bindParameter(":key", $key, $cmd->getConnection()::PARAM_STR);
+		$cmd->bindParameter(":key", $key, $db::PARAM_STR);
 		$result = $cmd->queryRow();
 		return $result['count'] > 0;
 	}
@@ -536,7 +536,7 @@ class TDbParameterModule extends TDbModule implements IPermissions, IModuleDepen
 			$appendix = ' LIMIT 1';
 		}
 		$cmd = $db->createCommand("DELETE FROM {$this->getTableName()} WHERE {$this->getKeyField()}=:key" . $appendix);
-		$cmd->bindParameter(":key", $key, $cmd->getConnection()::PARAM_STR);
+		$cmd->bindParameter(":key", $key, $db::PARAM_STR);
 		$cmd->execute();
 		return $value;
 	}
