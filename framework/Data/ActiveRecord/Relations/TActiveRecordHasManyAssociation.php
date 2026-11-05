@@ -14,6 +14,11 @@ namespace Prado\Data\ActiveRecord\Relations;
  * Loads base active record relations class.
  */
 use Prado\Data\ActiveRecord\TActiveRecord;
+use Prado\Data\ActiveRecord\TActiveRecordCriteria;
+use Prado\Data\ActiveRecord\Exceptions\TActiveRecordException;
+use Prado\Data\Common\IDataCriteriaBuilder;
+use Prado\Data\Common\IDataSchemalessTableInfo;
+use Prado\Data\Common\IDataTableInfo;
 use Prado\Prado;
 
 /**
@@ -95,6 +100,11 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 	 */
 	protected function collectForeignObjects(&$results)
 	{
+		$association = $this->getAssociationTable();
+		if ($association instanceof IDataSchemalessTableInfo && $association->isSchemaless()) {
+			$this->collectForeignObjectsViaAssociation($results, $association);
+			return;
+		}
 		[$sourceKeys, $foreignKeys] = $this->getRelationForeignKeys();
 		$properties = array_values($sourceKeys);
 		$indexValues = $this->getNonNullIndexValues($this->getIndexValues($properties, $results));
@@ -104,6 +114,86 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 			return;
 		}
 		$this->fetchForeignObjects($results, $foreignKeys, $indexValues, $sourceKeys);
+	}
+
+	/**
+	 * Eager-loads the M-N relationship for a schemaless association store.
+	 *
+	 * A schemaless store (e.g. MongoDB) has no foreign-key metadata and no join
+	 * operator, so the SQL join path does not apply.  The pivot columns are taken
+	 * verbatim from the association declaration `assoc.(sourceKey, foreignKey)`,
+	 * and the relationship is resolved in two queries:
+	 *
+	 * 1. read the pivot rows whose source column matches the source results' keys;
+	 * 2. fetch the foreign records whose primary key matches the pivot rows'
+	 *    foreign column.
+	 *
+	 * The foreign records are then grouped under each source result by the source
+	 * primary-key value, the same grouping the SQL path produces.
+	 *
+	 * @param array $results by reference, the source results.
+	 * @param IDataSchemalessTableInfo&IDataTableInfo $association the association table info.
+	 * @throws TActiveRecordException when the association declares fewer than two pivot columns.
+	 * @since 4.3.3
+	 */
+	protected function collectForeignObjectsViaAssociation(&$results, $association)
+	{
+		if (count($this->_association_columns) < 2) {
+			throw new TActiveRecordException(
+				'ar_mn_relation_keys_required',
+				$this->getContext()->getForeignRecordFinder()::class,
+				$association->getTableName()
+			);
+		}
+		$sourcePivot = $this->_association_columns[0];
+		$foreignPivot = $this->_association_columns[1];
+		$sourceKey = array_values($this->getSourceTable()->getPrimaryKeys())[0];
+		$foreignKey = array_values($this->getForeignTable()->getPrimaryKeys())[0];
+
+		// 1. pivot rows whose source column matches the source results' keys.
+		$sourceValues = $this->getIndexValues([$sourceKey], $results);
+		if (empty($sourceValues)) {
+			return;
+		}
+		$conn = $this->getSourceRecord()->getDbConnection();
+		$builder = $association->createCommandBuilder($conn);
+		if (!$builder instanceof IDataCriteriaBuilder) {
+			throw new TActiveRecordException('ar_invalid_relationship');
+		}
+		$command = $builder->createIndexedFindCommand(new TActiveRecordCriteria(), [$sourcePivot], $sourceValues);
+
+		$foreignByHash = [];
+		$foreignValues = [];
+		foreach ($command->query() as $row) {
+			$row = (array) $row;
+			if (!array_key_exists($sourcePivot, $row) || !array_key_exists($foreignPivot, $row)) {
+				continue;
+			}
+			$hash = $this->getObjectHash($row, [$sourcePivot]);
+			$fkValue = $row[$foreignPivot];
+			$foreignByHash[$hash][] = $fkValue;
+			$foreignValues[(string) $fkValue] = [$fkValue];
+		}
+
+		// 2. fetch the foreign records by their primary key.
+		$foreignByPk = [];
+		if (!empty($foreignValues)) {
+			foreach ($this->findForeignObjects([$foreignKey], array_values($foreignValues)) as $fkObject) {
+				$foreignByPk[(string) $fkObject->getColumnValue($foreignKey)] = $fkObject;
+			}
+		}
+
+		// 3. group the foreign records under each source result.
+		$collections = [];
+		foreach ($foreignByHash as $hash => $fkValues) {
+			foreach ($fkValues as $fkValue) {
+				$key = (string) $fkValue;
+				if (isset($foreignByPk[$key])) {
+					$collections[$hash][] = $foreignByPk[$key];
+				}
+			}
+		}
+		$this->setResultCollection($results, $collections, [$sourceKey]);
 	}
 
 	/**

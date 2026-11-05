@@ -15,6 +15,7 @@ use Prado\Data\ActiveRecord\Relations\TActiveRecordRelationContext;
 use Prado\Data\Common\TDbMetaData;
 use Prado\Data\Common\TDbTableColumn;
 use Prado\Data\Common\TDbTableInfo;
+use Prado\Data\Common\IDataSchemalessTableInfo;
 use Prado\Data\DataGateway\TDataGatewayCommand;
 use Prado\Data\DataGateway\TSqlCriteria;
 use Prado\Data\IDataConnection;
@@ -362,6 +363,16 @@ class TActiveRecordGateway extends \Prado\TComponent
 	{
 		$values = [];
 		$tableInfo = $this->getCommand($record)->getTableInfo();
+		// Schemaless store (no column metadata, e.g. MongoDB): the record's own
+		// properties are the authoritative field set.
+		if ($tableInfo instanceof IDataSchemalessTableInfo && $tableInfo->isSchemaless()) {
+			foreach ($record->getRecordColumnValues() as $name => $value) {
+				if ($value !== null) {
+					$values[$name] = $value;
+				}
+			}
+			return $values;
+		}
 		foreach ($tableInfo->getColumns() as $name => $column) {
 			if ($column->getIsExcluded()) {
 				continue;
@@ -401,6 +412,19 @@ class TActiveRecordGateway extends \Prado\TComponent
 		$values = [];
 		$tableInfo = $this->getCommand($record)->getTableInfo();
 		$primary = [];
+		// Schemaless store (no column metadata, e.g. MongoDB): split the record's
+		// own properties into primary-key fields and updatable fields.
+		if ($tableInfo instanceof IDataSchemalessTableInfo && $tableInfo->isSchemaless()) {
+			$primaryKeys = $tableInfo->getPrimaryKeys();
+			foreach ($record->getRecordColumnValues() as $name => $value) {
+				if (in_array($name, $primaryKeys, true)) {
+					$primary[$name] = $value;
+				} else {
+					$values[$name] = $value;
+				}
+			}
+			return [$values, $primary];
+		}
 		foreach ($tableInfo->getColumns() as $name => $column) {
 			if ($column->getIsExcluded()) {
 				continue;

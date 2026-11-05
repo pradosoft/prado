@@ -143,6 +143,20 @@ abstract class TActiveRecordRelation
 			}
 		}
 
+		// No declared foreign-key metadata matched.  When the relation explicitly
+		// names its foreign-key field(s) (the 3rd element of the RELATIONS entry),
+		// synthesize the mapping from those fields to the referenced record's
+		// primary keys.  This lets ActiveRecord relations work on data stores that
+		// expose no foreign-key metadata (e.g. MongoDB and other non-SQL drivers).
+		// SQL stores with real FK metadata return above, so their behavior is
+		// unchanged; this only adds a fallback when no metadata FK is found.
+		if (!$loose && $this->getContext()->hasFkField()) {
+			$key = $this->synthesizeForeignKeys($matchesRecord, $gateway);
+			if (!empty($key)) {
+				return $key;
+			}
+		}
+
 		//none found
 		$matching = $gateway->getRecordTableInfo($matchesRecord)->getTableFullName();
 		throw new TActiveRecordException(
@@ -174,6 +188,33 @@ abstract class TActiveRecordRelation
 		}
 		$constraints[] = $current;
 		return $constraints;
+	}
+
+	/**
+	 * Synthesizes a foreign-key mapping from the relation's explicitly declared
+	 * foreign-key field(s) and the referenced record's primary keys, for stores
+	 * that expose no foreign-key metadata.  The declared fields (3rd element of
+	 * the RELATIONS entry, comma-delimited) are paired positionally with the
+	 * referenced record's primary keys.
+	 * @param \Prado\Data\ActiveRecord\TActiveRecord $matchesRecord the referenced record.
+	 * @param \Prado\Data\ActiveRecord\TActiveRecordGateway $gateway the record gateway.
+	 * @return array foreign-key field => referenced primary-key field, or empty
+	 *   when the declared field count does not match the primary-key count.
+	 * @since 4.3.3
+	 */
+	protected function synthesizeForeignKeys($matchesRecord, $gateway)
+	{
+		$primaryKeys = array_values($gateway->getRecordTableInfo($matchesRecord)->getPrimaryKeys());
+		preg_match_all('/\s*(\S+\.)?([\w-]+)\s*/', (string) $this->getContext()->getFkField(), $matches);
+		$fkFields = array_values(array_filter($matches[2], 'strlen'));
+		if (empty($fkFields) || count($fkFields) !== count($primaryKeys)) {
+			return [];
+		}
+		$keys = [];
+		foreach ($fkFields as $i => $fkField) {
+			$keys[$fkField] = $primaryKeys[$i];
+		}
+		return $keys;
 	}
 
 	/**

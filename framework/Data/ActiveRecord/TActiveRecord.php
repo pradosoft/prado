@@ -15,6 +15,7 @@ use Prado\Data\Common\TDbTableInfo;
 use Prado\Data\ActiveRecord\Exceptions\TActiveRecordException;
 use Prado\Data\ActiveRecord\Relations\TActiveRecordRelationContext;
 use Prado\Data\DataGateway\TSqlCriteria;
+use Prado\Data\DataGateway\IDataCriteria;
 use Prado\Prado;
 use Prado\TPropertyValue;
 use ReflectionClass;
@@ -1036,6 +1037,9 @@ abstract class TActiveRecord extends \Prado\TComponent
 			return new TActiveRecordCriteria($criteria, $useArgs ? $args : $parameters);
 		} elseif ($criteria instanceof TSqlCriteria) {
 			return clone $criteria;
+		} elseif ($criteria instanceof IDataCriteria) {
+			// A non-SQL criteria, such as a MongoDB filter criteria, is kept as is.
+			return $criteria;
 		} else {
 			return new TActiveRecordCriteria();
 		}
@@ -1129,6 +1133,38 @@ abstract class TActiveRecord extends \Prado\TComponent
 	{
 		$columnName = $this->getColumnPropertyName($columnName);
 		$this->$columnName = $value;
+	}
+
+	/**
+	 * Returns the record's field values keyed by the record's public, non-static,
+	 * non-relation instance property names.
+	 *
+	 * This is used by {@see TActiveRecordGateway} for schemaless data stores
+	 * whose metadata exposes no authoritative column list (e.g. MongoDB), where
+	 * the record's own properties define the persisted fields.  The logical
+	 * property names are used verbatim — {@see $COLUMN_MAPPING}'s physical column
+	 * names are not materialized, because a schemaless store has no physical
+	 * schema to map to.  For SQL stores the gateway uses the table metadata
+	 * columns instead, so this method does not affect them.
+	 *
+	 * @return array property-name => value for every persisted property.
+	 * @since 4.3.3
+	 */
+	public function getRecordColumnValues(): array
+	{
+		$relations = self::$_relations[$this::class] ?? [];
+		$values = [];
+		foreach ((new \ReflectionObject($this))->getProperties(\ReflectionProperty::IS_PUBLIC) as $property) {
+			if ($property->isStatic()) {
+				continue;
+			}
+			$name = $property->getName();
+			if (isset($relations[strtolower($name)])) {
+				continue;
+			}
+			$values[$name] = $this->$name;
+		}
+		return $values;
 	}
 
 	/**
