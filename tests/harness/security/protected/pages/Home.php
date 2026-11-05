@@ -16,6 +16,14 @@ class Home extends \Prado\Web\UI\TPage
 		}
 	}
 
+	/**
+	 * The login page URL that returns to this request.
+	 */
+	public function getLoginUrl(): string
+	{
+		return $this->Application->getModule('auth')->constructLoginUrl($this->Request->getRequestUri());
+	}
+
 	public function getCurrentUser(): string
 	{
 		$user = $this->Application->getUser();

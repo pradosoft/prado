@@ -90,7 +90,7 @@ This dual-path design means ciphertext produced before or after enabling `UseEnc
 - **`UseEncryptionHmac` defaults to `true`** since 4.4.0. `decrypt()` reads ciphertext with or without the HMAC, so data encrypted under the 4.3 default still decrypts.
 - **Empty keys are rejected** — `setValidationKey('')`, `setCookieValidationKey('')`, and `setEncryptionKey('')` throw `TInvalidDataValueException`.
 - **Cookies use `CookieValidationKey`** — `THttpRequest`/`THttpResponse` cookie validation, the `TAuthManager` auto-login cookie, and the `TUserManager` auto-login token. Set it to sign out every remembered user without touching page state or encrypted data.
-- **mbstring** — when the `mbstring` extension is present, binary-safe `mb_strlen`/`mb_substr` with `'8bit'` encoding are used internally to avoid multibyte-string splitting errors.
+- **Bytes, not characters** — HMAC and IV splitting use `strlen()` and `substr()`, which count bytes; PHP 8 removed `mbstring.func_overload`, so the old `mb_strlen(..., '8bit')` guard is gone.
 
 ## See Also
 

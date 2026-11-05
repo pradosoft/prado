@@ -1,6 +1,6 @@
 # PRADO Framework Classes
 
-**Total Classes: 716**
+**Total Classes: 717**
 
 This document lists all classes in the PRADO framework as defined in `classes.php`.
 
@@ -8,7 +8,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 | Directory | Classes | Interfaces | Total | Recursive |
 |-----------|---------|------------|-------|-----------|
-| [Prado](./INDEX.md) | 17 | 7 | 24 | 716 |
+| [Prado](./INDEX.md) | 17 | 7 | 24 | 717 |
 | [Prado\\Caching](./Caching/INDEX.md) | 18 | 2 | 20 | 20 |
 | [Prado\\Collections](./Collections/INDEX.md) | 27 | 7 | 34 | 34 |
 | [Prado\\Data](./Data/INDEX.md) | 10 | 5 | 15 | 51 |
@@ -32,7 +32,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 | [Prado\\Security\\Permissions](./Security/Permissions/INDEX.md) | 8 | 1 | 9 | 9 |
 | [Prado\\Shell](./Shell/INDEX.md) | 4 | 0 | 4 | 10 |
 | [Prado\\Shell\\Actions](./Shell/Actions/INDEX.md) | 5 | 0 | 5 | 5 |
-| [Prado\\Util](./Util/INDEX.md) | 23 | 7 | 30 | 78 |
+| [Prado\\Util](./Util/INDEX.md) | 24 | 7 | 31 | 79 |
 | [Prado\\Util\\Behaviors](./Util/Behaviors/INDEX.md) | 14 | 0 | 14 | 14 |
 | [Prado\\Util\\Cron](./Util/Cron/INDEX.md) | 11 | 0 | 11 | 11 |
 | [Prado\\Util\\Helpers](./Util/Helpers/INDEX.md) | 6 | 0 | 6 | 6 |
@@ -515,6 +515,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 - [TDbParameterModule](./Util/TDbParameterModule.md)
 - [TDbPluginModule](./Util/TDbPluginModule.md)
 - [TJsonRpcClient](./Util/TJsonRpcClient.md)
+- [TMultibyteString](./Util/TMultibyteString.md)
 - [TParameterModule](./Util/TParameterModule.md)
 - [TPluginModule](./Util/TPluginModule.md)
 - [TRpcClient](./Util/TRpcClient.md)
