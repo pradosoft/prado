@@ -10,7 +10,9 @@
  
  // No Namespace for unit tests, separate from the system
  require_once('PradoUnitDataConnectionTrait.php');
- 
+
+use Prado\Data\TDbConnection;
+
  /**
   * PradoUnitDataConnectionTrait class
   *
@@ -41,17 +43,24 @@ trait PradoUnitDataConnectionTrait {
 			return null;
 		}
 		$conn = PradoUnit::$unitSetup($this->getDatabaseName(), $this->getIsForActiveRecord());
-		if (is_string($conn)) {
-			$this->markTestSkipped($conn);
+		if (is_array($conn)) {
+			// The 4.3 unit suite runs every driver's tests in one job; a driver
+			// whose PDO extension is not installed is skipped, not failed.
+			if (str_starts_with($conn[0], 'extension:')) {
+				$this->markTestSkipped($conn[1]);
+			}
+			PradoUnit::failFirstThenSkip($this, $conn[0], null, $conn[1]);
+			return null;
 		} elseif ($conn instanceof \Exception) {
 			throw $conn;
 		} elseif ($conn instanceof TDbConnection) {
 			foreach ($this->getTestTables() as $tableName) {
-				$tableException = PradoUnit::checkForTable($conn, $tableName);
-				if (is_string($tableException)) {
-					$this->markTestSkipped($tableException);
-				} elseif ($tableException instanceof \Exception) {
-					throw $tableException;
+				$tableResult = PradoUnit::checkForTable($conn, $tableName);
+				if (is_array($tableResult)) {
+					PradoUnit::failFirstThenSkip($this, $tableResult[0], null, $tableResult[1]);
+					return null;
+				} elseif ($tableResult instanceof \Exception) {
+					throw $tableResult;
 				}
 			}
 		}
