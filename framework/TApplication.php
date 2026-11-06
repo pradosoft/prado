@@ -13,7 +13,7 @@ namespace Prado;
 use Prado\Caching\ICache;
 use Prado\Collections\TCollectionItemChangeParameter;
 use Prado\Collections\TMap;
-use Prado\Exceptions\{TConfigurationException, TExitException, THttpException};
+use Prado\Exceptions\{TConfigurationException, TException, TExitException, THttpException};
 use Prado\Exceptions\TErrorHandler;
 use Prado\I18N\TGlobalization;
 use Prado\Security\IUser;
@@ -21,6 +21,7 @@ use Prado\Security\TAuthorizationRuleCollection;
 use Prado\Security\TSecurityManager;
 use Prado\Web\{THttpRequest, THttpResponse, THttpSession};
 use Prado\Web\TAssetManager;
+use Prado\Util\TComposerReflection;
 use Prado\Util\TLogger;
 use Prado\Web\Services\TPageService;
 use Prado\Web\UI\TTemplateManager;
@@ -1980,6 +1981,12 @@ class TApplication extends TComponent implements ISingleton
 			Prado::using($using);
 		}
 
+		// register extension class map (data, no code execution) and extra message files
+		Prado::registerClassMap($config->getClassMap());
+		foreach ($config->getErrorMessages() as $messageFile) {
+			TException::addMessageFile($messageFile);
+		}
+
 		// set application properties
 		if (!$withinService) {
 			foreach ($config->getProperties() as $name => $value) {
@@ -2065,9 +2072,15 @@ class TApplication extends TComponent implements ISingleton
 		$configFile = $this->getConfigurationFile();
 		if ($configFile !== null) {
 			$cacheFile = $this->getCacheFile();
-			if ($cacheFile === null || @filemtime($cacheFile) < filemtime($configFile)) {
+			// The cached config bakes in the installed extensions' error-message and
+			// class-map files, so it is also stale when any Composer installed.json
+			// changes (a package installed, updated, or removed), not just the config file.
+			if ($cacheFile === null
+					|| ($cacheTime = @filemtime($cacheFile)) < filemtime($configFile)
+					|| (($manifestsTime = TComposerReflection::getInstalledManifestsTime()) !== null && $cacheTime < $manifestsTime)) {
 				$cn = $this->getApplicationConfigurationClass();
 				$config = new $cn();
+				$config->captureComposerExtensions();
 				$config->loadFromFile($configFile);
 				if ($cacheFile !== null) {
 					file_put_contents($cacheFile, serialize($config), LOCK_EX);
