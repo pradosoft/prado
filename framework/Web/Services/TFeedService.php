@@ -15,6 +15,7 @@ use Prado\Prado;
 use Prado\TApplication;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\THttpException;
+use Prado\Xml\TXmlElement;
 
 /**
  * TFeedService class
@@ -69,6 +70,7 @@ class TFeedService extends \Prado\TService
 	/**
 	 * Initializes this module.
 	 * This method is required by the IModule interface.
+	 * A PHP configuration skips the service `class` key and entries that are not arrays.
 	 * @param mixed $config configuration for this module, can be null
 	 */
 	public function init($config)
@@ -76,10 +78,13 @@ class TFeedService extends \Prado\TService
 		if ($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP) {
 			if (is_array($config)) {
 				foreach ($config as $id => $feed) {
+					if ($id === 'class' || !is_array($feed)) {
+						continue;
+					}
 					$this->_feeds[$id] = $feed;
 				}
 			}
-		} else {
+		} elseif ($config instanceof TXmlElement) {
 			foreach ($config->getElementsByTagName('feed') as $feed) {
 				if (($id = $feed->getAttributes()->remove('id')) !== null) {
 					$this->_feeds[$id] = $feed;
@@ -116,10 +121,10 @@ class TFeedService extends \Prado\TService
 					if ($feed instanceof IFeedContentProvider) {
 						$properties = $feedConfig['properties'] ?? [];
 					} else {
-						throw new TConfigurationException('jsonservice_response_type_invalid', $id);
+						throw new TConfigurationException('feedservice_feedtype_invalid', $id);
 					}
 				} else {
-					throw new TConfigurationException('jsonservice_class_required', $id);
+					throw new TConfigurationException('feedservice_class_required', $id);
 				}
 			} else {
 				$properties = $feedConfig->getAttributes();

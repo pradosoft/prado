@@ -95,4 +95,52 @@ class ChoiceFormatTest extends \PHPUnit\Framework\TestCase
 			}
 		}
 	}
+
+	public function testSetNotationOperators()
+	{
+		$choice = new ChoiceFormat();
+		$this->assertTrue($choice->isValid(0, '{n: !n}'));
+		$this->assertFalse($choice->isValid(3, '{n: !n}'));
+		$this->assertTrue($choice->isValid(2, '{n: -n < 0}'));
+		$this->assertTrue($choice->isValid(2, '{n: (n + 1) % 3 == 0}'));
+		$this->assertFalse($choice->isValid(2, '{n: n + 1 % 3 == 0}'));
+		$this->assertTrue($choice->isValid(5, '{n: n - 2 >= 3 & n <= 5}'));
+		$this->assertTrue($choice->isValid(4, '{n: n % 2 == 1 | n == 4}'));
+		$this->assertTrue($choice->isValid(7, '{n: n & 1}'));
+		$this->assertTrue($choice->isValid(1.5, '{n: n > 1.25}'));
+		$this->assertTrue($choice->isValid(0, '{n: n == 0 || 10 % n == 0}'));
+		$this->assertFalse($choice->isValid(0, '{n: n != 0 && 10 % n == 0}'));
+		$this->assertFalse($choice->isValid(3, '{n: n % 0}'));
+	}
+
+	public function testSetNotationConditional()
+	{
+		$choice = new ChoiceFormat();
+		$this->assertTrue($choice->isValid(2, '{n: n > 1 ? 1 : 0}'));
+		$this->assertFalse($choice->isValid(1, '{n: n > 1 ? 1 : 0}'));
+		$this->assertTrue($choice->isValid(3, '{n: n % 2 ? n > 2 : n == 0}'));
+		$this->assertTrue($choice->isValid(0, '{n: n % 2 ? n > 2 : n == 0}'));
+		$this->assertFalse($choice->isValid(1, '{n: n % 2 ? n > 2 : n == 0}'));
+		$this->assertTrue($choice->isValid(0, '{n: n ?: 1}'));
+		$this->assertFalse($choice->isValid(0, '{n: n ?: 0}'));
+		$this->assertTrue($choice->isValid(6, '{n: n > 0 ? n > 5 ? 1 : 0 : 0}'));
+		$this->assertFalse($choice->isValid(3, '{n: n > 0 ? n > 5 ? 1 : 0 : 0}'));
+		$this->assertTrue($choice->isValid(6, '{n: (n > 5 ? 1 : 0) ? 1 : 0}'));
+		$this->assertTrue($choice->isValid(2, '{n: n == 1 ? 0 : (n == 2 ? 1 : 0)}'));
+		$this->assertFalse($choice->isValid(2, '{n: n == 1 ? 0 : n == 2 ? 1 : 0}'));
+		$this->assertFalse($choice->isValid(2, '{n: n > 1 ? 1}'));
+		$this->assertTrue($choice->isValid(2, '{n: n > 1 ? : 0}'));
+		$this->assertEquals('two to four', $choice->format('[1] one |{n: n > 1 ? n < 5 : 0} two to four |[5,Inf] many', 3));
+	}
+
+	public function testSetNotationRejectsCode()
+	{
+		$choice = new ChoiceFormat();
+		$this->assertFalse($choice->isValid(1, '{n: phpinfo()}'));
+		$this->assertFalse($choice->isValid(1, '{n: n = 1}'));
+		$this->assertFalse($choice->isValid(1, '{n: (n > 0}'));
+		$this->assertFalse($choice->isValid(1, '{n: n > 0)}'));
+		$this->assertFalse($choice->isValid(1, '{n: n >}'));
+		$this->assertFalse($choice->isValid(1, '{n: 1 2}'));
+	}
 }

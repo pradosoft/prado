@@ -146,9 +146,10 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	 */
 	public function setEnabled($enabled)
 	{
-		if ($enabled == true && !$this->_paramBehavior) {
+		$enabled = TPropertyValue::ensureBoolean($enabled);
+		if ($enabled && !$this->_paramBehavior) {
 			$this->attachParamMapRoute();
-		} elseif ($enabled == false && $this->_paramBehavior) {
+		} elseif (!$enabled && $this->_paramBehavior) {
 			Prado::getApplication()->getParameters()->detachBehavior($this->_routeBehaviorName);
 			$this->_paramBehavior = null;
 		}
@@ -181,13 +182,14 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	 */
 	public function setParameter($value)
 	{
-		$this->_parameter = TPropertyValue::ensureString($value);
+		$parameter = TPropertyValue::ensureString($value);
 		if ($this->_paramBehavior) {
 			if (!strlen($value)) {
 				throw new TInvalidOperationException('parameterizebehavior_cannot_set_parameter_to_blank_after_attach');
 			}
 			$this->_paramBehavior->setParameter($value);
 		}
+		$this->_parameter = $parameter;
 	}
 
 	/**

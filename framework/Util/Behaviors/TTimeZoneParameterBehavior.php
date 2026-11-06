@@ -11,6 +11,7 @@
 namespace Prado\Util\Behaviors;
 
 use Prado\Prado;
+use Prado\TPropertyValue;
 use Prado\Util\TBehavior;
 
 /**
@@ -98,10 +99,11 @@ class TTimeZoneParameterBehavior extends TBehavior
 	 */
 	public function setEnabled($enabled)
 	{
-		if ($enabled == true && !$this->_paramBehavior) {
+		$enabled = TPropertyValue::ensureBoolean($enabled);
+		if ($enabled && !$this->_paramBehavior) {
 			$this->_paramBehavior = new TMapRouteBehavior($this->_timeZoneParameter, [$this, 'setTimeZone']);
 			Prado::getApplication()->getParameters()->attachBehavior(self::APP_PARAM_ROUTE_BEHAVIOR_NAME, $this->_paramBehavior);
-		} elseif ($enabled == false && $this->_paramBehavior) {
+		} elseif (!$enabled && $this->_paramBehavior) {
 			Prado::getApplication()->getParameters()->detachBehavior(self::APP_PARAM_ROUTE_BEHAVIOR_NAME);
 			$this->_paramBehavior = null;
 		}

@@ -1359,7 +1359,8 @@ class TComponent
 			try {
 				$this->getEventHandlers($name)->remove($handler, $priority);
 				return true;
-			} catch (\Exception $e) {
+			} catch (TInvalidDataValueException $e) {
+				// The handler is not attached at the given priority; nothing to detach.
 			}
 		}
 		return false;
@@ -1439,6 +1440,9 @@ class TComponent
 	 * {@see \Prado\IEventCycleParameter::postRaiseEvent} are called for pre- and
 	 * post-processing of the event lifecycle.
 	 *
+	 * A handler held by a WeakReference whose object is freed during the raise is
+	 * skipped.
+	 *
 	 * @param string $name the event name
 	 * @param mixed $sender the event sender object
 	 * @param \Prado\TEventParameter $param the event parameter
@@ -1485,6 +1489,10 @@ class TComponent
 				$handlerArray = array_reverse($handlerArray);
 			}
 			foreach ($handlerArray as $handler) {
+				// A weak handler collected during the raise outputs as null.
+				if ($handler === null) {
+					continue;
+				}
 				$this->callBehaviorsMethod('dyIntraRaiseEventTestHandler', $return, $handler, $sender, $param, $name);
 				if ($return === false) {
 					continue;

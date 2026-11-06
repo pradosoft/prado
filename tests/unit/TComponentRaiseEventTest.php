@@ -3,6 +3,7 @@
 namespace Prado\Test\Unit;
 
 use Prado\Collections\TPriorityList;
+use Prado\Collections\TWeakCallableCollection;
 use Prado\Exceptions\TApplicationException;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidOperationException;
@@ -210,5 +211,60 @@ class TComponentRaiseEventTest extends \PHPUnit\Framework\TestCase
 	{
 		//TODO Test the Global Event Listener
 		throw new \PHPUnit\Framework\IncompleteTestError();
+	}
+	/**
+	 * A weak listener freed between the scrub and the output filter (the cycle
+	 * collector can run there) is skipped instead of raised as an invalid handler.
+	 */
+	public function testRaiseEventSkipsListenerFreedDuringRaise()
+	{
+		$component = new NewComponent();
+		$dying = new NewComponent();
+		$handlers = new TComponentRaiseEventFreeingCollection();
+		$handlers->add([$dying, 'myEventHandler']);
+		$handlers->add([$this->component, 'myEventHandler']);
+		$handlers->afterFlatten = function () use (&$dying) {
+			$dying = null;
+		};
+		PradoUnit::setProp($component, '_e', ['onmyevent' => $handlers]);
+
+		$component->raiseEvent('OnMyEvent', $this, null);
+		$this->assertNull($dying);
+		$this->assertTrue($this->component->isEventHandled());
+	}
+
+	/**
+	 * A null entry from a handler collection that keeps invalid WeakReferences is skipped.
+	 */
+	public function testRaiseEventSkipsNullHandler()
+	{
+		$component = new NewComponent();
+		$dying = new NewComponent();
+		$handlers = new TWeakCallableCollection(null, null, null, null, false);
+		$handlers->add([$dying, 'myEventHandler']);
+		$handlers->add([$this->component, 'myEventHandler']);
+		$dying = null;
+		PradoUnit::setProp($component, '_e', ['onmyevent' => $handlers]);
+
+		$component->raiseEvent('OnMyEvent', $this, null);
+		$this->assertTrue($this->component->isEventHandled());
+	}
+}
+
+/**
+ * Runs a callback after flattening, between the scrub and the output filter of {@see toArray}.
+ */
+class TComponentRaiseEventFreeingCollection extends TWeakCallableCollection
+{
+	public $afterFlatten;
+
+	protected function flattenPriorities(): void
+	{
+		parent::flattenPriorities();
+		if ($this->afterFlatten) {
+			$afterFlatten = $this->afterFlatten;
+			$this->afterFlatten = null;
+			$afterFlatten();
+		}
 	}
 }

@@ -18,6 +18,22 @@ BUG: Issues #1048, #1050 - TSecurityManager: fix timing-attack vulnerability in 
 BUG: Issues #1101, #1122 - TDbCache: expiry moment is a cache hit; TErrorHandler: refactor - `THttpException`/`TExitException` updated.
 BUG: Issue #1121 - TPgsqlMetaData: null-safe `substr()` for PHP 8 compatibility (`adsrc` column can be `null`).
 BUG: Issue #1126 - `TDirectoryCacheDependency`: fixed missing `$timestamps` capture in `array_merge` for subdirectory timestamps; `TConstantReflectionTrait`: fixed blank-string prefix edge case.
+BUG: TWeakCallableCollection, TWeakList, TWeakMap: an entry added or removed while weak references are scrubbed is kept consistent.
+BUG: TComponent::detachEventHandler() catches only the handler-not-found exception.
+BUG: TComponent::raiseEvent() skips a weak listener freed during the raise.
+BUG: Property setters of TFileLogRoute, TLogRouter, TParameterizeBehavior, TTimeScheduler, TSoapService, TUrlMapping, TThemeManager, and TTableStyle store the value after it is validated.
+BUG: TPageStateFormatter::unserialize() rejects a missing page state without a PHP deprecation.
+BUG: TDbUserManager checks UserClass is uninitialized in setUserClass() instead of getUserClass().
+BUG: CultureInfo::getNativeName() skips the country lookup for a culture without a region.
+BUG: TJavaScript::jsonEncode() works without an application, skips a charset iconv does not recognize, and transcodes stdClass properties.
+BUG: ChoiceFormat parses set notation instead of calling eval().
+BUG: TCronModule PHP configuration job keys are case-insensitive.
+BUG: TJsonService PHP configuration without a 'json' key registers nothing.
+BUG: TFeedService PHP configuration skips the service 'class' key, XML init(null) no longer fails, and feed errors use the feedservice_* codes.
+BUG: TUserManager compares passwords with hash_equals().
+BUG: TThemeManager::getTheme() rejects a theme name that is not a single directory.
+BUG: TParameterizeBehavior and TTimeZoneParameterBehavior Enabled accept 'true' and 'false' strings; THttpResponse rejects a status reason starting with a line break.
+BUG: TCaptureForkLog: onCollectLogs TypeError, grandchild logs, message framing, signal-interrupted waits, closed connections, and a child blocking on its parent.
 
 ## Version 4.3.2 - January 28, 2026
 

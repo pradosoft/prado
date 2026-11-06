@@ -209,13 +209,18 @@ class TWeakMap extends TMap implements IWeakCollection, ICollectionFilter
 	// -------------------------------------------------------------------------
 
 	/**
-	 * Removes entries whose object value has been garbage-collected.
+	 * Removes entries from the keyed map `_d` whose stored `WeakReference`
+	 * has lost its referent, following the two-pass snapshot-identify +
+	 * identity-remove scrubbing contract documented on
+	 * {@see TWeakCollectionTrait}.
 	 *
-	 * Re-entrancy guard: PHP's cyclic GC can fire destructors between any two opcodes.
-	 * If a destructor calls back into the map (e.g. removing a handler) while this
-	 * method is iterating, {@see isScrubbing} prevents the inner call from modifying
-	 * $_d underneath the outer loop.  Entries skipped by the inner call are cleaned on
-	 * the next outer pass.
+	 * Class-specific behaviour: keys are scalar (string/int) and the stale
+	 * set is keyed by `spl_object_id` of the **stored object** (the entry
+	 * value or its wrapping `TEventHandler`), not the inner `WeakReference`'s
+	 * referent — which has already been GC'd. `_eventHandlerCount` is
+	 * decremented per removal during Pass 2; a destructor-time `remove()`
+	 * that already deleted the same key simply leaves nothing for Pass 2 to
+	 * skip without double-counting.
 	 */
 	protected function scrubWeakReferences(): void
 	{
@@ -224,34 +229,36 @@ class TWeakMap extends TMap implements IWeakCollection, ICollectionFilter
 		}
 		$this->setScrubbing(true);
 		try {
-			foreach (array_keys($this->_d) as $key) {
-				if (!array_key_exists($key, $this->_d)) {
-					continue; // already removed by a re-entrant call (shouldn't happen with guard, but defensive)
-				}
-				$stored = $this->_d[$key];
-
+			// Pass 1: identify entries whose stored object's WeakReference is stale.
+			// Key by spl_object_id of the *stored* object so Pass 2 can match
+			// against $_d's current state even if the same key has been overwritten.
+			$staleEntryIds = [];
+			foreach ($this->_d as $stored) {
 				if (!is_object($stored)) {
 					continue;
 				}
-
-				$isEventHandler = false;
-				$isDead = false;
-				$object = $stored;
-
-				if ($isEventHandler = ($stored instanceof TEventHandler)) {
-					$object = $stored->getHandlerObject(true);
+				$ref = $stored;
+				if ($ref instanceof TEventHandler) {
+					$ref = $ref->getHandlerObject(true);
 				}
-
-				if (($object instanceof WeakReference) && $object->get() === null) {
-					$isDead = true;
+				if (($ref instanceof WeakReference) && $ref->get() === null) {
+					$staleEntryIds[spl_object_id($stored)] = true;
 				}
+			}
 
-				if ($isDead) {
-					unset($this->_d[$key]);
-
-					if ($isEventHandler) {
-						$this->_eventHandlerCount--;
-					}
+			// Pass 2: remove stale entries from _d's current state.
+			foreach (array_keys($this->_d) as $key) {
+				if (!array_key_exists($key, $this->_d)) {
+					continue;
+				}
+				$stored = $this->_d[$key];
+				if (!is_object($stored) || !isset($staleEntryIds[spl_object_id($stored)])) {
+					continue;
+				}
+				$isEventHandler = $stored instanceof TEventHandler;
+				unset($this->_d[$key]);
+				if ($isEventHandler) {
+					$this->_eventHandlerCount--;
 				}
 			}
 			$this->weakResetCount();
