@@ -175,6 +175,12 @@ abstract class TActiveRecord extends \Prado\TComponent
 	private static $_columnMapping = [];
 
 	/**
+	 * @var array<string, array<string, string>> per class, the lower case column name or
+	 *   public property name mapped to the record property, for case-insensitive matching.
+	 */
+	private static $_columnMappingCi = [];
+
+	/**
 	 * This static variable defines the relationships.
 	 * The keys are public variable/property names defined in the AR class.
 	 * Each value is an array, e.g. array(self::HAS_MANY, 'PlayerRecord').
@@ -321,8 +327,43 @@ abstract class TActiveRecord extends \Prado\TComponent
 		$className = $this::class;
 		if (!isset(self::$_columnMapping[$className])) {
 			$class = new ReflectionClass($className);
-			self::$_columnMapping[$className] = $class->getStaticPropertyValue('COLUMN_MAPPING');
+			self::$_columnMapping[$className] = $mapping = $class->getStaticPropertyValue('COLUMN_MAPPING');
+			$map = [];
+			foreach ($class->getProperties(\ReflectionProperty::IS_PUBLIC) as $prop) {
+				if (!$prop->isStatic()) {
+					$map[strtolower($prop->getName())] ??= $prop->getName();
+				}
+			}
+			foreach ($mapping as $column => $property) {
+				$map[strtolower($column)] = $property;
+			}
+			self::$_columnMappingCi[$className] = $map;
 		}
+	}
+
+	/**
+	 * Returns the record property for a column name.
+	 * - A `COLUMN_MAPPING` key of the same case → its property.
+	 * - A property of the same name → the column name.
+	 * - A `COLUMN_MAPPING` key or a public property that differs only in case → that property.
+	 * - Otherwise → the column name.
+	 *
+	 * Drivers that report upper case column names, such as Firebird, Oracle, and DB2,
+	 * fill lower case properties without `COLUMN_MAPPING` entries.
+	 * @param string $columnName the column name (as defined in database schema)
+	 * @return string the record property name
+	 * @since 4.3.3
+	 */
+	protected function getColumnPropertyName($columnName)
+	{
+		$className = $this::class;
+		if (isset(self::$_columnMapping[$className][$columnName])) {
+			return self::$_columnMapping[$className][$columnName];
+		}
+		if (property_exists($this, $columnName) || $this->canGetProperty($columnName) || $this->canSetProperty($columnName)) {
+			return $columnName;
+		}
+		return self::$_columnMappingCi[$className][strtolower($columnName)] ?? $columnName;
 	}
 
 	/**
@@ -1073,10 +1114,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 */
 	public function getColumnValue($columnName)
 	{
-		$className = $this::class;
-		if (isset(self::$_columnMapping[$className][$columnName])) {
-			$columnName = self::$_columnMapping[$className][$columnName];
-		}
+		$columnName = $this->getColumnPropertyName($columnName);
 		return $this->$columnName;
 	}
 
@@ -1089,10 +1127,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 */
 	public function setColumnValue($columnName, $value)
 	{
-		$className = $this::class;
-		if (isset(self::$_columnMapping[$className][$columnName])) {
-			$columnName = self::$_columnMapping[$className][$columnName];
-		}
+		$columnName = $this->getColumnPropertyName($columnName);
 		$this->$columnName = $value;
 	}
 

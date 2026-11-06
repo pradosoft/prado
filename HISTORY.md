@@ -15,6 +15,7 @@ BUG: ActiveRecord - `RecordClass::finder()` works without an override. (belisofu
 BUG: ActiveRecord - A record class without `TABLE` maps to its short class name. (belisoful)
 BUG: ActiveRecord - `findBy()` and `with()` without a suffix raise no string offset warning. (belisoful)
 BUG: ActiveRecord - `copyFrom()` copies an object's public properties only. (belisoful)
+BUG: ActiveRecord - Column names that differ from a record property or `COLUMN_MAPPING` key only in case fill that property; an exact-case match takes precedence. (belisoful)
 BUG: ActiveRecord - Message text for `ar_save_invalid`, `ar_delete_invalid`, `ar_data_invalid`, `ar_belongs_to_multiple_result`, and the five `scaffold_*` codes. (belisoful)
 BUG: ActiveRecord - `TScaffoldListView` and `TScaffoldView` find their template controls; the list sorts by the selected option and renders NULL cells. (belisoful)
 BUG: ActiveRecord - `TScaffoldBase` reports a missing record's key values; a Scaffold subclass publishes the default stylesheet; `TScaffoldSearch` trims `SearchableFields`. (belisoful)

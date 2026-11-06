@@ -45,6 +45,18 @@ class LifecycleOwnerRecord extends TActiveRecord
 	public $owner_id;
 }
 
+class LifecycleCaseRecord extends TActiveRecord
+{
+	public const TABLE = 'case_items';
+
+	public static $COLUMN_MAPPING = ['Title_Col' => 'title'];
+
+	public $id;
+	public $ID;
+	public $name;
+	public $title;
+}
+
 /** Records the keys the finder passes to the gateway and returns no rows. */
 class LifecycleRecordingGateway extends TActiveRecordGateway
 {
@@ -140,6 +152,37 @@ class TActiveRecordTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame(9, $record->id);
 		$this->assertNull($record->owner_id);
 		$this->assertNull($record->name);
+	}
+
+	public function testColumnValue_caseInsensitiveFallback()
+	{
+		$record = new LifecycleCaseRecord();
+		$record->setColumnValue('NAME', 'upper');
+		$this->assertSame('upper', $record->name);
+		$this->assertSame('upper', $record->getColumnValue('Name'));
+		$record->setColumnValue('TITLE_COL', 'mapped');
+		$this->assertSame('mapped', $record->title);
+	}
+
+	public function testColumnValue_exactCaseWins()
+	{
+		$record = new LifecycleCaseRecord(['id' => 1, 'ID' => 2]);
+		$this->assertSame(1, $record->id);
+		$this->assertSame(2, $record->ID);
+		$this->assertSame(2, $record->getColumnValue('ID'));
+		$record->setColumnValue('Title_Col', 'exact');
+		$this->assertSame('exact', $record->title);
+		$record->setColumnValue('title', 'property');
+		$this->assertSame('property', $record->title);
+	}
+
+	public function testColumnValue_unmatchedColumnKeepsItsName()
+	{
+		$record = new LifecycleItemRecord();
+		$record->setColumnValue('item_name', 'mapped');
+		$this->assertSame('mapped', $record->name);
+		$record->setColumnValue('OWNER_ID', 3);
+		$this->assertSame(3, $record->owner_id);
 	}
 
 	public function testCopyFrom_scalar_throws()
