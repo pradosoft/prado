@@ -204,7 +204,7 @@ class TActiveRecordActionTest extends \PHPUnit\Framework\TestCase
 		$action = $this->newAction();
 		$this->assertTrue($action->actionGenerate(['generate', 'users', self::OUTPUT]));
 		$this->assertFlags($action, false, false);
-		$this->assertStringContainsString('must be within directory', $this->_out->flush());
+		$this->assertStringContainsString('must be within directory', $this->errorText($this->_out->flush()));
 	}
 
 	public function testActionGenerate_readsSoapAndOverwrite()
