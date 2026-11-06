@@ -57,10 +57,6 @@ use Prado\Web\UI\WebControls\TRepeaterCommandEventParameter;
  */
 class TScaffoldListView extends TScaffoldBase
 {
-	private $_sort;
-	private $_header;
-	private $_list;
-
 	/**
 	 * Initialize the sort drop down list and the column names repeater.
 	 */
@@ -75,10 +71,10 @@ class TScaffoldListView extends TScaffoldBase
 			$sorts[$name . ' DESC'] = $fname . ' Descending';
 			$headers[] = $fname;
 		}
-		$this->_sort->setDataSource($sorts);
-		$this->_sort->dataBind();
-		$this->_header->setDataSource($headers);
-		$this->_header->dataBind();
+		$this->getSort()->setDataSource($sorts);
+		$this->getSort()->dataBind();
+		$this->getHeader()->setDataSource($headers);
+		$this->getHeader()->dataBind();
 	}
 
 	/**
@@ -101,11 +97,11 @@ class TScaffoldListView extends TScaffoldBase
 	protected function loadRecordData()
 	{
 		$search = new TActiveRecordCriteria($this->getSearchCondition(), $this->getSearchParameters());
-		$this->_list->setVirtualItemCount($this->getRecordFinder()->count($search));
+		$this->getList()->setVirtualItemCount($this->getRecordFinder()->count($search));
 		$finder = $this->getRecordFinder();
 		$criteria = $this->getRecordCriteria();
-		$this->_list->setDataSource($finder->findAll($criteria));
-		$this->_list->dataBind();
+		$this->getList()->setDataSource($finder->findAll($criteria));
+		$this->getList()->dataBind();
 	}
 
 	/**
@@ -113,9 +109,9 @@ class TScaffoldListView extends TScaffoldBase
 	 */
 	protected function getRecordCriteria()
 	{
-		$total = $this->_list->getVirtualItemCount();
-		$limit = $this->_list->getPageSize();
-		$offset = $this->_list->getCurrentPageIndex() * $limit;
+		$total = $this->getList()->getVirtualItemCount();
+		$limit = $this->getList()->getPageSize();
+		$offset = $this->getList()->getCurrentPageIndex() * $limit;
 		if ($offset + $limit > $total) {
 			$limit = $total - $offset;
 		}
@@ -126,9 +122,9 @@ class TScaffoldListView extends TScaffoldBase
 				$criteria->setOffset($offset);
 			}
 		}
-		$order = explode(' ', $this->_sort->getSelectedValue(), 2);
-		if (is_array($order) && count($order) === 2) {
-			$criteria->setOrdersBy($order);
+		$order = explode(' ', $this->getSort()->getSelectedValue(), 2);
+		if (count($order) === 2) {
+			$criteria->setOrdersBy([$order[0] => $order[1]]);
 		}
 		return $criteria;
 	}
@@ -252,7 +248,7 @@ class TScaffoldListView extends TScaffoldBase
 	 */
 	protected function pageChanged($sender, $param)
 	{
-		$this->_list->setCurrentPageIndex($param->getNewPageIndex());
+		$this->getList()->setCurrentPageIndex($param->getNewPageIndex());
 	}
 
 	/**

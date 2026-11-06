@@ -65,7 +65,7 @@ class TSqliteScaffoldInput extends TScaffoldInputCommon
 	{
 		$control = parent::createDateControl($container, $column, $record);
 		$value = $this->getRecordPropertyValue($column, $record);
-		if (!empty($value) && preg_match('/timestamp/i', $column->getDbType())) {
+		if (!empty($value) && is_numeric($value) && preg_match('/timestamp/i', $column->getDbType())) {
 			$control->setTimestamp((int) $value);
 		}
 		return $control;
@@ -75,26 +75,27 @@ class TSqliteScaffoldInput extends TScaffoldInputCommon
 	{
 		$value = $this->getRecordPropertyValue($column, $record);
 		$time = parent::createDateTimeControl($container, $column, $record);
-		if (!empty($value) && preg_match('/timestamp/i', $column->getDbType())) {
+		if (!empty($value) && is_numeric($value) && preg_match('/timestamp/i', $column->getDbType())) {
 			$dt = new \DateTime();
 			$dt->setTimestamp((int) $value);
-			$time[1]->setSelectedValue($dt->format('G'));
-			$time[2]->setSelectedValue($dt->format('i'));
-			$time[3]->setSelectedValue($dt->format('s'));
+			$time[1]->setSelectedValue((int) $dt->format('G'));
+			$time[2]->setSelectedValue((int) $dt->format('i'));
+			$time[3]->setSelectedValue((int) $dt->format('s'));
 		}
 		return $time;
 	}
 
 	protected function getDateTimeValue($container, $column, $record)
 	{
-		if (preg_match('/timestamp/i', $column->getDbType())) {
+		$value = $this->getRecordPropertyValue($column, $record);
+		if (preg_match('/timestamp/i', $column->getDbType()) && (empty($value) || is_numeric($value))) {
 			$time = $container->findControl(self::DEFAULT_ID)->getTimestamp();
 			$dt = new \DateTime();
 			$dt->setTimestamp($time);
 			$hour = $container->findControl('scaffold_time_hour')->getSelectedValue();
 			$mins = $container->findControl('scaffold_time_min')->getSelectedValue();
 			$secs = $container->findControl('scaffold_time_sec')->getSelectedValue();
-			$dt->setTime($hour, $mins, $secs);
+			$dt->setTime((int) $hour, (int) $mins, (int) $secs);
 			return $dt->getTimeStamp();
 		} else {
 			return parent::getDateTimeValue($container, $column, $record);

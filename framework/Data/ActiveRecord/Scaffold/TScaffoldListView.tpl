@@ -25,7 +25,7 @@
 	<com:TRepeater ID="_properties">
 		<prop:ItemTemplate>
 		<span class="field field_<%# $this->ItemIndex %>">
-			<%# htmlspecialchars($this->Data) %>
+			<%# htmlspecialchars((string) $this->Data) %>
 		</span>
 		</prop:ItemTemplate>
 	</com:TRepeater>

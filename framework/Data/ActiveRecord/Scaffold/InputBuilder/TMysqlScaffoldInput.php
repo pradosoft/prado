@@ -74,7 +74,7 @@ class TMysqlScaffoldInput extends TScaffoldInputCommon
 		if ($column->getColumnSize() == 1) {
 			return $this->createBooleanControl($container, $column, $record);
 		} else {
-			parent::createIntegerControl($container, $column, $record);
+			return parent::createIntegerControl($container, $column, $record);
 		}
 	}
 

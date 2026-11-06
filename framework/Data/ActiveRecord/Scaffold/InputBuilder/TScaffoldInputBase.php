@@ -81,6 +81,8 @@ class TScaffoldInputBase implements IScaffoldInput
 				require_once(__DIR__ . '/TPgsqlScaffoldInput.php');
 				return new TPgsqlScaffoldInput();
 			case TDbDriver::EXTENSION_MSSQL:
+			case TDbDriver::DRIVER_SQLSRV:
+			case TDbDriver::DRIVER_DBLIB:
 				require_once(__DIR__ . '/TMssqlScaffoldInput.php');
 				return new TMssqlScaffoldInput();
 			case TDbDriver::DRIVER_IBM:
@@ -101,7 +103,7 @@ class TScaffoldInputBase implements IScaffoldInput
 				$class = $inputClasses[0];
 				if (!is_string($class) || !is_a($class, IScaffoldInput::class, true)) {
 					// @todo v4.4 TActiveRecordConfigurationException, move message
-					throw new TConfigurationException('ar_not_input_base', is_string($class) ? $class : $class::class, IScaffoldInput::class);
+					throw new TConfigurationException('ar_not_input_base', is_string($class) ? $class : get_debug_type($class), IScaffoldInput::class);
 				}
 				return new $class();
 		}

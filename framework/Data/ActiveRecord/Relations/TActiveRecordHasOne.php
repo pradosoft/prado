@@ -112,6 +112,7 @@ class TActiveRecordHasOne extends TActiveRecordRelation
 
 	/**
 	 * Sets the foreign objects to the given property on the source object.
+	 * The property is null when no foreign object matches.
 	 * @param \Prado\Data\ActiveRecord\TActiveRecord $source source object.
 	 * @param array $properties foreign objects.
 	 * @param array $collections by reference
@@ -125,6 +126,8 @@ class TActiveRecordHasOne extends TActiveRecordRelation
 				throw new TActiveRecordException('ar_belongs_to_multiple_result');
 			}
 			$source->setColumnValue($prop, $collections[$hash][0]);
+		} else {
+			$source->setColumnValue($prop, null);
 		}
 	}
 

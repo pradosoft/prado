@@ -14,6 +14,11 @@ namespace Prado\Data\ActiveRecord\Relations;
  * Loads base active record relations class.
  */
 use Prado\Data\ActiveRecord\TActiveRecord;
+use Prado\Data\ActiveRecord\TActiveRecordCriteria;
+use Prado\Data\ActiveRecord\Exceptions\TActiveRecordException;
+use Prado\Data\Common\IDataCriteriaBuilder;
+use Prado\Data\Common\IDataSchemalessTableInfo;
+use Prado\Data\Common\IDataTableInfo;
 use Prado\Prado;
 
 /**
@@ -95,22 +100,135 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 	 */
 	protected function collectForeignObjects(&$results)
 	{
+		$association = $this->getAssociationTable();
+		if ($association instanceof IDataSchemalessTableInfo && $association->isSchemaless()) {
+			$this->collectForeignObjectsViaAssociation($results, $association);
+			return;
+		}
 		[$sourceKeys, $foreignKeys] = $this->getRelationForeignKeys();
 		$properties = array_values($sourceKeys);
-		$indexValues = $this->getIndexValues($properties, $results);
+		$indexValues = $this->getNonNullIndexValues($this->getIndexValues($properties, $results));
+		if (count($indexValues) === 0) {
+			$collections = [];
+			$this->setResultCollection($results, $collections, $properties);
+			return;
+		}
 		$this->fetchForeignObjects($results, $foreignKeys, $indexValues, $sourceKeys);
 	}
 
 	/**
+	 * Eager-loads the M-N relationship for a schemaless association store.
+	 *
+	 * A schemaless store (e.g. MongoDB) has no foreign-key metadata and no join
+	 * operator, so the SQL join path does not apply.  The pivot columns are taken
+	 * verbatim from the association declaration `assoc.(sourceKey, foreignKey)`,
+	 * and the relationship is resolved in two queries:
+	 *
+	 * 1. read the pivot rows whose source column matches the source results' keys;
+	 * 2. fetch the foreign records whose primary key matches the pivot rows'
+	 *    foreign column.
+	 *
+	 * The foreign records are then grouped under each source result by the source
+	 * primary-key value, the same grouping the SQL path produces.
+	 *
+	 * @param array $results by reference, the source results.
+	 * @param IDataSchemalessTableInfo&IDataTableInfo $association the association table info.
+	 * @throws TActiveRecordException when the association declares fewer than two pivot columns.
+	 * @since 4.3.3
+	 */
+	protected function collectForeignObjectsViaAssociation(&$results, $association)
+	{
+		if (count($this->_association_columns) < 2) {
+			throw new TActiveRecordException(
+				'ar_mn_relation_keys_required',
+				$this->getContext()->getForeignRecordFinder()::class,
+				$association->getTableName()
+			);
+		}
+		$sourcePivot = $this->_association_columns[0];
+		$foreignPivot = $this->_association_columns[1];
+		$sourceKey = array_values($this->getSourceTable()->getPrimaryKeys())[0];
+		$foreignKey = array_values($this->getForeignTable()->getPrimaryKeys())[0];
+
+		// 1. pivot rows whose source column matches the source results' keys.
+		$sourceValues = $this->getIndexValues([$sourceKey], $results);
+		if (empty($sourceValues)) {
+			return;
+		}
+		$conn = $this->getSourceRecord()->getDbConnection();
+		$builder = $association->createCommandBuilder($conn);
+		if (!$builder instanceof IDataCriteriaBuilder) {
+			throw new TActiveRecordException('ar_invalid_relationship');
+		}
+		$command = $builder->createIndexedFindCommand(new TActiveRecordCriteria(), [$sourcePivot], $sourceValues);
+
+		$foreignByHash = [];
+		$foreignValues = [];
+		foreach ($command->query() as $row) {
+			$row = (array) $row;
+			if (!array_key_exists($sourcePivot, $row) || !array_key_exists($foreignPivot, $row)) {
+				continue;
+			}
+			$hash = $this->getObjectHash($row, [$sourcePivot]);
+			$fkValue = $row[$foreignPivot];
+			$foreignByHash[$hash][] = $fkValue;
+			$foreignValues[(string) $fkValue] = [$fkValue];
+		}
+
+		// 2. fetch the foreign records by their primary key.
+		$foreignByPk = [];
+		if (!empty($foreignValues)) {
+			foreach ($this->findForeignObjects([$foreignKey], array_values($foreignValues)) as $fkObject) {
+				$foreignByPk[(string) $fkObject->getColumnValue($foreignKey)] = $fkObject;
+			}
+		}
+
+		// 3. group the foreign records under each source result.
+		$collections = [];
+		foreach ($foreignByHash as $hash => $fkValues) {
+			foreach ($fkValues as $fkValue) {
+				$key = (string) $fkValue;
+				if (isset($foreignByPk[$key])) {
+					$collections[$hash][] = $foreignByPk[$key];
+				}
+			}
+		}
+		$this->setResultCollection($results, $collections, [$sourceKey]);
+	}
+
+	/**
+	 * Returns the association table keys to the source table and to the foreign table.
+	 * The source keys exclude the association columns named in the relation. The
+	 * foreign keys exclude the source key columns. A self-referencing relation, whose
+	 * association table holds two keys to the same table, resolves to two different keys.
+	 *
+	 * | Self-referencing relation | Source keys                    | Foreign keys |
+	 * |---------------------------|--------------------------------|--------------|
+	 * | `'links.target_id'`       | the key other than `target_id` | `target_id`  |
+	 * | `'links'`                 | first key in metadata order    | second key   |
+	 *
+	 * The metadata order of keys differs between drivers. Name the foreign column in a
+	 * self-referencing relation.
 	 * @return array 2 arrays of source keys and foreign keys from the association table.
 	 */
 	public function getRelationForeignKeys()
 	{
 		$association = $this->getAssociationTable();
-		$sourceKeys = $this->findForeignKeys($association, $this->getSourceRecord(), true);
+		$sourceKeys = $this->findForeignKeys($association, $this->getSourceRecord(), true, $this->getAssociationColumns());
 		$fkObject = $this->getContext()->getForeignRecordFinder();
-		$foreignKeys = $this->findForeignKeys($association, $fkObject);
+		$foreignKeys = $this->findForeignKeys($association, $fkObject, false, array_keys($sourceKeys));
 		return [$sourceKeys, $foreignKeys];
+	}
+
+	/**
+	 * @return string[] association table columns named after the dot in the relation's
+	 *   association table, as in `'player_skills.(player_id, skill_id)'`. Empty when none are named.
+	 * @since 4.3.3
+	 */
+	protected function getAssociationColumns()
+	{
+		$this->getAssociationTable();
+		return $this->_association_columns;
 	}
 
 	/**
@@ -125,7 +243,7 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 			$table = explode('.', $this->getContext()->getAssociationTable());
 			if (count($table) > 1) {
 				$columns = preg_replace('/^\((.*)\)/', '\1', $table[1]);
-				$this->_association_columns = preg_split('/\s*[, ]\*/', $columns);
+				$this->_association_columns = preg_split('/\s*[, ]\s*/', $columns);
 			}
 			$this->_association = $gateway->getTableInfo($conn, $table[0]);
 		}
@@ -203,6 +321,8 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 	}
 
 	/**
+	 * Creates a foreign record from a joined row. The record uses the connection of
+	 * the foreign record finder, which ran the query.
 	 * @param string $type active record class name.
 	 * @param array $row row data
 	 * @param array $foreignKeys foreign key column names
@@ -211,6 +331,7 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 	protected function createFkObject($type, $row, $foreignKeys)
 	{
 		$obj = TActiveRecord::createRecord($type, $row);
+		$obj->setDbConnection($this->getContext()->getForeignRecordFinder()->getDbConnection());
 		if (count($this->_association_columns) > 0) {
 			$i = 0;
 			foreach ($foreignKeys as $ref => $fk) {
@@ -302,7 +423,7 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 	public function updateAssociatedRecords()
 	{
 		$obj = $this->getContext()->getSourceRecord();
-		$fkObjects = &$obj->{$this->getContext()->getProperty()};
+		$fkObjects = $obj->{$this->getContext()->getProperty()};
 		$success = true;
 		if (($total = count($fkObjects)) > 0) {
 			$source = $this->getSourceRecord();
@@ -344,8 +465,8 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 
 	private function updateAssociationTable($obj, $fkObjects, $builder)
 	{
-		$source = $this->getSourceRecordValues($obj);
-		$foreignKeys = $this->findForeignKeys($this->getAssociationTable(), $fkObjects[0]);
+		[$sourceKeys, $foreignKeys] = $this->getRelationForeignKeys();
+		$source = $this->getSourceRecordValues($obj, $sourceKeys);
 		$success = true;
 		foreach ($fkObjects as $fkObject) {
 			$data = array_merge($source, $this->getForeignObjectValues($foreignKeys, $fkObject));
@@ -356,9 +477,8 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 		return $success;
 	}
 
-	private function getSourceRecordValues($obj)
+	private function getSourceRecordValues($obj, $sourceKeys)
 	{
-		$sourceKeys = $this->findForeignKeys($this->getAssociationTable(), $obj);
 		$indexValues = $this->getIndexValues(array_values($sourceKeys), $obj);
 		$data = [];
 		$i = 0;

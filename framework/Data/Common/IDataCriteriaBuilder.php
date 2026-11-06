@@ -66,7 +66,8 @@ interface IDataCriteriaBuilder
 	/**
 	 * Builds a criteria for relation batch-loading: matches rows whose
 	 * `$fields` columns are in the `$values` tuples.  SQL drivers emit an
-	 * `IN`-tuple; document drivers emit a `$in` filter.
+	 * `IN` list for one column and an `OR` of `AND`-joined equalities for
+	 * several; document drivers emit a `$in` filter.
 	 * @param array $fields column names to match.
 	 * @param array $values list of value-tuples (one per matching row).
 	 */

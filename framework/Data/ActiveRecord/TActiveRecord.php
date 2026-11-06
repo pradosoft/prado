@@ -15,6 +15,7 @@ use Prado\Data\Common\TDbTableInfo;
 use Prado\Data\ActiveRecord\Exceptions\TActiveRecordException;
 use Prado\Data\ActiveRecord\Relations\TActiveRecordRelationContext;
 use Prado\Data\DataGateway\TSqlCriteria;
+use Prado\Data\DataGateway\IDataCriteria;
 use Prado\Prado;
 use Prado\TPropertyValue;
 use ReflectionClass;
@@ -175,6 +176,12 @@ abstract class TActiveRecord extends \Prado\TComponent
 	private static $_columnMapping = [];
 
 	/**
+	 * @var array<string, array<string, string>> per class, the lower case column name or
+	 *   public property name mapped to the record property, for case-insensitive matching.
+	 */
+	private static $_columnMappingCi = [];
+
+	/**
 	 * This static variable defines the relationships.
 	 * The keys are public variable/property names defined in the AR class.
 	 * Each value is an array, e.g. array(self::HAS_MANY, 'PlayerRecord').
@@ -244,7 +251,10 @@ abstract class TActiveRecord extends \Prado\TComponent
 	/**
 	 * Magic method for reading properties.
 	 * This method is overriden to provide read access to the foreign objects via
-	 * the key names declared in the RELATIONS array.
+	 * the key names declared in the RELATIONS array. The first read of a relation
+	 * that the class does not declare as a property fetches the foreign objects.
+	 * Later reads return the fetched or assigned value without a query. Relation
+	 * names are case-insensitive, and the value is kept under the declared key.
 	 * @param string $name property name
 	 * @return mixed property value.
 	 * @since 3.1.2
@@ -252,8 +262,11 @@ abstract class TActiveRecord extends \Prado\TComponent
 	public function __get($name)
 	{
 		if ($this->hasRecordRelation($name) && !$this->canGetProperty($name)) {
-			$this->fetchResultsFor($name);
-			return $this->_relationsObjs[$name];
+			$key = $this->getRecordRelation($name)[0];
+			if (!array_key_exists($key, $this->_relationsObjs)) {
+				$this->fetchResultsFor($key);
+			}
+			return $this->_relationsObjs[$key] ?? null;
 		}
 		return parent::__get($name);
 	}
@@ -269,9 +282,41 @@ abstract class TActiveRecord extends \Prado\TComponent
 	public function __set($name, $value)
 	{
 		if ($this->hasRecordRelation($name) && !$this->canSetProperty($name)) {
-			$this->_relationsObjs[$name] = $value;
+			$this->_relationsObjs[$this->getRecordRelation($name)[0]] = $value;
 		} else {
 			parent::__set($name, $value);
+		}
+	}
+
+	/**
+	 * Magic method for checking properties.
+	 * A relation that the class does not declare as a property is set when it is
+	 * fetched or assigned and its value is not null. The check does not fetch it.
+	 * @param string $name property name
+	 * @return bool whether the property is set
+	 * @since 4.3.3
+	 */
+	public function __isset($name)
+	{
+		if ($this->hasRecordRelation($name) && !$this->canGetProperty($name)) {
+			return isset($this->_relationsObjs[$this->getRecordRelation($name)[0]]);
+		}
+		return parent::__isset($name);
+	}
+
+	/**
+	 * Magic method for unsetting properties.
+	 * Unsetting a relation that the class does not declare as a property discards
+	 * its value, so the next read fetches it again.
+	 * @param string $name property name
+	 * @since 4.3.3
+	 */
+	public function __unset($name)
+	{
+		if ($this->hasRecordRelation($name) && !$this->canSetProperty($name)) {
+			unset($this->_relationsObjs[$this->getRecordRelation($name)[0]]);
+		} else {
+			parent::__unset($name);
 		}
 	}
 
@@ -283,8 +328,43 @@ abstract class TActiveRecord extends \Prado\TComponent
 		$className = $this::class;
 		if (!isset(self::$_columnMapping[$className])) {
 			$class = new ReflectionClass($className);
-			self::$_columnMapping[$className] = $class->getStaticPropertyValue('COLUMN_MAPPING');
+			self::$_columnMapping[$className] = $mapping = $class->getStaticPropertyValue('COLUMN_MAPPING');
+			$map = [];
+			foreach ($class->getProperties(\ReflectionProperty::IS_PUBLIC) as $prop) {
+				if (!$prop->isStatic()) {
+					$map[strtolower($prop->getName())] ??= $prop->getName();
+				}
+			}
+			foreach ($mapping as $column => $property) {
+				$map[strtolower($column)] = $property;
+			}
+			self::$_columnMappingCi[$className] = $map;
 		}
+	}
+
+	/**
+	 * Returns the record property for a column name.
+	 * - A `COLUMN_MAPPING` key of the same case → its property.
+	 * - A property of the same name → the column name.
+	 * - A `COLUMN_MAPPING` key or a public property that differs only in case → that property.
+	 * - Otherwise → the column name.
+	 *
+	 * Drivers that report upper case column names, such as Firebird, Oracle, and DB2,
+	 * fill lower case properties without `COLUMN_MAPPING` entries.
+	 * @param string $columnName the column name (as defined in database schema)
+	 * @return string the record property name
+	 * @since 4.3.3
+	 */
+	protected function getColumnPropertyName($columnName)
+	{
+		$className = $this::class;
+		if (isset(self::$_columnMapping[$className][$columnName])) {
+			return self::$_columnMapping[$className][$columnName];
+		}
+		if (property_exists($this, $columnName) || $this->canGetProperty($columnName) || $this->canSetProperty($columnName)) {
+			return $columnName;
+		}
+		return self::$_columnMappingCi[$className][strtolower($columnName)] ?? $columnName;
 	}
 
 	/**
@@ -305,13 +385,16 @@ abstract class TActiveRecord extends \Prado\TComponent
 
 	/**
 	 * Copies data from an array or another object.
+	 * If $data is an object, its initialized public instance properties are copied.
+	 * Protected and private properties, such as another record's state and connection,
+	 * are not.
 	 * @param mixed $data
 	 * @throws TActiveRecordException if data is not array or not object.
 	 */
 	public function copyFrom($data)
 	{
 		if (is_object($data)) {
-			$data = get_object_vars($data);
+			$data = $this->getPublicObjectValues($data);
 		}
 		if (!is_array($data)) {
 			throw new TActiveRecordException('ar_data_invalid', $this::class);
@@ -319,6 +402,25 @@ abstract class TActiveRecord extends \Prado\TComponent
 		foreach ($data as $name => $value) {
 			$this->setColumnValue($name, $value);
 		}
+	}
+
+	/**
+	 * Returns the initialized public instance properties of an object, keyed by name.
+	 * get_object_vars() is not used: called in this class, which is a TComponent, it also
+	 * returns the protected properties of a TComponent source.
+	 * @param object $object the source object.
+	 * @return array property name => value.
+	 * @since 4.3.3
+	 */
+	private function getPublicObjectValues(object $object): array
+	{
+		$values = [];
+		foreach ((new \ReflectionObject($object))->getProperties(\ReflectionProperty::IS_PUBLIC) as $property) {
+			if (!$property->isStatic() && $property->isInitialized($object)) {
+				$values[$property->getName()] = $property->getValue($object);
+			}
+		}
+		return $values;
 	}
 
 
@@ -395,6 +497,9 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * This means that event handlers bound to these finder instances are class wide.
 	 * Create a new instance of the ActiveRecord class if you wish to bound the
 	 * event handlers to object instance.
+	 * A record class that does not override this method gets its own finder from
+	 * `RecordClass::finder()`, because the default class name resolves to the
+	 * called class.
 	 * @template T of TActiveRecord
 	 * @param class-string<T> $className active record class name.
 	 * @return T active record finder instance.
@@ -402,6 +507,9 @@ abstract class TActiveRecord extends \Prado\TComponent
 	public static function finder($className = __CLASS__)
 	{
 		static $finders = [];
+		if ($className === __CLASS__) {
+			$className = static::class;
+		}
 		if (!isset($finders[$className])) {
 			$f = Prado::createComponent($className);
 			$finders[$className] = $f;
@@ -532,13 +640,18 @@ abstract class TActiveRecord extends \Prado\TComponent
 
 	/**
 	 * Populates a new record with the query result.
-	 * This is a wrapper of {@see createRecord}.
+	 * This is a wrapper of {@see createRecord}. The new record uses the connection
+	 * of this finder, so it saves to the database it was read from.
 	 * @param array $data name value pair of record data
 	 * @return TActiveRecord object record, null if data is empty.
 	 */
 	protected function populateObject($data)
 	{
-		return self::createRecord($this::class, $data);
+		$record = self::createRecord($this::class, $data);
+		if ($record !== null) {
+			$record->setDbConnection($this->getDbConnection());
+		}
+		return $record;
 	}
 
 	/**
@@ -848,16 +961,16 @@ abstract class TActiveRecord extends \Prado\TComponent
 	{
 		$delete = false;
 		if (strncasecmp($method, 'with', 4) === 0) {
-			$property = $method[4] === '_' ? substr($method, 5) : substr($method, 4);
+			$property = ($method[4] ?? '') === '_' ? substr($method, 5) : substr($method, 4);
 			return $this->getRelationHandler($property, $args);
 		} elseif ($findOne = strncasecmp($method, 'findby', 6) === 0) {
-			$condition = $method[6] === '_' ? substr($method, 7) : substr($method, 6);
+			$condition = ($method[6] ?? '') === '_' ? substr($method, 7) : substr($method, 6);
 		} elseif (strncasecmp($method, 'findallby', 9) === 0) {
-			$condition = $method[9] === '_' ? substr($method, 10) : substr($method, 9);
+			$condition = ($method[9] ?? '') === '_' ? substr($method, 10) : substr($method, 9);
 		} elseif ($delete = strncasecmp($method, 'deleteby', 8) === 0) {
-			$condition = $method[8] === '_' ? substr($method, 9) : substr($method, 8);
+			$condition = ($method[8] ?? '') === '_' ? substr($method, 9) : substr($method, 8);
 		} elseif ($delete = strncasecmp($method, 'deleteallby', 11) === 0) {
-			$condition = $method[11] === '_' ? substr($method, 12) : substr($method, 11);
+			$condition = ($method[11] ?? '') === '_' ? substr($method, 12) : substr($method, 11);
 		} elseif (strncasecmp($method, 'dy', 2) === 0 || strncasecmp($method, 'fx', 2) === 0) {
 			return parent::__call($method, $args);
 		} else {
@@ -910,6 +1023,8 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * Create a new TSqlCriteria object from a string $criteria. The $args
 	 * are additional parameters and are used in place of the $parameters
 	 * if $parameters is not an array and $args is an arrary.
+	 * A TSqlCriteria object is copied, so the finder methods that set its limit or
+	 * condition leave the caller's object unchanged.
 	 * @param string|TSqlCriteria $criteria sql criteria
 	 * @param mixed $parameters parameters passed by the user.
 	 * @param array $args additional parameters obtained from function_get_args().
@@ -921,6 +1036,9 @@ abstract class TActiveRecord extends \Prado\TComponent
 			$useArgs = !is_array($parameters) && is_array($args);
 			return new TActiveRecordCriteria($criteria, $useArgs ? $args : $parameters);
 		} elseif ($criteria instanceof TSqlCriteria) {
+			return clone $criteria;
+		} elseif ($criteria instanceof IDataCriteria) {
+			// A non-SQL criteria, such as a MongoDB filter criteria, is kept as is.
 			return $criteria;
 		} else {
 			return new TActiveRecordCriteria();
@@ -1000,10 +1118,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 */
 	public function getColumnValue($columnName)
 	{
-		$className = $this::class;
-		if (isset(self::$_columnMapping[$className][$columnName])) {
-			$columnName = self::$_columnMapping[$className][$columnName];
-		}
+		$columnName = $this->getColumnPropertyName($columnName);
 		return $this->$columnName;
 	}
 
@@ -1016,11 +1131,40 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 */
 	public function setColumnValue($columnName, $value)
 	{
-		$className = $this::class;
-		if (isset(self::$_columnMapping[$className][$columnName])) {
-			$columnName = self::$_columnMapping[$className][$columnName];
-		}
+		$columnName = $this->getColumnPropertyName($columnName);
 		$this->$columnName = $value;
+	}
+
+	/**
+	 * Returns the record's field values keyed by the record's public, non-static,
+	 * non-relation instance property names.
+	 *
+	 * This is used by {@see TActiveRecordGateway} for schemaless data stores
+	 * whose metadata exposes no authoritative column list (e.g. MongoDB), where
+	 * the record's own properties define the persisted fields.  The logical
+	 * property names are used verbatim — {@see $COLUMN_MAPPING}'s physical column
+	 * names are not materialized, because a schemaless store has no physical
+	 * schema to map to.  For SQL stores the gateway uses the table metadata
+	 * columns instead, so this method does not affect them.
+	 *
+	 * @return array property-name => value for every persisted property.
+	 * @since 4.3.3
+	 */
+	public function getRecordColumnValues(): array
+	{
+		$relations = self::$_relations[$this::class] ?? [];
+		$values = [];
+		foreach ((new \ReflectionObject($this))->getProperties(\ReflectionProperty::IS_PUBLIC) as $property) {
+			if ($property->isStatic()) {
+				continue;
+			}
+			$name = $property->getName();
+			if (isset($relations[strtolower($name)])) {
+				continue;
+			}
+			$values[$name] = $this->$name;
+		}
+		return $values;
 	}
 
 	/**
