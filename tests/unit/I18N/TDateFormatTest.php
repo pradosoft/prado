@@ -312,6 +312,7 @@ class TDateFormatTest extends TestCase
 	public function testCustomPatternMmmmYyyy()
 	{
 		$control = new TDateFormat();
+		$control->setCulture('en_US');
 		$control->setPattern('MMMM yyyy');
 		$control->setValue('2026-04-19');
 		$output = $this->render($control);
@@ -322,6 +323,7 @@ class TDateFormatTest extends TestCase
 	public function testCustomPatternEeee()
 	{
 		$control = new TDateFormat();
+		$control->setCulture('en_US');
 		$control->setPattern('EEEE, MMMM d, yyyy');
 		$control->setValue('2026-04-19');
 		$output = $this->render($control);

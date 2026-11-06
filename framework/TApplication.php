@@ -1354,12 +1354,12 @@ class TApplication extends TComponent implements ISingleton
 	 * Returns the module registered under `$id`, or `null` if no module with that ID exists.
 	 * Lazy modules are deferred at startup and loaded on first request via {@see internalLoadModule()}
 	 * and `init()`, then cached for subsequent calls.
-	 * @param string $id module ID
-	 * @return ?TModule the module with the specified ID, null if not found
+	 * @param ?string $id module ID
+	 * @return ?TModule the module with the specified ID, null if not found or `$id` is null
 	 */
 	public function getModule($id)
 	{
-		if (!array_key_exists($id, $this->_modules)) {
+		if ($id === null || !array_key_exists($id, $this->_modules)) {
 			return null;
 		}
 
