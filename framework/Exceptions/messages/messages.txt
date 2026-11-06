@@ -592,6 +592,7 @@ soapservice_serverid_required			= <soap> element must have 'id' attribute.
 soapservice_serverid_duplicated			= SOAP server ID '{0}' is duplicated.
 soapserver_id_invalid					= Invalid SOAP server ID '{0}'. It should not end with '.wsdl'.
 soapserver_provider_invalid				= TSoapServer provider class '{0}' could not be resolved.
+soapserver_internal_error				= The SOAP request could not be processed.
 soapserver_version_invalid				= Invalid SOAP version '{0}'. It must be either '1.1' or '1.2'.
 
 jsonservice_id_required				= TJsonService requires 'id' attribute in its JSON elements.

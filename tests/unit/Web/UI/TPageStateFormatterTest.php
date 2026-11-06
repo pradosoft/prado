@@ -5,6 +5,16 @@ namespace Prado\Test\Unit\Web\UI;
 use Prado\Web\UI\TPage;
 use Prado\Web\UI\TPageStateFormatter;
 
+class TPageStateFormatterTestWakeup
+{
+	public static bool $wokeUp = false;
+
+	public function __wakeup()
+	{
+		self::$wokeUp = true;
+	}
+}
+
 class TPageStateFormatterTest extends \PHPUnit\Framework\TestCase
 {
 	/**
@@ -132,6 +142,29 @@ class TPageStateFormatterTest extends \PHPUnit\Framework\TestCase
 		$this->assertFalse(TPageStateFormatter::unserialize($page, $state));
 	}
 
+	public function testUnserializeWithoutValidationDoesNotInstantiateObjects(): void
+	{
+		$page = $this->newPage();
+		$state = base64_encode(serialize(['object' => new TPageStateFormatterTestWakeup()]));
+		TPageStateFormatterTestWakeup::$wokeUp = false;
+
+		$result = TPageStateFormatter::unserialize($page, $state);
+
+		$this->assertFalse(TPageStateFormatterTestWakeup::$wokeUp);
+		$this->assertInstanceOf(\__PHP_Incomplete_Class::class, $result['object']);
+	}
+
+	public function testUnserializeWithValidationRestoresObjects(): void
+	{
+		$page = $this->newPage();
+		$page->setEnableStateValidation(true);
+		$data = ['object' => new \ArrayObject([1, 2])];
+
+		$state = TPageStateFormatter::serialize($page, $data);
+
+		$this->assertEquals($data, TPageStateFormatter::unserialize($page, $state));
+	}
+
 	// -----------------------------------------------------------------------
 	// EnableStateValidation
 	// -----------------------------------------------------------------------
@@ -236,19 +269,21 @@ class TPageStateFormatterTest extends \PHPUnit\Framework\TestCase
 	// EnableStateIGBinary
 	// -----------------------------------------------------------------------
 
-	public function testSerializeWithIGBinaryProducesIGBinaryData(): void
+	public function testSerializeWithIGBinaryAndValidationProducesIGBinaryData(): void
 	{
 		$this->requireIGBinary();
 		$page = $this->newPage();
 		$page->setEnableStateIGBinary(true);
+		$page->setEnableStateValidation(true);
 		$data = ['igbinary' => true];
 
 		$state = TPageStateFormatter::serialize($page, $data);
 
-		$this->assertEquals(igbinary_serialize($data), base64_decode($state));
+		$sm = $page->getApplication()->getSecurityManager();
+		$this->assertEquals(igbinary_serialize($data), $sm->validateData(base64_decode($state)));
 	}
 
-	public function testUnserializeWithIGBinaryRestoresData(): void
+	public function testSerializeWithIGBinaryWithoutValidationUsesSerialize(): void
 	{
 		$this->requireIGBinary();
 		$page = $this->newPage();
@@ -257,6 +292,7 @@ class TPageStateFormatterTest extends \PHPUnit\Framework\TestCase
 
 		$state = TPageStateFormatter::serialize($page, $data);
 
+		$this->assertEquals(serialize($data), base64_decode($state));
 		$this->assertEquals($data, TPageStateFormatter::unserialize($page, $state));
 	}
 

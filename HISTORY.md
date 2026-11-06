@@ -50,6 +50,12 @@ BUG: TActiveHyperLink HTML-encodes its callback text as THyperLink renders it.
 BUG: TDbCache binds the cache key when reading a value.
 BUG: TDbParameterModule binds the AutoLoadValue; TDbParameterModule, TDbCache, TDbLogRoute, and TDbCronManager validate their configured table and field names; TMysqlMetaData quotes the table name in getIsView(); TDbLogRoute::getDBLogs() order and limit are fixed and validated.
 BUG: TDbCronManager pages the cron log with LIMIT count OFFSET offset on every driver.
+BUG: TSessionPageStatePersister HMACs the session snapshot and rejects an altered one before unserialize().
+BUG: TPageStateFormatter restores page state without HMAC validation with `allowed_classes` false; igbinary serializes only validated state.
+BUG: TSoapServer faults show the developer message only in Debug mode; other modes send a TUserException or THttpException message or a generic sentence. The Debug recursive error page is HTML-encoded.
+BUG: THttpRequest::getContentType() strips the parameters by default, as documented.
+BUG: Issue #450 - Template attribute values mix `~`, `$`, `[`, `/` tags with literal text; adds the `<%! %>` init binding (TControl::initBindProperty()).
+BUG: Issue #1131 - TReCaptcha2::getCaptchaResponse() and setCaptchaResponse() hold the token; getResponse() and setResponse() are deprecated aliases.
 
 ## Version 4.3.2 - January 28, 2026
 

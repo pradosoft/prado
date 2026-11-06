@@ -123,7 +123,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 
 	public function getResponseFieldName()
 	{
-		$captchas = $this->getPage()->findControlsByType(TReCaptcha2::class);
+		$captchas = $this->getPage()->findControlsByType(TReCaptcha2::class, false);
 		$cont = 0;
 		$responseFieldName = self::ChallengeFieldName;
 		foreach ($captchas as $captcha) {
@@ -274,16 +274,47 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 	}
 
 	/**
-	 * Gets the response for the reCAPTCHA widget.
+	 * Returns the reCAPTCHA verification token set by the widget.
+	 *
+	 * @return string The captcha response token, or an empty string when not yet set.
+	 * @since 4.3.3
+	 */
+	public function getCaptchaResponse()
+	{
+		return $this->getViewState('CaptchaResponse', '');
+	}
+
+	/**
+	 * Sets the reCAPTCHA verification token.
+	 * @param string $value The captcha response token.
+	 * @since 4.3.3
+	 */
+	public function setCaptchaResponse($value)
+	{
+		$this->setViewState('CaptchaResponse', TPropertyValue::ensureString($value), '');
+	}
+
+	/**
+	 * Returns the reCAPTCHA verification token, as {@see getCaptchaResponse()} does.
+	 * This method shadows {@see \Prado\TApplicationComponent::getResponse()}; use
+	 * `getApplication()->getResponse()` for the HTTP response.
+	 * @return string The captcha response token, or an empty string when not yet set.
+	 * @deprecated 4.3.3 Use {@see getCaptchaResponse()}. Removed in 4.4.0, where
+	 *   getResponse() returns the HTTP response.
 	 */
 	public function getResponse()
 	{
-		return $this->getViewState('Response', '');
+		return $this->getCaptchaResponse();
 	}
 
+	/**
+	 * Sets the reCAPTCHA verification token, as {@see setCaptchaResponse()} does.
+	 * @param string $value The captcha response token.
+	 * @deprecated 4.3.3 Use {@see setCaptchaResponse()}. Removed in 4.4.0.
+	 */
 	public function setResponse($value)
 	{
-		$this->setViewState('Response', TPropertyValue::ensureString($value), '');
+		$this->setCaptchaResponse($value);
 	}
 
 	public function getWidgetId()
@@ -377,7 +408,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 
 			if ($callback) {
 				$this->setWidgetId($params->widgetId);
-				$this->setResponse($params->response);
+				$this->setCaptchaResponse($params->response);
 				$this->getPage()->getCallbackClient()->jQuery($params->responseField, 'text', [$params->response]);
 
 				if ($params->onCallback) {
@@ -386,7 +417,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 			}
 
 			if ($callbackExpired) {
-				$this->setResponse('');
+				$this->setCaptchaResponse('');
 				$this->reset();
 
 				if ($params->onCallbackExpired) {

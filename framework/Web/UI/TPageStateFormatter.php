@@ -23,6 +23,13 @@ namespace Prado\Web\UI;
  * The private keys and hashing/encryption methods are determined by
  * {@see \Prado\TApplication::getSecurityManager() SecurityManager}.
  *
+ * State without HMAC validation is client controlled, so it is restored with
+ * `unserialize()` and `allowed_classes` false: objects in it are not instantiated.
+ * igbinary has no class filter, so {@see \Prado\Web\UI\TPage::getEnableStateIGBinary() EnableStateIGBinary}
+ * applies only to validated state.  A page that disables validation either keeps
+ * objects out of its state or uses a server-side persister such as
+ * {@see \Prado\Web\UI\TSessionPageStatePersister}.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.1
  */
@@ -36,18 +43,9 @@ class TPageStateFormatter
 	public static function serialize($page, $data)
 	{
 		$sm = $page->getApplication()->getSecurityManager();
-		if ($page->getEnableStateIGBinary() && extension_loaded('igbinary')) {
-			if ($page->getEnableStateValidation()) {
-				$str = $sm->hashData(igbinary_serialize($data));
-			} else {
-				$str = igbinary_serialize($data);
-			}
-		} else {
-			if ($page->getEnableStateValidation()) {
-				$str = $sm->hashData(serialize($data));
-			} else {
-				$str = serialize($data);
-			}
+		$str = static::getUseIGBinary($page) ? igbinary_serialize($data) : serialize($data);
+		if ($page->getEnableStateValidation()) {
+			$str = $sm->hashData($str);
 		}
 		if ($page->getEnableStateCompression() && extension_loaded('zlib')) {
 			$str = gzcompress($str);
@@ -82,23 +80,24 @@ class TPageStateFormatter
 			$str = @gzuncompress($str);
 		}
 
-		if ($page->getEnableStateIGBinary() && extension_loaded('igbinary')) {
-			if ($page->getEnableStateValidation()) {
-				if (($str = $sm->validateData($str)) !== false) {
-					return igbinary_unserialize($str);
-				}
-			} else {
-				return igbinary_unserialize($str);
-			}
-		} else {
-			if ($page->getEnableStateValidation()) {
-				if (($str = $sm->validateData($str)) !== false) {
-					return unserialize($str);
-				}
-			} else {
-				return unserialize($str);
-			}
+		if (!$page->getEnableStateValidation()) {
+			return unserialize($str, ['allowed_classes' => false]);
 		}
-		return null;
+		if (($str = $sm->validateData($str)) === false) {
+			return null;
+		}
+		return static::getUseIGBinary($page) ? igbinary_unserialize($str) : unserialize($str);
+	}
+
+	/**
+	 * Whether the state is serialized with igbinary.  Only validated state uses igbinary,
+	 * since `igbinary_unserialize()` cannot exclude classes from client-controlled state.
+	 * @param TPage $page the page the state belongs to.
+	 * @return bool whether igbinary serializes the page state.
+	 * @since 4.3.3
+	 */
+	protected static function getUseIGBinary($page): bool
+	{
+		return $page->getEnableStateValidation() && $page->getEnableStateIGBinary() && extension_loaded('igbinary');
 	}
 }

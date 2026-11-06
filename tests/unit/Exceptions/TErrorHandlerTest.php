@@ -1276,6 +1276,26 @@ class TErrorHandlerTest extends \PHPUnit\Framework\TestCase
 		$this->assertStringContainsString('Test recursive error message', $output);
 	}
 
+	public function testHandleRecursiveErrorInDebugModeEncodesTheException(): void
+	{
+		$app = Prado::getApplication();
+		if ($app === null) {
+			$this->markTestSkipped('No global TApplication available.');
+		}
+		$originalMode = $app->getMode();
+		$app->setMode(TApplicationMode::Debug);
+		$exception = new \Exception('page <script>alert(1)</script> & more');
+		ob_start();
+		try {
+			$this->handler->pubHandleRecursiveError($exception);
+		} finally {
+			$output = ob_get_clean();
+			$app->setMode($originalMode);
+		}
+		$this->assertStringContainsString('page &lt;script&gt;alert(1)&lt;/script&gt; &amp; more', $output);
+		$this->assertStringNotContainsString('<script>', $output);
+	}
+
 	public function testHandleRecursiveErrorInNonDebugModeProducesNoHtmlOutput(): void
 	{
 		$app = Prado::getApplication();
