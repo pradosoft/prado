@@ -106,12 +106,18 @@ abstract class TActiveRecordRelation
 	 * Returns foreign keys in $from with source column names as key
 	 * and foreign column names in the corresponding $matchesRecord as value.
 	 * The method returns the first matching foreign key between these 2 records.
-	 * @param \Prado\Data\ActiveRecord\TActiveRecord $from
+	 * Columns listed in $exclude are removed from each candidate foreign key, and
+	 * a candidate left with no columns is skipped. A table with two foreign keys to
+	 * the same table, such as the association table of a self-referencing
+	 * MANY_TO_MANY relation, uses $exclude to pick the second key after the first.
+	 * @param \Prado\Data\ActiveRecord\TActiveRecord|\Prado\Data\Common\TDbTableInfo $from
 	 * @param \Prado\Data\ActiveRecord\TActiveRecord $matchesRecord
 	 * @param bool $loose
+	 * @param string[] $exclude column names of $from to leave out of the result.
+	 *   Default is none. Parameter available since 4.3.3.
 	 * @return array foreign keys with source column names as key and foreign column names as value.
 	 */
-	protected function findForeignKeys($from, $matchesRecord, $loose = false)
+	protected function findForeignKeys($from, $matchesRecord, $loose = false, $exclude = [])
 	{
 		$gateway = $matchesRecord->getRecordGateway();
 		$recordTableInfo = $gateway->getRecordTableInfo($matchesRecord);
@@ -121,14 +127,18 @@ abstract class TActiveRecordRelation
 		if ($from instanceof TActiveRecord) {
 			$tableInfo = $gateway->getRecordTableInfo($from);
 		}
+		$exclude = array_flip($exclude);
 		//find first non-empty FK
 		foreach ($tableInfo->getForeignKeys() as $fkeys) {
 			$fkTable = strtolower($fkeys['table']);
 			if ($fkTable === $matchingTableName || $fkTable === $matchingFullTableName) {
-				$hasFkField = !$loose && $this->getContext()->hasFkField();
-				$key = $hasFkField ? $this->getFkFields($fkeys['keys']) : $fkeys['keys'];
-				if (!empty($key)) {
-					return $key;
+				foreach ($this->splitForeignKeys($fkeys['keys']) as $keys) {
+					$hasFkField = !$loose && $this->getContext()->hasFkField();
+					$key = $hasFkField ? $this->getFkFields($keys) : $keys;
+					$key = array_diff_key($key, $exclude);
+					if (!empty($key)) {
+						return $key;
+					}
 				}
 			}
 		}
@@ -140,6 +150,30 @@ abstract class TActiveRecordRelation
 			$tableInfo->getTableFullName(),
 			$matching
 		);
+	}
+
+	/**
+	 * Splits one foreign key entry of the table metadata into its constraints.
+	 * A single constraint references each foreign column once. The SQLite metadata
+	 * groups every constraint to the same table into one entry, so a repeated foreign
+	 * column starts the next constraint.
+	 * @param array $keys source column names as key and foreign column names as value.
+	 * @return array[] one array of keys per constraint, in metadata order.
+	 * @since 4.3.3
+	 */
+	private function splitForeignKeys($keys)
+	{
+		$constraints = [];
+		$current = [];
+		foreach ($keys as $column => $foreignColumn) {
+			if (in_array($foreignColumn, $current, true)) {
+				$constraints[] = $current;
+				$current = [];
+			}
+			$current[$column] = $foreignColumn;
+		}
+		$constraints[] = $current;
+		return $constraints;
 	}
 
 	/**
@@ -183,14 +217,33 @@ abstract class TActiveRecordRelation
 
 	/**
 	 * Fetches the foreign objects using TActiveRecord::findAllByIndex()
+	 * Each call passes a copy of the relation criteria, because findAllByIndex() adds
+	 * the key condition to the criteria it receives. Key tuples that hold a null are
+	 * skipped, and no query runs when none remain.
 	 * @param array $fields field names
 	 * @param array $indexValues foreign key index values.
 	 * @return TActiveRecord[] foreign objects.
 	 */
 	protected function findForeignObjects($fields, $indexValues)
 	{
+		$indexValues = $this->getNonNullIndexValues($indexValues);
+		if (count($indexValues) === 0) {
+			return [];
+		}
 		$finder = $this->getContext()->getForeignRecordFinder();
-		return $finder->findAllByIndex($this->_criteria, $fields, $indexValues);
+		return $finder->findAllByIndex(clone $this->getCriteria(), $fields, $indexValues);
+	}
+
+	/**
+	 * Removes the key tuples that hold a null. A null key matches no row, so a
+	 * record whose key is null has no foreign objects.
+	 * @param array $indexValues key tuples, one array of values per record
+	 * @return array the tuples without a null value, reindexed
+	 * @since 4.3.3
+	 */
+	protected function getNonNullIndexValues($indexValues)
+	{
+		return array_values(array_filter($indexValues, fn ($tuple) => !in_array(null, $tuple, true)));
 	}
 
 	/**

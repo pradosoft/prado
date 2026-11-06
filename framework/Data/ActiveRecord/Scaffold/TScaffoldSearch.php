@@ -108,7 +108,7 @@ class TScaffoldSearch extends TScaffoldBase
 	protected function getFields()
 	{
 		if (strlen(trim($str = $this->getSearchableFields())) > 0) {
-			$fields = preg_split('/\s*,\s*/', $str);
+			$fields = preg_split('/\s*,\s*/', trim($str));
 		} else {
 			$fields = $this->getTableInfo()->getColumns()->getKeys();
 		}

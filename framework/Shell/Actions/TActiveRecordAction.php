@@ -13,6 +13,7 @@ namespace Prado\Shell\Actions;
 use Prado\Data\ActiveRecord\TActiveRecordConfig;
 use Prado\Data\ActiveRecord\TActiveRecordManager;
 use Prado\Data\TDbDriver;
+use Prado\Exceptions\TDbException;
 use Prado\Prado;
 use Prado\Shell\TShellAction;
 
@@ -66,6 +67,11 @@ class TActiveRecordAction extends TShellAction
 
 			$manager = TActiveRecordManager::getInstance();
 			$con = $manager->getDbConnection();
+			if (!$con) {
+				$this->writeConnectionError($config);
+				return true;
+			}
+			$wasActive = $con->getActive();
 			$con->setActive(true);
 			$command = null;
 
@@ -98,6 +104,8 @@ class TActiveRecordAction extends TShellAction
 					break;
 				default:
 					$this->_outWriter->writeError("Sorry, generateAll is not implemented for " . $con->getDriverName() . ".");
+					$con->setActive($wasActive);
+					return true;
 			}
 
 			$dataReader = $command->query();
@@ -106,33 +114,33 @@ class TActiveRecordAction extends TShellAction
 			while ($dataReader->read() !== false) {
 				$tables[] = $table;
 			}
-			$con->setActive(false);
 			foreach ($tables as $key => $table) {
-				$output = $args[1] . "." . $this->_prefix . ucfirst($table) . $this->_postfix;
-				if ($config !== false && $output !== false) {
-					$this->generate("generate " . $table . " " . $output . " " . $this->_soapall . " " . $this->_overwriteall);
+				$classname = preg_replace('/[^A-Za-z0-9_\x80-\xff]/', '_', $this->_prefix . ucfirst($table) . $this->_postfix);
+				$output = $args[1] . "." . $classname;
+				if ($config !== false) {
+					$this->actionGenerate([
+						'generate',
+						$table,
+						$output,
+						$this->_soapall ? 'soap' : 'false',
+						$this->_overwriteall ? 'overwrite' : 'false',
+					]);
 				}
 			}
+			$con->setActive($wasActive);
 		}
 		return true;
 	}
 
 	/**
-	 * @param string $l commandline
+	 * Runs {@see actionGenerate()} from a command line string.
+	 * @param string $l command line in the form `generate <table> <output> [soap] [overwrite]`
 	 */
 	public function generate($l)
 	{
 		$input = explode(" ", trim($l));
 		if (count($input) > 2) {
-			$app_dir = dirname(Prado::getApplication()->getBasePath());
-			$args = [$input[0], $input[1], $input[2]];
-			if (count($input) > 3) {
-				$args[] = 'soap';
-			}
-			if (count($input) > 4) {
-				$args[] = 'overwrite';
-			}
-			$this->actionGenerate($args);
+			$this->actionGenerate(array_slice($input, 0, 5));
 		} else {
 			$this->_outWriter->writeLine("\n    Usage: generate table_name Application.pages.RecordClassName");
 		}
@@ -146,8 +154,8 @@ class TActiveRecordAction extends TShellAction
 	 */
 	public function actionGenerate($args)
 	{
-		$this->_soapall = count($args) > 3 ? ($args[3] == "soap" || $args[2] == "true" ? true : false) : false;
-		$this->_overwriteall = count($args) > 4 ? ($args[4] == "overwrite" || $args[3] == "true" ? true : false) : false;
+		$this->_soap = count($args) > 3 && ($args[3] == 'soap' || $args[3] == 'true');
+		$this->_overwrite = count($args) > 4 && ($args[4] == 'overwrite' || $args[4] == 'true');
 		$config = $this->getActiveRecordConfig();
 		$output = $this->getOutputFile($args[2]);
 		if (is_file($output) && !$this->_overwrite) {
@@ -160,7 +168,7 @@ class TActiveRecordAction extends TShellAction
 
 	/**
 	 * gets the TActiveRecordConfig for the application
-	 * @return false|TActiveRecordConfig
+	 * @return null|\Prado\Data\ActiveRecord\TActiveRecordConfig
 	 */
 	protected function getActiveRecordConfig()
 	{
@@ -179,17 +187,43 @@ class TActiveRecordAction extends TShellAction
 	protected function getOutputFile($namespace)
 	{
 		$app_dir = Prado::getApplication()->getBasePath();
-		if (is_file($namespace) && strpos($namespace, $app_dir) === 0) {
+		$real_dir = realpath($app_dir);
+		if (is_file($namespace) && $this->isWithinDirectory(realpath($namespace), $real_dir)) {
 			return $namespace;
 		}
 		$file = Prado::getPathOfNamespace($namespace, ".php");
 		if ($file !== null && false !== ($path = realpath(dirname($file))) && is_dir($path)) {
-			if (strpos($path, $app_dir) === 0) {
+			if ($this->isWithinDirectory($path, $real_dir)) {
 				return $file;
 			}
 		}
-		$this->_outWriter->writeError('Output file ' . $file . ' must be within directory ' . $app_dir . "");
+		$this->_outWriter->writeError('Output file ' . ($file ?? $namespace) . ' must be within directory ' . $app_dir . "");
 		return false;
+	}
+
+	/**
+	 * @param string $path canonical path
+	 * @param false|string $dir canonical directory, false when it does not exist
+	 * @return bool whether $path is $dir or lies below it
+	 * @since 4.3.3
+	 */
+	private function isWithinDirectory($path, $dir): bool
+	{
+		if ($dir === false) {
+			return false;
+		}
+		$dir = rtrim($dir, '/\\');
+		return $path === $dir || str_starts_with($path, $dir . DIRECTORY_SEPARATOR);
+	}
+
+	/**
+	 * Writes the error for a missing database connection.
+	 * @param ?TActiveRecordConfig $config active record module, null when the application has none
+	 * @since 4.3.3
+	 */
+	private function writeConnectionError($config): void
+	{
+		$this->_outWriter->writeError('Unable to connect to database with ConnectionID=\'' . ($config ? $config->getConnectionID() : '') . "'. Please check your settings in application.xml and ensure your database connection is set up first.");
 	}
 
 	/**
@@ -203,8 +237,12 @@ class TActiveRecordAction extends TShellAction
 		$manager = TActiveRecordManager::getInstance();
 		if ($manager->getDbConnection()) {
 			$gateway = $manager->getRecordGateway();
-			$tableInfo = $gateway->getTableInfo($manager->getDbConnection(), $tablename);
-			if (count($tableInfo->getColumns()) === 0) {
+			try {
+				$tableInfo = $gateway->getTableInfo($manager->getDbConnection(), $tablename);
+			} catch (TDbException $e) {
+				$tableInfo = null;
+			}
+			if ($tableInfo === null || count($tableInfo->getColumns()) === 0) {
 				$this->_outWriter->writeError('Unable to find table or view "' . $tablename . '" in "' . $manager->getDbConnection()->getConnectionString() . "\".");
 				return false;
 			} else {
@@ -219,7 +257,7 @@ class TActiveRecordAction extends TShellAction
 			$this->_outWriter->writeLine("  Writing class $classname to file $output");
 			file_put_contents($output, $class);
 		} else {
-			$this->_outWriter->writeError('Unable to connect to database with ConnectionID=\'' . $config->getConnectionID() . "'. Please check your settings in application.xml and ensure your database connection is set up first.");
+			$this->writeConnectionError($config);
 		}
 		return true;
 	}
@@ -257,7 +295,7 @@ class TActiveRecordAction extends TShellAction
 	protected function generateClass($properties, $tablename, $class)
 	{
 		$props = implode("\n", $properties);
-		$date = date('Y-m-d h:i:s');
+		$date = date('Y-m-d H:i:s');
 		return <<<EOD
 			<?php
 			/**

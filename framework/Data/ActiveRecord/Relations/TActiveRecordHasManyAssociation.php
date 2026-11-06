@@ -97,20 +97,48 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 	{
 		[$sourceKeys, $foreignKeys] = $this->getRelationForeignKeys();
 		$properties = array_values($sourceKeys);
-		$indexValues = $this->getIndexValues($properties, $results);
+		$indexValues = $this->getNonNullIndexValues($this->getIndexValues($properties, $results));
+		if (count($indexValues) === 0) {
+			$collections = [];
+			$this->setResultCollection($results, $collections, $properties);
+			return;
+		}
 		$this->fetchForeignObjects($results, $foreignKeys, $indexValues, $sourceKeys);
 	}
 
 	/**
+	 * Returns the association table keys to the source table and to the foreign table.
+	 * The source keys exclude the association columns named in the relation. The
+	 * foreign keys exclude the source key columns. A self-referencing relation, whose
+	 * association table holds two keys to the same table, resolves to two different keys.
+	 *
+	 * | Self-referencing relation | Source keys                    | Foreign keys |
+	 * |---------------------------|--------------------------------|--------------|
+	 * | `'links.target_id'`       | the key other than `target_id` | `target_id`  |
+	 * | `'links'`                 | first key in metadata order    | second key   |
+	 *
+	 * The metadata order of keys differs between drivers. Name the foreign column in a
+	 * self-referencing relation.
 	 * @return array 2 arrays of source keys and foreign keys from the association table.
 	 */
 	public function getRelationForeignKeys()
 	{
 		$association = $this->getAssociationTable();
-		$sourceKeys = $this->findForeignKeys($association, $this->getSourceRecord(), true);
+		$sourceKeys = $this->findForeignKeys($association, $this->getSourceRecord(), true, $this->getAssociationColumns());
 		$fkObject = $this->getContext()->getForeignRecordFinder();
-		$foreignKeys = $this->findForeignKeys($association, $fkObject);
+		$foreignKeys = $this->findForeignKeys($association, $fkObject, false, array_keys($sourceKeys));
 		return [$sourceKeys, $foreignKeys];
+	}
+
+	/**
+	 * @return string[] association table columns named after the dot in the relation's
+	 *   association table, as in `'player_skills.(player_id, skill_id)'`. Empty when none are named.
+	 * @since 4.3.3
+	 */
+	protected function getAssociationColumns()
+	{
+		$this->getAssociationTable();
+		return $this->_association_columns;
 	}
 
 	/**
@@ -203,6 +231,8 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 	}
 
 	/**
+	 * Creates a foreign record from a joined row. The record uses the connection of
+	 * the foreign record finder, which ran the query.
 	 * @param string $type active record class name.
 	 * @param array $row row data
 	 * @param array $foreignKeys foreign key column names
@@ -211,6 +241,7 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 	protected function createFkObject($type, $row, $foreignKeys)
 	{
 		$obj = TActiveRecord::createRecord($type, $row);
+		$obj->setDbConnection($this->getContext()->getForeignRecordFinder()->getDbConnection());
 		if (count($this->_association_columns) > 0) {
 			$i = 0;
 			foreach ($foreignKeys as $ref => $fk) {
@@ -302,7 +333,7 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 	public function updateAssociatedRecords()
 	{
 		$obj = $this->getContext()->getSourceRecord();
-		$fkObjects = &$obj->{$this->getContext()->getProperty()};
+		$fkObjects = $obj->{$this->getContext()->getProperty()};
 		$success = true;
 		if (($total = count($fkObjects)) > 0) {
 			$source = $this->getSourceRecord();
@@ -344,8 +375,8 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 
 	private function updateAssociationTable($obj, $fkObjects, $builder)
 	{
-		$source = $this->getSourceRecordValues($obj);
-		$foreignKeys = $this->findForeignKeys($this->getAssociationTable(), $fkObjects[0]);
+		[$sourceKeys, $foreignKeys] = $this->getRelationForeignKeys();
+		$source = $this->getSourceRecordValues($obj, $sourceKeys);
 		$success = true;
 		foreach ($fkObjects as $fkObject) {
 			$data = array_merge($source, $this->getForeignObjectValues($foreignKeys, $fkObject));
@@ -356,9 +387,8 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 		return $success;
 	}
 
-	private function getSourceRecordValues($obj)
+	private function getSourceRecordValues($obj, $sourceKeys)
 	{
-		$sourceKeys = $this->findForeignKeys($this->getAssociationTable(), $obj);
 		$indexValues = $this->getIndexValues(array_values($sourceKeys), $obj);
 		$data = [];
 		$i = 0;

@@ -39,8 +39,14 @@ class TActiveRecordGateway extends \Prado\TComponent
 	 */
 	private $_dataGatewayClass = self::DEFAULT_DATA_GATEWAY_CLASS;
 	private $_manager;
-	private $_tables = []; //table cache
-	private $_meta = []; //meta data cache.
+	/**
+	 * @var \WeakMap<IDataConnection, array<string, TDbTableInfo>> table information per connection and table name
+	 */
+	private \WeakMap $_tables;
+	/**
+	 * @var \WeakMap<IDataConnection, TDbMetaData> meta data reader per connection
+	 */
+	private \WeakMap $_meta;
 	private $_commandBuilders = [];
 	private $_currentRecord;
 
@@ -60,6 +66,8 @@ class TActiveRecordGateway extends \Prado\TComponent
 	public function __construct(TActiveRecordManager $manager)
 	{
 		$this->_manager = $manager;
+		$this->_tables = new \WeakMap();
+		$this->_meta = new \WeakMap();
 		parent::__construct();
 	}
 
@@ -73,7 +81,8 @@ class TActiveRecordGateway extends \Prado\TComponent
 
 	/**
 	 * Gets the table name from the 'TABLE' constant of the active record
-	 * class if defined, otherwise use the class name as table name.
+	 * class if defined, then from its 'table()' method, otherwise uses the class
+	 * name without its namespace, in lower case, as table name.
 	 * @param TActiveRecord $record active record instance
 	 * @return string table name for the given record class.
 	 */
@@ -102,7 +111,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 			}
 			return $value;
 		} else {
-			return strtolower($record::class);
+			return strtolower($class->getShortName());
 		}
 	}
 
@@ -118,37 +127,45 @@ class TActiveRecordGateway extends \Prado\TComponent
 	}
 
 	/**
-	 * Returns table information for table in the database connection.
+	 * Returns table information for table in the database connection, trys the
+	 * application cache first.
+	 *
+	 * The table information is kept per connection object, and the meta data is
+	 * read through that connection. Two connections with the same connection
+	 * string, such as two `sqlite::memory:` databases, each read their own tables.
+	 * The application cache key is the connection string and the table name.
 	 * @param IDataConnection $connection database connection
 	 * @param string $tableName table name
 	 * @return TDbTableInfo table details.
 	 */
 	public function getTableInfo(IDataConnection $connection, $tableName)
 	{
-		$connStr = $connection instanceof TDbConnection
-			? $connection->getConnectionString()
-			: $connection->getDriverName() . ':' . spl_object_id($connection);
-		$key = $connStr . $tableName;
-		if (!isset($this->_tables[$key])) {
+		$tables = $this->_tables[$connection] ?? [];
+		if (!isset($tables[$tableName])) {
 			//call this first to ensure that unserializing the cache
 			//will find the correct driver dependent classes.
-			if (!isset($this->_meta[$connStr])) {
-				$this->_meta[$connStr] = TDbMetaData::getInstance($connection);
+			if (!isset($this->_meta[$connection])) {
+				$this->_meta[$connection] = TDbMetaData::getInstance($connection);
 			}
 
+			$connStr = $connection instanceof TDbConnection
+				? $connection->getConnectionString()
+				: $connection->getDriverName() . ':' . spl_object_id($connection);
+			$key = $connStr . $tableName;
 			$tableInfo = null;
 			if (($cache = $this->getManager()->getCache()) !== null) {
 				$tableInfo = $cache->get($key);
 			}
 			if (empty($tableInfo)) {
-				$tableInfo = $this->_meta[$connStr]->getTableInfo($tableName);
+				$tableInfo = $this->_meta[$connection]->getTableInfo($tableName);
 				if ($cache !== null) {
 					$cache->set($key, $tableInfo);
 				}
 			}
-			$this->_tables[$key] = $tableInfo;
+			$tables[$tableName] = $tableInfo;
+			$this->_tables[$connection] = $tables;
 		}
-		return $this->_tables[$key];
+		return $tables[$tableName];
 	}
 
 	/**
@@ -167,6 +184,9 @@ class TActiveRecordGateway extends \Prado\TComponent
 			$command->attachEventHandler('OnExecuteCommand', [$this, 'onExecuteCommand']);
 			$this->_commandBuilders[$connStr] = $command;
 		}
+		// Connections with the same connection string share the command. Its builder
+		// runs the SQL on the connection of the record it was last prepared for.
+		$this->_commandBuilders[$connStr]->getBuilder()->setDbConnection($conn);
 		$this->_commandBuilders[$connStr]->getBuilder()->setTableInfo($tableInfo);
 		$this->_currentRecord = $record;
 		return $this->_commandBuilders[$connStr];

@@ -682,6 +682,11 @@ bithelper_bad_mirror_bits				= TBitHelper cannot mirror '{0}' bits in a {1} bit 
 ar_data_invalid							= {0}.copyFrom() can only take an object or array as parameter.
 ar_save_invalid							= The {0} instance cannot be saved because it is either deleted or in an unknown state.
 ar_delete_invalid						= The {0} instance cannot be deleted because it is either a new record or a record already deleted.
+scaffold_invalid_record_pk				= Unable to find a '{0}' record with primary key '{1}'.
+scaffold_invalid_record_class			= Scaffold control '{1}' requires a RecordClass; '{0}' is not a record class.
+scaffold_unable_to_find_edit_view		= Unable to find the TScaffoldEditView with ID '{0}'.
+scaffold_unable_to_find_list_view		= Unable to find the TScaffoldListView with ID '{0}'.
+scaffold_invalid_edit_renderer			= The edit renderer of scaffold control '{0}' for record class '{1}' must implement IScaffoldEditRenderer.
 
 dbmetadata_invalid_database_driver		= Driver '{0}' is unsupported. Please install its PRADO Driver, if available.
 dbmetadata_not_meta_data				= Expected driver class {1} but got class {0}.
