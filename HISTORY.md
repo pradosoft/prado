@@ -18,6 +18,12 @@ BUG: Issues #1048, #1050 - TSecurityManager: fix timing-attack vulnerability in 
 BUG: Issues #1101, #1122 - TDbCache: expiry moment is a cache hit; TErrorHandler: refactor - `THttpException`/`TExitException` updated.
 BUG: Issue #1121 - TPgsqlMetaData: null-safe `substr()` for PHP 8 compatibility (`adsrc` column can be `null`).
 BUG: Issue #1126 - `TDirectoryCacheDependency`: fixed missing `$timestamps` capture in `array_merge` for subdirectory timestamps; `TConstantReflectionTrait`: fixed blank-string prefix edge case.
+BUG: SqlMap `TPropertyAccess` reads `ArrayAccess` objects through `offsetExists()` and `offsetGet()`. (belisoful)
+BUG: SqlMap insert, update, and delete statements with a `cacheModel` flush that cache when they execute. (belisoful)
+BUG: SqlMap `groupBy` result maps leave a collection empty for a LEFT JOIN row without a match, and scope nested group keys by their parent. (belisoful)
+BUG: SqlMap `TSqlMapObjectCollectionTree` looped forever on a group key of `"0"` and matched parent keys loosely. (belisoful)
+BUG: SqlMap row delegates accept closures and invokable objects. (belisoful)
+BUG: SqlMap binds null as `PARAM_STR` on pdo_ibm, binds booleans as 0/1 on pdo_firebird, and drops the IBM `PRADO_ROWNUM` paging column from results. (belisoful)
 
 ## Version 4.3.2 - January 28, 2026
 

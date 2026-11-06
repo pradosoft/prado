@@ -293,9 +293,9 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 */
 	protected function raiseRowDelegate($handler, $param)
 	{
-		if (is_string($handler)) {
+		if (is_string($handler) || is_object($handler) && is_callable($handler)) {
 			call_user_func($handler, $this, $param);
-		} elseif (is_callable($handler, true)) {
+		} elseif (is_array($handler) && is_callable($handler, true)) {
 			// an array: 0 - object, 1 - method name/path
 			[$object, $method] = $handler;
 			if (is_string($object)) {	// static method call
@@ -492,6 +492,8 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 
 	/**
 	 * Apply result mapping.
+	 * The PRADO_ROWNUM column is removed from the row. TIbmCommandBuilder::applyLimitOffset()
+	 * pages through a ROW_NUMBER() subquery, and its outer "SELECT *" returns that helper column.
 	 * @param array $row a result set row retrieved from the database
 	 * @param null|object $resultObject the result object, will create if necessary.
 	 * @return object the result filled with data, null if not filled.
@@ -501,6 +503,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 		if ($row === false) {
 			return null;
 		}
+		unset($row['PRADO_ROWNUM'], $row['prado_rownum']);
 
 		$resultMapName = $this->_statement->getResultMap();
 		$resultClass = $this->_statement->getResultClass();
@@ -622,10 +625,13 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 
 	/**
 	 * ResultMap with GroupBy property. Save object collection graph in a tree
-	 * and collect the result later.
+	 * and collect the result later. A nested result map without row data, such as
+	 * the right side of a LEFT JOIN with no match, adds no element to the collection.
+	 * The tree key of a nested element is prefixed with its parent key, so equal
+	 * `groupBy` values under different parents are separate elements.
 	 * @param TResultMap $resultMap result mapping details.
 	 * @param array $row a result set row retrieved from the database
-	 * @param mixed $parent
+	 * @param mixed $parent tree key of the parent element, null or '' for a root
 	 * @param object $resultObject the result object
 	 * @return object result object.
 	 */
@@ -636,6 +642,9 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 		if (empty($parent)) {
 			$rootObject = ['object' => $resultObject, 'property' => null];
 			$this->_groupBy->add(null, $group, $rootObject);
+			$parentKey = $group;
+		} else {
+			$parentKey = $parent;
 		}
 
 		foreach ($resultMap->getColumns() as $property) {
@@ -646,7 +655,10 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 			//nested property
 			if ($this->getManager()->getResultMaps()->contains($nested)) {
 				$nestedMap = $this->getManager()->getResultMap($nested);
-				$groupKey = $this->getResultMapGroupKey($nestedMap, $row);
+				if (!$this->hasResultMapRowData($nestedMap, $row)) {
+					continue;
+				}
+				$groupKey = $parentKey . '.' . $this->getResultMapGroupKey($nestedMap, $row);
 
 				//add the node reference first
 				if (empty($parent)) {
@@ -666,6 +678,39 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 			}
 		}
 		return $resultObject;
+	}
+
+	/**
+	 * Checks whether a row holds a value for any column of a result map.
+	 * A LEFT JOIN row without a matching right-side row is null in every column
+	 * of the nested result map. Column names match case-insensitively when no
+	 * exact match exists.
+	 * @param TResultMap $resultMap result mapping details.
+	 * @param array $row a result set row retrieved from the database
+	 * @return bool true if a mapped column is not null or the map has no column mappings.
+	 * @since 4.3.3
+	 */
+	protected function hasResultMapRowData($resultMap, $row)
+	{
+		$hasColumns = false;
+		foreach ($resultMap->getColumns() as $property) {
+			$column = $property->getColumn();
+			if ($column === null || $column === '') {
+				continue;
+			}
+			$hasColumns = true;
+			$index = $property->getColumnIndex();
+			if (($index > 0 && isset($row[$index])) || isset($row[$column])) {
+				return true;
+			}
+			$columnLower = strtolower($column);
+			foreach ($row as $key => $value) {
+				if ($value !== null && strtolower((string) $key) === $columnLower) {
+					return true;
+				}
+			}
+		}
+		return !$hasColumns;
 	}
 
 	/**

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<sqlMapConfig>
+	<sqlMaps>
+		<sqlMap resource="cache-flush.xml"/>
+		<sqlMap resource="cache-flush-other.xml"/>
+	</sqlMaps>
+</sqlMapConfig>
