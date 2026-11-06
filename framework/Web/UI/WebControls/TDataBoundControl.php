@@ -368,7 +368,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	{
 		if (!$this->_currentViewValid) {
 			if ($this->_currentView && $this->_currentViewIsFromDataSourceID) {
-				$this->_currentView->detachEventHandler('DataSourceViewChanged', [$this, 'dataSourceViewChanged']);
+				$this->_currentView->detachEventHandler('OnDataSourceViewChanged', [$this, 'dataSourceViewChanged']);
 			}
 			if (($dataSource = $this->determineDataSource()) !== null) {
 				if (($view = $dataSource->getView($this->getDataMember())) === null) {

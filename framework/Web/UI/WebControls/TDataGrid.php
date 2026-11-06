@@ -18,6 +18,7 @@ namespace Prado\Web\UI\WebControls;
 use Prado\Collections\TList;
 use Prado\Collections\TPagedDataSource;
 use Prado\TPropertyValue;
+use Prado\Web\THttpUtility;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Web\UI\ITemplate;
 
@@ -160,6 +161,10 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	public const CMD_PAGE_PREV = 'Previous';
 	public const CMD_PAGE_FIRST = 'First';
 	public const CMD_PAGE_LAST = 'Last';
+	/**
+	 * @var array<string, true> the default page texts, HTML-encoded in link button and label pager buttons.
+	 */
+	private const DEFAULT_PAGER_TEXTS = ['<' => true, '>' => true, '<<' => true, '>>' => true];
 
 	/**
 	 * @var TDataGridColumnCollection manually created column collection
@@ -678,6 +683,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 * the command name is a recognized one, which includes 'select', 'edit',
 	 * 'delete', 'update', and 'cancel' (case-insensitive), then a
 	 * corresponding command event is also raised (such as {@see onEditCommand OnEditCommand}).
+	 * A 'select' command from a pager selects no item.
 	 * This method should only be used by control developers.
 	 * @param \Prado\Web\UI\TControl $sender the sender of the event
 	 * @param \Prado\TEventParameter $param event parameter
@@ -689,8 +695,10 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 			$this->onItemCommand($param);
 			$command = $param->getCommandName();
 			if (strcasecmp($command, self::CMD_SELECT) === 0) {
-				$this->setSelectedItemIndex($param->getItem()->getItemIndex());
-				$this->onSelectedIndexChanged($param);
+				if (($item = $param->getItem()) instanceof TDataGridItem) {
+					$this->setSelectedItemIndex($item->getItemIndex());
+					$this->onSelectedIndexChanged($param);
+				}
 				return true;
 			} elseif (strcasecmp($command, self::CMD_EDIT) === 0) {
 				$this->onEditCommand($param);
@@ -1188,6 +1196,19 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
+	 * Returns the text of a link button or label pager button.  A default page text
+	 * (`<`, `>`, `<<`, `>>`) is HTML-encoded; any other text renders as HTML, as in
+	 * {@see TLinkButton} and {@see TLabel}.
+	 * @param string $text the page text.
+	 * @return string the button text.
+	 * @since 4.3.3
+	 */
+	protected function encodeDefaultPagerText($text)
+	{
+		return isset(self::DEFAULT_PAGER_TEXTS[$text]) ? THttpUtility::htmlEncode($text) : $text;
+	}
+
+	/**
 	 * Creates a pager button.
 	 * Depending on the button type, a TLinkButton or a TButton may be created.
 	 * If it is enabled (clickable), its command name and parameter will also be set.
@@ -1203,6 +1224,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	protected function createPagerButton($pager, $buttonType, $enabled, $text, $commandName, $commandParameter)
 	{
 		if ($buttonType === TDataGridPagerButtonType::LinkButton) {
+			$text = $this->encodeDefaultPagerText($text);
 			if ($enabled) {
 				$button = new TLinkButton();
 			} else {
@@ -1451,7 +1473,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 					if ($selectedItemStyle) {
 						$item->getStyle()->mergeWith($selectedItemStyle);
 					}
-					if ($index % 2 == 1) {
+					if ($item->getItemIndex() % 2 === 0) {
 						if ($itemStyle) {
 							$item->getStyle()->mergeWith($itemStyle);
 						}
@@ -1465,7 +1487,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 					if ($editItemStyle) {
 						$item->getStyle()->mergeWith($editItemStyle);
 					}
-					if ($index % 2 == 1) {
+					if ($item->getItemIndex() % 2 === 0) {
 						if ($itemStyle) {
 							$item->getStyle()->mergeWith($itemStyle);
 						}

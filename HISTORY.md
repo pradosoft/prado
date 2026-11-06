@@ -34,6 +34,19 @@ BUG: TUserManager compares passwords with hash_equals().
 BUG: TThemeManager::getTheme() rejects a theme name that is not a single directory.
 BUG: TParameterizeBehavior and TTimeZoneParameterBehavior Enabled accept 'true' and 'false' strings; THttpResponse rejects a status reason starting with a line break.
 BUG: TCaptureForkLog: onCollectLogs TypeError, grandchild logs, message framing, signal-interrupted waits, closed connections, and a child blocking on its parent.
+BUG: TActiveFileUpload restricts the callback token unserialize() to TActiveFileUploadCallbackParams and quotes the request IDs in its upload script.
+BUG: TActiveListControlAdapter skips a selection index equal to the item count.
+BUG: TDataGrid ignores a pager Select command and styles selected and edit items by item index.
+BUG: TDataGrid and TPager HTML-encode the default page texts of link and label pager buttons.
+BUG: TDataGridPagerStyle resets, copies, and merges FirstPageText and LastPageText.
+BUG: TRadioButtonList ignores post data while disabled and reports DataChanged.
+BUG: TListControlValidator matches required selections exactly.
+BUG: TDataBoundControl, TDataSourceControl, TDataSourceView, and TReadOnlyDataSource error messages are defined.
+BUG: TDataBoundControl detaches OnDataSourceViewChanged from a replaced view.
+BUG: TListControl applies the last selection set before databinding.
+BUG: TListControl and TListItem clone their items and attributes.
+BUG: TActiveRatingList encodes client function values.
+BUG: TActiveHyperLink HTML-encodes its callback text as THyperLink renders it.
 
 ## Version 4.3.2 - January 28, 2026
 
