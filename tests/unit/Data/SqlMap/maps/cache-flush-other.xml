@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap>
+	<cacheModel id="other-cache" implementation="LRU" />
+
+	<update id="UpdateInOtherFile" cacheModel="shared-cache">UPDATE t SET a = 5</update>
+</sqlMap>
