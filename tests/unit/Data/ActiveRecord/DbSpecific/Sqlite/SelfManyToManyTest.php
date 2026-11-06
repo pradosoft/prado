@@ -5,6 +5,7 @@ namespace Prado\Test\Unit\Data\ActiveRecord\DbSpecific\Sqlite;
 use Prado\Data\ActiveRecord\Relations\TActiveRecordRelationContext;
 use Prado\Data\ActiveRecord\TActiveRecord;
 use Prado\Data\TDbConnection;
+use Prado\Test\Unit\PradoUnit;
 
 /**
  * Records over an in-memory SQLite database whose association tables link
@@ -202,5 +203,27 @@ class SelfManyToManyTest extends \PHPUnit\Framework\TestCase
 		$command = $class::connection()->createCommand("SELECT source_id, target_id FROM {$link} ORDER BY source_id, target_id");
 		$rows = array_map(fn ($row) => [(int) $row['source_id'], (int) $row['target_id']], $command->queryAll());
 		$this->assertSame([[1, 2], [3, 1], [3, 2]], $rows);
+	}
+
+	public static function associationColumnLists(): array
+	{
+		return [
+			'comma and space' => ['(source_id, target_id)'],
+			'comma' => ['(source_id,target_id)'],
+			'space' => ['(source_id target_id)'],
+		];
+	}
+
+	/**
+	 * @dataProvider associationColumnLists
+	 * @param string $columns
+	 */
+	public function testAssociationColumnListSplits(string $columns)
+	{
+		$record = SelfItemSourceFirst::finder()->findByPk(1);
+		$relation = [TActiveRecord::MANY_TO_MANY, SelfItemSourceFirst::class, 'self_link_st.' . $columns];
+		$handler = (new TActiveRecordRelationContext($record, 'linked', $relation))->getRelationHandler();
+		PradoUnit::invoke($handler, 'getAssociationTable');
+		$this->assertSame(['source_id', 'target_id'], PradoUnit::getProp($handler, '_association_columns'));
 	}
 }

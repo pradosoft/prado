@@ -153,7 +153,7 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 			$table = explode('.', $this->getContext()->getAssociationTable());
 			if (count($table) > 1) {
 				$columns = preg_replace('/^\((.*)\)/', '\1', $table[1]);
-				$this->_association_columns = preg_split('/\s*[, ]\*/', $columns);
+				$this->_association_columns = preg_split('/\s*[, ]\s*/', $columns);
 			}
 			$this->_association = $gateway->getTableInfo($conn, $table[0]);
 		}
