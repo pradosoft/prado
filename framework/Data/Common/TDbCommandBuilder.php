@@ -1024,17 +1024,57 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDbCommandBuilder
 	 */
 	public function createIndexCriteria(array $fields, array $values)
 	{
-		if (!count($values)) {
-			return new TSqlCriteria('FALSE');
+		return new TSqlCriteria($this->getIndexCondition($fields, $values));
+	}
+
+	/**
+	 * Builds the SQL condition that matches the rows whose `$fields` columns hold one of the `$values` rows.
+	 *
+	 * | Input | Condition |
+	 * |---|---|
+	 * | no values | `1=0` |
+	 * | one field | `t.a IN ('1', '2')` |
+	 * | several fields, one row | `(t.a = '1' AND t.b = 'x')` |
+	 * | several fields, several rows | `((t.a = '1' AND t.b = 'x') OR (t.a = '2' AND t.b = 'y'))` |
+	 *
+	 * `1=0` is the false predicate; Oracle, SQL Server, Firebird, and DB2 reject a bare `FALSE`.
+	 * Several fields are matched by equalities. SQL Server and DB2 reject the row-value
+	 * `(t.a, t.b) IN ((...))` form, and MySQL does not use an index for it in DELETE and UPDATE.
+	 * The outer parentheses keep the disjunction intact when the condition is joined with `AND`.
+	 * The values of a row pair with `$fields` by position.
+	 *
+	 * @param array $fields index column ids.
+	 * @param array $values index values, one value or one value array per row.
+	 * @param ?IDataTableInfo $table the table of the columns; null for this builder's table.
+	 * @return string the SQL condition.
+	 * @since 4.4.0
+	 */
+	public function getIndexCondition(array $fields, array $values, ?IDataTableInfo $table = null): string
+	{
+		if (count($values) === 0) {
+			return '1=0';
 		}
-		$table = $this->getTableInfo();
+		$table ??= $this->getTableInfo();
 		$tableName = $table->getTableFullName();
 		$columns = [];
 		foreach ($fields as $field) {
 			$columns[] = $tableName . '.' . $table->getColumn($field)->getColumnName();
 		}
-		$condition = '(' . implode(', ', $columns) . ') IN ' . $this->quoteTuple($values);
-		return new TSqlCriteria($condition);
+		if (count($columns) === 1) {
+			$values = array_map(fn ($value) => is_array($value) ? array_values($value)[0] : $value, $values);
+			return $columns[0] . ' IN ' . $this->quoteTuple($values);
+		}
+		$conn = $this->getDbConnection();
+		$rows = [];
+		foreach ($values as $row) {
+			$row = array_values((array) $row);
+			$terms = [];
+			foreach ($columns as $i => $column) {
+				$terms[] = $column . ' = ' . $conn->quoteString($row[$i]);
+			}
+			$rows[] = '(' . implode(' AND ', $terms) . ')';
+		}
+		return count($rows) === 1 ? $rows[0] : '(' . implode(' OR ', $rows) . ')';
 	}
 
 	/**

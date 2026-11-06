@@ -1,4 +1,5 @@
 ## Version 4.3.3 - TBA
+BUG: Issue #129 - Composite key lookups match an `OR` of `AND`-joined equalities in place of the row-value `IN`, which MySQL does not index in `DELETE` and `UPDATE` and SQL Server and DB2 reject; `TDbCommandBuilder::getIndexCondition()` builds it, and `createIndexCriteria()` gives `1=0` for no values in place of `FALSE`. (belisoful)
 ENH: Issue #1088 - Database layer from 4.4: `TDbDriverCapabilities` centralizes per-driver PDO capabilities; `getMetaDataClass()` accepts any `IDataConnection`, and a plugin connection raises `fxDataGetMetaDataClass` before the built-in lookup (#1469); `TDbCommandBuilder::insertOrIgnore()` and `upsert()` with per-driver SQL; `IDataCriteria`, `IDataCriteriaBuilder`, and `IDataSchemalessTableInfo` for non-SQL drivers; `TDataTransaction` lifecycle; the data interfaces match 4.4 so Data extensions run on 4.3.3. (belisoful)
 CHG: Issue #1088 - `Prado\Data\Common\SqlSrv` classes implement SQL Server; the `Prado\Data\Common\Mssql` classes are deprecated empty subclasses of them. `IDbHasSchema` is replaced by `IDataHasSchema`. (belisoful)
 
