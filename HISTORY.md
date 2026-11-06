@@ -47,6 +47,9 @@ BUG: TListControl applies the last selection set before databinding.
 BUG: TListControl and TListItem clone their items and attributes.
 BUG: TActiveRatingList encodes client function values.
 BUG: TActiveHyperLink HTML-encodes its callback text as THyperLink renders it.
+BUG: TDbCache binds the cache key when reading a value.
+BUG: TDbParameterModule binds the AutoLoadValue; TDbParameterModule, TDbCache, TDbLogRoute, and TDbCronManager validate their configured table and field names; TMysqlMetaData quotes the table name in getIsView(); TDbLogRoute::getDBLogs() order and limit are fixed and validated.
+BUG: TDbCronManager pages the cron log with LIMIT count OFFSET offset on every driver.
 
 ## Version 4.3.2 - January 28, 2026
 
