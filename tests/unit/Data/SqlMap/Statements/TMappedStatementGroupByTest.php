@@ -175,6 +175,40 @@ class TMappedStatementGroupByTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame(['read', 'write'], $this->permissionNames($users[1]->Roles[0]));
 	}
 
+	public function testColumnCaseFolding()
+	{
+		$users = $this->query([
+			['USER_ID' => 1, 'USER_NAME' => 'ann', 'ROLE_NAME' => 'admin', 'ROLE_LEVEL' => 2, 'PERMISSION_NAME' => null],
+			['USER_ID' => 2, 'USER_NAME' => 'bob', 'ROLE_NAME' => null, 'ROLE_LEVEL' => null, 'PERMISSION_NAME' => null],
+		]);
+
+		$this->assertSame(['admin'], $this->roleNames($users[0]));
+		$this->assertSame([], $users[0]->Roles[0]->Permissions);
+		$this->assertSame([], $users[1]->Roles);
+	}
+
+	public function testResultObjectPropertyCaseFolding()
+	{
+		$statement = new TMappedStatement(new TSqlMapManager(), new \Prado\Data\SqlMap\Configuration\TSqlMapSelect());
+		$fill = \Closure::bind(
+			fn ($row, $object) => $this->fillResultObjectProperty($row, $object),
+			$statement,
+			TMappedStatement::class
+		);
+		$user = $fill(['ID' => 7, 'name' => 'ann'], new TMappedStatementGroupByUser());
+		$this->assertSame(7, $user->Id);
+		$this->assertSame('ann', $user->Name);
+		$this->assertFalse(property_exists($user, 'ID'));
+
+		$exact = new class () {
+			public $Id;
+			public $id;
+		};
+		$exact = $fill(['id' => 3], $exact);
+		$this->assertSame(3, $exact->id);
+		$this->assertNull($exact->Id);
+	}
+
 	public function testHasResultMapRowDataByColumnName()
 	{
 		$map = $this->resultMap(['A' => 'col_a', 'B' => 'col_b']);

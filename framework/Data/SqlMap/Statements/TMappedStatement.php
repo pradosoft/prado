@@ -568,6 +568,9 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 
 	/**
 	 * Apply the result to an object.
+	 * A column name matches its property exactly first. A column without an exact
+	 * match is assigned to the property whose name matches case-insensitively, for
+	 * drivers that fold column-name case.
 	 * @param array $row a result set row retrieved from the database
 	 * @param object $resultObject result object, array or list
 	 * @return object result filled with data.
@@ -576,16 +579,22 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	{
 		$index = 0;
 		$registry = $this->getManager()->getTypeHandlers();
+		$propMap = $this->getResultObjectPropertyMap($resultObject);
 		foreach ($row as $k => $v) {
+			$prop = $k;
+			if (is_string($k) && isset($propMap[$lower = strtolower($k)])
+				&& $propMap[$lower] !== $k && !TPropertyAccess::has($resultObject, $k)) {
+				$prop = $propMap[$lower];
+			}
 			$property = new TResultProperty();
 			if (is_string($k) && strlen($k) > 0) {
 				$property->setColumn($k);
 			}
 			$property->setColumnIndex(++$index);
-			$type = gettype(TPropertyAccess::get($resultObject, $k));
+			$type = gettype(TPropertyAccess::get($resultObject, $prop));
 			$property->setType($type);
 			$value = $property->getPropertyValue($registry, $row);
-			TPropertyAccess::set($resultObject, $k, $value);
+			TPropertyAccess::set($resultObject, $prop, $value);
 		}
 		return $resultObject;
 	}
@@ -681,6 +690,36 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	}
 
 	/**
+	 * Builds a map of lowercase property name to property name for an object.
+	 * - {@see \Prado\TComponent} → setters with a readable property
+	 * - other object → setters with a matching getter
+	 * - any object → public properties
+	 * @param mixed $resultObject the result object
+	 * @return array<string, string> lowercase property name → property name.
+	 * @since 4.3.3
+	 */
+	protected function getResultObjectPropertyMap($resultObject)
+	{
+		$propMap = [];
+		if (!is_object($resultObject)) {
+			return $propMap;
+		}
+		foreach (get_class_methods($resultObject) as $method) {
+			if (strncasecmp($method, 'set', 3) !== 0 || strlen($method) <= 3) {
+				continue;
+			}
+			$propName = substr($method, 3);
+			if ($resultObject instanceof \Prado\TComponent ? $resultObject->canGetProperty($propName) : method_exists($resultObject, 'get' . $propName)) {
+				$propMap[strtolower($propName)] = $propName;
+			}
+		}
+		foreach (array_keys(get_object_vars($resultObject)) as $prop) {
+			$propMap[strtolower($prop)] = $prop;
+		}
+		return $propMap;
+	}
+
+	/**
 	 * Checks whether a row holds a value for any column of a result map.
 	 * A LEFT JOIN row without a matching right-side row is null in every column
 	 * of the nested result map. Column names match case-insensitively when no
@@ -722,11 +761,19 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	protected function getResultMapGroupKey($resultMap, $row)
 	{
 		$groupBy = $resultMap->getGroupBy();
-		if (isset($row[$groupBy])) {
+		if ($groupBy !== null && isset($row[$groupBy])) {
 			return $resultMap->getID() . $row[$groupBy];
-		} else {
-			return $resultMap->getID() . crc32(serialize($row));
 		}
+		if ($groupBy !== null && !array_key_exists($groupBy, $row)) {
+			// Case-insensitive fallback for drivers that fold column-name case.
+			$groupByLower = strtolower($groupBy);
+			foreach ($row as $key => $val) {
+				if (strtolower((string) $key) === $groupByLower) {
+					return $resultMap->getID() . $val;
+				}
+			}
+		}
+		return $resultMap->getID() . crc32(serialize($row));
 	}
 
 	/**
@@ -891,9 +938,19 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 		$value = $property->getColumn();
 		if (is_int(strpos($value, ',', 0)) || is_int(strpos($value, '=', 0))) {
 			$keys = [];
+			// Lowercase key map for columns whose case the driver folded.
+			$rowLower = [];
+			foreach ($row as $k => $v) {
+				$rowLower[strtolower((string) $k)] = $v;
+			}
 			foreach (explode(',', $value) as $entry) {
 				$pair = explode('=', $entry);
-				$keys[trim($pair[0])] = $row[trim($pair[1])];
+				$colName = trim($pair[1]);
+				if (array_key_exists($colName, $row)) {
+					$keys[trim($pair[0])] = $row[$colName];
+				} else {
+					$keys[trim($pair[0])] = $rowLower[strtolower($colName)] ?? null;
+				}
 			}
 			return $keys;
 		} else {

@@ -24,6 +24,7 @@ BUG: SqlMap `groupBy` result maps leave a collection empty for a LEFT JOIN row w
 BUG: SqlMap `TSqlMapObjectCollectionTree` looped forever on a group key of `"0"` and matched parent keys loosely. (belisoful)
 BUG: SqlMap row delegates accept closures and invokable objects. (belisoful)
 BUG: SqlMap binds null as `PARAM_STR` on pdo_ibm, binds booleans as 0/1 on pdo_firebird, and drops the IBM `PRADO_ROWNUM` paging column from results. (belisoful)
+BUG: SqlMap matches result columns to properties, `groupBy` columns, and composite select keys case-insensitively when no exact-case match exists, for drivers that fold column-name case. (belisoful)
 
 ## Version 4.3.2 - January 28, 2026
 
