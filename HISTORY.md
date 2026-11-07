@@ -77,6 +77,8 @@ BUG: THttpResponse::httpRedirect() works without SERVER_SOFTWARE.
 BUG: TReCaptcha2::validate() verifies the token with Google siteverify; it now needs SecretKey and outbound HTTPS. TReCaptcha and TReCaptchaValidator (reCAPTCHA v1) are deprecated. See UPGRADE.md.
 BUG: TWebControl::setAccessKey() ensures a string and accepts one multibyte character.
 BUG: TSoapService PHP configuration without a 'soap' key registers nothing, and a server's 'class' key is honored.
+BUG: Prado.PostBack copies its options per instance, so a postback that stays on the page (failed validation, a cancelled submit, a formtarget window) no longer leaks PostBackUrl, EventParameter, ValidationGroup, or CausesValidation into the next one (#1417).
+BUG: Prado.PostBack removes its EventTarget and EventParameter fields after the submit, so a later submit does not post them again (#1418).
 
 ## Version 4.3.2 - January 28, 2026
 

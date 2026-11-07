@@ -304,11 +304,12 @@ Prado.RequestManager =
  */
 Prado.PostBack = jQuery.klass(
 {
-	options : {},
-
+	/**
+	 * Each instance copies its options, so an option one postback omits is unset.
+	 */
 	initialize: function(options, event)
 	{
-		jQuery.extend(this.options, options || {});
+		this.options = jQuery.extend({}, options || {});
 		this.event = event;
 		this.doPostBack();
 	},
@@ -343,25 +344,46 @@ Prado.PostBack = jQuery.klass(
 			}
 		}
 
-		var input=null;
-		if(this.options.EventTarget)
-		{
-			input = document.createElement("input");
-			input.setAttribute("type", "hidden");
-			input.setAttribute("name", Prado.RequestManager.FIELD_POSTBACK_TARGET);
-			input.setAttribute("value", this.options.EventTarget);
-			form.appendChild(input);
-		}
-		if(this.options.EventParameter)
-		{
-			input = document.createElement("input");
-			input.setAttribute("type", "hidden");
-			input.setAttribute("name", Prado.RequestManager.FIELD_POSTBACK_PARAMETER);
-			input.setAttribute("value", this.options.EventParameter);
-			form.appendChild(input);
-		}
-
+		var removeFields = this.addPostBackFields(form);
 		jQuery(form).trigger('submit');
+		removeFields();
+	},
+
+	/**
+	 * Adds the EventTarget and EventParameter hidden fields to the form.
+	 * Submit listeners and the native submit read them at once, so they are removed
+	 * right after. A cancelled submit, or one to another window, leaves the page
+	 * in place, and a later submit of the form would otherwise post them again.
+	 * @param {HTMLFormElement} form - the form to submit
+	 * @return {function} removes the added fields
+	 */
+	addPostBackFields : function(form)
+	{
+		var fields = [];
+		var pairs = [
+			[Prado.RequestManager.FIELD_POSTBACK_TARGET, this.options.EventTarget],
+			[Prado.RequestManager.FIELD_POSTBACK_PARAMETER, this.options.EventParameter]
+		];
+		for(var i = 0; i < pairs.length; i++)
+		{
+			if(pairs[i][1])
+			{
+				var input = document.createElement("input");
+				input.setAttribute("type", "hidden");
+				input.setAttribute("name", pairs[i][0]);
+				input.setAttribute("value", pairs[i][1]);
+				form.appendChild(input);
+				fields.push(input);
+			}
+		}
+		return function()
+		{
+			for(var j = 0; j < fields.length; j++)
+			{
+				if(fields[j].parentNode)
+					fields[j].parentNode.removeChild(fields[j]);
+			}
+		};
 	}
 });
 

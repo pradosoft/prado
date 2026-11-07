@@ -41,14 +41,17 @@ describe('Prado.PostBack.doPostBack', () => {
 	const submits = [];
 
 	beforeEach(() => {
-		// Reset the shared prototype options object between tests to prevent
-		// option bleed: PostBack.prototype.options is mutated by jQuery.extend.
-		PostBack.prototype.options = {};
 		form = makeForm();
 		submits.length = 0;
 		// Capture submit events via jQuery (PostBack uses jQuery.trigger, not
 		// a native DOM event, so native addEventListener won't fire here).
-		jQuery(form).on('submit', function (e) { e.preventDefault(); submits.push(true); });
+		// Each entry records the postback fields the submit carried.
+		jQuery(form).on('submit', function (e) {
+			e.preventDefault();
+			const fields = {};
+			form.querySelectorAll('input[type="hidden"]').forEach((input) => { fields[input.name] = input.value; });
+			submits.push(fields);
+		});
 	});
 
 	afterEach(() => {
@@ -72,9 +75,7 @@ describe('Prado.PostBack.doPostBack', () => {
 		const fakeEvent = { preventDefault: vi.fn() };
 		new PostBack(baseOpts({ EventTarget: 'btn1' }), fakeEvent);
 
-		const field = form.querySelector('[name="PRADO_POSTBACK_TARGET"]');
-		expect(field).not.toBeNull();
-		expect(field.value).toBe('btn1');
+		expect(submits[0].PRADO_POSTBACK_TARGET).toBe('btn1');
 	});
 
 	it('does NOT append PRADO_POSTBACK_TARGET when EventTarget is empty', () => {
@@ -88,9 +89,38 @@ describe('Prado.PostBack.doPostBack', () => {
 		const fakeEvent = { preventDefault: vi.fn() };
 		new PostBack(baseOpts({ EventParameter: 'p42' }), fakeEvent);
 
-		const field = form.querySelector('[name="PRADO_POSTBACK_PARAMETER"]');
-		expect(field).not.toBeNull();
-		expect(field.value).toBe('p42');
+		expect(submits[0].PRADO_POSTBACK_PARAMETER).toBe('p42');
+	});
+
+	it('removes its postback fields after a cancelled submit', () => {
+		const fakeEvent = { preventDefault: vi.fn() };
+		new PostBack(baseOpts({ EventTarget: 'btn1', EventParameter: 'p42' }), fakeEvent);
+
+		expect(submits).toHaveLength(1);
+		expect(form.querySelector('[name="PRADO_POSTBACK_TARGET"]')).toBeNull();
+		expect(form.querySelector('[name="PRADO_POSTBACK_PARAMETER"]')).toBeNull();
+	});
+
+	it('does not post the fields of an earlier cancelled postback', () => {
+		const fakeEvent = { preventDefault: vi.fn() };
+		new PostBack(baseOpts({ EventTarget: 'list', EventParameter: 'item3' }), fakeEvent);
+		new PostBack(baseOpts({ EventTarget: 'btn2', EventParameter: undefined }), fakeEvent);
+
+		expect(submits[1]).toEqual({ PRADO_POSTBACK_TARGET: 'btn2' });
+	});
+
+	it('copies its options per instance, so an omitted option is unset', () => {
+		const fakeEvent = { preventDefault: vi.fn() };
+		const first = new PostBack({ FormID: 'testForm', PostBackUrl: 'http://example.com/other', EventParameter: 'p1', ValidationGroup: 'g1' }, fakeEvent);
+		form.action = 'http://example.com/original';
+		const second = new PostBack({ FormID: 'testForm' }, fakeEvent);
+
+		expect(first.options).not.toBe(second.options);
+		expect(second.options.PostBackUrl).toBeUndefined();
+		expect(second.options.EventParameter).toBeUndefined();
+		expect(second.options.ValidationGroup).toBeUndefined();
+		expect(form.action).toBe('http://example.com/original');
+		expect(Object.prototype.hasOwnProperty.call(PostBack.prototype, 'options')).toBe(false);
 	});
 
 	it('does NOT append PRADO_POSTBACK_PARAMETER when EventParameter is empty', () => {
