@@ -109,8 +109,6 @@ Prado.WebUI.TInPlaceTextBox = jQuery.klass(Prado.WebUI.Control,
 		if(this.options.TextMode == 'SingleLine')
 		{
 			this.editField = document.createElement("input");
-			if(this.options.MaxLength > 0)
-				this.editField.maxlength = this.options.MaxLength;
 			if(this.options.Columns > 0)
 				this.editField.size = this.options.Columns;
 		}
@@ -124,6 +122,8 @@ Prado.WebUI.TInPlaceTextBox = jQuery.klass(Prado.WebUI.Control,
 			if(this.options.Wrap)
 				this.editField.wrap = 'off';
 		}
+		if(this.options.MaxLength > 0)
+			this.editField.maxLength = this.options.MaxLength;
 
 		this.editField.className = cssClass;
 		this.editField.name = inputName;
@@ -149,7 +149,7 @@ Prado.WebUI.TInPlaceTextBox = jQuery.klass(Prado.WebUI.Control,
 		}
 
 		this.observe(this.editField, "blur", this.onTextBoxBlur.bind(this));
-		this.observe(this.editField, "keypress", this.onKeyPressed.bind(this));
+		this.observe(this.editField, "keydown", this.onKeyPressed.bind(this));
 	},
 
 	/**

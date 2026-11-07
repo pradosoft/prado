@@ -970,26 +970,90 @@ class TAssetManagerTest extends \PHPUnit\Framework\TestCase
 		self::assertArrayHasKey($fileToPublish, $published);
 	}
 
+	/**
+	 * A source that exists but has not been published yet still reports where it would go.
+	 */
 	public function testGetPublishedPathNotPublished()
 	{
 		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->init(null);
 
-		$path = $manager->getPublishedPath('/nonexistent/file.txt');
-		self::assertNotNull($path);
+		$path = $manager->getPublishedPath(__DIR__ . '/data/pradoheader.gif');
 		self::assertStringContainsString(self::$assetDir, $path);
+
+		$url = $manager->getPublishedUrl(__DIR__ . '/data/pradoheader.gif');
+		self::assertStringStartsWith('/', $url);
+		self::assertStringEndsWith('/pradoheader.gif', $url);
 	}
 
-	public function testGetPublishedUrlNotPublished()
+	/**
+	 * A path that does not exist cannot be resolved, so both accessors throw.
+	 */
+	public function testGetPublishedPathNonexistentThrows()
 	{
 		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->init(null);
 
-		$url = $manager->getPublishedUrl('/nonexistent/file.txt');
-		self::assertNotNull($url);
-		self::assertStringStartsWith('/', $url);
+		$this->expectException(TInvalidDataValueException::class);
+		$manager->getPublishedPath('/nonexistent/file.txt');
+	}
+
+	public function testGetPublishedUrlNonexistentThrows()
+	{
+		$manager = $this->newAssetManager();
+		$manager->setBaseUrl('/');
+		$manager->init(null);
+
+		$this->expectException(TInvalidDataValueException::class);
+		$manager->getPublishedUrl('/nonexistent/file.txt');
+	}
+
+	public function testGetPublishedPathEmptyThrows()
+	{
+		$manager = $this->newAssetManager();
+		$manager->setBaseUrl('/');
+		$manager->init(null);
+
+		$this->expectException(TInvalidDataValueException::class);
+		$manager->getPublishedPath('');
+	}
+
+	/**
+	 * A failed extraction throws and leaves the checksum unpublished, so the next publish extracts again.
+	 */
+	public function testPublishTarFileFailedExtractionThrowsAndKeepsChecksumUnpublished()
+	{
+		$tarFile = __DIR__ . '/data/aTarFile.tar';
+		$md5File = __DIR__ . '/data/aTarFile.md5';
+		$manager = new TAssetManagerTestFailingTar();
+		$manager->setBaseUrl('/');
+		$manager->init(null);
+		$dst = dirname($manager->getPublishedPath($md5File));
+		try {
+			$manager->publishTarFile($tarFile, $md5File);
+			self::fail('Expected TIOException not thrown');
+		} catch (TIOException $e) {
+			self::assertEquals('assetmanager_tarfile_extract_failed', $e->getErrorCode());
+		}
+		self::assertFalse(is_file($dst . DIRECTORY_SEPARATOR . 'aTarFile.md5'));
+		self::assertArrayNotHasKey('tar:' . $md5File, $manager->getPublished());
+	}
+
+	/**
+	 * The tar publish is cached under a `tar:` key, apart from a plain publish of the checksum file.
+	 */
+	public function testPublishTarFileCacheKeyIsNamespaced()
+	{
+		$tarFile = __DIR__ . '/data/aTarFile.tar';
+		$md5File = __DIR__ . '/data/aTarFile.md5';
+		$manager = $this->newAssetManager();
+		$manager->setBaseUrl('/');
+		$manager->init(null);
+		$tarUrl = $manager->publishTarFile($tarFile, $md5File);
+		self::assertArrayHasKey('tar:' . $md5File, $manager->getPublished());
+		self::assertStringEndsNotWith('/aTarFile.md5', $tarUrl);
 	}
 
 	public function testBeforeCopyWithDirectory()
@@ -2129,5 +2193,16 @@ class TAssetManagerTest extends \PHPUnit\Framework\TestCase
 		$manager->init(null);
 
 		self::assertNull($manager->validateSymlinks(__DIR__ . '/data/pradoheader.gif', false));
+	}
+}
+
+/**
+ * Asset manager whose tar extraction fails.
+ */
+class TAssetManagerTestFailingTar extends TAssetManager
+{
+	protected function deployTarFile($path, $destination)
+	{
+		return false;
 	}
 }

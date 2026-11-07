@@ -266,7 +266,7 @@ class TBitHelper
 	 */
 	public static function isNegativeFloat(float $value): bool
 	{
-		return $value < 0 || $value === -0.0 && (ord(pack('G', $value)) & 0x80) !== 0;
+		return $value < 0 || $value === -0.0 && (ord(pack('G', $value)[0]) & 0x80) !== 0;
 	}
 
 	/**
@@ -278,7 +278,7 @@ class TBitHelper
 	 */
 	public static function isNegativeZero(float $value): bool
 	{
-		return $value === -0.0 && (ord(pack('G', $value)) & 0x80) !== 0;
+		return $value === -0.0 && (ord(pack('G', $value)[0]) & 0x80) !== 0;
 	}
 
 	/**

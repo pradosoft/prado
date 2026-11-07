@@ -45,7 +45,7 @@ abstract class TDataSourceView extends \Prado\TComponent
 	 */
 	public function insertAt($values)
 	{
-		throw new TNotSupportedException('datasourceview_insert_unsupported');
+		throw new TNotSupportedException('datasourceview_insert_unsupported', $this::class);
 	}
 
 	/**
@@ -56,7 +56,7 @@ abstract class TDataSourceView extends \Prado\TComponent
 	 */
 	public function update($keys, $values)
 	{
-		throw new TNotSupportedException('datasourceview_update_unsupported');
+		throw new TNotSupportedException('datasourceview_update_unsupported', $this::class);
 	}
 
 	/**
@@ -66,7 +66,7 @@ abstract class TDataSourceView extends \Prado\TComponent
 	 */
 	public function delete($keys)
 	{
-		throw new TNotSupportedException('datasourceview_delete_unsupported');
+		throw new TNotSupportedException('datasourceview_delete_unsupported', $this::class);
 	}
 
 	public function getCanDelete()

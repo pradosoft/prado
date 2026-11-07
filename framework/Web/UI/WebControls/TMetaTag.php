@@ -10,6 +10,8 @@
 
 namespace Prado\Web\UI\WebControls;
 
+use Prado\TPropertyValue;
+
 /**
  * TMetaTag class.
  *
@@ -62,7 +64,7 @@ class TMetaTag extends \Prado\TComponent
 	 */
 	public function setID($value)
 	{
-		$this->_id = $value;
+		$this->_id = TPropertyValue::ensureString($value);
 	}
 
 	/**
@@ -78,7 +80,7 @@ class TMetaTag extends \Prado\TComponent
 	 */
 	public function setHttpEquiv($value)
 	{
-		$this->_httpEquiv = $value;
+		$this->_httpEquiv = TPropertyValue::ensureString($value);
 	}
 
 	/**
@@ -94,7 +96,7 @@ class TMetaTag extends \Prado\TComponent
 	 */
 	public function setName($value)
 	{
-		$this->_name = $value;
+		$this->_name = TPropertyValue::ensureString($value);
 	}
 
 	/**
@@ -110,7 +112,7 @@ class TMetaTag extends \Prado\TComponent
 	 */
 	public function setContent($value)
 	{
-		$this->_content = $value;
+		$this->_content = TPropertyValue::ensureString($value);
 	}
 
 	/**
@@ -128,7 +130,7 @@ class TMetaTag extends \Prado\TComponent
 	 */
 	public function setScheme($value)
 	{
-		$this->_scheme = $value;
+		$this->_scheme = TPropertyValue::ensureString($value);
 	}
 
 	/**
@@ -144,7 +146,7 @@ class TMetaTag extends \Prado\TComponent
 	 */
 	public function setCharset($value)
 	{
-		$this->_charset = $value;
+		$this->_charset = TPropertyValue::ensureString($value);
 	}
 
 	/**
@@ -153,23 +155,21 @@ class TMetaTag extends \Prado\TComponent
 	 */
 	public function render($writer)
 	{
-		if ($this->_id !== '') {
-			$writer->addAttribute('id', $this->_id);
+		$charset = $this->getCharset();
+		$attributes = [
+			'id' => $this->getID(),
+			'name' => $this->getName(),
+			'http-equiv' => $this->getHttpEquiv(),
+			'scheme' => $this->getScheme(),
+			'charset' => $charset,
+		];
+		foreach ($attributes as $name => $value) {
+			if ($value !== '') {
+				$writer->addAttribute($name, $value);
+			}
 		}
-		if ($this->_name !== '') {
-			$writer->addAttribute('name', $this->_name);
-		}
-		if ($this->_httpEquiv !== '') {
-			$writer->addAttribute('http-equiv', $this->_httpEquiv);
-		}
-		if ($this->_scheme !== '') {
-			$writer->addAttribute('scheme', $this->_scheme);
-		}
-		if ($this->_charset !== '') {
-			$writer->addAttribute('charset', $this->_charset);
-		}
-		if ($this->_charset === '') {
-			$writer->addAttribute('content', $this->_content);
+		if ($charset === '') {
+			$writer->addAttribute('content', $this->getContent());
 		}
 		$writer->renderBeginTag('meta');
 		$writer->renderEndTag();

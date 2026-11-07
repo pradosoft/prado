@@ -4,9 +4,50 @@ namespace Prado\Test\Unit\Util\Cron;
 
 use Prado\Prado;
 use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Util\Cron\TDbCronModule;
 use Prado\Util\Cron\TCronMethodTask;
+use Prado\Util\Cron\TDbCronManager;
+use Prado\Data\IDataConnection;
+use Prado\Data\TDbConnection;
+use Prado\Exceptions\TDbException;
+
+/**
+ * SQLite connection that reports the PostgreSQL driver and records each command's SQL.
+ */
+class TDbCronManagerTestPgsqlConnection extends TDbConnection
+{
+	public array $sql = [];
+
+	public function getDriverName()
+	{
+		return 'pgsql';
+	}
+
+	public function createCommand($sql)
+	{
+		$this->sql[] = $sql;
+		throw new TDbException('dbconnection_connection_inactive');
+	}
+}
+
+/**
+ * TDbCronManager that uses a recording connection and skips table creation.
+ */
+class TDbCronManagerTestPgsqlManager extends TDbCronManager
+{
+	public ?TDbCronManagerTestPgsqlConnection $recorder = null;
+
+	public function getDbConnection(): IDataConnection
+	{
+		return $this->recorder;
+	}
+
+	protected function ensureTable()
+	{
+	}
+}
 
 class TDbCronManagerTest extends TCronModuleTest
 {
@@ -809,6 +850,12 @@ class TDbCronManagerTest extends TCronModuleTest
 		self::assertEquals($value, $this->obj->getTableName());
 		$this->obj->setTableName($restoreValue);
 	}
+
+	public function testTableNameRejectsSql()
+	{
+		$this->expectException(TInvalidDataValueException::class);
+		$this->obj->setTableName('crontabs; DROP TABLE users');
+	}
 	
 	public function testAutoCreateCronTable()
 	{
@@ -821,5 +868,20 @@ class TDbCronManagerTest extends TCronModuleTest
 		self::assertFalse($this->obj->getAutoCreateCronTable());
 		$this->obj->setAutoCreateCronTable('true');
 		self::assertTrue($this->obj->getAutoCreateCronTable());
+	}
+
+	public function testGetCronLogPagesWithLimitOffset()
+	{
+		$manager = new TDbCronManagerTestPgsqlManager();
+		$manager->recorder = new TDbCronManagerTestPgsqlConnection('sqlite::memory:');
+		foreach ([[2, 4], [3, 0]] as [$pageSize, $offset]) {
+			try {
+				$manager->getCronLog(null, $pageSize, $offset, true);
+			} catch (TDbException $e) {
+			}
+		}
+		$manager->unlisten();
+		self::assertStringEndsWith(' LIMIT 2 OFFSET 4', $manager->recorder->sql[0]);
+		self::assertStringEndsWith(' LIMIT 3', $manager->recorder->sql[1]);
 	}
 }

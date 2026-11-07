@@ -233,10 +233,10 @@ class TInPlaceTextBox extends TActiveTextBox
 		if ($this->getTextMode() === 'MultiLine') {
 			$options['Rows'] = $this->getRows();
 			$options['Wrap'] = $this->getWrap() == false ? '' : true;
-		} else {
-			$length = $this->getMaxLength();
-			$options['MaxLength'] = $length > 0 ? $length : '';
 		}
+		// TTextBox renders maxlength in every mode, the textarea included.
+		$length = $this->getMaxLength();
+		$options['MaxLength'] = $length > 0 ? $length : '';
 
 		if ($this->hasEventHandler('OnLoadingText')) {
 			$options['LoadTextOnEdit'] = true;

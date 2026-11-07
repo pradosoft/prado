@@ -343,14 +343,11 @@ class TRatingList extends TRadioButtonList
 	}
 
 	/**
-	 * Add rating style class name to the class attribute
-	 * when {@see setReadOnly ReadOnly} property is true and when the
-	 * {@see setCssClass CssClass} property is empty.
+	 * Registers the rating client control and renders the list.
 	 * @param \Prado\Web\UI\THtmlWriter $writer renderer
 	 */
 	public function render($writer)
 	{
-		$writer->addAttribute('id', $this->getClientID());
 		$this->getPage()->getClientScript()->registerPostBackControl(
 			$this->getClientClassName(),
 			$this->getPostBackOptions()

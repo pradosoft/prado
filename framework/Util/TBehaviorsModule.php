@@ -76,12 +76,12 @@ use Prado\Xml\TXmlElement;
 class TBehaviorsModule extends \Prado\TModule
 {
 	/**
-	 * @var IBaseBehavior[] loaded behaviors.
+	 * @var IBaseBehavior[] loaded named behaviors, the targets of `behavior:<name>`.
 	 */
 	private static $_behaviors = [];
 
 	/**
-	 * @var IBaseBehavior[] behaviors attaching to the TPage
+	 * @var IBaseBehavior[] behaviors attaching to the TPage; anonymous behaviors take integer keys.
 	 */
 	private $_pageBehaviors = [];
 
@@ -225,7 +225,11 @@ class TBehaviorsModule extends \Prado\TModule
 				$behavior = TComponent::attachClassBehavior($name, $properties, $attachToClass, $priority);
 			} else {
 				if (strtolower($attachTo) == "page") {
-					$this->_pageBehaviors[$name] = $properties;
+					if ($name === null) {
+						$this->_pageBehaviors[] = $properties;
+					} else {
+						$this->_pageBehaviors[$name] = $properties;
+					}
 					continue;
 				} elseif (strncasecmp($attachTo, 'module:', 7) === 0) {
 					$owner = $this->getApplication()->getModule(trim(substr($attachTo, 7)));
@@ -243,7 +247,7 @@ class TBehaviorsModule extends \Prado\TModule
 				}
 				$behavior = $owner->attachBehavior($name, $properties, $priority);
 			}
-			if (!is_array($behavior)) {
+			if ($name !== null && !is_array($behavior)) {
 				self::$_behaviors[$name] = \WeakReference::create($behavior);
 			}
 		}

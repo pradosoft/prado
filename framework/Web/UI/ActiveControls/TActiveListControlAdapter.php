@@ -50,11 +50,13 @@ class TActiveListControlAdapter extends TActiveControlAdapter implements IListCo
 			if ($promptValue === '') {
 				$promptValue = $this->getControl()->getPromptText();
 			}
+			$n = $this->getControl()->getItemCount();
 			if ($promptValue !== '') {
 				$index++;
+				$n++;
 			}
 
-			if ($index >= 0 && $index <= $this->getControl()->getItemCount()) {
+			if ($index >= 0 && $index < $n) {
 				$this->getPage()->getCallbackClient()->select(
 					$this->getControl(),
 					'Index',
@@ -79,13 +81,17 @@ class TActiveListControlAdapter extends TActiveControlAdapter implements IListCo
 				$promptValue = $this->getControl()->getPromptText();
 			}
 
+			if ($promptValue !== '') {
+				$n++;
+			}
+
 			$list = [];
 			foreach ($indices as $index) {
 				$index = (int) $index;
 				if ($promptValue !== '') {
 					$index++;
 				}
-				if ($index >= 0 && $index <= $n) {
+				if ($index >= 0 && $index < $n) {
 					$list[] = $index;
 				}
 			}

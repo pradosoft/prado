@@ -152,6 +152,7 @@ class CultureInfo
 		if ($culture === null && ($app = Prado::getApplication()) && ($globalize = $app->getGlobalization(false))) {
 			$culture = $globalize->getCulture();
 		}
+		$culture ??= '';
 		if (isset(self::$cultureInfos[$culture])) {
 			return self::$cultureInfos[$culture];
 		}
@@ -371,8 +372,7 @@ class CultureInfo
 		$lang = substr($this->culture, 0, 2);
 		$reg = substr($this->culture, 3, 2);
 		$language = $this->findInfo("Languages/{$lang}");
-		$region = $this->findInfo("Countries/{$reg}");
-		if ($region) {
+		if ($reg !== '' && $region = $this->findInfo("Countries/{$reg}")) {
 			return $language . ' (' . $region . ')';
 		} else {
 			return $language;

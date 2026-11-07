@@ -307,17 +307,17 @@ Prado.WebUI.TImageButton = jQuery.klass(Prado.WebUI.PostBackControl,
 
 	/**
 	 * Add hidden inputs to capture the x,y point clicked on the image.
+	 * The point is in pixels from the image's top-left corner inside its border,
+	 * rounded to integers as a native image submit posts it. Page scrolling does
+	 * not affect it.
 	 * @param event DOM click event.
 	 * @param array image button options.
 	 */
 	addXYInput : function(options, event)
 	{
-		var imagePos = jQuery(this.element).offset();
-		var clickedPos = [event.clientX, event.clientY];
-		var x = clickedPos[0]-imagePos['left']+1;
-		var y = clickedPos[1]-imagePos['top']+1;
-		x = x < 0 ? 0 : x;
-		y = y < 0 ? 0 : y;
+		var rect = this.element.getBoundingClientRect();
+		var x = Math.max(0, Math.round(event.clientX - rect.left - this.element.clientLeft));
+		var y = Math.max(0, Math.round(event.clientY - rect.top - this.element.clientTop));
 		var id = this.element.id;
 		var name = options['EventTarget'];
 		var form = this.element.form || jQuery('#PRADO_PAGESTATE').get(0).form;

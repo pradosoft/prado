@@ -3,6 +3,9 @@
 namespace Prado\Test\Unit\Web\UI;
 
 use Prado\IO\TTextWriter;
+use Prado\Prado;
+use Prado\Test\Unit\PradoUnit;
+use Prado\Test\Unit\Harness\TTestApplication;
 use Prado\Web\UI\IAdapterControl;
 use Prado\Web\UI\TControl;
 use Prado\Web\UI\TControlAdapter;
@@ -65,8 +68,70 @@ class TControlAdapterSpy extends TControlAdapter
 	}
 }
 
+class TControlTestPluginModule extends \Prado\Util\TPluginModule
+{
+	private $_path;
+	public function __construct($path)
+	{
+		parent::__construct();
+		$this->_path = $path;
+	}
+	public function getPluginPath()
+	{
+		return $this->_path;
+	}
+}
+
+class TControlTestPluginControl extends TControl
+{
+}
+
 class TControlTest extends \PHPUnit\Framework\TestCase
 {
+	public function testGetPluginModuleFindsModuleSharingClassPath()
+	{
+		$app = Prado::getApplication();
+		$snap = TTestApplication::snapshotApp($app);
+		try {
+			$module = new TControlTestPluginModule(__DIR__);
+			$app->setModule('TControlTestPlugin', $module);
+			$control = new TControlTestPluginControl();
+			$this->assertSame($module, $control->getPluginModule());
+			$this->assertSame($module, $control->getPluginModule());
+		} finally {
+			TTestApplication::restoreApp($snap, $app);
+		}
+	}
+
+	public function testGetPluginModuleReturnsNullWhenNoPathMatches()
+	{
+		$app = Prado::getApplication();
+		$snap = TTestApplication::snapshotApp($app);
+		try {
+			$app->setModule('TControlTestPlugin', new TControlTestPluginModule(__DIR__ . DIRECTORY_SEPARATOR . 'no-such-dir'));
+			$control = new TControlTestPluginControl();
+			$this->assertNull($control->getPluginModule());
+			$this->assertNull(PradoUnit::getProp($control, '_pluginmodule'));
+		} finally {
+			TTestApplication::restoreApp($snap, $app);
+		}
+	}
+
+	public function testGetPluginModuleSearchesOnlyOnce()
+	{
+		$app = Prado::getApplication();
+		$snap = TTestApplication::snapshotApp($app);
+		try {
+			$control = new TControlTestPluginControl();
+			$this->assertFalse(PradoUnit::getProp($control, '_pluginmodule'));
+			$this->assertNull($control->getPluginModule());
+			$app->setModule('TControlTestPlugin', new TControlTestPluginModule(__DIR__));
+			$this->assertNull($control->getPluginModule());
+		} finally {
+			TTestApplication::restoreApp($snap, $app);
+		}
+	}
+
 	public function testConstruct()
 	{
 		$control = new TControl();
@@ -1084,5 +1149,13 @@ class TControlTest extends \PHPUnit\Framework\TestCase
 		};
 		$control->onRenderFilter('<p>test</p>');
 		$this->assertInstanceOf(TRenderFilterParameter::class, $receivedParam);
+	}
+
+	public function testGetIsSkinAppliedReturnsBool()
+	{
+		$control = new TControl();
+		$this->assertFalse($control->getIsSkinApplied());
+		PradoUnit::setProp($control, '_flags', PradoUnit::getProp($control, '_flags') | TControl::IS_SKIN_APPLIED);
+		$this->assertTrue($control->getIsSkinApplied());
 	}
 }

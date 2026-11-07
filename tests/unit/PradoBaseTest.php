@@ -1376,4 +1376,31 @@ class PradoBaseTest extends \PHPUnit\Framework\TestCase
 		$this->assertStringContainsString('<a', $result);
 		$this->assertStringContainsString('powered2', $result);
 	}
+
+	// getUserLanguages() is statically cached, so each Accept-Language case runs in its own process.
+
+	#[\PHPUnit\Framework\Attributes\RunInSeparateProcess]
+	#[\PHPUnit\Framework\Attributes\PreserveGlobalState(false)]
+	public function testGetUserLanguages_emptyEntriesSkipped(): void
+	{
+		$_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'en, ,;q=0.9, fr;q=0.5,';
+		$this->assertSame(['en', 'fr'], Prado::getUserLanguages());
+	}
+
+	#[\PHPUnit\Framework\Attributes\RunInSeparateProcess]
+	#[\PHPUnit\Framework\Attributes\PreserveGlobalState(false)]
+	public function testGetUserLanguages_emptyHeader_defaultsToEnglish(): void
+	{
+		$_SERVER['HTTP_ACCEPT_LANGUAGE'] = '';
+		$this->assertSame(['en'], Prado::getUserLanguages());
+		$this->assertSame('en', Prado::getPreferredLanguage());
+	}
+
+	#[\PHPUnit\Framework\Attributes\RunInSeparateProcess]
+	#[\PHPUnit\Framework\Attributes\PreserveGlobalState(false)]
+	public function testGetUserLanguages_noHeader_defaultsToEnglish(): void
+	{
+		unset($_SERVER['HTTP_ACCEPT_LANGUAGE']);
+		$this->assertSame(['en'], Prado::getUserLanguages());
+	}
 }

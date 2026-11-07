@@ -56,6 +56,13 @@ class TTimeZoneParameterBehaviorTest extends \PHPUnit\Framework\TestCase
 		$this->obj->setEnabled(true);
 		$params['test:TimeZone'] = 'Europe/Rome';
 		self::assertEquals('Europe/Rome', $this->obj->getTimeZone());
+		$this->obj->setEnabled('false');
+		self::assertFalse($this->obj->getEnabled());
+		$params['test:TimeZone'] = 'UTC';
+		self::assertEquals('Europe/Rome', $this->obj->getTimeZone());
+		$this->obj->setEnabled('true');
+		$params['test:TimeZone'] = 'Europe/Rome';
+		self::assertEquals('Europe/Rome', $this->obj->getTimeZone());
 		
 		// And test the detach method too
 		$app->detachBehavior($behaviorName);

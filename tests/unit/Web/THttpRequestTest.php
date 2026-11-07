@@ -144,6 +144,49 @@ class THttpRequestTest extends \PHPUnit\Framework\TestCase
 		self::assertEquals('GET', $request->getRequestType());
 	}
 
+	public static function contentTypeProvider(): array
+	{
+		return [
+			'absent' => [null, true, null],
+			'absent, full' => [null, false, null],
+			'no parameters' => ['application/json', true, 'application/json'],
+			'parameters stripped' => ['text/html; charset=UTF-8', true, 'text/html'],
+			'no space before parameters' => ['text/html;charset=UTF-8', true, 'text/html'],
+			'space before semicolon' => ['text/html ; charset=UTF-8', true, 'text/html'],
+			'multipart boundary stripped' => ['multipart/form-data; boundary=----x', true, 'multipart/form-data'],
+			'full value kept' => ['text/html; charset=UTF-8', false, 'text/html; charset=UTF-8'],
+		];
+	}
+
+	/**
+	 * @dataProvider contentTypeProvider
+	 */
+	public function testGetContentType(?string $serverValue, bool $mimetypeOnly, ?string $expected)
+	{
+		$request = new THttpRequest();
+		if ($serverValue === null) {
+			unset($_SERVER['CONTENT_TYPE']);
+		} else {
+			$_SERVER['CONTENT_TYPE'] = $serverValue;
+		}
+		try {
+			self::assertSame($expected, $request->getContentType($mimetypeOnly));
+		} finally {
+			unset($_SERVER['CONTENT_TYPE']);
+		}
+	}
+
+	public function testGetContentTypeDefaultStripsParameters()
+	{
+		$request = new THttpRequest();
+		$_SERVER['CONTENT_TYPE'] = 'application/json; charset=UTF-8';
+		try {
+			self::assertSame('application/json', $request->getContentType());
+		} finally {
+			unset($_SERVER['CONTENT_TYPE']);
+		}
+	}
+
 	public function testGetIsSecureConnection()
 	{
 		$request = new THttpRequest();
@@ -619,5 +662,28 @@ class THttpRequestTest extends \PHPUnit\Framework\TestCase
 		self::assertEquals('testService', $request->resolveRequest(['page', 'testService']));
 		
 		unset($_GET[$resolveKey]);
+	}
+
+	/**
+	 * Each request reads its own headers; the cache is per instance.
+	 */
+	public function testGetHeadersIsCachedPerInstance()
+	{
+		if (function_exists('apache_request_headers')) {
+			$this->markTestSkipped('apache_request_headers() supplies the headers.');
+		}
+		$saved = $_SERVER;
+		try {
+			$_SERVER['HTTP_X_PRADO_TEST'] = 'one';
+			$first = new \Prado\Web\THttpRequest();
+			$this->assertSame('one', $first->getHeaders()['X-Prado-Test']);
+			$_SERVER['HTTP_X_PRADO_TEST'] = 'two';
+			$this->assertSame('one', $first->getHeaders()['X-Prado-Test']);
+			$second = new \Prado\Web\THttpRequest();
+			$this->assertSame('two', $second->getHeaders()['X-Prado-Test']);
+			$this->assertSame('two', $second->getHeaders(CASE_LOWER)['x-prado-test']);
+		} finally {
+			$_SERVER = $saved;
+		}
 	}
 }
