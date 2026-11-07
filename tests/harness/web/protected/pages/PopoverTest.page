@@ -1,0 +1,19 @@
+<com:TContent ID="Content">
+	<h1>Popover Test Case</h1>
+
+	<div style="padding: 4rem 12rem">
+		<com:TPopover ID="help" ButtonText="Help">
+			<p>Passwords take 12 or more characters.</p>
+		</com:TPopover>
+
+		<com:TButton ID="openFilters" Text="Filters" CommandFor="filters" Command="toggle-popover" />
+		<com:TPopover ID="filters" Placement="End">
+			<com:TCheckBox ID="active" Text="Active only" />
+		</com:TPopover>
+
+		<com:TPopover ID="pinned" ButtonText="Pinned" Popover="manual">
+			<p>Closes only from its button.</p>
+		</com:TPopover>
+	</div>
+	<p id="outside">Outside</p>
+</com:TContent>
