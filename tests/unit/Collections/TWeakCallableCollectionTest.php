@@ -1483,4 +1483,265 @@ class TWeakCallableCollectionTest extends TPriorityListTest
 		self::assertSame(0, PradoUnit::getProp($list, '_eventHandlerCount'));
 		self::assertNull($list->getWeakObjectCount($item));
 	}
+
+	public function testConstructDiscardInvalidArgument_TWCC()
+	{
+		$dying = new CallableListItem();
+		$list = new $this->_baseClass([[$dying, 'eventHandler'], $this->item1], null, null, null, false);
+		$dying = null;
+
+		self::assertFalse($list->getReadOnly());
+		self::assertFalse($list->getDiscardInvalid());
+		self::assertNull($list->getWeakCount());
+		self::assertSame(2, $list->getCount());
+		self::assertNull($list[0]);
+
+		$dying = new CallableListItem();
+		$list = new $this->_baseClass([[$dying, 'eventHandler'], $this->item1], true, null, null, true);
+		self::assertSame(2, $list->getWeakCount());
+		$dying = null;
+
+		self::assertTrue($list->getReadOnly());
+		self::assertTrue($list->getDiscardInvalid());
+		self::assertSame([$this->item1], $list->toArray());
+		self::assertSame(1, $list->getCount());
+	}
+
+	public function testClone_TWCC()
+	{
+		$list = new $this->_baseClass();
+		$list->add([$this->item1, 'eventHandler']);
+		$list->add($this->item2);
+		$clone = clone $list;
+		$clone->add($this->item3);
+
+		self::assertSame(2, $list->getWeakCount());
+		self::assertSame(3, $clone->getWeakCount());
+		self::assertNull($list->getWeakObjectCount($this->item3));
+
+		$this->item2 = null;
+
+		self::assertSame([[$this->item1, 'eventHandler']], $list->toArray());
+		self::assertSame([[$this->item1, 'eventHandler'], $this->item3], $clone->toArray());
+		self::assertSame(1, $list->getWeakCount());
+		self::assertSame(2, $clone->getWeakCount());
+	}
+
+	public function testSerializeWakesEmptyAndRestartsTracking_TWCC()
+	{
+		$list = new $this->_baseClass();
+		$list->add([$this->item1, 'eventHandler'], 5);
+		$list->add($this->item2);
+		self::assertSame([[$this->item1, 'eventHandler'], $this->item2], $list->toArray());
+
+		$serialized = serialize($list);
+
+		self::assertStringContainsString('_discardInvalid', $serialized);
+		self::assertStringNotContainsString('_weakMap', $serialized);
+		self::assertSame(2, $list->getCount(), 'Sleeping must not change the source list.');
+		self::assertSame([[$this->item1, 'eventHandler'], $this->item2], $list->toArray());
+
+		$restored = unserialize($serialized);
+
+		self::assertSame(0, $restored->getCount());
+		self::assertSame([], $restored->toArray());
+		self::assertTrue($restored->getDiscardInvalid());
+		self::assertSame(0, $restored->getWeakCount());
+		$restored->add($this->item3);
+		self::assertSame(1, $restored->getWeakCount());
+		$this->item3 = null;
+		self::assertSame(0, $restored->getCount());
+	}
+
+	public function testSerializeKeepsDiscardInvalidFalse_TWCC()
+	{
+		$list = new $this->_baseClass([$this->item1], true);
+		self::assertFalse($list->getDiscardInvalid());
+
+		$restored = unserialize(serialize($list));
+
+		self::assertTrue($restored->getReadOnly());
+		self::assertFalse($restored->getDiscardInvalid());
+		self::assertNull($restored->getWeakCount());
+		self::assertSame(0, $restored->getCount());
+	}
+
+	public function testSerializeLeavesUnresolvedDiscardInvalidLazy_TWCC()
+	{
+		$list = new $this->_baseClass();
+
+		$serialized = serialize($list);
+
+		self::assertStringNotContainsString('_discardInvalid', $serialized);
+		$restored = unserialize($serialized);
+		self::assertTrue($restored->getDiscardInvalid());
+	}
+
+	public function testTEventHandlerWithoutHandlerObject_TWCC()
+	{
+		$list = new $this->_baseClass();
+		$list->add($this->item1);
+		$eh = new TEventHandler('strlen', 5);
+
+		$list->add($eh, 5);
+
+		self::assertSame(2, $list->getCount());
+		self::assertSame(1, $list->getWeakCount());
+		self::assertSame([$eh, $this->item1], $list->toArray());
+		self::assertSame(0, $list->indexOf($eh));
+
+		self::assertSame($eh, $list->removeAt(0));
+
+		self::assertSame(1, $list->getWeakCount());
+		self::assertSame([$this->item1], $list->toArray());
+	}
+
+	public function testInsertArrayOfCallablesReturnsEachIndex_TWCC()
+	{
+		$list = new $this->_baseClass();
+		$list->add($this->item1);
+		self::assertSame([$this->item1], $list->toArray());
+
+		$result = $list->insertAtIndexInPriority([[$this->item2, 'eventHandler'], [$this->item3, 'eventHandler'], $this->item4]);
+
+		self::assertSame([1, 2, 3], $result);
+		self::assertSame([$this->item1, [$this->item2, 'eventHandler'], [$this->item3, 'eventHandler'], $this->item4], $list->toArray());
+		self::assertSame(4, $list->getWeakCount());
+	}
+
+	public function testIndexOfWithPriority_TWCC()
+	{
+		$list = new $this->_baseClass();
+		$list->add($this->item1, 5);
+		$list->add($this->item2, 10);
+		$list->add($eh = new TEventHandler([$this->item3, 'eventHandler']), 10);
+		$list->add($this->item4, 20);
+
+		self::assertSame(2, $list->indexOf($eh, 10));
+		self::assertSame(2, $list->indexOf([$this->item3, 'eventHandler'], 10));
+		self::assertSame(-1, $list->indexOf($this->item4, 10));
+		self::assertSame(-1, $list->indexOf($this->item1, 7));
+		self::assertSame(-1, $list->indexOf($this->item4, 30));
+
+		$empty = new $this->_baseClass();
+		self::assertSame(-1, $empty->indexOf($this->item1, 10));
+	}
+
+	public function testPriorityOfTEventHandlerWrappedCallable_TWCC()
+	{
+		$list = new $this->_baseClass();
+		$list->add($this->item1, 5);
+		$list->add(new TEventHandler([$this->item2, 'eventHandler']), 15);
+
+		self::assertEquals(15, $list->priorityOf([$this->item2, 'eventHandler']));
+		self::assertSame(1, $list->priorityOf([$this->item2, 'eventHandler'], true)['absindex']);
+		self::assertFalse($list->priorityOf([$this->item3, 'eventHandler']));
+	}
+
+	public function testOffsetSetGuards_TWCC()
+	{
+		$list = new $this->_baseClass([$this->item1], true);
+		try {
+			$list[0] = $this->item2;
+			self::fail('offsetSet did not throw TInvalidOperationException on a read-only list.');
+		} catch (TInvalidOperationException $e) {
+			self::assertSame('list_readonly', $e->getErrorCode());
+		}
+
+		$list = new $this->_baseClass([$this->item1]);
+		try {
+			$list[-1] = $this->item2;
+			self::fail('offsetSet did not throw TInvalidDataValueException on a negative offset.');
+		} catch (TInvalidDataValueException $e) {
+			self::assertSame('list_index_invalid', $e->getErrorCode());
+		}
+		self::assertSame([$this->item1], $list->toArray());
+	}
+
+	public function testClearEmptyAndSingle_TWCC()
+	{
+		$list = new $this->_baseClass();
+		$list->clear();
+		self::assertSame(0, $list->getCount());
+		self::assertSame(0, $list->getWeakCount());
+
+		$list->add($this->item1, 5);
+		$list->clear();
+		self::assertSame(0, $list->getCount());
+		self::assertSame([], $list->toPriorityArray());
+		self::assertSame(0, $list->getWeakCount());
+	}
+
+	public function testRemoveWithPriority_TWCC()
+	{
+		$list = new $this->_baseClass();
+		$list->add($this->item1, 5);
+
+		foreach ([
+			'below every priority' => [$this->item1, 10],
+			'not at the priority' => [$this->item2, 5],
+			'above every priority' => [$this->item1, 1],
+		] as $case => [$item, $priority]) {
+			try {
+				$list->remove($item, $priority);
+				self::fail("remove did not throw TInvalidDataValueException: $case.");
+			} catch (TInvalidDataValueException $e) {
+				self::assertSame('list_item_inexistent', $e->getErrorCode(), $case);
+			}
+		}
+		self::assertSame(0, $list->remove($this->item1, 5));
+		self::assertSame(0, $list->getCount());
+
+		try {
+			$list->remove($this->item1, 5);
+			self::fail('remove did not throw TInvalidDataValueException on an empty list.');
+		} catch (TInvalidDataValueException $e) {
+			self::assertSame('list_item_inexistent', $e->getErrorCode());
+		}
+	}
+
+	public function testRemoveNonObjectCallables_TWCC()
+	{
+		$list = new $this->_baseClass();
+		$list->add('strlen');
+		$list->add([CallableListItem::class, 'staticHandler']);
+		$list->add($this->item1);
+		self::assertSame(1, $list->getWeakCount());
+
+		self::assertSame('strlen', $list->removeAt(0));
+		self::assertSame([CallableListItem::class, 'staticHandler'], $list->removeAt(0));
+
+		self::assertSame(1, $list->getWeakCount());
+		self::assertSame([$this->item1], $list->toArray());
+	}
+
+	public function testRemoveCollectedEntryWithoutDiscardInvalid_TWCC()
+	{
+		$dying = new CallableListItem();
+		$list = new $this->_baseClass(null, null, null, null, false);
+		$list->add([$dying, 'eventHandler']);
+		$dying = null;
+
+		self::assertSame(1, $list->getCount());
+		self::assertNull($list->removeAt(0));
+		self::assertSame(0, $list->getCount());
+	}
+
+	/**
+	 * When the only listener of the only priority is freed after the scrub,
+	 * toPriorityArray omits that priority.
+	 */
+	public function testToPriorityArrayOmitsPriorityFreedAfterScrub_TWCC()
+	{
+		$dying = new CallableListItem();
+		$list = new $this->_baseClass();
+		$list->add([$dying, 'eventHandler'], 20);
+		$list->_afterScrub = function () use (&$dying) {
+			$dying = null;
+		};
+
+		self::assertSame([], $list->toPriorityArray());
+		self::assertNull($dying);
+		self::assertSame(0, $list->getCount());
+	}
 }

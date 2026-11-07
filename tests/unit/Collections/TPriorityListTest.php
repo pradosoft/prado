@@ -10,6 +10,7 @@ use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Collections\IPriorityCapture;
 use Prado\Collections\IPriorityProperty;
+use Prado\Test\Unit\PradoUnit;
 
 class AutoPriorityListItem extends PriorityListItem implements IPriorityItem
 {
@@ -1200,5 +1201,191 @@ class TPriorityListTest extends TListTest
 		self::assertEquals([
 			$this->item1, $this->item3
 		], $list->toArray());
+	}
+
+	public function testItemAtNegativeIndexErrorCodeTPriorityList()
+	{
+		try {
+			$this->plist->itemAt(-1);
+			$this->fail('TInvalidDataValueException not raised for a negative index');
+		} catch (TInvalidDataValueException $e) {
+			$this->assertEquals('list_index_invalid', $e->getErrorCode());
+		}
+	}
+
+	public function testItemAtIndexInPriorityBoundsTPriorityList()
+	{
+		$this->assertSame($this->pitem2, $this->plist->itemAtIndexInPriority(1));
+		foreach ([[0, 50], [-1, null], [2, null]] as [$index, $priority]) {
+			try {
+				$this->plist->itemAtIndexInPriority($index, $priority);
+				$this->fail("TInvalidDataValueException not raised for index $index at priority " . var_export($priority, true));
+			} catch (TInvalidDataValueException $e) {
+				$this->assertEquals('prioritylist_index_invalid', $e->getErrorCode());
+			}
+		}
+	}
+
+	public function testRemoveAtOutOfRangeErrorCodeTPriorityList()
+	{
+		foreach ([-1, 5] as $index) {
+			try {
+				$this->plist->removeAt($index);
+				$this->fail("TInvalidDataValueException not raised when removing at index $index");
+			} catch (TInvalidDataValueException $e) {
+				$this->assertEquals('list_index_invalid', $e->getErrorCode());
+			}
+		}
+		$this->assertEquals(4, $this->plist->getCount());
+	}
+
+	public function testOffsetSetNegativeOffsetThrowsTPriorityList()
+	{
+		try {
+			$this->plist[-1] = $this->pitem4;
+			$this->fail('TInvalidDataValueException not raised when setting a negative offset');
+		} catch (TInvalidDataValueException $e) {
+			$this->assertEquals('list_index_invalid', $e->getErrorCode());
+		}
+		$this->assertEquals(4, $this->plist->getCount());
+	}
+
+	public function testClearEmptyAndSingleItemTPriorityList()
+	{
+		$list = new $this->_baseClass();
+		$list->clear();
+		$this->assertEquals(0, $list->getCount());
+
+		$list->add($this->pitem1);
+		$list->clear();
+		$this->assertEquals(0, $list->getCount());
+		$this->assertEquals([], $list->getPriorities());
+		$this->assertEquals([], $list->toArray());
+	}
+
+	public function testIndexOfAtPriorityInSinglePriorityListTPriorityList()
+	{
+		$list = new $this->_baseClass();
+		$this->assertEquals(-1, $list->indexOf($this->pitem1, 10));
+
+		$list->add($this->pitem1, 10);
+		$this->assertEquals(0, $list->indexOf($this->pitem1, 10));
+		// the priority holds no such item
+		$this->assertEquals(-1, $list->indexOf($this->pitem2, 10));
+		// the priority is after every item
+		$this->assertEquals(-1, $list->indexOf($this->pitem1, 20));
+		// the priority is before every item
+		$this->assertEquals(-1, $list->indexOf($this->pitem1, 5));
+	}
+
+	public function testIndexOfAtPriorityAfterLowerPrioritiesTPriorityList()
+	{
+		$this->assertEquals(1, $this->plist->indexOf($this->pitem1, 10));
+		$this->assertEquals(2, $this->plist->indexOf($this->pitem2, 10));
+		$this->assertEquals(-1, $this->plist->indexOf($this->pitem3, 10));
+		$this->assertEquals(3, $this->plist->indexOf($this->pitem3, 100));
+		$this->assertEquals(-1, $this->plist->indexOf($this->pitem3, 50));
+	}
+
+	public function testRemoveAtPriorityInSinglePriorityListTPriorityList()
+	{
+		$list = new $this->_baseClass();
+		foreach ([[$this->pitem1, 10]] as [$item, $priority]) {
+			try {
+				$list->remove($item, $priority);
+				$this->fail('TInvalidDataValueException not raised when removing from an empty list');
+			} catch (TInvalidDataValueException $e) {
+				$this->assertEquals('list_item_inexistent', $e->getErrorCode());
+			}
+		}
+
+		$list->add($this->pitem1, 10);
+		foreach ([[$this->pitem2, 10], [$this->pitem1, 20], [$this->pitem1, 5]] as [$item, $priority]) {
+			try {
+				$list->remove($item, $priority);
+				$this->fail("TInvalidDataValueException not raised when removing at priority $priority");
+			} catch (TInvalidDataValueException $e) {
+				$this->assertEquals('list_item_inexistent', $e->getErrorCode());
+			}
+		}
+		$this->assertEquals(1, $list->getCount());
+		$this->assertEquals(0, $list->remove($this->pitem1, 10));
+		$this->assertEquals(0, $list->getCount());
+	}
+
+	public function testToArrayBelowLowestPriorityIsEmptyTPriorityList()
+	{
+		$this->assertEquals([], $this->plist->toArrayBelowPriority(-10000000));
+		$this->assertEquals([$this->pfirst], $this->plist->toArrayBelowPriority(-10000000, true));
+	}
+
+	public function testPriorityOfInEmptyAndSinglePriorityListTPriorityList()
+	{
+		$list = new $this->_baseClass();
+		$this->assertFalse($list->priorityOf($this->pitem1));
+		$this->assertFalse($list->priorityOf($this->pitem1, true));
+
+		$list->add($this->pitem1, 15);
+		$this->assertEquals(15, $list->priorityOf($this->pitem1));
+		$this->assertEquals([15, 0, 0, 'priority' => 15, 'index' => 0, 'absindex' => 0], $list->priorityOf($this->pitem1, true));
+		$this->assertFalse($list->priorityOf($this->pitem2));
+	}
+
+	public function testSetPrecisionMergesPrioritiesThatRoundTogetherTPriorityList()
+	{
+		$list = new TPriorityListUnit();
+		$list->add($this->pitem1, 1.234);
+		$list->add($this->pitem2, 1.231);
+		$list->add($this->pitem3, 2);
+		$this->assertEquals(['1.234', '1.231', '2'], array_map('strval', array_keys(PradoUnit::getProp($list, '_d'))));
+
+		// Precision is set by the first add, so only the list itself may change it.
+		$list->resetPrecision(2);
+		$this->assertEquals(2, $list->getPrecision());
+		$this->assertEquals([1.23, 2], $list->getPriorities());
+		$this->assertSame([$this->pitem1, $this->pitem2], $list->itemsAtPriority(1.23));
+		$this->assertSame([$this->pitem1, $this->pitem2, $this->pitem3], $list->toArray());
+	}
+
+	public function testSerializeNewEmptyListKeepsDefaultsUnsetTPriorityList()
+	{
+		$copy = unserialize(serialize(new TPriorityList()));
+		$this->assertNull(PradoUnit::getProp($copy, '_dp'));
+		$this->assertNull(PradoUnit::getProp($copy, '_p'));
+		$this->assertEquals(0, $copy->getCount());
+
+		// Unset precision and default priority can still be set once.
+		$copy->setPrecision(2);
+		$copy->setDefaultPriority(5.555);
+		$this->assertEquals(2, $copy->getPrecision());
+		$this->assertEquals('5.56', $copy->getDefaultPriority());
+	}
+
+	public function testSerializeKeepsItemsPrioritiesAndSettingsTPriorityList()
+	{
+		$list = new TPriorityList(null, null, 20, 4);
+		$list->add('b', 30);
+		$list->add('a', 1);
+		$list->add('c');
+		$this->assertFalse(PradoUnit::getProp($list, '_o'));
+
+		$copy = unserialize(serialize($list));
+		$this->assertFalse(PradoUnit::getProp($copy, '_o'));
+		$this->assertNull(PradoUnit::getProp($copy, '_fd'));
+		$this->assertEquals(['a', 'c', 'b'], $copy->toArray());
+		$this->assertEquals(3, $copy->getCount());
+		$this->assertEquals('20', $copy->getDefaultPriority());
+		$this->assertEquals(4, $copy->getPrecision());
+		$this->assertEquals(20, $copy->priorityOf('c'));
+
+		// sorted lists keep their sorted flag
+		$list->toArray();
+		$this->assertTrue(PradoUnit::getProp($list, '_o'));
+		$sorted = unserialize(serialize($list));
+		$this->assertTrue(PradoUnit::getProp($sorted, '_o'));
+		$this->assertEquals(['a', 'c', 'b'], $sorted->toArray());
+
+		$this->expectException(TInvalidOperationException::class);
+		$copy->setPrecision(2);
 	}
 }

@@ -433,4 +433,141 @@ class TListTest extends \PHPUnit\Framework\TestCase
 		self::assertStringContainsString("\0*\0_r", $payload);
 		self::assertTrue(unserialize($payload)->getReadOnly());
 	}
+
+	public function testOffsetExistsRejectsOutOfRangeOffsetsTList()
+	{
+		$this->assertTrue($this->list->offsetExists(0));
+		$this->assertFalse($this->list->offsetExists(-1));
+		$this->assertFalse($this->list->offsetExists(2));
+		$this->assertFalse(isset($this->list[-1]));
+	}
+
+	public function testItemAtNegativeIndexThrowsTList()
+	{
+		self::expectException(TInvalidDataValueException::class);
+		$this->list->itemAt(-1);
+	}
+
+	public function testCopyFromTraversableReplacesItemsTList()
+	{
+		$this->list->copyFrom(new \ArrayIterator([$this->item3, $this->item4]));
+		$this->assertEquals(2, $this->list->getCount());
+		$this->assertSame($this->item3, $this->list[0]);
+		$this->assertSame($this->item4, $this->list[1]);
+	}
+
+	public function testCopyFromEmptyDataClearsItemsTList()
+	{
+		$this->list->copyFrom([]);
+		$this->assertEquals(0, $this->list->getCount());
+
+		$this->list->add($this->item3);
+		$this->list->copyFrom(new \ArrayIterator([]));
+		$this->assertEquals(0, $this->list->getCount());
+		$this->assertEquals([], $this->list->toArray());
+	}
+
+	public function testCopyFromEmptyDataIntoEmptyListTList()
+	{
+		$list = new $this->_baseClass();
+		$list->copyFrom([]);
+		$this->assertEquals(0, $list->getCount());
+		$list->copyFrom(new \ArrayIterator([]));
+		$this->assertEquals(0, $list->getCount());
+		$list->copyFrom(new \ArrayIterator([$this->item3]));
+		$this->assertEquals(1, $list->getCount());
+		$this->assertSame($this->item3, $list[0]);
+	}
+
+	public function testCopyFromNullKeepsItemsTList()
+	{
+		$this->list->copyFrom(null);
+		$this->assertEquals(2, $this->list->getCount());
+		$this->assertSame($this->item1, $this->list[0]);
+		$this->assertSame($this->item2, $this->list[1]);
+	}
+
+	public function testMergeWithEmptyOrNullKeepsItemsTList()
+	{
+		$this->list->mergeWith([]);
+		$this->assertEquals(2, $this->list->getCount());
+		$this->list->mergeWith(new \ArrayIterator([]));
+		$this->assertEquals(2, $this->list->getCount());
+		$this->list->mergeWith(null);
+		$this->assertEquals(2, $this->list->getCount());
+		$this->assertSame($this->item1, $this->list[0]);
+		$this->assertSame($this->item2, $this->list[1]);
+	}
+
+	public function testMergeWithTraversableAppendsItemsTList()
+	{
+		$this->list->mergeWith(new \ArrayIterator([$this->item3, $this->item4]));
+		$this->assertEquals(4, $this->list->getCount());
+		$this->assertSame($this->item3, $this->list[2]);
+		$this->assertSame($this->item4, $this->list[3]);
+	}
+
+	public function testSerializeEmptyListKeepsSetReadOnly()
+	{
+		$list = new TList([], false);
+		$copy = unserialize(serialize($list));
+		$this->assertEquals(0, $copy->getCount());
+		$this->assertEquals([], $copy->toArray());
+		$this->assertFalse($copy->getReadOnly());
+
+		// The read-only state is preserved as set, so it cannot change again.
+		self::expectException(TInvalidOperationException::class);
+		$copy->setReadOnly(true);
+	}
+
+	public function testSerializeListWithItemsKeepsCollapsedReadOnly()
+	{
+		$list = new TList();
+		$list->add('a');
+		$list->add('b');
+		$copy = unserialize(serialize($list));
+		$this->assertEquals(['a', 'b'], $copy->toArray());
+		$this->assertEquals(2, $copy->getCount());
+		$this->assertFalse($copy->getReadOnly());
+
+		// Adding an item collapses the unset read-only state to false.
+		self::expectException(TInvalidOperationException::class);
+		$copy->setReadOnly(true);
+	}
+
+	public function testSerializeNewEmptyListKeepsReadOnlyUnset()
+	{
+		$copy = unserialize(serialize(new TList()));
+		$this->assertEquals(0, $copy->getCount());
+		$copy->setReadOnly(true);
+		$this->assertTrue($copy->getReadOnly());
+	}
+
+	public function testClearEmptyListTList()
+	{
+		$list = new $this->_baseClass();
+		$list->clear();
+		$this->assertEquals(0, $list->getCount());
+		$this->assertEquals([], $list->toArray());
+	}
+
+	public function testInsertAtNegativeIndexThrowsTList()
+	{
+		try {
+			$this->list->insertAt(-1, $this->item3);
+			$this->fail('TInvalidDataValueException not raised when inserting at a negative index');
+		} catch (TInvalidDataValueException $e) {
+		}
+		$this->assertEquals(2, $this->list->getCount());
+	}
+
+	public function testRemoveAtNegativeIndexThrowsTList()
+	{
+		try {
+			$this->list->removeAt(-1);
+			$this->fail('TInvalidDataValueException not raised when removing at a negative index');
+		} catch (TInvalidDataValueException $e) {
+		}
+		$this->assertEquals(2, $this->list->getCount());
+	}
 }
