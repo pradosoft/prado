@@ -246,4 +246,162 @@ class TPagedListTest extends \PHPUnit\Framework\TestCase
 		$list->CustomPaging = true;
 		self::assertEquals([1, 2, 3], $list->toArray());
 	}
+
+	public function testNewManagedListShorterThanPageSizeIsPageZero()
+	{
+		$list = new TPagedList([1, 2]);
+		self::assertSame(0, $list->getCurrentPageIndex());
+		self::assertSame(1, $list->getPageCount());
+		self::assertSame(2, $list->getCount());
+		self::assertSame(2, count($list));
+		self::assertSame([1, 2], $list->toArray());
+		self::assertSame(1, $list->itemAt(0));
+		self::assertSame(2, $list[1]);
+		self::assertTrue(isset($list[1]));
+		self::assertFalse(isset($list[2]));
+		self::assertSame(1, $list->indexOf(2));
+		self::assertTrue($list->getIsFirstPage());
+		self::assertTrue($list->getIsLastPage());
+		$items = [];
+		foreach ($list as $index => $item) {
+			$items[$index] = $item;
+		}
+		self::assertSame([1, 2], $items);
+	}
+
+	public function testNewManagedEmptyListIsPageZero()
+	{
+		$list = new TPagedList();
+		self::assertSame(0, $list->getCurrentPageIndex());
+		self::assertSame(0, $list->getPageCount());
+		self::assertSame(0, $list->getCount());
+		self::assertSame([], $list->toArray());
+		self::assertTrue($list->getIsFirstPage());
+		self::assertTrue($list->getIsLastPage());
+		self::assertFalse($list->nextPage());
+		self::assertFalse($list->previousPage());
+	}
+
+	public function testNewManagedListSpanningPagesIsPageZero()
+	{
+		$list = new TPagedList([1, 2, 3, 4, 5]);
+		$list->PageSize = 2;
+		self::assertSame(0, $list->getCurrentPageIndex());
+		self::assertSame(3, $list->getPageCount());
+		self::assertSame(2, $list->getCount());
+		self::assertSame([1, 2], $list->toArray());
+		self::assertSame(2, $list->itemAt(1));
+		self::assertTrue($list->getIsFirstPage());
+		self::assertFalse($list->getIsLastPage());
+		self::assertFalse($list->previousPage());
+
+		self::assertSame(1, $list->nextPage());
+		self::assertSame([3, 4], $list->toArray());
+		self::assertSame(2, $list->nextPage());
+		self::assertSame(1, $list->getCount());
+		self::assertSame([5], $list->toArray());
+		self::assertSame(5, $list->itemAt(0));
+		self::assertTrue($list->getIsLastPage());
+	}
+
+	public function testManagedGotoCurrentPageRaisesNoEvent()
+	{
+		$list = new TPagedList([1, 2, 3]);
+		$list->PageSize = 1;
+		$raised = 0;
+		$list->attachEventHandler('OnPageIndexChanged', function ($sender, $param) use (&$raised) {
+			$raised++;
+		});
+		self::assertSame(0, $list->gotoPage(0));
+		self::assertSame(0, $raised);
+	}
+
+	public function testManagedGotoPageEventParameterCarriesOldPage()
+	{
+		$list = new TPagedList([1, 2, 3, 4, 5]);
+		$list->PageSize = 2;
+		$params = [];
+		$list->attachEventHandler('OnPageIndexChanged', function ($sender, $param) use (&$params, $list) {
+			self::assertSame($list, $sender);
+			$params[] = $param;
+		});
+
+		self::assertSame(2, $list->gotoPage(2));
+		self::assertSame(1, $list->previousPage());
+		$list->CurrentPageIndex = 0;
+
+		self::assertCount(3, $params);
+		foreach ($params as $param) {
+			self::assertInstanceOf(TPagedListPageChangedEventParameter::class, $param);
+		}
+		self::assertSame(0, $params[0]->getOldPageIndex());
+		self::assertSame(2, $params[1]->getOldPageIndex());
+		self::assertSame(1, $params[2]->getOldPageIndex());
+	}
+
+	public function testCustomPagingFirstGotoPageZeroFetches()
+	{
+		$list = new TPagedList();
+		$list->CustomPaging = true;
+		$list->PageSize = 2;
+		self::assertSame(-1, $list->getCurrentPageIndex());
+		self::assertFalse($list->getIsFirstPage());
+
+		$fetches = [];
+		$list->attachEventHandler('OnFetchData', function ($sender, $param) use (&$fetches) {
+			$fetches[] = [$param->getNewPageIndex(), $param->getOffset(), $param->getLimit()];
+			$param->setData(['a' . $param->getOffset(), 'b' . $param->getOffset()]);
+		});
+		$oldPages = [];
+		$list->attachEventHandler('OnPageIndexChanged', function ($sender, $param) use (&$oldPages) {
+			$oldPages[] = $param->getOldPageIndex();
+		});
+
+		self::assertSame(0, $list->gotoPage(0));
+		self::assertSame([[0, 0, 2]], $fetches);
+		self::assertSame([-1], $oldPages);
+		self::assertSame(0, $list->getCurrentPageIndex());
+		self::assertSame(['a0', 'b0'], $list->toArray());
+		self::assertTrue($list->getIsFirstPage());
+
+		self::assertSame(0, $list->gotoPage(0));
+		self::assertCount(1, $fetches);
+
+		self::assertSame(1, $list->nextPage());
+		self::assertSame([[0, 0, 2], [1, 2, 2]], $fetches);
+		self::assertSame([-1, 0], $oldPages);
+		self::assertSame(['a2', 'b2'], $list->toArray());
+	}
+
+	public function testCustomPagingNextPageFromNewListFetchesPageZero()
+	{
+		$list = new TPagedList();
+		$list->CustomPaging = true;
+		$pages = [];
+		$list->attachEventHandler('OnFetchData', function ($sender, $param) use (&$pages) {
+			$pages[] = $param->getNewPageIndex();
+			$param->setData([1]);
+		});
+		self::assertSame(0, $list->nextPage());
+		self::assertSame([0], $pages);
+	}
+
+	public function testCustomPagingEnabledAfterConstructionStillFetchesPageZero()
+	{
+		$list = new TPagedList([1, 2, 3]);
+		self::assertSame(0, $list->getCurrentPageIndex());
+		$list->CustomPaging = true;
+		self::assertSame(-1, $list->getCurrentPageIndex());
+		$fetched = 0;
+		$list->attachEventHandler('OnFetchData', function ($sender, $param) use (&$fetched) {
+			$fetched++;
+			$param->setData([7, 8]);
+		});
+		self::assertSame(0, $list->gotoPage(0));
+		self::assertSame(1, $fetched);
+		self::assertSame([7, 8], $list->toArray());
+		$list->CustomPaging = false;
+		self::assertSame(0, $list->getCurrentPageIndex());
+		self::assertSame([7, 8], $list->toArray());
+	}
 }

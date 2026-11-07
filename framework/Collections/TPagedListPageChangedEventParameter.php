@@ -13,8 +13,9 @@ namespace Prado\Collections;
 /**
  * TPagedListPageChangedEventParameter class.
  * TPagedListPageChangedEventParameter is used as the parameter for
- * {@see \Prado\Collections\TPagedList::onPageChanged OnPageChanged} event.
+ * {@see \Prado\Collections\TPagedList::onPageIndexChanged OnPageIndexChanged} event.
  * To obtain the page index before it was changed, use {@see getOldPageIndex OldPageIndex}.
+ * The first page fetched in custom paging has an OldPageIndex of -1.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
