@@ -11,6 +11,7 @@
 namespace Prado\Util\Behaviors;
 
 use Prado\Exceptions\TInvalidDataTypeException;
+use Prado\TComponentReflection;
 use Prado\Util\TBehavior;
 
 /**
@@ -147,14 +148,15 @@ class TMapRouteBehavior extends TBehavior
 
 	/**
 	 * A route is indexable when this class declares its `dyAddItem` and `dyRemoveItem`.
-	 * A subclass that overrides either one runs in the `dy` call chain.
+	 * A subclass that overrides either one runs in the `dy` call chain.  The methods
+	 * resolve through the {@see TComponentReflection} cache.
 	 * @return bool whether the route can be called through {@see routeChange()}.
 	 * @since 4.4.0
 	 */
 	public function getIsIndexable(): bool
 	{
-		return (new \ReflectionMethod($this, 'dyAddItem'))->getDeclaringClass()->getName() === self::class
-			&& (new \ReflectionMethod($this, 'dyRemoveItem'))->getDeclaringClass()->getName() === self::class;
+		return TComponentReflection::getReflectionMethodByType(static::class, 'dyAddItem')?->class === self::class
+			&& TComponentReflection::getReflectionMethodByType(static::class, 'dyRemoveItem')?->class === self::class;
 	}
 
 	/**
