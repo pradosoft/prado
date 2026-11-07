@@ -9,6 +9,8 @@ use Prado\Exceptions\TIOException;
 use Prado\Prado;
 use Prado\TApplication;
 use Prado\Web\TAssetManager;
+use Prado\Test\Unit\Harness\IO\TarTestHelper;
+use Prado\TApplicationMode;
 
 class TAssetManagerTest extends \PHPUnit\Framework\TestCase
 {
@@ -51,6 +53,7 @@ class TAssetManagerTest extends \PHPUnit\Framework\TestCase
 
 		if (self::$app === null) {
 			self::$app = new TApplication(__DIR__ . '/app');
+			self::$app->setMode(TApplicationMode::Debug);
 		}
 
 		if (self::$assetDir === null) {
@@ -114,7 +117,7 @@ class TAssetManagerTest extends \PHPUnit\Framework\TestCase
 	 * {@see TarTestHelper}, instead of relying on a committed binary fixture. The md5 is
 	 * a sentinel only (neither publishTarFile nor TTarAsset verifies it against the tar).
 	 * @return array{0:string,1:string} the tar file path and the md5 file path.
-	 * @since 4.4.0
+	 * @since 4.3.3
 	 */
 	protected function buildTarFixture(): array
 	{
@@ -2959,7 +2962,7 @@ class TAssetManagerTest extends \PHPUnit\Framework\TestCase
 	 * extractions and then defers to the real extractor. A subclass test overrides this
 	 * to build the same behavior on its own class.
 	 * @param int $failures the number of extractions to fail before succeeding.
-	 * @since 4.4.0
+	 * @since 4.3.3
 	 */
 	protected function newFailingTarAssetManager(int $failures)
 	{
@@ -3207,7 +3210,6 @@ class TAssetManagerTest extends \PHPUnit\Framework\TestCase
 		$src = __DIR__ . '/data/pradoheader.gif';
 		$dst = self::$assetDir . DIRECTORY_SEPARATOR . 'pradoheader.gif';
 		$copyFile = new \ReflectionMethod($manager, 'copyDirectoryFile');
-		$copyFile->setAccessible(true);
 
 		// The instance "only" would reject the file; the supplied options accept it.
 		$copyFile->invoke($manager, $src, $dst, 'pradoheader.gif', [

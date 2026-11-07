@@ -71,13 +71,13 @@ return [
 - `init($config)`: Initializes the module with configuration
 
 ### Publishing
-- `publish($path, $checkTimestamp)`: Publishes a file, directory, or `IPublishable` asset — @since 4.4.0
+- `publish($path, $checkTimestamp)`: Publishes a file, directory, or `IPublishable` asset — @since 4.3.3
 - `publishFilePath($path, $checkTimestamp)`: Publishes a file or directory and returns the URL
 - `getPublishedPath($path)`: Returns the published path without actually publishing
 - `getPublishedUrl($path)`: Returns the published URL without actually publishing
 
 Both accessors throw `TInvalidDataValueException` for a path that does not exist, matching
-`publish()`. Without it every missing path resolves to one hashed directory. — @since 4.4.0
+`publish()`. Without it every missing path resolves to one hashed directory. — @since 4.3.3
 
 ### Directory Operations
 - `copyDirectory($src, $dst)`: Copies a directory recursively to a destination
@@ -85,7 +85,7 @@ Both accessors throw `TInvalidDataValueException` for a path that does not exist
 - `publishTarFile($tarfile, $md5sum, $checkTimestamp)`: Publishes a tar file by extracting it
 
 A tar publish extracts the contents, copies the checksum file, and writes a completion
-marker last, so the marker appears only once the publish is complete. — @since 4.4.0
+marker last, so the marker appears only once the publish is complete. — @since 4.3.3
 
 | condition | result |
 |---|---|
@@ -104,9 +104,9 @@ A subclass overrides these instead of re-implementing the surrounding machinery:
 
 | Method | Overriding it changes |
 |---|---|
-| `copyDirectoryFile($srcPath, $dstPath, $relativePath, $options)` | how one file of a directory publish is handled, keeping the walk, the visited-path cycle guard, `PATH_COPY_EXCEPTIONS`, the marker exclusion, and the directory creation — @since 4.4.0 |
+| `copyDirectoryFile($srcPath, $dstPath, $relativePath, $options)` | how one file of a directory publish is handled, keeping the walk, the visited-path cycle guard, `PATH_COPY_EXCEPTIONS`, the marker exclusion, and the directory creation — @since 4.3.3 |
 | `deployTarFile($path, $destination, $options)` | how a tar archive is extracted; return false or throw to report failure |
-| `virtualAssetPath($asset)` | the path an `IPublishable` publishes under, leaving `virtualAssetTarget()` to resolve the location — @since 4.4.0 |
+| `virtualAssetPath($asset)` | the path an `IPublishable` publishes under, leaving `virtualAssetTarget()` to resolve the location — @since 4.3.3 |
 | `publishedLocation($path, $isDir, $fileName)` | the hashed directory, destination, and URL of any published path |
 | `hash($path)` | the asset sub-directory name |
 | `symlink($target, $link)` | how a linked asset is created |

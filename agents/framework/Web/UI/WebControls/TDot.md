@@ -7,7 +7,7 @@
 **Location:** `framework/Web/UI/WebControls/TDot.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 **Extends:** [`TImage`](TImage.md) · **Implements:** `Prado\Web\IPublishable`
-**Since:** 4.4.0
+**Since:** 4.3.3
 
 ## Overview
 TDot renders an SVG dot of a given `Size` and `Color`, shaded 3D by default or flat. It is a status indicator. The SVG is generated on the server; it is embedded as a data URI, published as a virtual asset through [`TAssetManager`](../../TAssetManager.md), or written inline into the page.
@@ -40,11 +40,11 @@ The `<img>` styles render TImage's `alt`. The `Inline` style has no `alt`, so `a
 |---|---|
 | `AlternateText` set | `role="img"`, `aria-labelledby="<ClientID>_title"`, and `<title id="<ClientID>_title">` as the first child of the `<svg>` |
 | `AlternateText` empty | `aria-hidden="true"`; decorative, as TImage's `alt=""` is |
-| `Role` set | replaces `role="img"`; the name and `aria-hidden` rules are unchanged |
+| custom `role` attribute (template `Role="status"`) | replaces `role="img"`; the name and `aria-hidden` rules are unchanged |
 
 - Chromium exposes a named inline dot as role `image` with the `AlternateText` as its name; a decorative one is ignored.
 - The SVG `<title>` also shows as a hover tooltip in browsers.
-- `Aria` entries and custom attributes render after these and override them.
+- Custom attributes render after these and override them.
 - A dot conveys status by color. Pair it with text or an `AlternateText` that states the status (WCAG 1.4.1).
 
 ## Tests

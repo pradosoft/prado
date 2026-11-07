@@ -20,7 +20,7 @@ namespace Prado\Web;
  * this interface to capture through the same primitive.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @since 4.4.0
+ * @since 4.3.3
  */
 interface IPublishedCapture
 {

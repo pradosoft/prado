@@ -1,10 +1,15 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI\WebControls;
+
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\TApplicationMode;
 use Prado\Web\UI\WebControls\TDot;
+use Prado\Test\Unit\Harness\Traits\TWebControlRenderTrait;
+use Prado\TApplication;
+use Prado\Web\TAssetManager;
 
-class TDotTest extends PHPUnit\Framework\TestCase
+class TDotTest extends \PHPUnit\Framework\TestCase
 {
 	use TWebControlRenderTrait;
 
@@ -33,6 +38,7 @@ class TDotTest extends PHPUnit\Framework\TestCase
 		
 		if (self::$app === null) {
 			self::$app = new TApplication(__DIR__ . '/../../app');
+			self::$app->setMode(TApplicationMode::Debug);
 		}
 		
 		if (self::$assetDir === null) {
@@ -43,13 +49,13 @@ class TDotTest extends PHPUnit\Framework\TestCase
 			if (is_writable(dirname(self::$assetDir))) {
 				mkdir(self::$assetDir) ;
 			} else {
-				throw new Exception('Directory ' . dirname(self::$assetDir) . ' is not writable');
+				throw new \Exception('Directory ' . dirname(self::$assetDir) . ' is not writable');
 			}
 		} elseif (!is_dir(self::$assetDir)) {
-			throw new Exception(self::$assetDir . ' exists and is not a directory');
+			throw new \Exception(self::$assetDir . ' exists and is not a directory');
 		}
 		// Define an alias to asset directory
-		prado::setPathofAlias('AssetAlias', self::$assetDir);
+		\prado::setPathofAlias('AssetAlias', self::$assetDir);
 		
 		$this->obj = new TDot();
 	}
@@ -211,7 +217,7 @@ class TDotTest extends PHPUnit\Framework\TestCase
 		self::assertEquals('#B2A292', $this->obj->getHighlightColor());
 
 		// The cascade and cross-modulation tuning constants are defined.
-		$rc = new ReflectionClass(TDot::class);
+		$rc = new \ReflectionClass(TDot::class);
 		self::assertEqualsWithDelta(0.9633, $rc->getConstant('MAIN_DEPTH_SCALE'), 1e-9);
 		self::assertEqualsWithDelta(0.2312, $rc->getConstant('HSL_DEPTH_FRACTION'), 1e-9);
 		self::assertEqualsWithDelta(0.2157, $rc->getConstant('HSL_CHROMA_MOD'), 1e-9);
@@ -246,10 +252,8 @@ class TDotTest extends PHPUnit\Framework\TestCase
 	{
 		// The cascade's RGB<->HSL converters round-trip: rgbToHsl then hslToRgb returns the
 		// source (within rounding) across grays, primaries, and arbitrary colors.
-		$r2h = new ReflectionMethod(TDot::class, 'rgbToHsl');
-		$h2r = new ReflectionMethod(TDot::class, 'hslToRgb');
-		$r2h->setAccessible(true);
-		$h2r->setAccessible(true);
+		$r2h = new \ReflectionMethod(TDot::class, 'rgbToHsl');
+		$h2r = new \ReflectionMethod(TDot::class, 'hslToRgb');
 
 		foreach ([[0, 0, 0], [255, 255, 255], [128, 128, 128], [255, 0, 0], [0, 128, 0], [0, 0, 255], [153, 136, 119], [64, 200, 30]] as $rgb) {
 			[$h, $s, $l] = $r2h->invoke($this->obj, ...$rgb);
@@ -264,8 +268,7 @@ class TDotTest extends PHPUnit\Framework\TestCase
 	{
 		// nudge() scales a channel change toward the channel extremes. setColor only ever
 		// passes true/false, so the null-default and taper branches are exercised here.
-		$nudge = new ReflectionMethod(TDot::class, 'nudge');
-		$nudge->setAccessible(true);
+		$nudge = new \ReflectionMethod(TDot::class, 'nudge');
 
 		// A null style follows the sign of the change: negative is top-exaggerated, positive bottom.
 		self::assertEquals(0, $nudge->invoke($this->obj, 0, -10, null));    // darken at the floor stays 0
@@ -525,7 +528,8 @@ class TDotTest extends PHPUnit\Framework\TestCase
 		$this->obj->setColor('Green');
 		$this->obj->setPublishStyle('Inline');
 		$this->obj->setAlternateText('Online');
-		$this->obj->setRole('status');
+		// A custom attribute, as a template's Role="status" is, replaces role="img".
+		$this->obj->setAttribute('Role', 'status');
 
 		$output = $this->render($this->obj);
 		self::assertStringContainsString('role="status"', $output);

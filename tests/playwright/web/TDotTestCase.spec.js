@@ -6,7 +6,7 @@ const BASE = 'ctl0_Content_';
 
 /**
  * An Inline dot with AlternateText is an image named by its <title>; one without
- * is hidden; an explicit Role replaces role="img"; an Embed dot keeps its alt.
+ * is hidden; an explicit role attribute replaces role="img"; an Embed dot keeps its alt.
  */
 test('TDotTestCase: inline dots render accessible names', async ({ page }) => {
 	const h = new PradoTestHelper(page, GENERIC_BASE_URL);

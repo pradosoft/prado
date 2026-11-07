@@ -24,7 +24,7 @@ namespace Prado\Web;
  * ride on the same publishing primitive.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @since 4.4.0
+ * @since 4.3.3
  */
 interface IPublishable
 {

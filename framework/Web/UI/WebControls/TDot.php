@@ -69,7 +69,7 @@ use Prado\Web\UI\TWebColor;
  * </code>
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @since 4.4.0
+ * @since 4.3.3
  * @see https://en.wikipedia.org/wiki/Web_colors Extended Web Colors
  */
 class TDot extends TImage implements IPublishable
@@ -624,7 +624,7 @@ class TDot extends TImage implements IPublishable
 	 *   naming the <title> that {@see renderContents} writes.
 	 * - AlternateText empty → `aria-hidden="true"`; the dot is decorative, as `alt=""` is.
 	 *
-	 * A {@see getRole Role} set on the control replaces `role="img"`. Every other style
+	 * A custom `role` attribute on the control replaces `role="img"`. Every other style
 	 * renders the {@see TImage} <img> attributes.
 	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose.
 	 */

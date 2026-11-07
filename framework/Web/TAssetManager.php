@@ -191,7 +191,7 @@ class TAssetManager extends \Prado\TModule
 	public const DEFAULT_BASEPATH = 'assets';
 	/** @var array<string> explicit files/directories to exclude. @since 4.3.3 */
 	public const PATH_COPY_EXCEPTIONS = ['.svn', '.git', '.github', '.claude'];
-	/** Prefix of the per-source completion marker written into a published directory. @since 4.4.0 */
+	/** Prefix of the per-source completion marker written into a published directory. @since 4.3.3 */
 	public const DIRECTORY_COMPLETE_MARKER_PREFIX = '.copied-';
 
 	/** @var string base web accessible path for storing private files */
@@ -204,7 +204,7 @@ class TAssetManager extends \Prado\TModule
 	private $_linkAssets = false;
 	/** @var bool whether to copy asset files even if they already exist in the target directory. */
 	private $_forceCopy = false;
-	/** @var bool whether to publish a file by writing to a temporary file then renaming it into place. @since 4.4.0 */
+	/** @var bool whether to publish a file by writing to a temporary file then renaming it into place. @since 4.3.3 */
 	private $_atomic = true;
 	/** @var bool whether to append timestamp to the URL of every published asset. */
 	private $_appendTimestamp = false;
@@ -345,7 +345,7 @@ class TAssetManager extends \Prado\TModule
 	 * per-file cost at publish time, paid once per asset since published files are cached.
 	 * Disable it for the fastest direct writes. Default true.
 	 * @return bool whether files publish through a temporary file and rename.
-	 * @since 4.4.0
+	 * @since 4.3.3
 	 */
 	public function getAtomic()
 	{
@@ -354,7 +354,7 @@ class TAssetManager extends \Prado\TModule
 
 	/**
 	 * @param bool $value whether files publish through a temporary file and rename.
-	 * @since 4.4.0
+	 * @since 4.3.3
 	 */
 	public function setAtomic($value)
 	{
@@ -650,7 +650,7 @@ class TAssetManager extends \Prado\TModule
 	 * @return string the absolute URL to the published file, directory, or asset; '' when
 	 * a virtual asset cancels publishing (a null virtual file path). A file URL carries
 	 * the appended timestamp query when {@see setAppendTimestamp AppendTimestamp} is enabled.
-	 * @since 4.4.0
+	 * @since 4.3.3
 	 */
 	public function publish($path, $checkTimestamp = false)
 	{
@@ -722,7 +722,7 @@ class TAssetManager extends \Prado\TModule
 	 * @throws TInvalidDataValueException when the virtual file path is empty or invalid.
 	 * @return string the absolute URL to the published asset, or '' when publishing is
 	 *   cancelled (a null virtual file path).
-	 * @since 4.4.0
+	 * @since 4.3.3
 	 */
 	protected function publishVirtual($asset, $checkTimestamp = false, array $options = [])
 	{
@@ -785,7 +785,7 @@ class TAssetManager extends \Prado\TModule
 	 * @throws TInvalidDataValueException when the virtual file path is empty or invalid.
 	 * @return ?array null when publishing is cancelled (a null virtual file path);
 	 *   otherwise the keys vpath, isDir, fileName, and those from {@see publishedLocation}.
-	 * @since 4.4.0
+	 * @since 4.3.3
 	 */
 	protected function virtualAssetTarget($asset)
 	{
@@ -810,7 +810,7 @@ class TAssetManager extends \Prado\TModule
 	 * {@see virtualAssetTarget} turns the returned path into the published location.
 	 * @param IPublishable $asset the virtual asset to resolve.
 	 * @return ?string the virtual file path, or null to cancel publishing.
-	 * @since 4.4.0
+	 * @since 4.3.3
 	 */
 	protected function virtualAssetPath(IPublishable $asset): ?string
 	{
@@ -828,7 +828,7 @@ class TAssetManager extends \Prado\TModule
 	 * @param string $fileName the published file name (the basename of a file path).
 	 * @return array the keys dir (hashed sub-directory name), dstDir (its absolute path,
 	 *   the copy target), dst (the published file or directory path), and url.
-	 * @since 4.4.0
+	 * @since 4.3.3
 	 */
 	protected function publishedLocation($path, $isDir, $fileName)
 	{
@@ -852,7 +852,7 @@ class TAssetManager extends \Prado\TModule
 	 * @param string $sourcePath the source directory path being published, or the checksum
 	 *   file path of a published tar.
 	 * @return string the marker file name.
-	 * @since 4.4.0
+	 * @since 4.3.3
 	 */
 	protected function directoryCompleteMarker($sourcePath)
 	{
@@ -870,7 +870,7 @@ class TAssetManager extends \Prado\TModule
 	 * @param callable $writer a callback that writes the content to the path it receives.
 	 * @throws \Throwable rethrown from the writer after the temp file is removed.
 	 * @return string the destination path.
-	 * @since 4.4.0
+	 * @since 4.3.3
 	 */
 	protected function writeAtomic(string $dst, callable $writer): string
 	{
@@ -1370,7 +1370,7 @@ class TAssetManager extends \Prado\TModule
 	 *   "/" separators, which the patterns match against.
 	 * @param array $options the resolved options listed above.
 	 * @throws \Throwable rethrown from {@see symlink} when linking leaves no file or link.
-	 * @since 4.4.0
+	 * @since 4.3.3
 	 */
 	protected function copyDirectoryFile(string $srcPath, string $dstPath, string $relativePath, array $options): void
 	{
