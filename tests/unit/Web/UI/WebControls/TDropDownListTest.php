@@ -445,20 +445,20 @@ class TDropDownListTest extends TestCase
 	}
 
 	// ================================================================================
-	// Customizable select
+	// RichOptions
 	// ================================================================================
 
-	public function testCustomizableDefaultsAndSet()
+	public function testRichOptionsDefaultsAndSet()
 	{
 		$list = new TDropDownList();
-		$this->assertFalse($list->getCustomizable());
-		$this->assertSame('default', $list->getCustomizableCssUrl());
-		$list->setCustomizable('true');
-		$this->assertTrue($list->getCustomizable());
-		$list->setCustomizableCssUrl('/theme/select.css');
-		$this->assertSame('/theme/select.css', $list->getCustomizableCssUrl());
-		$list->setCustomizableCssUrl('');
-		$this->assertSame('', $list->getCustomizableCssUrl());
+		$this->assertFalse($list->getRichOptions());
+		$this->assertSame('default', $list->getRichOptionsCssUrl());
+		$list->setRichOptions('true');
+		$this->assertTrue($list->getRichOptions());
+		$list->setRichOptionsCssUrl('/theme/select.css');
+		$this->assertSame('/theme/select.css', $list->getRichOptionsCssUrl());
+		$list->setRichOptionsCssUrl('');
+		$this->assertSame('', $list->getRichOptionsCssUrl());
 	}
 
 	public function testRenderNativeSelectHasNoButton()
@@ -466,23 +466,23 @@ class TDropDownListTest extends TestCase
 		[, $list] = $this->createPageList(['a' => 'A']);
 		$output = $this->render($list);
 		$this->assertStringNotContainsString('<button>', $output);
-		$this->assertStringNotContainsString('customizable-select', $output);
+		$this->assertStringNotContainsString('rich-options', $output);
 	}
 
-	public function testRenderCustomizableRendersClassAndSelectedContent()
+	public function testRenderRichOptionsRendersClassAndSelectedContent()
 	{
 		[, $list] = $this->createPageList(['a' => 'A']);
-		$list->setCustomizable(true);
-		$list->setCssClass('pets customizable-select');
+		$list->setRichOptions(true);
+		$list->setCssClass('pets rich-options');
 		$output = $this->render($list);
-		$this->assertStringContainsString('class="customizable-select pets"', $output);
+		$this->assertStringContainsString('class="rich-options pets"', $output);
 		$this->assertMatchesRegularExpression('#<select[^>]*>\s*<button><selectedcontent></selectedcontent></button>\s*<option value="a">A</option>#', $output);
 	}
 
-	public function testRenderCustomizableButtonPrecedesPrompt()
+	public function testRenderRichOptionsButtonPrecedesPrompt()
 	{
 		[, $list] = $this->createPageList(['a' => 'A']);
-		$list->setCustomizable(true);
+		$list->setRichOptions(true);
 		$list->setPromptText('Choose');
 		$this->assertMatchesRegularExpression('#</button>\s*<option value="">Choose</option>#', $this->render($list));
 	}
@@ -511,35 +511,35 @@ class TDropDownListTest extends TestCase
 	public function testPreRenderRegistersBaseSelectStyleBlock()
 	{
 		[$page, $list] = $this->createPageList();
-		$list->setCustomizable(true);
+		$list->setRichOptions(true);
 		$list->onPreRender(null);
 		$clientScript = $page->getClientScript();
-		$this->assertTrue($clientScript->isStyleSheetRegistered(TDropDownList::CUSTOMIZABLE_CSS_CLASS));
+		$this->assertTrue($clientScript->isStyleSheetRegistered(TDropDownList::RICH_OPTIONS_CSS_CLASS));
 		$this->assertSame(
-			'select.customizable-select,select.customizable-select::picker(select){appearance:base-select}',
-			PradoUnit::getProp($clientScript, '_styleSheets')[TDropDownList::CUSTOMIZABLE_CSS_CLASS]
+			'select.rich-options,select.rich-options::picker(select){appearance:base-select}',
+			PradoUnit::getProp($clientScript, '_styleSheets')[TDropDownList::RICH_OPTIONS_CSS_CLASS]
 		);
 	}
 
-	public function testPreRenderRegistersCustomizableCssUrl()
+	public function testPreRenderRegistersRichOptionsCssUrl()
 	{
 		[$page, $list] = $this->createPageList();
-		$list->setCustomizable(true);
-		$list->setCustomizableCssUrl('/theme/select.css');
+		$list->setRichOptions(true);
+		$list->setRichOptionsCssUrl('/theme/select.css');
 		$list->onPreRender(null);
 		$this->assertTrue($page->getClientScript()->isStyleSheetFileRegistered('/theme/select.css'));
-		$this->assertFalse($page->getClientScript()->isStyleSheetRegistered(TDropDownList::CUSTOMIZABLE_CSS_CLASS));
+		$this->assertFalse($page->getClientScript()->isStyleSheetRegistered(TDropDownList::RICH_OPTIONS_CSS_CLASS));
 	}
 
-	public function testPreRenderRegistersNothingWithoutCustomizableOrUrl()
+	public function testPreRenderRegistersNothingWithoutRichOptionsOrUrl()
 	{
 		[$page, $list] = $this->createPageList();
 		$list->onPreRender(null);
-		$this->assertFalse($page->getClientScript()->isStyleSheetRegistered(TDropDownList::CUSTOMIZABLE_CSS_CLASS));
-		$list->setCustomizable(true);
-		$list->setCustomizableCssUrl('');
+		$this->assertFalse($page->getClientScript()->isStyleSheetRegistered(TDropDownList::RICH_OPTIONS_CSS_CLASS));
+		$list->setRichOptions(true);
+		$list->setRichOptionsCssUrl('');
 		$list->onPreRender(null);
-		$this->assertFalse($page->getClientScript()->isStyleSheetRegistered(TDropDownList::CUSTOMIZABLE_CSS_CLASS));
+		$this->assertFalse($page->getClientScript()->isStyleSheetRegistered(TDropDownList::RICH_OPTIONS_CSS_CLASS));
 	}
 
 	public function testTemplateBodySetsItemContent()
@@ -548,7 +548,7 @@ class TDropDownListTest extends TestCase
 		$container = new TControl();
 		$container->setID('tplControl');
 		$page->getControls()->add($container);
-		$template = '<com:Prado.Web.UI.WebControls.TDropDownList ID="Pets" Customizable="true">'
+		$template = '<com:Prado.Web.UI.WebControls.TDropDownList ID="Pets" RichOptions="true">'
 			. '<com:Prado.Web.UI.WebControls.TListItem Value="cat" Text="Cat">'
 			. "\n\t<img src=\"cat.svg\" alt=\"\"> Cat\n"
 			. '</com:Prado.Web.UI.WebControls.TListItem>'
@@ -556,7 +556,7 @@ class TDropDownListTest extends TestCase
 			. '</com:Prado.Web.UI.WebControls.TDropDownList>';
 		(new TTemplate($template, sys_get_temp_dir(), null, 0, true))->instantiateIn($container);
 		$list = $container->findControl('Pets');
-		$this->assertTrue($list->getCustomizable());
+		$this->assertTrue($list->getRichOptions());
 		$this->assertSame('<img src="cat.svg" alt=""> Cat', $list->getItems()->itemAt(0)->getContent());
 		$this->assertFalse($list->getItems()->itemAt(1)->getHasContent());
 	}

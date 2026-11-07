@@ -199,7 +199,7 @@ describe('Prado.Element.setOptions', () => {
 		expect(() => Element.setOptions('no-such-element', [['A', 'a']])).not.toThrow();
 	});
 
-	it('keeps the <button> of a customizable select and replaces the options', () => {
+	it('keeps the <button> of a RichOptions select and replaces the options', () => {
 		const button = document.createElement('button');
 		button.appendChild(document.createElement('selectedcontent'));
 		sel.appendChild(button);

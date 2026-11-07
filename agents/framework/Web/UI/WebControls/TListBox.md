@@ -8,7 +8,7 @@
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-TListBox displays a list box on a Web page that allows single or multiple selection. The number of visible rows can be configured, and it supports optgroup for item grouping. `Customizable` ([TCustomizableSelectTrait](./TCustomizableSelectTrait.md)) opts the select into `appearance: base-select`.
+TListBox displays a list box on a Web page that allows single or multiple selection. The number of visible rows can be configured, and it supports optgroup for item grouping. `RichOptions` ([TRichOptionsTrait](./TRichOptionsTrait.md)) shows the HTML content of the options with `appearance: base-select`.
 
 ## Key Properties/Methods
 
@@ -19,8 +19,8 @@ TListBox displays a list box on a Web page that allows single or multiple select
 - `raisePostDataChangedEvent()` - Raises postdata changed event
 - `getValidationPropertyValue()` - Returns selected value for validation
 - `getIsValid()` / `setIsValid()` - Gets or sets validation status
-- `getCustomizable()` / `setCustomizable()` - Customizable select appearance; default false
-- `getCustomizableCssUrl()` / `setCustomizableCssUrl()` - Stylesheet of a customizable select
+- `getRichOptions()` / `setRichOptions()` - Rich option content with `appearance: base-select`; default false
+- `getRichOptionsCssUrl()` / `setRichOptionsCssUrl()` - Stylesheet of a RichOptions select
 
 ## See Also
 

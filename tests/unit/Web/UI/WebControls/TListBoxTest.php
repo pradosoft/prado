@@ -309,15 +309,15 @@ class TListBoxTest extends TestCase
 	}
 
 	// ================================================================================
-	// Customizable select
+	// RichOptions
 	// ================================================================================
 
-	public function testRenderCustomizableHasClassAndNoButton()
+	public function testRenderRichOptionsHasClassAndNoButton()
 	{
 		[, $list] = $this->createPageList(true, ['a' => 'A']);
-		$list->setCustomizable(true);
+		$list->setRichOptions(true);
 		$output = $this->render($list);
-		$this->assertStringContainsString('class="customizable-select"', $output);
+		$this->assertStringContainsString('class="rich-options"', $output);
 		$this->assertStringContainsString('multiple="multiple"', $output);
 		$this->assertStringNotContainsString('<button>', $output);
 	}
@@ -335,9 +335,9 @@ class TListBoxTest extends TestCase
 	{
 		[$page, $list] = $this->createPageList();
 		$list->onPreRender(null);
-		$this->assertFalse($page->getClientScript()->isStyleSheetRegistered(TListBox::CUSTOMIZABLE_CSS_CLASS));
-		$list->setCustomizable(true);
+		$this->assertFalse($page->getClientScript()->isStyleSheetRegistered(TListBox::RICH_OPTIONS_CSS_CLASS));
+		$list->setRichOptions(true);
 		$list->onPreRender(null);
-		$this->assertTrue($page->getClientScript()->isStyleSheetRegistered(TListBox::CUSTOMIZABLE_CSS_CLASS));
+		$this->assertTrue($page->getClientScript()->isStyleSheetRegistered(TListBox::RICH_OPTIONS_CSS_CLASS));
 	}
 }

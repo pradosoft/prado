@@ -1,18 +1,18 @@
-# Web/UI/WebControls/TCustomizableSelectTrait
+# Web/UI/WebControls/TRichOptionsTrait
 
 ### Directories
-[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TCustomizableSelectTrait`**
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TRichOptionsTrait`**
 
 ## Class Info
-**Location:** `framework/Web/UI/WebControls/TCustomizableSelectTrait.php`
+**Location:** `framework/Web/UI/WebControls/TRichOptionsTrait.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 **Since:** 4.4.0
 
 ## Overview
-TCustomizableSelectTrait backs the `Customizable` property of a `<select>` list control. A customizable select renders the `customizable-select` class (`CUSTOMIZABLE_CSS_CLASS`) before `CssClass`, and the page registers one style block, keyed by the class, that opts it into `appearance: base-select`:
+TRichOptionsTrait backs the `RichOptions` property of a `<select>` list control. With RichOptions, the select uses the browser's customizable select. It renders the `rich-options` class (`RICH_OPTIONS_CSS_CLASS`) before `CssClass`, and the page registers one style block, keyed by the class, that opts it into `appearance: base-select`:
 
 ```css
-select.customizable-select, select.customizable-select::picker(select) { appearance: base-select }
+select.rich-options, select.rich-options::picker(select) { appearance: base-select }
 ```
 
 The picker shows the HTML `Content` of each [TListItem](./TListItem.md).
@@ -21,10 +21,10 @@ The picker shows the HTML `Content` of each [TListItem](./TListItem.md).
 
 | Method | Description |
 |---|---|
-| `getCustomizable()` / `setCustomizable($value)` | Viewstate `Customizable`; default `false` |
-| `getCustomizableCssUrl()` / `setCustomizableCssUrl($value)` | Viewstate `CustomizableCssUrl`. `'default'` → the style block; a URL → `registerStyleSheetFile()`; `''` → nothing |
-| `registerCustomizableStyleSheet()` | Protected. Registers the stylesheet of a customizable select; the using class calls it from `onPreRender()` |
-| `addCustomizableAttributesToRender($writer)` | Protected. Replaces `class` with `customizable-select` and `CssClass`; the using class calls it after `parent::addAttributesToRender()` |
+| `getRichOptions()` / `setRichOptions($value)` | Viewstate `RichOptions`; default `false` |
+| `getRichOptionsCssUrl()` / `setRichOptionsCssUrl($value)` | Viewstate `RichOptionsCssUrl`. `'default'` → the style block; a URL → `registerStyleSheetFile()`; `''` → nothing |
+| `registerRichOptionsStyleSheet()` | Protected. Registers the stylesheet of a RichOptions select; the using class calls it from `onPreRender()` |
+| `addRichOptionsAttributesToRender($writer)` | Protected. Replaces `class` with `rich-options` and `CssClass`; the using class calls it after `parent::addAttributesToRender()` |
 
 ## Using Classes
 

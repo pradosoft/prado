@@ -10,7 +10,7 @@
 ## Overview
 TListItem represents an item in a list control. Each item has Text and Value properties, can be selected or enabled, and can have custom attributes rendered.
 
-`Content` is HTML rendered inside the `<option>` of a TDropDownList or TListBox in place of the encoded Text. The template body sets it (`addParsedObject()` appends body text; other objects are ignored). Content is not encoded. It is serialized in viewstate and sent by `TCallbackClientScript::setListItems()`. A [customizable select](./TCustomizableSelectTrait.md) shows its elements; other browsers and the option's accessible name use its text, so it contains the item's text.
+`Content` is HTML rendered inside the `<option>` of a TDropDownList or TListBox in place of the encoded Text. The template body sets it (`addParsedObject()` appends body text; other objects are ignored). Content is not encoded. It is serialized in viewstate and sent by `TCallbackClientScript::setListItems()`. A [RichOptions](./TRichOptionsTrait.md) select shows its elements; other browsers and the option's accessible name use its text, so it contains the item's text.
 
 ## Key Properties/Methods
 
@@ -31,4 +31,4 @@ TListItem represents an item in a list control. Each item has Text and Value pro
 ## See Also
 
 - [TListControl](./TListControl.md)
-- [TCustomizableSelectTrait](./TCustomizableSelectTrait.md)
+- [TRichOptionsTrait](./TRichOptionsTrait.md)

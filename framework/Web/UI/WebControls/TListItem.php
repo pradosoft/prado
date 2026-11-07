@@ -33,7 +33,7 @@ use Prado\TPropertyValue;
  * </com:TListItem>
  * ```
  * Content is not encoded; encode user data before adding it. A
- * {@see TCustomizableSelectTrait customizable select} shows the elements of the
+ * {@see TRichOptionsTrait RichOptions} select shows the elements of the
  * content. A browser without customizable select support, and the accessible
  * name of the option, use the text of the content, so the content contains the
  * item's text. Decorative images and icons have `alt=""` or `aria-hidden="true"`.

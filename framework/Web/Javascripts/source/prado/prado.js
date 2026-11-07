@@ -644,7 +644,7 @@ Prado.Element =
 	},
 
 	/**
-	 * Sets the options for a select element. The `<button>` of a customizable select stays.
+	 * Sets the options for a select element. The `<button>` of a RichOptions select stays.
 	 * @function ?
 	 * @param {string} element - Element id
 	 * @param {array[]} options - Array of options, each an array of structure

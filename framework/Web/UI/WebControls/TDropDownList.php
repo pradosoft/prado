@@ -36,12 +36,12 @@ use Prado\TPropertyValue;
  * The {@see clearSelection clearSelection} method will select the prompt item if existing, otherway the first
  * available item in the dropdown list will be selected.
  *
- * A {@see setCustomizable Customizable} dropdown list uses the `appearance: base-select`
- * of a customizable select ({@see TCustomizableSelectTrait}). It renders
+ * A {@see setRichOptions RichOptions} dropdown list shows the HTML content of its
+ * options with `appearance: base-select` ({@see TRichOptionsTrait}). It renders
  * `<button><selectedcontent></selectedcontent></button>` before the options, so the
  * button shows the content of the selected option.
  * ```xml
- * <com:TDropDownList Customizable="true">
+ * <com:TDropDownList RichOptions="true">
  *   <com:TListItem Value="cat"><img src="cat.svg" alt=""> Cat</com:TListItem>
  *   <com:TListItem Value="dog"><img src="dog.svg" alt=""> Dog</com:TListItem>
  * </com:TDropDownList>
@@ -52,7 +52,7 @@ use Prado\TPropertyValue;
  */
 class TDropDownList extends TListControl implements \Prado\Web\UI\IPostBackDataHandler, \Prado\Web\UI\IValidatable
 {
-	use TCustomizableSelectTrait;
+	use TRichOptionsTrait;
 
 	private $_dataChanged = false;
 	private $_isValid = true;
@@ -65,29 +65,29 @@ class TDropDownList extends TListControl implements \Prado\Web\UI\IPostBackDataH
 	{
 		$writer->addAttribute('name', $this->getUniqueID());
 		parent::addAttributesToRender($writer);
-		$this->addCustomizableAttributesToRender($writer);
+		$this->addRichOptionsAttributesToRender($writer);
 	}
 
 	/**
-	 * Registers the stylesheet of a {@see getCustomizable Customizable} dropdown list.
+	 * Registers the stylesheet of a {@see getRichOptions RichOptions} dropdown list.
 	 * @param mixed $param event parameter
 	 * @since 4.4.0
 	 */
 	public function onPreRender($param)
 	{
 		parent::onPreRender($param);
-		$this->registerCustomizableStyleSheet();
+		$this->registerRichOptionsStyleSheet();
 	}
 
 	/**
-	 * Renders the `<button>` with `<selectedcontent>` of a {@see getCustomizable Customizable}
+	 * Renders the `<button>` with `<selectedcontent>` of a {@see getRichOptions RichOptions}
 	 * dropdown list, then the options.
 	 * @param \Prado\Web\UI\THtmlWriter $writer writer
 	 * @since 4.4.0
 	 */
 	public function renderContents($writer)
 	{
-		if ($this->getCustomizable()) {
+		if ($this->getRichOptions()) {
 			$writer->renderBeginTag('button');
 			$writer->renderBeginTag('selectedcontent');
 			$writer->renderEndTag();
