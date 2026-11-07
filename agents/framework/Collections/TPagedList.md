@@ -19,6 +19,7 @@ Extends [TList](./TList.md)
 - Built-in pagination
 - Managed or custom paging modes
 - `OnFetchData` event for custom paging
+- `OnPageIndexChanged` event carrying the previous page index
 
 ## Properties
 
@@ -38,6 +39,13 @@ public function getCurrentPageIndex(): int
 ```
 
 Zero-based current page index.
+
+| Mode | Before any page is selected |
+|---|---|
+| Managed (`CustomPaging` false) | `0`; `Count`, `toArray()`, iteration, and `itemAt()` read page 0 |
+| Custom (`CustomPaging` true) | `-1`; the first `gotoPage(0)` or `nextPage()` raises `OnFetchData` |
+
+`gotoPage()` with the current page index returns it without raising an event or fetching data.
 
 ### PageCount
 
@@ -81,11 +89,12 @@ $list->AttachEventHandler('OnFetchData', function($sender, $param) {
 
 Raised when custom paging is enabled and page changes. Handler receives [TPagedListFetchDataEventParameter](./TPagedListFetchDataEventParameter.md).
 
-### OnPageChanged
+### OnPageIndexChanged
 
-Raised when the page index changes.
+Raised when the page index changes, in both modes. Handler receives [TPagedListPageChangedEventParameter](./TPagedListPageChangedEventParameter.md) with `OldPageIndex`. The first custom-paging fetch has an `OldPageIndex` of `-1`.
 
 ## See Also
 
 - [TPagedDataSource](./TPagedDataSource.md) - Data source with paging
 - [TPagedListFetchDataEventParameter](./TPagedListFetchDataEventParameter.md) - Event parameter for OnFetchData
+- [TPagedListPageChangedEventParameter](./TPagedListPageChangedEventParameter.md) - Event parameter for OnPageIndexChanged

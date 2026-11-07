@@ -52,7 +52,7 @@ public function getAllowPaging(): bool
 public function setAllowPaging(bool $value): void
 ```
 
-Whether paging is enabled.
+Whether paging is enabled. With paging off, `IsFirstPage` and `IsLastPage` are both true.
 
 ## Usage
 
