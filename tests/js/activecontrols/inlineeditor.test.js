@@ -204,7 +204,16 @@ describe('TInPlaceTextBox createTextBox', () => {
 		({ container } = buildDOM());
 		new TInPlaceTextBox(makeOptions({ TextMode: 'SingleLine', MaxLength: 20 }));
 		const field = document.getElementById('tb_lbl1');
-		expect(field.maxlength).toBe(20);
+		expect(field.maxLength).toBe(20);
+	});
+
+	it('sets maxLength when MaxLength > 0 (MultiLine)', () => {
+		clearRegistry(); clearTextboxes();
+		({ container } = buildDOM());
+		new TInPlaceTextBox(makeOptions({ TextMode: 'MultiLine', MaxLength: 20 }));
+		const field = document.getElementById('tb_lbl1');
+		expect(field.tagName).toBe('TEXTAREA');
+		expect(field.maxLength).toBe(20);
 	});
 
 	it('sets size when Columns > 0 (SingleLine)', () => {
