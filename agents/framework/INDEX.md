@@ -38,7 +38,9 @@ This is the root source directory of the **Prado** PHP framework (PSR-4 namespac
 
 - **[`TApplicationComponent.php`](TApplicationComponent.md)** — Base for application-aware components; provides `getApplication()`, `getService()`, `getRequest()`, `getResponse()`, `getSession()`, `getUser()`.
 
-- **[`TApplicationConfiguration.php`](TApplicationConfiguration.md)** — Parses `application.xml` (or `application.php`); loads module/service/parameter definitions.
+- **[`TApplicationConfiguration.php`](TApplicationConfiguration.md)** — Parses `application.xml` (or `application.php`); loads module/service/parameter definitions and the `final` parameter flag.
+
+- **[`TApplicationParameters.php`](TApplicationParameters.md)** — `TMap` of application parameters; a finalized key cannot be added, set, or removed again (issue #296). @since 4.4.0
 
 - **[`TModule.php`](TModule.md)** — Base for pluggable application modules registered in configuration.
 

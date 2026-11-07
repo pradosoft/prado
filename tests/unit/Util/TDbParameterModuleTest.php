@@ -494,4 +494,78 @@ class TDbParameterModuleTest extends \PHPUnit\Framework\TestCase
 			$module->getModuleDependencies(false)
 		);
 	}
+
+	/** Runs a test body against a fresh TApplicationParameters, restoring the application's map after. */
+	private function withFinalParameters(callable $body): void
+	{
+		$app = \Prado::getApplication();
+		$saved = $app->getParameters();
+		$params = new \Prado\TApplicationParameters();
+		PradoUnit::setProp($app, '_parameters', $params);
+		try {
+			$body($params);
+		} finally {
+			$params->detachBehavior(TDbParameterModule::APP_PARAMETER_SET_BEHAVIOR);
+			$params->detachBehavior(TDbParameterModule::APP_PARAMETER_LAZY_BEHAVIOR);
+			PradoUnit::setProp($app, '_parameters', $saved);
+		}
+	}
+
+	public function testInit_skipsRowOfFinalParameter()
+	{
+		$this->obj->set('testparam', 'db', true, false);
+		$this->obj->set('testparam2', 'db2', true, false);
+		$this->withFinalParameters(function ($params) {
+			$params['testparam'] = 'cfg';
+			$params->finalize('testparam');
+			$logger = \Prado::getLogger();
+			$logger->deleteLogs(\Prado\Util\Log\TLogger::WARNING, TDbParameterModule::class);
+
+			$module = new TDbParameterModule();
+			$module->init(null);
+
+			self::assertEquals('cfg', $params['testparam']);
+			self::assertEquals('db2', $params['testparam2']);
+			$logs = $logger->deleteLogs(\Prado\Util\Log\TLogger::WARNING, TDbParameterModule::class);
+			self::assertCount(1, $logs);
+			self::assertStringContainsString('testparam', $logs[0][0]);
+		});
+	}
+
+	public function testSet_finalParameterThrowsBeforeWritingRow()
+	{
+		$this->withFinalParameters(function ($params) {
+			$params['testparam'] = 'cfg';
+			$params->finalize('testparam');
+			try {
+				$this->obj->set('testparam', 'db');
+				self::fail('set() on a final parameter must throw');
+			} catch (TInvalidOperationException $e) {
+				self::assertEquals('dbparametermodule_set_final', $e->getErrorCode());
+			}
+			self::assertNull($this->obj->get('testparam', false, false));
+			self::assertEquals('cfg', $params['testparam']);
+		});
+	}
+
+	public function testGet_doesNotSetFinalParameter()
+	{
+		$this->obj->set('testparam', 'db', false, false);
+		$this->withFinalParameters(function ($params) {
+			$params->finalize('testparam');
+			self::assertEquals('db', $this->obj->get('testparam', false, true));
+			self::assertFalse($params->contains('testparam'));
+		});
+	}
+
+	public function testLazyLoad_finalAbsentParameterReadsNull()
+	{
+		$this->obj->set('testparam', 'db', false, false);
+		$this->withFinalParameters(function ($params) {
+			$params->finalize('testparam');
+			$params->attachBehavior(TDbParameterModule::APP_PARAMETER_LAZY_BEHAVIOR, new TMapLazyLoadBehavior([$this->obj, 'getFromBehavior']));
+			self::assertNull($params['testparam']);
+			self::assertFalse($params->contains('testparam'));
+		});
+	}
 }

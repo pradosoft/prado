@@ -68,6 +68,9 @@ use Prado\Xml\TXmlElement;
  * If a parameter is defined both in the external file and within the module
  * tag, the former takes precedence.
  *
+ * A parameter finalized by the application configuration
+ * ({@see \Prado\TApplicationParameters}) cannot be loaded; setting it throws.
+ *
  * When a parameter has an Class Attribute, the parameter is instanced as an object
  * of the specified class and the attribute=value pairs are then set on the object.
  *
