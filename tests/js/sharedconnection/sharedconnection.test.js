@@ -107,7 +107,7 @@ let transports;
 
 function createTransport() {
 	return vi.fn((resumeId, emit) => {
-		const transport = { resumeId, emit, closed: false, close: vi.fn(() => { transport.closed = true; }) };
+		const transport = { resumeId, emit, closed: false, sent: [], close: vi.fn(() => { transport.closed = true; }), send: vi.fn((data) => transport.sent.push(data)) };
 		transports.push(transport);
 		return transport;
 	});
@@ -305,6 +305,96 @@ describe('Prado.SharedConnection', () => {
 		expect(SharedConnection.connections.k).toBeUndefined();
 		expect(transports[0].close).toHaveBeenCalled();
 		vi.unstubAllGlobals();
+	});
+});
+
+describe('Prado.SharedConnection send()', () => {
+	it('sends through the transport in the leader', async () => {
+		const one = createTab();
+		await flush();
+		await one.subscription.send({ type: 'subscribe', channel: 'orders' });
+		expect(transports[0].sent).toEqual([{ type: 'subscribe', channel: 'orders' }]);
+	});
+
+	it('sends through the leader from another tab and resolves on its confirmation', async () => {
+		createTab();
+		const two = createTab();
+		await flush();
+		const sent = two.subscription.send({ n: 1 });
+		await flush();
+		await expect(sent).resolves.toBeUndefined();
+		expect(transports).toHaveLength(1);
+		expect(transports[0].sent).toEqual([{ n: 1 }]);
+		expect(two.connection.pending.size).toBe(0);
+	});
+
+	it('rejects when the transport cannot send', async () => {
+		const open = vi.fn((resumeId, emit) => ({ close: vi.fn() }));
+		const one = createTab({ open });
+		const two = createTab({ open });
+		await flush();
+		await expect(one.subscription.send('x')).rejects.toThrow('cannot send');
+		const remote = two.subscription.send('y');
+		await flush();
+		await expect(remote).rejects.toThrow('cannot send');
+	});
+
+	it('keeps an unconfirmed send through a handover', async () => {
+		const one = createTab();
+		const two = createTab();
+		const three = createTab();
+		await flush();
+		// The leader stops answering the channel, as a frozen tab does.
+		one.connection.channel.onmessage = null;
+		const sent = three.subscription.send('after');
+		await flush();
+		expect(transports[0].sent).toEqual([]);
+		one.subscription.close();
+		await flush();
+		expect(two.connection.leader).toBe(true);
+		await expect(sent).resolves.toBeUndefined();
+		expect(transports[1].sent).toEqual(['after']);
+	});
+
+	it('sends its own unconfirmed data once it becomes the leader', async () => {
+		const one = createTab();
+		const two = createTab();
+		await flush();
+		one.connection.channel.onmessage = null;
+		const sent = two.subscription.send('mine');
+		await flush();
+		one.subscription.close();
+		await flush();
+		expect(two.connection.leader).toBe(true);
+		await expect(sent).resolves.toBeUndefined();
+		expect(transports[1].sent).toEqual(['mine']);
+	});
+
+	it('sends before the first lock is granted once it leads', async () => {
+		const one = createTab();
+		const sent = one.subscription.send('early');
+		await flush();
+		await expect(sent).resolves.toBeUndefined();
+		expect(transports[0].sent).toEqual(['early']);
+	});
+
+	it('rejects unconfirmed sends when the connection closes, and sends after it', async () => {
+		const one = createTab();
+		const two = createTab();
+		await flush();
+		one.connection.channel.onmessage = null;
+		const sent = two.subscription.send('lost');
+		await flush();
+		two.subscription.close();
+		await expect(sent).rejects.toThrow('closed');
+		await expect(two.subscription.send('late')).rejects.toThrow('closed');
+	});
+
+	it('sends directly without sharing', async () => {
+		const one = createTab({ shared: false });
+		await flush();
+		await one.subscription.send('own');
+		expect(transports[0].sent).toEqual(['own']);
 	});
 });
 

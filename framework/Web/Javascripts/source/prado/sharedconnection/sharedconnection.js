@@ -18,10 +18,27 @@
  * subscription.close();
  * ```
  *
+ * A transport is any `open` function. One that also carries messages to the
+ * server, such as a WebSocket client from an extension, returns `send(data)`
+ * as well, and every tab sends through it:
+ *
+ * ```javascript
+ * const socket = Prado.SharedConnection.subscribe({
+ *     key: 'ws:wss://example.com/pubsub?token=abc',
+ *     open: (resumeId, emit) => {
+ *         const ws = new WebSocket('wss://example.com/pubsub?token=abc');
+ *         ws.onmessage = (event) => emit({ id: null, event: 'message', data: event.data });
+ *         return { send: (data) => ws.send(JSON.stringify(data)), close: () => ws.close() };
+ *     },
+ *     onMessage(message) { … },
+ * });
+ * await socket.send({ type: 'subscribe', channel: 'orders' });
+ * ```
+ *
  * | Option | Use |
  * |---|---|
  * | `key` | Identifies the connection; tabs with one key share one connection. Include the user's token, so a connection is never shared between sessions. |
- * | `open(resumeId, emit)` | Opens the connection from `resumeId` (null for the start) and calls `emit({id, event, data})` per message; returns `{close()}` |
+ * | `open(resumeId, emit)` | Opens the connection from `resumeId` (null for the start) and calls `emit({id, event, data})` per message; returns `{close()}`, and `{send(data)}` for a connection that sends |
  * | `onMessage(message, info)` | Receives each message in every tab; `info.leader` is whether this tab holds the connection |
  * | `heartbeat` | Milliseconds between the leader's heartbeats; 15000 by default |
  * | `shared` | False holds a connection of this tab's own |
@@ -38,6 +55,17 @@
  * last message ID it received, so no message is lost. A tab that hears no
  * heartbeat for two intervals takes the lock from a holder that stopped
  * delivering (`steal`).
+ *
+ * **Sending.** `subscription.send(data)` returns a promise. In the leader it
+ * calls the transport's `send()`. In another tab it posts the data on the
+ * channel; the leader sends it and posts the outcome back. A send that no
+ * leader confirmed is posted again when a new leader announces itself, and a
+ * tab that becomes the leader sends its unconfirmed data itself, so a send
+ * survives a handover. A handover between the send and the confirmation can
+ * send the data twice; messages that must not repeat carry an ID the server
+ * deduplicates. The data crosses the channel by structured clone. A transport
+ * without `send()` rejects the promise; closing the connection rejects the
+ * unconfirmed sends.
  *
  * Without `navigator.locks` or `BroadcastChannel`, or with `shared: false`, each
  * tab holds its own connection.
@@ -136,6 +164,8 @@ Prado.SharedConnection.Connection = class
 		this.running = false;
 		this.paused = false;
 		this.onEmpty = null;
+		this.pending = new Map();
+		this.sequence = 0;
 		this.lifecycle = {
 			freeze: () => this.pause(),
 			resume: () => this.unpause(),
@@ -147,7 +177,7 @@ Prado.SharedConnection.Connection = class
 	/**
 	 * Adds a subscriber, starting the connection for the first one.
 	 * @param {function(object, object)} onMessage - the message handler
-	 * @returns {{close: function, isLeader: function}} the subscription
+	 * @returns {{close: function, isLeader: function, send: function}} the subscription
 	 */
 	subscribe(onMessage)
 	{
@@ -159,7 +189,83 @@ Prado.SharedConnection.Connection = class
 		return {
 			close: () => this.unsubscribe(subscriber),
 			isLeader: () => this.leader,
+			send: (data) => this.send(data),
 		};
+	}
+
+	/**
+	 * Sends data through the leader's transport.
+	 * @param {*} data - the data; structured-cloneable to cross tabs
+	 * @returns {Promise<void>} resolves once the leader sent it; rejects when the
+	 *   transport cannot send or the connection closes first
+	 */
+	send(data)
+	{
+		if (!this.running) {
+			return Promise.reject(new Error('The shared connection is closed.'));
+		}
+		if (this.leader) {
+			try {
+				this.transmit(data);
+				return Promise.resolve();
+			} catch (error) {
+				return Promise.reject(error);
+			}
+		}
+		return new Promise((resolve, reject) => {
+			const id = this.newSendId();
+			this.pending.set(id, { data, resolve, reject });
+			this.post({ type: 'send', id, data });
+		});
+	}
+
+	/**
+	 * Sends data through this tab's transport.
+	 * @param {*} data - the data
+	 * @throws {Error} when the transport has no `send()`
+	 */
+	transmit(data)
+	{
+		if (!this.transport || typeof this.transport.send !== 'function') {
+			throw new Error('The shared connection transport cannot send.');
+		}
+		this.transport.send(data);
+	}
+
+	/**
+	 * @returns {string} an ID for a send, unique across the tabs
+	 */
+	newSendId()
+	{
+		this.sequence += 1;
+		const tab = this.tabId || (this.tabId = Math.random().toString(36).slice(2) + this.now().toString(36));
+		return tab + '-' + this.sequence;
+	}
+
+	/**
+	 * Sends the unconfirmed data of this tab through its own transport, once it leads.
+	 */
+	flushPending()
+	{
+		this.pending.forEach((entry, id) => {
+			this.pending.delete(id);
+			try {
+				this.transmit(entry.data);
+				entry.resolve();
+			} catch (error) {
+				entry.reject(error);
+			}
+		});
+	}
+
+	/**
+	 * Rejects the unconfirmed data of this tab.
+	 * @param {Error} error - the reason
+	 */
+	rejectPending(error)
+	{
+		this.pending.forEach((entry) => entry.reject(error));
+		this.pending.clear();
 	}
 
 	/**
@@ -202,6 +308,7 @@ Prado.SharedConnection.Connection = class
 	stop()
 	{
 		this.running = false;
+		this.rejectPending(new Error('The shared connection is closed.'));
 		this.resign();
 		this.cancelRequest();
 		clearInterval(this.watchdogTimer);
@@ -268,6 +375,7 @@ Prado.SharedConnection.Connection = class
 		}
 		this.leader = true;
 		this.transport = this.open(this.lastId, (message) => this.emit(message));
+		this.flushPending();
 		if (this.shared) {
 			this.post({ type: 'leader', id: this.lastId });
 			this.heartbeatTimer = setInterval(() => this.post({ type: 'heartbeat', id: this.lastId }), this.interval);
@@ -351,14 +459,43 @@ Prado.SharedConnection.Connection = class
 	}
 
 	/**
-	 * Handles a channel post from the leader.
-	 * @param {object} post - `{type, id}` or `{type: 'message', message}`
+	 * Handles a channel post: a send for the leader, or a message, heartbeat,
+	 * leader announcement, or send confirmation from the leader.
+	 * @param {object} post - `{type, id}`, `{type: 'message', message}`,
+	 *   `{type: 'send', id, data}`, or `{type: 'sent', id, error}`
 	 */
 	receive(post)
 	{
+		if (post.type === 'send') {
+			if (this.leader) {
+				let error = null;
+				try {
+					this.transmit(post.data);
+				} catch (failure) {
+					error = String(failure && failure.message || failure);
+				}
+				this.post({ type: 'sent', id: post.id, error });
+			}
+			return;
+		}
+		if (post.type === 'sent') {
+			const entry = this.pending.get(post.id);
+			if (entry) {
+				this.pending.delete(post.id);
+				if (post.error) {
+					entry.reject(new Error(post.error));
+				} else {
+					entry.resolve();
+				}
+			}
+			return;
+		}
 		this.lastSeen = this.now();
 		if (this.leader) {
 			return;
+		}
+		if (post.type === 'leader') {
+			this.pending.forEach((entry, id) => this.post({ type: 'send', id, data: entry.data }));
 		}
 		if (post.type === 'message' && post.message) {
 			this.track(post.message);
