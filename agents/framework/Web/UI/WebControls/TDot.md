@@ -40,7 +40,7 @@ The `<img>` styles render TImage's `alt`. The `Inline` style has no `alt`, so `a
 |---|---|
 | `AlternateText` set | `role="img"`, `aria-labelledby="<ClientID>_title"`, and `<title id="<ClientID>_title">` as the first child of the `<svg>` |
 | `AlternateText` empty | `aria-hidden="true"`; decorative, as TImage's `alt=""` is |
-| custom `role` attribute (template `Role="status"`) | replaces `role="img"`; the name and `aria-hidden` rules are unchanged |
+| custom `role` attribute (template `Attributes.role="status"`) | replaces `role="img"`; the name and `aria-hidden` rules are unchanged |
 
 - Chromium exposes a named inline dot as role `image` with the `AlternateText` as its name; a decorative one is ignored.
 - The SVG `<title>` also shows as a hover tooltip in browsers.

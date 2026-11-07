@@ -528,8 +528,8 @@ class TDotTest extends \PHPUnit\Framework\TestCase
 		$this->obj->setColor('Green');
 		$this->obj->setPublishStyle('Inline');
 		$this->obj->setAlternateText('Online');
-		// A custom attribute, as a template's Role="status" is, replaces role="img".
-		$this->obj->setAttribute('Role', 'status');
+		// A custom role attribute, as a template's Attributes.role="status" sets, replaces role="img".
+		$this->obj->getAttributes()->add('role', 'status');
 
 		$output = $this->render($this->obj);
 		self::assertStringContainsString('role="status"', $output);
