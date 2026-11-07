@@ -107,4 +107,19 @@ class TDropDownListColumnTest extends TestCase
 		$this->assertSame('green', $cell->getRegisteredObject('DropDownList')->getSelectedValue());
 	}
 
+
+	/**
+	 * A format expression that throws an Error is reported with the error as the previous exception.
+	 */
+	public function testFormatDataValueChainsThrowable()
+	{
+		$column = new TDropDownListColumn();
+		try {
+			PradoUnit::invoke($column, 'formatDataValue', '#intdiv({0}, 0)', 1);
+			$this->fail('TInvalidDataValueException not raised');
+		} catch (TInvalidDataValueException $e) {
+			$this->assertSame('datagridcolumn_expression_invalid', $e->getErrorCode());
+			$this->assertInstanceOf(\DivisionByZeroError::class, $e->getPrevious());
+		}
+	}
 }

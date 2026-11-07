@@ -269,4 +269,19 @@ class TListControlTest extends TestCase
 	// Rendering: control
 	// ================================================================================
 
+
+	/**
+	 * A format expression that throws an Error is reported with the error as the previous exception.
+	 */
+	public function testFormatDataValueChainsThrowable()
+	{
+		$list = new TListControlTestList();
+		try {
+			PradoUnit::invoke($list, 'formatDataValue', '#intdiv({0}, 0)', 1);
+			$this->fail('TInvalidDataValueException not raised');
+		} catch (TInvalidDataValueException $e) {
+			$this->assertSame('listcontrol_expression_invalid', $e->getErrorCode());
+			$this->assertInstanceOf(\DivisionByZeroError::class, $e->getPrevious());
+		}
+	}
 }

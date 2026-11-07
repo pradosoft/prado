@@ -1044,4 +1044,18 @@ class TRenderFilterParameterTest extends TestCase
 		unset($p[TRenderFilterParameter::RENDER_FILTER_ERRORS]);
 		$this->assertFalse(isset($p[TRenderFilterParameter::RENDER_FILTER_ERRORS]));
 	}
+
+	/**
+	 * Only the injected encoding prefix is removed; source comments survive the DOM round trip,
+	 * including one whose text matches the prefix.
+	 */
+	public function testDomRoundTripKeepsSourceComments()
+	{
+		foreach (['<!--keep--><p>x</p>', '<!--?xml encoding="UTF-8"--><p>x</p>', '<p title="è € 😀">è € 😀</p>'] as $html) {
+			$p = $this->makeParam($html);
+			$this->assertInstanceOf(\DOMDocument::class, $p->getFilterDOM());
+			$p->postRaiseEvent([], 'onrenderfilter', null, $p, null, null);
+			$this->assertSame($html, $p->getFilterText(), $html);
+		}
+	}
 }

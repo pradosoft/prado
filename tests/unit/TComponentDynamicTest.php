@@ -268,4 +268,24 @@ class TComponentDynamicTest extends TComponentTestBase
 		//3 + 4 + 5 + 6 = 18 (the behavior adds these together when each raiseEvent dynamic intra event is called)
 		$this->assertEquals(18, $this->component->IntraEvents->LastCall);
 	}
+
+	/**
+	 * evaluateExpression() and evaluateStatements() chain the original error as the previous exception.
+	 */
+	public function testEvaluateChainsThePreviousException()
+	{
+		$component = new \Prado\TComponent();
+		try {
+			$component->evaluateExpression('intdiv(1, 0)');
+			$this->fail('TInvalidOperationException not raised');
+		} catch (\Prado\Exceptions\TInvalidOperationException $e) {
+			$this->assertInstanceOf(\DivisionByZeroError::class, $e->getPrevious());
+		}
+		try {
+			$component->evaluateStatements('intdiv(1, 0);');
+			$this->fail('TInvalidOperationException not raised');
+		} catch (\Prado\Exceptions\TInvalidOperationException $e) {
+			$this->assertInstanceOf(\DivisionByZeroError::class, $e->getPrevious());
+		}
+	}
 }

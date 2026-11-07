@@ -11,7 +11,6 @@
 
 namespace Prado\Web\UI\WebControls;
 
-use Exception;
 use Prado\Exceptions\TNotSupportedException;
 use Prado\TPropertyValue;
 use Prado\Util\TDataFieldAccessor;
@@ -145,7 +144,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	{
 		$page = $this->getPage();
 		$page->ensureRenderInForm($this);
-		if ($this->getIsMultiSelect()) {
+		if ($this->getIsMultiSelect() && $this->getTagName() === 'select') {
 			$writer->addAttribute('multiple', 'multiple');
 		}
 		if ($this->getEnabled(true)) {
@@ -871,8 +870,8 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 			$expression = strtr(substr($formatString, 1), ['{0}' => '$value']);
 			try {
 				return eval("return $expression;");
-			} catch (Exception $e) {
-				throw new TInvalidDataValueException('listcontrol_expression_invalid', $this::class, $expression, $e->getMessage());
+			} catch (\Throwable $e) {
+				throw new TInvalidDataValueException('listcontrol_expression_invalid', $this::class, $expression, $e->getMessage(), $e);
 			}
 		} else {
 			return sprintf($formatString, $value);

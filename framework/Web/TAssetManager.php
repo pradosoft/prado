@@ -702,15 +702,18 @@ class TAssetManager extends \Prado\TModule
 	 * This method does not perform any publishing. It merely tells you
 	 * if the file path is published, where it will go.
 	 * @param string $path directory or file path being published
+	 * @throws TInvalidDataValueException if the path is empty or does not exist
 	 * @return string the published file path
 	 */
 	public function getPublishedPath($path)
 	{
-		$path = realpath($path);
-		if (is_file($path)) {
-			return $this->_basePath . DIRECTORY_SEPARATOR . $this->hash(dirname($path)) . DIRECTORY_SEPARATOR . basename($path);
+		if (empty($path) || ($fullpath = realpath($path)) === false) {
+			throw new TInvalidDataValueException('assetmanager_filepath_invalid', $path);
+		}
+		if (is_file($fullpath)) {
+			return $this->_basePath . DIRECTORY_SEPARATOR . $this->hash(dirname($fullpath)) . DIRECTORY_SEPARATOR . basename($fullpath);
 		} else {
-			return $this->_basePath . DIRECTORY_SEPARATOR . $this->hash($path);
+			return $this->_basePath . DIRECTORY_SEPARATOR . $this->hash($fullpath);
 		}
 	}
 
@@ -719,15 +722,18 @@ class TAssetManager extends \Prado\TModule
 	 * This method does not perform any publishing. It merely tells you
 	 * if the file path is published, what the URL will be to access it.
 	 * @param string $path directory or file path being published
+	 * @throws TInvalidDataValueException if the path is empty or does not exist
 	 * @return string the published URL for the file path
 	 */
 	public function getPublishedUrl($path)
 	{
-		$path = realpath($path);
-		if (is_file($path)) {
-			return $this->_baseUrl . '/' . $this->hash(dirname($path)) . '/' . basename($path);
+		if (empty($path) || ($fullpath = realpath($path)) === false) {
+			throw new TInvalidDataValueException('assetmanager_filepath_invalid', $path);
+		}
+		if (is_file($fullpath)) {
+			return $this->_baseUrl . '/' . $this->hash(dirname($fullpath)) . '/' . basename($fullpath);
 		} else {
-			return $this->_baseUrl . '/' . $this->hash($path);
+			return $this->_baseUrl . '/' . $this->hash($fullpath);
 		}
 	}
 
@@ -1111,18 +1117,22 @@ class TAssetManager extends \Prado\TModule
 	/**
 	 * Publish a tar file by extracting its contents to the assets directory.
 	 * Each tar file must be accompanied with its own MD5 check sum file.
-	 * The MD5 file is published when the tar contents are successfully
-	 * extracted to the assets directory. The presence of the MD5 file
-	 * as published asset assumes that the tar file has already been extracted.
+	 * The MD5 file is published after the tar contents are extracted to the assets
+	 * directory, so the presence of the published MD5 file marks a complete extraction.
+	 * A failed extraction throws and leaves the MD5 file unpublished.
 	 * @param string $tarfile tar filename
 	 * @param string $md5sum MD5 checksum for the corresponding tar file.
 	 * @param bool $checkTimestamp Wether or not to check the time stamp of the file for publishing. Defaults to false.
+	 * @throws TIOException if the tar file cannot be extracted
 	 * @return string URL path to the directory where the tar file was extracted.
 	 */
 	public function publishTarFile($tarfile, $md5sum, $checkTimestamp = false)
 	{
-		if (isset($this->_published[$md5sum])) {
-			return $this->_published[$md5sum];
+		// The tar key is namespaced so that publishing the checksum file itself as a plain
+		// file does not share the cache entry of the directory extracted from the tar.
+		$cacheKey = 'tar:' . $md5sum;
+		if (isset($this->_published[$cacheKey])) {
+			return $this->_published[$cacheKey];
 		} elseif (($fullpath = realpath($md5sum)) === false || !is_file($fullpath)) {
 			throw new TInvalidDataValueException('assetmanager_tarchecksum_invalid', $md5sum);
 		} else {
@@ -1131,12 +1141,21 @@ class TAssetManager extends \Prado\TModule
 			$dst = $this->_basePath . DIRECTORY_SEPARATOR . $dir;
 			if (!is_file($dst . DIRECTORY_SEPARATOR . $fileName) || $checkTimestamp || $this->getApplication()->getMode() !== TApplicationMode::Performance) {
 				if (@filemtime($dst . DIRECTORY_SEPARATOR . $fileName) < @filemtime($fullpath)) {
+					if (!is_dir($dst)) {
+						$dirMode = $this->getDirMode();
+						@mkdir($dst, $dirMode);
+						@chmod($dst, $dirMode);	// override umask on mkdir dirMode
+					}
+					// The contents land first and the checksum last, so the checksum appears
+					// only once the publish is complete.
+					if (!$this->deployTarFile($tarfile, $dst)) {
+						throw new TIOException('assetmanager_tarfile_extract_failed', $tarfile);
+					}
 					// The checksum file is always published; instance only/except filters do not apply.
 					$this->copyFile($fullpath, $dst, ['only' => null, 'except' => null]);
-					$this->deployTarFile($tarfile, $dst);
 				}
 			}
-			return $this->_published[$md5sum] = $this->_baseUrl . '/' . $dir;
+			return $this->_published[$cacheKey] = $this->_baseUrl . '/' . $dir;
 		}
 	}
 

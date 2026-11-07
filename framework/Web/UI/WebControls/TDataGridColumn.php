@@ -10,7 +10,6 @@
 
 namespace Prado\Web\UI\WebControls;
 
-use Exception;
 use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Exceptions\TInvalidDataValueException;
@@ -522,8 +521,8 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 			$expression = strtr(substr($formatString, 1), ['{0}' => '$value']);
 			try {
 				return eval("return $expression;");
-			} catch (Exception $e) {
-				throw new TInvalidDataValueException('datagridcolumn_expression_invalid', $this::class, $expression, $e->getMessage());
+			} catch (\Throwable $e) {
+				throw new TInvalidDataValueException('datagridcolumn_expression_invalid', $this::class, $expression, $e->getMessage(), $e);
 			}
 		} else {
 			return sprintf($formatString, $value);

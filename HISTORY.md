@@ -61,6 +61,12 @@ BUG: TComponent::attachBehavior() unregisters the behavior, and detaches it when
 BUG: THttpResponse::getHttpHeaderSent() reports the sent status header; TCallbackErrorHandler sets the 500 status only before it is sent and reads SERVER_SOFTWARE null-safely; TSignalsDispatcher::detachPidHandler() returns false for a missing handler.
 BUG: TPropertyValue::ensureFloat() parses 'NAN', 'INF', and '-INF'.
 BUG: TPermissionsManager PHP configuration keys are case-insensitive.
+BUG: TMetaTag setters ensure strings and render() reads through the getters.
+BUG: TAssetManager::publishTarFile() publishes the checksum after the contents, throws assetmanager_tarfile_extract_failed on a failed extraction, and caches under a `tar:` key; getPublishedPath() and getPublishedUrl() throw assetmanager_filepath_invalid for a path that does not resolve.
+BUG: TCheckBoxList, TRatingList, and TActiveCheckBoxList render list attributes on the container only, without a duplicate id or forced tabindex; TListControl renders `multiple` only on a select.
+BUG: TRenderFilterParameter removes only the leading libxml encoding prefix, in processing-instruction or comment form.
+BUG: TDataGridColumn and TListControl format expressions catch every Throwable; TComponent::evaluateExpression() and evaluateStatements() chain the original exception.
+BUG: TInPlaceTextBox applies MaxLength to single and multi-line editors.
 
 ## Version 4.3.2 - January 28, 2026
 
