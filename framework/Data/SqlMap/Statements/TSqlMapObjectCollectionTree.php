@@ -49,26 +49,25 @@ class TSqlMapObjectCollectionTree extends \Prado\TComponent
 
 	/**
 	 * Add a new node to the object tree graph.
-	 * @param string $parent parent node id
+	 * @param ?string $parent parent node id, null for a root node
 	 * @param string $node new node id
 	 * @param mixed $object node value
 	 */
 	public function add($parent, $node, $object = '')
 	{
-		if (isset($this->_entries[$parent]) && ($this->_entries[$parent] !== null)
-			&& isset($this->_entries[$node]) && ($this->_entries[$node] !== null)) {
+		if ($parent !== null && isset($this->_entries[$parent]) && isset($this->_entries[$node])) {
 			$this->_entries[$node] = $object;
 			return;
 		}
 		$this->_entries[$node] = $object;
 		if (empty($parent)) {
-			if (isset($this->_entries[$node])) {
-				return;
+			if (!isset($this->_tree[$node])) {
+				$this->_tree[$node] = [];
 			}
-			$this->_tree[$node] = [];
+			return;
 		}
 		$found = $this->addNode($this->_tree, $parent, $node);
-		if (!$found && !empty($parent)) {
+		if (!$found) {
 			$this->_tree[$parent] = [];
 			if (!isset($this->_entries[$parent]) || $object !== '') {
 				$this->_entries[$parent] = $object;
@@ -87,11 +86,8 @@ class TSqlMapObjectCollectionTree extends \Prado\TComponent
 	protected function addNode(&$childs, $parent, $node)
 	{
 		$found = false;
-		reset($childs);
-		for ($i = 0, $k = count($childs); $i < $k; $i++) {
-			$key = key($childs);
-			next($childs);
-			if ($key == $parent) {
+		foreach (array_keys($childs) as $key) {
+			if ((string) $key === (string) $parent) {
 				$found = true;
 				$childs[$key][$node] = [];
 			} else {
@@ -102,12 +98,21 @@ class TSqlMapObjectCollectionTree extends \Prado\TComponent
 	}
 
 	/**
+	 * Collects the root objects in the order they were added. A root object
+	 * without child nodes is included with its collection property unchanged.
 	 * @return array object collection
 	 */
 	public function collect()
 	{
+		$roots = array_keys($this->_tree);
 		while (count($this->_tree) > 0) {
 			$this->collectChildren(null, $this->_tree);
+		}
+		foreach ($roots as $root) {
+			$entry = $this->_entries[$root] ?? null;
+			if (is_array($entry) && $entry['property'] === null) {
+				$this->_list[] = $entry['object'];
+			}
 		}
 		return $this->getCollection();
 	}
@@ -136,8 +141,7 @@ class TSqlMapObjectCollectionTree extends \Prado\TComponent
 	{
 		$noChildren = !$this->hasChildren($nodes);
 		$childs = [];
-		for (reset($nodes); $key = key($nodes);) {
-			next($nodes);
+		foreach (array_keys($nodes) as $key) {
 			if ($noChildren) {
 				$childs[] = $key;
 				unset($nodes[$key]);
@@ -180,10 +184,6 @@ class TSqlMapObjectCollectionTree extends \Prado\TComponent
 
 		if (is_array($list)) {
 			TPropertyAccess::set($parentObject, $property, $list);
-		}
-
-		if ($this->_entries[$parent]['property'] === null) {
-			$this->_list[] = $parentObject;
 		}
 	}
 

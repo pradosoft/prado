@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap>
+	<resultMap id="user-with-roles" class="Prado\Test\Unit\Data\SqlMap\Statements\TMappedStatementGroupByUser" groupBy="user_id">
+		<result property="Id" column="user_id"/>
+		<result property="Name" column="user_name"/>
+		<result property="Roles" resultMapping="user-role"/>
+	</resultMap>
+
+	<resultMap id="user-role" class="Prado\Test\Unit\Data\SqlMap\Statements\TMappedStatementGroupByRole" groupBy="role_name">
+		<result property="Name" column="role_name"/>
+		<result property="Level" column="role_level"/>
+		<result property="Permissions" resultMapping="role-permission"/>
+	</resultMap>
+
+	<resultMap id="role-permission" class="Prado\Test\Unit\Data\SqlMap\Statements\TMappedStatementGroupByPermission">
+		<result property="Name" column="permission_name"/>
+	</resultMap>
+
+	<select id="GetUsersWithRoles" resultMap="user-with-roles">
+		SELECT u.user_id, u.user_name, r.role_name, r.role_level, p.permission_name
+		FROM users u
+		LEFT JOIN roles r ON r.user_id = u.user_id
+		LEFT JOIN permissions p ON p.role_name = r.role_name
+	</select>
+</sqlMap>

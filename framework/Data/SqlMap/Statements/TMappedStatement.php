@@ -293,9 +293,9 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 */
 	protected function raiseRowDelegate($handler, $param)
 	{
-		if (is_string($handler)) {
+		if (is_string($handler) || is_object($handler) && is_callable($handler)) {
 			call_user_func($handler, $this, $param);
-		} elseif (is_callable($handler, true)) {
+		} elseif (is_array($handler) && is_callable($handler, true)) {
 			// an array: 0 - object, 1 - method name/path
 			[$object, $method] = $handler;
 			if (is_string($object)) {	// static method call
@@ -492,6 +492,8 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 
 	/**
 	 * Apply result mapping.
+	 * The PRADO_ROWNUM column is removed from the row. TIbmCommandBuilder::applyLimitOffset()
+	 * pages through a ROW_NUMBER() subquery, and its outer "SELECT *" returns that helper column.
 	 * @param array $row a result set row retrieved from the database
 	 * @param null|object $resultObject the result object, will create if necessary.
 	 * @return object the result filled with data, null if not filled.
@@ -501,6 +503,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 		if ($row === false) {
 			return null;
 		}
+		unset($row['PRADO_ROWNUM'], $row['prado_rownum']);
 
 		$resultMapName = $this->_statement->getResultMap();
 		$resultClass = $this->_statement->getResultClass();
@@ -565,6 +568,9 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 
 	/**
 	 * Apply the result to an object.
+	 * A column name matches its property exactly first. A column without an exact
+	 * match is assigned to the property whose name matches case-insensitively, for
+	 * drivers that fold column-name case.
 	 * @param array $row a result set row retrieved from the database
 	 * @param object $resultObject result object, array or list
 	 * @return object result filled with data.
@@ -573,16 +579,22 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	{
 		$index = 0;
 		$registry = $this->getManager()->getTypeHandlers();
+		$propMap = $this->getResultObjectPropertyMap($resultObject);
 		foreach ($row as $k => $v) {
+			$prop = $k;
+			if (is_string($k) && isset($propMap[$lower = strtolower($k)])
+				&& $propMap[$lower] !== $k && !TPropertyAccess::has($resultObject, $k)) {
+				$prop = $propMap[$lower];
+			}
 			$property = new TResultProperty();
 			if (is_string($k) && strlen($k) > 0) {
 				$property->setColumn($k);
 			}
 			$property->setColumnIndex(++$index);
-			$type = gettype(TPropertyAccess::get($resultObject, $k));
+			$type = gettype(TPropertyAccess::get($resultObject, $prop));
 			$property->setType($type);
 			$value = $property->getPropertyValue($registry, $row);
-			TPropertyAccess::set($resultObject, $k, $value);
+			TPropertyAccess::set($resultObject, $prop, $value);
 		}
 		return $resultObject;
 	}
@@ -622,10 +634,13 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 
 	/**
 	 * ResultMap with GroupBy property. Save object collection graph in a tree
-	 * and collect the result later.
+	 * and collect the result later. A nested result map without row data, such as
+	 * the right side of a LEFT JOIN with no match, adds no element to the collection.
+	 * The tree key of a nested element is prefixed with its parent key, so equal
+	 * `groupBy` values under different parents are separate elements.
 	 * @param TResultMap $resultMap result mapping details.
 	 * @param array $row a result set row retrieved from the database
-	 * @param mixed $parent
+	 * @param mixed $parent tree key of the parent element, null or '' for a root
 	 * @param object $resultObject the result object
 	 * @return object result object.
 	 */
@@ -636,6 +651,9 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 		if (empty($parent)) {
 			$rootObject = ['object' => $resultObject, 'property' => null];
 			$this->_groupBy->add(null, $group, $rootObject);
+			$parentKey = $group;
+		} else {
+			$parentKey = $parent;
 		}
 
 		foreach ($resultMap->getColumns() as $property) {
@@ -646,7 +664,10 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 			//nested property
 			if ($this->getManager()->getResultMaps()->contains($nested)) {
 				$nestedMap = $this->getManager()->getResultMap($nested);
-				$groupKey = $this->getResultMapGroupKey($nestedMap, $row);
+				if (!$this->hasResultMapRowData($nestedMap, $row)) {
+					continue;
+				}
+				$groupKey = $parentKey . '.' . $this->getResultMapGroupKey($nestedMap, $row);
 
 				//add the node reference first
 				if (empty($parent)) {
@@ -669,6 +690,69 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	}
 
 	/**
+	 * Builds a map of lowercase property name to property name for an object.
+	 * - {@see \Prado\TComponent} → setters with a readable property
+	 * - other object → setters with a matching getter
+	 * - any object → public properties
+	 * @param mixed $resultObject the result object
+	 * @return array<string, string> lowercase property name → property name.
+	 * @since 4.3.3
+	 */
+	protected function getResultObjectPropertyMap($resultObject)
+	{
+		$propMap = [];
+		if (!is_object($resultObject)) {
+			return $propMap;
+		}
+		foreach (get_class_methods($resultObject) as $method) {
+			if (strncasecmp($method, 'set', 3) !== 0 || strlen($method) <= 3) {
+				continue;
+			}
+			$propName = substr($method, 3);
+			if ($resultObject instanceof \Prado\TComponent ? $resultObject->canGetProperty($propName) : method_exists($resultObject, 'get' . $propName)) {
+				$propMap[strtolower($propName)] = $propName;
+			}
+		}
+		foreach (array_keys(get_object_vars($resultObject)) as $prop) {
+			$propMap[strtolower($prop)] = $prop;
+		}
+		return $propMap;
+	}
+
+	/**
+	 * Checks whether a row holds a value for any column of a result map.
+	 * A LEFT JOIN row without a matching right-side row is null in every column
+	 * of the nested result map. Column names match case-insensitively when no
+	 * exact match exists.
+	 * @param TResultMap $resultMap result mapping details.
+	 * @param array $row a result set row retrieved from the database
+	 * @return bool true if a mapped column is not null or the map has no column mappings.
+	 * @since 4.3.3
+	 */
+	protected function hasResultMapRowData($resultMap, $row)
+	{
+		$hasColumns = false;
+		foreach ($resultMap->getColumns() as $property) {
+			$column = $property->getColumn();
+			if ($column === null || $column === '') {
+				continue;
+			}
+			$hasColumns = true;
+			$index = $property->getColumnIndex();
+			if (($index > 0 && isset($row[$index])) || isset($row[$column])) {
+				return true;
+			}
+			$columnLower = strtolower($column);
+			foreach ($row as $key => $value) {
+				if ($value !== null && strtolower((string) $key) === $columnLower) {
+					return true;
+				}
+			}
+		}
+		return !$hasColumns;
+	}
+
+	/**
 	 * Gets the result 'group by' groupping key for each row.
 	 * @param TResultMap $resultMap result mapping details.
 	 * @param array $row a result set row retrieved from the database
@@ -677,11 +761,19 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	protected function getResultMapGroupKey($resultMap, $row)
 	{
 		$groupBy = $resultMap->getGroupBy();
-		if (isset($row[$groupBy])) {
+		if ($groupBy !== null && isset($row[$groupBy])) {
 			return $resultMap->getID() . $row[$groupBy];
-		} else {
-			return $resultMap->getID() . crc32(serialize($row));
 		}
+		if ($groupBy !== null && !array_key_exists($groupBy, $row)) {
+			// Case-insensitive fallback for drivers that fold column-name case.
+			$groupByLower = strtolower($groupBy);
+			foreach ($row as $key => $val) {
+				if (strtolower((string) $key) === $groupByLower) {
+					return $resultMap->getID() . $val;
+				}
+			}
+		}
+		return $resultMap->getID() . crc32(serialize($row));
 	}
 
 	/**
@@ -782,7 +874,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 				}
 			} else {
 				$obj = $nested->createInstanceOfResult($this->getManager()->getTypeHandlers());
-				if ($this->fillPropertyWithResultMap($nested, $row, $obj) == false) {
+				if (!$this->fillPropertyWithResultMap($nested, $row, $obj)) {
 					$obj = null;
 				}
 				TPropertyAccess::set($resultObject, $key, $obj);
@@ -846,9 +938,19 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 		$value = $property->getColumn();
 		if (is_int(strpos($value, ',', 0)) || is_int(strpos($value, '=', 0))) {
 			$keys = [];
+			// Lowercase key map for columns whose case the driver folded.
+			$rowLower = [];
+			foreach ($row as $k => $v) {
+				$rowLower[strtolower((string) $k)] = $v;
+			}
 			foreach (explode(',', $value) as $entry) {
 				$pair = explode('=', $entry);
-				$keys[trim($pair[0])] = $row[trim($pair[1])];
+				$colName = trim($pair[1]);
+				if (array_key_exists($colName, $row)) {
+					$keys[trim($pair[0])] = $row[$colName];
+				} else {
+					$keys[trim($pair[0])] = $rowLower[strtolower($colName)] ?? null;
+				}
 			}
 			return $keys;
 		} else {
