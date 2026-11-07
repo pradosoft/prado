@@ -807,6 +807,7 @@ return [
 'TDot' => 'Prado\Web\UI\WebControls\TDot',
 'TDropDownList' => 'Prado\Web\UI\WebControls\TDropDownList',
 'TDropDownListColumn' => 'Prado\Web\UI\WebControls\TDropDownListColumn',
+'TDropdownMenu' => 'Prado\Web\UI\WebControls\TDropdownMenu',
 'TEditCommandColumn' => 'Prado\Web\UI\WebControls\TEditCommandColumn',
 'TEmailAddressValidator' => 'Prado\Web\UI\WebControls\TEmailAddressValidator',
 'TEncodeTrait' => 'Prado\Web\UI\WebControls\TEncodeTrait',
