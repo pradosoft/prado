@@ -362,6 +362,7 @@ return [
 'TModule' => 'Prado\TModule',
 'TPropertyValue' => 'Prado\TPropertyValue',
 'TService' => 'Prado\TService',
+'IMapRouteIndex' => 'Prado\Util\Behaviors\IMapRouteIndex',
 'TApplicationSignals' => 'Prado\Util\Behaviors\TApplicationSignals',
 'TBehaviorParameterLoader' => 'Prado\Util\Behaviors\TBehaviorParameterLoader',
 'TCaptureForkLog' => 'Prado\Util\Behaviors\TCaptureForkLog',

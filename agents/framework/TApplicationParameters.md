@@ -50,10 +50,20 @@ The map of application parameters returned by `TApplication::getParameters()` (c
 
 | Behavior | Interaction with a final key |
 |---|---|
-| [`TMapRouteBehavior`](Util/Behaviors/TMapRouteBehavior.md) | rejected changes raise no `dyAddItem`/`dyRemoveItem`; the handler is not called |
+| [`TMapRouteBehavior`](Util/Behaviors/TMapRouteBehavior.md) | indexed by key (see below); rejected changes call no route |
 | [`TMapLazyLoadBehavior`](Util/Behaviors/TMapLazyLoadBehavior.md) | a final absent key raises no `dyNoItem`; the loader is not called |
 | [`TParameterizeBehavior`](Util/Behaviors/TParameterizeBehavior.md) | the property holds a copy of the final value; code may still set it |
 | [`TDbParameterModule`](Util/TDbParameterModule.md) | skips final rows on load, `get()` does not set them, `set()` throws before writing |
+
+## Route index
+
+`TApplicationParameters` implements [`IMapRouteIndex`](Util/Behaviors/TMapRouteBehavior.md#key-index). Each `TMapRouteBehavior` registers by its Parameter on attach. `add()` and `remove()` call the routes for the changed key, then the all-key routes, after the `dy` chain; indexed routes are left out of that chain (`getBehaviorsWithMethod()` override, cached until `flushBehaviorMethodCache()`). A write costs about 0.55 µs at any number of routes.
+
+| Member | Purpose |
+|---|---|
+| `attachKeyRoute($route)` / `detachKeyRoute($route)` | index or remove a route |
+| `routeKeyChange($key, $value)` | calls the enabled routes; skipped while behaviors are disabled |
+| `__clone()`, `__wakeup()` | reset the index; re-attached behaviors register again |
 
 ## Patterns & Gotchas
 
