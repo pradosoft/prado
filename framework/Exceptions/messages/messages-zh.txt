@@ -10,6 +10,10 @@ pageservice_page_required				= 请提供页面名字。
 pageservice_page_unknown				= 无法找到页面“{0}”。
 pageservice_security_violation			= TPageService无法访问附加目录“{0}”。
 
+serviceworkerservice_request_unknown	= 无法找到Service Worker请求“{0}”。
+serviceworkerservice_worker_unknown		= 无法找到Service Worker“{0}”。
+serviceworkerservice_manifest_unknown	= Service Worker“{0}”没有Web应用清单。
+
 page_csrf_token_invalid					= 该页面需要有效的CSRF令牌。
 
 pagestatepersister_pagestate_corrupted	= 页面状态已损坏。

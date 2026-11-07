@@ -46,10 +46,16 @@ This file defines the JavaScript package registry for PRADO. It declares all JS 
 | `activedatepicker` | `prado/activecontrols/activedatepicker.js` |
 | `proofofwork` | `prado/controls/proofofwork-solver.js`, `prado/controls/proofofwork.js` |
 | `idiomorph` | `idiomorph/idiomorph.js`: DOM morphing for callback updates; `npm-asset/idiomorph`, pinned exactly in composer.json and package.json |
+| `serviceworker` | `prado/serviceworker/serviceworker.js`: `Prado.ServiceWorker`, registered by [TServiceWorker](../UI/WebControls/TServiceWorker.md). The `worker*.js` files in the folder are worker scripts, not packages |
+| `sharedconnection` | `prado/sharedconnection/sharedconnection.js`: `Prado.SharedConnection`, one connection per key shared by the tabs of the origin |
 
 ## Dependencies
 
 Key dependencies include: `prado` requires `jquery`, `ajax` requires `jquery` and `prado`, `activedatepicker` requires `jquery`, `prado`, `datepicker`, and `ajax`. `morph` (no files of its own) requires `jquery`, `prado`, `ajax`, and `idiomorph`; [TActiveControlAdapter](../UI/ActiveControls/TActiveControlAdapter.md) registers it for a control whose callback updates morph.
+
+## Prado.SharedConnection
+
+`subscribe({key, open(resumeId, emit), onMessage(message, {leader}), heartbeat, shared})` → `{close(), isLeader()}`. Tabs requesting the Web Lock `prado-sharedconnection:<key>` elect one holder, which opens the transport and posts each `{id, event, data}` and a heartbeat on the `BroadcastChannel` of the same name. The holder releases the lock when its last subscriber closes, on `pagehide`, and on `freeze` (requesting it again on `pageshow` and `resume`); the next tab opens from the last ID it received. A tab that hears no heartbeat for two intervals steals the lock. Without `navigator.locks` or `BroadcastChannel`, or with `shared: false`, each tab holds its own. `eventSource(url, {resumeParameter, events, withCredentials})` is the server-sent event transport; the key should include the user's token. `Prado.SharedConnection.Connection` takes an environment (`locks`, `BroadcastChannel`, `target`, `now`) for tests. Tests: `tests/js/sharedconnection/`.
 
 ## See Also
 

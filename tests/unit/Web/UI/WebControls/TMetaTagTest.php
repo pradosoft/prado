@@ -45,6 +45,17 @@ class TMetaTagTest extends TestCase
 		$this->assertSame('<meta charset="utf-8" />', $this->renderTag($tag));
 	}
 
+	public function testMediaRendersAfterCharset()
+	{
+		$tag = new TMetaTag();
+		$this->assertSame('', $tag->getMedia());
+		$tag->setName('theme-color');
+		$tag->setMedia('(prefers-color-scheme: dark)');
+		$tag->setContent('#000000');
+		$this->assertSame('(prefers-color-scheme: dark)', $tag->getMedia());
+		$this->assertSame('<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000000" />', $this->renderTag($tag));
+	}
+
 	public function testSettersEnsureString()
 	{
 		$tag = new TMetaTag();

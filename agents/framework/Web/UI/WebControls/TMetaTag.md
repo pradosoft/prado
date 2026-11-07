@@ -19,7 +19,8 @@ TMetaTag represents a meta tag appearing in a page head section. Supports http-e
 - `getContent()` / `setContent()` - Gets or sets content attribute
 - `getScheme()` / `setScheme()` - Gets or sets scheme attribute (deprecated)
 - `getCharset()` / `setCharset()` - Gets or sets charset attribute
-- `render()` - Renders id, name, property, http-equiv, scheme, and charset through their getters, skipping empty values; a tag without a charset also renders `content`, even when empty
+- `getMedia()` / `setMedia()` - Gets or sets the media query, such as `(prefers-color-scheme: dark)` for a `theme-color` (4.4.0)
+- `render()` - Renders id, name, property, http-equiv, scheme, charset, and media through their getters, skipping empty values; a tag without a charset also renders `content`, even when empty
 
 Setters store strings (`TPropertyValue::ensureString()`), so null is empty.
 

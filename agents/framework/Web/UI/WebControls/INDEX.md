@@ -221,6 +221,8 @@ All extend [THtmlElement](./THtmlElement.md). Each wraps the named HTML5 element
 | `THead` | `<head>`; `Title`, `BaseUrl`, `ShortcutIcon`, `MetaTags` ([TMetaTag](TMetaTag.md)), `LinkTags` ([TLinkTag](TLinkTag.md): canonical, alternate, preload, icon; @since 4.4.0) |
 | [`TJsonLd`](TJsonLd.md) | `<script type="application/ld+json">` structured data from its JSON body or a `StructuredData` array; adds the schema.org `Context` (@since 4.4.0) |
 | [`TOpenGraph`](TOpenGraph.md) | Open Graph `og:*` and X Card `twitter:*` meta tags from properties; child TMetaTags in `MetaTags` (@since 4.4.0) |
+| [`TWebManifest`](TWebManifest.md) | Web app manifest link, `theme-color` (light and dark), `application-name`, and the iOS app tags; an empty `Href` links the page's service worker manifest (@since 4.4.0) |
+| [`TServiceWorker`](TServiceWorker.md) | Registers the page's service worker of `TServiceWorkerModule`; no markup (@since 4.4.0) |
 | `TWizard` | Multi-step wizard with `TWizardStep` navigation; the default sidebar is an `<ol>` step indicator with `aria-current="step"` |
 | `TOutputCache` | Caches rendered output of child controls |
 

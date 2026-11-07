@@ -187,6 +187,27 @@ pageservice_pageclass_unknown			= Page class ''{0}'' is unknown.
 pageservice_basepath_invalid			= TPageService.BasePath ''{0}'' is not a valid directory.
 pageservice_security_violation			= TPageService cannot access additional directory ''{0}''.
 pageservice_page_required				= Page Name Required
+
+serviceworkerservice_module_required	= TServiceWorkerService requires a TServiceWorkerModule in the application.
+serviceworkerservice_module_invalid		= TServiceWorkerService.ModuleID ''{0}'' is not a TServiceWorkerModule.
+serviceworkerservice_request_unknown	= Service worker request ''{0}'' was not found.
+serviceworkerservice_worker_unknown		= Service worker ''{0}'' was not found.
+serviceworkerservice_manifest_unknown	= Service worker ''{0}'' has no web app manifest.
+serviceworkermodule_worker_duplicate	= TServiceWorkerModule already has a worker named ''{0}''.
+serviceworkermodule_worker_name_required	= TServiceWorkerModule requires a name for each <worker>.
+serviceworkermodule_worker_scope_required	= TServiceWorkerModule worker ''{0}'' requires a Scope.
+serviceworkermodule_scope_duplicate		= TServiceWorkerModule workers ''{0}'' and ''{1}'' have the same scope ''{2}''.
+serviceworkermodule_service_invalid		= TServiceWorkerModule.ServiceID ''{0}'' names a service of class ''{1}'', which is not a TServiceWorkerService.
+serviceworkermodule_clearsitedata_invalid	= TServiceWorkerModule.ClearSiteDataOnLogout type ''{0}'' must be one of: {1}.
+serviceworkerdefinition_name_invalid	= TServiceWorkerDefinition.Name ''{0}'' must contain only letters, digits, _, and -.
+serviceworkerdefinition_networktimeout_invalid	= TServiceWorkerDefinition.NetworkTimeout {0} must not be negative.
+serviceworkerscript_fragment_name_invalid	= TServiceWorkerScript fragment name ''{0}'' must contain only letters, digits, _, -, and dots.
+serviceworkerscript_file_invalid		= TServiceWorkerScript cannot read the script file ''{0}''.
+webappmanifest_value_invalid			= TWebAppManifest.{0} ''{1}'' must be one of: {2}.
+webappmanifest_json_invalid				= TWebAppManifest.{0} is not valid: {1}
+webappmanifest_file_invalid				= TWebAppManifest.File ''{0}'' is not a readable JSON object.
+serviceworker_module_invalid			= {0}.ModuleID ''{1}'' is not a TServiceWorkerModule.
+webmanifest_statusbarstyle_invalid		= TWebManifest.StatusBarStyle ''{0}'' must be default, black, or black-translucent.
 pageservice_includefile_invalid			= Unable to find page service configuration {0}. Make sure it is in namespace format and the file ends with ".xml" or ".php".
 
 pageserviceconf_file_invalid			= Unable to open page directory configuration file ''{0}''.

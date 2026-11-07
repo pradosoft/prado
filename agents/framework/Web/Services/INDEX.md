@@ -13,6 +13,8 @@ Application services for the Prado framework. Each service handles a different t
 
 - **[Rest/](Rest/INDEX.md)** — `TRestService`, a JSON HTTP API service: resources declare each handler's verb and URL pattern with the `#[TRestRoute]` attribute (or a `getRoutes()` table), routes are `TRestRoutePattern` objects (a `TUrlMappingPattern`), errors are `application/problem+json` documents, `<authorization>` rules feed `TAuthManager`, and `onPreRunResource` / `onError` are raised. **Since 4.4.0.**
 
+- **[ServiceWorker/](ServiceWorker/INDEX.md)** — Browser service workers: `TServiceWorkerModule` links or registers `TServiceWorkerService` (`?sw=worker`, `?sw=manifest`), defines the `default` and named workers by scope, collects `IServiceWorkerContributor` fragments, and adds `TServiceWorker` and `TWebManifest` to pages. **Since 4.4.0.**
+
 - **[TJsonService](TJsonService.md)** — Returns JSON-formatted responses. Configures named JSON response handlers; each handler is a class that produces the JSON payload.
 
 - **[TSoapService](TSoapService.md)** — SOAP/WSDL service. Auto-generates WSDL from provider classes using reflection on `@soapmethod` PHPDoc annotations. Requires PHP's `soap` extension. Supports session persistence.

@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html lang="en">
+<com:THead Title="Service Worker Home" />
+<body>
+<com:TForm>
+	<h1>Service Worker Home</h1>
+	<com:TActiveButton ID="Ping" Text="Ping" OnCallback="ping" />
+	<com:TActiveLabel ID="Pong" Text="" />
+</com:TForm>
+</body>
+</html>

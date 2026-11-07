@@ -64,6 +64,8 @@ through `light-dark()` and the `Canvas` system color. See
 | `tabpanel` | `controls/tabpanel.js` | Tabbed interface |
 | `proofofwork` | `controls/proofofwork-solver.js`, `controls/proofofwork.js` | TProofOfWork client; the solver file is also its Web Worker script |
 | `unsavedchanges` | `controls/unsavedchanges.js` | TUnsavedChangesGuard: changed-field marks and the `beforeunload` warning |
+| `serviceworker` | `serviceworker/serviceworker.js` | `Prado.ServiceWorker`: registration, update prompt, page/worker messages for [TServiceWorker](../UI/WebControls/TServiceWorker.md); the `worker*.js` files beside it run in the worker and are served by [TServiceWorkerService](../Services/ServiceWorker/TServiceWorkerService.md) (4.4.0) |
+| `sharedconnection` | `sharedconnection/sharedconnection.js` | `Prado.SharedConnection`: one live connection per key for all tabs of the origin, through a Web Lock leader and a `BroadcastChannel` relay, with handover by last message ID; `eventSource()` transport (4.4.0) |
 
 External packages (jQuery, jQuery UI, TinyMCE, HighlightJS, Clipboard) are sourced from `bower_components` and declared in `packages.php`.
 

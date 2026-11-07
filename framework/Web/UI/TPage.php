@@ -215,6 +215,10 @@ class TPage extends TTemplateControl
 	 */
 	private $_callbackViewTransition = false;
 	/**
+	 * @var string the service worker the page registers; empty selects the page service's
+	 */
+	private $_serviceWorker = '';
+	/**
 	 * @var bool whether page state should be encrypted
 	 */
 	private $_enableStateEncryption = false;
@@ -1364,6 +1368,29 @@ class TPage extends TTemplateControl
 	public function setCallbackViewTransition($value)
 	{
 		$this->_callbackViewTransition = TPropertyValue::ensureBoolean($value);
+	}
+
+	/**
+	 * @return string the name of the service worker the page registers. Defaults
+	 *   to empty, which selects the page service's.
+	 * @since 4.4.0
+	 */
+	public function getServiceWorker()
+	{
+		return $this->_serviceWorker;
+	}
+
+	/**
+	 * Sets the name of the service worker of {@see \Prado\Web\Services\ServiceWorker\TServiceWorkerModule}
+	 * the page registers. Set it in a page or the `<pages>` configuration of a
+	 * pages directory. Empty selects the page service's
+	 * {@see \Prado\Web\Services\TPageService::setServiceWorker ServiceWorker}.
+	 * @param string $value the worker name
+	 * @since 4.4.0
+	 */
+	public function setServiceWorker($value)
+	{
+		$this->_serviceWorker = trim(TPropertyValue::ensureString($value));
 	}
 
 	/**
