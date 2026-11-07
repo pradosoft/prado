@@ -5,8 +5,7 @@
 	<com:TButton ID="openEdit" Text="Edit name" CommandFor="editDialog" Command="show-modal" />
 	<com:TButton ID="openNotice" Text="Show notice" CommandFor="notice" Command="show-modal" />
 
-	<com:TDialog ID="editDialog" Modal="true" Attributes.aria-labelledby="editTitle">
-		<h2 id="editTitle">Edit name</h2>
+	<com:TDialog ID="editDialog" Modal="true" HeaderText="Edit name" ShowCloseButton="true">
 		<com:TLabel ForControl="userName" Text="Name" />
 		<com:TTextBox ID="userName" />
 		<com:TButton ID="save" Text="Save" OnClick="saveClicked" />

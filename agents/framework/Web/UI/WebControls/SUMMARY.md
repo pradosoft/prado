@@ -77,7 +77,7 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 
 - **`TAccordion`** / **`TTabPanel`** / **`TSlider`** / **`TColorPicker`** / **`TDatePicker`** / **`TKeyboard`** / **`TRatingList`** — Widget controls with JS implementations.
 
-- **`TDialog`** — `<dialog>`; `Open`, `Modal`, `ClosedBy` (**`TDialogClosedBy`**: `Auto`, `Any`, `CloseRequest`, `None`); opened and closed by TButton invokers without script. @since 4.4.0
+- **`TDialog`** — `<dialog>`; `Open`, `Modal`, `ClosedBy` (**`TDialogClosedBy`**: `Auto`, `Any`, `CloseRequest`, `None`), `HeaderText`/`HeaderLevel` and `ShowCloseButton` (a header block with a heading that names it and a script-free close button); opened and closed by TButton invokers without script. @since 4.4.0
 
 - **`TTeleport`** — Renders its content after `</form>`, outside the page form, so a native `<form method="dialog">` works and overlays escape their ancestors; `TForm::registerTeleportContent()`; JS in `controls/teleport.js` joins its fields to the page form. @since 4.4.0
 

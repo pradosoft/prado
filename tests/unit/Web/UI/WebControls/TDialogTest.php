@@ -141,6 +141,126 @@ class TDialogTest extends TestCase
 		$this->assertStringContainsString(TJavaScript::quoteString($control->getClientID()), $scripts[$key]);
 	}
 
+	public function testHeaderDefaultsRenderNoHeader()
+	{
+		$control = new TDialog();
+		$this->assertSame('', $control->getHeaderText());
+		$this->assertSame(2, $control->getHeaderLevel());
+		$this->assertFalse($control->getShowCloseButton());
+		$this->assertFalse($control->getHasHeader());
+		$output = $this->render($control);
+		$this->assertStringNotContainsString('dialog-header', $output);
+		$this->assertStringNotContainsString('aria-labelledby', $output);
+	}
+
+	public function testHeaderTextRendersHeadingThatNamesTheDialog()
+	{
+		[$page, $control] = $this->createPageDialog();
+		$control->setHeaderText('Edit name');
+		$control->setHeaderLevel('3');
+		$output = $this->render($control);
+		$headerId = $control->getClientID() . '_header';
+		$this->assertSame($headerId, $control->getHeaderClientID());
+		$this->assertStringContainsString('id="' . $control->getClientID() . '"', $output);
+		$this->assertStringContainsString('aria-labelledby="' . $headerId . '"', $output);
+		$this->assertStringContainsString('<div class="dialog-header"><h3 id="' . $headerId . '" class="dialog-title">Edit name</h3></div>', $output);
+		$this->assertStringNotContainsString('dialog-close', $output);
+	}
+
+	public function testHeaderRendersBeforeTheBody()
+	{
+		$control = new TDialog();
+		$control->setHeaderText('Notice');
+		$control->getControls()->add('<p>Body</p>');
+		$output = $this->render($control);
+		$this->assertLessThan(strpos($output, '<p>Body</p>'), strpos($output, 'dialog-header'));
+	}
+
+	public function testExplicitLabelledByIsKept()
+	{
+		$control = new TDialog();
+		$control->setHeaderText('Notice');
+		$control->setAttribute('aria-labelledby', 'other');
+		$output = $this->render($control);
+		$this->assertStringContainsString('aria-labelledby="other"', $output);
+		$this->assertStringNotContainsString('_header"', substr($output, 0, strpos($output, '>')));
+	}
+
+	public function testHeaderTextEncode()
+	{
+		$control = new TDialog();
+		$control->setHeaderText('<b>Bold</b>');
+		$this->assertStringContainsString('><b>Bold</b></h2>', $this->render($control));
+		$control->setEncode(true);
+		$this->assertStringContainsString('>&lt;b&gt;Bold&lt;/b&gt;</h2>', $this->render($control));
+	}
+
+	public function testHeaderLevelRejectsOutOfRange()
+	{
+		$control = new TDialog();
+		foreach ([0, 7] as $level) {
+			try {
+				$control->setHeaderLevel($level);
+				$this->fail('HeaderLevel ' . $level . ' was accepted');
+			} catch (\Prado\Exceptions\TInvalidDataValueException $e) {
+				$this->assertSame('dialog_headerlevel_invalid', $e->getErrorCode());
+			}
+		}
+		$this->assertSame(2, $control->getHeaderLevel());
+	}
+
+	public function testShowCloseButtonRendersInvoker()
+	{
+		[$page, $control] = $this->createPageDialog();
+		$control->setShowCloseButton('true');
+		$this->assertTrue($control->getHasHeader());
+		$output = $this->render($control);
+		$this->assertStringContainsString('id="' . $control->getClientID() . '"', $output);
+		$this->assertStringContainsString('<button type="button" class="dialog-close" commandfor="' . $control->getClientID() . '" command="close" aria-label="Close">&times;</button>', $output);
+		$this->assertStringNotContainsString('aria-labelledby', $output);
+	}
+
+	public function testCloseButtonText()
+	{
+		$control = new TDialog();
+		$this->assertSame('Close', $control->getCloseButtonText());
+		$control->setCloseButtonText('Dismiss <now>');
+		$control->setShowCloseButton(true);
+		$this->assertStringContainsString('aria-label="Dismiss &lt;now&gt;"', $this->render($control));
+		$control->setCloseButtonText('');
+		$this->assertSame('Close', $control->getCloseButtonText());
+	}
+
+	public function testHeaderRegistersStyleSheet()
+	{
+		[$page, $control] = $this->createPageDialog();
+		$this->assertSame('default', $control->getCssUrl());
+		$control->onPreRender(null);
+		$this->assertSame([], $this->styleSheetFiles($page));
+
+		$control->setHeaderText('Notice');
+		$control->setCssUrl('/css/dialog.css');
+		$control->onPreRender(null);
+		$this->assertSame(['/css/dialog.css'], $this->styleSheetFiles($page));
+	}
+
+	public function testEmptyCssUrlRegistersNoStyleSheet()
+	{
+		[$page, $control] = $this->createPageDialog();
+		$control->setShowCloseButton(true);
+		$control->setCssUrl('');
+		$control->onPreRender(null);
+		$this->assertSame([], $this->styleSheetFiles($page));
+	}
+
+	/**
+	 * @return string[] the registered stylesheet file URLs
+	 */
+	private function styleSheetFiles(TPage $page): array
+	{
+		return array_values(array_map(fn ($file) => is_array($file) ? $file[0] : $file, PradoUnit::getProp($page->getClientScript(), '_styleSheetFiles')));
+	}
+
 	/**
 	 * @return array{TPage, TDialog} a dialog with an ID in a page
 	 */

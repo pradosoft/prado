@@ -42,6 +42,23 @@ test('DialogInvokerTestCase: show-modal and close', async ({ page }) => {
 });
 
 /**
+ * HeaderText names the dialog; its close button closes it without script and
+ * returns the focus to the invoker.
+ */
+test('DialogInvokerTestCase: header and close button', async ({ page }) => {
+	await open(page);
+	await page.getByRole('button', { name: 'Edit name' }).focus();
+	await page.keyboard.press('Enter');
+	const dialog = page.getByRole('dialog', { name: 'Edit name' });
+	await expect(dialog.getByRole('heading', { level: 2, name: 'Edit name' })).toBeVisible();
+
+	await dialog.getByRole('button', { name: 'Close' }).focus();
+	await page.keyboard.press('Enter');
+	expect(await dialogState(page, 'editDialog')).toEqual({ open: false, modal: false, returnValue: '' });
+	expect(await page.evaluate(() => document.activeElement.id)).toBe(`${B}openEdit`);
+});
+
+/**
  * A modal dialog closes on Esc.
  */
 test('DialogInvokerTestCase: Esc closes the modal dialog', async ({ page }) => {
