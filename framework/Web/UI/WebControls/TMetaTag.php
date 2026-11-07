@@ -18,8 +18,8 @@ use Prado\TPropertyValue;
  * TMetaTag represents a meta tag appearing in a page head section.
  * You can set its {@see setID ID}, {@see setHttpEquiv HttpEquiv},
  * {@see setName Name}, {@see setProperty Property}, {@see setContent Content},
- * {@see setScheme Scheme}, {@see setCharset Charset} properties, which correspond to
- * id, http-equiv, name, property, content, scheme and charset attributes for a meta tag, respectively.
+ * {@see setScheme Scheme}, {@see setCharset Charset}, {@see setMedia Media} properties, which correspond to
+ * id, http-equiv, name, property, content, scheme, charset and media attributes for a meta tag, respectively.
  * The RDFa `property` attribute names Open Graph metadata, such as `og:title`;
  * {@see TOpenGraph} renders those.
  *
@@ -56,6 +56,10 @@ class TMetaTag extends \Prado\TComponent
 	 * @var string charset attribute of the meta tag
 	 */
 	private $_charset = '';
+	/**
+	 * @var string media attribute of the meta tag
+	 */
+	private $_media = '';
 
 	/**
 	 * @return string id of the meta tag
@@ -175,6 +179,26 @@ class TMetaTag extends \Prado\TComponent
 	}
 
 	/**
+	 * @return string media attribute of the meta tag
+	 * @since 4.4.0
+	 */
+	public function getMedia()
+	{
+		return $this->_media;
+	}
+
+	/**
+	 * Sets the media query the meta tag applies to, such as
+	 * `(prefers-color-scheme: dark)` for a `theme-color`.
+	 * @param string $value media attribute of the meta tag
+	 * @since 4.4.0
+	 */
+	public function setMedia($value)
+	{
+		$this->_media = TPropertyValue::ensureString($value);
+	}
+
+	/**
 	 * Renders the meta tag. A charset meta tag has no content attribute; any other
 	 * renders its content, even when empty.
 	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
@@ -189,6 +213,7 @@ class TMetaTag extends \Prado\TComponent
 			'http-equiv' => $this->getHttpEquiv(),
 			'scheme' => $this->getScheme(),
 			'charset' => $charset,
+			'media' => $this->getMedia(),
 		];
 		foreach ($attributes as $name => $value) {
 			if ($value !== '') {

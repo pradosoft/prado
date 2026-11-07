@@ -46,6 +46,7 @@ This file defines the JavaScript package registry for PRADO. It declares all JS 
 | `activedatepicker` | `prado/activecontrols/activedatepicker.js` |
 | `proofofwork` | `prado/controls/proofofwork-solver.js`, `prado/controls/proofofwork.js` |
 | `idiomorph` | `idiomorph/idiomorph.js`: DOM morphing for callback updates; `npm-asset/idiomorph`, pinned exactly in composer.json and package.json |
+| `serviceworker` | `prado/serviceworker/serviceworker.js`: `Prado.ServiceWorker`, registered by [TServiceWorker](../UI/WebControls/TServiceWorker.md). The `worker*.js` files in the folder are worker scripts, not packages |
 
 ## Dependencies
 

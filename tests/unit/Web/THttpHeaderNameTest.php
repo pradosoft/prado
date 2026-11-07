@@ -535,6 +535,8 @@ class THttpHeaderNameTest extends \PHPUnit\Framework\TestCase
 			// Connection upgrade (WebSocket)
 			'Connection', 'Upgrade', 'Sec-WebSocket-Key', 'Sec-WebSocket-Accept',
 			'Sec-WebSocket-Version', 'Sec-WebSocket-Protocol', 'Sec-WebSocket-Extensions',
+			// Service worker
+			'Service-Worker-Allowed', 'Service-Worker-Navigation-Preload', 'Clear-Site-Data',
 			// Deprecated
 			'Accept-Charset', 'Feature-Policy', 'X-XSS-Protection', 'Pragma',
 		];

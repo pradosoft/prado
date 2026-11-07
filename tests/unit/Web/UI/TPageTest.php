@@ -64,6 +64,14 @@ class TPageTest extends \PHPUnit\Framework\TestCase
 		$this->assertNull($page->getForm());
 	}
 
+	public function testServiceWorkerDefaultsToEmptyAndIsTrimmed(): void
+	{
+		$page = new TPage();
+		$this->assertSame('', $page->getServiceWorker());
+		$page->setServiceWorker(' admin ');
+		$this->assertSame('admin', $page->getServiceWorker());
+	}
+
 	public function testSetAndGetForm(): void
 	{
 		$page = new TPage();
