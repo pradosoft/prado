@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+	Service worker harness. Path URLs put the admin pages under index.php/admin/,
+	the scope of the admin worker, so each worker controls its own pages.
+	HarnessServiceWorkerModule reads the revision and the disabled flag that
+	the Control page stores in the runtime directory.
+-->
+<application id="ServiceWorkerTests" Mode="Debug">
+	<paths>
+		<using namespace="Application.*" />
+	</paths>
+	<modules>
+		<module id="friendly-url" class="Prado\Web\TUrlMapping" EnableCustomUrl="true">
+			<url ServiceParameter="Admin.Home" pattern="admin/home" />
+		</module>
+		<module id="request" class="Prado\Web\THttpRequest" UrlFormat="Path" UrlManager="friendly-url" />
+		<module id="serviceworker" class="Application.HarnessServiceWorkerModule"
+			CacheAssets="true" OfflinePage="Offline" NavigationPreload="true" ExcludePages="Control"
+			Manifest.Name="Service Worker Tests" Manifest.ShortName="SW Tests"
+			Manifest.ThemeColor="#2b5797" Manifest.Display="standalone">
+			<worker name="admin" Scope="index.php/admin/" OfflinePage="" Manifest.Name="Service Worker Admin" />
+		</module>
+	</modules>
+	<services>
+		<service id="page" class="TPageService" DefaultPage="Home" />
+	</services>
+</application>
