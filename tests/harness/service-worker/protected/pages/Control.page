@@ -1,0 +1,7 @@
+<!DOCTYPE html>
+<html lang="en">
+<com:THead Title="Service Worker Control" />
+<body>
+	<p id="state"><%= json_encode(HarnessServiceWorkerModule::readState()) %></p>
+</body>
+</html>
