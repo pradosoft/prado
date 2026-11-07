@@ -757,6 +757,7 @@ return [
 'TContent' => 'Prado\Web\UI\WebControls\TContent',
 'TContentDirection' => 'Prado\Web\UI\WebControls\TContentDirection',
 'TContentPlaceHolder' => 'Prado\Web\UI\WebControls\TContentPlaceHolder',
+'TContextMenu' => 'Prado\Web\UI\WebControls\TContextMenu',
 'TCustomValidator' => 'Prado\Web\UI\WebControls\TCustomValidator',
 'TDataBoundControl' => 'Prado\Web\UI\WebControls\TDataBoundControl',
 'TDataGrid' => 'Prado\Web\UI\WebControls\TDataGrid',

@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+NEW: Issue #1401 - `TContextMenu` opens a `TDropdownMenu` on a right-click on `ForControl` at the pointer, or on Shift+F10 and the ContextMenu key below the target, in place of the browser context menu. (belisoful)
 NEW: Issue #1401 - `TDropdownMenu` renders a menu button and an action menu of its links and buttons, a `TPopover` with the ARIA `menu` role and the WAI-ARIA menu button keyboard. (belisoful)
 NEW: Issue #1401 - `TConfirmButton` asks for confirmation in a modal `alertdialog` before it posts back, without script, and replaces `onclick="return confirm()"`: `ConfirmText`, `ConfirmHeaderText`, `ConfirmButtonText`, and `CancelButtonText`. (belisoful)
 NEW: Issue #1401 - `TTooltip` describes `ForControl` with a `popover="hint"` tooltip that shows on hover and focus and hides on Esc (WCAG 1.4.13); the target's `aria-describedby` names it. (belisoful)
