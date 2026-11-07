@@ -350,6 +350,7 @@ return [
 'TApplicationComponent' => 'Prado\TApplicationComponent',
 'TApplicationConfiguration' => 'Prado\TApplicationConfiguration',
 'TApplicationMode' => 'Prado\TApplicationMode',
+'TApplicationParameters' => 'Prado\TApplicationParameters',
 'TApplicationStatePersister' => 'Prado\TApplicationStatePersister',
 'TComponent' => 'Prado\TComponent',
 'TComponentReflection' => 'Prado\TComponentReflection',

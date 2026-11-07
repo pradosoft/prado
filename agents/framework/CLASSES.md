@@ -1,6 +1,6 @@
 # PRADO Framework Classes
 
-**Total Classes: 704**
+**Total Classes: 705**
 
 This document lists all classes in the PRADO framework as defined in `classes.php`.
 
@@ -8,7 +8,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 | Directory | Classes | Interfaces | Total | Recursive |
 |-----------|---------|------------|-------|-----------|
-| [Prado](./INDEX.md) | 17 | 7 | 24 | 704 |
+| [Prado](./INDEX.md) | 18 | 7 | 25 | 705 |
 | [Prado\\Caching](./Caching/INDEX.md) | 18 | 2 | 20 | 20 |
 | [Prado\\Collections](./Collections/INDEX.md) | 27 | 7 | 34 | 34 |
 | [Prado\\Data](./Data/INDEX.md) | 10 | 5 | 15 | 51 |
@@ -54,7 +54,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 ## Class Listings
 
-## [Prado](./INDEX.md) - Classes: 17, Interfaces: 7, Total: 24, Recursive: 745
+## [Prado](./INDEX.md) - Classes: 18, Interfaces: 7, Total: 25, Recursive: 746
 
 ### Interfaces (6)
 
@@ -66,7 +66,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 - ISingleton
 - IStatePersister
 
-### Classes (17)
+### Classes (18)
 
 - [Prado](./Prado.md)
 - PradoBase
@@ -74,6 +74,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 - [TApplicationComponent](./TApplicationComponent.md)
 - [TApplicationConfiguration](./TApplicationConfiguration.md)
 - TApplicationMode
+- [TApplicationParameters](./TApplicationParameters.md)
 - [TApplicationSignals](./Util/Behaviors/TApplicationSignals.md)
 - TApplicationStatePersister
 - [TComponent](./TComponent.md)
