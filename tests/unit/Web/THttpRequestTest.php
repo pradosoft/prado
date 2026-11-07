@@ -663,4 +663,27 @@ class THttpRequestTest extends \PHPUnit\Framework\TestCase
 		
 		unset($_GET[$resolveKey]);
 	}
+
+	/**
+	 * Each request reads its own headers; the cache is per instance.
+	 */
+	public function testGetHeadersIsCachedPerInstance()
+	{
+		if (function_exists('apache_request_headers')) {
+			$this->markTestSkipped('apache_request_headers() supplies the headers.');
+		}
+		$saved = $_SERVER;
+		try {
+			$_SERVER['HTTP_X_PRADO_TEST'] = 'one';
+			$first = new \Prado\Web\THttpRequest();
+			$this->assertSame('one', $first->getHeaders()['X-Prado-Test']);
+			$_SERVER['HTTP_X_PRADO_TEST'] = 'two';
+			$this->assertSame('one', $first->getHeaders()['X-Prado-Test']);
+			$second = new \Prado\Web\THttpRequest();
+			$this->assertSame('two', $second->getHeaders()['X-Prado-Test']);
+			$this->assertSame('two', $second->getHeaders(CASE_LOWER)['x-prado-test']);
+		} finally {
+			$_SERVER = $saved;
+		}
+	}
 }

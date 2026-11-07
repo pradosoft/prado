@@ -93,7 +93,7 @@ class TUtf8Converter
 	public static function parseEncodingLanguage(string &$encoding, &$lang)
 	{
 		if (strpos($encoding, '.') !== false) {
-			$parts = explode($encoding, '.', 1);
+			$parts = explode('.', $encoding, 2);
 			$encoding = $parts[0];
 			$lang = $parts[1];
 		}

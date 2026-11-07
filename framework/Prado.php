@@ -739,20 +739,16 @@ class Prado
 	{
 		static $languages = null;
 		if ($languages === null) {
-			if (!isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
-				$languages[0] = 'en';
-			} else {
-				$languages = [];
-				foreach (explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']) as $language) {
-					$array = explode(';q=', trim($language));
-					$languages[trim($array[0])] = isset($array[1]) ? (float) $array[1] : 1.0;
+			$languages = [];
+			foreach (explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? '') as $language) {
+				$array = explode(';q=', trim($language));
+				if (($tag = trim($array[0])) === '') {
+					continue;
 				}
-				arsort($languages);
-				$languages = array_keys($languages);
-				if (count($languages) == 0) {
-					$languages[0] = 'en';
-				}
+				$languages[$tag] = isset($array[1]) ? (float) $array[1] : 1.0;
 			}
+			arsort($languages);
+			$languages = array_keys($languages) ?: ['en'];
 		}
 		return $languages;
 	}

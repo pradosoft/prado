@@ -221,6 +221,25 @@ class THttpResponseTest extends \PHPUnit\Framework\TestCase
 		ob_end_clean();
 	}
 
+	public function testHttpRedirectWithoutServerSoftware()
+	{
+		$response = new TTestHttpResponse();
+		$response->init(null);
+		$software = $_SERVER['SERVER_SOFTWARE'] ?? null;
+		unset($_SERVER['SERVER_SOFTWARE']);
+		try {
+			$response->httpRedirect('http://example.com/next');
+			$this->fail('TExitException not raised');
+		} catch (\Prado\Exceptions\TExitException $e) {
+		} finally {
+			if ($software !== null) {
+				$_SERVER['SERVER_SOFTWARE'] = $software;
+			}
+			ob_end_clean();
+		}
+		$this->assertContains('Location: http://example.com/next', $response->headers);
+	}
+
 	public function testReload()
 	{
 		$response = new TTestHttpResponse();

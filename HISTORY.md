@@ -67,6 +67,13 @@ BUG: TCheckBoxList, TRatingList, and TActiveCheckBoxList render list attributes 
 BUG: TRenderFilterParameter removes only the leading libxml encoding prefix, in processing-instruction or comment form.
 BUG: TDataGridColumn and TListControl format expressions catch every Throwable; TComponent::evaluateExpression() and evaluateStatements() chain the original exception.
 BUG: TInPlaceTextBox applies MaxLength to single and multi-line editors.
+BUG: TSignalsDispatcher::disarm() keeps the other callbacks of an alarm time and re-arms the next alarm for at least one second.
+BUG: TUtf8Converter::parseEncodingLanguage() splits 'ASCII.de' with the explode() arguments in order.
+BUG: TControl::getIsSkinApplied() returns a bool; MessageSource_Database returns a bool on save; TCronModule only takes an IUserManager module as its user manager.
+BUG: TApplicationComponent keeps the fx-event cache file only in Performance mode, discards a corrupt or out-of-date file, and `prado-cli cache/flush-all` deletes it.
+BUG: Prado::getUserLanguages() returns 'en' for an empty Accept-Language header and skips empty tags.
+BUG: THttpRequest::getHeaders() caches the headers per instance.
+BUG: THttpResponse::httpRedirect() works without SERVER_SOFTWARE.
 
 ## Version 4.3.2 - January 28, 2026
 

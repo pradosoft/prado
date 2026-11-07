@@ -570,7 +570,7 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	 */
 	public function getIsSkinApplied()
 	{
-		return ($this->_flags & self::IS_SKIN_APPLIED);
+		return ($this->_flags & self::IS_SKIN_APPLIED) !== 0;
 	}
 
 	/**

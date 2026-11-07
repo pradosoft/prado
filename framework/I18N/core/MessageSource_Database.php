@@ -201,7 +201,7 @@ class MessageSource_Database extends MessageSource
 		$connection = $command->getConnection();
 		$command->bindParameter(':moddate', $time, $connection::PARAM_INT);
 		$command->bindParameter(':catid', $cat_id, $connection::PARAM_INT);
-		$result = $command->execute();
+		$result = ($command->execute() > 0);
 
 		if (!empty($this->cache)) {
 			$this->cache->clean($variant, $this->culture);

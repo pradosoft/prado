@@ -1150,4 +1150,12 @@ class TControlTest extends \PHPUnit\Framework\TestCase
 		$control->onRenderFilter('<p>test</p>');
 		$this->assertInstanceOf(TRenderFilterParameter::class, $receivedParam);
 	}
+
+	public function testGetIsSkinAppliedReturnsBool()
+	{
+		$control = new TControl();
+		$this->assertFalse($control->getIsSkinApplied());
+		PradoUnit::setProp($control, '_flags', PradoUnit::getProp($control, '_flags') | TControl::IS_SKIN_APPLIED);
+		$this->assertTrue($control->getIsSkinApplied());
+	}
 }

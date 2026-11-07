@@ -663,12 +663,13 @@ class TSignalsDispatcher extends TComponent implements \Prado\ISingleton
 		foreach ($alarmTime !== null ? [$alarmTime] : array_keys(static::$_alarms) as $time) {
 			if (($key = array_search($callback, static::$_alarms[$time] ?? [], true)) !== false) {
 				unset(static::$_alarms[$time][$key]);
-				if (is_array(static::$_alarms[$time] ?? false)) {
+				if (empty(static::$_alarms[$time])) {
 					unset(static::$_alarms[$time]);
 					if ($time === self::$_nextAlarmTime) {
 						self::$_nextAlarmTime = array_key_first(static::$_alarms);
 						if (self::$_nextAlarmTime !== null) {
-							$seconds = min(1, self::$_nextAlarmTime - time());
+							// At least 1 s: pcntl_alarm(0) cancels, so an overdue alarm would never ring.
+							$seconds = max(1, self::$_nextAlarmTime - time());
 						} else {
 							$seconds = 0;
 						}
