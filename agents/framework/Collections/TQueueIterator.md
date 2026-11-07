@@ -10,7 +10,7 @@
 ## Overview
 
 
-Iterator for traversing items in a TQueue. Used internally by [TQueue](./TQueue.md).
+Iterator that traverses an array by reference. [TQueue](./TQueue.md) returns an `\ArrayIterator` and does not use this class.
 
 ## Implementation
 
@@ -22,7 +22,7 @@ Implements PHP's Iterator interface with array reference passthrough.
 public function __construct(array &$data)
 ```
 
-Takes an array reference to the queue's internal data.
+Takes the array to traverse by reference.
 
 ## Iterator Methods
 
@@ -34,18 +34,13 @@ Takes an array reference to the queue's internal data.
 
 ## Usage
 
-Typically not used directly:
-
 ```php
-$queue = new TQueue();
-$queue->enqueue('a');
-$queue->enqueue('b');
-
-foreach ($queue as $item) {  // Uses TQueueIterator internally
+$data = ['a', 'b'];
+foreach (new TQueueIterator($data) as $item) {
     echo $item;
 }
 ```
 
 ## See Also
 
-- [TQueue](./TQueue.md) - The queue using this iterator
+- [TQueue](./TQueue.md) - FIFO queue; iterates with `\ArrayIterator`
