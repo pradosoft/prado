@@ -32,6 +32,9 @@ use Prado\Util\TBehavior;
  * This code will call $obj->setParam($key, $value) every time any parameter
  * changes in the Application Parameters.
  *
+ * Keys match by their string form: the parameter `'10'` matches the map key `10`
+ * and does not match `'1e1'`.
+ *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.2.0
  */
@@ -73,7 +76,7 @@ class TMapRouteBehavior extends TBehavior
 	 */
 	public function dyAddItem($key, $value, $callchain)
 	{
-		if ($key == $this->_parameter && $key !== null && $this->_handler) {
+		if ($this->isRoutedKey($key)) {
 			call_user_func($this->_handler, $value);
 		} elseif ($this->_parameter === null) {
 			call_user_func($this->_handler, $key, $value);
@@ -94,12 +97,23 @@ class TMapRouteBehavior extends TBehavior
 	 */
 	public function dyRemoveItem($key, $value, $callchain)
 	{
-		if ($key == $this->_parameter && $key !== null && $this->_handler) {
+		if ($this->isRoutedKey($key)) {
 			call_user_func($this->_handler, null);
 		} elseif ($this->_parameter === null) {
 			call_user_func($this->_handler, $key, null);
 		}
 		return $callchain->dyRemoveItem($key, $value);
+	}
+
+	/**
+	 * Matches a map key against the parameter by string form.
+	 * @param mixed $key the map key.
+	 * @return bool whether the key is the routed parameter; false when the parameter is null.
+	 * @since 4.4.0
+	 */
+	protected function isRoutedKey($key): bool
+	{
+		return $this->_parameter !== null && $key !== null && (string) $key === (string) $this->_parameter;
 	}
 
 	/**

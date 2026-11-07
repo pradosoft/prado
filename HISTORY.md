@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: `TMapRouteBehavior` matched keys with `==`, so the parameter `'10'` also routed `'1e1'` and `'10.0'`, and an all-keys route called its handler without the key for the `''` key; keys now match by string form. (belisoful)
 ENH: Issue #296 - An application parameter marked `final="true"` (PHP `'final' => true`) cannot be overridden by folder `config.xml` files, later configurations, or code; `TApplicationParameters` is the parameter map with `finalize()` and `getIsFinal()`. (belisoful)
 BUG: Issue #129 - Composite key lookups match an `OR` of `AND`-joined equalities in place of the row-value `IN`, which MySQL does not index in `DELETE` and `UPDATE` and SQL Server and DB2 reject; `TDbCommandBuilder::getIndexCondition()` builds it, and `createIndexCriteria()` gives `1=0` for no values in place of `FALSE`. (belisoful)
 BUG: `TRestPagination` was fatal for a `per_page=1` request with a page near `PHP_INT_MAX`; the page cap no longer overflows. (belisoful)
