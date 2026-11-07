@@ -79,6 +79,11 @@ BUG: TWebControl::setAccessKey() ensures a string and accepts one multibyte char
 BUG: TSoapService PHP configuration without a 'soap' key registers nothing, and a server's 'class' key is honored.
 BUG: Prado.PostBack copies its options per instance, so a postback that stays on the page (failed validation, a cancelled submit, a formtarget window) no longer leaks PostBackUrl, EventParameter, ValidationGroup, or CausesValidation into the next one (#1417).
 BUG: Prado.PostBack removes its EventTarget and EventParameter fields after the submit, so a later submit does not post them again (#1418).
+BUG: TImageButton client script posts click coordinates relative to the image on a scrolled page.
+BUG: Client validator change re-validation waits for the mouse release, so a Dynamic message no longer moves the clicked button.
+BUG: Prado.Element.createOptions() escapes option text as the page render does.
+BUG: TColorPicker Basic and Simple pickers stay open on a click inside the picker.
+BUG: TInPlaceTextBox cancels the edit on Escape.
 
 ## Version 4.3.2 - January 28, 2026
 

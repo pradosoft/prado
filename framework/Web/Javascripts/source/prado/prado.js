@@ -522,7 +522,9 @@ Prado.Element =
 	},
 
 	/**
-	 * Create opt-group options from an array of options.
+	 * Create opt-group options from an array of options. Option text is set as the page render
+	 * sets it: `<` and `>` are escaped, as THttpUtility::htmlEncode() escapes them, and entities
+	 * decode. The text creates no elements.
 	 * @function {array} ?
 	 * @param {array[]} options - Array of options, each an array of structure
 	 *   [ "optionText" , "optionValue" , "optionGroup" ]
@@ -553,8 +555,7 @@ Prado.Element =
 				}
 			}
 			var opt = document.createElement('option');
-			opt.text = option[0];
-			opt.innerHTML = option[0];
+			opt.innerHTML = String(option[0]).replace(/</g, '&lt;').replace(/>/g, '&gt;');
 			opt.value = option[1];
 			if(optgroup!=null)
 				optgroup.appendChild(opt);

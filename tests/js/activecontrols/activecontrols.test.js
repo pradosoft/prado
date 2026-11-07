@@ -265,6 +265,20 @@ describe('TActiveImageButton', () => {
 		expect(form.querySelector('#img1_y')).not.toBeNull();
 	});
 
+	it('addXYInput posts the point from the image corner, unaffected by page scroll', () => {
+		const ctrl = new TActiveImageButton({ ID: 'img1', EventTarget: 'img1' });
+		img.getBoundingClientRect = () => ({ top: 20, left: 10, right: 110, bottom: 120, width: 100, height: 100 });
+		const scrollY = window.pageYOffset;
+		window.pageYOffset = 500;
+		try {
+			ctrl.addXYInput({ EventTarget: 'img1' }, fakeEvent({ target: img, clientX: 35.6, clientY: 50.2 }));
+		} finally {
+			window.pageYOffset = scrollY;
+		}
+		expect(form.querySelector('#img1_x').value).toBe('26');
+		expect(form.querySelector('#img1_y').value).toBe('30');
+	});
+
 	it('removeXYInput removes the hidden x/y inputs', () => {
 		const ctrl = new TActiveImageButton({ ID: 'img1', EventTarget: 'img1' });
 		const evt  = fakeEvent({ target: img, clientX: 5, clientY: 5 });

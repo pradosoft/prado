@@ -359,7 +359,7 @@ Prado.WebUI.TColorPicker = jQuery.klass(Prado.WebUI.Control, {
 		var el = ev.target;
 		var within = false;
 		do
-		{	within = within || String(el.className).indexOf('FullColorPicker') > -1
+		{	within = within || String(el.className).indexOf('ColorPicker') > -1
 			within = within || el == this.button;
 			within = within || el == this.input;
 			if(within) break;

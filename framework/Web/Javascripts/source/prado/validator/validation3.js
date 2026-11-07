@@ -233,8 +233,66 @@ jQuery.extend(Prado.Validation,
 				}
 			});
 		});
+	},
+
+	/**
+	 * Whether the primary mouse button is held down in the document.
+	 * @var {boolean} pressing
+	 */
+	pressing : false,
+
+	/**
+	 * Callbacks waiting for the primary mouse button to be released.
+	 * @var {function[]} pressCallbacks
+	 */
+	pressCallbacks : [],
+
+	/**
+	 * Runs a callback now, or after the primary mouse button is released.
+	 * A control's change event fires on blur when the mouse goes down on another
+	 * element, such as a submit button. Re-validation that hides a Dynamic message
+	 * or summary moves that element. Waiting for the release keeps the element under
+	 * the pointer until its click is dispatched.
+	 * @function ?
+	 * @param {function} callback - Function to run.
+	 */
+	afterPress : function(callback)
+	{
+		if(this.pressing)
+			this.pressCallbacks.push(callback);
+		else
+			callback();
+	},
+
+	/**
+	 * Tracks the primary mouse button. A release, a drag end, or the window losing
+	 * focus ends the press; the waiting callbacks run after the click dispatches.
+	 * @function ?
+	 */
+	observePress : function()
+	{
+		var self = this;
+		var release = function()
+		{
+			if(!self.pressing)
+				return;
+			self.pressing = false;
+			var callbacks = self.pressCallbacks.splice(0);
+			if(callbacks.length > 0)
+				setTimeout(function() { jQuery.each(callbacks, function(i, callback) { callback(); }); }, 0);
+		};
+		document.addEventListener('mousedown', function(event)
+		{
+			if(event.button === 0)
+				self.pressing = true;
+		}, true);
+		document.addEventListener('mouseup', release, true);
+		document.addEventListener('dragend', release, true);
+		window.addEventListener('blur', release);
 	}
 });
+
+Prado.Validation.observePress();
 
 /**
  * Manages validators for a particular HTML form.
@@ -1092,7 +1150,8 @@ Prado.WebUI.TBaseValidator = jQuery.klass(Prado.WebUI.Control,
 	/**
 	 * Add control to observe for changes.
 	 * Re-validates upon change. If the validator is not visible,
-	 * no updates are propagated.
+	 * no updates are propagated. During a mouse press the re-validation
+	 * waits for the release (see {@see Prado.Validation.afterPress}).
 	 * @function ?
 	 * @param {element} control - DOM element of control to observe
 	 */
@@ -1109,11 +1168,14 @@ Prado.WebUI.TBaseValidator = jQuery.klass(Prado.WebUI.Control,
 
 			this.observe(control, 'change', function()
 			{
-				if(validator.visible)
+				Prado.Validation.afterPress(function()
 				{
-					validator.validate();
-					validator.manager.updateSummary(validator.group);
-				}
+					if(validator.visible)
+					{
+						validator.validate();
+						validator.manager.updateSummary(validator.group);
+					}
+				});
 			});
 			this._isObserving[control.id+this.options.ID] = true;
 		}

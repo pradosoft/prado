@@ -465,6 +465,16 @@ describe('TInPlaceTextBox onKeyPressed', () => {
 		expect(showLabel).toHaveBeenCalled();
 	});
 
+	it('cancels the edit on an Escape keydown, which browsers fire without keypress', () => {
+		const ctrl = new TInPlaceTextBox(makeOptions({ AutoHide: true }));
+		ctrl.isEditing = true;
+		ctrl.element.innerHTML = 'Original';
+		ctrl.editField.value   = 'Changed';
+		ctrl.editField.dispatchEvent(new KeyboardEvent('keydown', { keyCode: 27, bubbles: true }));
+		expect(ctrl.editField.value).toBe('Original');
+		expect(ctrl.isEditing).toBe(false);
+	});
+
 	it('calls preventDefault on ENTER (keyCode 13) in SingleLine mode', () => {
 		const ctrl = new TInPlaceTextBox(makeOptions({ TextMode: 'SingleLine' }));
 		const evt = { keyCode: 13, preventDefault: vi.fn() };

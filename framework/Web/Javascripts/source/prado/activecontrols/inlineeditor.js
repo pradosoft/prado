@@ -149,7 +149,7 @@ Prado.WebUI.TInPlaceTextBox = jQuery.klass(Prado.WebUI.Control,
 		}
 
 		this.observe(this.editField, "blur", this.onTextBoxBlur.bind(this));
-		this.observe(this.editField, "keypress", this.onKeyPressed.bind(this));
+		this.observe(this.editField, "keydown", this.onKeyPressed.bind(this));
 	},
 
 	/**
