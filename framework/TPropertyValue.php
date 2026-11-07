@@ -47,6 +47,27 @@ use Prado\Web\Javascripts\TJavaScript;
 class TPropertyValue
 {
 	/**
+	 * The string representation of a PHP not-a-number float produced by {@see ensureString}
+	 * and recognized (case-insensitively, after trimming) by {@see ensureFloat}.
+	 * @since 4.3.3
+	 */
+	public const FLOAT_NAN = 'NAN';
+
+	/**
+	 * The string representation of PHP positive infinity, recognized
+	 * (case-insensitively, after trimming) by {@see ensureFloat}.
+	 * @since 4.3.3
+	 */
+	public const FLOAT_INF = 'INF';
+
+	/**
+	 * The string representation of PHP negative infinity, recognized
+	 * (case-insensitively, after trimming) by {@see ensureFloat}.
+	 * @since 4.3.3
+	 */
+	public const FLOAT_NEGATIVE_INF = '-INF';
+
+	/**
 	 * Converts a value to boolean type.
 	 * Note, string 'true' (case-insensitive) will be converted to true,
 	 * string 'false' (case-insensitive) will be converted to false.
@@ -78,7 +99,7 @@ class TPropertyValue
 		if (is_bool($value)) {
 			return $value ? 'true' : 'false';
 		} elseif (is_float($value) && is_nan($value)) {
-			return 'NAN';
+			return static::FLOAT_NAN;
 		} else {
 			return (string) $value;
 		}
@@ -95,12 +116,23 @@ class TPropertyValue
 	}
 
 	/**
-	 * Converts a value to float type.
+	 * Converts a value to float type.  The strings `NAN`, `INF`, and `-INF` (case-insensitive,
+	 * trimmed) convert to the matching non-finite floats.
 	 * @param mixed $value the value to be converted.
 	 * @return float
 	 */
 	public static function ensureFloat($value): float
 	{
+		if (is_string($value)) {
+			$trimmed = trim($value);
+			if (strcasecmp($trimmed, static::FLOAT_NAN) === 0) {
+				return NAN;
+			} elseif (strcasecmp($trimmed, static::FLOAT_INF) === 0) {
+				return INF;
+			} elseif (strcasecmp($trimmed, static::FLOAT_NEGATIVE_INF) === 0) {
+				return -INF;
+			}
+		}
 		return (float) $value;
 	}
 

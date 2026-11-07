@@ -57,6 +57,10 @@ BUG: THttpRequest::getContentType() strips the parameters by default, as documen
 BUG: Issue #450 - Template attribute values mix `~`, `$`, `[`, `/` tags with literal text; adds the `<%! %>` init binding (TControl::initBindProperty()).
 BUG: Issue #1131 - TReCaptcha2::getCaptchaResponse() and setCaptchaResponse() hold the token; getResponse() and setResponse() are deprecated aliases.
 BUG: PHP 8.4/8.5 compatibility: null keys in TMap, TPriorityMap, TWeakMap, and TEventParameter; TApplication::getModule(null); anonymous behaviors in TBehaviorParameterLoader and TBehaviorsModule; TBitHelper and CultureInfo deprecations; NAN in TPropertyValue::ensureString() and TJavaScript::encode(); THttpSession::setUseTransparentSessionID() is deprecated.
+BUG: TComponent::attachBehavior() unregisters the behavior, and detaches it when owned, if its attach() throws.
+BUG: THttpResponse::getHttpHeaderSent() reports the sent status header; TCallbackErrorHandler sets the 500 status only before it is sent and reads SERVER_SOFTWARE null-safely; TSignalsDispatcher::detachPidHandler() returns false for a missing handler.
+BUG: TPropertyValue::ensureFloat() parses 'NAN', 'INF', and '-INF'.
+BUG: TPermissionsManager PHP configuration keys are case-insensitive.
 
 ## Version 4.3.2 - January 28, 2026
 

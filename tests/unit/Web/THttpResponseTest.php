@@ -136,6 +136,29 @@ class THttpResponseTest extends \PHPUnit\Framework\TestCase
 		ob_end_flush();
 	}
 
+	public function testGetHttpHeaderSent()
+	{
+		$response = new TTestHttpResponse();
+		$response->init(null);
+		self::assertFalse($response->getHttpHeaderSent());
+		$response->ensureHeadersSent();
+		self::assertTrue($response->getHttpHeaderSent());
+		ob_end_clean();
+	}
+
+	public function testSetStatusCodeAfterHttpHeaderSentThrows()
+	{
+		$response = new TTestHttpResponse();
+		$response->init(null);
+		$response->ensureHeadersSent();
+		try {
+			$this->expectException(\Exception::class);
+			$response->setStatusCode(500);
+		} finally {
+			ob_end_clean();
+		}
+	}
+
 	public function testSetStatusCodeRejectsLineBreakAtReasonStart()
 	{
 		$response = new TTestHttpResponse();
