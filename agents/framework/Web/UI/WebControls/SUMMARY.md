@@ -13,6 +13,7 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 ### Input Controls
 
 - **`TButton`** — `<input type="submit">` or `<button>`; properties: `ButtonType`, `ButtonTag`, `CausesValidation`, `ValidationGroup`, `CommandFor` and `Command` (an invoker that opens or closes a dialog or popover without script).
+- **`TConfirmButton`** — a TButton that opens a modal `alertdialog` (after `</form>`) and posts back from its OK button; `ConfirmText`, `ConfirmHeaderText`, `ConfirmButtonText`, `CancelButtonText`; replaces `onclick="return confirm()"`. @since 4.4.0
 
 - **`TLinkButton`** — `<a>` with postback; same properties as TButton.
 

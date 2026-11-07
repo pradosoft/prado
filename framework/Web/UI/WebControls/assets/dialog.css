@@ -36,3 +36,12 @@
 	outline: 2px solid currentColor;
 	outline-offset: 2px;
 }
+
+/* The Cancel and OK buttons of a TConfirmButton dialog, at the inline end. */
+.dialog-buttons {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: flex-end;
+	gap: 0.5rem;
+	margin-block-start: 1rem;
+}

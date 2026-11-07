@@ -753,6 +753,7 @@ return [
 'TCompareValidator' => 'Prado\Web\UI\WebControls\TCompareValidator',
 'TCompleteWizardStep' => 'Prado\Web\UI\WebControls\TCompleteWizardStep',
 'TConditional' => 'Prado\Web\UI\WebControls\TConditional',
+'TConfirmButton' => 'Prado\Web\UI\WebControls\TConfirmButton',
 'TContent' => 'Prado\Web\UI\WebControls\TContent',
 'TContentDirection' => 'Prado\Web\UI\WebControls\TContentDirection',
 'TContentPlaceHolder' => 'Prado\Web\UI\WebControls\TContentPlaceHolder',
