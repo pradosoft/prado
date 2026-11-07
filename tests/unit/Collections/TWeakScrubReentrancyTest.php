@@ -67,6 +67,37 @@ class WeakScrubReentryInjector extends TWeakCallableCollection
 }
 
 /**
+ * Subclass that runs a callable once, right after turning DiscardInvalid on
+ * registers its first object.  The callable drops the last reference to an
+ * object whose destructor removes an entry that is not registered yet.
+ */
+class WeakMapTransitionInjector extends TWeakMap
+{
+	/** @var ?\Closure The closure to invoke after the first registration. */
+	public ?\Closure $afterFirstRegister = null;
+
+	public function enableDiscardInvalid(): void
+	{
+		$this->setDiscardInvalid(true);
+	}
+
+	public function getWeakObjectCount(object $object): ?int
+	{
+		return $this->weakObjectCount($object);
+	}
+
+	protected function weakAdd(object $object): int
+	{
+		$count = parent::weakAdd($object);
+		if (($callable = $this->afterFirstRegister) !== null) {
+			$this->afterFirstRegister = null;
+			$callable();
+		}
+		return $count;
+	}
+}
+
+/**
  * Regression tests for the snapshot/identify + identity-based-remove
  * scrubbing algorithm shared by {@see TWeakCallableCollection}, {@see TWeakList},
  * and {@see TWeakMap}. The earlier implementation guarded the scrub with a
@@ -250,5 +281,58 @@ class TWeakScrubReentrancyTest extends \PHPUnit\Framework\TestCase
 		iterator_to_array($map);
 
 		$this->assertSame(1, $map->getCount(), 'TWeakMap: entry with stale value must be removed');
+	}
+
+	public function testWeakMap_destructorRemovesUnregisteredEntryDuringDiscardInvalidTransition(): void
+	{
+		$map = new WeakMapTransitionInjector(null, null, false);
+		$keep = new WeakScrubReentryTarget();
+		$removed = new WeakScrubReentryTarget();
+		$map->add('keep', $keep);
+		$map->add('removed', $removed);
+
+		$fired = false;
+		$trap = new WeakScrubReentryTarget();
+		$trap->onDestruct = function () use ($map, &$fired): void {
+			$fired = true;
+			$map->remove('removed');
+		};
+		$map->afterFirstRegister = function () use (&$trap): void {
+			$trap = null;
+		};
+
+		$map->enableDiscardInvalid();
+
+		$this->assertTrue($fired, 'The destructor fired during the transition');
+		$this->assertTrue($map->getDiscardInvalid());
+		$this->assertSame(['keep' => $keep], $map->toArray());
+		$this->assertSame(1, $map->getWeakObjectCount($keep));
+
+		$keep = null;
+		$this->assertSame(0, $map->getCount(), 'The registered entry is scrubbed once its value is collected');
+	}
+
+	public function testWeakMap_destructorRemovesDuplicateValueDuringDiscardInvalidTransition(): void
+	{
+		$map = new WeakMapTransitionInjector(null, null, false);
+		$value = new WeakScrubReentryTarget();
+		$map->add('first', $value);
+		$map->add('second', $value);
+
+		$trap = new WeakScrubReentryTarget();
+		$trap->onDestruct = function () use ($map): void {
+			$map->remove('second');
+		};
+		$map->afterFirstRegister = function () use (&$trap): void {
+			$trap = null;
+		};
+
+		$map->enableDiscardInvalid();
+
+		$this->assertSame(['first' => $value], $map->toArray());
+		$this->assertSame(1, $map->getWeakObjectCount($value), 'The remaining entry keeps its value registered');
+
+		$value = null;
+		$this->assertSame(0, $map->getCount());
 	}
 }

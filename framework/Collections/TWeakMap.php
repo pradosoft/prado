@@ -63,11 +63,15 @@ class TWeakMap extends TMap implements IWeakCollection, ICollectionFilter
 	 * @param null|array|\Traversable $data Initial data. Default null.
 	 * @param ?bool $readOnly Whether the map is read-only. Default null.
 	 * @param ?bool $discardInvalid Whether GC'd entries are removed (true) or
-	 *   retained as null (false). Default null: opposite of $readOnly.
+	 *   retained as null (false). Default null: opposite of $readOnly.  Without
+	 *   $data, null defers the resolution until the mode is first needed.
 	 */
 	public function __construct($data = null, $readOnly = null, $discardInvalid = null)
 	{
 		parent::__construct($data, $readOnly);
+		if ($discardInvalid === null && $this->_discardInvalid !== null) {
+			$discardInvalid = !$this->getReadOnly();
+		}
 		$this->setDiscardInvalid($discardInvalid);
 	}
 
@@ -100,6 +104,8 @@ class TWeakMap extends TMap implements IWeakCollection, ICollectionFilter
 	 * Adds an object value to the WeakMap cache.  For TEventHandler values the
 	 * inner callable object is tracked rather than the handler wrapper.
 	 * Closures are skipped — they are strongly retained by the map on purpose.
+	 * A TEventHandler whose handler object is already collected marks the WeakMap
+	 * changed so the next scrub removes it.
 	 * @param object $object The stored value (original, before WeakReference wrapping).
 	 * @return int The updated instance count for the tracked object.
 	 */
@@ -111,6 +117,10 @@ class TWeakMap extends TMap implements IWeakCollection, ICollectionFilter
 
 			if ($inner !== null) {
 				return $this->weakAdd($inner);
+			}
+
+			if (!$object->hasHandler()) {
+				$this->weakMarkChanged();
 			}
 
 			return 0;
@@ -320,13 +330,11 @@ class TWeakMap extends TMap implements IWeakCollection, ICollectionFilter
 		if ($value && !$this->_discardInvalid) {
 			$this->weakStart();
 
-			foreach (array_keys($this->_d) as $key) {
-				if (!array_key_exists($key, $this->_d)) {
-					continue;
-				}
-				$stored = $this->_d[$key];
-
-				if (!is_object($stored)) {
+			// Iterate a snapshot so every live stored object is registered even
+			// when a destructor removes its entry first; the trait ignores the
+			// removal of an object not yet registered.
+			foreach ($this->_d as $key => $stored) {
+				if (!is_object($stored) || ($stored instanceof Closure)) {
 					continue;
 				}
 
@@ -335,20 +343,23 @@ class TWeakMap extends TMap implements IWeakCollection, ICollectionFilter
 
 				if ($isEventHandler = ($stored instanceof TEventHandler)) {
 					$object = $stored->getHandlerObject(true);
+					if ($object === null) {
+						continue;
+					}
 				}
 
 				if ($object instanceof WeakReference) {
 					$object = $object->get();
 				}
 
-				if ($object === null) {
+				if ($object !== null) {
+					$this->weakAdd($object);
+				} elseif (array_key_exists($key, $this->_d) && $this->_d[$key] === $stored) {
 					unset($this->_d[$key]);
 
 					if ($isEventHandler) {
 						$this->_eventHandlerCount--;
 					}
-				} elseif (!($stored instanceof Closure)) {
-					$this->weakAdd($object);
 				}
 			}
 

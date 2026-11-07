@@ -25,6 +25,7 @@ Extends [TList](./TList.md). Implements [IWeakCollection](./IWeakCollection.md) 
 | `IWeakRetainable` / `TEventHandler` | Directly; inner callable object tracked in WeakMap |
 | Any other object | `WeakReference::create($object)` |
 | Array | Recursively weakened (nested objects become WeakReferences) |
+| `Traversable` + `ArrayAccess` container (e.g. `ArrayObject`) | A weakened copy (`clone`); the caller's container is unchanged |
 
 ## DiscardInvalid Mode
 
@@ -51,10 +52,12 @@ new TWeakList(
 public static function filterItemForInput(mixed &$item): void
 // Recursively wraps objects (except Closure, IWeakRetainable) in WeakReference.
 // Works on plain items, arrays, and Traversable+ArrayAccess containers.
+// A container is weakened as a clone; $item receives the clone.
 
 public static function filterItemForOutput(mixed &$item): void
 // Recursively resolves WeakReferences back to the original object (null if GC'd).
 // A TEventHandler with no live inner handler resolves to null.
+// A container is resolved into a clone, so the stored container keeps its WeakReferences.
 ```
 
 ## Key TList Overrides
@@ -72,7 +75,16 @@ protected function scrubWeakReferences(): void
 
 ## WeakMap Bookkeeping
 
-`weakCustomAdd(object $object)` and `weakCustomRemove(object $object)` proxy to the trait's `weakAdd()`/`weakRemove()`. For `TEventHandler` items the inner handler object (not the wrapper) is tracked; `$_eventHandlerCount` is incremented/decremented accordingly.
+`weakCustomAdd(object $object)` and `weakCustomRemove(object $object)` proxy to the trait's `weakAdd()`/`weakRemove()`. For `TEventHandler` items the inner handler object (not the wrapper) is tracked; `$_eventHandlerCount` is incremented/decremented for every `TEventHandler`.
+
+| Item | Bookkeeping |
+|---|---|
+| `TEventHandler` with a live handler object | Counted; handler object tracked |
+| `TEventHandler` without a handler object (e.g. `'strlen'`) | Counted; not tracked; kept when `DiscardInvalid` turns on |
+| `TEventHandler` whose handler object is collected before it is added | Counted; `weakMarkChanged()` so the next scrub removes it |
+| `Traversable` + `ArrayAccess` container | Not tracked (stored strongly, like an array) |
+
+`remove()`, `removeAt()`, and `offsetSet()` pass the removed stored entry to `weakCustomRemove()`, which resolves a stored `WeakReference`.
 
 ## TEventHandler Search Semantics
 
@@ -85,6 +97,7 @@ WeakReferences cannot be serialized. On `__sleep()` the data array is excluded. 
 
 ## Patterns & Gotchas
 
+- **Container items** — A `Traversable` + `ArrayAccess` item is stored as a weakened copy and read as a resolved copy. A search by the original container does not match the stored copy by identity.
 - **Array items** — Objects nested inside array items are also weakened. If a nested object is GC'd, `filterItemForOutput` returns `null` for that nested position; the enclosing array item itself remains in the list.
 - **Closures survive GC** — A `Closure` stored in TWeakList is strongly retained; the list is the owning reference.
 - **Count/index stability** — In `DiscardInvalid = true` mode, positions shift when entries are purged. Do not cache indices across potential GC points.
