@@ -394,6 +394,9 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 
 	/**
 	 * Sets the options of a select input element.
+	 * Each option is `[text, value]`, `[text, value, group]`, or, for an item with
+	 * {@see \Prado\Web\UI\WebControls\TListItem::getContent Content},
+	 * `[text, value, group, content]` with a null group outside an option group.
 	 * A {@see TSuggestionList} uses {@see setSuggestionListItems} instead.
 	 * @param \Prado\Web\UI\TControl $control control element or element id
 	 * @param array|TListControl $items a list of new options
@@ -419,8 +422,11 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 		}
 
 		foreach ($items as $item) {
-			if ($item->getHasAttributes()) {
-				$options[] = [$item->getText(), $item->getValue(), $item->getAttributes()->itemAt('Group')];
+			$group = $item->getHasAttributes() ? $item->getAttributes()->itemAt('Group') : null;
+			if ($item->getHasContent()) {
+				$options[] = [$item->getText(), $item->getValue(), $group, $item->getContent()];
+			} elseif ($group !== null) {
+				$options[] = [$item->getText(), $item->getValue(), $group];
 			} else {
 				$options[] = [$item->getText(), $item->getValue()];
 			}

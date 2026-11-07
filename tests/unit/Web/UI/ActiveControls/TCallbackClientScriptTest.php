@@ -5,7 +5,9 @@ namespace Prado\Test\Unit\Web\UI\ActiveControls;
 use PHPUnit\Framework\TestCase;
 use Prado\Test\Unit\Harness\Web\UI\TTestCallbackPage;
 use Prado\Web\UI\ActiveControls\TCallback;
+use Prado\Web\UI\WebControls\TDropDownList;
 use Prado\Web\UI\WebControls\TLabel;
+use Prado\Web\UI\WebControls\TListItem;
 
 /**
  * The content methods of the callback client (setText() sends text and update() sends
@@ -138,6 +140,36 @@ class TCallbackClientScriptTest extends TestCase
 				['Prado.Browser.vibrate' => [[100, 50, 100]]],
 				['Prado.Browser.vibrate' => [0]],
 			],
+			$page->getClientFunctions()
+		);
+	}
+
+	public function testSetListItemsSendsGroupAndContent()
+	{
+		$page = new TTestCallbackPage();
+		$list = new TDropDownList();
+		$list->setID('Pets');
+		$list->setPromptText('Choose');
+		$plain = new TListItem('Fish', 'fish');
+		$grouped = new TListItem('Dog', 'dog');
+		$grouped->setAttribute('Group', 'Mammals');
+		$attributed = new TListItem('Bird', 'bird');
+		$attributed->setAttribute('class', 'wing');
+		$rich = new TListItem('Cat', 'cat');
+		$rich->setContent('<b>Cat</b>');
+		$richGrouped = new TListItem('Cow', 'cow');
+		$richGrouped->setAttribute('Group', 'Mammals');
+		$richGrouped->setContent('<i>Cow</i>');
+		$page->getCallbackClient()->setListItems($list, [$plain, $grouped, $attributed, $rich, $richGrouped]);
+		$this->assertSame(
+			[['Prado.Element.setOptions' => ['Pets', [
+				['Choose', 'Choose'],
+				['Fish', 'fish'],
+				['Dog', 'dog', 'Mammals'],
+				['Bird', 'bird'],
+				['Cat', 'cat', null, '<b>Cat</b>'],
+				['Cow', 'cow', 'Mammals', '<i>Cow</i>'],
+			]]]],
 			$page->getClientFunctions()
 		);
 	}

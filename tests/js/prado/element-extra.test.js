@@ -198,6 +198,43 @@ describe('Prado.Element.setOptions', () => {
 	it('is a no-op when the element does not exist', () => {
 		expect(() => Element.setOptions('no-such-element', [['A', 'a']])).not.toThrow();
 	});
+
+	it('keeps the <button> of a customizable select and replaces the options', () => {
+		const button = document.createElement('button');
+		button.appendChild(document.createElement('selectedcontent'));
+		sel.appendChild(button);
+		sel.appendChild(document.createElement('option'));
+		Element.setOptions('so-test', [['Apple', 'apple']]);
+		expect(sel.firstElementChild).toBe(button);
+		expect(sel.options).toHaveLength(1);
+		expect(sel.options[0].value).toBe('apple');
+	});
+
+	it('sets option content as HTML in place of the text', () => {
+		Element.setOptions('so-test', [
+			['Cat', 'cat', null, '<img src="cat.svg" alt=""> Cat'],
+			['<b>Dog</b>', 'dog'],
+		]);
+		expect(sel.options[0].querySelector('img')).not.toBeNull();
+		expect(sel.options[0].textContent.trim()).toBe('Cat');
+		expect(sel.options[1].querySelector('b')).toBeNull();
+		expect(sel.options[1].textContent).toBe('<b>Dog</b>');
+	});
+
+	it('places options without a group after the option group, as the page render does', () => {
+		Element.setOptions('so-test', [
+			['Red',   'red',   'Colors'],
+			['Cat',   'cat',   null, '<b>Cat</b>'],
+			['Dog',   'dog'],
+			['Blue',  'blue',  'Colors'],
+		]);
+		const children = [...sel.children];
+		expect(children.map((c) => c.tagName.toLowerCase())).toEqual(['optgroup', 'option', 'option', 'optgroup']);
+		expect(children[0].label).toBe('Colors');
+		expect(children[0].querySelectorAll('option')).toHaveLength(1);
+		expect(children[1].querySelector('b')).not.toBeNull();
+		expect(sel.querySelectorAll('optgroup:not([label])')).toHaveLength(0);
+	});
 });
 
 // ─── Prado.Element.replace ───────────────────────────────────────────────────

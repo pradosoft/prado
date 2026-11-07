@@ -644,18 +644,19 @@ Prado.Element =
 	},
 
 	/**
-	 * Sets the options for a select element.
+	 * Sets the options for a select element. The `<button>` of a customizable select stays.
 	 * @function ?
 	 * @param {string} element - Element id
 	 * @param {array[]} options - Array of options, each an array of structure
-	 *   [ "optionText" , "optionValue" , "optionGroup" ]
+	 *   [ "optionText" , "optionValue" , "optionGroup" , "optionContent" ]
 	 */
 	setOptions(element, options) {
 		const el = document.getElementById(element);
 		if(el && el.tagName.toLowerCase() == "select")
 		{
-			while(el.childNodes.length > 0)
-				el.removeChild(el.lastChild);
+			for(const node of [...el.childNodes])
+				if(node.nodeName.toLowerCase() != "button")
+					el.removeChild(node);
 
 			const optDom = Prado.Element.createOptions(options);
 			for(let i = 0; i < optDom.length; i++)
@@ -666,44 +667,47 @@ Prado.Element =
 	/**
 	 * Create opt-group options from an array of options. Option text is set as the page render
 	 * sets it: `<` and `>` are escaped, as THttpUtility::htmlEncode() escapes them, and entities
-	 * decode. The text creates no elements.
+	 * decode. The text creates no elements. An option content is HTML from the server, set as
+	 * the page render sets TListItem Content; it replaces the text.
+	 * Options without a group follow the option group, as the page render places them.
 	 * @function {array} ?
 	 * @param {array[]} options - Array of options, each an array of structure
-	 *   [ "optionText" , "optionValue" , "optionGroup" ]
+	 *   [ "optionText" , "optionValue" , "optionGroup" , "optionContent" ];
+	 *   a null or missing group places the option outside an option group
 	 * @returns Array of option DOM elements
 	 */
 	createOptions(options) {
 		let previousGroup = null;
-		let optgroup=null;
+		let optgroup = null;
 		const result = [];
-		for(let i = 0; i<options.length; i++)
+		for(let i = 0; i < options.length; i++)
 		{
 			const option = options[i];
-			if(option.length > 2)
+			const group = option.length > 2 && option[2] != null ? option[2] : null;
+			if(group !== previousGroup)
 			{
-				const group = option[2];
-				if(group!=previousGroup)
+				if(optgroup != null)
+					result.push(optgroup);
+				optgroup = null;
+				if(group !== null)
 				{
-					if(previousGroup!=null && optgroup!=null)
-					{
-						result.push(optgroup);
-						previousGroup=null;
-						optgroup=null;
-					}
 					optgroup = document.createElement('optgroup');
 					optgroup.label = group;
-					previousGroup = group;
 				}
+				previousGroup = group;
 			}
 			const opt = document.createElement('option');
-			opt.innerHTML = String(option[0]).replace(/</g, '&lt;').replace(/>/g, '&gt;');
+			if(option.length > 3 && option[3] != null && option[3] !== '')
+				opt.innerHTML = String(option[3]);
+			else
+				opt.innerHTML = String(option[0]).replace(/</g, '&lt;').replace(/>/g, '&gt;');
 			opt.value = option[1];
-			if(optgroup!=null)
+			if(optgroup != null)
 				optgroup.appendChild(opt);
 			else
 				result.push(opt);
 		}
-		if(optgroup!=null)
+		if(optgroup != null)
 			result.push(optgroup);
 		return result;
 	},

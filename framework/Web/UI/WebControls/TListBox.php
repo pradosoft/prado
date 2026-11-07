@@ -28,11 +28,17 @@ use Prado\TPropertyValue;
  *  // or <com:TListItem Attributes.Group="Group Name" .../> in template
  * ```
  *
+ * A {@see setCustomizable Customizable} list box uses the `appearance: base-select`
+ * of a customizable select ({@see TCustomizableSelectTrait}) and shows the rich
+ * {@see TListItem::setContent Content} of its options.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
  */
 class TListBox extends TListControl implements \Prado\Web\UI\IPostBackDataHandler, \Prado\Web\UI\IValidatable
 {
+	use TCustomizableSelectTrait;
+
 	private $_dataChanged = false;
 	private $_isValid = true;
 
@@ -51,6 +57,7 @@ class TListBox extends TListControl implements \Prado\Web\UI\IPostBackDataHandle
 			$writer->addAttribute('name', $this->getUniqueID());
 		}
 		parent::addAttributesToRender($writer);
+		$this->addCustomizableAttributesToRender($writer);
 	}
 
 	/**
@@ -64,8 +71,8 @@ class TListBox extends TListControl implements \Prado\Web\UI\IPostBackDataHandle
 	}
 
 	/**
-	 * Registers the list control to load post data on postback.
-	 * This method overrides the parent implementation.
+	 * Registers the list control to load post data on postback and the stylesheet of a
+	 * {@see getCustomizable Customizable} list box.
 	 * @param mixed $param event parameter
 	 */
 	public function onPreRender($param)
@@ -74,6 +81,7 @@ class TListBox extends TListControl implements \Prado\Web\UI\IPostBackDataHandle
 		if ($this->getEnabled(true)) {
 			$this->getPage()->registerRequiresPostData($this);
 		}
+		$this->registerCustomizableStyleSheet();
 	}
 
 	/**

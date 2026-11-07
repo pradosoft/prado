@@ -754,6 +754,7 @@ return [
 'TContent' => 'Prado\Web\UI\WebControls\TContent',
 'TContentDirection' => 'Prado\Web\UI\WebControls\TContentDirection',
 'TContentPlaceHolder' => 'Prado\Web\UI\WebControls\TContentPlaceHolder',
+'TCustomizableSelectTrait' => 'Prado\Web\UI\WebControls\TCustomizableSelectTrait',
 'TCustomValidator' => 'Prado\Web\UI\WebControls\TCustomValidator',
 'TDataBoundControl' => 'Prado\Web\UI\WebControls\TDataBoundControl',
 'TDataGrid' => 'Prado\Web\UI\WebControls\TDataGrid',

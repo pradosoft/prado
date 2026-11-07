@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+NEW: Issue #1410 - Customizable select: `TListItem.Content` (or the item's template body) is HTML rendered inside its `<option>`, and is sent with callback option updates. `TDropDownList.Customizable` and `TListBox.Customizable` (`TCustomizableSelectTrait`) opt the select into `appearance: base-select`; a customizable dropdown list renders `<selectedcontent>` in its button. (belisoful)
 BUG: `TRestPagination` was fatal for a `per_page=1` request with a page near `PHP_INT_MAX`; the page cap no longer overflows. (belisoful)
 NEW: Issue #1404 - `TAuthView` renders content by the current user: the first `TAuthViewTemplate` child whose `Users`, `Roles`, and `Permissions` match, then its own body. Only the chosen case joins the control tree, and a login or logout during a postback renders the new case. (belisoful)
 ENH: Issue #1404 - `TAuthManager::getReturnUrl()` prefers a local `ReturnUrl` request parameter to the session value; `constructLoginUrl()` builds a login link carrying it, and `isLocalReturnUrl()` rejects other hosts and schemes. (belisoful)

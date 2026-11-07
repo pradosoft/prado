@@ -900,6 +900,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 - [TContent](./Web/UI/WebControls/TContent.md)
 - [TContentDirection](./Web/UI/WebControls/TContentDirection.md)
 - [TContentPlaceHolder](./Web/UI/WebControls/TContentPlaceHolder.md)
+- [TCustomizableSelectTrait](./Web/UI/WebControls/TCustomizableSelectTrait.md)
 - [TCustomValidator](./Web/UI/WebControls/TCustomValidator.md)
 - [TDataBoundControl](./Web/UI/WebControls/TDataBoundControl.md)
 - [TDataGrid](./Web/UI/WebControls/TDataGrid.md)

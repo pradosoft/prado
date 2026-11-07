@@ -36,11 +36,24 @@ use Prado\TPropertyValue;
  * The {@see clearSelection clearSelection} method will select the prompt item if existing, otherway the first
  * available item in the dropdown list will be selected.
  *
+ * A {@see setCustomizable Customizable} dropdown list uses the `appearance: base-select`
+ * of a customizable select ({@see TCustomizableSelectTrait}). It renders
+ * `<button><selectedcontent></selectedcontent></button>` before the options, so the
+ * button shows the content of the selected option.
+ * ```xml
+ * <com:TDropDownList Customizable="true">
+ *   <com:TListItem Value="cat"><img src="cat.svg" alt=""> Cat</com:TListItem>
+ *   <com:TListItem Value="dog"><img src="dog.svg" alt=""> Dog</com:TListItem>
+ * </com:TDropDownList>
+ * ```
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
  */
 class TDropDownList extends TListControl implements \Prado\Web\UI\IPostBackDataHandler, \Prado\Web\UI\IValidatable
 {
+	use TCustomizableSelectTrait;
+
 	private $_dataChanged = false;
 	private $_isValid = true;
 
@@ -52,6 +65,36 @@ class TDropDownList extends TListControl implements \Prado\Web\UI\IPostBackDataH
 	{
 		$writer->addAttribute('name', $this->getUniqueID());
 		parent::addAttributesToRender($writer);
+		$this->addCustomizableAttributesToRender($writer);
+	}
+
+	/**
+	 * Registers the stylesheet of a {@see getCustomizable Customizable} dropdown list.
+	 * @param mixed $param event parameter
+	 * @since 4.4.0
+	 */
+	public function onPreRender($param)
+	{
+		parent::onPreRender($param);
+		$this->registerCustomizableStyleSheet();
+	}
+
+	/**
+	 * Renders the `<button>` with `<selectedcontent>` of a {@see getCustomizable Customizable}
+	 * dropdown list, then the options.
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer
+	 * @since 4.4.0
+	 */
+	public function renderContents($writer)
+	{
+		if ($this->getCustomizable()) {
+			$writer->renderBeginTag('button');
+			$writer->renderBeginTag('selectedcontent');
+			$writer->renderEndTag();
+			$writer->renderEndTag();
+			$writer->writeLine();
+		}
+		parent::renderContents($writer);
 	}
 
 	/**
