@@ -746,6 +746,7 @@ authviewtemplate_permissions_unsupported	= TAuthViewTemplate.Permissions ''{0}''
 dbparametermodule_table_nonexistent		= TDbParameterModule cannot find DB table ''{0}'' to store parameter data.
 dbparametermodule_get_no_blank_key		= TDbParameterModule cannot get an empty key.
 dbparametermodule_set_no_blank_key		= TDbParameterModule cannot set an empty key with a value.
+dbparametermodule_set_final				= TDbParameterModule cannot set ''{0}''; the application parameter is final.
 dbparametermodule_connectionid_invalid	= TDbParameterModule.ConnectionID ''{0}'' does not point to a valid TDataSourceConfig module.
 dbparametermodule_serializer_not_callable= TDbParameterModule Serializer is not a callable.
 

@@ -40,10 +40,20 @@ The map of application parameters returned by `TApplication::getParameters()` (c
 
 | Operation | Result |
 |---|---|
-| `itemAt()`, `$p[$key]`, `contains()` | value / true |
+| `itemAt()`, `$p[$key]` | value; null for an absent key, without `dyNoItem` |
+| `contains()` | whether a value is stored |
 | `add()`, `$p[$key] = $v`, `mergeWith()` | throws `TInvalidOperationException` (`appparameters_final`) |
 | `remove()`, `unset($p[$key])`, `removeItem()`, `clear()`, `copyFrom()` | throws `appparameters_final` |
 | `finalize()` again | no change |
+
+## Behaviors on the map
+
+| Behavior | Interaction with a final key |
+|---|---|
+| [`TMapRouteBehavior`](Util/Behaviors/TMapRouteBehavior.md) | rejected changes raise no `dyAddItem`/`dyRemoveItem`; the handler is not called |
+| [`TMapLazyLoadBehavior`](Util/Behaviors/TMapLazyLoadBehavior.md) | a final absent key raises no `dyNoItem`; the loader is not called |
+| [`TParameterizeBehavior`](Util/Behaviors/TParameterizeBehavior.md) | the property holds a copy of the final value; code may still set it |
+| [`TDbParameterModule`](Util/TDbParameterModule.md) | skips final rows on load, `get()` does not set them, `set()` throws before writing |
 
 ## Patterns & Gotchas
 

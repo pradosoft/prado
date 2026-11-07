@@ -212,6 +212,24 @@ class TApplicationParametersTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame(['open'], $added);
 	}
 
+	public function testFinalAbsentKey_skipsLazyLoad(): void
+	{
+		$params = $this->params(['present' => 'v']);
+		$params->finalize('absent');
+		$params->finalize('present');
+		$asked = [];
+		$params->attachBehavior('lazy', new \Prado\Util\Behaviors\TMapLazyLoadBehavior(function ($key) use (&$asked) {
+			$asked[] = $key;
+			return "lazy:$key";
+		}));
+
+		$this->assertNull($params->itemAt('absent'));
+		$this->assertNull($params['absent']);
+		$this->assertSame('v', $params['present']);
+		$this->assertSame('lazy:open', $params['open']);
+		$this->assertSame(['open'], $asked);
+	}
+
 	public function testSerialization_keepsFinalKeys(): void
 	{
 		$params = $this->params(['locked' => 'v', 'open' => 1]);

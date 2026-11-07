@@ -35,10 +35,19 @@ use Prado\Exceptions\TInvalidOperationException;
  *
  * | Operation on a final key | Result |
  * |---|---|
- * | {@see itemAt()}, `$params[$key]` | returns the value |
+ * | {@see itemAt()}, `$params[$key]` | returns the value; null for an absent key, without `dyNoItem` |
  * | {@see add()}, `$params[$key] = $v`, {@see mergeWith()} | throws |
  * | {@see remove()}, `unset($params[$key])`, {@see clear()}, {@see copyFrom()} | throws |
  * | {@see finalize()} | no change |
+ *
+ * Behaviors on the map follow the final keys:
+ * - `dyAddItem` and `dyRemoveItem` are not raised for a rejected change, so
+ *   {@see \Prado\Util\Behaviors\TMapRouteBehavior} handlers receive no message.
+ * - `dyNoItem` is not raised for a final absent key, so
+ *   {@see \Prado\Util\Behaviors\TMapLazyLoadBehavior} loaders are not consulted.
+ * - A property set from a final parameter by
+ *   {@see \Prado\Util\Behaviors\TParameterizeBehavior} holds a copy; code may still set
+ *   that property directly.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0
@@ -75,6 +84,21 @@ class TApplicationParameters extends TMap
 	public function getFinalKeys(): array
 	{
 		return array_keys($this->_final);
+	}
+
+	/**
+	 * Returns a parameter.
+	 * A final absent key returns null without raising `dyNoItem`, so lazy loaders
+	 * cannot supply it.
+	 * @param mixed $key the parameter key; null looks up the empty-string key.
+	 * @return mixed the parameter value, null if no value is found.
+	 */
+	public function itemAt($key)
+	{
+		if ($this->getIsFinal($key) && !$this->contains($key)) {
+			return null;
+		}
+		return parent::itemAt($key);
 	}
 
 	/**
