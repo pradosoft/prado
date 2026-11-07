@@ -107,6 +107,12 @@ class TMediaTypeTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame('application/ld+json', TMediaType::JSON_LD);
 	}
 
+	public function testConstantManifestJson(): void
+	{
+		$this->assertSame('application/manifest+json', TMediaType::MANIFEST_JSON);
+		$this->assertSame(TMediaType::MANIFEST_JSON, TMediaType::mimeTypeFromExtension('webmanifest'));
+	}
+
 	public function testConstantWasm(): void
 	{
 		$this->assertSame('application/wasm', TMediaType::WASM);

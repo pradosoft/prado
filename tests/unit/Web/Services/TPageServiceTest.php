@@ -285,6 +285,17 @@ class TPageServiceTest extends \PHPUnit\Framework\TestCase
 	}
 
 	/**
+	 * The service worker of the service's pages defaults to empty and is trimmed.
+	 */
+	public function testServiceWorker()
+	{
+		$service = $this->service();
+		$this->assertSame('', $service->getServiceWorker());
+		$service->setServiceWorker(' admin ');
+		$this->assertSame('admin', $service->getServiceWorker());
+	}
+
+	/**
 	 * The default page cannot change once the service is initialized.
 	 */
 	public function testSetDefaultPageAfterInitializationIsRefused()

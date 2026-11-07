@@ -10,6 +10,10 @@ pageservice_page_required				= Le nom de la page est requis.
 pageservice_page_unknown				= La page ''{0}'' n'a pas été trouvée.
 pageservice_security_violation			= TPageService ne peut pas accéder au répertoire supplémentaire ''{0}''.
 
+serviceworkerservice_request_unknown	= La requête de service worker ''{0}'' n'a pas été trouvée.
+serviceworkerservice_worker_unknown		= Le service worker ''{0}'' n'a pas été trouvé.
+serviceworkerservice_manifest_unknown	= Le service worker ''{0}'' n'a pas de manifeste d'application web.
+
 page_csrf_token_invalid					= La page requiert un jeton CSRF valide.
 
 pagestatepersister_pagestate_corrupted	= L'état de la page est corrompu.

@@ -106,4 +106,19 @@ export default [
 			'no-empty': 'warn',
 		},
 	},
+	{
+		// Service worker scripts run in the ServiceWorkerGlobalScope, not a window.
+		// TServiceWorkerScript declares PRADO_SERVICE_WORKER before them, and runs a
+		// fragment as a function body with the runtime API `prado` and its `config`.
+		files: ['framework/Web/Javascripts/source/prado/serviceworker/worker*.js'],
+
+		languageOptions: {
+			globals: {
+				...globals.serviceworker,
+				PRADO_SERVICE_WORKER: 'readonly',
+				prado:                'writable',
+				config:               'readonly',
+			},
+		},
+	},
 ];

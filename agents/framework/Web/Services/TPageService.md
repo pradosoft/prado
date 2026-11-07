@@ -49,6 +49,7 @@ Activated when the URL contains no special service parameter, or when `ServiceID
 | `BasePath` | Root directory for page files (default: `pages/` under app root) |
 | `DefaultPage` | Page to serve when no page specified (default: `'Home'`) |
 | `ServiceParameter` | URL parameter identifying the page path |
+| `ServiceWorker` | Worker of `TServiceWorkerModule` for the service's pages, unless a page sets `TPage::ServiceWorker`; empty selects the module's `DefaultWorker` (4.4.0) |
 
 ### Page Resolution
 

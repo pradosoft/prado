@@ -10,6 +10,10 @@ pageservice_page_required				= Nama halaman diperlukan.
 pageservice_page_unknown				= Halaman ''{0}'' tidak ditemukan.
 pageservice_security_violation			= TPageService tidak dapat mengakses direktori tambahan ''{0}''.
 
+serviceworkerservice_request_unknown	= Permintaan service worker ''{0}'' tidak ditemukan.
+serviceworkerservice_worker_unknown		= Service worker ''{0}'' tidak ditemukan.
+serviceworkerservice_manifest_unknown	= Service worker ''{0}'' tidak memiliki manifes aplikasi web.
+
 page_csrf_token_invalid					= Halaman ini memerlukan token CSRF yang valid.
 
 pagestatepersister_pagestate_corrupted	= Kondisi halaman rusak.

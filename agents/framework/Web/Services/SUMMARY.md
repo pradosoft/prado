@@ -8,6 +8,8 @@ Application services handling different response types; registered in `applicati
 
 - **`Rest/`** — `TRestService` JSON API service; `TRestResource` handlers declared with `#[TRestRoute]`; `TRestRoutePattern` routes; `TRestException` problem documents; `TRestPagination`.
 
+- **`ServiceWorker/`** — `TServiceWorkerModule` and `TServiceWorkerService`: browser service workers by scope, contributor fragments, manifests, page registration.
+
 - **`TJsonService`** — Returns JSON-formatted responses; configures named JSON response handlers.
 
 - **`TSoapService`** — SOAP/WSDL service; auto-generates WSDL from provider classes using `@soapmethod` PHPDoc annotations.
