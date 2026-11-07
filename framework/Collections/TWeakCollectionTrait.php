@@ -197,13 +197,29 @@ trait TWeakCollectionTrait
 	}
 
 	/**
+	 * Marks the WeakMap as changed so the next {@see weakChanged} reports true.
+	 * An entry whose object is already collected when it is added has no object
+	 * to track; marking the change lets the next scrub remove the entry.
+	 * @since 4.4.0
+	 */
+	protected function weakMarkChanged(): void
+	{
+		if ($this->_weakMap) {
+			$this->_weakCount++;
+		}
+	}
+
+	/**
 	 * Removes or updates an object from WeakMap tracking.
+	 * Removing an object that is not tracked is a no-op.  This occurs when a
+	 * destructor removes an entry while turning DiscardInvalid on registers the
+	 * existing entries, before that entry is registered.
 	 * @param object $object The object being tracked for existence.
 	 * @return int The number of remaining instances of the object in the Collection.
 	 */
 	protected function weakRemove(object $object): int
 	{
-		if ($this->_weakMap) {
+		if ($this->_weakMap && $this->_weakMap->offsetExists($object)) {
 			$count = $this->_weakMap->offsetGet($object) - 1;
 			if ($count) {
 				$this->_weakMap->offsetSet($object, $count);

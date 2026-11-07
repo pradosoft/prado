@@ -1,4 +1,6 @@
 ## Version 4.4.0 - TBA
+BUG: Weak collections: `TWeakMap` and `TWeakCallableCollection` constructed with data resolve `DiscardInvalid` to the opposite of `ReadOnly`; a `TEventHandler` without a handler object is counted and found by its callable, and one collected before it is added is scrubbed; turning `DiscardInvalid` on survives a destructor removing an entry. (belisoful)
+BUG: `TWeakList` weakens a copy of a `Traversable` `ArrayAccess` item and reads into a copy, so the caller's container keeps its objects and the list releases them. (belisoful)
 BUG: Issue #129 - Composite key lookups match an `OR` of `AND`-joined equalities in place of the row-value `IN`, which MySQL does not index in `DELETE` and `UPDATE` and SQL Server and DB2 reject; `TDbCommandBuilder::getIndexCondition()` builds it, and `createIndexCriteria()` gives `1=0` for no values in place of `FALSE`. (belisoful)
 BUG: `TRestPagination` was fatal for a `per_page=1` request with a page near `PHP_INT_MAX`; the page cap no longer overflows. (belisoful)
 NEW: Issue #1404 - `TAuthView` renders content by the current user: the first `TAuthViewTemplate` child whose `Users`, `Roles`, and `Permissions` match, then its own body. Only the chosen case joins the control tree, and a login or logout during a postback renders the new case. (belisoful)
