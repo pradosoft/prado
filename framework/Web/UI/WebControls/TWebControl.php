@@ -108,13 +108,15 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	/**
 	 * Sets the access key of the control.
 	 * Only one-character string can be set, or an exception will be raised.
+	 * The character may be multibyte UTF-8, such as `é`.
 	 * Pass in an empty string if you want to disable access key.
 	 * @param string $value the access key to be set
 	 * @throws TInvalidDataValueException if the access key is specified with more than one character
 	 */
 	public function setAccessKey($value)
 	{
-		if (strlen($value) > 1) {
+		$value = TPropertyValue::ensureString($value);
+		if ($value !== '' && !preg_match('/^.$/su', $value)) {
 			throw new TInvalidDataValueException('webcontrol_accesskey_invalid', $this::class, $value);
 		}
 		$this->setViewState('AccessKey', $value, '');

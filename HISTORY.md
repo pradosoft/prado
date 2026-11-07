@@ -74,6 +74,9 @@ BUG: TApplicationComponent keeps the fx-event cache file only in Performance mod
 BUG: Prado::getUserLanguages() returns 'en' for an empty Accept-Language header and skips empty tags.
 BUG: THttpRequest::getHeaders() caches the headers per instance.
 BUG: THttpResponse::httpRedirect() works without SERVER_SOFTWARE.
+BUG: TReCaptcha2::validate() verifies the token with Google siteverify; it now needs SecretKey and outbound HTTPS. TReCaptcha and TReCaptchaValidator (reCAPTCHA v1) are deprecated. See UPGRADE.md.
+BUG: TWebControl::setAccessKey() ensures a string and accepts one multibyte character.
+BUG: TSoapService PHP configuration without a 'soap' key registers nothing, and a server's 'class' key is honored.
 
 ## Version 4.3.2 - January 28, 2026
 

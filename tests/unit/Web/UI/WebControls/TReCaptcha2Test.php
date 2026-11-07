@@ -58,6 +58,19 @@ class SpyTReCaptcha2 extends TReCaptcha2
 	{
 		return $this->_resetCallCount;
 	}
+
+	/** @var ?string the siteverify answer body; null simulates a transport failure. */
+	public ?string $verifyAnswer = '{"success": true}';
+
+	/** @var array[] each siteverify request as [url, body]. */
+	public array $verifyRequests = [];
+
+	/** Records the siteverify request instead of sending it. */
+	protected function postVerifyRequest(string $url, string $body): ?string
+	{
+		$this->verifyRequests[] = [$url, $body];
+		return $this->verifyAnswer;
+	}
 }
 
 // ---------------------------------------------------------------------------
@@ -403,18 +416,71 @@ class TReCaptcha2Test extends \PHPUnit\Framework\TestCase
 		$this->assertFalse($captcha->validate());
 	}
 
-	public function testValidateReturnsTrueWhenValidationPropertyValueIsNonEmpty(): void
+	public function testValidatePostsTheTokenToSiteverify(): void
 	{
 		[$captcha] = $this->makeSpyWithPage();
+		$captcha->setSecretKey('secret-key');
 		$captcha->setSpyValidationValue('03ANYolqt_valid_token');
 		$this->assertTrue($captcha->validate());
+		$this->assertCount(1, $captcha->verifyRequests);
+		[$url, $body] = $captcha->verifyRequests[0];
+		$this->assertSame(TReCaptcha2::VERIFY_URL, $url);
+		parse_str($body, $fields);
+		$this->assertSame('secret-key', $fields['secret']);
+		$this->assertSame('03ANYolqt_valid_token', $fields['response']);
+		$this->assertSame(['success' => true], $captcha->getVerifyResult());
 	}
 
-	public function testValidateReturnsTrueForArbitraryNonEmptyString(): void
+	public function testValidateFailsWhenGoogleRejectsTheToken(): void
 	{
 		[$captcha] = $this->makeSpyWithPage();
+		$captcha->setSecretKey('secret-key');
+		$captcha->setSpyValidationValue('x');
+		$captcha->verifyAnswer = '{"success": false, "error-codes": ["invalid-input-response"]}';
+		$this->assertFalse($captcha->validate());
+	}
+
+	public function testValidateFailsWithoutAnExplicitSuccess(): void
+	{
+		[$captcha] = $this->makeSpyWithPage();
+		$captcha->setSecretKey('secret-key');
+		$captcha->setSpyValidationValue('x');
+		$captcha->verifyAnswer = '{"success": "true"}';
+		$this->assertFalse($captcha->validate());
+	}
+
+	public function testValidateFailsOnAnUnreadableAnswerOrTransportFailure(): void
+	{
+		foreach (['not json', null] as $answer) {
+			[$captcha] = $this->makeSpyWithPage();
+			$captcha->setSecretKey('secret-key');
+			$captcha->setSpyValidationValue('x');
+			$captcha->verifyAnswer = $answer;
+			$this->assertFalse($captcha->validate());
+			$this->assertNull($captcha->getVerifyResult());
+		}
+	}
+
+	public function testValidateVerifiesOncePerRequest(): void
+	{
+		[$captcha] = $this->makeSpyWithPage();
+		$captcha->setSecretKey('secret-key');
 		$captcha->setSpyValidationValue('x');
 		$this->assertTrue($captcha->validate());
+		$this->assertTrue($captcha->validate());
+		$this->assertCount(1, $captcha->verifyRequests);
+	}
+
+	public function testValidateSkipsTheRequestWithoutATokenOrSecretKey(): void
+	{
+		[$captcha] = $this->makeSpyWithPage();
+		$captcha->setSecretKey('secret-key');
+		$captcha->setSpyValidationValue('');
+		$this->assertFalse($captcha->validate());
+		[$captcha] = $this->makeSpyWithPage();
+		$captcha->setSpyValidationValue('x');
+		$this->assertFalse($captcha->validate());
+		$this->assertCount(0, $captcha->verifyRequests);
 	}
 
 	// -----------------------------------------------------------------------

@@ -10,6 +10,7 @@
 
 namespace Prado\Web\UI\WebControls;
 
+use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Web\Javascripts\TJavaScript;
 use Prado\Exceptions\TConfigurationException;
@@ -35,7 +36,9 @@ use Prado\Web\UI\ActiveControls\TActiveControlAdapter;
  * control on the page will lead to unpredictable results, and the user will most likely unable to solve
  * any of them successfully.
  *
- * Upon postback, user input can be validated by calling {@see validate()}.
+ * Upon postback, user input can be validated by calling {@see validate()}, which posts the
+ * response token and {@see setSecretKey SecretKey} to Google's siteverify endpoint
+ * ({@see VERIFY_URL}). Validation therefore needs the SecretKey and outbound HTTPS access.
  * The {@see \Prado\Web\UI\WebControls\TReCaptcha2Validator} control can also be used to do validation, which provides
  * server-side validation. Calling (@link validate()) will invalidate the token supplied, so all consecutive
  * calls to the method - without solving a new captcha - will return false. Therefore if implementing a multi-stage
@@ -59,7 +62,16 @@ use Prado\Web\UI\ActiveControls\TActiveControlAdapter;
 class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\ICallbackEventHandler, \Prado\Web\UI\IValidatable
 {
 	public const ChallengeFieldName = 'g-recaptcha-response';
+	/**
+	 * Google's endpoint that verifies a response token.
+	 * @since 4.3.3
+	 */
+	public const VERIFY_URL = 'https://www.google.com/recaptcha/api/siteverify';
 	private $_isValid = true;
+	/** @var ?bool the siteverify result of this request, null before verification. */
+	private $_verified;
+	/** @var ?array Google's decoded siteverify answer of this request. */
+	private $_verifyResult;
 
 	/**
 	 * Creates a new callback control, sets the adapter to
@@ -363,14 +375,86 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 		$cs->registerEndScript("grecaptcha:$id", $code);
 	}
 
+	/**
+	 * Verifies the posted response token with Google's siteverify endpoint.
+	 * Repeated calls in the same request return the first result.
+	 * @return bool whether Google accepted the token.
+	 */
 	public function validate()
 	{
-		$value = $this->getValidationPropertyValue();
-		if ($value === null || empty($value)) {
+		if ($this->_verified === null) {
+			$this->_verified = $this->verifyResponse((string) $this->getValidationPropertyValue());
+		}
+		return $this->_verified;
+	}
+
+	/**
+	 * @return ?array Google's decoded siteverify answer from this request, or null before verification or on failure.
+	 * @since 4.3.3
+	 */
+	public function getVerifyResult(): ?array
+	{
+		return $this->_verifyResult;
+	}
+
+	/**
+	 * Posts a response token to siteverify. An empty token or SecretKey fails without a request.
+	 * A transport failure logs a warning and fails.
+	 * @param string $response the response token from the widget.
+	 * @return bool whether Google answered `"success": true`.
+	 * @since 4.3.3
+	 */
+	protected function verifyResponse(string $response): bool
+	{
+		if ($response === '' || ($secret = (string) $this->getSecretKey()) === '') {
 			return false;
 		}
+		$fields = ['secret' => $secret, 'response' => $response];
+		if (($address = (string) $this->getRequest()->getUserHostAddress()) !== '') {
+			$fields['remoteip'] = $address;
+		}
+		$answer = $this->postVerifyRequest(self::VERIFY_URL, http_build_query($fields));
+		if ($answer === null) {
+			Prado::warning('TReCaptcha2 could not reach siteverify.', static::class);
+			return false;
+		}
+		$data = json_decode($answer, true);
+		$this->_verifyResult = is_array($data) ? $data : null;
+		return ($this->_verifyResult['success'] ?? false) === true;
+	}
 
-		return true;
+	/**
+	 * Posts a form-encoded body and returns the response body.  cURL is used when it is
+	 * loaded, otherwise an HTTP stream context.
+	 * @param string $url the URL to post to.
+	 * @param string $body the `application/x-www-form-urlencoded` body.
+	 * @return ?string the response body, or null when the request fails or the status is not 2xx.
+	 * @since 4.3.3
+	 */
+	protected function postVerifyRequest(string $url, string $body): ?string
+	{
+		if (function_exists('curl_init')) {
+			$ch = curl_init($url);
+			curl_setopt_array($ch, [
+				CURLOPT_POST => true,
+				CURLOPT_POSTFIELDS => $body,
+				CURLOPT_RETURNTRANSFER => true,
+				CURLOPT_HTTPHEADER => ['Content-Type: application/x-www-form-urlencoded'],
+				CURLOPT_TIMEOUT => 10,
+			]);
+			$result = curl_exec($ch);
+			$status = (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+			return (is_string($result) && $status >= 200 && $status < 300) ? $result : null;
+		}
+		$context = stream_context_create(['http' => [
+			'method' => 'POST',
+			'header' => "Content-Type: application/x-www-form-urlencoded\r\n",
+			'content' => $body,
+			'timeout' => 10,
+			'ignore_errors' => false,
+		]]);
+		$result = @file_get_contents($url, false, $context);
+		return is_string($result) ? $result : null;
 	}
 
 	/**
