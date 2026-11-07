@@ -1,0 +1,35 @@
+/*! PRADO TTooltip stylesheet | github.com/pradosoft/prado */
+
+.prado-tooltip {
+	max-width: 20rem;
+	padding: 0.25rem 0.5rem;
+	font-size: 0.875rem;
+	line-height: 1.4;
+	background: CanvasText;
+	color: Canvas;
+	border: 1px solid transparent;
+	border-radius: 0.25rem;
+}
+
+/* Anchored to the target; flips to the opposite side when it does not fit. */
+.prado-tooltip[data-placement] {
+	inset: auto;
+	margin: 0.375rem;
+	position-try-fallbacks: flip-block, flip-inline;
+}
+
+.prado-tooltip[data-placement="top"] {
+	position-area: block-start;
+}
+
+.prado-tooltip[data-placement="bottom"] {
+	position-area: block-end;
+}
+
+.prado-tooltip[data-placement="start"] {
+	position-area: inline-start;
+}
+
+.prado-tooltip[data-placement="end"] {
+	position-area: inline-end;
+}

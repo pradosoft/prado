@@ -1,0 +1,17 @@
+<com:TContent ID="Content">
+	<h1>Tooltip Test Case</h1>
+
+	<div style="padding: 4rem 12rem">
+		<com:TLabel ForControl="userName" Text="Name" />
+		<com:TTextBox ID="userName" />
+		<com:TTooltip ID="nameTip" ForControl="userName" Text="Your full name" />
+	</div>
+	<p id="outside">Outside</p>
+
+	<com:TButton ID="openDialog" Text="Edit" CommandFor="editDialog" Command="show-modal" />
+	<com:TDialog ID="editDialog" Attributes.aria-label="Edit">
+		<com:TLabel ForControl="code" Text="Code" />
+		<com:TTextBox ID="code" />
+		<com:TTooltip ID="codeTip" ForControl="code" Text="Six digits" Placement="Bottom" />
+	</com:TDialog>
+</com:TContent>

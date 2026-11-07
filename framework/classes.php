@@ -1017,6 +1017,7 @@ return [
 'TTextTrackKind' => 'Prado\Web\UI\WebControls\TTextTrackKind',
 'TTime' => 'Prado\Web\UI\WebControls\TTime',
 'TTimeFormat' => 'Prado\Web\UI\WebControls\TTimeFormat',
+'TTooltip' => 'Prado\Web\UI\WebControls\TTooltip',
 'TUnicodeRestrictionLevel' => 'Prado\Web\UI\WebControls\TUnicodeRestrictionLevel',
 'TUnicodeValidator' => 'Prado\Web\UI\WebControls\TUnicodeValidator',
 'TUnsavedChangesGuard' => 'Prado\Web\UI\WebControls\TUnsavedChangesGuard',
