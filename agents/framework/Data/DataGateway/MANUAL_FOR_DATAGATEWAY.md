@@ -873,7 +873,7 @@ TDataGatewayCommand handles composite (multi-column) primary keys by accepting a
 
 **getCompositeKeyCondition()**:
 
-This method constructs an IN clause for composite keys:
+This method validates the key values and returns the index condition for the primary key columns:
 
 ```php
 protected function getCompositeKeyCondition($values)
@@ -970,24 +970,20 @@ $reader = $gateway->findAllByIndex(
 
 **getIndexKeyCondition() Helper**:
 
-The internal helper constructs the WHERE clause for index-based operations:
+The deprecated helper returns the WHERE condition for index-based operations. It delegates to `TDbCommandBuilder::getIndexCondition()`:
 
 ```php
-protected function getIndexKeyCondition($table, $fields, $values)
+public function getIndexKeyCondition($table, $fields, $values)
 {
-    if (!count($values)) {
-        return 'FALSE';
-    }
-    
-    $columns = [];
-    $tableName = $table->getTableFullName();
-    foreach ($fields as $field) {
-        $columns[] = $tableName . '.' . $table->getColumn($field)->getColumnName();
-    }
-    
-    return '(' . implode(', ', $columns) . ') IN ' . $this->quoteTuple($values);
+    return $this->getBuilder()->getIndexCondition($fields, $values, $table);
 }
 ```
+
+| Input | Condition |
+|---|---|
+| no values | `1=0` |
+| one field | `t.a IN ('1', '2')` |
+| several fields | `((t.a = '1' AND t.b = 'x') OR (t.a = '2' AND t.b = 'y'))` |
 
 ---
 

@@ -95,7 +95,7 @@ class TActiveRecordHasMany extends TActiveRecordRelation
 	public function updateAssociatedRecords()
 	{
 		$obj = $this->getContext()->getSourceRecord();
-		$fkObjects = &$obj->{$this->getContext()->getProperty()};
+		$fkObjects = $obj->{$this->getContext()->getProperty()};
 		$success = true;
 		if (($total = count($fkObjects)) > 0) {
 			$source = $this->getSourceRecord();

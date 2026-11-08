@@ -76,6 +76,8 @@ class TDbCommandBuilderTest extends \PHPUnit\Framework\TestCase
 		self::$conn->createCommand("INSERT INTO items VALUES (1, 'foo', 9.99, NULL)")->execute();
 		self::$conn->createCommand("INSERT INTO items VALUES (2, 'bar', 4.50, 'a note')")->execute();
 		self::$conn->createCommand('CREATE TABLE nopk (a INTEGER, b TEXT)')->execute();
+		self::$conn->createCommand('CREATE TABLE pairs (a INTEGER, b TEXT, val TEXT, PRIMARY KEY (a, b))')->execute();
+		self::$conn->createCommand("INSERT INTO pairs VALUES (1, 'x', 'keep'), (1, 'y', 'keep'), (2, 'x', 'drop'), (2, 'y', 'keep')")->execute();
 		self::$meta = new TSqliteMetaData(self::$conn);
 	}
 
@@ -654,6 +656,65 @@ class TDbCommandBuilderTest extends \PHPUnit\Framework\TestCase
 	{
 		$cmd = $this->builder()->createFindCommand('price > ?', [5.0], ['id' => 'asc'], -1, -1, 'name');
 		$this->assertSame(['foo'], $cmd->queryColumn());
+	}
+
+	// -----------------------------------------------------------------------
+	// getIndexCondition / createIndexCriteria
+	// -----------------------------------------------------------------------
+
+	private function pairsBuilder(): TDbCommandBuilder
+	{
+		return new TDbCommandBuilder(self::$conn, self::$meta->getTableInfo('pairs'));
+	}
+
+	/** @return array the "a:b" keys of the pairs rows matching the condition, in key order. */
+	private function pairsWhere(string $condition): array
+	{
+		$rows = self::$conn->createCommand("SELECT a, b FROM pairs WHERE {$condition} ORDER BY a, b")->queryAll();
+		return array_map(fn ($row) => $row['a'] . ':' . $row['b'], $rows);
+	}
+
+	public function test_index_condition_without_values_is_portable_false()
+	{
+		$this->assertSame('1=0', $this->pairsBuilder()->getIndexCondition(['a', 'b'], []));
+		$this->assertSame('1=0', $this->builder()->createIndexCriteria(['id'], [])->getCondition());
+		$this->assertSame([], $this->pairsWhere('1=0'));
+	}
+
+	public function test_index_condition_of_one_field_is_an_in_list()
+	{
+		$builder = $this->builder();
+		$this->assertSame("\"items\".\"id\" IN ('1', '2')", $builder->getIndexCondition(['id'], [1, 2]));
+		$this->assertSame("\"items\".\"id\" IN ('1', '2')", $builder->getIndexCondition(['id'], [[1], ['id' => 2]]));
+	}
+
+	public function test_index_condition_of_several_fields_joins_equalities()
+	{
+		$builder = $this->pairsBuilder();
+		$this->assertSame(
+			"(\"pairs\".\"a\" = '1' AND \"pairs\".\"b\" = 'x')",
+			$builder->getIndexCondition(['a', 'b'], [[1, 'x']])
+		);
+		$this->assertSame(
+			"((\"pairs\".\"a\" = '1' AND \"pairs\".\"b\" = 'x') OR (\"pairs\".\"a\" = '2' AND \"pairs\".\"b\" = 'y'))",
+			$builder->createIndexCriteria(['a', 'b'], [[1, 'x'], ['a' => 2, 'b' => 'y']])->getCondition()
+		);
+	}
+
+	public function test_index_condition_of_several_rows_keeps_precedence_after_and()
+	{
+		$condition = $this->pairsBuilder()->getIndexCondition(['a', 'b'], [[1, 'x'], [2, 'x'], [2, 'y']]);
+
+		$this->assertSame(['1:x', '2:x', '2:y'], $this->pairsWhere($condition));
+		$this->assertSame(['1:x', '2:y'], $this->pairsWhere("val = 'keep' AND " . $condition));
+	}
+
+	public function test_index_condition_of_another_table()
+	{
+		$condition = $this->builder()->getIndexCondition(['a', 'b'], [[2, 'y']], self::$meta->getTableInfo('pairs'));
+
+		$this->assertSame("(\"pairs\".\"a\" = '2' AND \"pairs\".\"b\" = 'y')", $condition);
+		$this->assertSame(['2:y'], $this->pairsWhere($condition));
 	}
 
 	// -----------------------------------------------------------------------
