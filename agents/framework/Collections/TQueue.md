@@ -94,5 +94,5 @@ Returns all items as an array.
 
 ## See Also
 
-- [TQueueIterator](./TQueueIterator.md) - Iterator for the queue
+- [TQueueIterator](./TQueueIterator.md) - Array iterator; not used by TQueue
 - [TStack](./TStack.md) - LIFO stack

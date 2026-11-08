@@ -38,6 +38,9 @@ protected function weakResetCount(): void   // sync $_weakCount to current WeakM
 // Object registration:
 protected function weakAdd(object $object): int     // increment count; adds to WeakMap. Returns new count.
 protected function weakRemove(object $object): int  // decrement count; removes from WeakMap. Returns remaining count.
+                                                    // An untracked object is a no-op returning 0.
+protected function weakMarkChanged(): void          // (since 4.4.0) offsets $_weakCount so weakChanged() is true
+                                                    // until the next scrub; marks an entry added already collected.
 protected function weakObjectCount(object $object): ?int  // instance count for one object
 protected function weakCount(): ?int                // total distinct objects in WeakMap
 
@@ -64,6 +67,10 @@ Implementing classes:
 ## Re-entrancy Guard (since 4.3.3)
 
 PHP's cyclic GC can fire destructors between any two opcodes, potentially calling back into `scrubWeakReferences()` while it is already executing. The `isScrubbing()` / `setScrubbing()` guard prevents the inner call from modifying the internal array while the outer loop is iterating. Any entries skipped by the inner call are cleaned on the next outer pass.
+
+## Untracked Removal
+
+A destructor can remove an entry while turning `DiscardInvalid` on registers the existing entries. When that entry's object is not registered yet, `weakRemove()` is a no-op. [TWeakMap](./TWeakMap.md) iterates a snapshot during this pass, so an object whose duplicate entry was removed is registered again.
 
 ## Serialization
 

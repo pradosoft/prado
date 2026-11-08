@@ -30,7 +30,7 @@ Uses [TWeakCollectionTrait](./TWeakCollectionTrait.md) for the PHP `WeakMap`-bas
 | `AutoGlobalListen` | `bool` | always `false` | Hard-coded to `false` to prevent catastrophic recursion when global events fire. |
 
 Internal counters:
-- `$_eventHandlerCount` — tracks how many `TEventHandler` items are in the list; used to skip the secondary TEventHandler search in `indexOf()` when count is zero.
+- `$_eventHandlerCount` — tracks how many `TEventHandler` items are in the list, including those without a handler object; used to skip the secondary TEventHandler search in `indexOf()` and `priorityOf()` when count is zero.
 
 ## Key Methods
 
@@ -110,7 +110,13 @@ If `DiscardInvalid` is true and the WeakMap reports a change (`weakChanged()`), 
 protected function weakCustomAdd(object $object): void
 protected function weakCustomRemove(object $object): void
 ```
-Proxy to `weakAdd()`/`weakRemove()` from [TWeakCollectionTrait](./TWeakCollectionTrait.md). For `TEventHandler` items, registers/deregisters the handler's *inner object* (not the `TEventHandler` shell) and adjusts `$_eventHandlerCount`.
+Proxy to `weakAdd()`/`weakRemove()` from [TWeakCollectionTrait](./TWeakCollectionTrait.md). For `TEventHandler` items, registers/deregisters the handler's *inner object* (not the `TEventHandler` shell) and adjusts `$_eventHandlerCount` for every `TEventHandler`.
+
+| `TEventHandler` | Bookkeeping |
+|---|---|
+| Live handler object | Counted; handler object tracked |
+| No handler object (e.g. `'strlen'`) | Counted, so a search by `'strlen'` finds it; not tracked |
+| Handler object collected before it is added | Counted; `weakMarkChanged()` so the next scrub removes it and `getCount()` matches `toArray()` |
 
 ### DiscardInvalid Lifecycle
 
@@ -122,7 +128,7 @@ protected function collapseDiscardInvalid(): void
 
 Setting `DiscardInvalid` to `true` on an already-populated list immediately:
 - Starts the WeakMap tracker (`weakStart()`).
-- Iterates existing items and registers all living objects; dead WeakReferences are removed inline.
+- Iterates existing items and registers all living objects; dead WeakReferences are removed inline and a removed `TEventHandler` is uncounted. A `TEventHandler` without a handler object is kept.
 
 Setting it to `false` calls `weakStop()`.
 
@@ -139,7 +145,7 @@ public function __construct(
 ```
 
 `$discardInvalid`:
-- `null` (default) — resolved lazily to `!ReadOnly` when first needed.
+- `null` (default) — resolved lazily to `!ReadOnly` when first needed. With initial data, it resolves to the opposite of the final `ReadOnly` after loading the data.
 - `false` — disables scrubbing even on mutable lists.
 - `true` — enables scrubbing even on read-only lists.
 

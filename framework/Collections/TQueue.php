@@ -1,7 +1,7 @@
 <?php
 
 /**
- * TQueue, TQueueIterator classes
+ * TQueue class
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
