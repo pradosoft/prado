@@ -105,7 +105,9 @@ class TWeakMap extends TMap implements IWeakCollection, ICollectionFilter
 	 * inner callable object is tracked rather than the handler wrapper.
 	 * Closures are skipped — they are strongly retained by the map on purpose.
 	 * A TEventHandler whose handler object is already collected marks the WeakMap
-	 * changed so the next scrub removes it.
+	 * changed so the next scrub removes it.  An explicit WeakReference tracks its
+	 * referent, whichever type it is; a referent already collected marks the WeakMap
+	 * changed.
 	 * @param object $object The stored value (original, before WeakReference wrapping).
 	 * @return int The updated instance count for the tracked object.
 	 */
@@ -128,6 +130,15 @@ class TWeakMap extends TMap implements IWeakCollection, ICollectionFilter
 
 		if ($object instanceof Closure) {
 			return 0;
+		}
+
+		if ($object instanceof WeakReference) {
+			$object = $object->get();
+
+			if ($object === null) {
+				$this->weakMarkChanged();
+				return 0;
+			}
 		}
 
 		return $this->weakAdd($object);
@@ -524,23 +535,39 @@ class TWeakMap extends TMap implements IWeakCollection, ICollectionFilter
 	}
 
 	/**
-	 * Removes all entries and resets the WeakMap cache.
+	 * Removes all entries and resets the WeakMap cache and event handler count.
+	 * A destructor run by a removed value can remove or add entries; each key is
+	 * checked before removal and the keys are read again until the map is empty.
+	 * GC'd entries are scrubbed first on a read-only map when DiscardInvalid is true,
+	 * so a read-only map holding only GC'd entries clears without error.
+	 * @throws TInvalidOperationException if the map is read-only and has entries.
 	 */
 	public function clear(): void
 	{
-		$c = count($this->_d);
-
-		foreach (array_keys($this->_d) as $key) {
-			$stored = $this->_d[$key];
-			$value = $stored;
-			static::filterItemForOutput($value);
-			unset($this->_d[$key]);
-			$this->dyRemoveItem($key, $value);
+		if ($this->getReadOnly() && $this->getCount() > 0) {
+			throw new TInvalidOperationException('map_readonly', $this::class);
 		}
 
-		if ($c) {
-			$this->weakRestart();
+		if (!$this->_d) {
+			return;
 		}
+
+		while ($this->_d) {
+			foreach (array_keys($this->_d) as $key) {
+				if (!isset($this->_d[$key]) && !array_key_exists($key, $this->_d)) {
+					continue;
+				}
+
+				$value = $this->_d[$key];
+				unset($this->_d[$key]);
+				static::filterItemForOutput($value);
+				$this->dyRemoveItem($key, $value);
+				unset($value);
+			}
+		}
+
+		$this->_eventHandlerCount = 0;
+		$this->weakRestart();
 	}
 
 	/**

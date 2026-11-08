@@ -1,4 +1,6 @@
 ## Version 4.4.0 - TBA
+BUG: `TWeakMap::clear()` on a read-only map throws `map_readonly` like `TMap`, so `clear()` and `copyFrom()` no longer empty it; each weak collection's `clear()` survives a destructor removing or inserting an entry and resets its counts. (belisoful)
+BUG: `TWeakList` and `TWeakMap` track the referent of an explicit `WeakReference`, so a collected one is scrubbed; `TWeakCallableCollection` turning `DiscardInvalid` on removes collected entries on a read-only list; a failed insert leaves no bookkeeping. (belisoful)
 BUG: `TPagedDataSource::getCount()` with paging on matches iteration: a page past the last page counts 0 and reports `IsLastPage`, and a short custom page counts its own items. (belisoful)
 NEW: Issue #1401 - `TDropdownMenu` renders a menu button and an action menu of its links and buttons, a `TPopover` with the ARIA `menu` role and the WAI-ARIA menu button keyboard. (belisoful)
 NEW: Issue #1401 - `TConfirmButton` asks for confirmation in a modal `alertdialog` before it posts back, without script, and replaces `onclick="return confirm()"`: `ConfirmText`, `ConfirmHeaderText`, `ConfirmButtonText`, and `CancelButtonText`. (belisoful)
