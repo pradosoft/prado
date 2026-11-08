@@ -29,12 +29,17 @@ The minute **parity** keeps a process that overruns into the next minute from co
 |---|---|---|
 | `RuntimePath` | application runtime path | Directory of the `udg` socket files; a path or namespace. |
 | `BasePort` | `52800` | Base `udp` loopback port. |
-| `Token` | HMAC of the validation key | The content every wake datagram must carry: by default `hash_hmac('sha256', 'prado:cron:wake', <TSecurityManager ValidationKey>)`, which every process of the application derives alike; without an application the key is the runtime path. A datagram without it is read and ignored, so another local process cannot wake the cron. The `udg` socket file is owner-only. |
+| `Key` | HMAC of the validation key | Signs the wake messages: by default `hash_hmac('sha256', 'prado:cron:wake', <TSecurityManager ValidationKey>)`, which every process of the application derives alike; without an application the key is the runtime path. |
+
+## Wake message
+
+`createToken()` builds `time:nonce:signature`, a fresh 8-byte random nonce and the current time signed with the `Key`. `verifyToken()` accepts a message whose signature matches, whose time is within `TOKEN_WINDOW` (30 s) of now, and whose nonce was not accepted before (nonces are remembered until they expire), so a captured datagram cannot be replayed and a datagram from another local process is read and ignored. The `udg` socket file is owner-only.
 
 ## Methods
 
 - `getTransport(): ?string`, `getAddress(int $minute): ?string`, `getDaemonAddress(): ?string`
 - `signal(float $now): bool`, `wait(float $until, float $now): ?bool`, `watch(IEventLoop $loop, callable $onWake): bool`, `unwatch(): void`, `close(): void`
+- `getKey()`, `createToken(): string`, `verifyToken(string $data): bool`
 - Protected seams: `bind($address)`, `release($server, $address)`, `send($address)`, `drain()`, `ensureBound($address)`
 
 ## See Also

@@ -36,9 +36,12 @@ use Prado\TPropertyValue;
  * in the receive queue and consumed by the next wait instead of being dropped. {@see close()} releases
  * it; a per-minute process closes at the end of its minute so nothing is held into the next.
  *
- * Any process of the host can send a datagram to a loopback or `udg` address, so a wake carries the
- * {@see getToken Token}, an HMAC of the application's validation key by default, and a datagram
- * without it is read and ignored. A `udg` socket file is also owner-only.
+ * Any process of the host can send a datagram to a loopback or `udg` address, so a wake is a signed
+ * message ({@see createToken}): a fresh nonce and the time, authenticated with an HMAC of the
+ * {@see getKey Key}, the application's validation key by default. The receiver ({@see verifyToken})
+ * accepts a message once, within {@see TOKEN_WINDOW} seconds of its time, so a captured datagram
+ * cannot be replayed and a datagram without a valid signature is read and ignored. A `udg` socket
+ * file is also owner-only.
  *
  * The socket is the default transport of {@see \Prado\Util\Cron\TCronModule}; as a module it
  * configures {@see setRuntimePath RuntimePath} and {@see setBasePort BasePort}.
@@ -54,14 +57,23 @@ class TCronWakeSocket extends TModule implements ICronWakeTransport
 	/** @var string the udg socket file name prefix in the runtime directory */
 	public const SOCKET_PREFIX = 'cronwake-';
 
+	/** @var int the seconds a wake message stays valid after its time; a nonce is remembered for as long */
+	public const TOKEN_WINDOW = 30;
+
+	/** @var int the bytes of the random nonce in a wake message */
+	protected const NONCE_BYTES = 8;
+
 	/** @var ?string the runtime directory holding the udg socket files, or null for the application runtime path */
 	private ?string $_runtimePath;
 
 	/** @var ?int the base udp loopback port; null for {@see DEFAULT_WAKE_PORT} */
 	private ?int $_basePort;
 
-	/** @var ?string the wake token, or null to derive it from the application's validation key */
-	private ?string $_token = null;
+	/** @var ?string the signing key of the wake messages, or null to derive it from the application's validation key */
+	private ?string $_key = null;
+
+	/** @var array<string, int> the nonces of the accepted messages, by their expiry time */
+	private array $_seenNonces = [];
 
 	/** @var null|false|string the resolved transport: false until detected, then 'udg', 'udp', or null */
 	private $_transport = false;
@@ -141,33 +153,74 @@ class TCronWakeSocket extends TModule implements ICronWakeTransport
 	}
 
 	/**
-	 * Returns the wake token every datagram must carry.  Without a configured token it is the SHA-256
-	 * HMAC of `prado:cron:wake` with the application's `TSecurityManager` validation key, which every
+	 * Returns the key that signs the wake messages.  Without a configured key it is the SHA-256 HMAC
+	 * of `prado:cron:wake` with the application's `TSecurityManager` validation key, which every
 	 * process of the application shares; without an application the key is the runtime path.
-	 * @return string the wake token
+	 * @return string the signing key
 	 */
-	public function getToken(): string
+	public function getKey(): string
 	{
-		if ($this->_token === null) {
+		if ($this->_key === null) {
 			$key = null;
 			try {
 				$key = Prado::getApplication()?->getSecurityManager()?->getValidationKey();
 			} catch (\Throwable $e) {
 				// no security manager; fall back to the runtime path
 			}
-			$this->_token = hash_hmac('sha256', 'prado:cron:wake', (string) ($key ?: $this->getRuntimePath()));
+			$this->_key = hash_hmac('sha256', 'prado:cron:wake', (string) ($key ?: $this->getRuntimePath()));
 		}
-		return $this->_token;
+		return $this->_key;
 	}
 
 	/**
-	 * @param ?string $value the wake token, or null or '' to derive it from the application's validation key
+	 * @param ?string $value the key that signs the wake messages, or null or '' to derive it from the application's validation key
 	 * @return static the current object
 	 */
-	public function setToken($value): static
+	public function setKey($value): static
 	{
-		$this->_token = ($value === null || $value === '') ? null : TPropertyValue::ensureString($value);
+		$this->_key = ($value === null || $value === '') ? null : TPropertyValue::ensureString($value);
 		return $this;
+	}
+
+	/**
+	 * Creates a wake message: the current time, a random nonce, and their SHA-256 HMAC with the
+	 * {@see getKey Key}, as `time:nonce:signature`.  Every message is different, so none replays.
+	 * @return string the signed wake message
+	 */
+	public function createToken(): string
+	{
+		$payload = time() . ':' . bin2hex(random_bytes(static::NONCE_BYTES));
+		return $payload . ':' . hash_hmac('sha256', $payload, $this->getKey());
+	}
+
+	/**
+	 * Verifies a wake message: its signature with the {@see getKey Key}, its time within
+	 * {@see TOKEN_WINDOW} seconds of now, and a nonce not accepted before.  An accepted nonce is
+	 * remembered until the message would have expired.
+	 * @param string $data the received datagram
+	 * @return bool whether the message is a fresh, authentic wake
+	 */
+	public function verifyToken(string $data): bool
+	{
+		$parts = explode(':', $data);
+		if (count($parts) !== 3) {
+			return false;
+		}
+		[$time, $nonce, $signature] = $parts;
+		if (!hash_equals(hash_hmac('sha256', $time . ':' . $nonce, $this->getKey()), $signature)) {
+			return false;
+		}
+		$now = time();
+		foreach ($this->_seenNonces as $seen => $expiry) {
+			if ($expiry <= $now) {
+				unset($this->_seenNonces[$seen]);
+			}
+		}
+		if (!ctype_digit($time) || abs($now - (int) $time) > static::TOKEN_WINDOW || isset($this->_seenNonces[$nonce])) {
+			return false;
+		}
+		$this->_seenNonces[$nonce] = $now + static::TOKEN_WINDOW;
+		return true;
 	}
 
 	/**
@@ -222,7 +275,7 @@ class TCronWakeSocket extends TModule implements ICronWakeTransport
 	 * wake datagram arrives. The socket is bound on first use and kept bound (see {@see ensureBound}),
 	 * so a datagram that arrived while the process was busy is consumed here rather than dropped. On
 	 * wake all queued datagrams are drained.
-	 * A datagram without the {@see getToken Token} is ignored and the wait goes on.
+	 * A datagram that is not a fresh signed wake ({@see verifyToken}) is ignored and the wait goes on.
 	 * @param float $until the Unix timestamp to wait until
 	 * @param float $now the current Unix timestamp with microseconds
 	 * @return ?bool true when a wake datagram arrived, false when the wait timed out, null when no socket
@@ -325,17 +378,16 @@ class TCronWakeSocket extends TModule implements ICronWakeTransport
 
 	/**
 	 * Consumes all datagrams queued on the bound socket without blocking.
-	 * @return bool whether at least one of them carried the {@see getToken Token}
+	 * @return bool whether at least one of them was a fresh signed wake ({@see verifyToken})
 	 */
 	protected function drain(): bool
 	{
 		$valid = false;
-		$token = $this->getToken();
 		$write = $except = [];
 		$read = [$this->_server];
 		while (@stream_select($read, $write, $except, 0, 0) > 0) {
 			$data = @stream_socket_recvfrom($this->_server, 65535);
-			if (is_string($data) && hash_equals($token, $data)) {
+			if (is_string($data) && $this->verifyToken($data)) {
 				$valid = true;
 			}
 			$read = [$this->_server];
@@ -345,8 +397,8 @@ class TCronWakeSocket extends TModule implements ICronWakeTransport
 	}
 
 	/**
-	 * Sends the {@see getToken Token} datagram to the daemon address and to the current minute's parity
-	 * address. A missing listener (no cron waiting) is a harmless no-op.
+	 * Sends a signed wake message ({@see createToken}) to the daemon address and to the current minute's
+	 * parity address. A missing listener (no cron waiting) is a harmless no-op.
 	 * @param float $now the current Unix timestamp with microseconds
 	 * @return bool whether a datagram was sent
 	 */
@@ -372,7 +424,7 @@ class TCronWakeSocket extends TModule implements ICronWakeTransport
 		if ($client === false) {
 			return false;
 		}
-		$token = $this->getToken();
+		$token = $this->createToken();
 		$sent = @fwrite($client, $token) === strlen($token);
 		fclose($client);
 		return $sent;

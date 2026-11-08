@@ -43,12 +43,12 @@ class TCronWakeSocketTest extends \PHPUnit\Framework\TestCase
 		self::assertSame($this->runtime . '/sub', $s->getRuntimePath());
 		$s->setBasePort('61000');
 		self::assertSame(61000, $s->getBasePort());
-		self::assertSame(64, strlen($s->getToken()), 'the default token is a SHA-256 HMAC');
-		self::assertSame($s->getToken(), (new TCronWakeSocket($this->runtime))->getToken(), 'every transport of the application derives the same token');
-		$s->setToken('secret');
-		self::assertSame('secret', $s->getToken());
-		$s->setToken('');
-		self::assertSame(64, strlen($s->getToken()));
+		self::assertSame(64, strlen($s->getKey()), 'the default key is a SHA-256 HMAC of the validation key');
+		self::assertSame($s->getKey(), (new TCronWakeSocket($this->runtime))->getKey(), 'every transport of the application derives the same key');
+		$s->setKey('secret');
+		self::assertSame('secret', $s->getKey());
+		$s->setKey('');
+		self::assertSame(64, strlen($s->getKey()));
 		$s = new TCronWakeSocket();
 		self::assertNotEmpty($s->getRuntimePath(), 'defaults to the application runtime path');
 	}
@@ -101,7 +101,7 @@ class TCronWakeSocketTest extends \PHPUnit\Framework\TestCase
 		$this->unlinkUdg($address);
 		$server = stream_socket_server($address, $errno, $errstr, STREAM_SERVER_BIND);
 		$client = stream_socket_client($address, $e1, $e2, 0, STREAM_CLIENT_CONNECT);
-		fwrite($client, $base->getToken()); // queue a wake datagram
+		fwrite($client, $base->createToken()); // queue a wake datagram
 		fclose($client);
 
 		$socket = new class ($this->runtime) extends TCronWakeSocket {
@@ -184,9 +184,26 @@ class TCronWakeSocketTest extends \PHPUnit\Framework\TestCase
 		$start = microtime(true);
 		self::assertFalse($socket->wait($now + 0.05, $now), 'datagrams without the token are read and ignored');
 		self::assertGreaterThanOrEqual(0.04, microtime(true) - $start, 'the wait goes on after a foreign datagram');
-		$send($socket->getToken());
+		$send($socket->createToken());
 		self::assertTrue($socket->wait($now + 5.0, $now));
 		$socket->close();
+	}
+
+	public function testTokensAreSignedFreshAndNotReplayable()
+	{
+		$s = (new TCronWakeSocket($this->runtime))->setKey('k1');
+		$a = $s->createToken();
+		$b = $s->createToken();
+		self::assertNotSame($a, $b, 'every wake message differs');
+		self::assertTrue($s->verifyToken($a));
+		self::assertFalse($s->verifyToken($a), 'a message is accepted once');
+		self::assertTrue($s->verifyToken($b));
+		self::assertFalse((new TCronWakeSocket($this->runtime))->setKey('k2')->verifyToken($s->createToken()), 'another key rejects the signature');
+		[$time, $nonce] = explode(':', $s->createToken());
+		$stale = (time() - TCronWakeSocket::TOKEN_WINDOW - 5) . ':' . $nonce;
+		self::assertFalse($s->verifyToken($stale . ':' . hash_hmac('sha256', $stale, 'k1')), 'a message older than the window is rejected');
+		self::assertFalse($s->verifyToken('1'));
+		self::assertFalse($s->verifyToken(''));
 	}
 
 	public function testWatchDeliversWakesOnTheLoop()
