@@ -43,7 +43,9 @@ public function getCurrentPageIndex(): int
 public function setCurrentPageIndex(int $value): void
 ```
 
-Zero-based index of the current page.
+Zero-based index of the current page. A negative index is 0. The index has no upper limit because the data source may be set later. A page past the last page is empty: `Count` is 0, iteration yields nothing, and `IsLastPage` is true. `TDataBoundControl::dataBind()` moves such an index to the last page once the data is attached.
+
+With paging on, `Count` matches iteration. Under custom paging the data source holds only the current page, so a short page counts its own items.
 
 ### AllowPaging
 

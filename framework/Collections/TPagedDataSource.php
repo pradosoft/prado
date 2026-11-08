@@ -111,6 +111,10 @@ class TPagedDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 	}
 
 	/**
+	 * Sets the index of the current page.
+	 * A negative index is 0. The index has no upper limit because the data source may
+	 * be set later; a page past the last page is empty. {@see \Prado\Web\UI\WebControls\TDataBoundControl::dataBind}
+	 * moves such an index to the last page once the data is attached.
 	 * @param int $value current page index
 	 */
 	public function setCurrentPageIndex($value)
@@ -174,6 +178,10 @@ class TPagedDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 	}
 
 	/**
+	 * Returns the number of items in the current page.
+	 * With paging on, this is the number of items iterated. A page past the last page
+	 * has no items. Under custom paging the data source holds only the current page,
+	 * so a short page counts its own items.
 	 * @return int number of items in current page
 	 */
 	public function getCount()
@@ -184,10 +192,10 @@ class TPagedDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 		if (!$this->_allowPaging) {
 			return $this->getDataSourceCount();
 		}
-		if (!$this->_allowCustomPaging && $this->getIsLastPage()) {
-			return $this->getDataSourceCount() - $this->getFirstIndexInPage();
+		if ($this->_allowCustomPaging) {
+			return min($this->getPageSize(), $this->_dataSource->getCount());
 		}
-		return $this->_pageSize;
+		return max(0, min($this->getPageSize(), $this->getDataSourceCount() - $this->getFirstIndexInPage()));
 	}
 
 	/**
@@ -230,12 +238,15 @@ class TPagedDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 
 	/**
 	 * Returns whether the current page is the last page.
+	 * A page past the last page also reports true. Without a data source and with
+	 * paging on, there are no pages and this reports false.
 	 * @return bool whether the current page is the last page; true when {@see setAllowPaging AllowPaging} is false.
 	 */
 	public function getIsLastPage()
 	{
 		if ($this->_allowPaging) {
-			return $this->_currentPageIndex === $this->getPageCount() - 1;
+			$pageCount = $this->getPageCount();
+			return $pageCount > 0 && $this->getCurrentPageIndex() >= $pageCount - 1;
 		} else {
 			return true;
 		}
