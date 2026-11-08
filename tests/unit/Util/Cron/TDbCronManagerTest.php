@@ -301,32 +301,22 @@ class TDbCronManagerTest extends TCronModuleTest
 		
 		self::assertEquals('testTaskAA', $log[0]['name']);
 		$task = $this->obj->getTask('testTaskAA');
-		$task->setProcessCount(0);
-		$task->setLastExecTime(null);
 		self::assertEquals(serialize($task), $log[0]['options']);
 		
 		self::assertEquals('testTaskBB', $log[1]['name']);
 		$task = $this->obj->getTask('testTaskBB');
-		$task->setProcessCount(0);
-		$task->setLastExecTime(null);
 		self::assertEquals(serialize($task), $log[1]['options']);
 		
 		self::assertEquals('testTaskCC', $log[2]['name']);
 		$task = $this->obj->getTask('testTaskCC');
-		$task->setProcessCount(0);
-		$task->setLastExecTime(null);
 		self::assertEquals(serialize($task), $log[2]['options']);
 		
 		self::assertEquals('testTaskDD', $log[3]['name']);
 		$task = $this->obj->getTask('testTaskDD');
-		$task->setProcessCount(0);
-		$task->setLastExecTime(null);
 		self::assertEquals(serialize($task), $log[3]['options']);
 		
 		self::assertEquals('testTaskEE', $log[4]['name']);
 		$task = $this->obj->getTask('testTaskEE');
-		$task->setProcessCount(0);
-		$task->setLastExecTime(null);
 		self::assertEquals(serialize($task), $log[4]['options']);
 		
 		// Test when db logging is off
@@ -1036,6 +1026,36 @@ class TDbCronManagerTest extends TCronModuleTest
 		$this->obj->removeTask($early);
 		$this->obj->removeTask($late);
 		$this->obj->removeTask($next);
+	}
+
+	public function testUpdateTaskInfoClaimsTheRunAgainstTheRow()
+	{
+		$task = new TTestCronModuleTask();
+		$task->setName('claimTask');
+		$task->setSchedule('@' . ($this->obj->fakeNow - 10));
+		$task->testunit = $this;
+		self::assertTrue($this->obj->addTask($task));
+
+		// Another process advanced the row since this process read it: the claim fails and the task is skipped.
+		$rows = PradoUnit::getProp($this->obj, '_taskRows');
+		$rows['claimTask']['nextexectime'] = 12345;
+		PradoUnit::setProp($this->obj, '_taskRows', $rows);
+		self::assertFalse($this->obj->runTask($task));
+		self::assertEquals(0, $task->getProcessCount());
+		self::assertEquals(0, $this->_countTasks);
+		self::assertEquals(0, $this->obj->getCronLogCount('claimTask'));
+
+		// A fresh read of the row claims and runs.
+		$pending = $this->obj->getPendingTasks();
+		self::assertArrayHasKey('claimTask', $pending);
+		self::assertTrue($this->obj->runTask($pending['claimTask']));
+		self::assertEquals(1, $task->getProcessCount());
+		self::assertEquals(1, $this->_countTasks);
+		self::assertEquals(1, $this->obj->getCronLogCount('claimTask'));
+		$log = $this->obj->getCronLog('claimTask');
+		self::assertEquals(1, $log[0]['processcount'], 'the log row records the claimed run');
+
+		$this->obj->removeTask($task);
 	}
 
 	public function testGetDbConnection()

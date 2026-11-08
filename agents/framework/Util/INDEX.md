@@ -8,7 +8,7 @@ This file provides guidance to Agents when working with code in this repository.
 | Directory | Purpose |
 |---|---|
 | [Behaviors/](Behaviors/INDEX.md) | Pre-built installable behaviors (lazy loading, page behaviors, signals, etc.) |
-| [Cron/](Cron/INDEX.md) | Scheduled task engine: [`TCronModule`](Cron/TCronModule.md), [`TDbCronManager`](Cron/TDbCronManager.md), [`TTimeScheduler`](Cron/TTimeScheduler.md) |
+| [Cron/](Cron/INDEX.md) | Scheduled task engine: [`TCronModule`](Cron/TCronModule.md) (per-minute sweeps or a leased daemon), [`TDbCronManager`](Cron/TDbCronManager.md), [`TTimeScheduler`](Cron/TTimeScheduler.md), the [`ICronWakeTransport`](Cron/ICronWakeTransport.md) wake seam |
 | [Helpers/](Helpers/INDEX.md) | Static utility classes: [`TArrayHelper`](Helpers/TArrayHelper.md), [`TBitHelper`](Helpers/TBitHelper.md), [`TProcessHelper`](Helpers/TProcessHelper.md) |
 | [Log/](Log/INDEX.md) | Logging: [`TLogger`](Log/TLogger.md), [`TLogRouter`](Log/TLogRouter.md), [`TLogRoute`](Log/TLogRoute.md) subclasses, PSR-3 adapters [`TPsrLogger`](Log/TPsrLogger.md) / [`TPsrLogRoute`](Log/TPsrLogRoute.md) |
 | [Mutex/](Mutex/INDEX.md) | Named locks: [`TMutex`](Mutex/TMutex.md) base, file, semaphore, `sync`, memory, cache, Redis, and database ([`TDbMutex`](Mutex/TDbMutex.md) routing to [`TMysqlMutex`](Mutex/TMysqlMutex.md), [`TPgsqlMutex`](Mutex/TPgsqlMutex.md), [`TOracleMutex`](Mutex/TOracleMutex.md), [`TMssqlMutex`](Mutex/TMssqlMutex.md), [`TDbTableMutex`](Mutex/TDbTableMutex.md)) |

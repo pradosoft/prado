@@ -15,6 +15,8 @@ use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
+use Prado\Exceptions\TNotSupportedException;
+use Prado\IO\Async\IEventLoop;
 use Prado\IO\Async\TAsync;
 use Prado\IO\Async\TCancellationToken;
 use Prado\IO\Async\TFiberContext;
@@ -30,7 +32,10 @@ use Prado\TApplication;
 use Prado\TPropertyValue;
 use Prado\Util\Clock\IClock;
 use Prado\Util\Clock\TClockTrait;
+use Prado\Util\Clock\TMonotonicClockAwareTrait;
 use Prado\Util\Log\TLogger;
+use Prado\Util\Mutex\IMutex;
+use Prado\Util\Mutex\TFileMutex;
 use Prado\Util\Traits\TInitializedTrait;
 use Prado\Xml\TXmlElement;
 use Prado\Xml\TXmlDocument;
@@ -107,6 +112,14 @@ use Prado\Xml\TXmlDocument;
  * and a task's own {@see \Prado\Util\Cron\TCronTask::setTimeout Timeout} bound a run with a
  * {@see \Prado\IO\Async\TCancellationToken} the task observes.
  *
+ * With {@see setDaemon Daemon}, the crontab's `cron/run` tick elects a daemon instead of sweeping:
+ * the process acquires the {@see setDaemonMutex DaemonMutex} lease and, when another process holds
+ * it, exits at once; otherwise it runs the due tasks, waits on its event loop for the next trigger,
+ * a wake from the {@see setWakeTransport WakeTransport}, or {@see setDaemonIdle DaemonIdle}, and
+ * repeats until {@see setDaemonLifetime DaemonLifetime} passes or SIGTERM/SIGINT arrives.  The next
+ * tick elects a new daemon, which picks up deployed code.  A web request wakes a waiting process,
+ * per-minute or daemon, through {@see signalWake} when it schedules an earlier task.
+ *
  * TCronModule is an {@see \Prado\Util\Clock\IClock} through {@see \Prado\Util\Clock\TClockTrait}:
  * scheduling reads "now" through {@see time()} and {@see microtime()}, so a subclass or test harness
  * overrides the clock to drive scheduling deterministically.
@@ -135,6 +148,8 @@ use Prado\Xml\TXmlDocument;
  * @method void dyLogCronTaskEnd($task)
  * @method void dyLogCronTaskError($task, $exception)
  * @method void dyLogCronSleep($seconds)
+ * @method void dyLogCronDaemonStart($lockName, $watching)
+ * @method void dyLogCronDaemonEnd($numtasks)
  * @method bool dyRegisterShellAction($returnValue)
  * @method \Prado\Shell\TShellWriter getOutputWriter()
  * @see \Prado\Security\Permissions\TPermissionsBehavior::dyLogPermissionFailed
@@ -144,6 +159,16 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 {
 	use TInitializedTrait;
 	use TClockTrait;
+	use TMonotonicClockAwareTrait;
+
+	/** The default seconds a daemon runs before it exits for the next tick to elect a new one. */
+	public const DEFAULT_DAEMON_LIFETIME = 3600;
+
+	/** The default maximum seconds a daemon waits between sweeps. */
+	public const DEFAULT_DAEMON_IDLE = 60;
+
+	/** The least seconds a daemon waits between sweeps, so a task it cannot run does not spin it. */
+	protected const DAEMON_MIN_WAIT = 0.05;
 
 	/** The behavior name for the Shell Log behavior */
 	public const SHELL_LOG_BEHAVIOR = 'shellLog';
@@ -216,8 +241,29 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	/** @var ?float the seconds a task run may take unless the task has its own Timeout, default null for no deadline */
 	private ?float $_taskTimeout = null;
 
-	/** @var ?TCronWakeSocket the same-host wake transport for second-resolution polling */
-	private ?TCronWakeSocket $_wakeSocket = null;
+	/** @var null|ICronWakeTransport|string the wake transport, or its module ID, or null for the default */
+	private $_wakeTransport;
+
+	/** @var bool whether `cron/run` elects a daemon instead of sweeping once, default false */
+	private bool $_daemon = false;
+
+	/** @var float the seconds a daemon runs before it exits; 0 for no limit */
+	private float $_daemonLifetime = self::DEFAULT_DAEMON_LIFETIME;
+
+	/** @var float the maximum seconds a daemon waits between sweeps */
+	private float $_daemonIdle = self::DEFAULT_DAEMON_IDLE;
+
+	/** @var null|IMutex|string the mutex of the daemon lease, or its module ID, or null for a file mutex */
+	private $_daemonMutex;
+
+	/** @var bool whether the running daemon stops after the current sweep */
+	private bool $_daemonStop = false;
+
+	/** @var bool whether a wake arrived since the daemon's last sweep */
+	private bool $_daemonWake = false;
+
+	/** @var ?\Closure resumes the daemon's current wait, when it is waiting */
+	private ?\Closure $_daemonResume = null;
 
 	/**
 	 * Initializes the module.  Read the configuration, installs Shell Actions,
@@ -682,11 +728,15 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	 * processPendingTasks executes pending tasks through {@see runTasks}.  In a crontab shell
 	 * no task starts after the minute the sweep began.  With {@see getSecondResolution} in a
 	 * crontab shell, the tasks due through the end of the minute run at their trigger second
-	 * through {@see runPendingTasksWithWake}.
-	 * @return int number of tasks that were pending
+	 * through {@see runPendingTasksWithWake}.  With {@see getDaemon Daemon} in the CLI the call is
+	 * {@see runDaemon}.
+	 * @return int number of tasks that were pending, or that the daemon ran
 	 */
 	public function processPendingTasks()
 	{
+		if ($this->getDaemon() && $this->php_sapi_name() === 'cli') {
+			return $this->runDaemon();
+		}
 		$inCronTab = (($inCron = $this->getInCronShell()) !== null) ? $inCron : TShellApplication::detectCronTabShell();
 		$sleep = $inCronTab && $this->getSecondResolution();
 
@@ -738,8 +788,10 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 				$this->runTasks([$task]);
 			}
 		} finally {
-			// Release the wake socket held for this minute so nothing is bound into the next minute.
-			$this->_wakeSocket?->close();
+			// Release the wake transport held for this minute so nothing is bound into the next minute.
+			if ($this->_wakeTransport instanceof ICronWakeTransport) {
+				$this->_wakeTransport->close();
+			}
 		}
 	}
 
@@ -815,8 +867,9 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	 * task's Timeout or the module's {@see getTaskTimeout} becomes the task's
 	 * {@see \Prado\Util\Cron\TCronTask::getCancellationToken() CancellationToken}.  A `dyRunTask`
 	 * permission denial ({@see PERM_CRON_RUN_TASK}) is logged, advances the task's info like a
-	 * run, and returns false.  An exception from the task is logged by {@see logCronTaskError}
-	 * and does not leave this method.
+	 * run, and returns false.  {@see updateTaskInfo} claims the run first; when another process
+	 * claimed it, the task is skipped.  An exception from the task is logged by
+	 * {@see logCronTaskError} and does not leave this method.
 	 * @param \Prado\Util\Cron\TCronTask $task the task to run.
 	 * @return bool whether the task ran without an exception
 	 */
@@ -839,8 +892,11 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 				$this->updateTaskInfo($task);
 				return false;
 			}
+			if (!$this->updateTaskInfo($task)) {
+				Prado::log('Cron task (' . $task->getName() . ') was claimed by another process', TLogger::INFO, TCronModule::class);
+				return false;
+			}
 			$this->logCronTask($task, $username);
-			$this->updateTaskInfo($task);
 			try {
 				$task->execute($this);
 				$this->logCronTaskEnd($task);
@@ -905,9 +961,11 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	}
 
 	/**
-	 * sets the lastExecTime to now and increments the processCount.  This saves
-	 * the new data to the global state.
+	 * Claims the run of a task: sets the lastExecTime to now and increments the processCount, and
+	 * saves the new data to the global state.  TCronModule has one process per application, so
+	 * every claim succeeds; TDbCronManager claims against the database row.
 	 * @param TCronTask $task
+	 * @return bool whether this process claimed the run
 	 */
 	protected function updateTaskInfo($task)
 	{
@@ -919,6 +977,7 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 		$task->setLastExecTime($time);
 
 		$this->getApplication()->setGlobalState(self::TASKS_INFO, $tasksInfo, [], true);
+		return true;
 	}
 
 	/**
@@ -970,6 +1029,24 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 			$this->_tasksInfo = $this->raiseEvent('fxGetCronTaskInfos', $this, null);
 		}
 		return $this->_tasksInfo;
+	}
+
+	/**
+	 * Returns the soonest next trigger time among the tasks, which a daemon waits for.
+	 * @return ?int the Unix timestamp of the next trigger, or null when no task has one
+	 * @since 4.4.0
+	 */
+	public function getNextPendingTime(): ?int
+	{
+		$this->ensureTasks();
+		$next = null;
+		foreach ($this->_tasks as $task) {
+			$trigger = $task->getNextTriggerTime();
+			if ($trigger !== null && ($next === null || $trigger < $next)) {
+				$next = (int) $trigger;
+			}
+		}
+		return $next;
 	}
 
 	/**
@@ -1218,20 +1295,18 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	}
 
 	/**
-	 * Waits until the given timestamp, returning early when a wake datagram arrives. Waits on the
-	 * {@see getWakeSocket WakeSocket} when a datagram transport is available, falling back to a plain
-	 * {@see time_sleep_until()} sleep otherwise.
+	 * Waits until the given timestamp, returning early when a wake arrives through the
+	 * {@see getWakeTransport WakeTransport}, falling back to a plain {@see time_sleep_until()} sleep
+	 * without one.
 	 * @param float $until the Unix timestamp to wait until
-	 * @return bool whether a wake signal arrived before the timestamp
+	 * @return bool whether a wake arrived before the timestamp
 	 * @since 4.4.0
 	 */
 	protected function waitForWake($until): bool
 	{
-		$socket = $this->getWakeSocket();
-		if ($socket !== null && $socket->getTransport() !== null) {
-			$minute = (int) floor($this->time() / 60);
-			$now = $this->microtime();
-			$woken = $socket->wait((float) $until, $minute, $now);
+		$transport = $this->getWakeTransport();
+		if ($transport !== null) {
+			$woken = $transport->wait((float) $until, $this->microtime());
 			if ($woken !== null) {
 				return $woken;
 			}
@@ -1241,43 +1316,392 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	}
 
 	/**
-	 * Sends a wake datagram to the cron process servicing the current minute, so a task scheduled
-	 * earlier than the sleeping process expects runs on time. A missing listener is a harmless no-op.
-	 * @return bool whether a wake datagram was sent
+	 * Sends a wake through the {@see getWakeTransport WakeTransport} to a cron process waiting for its
+	 * next trigger, per-minute or daemon, so a task scheduled earlier than it expects runs on time. A
+	 * missing listener is a harmless no-op.
+	 * @return bool whether a wake was sent
 	 * @since 4.4.0
 	 */
 	public function signalWake(): bool
 	{
-		$socket = $this->getWakeSocket();
-		if ($socket === null || $socket->getTransport() === null) {
-			return false;
-		}
-		return $socket->signal((int) floor($this->time() / 60));
+		$transport = $this->getWakeTransport();
+		return $transport !== null && $transport->signal($this->microtime());
 	}
 
 	/**
-	 * Returns the same-host wake transport, lazily created in the application runtime directory.
-	 * @return ?TCronWakeSocket the wake socket, or null when no application is available
+	 * Returns the wake transport: the configured transport, the module of the configured ID, or a
+	 * {@see TCronWakeSocket} in the application runtime directory.
+	 * @throws TConfigurationException when the configured module ID is not an ICronWakeTransport
+	 * @return ?ICronWakeTransport the wake transport, or null when no application is available
 	 * @since 4.4.0
 	 */
-	public function getWakeSocket(): ?TCronWakeSocket
+	public function getWakeTransport(): ?ICronWakeTransport
 	{
-		if ($this->_wakeSocket === null) {
+		if (is_string($this->_wakeTransport)) {
+			$module = $this->getApplication()->getModule($this->_wakeTransport);
+			if (!($module instanceof ICronWakeTransport)) {
+				throw new TConfigurationException('cron_waketransport_invalid', $this->_wakeTransport);
+			}
+			$this->_wakeTransport = $module;
+		}
+		if ($this->_wakeTransport === null) {
 			$app = $this->getApplication();
 			if ($app === null) {
 				return null;
 			}
-			$this->_wakeSocket = new TCronWakeSocket($app->getRuntimePath());
+			$this->_wakeTransport = new TCronWakeSocket($app->getRuntimePath());
 		}
-		return $this->_wakeSocket;
+		return $this->_wakeTransport;
 	}
 
 	/**
-	 * @param ?TCronWakeSocket $socket the wake transport, or null to rebuild the default on next use
+	 * @param null|ICronWakeTransport|string $transport the wake transport, its module ID, or null for the default socket
+	 * @throws TConfigurationException when the value is not a transport, a module ID, or null
 	 * @since 4.4.0
 	 */
-	public function setWakeSocket(?TCronWakeSocket $socket)
+	public function setWakeTransport($transport)
 	{
-		$this->_wakeSocket = $socket;
+		if ($transport !== null && !is_string($transport) && !($transport instanceof ICronWakeTransport)) {
+			throw new TConfigurationException('cron_waketransport_invalid', get_debug_type($transport));
+		}
+		$this->_wakeTransport = ($transport === '') ? null : $transport;
+	}
+
+	/**
+	 * @return bool whether `cron/run` in the CLI elects a daemon instead of sweeping once, default false
+	 * @since 4.4.0
+	 */
+	public function getDaemon(): bool
+	{
+		return $this->_daemon;
+	}
+
+	/**
+	 * @param mixed $value whether `cron/run` in the CLI elects a daemon instead of sweeping once
+	 * @throws TInvalidOperationException if the module has been initialized
+	 * @since 4.4.0
+	 */
+	public function setDaemon($value)
+	{
+		$this->assertUninitialized('Daemon');
+		$this->_daemon = TPropertyValue::ensureBoolean($value);
+	}
+
+	/**
+	 * @return float the seconds a daemon runs before it exits for the next tick to elect a new one, default 3600; 0 for no limit
+	 * @since 4.4.0
+	 */
+	public function getDaemonLifetime(): float
+	{
+		return $this->_daemonLifetime;
+	}
+
+	/**
+	 * @param float|string $seconds the seconds a daemon runs before it exits; 0 for no limit
+	 * @throws TInvalidDataValueException when the seconds are negative
+	 * @since 4.4.0
+	 */
+	public function setDaemonLifetime($seconds)
+	{
+		$seconds = TPropertyValue::ensureFloat($seconds);
+		if ($seconds < 0) {
+			throw new TInvalidDataValueException('cron_daemon_lifetime_invalid', $seconds);
+		}
+		$this->_daemonLifetime = $seconds;
+	}
+
+	/**
+	 * @return float the maximum seconds a daemon waits between sweeps, default 60
+	 * @since 4.4.0
+	 */
+	public function getDaemonIdle(): float
+	{
+		return $this->_daemonIdle;
+	}
+
+	/**
+	 * @param float|string $seconds the maximum seconds a daemon waits between sweeps
+	 * @throws TInvalidDataValueException when the seconds are not greater than zero
+	 * @since 4.4.0
+	 */
+	public function setDaemonIdle($seconds)
+	{
+		$seconds = TPropertyValue::ensureFloat($seconds);
+		if ($seconds <= 0) {
+			throw new TInvalidDataValueException('cron_daemon_idle_invalid', $seconds);
+		}
+		$this->_daemonIdle = $seconds;
+	}
+
+	/**
+	 * Returns the mutex of the daemon lease: the configured mutex, the module of the configured ID,
+	 * or a {@see \Prado\Util\Mutex\TFileMutex} in the application runtime directory, which excludes
+	 * the processes of one host.  A database or cache mutex excludes the processes of every host.
+	 * @throws TConfigurationException when the configured module ID is not an IMutex
+	 * @return IMutex the mutex of the daemon lease
+	 * @since 4.4.0
+	 */
+	public function getDaemonMutex(): IMutex
+	{
+		if (is_string($this->_daemonMutex)) {
+			$module = $this->getApplication()->getModule($this->_daemonMutex);
+			if (!($module instanceof IMutex)) {
+				throw new TConfigurationException('cron_daemonmutex_invalid', $this->_daemonMutex);
+			}
+			$this->_daemonMutex = $module;
+		}
+		if ($this->_daemonMutex === null) {
+			$this->_daemonMutex = Prado::createComponent(TFileMutex::class);
+		}
+		return $this->_daemonMutex;
+	}
+
+	/**
+	 * @param null|IMutex|string $mutex the mutex of the daemon lease, its module ID, or null for a file mutex
+	 * @throws TConfigurationException when the value is not a mutex, a module ID, or null
+	 * @since 4.4.0
+	 */
+	public function setDaemonMutex($mutex)
+	{
+		if ($mutex !== null && !is_string($mutex) && !($mutex instanceof IMutex)) {
+			throw new TConfigurationException('cron_daemonmutex_invalid', get_debug_type($mutex));
+		}
+		$this->_daemonMutex = ($mutex === '') ? null : $mutex;
+	}
+
+	/**
+	 * @return string the lock name of the daemon lease, `cron:daemon:` and the module ID
+	 * @since 4.4.0
+	 */
+	public function getDaemonLockName(): string
+	{
+		return 'cron:daemon:' . ($this->getID() ?: 'cron');
+	}
+
+	/**
+	 * Runs as the cron daemon.  The process acquires the {@see getDaemonMutex DaemonMutex} lease
+	 * without waiting; when another process holds it, this returns 0 at once.  Otherwise it sweeps
+	 * the pending tasks, waits on the event loop until the next trigger, a wake from the
+	 * {@see getWakeTransport WakeTransport}, or {@see getDaemonIdle DaemonIdle}, and repeats until
+	 * {@see getDaemonLifetime DaemonLifetime} passes, {@see stopDaemon} is called, or SIGTERM or
+	 * SIGINT arrives.  Tasks run through {@see runTasks} with the module's Concurrency.
+	 * @return int the number of tasks the daemon ran
+	 * @since 4.4.0
+	 */
+	public function runDaemon(): int
+	{
+		$mutex = $this->getDaemonMutex();
+		$lockName = $this->getDaemonLockName();
+		if (!$mutex->acquire($lockName)) {
+			Prado::log('Cron daemon lease (' . $lockName . ') is held by another process', TLogger::INFO, TCronModule::class);
+			return 0;
+		}
+		$loop = TAsync::getLoop();
+		$start = $this->getMonotonicClock()->seconds();
+		$numtasks = 0;
+		$this->_daemonStop = false;
+		$this->_daemonWake = false;
+		$transport = $this->getWakeTransport();
+		$watching = $transport !== null && $transport->watch($loop, function () {
+			$this->wakeDaemon();
+		});
+		$signals = $this->watchDaemonSignals($loop);
+		$this->logCronDaemonStart($lockName, $watching);
+		try {
+			do {
+				$this->consumeDaemonWake();
+				$numtasks += $this->sweepTasks();
+				if ($this->_daemonStop || $this->isDaemonExpired($start)) {
+					break;
+				}
+				if (!$this->consumeDaemonWake()) {
+					$this->waitDaemon($loop, $this->getDaemonWait($start));
+				}
+			} while (!$this->_daemonStop && !$this->isDaemonExpired($start));
+		} finally {
+			foreach ($signals as $id) {
+				$loop->cancel($id);
+			}
+			if ($transport !== null) {
+				$transport->close();
+			}
+			$mutex->release($lockName);
+			$this->logCronDaemonEnd($numtasks);
+		}
+		return $numtasks;
+	}
+
+	/**
+	 * Stops the running daemon after its current sweep, and ends its current wait.
+	 * @since 4.4.0
+	 */
+	public function stopDaemon(): void
+	{
+		$this->_daemonStop = true;
+		$this->wakeDaemon();
+	}
+
+	/**
+	 * Runs the pending tasks once, without a minute limit: a daemon sweep.
+	 * @return int the number of tasks that were pending
+	 * @since 4.4.0
+	 */
+	protected function sweepTasks(): int
+	{
+		$this->filterStaleTasks();
+		$pendingTasks = $this->getPendingTasks();
+		if ($pendingTasks === null) {
+			return 0;
+		}
+		$numtasks = count($pendingTasks);
+		if ($numtasks) {
+			$this->logCron($numtasks);
+			$this->runTasks($pendingTasks);
+		} else {
+			$this->setLastCronTime($this->microtime());
+		}
+		return $numtasks;
+	}
+
+	/**
+	 * Computes the seconds the daemon waits before its next sweep: until the next trigger
+	 * ({@see getNextPendingTime}), at most {@see getDaemonIdle DaemonIdle} and the remaining
+	 * {@see getDaemonLifetime DaemonLifetime}, and at least {@see DAEMON_MIN_WAIT}.
+	 * @param float $start the monotonic seconds the daemon started at
+	 * @return float the seconds to wait
+	 * @since 4.4.0
+	 */
+	protected function getDaemonWait(float $start): float
+	{
+		$wait = $this->getDaemonIdle();
+		$next = $this->getNextPendingTime();
+		if ($next !== null) {
+			$wait = min($wait, max(0.0, $next - $this->microtime()));
+		}
+		$lifetime = $this->getDaemonLifetime();
+		if ($lifetime > 0) {
+			$wait = min($wait, max(0.0, $lifetime - ($this->getMonotonicClock()->seconds() - $start)));
+		}
+		return max($wait, self::DAEMON_MIN_WAIT);
+	}
+
+	/**
+	 * Waits on the event loop for the given seconds or until {@see wakeDaemon} resumes the wait.
+	 * {@see onDaemonIdle} runs before the wait.
+	 * @param IEventLoop $loop the daemon's event loop
+	 * @param float $seconds the seconds to wait
+	 * @since 4.4.0
+	 */
+	protected function waitDaemon(IEventLoop $loop, float $seconds): void
+	{
+		$this->onDaemonIdle();
+		$suspension = $loop->suspension();
+		$resumed = false;
+		$this->_daemonResume = static function () use ($suspension, &$resumed) {
+			if (!$resumed) {
+				$resumed = true;
+				$suspension->resume();
+			}
+		};
+		$timer = $loop->delay($seconds, $this->_daemonResume);
+		try {
+			$suspension->suspend();
+		} finally {
+			$resumed = true;
+			$this->_daemonResume = null;
+			$loop->cancel($timer);
+		}
+	}
+
+	/**
+	 * Returns whether a wake arrived since the last call, and clears it.  A wake that arrives during
+	 * a sweep makes the daemon sweep again instead of waiting.
+	 * @return bool whether a wake arrived
+	 * @since 4.4.0
+	 */
+	protected function consumeDaemonWake(): bool
+	{
+		$wake = $this->_daemonWake;
+		$this->_daemonWake = false;
+		return $wake;
+	}
+
+	/**
+	 * Records a wake and ends the daemon's current wait, so the next sweep runs at once.
+	 * @since 4.4.0
+	 */
+	protected function wakeDaemon(): void
+	{
+		$this->_daemonWake = true;
+		if ($this->_daemonResume !== null) {
+			($this->_daemonResume)();
+		}
+	}
+
+	/**
+	 * Runs before each daemon wait.  Subclasses release resources an idle process should not hold,
+	 * such as a database connection.
+	 * @since 4.4.0
+	 */
+	protected function onDaemonIdle()
+	{
+	}
+
+	/**
+	 * @param float $start the monotonic seconds the daemon started at
+	 * @return bool whether the {@see getDaemonLifetime DaemonLifetime} has passed
+	 * @since 4.4.0
+	 */
+	protected function isDaemonExpired(float $start): bool
+	{
+		$lifetime = $this->getDaemonLifetime();
+		return $lifetime > 0 && ($this->getMonotonicClock()->seconds() - $start) >= $lifetime;
+	}
+
+	/**
+	 * Watches SIGTERM and SIGINT on the loop to stop the daemon, where the platform has signals.
+	 * @param IEventLoop $loop the daemon's event loop
+	 * @return string[] the loop callback identifiers
+	 * @since 4.4.0
+	 */
+	protected function watchDaemonSignals(IEventLoop $loop): array
+	{
+		$ids = [];
+		if (!\extension_loaded('pcntl')) {
+			return $ids;
+		}
+		foreach ([15, 2] as $signal) { // SIGTERM, SIGINT
+			try {
+				$ids[] = $loop->onSignal($signal, function () {
+					$this->stopDaemon();
+				});
+			} catch (TNotSupportedException $e) {
+				break;
+			}
+		}
+		return $ids;
+	}
+
+	/**
+	 * Logs the daemon's start and raises `dyLogCronDaemonStart`.
+	 * @param string $lockName the lease lock name
+	 * @param bool $watching whether the wake transport is watched
+	 * @since 4.4.0
+	 */
+	protected function logCronDaemonStart(string $lockName, bool $watching)
+	{
+		Prado::log('Cron daemon started (' . $lockName . ($watching ? ', watching wakes' : '') . ')', TLogger::INFO, TCronModule::class);
+		$this->dyLogCronDaemonStart($lockName, $watching);
+	}
+
+	/**
+	 * Logs the daemon's end and raises `dyLogCronDaemonEnd`.
+	 * @param int $numtasks the number of tasks the daemon ran
+	 * @since 4.4.0
+	 */
+	protected function logCronDaemonEnd(int $numtasks)
+	{
+		Prado::log('Cron daemon ended after ' . $numtasks . ' tasks', TLogger::INFO, TCronModule::class);
+		$this->dyLogCronDaemonEnd($numtasks);
 	}
 }

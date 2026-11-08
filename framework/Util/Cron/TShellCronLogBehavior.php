@@ -175,4 +175,34 @@ class TShellCronLogBehavior extends TBehavior
 
 		return $callchain->dyLogCronTaskError($task, $exception);
 	}
+	/**
+	 * Logs the start of the cron daemon when run in the shell.
+	 * @param string $lockName the daemon lease lock name
+	 * @param bool $watching whether the wake transport is watched
+	 * @param \Prado\Util\TCallChain $callchain the chain of methods
+	 * @return mixed
+	 * @since 4.4.0
+	 */
+	public function dyLogCronDaemonStart($lockName, $watching, $callchain)
+	{
+		$this->_outWriter->writeLine("Cron daemon started ({$lockName})" . ($watching ? ', watching for wakes' : '') . ' at ' . date('Y-m-d H:i:s'));
+		$this->_outWriter->flush();
+
+		return $callchain->dyLogCronDaemonStart($lockName, $watching);
+	}
+
+	/**
+	 * Logs the end of the cron daemon when run in the shell.
+	 * @param int $numtasks the number of tasks the daemon ran
+	 * @param \Prado\Util\TCallChain $callchain the chain of methods
+	 * @return mixed
+	 * @since 4.4.0
+	 */
+	public function dyLogCronDaemonEnd($numtasks, $callchain)
+	{
+		$this->_outWriter->writeLine("Cron daemon ended after {$numtasks} tasks at " . date('Y-m-d H:i:s') . "\n");
+		$this->_outWriter->flush();
+
+		return $callchain->dyLogCronDaemonEnd($numtasks);
+	}
 }

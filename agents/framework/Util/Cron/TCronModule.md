@@ -65,6 +65,26 @@ $cron->getTasksByType(TDbCronCleanLogTask::class);
 
 **Clock seam (`@since 4.4.0`)** — `TCronModule` is an [`IClock`](../Clock/IClock.md) via [`TClockTrait`](../Clock/TClockTrait.md). Cron scheduling reads time through `time()` and `microtime()`; in production these are the real system clock. The cron test harness (`tests/unit/Harness/Util/Cron`) overrides `now()`, `time()`, and `microtime()` to drive scheduling deterministically. The remaining environment seams are protected overridables: `mt_rand()`, `php_sapi_name()`, `time_sleep_until()` (a `sleep()` on the event loop), and `waitForWake()`. For code that *holds* a clock rather than being one, use [`TClockAwareTrait`](../Clock/TClockAwareTrait.md).
 
+### Daemon mode (4.4.0)
+
+`Daemon="true"` turns the crontab tick `cron/run` into a daemon election: `processPendingTasks()` in the CLI calls `runDaemon()`.
+
+| Property | Default | Description |
+|---|---|---|
+| `Daemon` | `false` | `cron/run` in the CLI elects a daemon instead of sweeping once; a web request (`EnableRequestCron`) still sweeps once. Frozen after `init()`. |
+| `DaemonLifetime` | `3600` | Seconds the daemon runs before it exits so the next tick elects a new one (a rolling restart after a deploy); `0` for no limit. |
+| `DaemonIdle` | `60` | Maximum seconds between sweeps when no trigger or wake comes sooner; also the poll period of a `TDbCronManager` table changed by a host without a shared wake transport. |
+| `DaemonMutex` | a `TFileMutex` | The lease, an [`IMutex`](../Mutex/IMutex.md) or its module ID. The lock name is `getDaemonLockName()`, `cron:daemon:<module id>`. A file mutex excludes the processes of one host; a database or Redis mutex excludes every host's. |
+| `WakeTransport` | a `TCronWakeSocket` | The [`ICronWakeTransport`](ICronWakeTransport.md) or its module ID, shared by per-minute waits (`waitForWake()`), the daemon (`watch()`), and `signalWake()`. |
+
+`runDaemon()` returns the number of tasks it ran, or 0 at once when the lease is held. Each turn: `sweepTasks()` (`filterStaleTasks()`, `getPendingTasks()`, `runTasks()` with no minute limit), then `waitDaemon()` for `getDaemonWait()` seconds, the least of the time to `getNextPendingTime()`, `DaemonIdle`, and the remaining lifetime, never under `DAEMON_MIN_WAIT`. A wake (`wakeDaemon()`, from the transport's `watch()` callback) or `stopDaemon()` (also SIGTERM and SIGINT through the loop's `onSignal()` where `pcntl` exists) ends the wait; a wake during a sweep causes another sweep. `onDaemonIdle()` runs before each wait; `TDbCronManager` closes its database connection there. The lease is released and the transport closed in a `finally`. `dyLogCronDaemonStart($lockName, $watching)` and `dyLogCronDaemonEnd($numtasks)` are raised, and written to the shell by [`TShellCronLogBehavior`](TShellCronLogBehavior.md).
+
+```xml
+<module id="cron" class="Prado\Util\Cron\TDbCronManager" Daemon="true" DaemonLifetime="1800" DaemonMutex="dbmutex" WakeTransport="cronwake" />
+<module id="dbmutex" class="Prado\Util\Mutex\TDbMutex" ConnectionID="db" />
+<module id="cronwake" class="Prado\Util\Cron\TCronWakeCache" CacheID="memcache" PollInterval="0.5" />
+```
+
 ### Concurrency and the task fiber (4.4.0)
 
 `processPendingTasks()` hands the due tasks to `runTasks()`, which starts each one in a fiber of its own through [`TAsync::run()`](../../IO/Async/TAsync.md) and keeps at most `Concurrency` (default 1) running; `awaitTasks()` waits on the loop (`TAsync::any()->await()`) for a slot. A task that pauses through `TAsync::sleep()` or awaits a `TFuture` yields to the other tasks; a task that never waits runs to completion before the next starts, as before. The crontab minute limit applies to starting a task, not to one already running.
@@ -190,7 +210,7 @@ php prado-cli.php /path/to/app cron/flush [period] [name] [@user]
 
 ## Patterns & Gotchas
 
-- **System crontab is required** — `TCronModule` itself doesn't schedule anything; the OS crontab must call `prado-cli cron/run` periodically.
+- **System crontab is required** — `TCronModule` itself doesn't schedule anything; the OS crontab must call `prado-cli cron/run` periodically. In daemon mode the tick is the daemon's liveness check: it exits when a daemon holds the lease and becomes the daemon otherwise.
 - **Last-run tracking** — stored in application global state. If global state is cleared, tasks may run again immediately.
 - **User context** — tasks can run as a specific user via `UserName` property (requires `TUserManager` to be configured). The user is the task fiber's user in `TFiberContext`, so a task that calls `$app->setUser()` changes only its own fiber.
 - **A task future never rejects** — `runTask()` catches the task's exception; a rejection of the `TAsync::run()` future means `logCronTaskError()` itself threw.

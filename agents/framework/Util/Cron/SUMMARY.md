@@ -4,9 +4,9 @@ Cron-style scheduled task engine supporting both file-configured and database-ba
 
 ## Classes
 
-- **`TCronModule`** — Main cron scheduler `TModule`; parses cron schedule expressions (standard Linux `minute hour day month dayOfWeek` format); runs each due task in its own fiber, `Concurrency` at once, with a per-task deadline and exception boundary; an `IClock` whose `time()`/`microtime()` drive the scheduling.
+- **`TCronModule`** — Main cron scheduler `TModule`; parses cron schedule expressions (standard Linux `minute hour day month dayOfWeek` format); runs each due task in its own fiber, `Concurrency` at once, with a per-task deadline and exception boundary; an `IClock` whose `time()`/`microtime()` drive the scheduling; `Daemon` mode elects one long-running process per lease that waits on the event loop for the next trigger or a wake.
 
-- **`TDbCronManager`** — Extends `TCronModule` with database-backed task storage, execution logging, runtime tasks (`deferTask`), and sub-minute polling (`PollsPerMinute`).
+- **`TDbCronManager`** — Extends `TCronModule` with database-backed task storage, execution logging, runtime tasks (`deferTask`), sub-minute polling (`PollsPerMinute`), and a per-row run claim for several hosts.
 
 - **`TCronTask`** — Abstract base for cron tasks; implement `execute($cronModule)`; properties: `Name`, `Schedule`, `UserName`, `ModuleId`, `AutoRemove`, `Timeout`.
 
@@ -20,7 +20,7 @@ Cron-style scheduled task engine supporting both file-configured and database-ba
 
 - **`TTimeScheduler`** — Cron expression parser supporting multi-language expressions and special tokens (`@daily`, `@hourly`, `@now`, etc.); both day fields restricted match as a union (POSIX).
 
-- **`TCronWakeSocket`** — Same-host datagram transport that wakes a sleeping second-resolution cron process when an earlier task is scheduled.
+- **`ICronWakeTransport`** — The wake seam (`signal`, `wait`, `watch`); **`TCronWakeSocket`** (same-host datagram), **`TCronWakeFile`** (shared file system), and **`TCronWakeCache`** (shared cache, via **`TCronWakePoll`**) wake a waiting cron process or daemon when an earlier task is scheduled.
 
 - **`TDbCronCleanLogTask`** — Pre-built task that auto-purges old cron log entries from the database.
 

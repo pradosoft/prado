@@ -592,7 +592,8 @@ class TDbCronManager extends TCronModule implements IDbModule
 	}
 
 	/**
-	 * logCronTask adds a task log to the table.
+	 * logCronTask adds a task log to the table, after {@see updateTaskInfo} claimed the run, so the
+	 * row records the run's count and time.
 	 * @param TCronTask $task
 	 * @param string $username
 	 */
@@ -616,8 +617,8 @@ class TDbCronManager extends TCronModule implements IDbModule
 			$cmd->bindValue(":mid", $task->getModuleId(), $db::PARAM_STR);
 			$cmd->bindValue(":username", $username, $db::PARAM_STR);
 			$cmd->bindValue(":options", serialize($task), $db::PARAM_STR);
-			$cmd->bindValue(":count", $task->getProcessCount() + 1, $db::PARAM_INT);
-			$cmd->bindValue(":time", $this->time(), $db::PARAM_STR);
+			$cmd->bindValue(":count", $task->getProcessCount(), $db::PARAM_INT);
+			$cmd->bindValue(":time", $task->getLastExecTime(), $db::PARAM_STR);
 			$cmd->execute();
 			$logid = $db->getLastInsertID();
 		}
@@ -625,34 +626,56 @@ class TDbCronManager extends TCronModule implements IDbModule
 	}
 
 	/**
-	 * This updates the LastExecTime, ProcessCount, and next execution time in the database.
-	 * A task with {@see \Prado\Util\Cron\TCronTask::getAutoRemove AutoRemove} is removed.
+	 * Claims the run of a task: updates the LastExecTime, ProcessCount, and next execution time in the
+	 * database on the condition that the row's next execution time is still the one this process read,
+	 * so of several cron processes (hosts) that found the task pending only one runs it.  A task with
+	 * {@see \Prado\Util\Cron\TCronTask::getAutoRemove AutoRemove} is removed.  A task without a row,
+	 * a runtime task that is not persisted, is always claimed.
 	 * @param TCronTask $task
+	 * @return bool whether this process claimed the run; false when another process did
 	 */
 	protected function updateTaskInfo($task)
 	{
+		$name = $task->getName();
+		$priorTime = $task->getLastExecTime();
+		$priorCount = $task->getProcessCount();
 		$task->setLastExecTime($time = $this->time());
-		$task->setProcessCount($count = ($task->getProcessCount() + 1));
+		$task->setProcessCount($count = ($priorCount + 1));
+
+		$row = $this->_taskRows[$name] ?? null;
+		$seen = ($row === null) ? null : $row['nextexectime'];
+		$claim = ($row === null) ? '' : (($seen === null) ? ' AND nextexectime IS NULL' : ' AND nextexectime=:seen');
 
 		$db = $this->getDbConnection();
 		$cmd = $db->createCommand(
-			"UPDATE {$this->_tableName} SET processcount=:count, lastexectime=:time, nextexectime=:ntime, options=:task WHERE name=:name AND active IS NOT NULL"
+			"UPDATE {$this->_tableName} SET processcount=:count, lastexectime=:time, nextexectime=:ntime, options=:task WHERE name=:name AND active IS NOT NULL{$claim}"
 		);
 		$cmd->bindValue(":count", $count, $db::PARAM_STR);
 		$cmd->bindValue(":time", $time, $db::PARAM_STR);
 		$cmd->bindValue(":ntime", $ntime = $task->getNextTriggerTime($time), $db::PARAM_STR);
 		$cmd->bindValue(":task", $serial = serialize($task), $db::PARAM_STR);
-		$cmd->bindValue(":name", $name = $task->getName(), $db::PARAM_STR);
-		$cmd->execute();
+		$cmd->bindValue(":name", $name, $db::PARAM_STR);
+		if ($claim === ' AND nextexectime=:seen') {
+			$cmd->bindValue(":seen", $seen, $db::PARAM_STR);
+		}
+		if ($cmd->execute() < 1 && $row !== null) {
+			$task->setLastExecTime($priorTime);
+			$task->setProcessCount($priorCount);
+			unset($this->_taskRows[$name]);
+			return false;
+		}
 
-		$this->_taskRows[$name]['processcount'] = $count;
-		$this->_taskRows[$name]['lastexectime'] = $time;
-		$this->_taskRows[$name]['nextexectime'] = $ntime;
-		$this->_taskRows[$name]['options'] = $serial;
+		if ($row !== null) {
+			$this->_taskRows[$name]['processcount'] = $count;
+			$this->_taskRows[$name]['lastexectime'] = $time;
+			$this->_taskRows[$name]['nextexectime'] = $ntime;
+			$this->_taskRows[$name]['options'] = $serial;
+		}
 
 		if ($count && $task->getAutoRemove()) {
 			$this->removeTaskInternal($task);
 		}
+		return true;
 	}
 
 	/**
@@ -894,6 +917,35 @@ class TDbCronManager extends TCronModule implements IDbModule
 		if ($earliest === null || $ntime <= $earliest) {
 			$this->signalWake();
 		}
+	}
+
+	/**
+	 * Returns the soonest next execution time among active tasks, read from the database.
+	 * @return ?int the Unix timestamp of the next trigger, or null when no task has one
+	 * @since 4.4.0
+	 */
+	public function getNextPendingTime(): ?int
+	{
+		return $this->getEarliestPendingTime();
+	}
+
+	/**
+	 * Closes the database connection while the daemon waits, so an idle connection does not time out;
+	 * {@see getDbConnection} reopens it on the next query.
+	 * @since 4.4.0
+	 */
+	protected function onDaemonIdle()
+	{
+		$this->deactivateDbConnection();
+	}
+
+	/**
+	 * @return ?bool true: the connection is activated on every retrieval, so a connection closed while
+	 * the daemon waited reopens on the next query
+	 */
+	protected function getDbConnectionActivationType(): ?bool
+	{
+		return true;
 	}
 
 	/**

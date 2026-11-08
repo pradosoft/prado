@@ -18,7 +18,7 @@
 - Dynamic task CRUD (`addTask`, `updateTask`, `removeTask`) and filtered, paged reads (`getTasks`, `getUserTasks`, counts)
 - Execution logging to the DB (`LogCronTasks`), with name and user filters on the log reads and flush
 - Runtime task queue: tasks that run at `onEndRequest`, and `deferTask()` for a closure with a cron fallback (4.4.0)
-- A per-row next execution time (`nextexectime`), so `getPendingTasks()` is one query and the cron shell can poll within the minute (`PollsPerMinute`, 4.4.0)
+- A per-row next execution time (`nextexectime`), so `getPendingTasks()` is one query, the cron shell can poll within the minute (`PollsPerMinute`), and a run is claimed against the row so one of several hosts runs each trigger (4.4.0)
 - Permission-gated CLI management via [`TShellDbCronAction`](TShellDbCronAction.md)
 - Auto-creates the DB table if needed, and adds the `nextexectime` column to a table created before 4.4.0
 
@@ -127,6 +127,11 @@ $cron->deferTask(\Closure $closure, ?string $name = null): TClosureCronTask   //
 ```
 
 The first call to `addRuntimeTask()` automatically attaches `executeRuntimeTasks` to `TApplication::onEndRequest`. `addRuntimeTask()` alone does not persist the task, so it has no cron fallback; `addTask($task, true)` or `deferTask()` persists it as well, so a missed `onEndRequest` is run by the next shell cron. A task with `AutoRemove` is deleted from the table once it runs (`updateTaskInfo()`), so it does not run twice.
+
+## Multi-host and daemon
+
+- **Claim.** `updateTaskInfo()` updates `processcount`, `lastexectime`, `nextexectime`, and `options` with `WHERE name=:name AND active IS NOT NULL AND nextexectime = :seen`, where `:seen` is the value this process read; when no row is affected another process ran the trigger first, the task's count and time are restored, and `runTask()` skips it with an INFO log entry. A runtime task without a row is always claimed. `logCronTask()` runs after the claim, so a log row records the run's count and time.
+- **Daemon.** See [TCronModule](TCronModule.md#daemon-mode-440). `getNextPendingTime()` is `MIN(nextexectime)` of the active rows; `onDaemonIdle()` calls `deactivateDbConnection()` and `getDbConnectionActivationType()` is `true`, so the connection reopens on the next query. Hosts that do not share a wake transport see each other's new tasks within `DaemonIdle`.
 
 ## Permissions (IPermissions)
 

@@ -13,6 +13,10 @@ use Prado\IO\Async\TFiberContext;
 use Prado\Prado;
 use Prado\Test\Unit\PradoUnit;
 use Prado\Test\Unit\Harness\Util\Cron\TTestCronModule;
+use Prado\Util\Cron\TCronWakeFile;
+use Prado\Util\Cron\TCronWakeSocket;
+use Prado\Util\Mutex\TFileMutex;
+use Prado\Util\Mutex\TMemoryMutex;
 use Prado\Util\TBehavior;
 use Prado\TApplication;
 use Prado\TComponent;
@@ -973,6 +977,138 @@ class TCronModuleTest extends \PHPUnit\Framework\TestCase
 		$before = count(TAsync::getLoop()->getIdentifiers());
 		self::assertEquals(1, $this->obj->processPendingTasks());
 		self::assertCount($before, TAsync::getLoop()->getIdentifiers());
+	}
+
+	public function testDaemonProperties()
+	{
+		$suffix = substr(md5(static::class), 0, 6);
+		self::assertFalse($this->obj->getDaemon());
+		self::assertEquals(TCronModule::DEFAULT_DAEMON_LIFETIME, $this->obj->getDaemonLifetime());
+		self::assertEquals(TCronModule::DEFAULT_DAEMON_IDLE, $this->obj->getDaemonIdle());
+		self::assertInstanceOf(TFileMutex::class, $this->obj->getDaemonMutex());
+		self::assertInstanceOf(TCronWakeSocket::class, $this->obj->getWakeTransport());
+		self::assertEquals('cron:daemon:cron', $this->obj->getDaemonLockName());
+		$this->obj->setID('cronDaemon' . $suffix);
+		self::assertEquals('cron:daemon:cronDaemon' . $suffix, $this->obj->getDaemonLockName());
+
+		$this->obj->setDaemon('true');
+		self::assertTrue($this->obj->getDaemon());
+		$this->obj->setDaemonLifetime('0');
+		self::assertSame(0.0, $this->obj->getDaemonLifetime());
+		$this->obj->setDaemonIdle('2.5');
+		self::assertSame(2.5, $this->obj->getDaemonIdle());
+
+		$mutex = new TMemoryMutex();
+		$this->obj->setDaemonMutex($mutex);
+		self::assertSame($mutex, $this->obj->getDaemonMutex());
+		$this->obj->setDaemonMutex(null);
+		self::assertInstanceOf(TFileMutex::class, $this->obj->getDaemonMutex());
+		$file = new TCronWakeFile(sys_get_temp_dir() . '/cronwake-props-' . $suffix);
+		$this->obj->setWakeTransport($file);
+		self::assertSame($file, $this->obj->getWakeTransport());
+
+		$app = Prado::getApplication();
+		$app->setModule('cronTestDaemonMutex' . $suffix, $mutex);
+		$app->setModule('cronTestWakeFile' . $suffix, $file);
+		$this->obj->setDaemonMutex('cronTestDaemonMutex' . $suffix);
+		$this->obj->setWakeTransport('cronTestWakeFile' . $suffix);
+		self::assertSame($mutex, $this->obj->getDaemonMutex());
+		self::assertSame($file, $this->obj->getWakeTransport());
+
+		try {
+			$this->obj->setDaemonLifetime(-1);
+			self::fail('a negative DaemonLifetime is invalid');
+		} catch (TInvalidDataValueException $e) {
+		}
+		try {
+			$this->obj->setDaemonIdle(0);
+			self::fail('a zero DaemonIdle is invalid');
+		} catch (TInvalidDataValueException $e) {
+		}
+		try {
+			$this->obj->setDaemonMutex(42);
+			self::fail('DaemonMutex takes a mutex, a module ID, or null');
+		} catch (TConfigurationException $e) {
+		}
+		$this->obj->setDaemonMutex('cronTestNoSuchModule');
+		try {
+			$this->obj->getDaemonMutex();
+			self::fail('an unknown DaemonMutex module ID is a configuration error');
+		} catch (TConfigurationException $e) {
+		}
+		$this->obj->setWakeTransport('cronTestNoSuchModule');
+		try {
+			$this->obj->getWakeTransport();
+			self::fail('an unknown WakeTransport module ID is a configuration error');
+		} catch (TConfigurationException $e) {
+		}
+	}
+
+	public function testRunDaemon_RunsTheDueTasksUntilTheLifetimeEnds()
+	{
+		$now = $this->obj->fakeNow;
+		$mutex = new TMemoryMutex();
+		$this->obj->setDaemon(true);
+		$this->obj->setDaemonLifetime(0.3);
+		$this->obj->setDaemonIdle(0.05);
+		$this->obj->setDaemonMutex($mutex);
+		$this->obj->setWakeTransport(new TCronWakeFile(sys_get_temp_dir() . '/cronwake-' . bin2hex(random_bytes(4))));
+		$this->obj->init([
+			['name' => 'daemonDue', 'schedule' => '@' . ($now - 10), 'task' => TTestCronModuleTask::class],
+			['name' => 'daemonLater', 'schedule' => '@' . ($now + 86400), 'task' => TTestCronModuleTask::class],
+		]);
+		$this->obj->getTask('daemonDue')->testunit = $this;
+		$start = microtime(true);
+		self::assertEquals(1, $this->obj->processPendingTasks());
+		$elapsed = microtime(true) - $start;
+		self::assertGreaterThanOrEqual(0.25, $elapsed, 'the daemon lives its lifetime');
+		self::assertLessThan(3.0, $elapsed);
+		self::assertEquals(1, $this->_countTasks);
+		self::assertEquals(1, $this->obj->getTask('daemonDue')->getProcessCount());
+		self::assertEquals(0, $this->obj->getTask('daemonLater')->getProcessCount());
+		self::assertFalse($mutex->isAcquired($this->obj->getDaemonLockName()), 'the lease is released');
+	}
+
+	public function testRunDaemon_ExitsWhenAnotherProcessHoldsTheLease()
+	{
+		$now = $this->obj->fakeNow;
+		$other = new TMemoryMutex();
+		$this->obj->setDaemon(true);
+		$this->obj->setDaemonMutex(new TMemoryMutex());
+		$this->obj->init([['name' => 'daemonHeld', 'schedule' => '@' . ($now - 10), 'task' => TTestCronModuleTask::class]]);
+		self::assertTrue($other->acquire($this->obj->getDaemonLockName()));
+		try {
+			self::assertEquals(0, $this->obj->processPendingTasks());
+			self::assertEquals(0, $this->obj->getTask('daemonHeld')->getProcessCount());
+		} finally {
+			$other->release($this->obj->getDaemonLockName());
+		}
+	}
+
+	public function testRunDaemon_AWakeSweepsAndStopDaemonEndsTheWait()
+	{
+		$now = $this->obj->fakeNow;
+		$transport = (new TCronWakeFile(sys_get_temp_dir() . '/cronwake-' . bin2hex(random_bytes(4))))->setPollInterval(0.02);
+		$this->obj->setDaemon(true);
+		$this->obj->setDaemonLifetime(0);
+		$this->obj->setDaemonIdle(10);
+		$this->obj->setDaemonMutex(new TMemoryMutex());
+		$this->obj->setWakeTransport($transport);
+		$this->obj->init([['name' => 'daemonWoken', 'schedule' => '@' . ($now + 100), 'task' => TTestCronModuleTask::class]]);
+		$this->obj->getTask('daemonWoken')->testunit = $this;
+		$loop = TAsync::getLoop();
+		// The task becomes due while the daemon waits; the wake makes it sweep instead of waiting out DaemonIdle.
+		$loop->delay(0.05, function () use ($transport) {
+			$this->obj->fakeNow += 200;
+			$this->obj->fakeMicrotime = (float) $this->obj->fakeNow;
+			$transport->signal(microtime(true));
+		});
+		$loop->delay(0.3, fn () => $this->obj->stopDaemon());
+		$start = microtime(true);
+		self::assertEquals(1, $this->obj->processPendingTasks());
+		self::assertLessThan(3.0, microtime(true) - $start, 'stopDaemon ends the wait before DaemonIdle');
+		self::assertEquals(1, $this->_countTasks);
+		self::assertEquals(1, $this->obj->getTask('daemonWoken')->getProcessCount());
 	}
 
 	public function testLastCronTime()

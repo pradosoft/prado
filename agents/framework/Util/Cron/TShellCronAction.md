@@ -29,7 +29,7 @@ Name and user filters are patterns: `_` is a wild card and `%` a wild string. A 
 
 - `getModuleClass()` — returns `TCronModule::class`; override in subclasses to target a different module type
 - `getCronModule()` — finds and returns the first `TCronModule` instance from the application modules
-- `actionRun($args)` — calls `processPendingTasks()` on the cron module
+- `actionRun($args)` — calls `processPendingTasks()` on the cron module; with `Daemon` this elects or defers to the cron daemon (see [TCronModule](TCronModule.md#daemon-mode-440))
 - `actionTasks($args)` — displays task table: name, schedule, last run, next run, user, run count; through `getTasks()` or `getUserTasks()`
 - `actionIndex($args)` — displays task info from `fxGetCronTaskInfos`
 - `time()` — protected clock seam for the displayed dates (4.4.0)

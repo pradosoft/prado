@@ -781,6 +781,12 @@ cron_not_a_crontask						= Cron Task ''{0}'' is not a TCronTask.
 cron_additional_tasks_invalid			= ''{0}'' is not a valid additional cron task.
 cron_concurrency_invalid				= TCronModule Concurrency must be at least 1; ''{0}'' given.
 cron_task_timeout_invalid				= TCronModule TaskTimeout must be greater than zero or null; ''{0}'' given.
+cron_daemon_lifetime_invalid			= TCronModule DaemonLifetime must be zero or greater; ''{0}'' given.
+cron_daemon_idle_invalid				= TCronModule DaemonIdle must be greater than zero; ''{0}'' given.
+cron_daemonmutex_invalid				= TCronModule DaemonMutex ''{0}'' is not an IMutex module.
+cron_waketransport_invalid				= TCronModule WakeTransport ''{0}'' is not an ICronWakeTransport module.
+cronwake_pollinterval_invalid			= Cron wake PollInterval must be greater than zero; ''{0}'' given.
+cronwakecache_cacheid_invalid			= TCronWakeCache CacheID ''{0}'' is not an ICache module.
 crontask_no_module						= TCronTask could not find module ''{0}''.
 crontask_timeout_invalid				= TCronTask Timeout must be greater than zero or null; ''{0}'' given.
 
