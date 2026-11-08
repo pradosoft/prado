@@ -9,8 +9,11 @@ use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Test\Unit\PradoUnit;
 use Prado\TEventHandler;
+use Prado\Test\Unit\PradoUnit;
 use ArrayIterator;
 use ArrayObject;
+use IteratorAggregate;
+use Traversable;
 use WeakReference;
 
 class TWeakListUnit extends TWeakList
@@ -60,6 +63,20 @@ class WeakListListItem extends PriorityListItem
 	{
 		$this->calledData = $data;
 	}
+}
+
+/** A Traversable item without ArrayAccess: not a container, so it is weakened and tracked. */
+class WeakListTraversableItem implements IteratorAggregate
+{
+	public function getIterator(): Traversable
+	{
+		return new ArrayIterator([]);
+	}
+}
+
+/** A Traversable item without ArrayAccess that the list stores strongly and tracks. */
+class WeakListRetainedTraversableItem extends WeakListTraversableItem implements IWeakRetainable
+{
 }
 
 /**
@@ -1151,5 +1168,138 @@ class TWeakListTest extends TListTest
 		self::assertSame(['a', $this->item3, 'z'], $list->toArray());
 		self::assertSame(1, $list->getWeakCount());
 		self::assertSame(1, $list->getWeakObjectCount($this->item3));
+	}
+
+	public function testRemoveScalarSkipsWeakTrackingTWeakList()
+	{
+		$list = new $this->_baseClass(['a', $this->item1]);
+
+		self::assertSame(0, $list->remove('a'));
+
+		self::assertSame([$this->item1], $list->toArray());
+		self::assertSame(1, $list->getWeakObjectCount($this->item1));
+	}
+
+	public function testTraversableItemWithoutArrayAccessIsWeakenedAndTrackedTWeakList()
+	{
+		$list = new $this->_baseClass();
+		$item = new WeakListTraversableItem();
+		$weak = WeakReference::create($item);
+
+		$list->add($item);
+
+		self::assertSame(1, $list->getWeakObjectCount($item));
+		self::assertSame($item, $list->itemAt(0));
+
+		$item = null;
+
+		self::assertNull($weak->get());
+		self::assertSame(0, $list->getCount());
+	}
+
+	public function testRemoveTraversableItemClearsWeakTrackingTWeakList()
+	{
+		$list = new $this->_baseClass();
+		$item = new WeakListTraversableItem();
+		$list->add($item);
+
+		self::assertSame(0, $list->remove($item));
+
+		self::assertNull($list->getWeakObjectCount($item));
+		self::assertSame(0, $list->getWeakCount());
+		self::assertSame(0, $list->getCount());
+	}
+
+	public function testRemoveRetainedTraversableItemClearsWeakTrackingTWeakList()
+	{
+		$list = new $this->_baseClass();
+		$item = new WeakListRetainedTraversableItem();
+		$weak = WeakReference::create($item);
+		$list->add($item);
+		self::assertSame(1, $list->getWeakObjectCount($item));
+
+		$item = null;
+		self::assertInstanceOf(WeakListRetainedTraversableItem::class, $weak->get());
+
+		self::assertSame($weak->get(), $list->removeAt(0));
+
+		self::assertSame(0, $list->getWeakCount());
+		self::assertNull($weak->get());
+	}
+
+	public function testRemoveClosureClearsWeakTrackingTWeakList()
+	{
+		$list = new $this->_baseClass();
+		$closure = static function () {
+		};
+		$list->add($closure);
+		self::assertSame(1, $list->getWeakObjectCount($closure));
+
+		self::assertSame(0, $list->remove($closure));
+
+		self::assertNull($list->getWeakObjectCount($closure));
+		self::assertSame(0, $list->getWeakCount());
+	}
+
+	public function testRemoveAtExplicitReferenceToContainerReturnsContainerTWeakList()
+	{
+		$list = new $this->_baseClass();
+		$container = new ArrayObject(['x' => 1]);
+		$list->add(WeakReference::create($container));
+
+		self::assertSame($container, $list->removeAt(0));
+		self::assertSame(0, $list->getCount());
+		self::assertSame(['x' => 1], $container->getArrayCopy());
+	}
+
+	public function testWeakCustomRemoveOfReferenceToContainerIsNotTrackedTWeakList()
+	{
+		$list = new $this->_baseClass();
+		$list->add($this->item1);
+		$container = new ArrayObject();
+
+		self::assertSame(0, PradoUnit::invoke($list, 'weakCustomRemove', WeakReference::create($container)));
+		self::assertSame(1, $list->getWeakCount());
+	}
+
+	public function testRemoveAtExplicitReferenceToEventHandlerReturnsHandlerTWeakList()
+	{
+		$list = new $this->_baseClass();
+		$withoutObject = new TEventHandler('strlen');
+		$target = new WeakListInvokableItem();
+		$withObject = new TEventHandler([$target, 'myHandler']);
+		$list->add(WeakReference::create($withoutObject));
+		$list->add(WeakReference::create($withObject));
+
+		self::assertSame($withObject, $list->removeAt(1));
+		self::assertSame($withoutObject, $list->removeAt(0));
+		self::assertSame(0, $list->getCount());
+	}
+
+	public function testWeakCustomRemoveResolvesReferenceToEventHandlerWithoutObjectTWeakList()
+	{
+		$list = new $this->_baseClass();
+		$handler = new TEventHandler('strlen');
+		$list->add($handler);
+		self::assertSame(1, PradoUnit::getProp($list, '_eventHandlerCount'));
+
+		self::assertSame(0, PradoUnit::invoke($list, 'weakCustomRemove', WeakReference::create($handler)));
+
+		self::assertSame(0, PradoUnit::getProp($list, '_eventHandlerCount'));
+	}
+
+	public function testWeakCustomRemoveResolvesReferenceToEventHandlerWithObjectTWeakList()
+	{
+		$list = new $this->_baseClass();
+		$target = new WeakListInvokableItem();
+		$handler = new TEventHandler([$target, 'myHandler']);
+		$list->add($handler);
+		self::assertSame(1, $list->getWeakObjectCount($target));
+
+		self::assertSame(0, PradoUnit::invoke($list, 'weakCustomRemove', WeakReference::create($handler)));
+
+		self::assertNull($list->getWeakObjectCount($target));
+		self::assertSame(0, $list->getWeakCount());
+		self::assertSame(0, PradoUnit::getProp($list, '_eventHandlerCount'));
 	}
 }

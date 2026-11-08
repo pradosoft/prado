@@ -20,6 +20,15 @@ class TListUnit extends TList
 	use TListResetTrait;
 }
 
+class TListSeededStorage extends TList
+{
+	public function seed(array $items): void
+	{
+		$this->_d = $items;
+		$this->_c = count($items);
+	}
+}
+
 class TListTest extends \PHPUnit\Framework\TestCase
 {
 	protected $list;
@@ -569,5 +578,19 @@ class TListTest extends \PHPUnit\Framework\TestCase
 		} catch (TInvalidDataValueException $e) {
 		}
 		$this->assertEquals(2, $this->list->getCount());
+	}
+
+	public function testSerializeSubclassSeededStorageKeepsReadOnlyUnset()
+	{
+		$list = new TListSeededStorage();
+		$list->seed(['a', 'b']);
+		$copy = unserialize(serialize($list));
+		$this->assertEquals(['a', 'b'], $copy->toArray());
+		$this->assertEquals(2, $copy->getCount());
+		$this->assertFalse($copy->getReadOnly());
+
+		// Seeding the storage skips insertAt, so the read-only state is still unset and settable.
+		$copy->setReadOnly(true);
+		$this->assertTrue($copy->getReadOnly());
 	}
 }

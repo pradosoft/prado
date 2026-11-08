@@ -1388,4 +1388,26 @@ class TPriorityListTest extends TListTest
 		$this->expectException(TInvalidOperationException::class);
 		$copy->setPrecision(2);
 	}
+
+	public function testInsertAtIndexInPriorityNewPriorityNonZeroIndexThrows()
+	{
+		$list = new TPriorityList();
+		try {
+			$list->insertAtIndexInPriority('a', 1, 5);
+			$this->fail('TInvalidDataValueException not raised for a non-zero index in a new priority');
+		} catch (TInvalidDataValueException $e) {
+			$this->assertEquals('prioritylist_index_invalid', $e->getErrorCode());
+		}
+		$this->assertEquals(0, $list->getCount());
+		$this->assertNull($list->itemsAtPriority(5));
+	}
+
+	public function testPriorityAtListEndIsLastPriority()
+	{
+		$list = new TPriorityList();
+		$list->add('a', 5);
+		$list->add('b', 7);
+		$this->assertEquals(7, $list->priorityAt(2));
+		$this->assertFalse($list->priorityAt(3));
+	}
 }

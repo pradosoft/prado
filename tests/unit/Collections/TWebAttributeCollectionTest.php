@@ -6,6 +6,7 @@ use Prado\Collections\TMap;
 use Prado\Collections\TWebAttributeCollection;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Exceptions\TUnknownMethodException;
+use Prado\Test\Unit\PradoUnit;
 use Prado\Util\TBehavior;
 
 class TWebAttributeCollectionPairBehavior extends TBehavior
@@ -633,5 +634,16 @@ class TWebAttributeCollectionTest extends \PHPUnit\Framework\TestCase
 		self::assertEquals(['id' => 'test'], $copy->getAttributes());
 		$copy->setAttribute('name', 'value');
 		self::assertEquals('value', $copy->getAttribute('name'));
+	}
+
+	public function testIsPropertyAccessorRequiresAnExistingMethodWithAMatchingSignature()
+	{
+		$isAccessor = fn (string $method, int $args) => PradoUnit::invoke($this->collection, 'isPropertyAccessor', $method, $args);
+
+		self::assertFalse($isAccessor('getNoSuchProperty', 0));
+		self::assertFalse($isAccessor('setNoSuchProperty', 1));
+		self::assertTrue($isAccessor('getPrefix', 0));
+		self::assertFalse($isAccessor('getAttribute', 0));
+		self::assertFalse($isAccessor('setAttribute', 1));
 	}
 }

@@ -24,6 +24,14 @@ class TMapTestBehavior extends TBehavior implements IDynamicMethods
 		$this->args = $args;
 	}
 }
+class TMapSeededStorage extends TMap
+{
+	public function seed(array $items): void
+	{
+		$this->_d = $items;
+	}
+}
+
 class TMapTest extends \PHPUnit\Framework\TestCase
 {
 	protected const BEHAVIOR_NAME = 'catcher';
@@ -480,5 +488,21 @@ class TMapTest extends \PHPUnit\Framework\TestCase
 		$this->assertNull($this->map->remove('nullkey'));
 		$this->assertFalse($this->map->contains('nullkey'));
 		$this->assertEquals(2, $this->map->getCount());
+	}
+
+	public function testSerializeSubclassSeededStorageKeepsReadOnlyUnset()
+	{
+		$map = new TMapSeededStorage();
+		$map->seed(['a' => 1, 'b' => 2]);
+		$serialized = serialize($map);
+		$this->assertStringNotContainsString('_r"', $serialized);
+
+		$copy = unserialize($serialized);
+		$this->assertEquals(['a' => 1, 'b' => 2], $copy->toArray());
+		$this->assertFalse($copy->getReadOnly());
+
+		// Seeding the storage skips add, so the read-only state is still unset and settable.
+		$copy->setReadOnly(true);
+		$this->assertTrue($copy->getReadOnly());
 	}
 }
