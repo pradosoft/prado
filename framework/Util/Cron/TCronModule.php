@@ -127,6 +127,15 @@ use Prado\Xml\TXmlDocument;
  * {@see \Prado\Util\Cron\TCronDaemonEventParameter}.  A web request wakes a waiting process,
  * per-minute or daemon, through {@see signalWake} when it schedules an earlier task.
  *
+ * Each sweep raises {@see onSweepStart}, whose {@see \Prado\Util\Cron\TCronSweepEventParameter} lets a
+ * handler change the tasks about to run, and {@see onSweepEnd} with their results.  Every `on` event
+ * of the module is also broadcast as a global `fx` event (`fxCronSweepStart`, `fxCronSweepEnd`,
+ * `fxCronDaemonStart`, `fxCronDaemonIdle`, `fxCronDaemonEnd`), so a module declaring the method is
+ * called without configuration.  A component raises `fxRetireCronDaemon` or `fxStopCronDaemon` to
+ * retire or stop the daemon from inside its process; {@see requestDaemonRetire} and
+ * {@see requestDaemonStop} do the same from another process, as the `cron/retire` and `cron/stop`
+ * shell commands do.
+ *
  * TCronModule is an {@see \Prado\Util\Clock\IClock} through {@see \Prado\Util\Clock\TClockTrait}:
  * scheduling reads "now" through {@see time()} and {@see microtime()}, so a subclass or test harness
  * overrides the clock to drive scheduling deterministically.
@@ -160,6 +169,8 @@ use Prado\Xml\TXmlDocument;
  * @method void onDaemonStart(TCronDaemonEventParameter $param)
  * @method void onDaemonIdle(TCronDaemonEventParameter $param)
  * @method void onDaemonEnd(TCronDaemonEventParameter $param)
+ * @method void onSweepStart(TCronSweepEventParameter $param)
+ * @method void onSweepEnd(TCronSweepEventParameter $param)
  * @method bool dyRegisterShellAction($returnValue)
  * @method \Prado\Shell\TShellWriter getOutputWriter()
  * @see \Prado\Security\Permissions\TPermissionsBehavior::dyLogPermissionFailed
@@ -182,6 +193,15 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 
 	/** The default seconds a tick's process waits for a retiring daemon to hand over the lease. */
 	public const DEFAULT_DAEMON_HANDOFF_TIMEOUT = 10;
+
+	/** The default seconds {@see requestDaemonRetire} and {@see requestDaemonStop} wait for the daemon's acknowledgment. */
+	public const DEFAULT_DAEMON_REQUEST_TIMEOUT = 10;
+
+	/** {@see getDaemonState}: a daemon holds the lease and serves. */
+	public const DAEMON_STATE_RUNNING = 'running';
+
+	/** {@see getDaemonState}: a daemon holds the lease and waits to hand it to the next tick. */
+	public const DAEMON_STATE_RETIRING = 'retiring';
 
 	/** The behavior name for the Shell Log behavior */
 	public const SHELL_LOG_BEHAVIOR = 'shellLog';
@@ -785,19 +805,49 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 		if ($pendingTasks === null) {
 			return 0;
 		}
+		$sweep = new TCronSweepEventParameter($pendingTasks, false);
+		$this->onSweepStart($sweep);
+		$pendingTasks = $sweep->getTasks();
 		$numtasks = count($pendingTasks);
 		$startMinute = (int) floor($this->time() / 60);
 
 		$this->logCron($numtasks);
+		$results = [];
 		if ($numtasks) {
 			if ($sleep) {
-				$this->runPendingTasksWithWake($startMinute);
+				$results = $this->runPendingTasksWithWake($startMinute, $pendingTasks);
 			} else {
-				$this->runTasks($pendingTasks, $inCronTab ? $startMinute : null);
+				$results = $this->runTasks($pendingTasks, $inCronTab ? $startMinute : null);
 			}
 		}
+		$this->onSweepEnd($sweep->setResults($results));
 
 		return $numtasks;
+	}
+
+	/**
+	 * Raises the `OnSweepStart` event, and `fxCronSweepStart` globally, once the pending tasks of a sweep
+	 * are collected and before any runs.  A handler changes the tasks about to run through
+	 * {@see TCronSweepEventParameter::setTasks}.
+	 * @param TCronSweepEventParameter $param the sweep parameter
+	 * @since 4.4.0
+	 */
+	public function onSweepStart($param)
+	{
+		$this->raiseEvent('OnSweepStart', $this, $param);
+		$this->raiseEvent('fxCronSweepStart', $this, $param);
+	}
+
+	/**
+	 * Raises the `OnSweepEnd` event, and `fxCronSweepEnd` globally, after the last task of a sweep
+	 * finished, with each task's result in {@see TCronSweepEventParameter::getResults}.
+	 * @param TCronSweepEventParameter $param the sweep parameter
+	 * @since 4.4.0
+	 */
+	public function onSweepEnd($param)
+	{
+		$this->raiseEvent('OnSweepEnd', $this, $param);
+		$this->raiseEvent('fxCronSweepEnd', $this, $param);
 	}
 
 	/**
@@ -808,13 +858,17 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	 * the serviced minute rolls over or nothing remains pending. {@see runTask} advances each task's next
 	 * execution time before running it, so an overlapping next-minute cron process never re-runs a task.
 	 * @param int $startMinute the minute (floor(timestamp / 60)) this invocation services
+	 * @param array<string, TCronTask> $tasks the tasks the sweep may run, by name; a task removed by an
+	 * `onSweepStart` handler is left pending for the next sweep
+	 * @return array<string, bool> whether each task that ran did so without an exception, by name
 	 * @since 4.4.0
 	 */
-	protected function runPendingTasksWithWake(int $startMinute)
+	protected function runPendingTasksWithWake(int $startMinute, array $tasks): array
 	{
+		$results = [];
 		try {
 			while ($startMinute == floor($this->time() / 60)) {
-				$pending = $this->getPendingTasks(true);
+				$pending = array_intersect_key($this->getPendingTasks(true) ?? [], $tasks);
 				if (empty($pending)) {
 					break;
 				}
@@ -825,7 +879,7 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 					$this->waitForWake($trigger);
 					continue;
 				}
-				$this->runTasks([$task]);
+				$results += $this->runTasks([$task]);
 			}
 		} finally {
 			// Release the wake transport held for this minute so nothing is bound into the next minute.
@@ -833,6 +887,7 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 				$this->_wakeTransport->close();
 			}
 		}
+		return $results;
 	}
 
 	/**
@@ -841,11 +896,13 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	 * ({@see taskExistsInternal}) is skipped.  Returns once every task has finished.
 	 * @param TCronTask[] $tasks the tasks to run, in order
 	 * @param ?int $startMinute the minute (`time() / 60`) after which no further task starts, or null for no limit
+	 * @return array<string, bool> whether each task that ran did so without an exception, by task name
 	 * @since 4.4.0
 	 */
-	protected function runTasks(array $tasks, ?int $startMinute = null)
+	protected function runTasks(array $tasks, ?int $startMinute = null): array
 	{
 		$running = [];
+		$futures = [];
 		foreach ($tasks as $task) {
 			if ($startMinute !== null && $startMinute != floor($this->time() / 60)) {
 				break;
@@ -854,9 +911,14 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 				continue;
 			}
 			$this->awaitTasks($running, $this->getConcurrency() - 1);
-			$running[] = TAsync::run([$this, 'runTask'], $task);
+			$running[] = $futures[$task->getName()] = TAsync::run([$this, 'runTask'], $task);
 		}
 		$this->awaitTasks($running, 0);
+		$results = [];
+		foreach ($futures as $name => $future) {
+			$results[$name] = (bool) $future->await();
+		}
+		return $results;
 	}
 
 	/**
@@ -1739,6 +1801,7 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	 */
 	protected function isDaemonDone(float $start): bool
 	{
+		$this->checkDaemonRequests();
 		if ($this->_daemonStop) {
 			return true;
 		}
@@ -1807,17 +1870,18 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	}
 
 	/**
-	 * Raises the `OnDaemonStart` event after the lease is acquired, before the first sweep.
+	 * Raises the `OnDaemonStart` event, and `fxCronDaemonStart` globally, after the lease is acquired, before the first sweep.
 	 * @param TCronDaemonEventParameter $param the lease lock name and whether the wake transport is watched
 	 * @since 4.4.0
 	 */
 	public function onDaemonStart($param)
 	{
 		$this->raiseEvent('OnDaemonStart', $this, $param);
+		$this->raiseEvent('fxCronDaemonStart', $this, $param);
 	}
 
 	/**
-	 * Raises the `OnDaemonIdle` event before each wait.  The parameter carries the tasks of the sweep just
+	 * Raises the `OnDaemonIdle` event, and `fxCronDaemonIdle` globally, before each wait.  The parameter carries the tasks of the sweep just
 	 * finished, the elapsed seconds, and the seconds about to be waited, which a handler changes with
 	 * {@see TCronDaemonEventParameter::setWait}.  A subclass releases resources an idle process should not
 	 * hold here, such as a database connection, and calls the parent to raise the event.
@@ -1827,10 +1891,11 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	public function onDaemonIdle($param)
 	{
 		$this->raiseEvent('OnDaemonIdle', $this, $param);
+		$this->raiseEvent('fxCronDaemonIdle', $this, $param);
 	}
 
 	/**
-	 * Raises the `OnDaemonEnd` event after the lease is released.  The parameter carries the tasks the
+	 * Raises the `OnDaemonEnd` event, and `fxCronDaemonEnd` globally, after the lease is released.  The parameter carries the tasks the
 	 * daemon ran, the elapsed seconds, and the {@see TCronDaemonEventParameter::getReason Reason}.
 	 * @param TCronDaemonEventParameter $param the end parameter
 	 * @since 4.4.0
@@ -1838,6 +1903,7 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	public function onDaemonEnd($param)
 	{
 		$this->raiseEvent('OnDaemonEnd', $this, $param);
+		$this->raiseEvent('fxCronDaemonEnd', $this, $param);
 	}
 
 	/**
@@ -1849,6 +1915,161 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 		$this->_daemonReason ??= TCronDaemonEventParameter::REASON_STOP;
 		$this->_daemonStop = true;
 		$this->wakeDaemon();
+	}
+
+	/**
+	 * Handles the global `fxRetireCronDaemon` event: a component in the daemon's process raises it to
+	 * {@see retireDaemon retire} the daemon without a reference to this module.
+	 * @param mixed $sender the raising component
+	 * @param mixed $param the event parameter
+	 * @since 4.4.0
+	 */
+	public function fxRetireCronDaemon($sender, $param)
+	{
+		$this->retireDaemon();
+	}
+
+	/**
+	 * Handles the global `fxStopCronDaemon` event: a component in the daemon's process raises it to
+	 * {@see stopDaemon stop} the daemon without a reference to this module.
+	 * @param mixed $sender the raising component
+	 * @param mixed $param the event parameter
+	 * @since 4.4.0
+	 */
+	public function fxStopCronDaemon($sender, $param)
+	{
+		$this->stopDaemon();
+	}
+
+	/**
+	 * @return string the lock name a process holds while it asks the daemon to retire, {@see getDaemonLockName} and `:retire`
+	 * @since 4.4.0
+	 */
+	public function getDaemonRetireLockName(): string
+	{
+		return $this->getDaemonLockName() . ':retire';
+	}
+
+	/**
+	 * @return string the lock name a process holds while it asks the daemon to stop, {@see getDaemonLockName} and `:stop`
+	 * @since 4.4.0
+	 */
+	public function getDaemonStopLockName(): string
+	{
+		return $this->getDaemonLockName() . ':stop';
+	}
+
+	/**
+	 * Tells whether another holder has a lock of the {@see getDaemonMutex DaemonMutex}.  A free lock is
+	 * taken and released at once.
+	 * @param string $name the lock name
+	 * @return bool whether the lock is held
+	 * @since 4.4.0
+	 */
+	protected function isDaemonLockHeld(string $name): bool
+	{
+		$mutex = $this->getDaemonMutex();
+		if ($mutex->acquire($name)) {
+			$mutex->release($name);
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Returns the state of the daemon of this module's lease, from any process.
+	 * @return ?string {@see DAEMON_STATE_RUNNING}, {@see DAEMON_STATE_RETIRING}, or null when no daemon holds the lease
+	 * @since 4.4.0
+	 */
+	public function getDaemonState(): ?string
+	{
+		if (!$this->isDaemonLockHeld($this->getDaemonLockName())) {
+			return null;
+		}
+		return $this->isDaemonLockHeld($this->getDaemonRetiringLockName()) ? static::DAEMON_STATE_RETIRING : static::DAEMON_STATE_RUNNING;
+	}
+
+	/**
+	 * Asks the running daemon, from any process, to retire: it holds the retire lock and wakes the
+	 * daemon, which starts retiring at its next turn, and waits for the retiring lock to appear.
+	 * @param ?float $timeout the seconds to wait for the acknowledgment, null for {@see DEFAULT_DAEMON_REQUEST_TIMEOUT}
+	 * @return ?bool true when the daemon retires (or already does), false when it did not acknowledge in time, null when no daemon runs
+	 * @since 4.4.0
+	 */
+	public function requestDaemonRetire(?float $timeout = null): ?bool
+	{
+		return $this->requestDaemon($this->getDaemonRetireLockName(), static fn (?string $state) => $state !== static::DAEMON_STATE_RUNNING, $timeout);
+	}
+
+	/**
+	 * Asks the running daemon, from any process, to stop at once: it holds the stop lock and wakes the
+	 * daemon, which ends at its next turn, and waits for the lease to be released.  The next tick starts
+	 * a new daemon.
+	 * @param ?float $timeout the seconds to wait for the acknowledgment, null for {@see DEFAULT_DAEMON_REQUEST_TIMEOUT}
+	 * @return ?bool true when the daemon stopped, false when it did not within the timeout, null when no daemon runs
+	 * @since 4.4.0
+	 */
+	public function requestDaemonStop(?float $timeout = null): ?bool
+	{
+		return $this->requestDaemon($this->getDaemonStopLockName(), static fn (?string $state) => $state === null, $timeout);
+	}
+
+	/**
+	 * Holds a request lock, wakes the daemon, and waits until {@see getDaemonState} satisfies the
+	 * acknowledgment or the timeout passes.
+	 * @param string $lockName the request lock
+	 * @param callable $acknowledged `(?string $state): bool`, whether the state is the requested one
+	 * @param ?float $timeout the seconds to wait, null for {@see DEFAULT_DAEMON_REQUEST_TIMEOUT}
+	 * @return ?bool true when acknowledged, false when not in time, null when no daemon runs
+	 * @since 4.4.0
+	 */
+	protected function requestDaemon(string $lockName, callable $acknowledged, ?float $timeout): ?bool
+	{
+		$state = $this->getDaemonState();
+		if ($state === null) {
+			return null;
+		}
+		if ($acknowledged($state)) {
+			return true;
+		}
+		$mutex = $this->getDaemonMutex();
+		if (!$mutex->acquire($lockName)) {
+			return false;
+		}
+		try {
+			$this->signalWake();
+			$clock = $this->getMonotonicClock();
+			$deadline = $clock->seconds() + ($timeout ?? (float) static::DEFAULT_DAEMON_REQUEST_TIMEOUT);
+			while (true) {
+				if ($acknowledged($this->getDaemonState())) {
+					return true;
+				}
+				$remaining = $deadline - $clock->seconds();
+				if ($remaining <= 0) {
+					return false;
+				}
+				TAsync::sleep(min($remaining, static::DAEMON_MIN_WAIT));
+			}
+		} finally {
+			$mutex->release($lockName);
+		}
+	}
+
+	/**
+	 * Applies the requests of other processes: a held stop lock stops the daemon, a held retire lock
+	 * retires it.
+	 * @since 4.4.0
+	 */
+	protected function checkDaemonRequests(): void
+	{
+		if (!$this->_daemonStop && $this->isDaemonLockHeld($this->getDaemonStopLockName())) {
+			Prado::log('Cron daemon (' . $this->getDaemonLockName() . ') stops on request', TLogger::INFO, TCronModule::class);
+			$this->_daemonReason ??= TCronDaemonEventParameter::REASON_STOP;
+			$this->_daemonStop = true;
+		} elseif (!$this->_daemonRetiring && !$this->_daemonRetireRequested && $this->isDaemonLockHeld($this->getDaemonRetireLockName())) {
+			Prado::log('Cron daemon (' . $this->getDaemonLockName() . ') retires on request', TLogger::INFO, TCronModule::class);
+			$this->_daemonRetireRequested = true;
+		}
 	}
 
 	/**
@@ -1890,13 +2111,18 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 		if ($pendingTasks === null) {
 			return 0;
 		}
+		$sweep = new TCronSweepEventParameter($pendingTasks, true);
+		$this->onSweepStart($sweep);
+		$pendingTasks = $sweep->getTasks();
 		$numtasks = count($pendingTasks);
+		$results = [];
 		if ($numtasks) {
 			$this->logCron($numtasks);
-			$this->runTasks($pendingTasks);
+			$results = $this->runTasks($pendingTasks);
 		} else {
 			$this->setLastCronTime($this->microtime());
 		}
+		$this->onSweepEnd($sweep->setResults($results));
 		return $numtasks;
 	}
 

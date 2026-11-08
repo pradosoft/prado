@@ -8,6 +8,7 @@ use Prado\Prado;
 use Prado\TComponent;
 use Prado\Util\Cron\TShellCronAction;
 use Prado\Util\Cron\TCronModule;
+use Prado\Util\Mutex\TMemoryMutex;
 
 
 class TShellCronActionTest extends \PHPUnit\Framework\TestCase
@@ -47,6 +48,40 @@ class TShellCronActionTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals($v, $this->obj->getCronModule());
 	}
 	
+	public function testActionDaemonRetireStop()
+	{
+		$cronClass = $this->getTestCronClass();
+		$cron = new $cronClass();
+		$cron->setID('shellDaemon' . substr(md5(static::class), 0, 6));
+		$cron->setDaemonMutex(new TMemoryMutex());
+		$cron->init(null);
+		$this->obj->setCronModule($cron);
+		try {
+			self::assertTrue($this->obj->actionDaemon(['cron/daemon']));
+			self::assertStringContainsString('No cron daemon holds the lease', $this->writer->flush());
+			self::assertTrue($this->obj->actionRetire(['cron/retire']));
+			self::assertStringContainsString('No cron daemon is running', $this->writer->flush());
+			self::assertTrue($this->obj->actionStop(['cron/stop', '0.1']));
+			self::assertStringContainsString('No cron daemon is running', $this->writer->flush());
+
+			// another process holds the lease
+			$other = new TMemoryMutex();
+			self::assertTrue($other->acquire($cron->getDaemonLockName()));
+			self::assertTrue($this->obj->actionDaemon(['cron/daemon']));
+			self::assertStringContainsString('is running', $this->writer->flush());
+			self::assertTrue($this->obj->actionStop(['cron/stop', '0.1']));
+			self::assertStringContainsString('did not stop', $this->writer->flush(), 'the holder never acknowledges');
+			self::assertTrue($other->acquire($cron->getDaemonRetiringLockName()));
+			self::assertTrue($this->obj->actionDaemon(['cron/daemon']));
+			self::assertStringContainsString('is retiring', $this->writer->flush());
+			self::assertTrue($this->obj->actionRetire(['cron/retire', '0.1']));
+			self::assertStringContainsString('is retiring', $this->writer->flush(), 'a retiring daemon acknowledges at once');
+			$other->releaseAll();
+		} finally {
+			$cron->unlisten();
+		}
+	}
+
 	public function testPerformAction()
 	{
 		

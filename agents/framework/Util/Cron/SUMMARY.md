@@ -18,6 +18,8 @@ Cron-style scheduled task engine supporting both file-configured and database-ba
 
 - **`TCronDaemonEventParameter`** — Parameter of the daemon events `onDaemonStart`, `onDaemonIdle` (settable `Wait`), and `onDaemonEnd` (`Reason`).
 
+- **`TCronSweepEventParameter`** — Parameter of the sweep events `onSweepStart` (settable `Tasks`) and `onSweepEnd` (`Results`, `Failed`).
+
 - **`TCronTaskInfo`** — Task metadata: name, schedule, task class, last run time.
 
 - **`TTimeScheduler`** — Cron expression parser supporting multi-language expressions and special tokens (`@daily`, `@hourly`, `@now`, etc.); both day fields restricted match as a union (POSIX).
@@ -26,7 +28,7 @@ Cron-style scheduled task engine supporting both file-configured and database-ba
 
 - **`TDbCronCleanLogTask`** — Pre-built task that auto-purges old cron log entries from the database.
 
-- **`TShellCronAction`** — CLI action listing the tasks (`prado-cli cron`) and running the pending ones (`prado-cli cron/run`).
+- **`TShellCronAction`** — CLI action listing the tasks (`prado-cli cron`), running the pending ones (`cron/run`), and showing, retiring, or stopping the daemon (`cron/daemon`, `cron/retire`, `cron/stop`).
 
 - **`TShellDbCronAction`** — CLI action for managing database-backed cron tasks and the cron log.
 

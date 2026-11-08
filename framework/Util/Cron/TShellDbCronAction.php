@@ -32,9 +32,9 @@ use Prado\Shell\TShellWriter;
  */
 class TShellDbCronAction extends TShellCronAction
 {
-	protected $methods = ['tasks', 'run', 'index', 'add', 'update', 'remove', 'log', 'flush'];
-	protected $parameters = [null, null, null, ['task-name', 'task-id', 'schedule'], ['task-name'], ['task-name'], null, null];
-	protected $optional = [['task-name or @user'], null, null, ['parameters...'], ['parameters...'], [], ['task-name or @user'], ['task-name or @user or time (e.g. seconds or PHP DateInterval)']];
+	protected $methods = ['tasks', 'run', 'index', 'add', 'update', 'remove', 'log', 'flush', 'daemon', 'retire', 'stop'];
+	protected $parameters = [null, null, null, ['task-name', 'task-id', 'schedule'], ['task-name'], ['task-name'], null, null, null, null, null];
+	protected $optional = [['task-name or @user'], null, null, ['parameters...'], ['parameters...'], [], ['task-name or @user'], ['task-name or @user or time (e.g. seconds or PHP DateInterval)'], null, ['seconds'], ['seconds']];
 	protected $description = ['Manages DbCron time-based services',
 		'Displays the Cron tasks configured in the application and database. Filter by @user and task name.',
 		'Runs the DbCron Pending Tasks.',
@@ -44,6 +44,9 @@ class TShellDbCronAction extends TShellCronAction
 		'Removes a Cron task from the database.',
 		'Displays the Cron log with task name and @user filters; _ is wild card, % is wild string',
 		'Flushes the Cron log with time period, task name and @user filters; _ is wild card, % is wild string',
+		'Shows whether a cron daemon holds the lease, and whether it is retiring.',
+		'Retires the running cron daemon: it hands the lease to the next cron/run tick with no gap.',
+		'Stops the running cron daemon at once; the next cron/run tick starts a new one.',
 	];
 
 	private $_user;
@@ -55,21 +58,8 @@ class TShellDbCronAction extends TShellCronAction
 		if ($user && $user->asa(TPermissionsManager::USER_PERMISSIONS_BEHAVIOR)) {
 			$this->_user = $user;
 			if (!$user->can(TDbCronManager::PERM_CRON_ADD_TASK) && !$user->can(TDbCronManager::PERM_CRON_ADD_TASK_GLOBAL)) {
-				unset($this->methods[3]);
-				unset($this->parameters[3]);
-				unset($this->optional[3]);
-				unset($this->description[4]);
+				$this->removeShellMethod('add');
 			}
-			if (!$user->can(TCronModule::PERM_CRON_RUN_PENDING)) {
-				unset($this->methods[1]);
-				unset($this->parameters[1]);
-				unset($this->optional[1]);
-				unset($this->description[2]);
-			}
-			$this->methods = array_values($this->methods);
-			$this->parameters = array_values($this->parameters);
-			$this->optional = array_values($this->optional);
-			$this->description = array_values($this->description);
 		}
 		parent::__construct();
 	}

@@ -30,13 +30,16 @@ use Prado\Util\Cron\TCronModule;
 class TShellCronAction extends TShellAction
 {
 	protected $action = 'cron';
-	protected $methods = ['tasks', 'run', 'index'];
-	protected $parameters = [null, null, null];
-	protected $optional = [['task-name or @user'], null, null];
+	protected $methods = ['tasks', 'run', 'index', 'daemon', 'retire', 'stop'];
+	protected $parameters = [null, null, null, null, null, null];
+	protected $optional = [['task-name or @user'], null, null, null, ['seconds'], ['seconds']];
 	protected $description = ['Manages Cron time-based services',
 		'Displays the Cron tasks configured in the application. Filter by @user and task name.',
 		'Runs the Cron Pending Tasks.',
 		'Displays the registered Cron tasks information.',
+		'Shows whether a cron daemon holds the lease, and whether it is retiring.',
+		'Retires the running cron daemon: it hands the lease to the next cron/run tick with no gap.',
+		'Stops the running cron daemon at once; the next cron/run tick starts a new one.',
 	];
 
 	private $_cron = false;
@@ -49,17 +52,31 @@ class TShellCronAction extends TShellAction
 		if ($user && $user->asa(TPermissionsManager::USER_PERMISSIONS_BEHAVIOR)) {
 			$this->_user = $user;
 			if (!$user->can(TCronModule::PERM_CRON_RUN_PENDING)) {
-				unset($this->methods[1]);
-				unset($this->parameters[1]);
-				unset($this->optional[1]);
-				unset($this->description[2]);
+				$this->removeShellMethod('run');
+				$this->removeShellMethod('retire');
+				$this->removeShellMethod('stop');
 			}
-			$this->methods = array_values($this->methods);
-			$this->parameters = array_values($this->parameters);
-			$this->optional = array_values($this->optional);
-			$this->description = array_values($this->description);
 		}
 		parent::__construct();
+	}
+
+	/**
+	 * Removes a sub-command the current user may not run from the methods, parameters, optional
+	 * parameters, and descriptions.
+	 * @param string $name the sub-command
+	 * @since 4.4.0
+	 */
+	protected function removeShellMethod(string $name): void
+	{
+		$i = array_search($name, $this->methods, true);
+		if ($i === false) {
+			return;
+		}
+		unset($this->methods[$i], $this->parameters[$i], $this->optional[$i], $this->description[$i + 1]);
+		$this->methods = array_values($this->methods);
+		$this->parameters = array_values($this->parameters);
+		$this->optional = array_values($this->optional);
+		$this->description = array_values($this->description);
 	}
 
 	/**
@@ -260,6 +277,84 @@ class TShellCronAction extends TShellAction
 			'rows' => $rows]));
 		$this->_outWriter->writeLine();
 		return true;
+	}
+
+	/**
+	 * Shows the state of the cron daemon of the module's lease.
+	 * @param string[] $args the arguments to the command line action
+	 * @return bool whether the command ran
+	 * @since 4.4.0
+	 */
+	public function actionDaemon($args)
+	{
+		$module = $this->getCronModule();
+		if (!$module) {
+			return true;
+		}
+		$lock = $module->getDaemonLockName();
+		$this->_outWriter->writeLine("\n" . match ($module->getDaemonState()) {
+			TCronModule::DAEMON_STATE_RUNNING => "A cron daemon holds the lease ({$lock}) and is running.",
+			TCronModule::DAEMON_STATE_RETIRING => "A cron daemon holds the lease ({$lock}) and is retiring; the next cron/run tick takes it over.",
+			default => "No cron daemon holds the lease ({$lock})" . ($module->getDaemon() ? '; the next cron/run tick starts one.' : '; Daemon mode is off.'),
+		} . "\n");
+		return true;
+	}
+
+	/**
+	 * Retires the running cron daemon: it serves on and hands the lease to the next cron/run tick,
+	 * which starts a new daemon on the current code and configuration without a gap.
+	 * @param string[] $args the arguments to the command line action; an optional acknowledgment timeout in seconds
+	 * @return bool whether the command ran
+	 * @since 4.4.0
+	 */
+	public function actionRetire($args)
+	{
+		$module = $this->getCronModule();
+		if (!$module) {
+			return true;
+		}
+		$result = $module->requestDaemonRetire($this->requestTimeout($args));
+		if ($result === null) {
+			$this->_outWriter->writeLine("\nNo cron daemon is running.\n");
+		} elseif ($result) {
+			$this->_outWriter->writeLine("\nThe cron daemon is retiring; the next cron/run tick starts a new one with no gap.\n", TShellWriter::GREEN);
+		} else {
+			$this->_outWriter->writeError('The cron daemon did not acknowledge the retire request in time.');
+		}
+		return true;
+	}
+
+	/**
+	 * Stops the running cron daemon at once; the next cron/run tick starts a new one.
+	 * @param string[] $args the arguments to the command line action; an optional acknowledgment timeout in seconds
+	 * @return bool whether the command ran
+	 * @since 4.4.0
+	 */
+	public function actionStop($args)
+	{
+		$module = $this->getCronModule();
+		if (!$module) {
+			return true;
+		}
+		$result = $module->requestDaemonStop($this->requestTimeout($args));
+		if ($result === null) {
+			$this->_outWriter->writeLine("\nNo cron daemon is running.\n");
+		} elseif ($result) {
+			$this->_outWriter->writeLine("\nThe cron daemon stopped; the next cron/run tick starts a new one.\n", TShellWriter::GREEN);
+		} else {
+			$this->_outWriter->writeError('The cron daemon did not stop within the timeout.');
+		}
+		return true;
+	}
+
+	/**
+	 * @param string[] $args the command arguments
+	 * @return ?float the acknowledgment timeout in seconds from the first argument, or null for the module default
+	 * @since 4.4.0
+	 */
+	protected function requestTimeout($args): ?float
+	{
+		return (isset($args[1]) && is_numeric($args[1])) ? max(0.0, (float) $args[1]) : null;
 	}
 
 	/**

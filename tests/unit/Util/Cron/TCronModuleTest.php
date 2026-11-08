@@ -14,6 +14,7 @@ use Prado\Prado;
 use Prado\Test\Unit\PradoUnit;
 use Prado\Test\Unit\Harness\Util\Cron\TTestCronModule;
 use Prado\Util\Cron\TCronDaemonEventParameter;
+use Prado\Util\Cron\TCronSweepEventParameter;
 use Prado\Util\Cron\Wake\TCronWakeFile;
 use Prado\Util\Cron\Wake\TCronWakeSocket;
 use Prado\Util\Mutex\TFileMutex;
@@ -1281,14 +1282,12 @@ class TCronModuleTest extends \PHPUnit\Framework\TestCase
 		$loop = TAsync::getLoop();
 		$loop->delay(0.1, fn () => $this->obj->retireDaemon());
 		$retiring = null;
-		$loop->delay(0.25, function () use (&$retiring) {
-			$mutex = new TMemoryMutex();
-			$retiring = !$mutex->acquire($this->obj->getDaemonRetiringLockName());
-			$mutex->releaseAll();
+		$tick = new TMemoryMutex();
+		$loop->delay(0.25, function () use (&$retiring, $tick) {
+			$retiring = !$tick->acquire($this->obj->getDaemonRetiringLockName());
+			$tick->releaseAll();
 			// a tick arrives and waits for the lease
-			$mutex->acquire($this->obj->getDaemonHandoffLockName());
-			$loop = TAsync::getLoop();
-			$loop->delay(0.3, static fn () => $mutex->releaseAll());
+			$tick->acquire($this->obj->getDaemonHandoffLockName());
 		});
 		$end = null;
 		$this->obj->attachEventHandler('OnDaemonEnd', function ($sender, $param) use (&$end) {
@@ -1296,9 +1295,121 @@ class TCronModuleTest extends \PHPUnit\Framework\TestCase
 		});
 		$start = microtime(true);
 		self::assertEquals(0, $this->obj->processPendingTasks());
+		$tick->releaseAll();
 		self::assertLessThan(2.0, microtime(true) - $start);
 		self::assertTrue($retiring, 'retireDaemon() makes the daemon hold the retiring lock');
 		self::assertSame(TCronDaemonEventParameter::REASON_HANDOFF, $end->getReason());
+	}
+
+	public function testSweepEvents_HandlersSeeAndChangeTheTasksAndTheResults()
+	{
+		$now = $this->obj->fakeNow;
+		TTestCronRecordingTask::$events = [];
+		$this->obj->init([
+			['name' => 'sweepKept', 'schedule' => '@' . ($now - 10), 'task' => TTestCronModuleTask::class],
+			['name' => 'sweepDropped', 'schedule' => '@' . ($now - 10), 'task' => TTestCronModuleTask::class],
+			['name' => 'sweepFailing', 'schedule' => '@' . ($now - 10), 'task' => TTestCronRecordingTask::class],
+		]);
+		$this->obj->getTask('sweepKept')->testunit = $this;
+		$this->obj->getTask('sweepDropped')->testunit = $this;
+		$this->obj->getTask('sweepFailing')->throw = true;
+		$fx = new TTestCronFXComponent();
+		$seen = [];
+		$this->obj->attachEventHandler('OnSweepStart', function ($sender, $param) use (&$seen) {
+			self::assertInstanceOf(TCronSweepEventParameter::class, $param);
+			$seen['start'] = $param;
+			self::assertFalse($param->getDaemon());
+			self::assertSame(['sweepKept', 'sweepDropped', 'sweepFailing'], array_keys($param->getTasks()));
+			self::assertSame(3, $param->getCount());
+			$tasks = $param->getTasks();
+			unset($tasks['sweepDropped']);
+			$param->setTasks($tasks);
+		});
+		$this->obj->attachEventHandler('OnSweepEnd', function ($sender, $param) use (&$seen) {
+			$seen['end'] = $param;
+		});
+		self::assertEquals(2, $this->obj->processPendingTasks(), 'the handler dropped one task from the sweep');
+		self::assertSame('fxcronsweepend', $fx->dyMethod, 'the on events are broadcast as fx events');
+		self::assertSame($seen['end'], $fx->args[1]);
+		self::assertEquals(1, $this->_countTasks);
+		self::assertEquals(1, $this->obj->getTask('sweepKept')->getProcessCount());
+		self::assertEquals(0, $this->obj->getTask('sweepDropped')->getProcessCount(), 'a dropped task stays pending');
+		self::assertEquals(1, $this->obj->getTask('sweepFailing')->getProcessCount());
+		self::assertSame($seen['start'], $seen['end']);
+		self::assertSame(['sweepKept' => true, 'sweepFailing' => false], $seen['end']->getResults());
+		self::assertSame(2, $seen['end']->getCount());
+		self::assertSame(1, $seen['end']->getFailed());
+		$fx->unlisten();
+	}
+
+	public function testDaemonRequests_RetireAndStopFromAnotherProcess()
+	{
+		$this->obj->setDaemon(true);
+		$this->obj->setDaemonLifetime(0);
+		$this->obj->setDaemonIdle(0.05);
+		$this->obj->setDaemonWatchConfig(false);
+		$this->obj->setDaemonMutex(new TMemoryMutex());
+		$this->obj->init(null);
+		self::assertNull($this->obj->getDaemonState(), 'no daemon yet');
+		self::assertNull($this->obj->requestDaemonRetire(0.1));
+		self::assertNull($this->obj->requestDaemonStop(0.1));
+
+		$loop = TAsync::getLoop();
+		$states = [];
+		$acks = [];
+		// Another process (its own mutex instance) asks the running daemon to retire, then to stop.
+		$loop->delay(0.1, function () use (&$states, &$acks) {
+			$states[] = $this->obj->getDaemonState();
+			$other = new $this->baseClass();
+			$other->setDaemonMutex(new TMemoryMutex());
+			$other->setID($this->obj->getID());
+			TAsync::run(function () use ($other, &$acks, &$states) {
+				$acks['retire'] = $other->requestDaemonRetire(2);
+				$states[] = $other->getDaemonState();
+				$acks['stop'] = $other->requestDaemonStop(2);
+				$states[] = $other->getDaemonState();
+				$other->unlisten();
+			});
+		});
+		$end = null;
+		$this->obj->attachEventHandler('OnDaemonEnd', function ($sender, $param) use (&$end) {
+			$end = $param;
+		});
+		$start = microtime(true);
+		self::assertEquals(0, $this->obj->processPendingTasks());
+		self::assertLessThan(3.0, microtime(true) - $start);
+		// let the requester's fiber finish its last probe
+		$suspension = $loop->suspension();
+		$loop->delay(0.1, static fn () => $suspension->resume());
+		$suspension->suspend();
+		self::assertSame([TCronModule::DAEMON_STATE_RUNNING, TCronModule::DAEMON_STATE_RETIRING, null], $states);
+		self::assertSame(['retire' => true, 'stop' => true], $acks);
+		self::assertSame(TCronDaemonEventParameter::REASON_STOP, $end->getReason());
+	}
+
+	public function testFxRequests_RetireAndStopTheDaemonFromAComponent()
+	{
+		$this->obj->setDaemon(true);
+		$this->obj->setDaemonLifetime(0);
+		$this->obj->setDaemonIdle(0.05);
+		$this->obj->setDaemonWatchConfig(false);
+		$this->obj->setDaemonMutex(new TMemoryMutex());
+		$this->obj->init(null);
+		$loop = TAsync::getLoop();
+		$raiser = new TComponent();
+		$retiring = null;
+		$loop->delay(0.1, static fn () => $raiser->raiseEvent('fxRetireCronDaemon', $raiser, null));
+		$loop->delay(0.25, function () use (&$retiring) {
+			$retiring = $this->obj->getDaemonState();
+		});
+		$loop->delay(0.3, static fn () => $raiser->raiseEvent('fxStopCronDaemon', $raiser, null));
+		$end = null;
+		$this->obj->attachEventHandler('OnDaemonEnd', function ($sender, $param) use (&$end) {
+			$end = $param;
+		});
+		self::assertEquals(0, $this->obj->processPendingTasks());
+		self::assertSame(TCronModule::DAEMON_STATE_RETIRING, $retiring, 'fxRetireCronDaemon retires the daemon');
+		self::assertSame(TCronDaemonEventParameter::REASON_STOP, $end->getReason(), 'fxStopCronDaemon stops it');
 	}
 
 	public function testRunDaemon_AWakeSweepsAndStopDaemonEndsTheWait()

@@ -94,7 +94,26 @@ Application code hooks the daemon through three `on` events, each with a [`TCron
 | `onDaemonIdle` | before each wait | `Tasks` of the sweep just finished, `Elapsed`, and `Wait`, which a handler changes with `setWait()` |
 | `onDaemonEnd` | after the lease is released | `Tasks` in all, `Elapsed`, `Reason` (`handoff`, `stop`, `signal`, `error`; `lifetime` only when a daemon could not take the retiring lock) |
 
-`TDbCronManager` overrides `onDaemonIdle()` to close its database connection before raising the event. A handler that wants the daemon to end calls `stopDaemon()`.
+`TDbCronManager` overrides `onDaemonIdle()` to close its database connection before raising the event. A handler that wants the daemon to end calls `retireDaemon()` (hand-off, no gap) or `stopDaemon()` (at once).
+
+### Sweep events (4.4.0)
+
+Every pass of `processPendingTasks()`, per-minute or in the daemon, raises two events with a [`TCronSweepEventParameter`](TCronSweepEventParameter.md):
+
+| Event | When | Parameter |
+|---|---|---|
+| `onSweepStart` | the pending tasks are collected, before any runs | `Tasks` (settable: remove, add, reorder, or edit the tasks about to run), `Daemon`, `Count` |
+| `onSweepEnd` | the last task finished | `Tasks` as run, `Results` (name to whether it ran without an exception), `Count`, `Failed` |
+
+`runTasks()` returns the per-task results that feed `Results`.
+
+### Global `fx` events and requests (4.4.0)
+
+Each `on` event of the module is also broadcast as a global event, so a module declares the method and is called with no configuration: `fxCronSweepStart`, `fxCronSweepEnd`, `fxCronDaemonStart`, `fxCronDaemonIdle`, `fxCronDaemonEnd`, each with the same parameter object. In the other direction a component in the daemon's process raises `fxRetireCronDaemon` or `fxStopCronDaemon`, which the cron module handles by calling `retireDaemon()` or `stopDaemon()`, without a reference to the module.
+
+### Requests from another process (4.4.0)
+
+`getDaemonState()` reports `running`, `retiring`, or null by probing the lease and retiring locks, from any process. `requestDaemonRetire($timeout)` holds the `…:retire` lock, wakes the daemon, and waits for the retiring lock to appear; `requestDaemonStop($timeout)` holds the `…:stop` lock and waits for the lease to be released. The daemon checks both request locks on every loop turn (`checkDaemonRequests()`). Both return true on acknowledgment, false on timeout (`DEFAULT_DAEMON_REQUEST_TIMEOUT`, 10 s), and null when no daemon runs. The shell exposes them as `cron/daemon`, `cron/retire`, and `cron/stop`.
 
 ```xml
 <module id="cron" class="Prado\Util\Cron\TDbCronManager" Daemon="true" DaemonLifetime="1800" DaemonMutex="dbmutex" WakeTransport="cronwake" />
