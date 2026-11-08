@@ -139,6 +139,7 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 	protected function createPagerButton($pager, $buttonType, $enabled, $text, $commandName, $commandParameter)
 	{
 		if ($buttonType === TDataGridPagerButtonType::LinkButton) {
+			$text = $this->encodeDefaultPagerText($text);
 			if ($enabled) {
 				$button = new TActiveLinkButton();
 			} else {

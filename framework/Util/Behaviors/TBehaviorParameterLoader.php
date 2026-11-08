@@ -57,10 +57,10 @@ class TBehaviorParameterLoader extends TComponent
 	/** @var array<string, string> additional properties to feed the behavior */
 	private $_properties = [];
 
-	/** @var array<string, array<string, string>> the list of behaviors to attach to the page */
+	/** @var array<int|string, array<string, string>> the behaviors to attach to the page; anonymous behaviors take integer keys */
 	private static $_pageBehaviors = [];
 
-	/** @var array<string, array<object>> the list of behaviors to attach to the page */
+	/** @var array<string, array<int|string, array<string, string>>> the behaviors to attach to each module; anonymous behaviors take integer keys */
 	private static $_moduleBehaviors = [];
 
 	/**
@@ -89,7 +89,11 @@ class TBehaviorParameterLoader extends TComponent
 				if (!count(self::$_pageBehaviors)) {
 					Prado::getApplication()->attachEventHandler('onBeginRequest', [$this, 'attachTPageServiceHandler']);
 				}
-				self::$_pageBehaviors[$name] = $this->_properties;
+				if ($name === null) {
+					self::$_pageBehaviors[] = $this->_properties;
+				} else {
+					self::$_pageBehaviors[$name] = $this->_properties;
+				}
 				return;
 			} elseif (strncasecmp(strtolower($this->_attachto), 'module:', 7) === 0) {
 				if (!count(self::$_moduleBehaviors)) {
@@ -100,7 +104,11 @@ class TBehaviorParameterLoader extends TComponent
 					throw new TConfigurationException('behaviorparameterloader_moduleid_required', $moduleid);
 				}
 				self::$_moduleBehaviors[$moduleid] = self::$_moduleBehaviors[$moduleid] ?? [];
-				self::$_moduleBehaviors[$moduleid][$name] = $this->_properties;
+				if ($name === null) {
+					self::$_moduleBehaviors[$moduleid][] = $this->_properties;
+				} else {
+					self::$_moduleBehaviors[$moduleid][$name] = $this->_properties;
+				}
 				return;
 			} elseif (strtolower($this->_attachto) == "application") {
 				$owner = Prado::getApplication();

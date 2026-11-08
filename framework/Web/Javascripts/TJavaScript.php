@@ -178,6 +178,9 @@ class TJavaScript
 		} elseif (is_int($value)) {
 			return "$value";
 		} elseif (is_float($value)) {
+			if (is_nan($value)) {
+				return 'NAN';
+			}
 			switch ($value) {
 				case -INF:
 					return 'Number.NEGATIVE_INFINITY';
@@ -215,28 +218,56 @@ class TJavaScript
 	 */
 	public static function jsonEncode($value, $options = 0)
 	{
-		if (($g = Prado::getApplication()->getGlobalization(false)) !== null &&
-			strtoupper($enc = $g->getCharset()) != 'UTF-8') {
-			self::convertToUtf8($value, $enc);
+		$app = Prado::getApplication();
+		if ($app !== null && ($g = $app->getGlobalization(false)) !== null) {
+			$enc = (string) $g->getCharset();
+			if ($enc !== '' && strtoupper($enc) !== 'UTF-8' && self::isKnownEncoding($enc)) {
+				self::convertToUtf8($value, $enc);
+			}
 		}
 
 		return json_encode($value, $options | JSON_THROW_ON_ERROR);
 	}
 
 	/**
-	 * Encodes an string or the content of an array to UTF8
+	 * Recursively converts the strings of a string, array, or `stdClass` to UTF-8 in place.
+	 * A string that `iconv` cannot transcode is left unchanged.
 	 * @param array|mixed|string $value
 	 * @param string $sourceEncoding
 	 */
 	private static function convertToUtf8(&$value, $sourceEncoding)
 	{
 		if (is_string($value)) {
-			$value = iconv($sourceEncoding, 'UTF-8', $value);
+			$converted = @iconv($sourceEncoding, 'UTF-8', $value);
+			if ($converted !== false) {
+				$value = $converted;
+			}
 		} elseif (is_array($value)) {
 			foreach ($value as &$element) {
 				self::convertToUtf8($element, $sourceEncoding);
 			}
+			unset($element);
+		} elseif ($value instanceof \stdClass) {
+			foreach (get_object_vars($value) as $key => $element) {
+				self::convertToUtf8($element, $sourceEncoding);
+				$value->$key = $element;
+			}
 		}
+	}
+
+	/**
+	 * Checks whether `iconv` recognizes an encoding name; the result is cached per process.
+	 * @param string $encoding encoding name to test
+	 * @return bool whether `iconv` accepts the name
+	 */
+	private static function isKnownEncoding(string $encoding): bool
+	{
+		static $cache = [];
+		$key = strtoupper($encoding);
+		if (!isset($cache[$key])) {
+			$cache[$key] = @iconv($encoding, 'UTF-8', '') !== false;
+		}
+		return $cache[$key];
 	}
 
 	/**

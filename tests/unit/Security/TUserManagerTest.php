@@ -9,6 +9,7 @@ use Prado\Exceptions\TInvalidOperationException;
 use Prado\Prado;
 use Prado\Security\TUserManager;
 use Prado\TApplication;
+use Prado\Test\Unit\PradoUnit;
 use Prado\Xml\TXmlDocument;
 
 class TUserManagerTest extends \PHPUnit\Framework\TestCase
@@ -122,7 +123,24 @@ class TUserManagerTest extends \PHPUnit\Framework\TestCase
 		$userManager->init(self::$config);
 		$userManager->setPasswordMode('Clear');
 		self::assertTrue($userManager->validateUser('Joe', 'demo'));
+		self::assertTrue($userManager->validateUser('JOE', 'demo'));
 		self::assertFalse($userManager->validateUser('John', 'bad'));
+		self::assertFalse($userManager->validateUser('Joe', 'dem'));
+		self::assertFalse($userManager->validateUser('Joe', 'demo '));
+		self::assertFalse($userManager->validateUser('Joe', ''));
+		self::assertFalse($userManager->validateUser('Nobody', 'demo'));
+	}
+
+	public function testValidateUserHashedModes()
+	{
+		$userManager = new TUserManager();
+		$userManager->init(self::$config);
+		foreach (['MD5' => md5('demo'), 'SHA1' => sha1('demo')] as $mode => $hash) {
+			$userManager->setPasswordMode($mode);
+			PradoUnit::setProp($userManager, '_users', ['joe' => $hash]);
+			self::assertTrue($userManager->validateUser('Joe', 'demo'), $mode);
+			self::assertFalse($userManager->validateUser('Joe', 'Demo'), $mode);
+		}
 	}
 
 	public function testUser()

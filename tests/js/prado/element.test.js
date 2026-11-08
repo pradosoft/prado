@@ -11,6 +11,36 @@ import { Element } from '../adapters/prado-core.js';
 // ─── Prado.Element.createOptions ──────────────────────────────────────────────
 
 describe('Prado.Element.createOptions', () => {
+	it('escapes markup in option text, as the page render does', () => {
+		const markup = '<img src=x onerror="window.__createOptionsXss=1">';
+		const opts = Element.createOptions([[markup, 'm']]);
+		expect(opts[0].text).toBe(markup);
+		expect(opts[0].textContent).toBe(markup);
+		expect(opts[0].children).toHaveLength(0);
+		expect(window.__createOptionsXss).toBeUndefined();
+	});
+
+	it('decodes entities in option text, as the page render does', () => {
+		const opts = Element.createOptions([
+			['Tom &amp; Jerry', 'tj'],
+			['&nbsp;&nbsp;Child', 'c'],
+			['&lt;b&gt;', 'lt'],
+			['Tom & Jerry', 'amp'],
+		]);
+		expect(opts[0].text).toBe('Tom & Jerry');
+		expect(opts[1].textContent).toBe('\u00a0\u00a0Child');
+		expect(opts[2].textContent).toBe('<b>');
+		expect(opts[2].children).toHaveLength(0);
+		expect(opts[3].text).toBe('Tom & Jerry');
+	});
+
+	it('escapes markup in grouped option text', () => {
+		const opts = Element.createOptions([['<b>Red</b>', 'red', 'Colors']]);
+		const option = opts[0].children[0];
+		expect(option.textContent).toBe('<b>Red</b>');
+		expect(option.children).toHaveLength(0);
+	});
+
 	it('returns empty array for empty input', () => {
 		expect(Element.createOptions([])).toEqual([]);
 	});

@@ -9,6 +9,7 @@ use Prado\Exceptions\TExitException;
 use Prado\TEventSubscription;
 use Prado\Util\TSignalsDispatcher;
 use Prado\Util\TSignalParameter;
+use Prado\Test\Unit\PradoUnit;
 
 class TTestSignalInvokable {
 	public $data = null;
@@ -255,8 +256,12 @@ class TSignalsDispatcherTest extends \PHPUnit\Framework\TestCase
 			self::assertTrue($handlers->contains($handler));
 			self::assertEquals(5, $handlers->priorityOf($handler));
 			
-			$this->dispatcher->detachPidHandler($pid, $handler, 5);
+			self::assertFalse($this->dispatcher->detachPidHandler($pid, function ($sender, $param) {}));
+			self::assertFalse($this->dispatcher->detachPidHandler($pid, $handler, 10));
+			self::assertTrue($this->dispatcher->hasPidHandler($pid));
+			self::assertTrue($this->dispatcher->detachPidHandler($pid, $handler, 5));
 			self::assertFalse($this->dispatcher->hasPidHandler($pid));
+			self::assertFalse($this->dispatcher->detachPidHandler($pid, $handler, 5));
 		}
 		
 		// End the PID
@@ -476,6 +481,35 @@ class TSignalsDispatcherTest extends \PHPUnit\Framework\TestCase
 		self::assertEquals(2, count($called));
 	}
 	
+	public function testDisarmKeepsTheOtherAlarmsOfTheTimeAndRearmsForTheNext()
+	{
+		if (!TSignalsDispatcher::hasSignals()) {
+			$this->markTestSkipped("skipping " . TSignalsDispatcher::class . "::disarm.");
+			return;
+		}
+		$this->dispatcher = new TTestSignalsDispatcher();
+		PradoUnit::setStaticProp(TSignalsDispatcher::class, '_alarms', []);
+		PradoUnit::setStaticProp(TSignalsDispatcher::class, '_nextAlarmTime', null);
+		pcntl_alarm(0);
+
+		// Disarming one callback keeps the others of the same alarm time.
+		$time = TTestSignalsDispatcher::alarm(5, $f1 = function () {});
+		self::assertSame($time, TTestSignalsDispatcher::alarm(5, $f2 = function () {}));
+		self::assertSame($time, TTestSignalsDispatcher::disarm($f1));
+		self::assertSame($time, TTestSignalsDispatcher::alarm(), 'f2 is still pending at the same time.');
+		self::assertSame($time, TTestSignalsDispatcher::disarm($f2));
+		pcntl_alarm(0);
+
+		// Disarming the next alarm arms the OS alarm for the remaining seconds of the following one.
+		$near = TTestSignalsDispatcher::alarm(2, $g1 = function () {});
+		$far = TTestSignalsDispatcher::alarm(10, $g2 = function () {});
+		self::assertSame($near, TTestSignalsDispatcher::disarm($g1));
+		self::assertSame($far, TTestSignalsDispatcher::alarm());
+		self::assertContains(pcntl_alarm(0), [9, 10], 'The OS alarm waits for the far alarm, not 1 s.');
+		TTestSignalsDispatcher::disarm($g2);
+		pcntl_alarm(0);
+	}
+
 	public function testDelegateChild()
 	{
 		if (!TSignalsDispatcher::hasSignals()) {

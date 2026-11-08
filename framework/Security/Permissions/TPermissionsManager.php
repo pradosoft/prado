@@ -368,6 +368,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 			$roles = $config->getElementsByTagName('role');
 			$permissions = $config->getElementsByTagName('permissionrule');
 		} elseif (is_array($config)) {
+			$config = array_change_key_case($config);
 			$roles = $config['roles'] ?? [];
 			$permissions = $config['permissionrules'] ?? [];
 		}
@@ -398,6 +399,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 				if (!is_array($properties)) {
 					throw new TConfigurationException('permissions_rule_invalid', $name);
 				}
+				$properties = array_change_key_case($properties);
 			}
 			if (is_numeric($name) && (!isset($properties[0]) || !$properties[0] instanceof TAuthorizationRule)) {
 				$name = strtolower($properties['name'] ?? '');

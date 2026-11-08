@@ -113,11 +113,17 @@ class TThemeManager extends \Prado\TModule
 	}
 
 	/**
-	 * @param string $name name of the theme to be retrieved
+	 * Retrieves a theme by its directory name under {@see getBasePath() BasePath}.
+	 * @param string $name name of the theme to be retrieved, a single directory name
+	 * @throws TInvalidDataValueException if the name is empty, `.`, `..`, or contains `/`, `\`, or NUL
 	 * @return TTheme the theme retrieved
 	 */
 	public function getTheme($name)
 	{
+		$name = (string) $name;
+		if ($name === '' || $name === '.' || $name === '..' || strpbrk($name, "/\\\0") !== false) {
+			throw new TInvalidDataValueException('thememanager_theme_invalid', $name);
+		}
 		$themePath = $this->getBasePath() . DIRECTORY_SEPARATOR . $name;
 		$themeUrl = rtrim($this->getBaseUrl(), '/') . '/' . $name;
 		return Prado::createComponent($this->getThemeClass(), $themePath, $themeUrl);
@@ -179,10 +185,11 @@ class TThemeManager extends \Prado\TModule
 	public function setBasePath($value)
 	{
 		$this->assertUninitialized('BasePath');
-		$this->_basePath = Prado::getPathOfNamespace($value);
-		if ($this->_basePath === null || !is_dir($this->_basePath)) {
+		$basePath = Prado::getPathOfNamespace($value);
+		if ($basePath === null || !is_dir($basePath)) {
 			throw new TInvalidDataValueException('thememanager_basepath_invalid', $value);
 		}
+		$this->_basePath = $basePath;
 	}
 
 	/**

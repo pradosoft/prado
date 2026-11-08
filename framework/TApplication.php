@@ -61,7 +61,8 @@ use Prado\Xml\TXmlElement;
  *   will only be recorded in system error logs. The cache is ensured to be
  *   up-to-date if it is enabled.
  * - <b>Performance</b> mode is similar to <b>Normal</b> mode except that it
- *   does not ensure the cache is up-to-date.
+ *   does not ensure the cache is up-to-date.  It keeps class fx-event lists in a
+ *   runtime file that a deployment clears with `prado-cli cache/flush-all`.
  *
  * TApplication dispatches each user request to a particular service which
  * finishes the actual work for the request with the aid from the application
@@ -1354,12 +1355,12 @@ class TApplication extends TComponent implements ISingleton
 	 * Returns the module registered under `$id`, or `null` if no module with that ID exists.
 	 * Lazy modules are deferred at startup and loaded on first request via {@see internalLoadModule()}
 	 * and `init()`, then cached for subsequent calls.
-	 * @param string $id module ID
-	 * @return ?TModule the module with the specified ID, null if not found
+	 * @param ?string $id module ID
+	 * @return ?TModule the module with the specified ID, null if not found or `$id` is null
 	 */
 	public function getModule($id)
 	{
-		if (!array_key_exists($id, $this->_modules)) {
+		if ($id === null || !array_key_exists($id, $this->_modules)) {
 			return null;
 		}
 

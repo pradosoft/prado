@@ -50,10 +50,8 @@ class TCallbackErrorHandler extends TErrorHandler
 				$trace = preg_replace('/[^(\x20-\x7F)]*/', '', serialize($trace));
 			}
 
-			// avoid exception loop if headers have already been sent
-			try {
-				$response->setStatusCode(500, 'Internal Server Error');
-			} catch (Exception $e) {
+			if (!$response->getHttpHeaderSent()) {
+				$response->setStatusCode(500);
 			}
 
 			$content = $response->createHtmlWriter();
@@ -108,7 +106,7 @@ class TCallbackErrorHandler extends TErrorHandler
 		}
 		$data['type'] = $exception::class;
 		$data['message'] = $exception->getMessage();
-		$data['version'] = $_SERVER['SERVER_SOFTWARE'] . ' ' . Prado::getVersion();
+		$data['version'] = ($_SERVER['SERVER_SOFTWARE'] ?? '') . ' ' . Prado::getVersion();
 		$data['time'] = @strftime('%Y-%m-%d %H:%M', time());
 		return $data;
 	}

@@ -132,6 +132,7 @@ assetmanager_baseurl_unchangeable		= TAssetManager.BaseUrl cannot be modified af
 assetmanager_filepath_invalid			= TAssetManager is publishing an invalid file '{0}'.
 assetmanager_tarchecksum_invalid		= TAssetManager is publishing a tar file with invalid checksum '{0}'.
 assetmanager_tarfile_invalid			= TAssetManager is publishing an invalid tar file '{0}'.
+assetmanager_tarfile_extract_failed		= TAssetManager could not extract the tar file '{0}'.
 assetmanager_source_directory_invalid	= TAssetManager is copying an invalid directory '{0}'.
 
 cache_primary_duplicated				= At most one primary cache module is allowed. {0} is trying to register as another primary cache.
@@ -309,6 +310,7 @@ permissions_permissionfile_invalid		= TPermissionsManager.PermissionFile '{0}' i
 thememanager_basepath_invalid			= TThemeManager.BasePath '{0}' is not a valid path alias. Make sure you have defined this alias in configuration and it points to a valid directory.
 thememanager_basepath_invalid2			= TThemeManager.BasePath '{0}' is not a valid directory.
 thememanager_basepath_unchangeable		= TThemeManager.BasePath cannot be modified after the module is initialized.
+thememanager_theme_invalid				= TThemeManager theme name '{0}' must be a single directory name.
 
 theme_baseurl_required					= TThemeManager.BasePath is required. By default, a directory named 'themes' under the directory containing the application entry script is assumed.
 theme_path_inexistent					= Theme path '{0}' does not exist.
@@ -400,6 +402,8 @@ dblogroute_connectionid_invalid			= TDbLogRoute unable to create the Database Co
 dblogroute_insert_failed				= TDbLogRoute unable to insert the log into the '{0}'.
 dblogroute_bad_retain_period			= TDbLogRoute.RetainPeriod '{0}' is not valid
 dblogroute_table_nonexistent			= TDbLogRoute table '{0}' does not exist and must be created.
+dblogroute_order_invalid				= TDbLogRoute order '{0}' must list columns, each optionally followed by ASC or DESC.
+dblogroute_limit_invalid				= TDbLogRoute limit '{0}' must be a row count, 'count OFFSET offset', or 'offset, count'.
 
 filelogroute_logpath_invalid			= TFileLogRoute.LogPath '{0}' must be a directory in namespace format and must be writable by the Web server process.
 filelogroute_maxfilesize_invalid		= TFileLogRoute.MaxFileSize must be greater than 0.
@@ -495,9 +499,19 @@ databoundcontrol_pagesize_invalid		= {0}.PageSize must be an integer no smaller 
 databoundcontrol_virtualitemcount_invalid = {0}.VirtualItemCount must be an integer no smaller than 0.
 databoundcontrol_currentpageindex_invalid = {0}.CurrentPageIndex is out of range.
 databoundcontrol_datasource_invalid		= {0}.DataSource is not valid.
-databoundcontrol_datasourceid_inexistent = databoundcontrol_datasourceid_inexistent.
-databoundcontrol_datasourceid_invalid	= databoundcontrol_datasourceid_invalid
-databoundcontrol_datamember_invalid		= databoundcontrol_datamember_invalid
+databoundcontrol_datasourceid_inexistent = DataSourceID '{0}' does not refer to an existing control.
+databoundcontrol_datasourceid_invalid	= DataSourceID '{0}' must refer to a control implementing IDataSource.
+databoundcontrol_datamember_invalid		= DataMember '{0}' does not name a view of the data source.
+
+datasourcecontrol_focus_unsupported		= {0} does not support Focus.
+datasourcecontrol_enabletheming_unsupported = {0} does not support EnableTheming.
+datasourcecontrol_skinid_unsupported	= {0} does not support SkinID.
+datasourcecontrol_visible_unsupported	= {0} does not support Visible.
+datasourceview_insert_unsupported		= {0} does not support insert.
+datasourceview_update_unsupported		= {0} does not support update.
+datasourceview_delete_unsupported		= {0} does not support delete.
+readonlydatasource_datasource_invalid	= TReadOnlyDataSource requires an array, an IDataSource, or a Traversable data source.
+readonlydatasourceview_datasource_invalid = TReadOnlyDataSourceView requires null, an array, or a Traversable data source.
 
 clientscript_invalid_file_position		= Invalid file position '{1}' for TClientScript control '{0}', must be 'Head', 'Here' or 'Begin'.
 clientscript_invalid_package_path		= Invalid PackagePath '{0}' for TClientScript control '{1}'.
@@ -579,6 +593,7 @@ soapservice_serverid_required			= <soap> element must have 'id' attribute.
 soapservice_serverid_duplicated			= SOAP server ID '{0}' is duplicated.
 soapserver_id_invalid					= Invalid SOAP server ID '{0}'. It should not end with '.wsdl'.
 soapserver_provider_invalid				= TSoapServer provider class '{0}' could not be resolved.
+soapserver_internal_error				= The SOAP request could not be processed.
 soapserver_version_invalid				= Invalid SOAP version '{0}'. It must be either '1.1' or '1.2'.
 
 jsonservice_id_required				= TJsonService requires 'id' attribute in its JSON elements.

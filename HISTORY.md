@@ -40,6 +40,72 @@ BUG: Issues #1048, #1050 - TSecurityManager: fix timing-attack vulnerability in 
 BUG: Issues #1101, #1122 - TDbCache: expiry moment is a cache hit; TErrorHandler: refactor - `THttpException`/`TExitException` updated.
 BUG: Issue #1121 - TPgsqlMetaData: null-safe `substr()` for PHP 8 compatibility (`adsrc` column can be `null`).
 BUG: Issue #1126 - `TDirectoryCacheDependency`: fixed missing `$timestamps` capture in `array_merge` for subdirectory timestamps; `TConstantReflectionTrait`: fixed blank-string prefix edge case.
+BUG: TWeakCallableCollection, TWeakList, TWeakMap: an entry added or removed while weak references are scrubbed is kept consistent.
+BUG: TComponent::detachEventHandler() catches only the handler-not-found exception.
+BUG: TComponent::raiseEvent() skips a weak listener freed during the raise.
+BUG: Property setters of TFileLogRoute, TLogRouter, TParameterizeBehavior, TTimeScheduler, TSoapService, TUrlMapping, TThemeManager, and TTableStyle store the value after it is validated.
+BUG: TPageStateFormatter::unserialize() rejects a missing page state without a PHP deprecation.
+BUG: TDbUserManager checks UserClass is uninitialized in setUserClass() instead of getUserClass().
+BUG: CultureInfo::getNativeName() skips the country lookup for a culture without a region.
+BUG: TJavaScript::jsonEncode() works without an application, skips a charset iconv does not recognize, and transcodes stdClass properties.
+BUG: ChoiceFormat parses set notation instead of calling eval().
+BUG: TCronModule PHP configuration job keys are case-insensitive.
+BUG: TJsonService PHP configuration without a 'json' key registers nothing.
+BUG: TFeedService PHP configuration skips the service 'class' key, XML init(null) no longer fails, and feed errors use the feedservice_* codes.
+BUG: TUserManager compares passwords with hash_equals().
+BUG: TThemeManager::getTheme() rejects a theme name that is not a single directory.
+BUG: TParameterizeBehavior and TTimeZoneParameterBehavior Enabled accept 'true' and 'false' strings; THttpResponse rejects a status reason starting with a line break.
+BUG: TCaptureForkLog: onCollectLogs TypeError, grandchild logs, message framing, signal-interrupted waits, closed connections, and a child blocking on its parent.
+BUG: TActiveFileUpload restricts the callback token unserialize() to TActiveFileUploadCallbackParams and quotes the request IDs in its upload script.
+BUG: TActiveListControlAdapter skips a selection index equal to the item count.
+BUG: TDataGrid ignores a pager Select command and styles selected and edit items by item index.
+BUG: TDataGrid and TPager HTML-encode the default page texts of link and label pager buttons.
+BUG: TDataGridPagerStyle resets, copies, and merges FirstPageText and LastPageText.
+BUG: TRadioButtonList ignores post data while disabled and reports DataChanged.
+BUG: TListControlValidator matches required selections exactly.
+BUG: TDataBoundControl, TDataSourceControl, TDataSourceView, and TReadOnlyDataSource error messages are defined.
+BUG: TDataBoundControl detaches OnDataSourceViewChanged from a replaced view.
+BUG: TListControl applies the last selection set before databinding.
+BUG: TListControl and TListItem clone their items and attributes.
+BUG: TActiveRatingList encodes client function values.
+BUG: TActiveHyperLink HTML-encodes its callback text as THyperLink renders it.
+BUG: TDbCache binds the cache key when reading a value.
+BUG: TDbParameterModule binds the AutoLoadValue; TDbParameterModule, TDbCache, TDbLogRoute, and TDbCronManager validate their configured table and field names; TMysqlMetaData quotes the table name in getIsView(); TDbLogRoute::getDBLogs() order and limit are fixed and validated.
+BUG: TDbCronManager pages the cron log with LIMIT count OFFSET offset on every driver.
+BUG: TSessionPageStatePersister HMACs the session snapshot and rejects an altered one before unserialize().
+BUG: TPageStateFormatter restores page state without HMAC validation with `allowed_classes` false; igbinary serializes only validated state.
+BUG: TSoapServer faults show the developer message only in Debug mode; other modes send a TUserException or THttpException message or a generic sentence. The Debug recursive error page is HTML-encoded.
+BUG: THttpRequest::getContentType() strips the parameters by default, as documented.
+BUG: Issue #450 - Template attribute values mix `~`, `$`, `[`, `/` tags with literal text; adds the `<%! %>` init binding (TControl::initBindProperty()).
+BUG: Issue #1131 - TReCaptcha2::getCaptchaResponse() and setCaptchaResponse() hold the token; getResponse() and setResponse() are deprecated aliases.
+BUG: PHP 8.4/8.5 compatibility: null keys in TMap, TPriorityMap, TWeakMap, and TEventParameter; TApplication::getModule(null); anonymous behaviors in TBehaviorParameterLoader and TBehaviorsModule; TBitHelper and CultureInfo deprecations; NAN in TPropertyValue::ensureString() and TJavaScript::encode(); THttpSession::setUseTransparentSessionID() is deprecated.
+BUG: TComponent::attachBehavior() unregisters the behavior, and detaches it when owned, if its attach() throws.
+BUG: THttpResponse::getHttpHeaderSent() reports the sent status header; TCallbackErrorHandler sets the 500 status only before it is sent and reads SERVER_SOFTWARE null-safely; TSignalsDispatcher::detachPidHandler() returns false for a missing handler.
+BUG: TPropertyValue::ensureFloat() parses 'NAN', 'INF', and '-INF'.
+BUG: TPermissionsManager PHP configuration keys are case-insensitive.
+BUG: TMetaTag setters ensure strings and render() reads through the getters.
+BUG: TAssetManager::publishTarFile() publishes the checksum after the contents, throws assetmanager_tarfile_extract_failed on a failed extraction, and caches under a `tar:` key; getPublishedPath() and getPublishedUrl() throw assetmanager_filepath_invalid for a path that does not resolve.
+BUG: TCheckBoxList, TRatingList, and TActiveCheckBoxList render list attributes on the container only, without a duplicate id or forced tabindex; TListControl renders `multiple` only on a select.
+BUG: TRenderFilterParameter removes only the leading libxml encoding prefix, in processing-instruction or comment form.
+BUG: TDataGridColumn and TListControl format expressions catch every Throwable; TComponent::evaluateExpression() and evaluateStatements() chain the original exception.
+BUG: TInPlaceTextBox applies MaxLength to single and multi-line editors.
+BUG: TSignalsDispatcher::disarm() keeps the other callbacks of an alarm time and re-arms the next alarm for at least one second.
+BUG: TUtf8Converter::parseEncodingLanguage() splits 'ASCII.de' with the explode() arguments in order.
+BUG: TControl::getIsSkinApplied() returns a bool; MessageSource_Database returns a bool on save; TCronModule only takes an IUserManager module as its user manager.
+BUG: TApplicationComponent keeps the fx-event cache file only in Performance mode, discards a corrupt or out-of-date file, and `prado-cli cache/flush-all` deletes it.
+BUG: Prado::getUserLanguages() returns 'en' for an empty Accept-Language header and skips empty tags.
+BUG: THttpRequest::getHeaders() caches the headers per instance.
+BUG: THttpResponse::httpRedirect() works without SERVER_SOFTWARE.
+BUG: TReCaptcha2::validate() verifies the token with Google siteverify; it now needs SecretKey and outbound HTTPS. TReCaptcha and TReCaptchaValidator (reCAPTCHA v1) are deprecated. See UPGRADE.md.
+BUG: TWebControl::setAccessKey() ensures a string and accepts one multibyte character.
+BUG: TSoapService PHP configuration without a 'soap' key registers nothing, and a server's 'class' key is honored.
+BUG: Prado.PostBack copies its options per instance, so a postback that stays on the page (failed validation, a cancelled submit, a formtarget window) no longer leaks PostBackUrl, EventParameter, ValidationGroup, or CausesValidation into the next one (#1417).
+BUG: Prado.PostBack removes its EventTarget and EventParameter fields after the submit, so a later submit does not post them again (#1418).
+BUG: TImageButton client script posts click coordinates relative to the image on a scrolled page.
+BUG: Client validator change re-validation waits for the mouse release, so a Dynamic message no longer moves the clicked button.
+BUG: Prado.Element.createOptions() escapes option text as the page render does.
+BUG: TColorPicker Basic and Simple pickers stay open on a click inside the picker.
+BUG: TInPlaceTextBox cancels the edit on Escape.
 BUG: SqlMap `TPropertyAccess` reads `ArrayAccess` objects through `offsetExists()` and `offsetGet()`. (belisoful)
 BUG: SqlMap insert, update, and delete statements with a `cacheModel` flush that cache when they execute. (belisoful)
 BUG: SqlMap `groupBy` result maps leave a collection empty for a LEFT JOIN row without a match, and scope nested group keys by their parent. (belisoful)

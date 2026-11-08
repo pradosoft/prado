@@ -5,7 +5,9 @@ namespace Prado\Test\Unit\Caching;
 use Prado\Caching\TDbCache;
 use Prado\Data\TDbConnection;
 use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\TInvalidDataValueException;
 use Prado\TApplication;
+use Prado\Test\Unit\PradoUnit;
 
 if (!defined('TEST_CACHE_DB_DIR')) {
 	define('TEST_CACHE_DB_DIR', __DIR__ . '/../Data/db');
@@ -75,6 +77,12 @@ class TDbCacheTest extends \PHPUnit\Framework\TestCase
 	{
 		$this->_cache->setCacheTableName('custom_cache_table');
 		$this->assertEquals('custom_cache_table', $this->_cache->getCacheTableName());
+	}
+
+	public function testCacheTableNameRejectsSql()
+	{
+		$this->expectException(TInvalidDataValueException::class);
+		$this->_cache->setCacheTableName('pradocache; DROP TABLE users');
 	}
 
 	public function testAutoCreateCacheTable()
@@ -562,6 +570,18 @@ class TDbCacheTest extends \PHPUnit\Framework\TestCase
 		$result = $this->_cache->set($key, $value);
 		$result = $this->_cache->get($key);
 		$this->assertEquals($value, $result);
+	}
+
+	public function testValueBindsKey()
+	{
+		$this->initCache();
+
+		$key = "quote'key";
+		$this->assertTrue(PradoUnit::invoke($this->_cache, 'setValue', $key, 'stored', 0));
+		$this->assertSame('stored', PradoUnit::invoke($this->_cache, 'getValue', $key));
+
+		$this->assertTrue(PradoUnit::invoke($this->_cache, 'setValue', 'other', 'secret', 0));
+		$this->assertFalse(PradoUnit::invoke($this->_cache, 'getValue', "x' OR itemkey='other"));
 	}
 
 	public function testSpecialCharactersInValue()

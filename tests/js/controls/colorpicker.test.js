@@ -741,6 +741,12 @@ describe('TColorPicker.hideOnClick', () => {
 		expect(picker.showing).toBe(false);
 	});
 
+	it('does not hide when the target is inside the Basic picker', () => {
+		const cell = picker.element.querySelector('td') || picker.element;
+		picker.hideOnClick({ target: cell });
+		expect(picker.showing).toBe(true);
+	});
+
 	it('does not hide when the target is the input element', () => {
 		picker.hideOnClick({ target: picker.input });
 		expect(picker.showing).toBe(true);

@@ -10,6 +10,13 @@ for both A and B.
 Upgrading from v4.3.2
 ---------------------
 - Prado\TEventParameter adds a second constructor $readOnly
+- TReCaptcha and TReCaptchaValidator are deprecated. Google retired reCAPTCHA v1, so they
+  cannot validate. Replace them with TReCaptcha2 and TReCaptcha2Validator, using reCAPTCHA v2 keys:
+  `PublicKey` becomes `SiteKey` and `PrivateKey` becomes `SecretKey`.
+- TReCaptcha2 verifies the response token with Google's siteverify, so validation needs the correct `SecretKey`
+  and outbound HTTPS from the server to `www.google.com`, through cURL or `allow_url_fopen`. Before, any non-empty
+  response passed. A token verifies once, so validate it in one request.
+- TReCaptcha2::getResponse() and setResponse() are deprecated; use getCaptchaResponse() and setCaptchaResponse().
 
 Upgrading from v4.2.2
 ---------------------

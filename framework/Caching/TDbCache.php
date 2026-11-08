@@ -407,12 +407,13 @@ class TDbCache extends TCache implements \Prado\Util\IDbModule
 	 *
 	 * Important: Make sure that the indices are non-unique!
 	 *
-	 * @param string $value the name of the DB table to store cache content
+	 * @param string $value the name of the DB table to store cache content, an SQL identifier
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if the name is not an SQL identifier
 	 * @see setAutoCreateCacheTable
 	 */
 	public function setCacheTableName($value)
 	{
-		$this->_cacheTable = $value;
+		$this->_cacheTable = $this->ensureSqlIdentifier(TPropertyValue::ensureString($value), 'CacheTableName');
 	}
 
 	/**
@@ -445,8 +446,9 @@ class TDbCache extends TCache implements \Prado\Util\IDbModule
 			$this->initializeCache();
 		}
 
-		$sql = 'SELECT value FROM ' . $this->_cacheTable . ' WHERE itemkey=\'' . $key . '\' AND (expire=0 OR expire>=' . time() . ') ORDER BY expire DESC';
+		$sql = 'SELECT value FROM ' . $this->_cacheTable . ' WHERE itemkey=:key AND (expire=0 OR expire>=' . time() . ') ORDER BY expire DESC';
 		$command = $this->getDbConnection()->createCommand($sql);
+		$command->bindValue(':key', $key, \PDO::PARAM_STR);
 		try {
 			return unserialize($command->queryScalar());
 		} catch (\Exception $e) {

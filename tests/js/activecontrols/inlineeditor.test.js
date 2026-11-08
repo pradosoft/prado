@@ -204,7 +204,16 @@ describe('TInPlaceTextBox createTextBox', () => {
 		({ container } = buildDOM());
 		new TInPlaceTextBox(makeOptions({ TextMode: 'SingleLine', MaxLength: 20 }));
 		const field = document.getElementById('tb_lbl1');
-		expect(field.maxlength).toBe(20);
+		expect(field.maxLength).toBe(20);
+	});
+
+	it('sets maxLength when MaxLength > 0 (MultiLine)', () => {
+		clearRegistry(); clearTextboxes();
+		({ container } = buildDOM());
+		new TInPlaceTextBox(makeOptions({ TextMode: 'MultiLine', MaxLength: 20 }));
+		const field = document.getElementById('tb_lbl1');
+		expect(field.tagName).toBe('TEXTAREA');
+		expect(field.maxLength).toBe(20);
 	});
 
 	it('sets size when Columns > 0 (SingleLine)', () => {
@@ -454,6 +463,16 @@ describe('TInPlaceTextBox onKeyPressed', () => {
 		expect(ctrl.editField.value).toBe('Original');
 		expect(ctrl.isEditing).toBe(false);
 		expect(showLabel).toHaveBeenCalled();
+	});
+
+	it('cancels the edit on an Escape keydown, which browsers fire without keypress', () => {
+		const ctrl = new TInPlaceTextBox(makeOptions({ AutoHide: true }));
+		ctrl.isEditing = true;
+		ctrl.element.innerHTML = 'Original';
+		ctrl.editField.value   = 'Changed';
+		ctrl.editField.dispatchEvent(new KeyboardEvent('keydown', { keyCode: 27, bubbles: true }));
+		expect(ctrl.editField.value).toBe('Original');
+		expect(ctrl.isEditing).toBe(false);
 	});
 
 	it('calls preventDefault on ENTER (keyCode 13) in SingleLine mode', () => {

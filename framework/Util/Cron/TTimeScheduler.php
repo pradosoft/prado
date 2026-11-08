@@ -151,14 +151,16 @@ class TTimeScheduler extends \Prado\TComponent
 			return;
 		}
 		$schedule = trim($schedule);
-		$this->_schedule = $schedule;
 		$this->_attr = [];
 		if (strlen($schedule) > 1 && $schedule[0] == '@') {
 			if (is_numeric($triggerTime = substr($schedule, 1))) {
+				$this->_schedule = $schedule;
 				$this->_triggerTime = (int) $triggerTime;
 				return;
 			}
 		}
+
+		$originalSchedule = $schedule;
 
 		if (self::$_validatorCache) {
 			$minuteValidator = self::$_validatorCache['m'];
@@ -249,6 +251,7 @@ class TTimeScheduler extends \Prado\TComponent
 			}
 		} while ($matches[1]);
 
+		$this->_schedule = $originalSchedule;
 		$this->_attr[self::MINUTE] = [];
 		foreach (explode(',', $matches[2]) as $match) {
 			if (preg_match($minuteValidator, $match, $m2)) {

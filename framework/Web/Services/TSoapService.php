@@ -11,6 +11,7 @@
 
 namespace Prado\Web\Services;
 
+use Prado\Collections\TAttributeCollection;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\THttpException;
 use Prado\Prado;
@@ -164,8 +165,14 @@ class TSoapService extends \Prado\TService
 	{
 		if ($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP) {
 			if (is_array($config)) {
-				foreach ($config['soap'] as $id => $server) {
-					$properties = $server['properties'] ?? [];
+				foreach ($config['soap'] ?? [] as $id => $server) {
+					// The server is configured from a collection, the same one the
+					// attributes of a <soap> element produce, so that a class named
+					// beside the properties is found where the xml names it.
+					$properties = new TAttributeCollection($server['properties'] ?? []);
+					if (isset($server['class'])) {
+						$properties->add('class', $server['class']);
+					}
 					if (isset($this->_servers[$id])) {
 						throw new TConfigurationException('soapservice_serverid_duplicated', $id);
 					}
@@ -201,9 +208,11 @@ class TSoapService extends \Prado\TService
 	 */
 	public function setConfigFile($value)
 	{
-		if (($this->_configFile = Prado::getPathOfNamespace($value, Prado::getApplication()->getConfigurationFileExt())) === null) {
+		$configFile = Prado::getPathOfNamespace($value, Prado::getApplication()->getConfigurationFileExt());
+		if ($configFile === null) {
 			throw new TConfigurationException('soapservice_configfile_invalid', $value);
 		}
+		$this->_configFile = $configFile;
 	}
 
 	/**

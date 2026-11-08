@@ -109,6 +109,10 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	private $_urlManager;
 	/**
+	 * @var ?array the request headers, read once per instance.
+	 */
+	private $_headers;
+	/**
 	 * @var string the ID of the URL manager module
 	 */
 	private $_urlManagerID = '';
@@ -444,8 +448,10 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
+	 * Returns the request body's content type.  By default the parameters after the
+	 * first `;` are stripped, so `text/html; charset=UTF-8` returns `text/html`.
 	 * @param bool $mimetypeOnly whether to return only the mimetype (default: true)
-	 * @return string content type (e.g. 'application/json' or 'text/html; encoding=gzip') or null if not specified
+	 * @return ?string content type (e.g. 'application/json' or 'text/html; charset=UTF-8') or null if not specified
 	 */
 	public function getContentType($mimetypeOnly = true)
 	{
@@ -453,8 +459,8 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 			return null;
 		}
 
-		if ($mimetypeOnly === true && ($_pos = strpos(';', $_SERVER['CONTENT_TYPE'])) !== false) {
-			return substr($_SERVER['CONTENT_TYPE'], 0, $_pos);
+		if ($mimetypeOnly === true && ($_pos = strpos($_SERVER['CONTENT_TYPE'], ';')) !== false) {
+			return rtrim(substr($_SERVER['CONTENT_TYPE'], 0, $_pos));
 		}
 
 		return $_SERVER['CONTENT_TYPE'];
@@ -498,26 +504,37 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function getHeaders($case = null)
 	{
-		static $result;
-
-		if ($result === null && function_exists('apache_request_headers')) {
-			$result = apache_request_headers();
-		} elseif ($result === null) {
-			$result = [];
-			foreach ($_SERVER as $key => $value) {
-				if (strncasecmp($key, 'HTTP_', 5) !== 0) {
-					continue;
-				}
-				$key = str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($key, 5)))));
-				$result[$key] = $value;
-			}
+		if ($this->_headers === null) {
+			$this->_headers = $this->parseHeaders();
 		}
 
 		if ($case !== null) {
-			return array_change_key_case($result, $case);
+			return array_change_key_case($this->_headers, $case);
 		}
 
-		return $result;
+		return $this->_headers;
+	}
+
+	/**
+	 * Reads the request headers from the SAPI, or from the `HTTP_*` entries of `$_SERVER`
+	 * when the SAPI does not provide them.  {@see getHeaders()} caches the result per instance.
+	 * @return array The request headers, keyed by header name.
+	 * @since 4.3.3
+	 */
+	protected function parseHeaders(): array
+	{
+		if (function_exists('apache_request_headers')) {
+			return apache_request_headers();
+		}
+		$headers = [];
+		foreach ($_SERVER as $key => $value) {
+			if (strncasecmp($key, 'HTTP_', 5) !== 0) {
+				continue;
+			}
+			$key = str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($key, 5)))));
+			$headers[$key] = $value;
+		}
+		return $headers;
 	}
 
 	/**

@@ -11,6 +11,7 @@
 namespace Prado\Web\UI;
 
 use DOMDocument;
+use DOMDocumentType;
 use DOMElement;
 use DOMNode;
 use Prado\IEventCycleParameter;
@@ -475,10 +476,19 @@ class TRenderFilterParameter extends TEventParameter implements IEventCycleParam
 				);
 				return false;
 			}
-			foreach (iterator_to_array($dom->childNodes) as $node) {
-				if ($node->nodeType === XML_PI_NODE && $node->nodeName === 'xml') {
-					$dom->removeChild($node);
-				}
+			// Only the injected encoding prefix is removed, as a processing instruction or,
+			// as newer libxml parses it, a comment; source comments are kept.
+			$prefix = $dom->firstChild;
+			// libxml can place the doctype before the injected encoding prefix.
+			if ($prefix instanceof DOMDocumentType) {
+				$prefix = $prefix->nextSibling;
+			}
+			if ($prefix !== null && (
+				($prefix->nodeType === XML_PI_NODE && $prefix->nodeName === 'xml')
+				|| ($prefix->nodeType === XML_COMMENT_NODE
+					&& $prefix->nodeValue === '?xml encoding="UTF-8"')
+			)) {
+				$dom->removeChild($prefix);
 			}
 		}
 		return $dom;

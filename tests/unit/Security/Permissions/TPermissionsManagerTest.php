@@ -967,4 +967,40 @@ class TPermissionsManagerTest extends \PHPUnit\Framework\TestCase
 		$app->setModule('permissionsManager', $manager);
 		self::assertEquals($manager, TPermissionsManager::getManager());
 	}
+	/**
+	 * PHP configuration keys load in any case, matching the XML attribute names.
+	 */
+	public function testLoadPermissionsData_phpKeysAreCaseInsensitive(): void
+	{
+		$this->obj->setAutoAllowWithPermission(false);
+		$this->obj->setAutoPresetRules(false);
+		$this->obj->setAutoDenyAll(false);
+
+		$this->obj->loadPermissionsData([
+			'Roles' => ['Editor' => ['blog_edit']],
+			'permissionRules' => [
+				['Name' => 'blog_edit', 'Action' => 'allow', 'Users' => 'admin', 'Roles' => 'Editor', 'Verb' => 'get', 'IPs' => '127.0.0.1', 'Priority' => '5'],
+				['NAME' => 'blog_update', 'CLASS' => TUserOwnerRule::class, 'ACTION' => 'deny'],
+			],
+		]);
+		$this->obj->registerPermission('blog_edit', 'edit a post');
+		$this->obj->registerPermission('blog_update', 'update a post');
+
+		self::assertEquals(['blog_edit'], $this->obj->getHierarchyRoleChildren('editor'));
+
+		$rules = $this->obj->getPermissionRules('blog_edit');
+		self::assertNotNull($rules);
+		self::assertEquals(1, count($rules));
+		self::assertEquals('allow', $rules[0]->getAction());
+		self::assertEquals(['admin'], $rules[0]->getUsers());
+		self::assertEquals(['editor'], $rules[0]->getRoles());
+		self::assertEquals('get', $rules[0]->getVerb());
+		self::assertEquals(['127.0.0.1'], $rules[0]->getIPRules());
+		self::assertEquals(5, $rules[0]->getPriority());
+
+		$rules = $this->obj->getPermissionRules('blog_update');
+		self::assertNotNull($rules);
+		self::assertInstanceOf(TUserOwnerRule::class, $rules[0]);
+		self::assertEquals('deny', $rules[0]->getAction());
+	}
 }

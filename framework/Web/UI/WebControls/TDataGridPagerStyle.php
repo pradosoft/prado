@@ -231,6 +231,8 @@ class TDataGridPagerStyle extends TPanelStyle
 		$this->_buttonCount = null;
 		$this->_prevText = null;
 		$this->_nextText = null;
+		$this->_firstText = null;
+		$this->_lastText = null;
 		$this->_mode = null;
 		$this->_buttonType = null;
 	}
@@ -259,6 +261,12 @@ class TDataGridPagerStyle extends TPanelStyle
 			}
 			if ($style->_nextText !== null) {
 				$this->_nextText = $style->_nextText;
+			}
+			if ($style->_firstText !== null) {
+				$this->_firstText = $style->_firstText;
+			}
+			if ($style->_lastText !== null) {
+				$this->_lastText = $style->_lastText;
 			}
 			if ($style->_mode !== null) {
 				$this->_mode = $style->_mode;
@@ -293,6 +301,12 @@ class TDataGridPagerStyle extends TPanelStyle
 			}
 			if ($this->_nextText === null) {
 				$this->_nextText = $style->_nextText;
+			}
+			if ($this->_firstText === null) {
+				$this->_firstText = $style->_firstText;
+			}
+			if ($this->_lastText === null) {
+				$this->_lastText = $style->_lastText;
 			}
 			if ($this->_mode === null) {
 				$this->_mode = $style->_mode;

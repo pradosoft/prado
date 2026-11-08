@@ -96,15 +96,16 @@ class TDbUserManager extends TDbModule implements IUserManager, IDbModule
 	 */
 	public function getUserClass()
 	{
-		$this->assertUninitialized('UserClass');
 		return $this->_userClass;
 	}
 
 	/**
 	 * @param string $value the user class name in namespace format. The user class must extend from {@see \Prado\Security\TDbUser}.
+	 * @throws \Prado\Exceptions\TInvalidOperationException when set after the module is initialized.
 	 */
 	public function setUserClass($value)
 	{
+		$this->assertUninitialized('UserClass');
 		$this->_userClass = $value;
 	}
 

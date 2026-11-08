@@ -136,6 +136,45 @@ class THttpResponseTest extends \PHPUnit\Framework\TestCase
 		ob_end_flush();
 	}
 
+	public function testGetHttpHeaderSent()
+	{
+		$response = new TTestHttpResponse();
+		$response->init(null);
+		self::assertFalse($response->getHttpHeaderSent());
+		$response->ensureHeadersSent();
+		self::assertTrue($response->getHttpHeaderSent());
+		ob_end_clean();
+	}
+
+	public function testSetStatusCodeAfterHttpHeaderSentThrows()
+	{
+		$response = new TTestHttpResponse();
+		$response->init(null);
+		$response->ensureHeadersSent();
+		try {
+			$this->expectException(\Exception::class);
+			$response->setStatusCode(500);
+		} finally {
+			ob_end_clean();
+		}
+	}
+
+	public function testSetStatusCodeRejectsLineBreakAtReasonStart()
+	{
+		$response = new TTestHttpResponse();
+		$response->init(null);
+		$rejected = 0;
+		foreach (["\r\nX-Injected: 1", "\nX-Injected: 1", "OK\r\nX-Injected: 1"] as $reason) {
+			try {
+				$response->setStatusCode(299, $reason);
+			} catch (TInvalidDataValueException $e) {
+				$rejected++;
+			}
+		}
+		self::assertSame(3, $rejected);
+		ob_end_flush();
+	}
+
 	public function testGetCookies()
 	{
 		$response = new TTestHttpResponse();
@@ -180,6 +219,25 @@ class THttpResponseTest extends \PHPUnit\Framework\TestCase
 		$response->setStatusCode(302);
 		$this->assertEquals(302, $response->getStatusCode());
 		ob_end_clean();
+	}
+
+	public function testHttpRedirectWithoutServerSoftware()
+	{
+		$response = new TTestHttpResponse();
+		$response->init(null);
+		$software = $_SERVER['SERVER_SOFTWARE'] ?? null;
+		unset($_SERVER['SERVER_SOFTWARE']);
+		try {
+			$response->httpRedirect('http://example.com/next');
+			$this->fail('TExitException not raised');
+		} catch (\Prado\Exceptions\TExitException $e) {
+		} finally {
+			if ($software !== null) {
+				$_SERVER['SERVER_SOFTWARE'] = $software;
+			}
+			ob_end_clean();
+		}
+		$this->assertContains('Location: http://example.com/next', $response->headers);
 	}
 
 	public function testReload()

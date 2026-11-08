@@ -18,6 +18,10 @@ use Prado\Web\Javascripts\TJavaScriptLiteral;
 /**
  * TReCaptcha class.
  *
+ * TReCaptcha is deprecated. It uses reCAPTCHA v1, whose script and verify endpoint Google retired,
+ * so it cannot pass validation. Use {@see \Prado\Web\UI\WebControls\TReCaptcha2} with
+ * {@see \Prado\Web\UI\WebControls\TReCaptcha2Validator} instead.
+ *
  * TReCaptcha displays a reCAPTCHA (a token displayed as an image) that can be used
  * to determine if the input is entered by a real user instead of some program. It can
  * also prevent multiple submits of the same form either by accident, or on purpose (ie. spamming).
@@ -52,6 +56,7 @@ use Prado\Web\Javascripts\TJavaScriptLiteral;
  *
  * @author Bérczi Gábor <gabor.berczi@devworx.hu>
  * @since 3.2
+ * @deprecated 4.3.3 reCAPTCHA v1 is retired; use TReCaptcha2 and TReCaptcha2Validator.
  */
 class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web\UI\IValidatable
 {

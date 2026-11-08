@@ -137,7 +137,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	/**
 	 * @var bool whether http response header has been sent
 	 */
-	private $_httpHeaderSent;
+	private $_httpHeaderSent = false;
 	/**
 	 * @var bool whether content-type header has been sent
 	 */
@@ -290,6 +290,16 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	}
 
 	/**
+	 * Returns whether the HTTP status header is sent. The status code cannot change after it is sent.
+	 * @return bool Whether the HTTP status header is sent.
+	 * @since 4.3.3
+	 */
+	public function getHttpHeaderSent(): bool
+	{
+		return $this->_httpHeaderSent;
+	}
+
+	/**
 	 * Set the HTTP status code for the response.
 	 * The code and its reason will be sent to client using the currently requested http protocol version (see {@see \Prado\Web\THttpRequest::getHttpProtocolVersion})
 	 * Keep in mind that HTTP/1.0 clients might not understand all status codes from HTTP/1.1
@@ -310,7 +320,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 				throw new TInvalidDataValueException("response_status_reason_missing");
 			}
 			$reason = TPropertyValue::ensureString($reason);
-			if (strpos($reason, "\r") != false || strpos($reason, "\n") != false) {
+			if (str_contains($reason, "\r") || str_contains($reason, "\n")) {
 				throw new TInvalidDataValueException("response_status_reason_barchars");
 			}
 			$this->_reason = $reason;
@@ -456,7 +466,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 
 		// Under IIS, explicitly send an HTTP response including the status code
 		// this is handled automatically by PHP on Apache and others
-		$isIIS = (stripos($this->getRequest()->getServerSoftware(), "microsoft-iis") !== false);
+		$isIIS = (stripos((string) $this->getRequest()->getServerSoftware(), "microsoft-iis") !== false);
 		if ($url[0] === '/') {
 			$url = $this->getRequest()->getBaseUrl() . $url;
 		}
