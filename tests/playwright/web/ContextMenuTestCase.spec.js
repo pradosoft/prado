@@ -20,14 +20,15 @@ const focused = (page) => page.evaluate(() => document.activeElement.id);
 
 /**
  * A right-click opens the menu at the pointer on its first item, in place of the
- * browser context menu; a click outside closes it.
+ * browser context menu; a click outside closes it. Where `contextmenu` fires while
+ * the button is down, the menu opens just after the pointerup, so the test waits.
  */
 test('ContextMenuTestCase: right-click', async ({ page }) => {
 	await open(page);
 	const photo = page.locator(`#${B}photo`);
 	const box = await photo.boundingBox();
 	await photo.click({ button: 'right', position: { x: 100, y: 40 } });
-	expect(await isOpen(page)).toBe(true);
+	await expect.poll(() => isOpen(page)).toBe(true);
 	await expect(page.getByRole('menu')).toBeVisible();
 	await expect(page.getByRole('menu').getByRole('menuitem')).toHaveText(['Rotate', 'Delete']);
 	expect(await focused(page)).toBe(`${B}rotate`);
