@@ -1,12 +1,12 @@
 <?php
 
-namespace Prado\Test\Unit\Util\Cron;
+namespace Prado\Test\Unit\Util\Cron\Wake;
 
 use Prado\Caching\TMemoryCache;
 use Prado\Exceptions\TConfigurationException;
 use Prado\IO\Async\TAsync;
 use Prado\Prado;
-use Prado\Util\Cron\TCronWakeCache;
+use Prado\Util\Cron\Wake\TCronWakeCache;
 
 class TCronWakeCacheTest extends \PHPUnit\Framework\TestCase
 {

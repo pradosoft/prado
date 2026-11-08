@@ -8,7 +8,7 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
-namespace Prado\Util\Cron;
+namespace Prado\Util\Cron\Wake;
 
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\IO\Async\IEventLoop;
@@ -19,7 +19,7 @@ use Prado\TPropertyValue;
 /**
  * TCronWakePoll class.
  *
- * TCronWakePoll is the base of the {@see \Prado\Util\Cron\ICronWakeTransport} transports that
+ * TCronWakePoll is the base of the {@see \Prado\Util\Cron\Wake\ICronWakeTransport} transports that
  * signal through a shared stamp and detect a wake by polling it: a signal {@see writeStamp()}
  * writes a new stamp, and the waiting side compares {@see readStamp()} every
  * {@see setPollInterval PollInterval} seconds with the stamp it last saw.  A stamp medium that

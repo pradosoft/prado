@@ -1,11 +1,11 @@
 # Util/Cron/TCronWakePoll
 
 ### Directories
-[framework](../../INDEX.md) / [Util](../INDEX.md) / [Cron](./INDEX.md) / **`TCronWakePoll`**
+[framework](../../../INDEX.md) / [Util](../../INDEX.md) / [Cron](../INDEX.md) / [Wake](./INDEX.md) / **`TCronWakePoll`**
 
 ## Class Info
-**Location:** `framework/Util/Cron/TCronWakePoll.php`
-**Namespace:** `Prado\Util\Cron`
+**Location:** `framework/Util/Cron/Wake/TCronWakePoll.php`
+**Namespace:** `Prado\Util\Cron\Wake`
 **Extends:** `TModule`
 **Implements:** [`ICronWakeTransport`](ICronWakeTransport.md)
 **Since:** 4.4.0

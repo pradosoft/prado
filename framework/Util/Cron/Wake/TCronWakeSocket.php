@@ -8,7 +8,7 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
-namespace Prado\Util\Cron;
+namespace Prado\Util\Cron\Wake;
 
 use Prado\IO\Async\IEventLoop;
 use Prado\Prado;
@@ -18,7 +18,7 @@ use Prado\TPropertyValue;
 /**
  * TCronWakeSocket class.
  *
- * TCronWakeSocket is the same-host {@see \Prado\Util\Cron\ICronWakeTransport} of
+ * TCronWakeSocket is the same-host {@see \Prado\Util\Cron\Wake\ICronWakeTransport} of
  * {@see \Prado\Util\Cron\TCronModule}. A cron process waiting for a task's trigger time wakes at
  * once when a web request that schedules an earlier task sends a datagram with {@see signal()}.
  *

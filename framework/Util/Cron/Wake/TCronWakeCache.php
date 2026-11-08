@@ -8,7 +8,7 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
-namespace Prado\Util\Cron;
+namespace Prado\Util\Cron\Wake;
 
 use Prado\Caching\ICache;
 use Prado\Exceptions\TConfigurationException;
@@ -18,7 +18,7 @@ use Prado\TPropertyValue;
 /**
  * TCronWakeCache class.
  *
- * TCronWakeCache is the {@see \Prado\Util\Cron\ICronWakeTransport} that signals through a
+ * TCronWakeCache is the {@see \Prado\Util\Cron\Wake\ICronWakeTransport} that signals through a
  * cache: a wake stores the current microtime under {@see setCacheKey CacheKey}, and the waiting
  * cron process polls the key every {@see setPollInterval PollInterval}.  A cache that several
  * hosts share, such as memcached or Redis, carries the wake between hosts.

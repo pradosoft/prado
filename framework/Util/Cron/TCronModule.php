@@ -33,6 +33,8 @@ use Prado\TPropertyValue;
 use Prado\Util\Clock\IClock;
 use Prado\Util\Clock\TClockTrait;
 use Prado\Util\Clock\TMonotonicClockAwareTrait;
+use Prado\Util\Cron\Wake\ICronWakeTransport;
+use Prado\Util\Cron\Wake\TCronWakeSocket;
 use Prado\Util\Log\TLogger;
 use Prado\Util\Mutex\IMutex;
 use Prado\Util\Mutex\TFileMutex;

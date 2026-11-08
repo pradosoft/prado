@@ -1,9 +1,9 @@
 <?php
 
-namespace Prado\Test\Unit\Util\Cron;
+namespace Prado\Test\Unit\Util\Cron\Wake;
 
 use Prado\IO\Async\TAsync;
-use Prado\Util\Cron\TCronWakeFifo;
+use Prado\Util\Cron\Wake\TCronWakeFifo;
 
 class TCronWakeFifoTest extends \PHPUnit\Framework\TestCase
 {

@@ -1,17 +1,17 @@
 # Util/Cron/TCronWakeSocket
 
 ### Directories
-[framework](../../INDEX.md) / [Util](../INDEX.md) / [Cron](./INDEX.md) / **`TCronWakeSocket`**
+[framework](../../../INDEX.md) / [Util](../../INDEX.md) / [Cron](../INDEX.md) / [Wake](./INDEX.md) / **`TCronWakeSocket`**
 
 ## Class Info
-**Location:** `framework/Util/Cron/TCronWakeSocket.php`
-**Namespace:** `Prado\Util\Cron`
+**Location:** `framework/Util/Cron/Wake/TCronWakeSocket.php`
+**Namespace:** `Prado\Util\Cron\Wake`
 **Extends:** `TModule`
 **Implements:** [`ICronWakeTransport`](ICronWakeTransport.md)
 **Since:** 4.4.0
 
 ## Overview
-`TCronWakeSocket` is the same-host wake transport and the default `WakeTransport` of [`TCronModule`](TCronModule.md). It is a connectionless datagram socket: a unix-domain datagram (`udg`) when PHP has it, otherwise a `udp` loopback socket (`getTransport()`), and "no transport" when neither exists.
+`TCronWakeSocket` is the same-host wake transport and the default `WakeTransport` of [`TCronModule`](../TCronModule.md). It is a connectionless datagram socket: a unix-domain datagram (`udg`) when PHP has it, otherwise a `udp` loopback socket (`getTransport()`), and "no transport" when neither exists.
 
 Addresses:
 
@@ -39,4 +39,4 @@ The minute **parity** keeps a process that overruns into the next minute from co
 ## See Also
 
 - [ICronWakeTransport](ICronWakeTransport.md)
-- [TCronModule](TCronModule.md)
+- [TCronModule](../TCronModule.md)

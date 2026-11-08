@@ -8,7 +8,7 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
-namespace Prado\Util\Cron;
+namespace Prado\Util\Cron\Wake;
 
 use Prado\Prado;
 use Prado\TPropertyValue;
@@ -16,7 +16,7 @@ use Prado\TPropertyValue;
 /**
  * TCronWakeFile class.
  *
- * TCronWakeFile is the {@see \Prado\Util\Cron\ICronWakeTransport} that signals through a file:
+ * TCronWakeFile is the {@see \Prado\Util\Cron\Wake\ICronWakeTransport} that signals through a file:
  * a wake writes the current microtime into {@see setWakeFile WakeFile}, and the waiting cron
  * process polls the file's content every {@see setPollInterval PollInterval}.  The content is the
  * stamp rather than the modification time, which some file systems keep to the second.  On a

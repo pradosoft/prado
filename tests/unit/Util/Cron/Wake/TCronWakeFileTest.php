@@ -1,10 +1,10 @@
 <?php
 
-namespace Prado\Test\Unit\Util\Cron;
+namespace Prado\Test\Unit\Util\Cron\Wake;
 
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\IO\Async\TAsync;
-use Prado\Util\Cron\TCronWakeFile;
+use Prado\Util\Cron\Wake\TCronWakeFile;
 
 class TCronWakeFileTest extends \PHPUnit\Framework\TestCase
 {

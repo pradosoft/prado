@@ -8,7 +8,7 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
-namespace Prado\Util\Cron;
+namespace Prado\Util\Cron\Wake;
 
 use Prado\IO\Async\IEventLoop;
 use Prado\Prado;
@@ -18,7 +18,7 @@ use Prado\TPropertyValue;
 /**
  * TCronWakeFifo class.
  *
- * TCronWakeFifo is the POSIX {@see \Prado\Util\Cron\ICronWakeTransport} over a named pipe:
+ * TCronWakeFifo is the POSIX {@see \Prado\Util\Cron\Wake\ICronWakeTransport} over a named pipe:
  * {@see signal()} writes a byte into {@see setFifoFile FifoFile}, which the waiting cron process
  * reads.  The pipe is created on first use with `posix_mkfifo()`, and both sides open it for
  * reading and writing so that opening never blocks and a byte written while the waiting process

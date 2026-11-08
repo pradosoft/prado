@@ -8,7 +8,7 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
-namespace Prado\Util\Cron;
+namespace Prado\Util\Cron\Wake;
 
 use Prado\Exceptions\TNotSupportedException;
 use Prado\IO\Async\IEventLoop;
@@ -20,7 +20,7 @@ use Prado\TPropertyValue;
 /**
  * TCronWakeSignal class.
  *
- * TCronWakeSignal is the POSIX {@see \Prado\Util\Cron\ICronWakeTransport} that wakes the cron
+ * TCronWakeSignal is the POSIX {@see \Prado\Util\Cron\Wake\ICronWakeTransport} that wakes the cron
  * process with a process signal, `SIGUSR1` by default.  The waiting process records its pid in
  * {@see setPidFile PidFile}; {@see signal()} reads the pid and sends the {@see setSignal Signal}
  * with `posix_kill()`.  A per-minute {@see wait()} installs a `pcntl` handler and sleeps in short

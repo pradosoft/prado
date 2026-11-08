@@ -8,7 +8,7 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
-namespace Prado\Util\Cron;
+namespace Prado\Util\Cron\Wake;
 
 use Prado\IO\Async\IEventLoop;
 
@@ -23,9 +23,9 @@ use Prado\IO\Async\IEventLoop;
  *
  * | Transport | Reach | Latency |
  * |---|---|---|
- * | {@see \Prado\Util\Cron\TCronWakeSocket} | processes of a host (`udg`, `udp`) | immediate |
- * | {@see \Prado\Util\Cron\TCronWakeFile} | hosts sharing the file system | `PollInterval` |
- * | {@see \Prado\Util\Cron\TCronWakeCache} | clients of the cache | `PollInterval` |
+ * | {@see \Prado\Util\Cron\Wake\TCronWakeSocket} | processes of a host (`udg`, `udp`) | immediate |
+ * | {@see \Prado\Util\Cron\Wake\TCronWakeFile} | hosts sharing the file system | `PollInterval` |
+ * | {@see \Prado\Util\Cron\Wake\TCronWakeCache} | clients of the cache | `PollInterval` |
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0

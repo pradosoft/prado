@@ -1,13 +1,13 @@
 # Util/Cron/TCronWakePgsql
 
 ### Directories
-[framework](../../INDEX.md) / [Util](../INDEX.md) / [Cron](./INDEX.md) / **`TCronWakePgsql`**
+[framework](../../../INDEX.md) / [Util](../../INDEX.md) / [Cron](../INDEX.md) / [Wake](./INDEX.md) / **`TCronWakePgsql`**
 
 ## Class Info
-**Location:** `framework/Util/Cron/TCronWakePgsql.php`
-**Namespace:** `Prado\Util\Cron`
+**Location:** `framework/Util/Cron/Wake/TCronWakePgsql.php`
+**Namespace:** `Prado\Util\Cron\Wake`
 **Extends:** `TModule`
-**Implements:** [`ICronWakeTransport`](ICronWakeTransport.md), [`IDbModule`](../IDbModule.md)
+**Implements:** [`ICronWakeTransport`](ICronWakeTransport.md), [`IDbModule`](../../IDbModule.md)
 **Since:** 4.4.0
 
 ## Overview
@@ -37,4 +37,4 @@ The transport is unavailable without the `pdo_pgsql` extension.
 ## See Also
 
 - [ICronWakeTransport](ICronWakeTransport.md)
-- [TDbCronManager](TDbCronManager.md)
+- [TDbCronManager](../TDbCronManager.md)

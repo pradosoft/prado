@@ -1,15 +1,15 @@
 # Util/Cron/ICronWakeTransport
 
 ### Directories
-[framework](../../INDEX.md) / [Util](../INDEX.md) / [Cron](./INDEX.md) / **`ICronWakeTransport`**
+[framework](../../../INDEX.md) / [Util](../../INDEX.md) / [Cron](../INDEX.md) / [Wake](./INDEX.md) / **`ICronWakeTransport`**
 
 ## Interface Info
-**Location:** `framework/Util/Cron/ICronWakeTransport.php`
-**Namespace:** `Prado\Util\Cron`
+**Location:** `framework/Util/Cron/Wake/ICronWakeTransport.php`
+**Namespace:** `Prado\Util\Cron\Wake`
 **Since:** 4.4.0
 
 ## Overview
-`ICronWakeTransport` carries a wake from a process that schedules a task to the cron process waiting for its next trigger, so the task runs on time instead of after the remaining wait. A wake carries no data; the cron process re-polls its pending tasks. [`TCronModule`](TCronModule.md) holds one transport as `WakeTransport` and uses it in three places: `signalWake()` calls `signal()`, the per-minute `waitForWake()` calls `wait()`, and the daemon calls `watch()`/`unwatch()`.
+`ICronWakeTransport` carries a wake from a process that schedules a task to the cron process waiting for its next trigger, so the task runs on time instead of after the remaining wait. A wake carries no data; the cron process re-polls its pending tasks. [`TCronModule`](../TCronModule.md) holds one transport as `WakeTransport` and uses it in three places: `signalWake()` calls `signal()`, the per-minute `waitForWake()` calls `wait()`, and the daemon calls `watch()`/`unwatch()`.
 
 ## Methods
 
@@ -36,5 +36,5 @@ The transports are `TModule`s, so an application configures one and names its ID
 
 ## See Also
 
-- [TCronModule](TCronModule.md)
+- [TCronModule](../TCronModule.md)
 - [TCronWakePoll](TCronWakePoll.md)

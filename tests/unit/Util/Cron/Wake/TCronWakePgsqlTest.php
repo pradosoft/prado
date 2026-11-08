@@ -1,6 +1,6 @@
 <?php
 
-namespace Prado\Test\Unit\Util\Cron;
+namespace Prado\Test\Unit\Util\Cron\Wake;
 
 use Prado\Data\TDbConnection;
 use Prado\Data\TDbDriver;
@@ -8,7 +8,7 @@ use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\IO\Async\TAsync;
 use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
-use Prado\Util\Cron\TCronWakePgsql;
+use Prado\Util\Cron\Wake\TCronWakePgsql;
 
 /**
  * Tests for {@see TCronWakePgsql}: the properties and driver check over SQLite, and the

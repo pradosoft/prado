@@ -1,11 +1,11 @@
 # Util/Cron/TCronWakeSignal
 
 ### Directories
-[framework](../../INDEX.md) / [Util](../INDEX.md) / [Cron](./INDEX.md) / **`TCronWakeSignal`**
+[framework](../../../INDEX.md) / [Util](../../INDEX.md) / [Cron](../INDEX.md) / [Wake](./INDEX.md) / **`TCronWakeSignal`**
 
 ## Class Info
-**Location:** `framework/Util/Cron/TCronWakeSignal.php`
-**Namespace:** `Prado\Util\Cron`
+**Location:** `framework/Util/Cron/Wake/TCronWakeSignal.php`
+**Namespace:** `Prado\Util\Cron\Wake`
 **Extends:** `TModule`
 **Implements:** [`ICronWakeTransport`](ICronWakeTransport.md)
 **Since:** 4.4.0
@@ -29,4 +29,4 @@
 ## See Also
 
 - [ICronWakeTransport](ICronWakeTransport.md)
-- [TCronModule](TCronModule.md)
+- [TCronModule](../TCronModule.md)

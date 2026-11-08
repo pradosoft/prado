@@ -1,11 +1,11 @@
 # Util/Cron/TCronWakeFifo
 
 ### Directories
-[framework](../../INDEX.md) / [Util](../INDEX.md) / [Cron](./INDEX.md) / **`TCronWakeFifo`**
+[framework](../../../INDEX.md) / [Util](../../INDEX.md) / [Cron](../INDEX.md) / [Wake](./INDEX.md) / **`TCronWakeFifo`**
 
 ## Class Info
-**Location:** `framework/Util/Cron/TCronWakeFifo.php`
-**Namespace:** `Prado\Util\Cron`
+**Location:** `framework/Util/Cron/Wake/TCronWakeFifo.php`
+**Namespace:** `Prado\Util\Cron\Wake`
 **Extends:** `TModule`
 **Implements:** [`ICronWakeTransport`](ICronWakeTransport.md)
 **Since:** 4.4.0
@@ -24,4 +24,4 @@
 ## See Also
 
 - [ICronWakeTransport](ICronWakeTransport.md)
-- [TCronModule](TCronModule.md)
+- [TCronModule](../TCronModule.md)

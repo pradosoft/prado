@@ -8,7 +8,7 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
-namespace Prado\Util\Cron;
+namespace Prado\Util\Cron\Wake;
 
 use Prado\Data\IDataConnection;
 use Prado\Data\TDbConnection;
@@ -25,7 +25,7 @@ use Prado\Util\IDbModule;
 /**
  * TCronWakePgsql class.
  *
- * TCronWakePgsql is the {@see \Prado\Util\Cron\ICronWakeTransport} over PostgreSQL
+ * TCronWakePgsql is the {@see \Prado\Util\Cron\Wake\ICronWakeTransport} over PostgreSQL
  * `LISTEN`/`NOTIFY`: {@see signal()} runs `NOTIFY` on the {@see setChannel Channel} through the
  * {@see setConnectionID ConnectionID} connection, and the waiting cron process holds a connection
  * of its own that runs `LISTEN` and receives the notifications.  Every host that shares the
@@ -37,7 +37,7 @@ use Prado\Util\IDbModule;
  * every {@see setPollInterval PollInterval} on the loop.
  *
  * ```xml
- * <module id="cronwake" class="Prado\Util\Cron\TCronWakePgsql" ConnectionID="db" PollInterval="0.25" />
+ * <module id="cronwake" class="Prado\Util\Cron\Wake\TCronWakePgsql" ConnectionID="db" PollInterval="0.25" />
  * <module id="cron" class="Prado\Util\Cron\TDbCronManager" ConnectionID="db" WakeTransport="cronwake" Daemon="true" />
  * ```
  *
