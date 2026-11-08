@@ -951,6 +951,7 @@ return [
 'TRepeatInfo' => 'Prado\Web\UI\WebControls\TRepeatInfo',
 'TRepeatLayout' => 'Prado\Web\UI\WebControls\TRepeatLayout',
 'TRequiredFieldValidator' => 'Prado\Web\UI\WebControls\TRequiredFieldValidator',
+'TRichOptionsTrait' => 'Prado\Web\UI\WebControls\TRichOptionsTrait',
 'TRowSelectColumn' => 'Prado\Web\UI\WebControls\TRowSelectColumn',
 'TRuby' => 'Prado\Web\UI\WebControls\TRuby',
 'TRubyParenthesis' => 'Prado\Web\UI\WebControls\TRubyParenthesis',

@@ -1038,6 +1038,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 - [TRepeatInfo](./Web/UI/WebControls/TRepeatInfo.md)
 - [TRepeatLayout](./Web/UI/WebControls/TRepeatLayout.md)
 - [TRequiredFieldValidator](./Web/UI/WebControls/TRequiredFieldValidator.md)
+- [TRichOptionsTrait](./Web/UI/WebControls/TRichOptionsTrait.md)
 - [TSafeHtml](./Web/UI/WebControls/TSafeHtml.md)
 - [TSection](./Web/UI/WebControls/TSection.md)
 - [TScrollBars](./Web/UI/WebControls/TScrollBars.md)
