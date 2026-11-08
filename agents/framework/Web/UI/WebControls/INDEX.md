@@ -98,6 +98,7 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 | [`TDialog`](TDialog.md) | `<dialog>`; `Open`, `Modal` (an Open dialog shows modally through `showModal()`), `ClosedBy` ([`TDialogClosedBy`](TDialogClosedBy.md), light dismiss), `HeaderText` and `ShowCloseButton` (a header block: heading and close button); a TButton with `CommandFor` opens and closes it without script (@since 4.4.0) |
 | [`TTeleport`](TTeleport.md) | Renders its content after `</form>`, outside the page form: a native `<form method="dialog">`, overlays, toasts; JS in `controls/teleport.js` sets the `form` attribute of its fields (@since 4.4.0) |
 | [`TPopover`](TPopover.md) | `<div popover>` anchored to its invoker; `Popover` (`auto`), `Placement` ([`TPopoverPlacement`](TPopoverPlacement.md)), `ButtonText` renders its own invoker; no script (@since 4.4.0) |
+| [`TTooltip`](TTooltip.md) | `<div popover="hint" role="tooltip">` that describes `ForControl` on hover and focus (WCAG 1.4.13); `Placement`, `ShowDelay`, `HideDelay`; JS in `controls/tooltip.js` (@since 4.4.0) |
 
 ## Data Controls
 

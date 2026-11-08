@@ -79,6 +79,10 @@ $packages = [
 		'prado/controls/teleport.js',
 	],
 
+	'tooltip' => [
+		'prado/controls/tooltip.js',
+	],
+
 	'safetycover' => [
 		'prado/controls/safetycover.js',
 	],
@@ -173,6 +177,7 @@ $dependencies = [
 	'proofofwork' => ['jquery', 'prado', 'proofofwork'],
 	'webtemplate' => ['jquery', 'prado', 'webtemplate'],
 	'teleport' => ['jquery', 'prado', 'teleport'],
+	'tooltip' => ['jquery', 'prado', 'tooltip'],
 	'safetycover' => ['jquery', 'prado', 'safetycover'],
 	'rowselect' => ['jquery', 'prado', 'rowselect'],
 	'unsavedchanges' => ['jquery', 'prado', 'unsavedchanges'],
