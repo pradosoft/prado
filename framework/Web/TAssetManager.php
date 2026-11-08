@@ -75,6 +75,9 @@ use Prado\Util\Traits\TInitializedTrait;
  * - `beforeCopy`: callable, a PHP callback invoked before copying each file. Return false to skip.
  * - `afterCopy`: callable, a PHP callback invoked after each file is copied.
  * - `forceCopy`: bool, whether to copy even if the file already exists.
+ * - `atomic`: bool, whether to write a file via a temporary file and rename, overriding
+ *   the {@see setAtomic Atomic} property for the call. Atomicity costs an extra file
+ *   write and rename per file; disable it for the fastest direct writes.
  *
  * ## Asset Mapping
  *
@@ -186,8 +189,10 @@ class TAssetManager extends \Prado\TModule
 
 	/** Default web accessible base path for storing private files  */
 	public const DEFAULT_BASEPATH = 'assets';
-	/** @var array<string> explicit files/directories to exclude. */
+	/** @var array<string> explicit files/directories to exclude. @since 4.3.3 */
 	public const PATH_COPY_EXCEPTIONS = ['.svn', '.git', '.github', '.claude'];
+	/** Prefix of the per-source completion marker written into a published directory. @since 4.3.3 */
+	public const DIRECTORY_COMPLETE_MARKER_PREFIX = '.copied-';
 
 	/** @var string base web accessible path for storing private files */
 	private $_basePath;
@@ -199,6 +204,8 @@ class TAssetManager extends \Prado\TModule
 	private $_linkAssets = false;
 	/** @var bool whether to copy asset files even if they already exist in the target directory. */
 	private $_forceCopy = false;
+	/** @var bool whether to publish a file by writing to a temporary file then renaming it into place. @since 4.3.3 */
+	private $_atomic = true;
 	/** @var bool whether to append timestamp to the URL of every published asset. */
 	private $_appendTimestamp = false;
 	/** @var string the query parameter name to use for timestamp appending. */
@@ -330,6 +337,28 @@ class TAssetManager extends \Prado\TModule
 	public function setForceCopy($value)
 	{
 		$this->_forceCopy = TPropertyValue::ensureBoolean($value);
+	}
+
+	/**
+	 * Whether a published file is written to a temporary file then renamed into place, so
+	 * a half-written file never appears at the destination. The temp file and rename add a
+	 * per-file cost at publish time, paid once per asset since published files are cached.
+	 * Disable it for the fastest direct writes. Default true.
+	 * @return bool whether files publish through a temporary file and rename.
+	 * @since 4.3.3
+	 */
+	public function getAtomic()
+	{
+		return $this->_atomic;
+	}
+
+	/**
+	 * @param bool $value whether files publish through a temporary file and rename.
+	 * @since 4.3.3
+	 */
+	public function setAtomic($value)
+	{
+		$this->_atomic = TPropertyValue::ensureBoolean($value);
 	}
 
 	/**
@@ -531,33 +560,107 @@ class TAssetManager extends \Prado\TModule
 	}
 
 	/**
-	 * Publishes a file or a directory (recursively).
-	 * This method will copy the content in a directory (recursively) to
-	 * a web accessible directory and returns the URL for the directory.
-	 * If the application is not in performance mode, the file modification
-	 * time will be used to make sure the published file is latest or not.
-	 * If not, a file copy will be performed.
-	 * @param string $path the path to be published
-	 * @param array|bool $checkTimestamp If true, file modification time will be checked even if the application
-	 * is in performance mode. If an array, it is treated as options with the following keys:
-	 * - only: array, list of patterns that the file paths should match if they want to be copied.
-	 * - except: array, list of patterns that the files or directories should match if they want to be excluded from being copied.
-	 * - caseSensitive: bool, whether patterns should be case sensitive. Defaults to true.
-	 * - beforeCopy: callable, a PHP callback that is called before copying each sub-directory or file.
-	 * - afterCopy: callable, a PHP callback that is called after a sub-directory or file is successfully copied.
-	 * - forceCopy: bool, whether to copy even if the file already exists.
-	 * @throws TInvalidDataValueException if the file path to be published is
-	 * invalid
-	 * @return string the absolute URL to the published file or directory. A file
-	 * URL carries the appended timestamp query when {@see setAppendTimestamp
-	 * AppendTimestamp} is enabled.
+	 * Publishes a file, a directory (recursively), or a virtual asset to a web accessible
+	 * directory and returns the URL to it. This is the primary entry point for publishing
+	 * an asset by path.
+	 *
+	 * The second argument is either a boolean timestamp flag (true forces a
+	 * modification-time check even in performance mode) or an options array:
+	 *
+	 * | key           | type     | effect                                                        |
+	 * |---------------|----------|---------------------------------------------------------------|
+	 * | only          | string[] | glob patterns a file must match to be copied                  |
+	 * | except        | string[] | glob patterns that exclude a matching file or directory       |
+	 * | caseSensitive | bool     | whether the patterns are case sensitive; default true         |
+	 * | beforeCopy    | callable | `fn($src, $dst): bool` called per file; return false to skip  |
+	 * | afterCopy     | callable | `fn($src, $dst): void` called after a file is copied          |
+	 * | forceCopy     | bool     | copy even when the destination already exists                 |
+	 * | atomic        | bool     | write via a temp file then rename; defaults to {@see setAtomic Atomic} |
+	 *
+	 * See {@see publish} for worked examples, the gitignore-style pattern rules, and the
+	 * virtual-asset and directory-completion details; this method forwards to it.
+	 *
+	 * @param IPublishable|string $path the file or directory path, or a virtual asset.
+	 * @param array|bool $checkTimestamp the modification-time flag, or the options array above.
+	 * @throws TInvalidDataValueException if the file path to be published is invalid.
+	 * @return string the absolute URL to the published file, directory, or asset.
 	 */
 	public function publishFilePath($path, $checkTimestamp = false)
+	{
+		return $this->publish($path, $checkTimestamp);
+	}
+
+	/**
+	 * Publishes a file, a directory (recursively), or a virtual {@see IPublishable}
+	 * asset, returning the URL to the published result.
+	 *
+	 * A string path is copied to a web accessible directory and its URL returned. When
+	 * the application is not in performance mode, the file modification time decides
+	 * whether the published copy is current; otherwise a copy is performed. An
+	 * {@see IPublishable} generates its own content under a translated file name rather
+	 * than being copied, the slim path for a control that is its own file (e.g. an
+	 * on-the-fly SVG with a unique name). An {@see IPublishedCapture} asset receives its
+	 * published path and URL after writing.
+	 *
+	 * The second argument is either a boolean timestamp flag or an options array. As a
+	 * boolean, true forces a modification-time check even in performance mode:
+	 * ```php
+	 * $url = $manager->publish('Application.assets/app.js');         // default publish
+	 * $url = $manager->publish('Application.assets/app.js', true);   // force a freshness check
+	 * ```
+	 *
+	 * As an array it carries publishing options:
+	 *
+	 * | key           | type     | effect                                                        |
+	 * |---------------|----------|---------------------------------------------------------------|
+	 * | only          | string[] | glob patterns a file must match to be copied                  |
+	 * | except        | string[] | glob patterns that exclude a matching file or directory       |
+	 * | caseSensitive | bool     | whether patterns are case sensitive; default true             |
+	 * | beforeCopy    | callable | `fn($src, $dst): bool` called per file; return false to skip  |
+	 * | afterCopy     | callable | `fn($src, $dst): void` called after a file is copied          |
+	 * | forceCopy     | bool     | copy even when the destination already exists                 |
+	 * | atomic        | bool     | write to a temp file then rename into place; defaults to the {@see setAtomic Atomic} property |
+	 *
+	 * Patterns are gitignore-style: a pattern without a slash matches the file name at
+	 * any depth (`*.js`), while a pattern with a slash is anchored to the published root
+	 * and `*` does not cross separators (see {@see copyDirectory}).
+	 *
+	 * ```php
+	 * // Publish only JavaScript and CSS from a directory.
+	 * $url = $manager->publish('Application.assets', ['only' => ['*.js', '*.css']]);
+	 *
+	 * // Exclude source maps and minified sources.
+	 * $url = $manager->publish('Application.assets', ['except' => ['*.map', '*.min.js']]);
+	 *
+	 * // Skip dotfiles and log each published file.
+	 * $url = $manager->publish('Application.assets', [
+	 *     'beforeCopy' => fn($src, $dst) => $src[0] !== '.',
+	 *     'afterCopy' => fn($src, $dst) => Prado::trace("published $dst", 'asset'),
+	 * ]);
+	 *
+	 * // Republish even if the destination exists (e.g. after a content change).
+	 * $url = $manager->publish('Application.assets/logo.png', ['forceCopy' => true]);
+	 * ```
+	 *
+	 * @param IPublishable|string $path the path to publish, or a virtual asset.
+	 * @param array|bool $checkTimestamp the modification-time flag, or an options array
+	 *   with the keys above. An options array implies the timestamp flag from its
+	 *   forceCopy key.
+	 * @throws TInvalidDataValueException if the file path to be published is invalid.
+	 * @return string the absolute URL to the published file, directory, or asset; '' when
+	 * a virtual asset cancels publishing (a null virtual file path). A file URL carries
+	 * the appended timestamp query when {@see setAppendTimestamp AppendTimestamp} is enabled.
+	 * @since 4.3.3
+	 */
+	public function publish($path, $checkTimestamp = false)
 	{
 		$options = [];
 		if (is_array($checkTimestamp)) {
 			$options = $checkTimestamp;
 			$checkTimestamp = $options['forceCopy'] ?? false;
+		}
+		if ($path instanceof IPublishable) {
+			return $this->publishVirtual($path, $checkTimestamp, $options);
 		}
 
 		$cacheKey = $this->publishCacheKey($path, $options);
@@ -566,30 +669,224 @@ class TAssetManager extends \Prado\TModule
 		} elseif (empty($path) || ($fullpath = realpath($path)) === false) {
 			throw new TInvalidDataValueException('assetmanager_filepath_invalid', $path);
 		} elseif (is_file($fullpath)) {
-			$dir = $this->hash(dirname($fullpath));
-			$fileName = basename($fullpath);
-			$dst = $this->_basePath . DIRECTORY_SEPARATOR . $dir;
+			$loc = $this->publishedLocation($fullpath, false, basename($fullpath));
 			$forceCopy = $options['forceCopy'] ?? $this->getForceCopy();
-			if (!is_file($dst . DIRECTORY_SEPARATOR . $fileName) || $checkTimestamp || $forceCopy || $this->getApplication()->getMode() !== TApplicationMode::Performance) {
-				$this->copyFile($fullpath, $dst, $options);
+			if (!is_file($loc['dst']) || $checkTimestamp || $forceCopy || $this->getApplication()->getMode() !== TApplicationMode::Performance) {
+				$this->copyFile($fullpath, $loc['dstDir'], $options);
 			}
-			$publishedUrl = $this->_baseUrl . '/' . $dir . '/' . $fileName;
-			if ($this->getAppendTimestamp()) {
-				$dstFile = $dst . DIRECTORY_SEPARATOR . $fileName;
-				if (($timestamp = @filemtime($dstFile)) > 0) {
-					$publishedUrl .= '?' . $this->getTimestampVar() . '=' . $timestamp;
-				}
+			$publishedUrl = $loc['url'];
+			if ($this->getAppendTimestamp() && ($timestamp = @filemtime($loc['dst'])) > 0) {
+				$publishedUrl .= '?' . $this->getTimestampVar() . '=' . $timestamp;
 			}
 			return $this->_published[$cacheKey] = $publishedUrl;
 		} else {
-			$dir = $this->hash($fullpath);
+			$loc = $this->publishedLocation($fullpath, true, '');
 			$forceCopy = $options['forceCopy'] ?? $this->getForceCopy();
-			if (!is_dir($this->_basePath . DIRECTORY_SEPARATOR . $dir) || $checkTimestamp || $forceCopy || $this->getApplication()->getMode() !== TApplicationMode::Performance) {
+			$atomic = $options['atomic'] ?? $this->getAtomic();
+			$marker = $loc['dstDir'] . DIRECTORY_SEPARATOR . $this->directoryCompleteMarker($fullpath);
+			$published = $atomic ? is_file($marker) : is_dir($loc['dstDir']);
+			if (!$published || $checkTimestamp || $forceCopy || $this->getApplication()->getMode() !== TApplicationMode::Performance) {
 				Prado::trace("Publishing directory $fullpath", TAssetManager::class);
-				$this->copyDirectory($fullpath, $this->_basePath . DIRECTORY_SEPARATOR . $dir, $options);
+				$this->copyDirectory($fullpath, $loc['dstDir'], $options);
+				if ($atomic && is_dir($loc['dstDir'])) {
+					@touch($marker);
+				}
 			}
-			return $this->_published[$cacheKey] = $this->_baseUrl . '/' . $dir;
+			return $this->_published[$cacheKey] = $loc['url'];
 		}
+	}
+
+	/**
+	 * Publishes a virtual {@see IPublishable} asset that generates its own content under a
+	 * translated path, rather than copying a source file. The content is written by
+	 * {@see IPublishable::publish()}: a file is written atomically (temp file then rename)
+	 * when {@see getAtomic Atomic}; a directory (a virtual path ending in a separator) is
+	 * populated by the asset and gated by a completion marker, so an interrupted population
+	 * re-runs rather than being trusted. This is the slim path for a control that is its
+	 * own file (e.g. an on-the-fly SVG with a unique name). An {@see IPublishedCapture}
+	 * asset receives its published path and URL. {@see publish} dispatches here; callers
+	 * normally use {@see publish} so that string paths and virtual assets share one entry
+	 * point.
+	 *
+	 * Only these options are consulted, each falling back to the matching property:
+	 *
+	 * | key       | type | effect                                                              |
+	 * |-----------|------|---------------------------------------------------------------------|
+	 * | atomic    | bool | write via a temp file then rename; defaults to {@see setAtomic Atomic} |
+	 * | forceCopy | bool | write even when the destination already exists; defaults to {@see setForceCopy ForceCopy} |
+	 *
+	 * @param IPublishable $asset the virtual asset to publish.
+	 * @param bool $checkTimestamp true to check the modification time even in performance
+	 *   mode.
+	 * @param array $options the publishing options listed above.
+	 * @throws TInvalidDataValueException when the virtual file path is empty or invalid.
+	 * @return string the absolute URL to the published asset, or '' when publishing is
+	 *   cancelled (a null virtual file path).
+	 * @since 4.3.3
+	 */
+	protected function publishVirtual($asset, $checkTimestamp = false, array $options = [])
+	{
+		$target = $this->virtualAssetTarget($asset);
+		if ($target === null) {
+			return '';
+		}
+		$cacheKey = $this->publishCacheKey($target['vpath'], $options);
+		if (isset($this->_published[$cacheKey])) {
+			return $this->_published[$cacheKey];
+		}
+		$isDir = $target['isDir'];
+		$dst = $target['dst'];
+		$atomic = $options['atomic'] ?? $this->getAtomic();
+		$forceCopy = $options['forceCopy'] ?? $this->getForceCopy();
+		// A file is atomic via temp-then-rename; a directory (which the asset populates
+		// itself) is gated by a per-source completion marker, so an interrupted population
+		// re-runs instead of leaving a partial directory that looks finished.
+		$marker = ($isDir && $atomic) ? $dst . DIRECTORY_SEPARATOR . $this->directoryCompleteMarker($target['vpath']) : null;
+		$exists = $isDir ? ($marker !== null ? is_file($marker) : is_dir($dst)) : is_file($dst);
+		if (!$exists || $checkTimestamp || $forceCopy || @filemtime($dst) < $asset->getAssetModificationDate() || $this->getApplication()->getMode() !== TApplicationMode::Performance) {
+			$parent = $isDir ? $dst : dirname($dst);
+			if (!is_dir($parent)) {
+				$dirMode = $this->getDirMode();
+				@mkdir($parent, $dirMode, true);
+				@chmod($parent, $dirMode);
+			}
+			Prado::trace("Publishing virtual asset {$target['vpath']} to $dst", TAssetManager::class);
+			if (!$isDir && $atomic) {
+				$this->writeAtomic($dst, fn ($tmp) => $asset->publish($tmp));
+			} else {
+				$asset->publish($dst);
+			}
+			if ($marker !== null && is_dir($dst)) {
+				@touch($marker);
+			}
+			$fileMode = $this->getFileMode();
+			if (!$isDir && $fileMode !== null && is_file($dst)) {
+				@chmod($dst, $fileMode);
+			}
+		}
+		$url = $target['url'];
+		if (!$isDir && $this->getAppendTimestamp() && ($timestamp = @filemtime($dst)) > 0) {
+			$url .= '?' . $this->getTimestampVar() . '=' . $timestamp;
+		}
+		if ($asset instanceof IPublishedCapture) {
+			$asset->setPublishedPath($dst);
+			$asset->setPublishedUrl($url);
+		}
+		return $this->_published[$cacheKey] = $url;
+	}
+
+	/**
+	 * Resolves the published target of a virtual asset from its translated file path,
+	 * without writing anything. The virtual path's directory keys the hashed published
+	 * directory and its basename is the published file name; a trailing slash
+	 * designates a directory. The path itself comes from {@see virtualAssetPath}, so a
+	 * subclass changes where an asset publishes by overriding that method alone.
+	 * @param IPublishable $asset the virtual asset to resolve.
+	 * @throws TInvalidDataValueException when the virtual file path is empty or invalid.
+	 * @return ?array null when publishing is cancelled (a null virtual file path);
+	 *   otherwise the keys vpath, isDir, fileName, and those from {@see publishedLocation}.
+	 * @since 4.3.3
+	 */
+	protected function virtualAssetTarget($asset)
+	{
+		$vpath = $this->virtualAssetPath($asset);
+		if ($vpath === null) {
+			return null;
+		}
+		if (empty($vpath)) {
+			throw new TInvalidDataValueException('assetmanager_filepath_invalid', $vpath);
+		}
+		$isDir = in_array(substr($vpath, -1), ['/', '\\'], true);
+		$vpath = rtrim($vpath, '/\\');
+		$fileName = basename($vpath);
+		return ['vpath' => $vpath, 'isDir' => $isDir, 'fileName' => $fileName]
+			+ $this->publishedLocation($vpath, $isDir, $fileName);
+	}
+
+	/**
+	 * The virtual path a {@see IPublishable} asset publishes under, taken from the asset
+	 * itself. A trailing separator designates a directory. This is the extension point
+	 * for a subclass that relocates or rewrites published virtual paths;
+	 * {@see virtualAssetTarget} turns the returned path into the published location.
+	 * @param IPublishable $asset the virtual asset to resolve.
+	 * @return ?string the virtual file path, or null to cancel publishing.
+	 * @since 4.3.3
+	 */
+	protected function virtualAssetPath(IPublishable $asset): ?string
+	{
+		return $asset->getAssetFilePath();
+	}
+
+	/**
+	 * Computes the hashed published location of a path, shared by the virtual and the
+	 * non-virtual publish routes. The hashed sub-directory keys off the path's parent
+	 * directory for a file, or the path itself for a directory. The destination is the
+	 * published file path for a file, or the hashed directory for a directory.
+	 * @param string $path the source file or directory path, without a trailing
+	 *   DIRECTORY_SEPARATOR.
+	 * @param bool $isDir whether the path designates a directory.
+	 * @param string $fileName the published file name (the basename of a file path).
+	 * @return array the keys dir (hashed sub-directory name), dstDir (its absolute path,
+	 *   the copy target), dst (the published file or directory path), and url.
+	 * @since 4.3.3
+	 */
+	protected function publishedLocation($path, $isDir, $fileName)
+	{
+		$dir = $this->hash($isDir ? $path : dirname($path));
+		$dstDir = $this->_basePath . DIRECTORY_SEPARATOR . $dir;
+		return [
+			'dir' => $dir,
+			'dstDir' => $dstDir,
+			'dst' => $isDir ? $dstDir : $dstDir . DIRECTORY_SEPARATOR . $fileName,
+			'url' => $this->_baseUrl . '/' . $dir . ($isDir ? '' : '/' . $fileName),
+		];
+	}
+
+	/**
+	 * The completion marker file name for a published source directory. The name embeds a
+	 * SHA-1 of the source path, so it is unique to that source even when two sources share
+	 * a hashed published directory (a crc32 collision) and cannot be guessed without the
+	 * source path. A directory is considered fully published only when its own marker is
+	 * present. {@see publishTarFile} uses the same marker, keyed by the checksum file path,
+	 * to record an extracted tar.
+	 * @param string $sourcePath the source directory path being published, or the checksum
+	 *   file path of a published tar.
+	 * @return string the marker file name.
+	 * @since 4.3.3
+	 */
+	protected function directoryCompleteMarker($sourcePath)
+	{
+		return static::DIRECTORY_COMPLETE_MARKER_PREFIX . sha1($sourcePath);
+	}
+
+	/**
+	 * Writes an asset atomically: the content is generated or copied into a temporary
+	 * file next to the destination, and the temp file is then moved into place. The
+	 * temporary file is colocated with the destination so the move is an atomic rename on
+	 * the same filesystem, and a half-written asset never appears at the destination. The
+	 * temp file is removed whether the writer throws or the move fails, so a failed
+	 * publish leaves no debris behind.
+	 * @param string $dst the destination file path.
+	 * @param callable $writer a callback that writes the content to the path it receives.
+	 * @throws \Throwable rethrown from the writer after the temp file is removed.
+	 * @return string the destination path.
+	 * @since 4.3.3
+	 */
+	protected function writeAtomic(string $dst, callable $writer): string
+	{
+		$tmp = dirname($dst) . DIRECTORY_SEPARATOR . 'tmp-' . uniqid('', true) . '-' . basename($dst);
+		try {
+			$writer($tmp);
+		} catch (\Throwable $e) {
+			if (is_file($tmp)) {
+				@unlink($tmp);
+			}
+			throw $e;
+		}
+		if (is_file($tmp) && $tmp !== $dst && !@rename($tmp, $dst)) {
+			@unlink($tmp);
+		}
+		return $dst;
 	}
 
 	/**
@@ -613,7 +910,7 @@ class TAssetManager extends \Prado\TModule
 			$normalized[$key] = is_object($value) ? 'object#' . spl_object_id($value) : $value;
 		}
 		ksort($normalized);
-		return $path . '#' . md5(serialize($normalized));
+		return $path . '#' . sha1(serialize($normalized));
 	}
 
 	/**
@@ -698,48 +995,57 @@ class TAssetManager extends \Prado\TModule
 	}
 
 	/**
-	 * Returns the published path of a file path.
-	 * This method does not perform any publishing. It merely tells you
-	 * if the file path is published, where it will go.
-	 * @param string $path directory or file path being published
-	 * @throws TInvalidDataValueException if the path is empty or does not exist
-	 * @return string the published file path
+	 * Returns the published path of a file path, directory, or virtual asset.
+	 * This method does not perform any publishing. It merely tells you where the asset
+	 * will go if published.
+	 * @param IPublishable|string $path the directory or file path, or a virtual asset.
+	 * @throws TInvalidDataValueException if the file path does not exist, as {@see publish}
+	 *   throws, so a missing path is reported rather than resolved to a bogus location.
+	 * @return string the published file or directory path; '' when a virtual asset cancels.
 	 */
 	public function getPublishedPath($path)
 	{
+		if ($path instanceof IPublishable) {
+			$target = $this->virtualAssetTarget($path);
+			return $target === null ? '' : $target['dst'];
+		}
 		if (empty($path) || ($fullpath = realpath($path)) === false) {
 			throw new TInvalidDataValueException('assetmanager_filepath_invalid', $path);
 		}
-		if (is_file($fullpath)) {
-			return $this->_basePath . DIRECTORY_SEPARATOR . $this->hash(dirname($fullpath)) . DIRECTORY_SEPARATOR . basename($fullpath);
-		} else {
-			return $this->_basePath . DIRECTORY_SEPARATOR . $this->hash($fullpath);
-		}
+		return $this->publishedLocation($fullpath, !is_file($fullpath), basename($fullpath))['dst'];
 	}
 
 	/**
-	 * Returns the URL of a published file path.
-	 * This method does not perform any publishing. It merely tells you
-	 * if the file path is published, what the URL will be to access it.
-	 * @param string $path directory or file path being published
-	 * @throws TInvalidDataValueException if the path is empty or does not exist
-	 * @return string the published URL for the file path
+	 * Returns the URL of a published file path, directory, or virtual asset.
+	 * This method does not perform any publishing. It merely tells you what the URL will
+	 * be to access the asset if published.
+	 * @param IPublishable|string $path the directory or file path, or a virtual asset.
+	 * @throws TInvalidDataValueException if the file path does not exist, as {@see publish}
+	 *   throws, so a missing path is reported rather than resolved to a bogus location.
+	 * @return string the published URL; '' when a virtual asset cancels.
 	 */
 	public function getPublishedUrl($path)
 	{
+		if ($path instanceof IPublishable) {
+			$target = $this->virtualAssetTarget($path);
+			if ($target === null) {
+				return '';
+			}
+			$url = $target['url'];
+			if (!$target['isDir'] && $this->getAppendTimestamp() && ($timestamp = @filemtime($target['dst'])) > 0) {
+				$url .= '?' . $this->getTimestampVar() . '=' . $timestamp;
+			}
+			return $url;
+		}
 		if (empty($path) || ($fullpath = realpath($path)) === false) {
 			throw new TInvalidDataValueException('assetmanager_filepath_invalid', $path);
 		}
-		if (is_file($fullpath)) {
-			return $this->_baseUrl . '/' . $this->hash(dirname($fullpath)) . '/' . basename($fullpath);
-		} else {
-			return $this->_baseUrl . '/' . $this->hash($fullpath);
-		}
+		return $this->publishedLocation($fullpath, !is_file($fullpath), basename($fullpath))['url'];
 	}
 
 	/**
 	 * Generates the asset sub-directory name for a path. CRC32 produces a much
-	 * smaller string than MD5 at the cost of a higher collision rate.
+	 * smaller string than MD5/SHA1 at the cost of a higher collision rate.
 	 * When a {@see setHashCallback HashCallback} is set, it produces the name
 	 * instead. Otherwise a file path is reduced to its directory, the framework
 	 * version is mixed in so an upgrade republishes, and {@see setLinkAssets
@@ -756,7 +1062,7 @@ class TAssetManager extends \Prado\TModule
 		$pathToHash = is_file($path) ? dirname($path) : $path;
 		$hashComponents = $pathToHash . Prado::getVersion();
 		if ($this->getLinkAssets()) {
-			$hashComponents .= '|' . ($this->getLinkAssets() ? '1' : '0');
+			$hashComponents .= '|1';
 		}
 		return sprintf('%x', crc32($hashComponents));
 	}
@@ -765,15 +1071,29 @@ class TAssetManager extends \Prado\TModule
 	 * Copies a file to a directory.
 	 * Copying is done only when the destination file does not exist
 	 * or has an older file modification time.
+	 *
+	 * The options each fall back to the matching property when absent:
+	 *
+	 * | key           | type     | effect                                                        |
+	 * |---------------|----------|---------------------------------------------------------------|
+	 * | only          | string[] | glob patterns the file must match to be copied                |
+	 * | except        | string[] | glob patterns that exclude the file                           |
+	 * | caseSensitive | bool     | whether the patterns are case sensitive; default true         |
+	 * | beforeCopy    | callable | `fn($src, $dst): bool`; return false to skip the file         |
+	 * | afterCopy     | callable | `fn($src, $dst): void` run after the file is copied           |
+	 * | forceCopy     | bool     | copy even when the destination already exists                 |
+	 * | atomic        | bool     | copy through {@see writeAtomic} (temp file then rename); defaults to {@see setAtomic Atomic} |
+	 *
 	 * @param string $src source file path
 	 * @param string $dst destination directory (if not exists, it will be created)
-	 * @param array $options publishing options
+	 * @param array $options the publishing options listed above
 	 */
 	protected function copyFile($src, $dst, $options = [])
 	{
 		$only = array_key_exists('only', $options) ? $options['only'] : $this->getOnly();
 		$except = array_key_exists('except', $options) ? $options['except'] : $this->getExcept();
 		$caseSensitive = $options['caseSensitive'] ?? $this->getCaseSensitive();
+		$atomic = $options['atomic'] ?? $this->getAtomic();
 
 		if (!$this->matchFilePattern(basename($src), $only, $except, $caseSensitive)) {
 			return;
@@ -802,14 +1122,20 @@ class TAssetManager extends \Prado\TModule
 				try {
 					$this->symlink($this->relativeSymlinkTarget($src, $dstFile), $dstFile);
 				} catch (\Throwable $e) {
-					if (!is_file($dstFile) && !is_link($dstFile)) {
+					if (@lstat($dstFile) === false) {
 						throw $e;
 					}
 				}
 			}
 		} elseif ($forceCopy || @filemtime($dstFile) < @filemtime($src)) {
 			Prado::trace("Publishing file $src to $dstFile", TAssetManager::class);
-			@copy($src, $dstFile);
+			if ($atomic) {
+				$this->writeAtomic($dstFile, function ($tmp) use ($src) {
+					@copy($src, $tmp);
+				});
+			} else {
+				@copy($src, $dstFile);
+			}
 			$fileMode = $this->getFileMode();
 			if ($fileMode !== null) {
 				@chmod($dstFile, $fileMode);
@@ -917,15 +1243,18 @@ class TAssetManager extends \Prado\TModule
 	 * Copies a directory recursively as another.
 	 * If the destination directory does not exist, it will be created.
 	 * File modification time is used to ensure the copied files are latest.
-	 * @param string $src the source directory
-	 * @param string $dst the destination directory
-	 * @param array $options publishing options:
-	 * - only: array, list of patterns that the file paths should match if they want to be copied.
-	 * - except: array, list of patterns that the files or directories should match if they want to be excluded from being copied.
-	 * - caseSensitive: bool, whether patterns should be case sensitive. Defaults to true.
-	 * - beforeCopy: callable, a PHP callback that is called before copying each sub-directory or file.
-	 * - afterCopy: callable, a PHP callback that is called after a sub-directory or file is successfully copied.
-	 * - forceCopy: bool, whether to copy even if the file already exists.
+	 *
+	 * The options each fall back to the matching property when absent:
+	 *
+	 * | key           | type     | effect                                                        |
+	 * |---------------|----------|---------------------------------------------------------------|
+	 * | only          | string[] | glob patterns a file must match to be copied                  |
+	 * | except        | string[] | glob patterns that exclude a matching file or directory       |
+	 * | caseSensitive | bool     | whether the patterns are case sensitive; default true         |
+	 * | beforeCopy    | callable | `fn($src, $dst): bool` per file/sub-directory; false to skip  |
+	 * | afterCopy     | callable | `fn($src, $dst): void` after a file/sub-directory is copied   |
+	 * | forceCopy     | bool     | copy even when the destination already exists                 |
+	 * | atomic        | bool     | copy each file through a temp file and rename; defaults to {@see setAtomic Atomic} |
 	 *
 	 * Patterns are matched against the path relative to the published root using
 	 * gitignore-style rules. The "except" patterns also prune whole sub-directories;
@@ -934,11 +1263,17 @@ class TAssetManager extends \Prado\TModule
 	 * removed rather than left empty, while a directory that is empty in the source
 	 * is preserved. Directory symlinks are followed once; a realpath already visited
 	 * is skipped so a symlink cycle cannot loop forever.
-	 * @param ?string $basePath @internal the root source directory against which
-	 * relative paths are computed for pattern matching. Defaults to $src on the
-	 * top-level call and is preserved across recursion.
-	 * @param array $visited @internal realpaths already entered, keyed by realpath,
-	 * used to break symlink cycles across recursion.
+	 *
+	 * Each file is handed to {@see copyDirectoryFile} with the options resolved, which a
+	 * subclass overrides to publish files its own way.
+	 *
+	 * @param string $src the source directory
+	 * @param string $dst the destination directory
+	 * @param array $options the publishing options listed above
+	 * @param ?string $basePath @internal the root source directory relative paths are
+	 *   computed against; defaults to $src on the top-level call and preserved in recursion.
+	 * @param array $visited @internal realpaths already entered, keyed by realpath, used
+	 *   to break symlink cycles across recursion.
 	 */
 	public function copyDirectory($src, $dst, $options = [], $basePath = null, &$visited = [])
 	{
@@ -953,15 +1288,19 @@ class TAssetManager extends \Prado\TModule
 			}
 			$visited[$real] = true;
 		}
-		$only = array_key_exists('only', $options) ? $options['only'] : $this->getOnly();
 		$except = array_key_exists('except', $options) ? $options['except'] : $this->getExcept();
 		$caseSensitive = $options['caseSensitive'] ?? $this->getCaseSensitive();
-		$beforeCopy = $options['beforeCopy'] ?? $this->getBeforeCopy();
-		$afterCopy = $options['afterCopy'] ?? $this->getAfterCopy();
-		$forceCopy = $options['forceCopy'] ?? $this->getForceCopy();
-		$linkAssets = $this->getLinkAssets();
-		$fileMode = $this->getFileMode();
 		$dirMode = $this->getDirMode();
+		$fileOptions = [
+			'only' => array_key_exists('only', $options) ? $options['only'] : $this->getOnly(),
+			'except' => $except,
+			'caseSensitive' => $caseSensitive,
+			'beforeCopy' => $options['beforeCopy'] ?? $this->getBeforeCopy(),
+			'afterCopy' => $options['afterCopy'] ?? $this->getAfterCopy(),
+			'forceCopy' => $options['forceCopy'] ?? $this->getForceCopy(),
+			'linkAssets' => $this->getLinkAssets(),
+			'fileMode' => $this->getFileMode(),
+		];
 
 		if (!is_dir($dst)) {
 			@mkdir($dst, $dirMode);
@@ -974,7 +1313,7 @@ class TAssetManager extends \Prado\TModule
 					continue;
 				}
 				$srcHadEntries = true;
-				if (in_array($file, self::PATH_COPY_EXCEPTIONS)) {
+				if (in_array($file, self::PATH_COPY_EXCEPTIONS) || str_starts_with($file, static::DIRECTORY_COMPLETE_MARKER_PREFIX)) {
 					continue;
 				}
 				$srcPath = $src . DIRECTORY_SEPARATOR . $file;
@@ -982,40 +1321,7 @@ class TAssetManager extends \Prado\TModule
 				$relativePath = str_replace(DIRECTORY_SEPARATOR, '/', substr($srcPath, strlen($basePath) + 1));
 
 				if (is_file($srcPath)) {
-					if (!$this->matchFilePattern($relativePath, $only, $except, $caseSensitive)) {
-						continue;
-					}
-
-					if ($beforeCopy !== null && !call_user_func($beforeCopy, $srcPath, $dstPath)) {
-						continue;
-					}
-
-					$shouldCopy = $forceCopy || !is_file($dstPath) || @filemtime($dstPath) < @filemtime($srcPath);
-					if ($shouldCopy) {
-						if ($linkAssets) {
-							if ($forceCopy && (is_file($dstPath) || is_link($dstPath))) {
-								@unlink($dstPath);
-							}
-							if (!is_link($dstPath)) {
-								try {
-									$this->symlink($this->relativeSymlinkTarget($srcPath, $dstPath), $dstPath);
-								} catch (\Throwable $e) {
-									if (!is_file($dstPath) && !is_link($dstPath)) {
-										throw $e;
-									}
-								}
-							}
-						} else {
-							Prado::trace("Publishing file $srcPath to $dstPath", TAssetManager::class);
-							@copy($srcPath, $dstPath);
-							if ($fileMode !== null) {
-								@chmod($dstPath, $fileMode);
-							}
-						}
-					}
-					if ($afterCopy !== null) {
-						call_user_func($afterCopy, $srcPath, $dstPath);
-					}
+					$this->copyDirectoryFile($srcPath, $dstPath, $relativePath, $fileOptions);
 				} else {
 					if ($except !== null && $this->matchesAnyPattern($relativePath, $except, $caseSensitive)) {
 						continue;
@@ -1032,6 +1338,83 @@ class TAssetManager extends \Prado\TModule
 			}
 		} else {
 			throw new TInvalidDataValueException('assetmanager_source_directory_invalid', $src);
+		}
+	}
+
+	/**
+	 * Publishes one file of a directory copy: the pattern filters, the beforeCopy veto,
+	 * the freshness decision, the link-or-copy write, the file permissions, and the
+	 * afterCopy notification. {@see copyDirectory} calls this once per file it walks and
+	 * passes the options it has already resolved, so this is the extension point for a
+	 * subclass that handles each published file differently. Overriding it leaves the
+	 * directory walk, the visited-path cycle guard, {@see PATH_COPY_EXCEPTIONS}, the
+	 * marker exclusion, and the directory creation in place.
+	 *
+	 * The options carry the values {@see copyDirectory} resolved; an absent key falls
+	 * back to the matching property:
+	 *
+	 * | key           | type       | effect                                                  |
+	 * |---------------|------------|---------------------------------------------------------|
+	 * | only          | ?string[]  | glob patterns the file must match to be copied          |
+	 * | except        | ?string[]  | glob patterns that exclude the file                     |
+	 * | caseSensitive | bool       | whether the patterns are case sensitive                 |
+	 * | beforeCopy    | ?callable  | `fn($src, $dst): bool`; return false to skip the file   |
+	 * | afterCopy     | ?callable  | `fn($src, $dst): void` run after the file is handled    |
+	 * | forceCopy     | bool       | copy even when the destination already exists           |
+	 * | linkAssets    | bool       | publish a symbolic link instead of a copy               |
+	 * | fileMode      | ?int       | permissions applied to the copied file                  |
+	 *
+	 * @param string $srcPath the source file path.
+	 * @param string $dstPath the destination file path.
+	 * @param string $relativePath the source path relative to the published root, with
+	 *   "/" separators, which the patterns match against.
+	 * @param array $options the resolved options listed above.
+	 * @throws \Throwable rethrown from {@see symlink} when linking leaves no file or link.
+	 * @since 4.3.3
+	 */
+	protected function copyDirectoryFile(string $srcPath, string $dstPath, string $relativePath, array $options): void
+	{
+		$only = array_key_exists('only', $options) ? $options['only'] : $this->getOnly();
+		$except = array_key_exists('except', $options) ? $options['except'] : $this->getExcept();
+		$caseSensitive = $options['caseSensitive'] ?? $this->getCaseSensitive();
+		if (!$this->matchFilePattern($relativePath, $only, $except, $caseSensitive)) {
+			return;
+		}
+
+		$beforeCopy = $options['beforeCopy'] ?? $this->getBeforeCopy();
+		if ($beforeCopy !== null && !call_user_func($beforeCopy, $srcPath, $dstPath)) {
+			return;
+		}
+
+		$forceCopy = $options['forceCopy'] ?? $this->getForceCopy();
+		$shouldCopy = $forceCopy || !is_file($dstPath) || @filemtime($dstPath) < @filemtime($srcPath);
+		if ($shouldCopy) {
+			if ($options['linkAssets'] ?? $this->getLinkAssets()) {
+				if ($forceCopy && (is_file($dstPath) || is_link($dstPath))) {
+					@unlink($dstPath);
+				}
+				if (!is_link($dstPath)) {
+					try {
+						$this->symlink($this->relativeSymlinkTarget($srcPath, $dstPath), $dstPath);
+					} catch (\Throwable $e) {
+						if (@lstat($dstPath) === false) {
+							throw $e;
+						}
+					}
+				}
+			} else {
+				Prado::trace("Publishing file $srcPath to $dstPath", TAssetManager::class);
+				@copy($srcPath, $dstPath);
+				$fileMode = $options['fileMode'] ?? $this->getFileMode();
+				if ($fileMode !== null) {
+					@chmod($dstPath, $fileMode);
+				}
+			}
+		}
+
+		$afterCopy = $options['afterCopy'] ?? $this->getAfterCopy();
+		if ($afterCopy !== null) {
+			call_user_func($afterCopy, $srcPath, $dstPath);
 		}
 	}
 
@@ -1117,42 +1500,84 @@ class TAssetManager extends \Prado\TModule
 	/**
 	 * Publish a tar file by extracting its contents to the assets directory.
 	 * Each tar file must be accompanied with its own MD5 check sum file.
-	 * The MD5 file is published after the tar contents are extracted to the assets
-	 * directory, so the presence of the published MD5 file marks a complete extraction.
-	 * A failed extraction throws and leaves the MD5 file unpublished.
+	 * The MD5 file is published when the tar contents are successfully
+	 * extracted to the assets directory.
+	 *
+	 * A per-checksum completion marker written after the extraction records that the tar
+	 * is published there, and a marker at least as new as the checksum file skips the
+	 * extraction. The marker is keyed by the checksum file path, so two tars whose
+	 * checksums share a published directory each keep their own. The published checksum
+	 * file does not gate the extraction: publishing that same checksum file on its own
+	 * through {@see publish} puts an identical copy in the same place, which says nothing
+	 * about whether the contents were ever extracted.
+	 *
+	 * Like {@see publish}, the third argument is a boolean timestamp flag or an options
+	 * array. Beyond the publishing options, the array configures the
+	 * {@see \Prado\IO\TTarFileExtractor} that performs the extraction:
+	 *
+	 * | key          | type  | effect                                                                                      |
+	 * |--------------|-------|---------------------------------------------------------------------------------------------|
+	 * | atomic       | bool  | extract through a staging directory then rename, gating the checksum copy the same way; defaults to {@see setAtomic Atomic} |
+	 * | strict       | bool  | reject a malformed archive rather than extracting what it can                               |
+	 * | conflictMode | mixed | how an entry already present at the destination is resolved                                 |
+	 * | dirMode      | ?int  | permissions for the extracted directories; defaults to {@see setDirMode DirMode}            |
+	 * | fileMode     | ?int  | permissions for the extracted files; defaults to {@see setFileMode FileMode}                |
+	 *
+	 * The extractor's remaining features (exception class, URL timeout, retained temp file,
+	 * extraction manifest) are reachable by overriding {@see deployTarFile}.
+	 *
+	 * The extraction runs before the checksum file is copied, so the "already published"
+	 * sentinel only appears once the contents are in place. A failed extraction leaves no
+	 * sentinel and a later call extracts again.
+	 *
 	 * @param string $tarfile tar filename
 	 * @param string $md5sum MD5 checksum for the corresponding tar file.
-	 * @param bool $checkTimestamp Wether or not to check the time stamp of the file for publishing. Defaults to false.
-	 * @throws TIOException if the tar file cannot be extracted
+	 * @param array|bool $checkTimestamp the modification-time flag, or an options array
+	 *   (see {@see publish}). An options array implies the timestamp flag from forceCopy.
+	 * @throws TInvalidDataValueException if the checksum file does not exist.
+	 * @throws TIOException if the tar file is invalid or the extraction fails.
 	 * @return string URL path to the directory where the tar file was extracted.
 	 */
 	public function publishTarFile($tarfile, $md5sum, $checkTimestamp = false)
 	{
+		$options = [];
+		if (is_array($checkTimestamp)) {
+			$options = $checkTimestamp;
+			$checkTimestamp = $options['forceCopy'] ?? false;
+		}
 		// The tar key is namespaced so that publishing the checksum file itself as a plain
 		// file does not share the cache entry of the directory extracted from the tar.
-		$cacheKey = 'tar:' . $md5sum;
+		$cacheKey = $this->publishCacheKey('tar:' . $md5sum, $options);
 		if (isset($this->_published[$cacheKey])) {
 			return $this->_published[$cacheKey];
 		} elseif (($fullpath = realpath($md5sum)) === false || !is_file($fullpath)) {
 			throw new TInvalidDataValueException('assetmanager_tarchecksum_invalid', $md5sum);
 		} else {
 			$dir = $this->hash(dirname($fullpath));
-			$fileName = basename($fullpath);
 			$dst = $this->_basePath . DIRECTORY_SEPARATOR . $dir;
-			if (!is_file($dst . DIRECTORY_SEPARATOR . $fileName) || $checkTimestamp || $this->getApplication()->getMode() !== TApplicationMode::Performance) {
-				if (@filemtime($dst . DIRECTORY_SEPARATOR . $fileName) < @filemtime($fullpath)) {
+			$atomic = $options['atomic'] ?? $this->getAtomic();
+			// The completion marker, not the published checksum, records that this tar was
+			// extracted here. Publishing the checksum file on its own puts the very same
+			// file at the very same place, so a copy of it says nothing about the contents.
+			$marker = $dst . DIRECTORY_SEPARATOR . $this->directoryCompleteMarker($fullpath);
+			if (!is_file($marker) || $checkTimestamp || $this->getApplication()->getMode() !== TApplicationMode::Performance) {
+				if (@filemtime($marker) < @filemtime($fullpath)) {
 					if (!is_dir($dst)) {
 						$dirMode = $this->getDirMode();
 						@mkdir($dst, $dirMode);
 						@chmod($dst, $dirMode);	// override umask on mkdir dirMode
 					}
-					// The contents land first and the checksum last, so the checksum appears
-					// only once the publish is complete.
-					if (!$this->deployTarFile($tarfile, $dst)) {
+					// The contents land first, then the checksum, and the marker last, so the
+					// marker appears only once the publish is complete. Marking it earlier
+					// would make a failed extraction permanent.
+					if (!$this->deployTarFile($tarfile, $dst, $options)) {
 						throw new TIOException('assetmanager_tarfile_extract_failed', $tarfile);
 					}
 					// The checksum file is always published; instance only/except filters do not apply.
-					$this->copyFile($fullpath, $dst, ['only' => null, 'except' => null]);
+					$this->copyFile($fullpath, $dst, array_merge($options, ['only' => null, 'except' => null, 'atomic' => $atomic]));
+					if (is_dir($dst)) {
+						@touch($marker);
+					}
 				}
 			}
 			return $this->_published[$cacheKey] = $this->_baseUrl . '/' . $dir;
@@ -1160,19 +1585,48 @@ class TAssetManager extends \Prado\TModule
 	}
 
 	/**
-	 * Extracts the tar file to the destination directory.
-	 * N.B Tar file must not be compressed.
+	 * Extracts the tar file to the destination directory with {@see \Prado\IO\TTarFileExtractor}.
+	 * These options configure the extractor:
+	 *
+	 * | option       | type | effect                                                  | default                       |
+	 * |--------------|------|---------------------------------------------------------|-------------------------------|
+	 * | atomic       | bool | stage to a temporary directory then rename              | {@see getAtomic Atomic}       |
+	 * | dirMode      | ?int | permissions for extracted directories                   | {@see getDirMode DirMode}     |
+	 * | fileMode     | ?int | permissions for extracted files                         | {@see getFileMode FileMode}   |
+	 * | strict       | bool | reject a malformed archive instead of extracting best-effort | extractor default        |
+	 * | conflictMode | int  | how an entry already present at the destination resolves | extractor default            |
+	 *
+	 * This is the extension point for customizing extraction. A subclass overrides it to
+	 * reach the extractor features the options do not carry (exception class, URL timeout,
+	 * retained temp file, extraction manifest), or to substitute another archive reader
+	 * entirely. {@see publishTarFile} copies the checksum sentinel only when this returns
+	 * true, so an override reports a failed extraction by returning false or throwing.
+	 *
+	 * {@see publishTarFile} passes the options array as a third argument. It is read with
+	 * func_get_arg() so the declared signature stays `($path, $destination)`, and both an
+	 * override with that signature and one that adds `array $options = []` remain valid.
+	 *
 	 * @param string $path tar file
 	 * @param string $destination path where the contents of tar file are to be extracted
+	 * @throws TIOException if the tar file does not exist.
 	 * @return bool true if extract successful, false otherwise.
 	 */
 	protected function deployTarFile($path, $destination)
 	{
+		$options = func_num_args() > 2 ? func_get_arg(2) : [];
 		if (($fullpath = realpath($path)) === false || !is_file($fullpath)) {
 			throw new TIOException('assetmanager_tarfile_invalid', $path);
-		} else {
-			$tar = new TTarFileExtractor($fullpath);
-			return $tar->extract($destination);
 		}
+		$tar = new TTarFileExtractor($fullpath);
+		$tar->setAtomic($options['atomic'] ?? $this->getAtomic());
+		$tar->setDirModeOverride($options['dirMode'] ?? $this->getDirMode());
+		$tar->setFileModeOverride($options['fileMode'] ?? $this->getFileMode());
+		if (array_key_exists('strict', $options)) {
+			$tar->setStrict($options['strict']);
+		}
+		if (array_key_exists('conflictMode', $options)) {
+			$tar->setConflictMode($options['conflictMode']);
+		}
+		return $tar->extract($destination);
 	}
 }
