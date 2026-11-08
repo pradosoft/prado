@@ -4,6 +4,7 @@ namespace Prado\Test\Unit;
 
 use Prado\TApplication;
 use Prado\TModule;
+use Prado\Test\Unit\Harness\Util\TTestNullDynamicBehavior;
 
 // =============================================================================
 // Helper fixtures for TApplicationModuleDependencyTest
@@ -695,6 +696,24 @@ class TApplicationDependencyTest extends \PHPUnit\Framework\TestCase
 
 		$this->assertSame([], $app->pubCollectDeps($module),
 			'null return from getModuleDependencies() must yield an empty dep list');
+	}
+
+	public function testSort_dynamicBehaviorIgnoringTheFilterKeepsTheModules(): void
+	{
+		// A behavior on the application whose __dycall returns null for dyFilterModuleDependencies
+		// leaves the module records in place.
+		$app = $this->newAccessor();
+		$app->attachBehavior('nulldy', $behavior = new TTestNullDynamicBehavior());
+		$a   = new TrackingModule();
+		$b   = new StringReturnDepModule();
+		$b->setDepId('a');
+
+		$result = $app->pubSortByDep([
+			$this->entry('b', $b),
+			$this->entry('a', $a),
+		]);
+		$this->assertSame(['a', 'b'], array_column($result, 'id'));
+		$this->assertContains('dyFilterModuleDependencies', $behavior->events);
 	}
 
 	public function testCollectDeps_stringReturn_sort_depComesBefore(): void
@@ -2422,6 +2441,20 @@ class TApplicationDependencyTest extends \PHPUnit\Framework\TestCase
 	// -----------------------------------------------------------------------
 	// collectModuleDependencies — two behaviors with same dep ID
 	// -----------------------------------------------------------------------
+
+	public function testCollectDeps_dynamicBehaviorIgnoringTheFilterKeepsTheDeps(): void
+	{
+		// A behavior whose __dycall returns null for dyFilterDependencies leaves the map in place.
+		$app    = $this->newAccessor();
+		$module = new TrackingModule();
+		$dep = new DepBehavior();
+		$dep->setDepId('shared');
+		$module->attachBehavior('dep', $dep);
+		$module->attachBehavior('nulldy', $behavior = new TTestNullDynamicBehavior());
+
+		$this->assertContains('shared', $this->depIds($app->pubCollectDeps($module)));
+		$this->assertContains('dyFilterDependencies', $behavior->events);
+	}
 
 	public function testCollectDeps_twoBehaviorsSameDep_firstBehaviorWins(): void
 	{

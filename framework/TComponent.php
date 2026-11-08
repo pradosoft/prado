@@ -1327,14 +1327,15 @@ class TComponent
 	 * Raises a dynamic event that filters its first parameter, such as `dyPreRaiseEvent`
 	 * filtering the event name, through {@see callBehaviorsMethod}.  A null result, from a
 	 * behavior or an {@see \Prado\Util\IDynamicMethods::__dycall} that ignores the event, keeps
-	 * the parameter.
+	 * the parameter.  A class raises its filter events with this method, on itself or on
+	 * another component, where `$value = $this->dyFilter($value)` would take the null.
 	 * @param string $method the dynamic event
 	 * @param mixed $value the parameter being filtered
 	 * @param mixed ...$args the other parameters of the event
 	 * @return mixed the filtered parameter
 	 * @since 4.4.0
 	 */
-	protected function callBehaviorsFilter(string $method, mixed $value, mixed ...$args): mixed
+	public function callBehaviorsFilter(string $method, mixed $value, mixed ...$args): mixed
 	{
 		$this->callBehaviorsMethod($method, $return, $value, ...$args);
 		return $return ?? $value;

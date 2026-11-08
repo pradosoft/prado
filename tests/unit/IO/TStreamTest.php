@@ -8,6 +8,7 @@ use Psr\Http\Message\StreamInterface;
 use Prado\Test\Unit\Harness\IO\TTestIOEventLog;
 use Prado\Test\Unit\Harness\IO\TTestIOHelper;
 use Prado\Test\Unit\Harness\IO\TTestStream;
+use Prado\Test\Unit\Harness\Util\TTestNullDynamicBehavior;
 
 /**
  * Unit tests for {@see \Prado\IO\TStream}, the PSR-7 byte-stream wrapper.
@@ -535,30 +536,17 @@ class TStreamTest extends \PHPUnit\Framework\TestCase
 		// An IDynamicMethods behavior whose __dycall returns null for the dyRead, dyWrite, and dyIs* hooks
 		// leaves the data, the byte count, and the capabilities as they are.
 		$s = TStream::fromMemory();
-		$behavior = new TNullDynamicBehavior();
+		$behavior = new TTestNullDynamicBehavior();
 		$s->attachBehavior('nulldy', $behavior);
 		self::assertSame(5, $s->write('abcde'));
-		self::assertSame('dyWrite', $behavior->last);
+		self::assertContains('dyWrite', $behavior->events);
 		$s->rewind();
 		self::assertSame('abcde', $s->read(5));
-		self::assertSame('dyRead', $behavior->last);
+		self::assertContains('dyRead', $behavior->events);
 		self::assertTrue($s->isReadable());
 		self::assertTrue($s->isWritable());
 		self::assertTrue($s->isSeekable());
 		$s->close();
-	}
-}
-
-/**
- * Behavior that receives every dynamic event through __dycall and handles none of them.
- */
-class TNullDynamicBehavior extends \Prado\Util\TBehavior implements \Prado\Util\IDynamicMethods
-{
-	public $last;
-
-	public function __dycall($method, $args)
-	{
-		$this->last = $method;
 	}
 }
 
