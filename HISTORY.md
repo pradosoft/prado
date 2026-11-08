@@ -1,5 +1,6 @@
 ## Version 4.4.0 - TBA
 NEW: Issue #1401 - `TDropdownMenu` renders a menu button and an action menu of its links and buttons, a `TPopover` with the ARIA `menu` role and the WAI-ARIA menu button keyboard. (belisoful)
+NEW: Issue #1401 - `TTooltip` describes `ForControl` with a `popover="hint"` tooltip that shows on hover and focus and hides on Esc (WCAG 1.4.13); the target's `aria-describedby` names it. (belisoful)
 NEW: Issue #1401 - `TPopover` renders a popover anchored to its invoker with CSS anchor positioning and no script: `Placement` (`TPopoverPlacement`), `ButtonText` for its own invoker button, and `Popover` defaulting to `auto`. (belisoful)
 ENH: Issue #1401 - `TDialog.HeaderText` renders a heading of `HeaderLevel` that names the dialog, and `ShowCloseButton` renders a script-free close button named by `CloseButtonText`; `CssUrl` styles the header block. (belisoful)
 BUG: `TWeakCallableCollection::remove()` with a priority finds a `TEventHandler` wrapping the callable, so `detachEventHandler()` with a priority detaches it. (belisoful)
