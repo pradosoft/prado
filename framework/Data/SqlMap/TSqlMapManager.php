@@ -155,7 +155,7 @@ class TSqlMapManager extends \Prado\TComponent
 	 */
 	public function getMappedStatement($name)
 	{
-		if ($this->_mappedStatements->contains($name) == false) {
+		if (!$this->_mappedStatements->contains($name)) {
 			throw new TSqlMapUndefinedException('sqlmap_contains_no_statement', $name);
 		}
 		return $this->_mappedStatements[$name];
@@ -169,7 +169,7 @@ class TSqlMapManager extends \Prado\TComponent
 	public function addMappedStatement(IMappedStatement $statement)
 	{
 		$key = $statement->getID();
-		if ($this->_mappedStatements->contains($key) == true) {
+		if ($this->_mappedStatements->contains($key)) {
 			throw new TSqlMapDuplicateException('sqlmap_already_contains_statement', $key);
 		}
 		$this->_mappedStatements->add($key, $statement);
@@ -191,7 +191,7 @@ class TSqlMapManager extends \Prado\TComponent
 	 */
 	public function getResultMap($name)
 	{
-		if ($this->_resultMaps->contains($name) == false) {
+		if (!$this->_resultMaps->contains($name)) {
 			throw new TSqlMapUndefinedException('sqlmap_contains_no_result_map', $name);
 		}
 		return $this->_resultMaps[$name];
@@ -204,7 +204,7 @@ class TSqlMapManager extends \Prado\TComponent
 	public function addResultMap(TResultMap $result)
 	{
 		$key = $result->getID();
-		if ($this->_resultMaps->contains($key) == true) {
+		if ($this->_resultMaps->contains($key)) {
 			throw new TSqlMapDuplicateException('sqlmap_already_contains_result_map', $key);
 		}
 		$this->_resultMaps->add($key, $result);
@@ -225,7 +225,7 @@ class TSqlMapManager extends \Prado\TComponent
 	 */
 	public function getParameterMap($name)
 	{
-		if ($this->_parameterMaps->contains($name) == false) {
+		if (!$this->_parameterMaps->contains($name)) {
 			throw new TSqlMapUndefinedException('sqlmap_contains_no_parameter_map', $name);
 		}
 		return $this->_parameterMaps[$name];
@@ -238,7 +238,7 @@ class TSqlMapManager extends \Prado\TComponent
 	public function addParameterMap(TParameterMap $parameter)
 	{
 		$key = $parameter->getID();
-		if ($this->_parameterMaps->contains($key) == true) {
+		if ($this->_parameterMaps->contains($key)) {
 			throw new TSqlMapDuplicateException('sqlmap_already_contains_parameter_map', $key);
 		}
 		$this->_parameterMaps->add($key, $parameter);

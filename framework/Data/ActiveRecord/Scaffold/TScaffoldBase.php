@@ -130,7 +130,7 @@ abstract class TScaffoldBase extends TTemplateControl
 					throw new TConfigurationException(
 						'scaffold_invalid_record_pk',
 						$this->getRecordClass(),
-						$pk
+						is_array($pk) ? implode(', ', $pk) : $pk
 					);
 				}
 			} else {
@@ -199,13 +199,18 @@ abstract class TScaffoldBase extends TTemplateControl
 
 	/**
 	 * Publish the default stylesheet file.
+	 * The stylesheet is read from the directory of the control class when the file exists
+	 * there, and from the directory of TScaffoldBase otherwise.
 	 * @param mixed $param
 	 */
 	public function onPreRender($param)
 	{
 		parent::onPreRender($param);
 		if ($this->getEnableDefaultStyle()) {
-			$url = $this->publishAsset($this->getDefaultStyle() . '.css');
+			$style = $this->getDefaultStyle() . '.css';
+			$classFile = (new \ReflectionClass($this))->getFileName();
+			$className = is_file(dirname($classFile) . DIRECTORY_SEPARATOR . $style) ? $this::class : self::class;
+			$url = $this->publishAsset($style, $className);
 			$this->getPage()->getClientScript()->registerStyleSheetFile($url, $url);
 		}
 	}

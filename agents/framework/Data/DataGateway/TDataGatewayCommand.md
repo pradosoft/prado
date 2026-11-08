@@ -12,7 +12,7 @@
 
 ## Index Conditions
 
-`getIndexKeyCondition($table, $fields, $values)` builds `(table.col1, table.col2) IN ((v1, v2), ...)` for `findAllByIndex()`, `findAllByPk()`, and `deleteByPk()`. An empty value list gives `1=0`, which every driver accepts as a false predicate (a bare `FALSE` is not one in Oracle, SQL Server, Firebird, or DB2).
+`findAllByIndex()`, `findAllByPks()`, and `deleteByPk()` match keys through the builder's `createIndexCriteria()`. The deprecated `getIndexKeyCondition($table, $fields, $values)` returns the same condition for `$table`. [`TDbCommandBuilder::getIndexCondition()`](../Common/TDbCommandBuilder.md#index-condition) builds it: `t.a IN (...)` for one column, an `OR` of `AND`-joined equalities for several, and `1=0` for no values.
 
 ## Events
 

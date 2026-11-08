@@ -204,5 +204,96 @@ class TPropertyAccessTest extends \PHPUnit\Framework\TestCase
 		self::expectException(\Prado\Data\SqlMap\DataMapper\TInvalidPropertyException::class);
 		TPropertyAccess::get($testobj, 'a.d.C');
 	}
+
+	public function testArrayAccessObject()
+	{
+		$map = new \Prado\Collections\TMap(['a' => 'foo', 'n' => null, 'c' => ['d' => 'bar']]);
+
+		self::assertEquals('foo', TPropertyAccess::get($map, 'a'));
+		self::assertNull(TPropertyAccess::get($map, 'n'));
+		self::assertEquals('bar', TPropertyAccess::get($map, 'c.d'));
+		self::assertTrue(TPropertyAccess::has($map, 'a'));
+		self::assertTrue(TPropertyAccess::has($map, 'n'));
+		self::assertTrue(TPropertyAccess::has($map, 'c.d'));
+		self::assertFalse(TPropertyAccess::has($map, 'z'));
+		self::assertFalse(TPropertyAccess::has($map, 'c.z'));
+		self::assertFalse(TPropertyAccess::has($map, 'n.z'));
+
+		TPropertyAccess::set($map, 'e', 'qux');
+		self::assertEquals('qux', $map['e']);
+
+		$testobj = new _PropertyAccessTestHelperPublicVar();
+		TPropertyAccess::set($testobj, 'a', $map);
+		self::assertEquals('foo', TPropertyAccess::get($testobj, 'a.a'));
+		self::assertTrue(TPropertyAccess::has($testobj, 'a.c.d'));
+		TPropertyAccess::set($testobj, 'a.b', 'baz');
+		self::assertEquals('baz', $map['b']);
+
+		self::expectException(\Prado\Data\SqlMap\DataMapper\TInvalidPropertyException::class);
+		TPropertyAccess::get($map, 'z');
+	}
+
+	public function testArrayAccessObjectNestedPathMissing()
+	{
+		$map = new \Prado\Collections\TMap(['c' => ['d' => 'bar']]);
+
+		self::expectException(\Prado\Data\SqlMap\DataMapper\TInvalidPropertyException::class);
+		TPropertyAccess::get($map, 'c.z');
+	}
+
+	public function testArrayAccessObjectUsesOffsetMethods()
+	{
+		$object = new _PropertyAccessTestHelperArrayAccess();
+
+		self::assertEquals(['a', 'b'], TPropertyAccess::get($object, 'ab'));
+		self::assertEquals('b', TPropertyAccess::get($object, 'ab.1'));
+		self::assertTrue(TPropertyAccess::has($object, 'ab'));
+		self::assertTrue(TPropertyAccess::has($object, 'ab.1'));
+		self::assertFalse(TPropertyAccess::has($object, 'cd'));
+		self::assertSame(['ab', 'ab', 'ab', 'ab', 'cd'], $object->existsCalls);
+		self::assertSame(['ab', 'ab', 'ab', 'ab'], $object->getCalls);
+
+		self::expectException(\Prado\Data\SqlMap\DataMapper\TInvalidPropertyException::class);
+		TPropertyAccess::get($object, 'cd');
+	}
+
+	public function testArrayAccessObjectInsideArray()
+	{
+		$map = new \Prado\Collections\TMap(['k' => 'v']);
+		$data = ['map' => $map];
+
+		self::assertEquals('v', TPropertyAccess::get($data, 'map.k'));
+		self::assertTrue(TPropertyAccess::has($data, 'map.k'));
+		self::assertFalse(TPropertyAccess::has($data, 'map.z'));
+	}
 }
 
+/**
+ * Accepts only keys made of the letters a and b. The value of a key is the
+ * array of its letters. Records each offset call.
+ */
+class _PropertyAccessTestHelperArrayAccess implements \ArrayAccess
+{
+	public $existsCalls = [];
+	public $getCalls = [];
+
+	public function offsetExists($offset): bool
+	{
+		$this->existsCalls[] = $offset;
+		return preg_match('/^[ab]+$/', (string) $offset) === 1;
+	}
+
+	public function offsetGet($offset): mixed
+	{
+		$this->getCalls[] = $offset;
+		return str_split((string) $offset);
+	}
+
+	public function offsetSet($offset, $value): void
+	{
+	}
+
+	public function offsetUnset($offset): void
+	{
+	}
+}

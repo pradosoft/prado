@@ -64,7 +64,7 @@ class TDataGatewayCommandTest extends \PHPUnit\Framework\TestCase
 		$command = $this->command();
 		$condition = $command->getIndexKeyCondition($command->getTableInfo(), ['id', 'kind'], [[1, 'x'], [3, 'y']]);
 
-		$this->assertSame("(\"items\".\"id\", \"items\".\"kind\") IN (('1', 'x'), ('3', 'y'))", $condition);
+		$this->assertSame("((\"items\".\"id\" = '1' AND \"items\".\"kind\" = 'x') OR (\"items\".\"id\" = '3' AND \"items\".\"kind\" = 'y'))", $condition);
 	}
 
 	public function testIndexKeyConditionWithoutValuesMatchesNoRow()
@@ -105,13 +105,21 @@ class TDataGatewayCommandTest extends \PHPUnit\Framework\TestCase
 	public function testCompositeKeyConditionOfASingleKeyTable()
 	{
 		$condition = PradoUnit::invoke($this->command(), 'getCompositeKeyCondition', [1, 3]);
-		$this->assertSame("(\"items\".\"id\") IN ('1', '3')", $condition);
+		$this->assertSame("\"items\".\"id\" IN ('1', '3')", $condition);
 	}
 
 	public function testCompositeKeyConditionOfACompositeKeyTable()
 	{
 		$condition = PradoUnit::invoke($this->command('pairs'), 'getCompositeKeyCondition', [1, 'x']);
-		$this->assertSame("(\"pairs\".\"a\", \"pairs\".\"b\") IN (('1', 'x'))", $condition);
+		$this->assertSame("(\"pairs\".\"a\" = '1' AND \"pairs\".\"b\" = 'x')", $condition);
+	}
+
+	public function testDeleteByPkOfACompositeKeyTableDeletesTheKeyedRows()
+	{
+		$this->_conn->createCommand("INSERT INTO pairs VALUES (1, 'x', 'p'), (1, 'y', 'q'), (2, 'x', 'r')")->execute();
+
+		$this->assertSame(2, $this->command('pairs')->deleteByPk([[1, 'x'], [2, 'x']]));
+		$this->assertSame(['q'], $this->_conn->createCommand('SELECT val FROM pairs')->queryColumn());
 	}
 
 	public function testNormalizeCompositeKeyValuesErrors()

@@ -248,6 +248,16 @@ class TResultProperty extends \Prado\TComponent
 			$value = $this->getTypedValue($registry, $row[$index]);
 		} elseif (isset($row[$name])) {
 			$value = $this->getTypedValue($registry, $row[$name]);
+		} elseif ($name !== null && !array_key_exists($name, $row)) {
+			// Case-insensitive fallback for drivers that fold column-name case
+			// (pdo_oci uppercases, pdo_pgsql lowercases unquoted names).
+			$nameLower = strtolower($name);
+			foreach ($row as $key => $val) {
+				if (strtolower((string) $key) === $nameLower) {
+					$value = $this->getTypedValue($registry, $val);
+					break;
+				}
+			}
 		}
 		if (($value === null) && ($this->getNullValue() !== null)) {
 			$value = $this->getTypedValue($registry, $this->getNullValue());

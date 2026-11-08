@@ -57,9 +57,15 @@ class TPropertyAccess
 		}
 		$properties = explode('.', $path);
 		foreach ($properties as $prop) {
-			if (is_array($object) || $object instanceof \ArrayAccess) {
+			if (is_array($object)) {
 				if (array_key_exists($prop, $object)) {
 					$object = $object[$prop];
+				} else {
+					throw new TInvalidPropertyException('sqlmap_invalid_property', $path);
+				}
+			} elseif ($object instanceof \ArrayAccess) {
+				if ($object->offsetExists($prop)) {
+					$object = $object->offsetGet($prop);
 				} else {
 					throw new TInvalidPropertyException('sqlmap_invalid_property', $path);
 				}
@@ -93,9 +99,15 @@ class TPropertyAccess
 		}
 		$properties = explode('.', $path);
 		foreach ($properties as $prop) {
-			if (is_array($object) || $object instanceof \ArrayAccess) {
+			if (is_array($object)) {
 				if (array_key_exists($prop, $object)) {
 					$object = $object[$prop];
+				} else {
+					return false;
+				}
+			} elseif ($object instanceof \ArrayAccess) {
+				if ($object->offsetExists($prop)) {
+					$object = $object->offsetGet($prop);
 				} else {
 					return false;
 				}

@@ -163,14 +163,20 @@ class TSqlMapXmlConfiguration extends TSqlMapXmlConfigBuilder
 
 	/**
 	 * Set the cache for each statement having a cache model property.
+	 * An insert, update, or delete statement with a cache model flushes that cache
+	 * when it executes, the same as a `<flushOnExecute>` entry in the cache model.
 	 */
 	protected function attachCacheModels()
 	{
 		foreach ($this->_manager->getMappedStatements() as $mappedStatement) {
-			$model = $mappedStatement->getStatement()->getCacheModel();
+			$statement = $mappedStatement->getStatement();
+			$model = $statement->getCacheModel();
 			if ($model !== null && strlen($model) > 0) {
 				$cache = $this->_manager->getCacheModel($model);
-				$mappedStatement->getStatement()->setCache($cache);
+				$statement->setCache($cache);
+				if ($statement instanceof TSqlMapInsert || $statement instanceof TSqlMapUpdate) {
+					$cache->registerTriggerStatement($mappedStatement);
+				}
 			}
 		}
 	}
