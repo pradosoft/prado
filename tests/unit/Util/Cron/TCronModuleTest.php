@@ -13,6 +13,7 @@ use Prado\IO\Async\TFiberContext;
 use Prado\Prado;
 use Prado\Test\Unit\PradoUnit;
 use Prado\Test\Unit\Harness\Util\Cron\TTestCronModule;
+use Prado\Util\Cron\TCronDaemonEventParameter;
 use Prado\Util\Cron\Wake\TCronWakeFile;
 use Prado\Util\Cron\Wake\TCronWakeSocket;
 use Prado\Util\Mutex\TFileMutex;
@@ -1058,10 +1059,30 @@ class TCronModuleTest extends \PHPUnit\Framework\TestCase
 			['name' => 'daemonLater', 'schedule' => '@' . ($now + 86400), 'task' => TTestCronModuleTask::class],
 		]);
 		$this->obj->getTask('daemonDue')->testunit = $this;
+		$events = [];
+		foreach (['OnDaemonStart', 'OnDaemonIdle', 'OnDaemonEnd'] as $event) {
+			$this->obj->attachEventHandler($event, function ($sender, $param) use (&$events, $event) {
+				self::assertInstanceOf(TCronDaemonEventParameter::class, $param);
+				$events[$event][] = $param;
+				if ($event === 'OnDaemonIdle') {
+					$param->setWait(0.02); // a handler shortens the wait
+				}
+			});
+		}
 		$start = microtime(true);
 		self::assertEquals(1, $this->obj->processPendingTasks());
 		$elapsed = microtime(true) - $start;
 		self::assertGreaterThanOrEqual(0.25, $elapsed, 'the daemon lives its lifetime');
+		self::assertCount(1, $events['OnDaemonStart']);
+		self::assertSame($this->obj->getDaemonLockName(), $events['OnDaemonStart'][0]->getLockName());
+		self::assertTrue($events['OnDaemonStart'][0]->getWatching());
+		self::assertGreaterThanOrEqual(6, count($events['OnDaemonIdle']), 'the shortened wait yields more idle events than DaemonIdle would');
+		self::assertSame(1, $events['OnDaemonIdle'][0]->getTasks(), 'the first idle follows the sweep that ran the task');
+		self::assertSame(0, $events['OnDaemonIdle'][1]->getTasks());
+		self::assertCount(1, $events['OnDaemonEnd']);
+		self::assertSame(1, $events['OnDaemonEnd'][0]->getTasks());
+		self::assertSame(TCronDaemonEventParameter::REASON_LIFETIME, $events['OnDaemonEnd'][0]->getReason());
+		self::assertGreaterThanOrEqual(0.25, $events['OnDaemonEnd'][0]->getElapsed());
 		self::assertLessThan(3.0, $elapsed);
 		self::assertEquals(1, $this->_countTasks);
 		self::assertEquals(1, $this->obj->getTask('daemonDue')->getProcessCount());
@@ -1104,9 +1125,15 @@ class TCronModuleTest extends \PHPUnit\Framework\TestCase
 			$transport->signal(microtime(true));
 		});
 		$loop->delay(0.3, fn () => $this->obj->stopDaemon());
+		$end = null;
+		$this->obj->attachEventHandler('OnDaemonEnd', function ($sender, $param) use (&$end) {
+			$end = $param;
+		});
 		$start = microtime(true);
 		self::assertEquals(1, $this->obj->processPendingTasks());
 		self::assertLessThan(3.0, microtime(true) - $start, 'stopDaemon ends the wait before DaemonIdle');
+		self::assertSame(TCronDaemonEventParameter::REASON_STOP, $end->getReason());
+		self::assertSame(1, $end->getTasks());
 		self::assertEquals(1, $this->_countTasks);
 		self::assertEquals(1, $this->obj->getTask('daemonWoken')->getProcessCount());
 	}

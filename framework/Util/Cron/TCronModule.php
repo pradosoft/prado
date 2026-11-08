@@ -119,7 +119,9 @@ use Prado\Xml\TXmlDocument;
  * it, exits at once; otherwise it runs the due tasks, waits on its event loop for the next trigger,
  * a wake from the {@see setWakeTransport WakeTransport}, or {@see setDaemonIdle DaemonIdle}, and
  * repeats until {@see setDaemonLifetime DaemonLifetime} passes or SIGTERM/SIGINT arrives.  The next
- * tick elects a new daemon, which picks up deployed code.  A web request wakes a waiting process,
+ * tick elects a new daemon, which picks up deployed code.  {@see onDaemonStart}, {@see onDaemonIdle}
+ * (before each wait, with the wait a handler changes), and {@see onDaemonEnd} are raised with a
+ * {@see \Prado\Util\Cron\TCronDaemonEventParameter}.  A web request wakes a waiting process,
  * per-minute or daemon, through {@see signalWake} when it schedules an earlier task.
  *
  * TCronModule is an {@see \Prado\Util\Clock\IClock} through {@see \Prado\Util\Clock\TClockTrait}:
@@ -152,6 +154,9 @@ use Prado\Xml\TXmlDocument;
  * @method void dyLogCronSleep($seconds)
  * @method void dyLogCronDaemonStart($lockName, $watching)
  * @method void dyLogCronDaemonEnd($numtasks)
+ * @method void onDaemonStart(TCronDaemonEventParameter $param)
+ * @method void onDaemonIdle(TCronDaemonEventParameter $param)
+ * @method void onDaemonEnd(TCronDaemonEventParameter $param)
  * @method bool dyRegisterShellAction($returnValue)
  * @method \Prado\Shell\TShellWriter getOutputWriter()
  * @see \Prado\Security\Permissions\TPermissionsBehavior::dyLogPermissionFailed
@@ -266,6 +271,9 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 
 	/** @var ?\Closure resumes the daemon's current wait, when it is waiting */
 	private ?\Closure $_daemonResume = null;
+
+	/** @var ?string why the running daemon is ending, a TCronDaemonEventParameter::REASON_* constant */
+	private ?string $_daemonReason = null;
 
 	/**
 	 * Initializes the module.  Read the configuration, installs Shell Actions,
@@ -1513,18 +1521,32 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 			$this->wakeDaemon();
 		});
 		$signals = $this->watchDaemonSignals($loop);
+		$this->_daemonReason = null;
 		$this->logCronDaemonStart($lockName, $watching);
+		$param = $this->newDaemonEventParameter($lockName, $watching);
+		$this->onDaemonStart($param);
 		try {
 			do {
 				$this->consumeDaemonWake();
-				$numtasks += $this->sweepTasks();
-				if ($this->_daemonStop || $this->isDaemonExpired($start)) {
+				$swept = $this->sweepTasks();
+				$numtasks += $swept;
+				if ($this->isDaemonDone($start)) {
 					break;
 				}
 				if (!$this->consumeDaemonWake()) {
-					$this->waitDaemon($loop, $this->getDaemonWait($start));
+					$param = $this->newDaemonEventParameter($lockName, $watching)
+						->setTasks($swept)
+						->setElapsed($this->getMonotonicClock()->seconds() - $start)
+						->setWait($this->getDaemonWait($start));
+					$this->onDaemonIdle($param);
+					if (!$this->isDaemonDone($start)) {
+						$this->waitDaemon($loop, max($param->getWait(), static::DAEMON_MIN_WAIT));
+					}
 				}
-			} while (!$this->_daemonStop && !$this->isDaemonExpired($start));
+			} while (!$this->isDaemonDone($start));
+		} catch (\Throwable $e) {
+			$this->_daemonReason = TCronDaemonEventParameter::REASON_ERROR;
+			throw $e;
 		} finally {
 			foreach ($signals as $id) {
 				$loop->cancel($id);
@@ -1534,8 +1556,77 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 			}
 			$mutex->release($lockName);
 			$this->logCronDaemonEnd($numtasks);
+			$param = $this->newDaemonEventParameter($lockName, $watching)
+				->setTasks($numtasks)
+				->setElapsed($this->getMonotonicClock()->seconds() - $start)
+				->setReason($this->_daemonReason ?? TCronDaemonEventParameter::REASON_LIFETIME);
+			$this->onDaemonEnd($param);
 		}
 		return $numtasks;
+	}
+
+	/**
+	 * Creates the parameter of a daemon event.
+	 * @param string $lockName the lease lock name
+	 * @param bool $watching whether the wake transport is watched
+	 * @return TCronDaemonEventParameter the parameter
+	 * @since 4.4.0
+	 */
+	protected function newDaemonEventParameter(string $lockName, bool $watching): TCronDaemonEventParameter
+	{
+		return (new TCronDaemonEventParameter())->setLockName($lockName)->setWatching($watching);
+	}
+
+	/**
+	 * Tells whether the daemon loop ends: a stop or signal was requested, or the lifetime passed.
+	 * @param float $start the monotonic seconds the daemon started at
+	 * @return bool whether the daemon is done
+	 * @since 4.4.0
+	 */
+	protected function isDaemonDone(float $start): bool
+	{
+		if ($this->_daemonStop) {
+			return true;
+		}
+		if ($this->isDaemonExpired($start)) {
+			$this->_daemonReason ??= TCronDaemonEventParameter::REASON_LIFETIME;
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Raises the `OnDaemonStart` event after the lease is acquired, before the first sweep.
+	 * @param TCronDaemonEventParameter $param the lease lock name and whether the wake transport is watched
+	 * @since 4.4.0
+	 */
+	public function onDaemonStart($param)
+	{
+		$this->raiseEvent('OnDaemonStart', $this, $param);
+	}
+
+	/**
+	 * Raises the `OnDaemonIdle` event before each wait.  The parameter carries the tasks of the sweep just
+	 * finished, the elapsed seconds, and the seconds about to be waited, which a handler changes with
+	 * {@see TCronDaemonEventParameter::setWait}.  A subclass releases resources an idle process should not
+	 * hold here, such as a database connection, and calls the parent to raise the event.
+	 * @param TCronDaemonEventParameter $param the idle parameter
+	 * @since 4.4.0
+	 */
+	public function onDaemonIdle($param)
+	{
+		$this->raiseEvent('OnDaemonIdle', $this, $param);
+	}
+
+	/**
+	 * Raises the `OnDaemonEnd` event after the lease is released.  The parameter carries the tasks the
+	 * daemon ran, the elapsed seconds, and the {@see TCronDaemonEventParameter::getReason Reason}.
+	 * @param TCronDaemonEventParameter $param the end parameter
+	 * @since 4.4.0
+	 */
+	public function onDaemonEnd($param)
+	{
+		$this->raiseEvent('OnDaemonEnd', $this, $param);
 	}
 
 	/**
@@ -1544,6 +1635,7 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	 */
 	public function stopDaemon(): void
 	{
+		$this->_daemonReason ??= TCronDaemonEventParameter::REASON_STOP;
 		$this->_daemonStop = true;
 		$this->wakeDaemon();
 	}
@@ -1573,7 +1665,7 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	/**
 	 * Computes the seconds the daemon waits before its next sweep: until the next trigger
 	 * ({@see getNextPendingTime}), at most {@see getDaemonIdle DaemonIdle} and the remaining
-	 * {@see getDaemonLifetime DaemonLifetime}, and at least {@see DAEMON_MIN_WAIT}.
+	 * {@see getDaemonLifetime DaemonLifetime}; {@see onDaemonIdle} may change it, and {@see DAEMON_MIN_WAIT} is the floor.
 	 * @param float $start the monotonic seconds the daemon started at
 	 * @return float the seconds to wait
 	 * @since 4.4.0
@@ -1594,14 +1686,12 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 
 	/**
 	 * Waits on the event loop for the given seconds or until {@see wakeDaemon} resumes the wait.
-	 * {@see onDaemonIdle} runs before the wait.
 	 * @param IEventLoop $loop the daemon's event loop
 	 * @param float $seconds the seconds to wait
 	 * @since 4.4.0
 	 */
 	protected function waitDaemon(IEventLoop $loop, float $seconds): void
 	{
-		$this->onDaemonIdle();
 		$suspension = $loop->suspension();
 		$resumed = false;
 		$this->_daemonResume = static function () use ($suspension, &$resumed) {
@@ -1646,15 +1736,6 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	}
 
 	/**
-	 * Runs before each daemon wait.  Subclasses release resources an idle process should not hold,
-	 * such as a database connection.
-	 * @since 4.4.0
-	 */
-	protected function onDaemonIdle()
-	{
-	}
-
-	/**
 	 * @param float $start the monotonic seconds the daemon started at
 	 * @return bool whether the {@see getDaemonLifetime DaemonLifetime} has passed
 	 * @since 4.4.0
@@ -1680,6 +1761,7 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 		foreach ([15, 2] as $signal) { // SIGTERM, SIGINT
 			try {
 				$ids[] = $loop->onSignal($signal, function () {
+					$this->_daemonReason ??= TCronDaemonEventParameter::REASON_SIGNAL;
 					$this->stopDaemon();
 				});
 			} catch (TNotSupportedException $e) {

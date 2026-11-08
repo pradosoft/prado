@@ -79,7 +79,17 @@ $cron->getTasksByType(TDbCronCleanLogTask::class);
 
 `DEFAULT_CRON_USER`, `DEFAULT_DAEMON_LIFETIME`, `DEFAULT_DAEMON_IDLE`, and `DAEMON_MIN_WAIT` are read through `static::` (the unset properties take them in `init()`), so a subclass overrides a default by redefining the constant.
 
-`runDaemon()` returns the number of tasks it ran, or 0 at once when the lease is held. Each turn: `sweepTasks()` (`filterStaleTasks()`, `getPendingTasks()`, `runTasks()` with no minute limit), then `waitDaemon()` for `getDaemonWait()` seconds, the least of the time to `getNextPendingTime()`, `DaemonIdle`, and the remaining lifetime, never under `DAEMON_MIN_WAIT`. A wake (`wakeDaemon()`, from the transport's `watch()` callback) or `stopDaemon()` (also SIGTERM and SIGINT through the loop's `onSignal()` where `pcntl` exists) ends the wait; a wake during a sweep causes another sweep. `onDaemonIdle()` runs before each wait; `TDbCronManager` closes its database connection there. The lease is released and the transport closed in a `finally`. `dyLogCronDaemonStart($lockName, $watching)` and `dyLogCronDaemonEnd($numtasks)` are raised, and written to the shell by [`TShellCronLogBehavior`](TShellCronLogBehavior.md).
+`runDaemon()` returns the number of tasks it ran, or 0 at once when the lease is held. Each turn: `sweepTasks()` (`filterStaleTasks()`, `getPendingTasks()`, `runTasks()` with no minute limit), then `waitDaemon()` for `getDaemonWait()` seconds, the least of the time to `getNextPendingTime()`, `DaemonIdle`, and the remaining lifetime, never under `DAEMON_MIN_WAIT`. A wake (`wakeDaemon()`, from the transport's `watch()` callback) or `stopDaemon()` (also SIGTERM and SIGINT through the loop's `onSignal()` where `pcntl` exists) ends the wait; a wake during a sweep causes another sweep. The lease is released and the transport closed in a `finally`. `dyLogCronDaemonStart($lockName, $watching)` and `dyLogCronDaemonEnd($numtasks)` are raised for behaviors, and written to the shell by [`TShellCronLogBehavior`](TShellCronLogBehavior.md).
+
+Application code hooks the daemon through three `on` events, each with a [`TCronDaemonEventParameter`](TCronDaemonEventParameter.md):
+
+| Event | When | Parameter |
+|---|---|---|
+| `onDaemonStart` | after the lease is acquired, before the first sweep | `LockName`, `Watching` |
+| `onDaemonIdle` | before each wait | `Tasks` of the sweep just finished, `Elapsed`, and `Wait`, which a handler changes with `setWait()` |
+| `onDaemonEnd` | after the lease is released | `Tasks` in all, `Elapsed`, `Reason` (`lifetime`, `stop`, `signal`, `error`) |
+
+`TDbCronManager` overrides `onDaemonIdle()` to close its database connection before raising the event. A handler that wants the daemon to end calls `stopDaemon()`.
 
 ```xml
 <module id="cron" class="Prado\Util\Cron\TDbCronManager" Daemon="true" DaemonLifetime="1800" DaemonMutex="dbmutex" WakeTransport="cronwake" />

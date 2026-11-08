@@ -16,6 +16,8 @@ Cron-style scheduled task engine supporting both file-configured and database-ba
 
 - **`TProcessCronTask`** — Concrete task that keeps a background process running through a PID file.
 
+- **`TCronDaemonEventParameter`** — Parameter of the daemon events `onDaemonStart`, `onDaemonIdle` (settable `Wait`), and `onDaemonEnd` (`Reason`).
+
 - **`TCronTaskInfo`** — Task metadata: name, schedule, task class, last run time.
 
 - **`TTimeScheduler`** — Cron expression parser supporting multi-language expressions and special tokens (`@daily`, `@hourly`, `@now`, etc.); both day fields restricted match as a union (POSIX).

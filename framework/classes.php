@@ -393,6 +393,7 @@ return [
 'ICronWakeTransport' => 'Prado\Util\Cron\Wake\ICronWakeTransport',
 'TClosureCronTask' => 'Prado\Util\Cron\TClosureCronTask',
 'TCronMethodTask' => 'Prado\Util\Cron\TCronMethodTask',
+'TCronDaemonEventParameter' => 'Prado\Util\Cron\TCronDaemonEventParameter',
 'TCronModule' => 'Prado\Util\Cron\TCronModule',
 'TCronTask' => 'Prado\Util\Cron\TCronTask',
 'TCronTaskInfo' => 'Prado\Util\Cron\TCronTaskInfo',

@@ -930,13 +930,15 @@ class TDbCronManager extends TCronModule implements IDbModule
 	}
 
 	/**
-	 * Closes the database connection while the daemon waits, so an idle connection does not time out;
-	 * {@see getDbConnection} reopens it on the next query.
+	 * Closes the database connection while the daemon waits, so an idle connection does not time out,
+	 * then raises the `OnDaemonIdle` event; {@see getDbConnection} reopens the connection on the next query.
+	 * @param \Prado\Util\Cron\TCronDaemonEventParameter $param the idle parameter
 	 * @since 4.4.0
 	 */
-	protected function onDaemonIdle()
+	public function onDaemonIdle($param)
 	{
 		$this->deactivateDbConnection();
+		parent::onDaemonIdle($param);
 	}
 
 	/**
