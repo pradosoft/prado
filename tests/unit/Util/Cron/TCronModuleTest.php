@@ -12,6 +12,7 @@ use Prado\IO\Async\TDeferred;
 use Prado\IO\Async\TFiberContext;
 use Prado\Prado;
 use Prado\Test\Unit\PradoUnit;
+use Prado\Test\Unit\Harness\Util\Cron\TTestCronModule;
 use Prado\Util\TBehavior;
 use Prado\TApplication;
 use Prado\TComponent;
@@ -130,7 +131,7 @@ class TCronModuleTest extends \PHPUnit\Framework\TestCase
 	
 	protected function getTestClass()
 	{
-		return \Prado\Util\Cron\TCronModule::class;
+		return TTestCronModule::class;
 	}
 	
 	protected function setUp(): void
@@ -142,6 +143,10 @@ class TCronModuleTest extends \PHPUnit\Framework\TestCase
 		$this->baseClass = $this->getTestClass();
 		
 		$this->obj = new $this->baseClass();
+		// Pin the clock to the real "now" so the minute boundary cannot roll over mid-test while the
+		// "ran recently" assertions (microtime(true) - lastExecTime < 2) continue to hold.
+		$this->obj->fakeNow = time();
+		$this->obj->fakeMicrotime = (float) $this->obj->fakeNow;
 		
 		// Method tasks ('CMT_UserManager3' . SEPARATOR . 'methodN') execute against this module.
 		if (!Prado::getApplication()->getModule('CMT_UserManager3')) {

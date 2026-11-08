@@ -46,6 +46,9 @@ abstract class TCronTask extends TApplicationComponent
 	/** @var string The module Id */
 	private $_moduleId;
 
+	/** @var ?bool remove the task after it runs; used by TDbCronManager */
+	private $_autoRemove;
+
 	/** @var TTimeScheduler The time scheduler */
 	private $_scheduler;
 
@@ -54,6 +57,9 @@ abstract class TCronTask extends TApplicationComponent
 
 	/** @var ?int the last time this task was run */
 	private $_lastexectime;
+
+	/** @var null|false|int the cached next trigger time after the lastexectime; false until computed */
+	private $_nextexectime = false;
 
 	/** @var ?float the seconds one run of the task may take, or null for the module's TaskTimeout */
 	private ?float $_timeout = null;
@@ -92,12 +98,13 @@ abstract class TCronTask extends TApplicationComponent
 	}
 
 	/**
-	 *
+	 * Sets the schedule and clears the cached next trigger time.
 	 * @param string $schedule the cron style schedule of the task
 	 */
 	public function setSchedule($schedule)
 	{
 		$this->_schedule = TPropertyValue::ensureString($schedule);
+		$this->_nextexectime = false;
 		if ($this->_scheduler) {
 			$this->_scheduler->setSchedule($this->_schedule);
 		}
@@ -128,7 +135,7 @@ abstract class TCronTask extends TApplicationComponent
 	}
 
 	/**
-	 * @return null|string the utility module for the task
+	 * @return ?string the utility module for the task
 	 */
 	public function getModuleId()
 	{
@@ -145,7 +152,27 @@ abstract class TCronTask extends TApplicationComponent
 	}
 
 	/**
-	 * @return null|\Prado\IModule returns the module from ModuleId
+	 * TCronModule ignores this; TDbCronManager removes the task from its table after it runs.
+	 * @return ?bool after running the task, should it remove itself.
+	 * @since 4.4.0
+	 */
+	public function getAutoRemove()
+	{
+		return $this->_autoRemove;
+	}
+
+	/**
+	 * TCronModule ignores this; TDbCronManager removes the task from its table after it runs.
+	 * @param mixed $autoRemove after running the task, should it remove itself.
+	 * @since 4.4.0
+	 */
+	public function setAutoRemove($autoRemove)
+	{
+		$this->_autoRemove = ($autoRemove !== null) ? TPropertyValue::ensureBoolean($autoRemove) : null;
+	}
+
+	/**
+	 * @return ?\Prado\IModule returns the module from ModuleId
 	 */
 	public function getModule()
 	{
@@ -183,11 +210,13 @@ abstract class TCronTask extends TApplicationComponent
 	}
 
 	/**
+	 * Sets the last execution time and clears the cached next trigger time.
 	 * sometimes floats don't output correctly to 6 significant figures (microtime).
 	 * @param numeric $v the time of running this cron task
 	 */
 	public function setLastExecTime($v)
 	{
+		$this->_nextexectime = false;
 		if ($v !== null) {
 			$this->_lastexectime = TPropertyValue::ensureInteger($v);
 		} else {
@@ -203,29 +232,44 @@ abstract class TCronTask extends TApplicationComponent
 	 */
 	public function resetTaskLastExecTime()
 	{
-		$now = time();
+		$now = $this->time();
 		$schedule = $this->getScheduler();
 		$nextTriggerTime = $schedule->getNextTriggerTime($now);
+		$this->_nextexectime = false;
 		$this->_lastexectime = ($nextTriggerTime === null) ? null :
 			(($schedule->getNextTriggerTime(0) == $nextTriggerTime) ? null : $now);
 	}
 
 	/**
-	 * @return null|numeric time of the next trigger after the lastExecTime, null if none.
+	 * Computes the time of the next trigger.  When $time is provided, the next
+	 * trigger after $time is returned without caching; otherwise the value relative
+	 * to the lastExecTime is computed once and cached.
+	 * @param ?int $time the time to compute the next trigger after, default null for the lastExecTime.
+	 * @return ?numeric time of the next trigger, null if none.
 	 */
-	public function getNextTriggerTime()
+	public function getNextTriggerTime($time = null)
 	{
-		$s = $this->getScheduler();
-		return $s->getNextTriggerTime($this->_lastexectime ?? 0);
+		if ($time !== null) {
+			return $this->getScheduler()->getNextTriggerTime($time);
+		}
+		if ($this->_nextexectime === false) {
+			$s = $this->getScheduler();
+			$this->_nextexectime = $s->getNextTriggerTime($this->_lastexectime ?? 0);
+		}
+		return $this->_nextexectime;
 	}
 
 	/**
+	 * @param ?int $time the current time to check the trigger time against, default null for {@see time()}
 	 * @return bool is the current time after the NextTriggerTime
 	 */
-	public function getIsPending()
+	public function getIsPending($time = null)
 	{
+		if ($time === null) {
+			$time = $this->time();
+		}
 		$trigger = $this->getNextTriggerTime();
-		return $trigger !== null && time() >= $trigger;
+		return $trigger !== null && $trigger <= $time;
 	}
 
 	/**
@@ -299,11 +343,15 @@ abstract class TCronTask extends TApplicationComponent
 		parent::_getZappableSleepProps($exprops);
 
 		$exprops[] = "\0Prado\Util\Cron\TCronTask\0_scheduler";
+		$exprops[] = "\0Prado\Util\Cron\TCronTask\0_nextexectime";
 		if ($this->_userName === null) {
 			$exprops[] = "\0Prado\Util\Cron\TCronTask\0_userName";
 		}
 		if ($this->_moduleId === null) {
 			$exprops[] = "\0Prado\Util\Cron\TCronTask\0_moduleId";
+		}
+		if ($this->_autoRemove === null) {
+			$exprops[] = "\0Prado\Util\Cron\TCronTask\0_autoRemove";
 		}
 		if ($this->_processCount == 0) {
 			$exprops[] = "\0Prado\Util\Cron\TCronTask\0_processCount";
@@ -315,5 +363,16 @@ abstract class TCronTask extends TApplicationComponent
 			$exprops[] = "\0Prado\Util\Cron\TCronTask\0_timeout";
 		}
 		$exprops[] = "\0Prado\Util\Cron\TCronTask\0_cancellationToken";
+	}
+
+	/**
+	 * Returns the current Unix timestamp. Wraps the global {@see \time()} as a single
+	 * overridable seam so that subclasses and tests can control the clock.
+	 * @return int the current Unix timestamp
+	 * @since 4.4.0
+	 */
+	protected function time(): int
+	{
+		return \time();
 	}
 }

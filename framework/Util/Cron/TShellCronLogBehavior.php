@@ -57,7 +57,7 @@ class TShellCronLogBehavior extends TBehavior
 	 * writes, with attributes, to the OutputWriter
 	 * @param string $str
 	 * @param array|int|\Prado\Util\TCallChain|string $p1
-	 * @param null|\Prado\Util\TCallChain $p2
+	 * @param ?\Prado\Util\TCallChain $p2
 	 * @return mixed
 	 */
 	public function dyWrite($str, $p1, $p2 = null)
@@ -77,7 +77,7 @@ class TShellCronLogBehavior extends TBehavior
 	 * writes Line, with attributes, to the OutputWriter
 	 * @param string $str
 	 * @param array|int|\Prado\Util\TCallChain|string $p1
-	 * @param null|\Prado\Util\TCallChain $p2
+	 * @param ?\Prado\Util\TCallChain $p2
 	 * @return mixed
 	 */
 	public function dyWriteLine($str, $p1, $p2 = null)
@@ -127,10 +127,25 @@ class TShellCronLogBehavior extends TBehavior
 	 */
 	public function dyLogCronTask($task, $username, $callchain)
 	{
-		$this->_outWriter->writeLine("Running Task {$task->getName()} as {$username}");
+		$this->_outWriter->writeLine("Running Task {$task->getName()} as @{$username} at " . date('H:i:s'));
 		$this->_outWriter->flush();
 
 		return $callchain->dyLogCronTask($task, $username);
+	}
+
+	/**
+	 * Logs when cron sleeps for second resolution when run in the shell.
+	 * @param mixed $seconds the number of seconds to sleep
+	 * @param \Prado\Util\TCallChain $callchain the chain of methods
+	 * @return mixed
+	 */
+	public function dyLogCronSleep($seconds, $callchain)
+	{
+		$sleepTime = round($seconds * 1000) / 1000;
+		$this->_outWriter->writeLine("Sleeping for {$sleepTime} seconds...\n");
+		$this->_outWriter->flush();
+
+		return $callchain->dyLogCronSleep($seconds);
 	}
 
 	/**

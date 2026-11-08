@@ -8,13 +8,13 @@
 **Namespace:** `Prado\Util\Cron`
 
 ## Overview
-Cron-style scheduled task engine. `TCronModule` manages task registration and execution timing. Tasks run when `prado-cli cron` is invoked by the system crontab (typically every minute). The module tracks last-run times so it won't run a task more frequently than its schedule allows.
+Cron-style scheduled task engine. `TCronModule` manages task registration and execution timing. Tasks run when `prado-cli cron/run` is invoked by the system crontab (typically every minute). The module tracks last-run times so it won't run a task more frequently than its schedule allows.
 
 ## Architecture
 
 ```
 system crontab (every minute)
-    → prado-cli cron
+    → prado-cli cron/run
         → [TShellCronAction](TShellCronAction.md)::run()
             → [TCronModule](TCronModule.md)::processPendingTasks()
                 → evaluates each task's [TTimeScheduler](TTimeScheduler.md)
@@ -62,6 +62,8 @@ $cron->getTaskInfos();                    // array of TCronTaskInfo
 // Filtered lookup — returns array<string, T> keyed by task name (@template):
 $cron->getTasksByType(TDbCronCleanLogTask::class);
 ```
+
+**Clock seam (`@since 4.4.0`)** — `TCronModule` is an [`IClock`](../Clock/IClock.md) via [`TClockTrait`](../Clock/TClockTrait.md). Cron scheduling reads time through `time()` and `microtime()`; in production these are the real system clock. The cron test harness (`tests/unit/Harness/Util/Cron`) overrides `now()`, `time()`, and `microtime()` to drive scheduling deterministically. The remaining environment seams are protected overridables: `mt_rand()`, `php_sapi_name()`, `time_sleep_until()` (a `sleep()` on the event loop), and `waitForWake()`. For code that *holds* a clock rather than being one, use [`TClockAwareTrait`](../Clock/TClockAwareTrait.md).
 
 ### Concurrency and the task fiber (4.4.0)
 
@@ -172,22 +174,23 @@ Value object with task metadata:
 ## CLI Integration
 
 ```bash
-# Run all pending tasks:
-php prado-cli.php /path/to/app cron
+# List tasks and their schedules (the default action, 4.4.0); filter by name and @user:
+php prado-cli.php /path/to/app cron [name] [@user]
 
-# List tasks and their schedules:
-php prado-cli.php /path/to/app cron list
+# Run all pending tasks (the system crontab entry):
+php prado-cli.php /path/to/app cron/run
 
-# Manage DB cron tasks (TDbCronManager):
-php prado-cli.php /path/to/app db-cron tasks
-php prado-cli.php /path/to/app db-cron run <taskname>
-php prado-cli.php /path/to/app db-cron add <name> <task-id> <schedule>
-php prado-cli.php /path/to/app db-cron remove <name>
+# Manage DB cron tasks and the log (TDbCronManager):
+php prado-cli.php /path/to/app cron/add <name> <task-id> <schedule> [properties...]
+php prado-cli.php /path/to/app cron/update <name> [properties...]
+php prado-cli.php /path/to/app cron/remove <name>
+php prado-cli.php /path/to/app cron/log [name] [@user]
+php prado-cli.php /path/to/app cron/flush [period] [name] [@user]
 ```
 
 ## Patterns & Gotchas
 
-- **System crontab is required** — `TCronModule` itself doesn't schedule anything; the OS crontab must call `prado-cli cron` periodically.
+- **System crontab is required** — `TCronModule` itself doesn't schedule anything; the OS crontab must call `prado-cli cron/run` periodically.
 - **Last-run tracking** — stored in application global state. If global state is cleared, tasks may run again immediately.
 - **User context** — tasks can run as a specific user via `UserName` property (requires `TUserManager` to be configured). The user is the task fiber's user in `TFiberContext`, so a task that calls `$app->setUser()` changes only its own fiber.
 - **A task future never rejects** — `runTask()` catches the task's exception; a rejection of the `TAsync::run()` future means `logCronTaskError()` itself threw.

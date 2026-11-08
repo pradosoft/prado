@@ -9,25 +9,30 @@
 **Extends:** `TShellAction`
 
 ## Overview
-`TShellCronAction` provides the `cron` CLI action for running and inspecting [`TCronModule`](TCronModule.md) from the command line. Sub-commands: `run` (execute pending tasks), `tasks` (list configured tasks with schedule/last-run/next-run info), and `index` (list all registered task infos from `fxGetCronTaskInfos`).
+`TShellCronAction` provides the `cron` CLI action for running and inspecting [`TCronModule`](TCronModule.md) from the command line. Sub-commands: `tasks` (the default action: list configured tasks with schedule/last-run/next-run info, filtered by task name and `@user`), `run` (execute pending tasks; the system crontab entry), and `index` (list all registered task infos from `fxGetCronTaskInfos`).
 
-[`TDbCronManager`](TDbCronManager.md) replaces the shell class with [`TShellDbCronAction`](TShellDbCronAction.md) in its constructor, which extends this class with add/update/remove commands.
+When the application user has the `TUserPermissionsBehavior`, the constructor removes `run` without `cron_run_pending`, and `tasks` is limited to the user's own tasks without `cron_read_tasks` (4.4.0).
+
+[`TDbCronManager`](TDbCronManager.md) replaces the shell class with [`TShellDbCronAction`](TShellDbCronAction.md) in its constructor, which extends this class with add/update/remove/log/flush commands.
 
 ## CLI Commands
 
 ```bash
-php prado-cli.php /app cron          # run pending cron tasks
-php prado-cli.php /app cron tasks    # display configured tasks (schedule, last run, next run, count)
-php prado-cli.php /app cron index    # display registered task info from fxGetCronTaskInfos
+php prado-cli.php /app cron [name] [@user]    # display configured tasks (schedule, last run, next run, count); the default action (4.4.0)
+php prado-cli.php /app cron/run               # run pending cron tasks; the system crontab entry
+php prado-cli.php /app cron/index             # display registered task info from fxGetCronTaskInfos
 ```
+
+Name and user filters are patterns: `_` is a wild card and `%` a wild string. A one-off `@<timestamp>` schedule is displayed as `@(date)`.
 
 ## Key Methods
 
 - `getModuleClass()` — returns `TCronModule::class`; override in subclasses to target a different module type
 - `getCronModule()` — finds and returns the first `TCronModule` instance from the application modules
 - `actionRun($args)` — calls `processPendingTasks()` on the cron module
-- `actionTasks($args)` — displays task table: name, schedule, last run, next run, run count
+- `actionTasks($args)` — displays task table: name, schedule, last run, next run, user, run count; through `getTasks()` or `getUserTasks()`
 - `actionIndex($args)` — displays task info from `fxGetCronTaskInfos`
+- `time()` — protected clock seam for the displayed dates (4.4.0)
 
 ## See Also
 

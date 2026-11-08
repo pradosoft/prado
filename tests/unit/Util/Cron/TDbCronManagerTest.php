@@ -8,6 +8,9 @@ use Prado\Exceptions\TInvalidOperationException;
 use Prado\Util\Cron\TCronMethodTask;
 use Prado\Util\Cron\TDbCronManager;
 use Prado\Test\Unit\PradoUnit;
+use Prado\Test\Unit\Harness\Util\Cron\TTestDbCronManager;
+use Prado\Prado;
+use Prado\Util\Cron\TClosureCronTask;
 use Prado\Data\IDataConnection;
 use Prado\Data\TDbConnection;
 use Prado\Exceptions\TDbException;
@@ -52,7 +55,7 @@ class TDbCronManagerTest extends TCronModuleTest
 {
 	protected function getTestClass()
 	{
-		return TDbCronManager::class;
+		return TTestDbCronManager::class;
 	}
 	
 	protected function setUp(): void
@@ -363,7 +366,7 @@ class TDbCronManagerTest extends TCronModuleTest
 	public function testExecuteRuntimeTasks()
 	{
 		$jobs = [
-			['name' => 'testTaskA', 'schedule' => '0 0 1 1 * 2099', 'task' => TTestCronModuleTask::class]
+			['name' => 'testTaskA', 'schedule' => '@' . ($this->obj->fakeNow + 86400), 'task' => TTestCronModuleTask::class]
 		];
 		$this->obj->init($jobs);
 		$task1 = $this->obj->getTask('testTaskA');
@@ -402,7 +405,7 @@ class TDbCronManagerTest extends TCronModuleTest
 		
 		$task = new TTestCronModuleTask();
 		$task->setName('runtimeTask1');
-		$task->setSchedule('0 0 1 0 ? 2099');
+		$task->setSchedule('@' . ($this->obj->fakeNow + 86400));
 		$task2 = new TTestCronModuleTask();
 		$task2->setName('runtimeTask2');
 		$task2->setSchedule('* * * * *');
@@ -837,6 +840,202 @@ class TDbCronManagerTest extends TCronModuleTest
 		self::assertStringEndsWith(' LIMIT 3', $manager->recorder->sql[1]);
 		// Xdebug retains the objects on the stack of a thrown exception, so the manager unlistens itself rather than in its destructor.
 		$manager->unlisten();
+	}
+
+	public function testPollsPerMinute()
+	{
+		$o = new $this->baseClass();
+		self::assertEquals(1, $o->getPollsPerMinute());
+		self::assertFalse($o->getSecondResolution());
+
+		$o->setPollsPerMinute(4);
+		self::assertEquals(4, $o->getPollsPerMinute());
+		self::assertFalse($o->getSecondResolution());
+
+		$o->setPollsPerMinute(60);
+		self::assertEquals(60, $o->getPollsPerMinute());
+		self::assertTrue($o->getSecondResolution());
+
+		$o->setPollsPerMinute(0);   // clamps up to 1
+		self::assertEquals(1, $o->getPollsPerMinute());
+		$o->setPollsPerMinute(120); // clamps down to 60
+		self::assertEquals(60, $o->getPollsPerMinute());
+
+		// SecondResolution is an alias for PollsPerMinute 60/1
+		$o2 = new $this->baseClass();
+		$o2->setSecondResolution(true);
+		self::assertEquals(60, $o2->getPollsPerMinute());
+		self::assertTrue($o2->getSecondResolution());
+		$o2->setSecondResolution(false);
+		self::assertEquals(1, $o2->getPollsPerMinute());
+
+		// These auto-listen to global events on construction; unlisten so they do not
+		// pollute later tests' fxGetCronTaskInfos with their own task infos.
+		$o->unlisten();
+		$o2->unlisten();
+	}
+
+	public function testDeferTask()
+	{
+		if (!extension_loaded('openssl')) {
+			self::markTestSkipped('openssl extension not loaded');
+		}
+		$app = Prado::getApplication();
+		$this->obj->fakeNow = (int) (floor(time() / 60) * 60 + 10);
+		$this->obj->fakeMicrotime = (float) $this->obj->fakeNow;
+
+		$base = count($app->onEndRequest);
+		self::assertNull($this->obj->getRuntimeTasks());
+
+		$task = $this->obj->deferTask(function ($t, $cron) {
+			return 'deferred-ran';
+		});
+
+		// Queued as a runtime task (the onEndRequest fast path), auto-removing.
+		self::assertInstanceOf(TClosureCronTask::class, $task);
+		self::assertEquals($base + 1, count($app->onEndRequest));
+		$runtime = $this->obj->getRuntimeTasks();
+		self::assertEquals(1, count($runtime));
+		self::assertArrayHasKey($task->getName(), $runtime);
+		self::assertTrue($task->getAutoRemove());
+
+		// Persisted as an active task due now (the cron fallback).
+		self::assertTrue($this->obj->taskExists($task->getName()));
+		$row = $this->obj->getTask($task->getName(), false, false);
+		self::assertEquals('1', $row['active']);
+		self::assertLessThanOrEqual($this->obj->fakeNow, (int) $row['nextexectime']);
+
+		// The persisted closure round-trips and runs.
+		$reloaded = $this->obj->getTask($task->getName(), false, true);
+		self::assertEquals('deferred-ran', $reloaded->execute($this->obj));
+
+		$this->obj->clearRuntimeTasks();
+		$this->obj->removeTask($task->getName());
+		self::assertFalse($this->obj->taskExists($task->getName()));
+	}
+
+	public function testAddTaskSignalsWakeOnlyWhenEarliestThisMinute()
+	{
+		$this->obj->fakeNow = (int) (floor(time() / 60) * 60 + 10); // 10s into the current minute
+		$this->obj->fakeMicrotime = (float) $this->obj->fakeNow;
+
+		// A one-shot due at the start of this minute is the earliest pending task → kicks cron.
+		$now = new TTestCronModuleTask();
+		$now->setName('wakeNow');
+		$now->setSchedule('@' . (int) (floor($this->obj->fakeNow / 60) * 60));
+		$this->obj->wakeSignals = [];
+		self::assertTrue($this->obj->addTask($now));
+		self::assertNotEmpty($this->obj->wakeSignals, 'an earliest due-this-minute task should signal wake');
+
+		// A task due tomorrow is beyond this minute → no kick.
+		$later = new TTestCronModuleTask();
+		$later->setName('wakeLater');
+		$later->setSchedule('@' . ($this->obj->fakeNow + 86400));
+		$this->obj->wakeSignals = [];
+		self::assertTrue($this->obj->addTask($later));
+		self::assertEmpty($this->obj->wakeSignals, 'a far-future task should not signal wake');
+
+		$this->obj->removeTask($now);
+		$this->obj->removeTask($later);
+	}
+
+	public function testGetCronLogFiltersByUsernameAndClearsByPeriod()
+	{
+		$db = $this->obj->getDbConnection();
+		PradoUnit::invoke($this->obj, 'ensureTable');
+		$time = time();
+		$db->createCommand(
+			"INSERT INTO {$this->obj->getTableName()} " .
+				"(name, schedule, task, moduleid, username, processcount, lastexectime, active)" .
+				" VALUES ('logA', '* * * * *', 'TTestCronModuleTask', 'module1', 'alice', '1', " . ($time - 60) . ", NULL)" .
+				",('logB', '* * * * *', 'TTestCronModuleTask', 'module1', 'bob', '2', " . ($time - 60) . ", NULL)" .
+				",('logC', '* * * * *', 'TTestCronModuleTask', 'module1', NULL, '3', " . ($time - 7200) . ", NULL)"
+		)->execute();
+
+		self::assertEquals(3, $this->obj->getCronLogCount());
+		self::assertEquals(1, $this->obj->getCronLogCount(null, 'alice'));
+		self::assertEquals(3, $this->obj->getCronLogCount('log_'), 'the _ wild card matches one character');
+		self::assertEquals(1, $this->obj->getCronLogCount('logA'));
+		self::assertEquals(1, $this->obj->getCronLogCount(null, $this->obj->getDefaultUserName()), 'rows without a user belong to the default user');
+
+		$log = $this->obj->getCronLog(null, 0, 0, null, 'bob');
+		self::assertEquals(1, count($log));
+		self::assertEquals('logB', $log[0]['name']);
+		$log = $this->obj->getCronLog('log%', 1, 1, true);
+		self::assertEquals(1, count($log));
+
+		self::assertEquals(1, $this->obj->clearCronLog('1 hour'));
+		self::assertEquals(2, $this->obj->getCronLogCount());
+		self::assertEquals(1, $this->obj->clearCronLog(null, null, 'alice'));
+		self::assertEquals(1, $this->obj->getCronLogCount());
+		self::assertEquals(1, $this->obj->clearCronLog(0));
+		self::assertEquals(0, $this->obj->getCronLogCount());
+
+		self::assertEquals(0, $this->obj->clearCronLog('P7D'), 'an ISO 8601 duration is a period');
+		self::expectException(TInvalidDataValueException::class);
+		$this->obj->clearCronLog('not a period');
+	}
+
+	public function testGetUserTasks()
+	{
+		$this->obj->init([
+			['name' => 'userTaskA', 'schedule' => '0 0 1 1 * 2099', 'task' => TTestCronModuleTask::class, 'username' => 'alice'],
+			['name' => 'userTaskB', 'schedule' => '0 0 1 1 * 2099', 'task' => TTestCronModuleTask::class],
+		]);
+		$task = new TTestCronModuleTask();
+		$task->setName('userTaskC');
+		$task->setSchedule('0 0 1 1 * 2099');
+		$task->setUserName('alice');
+		self::assertTrue($this->obj->addTask($task));
+
+		self::assertEquals(3, $this->obj->getTasksCount());
+		self::assertEquals(3, $this->obj->getTasksCount('userTask_'));
+		self::assertEquals(1, $this->obj->getTasksCount('userTaskA'));
+		self::assertEquals(['userTaskA', 'userTaskC'], array_keys($this->obj->getUserTasks('alice')));
+		self::assertEquals(2, $this->obj->getUserTasksCount('alice'));
+		self::assertEquals(['userTaskB'], array_keys($this->obj->getUserTasks($this->obj->getDefaultUserName())), 'a task without a user belongs to the default user');
+		self::assertEquals(['userTaskC'], array_keys($this->obj->getUserTasks('alice', 'userTaskC')));
+		self::assertEquals(['userTaskC', 'userTaskA'], array_keys($this->obj->getUserTasks('al%', null, 0, 0, false)));
+		self::assertEquals(['userTaskB'], array_keys($this->obj->getTasks(null, 1, 1)));
+
+		$this->obj->removeTask($task);
+	}
+
+	public function testProcessPendingTasks_SecondResolutionRunsAtTheTriggerSecond()
+	{
+		$minute = (int) (floor(time() / 60) * 60);
+		$this->obj->fakeNow = $minute + 1;
+		$this->obj->fakeMicrotime = (float) $this->obj->fakeNow;
+		$this->obj->setInCronShell(true);
+		$this->obj->setSecondResolution(true);
+		$this->obj->init(null);
+
+		$early = new TTestCronModuleTask();
+		$early->setName('secondEarly');
+		$early->setSchedule('@' . ($minute + 5));
+		$early->testunit = $this;
+		$late = new TTestCronModuleTask();
+		$late->setName('secondLate');
+		$late->setSchedule('@' . ($minute + 20));
+		$late->testunit = $this;
+		$next = new TTestCronModuleTask();
+		$next->setName('secondNextMinute');
+		$next->setSchedule('@' . ($minute + 65));
+		self::assertTrue($this->obj->addTask($late));
+		self::assertTrue($this->obj->addTask($early));
+		self::assertTrue($this->obj->addTask($next));
+
+		self::assertEquals(2, $this->obj->processPendingTasks(), 'the tasks due within the minute are pending');
+		self::assertEquals([$minute + 5, $minute + 20], $this->obj->waitedFor, 'waits until each trigger second, earliest first');
+		self::assertEquals(2, $this->_countTasks);
+		self::assertEquals(1, $this->obj->getTask('secondEarly')->getProcessCount());
+		self::assertEquals(1, $this->obj->getTask('secondLate')->getProcessCount());
+		self::assertEquals(0, $this->obj->getTask('secondNextMinute')->getProcessCount());
+		self::assertEquals($minute + 20, $this->obj->fakeNow, 'the pinned clock advanced to the last trigger');
+
+		$this->obj->removeTask($early);
+		$this->obj->removeTask($late);
+		$this->obj->removeTask($next);
 	}
 
 	public function testGetDbConnection()

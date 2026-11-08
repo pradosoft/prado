@@ -16,9 +16,9 @@ use Prado\TPropertyValue;
 /**
  * TCronTaskInfo class.
  *
- * TCronTaskInfo helps distribute information for application cron tasks.
- * This is for adding cron tasks via TDbCronManager.  The Task can be a class,
- * or a module id with method and parameters.
+ * TCronTaskInfo describes an available application cron task. It is used when
+ * adding cron tasks via TDbCronManager. The task is a class, or a module id with
+ * a method and parameters.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.2.0
@@ -45,8 +45,8 @@ class TCronTaskInfo extends \Prado\TComponent
 	 * @param string $name the short reference name of the task
 	 * @param callable|string $task the class to instance for the task
 	 * @param null|\Prado\IModule|string $moduleid the module sericing the task
-	 * @param null|string $title the title of the task
-	 * @param null|string $description a short description of the task
+	 * @param ?string $title the title of the task
+	 * @param ?string $description a short description of the task
 	 */
 	public function __construct($name, $task, $moduleid = null, $title = null, $description = null)
 	{

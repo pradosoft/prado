@@ -395,6 +395,7 @@ return [
 'TCronModule' => 'Prado\Util\Cron\TCronModule',
 'TCronTask' => 'Prado\Util\Cron\TCronTask',
 'TCronTaskInfo' => 'Prado\Util\Cron\TCronTaskInfo',
+'TCronWakeSocket' => 'Prado\Util\Cron\TCronWakeSocket',
 'TDbCronCleanLogTask' => 'Prado\Util\Cron\TDbCronCleanLogTask',
 'TDbCronManager' => 'Prado\Util\Cron\TDbCronManager',
 'TProcessCronTask' => 'Prado\Util\Cron\TProcessCronTask',

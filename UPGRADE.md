@@ -10,6 +10,9 @@ for both A and B.
 Upgrading from v4.3.3
 ---------------------
 - PHP 8.2 is now required. Applications running PHP 8.1 stay on Prado 4.3.
+- Issue #833 - The bare `prado-cli cron` shell action lists the cron tasks; in 4.3 it ran the pending tasks. Change the
+  system crontab entry to `prado-cli <appdir> cron/run`. The `TDbCronManager` table gains a `nextexectime` column, added
+  and filled on the first use of an existing table.
 - The default application mode is `Normal`; in 4.3 it was `Debug`. An application that does not set `Mode` gets the
   Normal behavior: the error page shows no exception details to visitors, client scripts are served minified,
   `Prado::debug()` is dropped and `Prado::trace()` logs at `INFO`, `TMemoryCache` keys are hashed, serialized closures

@@ -11,6 +11,7 @@
 namespace Prado\Util\Cron;
 
 use Prado\Prado;
+use Prado\Security\Permissions\TPermissionsManager;
 use Prado\Shell\TShellAction;
 use Prado\Shell\TShellWriter;
 use Prado\Util\Cron\TCronModule;
@@ -18,10 +19,10 @@ use Prado\Util\Cron\TCronModule;
 /**
  * TShellCronAction class.
  *
- * Runs the TCronModule from the command line.   This will run all pending
- * tasks when the "cron" command is run.  Other sub-commands are "info" and
- * "tasks"; where "info" reports the possible cron tasks registered in the
- * application, and "tasks" reports the installed tasks being managed.
+ * Runs the TCronModule from the command line. The "cron" command, and "cron/tasks",
+ * report the installed tasks being managed; "cron/run" runs all pending tasks; and
+ * "cron/index" reports the possible cron tasks registered in the application.  A
+ * system crontab entry runs "cron/run".
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.2.0
@@ -29,16 +30,37 @@ use Prado\Util\Cron\TCronModule;
 class TShellCronAction extends TShellAction
 {
 	protected $action = 'cron';
-	protected $methods = ['run', 'tasks', 'index'];
+	protected $methods = ['tasks', 'run', 'index'];
 	protected $parameters = [null, null, null];
-	protected $optional = [null, null, null];
+	protected $optional = [['task-name or @user'], null, null];
 	protected $description = ['Manages Cron time-based services',
+		'Displays the Cron tasks configured in the application. Filter by @user and task name.',
 		'Runs the Cron Pending Tasks.',
-		'Displays the Cron tasks configured in the application.',
 		'Displays the registered Cron tasks information.',
 	];
 
 	private $_cron = false;
+	private $_user;
+
+	public function __construct()
+	{
+		/** @var \Prado\Security\Permissions\TUserPermissionsBehavior $user */
+		$user = Prado::getApplication()->getUser();
+		if ($user && $user->asa(TPermissionsManager::USER_PERMISSIONS_BEHAVIOR)) {
+			$this->_user = $user;
+			if (!$user->can(TCronModule::PERM_CRON_RUN_PENDING)) {
+				unset($this->methods[1]);
+				unset($this->parameters[1]);
+				unset($this->optional[1]);
+				unset($this->description[2]);
+			}
+			$this->methods = array_values($this->methods);
+			$this->parameters = array_values($this->parameters);
+			$this->optional = array_values($this->optional);
+			$this->description = array_values($this->description);
+		}
+		parent::__construct();
+	}
 
 	/**
 	 * @return string the Cron Class to find
@@ -49,7 +71,7 @@ class TShellCronAction extends TShellAction
 	}
 
 	/**
-	 * @return null|\Prado\Util\Cron\TCronModule returns the Cron Module of the applications
+	 * @return ?\Prado\Util\Cron\TCronModule returns the Cron Module of the applications
 	 */
 	public function getCronModule()
 	{
@@ -68,14 +90,14 @@ class TShellCronAction extends TShellAction
 				return null;
 			}
 		}
-		if (!$this->_cron->asa(TShellCronLogBehavior::class)) {
-			$this->_cron->attachBehavior(TCronModule::SHELL_LOG_BEHAVIOR, new TShellCronLogBehavior($this->getWriter()));
+		if (!$this->_cron->asa(TCronModule::SHELL_LOG_BEHAVIOR)) {
+			$this->_cron->attachBehavior(TCronModule::SHELL_LOG_BEHAVIOR, Prado::createComponent(TShellCronLogBehavior::class, $this->getWriter()));
 		}
 		return $this->_cron;
 	}
 
 	/**
-	 * @param null|\Prado\Util\Cron\TCronModule $cron sets the Cron Module
+	 * @param ?\Prado\Util\Cron\TCronModule $cron sets the Cron Module
 	 */
 	public function setCronModule($cron)
 	{
@@ -107,23 +129,70 @@ class TShellCronAction extends TShellAction
 		$module = $this->getCronModule();
 
 		$time = $module->getLastCronTime();
-		$this->_outWriter->writeLine("\n Last cron run was " . ($time == 0 ? 'never' : date('Y-m-d H:i:s', (int) $time)) . "");
-		$this->_outWriter->writeLine("The system time is " . date('Y-m-d H:i:s TP') . "\n");
-		$tasks = $module->getTasks();
+		$this->_outWriter->writeLine("\nThe system time is " . date('Y-m-d H:i:s TP'));
+		$this->_outWriter->writeLine(" Last cron run was " . ($time == 0 ? 'never' : date('Y-m-d H:i:s', (int) $time)) . "\n");
 
-		$this->_outWriter->writeLine("  Application Cron Tasks: ", [TShellWriter::BOLD]);
-		if (!count($tasks)) {
+		$taskName = null;
+		$username = null;
+		if ($this->_user && !$this->_user->can(TCronModule::PERM_CRON_READ_TASKS)) {
+			$username = $this->_user->getName();
+		}
+		$c = count($args) - 1;
+		while ($c--) {
+			if (($arg = $args[$c + 1] ?? false)) {
+				if ($arg[0] == '@') {
+					$username = substr($arg, 1);
+				} else {
+					$taskName = $arg;
+				}
+			}
+		}
+		if ($taskName && $username) {
+			$filter = ", filtered by task name '{$taskName}' and @{$username}";
+		} elseif ($taskName) {
+			$filter = ", filtered by task name '{$taskName}'";
+		} elseif ($username) {
+			$filter = ", filtered by @{$username}";
+		} else {
+			$filter = '';
+		}
+		if ($username) {
+			$tasks = $module->getUserTasks($username, $taskName);
+		} else {
+			$tasks = $module->getTasks($taskName);
+		}
+		if ($tasks === null) {
+			return true;
+		}
+		$count = count($tasks);
+
+		$this->_outWriter->write("  Application Cron Tasks: {$count} tasks found", [TShellWriter::BOLD]);
+		$this->_outWriter->writeLine($filter . "\n");
+		if (!$count) {
 			$this->_outWriter->writeLine("     **  There are no configured Cron Tasks.  **\n");
 			return true;
 		}
 		$rows = [];
 		foreach ($tasks as $task) {
+			$schedule = $task->getSchedule();
+			if (strlen($schedule) > 1 && $schedule[0] == '@') {
+				$trigger = substr($schedule, 1);
+				if (is_numeric($trigger)) {
+					if (abs($trigger - $this->time()) > 86400) {
+						$f = 'Y-m-d H:i:s';
+					} else {
+						$f = 'H:i:s';
+					}
+					$schedule = '@(' . date($f, $trigger) . ')';
+				}
+			}
+
 			$lastExecTime = $task->getLastExecTime();
 			$count = $task->getProcessCount();
 			if ($lastExecTime === null) {
 				$lastrun = '-';
 			} else {
-				if (abs(time() - $lastExecTime) > 86400) {
+				if (abs($this->time() - $lastExecTime) > 86400) {
 					$f = 'Y-m-d H:i:s';
 				} else {
 					$f = 'H:i:s';
@@ -138,7 +207,7 @@ class TShellCronAction extends TShellAction
 			if ($trigger === null) {
 				$nextrun = '-';
 			} else {
-				if (abs($trigger - time()) > 86400) {
+				if (abs($trigger - $this->time()) > 86400) {
 					$f = 'Y-m-d H:i:s';
 				} else {
 					$f = 'H:i:s';
@@ -154,7 +223,7 @@ class TShellCronAction extends TShellAction
 				$nextrun = $this->_outWriter->format($nextrun, [TShellWriter::GREEN, TShellWriter::BOLD]);
 			}
 
-			$rows[] = [$task->getName(), $task->getSchedule(), $task->getTask(), $lastrun, $nextrun, '@' . $user, $count];
+			$rows[] = [$task->getName(), $schedule, $task->getTask(), $lastrun, $nextrun, '@' . $user, $count];
 		}
 		$this->_outWriter->write($this->_outWriter->tableWidget(['headers' => ['Name', 'Schedule', 'Task', 'Last Run', 'Next Run', 'User', 'Run #'],
 			'rows' => $rows]));
@@ -191,5 +260,16 @@ class TShellCronAction extends TShellAction
 			'rows' => $rows]));
 		$this->_outWriter->writeLine();
 		return true;
+	}
+
+	/**
+	 * Returns the current Unix timestamp. Wraps the global {@see \time()} as a single
+	 * overridable seam so that subclasses and tests can control the clock.
+	 * @return int the current Unix timestamp
+	 * @since 4.4.0
+	 */
+	protected function time(): int
+	{
+		return \time();
 	}
 }

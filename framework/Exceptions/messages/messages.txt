@@ -785,10 +785,12 @@ crontask_no_module						= TCronTask could not find module ''{0}''.
 crontask_timeout_invalid				= TCronTask Timeout must be greater than zero or null; ''{0}'' given.
 
 dbcronclean_moduleid_is_null			= TDbCronCleanLogTask could not find the specified module ''{0}''.
+dbcronclean_timeperiod_invalid		= TDbCronCleanLogTask TimePeriod ''{0}'' is not a number of seconds, an ISO 8601 duration, or a relative date string.
 dbcron_invalid_name						= TDbCronManager the task name ''{0}'' is invalid .
 dbcron_conflicting_task_names			= Configuration cron tasks conflict with DB cron tasks ''{0}''.
 dbcron_table_nonexistent				= TDbCronManager database table does not exist.
 dbcron_connectionid_invalid				= TDbCronManager.ConnectionID ''{0}'' is not a TDataSourceConfig.
+dbcron_period_invalid					= TDbCronManager period ''{0}'' is not a number of seconds, an ISO 8601 duration, or a relative date string.
 
 timescheduler_invalid_string			= TTimeScheduler could not parse the schedule element ''{0}''
 

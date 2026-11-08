@@ -10,40 +10,73 @@
 
 namespace Prado\Util\Cron;
 
+use DateInterval;
+use DateTime;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TApplicationException;
 use Prado\Prado;
+use Prado\Security\Permissions\TPermissionsManager;
 use Prado\Shell\TShellAppAction;
 use Prado\Shell\TShellWriter;
 
 /**
  * TShellDbCronAction class.
  *
- * TShellDbCronAction extends {@see \Prado\Util\Cron\TShellCronAction} to implement
+ * TShellDbCronAction extends {@see TShellCronAction} to implement
  * additional commands {@see addTask add}, {@see updateTask update},
  * and {@see removeTask}.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.2.0
- * @method null|\Prado\Util\Cron\TDbCronManager getCronModule()
+ * @method ?\Prado\Util\Cron\TDbCronManager getCronModule()
  */
 class TShellDbCronAction extends TShellCronAction
 {
-	protected $methods = ['run', 'tasks', 'index', 'add', 'update', 'remove'];
-	protected $parameters = [null, null, null, ['task-name', 'task-id', 'schedule'], ['task-name'], ['task-name']];
-	protected $optional = [null, null, null, ['parameters...'], ['parameters...'], []];
+	protected $methods = ['tasks', 'run', 'index', 'add', 'update', 'remove', 'log', 'flush'];
+	protected $parameters = [null, null, null, ['task-name', 'task-id', 'schedule'], ['task-name'], ['task-name'], null, null];
+	protected $optional = [['task-name or @user'], null, null, ['parameters...'], ['parameters...'], [], ['task-name or @user'], ['task-name or @user or time (e.g. seconds or PHP DateInterval)']];
 	protected $description = ['Manages DbCron time-based services',
+		'Displays the Cron tasks configured in the application and database. Filter by @user and task name.',
 		'Runs the DbCron Pending Tasks.',
-		'Displays the Cron tasks configured in the application and database.',
 		'Displays the registered Cron tasks information.',
 		'Adds a Cron task to the database.',
 		'Updates a Cron task in the database.',
 		'Removes a Cron task from the database.',
+		'Displays the Cron log with task name and @user filters; _ is wild card, % is wild string',
+		'Flushes the Cron log with time period, task name and @user filters; _ is wild card, % is wild string',
 	];
+
+	private $_user;
+
+	public function __construct()
+	{
+		/** @var \Prado\Security\Permissions\TUserPermissionsBehavior $user */
+		$user = Prado::getApplication()->getUser();
+		if ($user && $user->asa(TPermissionsManager::USER_PERMISSIONS_BEHAVIOR)) {
+			$this->_user = $user;
+			if (!$user->can(TDbCronManager::PERM_CRON_ADD_TASK) && !$user->can(TDbCronManager::PERM_CRON_ADD_TASK_GLOBAL)) {
+				unset($this->methods[3]);
+				unset($this->parameters[3]);
+				unset($this->optional[3]);
+				unset($this->description[4]);
+			}
+			if (!$user->can(TCronModule::PERM_CRON_RUN_PENDING)) {
+				unset($this->methods[1]);
+				unset($this->parameters[1]);
+				unset($this->optional[1]);
+				unset($this->description[2]);
+			}
+			$this->methods = array_values($this->methods);
+			$this->parameters = array_values($this->parameters);
+			$this->optional = array_values($this->optional);
+			$this->description = array_values($this->description);
+		}
+		parent::__construct();
+	}
 
 	/**
 	 * Overrides parent getModuleClass to return the TDbCronManager class.
-	 * @return string the DbCron Class to find
+	 * @return string the DbCron module class name this shell action manages
 	 */
 	public function getModuleClass()
 	{
@@ -51,7 +84,7 @@ class TShellDbCronAction extends TShellCronAction
 	}
 
 	/**
-	 * adds a task to the database with its name, task id, schedule, and other properties.
+	 * Adds a task to the database with its name, task id, schedule, and other properties.
 	 * @param array $args command arguments
 	 */
 	public function actionAdd($args)
@@ -91,7 +124,7 @@ class TShellDbCronAction extends TShellCronAction
 			$this->_outWriter->writeError("Task ID '{$id}' could not be found");
 			return true;
 		}
-		$s = new TTimeScheduler();
+		$s = Prado::createComponent(TTimeScheduler::class);
 		try {
 			$s->setSchedule($schedule);
 		} catch (TInvalidDataValueException $e) {
@@ -121,7 +154,7 @@ class TShellDbCronAction extends TShellCronAction
 	}
 
 	/**
-	 * updates a task in the database by its name for its schedule, username, moduleid, and other properties.
+	 * Updates a task in the database by its name, setting its schedule, username, moduleid, and other properties.
 	 * @param array $args command arguments
 	 */
 	public function actionUpdate($args)
@@ -147,7 +180,7 @@ class TShellDbCronAction extends TShellCronAction
 			$property = strtolower($parts[0]);
 			if ($task->canSetProperty($property)) {
 				if ($property === 'schedule') {
-					$s = new TTimeScheduler();
+					$s = Prado::createComponent(TTimeScheduler::class);
 					try {
 						$s->setSchedule($parts[1]);
 					} catch (TInvalidDataValueException $e) {
@@ -168,7 +201,7 @@ class TShellDbCronAction extends TShellCronAction
 	}
 
 	/**
-	 * removes a task in the database by its name.
+	 * Removes a task from the database by its name.
 	 * @param array $args command arguments
 	 */
 	public function actionRemove($args)
@@ -191,5 +224,123 @@ class TShellDbCronAction extends TShellCronAction
 			$this->_outWriter->writeError("'{$taskName}' could not be removed.\n");
 		}
 		return true;
+	}
+
+	/**
+	 * Displays the cron log stored in the database, optionally filtered by task name and user.
+	 * @param array $args command arguments
+	 */
+	public function actionLog($args)
+	{
+		$module = $this->getCronModule();
+		$taskName = null;
+		$username = null;
+		if ($this->_user && !$this->_user->can(TDbCronManager::PERM_CRON_LOG_READ)) {
+			$username = $this->_user->getName();
+		}
+		$c = count($args) - 1;
+		while ($c--) {
+			if (($arg = $args[$c + 1] ?? false)) {
+				if ($arg[0] == '@') {
+					$username = substr($arg, 1);
+				} else {
+					$taskName = $arg;
+				}
+			}
+		}
+		if ($taskName && $username) {
+			$filter = ", filtered by task name '{$taskName}' and @{$username}";
+		} elseif ($taskName) {
+			$filter = ", filtered by task name '{$taskName}'";
+		} elseif ($username) {
+			$filter = ", filtered by @{$username}";
+		} else {
+			$filter = '';
+		}
+		$count = $module->getCronLogCount($taskName, $username);
+		if ($count === null) {
+			return true;
+		}
+		$this->_outWriter->write("\n  Cron Log found {$count} records", [TShellWriter::BOLD]);
+		$this->_outWriter->writeLine($filter . "\n");
+		$result = $module->getCronLog($taskName, 0, 0, null, $username);
+
+		$rows = [];
+		foreach ($result as $row) {
+			$rows[] = [date('Y-m-d H:i:s', $row['lastexectime']), $row['name'], $row['task'], '@' . $row['username'], $row['processcount']];
+		}
+
+		$this->_outWriter->write($this->_outWriter->tableWidget(['headers' => ['Exec Time', 'Name', 'Task', 'User', 'Run #'],
+			'rows' => $rows]));
+		if (!$result) {
+			$this->_outWriter->writeLine("    ** Cron Logs are empty. **", [TShellWriter::BLUE, TShellWriter::BOLD]);
+		}
+
+		$this->_outWriter->writeLine("");
+		return true;
+	}
+
+	/**
+	 * Flushes the cron log before an optional time period, filtered by task name (with wild cards) and user.
+	 * @param array $args command arguments
+	 */
+	public function actionFlush($args)
+	{
+		$module = $this->getCronModule();
+		$taskName = null;
+		$username = null;
+		$period = null;
+		if ($this->_user && !$this->_user->can(TDbCronManager::PERM_CRON_LOG_DELETE)) {
+			$username = $this->_user->getName();
+		}
+		$c = count($args) - 1;
+		while ($c--) {
+			if (($arg = $args[$c + 1] ?? false)) {
+				if (is_string($arg) && $arg[0] == '@') {
+					$username = substr($arg, 1);
+				} elseif ($period === null && ($di = $this->parsePeriod($arg)) !== null) {
+					$period = $di;
+				} else {
+					$taskName = $arg;
+				}
+			}
+		}
+
+		$time = $this->time();
+		if ($period) {
+			$beforeTime = new \DateTime();
+			$beforeTime->sub($period);
+			$time = $time - abs($time - $beforeTime->getTimestamp());
+		}
+		$count = $module->clearCronLog($period, $taskName, $username);
+
+		if ($count === null) {
+			return true;
+		}
+
+		$this->_outWriter->write("\nRemoving Cron Tasks before " . date('Y-m-d H:i:s', $time) .
+			($taskName !== null ? " with task name='{$taskName}'" : "") . ($username !== null ? " and user '@{$username}' " : "") . ": ");
+
+		$this->_outWriter->writeLine($count . "\n");
+
+		return true;
+	}
+	/**
+	 * Parses a flush period argument: seconds, an ISO 8601 duration (`P7D`), or a relative date string (`1 week`).
+	 * @param string $arg the argument
+	 * @return ?DateInterval the period, or null when the argument is not a period
+	 * @since 4.4.0
+	 */
+	protected function parsePeriod(string $arg): ?DateInterval
+	{
+		$arg = trim($arg);
+		if (is_numeric($arg)) {
+			return new DateInterval('PT' . ((int) $arg) . 'S');
+		}
+		try {
+			return str_starts_with($arg, 'P') ? new DateInterval($arg) : (@DateInterval::createFromDateString($arg) ?: null);
+		} catch (\Exception $e) {
+			return null;
+		}
 	}
 }

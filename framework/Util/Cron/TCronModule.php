@@ -24,9 +24,12 @@ use Prado\Security\IUser;
 use Prado\Security\IUserManager;
 use Prado\Security\Permissions\IPermissions;
 use Prado\Security\Permissions\TPermissionEvent;
+use Prado\Security\Permissions\TUserOwnerRule;
 use Prado\Shell\TShellApplication;
 use Prado\TApplication;
 use Prado\TPropertyValue;
+use Prado\Util\Clock\IClock;
+use Prado\Util\Clock\TClockTrait;
 use Prado\Util\Log\TLogger;
 use Prado\Util\Traits\TInitializedTrait;
 use Prado\Xml\TXmlElement;
@@ -35,18 +38,17 @@ use Prado\Xml\TXmlDocument;
 /**
  * TCronModule class.
  *
- * TCronModule runs time based services for the application. This will run a
- * task at a given time.  A task can be a task class or a module Id followed by
- * '->' followed by a method with or without parameters. eg.
+ * TCronModule runs time based services for the application. It runs a task at a
+ * given time. A task is a task class, or a module Id followed by '->' followed by
+ * a method with or without parameters.
  *
+ * XML configuration style:
  * ```xml
- * <modules>
- *     <module id="cron" class="Prado\Util\Cron\TCronModule" DefaultUserName="admin">
- *         <job Name="cronclean" Schedule="0 0 1 * * *" Task="Prado\Util\Cron\TDbCronCleanLogTask" UserName="cron" />
- *         <job Name="dbcacheclean" Schedule="* * * * *" Task="dbcache->flushCacheExpired(true)" />
- *         <job Schedule="0 * * * *" Task="mymoduleid->taskmethod" />
- *     </module>
- * </modules>
+ * <module id="cron" class="Prado\Util\Cron\TCronModule" DefaultUserName="admin">
+ *   <job Name="cronclean" Schedule="0 0 1 * * *" Task="Prado\Util\Cron\TDbCronCleanLogTask" UserName="cron" />
+ *   <job Name="dbcacheclean" Schedule="* * * * *" Task="dbcache->flushCacheExpired(true)" />
+ *   <job Schedule="0 * * * *" Task="mymoduleid->taskmethod" />
+ * </module>
  * ```
  *
  * PHP configuration style:
@@ -55,7 +57,9 @@ use Prado\Xml\TXmlDocument;
  *     'modules' => [
  *         'cron' => [
  *             'class' => 'Prado\Util\Cron\TCronModule',
- *             'properties' => ['DefaultUserName' => 'admin'],
+ *             'properties' => [
+ *                 'DefaultUserName' => 'admin',
+ *             ],
  *             'jobs' => [
  *                 ['name' => 'cronclean', 'schedule' => '0 0 1 * * *', 'task' => 'Prado\Util\Cron\TDbCronCleanLogTask', 'username' => 'cron'],
  *                 ['name' => 'dbcacheclean', 'schedule' => '* * * * *', 'task' => 'dbcache->flushCacheExpired(true)'],
@@ -69,8 +73,9 @@ use Prado\Xml\TXmlDocument;
  * `name`, `schedule`, `task`, and `username`.
  *
  * The schedule is formatted like a linux crontab schedule expression.
- * {@see TTimeSchedule} parses the schedule and supports 8 different
- * languages.  Advanced options, like @daily, and @hourly, are supported.
+ * {@see \Prado\Util\Cron\TTimeScheduler} parses the schedule and supports 8
+ * different languages. Advanced options, like `@daily`, `@hourly`, and
+ * `@1668165071`, are supported.
  *
  * This module is designed to be run as a system Crontab prado-cli every
  * minute.  The application then decides what tasks to execute, or not, and
@@ -79,13 +84,18 @@ use Prado\Xml\TXmlDocument;
  * The following is an example for your system cron tab to run the PRADO
  * application cron.
  * ```
- *		* * * * *  php /dir_to_/vendor/bin/prado-cli app /dir_to_app/ cron
+ *		* * * * *  php /dir_to_/vendor/bin/prado-cli app /dir_to_app/ cron/run
  * ```
  *
- * The default cron user can be set with {@see setDefaultUserName} with its
- * default being 'cron' user.  The default user is used when no task specific
- * user is specified.  The 'cron' user should exist in the TUserManager to
- * run the task as that user.
+ * Per-task user context requires an {@see \Prado\Security\IUserManager} module. The module
+ * is taken from {@see setUserManager UserManager}, or auto-discovered from the application
+ * when not set. Without an IUserManager, each task's {@see \Prado\Util\Cron\TCronTask::getUserName UserName}
+ * is ignored and tasks run as the ambient application user.
+ *
+ * The default cron user is set with {@see setDefaultUserName DefaultUserName} and
+ * defaults to the 'cron' user. The default user is used when no task specific user
+ * is specified. The 'cron' user should exist in the TUserManager to run the task
+ * as that user.
  *
  * {@see runTask()} runs each task in a fiber of its own.  The task's user is the
  * fiber's user in {@see \Prado\IO\Async\TFiberContext}, which
@@ -97,19 +107,43 @@ use Prado\Xml\TXmlDocument;
  * and a task's own {@see \Prado\Util\Cron\TCronTask::setTimeout Timeout} bound a run with a
  * {@see \Prado\IO\Async\TCancellationToken} the task observes.
  *
+ * TCronModule is an {@see \Prado\Util\Clock\IClock} through {@see \Prado\Util\Clock\TClockTrait}:
+ * scheduling reads "now" through {@see time()} and {@see microtime()}, so a subclass or test harness
+ * overrides the clock to drive scheduling deterministically.
+ *
+ * When TPermissionsManager is a module in your app, there are four permissions
+ * to control user access to its function:
+ *  - TCronModule::PERM_CRON_SHELL 'cron_shell' enables the shell commands.
+ *  - TCronModule::PERM_CRON_READ_TASKS 'cron_read_tasks' can read cron tasks and self owned tasks.
+ *  - TCronModule::PERM_CRON_RUN_PENDING 'cron_run_pending' can run pending cron tasks.
+ *  - TCronModule::PERM_CRON_RUN_TASK 'cron_run_task' enables cron tasks for the user.
+ *
+ * The default cron user (default: 'cron') should have these permissions to run tasks.
+ *
+ * The following gives user "cron" and all users with "Administrators" role the
+ * permission to access cron shell and run cron tasks
+ * ```xml
+ *	 <role name="cron_shell" children="cron_read_tasks, cron_run_pending, cron_run_task" />
+ *   <permissionrule name="cron_shell" action="allow" users="cron" />
+ *   <permissionrule name="cron_shell" action="allow" roles="Administrators" />
+ * ```
+ *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.2.0
  * @method void dyLogCron($numtasks)
  * @method void dyLogCronTask($task, $username)
  * @method void dyLogCronTaskEnd($task)
  * @method void dyLogCronTaskError($task, $exception)
+ * @method void dyLogCronSleep($seconds)
  * @method bool dyRegisterShellAction($returnValue)
  * @method \Prado\Shell\TShellWriter getOutputWriter()
+ * @see \Prado\Security\Permissions\TPermissionsBehavior::dyLogPermissionFailed
  * @see https://crontab.guru For more info on Crontab Schedule Expressions.
  */
-class TCronModule extends \Prado\TModule implements IPermissions
+class TCronModule extends \Prado\TModule implements IPermissions, IClock
 {
 	use TInitializedTrait;
+	use TClockTrait;
 
 	/** The behavior name for the Shell Log behavior */
 	public const SHELL_LOG_BEHAVIOR = 'shellLog';
@@ -137,6 +171,15 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	/** The permission for the cron shell */
 	public const PERM_CRON_SHELL = 'cron_shell';
 
+	/** The permission for reading cron tasks */
+	public const PERM_CRON_READ_TASKS = 'cron_read_tasks';
+
+	/** The permission for running pending cron tasks */
+	public const PERM_CRON_RUN_PENDING = 'cron_run_pending';
+
+	/** The permission for running individual cron tasks */
+	public const PERM_CRON_RUN_TASK = 'cron_run_task';
+
 	/** @var IUserManager user manager instance */
 	private $_userManager;
 
@@ -158,7 +201,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	/** @var numeric probability that a request cron will trigger [0.0 to 100.0], default 1.0 (for 1%) */
 	private $_requestCronProbability = 1.0;
 
-	/** @var null|bool is the app running in cron shell mode or not, or null for auto-detect */
+	/** @var ?bool is the app running in cron shell mode or not, or null for auto-detect */
 	private $_inCronShell;
 
 	/** @var string the cli class to instance for CLI command line actions; this changes for TDbCronManager */
@@ -173,9 +216,13 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	/** @var ?float the seconds a task run may take unless the task has its own Timeout, default null for no deadline */
 	private ?float $_taskTimeout = null;
 
+	/** @var ?TCronWakeSocket the same-host wake transport for second-resolution polling */
+	private ?TCronWakeSocket $_wakeSocket = null;
+
 	/**
 	 * Initializes the module.  Read the configuration, installs Shell Actions,
-	 * should Request cron be activated.
+	 * and checks if Request-cron should be activated.  This lazy loads the
+	 * cron job tasks to minimize computing when cron isn't used.
 	 * @param null|array|\Prado\Xml\TXmlElement $config
 	 * @throws TConfigurationException when the user manage doesn't exist or is invalid
 	 */
@@ -219,8 +266,8 @@ class TCronModule extends \Prado\TModule implements IPermissions
 			$app->registerOptionAlias('c', 'cron');
 		}
 
-		if (php_sapi_name() !== 'cli' && $this->getEnableRequestCron()) {
-			if (100.0 * ((float) (mt_rand()) / (float) (mt_getrandmax())) <= $this->getRequestCronProbability()) {
+		if ($this->php_sapi_name() !== 'cli' && $this->getEnableRequestCron()) {
+			if (100.0 * ((float) ($this->mt_rand()) / (float) (\mt_getrandmax())) <= $this->getRequestCronProbability()) {
 				$app->attachEventHandler('OnEndRequest', [$this, 'processPendingTasks'], 20);
 			}
 		}
@@ -229,13 +276,19 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	}
 
 	/**
+	 * This is the IPermissions implementation to put a permission on
+	 * dyRegisterShellAction, dyGetTasks, dyGetUserTasks, dyGetPendingTasks, and dyRunTask.
 	 * @param \Prado\Security\Permissions\TPermissionsManager $manager
 	 * @return \Prado\Security\Permissions\TPermissionEvent[]
 	 */
 	public function getPermissions($manager)
 	{
+		$userIsOwnerAllowedRule = Prado::createComponent(TUserOwnerRule::class);
 		return [
-			new TPermissionEvent(static::PERM_CRON_SHELL, 'Activates cron shell commands.', 'dyRegisterShellAction'),
+			Prado::createComponent(TPermissionEvent::class, static::PERM_CRON_SHELL, 'Activates cron shell commands.', 'dyRegisterShellAction'),
+			Prado::createComponent(TPermissionEvent::class, static::PERM_CRON_READ_TASKS, 'Cron read tasks.', ['dyGetTasks', 'dyGetUserTasks'], $userIsOwnerAllowedRule),
+			Prado::createComponent(TPermissionEvent::class, static::PERM_CRON_RUN_PENDING, 'Process/get pending cron tasks.', 'dyGetPendingTasks'),
+			Prado::createComponent(TPermissionEvent::class, static::PERM_CRON_RUN_TASK, 'Run individual cron tasks.', 'dyRunTask'),
 		];
 	}
 
@@ -301,7 +354,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 
 	/**
 	 * @param object $sender sender of this event handler
-	 * @param null|mixed $param parameter for the event
+	 * @param mixed $param parameter for the event
 	 */
 	public function registerShellAction($sender, $param)
 	{
@@ -312,25 +365,16 @@ class TCronModule extends \Prado\TModule implements IPermissions
 
 	/**
 	 * makes the tasks from the configuration array into task objects.
+	 * @throws TConfigurationException when the configuration task names interfere with the db tasks names.
 	 * @return \Prado\Util\Cron\TCronTask[]
 	 */
 	protected function ensureTasks()
 	{
 		if (!$this->_tasksInstanced) {
-			foreach ($this->_tasks as $properties) {
-				$name = $properties[self::NAME_KEY];
-				$task = $properties[self::TASK_KEY];
-				unset($properties[self::NAME_KEY]);
-				unset($properties[self::TASK_KEY]);
-
-				$task = $this->instanceTask($task);
-
-				$task->setName($name);
-				foreach ($properties as $key => $value) {
-					$task->$key = $value;
+			foreach ($this->_tasks as $name => $properties) {
+				if (is_array($properties)) {
+					$this->_tasks[$name] = $this->constructTask($properties);
 				}
-				$this->setPersistentData($name, $task);
-				$this->_tasks[$name] = $task;
 			}
 			$this->_tasksInstanced = true;
 		}
@@ -340,12 +384,103 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	/**
 	 * This lazy loads the tasks from configuration array to instance.
 	 * This calls {@see ensureTasks} to get the tasks and their persistent data.
-	 * @return \Prado\Util\Cron\TCronTask[] currently active cron tasks
+	 * @param ?string $name name of tasks, _ is wild card and % is wild string, default null.
+	 * @param int $pageSize max number of returning tasks, default 0 for unlimited
+	 * @param int $offset offset in the tasks to return, default 0 for all.
+	 * @param bool $sortingAsc sort by ascending name, default true
+	 * @return ?\Prado\Util\Cron\TCronTask[] currently active cron tasks, null when access is denied
 	 */
-	public function getTasks()
+	public function getTasks($name = null, $pageSize = 0, $offset = 0, $sortingAsc = true)
 	{
+		if ($this->dyGetTasks(false, $name) === true) {
+			$this->dyLogPermissionFailed(static::PERM_CRON_READ_TASKS, 'getting cron tasks \'' . $name . '\'');
+			return null;
+		}
 		$this->ensureTasks();
-		return $this->_tasks;
+		$result = [];
+		if ($name) {
+			$name = '/^' . str_replace(['_', '%'], ['.', '.*'], $name) . '$/';
+		}
+		foreach ($this->_tasks as $tname => $task) {
+			if (!$name || preg_match($name, $tname)) {
+				$result[$tname] = $task;
+			}
+		}
+		if ($sortingAsc) {
+			ksort($result);
+		} else {
+			krsort($result);
+		}
+		$result = array_slice($result, $offset, $pageSize ? $pageSize : null);
+		return $result;
+	}
+
+	/**
+	 * Gets the number of tasks filtered by $name
+	 * @param ?string $name task names where _ is wild card and % is wild string, default null.
+	 * @throws TConfigurationException when the configuration task names interfere with the db tasks names.
+	 * @return ?int the number of tasks, null when access is denied
+	 * @since 4.4.0
+	 */
+	public function getTasksCount($name = null)
+	{
+		$tasks = $this->getTasks($name);
+		return ($tasks === null) ? null : count($tasks);
+	}
+
+	/**
+	 * Gets the cron tasks for a specific username.
+	 * @param string $username name of the user.
+	 * @param ?string $name task name where _ is wild card and % is wild string, default null.
+	 * @param int $pageSize size of each page of data, default 0
+	 * @param int $offset offset for the page of data, default 0
+	 * @param ?bool $sortingAsc sort by descending name, default true.
+	 * @throws TConfigurationException when the configuration task names interfere with the db tasks names.
+	 * @return ?TCronTask[] cron tasks for a specific user, null when access is denied
+	 * @since 4.4.0
+	 */
+	public function getUserTasks($username, $name = null, $pageSize = 0, $offset = 0, $sortingAsc = true)
+	{
+		if ($this->dyGetUserTasks(false, $username, $name, ['extra' => ['username' => $username]]) === true) {
+			$this->dyLogPermissionFailed(static::PERM_CRON_READ_TASKS, 'getting cron tasks \'' . $name . '\'@' . $username);
+			return null;
+		}
+		$this->ensureTasks();
+		$result = [];
+		$usernameRegex = '/^' . str_replace(['_', '%'], ['.', '.*'], preg_quote((string) $username, '/')) . '$/';
+		$nameRegex = null;
+		if ($name) {
+			$nameRegex = '/^' . str_replace(['_', '%'], ['.', '.*'], $name) . '$/';
+		}
+		$checkNull = preg_match($usernameRegex, $this->getDefaultUserName());
+		foreach ($this->_tasks as $tname => $task) {
+			$uname = $task->getUserName();
+
+			if ((($checkNull && $uname === null) || preg_match($usernameRegex, (string) $uname)) && (!$nameRegex || preg_match($nameRegex, $tname))) {
+				$result[$tname] = $task;
+			}
+		}
+		if ($sortingAsc) {
+			ksort($result);
+		} else {
+			krsort($result);
+		}
+		$result = array_slice($result, $offset, $pageSize ? $pageSize : null);
+		return $result;
+	}
+
+	/**
+	 * Gets the number of tasks for a specific user.
+	 * @param string $username
+	 * @param ?string $name task name filter with _ as a wild and and % as a wild string, default null.
+	 * @throws TConfigurationException when the configuration task names interfere with the db tasks names.
+	 * @return ?int number of tasks, null when access is denied
+	 * @since 4.4.0
+	 */
+	public function getUserTasksCount($username, $name = null)
+	{
+		$tasks = $this->getUserTasks($username, $name);
+		return ($tasks === null) ? null : count($tasks);
 	}
 
 	/**
@@ -360,19 +495,30 @@ class TCronModule extends \Prado\TModule implements IPermissions
 
 	/**
 	 * This lazy loads the tasks.
-	 * @param string $name
-	 * @return TCronTask cron tasks with a specific name
+	 * @param string $name name of the task to retrieve.
+	 * @throws TConfigurationException when the configuration task names interfere with the db tasks names.
+	 * @return ?TCronTask cron task with a specific name, null when absent or access is denied
 	 */
 	public function getTask($name)
 	{
-		$tasks = $this->getTasks();
-		return $tasks[$name] ?? null;
+		if (isset($this->_tasks[$name])) {
+			if (is_array($this->_tasks[$name])) {
+				$this->_tasks[$name] = $this->constructTask($this->_tasks[$name]);
+			}
+			if ($this->dyGetUserTasks(false, $username = $this->_tasks[$name]->getUserName(), $name, ['extra' => ['username' => $username]]) === true) {
+				$this->dyLogPermissionFailed(static::PERM_CRON_READ_TASKS, 'getting cron task \'' . $name . '\'');
+				return null;
+			}
+			return $this->_tasks[$name];
+		}
+		return null;
 	}
 
 	/**
-	 * .
+	 * Instances a TCronTask subclass or TCronMethodTask based upon the task
+	 * being executed.
 	 * @param string $taskExec the class name or "module->method('param1')" to place
-	 * into a {@see \Prado\Util\Cron\TCronMethodTask}.
+	 * into a {@see TCronMethodTask}.
 	 * @return TCronTask the instance of $taskExec
 	 */
 	public function instanceTask($taskExec)
@@ -380,13 +526,37 @@ class TCronModule extends \Prado\TModule implements IPermissions
 		if (($pos = strpos($taskExec, self::METHOD_SEPARATOR)) !== false) {
 			$module = substr($taskExec, 0, $pos);
 			$method = substr($taskExec, $pos + 2); //String Length of self::METHOD_SEPARATOR
-			$task = new TCronMethodTask($module, $method);
+			$task = Prado::createComponent(TCronMethodTask::class, $module, $method);
 		} else {
 			$task = Prado::createComponent($taskExec);
 			if (!$task instanceof \Prado\Util\Cron\TCronTask) {
 				throw new TInvalidDataTypeException("cron_not_a_crontask", $taskExec);
 			}
 		}
+		return $task;
+	}
+
+	/**
+	 * Inputs an array of task properties and creates a TCronTask.
+	 * @param array $properties the properties to construct the task with.
+	 * @throws TConfigurationException when the configuration task names interfere with the db tasks names.
+	 * @return TCronTask
+	 * @since 4.4.0
+	 */
+	protected function constructTask($properties)
+	{
+		$name = $properties[self::NAME_KEY];
+		$task = $properties[self::TASK_KEY];
+		unset($properties[self::NAME_KEY]);
+		unset($properties[self::TASK_KEY]);
+
+		$task = $this->instanceTask($task);
+
+		$task->setName($name);
+		foreach ($properties as $key => $value) {
+			$task->$key = $value;
+		}
+		$this->setPersistentData($name, $task);
 		return $task;
 	}
 
@@ -416,14 +586,65 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	}
 
 	/**
-	 * @return TCronTask[] the tasks that are pending.
+	 * taskExists checks for a task name.
+	 * @param string $name task to check
+	 * @return bool whether the task name exists
+	 * @since 4.4.0
 	 */
-	public function getPendingTasks()
+	public function taskExists($name)
 	{
+		return !empty($this->getTask($name));
+	}
+
+	/**
+	 * taskExistsInternal checks for a task name without permissions.
+	 * @param string $name task to check
+	 * @return bool whether the task name exists
+	 * @since 4.4.0
+	 */
+	protected function taskExistsInternal($name)
+	{
+		return isset($this->_tasks[$name]);
+	}
+
+	/**
+	 * @param bool $futureSeconds false gets only pending tasks , true gets tasks to the 59th second of
+	 * the current minute too. default false.
+	 * @return ?TCronTask[] the tasks that are pending, null when access is denied
+	 */
+	public function getPendingTasks($futureSeconds = false)
+	{
+		if ($this->dyGetPendingTasks(false) === true) {
+			$this->dyLogPermissionFailed(static::PERM_CRON_RUN_PENDING, 'getting pending cron tasks');
+			return null;
+		}
+		$this->ensureTasks();
+
+		$time = $this->time();
+		if ($futureSeconds) {
+			$time = floor($time / 60) * 60 + 59;
+		}
 		$pendingtasks = [];
-		foreach ($this->getTasks() as $name => $task) {
-			if ($task->getIsPending()) {
-				$pendingtasks[$name] = $task;
+
+		if ($futureSeconds) {
+			foreach ($this->_tasks as $name => $task) {
+				if ($task->getIsPending($time)) {
+					$pendingtasks[$task->getNextTriggerTime()][$name] = $task;
+				}
+			}
+			if (count($pendingtasks)) {
+				ksort($pendingtasks);
+				$t = [];
+				foreach ($pendingtasks as $time => $tasks) {
+					$t = array_merge($t, $tasks);
+				}
+				$pendingtasks = $t;
+			}
+		} else {
+			foreach ($this->_tasks as $name => $task) {
+				if ($task->getIsPending($time)) {
+					$pendingtasks[$name] = $task;
+				}
 			}
 		}
 		return $pendingtasks;
@@ -433,43 +654,99 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	 * Filters the Tasks for a specific class.
 	 * @template T of TCronTask
 	 * @param class-string<T> $type
+	 * @param ?string $name task names to search, default null for all
+	 * _ is wild card and % is wild string.
+	 * @param int $pageSize the number of tasks to return
+	 * @param int $offset the offset of tasks
+	 * @param bool $sortingAsc sort by ascending name, default true
 	 * @return array<string, T> the tasks of $type, keyed by task name
 	 */
-	public function getTasksByType($type)
+	public function getTasksByType($type, $name = null, $pageSize = 0, $offset = 0, $sortingAsc = true)
 	{
-		$matches = [];
-		foreach ($this->getTasks() as $name => $task) {
+		$result = [];
+		foreach ($this->getTasks($name) ?? [] as $tname => $task) {
 			if ($task->isa($type)) {
-				$matches[$name] = $task;
+				$result[$tname] = $task;
 			}
 		}
-		return $matches;
+		if ($sortingAsc) {
+			ksort($result);
+		} else {
+			krsort($result);
+		}
+		$result = array_slice($result, $offset, $pageSize ? $pageSize : null);
+		return $result;
 	}
 
 	/**
 	 * processPendingTasks executes pending tasks through {@see runTasks}.  In a crontab shell
-	 * no task starts after the minute the sweep began.
+	 * no task starts after the minute the sweep began.  With {@see getSecondResolution} in a
+	 * crontab shell, the tasks due through the end of the minute run at their trigger second
+	 * through {@see runPendingTasksWithWake}.
 	 * @return int number of tasks that were pending
 	 */
 	public function processPendingTasks()
 	{
 		$inCronTab = (($inCron = $this->getInCronShell()) !== null) ? $inCron : TShellApplication::detectCronTabShell();
+		$sleep = $inCronTab && $this->getSecondResolution();
+
 		$this->filterStaleTasks();
-		$pendingTasks = $this->getPendingTasks();
+		$pendingTasks = $this->getPendingTasks($sleep);
+		if ($pendingTasks === null) {
+			return 0;
+		}
 		$numtasks = count($pendingTasks);
-		$startMinute = (int) floor(time() / 60);
+		$startMinute = (int) floor($this->time() / 60);
 
 		$this->logCron($numtasks);
 		if ($numtasks) {
-			$this->runTasks($pendingTasks, $inCronTab ? $startMinute : null);
+			if ($sleep) {
+				$this->runPendingTasksWithWake($startMinute);
+			} else {
+				$this->runTasks($pendingTasks, $inCronTab ? $startMinute : null);
+			}
 		}
 
 		return $numtasks;
 	}
 
 	/**
+	 * Second-resolution scheduling loop. Repeatedly polls for the earliest pending task and waits until
+	 * its trigger time through {@see waitForWake}, which returns early when a wake kick arrives. After
+	 * each wait it re-polls, so a task added or rescheduled mid-minute (a kick that makes a new task the
+	 * earliest, or a natural wake that reveals a later same-minute task) is honored. The loop ends when
+	 * the serviced minute rolls over or nothing remains pending. {@see runTask} advances each task's next
+	 * execution time before running it, so an overlapping next-minute cron process never re-runs a task.
+	 * @param int $startMinute the minute (floor(timestamp / 60)) this invocation services
+	 * @since 4.4.0
+	 */
+	protected function runPendingTasksWithWake(int $startMinute)
+	{
+		try {
+			while ($startMinute == floor($this->time() / 60)) {
+				$pending = $this->getPendingTasks(true);
+				if (empty($pending)) {
+					break;
+				}
+				$task = reset($pending);
+				$trigger = $task->getNextTriggerTime();
+				if (($now = $this->microtime()) < $trigger) {
+					$this->dyLogCronSleep($trigger - $now);
+					$this->waitForWake($trigger);
+					continue;
+				}
+				$this->runTasks([$task]);
+			}
+		} finally {
+			// Release the wake socket held for this minute so nothing is bound into the next minute.
+			$this->_wakeSocket?->close();
+		}
+	}
+
+	/**
 	 * Runs tasks, each in a fiber of its own through {@see runTask}, with at most
-	 * {@see getConcurrency} running at once.  Returns once every task has finished.
+	 * {@see getConcurrency} running at once.  A task removed since it was collected
+	 * ({@see taskExistsInternal}) is skipped.  Returns once every task has finished.
 	 * @param TCronTask[] $tasks the tasks to run, in order
 	 * @param ?int $startMinute the minute (`time() / 60`) after which no further task starts, or null for no limit
 	 * @since 4.4.0
@@ -478,8 +755,11 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	{
 		$running = [];
 		foreach ($tasks as $task) {
-			if ($startMinute !== null && $startMinute != floor(time() / 60)) {
+			if ($startMinute !== null && $startMinute != floor($this->time() / 60)) {
 				break;
+			}
+			if (!$this->taskExistsInternal($task->getName())) {
+				continue;
 			}
 			$this->awaitTasks($running, $this->getConcurrency() - 1);
 			$running[] = TAsync::run([$this, 'runTask'], $task);
@@ -511,7 +791,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	{
 		Prado::log("Processing {$numtasks} Cron Tasks", TLogger::INFO, TCronModule::class);
 		$this->dyLogCron($numtasks);
-		$this->setLastCronTime(microtime(true));
+		$this->setLastCronTime($this->microtime());
 	}
 
 	/**
@@ -533,8 +813,10 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	 * Runs a task in the current fiber as its user ({@see resolveTaskUser}), which is the
 	 * fiber's user in {@see \Prado\IO\Async\TFiberContext} for the run.  A deadline from the
 	 * task's Timeout or the module's {@see getTaskTimeout} becomes the task's
-	 * {@see \Prado\Util\Cron\TCronTask::getCancellationToken() CancellationToken}.  An exception
-	 * from the task is logged by {@see logCronTaskError} and does not leave this method.
+	 * {@see \Prado\Util\Cron\TCronTask::getCancellationToken() CancellationToken}.  A `dyRunTask`
+	 * permission denial ({@see PERM_CRON_RUN_TASK}) is logged, advances the task's info like a
+	 * run, and returns false.  An exception from the task is logged by {@see logCronTaskError}
+	 * and does not leave this method.
 	 * @param \Prado\Util\Cron\TCronTask $task the task to run.
 	 * @return bool whether the task ran without an exception
 	 */
@@ -552,6 +834,11 @@ class TCronModule extends \Prado\TModule implements IPermissions
 		$token = ($timeout !== null) ? new TCancellationToken($timeout) : null;
 		$task->setCancellationToken($token);
 		try {
+			if ($this->dyRunTask(false, $task, ['extra' => ['username' => $task->getUserName()]]) === true) {
+				$this->dyLogPermissionFailed(static::PERM_CRON_RUN_TASK, 'running cron task \'' . $task->getName() . '\'');
+				$this->updateTaskInfo($task);
+				return false;
+			}
 			$this->logCronTask($task, $username);
 			$this->updateTaskInfo($task);
 			try {
@@ -626,7 +913,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	{
 		$tasksInfo = $this->getApplication()->getGlobalState(self::TASKS_INFO, []);
 		$name = $task->getName();
-		$time = $tasksInfo[$name]['lastExecTime'] = (int) microtime(true);
+		$time = $tasksInfo[$name]['lastExecTime'] = $this->time();
 		$count = $tasksInfo[$name]['processCount'] = $task->getProcessCount() + 1;
 		$task->setProcessCount($count);
 		$task->setLastExecTime($time);
@@ -686,6 +973,28 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	}
 
 	/**
+	 * TCronModule does not support Second Resolution due to using the global state.
+	 * If you need this attribute, use the TDbCronManager.
+	 * @return bool returns false
+	 * @since 4.4.0
+	 */
+	public function getSecondResolution()
+	{
+		return false;
+	}
+
+	/**
+	 * TCronModule polls once per minute. Sub-minute polling requires the per-task next execution
+	 * times of the TDbCronManager; see {@see \Prado\Util\Cron\TDbCronManager::getPollsPerMinute PollsPerMinute}.
+	 * @return int returns 1
+	 * @since 4.4.0
+	 */
+	public function getPollsPerMinute()
+	{
+		return 1;
+	}
+
+	/**
 	 * @return string the default user id of Tasks without users ids
 	 */
 	public function getDefaultUserName()
@@ -704,7 +1013,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	}
 
 	/**
-	 * @return null|IUserManager user manager instance
+	 * @return ?IUserManager user manager instance
 	 */
 	public function getUserManager()
 	{
@@ -762,7 +1071,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	}
 
 	/**
-	 * @return null|bool is cli running from cron.
+	 * @return ?bool is cli running from cron.
 	 * @since 4.2.2
 	 */
 	public function getInCronShell()
@@ -771,7 +1080,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	}
 
 	/**
-	 * @param null|bool $inCronShell is cli running from cron.  This limits
+	 * @param ?bool $inCronShell is cli running from cron.  This limits
 	 * pending tasks to only the current minute.
 	 * @since 4.2.2
 	 */
@@ -839,7 +1148,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	}
 
 	/**
-	 * This will take a string that is an array of tasks that has been
+	 * This takes a string that is an array of tasks that has been
 	 * through serialize(), or json_encode, or is an xml file of additional tasks.
 	 * If one task is set, then it is automatically placed into an array.
 	 * @param null|array|string $tasks additional tasks in an array [0..n],  or
@@ -855,7 +1164,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 			} elseif (($t = json_decode($tasks, true)) !== null) {
 				$tasks = $t;
 			} else {
-				$xmldoc = new TXmlDocument('1.0', 'utf-8');
+				$xmldoc = Prado::createComponent(TXmlDocument::class, '1.0', 'utf-8');
 				$xmldoc->loadFromString($tasks);
 				$tasks = $xmldoc;
 			}
@@ -867,5 +1176,108 @@ class TCronModule extends \Prado\TModule implements IPermissions
 			throw new TInvalidDataTypeException('cron_additional_tasks_invalid', $tasks);
 		}
 		$this->_additionalCronTasks = $tasks ?? [];
+	}
+
+	/**
+	 * Delays execution until the given real Unix timestamp through {@see sleep}, so a worker fiber
+	 * yields to the event loop while waiting. An overridable seam so that the second-resolution path
+	 * can be controlled by subclasses and tests.
+	 * @param float $timestamp the Unix timestamp to delay until
+	 * @return bool whether the delay succeeded
+	 * @since 4.4.0
+	 */
+	protected function time_sleep_until($timestamp): bool
+	{
+		$seconds = $timestamp - \microtime(true);
+		if ($seconds > 0) {
+			$this->sleep($seconds);
+		}
+		return true;
+	}
+
+	/**
+	 * Returns a random integer. Wraps the global {@see \mt_rand()} as an overridable seam
+	 * so that the request cron probability can be controlled by subclasses and tests.
+	 * @return int a random integer between 0 and \mt_getrandmax()
+	 * @since 4.4.0
+	 */
+	protected function mt_rand(): int
+	{
+		return \mt_rand();
+	}
+
+	/**
+	 * Returns the PHP server API name. Wraps the global {@see \php_sapi_name()} as an
+	 * overridable seam so that request cron activation can be controlled by tests.
+	 * @return string the PHP server API name
+	 * @since 4.4.0
+	 */
+	protected function php_sapi_name(): string
+	{
+		return \php_sapi_name();
+	}
+
+	/**
+	 * Waits until the given timestamp, returning early when a wake datagram arrives. Waits on the
+	 * {@see getWakeSocket WakeSocket} when a datagram transport is available, falling back to a plain
+	 * {@see time_sleep_until()} sleep otherwise.
+	 * @param float $until the Unix timestamp to wait until
+	 * @return bool whether a wake signal arrived before the timestamp
+	 * @since 4.4.0
+	 */
+	protected function waitForWake($until): bool
+	{
+		$socket = $this->getWakeSocket();
+		if ($socket !== null && $socket->getTransport() !== null) {
+			$minute = (int) floor($this->time() / 60);
+			$now = $this->microtime();
+			$woken = $socket->wait((float) $until, $minute, $now);
+			if ($woken !== null) {
+				return $woken;
+			}
+		}
+		$this->time_sleep_until($until);
+		return false;
+	}
+
+	/**
+	 * Sends a wake datagram to the cron process servicing the current minute, so a task scheduled
+	 * earlier than the sleeping process expects runs on time. A missing listener is a harmless no-op.
+	 * @return bool whether a wake datagram was sent
+	 * @since 4.4.0
+	 */
+	public function signalWake(): bool
+	{
+		$socket = $this->getWakeSocket();
+		if ($socket === null || $socket->getTransport() === null) {
+			return false;
+		}
+		return $socket->signal((int) floor($this->time() / 60));
+	}
+
+	/**
+	 * Returns the same-host wake transport, lazily created in the application runtime directory.
+	 * @return ?TCronWakeSocket the wake socket, or null when no application is available
+	 * @since 4.4.0
+	 */
+	public function getWakeSocket(): ?TCronWakeSocket
+	{
+		if ($this->_wakeSocket === null) {
+			$app = $this->getApplication();
+			if ($app === null) {
+				return null;
+			}
+			$this->_wakeSocket = new TCronWakeSocket($app->getRuntimePath());
+		}
+		return $this->_wakeSocket;
+	}
+
+	/**
+	 * @param ?TCronWakeSocket $socket the wake transport, or null to rebuild the default on next use
+	 * @since 4.4.0
+	 */
+	public function setWakeSocket(?TCronWakeSocket $socket)
+	{
+		$this->_wakeSocket = $socket;
 	}
 }
