@@ -707,7 +707,54 @@ class TWeakCallableCollectionTest extends TPriorityListTest
 		self::assertEquals(1, $list->getWeakCount());
 		self::assertEquals(1, $list->getWeakObjectCount($this->item1));
 	}
-	
+
+	public function testRemoveWithPriorityFindsWrappingEventHandler_TWCC()
+	{
+		$list = new $this->_baseClass();
+		$callable = [$this->item1, 'eventHandler'];
+		$list->add([$this->item2, 'eventHandler'], 10);
+		$list->add($handler = new TEventHandler($callable, 'data'), 10);
+		$list->add([$this->item3, 'eventHandler'], 5);
+
+		self::assertEquals(2, $list->indexOf($callable, 10));
+		self::assertEquals(2, $list->remove($callable, 10));
+		self::assertEquals(2, $list->getCount());
+		self::assertEquals(-1, $list->indexOf($callable));
+		self::assertEquals(0, $list->getWeakObjectCount($this->item1));
+
+		$list->add($handler, 10);
+		try {
+			$list->remove($callable, 5);
+			self::fail('A wrapping TEventHandler at another priority must not be removed.');
+		} catch (TInvalidDataValueException $e) {
+			self::assertEquals('list_item_inexistent', $e->getErrorCode());
+		}
+		self::assertEquals(3, $list->getCount());
+	}
+
+	public function testRemoveWithPriorityPrefersExactMatch_TWCC()
+	{
+		$list = new $this->_baseClass();
+		$callable = [$this->item1, 'eventHandler'];
+		$list->add(new TEventHandler($callable, 'data'), 10);
+		$list->add($callable, 10);
+
+		self::assertEquals(1, $list->remove($callable, 10));
+		self::assertEquals(1, $list->getCount());
+		self::assertInstanceOf(TEventHandler::class, $list[0]);
+	}
+
+	public function testDetachEventHandlerWithPriorityFindsWrappingEventHandler_TWCC()
+	{
+		$component = new TComponent();
+		$callable = [$this->item1, 'eventHandler'];
+		$component->attachEventHandler('fxRemovePriorityTest', new TEventHandler($callable, 'data'), 10);
+
+		self::assertFalse($component->detachEventHandler('fxRemovePriorityTest', $callable, 5));
+		self::assertTrue($component->detachEventHandler('fxRemovePriorityTest', $callable, 10));
+		self::assertCount(0, $component->getEventHandlers('fxRemovePriorityTest'));
+	}
+
 	public function testRemoveAt_TWCC()
 	{
 		$list = new $this->_baseClass();

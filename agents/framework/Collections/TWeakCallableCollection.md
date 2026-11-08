@@ -160,7 +160,7 @@ Construction order matters: if `$discardInvalid = false` or (`null` + `$readOnly
 ## Patterns & Gotchas
 
 - **Do not store non-callables** — The list validates callables on insert when `$validate = true` in `filterItemForInput`. Items must be PHP callables (string, array, Closure, or invokable object).
-- **TEventHandler dual-search** — When removing or searching for a handler, passing a plain callable finds it even if it is wrapped in a `TEventHandler`. This is intentional: event dispatch attaches handlers in `TEventHandler` wrappers but removal by callable must still work.
+- **TEventHandler dual-search** — When removing or searching for a handler, passing a plain callable finds it even if it is wrapped in a `TEventHandler`, with or without a priority; an exact match is looked for first. This is intentional: event dispatch attaches handlers in `TEventHandler` wrappers but removal by callable must still work.
 - **`getAutoGlobalListen()` is hard-coded false** — Do not override this. Allowing TWeakCallableCollection to listen to global events would cause infinite recursion during `fx` event dispatch.
 - **Inherited `$_d` structure** — Internal storage is `array<priority_string, callable[]>` where each callable may be a WeakReference-wrapped form. Never read `$_d` directly without filtering output; always go through the public API.
 - **`$_fd` flat cache** — Inherited from [TPriorityList](./TPriorityList.md). `scrubWeakReferences()` sets it to `null` after purging dead entries. `flattenPriorities()` regenerates it. The flat cache contains the weakened (un-resolved) callables; `filterItemsForOutput` is always applied before exposing them.

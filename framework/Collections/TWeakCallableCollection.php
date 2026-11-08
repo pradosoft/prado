@@ -611,7 +611,8 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 	/**
 	 * Removes an item from the priority list.
 	 * The list will search for the item.  The first matching item found will be removed from
-	 * the list.
+	 * the list.  A callable also matches a TEventHandler wrapping it, with or without
+	 * $priority, after an exact match is looked for.
 	 * All invalid WeakReference[s] are optionally removed from the list before indexing.
 	 * @param mixed $item item the item to be removed.
 	 * @param null|bool|float $priority priority of item to remove. without this parameter it
@@ -639,7 +640,15 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 					$absindex += count($this->_d[$p]);
 					continue;
 				} elseif ($p == $priority) {
-					if (($index = array_search($item, $this->_d[$p], true)) !== false) {
+					if (($index = array_search($item, $this->_d[$p], true)) === false && $this->_eventHandlerCount) {
+						foreach ($this->_d[$p] as $index => $pItem) {
+							if (($pItem instanceof TEventHandler) && $pItem->isSameHandler($item, true)) {
+								break;
+							}
+							$index = false;
+						}
+					}
+					if ($index !== false) {
 						$absindex += $index;
 						$this->internalRemoveAtIndexInPriority($index, $p);
 						return $absindex;
