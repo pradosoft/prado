@@ -72,14 +72,17 @@ $cron->getTasksByType(TDbCronCleanLogTask::class);
 | Property | Default | Description |
 |---|---|---|
 | `Daemon` | `false` | `cron/run` in the CLI elects a daemon instead of sweeping once; a web request (`EnableRequestCron`) still sweeps once. Frozen after `init()`. |
-| `DaemonLifetime` | `3600` | Seconds the daemon runs before it exits so the next tick elects a new one (a rolling restart after a deploy); `0` for no limit. |
+| `DaemonLifetime` | `3600` | Seconds after which the daemon *retires*: it keeps serving but hands the lease to the next tick's process (a rolling restart after a deploy, with no gap); `0` for never. |
+| `DaemonHandoffTimeout` | `10` | Seconds a tick's process waits for a retiring daemon to hand over the lease before giving up. |
 | `DaemonIdle` | `60` | Maximum seconds between sweeps when no trigger or wake comes sooner; also the poll period of a `TDbCronManager` table changed by a host without a shared wake transport. |
 | `DaemonMutex` | a `TFileMutex` | The lease, an [`IMutex`](../Mutex/IMutex.md) or its module ID. The lock name is `getDaemonLockName()`, `cron:daemon:<module id>`. A file mutex excludes the processes of one host; a database or Redis mutex excludes every host's. |
 | `WakeTransport` | a `TCronWakeSocket` | The [`ICronWakeTransport`](Wake/ICronWakeTransport.md) or its module ID, shared by per-minute waits (`waitForWake()`), the daemon (`watch()`), and `signalWake()`. |
 
 `DEFAULT_CRON_USER`, `DEFAULT_DAEMON_LIFETIME`, `DEFAULT_DAEMON_IDLE`, and `DAEMON_MIN_WAIT` are read through `static::` (the unset properties take them in `init()`), so a subclass overrides a default by redefining the constant.
 
-`runDaemon()` returns the number of tasks it ran, or 0 at once when the lease is held. Each turn: `sweepTasks()` (`filterStaleTasks()`, `getPendingTasks()`, `runTasks()` with no minute limit), then `waitDaemon()` for `getDaemonWait()` seconds, the least of the time to `getNextPendingTime()`, `DaemonIdle`, and the remaining lifetime, never under `DAEMON_MIN_WAIT`. A wake (`wakeDaemon()`, from the transport's `watch()` callback) or `stopDaemon()` (also SIGTERM and SIGINT through the loop's `onSignal()` where `pcntl` exists) ends the wait; a wake during a sweep causes another sweep. The lease is released and the transport closed in a `finally`. `dyLogCronDaemonStart($lockName, $watching)` and `dyLogCronDaemonEnd($numtasks)` are raised for behaviors, and written to the shell by [`TShellCronLogBehavior`](TShellCronLogBehavior.md).
+`runDaemon()` returns the number of tasks it ran, or 0 at once when a healthy daemon holds the lease.
+
+**Retiring and hand-off.** Three locks of the `DaemonMutex` carry the protocol: the lease `cron:daemon:<id>`, `…:retiring`, which the daemon holds once its lifetime passed, and `…:handoff`, which a tick's process holds while it waits for the lease. A tick that finds the lease held probes the retiring lock: free means the daemon is healthy and the tick exits at once with no wake and no wait. Held means the daemon is retiring: the tick takes the handoff lock, sends a wake, and waits up to `DaemonHandoffTimeout` for the lease (`takeOverDaemon()`). The retiring daemon sees the handoff lock held at its next loop turn, finishes nothing new, releases the lease, and ends with reason `handoff`; the waiting tick acquires it within a mutex retry and is the daemon, already bound to the transport, so no wake or task falls into a gap. A retiring daemon with no tick serves on indefinitely, and a daemon that cannot release within the timeout is retried by the next tick. `stopDaemon()`, SIGTERM, and SIGINT still end the daemon at once; the gap until the next tick is the explicit price of an immediate stop. Each turn: `sweepTasks()` (`filterStaleTasks()`, `getPendingTasks()`, `runTasks()` with no minute limit), then `waitDaemon()` for `getDaemonWait()` seconds, the least of the time to `getNextPendingTime()`, `DaemonIdle`, and the remaining lifetime, never under `DAEMON_MIN_WAIT`. A wake (`wakeDaemon()`, from the transport's `watch()` callback) or `stopDaemon()` (also SIGTERM and SIGINT through the loop's `onSignal()` where `pcntl` exists) ends the wait; a wake during a sweep causes another sweep. The lease is released and the transport closed in a `finally`. `dyLogCronDaemonStart($lockName, $watching)` and `dyLogCronDaemonEnd($numtasks)` are raised for behaviors, and written to the shell by [`TShellCronLogBehavior`](TShellCronLogBehavior.md).
 
 Application code hooks the daemon through three `on` events, each with a [`TCronDaemonEventParameter`](TCronDaemonEventParameter.md):
 
@@ -87,7 +90,7 @@ Application code hooks the daemon through three `on` events, each with a [`TCron
 |---|---|---|
 | `onDaemonStart` | after the lease is acquired, before the first sweep | `LockName`, `Watching` |
 | `onDaemonIdle` | before each wait | `Tasks` of the sweep just finished, `Elapsed`, and `Wait`, which a handler changes with `setWait()` |
-| `onDaemonEnd` | after the lease is released | `Tasks` in all, `Elapsed`, `Reason` (`lifetime`, `stop`, `signal`, `error`) |
+| `onDaemonEnd` | after the lease is released | `Tasks` in all, `Elapsed`, `Reason` (`handoff`, `stop`, `signal`, `error`; `lifetime` only when a daemon could not take the retiring lock) |
 
 `TDbCronManager` overrides `onDaemonIdle()` to close its database connection before raising the event. A handler that wants the daemon to end calls `stopDaemon()`.
 

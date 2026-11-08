@@ -118,8 +118,9 @@ use Prado\Xml\TXmlDocument;
  * the process acquires the {@see setDaemonMutex DaemonMutex} lease and, when another process holds
  * it, exits at once; otherwise it runs the due tasks, waits on its event loop for the next trigger,
  * a wake from the {@see setWakeTransport WakeTransport}, or {@see setDaemonIdle DaemonIdle}, and
- * repeats until {@see setDaemonLifetime DaemonLifetime} passes or SIGTERM/SIGINT arrives.  The next
- * tick elects a new daemon, which picks up deployed code.  {@see onDaemonStart}, {@see onDaemonIdle}
+ * repeats.  After {@see setDaemonLifetime DaemonLifetime} the daemon retires: it keeps serving until a
+ * tick's process waits for the lease, then hands it over without a gap, so the new process picks up
+ * deployed code; SIGTERM, SIGINT, or {@see stopDaemon} end it at once.  {@see onDaemonStart}, {@see onDaemonIdle}
  * (before each wait, with the wait a handler changes), and {@see onDaemonEnd} are raised with a
  * {@see \Prado\Util\Cron\TCronDaemonEventParameter}.  A web request wakes a waiting process,
  * per-minute or daemon, through {@see signalWake} when it schedules an earlier task.
@@ -176,6 +177,9 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 
 	/** The least seconds a daemon waits between sweeps, so a task it cannot run does not spin it. */
 	protected const DAEMON_MIN_WAIT = 0.05;
+
+	/** The default seconds a tick's process waits for a retiring daemon to hand over the lease. */
+	public const DEFAULT_DAEMON_HANDOFF_TIMEOUT = 10;
 
 	/** The behavior name for the Shell Log behavior */
 	public const SHELL_LOG_BEHAVIOR = 'shellLog';
@@ -275,6 +279,12 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	/** @var ?string why the running daemon is ending, a TCronDaemonEventParameter::REASON_* constant */
 	private ?string $_daemonReason = null;
 
+	/** @var ?float the seconds a tick's process waits for a retiring daemon's lease; null for {@see DEFAULT_DAEMON_HANDOFF_TIMEOUT} */
+	private ?float $_daemonHandoffTimeout = null;
+
+	/** @var bool whether the running daemon's lifetime passed and it holds the retiring lock */
+	private bool $_daemonRetiring = false;
+
 	/**
 	 * Initializes the module.  Read the configuration, installs Shell Actions,
 	 * and checks if Request-cron should be activated.  This lazy loads the
@@ -290,6 +300,7 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 		$this->_defaultUserName ??= static::DEFAULT_CRON_USER;
 		$this->_daemonLifetime ??= (float) static::DEFAULT_DAEMON_LIFETIME;
 		$this->_daemonIdle ??= (float) static::DEFAULT_DAEMON_IDLE;
+		$this->_daemonHandoffTimeout ??= (float) static::DEFAULT_DAEMON_HANDOFF_TIMEOUT;
 
 		//Get the IUserManager module from the string
 		if (is_string($this->_userManager)) {
@@ -1403,7 +1414,7 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	}
 
 	/**
-	 * @return float the seconds a daemon runs before it exits for the next tick to elect a new one, default 3600; 0 for no limit
+	 * @return float the seconds after which a daemon retires and yields the lease to the next tick's process, default {@see DEFAULT_DAEMON_LIFETIME}; 0 for never
 	 * @since 4.4.0
 	 */
 	public function getDaemonLifetime(): float
@@ -1412,7 +1423,7 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	}
 
 	/**
-	 * @param float|string $seconds the seconds a daemon runs before it exits; 0 for no limit
+	 * @param float|string $seconds the seconds after which a daemon retires and yields to the next tick; 0 for never
 	 * @throws TInvalidDataValueException when the seconds are negative
 	 * @since 4.4.0
 	 */
@@ -1446,6 +1457,29 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 			throw new TInvalidDataValueException('cron_daemon_idle_invalid', $seconds);
 		}
 		$this->_daemonIdle = $seconds;
+	}
+
+	/**
+	 * @return float the seconds a tick's process waits for a retiring daemon to hand over the lease, default {@see DEFAULT_DAEMON_HANDOFF_TIMEOUT}
+	 * @since 4.4.0
+	 */
+	public function getDaemonHandoffTimeout(): float
+	{
+		return $this->_daemonHandoffTimeout ?? (float) static::DEFAULT_DAEMON_HANDOFF_TIMEOUT;
+	}
+
+	/**
+	 * @param float|string $seconds the seconds a tick's process waits for a retiring daemon to hand over the lease
+	 * @throws TInvalidDataValueException when the seconds are negative
+	 * @since 4.4.0
+	 */
+	public function setDaemonHandoffTimeout($seconds)
+	{
+		$seconds = TPropertyValue::ensureFloat($seconds);
+		if ($seconds < 0) {
+			throw new TInvalidDataValueException('cron_daemon_handoff_invalid', $seconds);
+		}
+		$this->_daemonHandoffTimeout = $seconds;
 	}
 
 	/**
@@ -1494,12 +1528,33 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	}
 
 	/**
+	 * @return string the lock name a retiring daemon holds, {@see getDaemonLockName} and `:retiring`
+	 * @since 4.4.0
+	 */
+	public function getDaemonRetiringLockName(): string
+	{
+		return $this->getDaemonLockName() . ':retiring';
+	}
+
+	/**
+	 * @return string the lock name a tick's process holds while it waits for the lease, {@see getDaemonLockName} and `:handoff`
+	 * @since 4.4.0
+	 */
+	public function getDaemonHandoffLockName(): string
+	{
+		return $this->getDaemonLockName() . ':handoff';
+	}
+
+	/**
 	 * Runs as the cron daemon.  The process acquires the {@see getDaemonMutex DaemonMutex} lease
-	 * without waiting; when another process holds it, this returns 0 at once.  Otherwise it sweeps
+	 * without waiting; when another process holds it, {@see takeOverDaemon} either exits at once (the
+	 * daemon is healthy) or waits for a retiring daemon to hand the lease over.  As the daemon it sweeps
 	 * the pending tasks, waits on the event loop until the next trigger, a wake from the
-	 * {@see getWakeTransport WakeTransport}, or {@see getDaemonIdle DaemonIdle}, and repeats until
-	 * {@see getDaemonLifetime DaemonLifetime} passes, {@see stopDaemon} is called, or SIGTERM or
-	 * SIGINT arrives.  Tasks run through {@see runTasks} with the module's Concurrency.
+	 * {@see getWakeTransport WakeTransport}, or {@see getDaemonIdle DaemonIdle}, and repeats.  After
+	 * {@see getDaemonLifetime DaemonLifetime} it retires: it holds the retiring lock and keeps serving
+	 * until a tick's process waits on the handoff lock, then releases the lease to it, so the module is
+	 * never without a daemon.  {@see stopDaemon}, SIGTERM, and SIGINT end it at once.  Tasks run through
+	 * {@see runTasks} with the module's Concurrency.
 	 * @return int the number of tasks the daemon ran
 	 * @since 4.4.0
 	 */
@@ -1507,8 +1562,7 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	{
 		$mutex = $this->getDaemonMutex();
 		$lockName = $this->getDaemonLockName();
-		if (!$mutex->acquire($lockName)) {
-			Prado::log('Cron daemon lease (' . $lockName . ') is held by another process', TLogger::INFO, TCronModule::class);
+		if (!$mutex->acquire($lockName) && !$this->takeOverDaemon($mutex)) {
 			return 0;
 		}
 		$loop = TAsync::getLoop();
@@ -1516,6 +1570,7 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 		$numtasks = 0;
 		$this->_daemonStop = false;
 		$this->_daemonWake = false;
+		$this->_daemonRetiring = false;
 		$transport = $this->getWakeTransport();
 		$watching = $transport !== null && $transport->watch($loop, function () {
 			$this->wakeDaemon();
@@ -1526,24 +1581,26 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 		$param = $this->newDaemonEventParameter($lockName, $watching);
 		$this->onDaemonStart($param);
 		try {
-			do {
+			while (true) {
 				$this->consumeDaemonWake();
-				$swept = $this->sweepTasks();
-				$numtasks += $swept;
 				if ($this->isDaemonDone($start)) {
 					break;
 				}
-				if (!$this->consumeDaemonWake()) {
-					$param = $this->newDaemonEventParameter($lockName, $watching)
-						->setTasks($swept)
-						->setElapsed($this->getMonotonicClock()->seconds() - $start)
-						->setWait($this->getDaemonWait($start));
-					$this->onDaemonIdle($param);
-					if (!$this->isDaemonDone($start)) {
-						$this->waitDaemon($loop, max($param->getWait(), static::DAEMON_MIN_WAIT));
-					}
+				$swept = $this->sweepTasks();
+				$numtasks += $swept;
+				if ($this->consumeDaemonWake()) {
+					continue; // a wake arrived during the sweep: sweep again
 				}
-			} while (!$this->isDaemonDone($start));
+				$param = $this->newDaemonEventParameter($lockName, $watching)
+					->setTasks($swept)
+					->setElapsed($this->getMonotonicClock()->seconds() - $start)
+					->setWait($this->getDaemonWait($start));
+				$this->onDaemonIdle($param);
+				if ($this->isDaemonDone($start)) {
+					break;
+				}
+				$this->waitDaemon($loop, max($param->getWait(), static::DAEMON_MIN_WAIT));
+			}
 		} catch (\Throwable $e) {
 			$this->_daemonReason = TCronDaemonEventParameter::REASON_ERROR;
 			throw $e;
@@ -1553,6 +1610,10 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 			}
 			if ($transport !== null) {
 				$transport->close();
+			}
+			if ($this->_daemonRetiring) {
+				$mutex->release($this->getDaemonRetiringLockName());
+				$this->_daemonRetiring = false;
 			}
 			$mutex->release($lockName);
 			$this->logCronDaemonEnd($numtasks);
@@ -1578,7 +1639,9 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	}
 
 	/**
-	 * Tells whether the daemon loop ends: a stop or signal was requested, or the lifetime passed.
+	 * Tells whether the daemon loop ends: a stop or signal was requested, or the daemon is retiring and
+	 * a tick's process waits on the handoff lock for the lease.  A daemon whose lifetime passed starts
+	 * retiring here by taking the retiring lock.
 	 * @param float $start the monotonic seconds the daemon started at
 	 * @return bool whether the daemon is done
 	 * @since 4.4.0
@@ -1588,11 +1651,68 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 		if ($this->_daemonStop) {
 			return true;
 		}
-		if ($this->isDaemonExpired($start)) {
-			$this->_daemonReason ??= TCronDaemonEventParameter::REASON_LIFETIME;
+		if (!$this->_daemonRetiring && $this->isDaemonExpired($start)) {
+			$this->_daemonRetiring = $this->getDaemonMutex()->acquire($this->getDaemonRetiringLockName());
+			if ($this->_daemonRetiring) {
+				Prado::log('Cron daemon (' . $this->getDaemonLockName() . ') is retiring; it serves until the next tick takes the lease', TLogger::INFO, TCronModule::class);
+			}
+		}
+		if ($this->_daemonRetiring && $this->isDaemonHandoffRequested()) {
+			$this->_daemonReason ??= TCronDaemonEventParameter::REASON_HANDOFF;
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * Tells whether a tick's process holds the handoff lock, waiting for the lease.
+	 * @return bool whether a successor waits
+	 * @since 4.4.0
+	 */
+	protected function isDaemonHandoffRequested(): bool
+	{
+		$mutex = $this->getDaemonMutex();
+		$handoff = $this->getDaemonHandoffLockName();
+		if ($mutex->acquire($handoff)) {
+			$mutex->release($handoff);
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Takes the lease over from a retiring daemon.  A healthy daemon, one not holding the retiring
+	 * lock, is left alone and this returns false at once.  Otherwise this process holds the handoff
+	 * lock, wakes the daemon, and waits up to {@see getDaemonHandoffTimeout DaemonHandoffTimeout} for
+	 * the lease; the retiring daemon sees the handoff lock held and releases the lease to it.
+	 * @param IMutex $mutex the daemon mutex
+	 * @return bool whether this process now holds the lease
+	 * @since 4.4.0
+	 */
+	protected function takeOverDaemon(IMutex $mutex): bool
+	{
+		$lockName = $this->getDaemonLockName();
+		$retiring = $this->getDaemonRetiringLockName();
+		if ($mutex->acquire($retiring)) {
+			$mutex->release($retiring);
+			Prado::log('Cron daemon lease (' . $lockName . ') is held by another process', TLogger::INFO, TCronModule::class);
+			return false;
+		}
+		$handoff = $this->getDaemonHandoffLockName();
+		if (!$mutex->acquire($handoff)) {
+			Prado::log('Cron daemon lease (' . $lockName . ') is retiring and another process already waits for it', TLogger::INFO, TCronModule::class);
+			return false;
+		}
+		try {
+			$this->signalWake();
+			if (!$mutex->acquire($lockName, $this->getDaemonHandoffTimeout())) {
+				Prado::log('Cron daemon lease (' . $lockName . ') was not handed over within the handoff timeout', TLogger::INFO, TCronModule::class);
+				return false;
+			}
+		} finally {
+			$mutex->release($handoff);
+		}
+		return true;
 	}
 
 	/**
@@ -1665,7 +1785,7 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	/**
 	 * Computes the seconds the daemon waits before its next sweep: until the next trigger
 	 * ({@see getNextPendingTime}), at most {@see getDaemonIdle DaemonIdle} and the remaining
-	 * {@see getDaemonLifetime DaemonLifetime}; {@see onDaemonIdle} may change it, and {@see DAEMON_MIN_WAIT} is the floor.
+	 * {@see getDaemonLifetime DaemonLifetime} before retiring; {@see onDaemonIdle} may change it, and {@see DAEMON_MIN_WAIT} is the floor.
 	 * @param float $start the monotonic seconds the daemon started at
 	 * @return float the seconds to wait
 	 * @since 4.4.0
@@ -1678,7 +1798,7 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 			$wait = min($wait, max(0.0, $next - $this->microtime()));
 		}
 		$lifetime = $this->getDaemonLifetime();
-		if ($lifetime > 0) {
+		if ($lifetime > 0 && !$this->_daemonRetiring) {
 			$wait = min($wait, max(0.0, $lifetime - ($this->getMonotonicClock()->seconds() - $start)));
 		}
 		return max($wait, static::DAEMON_MIN_WAIT);

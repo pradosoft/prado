@@ -62,10 +62,13 @@ trait TTestCronClockTrait
 	/** @var int[] records each {@see signalWake()} call (the serviced minute timestamp) instead of sending */
 	public array $wakeSignals = [];
 
+	/** @var bool when true, {@see signalWake()} also sends through the parent's wake transport */
+	public bool $realWake = false;
+
 	public function signalWake(): bool
 	{
 		$this->wakeSignals[] = $this->now()->getTimestamp();
-		return true;
+		return $this->realWake ? parent::signalWake() : true;
 	}
 
 	public function now(): \DateTimeImmutable

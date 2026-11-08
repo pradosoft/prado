@@ -783,6 +783,7 @@ cron_concurrency_invalid				= TCronModule Concurrency must be at least 1; ''{0}'
 cron_task_timeout_invalid				= TCronModule TaskTimeout must be greater than zero or null; ''{0}'' given.
 cron_daemon_lifetime_invalid			= TCronModule DaemonLifetime must be zero or greater; ''{0}'' given.
 cron_daemon_idle_invalid				= TCronModule DaemonIdle must be greater than zero; ''{0}'' given.
+cron_daemon_handoff_invalid			= TCronModule DaemonHandoffTimeout must be zero or greater; ''{0}'' given.
 cron_daemonmutex_invalid				= TCronModule DaemonMutex ''{0}'' is not an IMutex module.
 cron_waketransport_invalid				= TCronModule WakeTransport ''{0}'' is not an ICronWakeTransport module.
 cronwake_pollinterval_invalid			= Cron wake PollInterval must be greater than zero; ''{0}'' given.

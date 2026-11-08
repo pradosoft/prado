@@ -998,6 +998,11 @@ class TCronModuleTest extends \PHPUnit\Framework\TestCase
 		self::assertSame(0.0, $this->obj->getDaemonLifetime());
 		$this->obj->setDaemonIdle('2.5');
 		self::assertSame(2.5, $this->obj->getDaemonIdle());
+		self::assertEquals(TCronModule::DEFAULT_DAEMON_HANDOFF_TIMEOUT, $this->obj->getDaemonHandoffTimeout());
+		$this->obj->setDaemonHandoffTimeout('3');
+		self::assertSame(3.0, $this->obj->getDaemonHandoffTimeout());
+		self::assertSame($this->obj->getDaemonLockName() . ':retiring', $this->obj->getDaemonRetiringLockName());
+		self::assertSame($this->obj->getDaemonLockName() . ':handoff', $this->obj->getDaemonHandoffLockName());
 
 		$mutex = new TMemoryMutex();
 		$this->obj->setDaemonMutex($mutex);
@@ -1027,6 +1032,11 @@ class TCronModuleTest extends \PHPUnit\Framework\TestCase
 		} catch (TInvalidDataValueException $e) {
 		}
 		try {
+			$this->obj->setDaemonHandoffTimeout(-1);
+			self::fail('a negative DaemonHandoffTimeout is invalid');
+		} catch (TInvalidDataValueException $e) {
+		}
+		try {
 			$this->obj->setDaemonMutex(42);
 			self::fail('DaemonMutex takes a mutex, a module ID, or null');
 		} catch (TConfigurationException $e) {
@@ -1045,7 +1055,7 @@ class TCronModuleTest extends \PHPUnit\Framework\TestCase
 		}
 	}
 
-	public function testRunDaemon_RunsTheDueTasksUntilTheLifetimeEnds()
+	public function testRunDaemon_RunsTheDueTasksAndRetiresAfterTheLifetime()
 	{
 		$now = $this->obj->fakeNow;
 		$mutex = new TMemoryMutex();
@@ -1069,10 +1079,26 @@ class TCronModuleTest extends \PHPUnit\Framework\TestCase
 				}
 			});
 		}
+		// Without a tick to hand over to, a daemon past its lifetime keeps serving while holding the retiring lock.
+		$loop = TAsync::getLoop();
+		$retiringHeld = null;
+		$loop->delay(0.45, function () use (&$retiringHeld) {
+			$probe = new TMemoryMutex();
+			$retiringHeld = !$probe->acquire($this->obj->getDaemonRetiringLockName());
+			$probe->releaseAll();
+			$this->obj->stopDaemon();
+		});
 		$start = microtime(true);
 		self::assertEquals(1, $this->obj->processPendingTasks());
 		$elapsed = microtime(true) - $start;
-		self::assertGreaterThanOrEqual(0.25, $elapsed, 'the daemon lives its lifetime');
+		self::assertGreaterThanOrEqual(0.4, $elapsed, 'the daemon served past its lifetime until stopped');
+		self::assertLessThan(3.0, $elapsed);
+		self::assertTrue($retiringHeld, 'the retiring lock is held after the lifetime');
+		self::assertEquals(1, $this->_countTasks);
+		self::assertEquals(1, $this->obj->getTask('daemonDue')->getProcessCount());
+		self::assertEquals(0, $this->obj->getTask('daemonLater')->getProcessCount());
+		self::assertFalse($mutex->isAcquired($this->obj->getDaemonLockName()), 'the lease is released');
+		self::assertFalse($mutex->isAcquired($this->obj->getDaemonRetiringLockName()), 'the retiring lock is released');
 		self::assertCount(1, $events['OnDaemonStart']);
 		self::assertSame($this->obj->getDaemonLockName(), $events['OnDaemonStart'][0]->getLockName());
 		self::assertTrue($events['OnDaemonStart'][0]->getWatching());
@@ -1081,13 +1107,8 @@ class TCronModuleTest extends \PHPUnit\Framework\TestCase
 		self::assertSame(0, $events['OnDaemonIdle'][1]->getTasks());
 		self::assertCount(1, $events['OnDaemonEnd']);
 		self::assertSame(1, $events['OnDaemonEnd'][0]->getTasks());
-		self::assertSame(TCronDaemonEventParameter::REASON_LIFETIME, $events['OnDaemonEnd'][0]->getReason());
-		self::assertGreaterThanOrEqual(0.25, $events['OnDaemonEnd'][0]->getElapsed());
-		self::assertLessThan(3.0, $elapsed);
-		self::assertEquals(1, $this->_countTasks);
-		self::assertEquals(1, $this->obj->getTask('daemonDue')->getProcessCount());
-		self::assertEquals(0, $this->obj->getTask('daemonLater')->getProcessCount());
-		self::assertFalse($mutex->isAcquired($this->obj->getDaemonLockName()), 'the lease is released');
+		self::assertSame(TCronDaemonEventParameter::REASON_STOP, $events['OnDaemonEnd'][0]->getReason());
+		self::assertGreaterThanOrEqual(0.4, $events['OnDaemonEnd'][0]->getElapsed());
 	}
 
 	public function testRunDaemon_ExitsWhenAnotherProcessHoldsTheLease()
@@ -1103,6 +1124,103 @@ class TCronModuleTest extends \PHPUnit\Framework\TestCase
 			self::assertEquals(0, $this->obj->getTask('daemonHeld')->getProcessCount());
 		} finally {
 			$other->release($this->obj->getDaemonLockName());
+		}
+	}
+
+	public function testRunDaemon_RetiresAndHandsTheLeaseToTheNextTick()
+	{
+		$now = $this->obj->fakeNow;
+		$retiring = $this->obj;
+		$retiring->setDaemon(true);
+		$retiring->setDaemonLifetime(0.05);
+		$retiring->setDaemonIdle(0.5); // the tick's wake ends the wait sooner; this bounds the test without one
+		$retiring->setDaemonMutex(new TMemoryMutex());
+		$retiring->setWakeTransport((new TCronWakeFile(sys_get_temp_dir() . '/cronwake-' . bin2hex(random_bytes(4))))->setPollInterval(0.02));
+		$retiring->init([['name' => 'handoffTask', 'schedule' => '@' . ($now - 10), 'task' => TTestCronModuleTask::class]]);
+
+		$tick = new $this->baseClass();
+		$tick->fakeNow = $now;
+		$tick->fakeMicrotime = (float) $now;
+		$tick->setDaemon(true);
+		$tick->setDaemonLifetime(0);
+		$tick->setDaemonIdle(10);
+		$tick->setDaemonHandoffTimeout(5);
+		$tick->realWake = true; // the harness records wakes; this tick must really wake the retiring daemon
+		$tick->setDaemonMutex(new TMemoryMutex());
+		$tick->setWakeTransport($retiring->getWakeTransport());
+		$tick->init(null);
+		self::assertSame($retiring->getDaemonLockName(), $tick->getDaemonLockName());
+
+		$events = [];
+		foreach ([$retiring, $tick] as $i => $module) {
+			foreach (['OnDaemonStart', 'OnDaemonEnd'] as $event) {
+				$module->attachEventHandler($event, function ($sender, $param) use (&$events, $event, $i) {
+					$events[] = [$i, $event, $param->getReason(), microtime(true)];
+				});
+			}
+		}
+		$loop = TAsync::getLoop();
+		// The tick arrives after the daemon's lifetime passed and takes the lease over in a fiber of its own.
+		$tickResult = null;
+		$loop->delay(0.2, static function () use ($tick, &$tickResult) {
+			TAsync::run(static function () use ($tick, &$tickResult) {
+				$tickResult = $tick->processPendingTasks();
+			});
+		});
+		$loop->delay(0.6, static fn () => $tick->stopDaemon());
+
+		$start = microtime(true);
+		self::assertEquals(1, $retiring->processPendingTasks(), 'the retiring daemon ran its task and returned on the handoff');
+		$elapsed = microtime(true) - $start;
+		self::assertGreaterThanOrEqual(0.15, $elapsed, 'the retired daemon served past its lifetime until the tick arrived');
+		self::assertLessThan(3.0, $elapsed);
+
+		// Let the successor run until its stop.
+		$suspension = $loop->suspension();
+		$timer = $loop->delay(2.0, static fn () => $suspension->resume());
+		$tick->attachEventHandler('OnDaemonEnd', static function () use ($suspension, $loop, $timer) {
+			$loop->cancel($timer);
+			$loop->defer(static fn () => $suspension->resume());
+		});
+		if ($tickResult === null) {
+			$suspension->suspend();
+		}
+		self::assertSame(0, $tickResult, 'the successor had nothing left to run');
+
+		$names = array_map(static fn ($e) => $e[0] . ':' . $e[1], $events);
+		self::assertSame(['0:OnDaemonStart', '0:OnDaemonEnd', '1:OnDaemonStart', '1:OnDaemonEnd'], $names, 'the successor starts after the retiring daemon ends');
+		self::assertSame(TCronDaemonEventParameter::REASON_HANDOFF, $events[1][2]);
+		self::assertSame(TCronDaemonEventParameter::REASON_STOP, $events[3][2]);
+		self::assertFalse($tick->getDaemonMutex()->isAcquired($tick->getDaemonLockName()));
+		self::assertTrue((new TMemoryMutex())->acquire($tick->getDaemonRetiringLockName()), 'the retiring lock is released');
+		(new TMemoryMutex())->release($tick->getDaemonRetiringLockName());
+		$tick->unlisten();
+	}
+
+	public function testRunDaemon_TickLeavesAHealthyDaemonAlone()
+	{
+		$now = $this->obj->fakeNow;
+		$other = new TMemoryMutex();
+		$this->obj->setDaemon(true);
+		$this->obj->setDaemonMutex(new TMemoryMutex());
+		$this->obj->setDaemonHandoffTimeout(5);
+		$this->obj->init([['name' => 'daemonHealthy', 'schedule' => '@' . ($now - 10), 'task' => TTestCronModuleTask::class]]);
+		self::assertTrue($other->acquire($this->obj->getDaemonLockName()));
+		try {
+			$start = microtime(true);
+			self::assertEquals(0, $this->obj->processPendingTasks());
+			self::assertLessThan(0.5, microtime(true) - $start, 'a tick exits at once when the daemon is not retiring');
+			// A retiring daemon that does not release within the handoff timeout is left as well.
+			self::assertTrue($other->acquire($this->obj->getDaemonRetiringLockName()));
+			$this->obj->setDaemonHandoffTimeout(0.1);
+			$start = microtime(true);
+			self::assertEquals(0, $this->obj->processPendingTasks());
+			self::assertGreaterThanOrEqual(0.09, microtime(true) - $start, 'the tick waited for the lease');
+			self::assertTrue((new TMemoryMutex())->acquire($this->obj->getDaemonHandoffLockName()), 'the handoff lock is released after the timeout');
+			(new TMemoryMutex())->release($this->obj->getDaemonHandoffLockName());
+			self::assertEquals(0, $this->obj->getTask('daemonHealthy')->getProcessCount());
+		} finally {
+			$other->releaseAll();
 		}
 	}
 

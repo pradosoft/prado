@@ -28,7 +28,7 @@ use Prado\TPropertyValue;
  * | `Tasks` | idle, end | the tasks run in the sweep just finished (idle), or in all (end) |
  * | `Elapsed` | idle, end | the seconds since the daemon started |
  * | `Wait` | idle | the seconds the daemon is about to wait; a handler shortens or lengthens it |
- * | `Reason` | end | `lifetime`, `stop`, `signal`, or `error` |
+ * | `Reason` | end | `handoff`, `lifetime`, `stop`, `signal`, or `error` |
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0
@@ -46,6 +46,9 @@ class TCronDaemonEventParameter extends TEventParameter
 
 	/** The daemon ended by an exception leaving the loop. */
 	public const REASON_ERROR = 'error';
+
+	/** The retiring daemon handed the lease to the next tick's process, which waited for it. */
+	public const REASON_HANDOFF = 'handoff';
 
 	/** @var string the lease lock name */
 	private string $_lockName = '';

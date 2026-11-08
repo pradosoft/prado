@@ -19,7 +19,7 @@ The parameter of the [`TCronModule`](TCronModule.md) daemon events `onDaemonStar
 | `Tasks` | idle, end | tasks run in the sweep just finished (idle) or in the daemon's life (end) |
 | `Elapsed` | idle, end | seconds since the daemon started (monotonic) |
 | `Wait` | idle | seconds the daemon is about to wait; a handler shortens or lengthens it with `setWait()`, floored at `DAEMON_MIN_WAIT` |
-| `Reason` | end | `REASON_LIFETIME`, `REASON_STOP`, `REASON_SIGNAL`, or `REASON_ERROR` |
+| `Reason` | end | `REASON_HANDOFF` (the lease went to the next tick), `REASON_STOP`, `REASON_SIGNAL`, `REASON_ERROR`, or `REASON_LIFETIME` |
 
 ```php
 $cron->attachEventHandler('OnDaemonIdle', function ($cron, TCronDaemonEventParameter $param) {
