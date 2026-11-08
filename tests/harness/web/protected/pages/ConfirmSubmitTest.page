@@ -1,0 +1,30 @@
+<com:TContent ID="Content">
+	<h1>Confirm Submit Test Case</h1>
+
+	<p>Status: <com:TLabel ID="status" Text="waiting" /></p>
+	<com:TLabel ForControl="reason" Text="Reason" />
+	<com:TTextBox ID="reason" />
+	<com:TRequiredFieldValidator ID="reasonRequired" ControlToValidate="reason" ValidationGroup="archive"
+		ErrorMessage="Reason required" Display="Dynamic" />
+
+	<p id="para">Item 7
+	<com:TConfirmSubmit ID="confirm" ConfirmText="Apply this change?" ConfirmButtonText="Apply">
+		<com:TLinkButton ID="link" Text="Link action" OnClick="acted" />
+		<com:TButton ID="submit" Text="Submit action" OnClick="acted" />
+		<com:TButton ID="archive" Text="Archive action" ValidationGroup="archive" OnClick="acted" />
+		<com:TImageButton ID="image" AlternateText="Image action" ImageUrl="data:image/gif;base64,R0lGODlhAQABAAAAACw=" OnClick="imageActed" Width="20" Height="20" />
+		<com:TCheckBox ID="auto" Text="Auto check" AutoPostBack="true" OnCheckedChanged="changed" />
+		<com:TCheckBox ID="plain" Text="Plain check" />
+		<com:TDropDownList ID="pick" AutoPostBack="true" OnSelectedIndexChanged="changed" Attributes.aria-label="Pick">
+			<com:TListItem Value="a" Text="Alpha" Selected="true" />
+			<com:TListItem Value="b" Text="Beta" />
+		</com:TDropDownList>
+		<com:TTextBox ID="autoText" AutoPostBack="true" OnTextChanged="changed" Attributes.aria-label="Auto text" />
+		<com:TTextBox ID="plainText" Attributes.aria-label="Plain text" />
+		<com:TActiveButton ID="active" Text="Active action" OnCallback="activeActed" />
+		<com:THyperLink ID="away" Text="Away link" NavigateUrl="#away" />
+	</com:TConfirmSubmit>
+	stays in this paragraph.</p>
+	<com:TButton ID="outside" Text="Outside action" OnClick="acted" />
+	<com:TActiveLabel ID="activeStatus" Text="waiting" />
+</com:TContent>

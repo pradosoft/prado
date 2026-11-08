@@ -10,9 +10,6 @@
 
 namespace Prado\Web\UI\WebControls;
 
-use Prado\IO\TTextWriter;
-use Prado\Prado;
-use Prado\TPropertyValue;
 use Prado\Web\THttpUtility;
 
 /**
@@ -21,6 +18,7 @@ use Prado\Web\THttpUtility;
  * TConfirmButton is a {@see TButton} that asks for confirmation in a modal dialog
  * before it posts back. It replaces `onclick="return confirm('...')"` with an
  * accessible `<dialog role="alertdialog">` that works without script.
+ * {@see TConfirmSubmit} confirms any control inside it, with script.
  *
  * With {@see setConfirmText ConfirmText} set, the button renders as an invoker
  * (`commandfor`, `command="show-modal"`) of its confirmation dialog. The dialog
@@ -55,95 +53,7 @@ use Prado\Web\THttpUtility;
  */
 class TConfirmButton extends TButton
 {
-	use TEncodeTrait;
-
-	/**
-	 * @return string the confirmation message. Defaults to '', no confirmation.
-	 */
-	public function getConfirmText()
-	{
-		return $this->getViewState('ConfirmText', '');
-	}
-
-	/**
-	 * Sets the confirmation message; '' renders a plain TButton that posts back at once.
-	 * @param string $value the confirmation message
-	 */
-	public function setConfirmText($value)
-	{
-		$this->setViewState('ConfirmText', TPropertyValue::ensureString($value), '');
-	}
-
-	/**
-	 * @return string the heading of the dialog. Defaults to the localized "Confirm".
-	 */
-	public function getConfirmHeaderText()
-	{
-		return $this->getViewState('ConfirmHeaderText', '') ?: Prado::localize('Confirm');
-	}
-
-	/**
-	 * Sets the heading of the dialog; '' restores the localized "Confirm".
-	 * @param string $value the heading of the dialog
-	 */
-	public function setConfirmHeaderText($value)
-	{
-		$this->setViewState('ConfirmHeaderText', TPropertyValue::ensureString($value), '');
-	}
-
-	/**
-	 * @return string the text of the button that posts back. Defaults to the localized "OK".
-	 */
-	public function getConfirmButtonText()
-	{
-		return $this->getViewState('ConfirmButtonText', '') ?: Prado::localize('OK');
-	}
-
-	/**
-	 * Sets the text of the button that posts back; '' restores the localized "OK".
-	 * @param string $value the text of the button that posts back
-	 */
-	public function setConfirmButtonText($value)
-	{
-		$this->setViewState('ConfirmButtonText', TPropertyValue::ensureString($value), '');
-	}
-
-	/**
-	 * @return string the text of the button that closes the dialog. Defaults to the
-	 *   localized "Cancel".
-	 */
-	public function getCancelButtonText()
-	{
-		return $this->getViewState('CancelButtonText', '') ?: Prado::localize('Cancel');
-	}
-
-	/**
-	 * Sets the text of the button that closes the dialog; '' restores the localized "Cancel".
-	 * @param string $value the text of the button that closes the dialog
-	 */
-	public function setCancelButtonText($value)
-	{
-		$this->setViewState('CancelButtonText', TPropertyValue::ensureString($value), '');
-	}
-
-	/**
-	 * @return string URL of the stylesheet of the dialog. Defaults to 'default', the
-	 *   bundled {@see TDialog} stylesheet. An empty string registers no stylesheet.
-	 */
-	public function getCssUrl()
-	{
-		return $this->getViewState('CssUrl', 'default');
-	}
-
-	/**
-	 * Sets the URL of the stylesheet of the dialog.
-	 * @param string $value stylesheet URL, 'default' for the bundled stylesheet,
-	 *   or empty to register no stylesheet
-	 */
-	public function setCssUrl($value)
-	{
-		$this->setViewState('CssUrl', TPropertyValue::ensureString($value), 'default');
-	}
+	use TConfirmDialogTrait;
 
 	/**
 	 * @return bool whether the button asks for confirmation: ConfirmText is set and
@@ -155,25 +65,14 @@ class TConfirmButton extends TButton
 	}
 
 	/**
-	 * @return string the client ID of the confirmation dialog
-	 */
-	public function getDialogClientID()
-	{
-		return $this->getClientID() . '_confirm';
-	}
-
-	/**
 	 * Registers the stylesheet of the dialog.
 	 * @param mixed $param event parameter
 	 */
 	public function onPreRender($param)
 	{
 		parent::onPreRender($param);
-		if ($this->getHasConfirmation() && ($url = $this->getCssUrl()) !== '') {
-			if ($url === 'default') {
-				$url = $this->publishAsset('assets' . DIRECTORY_SEPARATOR . 'dialog.css', TDialog::class);
-			}
-			$this->getPage()->getClientScript()->registerStyleSheetFile($url, $url);
+		if ($this->getHasConfirmation()) {
+			$this->registerDialogStyleSheet();
 		}
 	}
 
@@ -190,12 +89,7 @@ class TConfirmButton extends TButton
 			return;
 		}
 		$this->renderInvoker($writer);
-		$page = $this->getPage();
-		if (!$page->getIsCallback() && $page->getInFormRender() && ($form = $page->getForm()) !== null) {
-			$form->registerTeleportContent($this->getDialogClientID(), $this->renderDialogToString($writer, $form->getClientID()));
-		} else {
-			$this->renderDialog($writer, '');
-		}
+		$this->renderConfirmDialog($writer);
 	}
 
 	/**
@@ -214,70 +108,6 @@ class TConfirmButton extends TButton
 		$writer->addAttribute('command', 'show-modal');
 		$writer->renderBeginTag('button');
 		$writer->write(THttpUtility::htmlEncode($this->getText()));
-		$writer->renderEndTag();
-	}
-
-	/**
-	 * Renders the dialog into a string through the writer, whose output is restored.
-	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
-	 * @param string $formID the client ID of the form the OK button submits
-	 * @return string the HTML of the dialog
-	 */
-	protected function renderDialogToString($writer, $formID)
-	{
-		$output = $writer->getWriter();
-		$writer->setWriter(new TTextWriter());
-		try {
-			$this->renderDialog($writer, $formID);
-			return $writer->flush();
-		} finally {
-			$writer->setWriter($output);
-		}
-	}
-
-	/**
-	 * Renders the confirmation dialog: its heading, the message, and the Cancel
-	 * and OK buttons.
-	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
-	 * @param string $formID the client ID of the form the OK button submits, or ''
-	 *   when the dialog renders inside it
-	 */
-	protected function renderDialog($writer, $formID)
-	{
-		$id = $this->getDialogClientID();
-		$writer->addAttribute('id', $id);
-		$writer->addAttribute('role', 'alertdialog');
-		$writer->addAttribute('class', 'prado-confirm');
-		$writer->addAttribute('aria-labelledby', $id . '_header');
-		$writer->addAttribute('aria-describedby', $id . '_message');
-		$writer->renderBeginTag('dialog');
-
-		$writer->addAttribute('class', 'dialog-header');
-		$writer->renderBeginTag('div');
-		$writer->addAttribute('id', $id . '_header');
-		$writer->addAttribute('class', 'dialog-title');
-		$writer->renderBeginTag('h2');
-		$writer->write($this->encodeText($this->getConfirmHeaderText()));
-		$writer->renderEndTag();
-		$writer->renderEndTag();
-
-		$writer->addAttribute('id', $id . '_message');
-		$writer->renderBeginTag('p');
-		$writer->write($this->encodeText($this->getConfirmText()));
-		$writer->renderEndTag();
-
-		$writer->addAttribute('class', 'dialog-buttons');
-		$writer->renderBeginTag('div');
-		$writer->addAttribute('type', 'button');
-		$writer->addAttribute('commandfor', $id);
-		$writer->addAttribute('command', 'close');
-		$writer->addAttribute('autofocus', 'autofocus');
-		$writer->renderBeginTag('button');
-		$writer->write(THttpUtility::htmlEncode($this->getCancelButtonText()));
-		$writer->renderEndTag();
-		$this->renderConfirmButton($writer, $formID);
-		$writer->renderEndTag();
-
 		$writer->renderEndTag();
 	}
 
@@ -303,14 +133,6 @@ class TConfirmButton extends TButton
 		$writer->renderBeginTag('button');
 		$writer->write(THttpUtility::htmlEncode($this->getConfirmButtonText()));
 		$writer->renderEndTag();
-	}
-
-	/**
-	 * @return string the client ID of the OK button
-	 */
-	public function getConfirmButtonClientID()
-	{
-		return $this->getDialogClientID() . '_ok';
 	}
 
 	/**

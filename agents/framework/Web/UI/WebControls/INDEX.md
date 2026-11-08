@@ -44,6 +44,7 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 |---|---|---|
 | `TButton` | `<input type="submit">` or `<button>` | `ButtonType`, `ButtonTag`, `CausesValidation`, `ValidationGroup`, `OnClick`, `OnCommand`; `CommandFor` and `Command` make it an invoker (`commandfor`, `command`) |
 | [`TConfirmButton`](TConfirmButton.md) | `<button>` and `<dialog role="alertdialog">` | A TButton that asks for confirmation in a modal dialog before it posts back; `ConfirmText`, `ConfirmHeaderText`, `ConfirmButtonText`, `CancelButtonText`; no script (@since 4.4.0) |
+| [`TConfirmSubmit`](TConfirmSubmit.md) | `<span>` and `<dialog role="alertdialog">` | Wraps controls and asks for confirmation before their postback, callback, or navigation; the dialog properties of TConfirmButton ([`TConfirmDialogTrait`](TConfirmDialogTrait.md)); JS in `controls/confirmsubmit.js` (@since 4.4.0) |
 | `TLinkButton` | `<a>` with postback | Same as TButton |
 | `TImageButton` | `<input type="image">` | Sends x,y coordinates; `OnClick` with `TImageClickEventParameter` |
 | `TTextBox` | `<input>` / `<textarea>` | `TextMode` (SingleLine/MultiLine/Password), `MaxLength`, `ReadOnly`, `AutoPostBack`, `SuggestionList` |
