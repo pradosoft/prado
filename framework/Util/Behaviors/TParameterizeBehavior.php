@@ -24,6 +24,10 @@ use Prado\Exceptions\TInvalidOperationException;
  * parameter to then route the change to the property by setting the
  * RouteBehaviorName.
  *
+ * The property holds a copy of the parameter value.  A final application
+ * parameter ({@see \Prado\TApplicationParameters}) sends no later changes;
+ * code may still set the property directly.
+ *
  * ```php
  *	<behavior name="PageThemeParameter" Class="Prado\Util\Behaviors\TParameterizeBehavior" AttachTo="Page" Parameter="ThemeName" Property="Theme" DefaultValue="Basic"/>
  *  <behavior name="PageTitle" Class="Prado\Util\Behaviors\TParameterizeBehavior" AttachTo="Page" Parameter="TPageTitle" Property="Title" Localize="true"/>
