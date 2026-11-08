@@ -28,11 +28,17 @@ use Prado\TPropertyValue;
  *  // or <com:TListItem Attributes.Group="Group Name" .../> in template
  * ```
  *
+ * A {@see setRichOptions RichOptions} list box shows the HTML
+ * {@see TListItem::setContent Content} of its options with `appearance: base-select`
+ * ({@see TRichOptionsTrait}).
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
  */
 class TListBox extends TListControl implements \Prado\Web\UI\IPostBackDataHandler, \Prado\Web\UI\IValidatable
 {
+	use TRichOptionsTrait;
+
 	private $_dataChanged = false;
 	private $_isValid = true;
 
@@ -51,6 +57,7 @@ class TListBox extends TListControl implements \Prado\Web\UI\IPostBackDataHandle
 			$writer->addAttribute('name', $this->getUniqueID());
 		}
 		parent::addAttributesToRender($writer);
+		$this->addRichOptionsAttributesToRender($writer);
 	}
 
 	/**
@@ -64,8 +71,8 @@ class TListBox extends TListControl implements \Prado\Web\UI\IPostBackDataHandle
 	}
 
 	/**
-	 * Registers the list control to load post data on postback.
-	 * This method overrides the parent implementation.
+	 * Registers the list control to load post data on postback and the stylesheet of a
+	 * {@see getRichOptions RichOptions} list box.
 	 * @param mixed $param event parameter
 	 */
 	public function onPreRender($param)
@@ -74,6 +81,7 @@ class TListBox extends TListControl implements \Prado\Web\UI\IPostBackDataHandle
 		if ($this->getEnabled(true)) {
 			$this->getPage()->registerRequiresPostData($this);
 		}
+		$this->registerRichOptionsStyleSheet();
 	}
 
 	/**

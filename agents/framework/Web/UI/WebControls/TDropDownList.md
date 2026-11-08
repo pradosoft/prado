@@ -10,6 +10,8 @@
 ## Overview
 TDropDownList displays a dropdown list on a Web page. It inherits from TListControl and supports optgroup for grouping items, and prompt text for displaying a selectable prompt item as the first option.
 
+`RichOptions` ([TRichOptionsTrait](./TRichOptionsTrait.md)) shows the HTML content of the options with `appearance: base-select` and renders `<button><selectedcontent></selectedcontent></button>` before the options.
+
 ## Key Properties/Methods
 
 - `getSelectedIndex()` / `setSelectedIndex()` - Gets or sets the selected index
@@ -22,6 +24,9 @@ TDropDownList displays a dropdown list on a Web page. It inherits from TListCont
 - `raisePostDataChangedEvent()` - Raises postdata changed event
 - `getValidationPropertyValue()` - Returns value to be validated
 - `getIsValid()` / `setIsValid()` - Gets or sets validation status
+- `getRichOptions()` / `setRichOptions()` - Rich option content with `appearance: base-select`; default false
+- `getRichOptionsCssUrl()` / `setRichOptionsCssUrl()` - Stylesheet of a RichOptions select
+- `renderContents()` - Renders the `<button>` of a RichOptions select, then the options
 
 ## See Also
 

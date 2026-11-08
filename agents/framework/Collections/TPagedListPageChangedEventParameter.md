@@ -8,7 +8,7 @@
 **Namespace:** `Prado\Collections`
 
 ## Overview
-Event parameter for the [TPagedList](./TPagedList.md)::OnPageChanged event. Provides the previous page index when the page changes.
+Event parameter for the [TPagedList](./TPagedList.md)::OnPageIndexChanged event, raised in managed and custom paging. Provides the previous page index when the page changes.
 
 ## Properties
 
@@ -18,12 +18,12 @@ Event parameter for the [TPagedList](./TPagedList.md)::OnPageChanged event. Prov
 public function getOldPageIndex(): int
 ```
 
-The page index before the change.
+The page index before the change. The first page fetched in custom paging has `-1`.
 
 ## Usage
 
 ```php
-$list->attachEventHandler('OnPageChanged', function($sender, $param) {
+$list->attachEventHandler('OnPageIndexChanged', function($sender, $param) {
     $previousPage = $param->getOldPageIndex();
     $currentPage = $list->getCurrentPageIndex();
 });

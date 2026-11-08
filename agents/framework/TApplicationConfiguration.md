@@ -31,6 +31,7 @@ After parsing, the following arrays are populated:
 | `$_modules` | Module configs: `[id => [class, properties, raw_element]]` |
 | `$_services` | Service configs: `[id => [class, properties, raw_element]]` |
 | `$_parameters` | Parameters: `[id => value_or_[class, properties, raw_element]]` |
+| `$_finalParameters` | Ids of parameters marked `final`: `[id => true]` |
 | `$_includes` | External config includes (with optional `when=` conditions) |
 
 ## Key Methods
@@ -51,6 +52,7 @@ $config->getUsings()
 $config->getModules()
 $config->getServices()
 $config->getParameters()
+$config->getFinalParameters()   // [id => true] for each parameter marked final
 $config->getExternalConfigurations()
 ```
 
@@ -75,6 +77,7 @@ return [
     ],
     'parameters' => [
         'siteName' => 'My Site',
+        'DeveloperMode' => ['value' => '0', 'final' => true],
     ],
     'includes' => [
         ['file' => 'protected/config/extra.xml', 'when' => ''],
@@ -96,4 +99,5 @@ return [
 - **Conditional includes** — `<include file="..." when="PHP_expression" />` includes are only loaded when the `when` expression evaluates to true. Useful for environment-specific config.
 - **Config type** — determined by `TApplication::getConfigurationType()` (returns `CONFIG_TYPE_XML` or `CONFIG_TYPE_PHP`). The type is set based on the config file extension.
 - **Path resolution** — relative paths in aliases are resolved relative to the config file's directory (`$configPath`).
+- **Final parameters** — `final="true"` (XML) or `'final' => true` (PHP) is removed from the parameter's properties and recorded in `getFinalParameters()`. A later definition of the same id in one file replaces both value and flag. `TApplication::applyConfiguration()` sets the value, then calls `TApplicationParameters::finalize()`; later configurations (folder `config.xml`, services, includes) that set the id throw `appparameters_final`. A PHP array parameter needs `class` or `value`; others are ignored.
 - **`getIsEmpty()`** — returns `true` if no meaningful config was found (e.g., an empty XML file). `TApplication` uses this to skip unnecessary processing.

@@ -1106,18 +1106,22 @@ class TApplication extends TComponent implements ISingleton
 	// =========================================================================
 
 	/**
-	 * @return TMap the list of application parameters
+	 * Creates the application parameter map.
+	 * @return TMap the list of application parameters, a {@see TApplicationParameters}
+	 *   by default. Only a {@see TApplicationParameters} supports final parameters.
 	 * @since 4.3.3
 	 */
 	protected function newParameters()
 	{
-		return new TMap();
+		return new TApplicationParameters();
 	}
 
 	/**
 	 * Returns the list of application parameters.
 	 * Since the parameters are returned as a {@see TMap} object, you may use
 	 * the returned result to access, add or remove individual parameters.
+	 * A final parameter ({@see TApplicationParameters::finalize()}) cannot be
+	 * added, set, or removed.
 	 * @return TMap the list of application parameters
 	 */
 	public function getParameters()
@@ -1132,6 +1136,21 @@ class TApplication extends TComponent implements ISingleton
 	protected function setParameters($parameters)
 	{
 		$this->_parameters = $parameters;
+	}
+
+	/**
+	 * Finalizes a configured parameter so later configurations and code cannot change it.
+	 * @param TMap $parameters the application parameter map.
+	 * @param int|string $id the parameter id.
+	 * @throws TConfigurationException if the parameter map is not a {@see TApplicationParameters}.
+	 * @since 4.4.0
+	 */
+	protected function finalizeParameter($parameters, $id): void
+	{
+		if (!($parameters instanceof TApplicationParameters)) {
+			throw new TConfigurationException('appconfig_parameters_final_unsupported', $id, $parameters::class);
+		}
+		$parameters->finalize($id);
 	}
 
 	// =========================================================================
@@ -2612,7 +2631,7 @@ class TApplication extends TComponent implements ISingleton
 	 * 1. Path aliases and usings
 	 * 2. Application properties (skipped when `$withinService` is true)
 	 * 3. Services
-	 * 4. Parameters
+	 * 4. Parameters, finalizing each parameter the configuration marks final
 	 * 5. Modules — four phases:
 	 *    a. Instantiate all modules and apply configuration properties via {@see setSubProperties()}
 	 *    b. Sort by dependency (pre-init pass), then raise {@see TModule::dyPreInit()} in order
@@ -2622,6 +2641,9 @@ class TApplication extends TComponent implements ISingleton
 	 * 6. External configuration files (evaluated conditionally and applied recursively)
 	 * @param TApplicationConfiguration $config the configuration
 	 * @param bool $withinService whether the configuration is specified within a service.
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the configuration sets a final parameter.
+	 * @throws TConfigurationException if the configuration marks a parameter final and
+	 *   the parameter map is not a {@see TApplicationParameters}.
 	 */
 	public function applyConfiguration($config, $withinService = false)
 	{
@@ -2658,6 +2680,7 @@ class TApplication extends TComponent implements ISingleton
 
 		// load parameters
 		$appParams = $this->getParameters();
+		$finalParams = $config->getFinalParameters();
 		foreach ($config->getParameters() as $id => $parameter) {
 			if (is_array($parameter)) {
 				$component = Prado::createComponent($parameter[0]);
@@ -2666,6 +2689,9 @@ class TApplication extends TComponent implements ISingleton
 				$appParams->add($id, $component);
 			} else {
 				$appParams->add($id, $parameter);
+			}
+			if (isset($finalParams[$id])) {
+				$this->finalizeParameter($appParams, $id);
 			}
 		}
 

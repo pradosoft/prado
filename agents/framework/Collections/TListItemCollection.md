@@ -45,10 +45,10 @@ Inserts a TListItem or string at the specified index.
 ### findIndexByValue
 
 ```php
-public function findIndexByValue(string $value, bool $includeDisabled = false): int
+public function findIndexByValue(string $value, bool $includeDisabled = true): int
 ```
 
-Finds the index of an item by its value.
+Finds the index of an item by its value. Disabled items are included by default.
 
 ## See Also
 

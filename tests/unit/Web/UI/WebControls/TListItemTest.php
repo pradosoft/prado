@@ -120,6 +120,46 @@ class TListItemTest extends TestCase
 	}
 
 	// ================================================================================
+	// Content
+	// ================================================================================
+
+	public function testContentDefaultsEmpty()
+	{
+		$item = new TListItem('Cat', 'cat');
+		$this->assertSame('', $item->getContent());
+		$this->assertFalse($item->getHasContent());
+	}
+
+	public function testSetContentTrimsAndEnsuresString()
+	{
+		$item = new TListItem('Cat', 'cat');
+		$item->setContent("  <img src=\"cat.svg\" alt=\"\"> Cat\n");
+		$this->assertSame('<img src="cat.svg" alt=""> Cat', $item->getContent());
+		$this->assertTrue($item->getHasContent());
+		$item->setContent(42);
+		$this->assertSame('42', $item->getContent());
+		$item->setContent('   ');
+		$this->assertFalse($item->getHasContent());
+	}
+
+	public function testContentLeavesTextAndValue()
+	{
+		$item = new TListItem('', 'cat');
+		$item->setContent('<b>Cat</b>');
+		$this->assertSame('cat', $item->getText());
+		$this->assertSame('cat', $item->getValue());
+	}
+
+	public function testAddParsedObjectAppendsTextToContent()
+	{
+		$item = new TListItem();
+		$item->addParsedObject("\n\t<b>Cat</b>");
+		$item->addParsedObject(" and kitten\n");
+		$item->addParsedObject(new \stdClass());
+		$this->assertSame('<b>Cat</b> and kitten', $item->getContent());
+	}
+
+	// ================================================================================
 	// Serialization
 	// ================================================================================
 
@@ -131,18 +171,21 @@ class TListItemTest extends TestCase
 		$this->assertNotContains("\0*\0_value", $props);
 		$this->assertNotContains("\0*\0_enabled", $props);
 		$this->assertNotContains("\0*\0_selected", $props);
+		$this->assertNotContains("\0*\0_content", $props);
 	}
 
 	public function testSleepKeepsNonDefaultProperties()
 	{
 		$item = new TListItem('Text', 'val', false, true);
 		$item->setAttribute('class', 'hot');
+		$item->setContent('<b>Text</b>');
 		$props = $item->__sleep();
 		$this->assertContains("\0*\0_attributes", $props);
 		$this->assertContains("\0*\0_text", $props);
 		$this->assertContains("\0*\0_value", $props);
 		$this->assertContains("\0*\0_enabled", $props);
 		$this->assertContains("\0*\0_selected", $props);
+		$this->assertContains("\0*\0_content", $props);
 	}
 
 	public function testCloneCopiesAttributes()
@@ -160,17 +203,20 @@ class TListItemTest extends TestCase
 	{
 		$item = new TListItem('Text', 'val', false, true);
 		$item->setAttribute('class', 'hot');
+		$item->setContent('<b>Text</b>');
 		$copy = unserialize(serialize($item));
 		$this->assertSame('Text', $copy->getText());
 		$this->assertSame('val', $copy->getValue());
 		$this->assertFalse($copy->getEnabled());
 		$this->assertTrue($copy->getSelected());
 		$this->assertSame('hot', $copy->getAttribute('class'));
+		$this->assertSame('<b>Text</b>', $copy->getContent());
 
 		$plain = unserialize(serialize(new TListItem()));
 		$this->assertSame('', $plain->getText());
 		$this->assertTrue($plain->getEnabled());
 		$this->assertFalse($plain->getSelected());
 		$this->assertFalse($plain->getHasAttributes());
+		$this->assertFalse($plain->getHasContent());
 	}
 }

@@ -67,7 +67,7 @@ class TPagedList extends TList
 	 */
 	private $_pageSize = 10;
 	/**
-	 * @var int current page index
+	 * @var int current page index, -1 until a page is selected
 	 */
 	private $_currentPageIndex = -1;
 	/**
@@ -123,10 +123,15 @@ class TPagedList extends TList
 	}
 
 	/**
-	 * @return int current page index. Defaults to 0.
+	 * Returns the index of the current page.
+	 * Managed paging starts on page 0. Custom paging reports -1 until the first page is fetched.
+	 * @return int current page index. Defaults to 0 in managed paging and -1 in custom paging.
 	 */
 	public function getCurrentPageIndex()
 	{
+		if (!$this->getCustomPaging() && $this->_currentPageIndex < 0) {
+			return 0;
+		}
 		return $this->_currentPageIndex;
 	}
 
@@ -165,12 +170,13 @@ class TPagedList extends TList
 
 	/**
 	 * Changes to a page with the specified page index.
+	 * Going to the current page returns its index without raising an event or fetching data.
 	 * @param int $pageIndex page index
 	 * @return bool|int the new page index, false if page index is out of range.
 	 */
 	public function gotoPage($pageIndex)
 	{
-		if ($pageIndex === $this->_currentPageIndex) {
+		if ($pageIndex === $this->getCurrentPageIndex()) {
 			return $pageIndex;
 		}
 		if ($this->_customPaging) {
@@ -193,8 +199,9 @@ class TPagedList extends TList
 			}
 		} else {
 			if ($pageIndex >= 0 && $pageIndex < $this->getPageCount()) {
+				$oldPage = $this->getCurrentPageIndex();
 				$this->_currentPageIndex = $pageIndex;
-				$this->onPageIndexChanged(null);
+				$this->onPageIndexChanged(new TPagedListPageChangedEventParameter($oldPage));
 				return $pageIndex;
 			} else {
 				return false;
@@ -208,7 +215,7 @@ class TPagedList extends TList
 	 */
 	public function nextPage()
 	{
-		return $this->gotoPage($this->_currentPageIndex + 1);
+		return $this->gotoPage($this->getCurrentPageIndex() + 1);
 	}
 
 	/**
@@ -217,7 +224,7 @@ class TPagedList extends TList
 	 */
 	public function previousPage()
 	{
-		return $this->gotoPage($this->_currentPageIndex - 1);
+		return $this->gotoPage($this->getCurrentPageIndex() - 1);
 	}
 
 	/**
@@ -260,15 +267,20 @@ class TPagedList extends TList
 	 */
 	public function getIsFirstPage()
 	{
-		return $this->_currentPageIndex === 0;
+		return $this->getCurrentPageIndex() === 0;
 	}
 
 	/**
+	 * Returns whether the current page is the last page.
+	 * An empty list in managed paging is on its first and last page.
 	 * @return bool whether the current page is the last page
 	 */
 	public function getIsLastPage()
 	{
-		return $this->_currentPageIndex === $this->getPageCount() - 1;
+		if ($this->getCustomPaging()) {
+			return $this->getCurrentPageIndex() === $this->getPageCount() - 1;
+		}
+		return $this->getCurrentPageIndex() >= $this->getPageCount() - 1;
 	}
 
 	/**
@@ -279,11 +291,8 @@ class TPagedList extends TList
 		if ($this->_customPaging) {
 			return parent::getCount();
 		} else {
-			if ($this->_currentPageIndex === $this->getPageCount() - 1) {
-				return parent::getCount() - $this->_pageSize * $this->_currentPageIndex;
-			} else {
-				return $this->_pageSize;
-			}
+			$remaining = parent::getCount() - $this->getPageSize() * $this->getCurrentPageIndex();
+			return max(0, min($this->getPageSize(), $remaining));
 		}
 	}
 
@@ -312,7 +321,7 @@ class TPagedList extends TList
 		if ($this->_customPaging) {
 			return parent::itemAt($index);
 		} else {
-			return parent::itemAt($this->_pageSize * $this->_currentPageIndex + $index);
+			return parent::itemAt($this->getPageSize() * $this->getCurrentPageIndex() + $index);
 		}
 	}
 
