@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: `TProcessFork` serialized with a Closure body threw because `_body` was excluded under its private name; `TList` and `TWebAttributeCollection` likewise keep a default `_r` and `_prefix` out of the payload. (belisoful)
 BUG: `TPagedDataSource::getCount()` with paging on matches iteration: a page past the last page counts 0 and reports `IsLastPage`, and a short custom page counts its own items. (belisoful)
 NEW: Issue #1401 - `TDropdownMenu` renders a menu button and an action menu of its links and buttons, a `TPopover` with the ARIA `menu` role and the WAI-ARIA menu button keyboard. (belisoful)
 NEW: Issue #1401 - `TConfirmButton` asks for confirmation in a modal `alertdialog` before it posts back, without script, and replaces `onclick="return confirm()"`: `ConfirmText`, `ConfirmHeaderText`, `ConfirmButtonText`, and `CancelButtonText`. (belisoful)

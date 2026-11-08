@@ -427,7 +427,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 			$exprops[] = "\0*\0_c";
 		}
 		if ($this->_r === null) {
-			$exprops[] = "\0" . __CLASS__ . "\0_r";
+			$exprops[] = "\0*\0_r";
 		}
 	}
 }
