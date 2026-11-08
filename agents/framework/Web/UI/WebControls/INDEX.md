@@ -43,6 +43,7 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 | Class | HTML | Key Properties / Events |
 |---|---|---|
 | `TButton` | `<input type="submit">` or `<button>` | `ButtonType`, `ButtonTag`, `CausesValidation`, `ValidationGroup`, `OnClick`, `OnCommand`; `CommandFor` and `Command` make it an invoker (`commandfor`, `command`) |
+| [`TConfirmButton`](TConfirmButton.md) | `<button>` and `<dialog role="alertdialog">` | A TButton that asks for confirmation in a modal dialog before it posts back; `ConfirmText`, `ConfirmHeaderText`, `ConfirmButtonText`, `CancelButtonText`; no script (@since 4.4.0) |
 | `TLinkButton` | `<a>` with postback | Same as TButton |
 | `TImageButton` | `<input type="image">` | Sends x,y coordinates; `OnClick` with `TImageClickEventParameter` |
 | `TTextBox` | `<input>` / `<textarea>` | `TextMode` (SingleLine/MultiLine/Password), `MaxLength`, `ReadOnly`, `AutoPostBack`, `SuggestionList` |
@@ -97,6 +98,7 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 | [`TDialog`](TDialog.md) | `<dialog>`; `Open`, `Modal` (an Open dialog shows modally through `showModal()`), `ClosedBy` ([`TDialogClosedBy`](TDialogClosedBy.md), light dismiss), `HeaderText` and `ShowCloseButton` (a header block: heading and close button); a TButton with `CommandFor` opens and closes it without script (@since 4.4.0) |
 | [`TTeleport`](TTeleport.md) | Renders its content after `</form>`, outside the page form: a native `<form method="dialog">`, overlays, toasts; JS in `controls/teleport.js` sets the `form` attribute of its fields (@since 4.4.0) |
 | [`TPopover`](TPopover.md) | `<div popover>` anchored to its invoker; `Popover` (`auto`), `Placement` ([`TPopoverPlacement`](TPopoverPlacement.md)), `ButtonText` renders its own invoker; no script (@since 4.4.0) |
+| [`TDropdownMenu`](TDropdownMenu.md) | A [`TPopover`](TPopover.md) menu button and ARIA `menu` of its links and buttons, with the menu keyboard; JS in `controls/menu.js` (@since 4.4.0) |
 | [`TTooltip`](TTooltip.md) | `<div popover="hint" role="tooltip">` that describes `ForControl` on hover and focus (WCAG 1.4.13); `Placement`, `ShowDelay`, `HideDelay`; JS in `controls/tooltip.js` (@since 4.4.0) |
 
 ## Data Controls

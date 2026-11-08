@@ -25,6 +25,7 @@ export const WebUI = global.Prado.WebUI;
 export const Control          = global.Prado.WebUI.Control;
 export const PostBackControl  = global.Prado.WebUI.PostBackControl;
 export const TButton          = global.Prado.WebUI.TButton;
+export const TConfirmButton   = global.Prado.WebUI.TConfirmButton;
 export const TLinkButton      = global.Prado.WebUI.TLinkButton;
 export const TCheckBox        = global.Prado.WebUI.TCheckBox;
 export const TBulletedList    = global.Prado.WebUI.TBulletedList;

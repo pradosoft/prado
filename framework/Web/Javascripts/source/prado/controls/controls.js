@@ -286,6 +286,22 @@ Prado.WebUI.PostBackControl = Prado.Class(Prado.WebUI.Control, {
 });
 
 Prado.WebUI.TButton = Prado.Class(Prado.WebUI.PostBackControl);
+
+/**
+ * TConfirmButton client-side behaviour. The OK button of the confirmation dialog
+ * posts back as a TButton; when client validation fails, the dialog closes so the
+ * error messages show.
+ * @since 4.4.0
+ */
+Prado.WebUI.TConfirmButton = Prado.Class(Prado.WebUI.TButton,
+{
+	onPostBack($super, options, event) {
+		$super(options, event);
+		const dialog = this.element.closest('dialog');
+		if (event.defaultPrevented && dialog && dialog.open)
+			dialog.close();
+	}
+});
 Prado.WebUI.TLinkButton = Prado.Class(Prado.WebUI.PostBackControl);
 Prado.WebUI.TCheckBox = Prado.Class(Prado.WebUI.PostBackControl);
 Prado.WebUI.TBulletedList = Prado.Class(Prado.WebUI.PostBackControl);

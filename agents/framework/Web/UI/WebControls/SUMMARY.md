@@ -13,6 +13,7 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 ### Input Controls
 
 - **`TButton`** — `<input type="submit">` or `<button>`; properties: `ButtonType`, `ButtonTag`, `CausesValidation`, `ValidationGroup`, `CommandFor` and `Command` (an invoker that opens or closes a dialog or popover without script).
+- **`TConfirmButton`** — a TButton that opens a modal `alertdialog` (after `</form>`) and posts back from its OK button; `ConfirmText`, `ConfirmHeaderText`, `ConfirmButtonText`, `CancelButtonText`; replaces `onclick="return confirm()"`. @since 4.4.0
 
 - **`TLinkButton`** — `<a>` with postback; same properties as TButton.
 
@@ -82,6 +83,8 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 - **`TTeleport`** — Renders its content after `</form>`, outside the page form, so a native `<form method="dialog">` works and overlays escape their ancestors; `TForm::registerTeleportContent()`; JS in `controls/teleport.js` joins its fields to the page form. @since 4.4.0
 
 - **`TPopover`** — `<div popover>` (default `auto`) anchored to its invoker with CSS anchor positioning; `Placement` (**`TPopoverPlacement`**: `None`, `Top`, `Bottom`, `Start`, `End`), `ButtonText` renders its own `toggle-popover` invoker, or a TButton with `CommandFor` opens it; no script. @since 4.4.0
+
+- **`TDropdownMenu`** — extends `TPopover`: a menu button (`aria-haspopup="menu"`) and an action menu whose links and buttons take `role="menuitem"`; arrows, Home, End, type-ahead, Esc, and Tab per the WAI-ARIA menu button pattern; JS in `controls/menu.js`. @since 4.4.0
 
 - **`TTooltip`** — `<div popover="hint" role="tooltip">` shown next to `ForControl` on hover and focus, hidden by Esc (WCAG 1.4.13); the target's `aria-describedby` names it; `Text`, `Placement` (default `Top`), `ShowDelay`, `HideDelay`; JS in `controls/tooltip.js`. @since 4.4.0
 

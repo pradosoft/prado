@@ -1,0 +1,14 @@
+<com:TContent ID="Content">
+	<h1>Confirm Button Test Case</h1>
+
+	<p>Status: <com:TLabel ID="status" Text="waiting" /></p>
+	<p id="para">Item 7 <com:TConfirmButton ID="remove" Text="Remove" ConfirmText="Remove this item?"
+		ConfirmButtonText="Remove" OnClick="removeClicked" /> stays in this paragraph.</p>
+
+	<com:TLabel ForControl="reason" Text="Reason" />
+	<com:TTextBox ID="reason" />
+	<com:TRequiredFieldValidator ID="reasonRequired" ControlToValidate="reason" ValidationGroup="archive"
+		ErrorMessage="Reason required" Display="Dynamic" />
+	<com:TConfirmButton ID="archive" Text="Archive" ConfirmText="Archive this item?" ValidationGroup="archive"
+		OnClick="archiveClicked" />
+</com:TContent>
