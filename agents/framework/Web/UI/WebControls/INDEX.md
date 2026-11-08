@@ -24,6 +24,7 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 - **[`TPagerAccessibilityTrait`](TPagerAccessibilityTrait.md)** — Accessible names, `aria-current="page"`, the named `<nav>`, and the `<ul>` list layout of the `TPager` and `TDataGrid` pagers. @since 4.4.0
 
 - **[`TCiteTrait`](TCiteTrait.md)** — Backs the `Cite` property (source or explanation URL) of `TQuote`, `TBlockQuote`, `TIns`, and `TDel`. @since 4.4.0
+- **[`TRichOptionsTrait`](TRichOptionsTrait.md)** — Backs `RichOptions` and `RichOptionsCssUrl` of `TDropDownList` and `TListBox`: the `rich-options` class opted into `appearance: base-select`. @since 4.4.0
 
 - **[`TBaseEdit`](TBaseEdit.md)** — Base for `TIns` and `TDel`: `Cite` and `DateTime` of an edit. @since 4.4.0
 
@@ -47,8 +48,8 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 | `TTextBox` | `<input>` / `<textarea>` | `TextMode` (SingleLine/MultiLine/Password), `MaxLength`, `ReadOnly`, `AutoPostBack`, `SuggestionList` |
 | `TCheckBox` | `<input type="checkbox">` | `Checked`, `TextAlign`, `AutoPostBack`, `OnCheckedChanged` |
 | `TRadioButton` | `<input type="radio">` | `GroupName`, `Checked`, `AutoPostBack`, `OnCheckedChanged` |
-| `TDropDownList` | `<select>` | `SelectedIndex`, `SelectedValue`, `Items` (TListItemCollection), `AutoPostBack` |
-| `TListBox` | `<select multiple>` | `SelectionMode` (Single/Multiple), `Rows` |
+| `TDropDownList` | `<select>` | `SelectedIndex`, `SelectedValue`, `Items` (TListItemCollection), `AutoPostBack`, `RichOptions` |
+| `TListBox` | `<select multiple>` | `SelectionMode` (Single/Multiple), `Rows`, `RichOptions` |
 | [`TSuggestionList`](TSuggestionList.md) | `<datalist>` | Suggested values for a `TTextBox` through `TTextBox::SuggestionList`; `Items`, data binding (@since 4.4.0) |
 | `TCheckBoxList` | multiple `<input type="checkbox">` | `RepeatLayout`, `RepeatColumns`, `RepeatDirection` |
 | `TRadioButtonList` | multiple `<input type="radio">` | Same as TCheckBoxList |
@@ -93,7 +94,7 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 | `TKeyboard` | Virtual on-screen keyboard; JS in `controls/keyboard.js` |
 | `TRatingList` | Star/block rating; JS in `ratings/ratings.js` |
 | `TRelativeTime` | Live "time ago" in a `<time>` element; extends `TTime`; JS in `controls/relativetime.js` |
-| [`TDialog`](TDialog.md) | `<dialog>`; `Open`, `Modal` (an Open dialog shows modally through `showModal()`), `ClosedBy` ([`TDialogClosedBy`](TDialogClosedBy.md), light dismiss); a TButton with `CommandFor` opens and closes it without script (@since 4.4.0) |
+| [`TDialog`](TDialog.md) | `<dialog>`; `Open`, `Modal` (an Open dialog shows modally through `showModal()`), `ClosedBy` ([`TDialogClosedBy`](TDialogClosedBy.md), light dismiss), `HeaderText` and `ShowCloseButton` (a header block: heading and close button); a TButton with `CommandFor` opens and closes it without script (@since 4.4.0) |
 | [`TTeleport`](TTeleport.md) | Renders its content after `</form>`, outside the page form: a native `<form method="dialog">`, overlays, toasts; JS in `controls/teleport.js` sets the `form` attribute of its fields (@since 4.4.0) |
 | [`TPopover`](TPopover.md) | `<div popover>` anchored to its invoker; `Popover` (`auto`), `Placement` ([`TPopoverPlacement`](TPopoverPlacement.md)), `ButtonText` renders its own invoker; no script (@since 4.4.0) |
 

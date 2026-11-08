@@ -30,9 +30,11 @@ Controlled by `setDiscardInvalid(?bool $value)`. The mode governs what happens w
 
 - **`true`**: the entry is silently removed. Count and key set shrink automatically. Use when the map is a live index and dead entries should be invisible.
 - **`false`**: the entry is retained with the value resolving to `null` on read. Count and key set remain stable. Use when callers need a stable key set (e.g., read-only snapshots or maps that must not silently shrink).
-- **`null`** (default — deferred resolution): the actual mode is not decided at construction time. The first operation that needs to know the mode (any add, remove, count, or iteration) resolves it automatically: mutable maps resolve to `true`; read-only maps resolve to `false`. After resolution the value is fixed for the lifetime of the object.
+- **`null`** (default — deferred resolution): without initial data, the actual mode is not decided at construction time. The first operation that needs to know the mode (any add, remove, count, or iteration) resolves it automatically: mutable maps resolve to `true`; read-only maps resolve to `false`. After resolution the value is fixed for the lifetime of the object.
 
-The `null` default exists so that a map constructed before its `ReadOnly` state is finalised still ends up with a sensible mode. Pass `$discardInvalid` explicitly in the constructor if you know the desired mode up front — this avoids any ambiguity.
+With initial data, the constructor resolves `null` to the opposite of the final `ReadOnly` after loading the data. The `null` default exists so that a map constructed before its `ReadOnly` state is finalised still ends up with a sensible mode. Pass `$discardInvalid` explicitly in the constructor if you know the desired mode up front — this avoids any ambiguity.
+
+Turning `DiscardInvalid` on iterates a snapshot of the entries: live objects are registered, collected entries are removed, and a `TEventHandler` without a handler object is kept. A destructor that removes an entry during this pass does not break the bookkeeping (see [TWeakCollectionTrait](./TWeakCollectionTrait.md) `weakRemove()`).
 
 **Lock:** once resolved from `null`, or set explicitly to `true`/`false`, `DiscardInvalid` is locked. Only code inside the class itself (constructor or protected subclass methods) may change it further. External callers attempting `setDiscardInvalid()` after resolution receive `TInvalidOperationException`.
 
@@ -88,7 +90,7 @@ PHP's cyclic GC can fire destructors between any two opcodes. `scrubWeakReferenc
 
 ## Patterns & Gotchas
 
-- **TEventHandler tracking** — The inner callable object (not the `TEventHandler` shell) is registered in the WeakMap. A dead inner object causes `filterItemForOutput` to return `null` for the whole entry.
+- **TEventHandler tracking** — The inner callable object (not the `TEventHandler` shell) is registered in the WeakMap. A dead inner object causes `filterItemForOutput` to return `null` for the whole entry. A `TEventHandler` whose inner object is collected before it is added calls `weakMarkChanged()`, so the next scrub removes it.
 - **Non-object values survive GC** — Scalars, arrays, and null are stored directly; they are never considered "dead" and are never scrubbed.
 - **Closures are strongly retained** — If the map is the only reference to a `Closure` it will *not* be GC'd; this matches `TWeakList` / `TWeakCallableCollection` behavior.
 - **`DiscardInvalid` lock** — Prefer passing `$discardInvalid` in the constructor if you need a specific mode; changing it later from outside the class throws `TInvalidOperationException`.

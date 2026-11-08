@@ -292,6 +292,19 @@ class TArraySubscriptionTest extends \PHPUnit\Framework\TestCase
 		self::assertFalse($this->subscription->getIsAssociative());
 		$this->subscription->setIsAssociative(null);
 		self::assertNull($this->subscription->getIsAssociative());
+
+		// Changing IsAssociative while subscribed names the IsAssociative property.
+		$array = [];
+		$this->subscription = new $this->_baseClass($array, 'key', 5);
+		self::assertTrue($this->subscription->getIsSubscribed());
+		try {
+			$this->subscription->setIsAssociative(false);
+			self::fail('setIsAssociative did not throw while subscribed.');
+		} catch (TInvalidOperationException $e) {
+			self::assertEquals('arraysubscription_no_change', $e->getErrorCode());
+			self::assertStringContainsString('TArraySubscription.IsAssociative ', $e->getMessage());
+		}
+		self::assertTrue($this->subscription->getIsAssociative());
 	}
 	
 	public function testSubscribe()
@@ -457,7 +470,38 @@ class TArraySubscriptionTest extends \PHPUnit\Framework\TestCase
 		self::assertNull($this->subscription->getKey());
 		self::assertEquals([0 => true, 1 => 5], $array);
 	}
-	
+
+	public function testSubscribe_array_list_bounds()
+	{
+		// key === count() appends.
+		$array = ['a', 'b'];
+		$this->subscription = new $this->_baseClass($array, 2, 'x', isAssociative: false);
+		self::assertTrue($this->subscription->getIsSubscribed());
+		self::assertEquals(['a', 'b', 'x'], $array);
+		self::assertTrue($this->subscription->unsubscribe());
+		self::assertEquals(['a', 'b'], $array);
+
+		// An in-range key inserts at that index.
+		$this->subscription = new $this->_baseClass($array, 1, 'x', isAssociative: false);
+		self::assertTrue($this->subscription->getIsSubscribed());
+		self::assertEquals(['a', 'x', 'b'], $array);
+		self::assertTrue($this->subscription->unsubscribe());
+		self::assertEquals(['a', 'b'], $array);
+
+		// Out-of-range keys throw and leave the array unchanged.
+		foreach ([3, 5, -1] as $key) {
+			$this->subscription = new $this->_baseClass($array, $key, 'x', isAssociative: false, autoSubscribe: false);
+			try {
+				$this->subscription->subscribe();
+				self::fail("Key {$key} did not throw arraysubscription_index_invalid.");
+			} catch (TInvalidDataValueException $e) {
+				self::assertEquals('arraysubscription_index_invalid', $e->getErrorCode());
+			}
+			self::assertFalse($this->subscription->getIsSubscribed());
+			self::assertEquals(['a', 'b'], $array);
+		}
+	}
+
 	public function testSubscribe_ArrayAccess()
 	{
 		$data = ['dkey' => 'data'];

@@ -629,6 +629,107 @@ class TApplicationConfigurationTest extends \PHPUnit\Framework\TestCase
 	}
 
 	// =======================================================================
+	// Parameters — final flag
+	// =======================================================================
+
+	public function testFinalParameters_emptyByDefault(): void
+	{
+		$config = $this->config();
+		$config->loadFromXml($this->xml(
+			'<application><parameters><parameter id="SiteName" value="My Site"/></parameters></application>'
+		), $this->tmpDir);
+		$this->assertSame([], $config->getFinalParameters());
+	}
+
+	public function testLoadParametersXml_finalValue(): void
+	{
+		$config = $this->config();
+		$config->loadFromXml($this->xml(
+			'<application><parameters>'
+			. '<parameter id="Locked" value="1" final="true"/>'
+			. '<parameter id="Open" value="2" final="false"/>'
+			. '<parameter id="Plain" value="3"/>'
+			. '</parameters></application>'
+		), $this->tmpDir);
+		$this->assertSame(['Locked' => '1', 'Open' => '2', 'Plain' => '3'], $config->getParameters());
+		$this->assertSame(['Locked' => true], $config->getFinalParameters());
+	}
+
+	public function testLoadParametersXml_finalComponentDropsFinalProperty(): void
+	{
+		$config = $this->config();
+		$config->loadFromXml($this->xml(
+			'<application><parameters><parameter id="Mailer" class="TMailer" Host="smtp" final="true"/></parameters></application>'
+		), $this->tmpDir);
+		[$type, $properties] = $config->getParameters()['Mailer'];
+		$this->assertSame('TMailer', $type);
+		$this->assertSame(['Host' => 'smtp'], $properties);
+		$this->assertSame(['Mailer' => true], $config->getFinalParameters());
+	}
+
+	public function testLoadParametersXml_finalElement(): void
+	{
+		$config = $this->config();
+		$config->loadFromXml($this->xml(
+			'<application><parameters><parameter id="Raw" final="true">body</parameter></parameters></application>'
+		), $this->tmpDir);
+		$raw = $config->getParameters()['Raw'];
+		$this->assertInstanceOf(\Prado\Xml\TXmlElement::class, $raw);
+		$this->assertNull($raw->getAttribute('final'));
+		$this->assertSame(['Raw' => true], $config->getFinalParameters());
+	}
+
+	public function testLoadParametersXml_laterDefinitionReplacesFinalFlag(): void
+	{
+		$config = $this->config();
+		$config->loadFromXml($this->xml(
+			'<application><parameters>'
+			. '<parameter id="A" value="1" final="true"/>'
+			. '<parameter id="A" value="2"/>'
+			. '<parameter id="B" value="1"/>'
+			. '<parameter id="B" value="2" final="true"/>'
+			. '</parameters></application>'
+		), $this->tmpDir);
+		$this->assertSame(['A' => '2', 'B' => '2'], $config->getParameters());
+		$this->assertSame(['B' => true], $config->getFinalParameters());
+	}
+
+	public function testLoadParametersPhp_finalValue(): void
+	{
+		$config = $this->config();
+		$config->loadFromPhp(['parameters' => [
+			'Locked' => ['value' => '1', 'final' => true],
+			'Open' => ['value' => '2', 'final' => false],
+			'NullValue' => ['value' => null],
+		]], $this->tmpDir);
+		$this->assertSame(['Locked' => '1', 'Open' => '2', 'NullValue' => null], $config->getParameters());
+		$this->assertSame(['Locked' => true], $config->getFinalParameters());
+		$this->assertFalse($config->getIsEmpty());
+	}
+
+	public function testLoadParametersPhp_finalComponent(): void
+	{
+		$config = $this->config();
+		$config->loadFromPhp(['parameters' => [
+			'Mailer' => ['class' => 'TMailer', 'properties' => ['Host' => 'smtp'], 'final' => 'true'],
+		]], $this->tmpDir);
+		[$type, $properties, $element] = $config->getParameters()['Mailer'];
+		$this->assertSame('TMailer', $type);
+		$this->assertSame(['Host' => 'smtp', 'id' => 'Mailer'], $properties);
+		$this->assertSame(['properties' => ['Host' => 'smtp']], $element);
+		$this->assertSame(['Mailer' => true], $config->getFinalParameters());
+	}
+
+	public function testLoadParametersPhp_finalWithoutValueOrClassIgnored(): void
+	{
+		$config = $this->config();
+		$config->loadFromPhp(['parameters' => ['Bad' => ['final' => true]]], $this->tmpDir);
+		$this->assertSame([], $config->getParameters());
+		$this->assertSame([], $config->getFinalParameters());
+		$this->assertTrue($config->getIsEmpty());
+	}
+
+	// =======================================================================
 	// Includes — PHP
 	// =======================================================================
 

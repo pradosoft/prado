@@ -216,7 +216,8 @@ class TPagedDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 	}
 
 	/**
-	 * @return bool whether the current page is the first page Defaults to false.
+	 * Returns whether the current page is the first page.
+	 * @return bool whether the current page is the first page; true when {@see setAllowPaging AllowPaging} is false.
 	 */
 	public function getIsFirstPage()
 	{
@@ -228,7 +229,8 @@ class TPagedDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 	}
 
 	/**
-	 * @return bool whether the current page is the last page
+	 * Returns whether the current page is the last page.
+	 * @return bool whether the current page is the last page; true when {@see setAllowPaging AllowPaging} is false.
 	 */
 	public function getIsLastPage()
 	{

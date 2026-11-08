@@ -707,7 +707,54 @@ class TWeakCallableCollectionTest extends TPriorityListTest
 		self::assertEquals(1, $list->getWeakCount());
 		self::assertEquals(1, $list->getWeakObjectCount($this->item1));
 	}
-	
+
+	public function testRemoveWithPriorityFindsWrappingEventHandler_TWCC()
+	{
+		$list = new $this->_baseClass();
+		$callable = [$this->item1, 'eventHandler'];
+		$list->add([$this->item2, 'eventHandler'], 10);
+		$list->add($handler = new TEventHandler($callable, 'data'), 10);
+		$list->add([$this->item3, 'eventHandler'], 5);
+
+		self::assertEquals(2, $list->indexOf($callable, 10));
+		self::assertEquals(2, $list->remove($callable, 10));
+		self::assertEquals(2, $list->getCount());
+		self::assertEquals(-1, $list->indexOf($callable));
+		self::assertEquals(0, $list->getWeakObjectCount($this->item1));
+
+		$list->add($handler, 10);
+		try {
+			$list->remove($callable, 5);
+			self::fail('A wrapping TEventHandler at another priority must not be removed.');
+		} catch (TInvalidDataValueException $e) {
+			self::assertEquals('list_item_inexistent', $e->getErrorCode());
+		}
+		self::assertEquals(3, $list->getCount());
+	}
+
+	public function testRemoveWithPriorityPrefersExactMatch_TWCC()
+	{
+		$list = new $this->_baseClass();
+		$callable = [$this->item1, 'eventHandler'];
+		$list->add(new TEventHandler($callable, 'data'), 10);
+		$list->add($callable, 10);
+
+		self::assertEquals(1, $list->remove($callable, 10));
+		self::assertEquals(1, $list->getCount());
+		self::assertInstanceOf(TEventHandler::class, $list[0]);
+	}
+
+	public function testDetachEventHandlerWithPriorityFindsWrappingEventHandler_TWCC()
+	{
+		$component = new TComponent();
+		$callable = [$this->item1, 'eventHandler'];
+		$component->attachEventHandler('fxRemovePriorityTest', new TEventHandler($callable, 'data'), 10);
+
+		self::assertFalse($component->detachEventHandler('fxRemovePriorityTest', $callable, 5));
+		self::assertTrue($component->detachEventHandler('fxRemovePriorityTest', $callable, 10));
+		self::assertCount(0, $component->getEventHandlers('fxRemovePriorityTest'));
+	}
+
 	public function testRemoveAt_TWCC()
 	{
 		$list = new $this->_baseClass();
@@ -1285,5 +1332,71 @@ class TWeakCallableCollectionTest extends TPriorityListTest
 		self::assertEquals(1, $list->getWeakObjectCount($this->item1));
 		self::assertEquals(0, $list->getWeakObjectCount($this->item4));
 	}
-	
+
+	public function testConstructorResolvesDiscardInvalid_TWCC()
+	{
+		$item = new CallableListItem();
+		$data = [[$item, 'eventHandler']];
+
+		self::assertTrue((new TWeakCallableCollection($data))->getDiscardInvalid());
+		self::assertTrue((new TWeakCallableCollection($data, false))->getDiscardInvalid());
+		self::assertFalse((new TWeakCallableCollection($data, true))->getDiscardInvalid());
+		self::assertFalse((new TWeakCallableCollection($data, 1))->getDiscardInvalid());
+		self::assertFalse((new TWeakCallableCollection($data, null, null, null, false))->getDiscardInvalid());
+		self::assertTrue((new TWeakCallableCollection($data, true, null, null, true))->getDiscardInvalid());
+		self::assertTrue((new TWeakCallableCollection())->getDiscardInvalid());
+
+		$list = new TWeakCallableCollection([[new CallableListItem(), 'eventHandler'], 'strlen']);
+		gc_collect_cycles();
+		self::assertSame(1, $list->getCount());
+		self::assertSame(['strlen'], $list->toArray());
+	}
+
+	public function testEventHandlerWithoutObject_TWCC()
+	{
+		$list = new TWeakCallableCollection();
+		$handler = new TEventHandler('strlen');
+		$list->add($handler);
+
+		self::assertSame(1, $list->getCount());
+		self::assertTrue($list->contains('strlen'));
+		self::assertSame(0, $list->indexOf('strlen'));
+		self::assertEquals(10, $list->priorityOf('strlen'));
+		self::assertSame(0, $list->remove('strlen'));
+		self::assertSame(0, $list->getCount());
+		self::assertFalse($list->contains('strlen'));
+	}
+
+	public function testEventHandlerWithCollectedObject_TWCC()
+	{
+		$item = new CallableListItem();
+		$handler = new TEventHandler([$item, 'eventHandler']);
+		$item = null;
+		self::assertFalse($handler->hasHandler());
+
+		$list = new TWeakCallableCollection();
+		$list->add($handler);
+		self::assertSame([], $list->toArray());
+		self::assertSame(0, $list->getCount(), 'A TEventHandler collected before it is added is scrubbed');
+
+		$list = new TWeakCallableCollection(null, null, null, null, false);
+		$list->add($handler);
+		self::assertSame(1, $list->getCount());
+		self::assertSame([null], $list->toArray());
+	}
+
+	public function testDiscardInvalidTransitionKeepsEventHandlerWithoutObject_TWCC()
+	{
+		$list = new TWeakCallableCollectionUnit(null, null, null, null, false);
+		$item = new CallableListItem();
+		$handler = new TEventHandler('strlen');
+		$list->add($handler);
+		$list->add($objectHandler = new TEventHandler([$item, 'eventHandler']));
+
+		$list->resetDiscardInvalid(true);
+
+		self::assertSame([$handler, $objectHandler], $list->toArray());
+		self::assertSame(1, $list->getWeakObjectCount($item));
+		self::assertSame(1, $list->indexOf([$item, 'eventHandler']));
+	}
 }

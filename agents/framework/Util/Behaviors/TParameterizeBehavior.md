@@ -57,6 +57,7 @@ Supports localization of values (`Localize=true`) and a `DefaultValue` for when 
 - **`Parameter` and `Property` are required** — `attach()` throws `TConfigurationException` if either is missing, or if the property is read-only or does not exist on the owner.
 - **`RouteBehaviorName` is optional but recommended for dynamic configs** — without it, only the initial value is applied at attach time; subsequent parameter changes are not propagated.
 - **`prop:ClassName.Property` convention** — allows using a dot-notation key into the parameter map that maps to a specific class property name (used for security keys and similar module-level parameters).
+- **Final parameters** — a final parameter ([`TApplicationParameters`](../../TApplicationParameters.md)) rejects changes before `dyAddItem`, so the route sends nothing. The property holds a copy; code may still set it directly.
 - **Class behaviors** — when attached via `AttachToClass`, the same behavior instance applies to every instance of that class; avoid storing per-object state.
 
 ## See Also
