@@ -12,7 +12,7 @@
 		<com:TLinkButton ID="link" Text="Link action" OnClick="acted" />
 		<com:TButton ID="submit" Text="Submit action" OnClick="acted" />
 		<com:TButton ID="archive" Text="Archive action" ValidationGroup="archive" OnClick="acted" />
-		<com:TImageButton ID="image" AlternateText="Image action" ImageUrl="data:image/gif;base64,R0lGODlhAQABAAAAACw=" OnClick="imageActed" Width="20" Height="20" />
+		<com:TImageButton ID="image" AlternateText="Image action" ImageUrl="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" OnClick="imageActed" Width="20px" Height="20px" />
 		<com:TCheckBox ID="auto" Text="Auto check" AutoPostBack="true" OnCheckedChanged="changed" />
 		<com:TCheckBox ID="plain" Text="Plain check" />
 		<com:TDropDownList ID="pick" AutoPostBack="true" OnSelectedIndexChanged="changed" Attributes.aria-label="Pick">

@@ -140,6 +140,7 @@ Prado.WebUI.TConfirmSubmit = Prado.Class(Prado.WebUI.Control,
 	ask(resume, cancel) {
 		if (this.dialog.open)
 			return;
+		this.drop();
 		this.pending = { resume, cancel };
 		this.dialog.showModal();
 	},
@@ -163,9 +164,13 @@ Prado.WebUI.TConfirmSubmit = Prado.Class(Prado.WebUI.Control,
 	},
 
 	/**
-	 * Drops the action of a dialog closed by Cancel, Esc, or a click outside.
+	 * Drops the action of a dialog closed by Cancel, Esc, or a click outside. The
+	 * `close` event fires a task after the close, so ask() drops an earlier action
+	 * itself, and a late event finds the dialog open for the next action and is ignored.
 	 */
 	drop() {
+		if (this.dialog.open)
+			return;
 		const pending = this.pending;
 		this.pending = null;
 		if (pending && pending.cancel)

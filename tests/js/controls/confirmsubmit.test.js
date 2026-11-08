@@ -118,6 +118,27 @@ describe('Prado.WebUI.TConfirmSubmit clicks', () => {
 		expect(spies.link).not.toHaveBeenCalled();
 	});
 
+	it('keeps a new action when the close event of the last one arrives late', () => {
+		byId('btn').click();
+		dialog.removeAttribute('open');
+		byId('link').click();
+		dialog.dispatchEvent(new Event('close'));
+		expect(dialog.open).toBe(true);
+		byId('ok').click();
+		expect(spies.btn).not.toHaveBeenCalled();
+		expect(spies.link).toHaveBeenCalledTimes(1);
+	});
+
+	it('runs the drop of an earlier action before asking for the next', () => {
+		const text = byId('text');
+		text.dispatchEvent(new FocusEvent('focusin', { bubbles: true }));
+		text.value = 'next';
+		text.dispatchEvent(new Event('change', { bubbles: true }));
+		dialog.removeAttribute('open');
+		byId('btn').click();
+		expect(text.value).toBe('start');
+	});
+
 	it('does not hold the resumed click again', () => {
 		byId('btn').click();
 		byId('ok').click();
