@@ -3019,6 +3019,41 @@ class TAssetManagerTest extends \PHPUnit\Framework\TestCase
 	}
 
 	/**
+	 * An override with the two-parameter deployTarFile() signature stays valid. Its failed
+	 * extraction throws and leaves the checksum unpublished.
+	 */
+	public function testPublishTarFileFailedExtractionThrowsAndKeepsChecksumUnpublished()
+	{
+		[$tarFile, $md5File] = $this->buildTarFixture();
+		$manager = new TAssetManagerTestFailingTar();
+		$manager->setBaseUrl('/');
+		$manager->init(null);
+		$dst = dirname($manager->getPublishedPath($md5File));
+		try {
+			$manager->publishTarFile($tarFile, $md5File);
+			self::fail('Expected TIOException not thrown');
+		} catch (TIOException $e) {
+			self::assertEquals('assetmanager_tarfile_extract_failed', $e->getErrorCode());
+		}
+		self::assertFalse(is_file($dst . DIRECTORY_SEPARATOR . basename($md5File)));
+		self::assertArrayNotHasKey('tar:' . $md5File, $manager->getPublished());
+	}
+
+	/**
+	 * The tar publish is cached under a `tar:` key, apart from a plain publish of the checksum file.
+	 */
+	public function testPublishTarFileCacheKeyIsNamespaced()
+	{
+		[$tarFile, $md5File] = $this->buildTarFixture();
+		$manager = $this->newAssetManager();
+		$manager->setBaseUrl('/');
+		$manager->init(null);
+		$tarUrl = $manager->publishTarFile($tarFile, $md5File);
+		self::assertArrayHasKey('tar:' . $md5File, $manager->getPublished());
+		self::assertStringEndsNotWith('/' . basename($md5File), $tarUrl);
+	}
+
+	/**
 	 * A plain publish of the checksum file and a tar publish keyed by that same checksum
 	 * are cached under distinct keys, so neither call order returns the other's URL: the
 	 * file publish answers with the file, the tar publish with the extracted directory.
@@ -3270,5 +3305,16 @@ class TAssetManagerTest extends \PHPUnit\Framework\TestCase
 		$plain->setBaseUrl('/');
 		$plain->init(null);
 		self::assertNotEquals($plain->getPublishedUrl($virtual), $url);
+	}
+}
+
+/**
+ * Asset manager whose tar extraction fails, overriding deployTarFile() with its two-parameter signature.
+ */
+class TAssetManagerTestFailingTar extends TAssetManager
+{
+	protected function deployTarFile($path, $destination)
+	{
+		return false;
 	}
 }

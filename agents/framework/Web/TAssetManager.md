@@ -105,7 +105,7 @@ A subclass overrides these instead of re-implementing the surrounding machinery:
 | Method | Overriding it changes |
 |---|---|
 | `copyDirectoryFile($srcPath, $dstPath, $relativePath, $options)` | how one file of a directory publish is handled, keeping the walk, the visited-path cycle guard, `PATH_COPY_EXCEPTIONS`, the marker exclusion, and the directory creation — @since 4.3.3 |
-| `deployTarFile($path, $destination, $options)` | how a tar archive is extracted; return false or throw to report failure |
+| `deployTarFile($path, $destination)` | how a tar archive is extracted; return false or throw to report failure. The options array arrives as a third argument, which an override may declare as `array $options = []` or omit |
 | `virtualAssetPath($asset)` | the path an `IPublishable` publishes under, leaving `virtualAssetTarget()` to resolve the location — @since 4.3.3 |
 | `publishedLocation($path, $isDir, $fileName)` | the hashed directory, destination, and URL of any published path |
 | `hash($path)` | the asset sub-directory name |

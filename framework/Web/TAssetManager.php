@@ -1602,14 +1602,18 @@ class TAssetManager extends \Prado\TModule
 	 * entirely. {@see publishTarFile} copies the checksum sentinel only when this returns
 	 * true, so an override reports a failed extraction by returning false or throwing.
 	 *
+	 * {@see publishTarFile} passes the options array as a third argument. It is read with
+	 * func_get_arg() so the declared signature stays `($path, $destination)`, and both an
+	 * override with that signature and one that adds `array $options = []` remain valid.
+	 *
 	 * @param string $path tar file
 	 * @param string $destination path where the contents of tar file are to be extracted
-	 * @param array $options the tar publishing options.
 	 * @throws TIOException if the tar file does not exist.
 	 * @return bool true if extract successful, false otherwise.
 	 */
-	protected function deployTarFile($path, $destination, array $options = [])
+	protected function deployTarFile($path, $destination)
 	{
+		$options = func_num_args() > 2 ? func_get_arg(2) : [];
 		if (($fullpath = realpath($path)) === false || !is_file($fullpath)) {
 			throw new TIOException('assetmanager_tarfile_invalid', $path);
 		}
