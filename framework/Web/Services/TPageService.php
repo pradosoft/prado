@@ -16,6 +16,7 @@ use Prado\Exceptions\TInvalidOperationException;
 use Prado\Prado;
 use Prado\TApplication;
 use Prado\TApplicationMode;
+use Prado\TPropertyValue;
 use Prado\Util\Traits\TInitializedTrait;
 use Prado\Web\UI\TPage;
 use Prado\Web\UI\TTemplateManager;
@@ -159,6 +160,10 @@ class TPageService extends \Prado\TService
 	 * @var string default page
 	 */
 	private $_defaultPage = 'Home';
+	/**
+	 * @var string the service worker of the service's pages
+	 */
+	private $_serviceWorker = '';
 	/**
 	 * @var string requested page (path)
 	 */
@@ -393,6 +398,28 @@ class TPageService extends \Prado\TService
 	{
 		$this->assertUninitialized('DefaultPage');
 		$this->_defaultPage = $value;
+	}
+
+	/**
+	 * @return string the name of the service worker of the service's pages.
+	 *   Defaults to empty, which selects the module's default worker.
+	 * @since 4.4.0
+	 */
+	public function getServiceWorker()
+	{
+		return $this->_serviceWorker;
+	}
+
+	/**
+	 * Sets the name of the service worker of {@see ServiceWorker\TServiceWorkerModule}
+	 * that the service's pages register, unless a page sets its own
+	 * {@see \Prado\Web\UI\TPage::setServiceWorker ServiceWorker}.
+	 * @param string $value the worker name; empty selects the module's default worker
+	 * @since 4.4.0
+	 */
+	public function setServiceWorker($value)
+	{
+		$this->_serviceWorker = trim(TPropertyValue::ensureString($value));
 	}
 
 	/**

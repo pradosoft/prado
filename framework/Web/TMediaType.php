@@ -56,7 +56,7 @@ use Prado\Web\HttpHeaders\THeaderParametersTrait;
  * {@see EVENT_STREAM}, {@see XML_TEXT}, {@see CSV}, {@see MARKDOWN},
  * {@see CALENDAR}
  *
- * *Application:* {@see JSON}, {@see JSON_LD}, {@see XML}, {@see XHTML},
+ * *Application:* {@see JSON}, {@see JSON_LD}, {@see MANIFEST_JSON}, {@see XML}, {@see XHTML},
  * {@see FORM}, {@see OCTET_STREAM}, {@see PDF}, {@see ZIP},
  * {@see GZIP}, {@see TAR}, {@see BZIP2}, {@see XZ}, {@see SEVEN_ZIP},
  * {@see RAR}, {@see ZSTD}, {@see RTF}, {@see WASM}, {@see EPUB}
@@ -214,6 +214,12 @@ class TMediaType implements \ArrayAccess
 
 	/** `application/ld+json` — JSON-LD structured data. */
 	public const JSON_LD = 'application/ld+json';
+
+	/**
+	 * `application/manifest+json` — Web app manifest (`.webmanifest`).
+	 * @since 4.4.0
+	 */
+	public const MANIFEST_JSON = 'application/manifest+json';
 
 	/** `application/wasm` — WebAssembly module. */
 	public const WASM = 'application/wasm';
@@ -478,6 +484,7 @@ class TMediaType implements \ArrayAccess
 		'wav' => self::AUDIO_WAV,
 		'weba' => self::AUDIO_WEBM,
 		'webm' => self::VIDEO_WEBM,
+		'webmanifest' => self::MANIFEST_JSON,
 		'webp' => self::WEBP,
 		'woff' => self::WOFF,
 		'woff2' => self::WOFF2,

@@ -45,7 +45,8 @@ class TPageLoadTimeTest extends \PHPUnit\Framework\TestCase
 
 		$pageloadtime->renderContents($writer);
 
-		self::assertEquals(1, preg_match('/^1\.\d*test$/', $writer->flush()));
+		// The time is rounded to 5 decimals, so a render within 5 µs of the start shows "1".
+		self::assertMatchesRegularExpression('/^1(\.\d+)?test$/', $writer->flush());
 	}
 
 	public function testLoadTimeIsMonotonicAndIgnoresAWallClockStep()
