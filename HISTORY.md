@@ -1,4 +1,6 @@
 ## Version 4.4.0 - TBA
+BUG: Weak collections: `TWeakMap` and `TWeakCallableCollection` constructed with data resolve `DiscardInvalid` to the opposite of `ReadOnly`; a `TEventHandler` without a handler object is counted and found by its callable, and one collected before it is added is scrubbed; turning `DiscardInvalid` on survives a destructor removing an entry. (belisoful)
+BUG: `TWeakList` weakens a copy of a `Traversable` `ArrayAccess` item and reads into a copy, so the caller's container keeps its objects and the list releases them. (belisoful)
 BUG: `TWebAttributeCollection` magic get, set, `isset()`, and `unset()` threw `ArgumentCountError` for a name like `Attribute` whose getter or setter takes more arguments; the name is an attribute. (belisoful)
 BUG: A new managed `TPagedList` starts on page 0, so `Count`, `toArray()`, iteration, and `itemAt()` no longer read a page at index -1; managed `gotoPage()` passes `TPagedListPageChangedEventParameter` with the old page to `OnPageIndexChanged`. (belisoful)
 BUG: `TArraySubscription` in list mode throws `arraysubscription_index_invalid` for a key outside 0 to `count()`, which it inserted silently, and `setIsAssociative()` while subscribed names `IsAssociative`. (belisoful)
