@@ -96,6 +96,7 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 | `TRatingList` | Star/block rating; JS in `ratings/ratings.js` |
 | `TRelativeTime` | Live "time ago" in a `<time>` element; extends `TTime`; JS in `controls/relativetime.js` |
 | [`TDialog`](TDialog.md) | `<dialog>`; `Open`, `Modal` (an Open dialog shows modally through `showModal()`), `ClosedBy` ([`TDialogClosedBy`](TDialogClosedBy.md), light dismiss), `HeaderText` and `ShowCloseButton` (a header block: heading and close button); a TButton with `CommandFor` opens and closes it without script (@since 4.4.0) |
+| [`TDrawer`](TDrawer.md) | A [`TDialog`](TDialog.md) at a page edge; `Placement` ([`TDrawerPlacement`](TDrawerPlacement.md)), `DockAt` docks it on wide screens, `Swipe` closes it on touch; JS in `controls/drawer.js` (@since 4.4.0) |
 | [`TTeleport`](TTeleport.md) | Renders its content after `</form>`, outside the page form: a native `<form method="dialog">`, overlays, toasts; JS in `controls/teleport.js` sets the `form` attribute of its fields (@since 4.4.0) |
 | [`TPopover`](TPopover.md) | `<div popover>` anchored to its invoker; `Popover` (`auto`), `Placement` ([`TPopoverPlacement`](TPopoverPlacement.md)), `ButtonText` renders its own invoker; no script (@since 4.4.0) |
 | [`TDropdownMenu`](TDropdownMenu.md) | A [`TPopover`](TPopover.md) menu button and ARIA `menu` of its links and buttons, with the menu keyboard; JS in `controls/menu.js` (@since 4.4.0) |

@@ -806,6 +806,8 @@ return [
 'TDialogClosedBy' => 'Prado\Web\UI\WebControls\TDialogClosedBy',
 'TDisplayStyle' => 'Prado\Web\UI\WebControls\TDisplayStyle',
 'TDot' => 'Prado\Web\UI\WebControls\TDot',
+'TDrawer' => 'Prado\Web\UI\WebControls\TDrawer',
+'TDrawerPlacement' => 'Prado\Web\UI\WebControls\TDrawerPlacement',
 'TDropDownList' => 'Prado\Web\UI\WebControls\TDropDownList',
 'TDropDownListColumn' => 'Prado\Web\UI\WebControls\TDropDownListColumn',
 'TDropdownMenu' => 'Prado\Web\UI\WebControls\TDropdownMenu',

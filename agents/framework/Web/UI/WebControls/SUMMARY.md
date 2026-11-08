@@ -80,6 +80,8 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 
 - **`TDialog`** — `<dialog>`; `Open`, `Modal`, `ClosedBy` (**`TDialogClosedBy`**: `Auto`, `Any`, `CloseRequest`, `None`), `HeaderText`/`HeaderLevel` and `ShowCloseButton` (a header block with a heading that names it and a script-free close button); opened and closed by TButton invokers without script. @since 4.4.0
 
+- **`TDrawer`** — extends `TDialog`: a modal `<dialog>` at a page edge; `Placement` (**`TDrawerPlacement`**: `Start`, `End`, `Top`, `Bottom`), `DockAt` docks a Start or End drawer in the page flow on wide screens, `Swipe` closes it on touch; `ClosedBy` defaults to `Any`, `ShowCloseButton` to true; JS in `controls/drawer.js`. @since 4.4.0
+
 - **`TTeleport`** — Renders its content after `</form>`, outside the page form, so a native `<form method="dialog">` works and overlays escape their ancestors; `TForm::registerTeleportContent()`; JS in `controls/teleport.js` joins its fields to the page form. @since 4.4.0
 
 - **`TPopover`** — `<div popover>` (default `auto`) anchored to its invoker with CSS anchor positioning; `Placement` (**`TPopoverPlacement`**: `None`, `Top`, `Bottom`, `Start`, `End`), `ButtonText` renders its own `toggle-popover` invoker, or a TButton with `CommandFor` opens it; no script. @since 4.4.0
