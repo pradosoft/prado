@@ -120,7 +120,9 @@ use Prado\Xml\TXmlDocument;
  * a wake from the {@see setWakeTransport WakeTransport}, or {@see setDaemonIdle DaemonIdle}, and
  * repeats.  After {@see setDaemonLifetime DaemonLifetime} the daemon retires: it keeps serving until a
  * tick's process waits for the lease, then hands it over without a gap, so the new process picks up
- * deployed code; SIGTERM, SIGINT, or {@see stopDaemon} end it at once.  {@see onDaemonStart}, {@see onDaemonIdle}
+ * deployed code.  A changed configuration file ({@see setDaemonWatchConfig DaemonWatchConfig}) or
+ * {@see retireDaemon} retires the daemon the same way; SIGTERM, SIGINT, or {@see stopDaemon} end it
+ * at once.  {@see onDaemonStart}, {@see onDaemonIdle}
  * (before each wait, with the wait a handler changes), and {@see onDaemonEnd} are raised with a
  * {@see \Prado\Util\Cron\TCronDaemonEventParameter}.  A web request wakes a waiting process,
  * per-minute or daemon, through {@see signalWake} when it schedules an earlier task.
@@ -284,6 +286,18 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 
 	/** @var bool whether the running daemon's lifetime passed and it holds the retiring lock */
 	private bool $_daemonRetiring = false;
+
+	/** @var bool whether {@see retireDaemon} asked the running daemon to retire */
+	private bool $_daemonRetireRequested = false;
+
+	/** @var bool whether the daemon retires when a configuration file changes, default true */
+	private bool $_daemonWatchConfig = true;
+
+	/** @var ?string[] the configuration files the daemon watches, or null for the application configuration file */
+	private ?array $_daemonConfigFiles = null;
+
+	/** @var ?string the configuration fingerprint the running daemon started with */
+	private ?string $_daemonFingerprint = null;
 
 	/**
 	 * Initializes the module.  Read the configuration, installs Shell Actions,
@@ -1483,6 +1497,79 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	}
 
 	/**
+	 * @return bool whether the daemon retires, handing the lease to the next tick, when a file of
+	 * {@see getDaemonConfigFiles DaemonConfigFiles} changes; default true
+	 * @since 4.4.0
+	 */
+	public function getDaemonWatchConfig(): bool
+	{
+		return $this->_daemonWatchConfig;
+	}
+
+	/**
+	 * @param mixed $value whether the daemon retires when a configuration file changes
+	 * @since 4.4.0
+	 */
+	public function setDaemonWatchConfig($value)
+	{
+		$this->_daemonWatchConfig = TPropertyValue::ensureBoolean($value);
+	}
+
+	/**
+	 * Returns the configuration files the daemon watches: the configured paths, or the application
+	 * configuration file.  A deployment that configures cron in an included file names it here.
+	 * @return string[] the watched file paths
+	 * @since 4.4.0
+	 */
+	public function getDaemonConfigFiles(): array
+	{
+		if ($this->_daemonConfigFiles !== null) {
+			return $this->_daemonConfigFiles;
+		}
+		$file = $this->getApplication()?->getConfigurationFile();
+		return ($file === null || $file === '') ? [] : [$file];
+	}
+
+	/**
+	 * @param null|string|string[] $value the configuration files to watch, as paths or namespaces, in an
+	 * array or separated by commas; null or '' watches the application configuration file
+	 * @since 4.4.0
+	 */
+	public function setDaemonConfigFiles($value)
+	{
+		if ($value === null || $value === '' || $value === []) {
+			$this->_daemonConfigFiles = null;
+			return;
+		}
+		$files = [];
+		foreach (is_array($value) ? $value : explode(',', TPropertyValue::ensureString($value)) as $file) {
+			$file = trim((string) $file);
+			if ($file !== '') {
+				$files[] = Prado::getPathOfNamespace($file) ?? $file;
+			}
+		}
+		$this->_daemonConfigFiles = $files;
+	}
+
+	/**
+	 * Fingerprints the {@see getDaemonConfigFiles DaemonConfigFiles}: each file's path, modification
+	 * time, size, and content hash.  The daemon compares it on each idle with the one it started with.
+	 * @return string the SHA-256 fingerprint
+	 * @since 4.4.0
+	 */
+	public function getDaemonConfigFingerprint(): string
+	{
+		$parts = [];
+		foreach ($this->getDaemonConfigFiles() as $file) {
+			clearstatcache(true, $file);
+			$parts[] = is_file($file)
+				? $file . '|' . @filemtime($file) . '|' . @filesize($file) . '|' . @hash_file('sha256', $file)
+				: $file . '|missing';
+		}
+		return hash('sha256', implode("\n", $parts));
+	}
+
+	/**
 	 * Returns the mutex of the daemon lease: the configured mutex, the module of the configured ID,
 	 * or a {@see \Prado\Util\Mutex\TFileMutex} in the application runtime directory, which excludes
 	 * the processes of one host.  A database or cache mutex excludes the processes of every host.
@@ -1571,6 +1658,8 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 		$this->_daemonStop = false;
 		$this->_daemonWake = false;
 		$this->_daemonRetiring = false;
+		$this->_daemonRetireRequested = false;
+		$this->_daemonFingerprint = $this->getDaemonWatchConfig() ? $this->getDaemonConfigFingerprint() : null;
 		$transport = $this->getWakeTransport();
 		$watching = $transport !== null && $transport->watch($loop, function () {
 			$this->wakeDaemon();
@@ -1591,6 +1680,7 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 				if ($this->consumeDaemonWake()) {
 					continue; // a wake arrived during the sweep: sweep again
 				}
+				$this->checkDaemonConfig();
 				$param = $this->newDaemonEventParameter($lockName, $watching)
 					->setTasks($swept)
 					->setElapsed($this->getMonotonicClock()->seconds() - $start)
@@ -1640,8 +1730,9 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 
 	/**
 	 * Tells whether the daemon loop ends: a stop or signal was requested, or the daemon is retiring and
-	 * a tick's process waits on the handoff lock for the lease.  A daemon whose lifetime passed starts
-	 * retiring here by taking the retiring lock.
+	 * a tick's process waits on the handoff lock for the lease.  A daemon whose lifetime passed, or that
+	 * {@see retireDaemon} or a configuration change asked to retire, starts retiring here by taking the
+	 * retiring lock.
 	 * @param float $start the monotonic seconds the daemon started at
 	 * @return bool whether the daemon is done
 	 * @since 4.4.0
@@ -1651,7 +1742,7 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 		if ($this->_daemonStop) {
 			return true;
 		}
-		if (!$this->_daemonRetiring && $this->isDaemonExpired($start)) {
+		if (!$this->_daemonRetiring && ($this->_daemonRetireRequested || $this->isDaemonExpired($start))) {
 			$this->_daemonRetiring = $this->getDaemonMutex()->acquire($this->getDaemonRetiringLockName());
 			if ($this->_daemonRetiring) {
 				Prado::log('Cron daemon (' . $this->getDaemonLockName() . ') is retiring; it serves until the next tick takes the lease', TLogger::INFO, TCronModule::class);
@@ -1758,6 +1849,33 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 		$this->_daemonReason ??= TCronDaemonEventParameter::REASON_STOP;
 		$this->_daemonStop = true;
 		$this->wakeDaemon();
+	}
+
+	/**
+	 * Retires the running daemon before its lifetime: it keeps serving and hands the lease to the next
+	 * tick's process without a gap, as after {@see getDaemonLifetime DaemonLifetime}.  A deployment hook
+	 * or an `onDaemonIdle` handler calls this to restart the daemon on new code or configuration.
+	 * @since 4.4.0
+	 */
+	public function retireDaemon(): void
+	{
+		$this->_daemonRetireRequested = true;
+		$this->wakeDaemon();
+	}
+
+	/**
+	 * Retires the daemon when a watched configuration file changed since it started.
+	 * @since 4.4.0
+	 */
+	protected function checkDaemonConfig(): void
+	{
+		if ($this->_daemonFingerprint === null || $this->_daemonRetiring || $this->_daemonRetireRequested) {
+			return;
+		}
+		if ($this->_daemonFingerprint !== $this->getDaemonConfigFingerprint()) {
+			Prado::log('Cron daemon (' . $this->getDaemonLockName() . ') configuration changed; retiring for the next tick', TLogger::INFO, TCronModule::class);
+			$this->_daemonRetireRequested = true;
+		}
 	}
 
 	/**

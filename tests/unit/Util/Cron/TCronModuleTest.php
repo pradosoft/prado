@@ -1002,6 +1002,21 @@ class TCronModuleTest extends \PHPUnit\Framework\TestCase
 		$this->obj->setDaemonHandoffTimeout('3');
 		self::assertSame(3.0, $this->obj->getDaemonHandoffTimeout());
 		self::assertSame($this->obj->getDaemonLockName() . ':retiring', $this->obj->getDaemonRetiringLockName());
+		self::assertTrue($this->obj->getDaemonWatchConfig());
+		$appConfig = ($file = Prado::getApplication()->getConfigurationFile()) ? [$file] : [];
+		self::assertSame($appConfig, $this->obj->getDaemonConfigFiles(), 'the application configuration file is watched by default');
+		$this->obj->setDaemonWatchConfig('false');
+		self::assertFalse($this->obj->getDaemonWatchConfig());
+		$this->obj->setDaemonConfigFiles(' /tmp/a.xml , /tmp/b.php ');
+		self::assertSame(['/tmp/a.xml', '/tmp/b.php'], $this->obj->getDaemonConfigFiles());
+		$this->obj->setDaemonConfigFiles(['/tmp/c.xml']);
+		self::assertSame(['/tmp/c.xml'], $this->obj->getDaemonConfigFiles());
+		$fingerprint = $this->obj->getDaemonConfigFingerprint();
+		self::assertSame(64, strlen($fingerprint));
+		self::assertSame($fingerprint, $this->obj->getDaemonConfigFingerprint(), 'the fingerprint is stable');
+		$this->obj->setDaemonConfigFiles(null);
+		self::assertSame($appConfig, $this->obj->getDaemonConfigFiles());
+		self::assertNotSame($fingerprint, $this->obj->getDaemonConfigFingerprint());
 		self::assertSame($this->obj->getDaemonLockName() . ':handoff', $this->obj->getDaemonHandoffLockName());
 
 		$mutex = new TMemoryMutex();
@@ -1222,6 +1237,68 @@ class TCronModuleTest extends \PHPUnit\Framework\TestCase
 		} finally {
 			$other->releaseAll();
 		}
+	}
+
+	public function testRunDaemon_RetiresWhenTheConfigurationChanges()
+	{
+		$config = sys_get_temp_dir() . '/cron-config-' . bin2hex(random_bytes(4)) . '.xml';
+		file_put_contents($config, '<application><module id="cron" /></application>');
+		try {
+			$this->obj->setDaemon(true);
+			$this->obj->setDaemonLifetime(0);
+			$this->obj->setDaemonIdle(0.05);
+			$this->obj->setDaemonMutex(new TMemoryMutex());
+			$this->obj->setDaemonConfigFiles($config);
+			$this->obj->init(null);
+			$loop = TAsync::getLoop();
+			$retiringAt = [];
+			$probe = function () use (&$retiringAt) {
+				$mutex = new TMemoryMutex();
+				$retiringAt[] = !$mutex->acquire($this->obj->getDaemonRetiringLockName());
+				$mutex->releaseAll();
+			};
+			$loop->delay(0.1, $probe);                      // unchanged: not retiring
+			$loop->delay(0.15, static function () use ($config) {
+				file_put_contents($config, '<application><module id="cron" DaemonIdle="30" /></application>');
+			});
+			$loop->delay(0.4, $probe);                      // changed: retiring, still serving
+			$loop->delay(0.45, fn () => $this->obj->stopDaemon());
+			self::assertEquals(0, $this->obj->processPendingTasks());
+			self::assertSame([false, true], $retiringAt, 'the daemon retires once the configuration file changes');
+		} finally {
+			@unlink($config);
+		}
+	}
+
+	public function testRunDaemon_RetireDaemonHandsOffAtTheNextTick()
+	{
+		$this->obj->setDaemon(true);
+		$this->obj->setDaemonLifetime(0);
+		$this->obj->setDaemonIdle(0.05);
+		$this->obj->setDaemonWatchConfig(false);
+		$this->obj->setDaemonMutex(new TMemoryMutex());
+		$this->obj->init(null);
+		$loop = TAsync::getLoop();
+		$loop->delay(0.1, fn () => $this->obj->retireDaemon());
+		$retiring = null;
+		$loop->delay(0.25, function () use (&$retiring) {
+			$mutex = new TMemoryMutex();
+			$retiring = !$mutex->acquire($this->obj->getDaemonRetiringLockName());
+			$mutex->releaseAll();
+			// a tick arrives and waits for the lease
+			$mutex->acquire($this->obj->getDaemonHandoffLockName());
+			$loop = TAsync::getLoop();
+			$loop->delay(0.3, static fn () => $mutex->releaseAll());
+		});
+		$end = null;
+		$this->obj->attachEventHandler('OnDaemonEnd', function ($sender, $param) use (&$end) {
+			$end = $param;
+		});
+		$start = microtime(true);
+		self::assertEquals(0, $this->obj->processPendingTasks());
+		self::assertLessThan(2.0, microtime(true) - $start);
+		self::assertTrue($retiring, 'retireDaemon() makes the daemon hold the retiring lock');
+		self::assertSame(TCronDaemonEventParameter::REASON_HANDOFF, $end->getReason());
 	}
 
 	public function testRunDaemon_AWakeSweepsAndStopDaemonEndsTheWait()

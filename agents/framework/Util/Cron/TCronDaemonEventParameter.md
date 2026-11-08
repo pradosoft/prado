@@ -25,7 +25,7 @@ The parameter of the [`TCronModule`](TCronModule.md) daemon events `onDaemonStar
 $cron->attachEventHandler('OnDaemonIdle', function ($cron, TCronDaemonEventParameter $param) {
     $this->redis->close();                    // release while idle
     if (file_exists($this->deployMarker)) {
-        $cron->stopDaemon();                  // the next tick elects a daemon on the new code
+        $cron->retireDaemon();                // hand the lease to the next tick, on the new code, without a gap
     }
 });
 ```
