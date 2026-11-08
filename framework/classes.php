@@ -917,6 +917,8 @@ return [
 'TPicture' => 'Prado\Web\UI\WebControls\TPicture',
 'TPlaceHolder' => 'Prado\Web\UI\WebControls\TPlaceHolder',
 'TPolygonHotSpot' => 'Prado\Web\UI\WebControls\TPolygonHotSpot',
+'TPopover' => 'Prado\Web\UI\WebControls\TPopover',
+'TPopoverPlacement' => 'Prado\Web\UI\WebControls\TPopoverPlacement',
 'TPre' => 'Prado\Web\UI\WebControls\TPre',
 'TProgress' => 'Prado\Web\UI\WebControls\TProgress',
 'TProofOfWork' => 'Prado\Web\UI\WebControls\TProofOfWork',

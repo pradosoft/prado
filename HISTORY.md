@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+NEW: Issue #1401 - `TPopover` renders a popover anchored to its invoker with CSS anchor positioning and no script: `Placement` (`TPopoverPlacement`), `ButtonText` for its own invoker button, and `Popover` defaulting to `auto`. (belisoful)
 ENH: Issue #1401 - `TDialog.HeaderText` renders a heading of `HeaderLevel` that names the dialog, and `ShowCloseButton` renders a script-free close button named by `CloseButtonText`; `CssUrl` styles the header block. (belisoful)
 BUG: `TWeakCallableCollection::remove()` with a priority finds a `TEventHandler` wrapping the callable, so `detachEventHandler()` with a priority detaches it. (belisoful)
 BUG: Weak collections: `TWeakMap` and `TWeakCallableCollection` constructed with data resolve `DiscardInvalid` to the opposite of `ReadOnly`; a `TEventHandler` without a handler object is counted and found by its callable, and one collected before it is added is scrubbed; turning `DiscardInvalid` on survives a destructor removing an entry. (belisoful)
