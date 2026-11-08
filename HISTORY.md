@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+ENH: Issue #1401 - `TDialog.HeaderText` renders a heading of `HeaderLevel` that names the dialog, and `ShowCloseButton` renders a script-free close button named by `CloseButtonText`; `CssUrl` styles the header block. (belisoful)
 BUG: `TWeakCallableCollection::remove()` with a priority finds a `TEventHandler` wrapping the callable, so `detachEventHandler()` with a priority detaches it. (belisoful)
 BUG: Weak collections: `TWeakMap` and `TWeakCallableCollection` constructed with data resolve `DiscardInvalid` to the opposite of `ReadOnly`; a `TEventHandler` without a handler object is counted and found by its callable, and one collected before it is added is scrubbed; turning `DiscardInvalid` on survives a destructor removing an entry. (belisoful)
 BUG: `TWeakList` weakens a copy of a `Traversable` `ArrayAccess` item and reads into a copy, so the caller's container keeps its objects and the list releases them. (belisoful)

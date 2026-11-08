@@ -407,6 +407,8 @@ output_forcontrol_invalid				= TOutput.ForControl ''{0}'' cannot be found.
 
 button_commandfor_invalid				= TButton.CommandFor ''{0}'' cannot be found.
 
+dialog_headerlevel_invalid				= TDialog HeaderLevel must be 1 through 6; {0} given.
+
 baseterm_targetcontrol_invalid			= {0}.TargetControl ''{1}'' cannot be found.
 baseterm_marklimit_invalid				= {0}.MarkLimit ''{1}'' must not be negative.
 baseterm_depthlimit_invalid				= {0}.DepthLimit ''{1}'' must not be negative.

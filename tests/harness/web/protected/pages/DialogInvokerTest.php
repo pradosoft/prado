@@ -6,7 +6,8 @@
  * "Edit name" and "Show notice" open their dialogs through Invoker Commands,
  * without script. The edit dialog is Modal: a Save without a name reopens it
  * modally after the postback, and Cancel closes it with the return value
- * "cancel". The notice dialog closes on a click outside it (ClosedBy="Any").
+ * "cancel". Its HeaderText names it, and its close button closes it with an
+ * empty return value. The notice dialog closes on a click outside it (ClosedBy="Any").
  */
 class DialogInvokerTest extends TPage
 {
