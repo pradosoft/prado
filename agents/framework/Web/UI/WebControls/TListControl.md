@@ -29,6 +29,7 @@ TListControl is the base class for list controls like TListBox, TDropDownList, T
 - `getDataGroupField()` / `setDataGroupField()` - Gets or sets data field for item grouping
 - `getPromptText()` / `setPromptText()` - Gets or sets prompt text for first item
 - `getPromptValue()` / `setPromptValue()` - Gets or sets prompt selection value
+- `renderItemContent()` - Protected. Renders an option body: the item's HTML `Content` when set, otherwise its encoded Text
 - `getAppendDataBoundItems()` / `setAppendDataBoundItems()` - Gets or sets whether to append items on databind
 - `onSelectedIndexChanged()` - Raises OnSelectedIndexChanged event
 - `onTextChanged()` - Raises OnTextChanged event

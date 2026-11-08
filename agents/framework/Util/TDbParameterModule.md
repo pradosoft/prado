@@ -102,6 +102,17 @@ Registers the `param_shell` permission with `[TPermissionsManager](../Security/P
 
 When `CaptureParameterChanges=true`, the module attaches `APP_PARAMETER_SET_BEHAVIOR` to the parameter map. Any `$params['key'] = $value` assignment is automatically persisted to the database.
 
+## Final Parameters
+
+A final application parameter ([`TApplicationParameters`](../TApplicationParameters.md)) keeps its configured value:
+
+| Path | Result for a final key |
+|---|---|
+| `loadDbParameters()` at init | skips the row, logs a warning (`TDbParameterModule` category) |
+| `get($key, …, $setParameter = true)` | returns the row's value, does not set the parameter |
+| `set($key, …)` | throws `dbparametermodule_set_final` before writing the row |
+| lazy load of a final absent key | not consulted; the read returns null |
+
 ## WordPress-Compatible Schema
 
 To use a WordPress `wp_options` table:

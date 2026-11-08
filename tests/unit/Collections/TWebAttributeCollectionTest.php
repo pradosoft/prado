@@ -366,6 +366,103 @@ class TWebAttributeCollectionTest extends \PHPUnit\Framework\TestCase
 		self::assertEquals('test2', $this->collection->anotherValue);
 	}
 
+	public function testMagicPropertyMatchingMethodWithArgumentsIsAttribute()
+	{
+		// getAttribute($name) and setAttribute($name, $value) need more arguments than an accessor passes.
+		$this->collection->Attribute = 'attr';
+		self::assertSame('attr', $this->collection->Attribute);
+		self::assertSame('attr', $this->collection->getAttribute('data-attribute'));
+
+		// getEventHandlers($name) requires one argument; getSubProperty($path) one; setSubProperty($path, $value) two.
+		$this->collection->EventHandlers = 'handlers';
+		self::assertSame('handlers', $this->collection->EventHandlers);
+		$this->collection->SubProperty = 'sub';
+		self::assertSame('sub', $this->collection->SubProperty);
+
+		self::assertSame(
+			['data-attribute' => 'attr', 'data-event-handlers' => 'handlers', 'data-sub-property' => 'sub'],
+			$this->collection->toArray()
+		);
+	}
+
+	public function testMagicIssetUnsetMatchingMethodWithArgumentsIsAttribute()
+	{
+		self::assertFalse(isset($this->collection->Attribute));
+		self::assertFalse(isset($this->collection->custom));
+
+		$this->collection->Attribute = 'attr';
+		$this->collection->custom = 'value';
+		self::assertTrue(isset($this->collection->Attribute));
+		self::assertTrue(isset($this->collection->custom));
+
+		unset($this->collection->Attribute);
+		unset($this->collection->custom);
+		self::assertFalse($this->collection->contains('data-attribute'));
+		self::assertFalse($this->collection->contains('data-custom'));
+		self::assertSame([], $this->collection->toArray());
+	}
+
+	public function testMagicPropertyRealAccessorsRemainProperties()
+	{
+		self::assertSame('data', $this->collection->Prefix);
+		self::assertSame('data-', $this->collection->PrefixDash);
+		self::assertTrue(isset($this->collection->Prefix));
+
+		self::assertFalse($this->collection->getReadOnly());
+		$this->collection->ReadOnly = true;
+		self::assertTrue($this->collection->getReadOnly());
+		self::assertTrue($this->collection->ReadOnly);
+		unset($this->collection->ReadOnly); // setReadOnly(null) keeps the value
+		self::assertTrue($this->collection->getReadOnly());
+
+		self::assertSame([], $this->collection->toArray());
+	}
+
+	public function testMagicPropertyAccessorArity()
+	{
+		$attrs = new class ('data') extends TWebAttributeCollection {
+			public $pair = [];
+			public function getOptional($suffix = 'default')
+			{
+				return 'optional-' . $suffix;
+			}
+			public function setPair($first, $second = 'second')
+			{
+				$this->pair = [$first, $second];
+			}
+			public function setNoArgument()
+			{
+				$this->pair = ['called'];
+			}
+			public function setTwoArguments($first, $second)
+			{
+				$this->pair = [$first, $second];
+			}
+		};
+
+		// Optional parameters do not disqualify an accessor.
+		self::assertSame('optional-default', $attrs->Optional);
+		$attrs->Pair = 'first';
+		self::assertSame(['first', 'second'], $attrs->pair);
+
+		// A setter that accepts no argument, or requires two, is not a property setter.
+		$attrs->NoArgument = 'none';
+		$attrs->TwoArguments = 'two';
+		self::assertSame(['first', 'second'], $attrs->pair);
+		self::assertSame(['data-no-argument' => 'none', 'data-two-arguments' => 'two'], $attrs->toArray());
+	}
+
+	public function testPropertyChecksAgreeWithMagicAccess()
+	{
+		foreach (['Attribute', 'EventHandlers', 'SubProperty', 'Prefix', 'ReadOnly', 'anyProperty'] as $name) {
+			self::assertTrue($this->collection->canGetProperty($name), $name);
+			self::assertTrue($this->collection->canSetProperty($name), $name);
+			self::assertTrue($this->collection->hasProperty($name), $name);
+		}
+		$this->collection->Attribute = 'attr';
+		self::assertSame('attr', $this->collection->Attribute);
+	}
+
 	public function testCanGetProperty()
 	{
 		self::assertTrue($this->collection->canGetProperty('anyProperty'));

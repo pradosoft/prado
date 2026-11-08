@@ -89,6 +89,8 @@ appconfig_paths_invalid					= Application configuration <paths> cannot contain e
 appconfig_modules_invalid				= Application configuration <modules> cannot contain element <{0}>.
 appconfig_services_invalid				= Application configuration <services> cannot contain element <{0}>.
 appconfig_parameters_invalid			= Application configuration <parameters> cannot contain element <{0}>.
+appconfig_parameters_final_unsupported	= Application parameter ''{0}'' is final, but the application parameters {1} cannot finalize parameters. TApplication::newParameters() must return a TApplicationParameters.
+appparameters_final						= Application parameter ''{0}'' is final and cannot be changed.
 
 securitymanager_validationkey_invalid	= TSecurityManager.ValidationKey must not be empty.
 securitymanager_cookievalidationkey_invalid	= TSecurityManager.CookieValidationKey must not be empty.
@@ -744,6 +746,7 @@ authviewtemplate_permissions_unsupported	= TAuthViewTemplate.Permissions ''{0}''
 dbparametermodule_table_nonexistent		= TDbParameterModule cannot find DB table ''{0}'' to store parameter data.
 dbparametermodule_get_no_blank_key		= TDbParameterModule cannot get an empty key.
 dbparametermodule_set_no_blank_key		= TDbParameterModule cannot set an empty key with a value.
+dbparametermodule_set_final				= TDbParameterModule cannot set ''{0}''; the application parameter is final.
 dbparametermodule_connectionid_invalid	= TDbParameterModule.ConnectionID ''{0}'' does not point to a valid TDataSourceConfig module.
 dbparametermodule_serializer_not_callable= TDbParameterModule Serializer is not a callable.
 
