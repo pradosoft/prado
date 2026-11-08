@@ -529,6 +529,37 @@ class TStreamTest extends \PHPUnit\Framework\TestCase
 		self::assertTrue($s->isWritable());
 		$s->close();
 	}
+
+	public function testDyHooksIgnoredByADynamicBehaviorKeepTheirValue()
+	{
+		// An IDynamicMethods behavior whose __dycall returns null for the dyRead, dyWrite, and dyIs* hooks
+		// leaves the data, the byte count, and the capabilities as they are.
+		$s = TStream::fromMemory();
+		$behavior = new TNullDynamicBehavior();
+		$s->attachBehavior('nulldy', $behavior);
+		self::assertSame(5, $s->write('abcde'));
+		self::assertSame('dyWrite', $behavior->last);
+		$s->rewind();
+		self::assertSame('abcde', $s->read(5));
+		self::assertSame('dyRead', $behavior->last);
+		self::assertTrue($s->isReadable());
+		self::assertTrue($s->isWritable());
+		self::assertTrue($s->isSeekable());
+		$s->close();
+	}
+}
+
+/**
+ * Behavior that receives every dynamic event through __dycall and handles none of them.
+ */
+class TNullDynamicBehavior extends \Prado\Util\TBehavior implements \Prado\Util\IDynamicMethods
+{
+	public $last;
+
+	public function __dycall($method, $args)
+	{
+		$this->last = $method;
+	}
 }
 
 /**
