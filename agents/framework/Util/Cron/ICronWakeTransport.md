@@ -28,8 +28,11 @@
 | [`TCronWakeSocket`](TCronWakeSocket.md) | processes of one host (`udg`, else `udp` loopback) | immediate | `RuntimePath`, `BasePort` |
 | [`TCronWakeFile`](TCronWakeFile.md) | hosts sharing a file system | `PollInterval` | `WakeFile`, `PollInterval` |
 | [`TCronWakeCache`](TCronWakeCache.md) | clients of a cache (memcached, Redis) | `PollInterval` | `CacheID`, `CacheKey`, `PollInterval` |
+| [`TCronWakeSignal`](TCronWakeSignal.md) | processes of one host (`pcntl`, `posix`) | immediate (daemon); `WAIT_SLICE` 50 ms (per-minute) | `PidFile`, `Signal` |
+| [`TCronWakeFifo`](TCronWakeFifo.md) | processes of one host (named pipe, `posix`) | immediate | `FifoFile` |
+| [`TCronWakePgsql`](TCronWakePgsql.md) | hosts sharing a PostgreSQL database (`LISTEN`/`NOTIFY`) | immediate (per-minute); `PollInterval` (daemon) | `ConnectionID`, `Channel`, `PollInterval` |
 
-The transports are `TModule`s, so an application configures one and names its ID in `TCronModule.WakeTransport`. Without configuration the module creates a `TCronWakeSocket` in the runtime directory. Further transports (a signal to the daemon pid, a FIFO, PostgreSQL `LISTEN/NOTIFY`) fit the same seam.
+The transports are `TModule`s, so an application configures one and names its ID in `TCronModule.WakeTransport`. Without configuration the module creates a `TCronWakeSocket` in the runtime directory. The socket, signal, and FIFO transports reach one host; the file, cache, and PostgreSQL transports reach every host sharing their medium.
 
 ## See Also
 

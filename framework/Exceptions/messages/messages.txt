@@ -787,6 +787,8 @@ cron_daemonmutex_invalid				= TCronModule DaemonMutex ''{0}'' is not an IMutex m
 cron_waketransport_invalid				= TCronModule WakeTransport ''{0}'' is not an ICronWakeTransport module.
 cronwake_pollinterval_invalid			= Cron wake PollInterval must be greater than zero; ''{0}'' given.
 cronwakecache_cacheid_invalid			= TCronWakeCache CacheID ''{0}'' is not an ICache module.
+cronwakepgsql_driver_invalid			= TCronWakePgsql needs a PostgreSQL connection; the connection driver is ''{0}''.
+cronwakepgsql_connectionid_invalid		= TCronWakePgsql.ConnectionID ''{0}'' is not a TDataSourceConfig.
 crontask_no_module						= TCronTask could not find module ''{0}''.
 crontask_timeout_invalid				= TCronTask Timeout must be greater than zero or null; ''{0}'' given.
 

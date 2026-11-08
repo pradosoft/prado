@@ -20,7 +20,7 @@ Cron-style scheduled task engine supporting both file-configured and database-ba
 
 - **`TTimeScheduler`** — Cron expression parser supporting multi-language expressions and special tokens (`@daily`, `@hourly`, `@now`, etc.); both day fields restricted match as a union (POSIX).
 
-- **`ICronWakeTransport`** — The wake seam (`signal`, `wait`, `watch`); **`TCronWakeSocket`** (same-host datagram), **`TCronWakeFile`** (shared file system), and **`TCronWakeCache`** (shared cache, via **`TCronWakePoll`**) wake a waiting cron process or daemon when an earlier task is scheduled.
+- **`ICronWakeTransport`** — The wake seam (`signal`, `wait`, `watch`); **`TCronWakeSocket`** (same-host datagram), **`TCronWakeSignal`** (process signal), **`TCronWakeFifo`** (named pipe), **`TCronWakeFile`** (shared file system), **`TCronWakeCache`** (shared cache, via **`TCronWakePoll`**), and **`TCronWakePgsql`** (PostgreSQL `LISTEN`/`NOTIFY`) wake a waiting cron process or daemon when an earlier task is scheduled.
 
 - **`TDbCronCleanLogTask`** — Pre-built task that auto-purges old cron log entries from the database.
 
