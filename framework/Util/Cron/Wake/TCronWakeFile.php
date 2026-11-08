@@ -50,7 +50,7 @@ class TCronWakeFile extends TCronWakePoll
 	public function getWakeFile(): string
 	{
 		if ($this->_wakeFile === null) {
-			$this->_wakeFile = Prado::getApplication()->getRuntimePath() . DIRECTORY_SEPARATOR . self::DEFAULT_FILE_NAME;
+			$this->_wakeFile = Prado::getApplication()->getRuntimePath() . DIRECTORY_SEPARATOR . static::DEFAULT_FILE_NAME;
 		}
 		return $this->_wakeFile;
 	}

@@ -39,8 +39,8 @@ class TCronWakeCache extends TCronWakePoll
 	/** @var ?string the ID of the cache module, or null for the application cache */
 	private ?string $_cacheID = null;
 
-	/** @var string the cache key of the stamp */
-	private string $_cacheKey = self::DEFAULT_CACHE_KEY;
+	/** @var ?string the cache key of the stamp; null for {@see DEFAULT_CACHE_KEY} */
+	private ?string $_cacheKey = null;
 
 	/**
 	 * @param ?ICache $cache the cache holding the stamp, or null to resolve from {@see getCacheID CacheID}
@@ -103,11 +103,21 @@ class TCronWakeCache extends TCronWakePoll
 	}
 
 	/**
-	 * @return string the cache key of the stamp
+	 * Initializes the module; an unset {@see getCacheKey CacheKey} takes {@see DEFAULT_CACHE_KEY} through `static::`.
+	 * @param null|array|\Prado\Xml\TXmlElement $config the module configuration
+	 */
+	public function init($config)
+	{
+		$this->_cacheKey ??= static::DEFAULT_CACHE_KEY;
+		parent::init($config);
+	}
+
+	/**
+	 * @return string the cache key of the stamp, default {@see DEFAULT_CACHE_KEY}
 	 */
 	public function getCacheKey(): string
 	{
-		return $this->_cacheKey;
+		return $this->_cacheKey ?? static::DEFAULT_CACHE_KEY;
 	}
 
 	/**
@@ -133,7 +143,7 @@ class TCronWakeCache extends TCronWakePoll
 	 */
 	protected function readStamp(): mixed
 	{
-		$value = $this->getCache()->get($this->_cacheKey);
+		$value = $this->getCache()->get($this->getCacheKey());
 		return ($value === false) ? null : $value;
 	}
 
@@ -143,6 +153,6 @@ class TCronWakeCache extends TCronWakePoll
 	 */
 	protected function writeStamp(): bool
 	{
-		return (bool) $this->getCache()->set($this->_cacheKey, sprintf('%.6F', \microtime(true)));
+		return (bool) $this->getCache()->set($this->getCacheKey(), sprintf('%.6F', \microtime(true)));
 	}
 }

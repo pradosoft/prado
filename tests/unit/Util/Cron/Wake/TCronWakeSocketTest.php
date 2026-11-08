@@ -43,6 +43,12 @@ class TCronWakeSocketTest extends \PHPUnit\Framework\TestCase
 		self::assertSame($this->runtime . '/sub', $s->getRuntimePath());
 		$s->setBasePort('61000');
 		self::assertSame(61000, $s->getBasePort());
+		self::assertSame(64, strlen($s->getToken()), 'the default token is a SHA-256 HMAC');
+		self::assertSame($s->getToken(), (new TCronWakeSocket($this->runtime))->getToken(), 'every transport of the application derives the same token');
+		$s->setToken('secret');
+		self::assertSame('secret', $s->getToken());
+		$s->setToken('');
+		self::assertSame(64, strlen($s->getToken()));
 		$s = new TCronWakeSocket();
 		self::assertNotEmpty($s->getRuntimePath(), 'defaults to the application runtime path');
 	}
@@ -95,7 +101,7 @@ class TCronWakeSocketTest extends \PHPUnit\Framework\TestCase
 		$this->unlinkUdg($address);
 		$server = stream_socket_server($address, $errno, $errstr, STREAM_SERVER_BIND);
 		$client = stream_socket_client($address, $e1, $e2, 0, STREAM_CLIENT_CONNECT);
-		fwrite($client, '1'); // queue a wake datagram
+		fwrite($client, $base->getToken()); // queue a wake datagram
 		fclose($client);
 
 		$socket = new class ($this->runtime) extends TCronWakeSocket {
@@ -149,6 +155,37 @@ class TCronWakeSocketTest extends \PHPUnit\Framework\TestCase
 		// The next wait consumes the buffered datagram immediately instead of dropping it.
 		self::assertTrue($socket->wait($now + 5.0, $now));
 
+		$socket->close();
+	}
+
+	public function testAForeignDatagramDoesNotWake()
+	{
+		$base = new TCronWakeSocket($this->runtime);
+		$this->skipWithoutTransport($base);
+		$now = 16 * 60 + 1.0;
+		$address = $base->getAddress(16);
+		$this->unlinkUdg($address);
+		$server = stream_socket_server($address, $errno, $errstr, STREAM_SERVER_BIND);
+		$socket = new class ($this->runtime) extends TCronWakeSocket {
+			public $injected;
+			protected function bind($address)
+			{
+				return $this->injected;
+			}
+		};
+		$socket->injected = $server;
+		$send = static function (string $data) use ($address) {
+			$client = stream_socket_client($address, $e1, $e2, 0, STREAM_CLIENT_CONNECT);
+			fwrite($client, $data);
+			fclose($client);
+		};
+		$send('1');
+		$send(str_repeat('x', 64));
+		$start = microtime(true);
+		self::assertFalse($socket->wait($now + 0.05, $now), 'datagrams without the token are read and ignored');
+		self::assertGreaterThanOrEqual(0.04, microtime(true) - $start, 'the wait goes on after a foreign datagram');
+		$send($socket->getToken());
+		self::assertTrue($socket->wait($now + 5.0, $now));
 		$socket->close();
 	}
 

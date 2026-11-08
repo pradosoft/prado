@@ -36,6 +36,10 @@ use Prado\TPropertyValue;
  * in the receive queue and consumed by the next wait instead of being dropped. {@see close()} releases
  * it; a per-minute process closes at the end of its minute so nothing is held into the next.
  *
+ * Any process of the host can send a datagram to a loopback or `udg` address, so a wake carries the
+ * {@see getToken Token}, an HMAC of the application's validation key by default, and a datagram
+ * without it is read and ignored. A `udg` socket file is also owner-only.
+ *
  * The socket is the default transport of {@see \Prado\Util\Cron\TCronModule}; as a module it
  * configures {@see setRuntimePath RuntimePath} and {@see setBasePort BasePort}.
  *
@@ -53,8 +57,11 @@ class TCronWakeSocket extends TModule implements ICronWakeTransport
 	/** @var ?string the runtime directory holding the udg socket files, or null for the application runtime path */
 	private ?string $_runtimePath;
 
-	/** @var int the base udp loopback port */
-	private int $_basePort;
+	/** @var ?int the base udp loopback port; null for {@see DEFAULT_WAKE_PORT} */
+	private ?int $_basePort;
+
+	/** @var ?string the wake token, or null to derive it from the application's validation key */
+	private ?string $_token = null;
 
 	/** @var null|false|string the resolved transport: false until detected, then 'udg', 'udp', or null */
 	private $_transport = false;
@@ -73,13 +80,24 @@ class TCronWakeSocket extends TModule implements ICronWakeTransport
 
 	/**
 	 * @param ?string $runtimePath the runtime directory for udg socket files, or null for the application runtime path
-	 * @param int $basePort the base udp loopback port (even minute uses it, odd uses it + 1, the daemon + 2)
+	 * @param ?int $basePort the base udp loopback port (even minute uses it, odd uses it + 1, the daemon + 2), or null for {@see DEFAULT_WAKE_PORT}
 	 */
-	public function __construct(?string $runtimePath = null, int $basePort = self::DEFAULT_WAKE_PORT)
+	public function __construct(?string $runtimePath = null, ?int $basePort = null)
 	{
 		$this->_runtimePath = ($runtimePath === null) ? null : rtrim($runtimePath, '/\\');
 		$this->_basePort = $basePort;
 		parent::__construct();
+	}
+
+	/**
+	 * Initializes the module; an unset {@see getBasePort BasePort} takes {@see DEFAULT_WAKE_PORT} through `static::`,
+	 * so a subclass overrides the default by redefining the constant.
+	 * @param null|array|\Prado\Xml\TXmlElement $config the module configuration
+	 */
+	public function init($config)
+	{
+		$this->_basePort ??= (int) static::DEFAULT_WAKE_PORT;
+		parent::init($config);
 	}
 
 	/**
@@ -105,11 +123,11 @@ class TCronWakeSocket extends TModule implements ICronWakeTransport
 	}
 
 	/**
-	 * @return int the base udp loopback port; even minutes use it, odd minutes the next, the daemon the one after
+	 * @return int the base udp loopback port, default {@see DEFAULT_WAKE_PORT}; even minutes use it, odd minutes the next, the daemon the one after
 	 */
 	public function getBasePort(): int
 	{
-		return $this->_basePort;
+		return $this->_basePort ?? (int) static::DEFAULT_WAKE_PORT;
 	}
 
 	/**
@@ -119,6 +137,36 @@ class TCronWakeSocket extends TModule implements ICronWakeTransport
 	public function setBasePort($value): static
 	{
 		$this->_basePort = TPropertyValue::ensureInteger($value);
+		return $this;
+	}
+
+	/**
+	 * Returns the wake token every datagram must carry.  Without a configured token it is the SHA-256
+	 * HMAC of `prado:cron:wake` with the application's `TSecurityManager` validation key, which every
+	 * process of the application shares; without an application the key is the runtime path.
+	 * @return string the wake token
+	 */
+	public function getToken(): string
+	{
+		if ($this->_token === null) {
+			$key = null;
+			try {
+				$key = Prado::getApplication()?->getSecurityManager()?->getValidationKey();
+			} catch (\Throwable $e) {
+				// no security manager; fall back to the runtime path
+			}
+			$this->_token = hash_hmac('sha256', 'prado:cron:wake', (string) ($key ?: $this->getRuntimePath()));
+		}
+		return $this->_token;
+	}
+
+	/**
+	 * @param ?string $value the wake token, or null or '' to derive it from the application's validation key
+	 * @return static the current object
+	 */
+	public function setToken($value): static
+	{
+		$this->_token = ($value === null || $value === '') ? null : TPropertyValue::ensureString($value);
 		return $this;
 	}
 
@@ -142,7 +190,7 @@ class TCronWakeSocket extends TModule implements ICronWakeTransport
 	 */
 	public function getAddress(int $minute): ?string
 	{
-		return $this->addressFor(($minute % 2) ? 'odd' : 'even', $this->_basePort + ($minute % 2));
+		return $this->addressFor(($minute % 2) ? 'odd' : 'even', $this->getBasePort() + ($minute % 2));
 	}
 
 	/**
@@ -151,7 +199,7 @@ class TCronWakeSocket extends TModule implements ICronWakeTransport
 	 */
 	public function getDaemonAddress(): ?string
 	{
-		return $this->addressFor('daemon', $this->_basePort + 2);
+		return $this->addressFor('daemon', $this->getBasePort() + 2);
 	}
 
 	/**
@@ -163,7 +211,7 @@ class TCronWakeSocket extends TModule implements ICronWakeTransport
 	protected function addressFor(string $suffix, int $port): ?string
 	{
 		return match ($this->getTransport()) {
-			'udg' => 'udg://' . $this->getRuntimePath() . DIRECTORY_SEPARATOR . self::SOCKET_PREFIX . $suffix . '.sock',
+			'udg' => 'udg://' . $this->getRuntimePath() . DIRECTORY_SEPARATOR . static::SOCKET_PREFIX . $suffix . '.sock',
 			'udp' => 'udp://127.0.0.1:' . $port,
 			default => null,
 		};
@@ -174,6 +222,7 @@ class TCronWakeSocket extends TModule implements ICronWakeTransport
 	 * wake datagram arrives. The socket is bound on first use and kept bound (see {@see ensureBound}),
 	 * so a datagram that arrived while the process was busy is consumed here rather than dropped. On
 	 * wake all queued datagrams are drained.
+	 * A datagram without the {@see getToken Token} is ignored and the wait goes on.
 	 * @param float $until the Unix timestamp to wait until
 	 * @param float $now the current Unix timestamp with microseconds
 	 * @return ?bool true when a wake datagram arrived, false when the wait timed out, null when no socket
@@ -185,19 +234,23 @@ class TCronWakeSocket extends TModule implements ICronWakeTransport
 		if ($address === null || !$this->ensureBound($address)) {
 			return null;
 		}
+		$start = \microtime(true);
 		$remaining = $until - $now;
-		if ($remaining <= 0) {
-			return $this->drain(); // a buffered kick still counts as a wake
-		}
-		$sec = (int) $remaining;
-		$usec = (int) (($remaining - $sec) * 1000000);
-		$read = [$this->_server];
-		$write = $except = [];
-		$count = @stream_select($read, $write, $except, $sec, $usec);
-		if ($count > 0) {
-			$this->drain();
-			return true;
-		}
+		do {
+			if ($remaining > 0) {
+				$sec = (int) $remaining;
+				$usec = (int) (($remaining - $sec) * 1000000);
+				$read = [$this->_server];
+				$write = $except = [];
+				if (@stream_select($read, $write, $except, $sec, $usec) < 1) {
+					return false;
+				}
+			}
+			if ($this->drain()) {
+				return true; // a buffered wake counts as well
+			}
+			$remaining = ($until - $now) - (\microtime(true) - $start);
+		} while ($remaining > 0);
 		return false;
 	}
 
@@ -216,8 +269,9 @@ class TCronWakeSocket extends TModule implements ICronWakeTransport
 		$this->unwatch();
 		$this->_loop = $loop;
 		$this->_watcher = $loop->onReadable($this->_server, function () use ($onWake) {
-			$this->drain();
-			$onWake();
+			if ($this->drain()) {
+				$onWake();
+			}
 		});
 		return true;
 	}
@@ -271,25 +325,28 @@ class TCronWakeSocket extends TModule implements ICronWakeTransport
 
 	/**
 	 * Consumes all datagrams queued on the bound socket without blocking.
-	 * @return bool whether at least one datagram was drained
+	 * @return bool whether at least one of them carried the {@see getToken Token}
 	 */
 	protected function drain(): bool
 	{
-		$drained = false;
+		$valid = false;
+		$token = $this->getToken();
 		$write = $except = [];
 		$read = [$this->_server];
 		while (@stream_select($read, $write, $except, 0, 0) > 0) {
-			@stream_socket_recvfrom($this->_server, 65535);
-			$drained = true;
+			$data = @stream_socket_recvfrom($this->_server, 65535);
+			if (is_string($data) && hash_equals($token, $data)) {
+				$valid = true;
+			}
 			$read = [$this->_server];
 			$write = $except = [];
 		}
-		return $drained;
+		return $valid;
 	}
 
 	/**
-	 * Sends a wake datagram to the daemon address and to the current minute's parity address. A
-	 * missing listener (no cron waiting) is a harmless no-op.
+	 * Sends the {@see getToken Token} datagram to the daemon address and to the current minute's parity
+	 * address. A missing listener (no cron waiting) is a harmless no-op.
 	 * @param float $now the current Unix timestamp with microseconds
 	 * @return bool whether a datagram was sent
 	 */
@@ -315,7 +372,8 @@ class TCronWakeSocket extends TModule implements ICronWakeTransport
 		if ($client === false) {
 			return false;
 		}
-		$sent = @fwrite($client, '1') !== false;
+		$token = $this->getToken();
+		$sent = @fwrite($client, $token) === strlen($token);
 		fclose($client);
 		return $sent;
 	}
@@ -331,6 +389,9 @@ class TCronWakeSocket extends TModule implements ICronWakeTransport
 			@unlink(substr($address, 6));
 		}
 		$server = @stream_socket_server($address, $errno, $errstr, STREAM_SERVER_BIND);
+		if ($server !== false && str_starts_with($address, 'udg://')) {
+			@chmod(substr($address, 6), 0o600);
+		}
 		return ($server === false) ? null : $server;
 	}
 

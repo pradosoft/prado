@@ -62,7 +62,7 @@ class TCronWakeFifo extends TModule implements ICronWakeTransport
 	public function getFifoFile(): string
 	{
 		if ($this->_fifoFile === null) {
-			$this->_fifoFile = Prado::getApplication()->getRuntimePath() . DIRECTORY_SEPARATOR . self::DEFAULT_FIFO_NAME;
+			$this->_fifoFile = Prado::getApplication()->getRuntimePath() . DIRECTORY_SEPARATOR . static::DEFAULT_FIFO_NAME;
 		}
 		return $this->_fifoFile;
 	}

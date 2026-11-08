@@ -219,8 +219,8 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	/** @var array[]|TCronTask[] the tasks */
 	private $_tasks = [];
 
-	/** @var string The user Id of the tasks without users */
-	private $_defaultUserName = self::DEFAULT_CRON_USER;
+	/** @var ?string The user Id of the tasks without users; null for {@see DEFAULT_CRON_USER} */
+	private ?string $_defaultUserName = null;
 
 	/** @var bool enable cron on requests, default false */
 	private $_enableRequestCron = false;
@@ -249,11 +249,11 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	/** @var bool whether `cron/run` elects a daemon instead of sweeping once, default false */
 	private bool $_daemon = false;
 
-	/** @var float the seconds a daemon runs before it exits; 0 for no limit */
-	private float $_daemonLifetime = self::DEFAULT_DAEMON_LIFETIME;
+	/** @var ?float the seconds a daemon runs before it exits; 0 for no limit; null for {@see DEFAULT_DAEMON_LIFETIME} */
+	private ?float $_daemonLifetime = null;
 
-	/** @var float the maximum seconds a daemon waits between sweeps */
-	private float $_daemonIdle = self::DEFAULT_DAEMON_IDLE;
+	/** @var ?float the maximum seconds a daemon waits between sweeps; null for {@see DEFAULT_DAEMON_IDLE} */
+	private ?float $_daemonIdle = null;
 
 	/** @var null|IMutex|string the mutex of the daemon lease, or its module ID, or null for a file mutex */
 	private $_daemonMutex;
@@ -270,13 +270,18 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	/**
 	 * Initializes the module.  Read the configuration, installs Shell Actions,
 	 * and checks if Request-cron should be activated.  This lazy loads the
-	 * cron job tasks to minimize computing when cron isn't used.
+	 * cron job tasks to minimize computing when cron isn't used.  The properties left unset take
+	 * the class constants through `static::`, so a subclass overrides a default by redefining
+	 * {@see DEFAULT_CRON_USER}, {@see DEFAULT_DAEMON_LIFETIME}, or {@see DEFAULT_DAEMON_IDLE}.
 	 * @param null|array|\Prado\Xml\TXmlElement $config
 	 * @throws TConfigurationException when the user manage doesn't exist or is invalid
 	 */
 	public function init($config)
 	{
 		$app = $this->getApplication();
+		$this->_defaultUserName ??= static::DEFAULT_CRON_USER;
+		$this->_daemonLifetime ??= (float) static::DEFAULT_DAEMON_LIFETIME;
+		$this->_daemonIdle ??= (float) static::DEFAULT_DAEMON_IDLE;
 
 		//Get the IUserManager module from the string
 		if (is_string($this->_userManager)) {
@@ -1074,11 +1079,11 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	}
 
 	/**
-	 * @return string the default user id of Tasks without users ids
+	 * @return string the default user id of Tasks without users ids, default {@see DEFAULT_CRON_USER}
 	 */
 	public function getDefaultUserName()
 	{
-		return $this->_defaultUserName;
+		return $this->_defaultUserName ?? static::DEFAULT_CRON_USER;
 	}
 
 	/**
@@ -1395,7 +1400,7 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	 */
 	public function getDaemonLifetime(): float
 	{
-		return $this->_daemonLifetime;
+		return $this->_daemonLifetime ?? (float) static::DEFAULT_DAEMON_LIFETIME;
 	}
 
 	/**
@@ -1418,7 +1423,7 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	 */
 	public function getDaemonIdle(): float
 	{
-		return $this->_daemonIdle;
+		return $this->_daemonIdle ?? (float) static::DEFAULT_DAEMON_IDLE;
 	}
 
 	/**
@@ -1584,7 +1589,7 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 		if ($lifetime > 0) {
 			$wait = min($wait, max(0.0, $lifetime - ($this->getMonotonicClock()->seconds() - $start)));
 		}
-		return max($wait, self::DAEMON_MIN_WAIT);
+		return max($wait, static::DAEMON_MIN_WAIT);
 	}
 
 	/**

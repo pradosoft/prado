@@ -56,11 +56,11 @@ class TCronWakePgsql extends TModule implements ICronWakeTransport, IDbModule
 	/** The default seconds between polls of the notifications in {@see watch()}. */
 	public const DEFAULT_POLL_INTERVAL = 1.0;
 
-	/** @var string the notification channel */
-	private string $_channel = self::DEFAULT_CHANNEL;
+	/** @var ?string the notification channel; null for {@see DEFAULT_CHANNEL} */
+	private ?string $_channel = null;
 
-	/** @var float the seconds between polls of the notifications in {@see watch()} */
-	private float $_pollInterval = self::DEFAULT_POLL_INTERVAL;
+	/** @var ?float the seconds between polls of the notifications in {@see watch()}; null for {@see DEFAULT_POLL_INTERVAL} */
+	private ?float $_pollInterval = null;
 
 	/** @var ?IDataConnection the connection set directly; null uses ConnectionID */
 	private ?IDataConnection $_connection = null;
@@ -84,11 +84,23 @@ class TCronWakePgsql extends TModule implements ICronWakeTransport, IDbModule
 	}
 
 	/**
-	 * @return string the notification channel, an SQL identifier; default `prado_cron_wake`
+	 * Initializes the module.  A property left unset takes its class constant through `static::`, so a
+	 * subclass overrides a default by redefining {@see DEFAULT_CHANNEL} or {@see DEFAULT_POLL_INTERVAL}.
+	 * @param null|array|\Prado\Xml\TXmlElement $config the module configuration
+	 */
+	public function init($config)
+	{
+		$this->_channel ??= static::DEFAULT_CHANNEL;
+		$this->_pollInterval ??= (float) static::DEFAULT_POLL_INTERVAL;
+		parent::init($config);
+	}
+
+	/**
+	 * @return string the notification channel, an SQL identifier; default {@see DEFAULT_CHANNEL}
 	 */
 	public function getChannel(): string
 	{
-		return $this->_channel;
+		return $this->_channel ?? static::DEFAULT_CHANNEL;
 	}
 
 	/**
@@ -107,7 +119,7 @@ class TCronWakePgsql extends TModule implements ICronWakeTransport, IDbModule
 	 */
 	public function getPollInterval(): float
 	{
-		return $this->_pollInterval;
+		return $this->_pollInterval ?? (float) static::DEFAULT_POLL_INTERVAL;
 	}
 
 	/**
@@ -180,7 +192,7 @@ class TCronWakePgsql extends TModule implements ICronWakeTransport, IDbModule
 			}
 			$listener = new TDbConnection($source->getConnectionString(), $source->getUsername(), $source->getPassword(), $source->getCharset());
 			$listener->setActive(true);
-			$listener->createCommand('LISTEN ' . $this->_channel)->execute();
+			$listener->createCommand('LISTEN ' . $this->getChannel())->execute();
 			$this->_listener = $listener;
 		}
 		return $this->_listener;
@@ -213,7 +225,7 @@ class TCronWakePgsql extends TModule implements ICronWakeTransport, IDbModule
 		if (!$this->getIsAvailable()) {
 			return false;
 		}
-		$this->getDbConnection()->createCommand('NOTIFY ' . $this->_channel)->execute();
+		$this->getDbConnection()->createCommand('NOTIFY ' . $this->getChannel())->execute();
 		return true;
 	}
 
@@ -247,7 +259,7 @@ class TCronWakePgsql extends TModule implements ICronWakeTransport, IDbModule
 		$this->unwatch();
 		$this->getListener();
 		$this->_loop = $loop;
-		$this->_watcher = $loop->repeat($this->_pollInterval, function () use ($onWake) {
+		$this->_watcher = $loop->repeat($this->getPollInterval(), function () use ($onWake) {
 			if ($this->takeNotifications(0)) {
 				$onWake();
 			}

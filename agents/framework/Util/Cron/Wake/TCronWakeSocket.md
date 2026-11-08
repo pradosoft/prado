@@ -29,6 +29,7 @@ The minute **parity** keeps a process that overruns into the next minute from co
 |---|---|---|
 | `RuntimePath` | application runtime path | Directory of the `udg` socket files; a path or namespace. |
 | `BasePort` | `52800` | Base `udp` loopback port. |
+| `Token` | HMAC of the validation key | The content every wake datagram must carry: by default `hash_hmac('sha256', 'prado:cron:wake', <TSecurityManager ValidationKey>)`, which every process of the application derives alike; without an application the key is the runtime path. A datagram without it is read and ignored, so another local process cannot wake the cron. The `udg` socket file is owner-only. |
 
 ## Methods
 

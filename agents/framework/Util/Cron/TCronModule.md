@@ -77,6 +77,8 @@ $cron->getTasksByType(TDbCronCleanLogTask::class);
 | `DaemonMutex` | a `TFileMutex` | The lease, an [`IMutex`](../Mutex/IMutex.md) or its module ID. The lock name is `getDaemonLockName()`, `cron:daemon:<module id>`. A file mutex excludes the processes of one host; a database or Redis mutex excludes every host's. |
 | `WakeTransport` | a `TCronWakeSocket` | The [`ICronWakeTransport`](Wake/ICronWakeTransport.md) or its module ID, shared by per-minute waits (`waitForWake()`), the daemon (`watch()`), and `signalWake()`. |
 
+`DEFAULT_CRON_USER`, `DEFAULT_DAEMON_LIFETIME`, `DEFAULT_DAEMON_IDLE`, and `DAEMON_MIN_WAIT` are read through `static::` (the unset properties take them in `init()`), so a subclass overrides a default by redefining the constant.
+
 `runDaemon()` returns the number of tasks it ran, or 0 at once when the lease is held. Each turn: `sweepTasks()` (`filterStaleTasks()`, `getPendingTasks()`, `runTasks()` with no minute limit), then `waitDaemon()` for `getDaemonWait()` seconds, the least of the time to `getNextPendingTime()`, `DaemonIdle`, and the remaining lifetime, never under `DAEMON_MIN_WAIT`. A wake (`wakeDaemon()`, from the transport's `watch()` callback) or `stopDaemon()` (also SIGTERM and SIGINT through the loop's `onSignal()` where `pcntl` exists) ends the wait; a wake during a sweep causes another sweep. `onDaemonIdle()` runs before each wait; `TDbCronManager` closes its database connection there. The lease is released and the transport closed in a `finally`. `dyLogCronDaemonStart($lockName, $watching)` and `dyLogCronDaemonEnd($numtasks)` are raised, and written to the shell by [`TShellCronLogBehavior`](TShellCronLogBehavior.md).
 
 ```xml

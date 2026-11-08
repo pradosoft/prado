@@ -73,7 +73,7 @@ class TCronWakeSignal extends TModule implements ICronWakeTransport
 	public function getPidFile(): string
 	{
 		if ($this->_pidFile === null) {
-			$this->_pidFile = Prado::getApplication()->getRuntimePath() . DIRECTORY_SEPARATOR . self::DEFAULT_PID_FILE_NAME;
+			$this->_pidFile = Prado::getApplication()->getRuntimePath() . DIRECTORY_SEPARATOR . static::DEFAULT_PID_FILE_NAME;
 		}
 		return $this->_pidFile;
 	}

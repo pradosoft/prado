@@ -35,8 +35,8 @@ abstract class TCronWakePoll extends TModule implements ICronWakeTransport
 	/** The default seconds between polls of the stamp. */
 	public const DEFAULT_POLL_INTERVAL = 1.0;
 
-	/** @var float the seconds between polls of the stamp */
-	private float $_pollInterval = self::DEFAULT_POLL_INTERVAL;
+	/** @var ?float the seconds between polls of the stamp; null for {@see DEFAULT_POLL_INTERVAL} */
+	private ?float $_pollInterval = null;
 
 	/** @var ?string the loop callback identifier of {@see watch()} */
 	private ?string $_watcher = null;
@@ -66,11 +66,22 @@ abstract class TCronWakePoll extends TModule implements ICronWakeTransport
 	abstract protected function getIsAvailable(): bool;
 
 	/**
-	 * @return float the seconds between polls of the stamp, default 1.0
+	 * Initializes the module.  A property left unset takes its class constant through `static::`, so a
+	 * subclass overrides the default by redefining {@see DEFAULT_POLL_INTERVAL}.
+	 * @param null|array|\Prado\Xml\TXmlElement $config the module configuration
+	 */
+	public function init($config)
+	{
+		$this->_pollInterval ??= (float) static::DEFAULT_POLL_INTERVAL;
+		parent::init($config);
+	}
+
+	/**
+	 * @return float the seconds between polls of the stamp, default {@see DEFAULT_POLL_INTERVAL}
 	 */
 	public function getPollInterval(): float
 	{
-		return $this->_pollInterval;
+		return $this->_pollInterval ?? (float) static::DEFAULT_POLL_INTERVAL;
 	}
 
 	/**
@@ -117,7 +128,7 @@ abstract class TCronWakePoll extends TModule implements ICronWakeTransport
 		$remaining = $until - $now;
 		$start = \microtime(true);
 		while ($remaining > 0) {
-			TAsync::sleep(min($remaining, $this->_pollInterval));
+			TAsync::sleep(min($remaining, $this->getPollInterval()));
 			if ($this->readStamp() !== $seen) {
 				return true;
 			}
@@ -140,7 +151,7 @@ abstract class TCronWakePoll extends TModule implements ICronWakeTransport
 		$this->unwatch();
 		$this->_seen = $this->readStamp();
 		$this->_loop = $loop;
-		$this->_watcher = $loop->repeat($this->_pollInterval, function () use ($onWake) {
+		$this->_watcher = $loop->repeat($this->getPollInterval(), function () use ($onWake) {
 			$stamp = $this->readStamp();
 			if ($stamp !== $this->_seen) {
 				$this->_seen = $stamp;
