@@ -8,6 +8,7 @@ use Prado\Test\Unit\Harness\Traits\TWebControlRenderTrait;
 use Prado\Test\Unit\PradoUnit;
 use Prado\Web\UI\IPostBackDataHandler;
 use Prado\Web\UI\IValidatable;
+use Prado\Web\UI\TClientScriptManager;
 use Prado\Web\UI\TPage;
 use Prado\Web\UI\WebControls\TListBox;
 use Prado\Web\UI\WebControls\TListItem;
@@ -22,6 +23,7 @@ class TListBoxTest extends TestCase
 	{
 		$page = new TPage();
 		PradoUnit::setProp($page, '_inFormRender', true);
+		PradoUnit::setProp($page, '_clientScript', new TClientScriptManager($page));
 		$list = new TListBox();
 		$list->setID('List');
 		if ($multi) {
@@ -304,5 +306,38 @@ class TListBoxTest extends TestCase
 		$list->setCausesValidation(false);
 		$list->raisePostDataChangedEvent();
 		$this->assertFalse(PradoUnit::getProp($page, '_validated'));
+	}
+
+	// ================================================================================
+	// RichOptions
+	// ================================================================================
+
+	public function testRenderRichOptionsHasClassAndNoButton()
+	{
+		[, $list] = $this->createPageList(true, ['a' => 'A']);
+		$list->setRichOptions(true);
+		$output = $this->render($list);
+		$this->assertStringContainsString('class="rich-options"', $output);
+		$this->assertStringContainsString('multiple="multiple"', $output);
+		$this->assertStringNotContainsString('<button>', $output);
+	}
+
+	public function testRenderItemContent()
+	{
+		[, $list] = $this->createPageList(false, []);
+		$item = new TListItem('Cat', 'cat');
+		$item->setContent('<b>Cat</b>');
+		$list->getItems()->add($item);
+		$this->assertStringContainsString('<option value="cat"><b>Cat</b></option>', $this->renderContents($list));
+	}
+
+	public function testPreRenderRegistersBaseSelectStyleBlock()
+	{
+		[$page, $list] = $this->createPageList();
+		$list->onPreRender(null);
+		$this->assertFalse($page->getClientScript()->isStyleSheetRegistered(TListBox::RICH_OPTIONS_CSS_CLASS));
+		$list->setRichOptions(true);
+		$list->onPreRender(null);
+		$this->assertTrue($page->getClientScript()->isStyleSheetRegistered(TListBox::RICH_OPTIONS_CSS_CLASS));
 	}
 }

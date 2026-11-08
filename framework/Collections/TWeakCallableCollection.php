@@ -83,6 +83,9 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 		}
 		parent::__construct($data, $readOnly, $defaultPriority, $precision);
 		if (!$set) {
+			if ($discardInvalid === null && $this->_discardInvalid !== null) {
+				$discardInvalid = !$this->getReadOnly();
+			}
 			$this->setDiscardInvalid($discardInvalid);
 		}
 	}
@@ -124,18 +127,25 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 	/**
 	 * This is a custom function for adding objects to the weak map.  Specifically,
 	 * if the object being added is a TEventHandler, we use the {@see \Prado\TEventHandler::getHandlerObject}
-	 * object instead of the TEventHandler itself.
+	 * object instead of the TEventHandler itself.  A TEventHandler without a handler
+	 * object is counted, so a search by its callable finds it, and is not tracked.
+	 * One whose handler object is already collected marks the WeakMap changed so the
+	 * next scrub removes it.
 	 * @param object $object The object to add to the managed weak map.
 	 * @since 4.3.0
 	 */
 	protected function weakCustomAdd(object $object)
 	{
 		if ($object instanceof TEventHandler) {
-			$object = $object->getHandlerObject();
-			if (!$object) {
-				return;
-			}
 			$this->_eventHandlerCount++;
+			$handlerObject = $object->getHandlerObject();
+			if ($handlerObject === null) {
+				if (!$object->hasHandler()) {
+					$this->weakMarkChanged();
+				}
+				return 0;
+			}
+			$object = $handlerObject;
 		}
 		return $this->weakAdd($object);
 	}
@@ -143,18 +153,19 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 	/**
 	 * This is a custom function for removing objects to the weak map.  Specifically,
 	 * if the object being removed is a TEventHandler, we use the {@see \Prado\TEventHandler::getHandlerObject}
-	 * object instead of the TEventHandler itself.
+	 * object instead of the TEventHandler itself.  This mirrors {@see weakCustomAdd}.
 	 * @param object $object The object to remove to the managed weak map.
 	 * @since 4.3.0
 	 */
 	protected function weakCustomRemove(object $object)
 	{
 		if ($object instanceof TEventHandler) {
-			$object = $object->getHandlerObject();
-			if (!$object) {
-				return;
-			}
 			$this->_eventHandlerCount--;
+			$handlerObject = $object->getHandlerObject();
+			if ($handlerObject === null) {
+				return 0;
+			}
+			$object = $handlerObject;
 		}
 		return $this->weakRemove($object);
 	}
@@ -353,15 +364,18 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 						$isEventHandler = false;
 						if (!$a && ($isEventHandler = ($obj instanceof TEventHandler))) {
 							$obj = $obj->getHandlerObject(true);
+							if ($obj === null) {
+								continue;
+							}
 						}
 						if ($obj instanceof WeakReference) {
 							if ($obj = $obj->get()) {
 								$this->weakAdd($obj);
 							} else {
 								parent::removeAtIndexInPriority($i, $priority);
-							}
-							if ($isEventHandler) {
-								$this->_eventHandlerCount--;
+								if ($isEventHandler) {
+									$this->_eventHandlerCount--;
+								}
 							}
 						} else { // Closure
 							$this->weakAdd($obj);
@@ -597,7 +611,8 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 	/**
 	 * Removes an item from the priority list.
 	 * The list will search for the item.  The first matching item found will be removed from
-	 * the list.
+	 * the list.  A callable also matches a TEventHandler wrapping it, with or without
+	 * $priority, after an exact match is looked for.
 	 * All invalid WeakReference[s] are optionally removed from the list before indexing.
 	 * @param mixed $item item the item to be removed.
 	 * @param null|bool|float $priority priority of item to remove. without this parameter it
@@ -625,7 +640,15 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 					$absindex += count($this->_d[$p]);
 					continue;
 				} elseif ($p == $priority) {
-					if (($index = array_search($item, $this->_d[$p], true)) !== false) {
+					if (($index = array_search($item, $this->_d[$p], true)) === false && $this->_eventHandlerCount) {
+						foreach ($this->_d[$p] as $index => $pItem) {
+							if (($pItem instanceof TEventHandler) && $pItem->isSameHandler($item, true)) {
+								break;
+							}
+							$index = false;
+						}
+					}
+					if ($index !== false) {
 						$absindex += $index;
 						$this->internalRemoveAtIndexInPriority($index, $p);
 						return $absindex;

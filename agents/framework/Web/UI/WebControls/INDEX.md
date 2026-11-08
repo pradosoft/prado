@@ -24,6 +24,7 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 - **[`TPagerAccessibilityTrait`](TPagerAccessibilityTrait.md)** — Accessible names, `aria-current="page"`, the named `<nav>`, and the `<ul>` list layout of the `TPager` and `TDataGrid` pagers. @since 4.4.0
 
 - **[`TCiteTrait`](TCiteTrait.md)** — Backs the `Cite` property (source or explanation URL) of `TQuote`, `TBlockQuote`, `TIns`, and `TDel`. @since 4.4.0
+- **[`TRichOptionsTrait`](TRichOptionsTrait.md)** — Backs `RichOptions` and `RichOptionsCssUrl` of `TDropDownList` and `TListBox`: the `rich-options` class opted into `appearance: base-select`. @since 4.4.0
 
 - **[`TBaseEdit`](TBaseEdit.md)** — Base for `TIns` and `TDel`: `Cite` and `DateTime` of an edit. @since 4.4.0
 
@@ -47,8 +48,8 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 | `TTextBox` | `<input>` / `<textarea>` | `TextMode` (SingleLine/MultiLine/Password), `MaxLength`, `ReadOnly`, `AutoPostBack`, `SuggestionList` |
 | `TCheckBox` | `<input type="checkbox">` | `Checked`, `TextAlign`, `AutoPostBack`, `OnCheckedChanged` |
 | `TRadioButton` | `<input type="radio">` | `GroupName`, `Checked`, `AutoPostBack`, `OnCheckedChanged` |
-| `TDropDownList` | `<select>` | `SelectedIndex`, `SelectedValue`, `Items` (TListItemCollection), `AutoPostBack` |
-| `TListBox` | `<select multiple>` | `SelectionMode` (Single/Multiple), `Rows` |
+| `TDropDownList` | `<select>` | `SelectedIndex`, `SelectedValue`, `Items` (TListItemCollection), `AutoPostBack`, `RichOptions` |
+| `TListBox` | `<select multiple>` | `SelectionMode` (Single/Multiple), `Rows`, `RichOptions` |
 | [`TSuggestionList`](TSuggestionList.md) | `<datalist>` | Suggested values for a `TTextBox` through `TTextBox::SuggestionList`; `Items`, data binding (@since 4.4.0) |
 | `TCheckBoxList` | multiple `<input type="checkbox">` | `RepeatLayout`, `RepeatColumns`, `RepeatDirection` |
 | `TRadioButtonList` | multiple `<input type="radio">` | Same as TCheckBoxList |

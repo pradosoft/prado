@@ -18,7 +18,8 @@ Pre-built installable behaviors for common Prado application concerns. Each beha
 | `TForkable` | Trait | Provides `fork()` helper for safe process forking with log capture |
 | `TGlobalClassAware` | Any | Checks class availability across the application |
 | `TMapLazyLoadBehavior` | [`TMap`](../../Collections/TMap.md) subclass | Lazy-loads TMap items on first access |
-| `TMapRouteBehavior` | [`TMap`](../../Collections/TMap.md) subclass | Routes `TMap` read/write operations through a handler |
+| `TMapRouteBehavior` | [`TMap`](../../Collections/TMap.md) subclass | Routes `TMap` read/write operations through a handler; indexed by key on an `IMapRouteIndex` map such as [`TApplicationParameters`](../../TApplicationParameters.md) |
+| `IMapRouteIndex` | Interface | A map that indexes its `TMapRouteBehavior`s by key and leaves them out of the `dy` call chain |
 | `TNoUnserializeBehaviorTrait` | Behaviors | Trait preventing behavior from being unserialized (stateless behaviors) |
 | `TPageGlobalizationCharsetBehavior` | [`TPage`](../../Web/UI/TPage.md) | Sets the page charset from [`TGlobalization`](../../I18N/TGlobalization.md) settings |
 | `TPageNoCacheBehavior` | [`TPage`](../../Web/UI/TPage.md) | Adds HTTP no-cache headers to page responses |

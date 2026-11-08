@@ -686,4 +686,88 @@ class TWeakListTest extends TListTest
 		self::expectException(TInvalidOperationException::class);
 		$list->setDiscardInvalid(true);
 	}
+
+	public function testAddEventHandlerWithoutObject_TWeakList()
+	{
+		$list = new TWeakList();
+		$handler = new TEventHandler('strlen');
+
+		self::assertSame(0, $list->add($handler));
+		self::assertSame(1, $list->getCount());
+		self::assertSame($handler, $list->itemAt(0));
+		self::assertTrue($list->contains('strlen'));
+		self::assertSame(0, $list->indexOf('strlen'));
+
+		self::assertSame(0, $list->remove('strlen'));
+		self::assertSame(0, $list->getCount());
+		self::assertFalse($list->contains('strlen'));
+
+		$list = new TWeakList([$handler]);
+		self::assertSame(1, $list->getCount(), 'Turning DiscardInvalid on keeps a TEventHandler without an object');
+		self::assertSame([$handler], $list->toArray());
+	}
+
+	public function testAddEventHandlerWithCollectedObject_TWeakList()
+	{
+		$object = new WeakListInvokableItem();
+		$handler = new TEventHandler([$object, 'myHandler']);
+		$object = null;
+		self::assertFalse($handler->hasHandler());
+
+		$list = new TWeakList();
+		self::assertSame(0, $list->add($handler));
+		self::assertSame(0, $list->getCount(), 'A TEventHandler collected before it is added is scrubbed');
+		self::assertSame([], $list->toArray());
+
+		$list = new TWeakList(null, null, false);
+		$list->add($handler);
+		self::assertSame(1, $list->getCount());
+		self::assertSame([null], $list->toArray());
+		self::assertSame(0, $list->remove($handler));
+		self::assertSame(0, $list->getCount());
+	}
+
+	public function testTraversableArrayAccessItemIsWeakenedAsCopy_TWeakList()
+	{
+		$object = new WeakListInvokableItem();
+		$container = new \ArrayObject(['x' => $object]);
+		$list = new TWeakList();
+		$list->add($container);
+
+		self::assertSame($object, $container['x'], 'The caller\'s container keeps its object');
+
+		$item = $list->itemAt(0);
+		self::assertInstanceOf(\ArrayObject::class, $item);
+		self::assertNotSame($container, $item);
+		self::assertSame($object, $item['x']);
+		$list->toArray();
+		$item = null;
+
+		$weak = \WeakReference::create($object);
+		$object = $container = null;
+		gc_collect_cycles();
+
+		self::assertNull($weak->get(), 'The list releases objects in a stored container after reads');
+		self::assertSame(1, $list->getCount());
+		self::assertNull($list->itemAt(0)['x']);
+	}
+
+	public function testFilterItemTraversableArrayAccess_TWeakList()
+	{
+		$object = new WeakListInvokableItem();
+		$container = new \ArrayObject(['x' => $object, 'y' => 1]);
+		$item = $container;
+
+		TWeakList::filterItemForInput($item);
+		self::assertNotSame($container, $item);
+		self::assertSame($object, $container['x']);
+		self::assertInstanceOf(\WeakReference::class, $item['x']);
+		self::assertSame(1, $item['y']);
+
+		$stored = $item;
+		TWeakList::filterItemForOutput($item);
+		self::assertNotSame($stored, $item);
+		self::assertSame($object, $item['x']);
+		self::assertInstanceOf(\WeakReference::class, $stored['x'], 'The stored container keeps its WeakReference');
+	}
 }

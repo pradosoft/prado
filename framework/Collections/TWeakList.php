@@ -107,14 +107,26 @@ class TWeakList extends TList implements IWeakCollection, ICollectionFilter
 	/**
 	 * This is a custom function for adding objects to the weak map.  Specifically,
 	 * if the object being added is a TEventHandler, we use the {@see \Prado\TEventHandler::getHandlerObject}
-	 * object instead of the TEventHandler itself.
+	 * object instead of the TEventHandler itself.  A TEventHandler without a handler
+	 * object is counted and not tracked; one whose handler object is already collected
+	 * marks the WeakMap changed so the next scrub removes it.  Traversable ArrayAccess
+	 * containers are stored as weakened copies, like arrays, and are not tracked.
 	 * @param object $object The object to add to the managed weak map.
 	 */
 	protected function weakCustomAdd(object $object)
 	{
 		if ($object instanceof TEventHandler) {
-			$object = $object->getHandlerObject();
 			$this->_eventHandlerCount++;
+			$handlerObject = $object->getHandlerObject();
+			if ($handlerObject === null) {
+				if (!$object->hasHandler()) {
+					$this->weakMarkChanged();
+				}
+				return 0;
+			}
+			$object = $handlerObject;
+		} elseif ($object instanceof Traversable && $object instanceof ArrayAccess) {
+			return 0;
 		}
 		return $this->weakAdd($object);
 	}
@@ -122,22 +134,37 @@ class TWeakList extends TList implements IWeakCollection, ICollectionFilter
 	/**
 	 * This is a custom function for removing objects to the weak map.  Specifically,
 	 * if the object being removed is a TEventHandler, we use the {@see \Prado\TEventHandler::getHandlerObject}
-	 * object instead of the TEventHandler itself.
-	 * @param object $object The object to remove to the managed weak map.
+	 * object instead of the TEventHandler itself.  This mirrors {@see weakCustomAdd}.
+	 * A stored WeakReference is resolved to its object; a collected object is
+	 * already gone from the WeakMap.
+	 * @param object $object The stored item to remove from the managed weak map.
 	 */
 	protected function weakCustomRemove(object $object)
 	{
+		if ($object instanceof WeakReference) {
+			$object = $object->get();
+			if ($object === null) {
+				return 0;
+			}
+		}
 		if ($object instanceof TEventHandler) {
-			$object = $object->getHandlerObject();
 			$this->_eventHandlerCount--;
+			$handlerObject = $object->getHandlerObject();
+			if ($handlerObject === null) {
+				return 0;
+			}
+			$object = $handlerObject;
+		} elseif ($object instanceof Traversable && $object instanceof ArrayAccess) {
+			return 0;
 		}
 		return $this->weakRemove($object);
 	}
 
 	/**
 	 * Converts the $item callable that has WeakReference rather than the actual object
-	 * back into a regular callable.
-	 * @param mixed &$item
+	 * back into a regular callable.  A Traversable ArrayAccess container is resolved
+	 * into a copy so the stored container keeps its WeakReference[s].
+	 * @param mixed &$item The stored item; receives the resolved item.
 	 */
 	public static function filterItemForOutput(&$item): void
 	{
@@ -146,6 +173,7 @@ class TWeakList extends TList implements IWeakCollection, ICollectionFilter
 				static::filterItemForOutput($item[$key]);
 			}
 		} elseif ($item instanceof Traversable && $item instanceof ArrayAccess) {
+			$item = clone $item;
 			foreach ($item as $key => $element) {
 				static::filterItemForOutput($element);
 				$item[$key] = $element;
@@ -164,8 +192,10 @@ class TWeakList extends TList implements IWeakCollection, ICollectionFilter
 	 * for storage.  Closure[s] are not converted into WeakReference and so act like a
 	 * basic PHP type.  Closures are added to the the WeakMap cache but has no weak
 	 * effect because the TWeakList maintains references to Closure[s] preventing their
-	 * invalidation.
-	 * @param mixed &$item object to convert into a WeakReference where needed.
+	 * invalidation.  A Traversable ArrayAccess container is weakened as a copy so
+	 * the caller's container keeps its objects.
+	 * @param mixed &$item object to convert into a WeakReference where needed; receives
+	 *   the weakened item.
 	 */
 	public static function filterItemForInput(&$item): void
 	{
@@ -174,6 +204,7 @@ class TWeakList extends TList implements IWeakCollection, ICollectionFilter
 				static::filterItemForInput($item[$key]);
 			}
 		} elseif ($item instanceof Traversable && $item instanceof ArrayAccess) {
+			$item = clone $item;
 			foreach ($item as $key => $element) {
 				static::filterItemForInput($element);
 				$item[$key] = $element;
@@ -289,8 +320,14 @@ class TWeakList extends TList implements IWeakCollection, ICollectionFilter
 			for ($i = $this->_c - 1; $i >= 0; $i--) {
 				if (is_object($this->_d[$i])) {
 					$object = $this->_d[$i];
+					if ($object instanceof Traversable && $object instanceof ArrayAccess) {
+						continue;
+					}
 					if ($isEventHandler = ($object instanceof TEventHandler)) {
 						$object = $object->getHandlerObject(true);
+						if ($object === null) {
+							continue;
+						}
 					}
 					if ($object instanceof WeakReference) {
 						$object = $object->get();
@@ -408,10 +445,10 @@ class TWeakList extends TList implements IWeakCollection, ICollectionFilter
 	{
 		if (!$this->getReadOnly()) {
 			if (($index = $this->indexOf($item)) !== -1) {
-				if (is_object($item)) {
-					$this->weakCustomRemove($item);
+				$removed = parent::removeAt($index);
+				if (is_object($removed)) {
+					$this->weakCustomRemove($removed);
 				}
-				parent::removeAt($index);
 				return $index;
 			} else {
 				throw new TInvalidDataValueException('list_item_inexistent');
@@ -433,10 +470,10 @@ class TWeakList extends TList implements IWeakCollection, ICollectionFilter
 	{
 		$this->scrubWeakReferences();
 		$item = parent::removeAt($index);
-		$this->filterItemForOutput($item);
 		if (is_object($item)) {
 			$this->weakCustomRemove($item);
 		}
+		$this->filterItemForOutput($item);
 		return $item;
 	}
 
@@ -628,7 +665,6 @@ class TWeakList extends TList implements IWeakCollection, ICollectionFilter
 			parent::insertAt($this->_c, $item);
 		} else {
 			$removed = parent::removeAt($offset);
-			$this->filterItemForOutput($removed);
 			if (is_object($removed)) {
 				$this->weakCustomRemove($removed);
 			}

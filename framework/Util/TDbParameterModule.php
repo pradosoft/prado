@@ -18,6 +18,8 @@ use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\IModuleDependency;
+use Prado\Prado;
+use Prado\TApplicationParameters;
 use Prado\TModule;
 use Prado\TPropertyValue;
 use Prado\Security\Permissions\IPermissions;
@@ -86,6 +88,12 @@ use Prado\Util\Traits\TInitializedTrait;
  * and be saved to the database.  This captures any changes when
  * done by the page or user.  These changes are restored when
  * this module is loaded again.
+ *
+ * A final application parameter ({@see \Prado\TApplicationParameters}) keeps
+ * its configured value:
+ * - {@see loadDbParameters()} skips its row and logs a warning.
+ * - {@see get()} returns the row's value without setting the parameter.
+ * - {@see set()} throws before writing the row.
  *
  * When TPermissionsManager is a module in your app, there is one permission
  * to control user access to its function:
@@ -263,8 +271,24 @@ class TDbParameterModule extends TDbModule implements IPermissions, IModuleDepen
 					$value = $avalue;
 				}
 			}
+			if ($this->isFinalParameter($row['keyField'])) {
+				Prado::warning("Database parameter '{$row['keyField']}' is not loaded; the application parameter is final.", static::class);
+				continue;
+			}
 			$appParameters[$row['keyField']] = $value;
 		}
+	}
+
+	/**
+	 * Checks whether an application parameter is final.
+	 * @param string $key the parameter key.
+	 * @return bool whether the application parameters finalize the key.
+	 * @since 4.4.0
+	 */
+	protected function isFinalParameter($key): bool
+	{
+		$appParameters = $this->getApplication()->getParameters();
+		return $appParameters instanceof TApplicationParameters && $appParameters->getIsFinal($key);
 	}
 
 	/**
@@ -369,7 +393,8 @@ class TDbParameterModule extends TDbModule implements IPermissions, IModuleDepen
 	 * Gets a specific parameter parameters into application.
 	 * @param string $key key to get the value
 	 * @param bool $checkParameter checks the Application Parameters first
-	 * @param bool $setParameter should the method set the application parameters
+	 * @param bool $setParameter should the method set the application parameters;
+	 *   a final application parameter is not set.
 	 * @throws \Prado\Exceptions\TInvalidOperationException if the $key is blank
 	 * @throws \Prado\Exceptions\TDbException if the Fields and table is not correct
 	 * @return mixed the value of the key
@@ -407,7 +432,7 @@ class TDbParameterModule extends TDbModule implements IPermissions, IModuleDepen
 			} elseif ($serializer && ($avalue = call_user_func($serializer, $value, false)) !== null) {
 				$value = $avalue;
 			}
-			if ($setParameter) {
+			if ($setParameter && !$this->isFinalParameter($key)) {
 				$appParams = $this->getApplication()->getParameters();
 				$appParams[$key] = $value;
 			}
@@ -434,13 +459,17 @@ class TDbParameterModule extends TDbModule implements IPermissions, IModuleDepen
 	 * @param mixed $value the key of the parameter
 	 * @param bool $autoLoad should the key be autoloaded at init
 	 * @param mixed $setParameter
-	 * @throws \Prado\Exceptions\TInvalidOperationException if the $key is blank
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the $key is blank or the
+	 *   application parameter is final; the row is not written.
 	 * @throws \Prado\Exceptions\TDbException if the Fields and table is not correct
 	 */
 	public function set($key, $value, $autoLoad = true, $setParameter = true)
 	{
 		if (empty($key)) {
 			throw new TInvalidOperationException('dbparametermodule_set_no_blank_key');
+		}
+		if ($this->isFinalParameter($key)) {
+			throw new TInvalidOperationException('dbparametermodule_set_final', $key);
 		}
 
 		$_value = $value;

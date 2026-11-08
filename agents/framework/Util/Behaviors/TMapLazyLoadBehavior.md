@@ -15,6 +15,10 @@ TMapLazyLoadBehavior handles Application Parameters when there is no parameter k
 - `__construct($handler)` - Constructor takes a callable handler that receives the key and returns the value
 - `dyNoItem($value, $key, $callchain)` - Dynamic event handler for `dyNoItem`; calls the handler with the key and returns the value through the chain
 
+## Final parameters
+
+[`TApplicationParameters`](../../TApplicationParameters.md) does not raise `dyNoItem` for a final absent key; the handler is not called and the read returns null.
+
 ## See Also
 
 - [TMapRouteBehavior](./TMapRouteBehavior.md)

@@ -337,7 +337,7 @@ class TArraySubscription
 	public function setIsAssociative(null|bool|int $value = null): static
 	{
 		if ($this->_isSubscribed) {
-			throw new TInvalidOperationException('arraysubscription_no_change', 'Key');
+			throw new TInvalidOperationException('arraysubscription_no_change', 'IsAssociative');
 		}
 
 		$this->_isAssoc = $value;
@@ -357,7 +357,8 @@ class TArraySubscription
 	 * Places the item in the array at the key (and priority, where possible).
 	 * List based ArrayAccess must also implement \Countable as well.
 	 * @throws TInvalidDataValueException When the Array is an ArrayAccess (but not
-	 *   TMap nor TList), the Array isAssociative, and key is null.
+	 *   TMap nor TList), the Array isAssociative, and key is null.  Also when the Array
+	 *   is a list array (isAssociative false) and the key is outside 0 to count().
 	 * @return ?bool Was the subscription successful.  If the item is already subscribed
 	 *   this will return false.  If the array is not an array, this returns null;
 	 */
@@ -443,7 +444,7 @@ class TArraySubscription
 					}
 					$collection[$key] = $this->getItem();
 				} else {
-					if ($key < 0 && $key > count($collection)) {
+					if ($key < 0 || $key > count($collection)) {
 						throw new TInvalidDataValueException('arraysubscription_index_invalid', $key, count($collection));
 					}
 					array_splice($collection, $key, 0, [$this->getItem()]);

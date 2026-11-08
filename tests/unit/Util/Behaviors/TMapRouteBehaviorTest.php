@@ -135,6 +135,37 @@ class TMapRouteBehaviorTest extends \PHPUnit\Framework\TestCase
 	}
 	
 
+	public function testDyAddItem_matchesKeyByStringForm()
+	{
+		$numeric = new TMapRouteBehavior('10', [$this, 'setProperty']);
+		$this->map->attachBehavior(self::BEHAVIOR_NAME, $numeric);
+
+		$this->map['1e1'] = 'exponent';
+		self::assertNull($this->_property, "'1e1' must not route to the '10' parameter");
+		$this->map['10.0'] = 'decimal';
+		self::assertNull($this->_property, "'10.0' must not route to the '10' parameter");
+
+		$this->map['10'] = 'ten';
+		self::assertEquals('ten', $this->_property, "the integer key 10 routes to the '10' parameter");
+
+		unset($this->map['1e1']);
+		self::assertEquals('ten', $this->_property);
+		unset($this->map['10']);
+		self::assertNull($this->_property);
+	}
+
+	public function testDyAddItem_allKeysRouteEmptyStringKeyWithKey()
+	{
+		$this->map->attachBehavior(self::BEHAVIOR_NAME_ALL, $this->behaviorall);
+		$this->map[''] = 'blank';
+		self::assertSame('', $this->_key);
+		self::assertEquals('blank', $this->_value);
+
+		unset($this->map['']);
+		self::assertSame('', $this->_key);
+		self::assertNull($this->_value);
+	}
+
 	public function testParameter()
 	{
 		self::assertEquals('key1', $this->behavior->getParameter());

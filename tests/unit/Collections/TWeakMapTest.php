@@ -655,4 +655,63 @@ class TWeakMapTest extends TMapTest
 		unset($obj);
 		$this->assertSame(0, $this->map->getCount());
 	}
+
+	// ========================================================================
+	// Constructor DiscardInvalid resolution
+	// ========================================================================
+
+	public function testConstructorResolvesDiscardInvalid()
+	{
+		$obj = new WeakMapItem();
+		$data = ['a' => $obj];
+
+		$this->assertTrue((new TWeakMap($data))->getDiscardInvalid());
+		$this->assertTrue((new TWeakMap($data, false))->getDiscardInvalid());
+		$this->assertFalse((new TWeakMap($data, true))->getDiscardInvalid());
+		$this->assertFalse((new TWeakMap($data, null, false))->getDiscardInvalid());
+		$this->assertTrue((new TWeakMap($data, true, true))->getDiscardInvalid());
+		$this->assertTrue((new TWeakMap([], null))->getDiscardInvalid());
+		$this->assertTrue((new TWeakMap())->getDiscardInvalid());
+		$this->assertFalse((new TWeakMap(null, true))->getDiscardInvalid());
+	}
+
+	public function testConstructorWithDataDiscardsCollectedValues()
+	{
+		$map = new TWeakMap(['a' => new WeakMapItem(), 'b' => 1]);
+		gc_collect_cycles();
+
+		$this->assertSame(1, $map->getCount());
+		$this->assertSame(['b' => 1], $map->toArray());
+
+		$this->expectException(TInvalidOperationException::class);
+		$map->setDiscardInvalid(false);
+	}
+
+	// ========================================================================
+	// TEventHandler without a live handler object
+	// ========================================================================
+
+	public function testAddEventHandlerWithCollectedObject()
+	{
+		$obj = new WeakMapItem();
+		$eh = new TEventHandler([$obj, 'handle']);
+		$obj = null;
+
+		$map = new TWeakMap();
+		$map->add('k', $eh);
+		$this->assertSame(0, $map->getCount(), 'A TEventHandler collected before it is added is scrubbed');
+		$this->assertSame([], $map->toArray());
+	}
+
+	public function testDiscardInvalidTransitionKeepsEventHandlerWithoutObject()
+	{
+		$map = new TWeakMapUnit(null, null, false);
+		$eh = new TEventHandler('strlen');
+		$map->add('k', $eh);
+
+		$map->resetDiscardInvalid(true);
+
+		$this->assertSame(1, $map->getCount());
+		$this->assertSame($eh, $map->itemAt('k'));
+	}
 }

@@ -5,6 +5,7 @@ namespace Prado\Test\Unit\Web\UI\WebControls;
 use Prado\Web\UI\WebControls\TDropDownList;
 use Prado\Web\UI\WebControls\TListItem;
 use Prado\Web\UI\WebControls\TPanel;
+use Prado\Web\UI\TClientScriptManager;
 use Prado\Web\UI\TPage;
 use Prado\Web\UI\IPostBackDataHandler;
 use Prado\Web\UI\IValidatable;
@@ -12,6 +13,8 @@ use Prado\Exceptions\TNotSupportedException;
 use PHPUnit\Framework\TestCase;
 use Prado\Test\Unit\Harness\Traits\TWebControlRenderTrait;
 use Prado\Test\Unit\PradoUnit;
+use Prado\Web\UI\TControl;
+use Prado\Web\UI\TTemplate;
 
 class TDropDownListTest extends TestCase
 {
@@ -21,6 +24,7 @@ class TDropDownListTest extends TestCase
 	{
 		$page = new TPage();
 		PradoUnit::setProp($page, '_inFormRender', true);
+		PradoUnit::setProp($page, '_clientScript', new TClientScriptManager($page));
 		$list = new TDropDownList();
 		$list->setID('List');
 		foreach ($items as $value => $text) {
@@ -438,5 +442,133 @@ class TDropDownListTest extends TestCase
 		$this->assertFalse($list->getIsValid());
 		$list->setIsValid(true);
 		$this->assertTrue($list->getIsValid());
+	}
+
+	// ================================================================================
+	// RichOptions
+	// ================================================================================
+
+	public function testRichOptionsDefaultsAndSet()
+	{
+		$list = new TDropDownList();
+		$this->assertFalse($list->getRichOptions());
+		$this->assertSame('default', $list->getRichOptionsCssUrl());
+		$list->setRichOptions('true');
+		$this->assertTrue($list->getRichOptions());
+		$list->setRichOptionsCssUrl('/theme/select.css');
+		$this->assertSame('/theme/select.css', $list->getRichOptionsCssUrl());
+		$list->setRichOptionsCssUrl('');
+		$this->assertSame('', $list->getRichOptionsCssUrl());
+	}
+
+	public function testRenderNativeSelectHasNoButton()
+	{
+		[, $list] = $this->createPageList(['a' => 'A']);
+		$output = $this->render($list);
+		$this->assertStringNotContainsString('<button>', $output);
+		$this->assertStringNotContainsString('rich-options', $output);
+	}
+
+	public function testRenderRichOptionsRendersClassAndSelectedContent()
+	{
+		[, $list] = $this->createPageList(['a' => 'A']);
+		$list->setRichOptions(true);
+		$list->setCssClass('pets rich-options');
+		$output = $this->render($list);
+		$this->assertStringContainsString('class="rich-options pets"', $output);
+		$this->assertMatchesRegularExpression('#<select[^>]*>\s*<button><selectedcontent></selectedcontent></button>\s*<option value="a">A</option>#', $output);
+	}
+
+	public function testRenderRichOptionsButtonPrecedesPrompt()
+	{
+		[, $list] = $this->createPageList(['a' => 'A']);
+		$list->setRichOptions(true);
+		$list->setPromptText('Choose');
+		$this->assertMatchesRegularExpression('#</button>\s*<option value="">Choose</option>#', $this->render($list));
+	}
+
+	public function testRenderItemContentIsRawAndTextIsEncoded()
+	{
+		[, $list] = $this->createPageList(['a' => 'A & <B>']);
+		$item = new TListItem('Cat', 'cat');
+		$item->setContent('<img src="cat.svg" alt=""> Cat');
+		$list->getItems()->add($item);
+		$output = $this->renderContents($list);
+		$this->assertStringContainsString('<option value="a">A & &lt;B&gt;</option>', $output);
+		$this->assertStringContainsString('<option value="cat"><img src="cat.svg" alt=""> Cat</option>', $output);
+	}
+
+	public function testRenderItemContentInsideOptionGroup()
+	{
+		[, $list] = $this->createPageList([]);
+		$item = new TListItem('Cat', 'cat');
+		$item->setAttribute('Group', 'Pets');
+		$item->setContent('<b>Cat</b>');
+		$list->getItems()->add($item);
+		$this->assertMatchesRegularExpression('#<optgroup label="Pets">\s*<option value="cat"><b>Cat</b></option>\s*</optgroup>#', $this->renderContents($list));
+	}
+
+	public function testPreRenderRegistersBaseSelectStyleBlock()
+	{
+		[$page, $list] = $this->createPageList();
+		$list->setRichOptions(true);
+		$list->onPreRender(null);
+		$clientScript = $page->getClientScript();
+		$this->assertTrue($clientScript->isStyleSheetRegistered(TDropDownList::RICH_OPTIONS_CSS_CLASS));
+		$this->assertSame(
+			'select.rich-options,select.rich-options::picker(select){appearance:base-select}',
+			PradoUnit::getProp($clientScript, '_styleSheets')[TDropDownList::RICH_OPTIONS_CSS_CLASS]
+		);
+	}
+
+	public function testPreRenderRegistersRichOptionsCssUrl()
+	{
+		[$page, $list] = $this->createPageList();
+		$list->setRichOptions(true);
+		$list->setRichOptionsCssUrl('/theme/select.css');
+		$list->onPreRender(null);
+		$this->assertTrue($page->getClientScript()->isStyleSheetFileRegistered('/theme/select.css'));
+		$this->assertFalse($page->getClientScript()->isStyleSheetRegistered(TDropDownList::RICH_OPTIONS_CSS_CLASS));
+	}
+
+	public function testPreRenderRegistersNothingWithoutRichOptionsOrUrl()
+	{
+		[$page, $list] = $this->createPageList();
+		$list->onPreRender(null);
+		$this->assertFalse($page->getClientScript()->isStyleSheetRegistered(TDropDownList::RICH_OPTIONS_CSS_CLASS));
+		$list->setRichOptions(true);
+		$list->setRichOptionsCssUrl('');
+		$list->onPreRender(null);
+		$this->assertFalse($page->getClientScript()->isStyleSheetRegistered(TDropDownList::RICH_OPTIONS_CSS_CLASS));
+	}
+
+	public function testTemplateBodySetsItemContent()
+	{
+		$page = new TPage();
+		$container = new TControl();
+		$container->setID('tplControl');
+		$page->getControls()->add($container);
+		$template = '<com:Prado.Web.UI.WebControls.TDropDownList ID="Pets" RichOptions="true">'
+			. '<com:Prado.Web.UI.WebControls.TListItem Value="cat" Text="Cat">'
+			. "\n\t<img src=\"cat.svg\" alt=\"\"> Cat\n"
+			. '</com:Prado.Web.UI.WebControls.TListItem>'
+			. '<com:Prado.Web.UI.WebControls.TListItem Value="dog" Text="Dog" />'
+			. '</com:Prado.Web.UI.WebControls.TDropDownList>';
+		(new TTemplate($template, sys_get_temp_dir(), null, 0, true))->instantiateIn($container);
+		$list = $container->findControl('Pets');
+		$this->assertTrue($list->getRichOptions());
+		$this->assertSame('<img src="cat.svg" alt=""> Cat', $list->getItems()->itemAt(0)->getContent());
+		$this->assertFalse($list->getItems()->itemAt(1)->getHasContent());
+	}
+
+	public function testItemContentSurvivesViewState()
+	{
+		[, $list] = $this->createPageList([]);
+		$item = new TListItem('Cat', 'cat');
+		$item->setContent('<b>Cat</b>');
+		$list->getItems()->add($item);
+		$list->saveState();
+		$items = unserialize(serialize($list->getViewState('Items')));
+		$this->assertSame('<b>Cat</b>', $items[0]->getContent());
 	}
 }
