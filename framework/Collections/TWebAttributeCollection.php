@@ -11,6 +11,7 @@
 namespace Prado\Collections;
 
 use Prado\Prado;
+use Prado\TComponentReflection;
 
 /**
  * TWebAttributeCollection class
@@ -26,7 +27,12 @@ use Prado\Prado;
  * $attrs->setAttribute('itemId', 'myElement'); // stored as 'data-item-id'
  * $attrs->getAttribute('item-id');             // returns 'myElement'
  * $attrs['custom'] = 'value';                  // stored as 'data-custom'
+ * $attrs->itemName = 'other';                  // stored as 'data-item-name'
  * ```
+ *
+ * Magic property access uses a declared getter callable with no arguments or a declared
+ * setter callable with one argument as a property. Every other name is an attribute, so
+ * `$attrs->Attribute` reads `data-attribute` because {@see getAttribute} requires a name.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0
@@ -280,12 +286,15 @@ class TWebAttributeCollection extends TMap
 	/**
 	 * Magic getter for attribute access via $collection->property.
 	 *
+	 * A getter callable with no arguments, such as {@see getPrefix}, is read as a property.
+	 * Any other name, including one whose getter requires arguments, reads the attribute.
+	 *
 	 * @param string $name property/attribute name
-	 * @return mixed the attribute value
+	 * @return mixed the property or attribute value
 	 */
 	public function __get($name)
 	{
-		if (Prado::method_visible($this, $getter = 'get' . $name)) {
+		if (Prado::method_visible($this, $getter = 'get' . $name) && $this->isPropertyAccessor($getter, 0)) {
 			return $this->$getter();
 		}
 		$name = $this->methodToAttributeName($name);
@@ -295,19 +304,75 @@ class TWebAttributeCollection extends TMap
 	/**
 	 * Magic setter for attribute access via $collection->property = value.
 	 *
+	 * A setter callable with one argument, such as {@see setReadOnly}, is written as a property.
+	 * Any other name, including one whose setter requires more arguments, writes the attribute.
+	 *
 	 * @param string $name property/attribute name
 	 * @param mixed $value value to set
 	 * @return void
 	 */
 	public function __set($name, $value)
 	{
-		if (Prado::method_visible($this, $setter = 'set' . $name)) {
+		if (Prado::method_visible($this, $setter = 'set' . $name) && $this->isPropertyAccessor($setter, 1)) {
 			$this->$setter($value);
 			return;
 		}
 		$name = $this->methodToAttributeName($name);
 		$this->setAttribute($name, $value);
 		return;
+	}
+
+	/**
+	 * Magic isset for attribute access via isset($collection->property).
+	 *
+	 * A property, as {@see __get} resolves it, is set when its value is not null.
+	 * An attribute is set when the collection contains it.
+	 *
+	 * @param string $name property/attribute name
+	 * @return bool whether the property or attribute is set
+	 */
+	public function __isset($name)
+	{
+		if (Prado::method_visible($this, $getter = 'get' . $name) && $this->isPropertyAccessor($getter, 0)) {
+			return $this->$getter() !== null;
+		}
+		$name = $this->methodToAttributeName($name);
+		return $this->hasAttribute($name);
+	}
+
+	/**
+	 * Magic unset for attribute access via unset($collection->property).
+	 *
+	 * A property, as {@see __set} resolves it, is set to null. Any other name clears the attribute.
+	 *
+	 * @param string $name property/attribute name
+	 */
+	public function __unset($name)
+	{
+		if (Prado::method_visible($this, $setter = 'set' . $name) && $this->isPropertyAccessor($setter, 1)) {
+			$this->$setter(null);
+			return;
+		}
+		$name = $this->methodToAttributeName($name);
+		$this->clearAttribute($name);
+	}
+
+	/**
+	 * Returns whether a method can be called as a property accessor with the given number of arguments.
+	 *
+	 * The method qualifies when it requires at most $argCount arguments and accepts at least $argCount.
+	 * {@see TComponentReflection::getReflectionMethodByType} caches the reflection.
+	 *
+	 * @param string $method the getter or setter method name
+	 * @param int $argCount the number of arguments the accessor passes: 0 for a getter, 1 for a setter
+	 * @return bool whether the method is callable with $argCount arguments
+	 */
+	protected function isPropertyAccessor(string $method, int $argCount): bool
+	{
+		$reflection = TComponentReflection::getReflectionMethodByType($this, $method);
+		return $reflection !== null
+			&& $reflection->getNumberOfRequiredParameters() <= $argCount
+			&& $reflection->getNumberOfParameters() >= $argCount;
 	}
 
 	/**

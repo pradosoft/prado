@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: `TWebAttributeCollection` magic get, set, `isset()`, and `unset()` threw `ArgumentCountError` for a name like `Attribute` whose getter or setter takes more arguments; the name is an attribute. (belisoful)
 BUG: A new managed `TPagedList` starts on page 0, so `Count`, `toArray()`, iteration, and `itemAt()` no longer read a page at index -1; managed `gotoPage()` passes `TPagedListPageChangedEventParameter` with the old page to `OnPageIndexChanged`. (belisoful)
 BUG: `TArraySubscription` in list mode throws `arraysubscription_index_invalid` for a key outside 0 to `count()`, which it inserted silently, and `setIsAssociative()` while subscribed names `IsAssociative`. (belisoful)
 NEW: Issue #1410 - Rich options: `TListItem.Content` (or the item's template body) is HTML rendered inside its `<option>`, and is sent with callback option updates. `TDropDownList.RichOptions` and `TListBox.RichOptions` (`TRichOptionsTrait`) show it with the browser's customizable select, `appearance: base-select`; a RichOptions dropdown list renders `<selectedcontent>` in its button. (belisoful)
