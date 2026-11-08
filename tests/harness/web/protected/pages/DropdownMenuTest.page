@@ -1,0 +1,15 @@
+<com:TContent ID="Content">
+	<h1>Dropdown Menu Test Case</h1>
+
+	<p>Status: <com:TLabel ID="status" Text="waiting" /></p>
+	<div style="padding: 1rem 8rem">
+		<com:TDropdownMenu ID="actions" ButtonText="Actions">
+			<com:TButton ID="duplicate" Text="Duplicate" ButtonTag="Button" OnClick="itemClicked" />
+			<com:TButton ID="archive" Text="Archive" ButtonTag="Button" OnClick="itemClicked" />
+			<com:TButton ID="remove" Text="Delete" ButtonTag="Button" Enabled="false" />
+			<hr />
+			<com:THyperLink ID="export" Text="Export" NavigateUrl="#export" />
+		</com:TDropdownMenu>
+		<button type="button" id="after">After</button>
+	</div>
+</com:TContent>

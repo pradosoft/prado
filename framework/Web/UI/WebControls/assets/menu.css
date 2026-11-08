@@ -1,0 +1,54 @@
+/*! PRADO TDropdownMenu stylesheet | github.com/pradosoft/prado */
+
+.prado-menu {
+	min-width: 10rem;
+	padding: 0.25rem;
+}
+
+/* Aligned with the start edge of the menu button. */
+.prado-menu[data-placement="bottom"] {
+	position-area: block-end span-inline-end;
+}
+
+.prado-menu[data-placement="top"] {
+	position-area: block-start span-inline-end;
+}
+
+.prado-menu :is(ul, ol) {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.prado-menu :is(a[href], button, input[type="submit"], input[type="button"]) {
+	display: block;
+	box-sizing: border-box;
+	width: 100%;
+	padding: 0.375rem 0.75rem;
+	font: inherit;
+	text-align: start;
+	text-decoration: none;
+	color: inherit;
+	background: none;
+	border: 0;
+	border-radius: 0.25rem;
+	cursor: pointer;
+}
+
+.prado-menu :is(a[href], button, input[type="submit"], input[type="button"]):is(:hover, :focus-visible) {
+	color: HighlightText;
+	background: Highlight;
+	outline: none;
+}
+
+.prado-menu :is(button, input):disabled {
+	color: GrayText;
+	background: none;
+	cursor: default;
+}
+
+.prado-menu hr {
+	margin: 0.25rem 0;
+	border: 0;
+	border-block-start: 1px solid GrayText;
+}
