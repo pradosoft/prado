@@ -58,7 +58,7 @@ run() → processRequest()
 | `Mode` | `TApplicationMode` enum value |
 | `RuntimePath` | Writable path for cache/session files (default: `protected/runtime`) |
 | `UniqueID` | Stable hash identifying this application; used for cache key prefixes |
-| `Parameters` | `TAttributeCollection` of application-wide config parameters |
+| `Parameters` | [`TApplicationParameters`](TApplicationParameters.md) of application-wide config parameters; `final="true"` locks a parameter |
 | `Modules` | Map of all registered modules |
 | `Services` | Map of registered services |
 
@@ -120,6 +120,7 @@ $app->getModulesByType(TDbCache::class, strict: true); // only exact TDbCache (n
     </services>
     <parameters>
         <parameter id="AppVersion" value="1.0.0" />
+        <parameter id="DeveloperMode" value="0" final="true" />
     </parameters>
 </application>
 ```

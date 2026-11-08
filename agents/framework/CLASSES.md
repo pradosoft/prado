@@ -1,6 +1,6 @@
 # PRADO Framework Classes
 
-**Total Classes: 704**
+**Total Classes: 706**
 
 This document lists all classes in the PRADO framework as defined in `classes.php`.
 
@@ -8,7 +8,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 | Directory | Classes | Interfaces | Total | Recursive |
 |-----------|---------|------------|-------|-----------|
-| [Prado](./INDEX.md) | 17 | 7 | 24 | 704 |
+| [Prado](./INDEX.md) | 18 | 7 | 25 | 706 |
 | [Prado\\Caching](./Caching/INDEX.md) | 18 | 2 | 20 | 20 |
 | [Prado\\Collections](./Collections/INDEX.md) | 27 | 7 | 34 | 34 |
 | [Prado\\Data](./Data/INDEX.md) | 10 | 5 | 15 | 51 |
@@ -33,7 +33,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 | [Prado\\Shell](./Shell/INDEX.md) | 4 | 0 | 4 | 10 |
 | [Prado\\Shell\\Actions](./Shell/Actions/INDEX.md) | 5 | 0 | 5 | 5 |
 | [Prado\\Util](./Util/INDEX.md) | 18 | 7 | 25 | 73 |
-| [Prado\\Util\\Behaviors](./Util/Behaviors/INDEX.md) | 14 | 0 | 14 | 14 |
+| [Prado\\Util\\Behaviors](./Util/Behaviors/INDEX.md) | 14 | 1 | 15 | 15 |
 | [Prado\\Util\\Cron](./Util/Cron/INDEX.md) | 11 | 0 | 11 | 11 |
 | [Prado\\Util\\Helpers](./Util/Helpers/INDEX.md) | 6 | 0 | 6 | 6 |
 | [Prado\\Util\\Log](./Util/Log/INDEX.md) | 13 | 1 | 14 | 14 |
@@ -54,7 +54,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 ## Class Listings
 
-## [Prado](./INDEX.md) - Classes: 17, Interfaces: 7, Total: 24, Recursive: 745
+## [Prado](./INDEX.md) - Classes: 18, Interfaces: 7, Total: 25, Recursive: 747
 
 ### Interfaces (6)
 
@@ -66,7 +66,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 - ISingleton
 - IStatePersister
 
-### Classes (17)
+### Classes (18)
 
 - [Prado](./Prado.md)
 - PradoBase
@@ -74,6 +74,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 - [TApplicationComponent](./TApplicationComponent.md)
 - [TApplicationConfiguration](./TApplicationConfiguration.md)
 - TApplicationMode
+- [TApplicationParameters](./TApplicationParameters.md)
 - [TApplicationSignals](./Util/Behaviors/TApplicationSignals.md)
 - TApplicationStatePersister
 - [TComponent](./TComponent.md)
@@ -526,7 +527,11 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 ---
 
-## [Prado\Util\Behaviors](./Util/Behaviors/INDEX.md) - Classes: 14, Interfaces: 0, Total: 14, Recursive: 14
+## [Prado\Util\Behaviors](./Util/Behaviors/INDEX.md) - Classes: 14, Interfaces: 1, Total: 15, Recursive: 15
+
+### Interfaces (1)
+
+- [IMapRouteIndex](./Util/Behaviors/TMapRouteBehavior.md#key-index)
 
 ### Classes (12)
 
@@ -1033,6 +1038,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 - [TRepeatInfo](./Web/UI/WebControls/TRepeatInfo.md)
 - [TRepeatLayout](./Web/UI/WebControls/TRepeatLayout.md)
 - [TRequiredFieldValidator](./Web/UI/WebControls/TRequiredFieldValidator.md)
+- [TRichOptionsTrait](./Web/UI/WebControls/TRichOptionsTrait.md)
 - [TSafeHtml](./Web/UI/WebControls/TSafeHtml.md)
 - [TSection](./Web/UI/WebControls/TSection.md)
 - [TScrollBars](./Web/UI/WebControls/TScrollBars.md)

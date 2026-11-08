@@ -55,7 +55,7 @@ Data structure implementations for the Prado framework. All collections extend [
 
 - **[`TListItemCollection`](TListItemCollection.md)** — Collection of `TListItem` objects for UI list controls ([`TDropDownList`](../Web/UI/WebControls/TDropDownList.md), [`TListBox`](../Web/UI/WebControls/TListBox.md), etc.).
 
-- **[`TPagedList`](TPagedList.md)** — Paged collection with lazy loading via `OnFetchData` event. Properties: `PageSize`, `CurrentPageIndex`, `ItemCount`.
+- **[`TPagedList`](TPagedList.md)** — Paged collection with lazy loading via `OnFetchData` event. Properties: `PageSize`, `CurrentPageIndex`, `PageCount`, `CustomPaging`, `VirtualCount`.
 
 - **[`TDummyDataSource`](TDummyDataSource.md)** — Null/empty data source useful for testing.
 
