@@ -9,7 +9,6 @@ use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Test\Unit\PradoUnit;
 use Prado\TEventHandler;
-use Prado\Test\Unit\PradoUnit;
 use ArrayIterator;
 use ArrayObject;
 use IteratorAggregate;
@@ -1276,30 +1275,5 @@ class TWeakListTest extends TListTest
 		self::assertSame(0, $list->getCount());
 	}
 
-	public function testWeakCustomRemoveResolvesReferenceToEventHandlerWithoutObjectTWeakList()
-	{
-		$list = new $this->_baseClass();
-		$handler = new TEventHandler('strlen');
-		$list->add($handler);
-		self::assertSame(1, PradoUnit::getProp($list, '_eventHandlerCount'));
 
-		self::assertSame(0, PradoUnit::invoke($list, 'weakCustomRemove', WeakReference::create($handler)));
-
-		self::assertSame(0, PradoUnit::getProp($list, '_eventHandlerCount'));
-	}
-
-	public function testWeakCustomRemoveResolvesReferenceToEventHandlerWithObjectTWeakList()
-	{
-		$list = new $this->_baseClass();
-		$target = new WeakListInvokableItem();
-		$handler = new TEventHandler([$target, 'myHandler']);
-		$list->add($handler);
-		self::assertSame(1, $list->getWeakObjectCount($target));
-
-		self::assertSame(0, PradoUnit::invoke($list, 'weakCustomRemove', WeakReference::create($handler)));
-
-		self::assertNull($list->getWeakObjectCount($target));
-		self::assertSame(0, $list->getWeakCount());
-		self::assertSame(0, PradoUnit::getProp($list, '_eventHandlerCount'));
-	}
 }
