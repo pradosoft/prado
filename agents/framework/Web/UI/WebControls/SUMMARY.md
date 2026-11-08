@@ -83,6 +83,8 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 
 - **`TPopover`** — `<div popover>` (default `auto`) anchored to its invoker with CSS anchor positioning; `Placement` (**`TPopoverPlacement`**: `None`, `Top`, `Bottom`, `Start`, `End`), `ButtonText` renders its own `toggle-popover` invoker, or a TButton with `CommandFor` opens it; no script. @since 4.4.0
 
+- **`TTooltip`** — `<div popover="hint" role="tooltip">` shown next to `ForControl` on hover and focus, hidden by Esc (WCAG 1.4.13); the target's `aria-describedby` names it; `Text`, `Placement` (default `Top`), `ShowDelay`, `HideDelay`; JS in `controls/tooltip.js`. @since 4.4.0
+
 - **`TSafetyCover`** — Panel content behind a click-to-open overlay (slide/collapse/none, optional fade), guarding against accidental clicks; JS in `controls/safetycover.js`. @since 4.4.0
 
 ### Data Controls
