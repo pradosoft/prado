@@ -10,6 +10,7 @@ import {
 	Control,
 	PostBackControl,
 	TButton,
+	TConfirmButton,
 	TLinkButton,
 	TCheckBox,
 	TBulletedList,
@@ -683,6 +684,51 @@ describe('TButton', () => {
 		createElement('button', 'tbtn2');
 		const ctrl = new TButton(postBackOptions('tbtn2'));
 		expect(ctrl.observers.length).toBeGreaterThan(0);
+	});
+});
+
+describe('TConfirmButton', () => {
+	/**
+	 * Builds an open dialog holding the OK button, with a stand-in close().
+	 * @returns {HTMLDialogElement} the dialog
+	 */
+	function openDialog(id) {
+		createForm();
+		const dialog = document.createElement('dialog');
+		dialog.setAttribute('open', '');
+		dialog.close = vi.fn(() => dialog.removeAttribute('open'));
+		document.body.appendChild(dialog);
+		const button = document.createElement('button');
+		button.id = id;
+		dialog.appendChild(button);
+		return dialog;
+	}
+
+	function postBack(ctrl, prevented) {
+		const origPostBack = global.Prado.PostBack;
+		global.Prado.PostBack = vi.fn(function (options, event) { if (prevented) event.preventDefault(); });
+		try {
+			const event = new Event('click', { cancelable: true });
+			ctrl.onPostBack(postBackOptions(ctrl.ID), event);
+		} finally {
+			global.Prado.PostBack = origPostBack;
+		}
+	}
+
+	it('is a subclass of TButton', () => {
+		expect(TConfirmButton.superclass).toBe(TButton);
+	});
+
+	it('closes its dialog when validation prevents the postback', () => {
+		const dialog = openDialog('tcb1');
+		postBack(new TConfirmButton(postBackOptions('tcb1')), true);
+		expect(dialog.close).toHaveBeenCalledTimes(1);
+	});
+
+	it('leaves its dialog open when the postback proceeds', () => {
+		const dialog = openDialog('tcb2');
+		postBack(new TConfirmButton(postBackOptions('tcb2')), false);
+		expect(dialog.close).not.toHaveBeenCalled();
 	});
 });
 

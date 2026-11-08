@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+NEW: Issue #1401 - `TConfirmButton` asks for confirmation in a modal `alertdialog` before it posts back, without script, and replaces `onclick="return confirm()"`: `ConfirmText`, `ConfirmHeaderText`, `ConfirmButtonText`, and `CancelButtonText`. (belisoful)
 NEW: Issue #1401 - `TTooltip` describes `ForControl` with a `popover="hint"` tooltip that shows on hover and focus and hides on Esc (WCAG 1.4.13); the target's `aria-describedby` names it. (belisoful)
 NEW: Issue #1401 - `TPopover` renders a popover anchored to its invoker with CSS anchor positioning and no script: `Placement` (`TPopoverPlacement`), `ButtonText` for its own invoker button, and `Popover` defaulting to `auto`. (belisoful)
 ENH: Issue #1401 - `TDialog.HeaderText` renders a heading of `HeaderLevel` that names the dialog, and `ShowCloseButton` renders a script-free close button named by `CloseButtonText`; `CssUrl` styles the header block. (belisoful)
