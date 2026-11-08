@@ -242,6 +242,7 @@ php prado-cli.php /path/to/app cron/update <name> [properties...]
 php prado-cli.php /path/to/app cron/remove <name>
 php prado-cli.php /path/to/app cron/log [name] [@user]
 php prado-cli.php /path/to/app cron/flush [period] [name] [@user]
+php prado-cli.php /path/to/app cron/migrate
 ```
 
 ## Patterns & Gotchas

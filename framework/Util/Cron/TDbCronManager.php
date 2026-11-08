@@ -495,8 +495,8 @@ class TDbCronManager extends TCronModule implements IDbModule
 	}
 
 	/**
-	 * checks for the table, and if not there and autoCreate, then creates the table else throw error.
-	 * A table created before 4.4.0 gains the `nextexectime` column.
+	 * Checks for the table once per request: a missing table is created when {@see getAutoCreateCronTable AutoCreateCronTable}
+	 * allows, and a table created before 4.4.0 gains the `nextexectime` column.
 	 * @throws TConfigurationException if the table does not exist and cannot autoCreate
 	 */
 	protected function ensureTable()
@@ -504,41 +504,78 @@ class TDbCronManager extends TCronModule implements IDbModule
 		if ($this->_tableEnsured) {
 			return;
 		}
-		$db = $this->getDbConnection();
-		$sql = 'SELECT * FROM ' . $this->_tableName . ' WHERE 0=1';
-		try {
-			$db->createCommand($sql)->query()->close();
-		} catch (Exception $e) {
-			// DB table not exists
-			if ($this->_autoCreate) {
-				$this->createDbTable();
-			} else {
+		if (!$this->tableExists()) {
+			if (!$this->_autoCreate) {
 				throw new TConfigurationException('dbcron_table_nonexistent', $this->_tableName);
 			}
+			$this->createDbTable();
 		}
 		$this->ensureNextExecTimeColumn();
 		$this->_tableEnsured = true;
 	}
 
 	/**
-	 * Adds the `nextexectime` column to a cron table created before 4.4.0, with its index, and fills
-	 * it for the active task rows from each task's schedule.
+	 * Brings the cron table up to date for the running version: a missing table is created, whatever
+	 * {@see getAutoCreateCronTable AutoCreateCronTable} says, and a table created before 4.4.0 gains the
+	 * `nextexectime` column with its index and values.  The `cron/migrate` shell action calls this as a
+	 * deployment step; {@see ensureTable} does the same on first use.
+	 * @return array{created: bool, column: ?int} whether the table was created, and the active rows given
+	 *   a `nextexectime` when the column was added, null when the column existed
 	 * @since 4.4.0
 	 */
-	protected function ensureNextExecTimeColumn()
+	public function migrateTable(): array
 	{
-		$db = $this->getDbConnection();
-		try {
-			$db->createCommand('SELECT nextexectime FROM ' . $this->_tableName . ' WHERE 0=1')->query()->close();
-			return;
-		} catch (Exception $e) {
-			// the column does not exist
+		$created = !$this->tableExists();
+		if ($created) {
+			$this->createDbTable();
 		}
+		$column = $this->ensureNextExecTimeColumn();
+		$this->_tableEnsured = true;
+		return ['created' => $created, 'column' => $column];
+	}
+
+	/**
+	 * @return bool whether the cron table exists
+	 * @since 4.4.0
+	 */
+	protected function tableExists(): bool
+	{
+		return $this->columnExists('*');
+	}
+
+	/**
+	 * @param string $column the column name, or `*` for the table itself
+	 * @return bool whether the cron table has the column
+	 * @since 4.4.0
+	 */
+	protected function columnExists(string $column): bool
+	{
+		try {
+			$this->getDbConnection()->createCommand('SELECT ' . $column . ' FROM ' . $this->_tableName . ' WHERE 0=1')->query()->close();
+			return true;
+		} catch (Exception $e) {
+			return false;
+		}
+	}
+
+	/**
+	 * Adds the `nextexectime` column to a cron table created before 4.4.0, with its index, and fills
+	 * it for the active task rows from each task's schedule.
+	 * @return ?int the active rows given a `nextexectime`, null when the column already exists
+	 * @since 4.4.0
+	 */
+	protected function ensureNextExecTimeColumn(): ?int
+	{
+		if ($this->columnExists('nextexectime')) {
+			return null;
+		}
+		$db = $this->getDbConnection();
 		$db->createCommand('ALTER TABLE ' . $this->_tableName . ' ADD COLUMN nextexectime INT NULL DEFAULT NULL')->execute();
-		$db->createCommand('CREATE INDEX tnext ON ' . $this->_tableName . '(nextexectime)')->execute();
+		$db->createCommand('CREATE INDEX ' . $this->getIndexName('tnext') . ' ON ' . $this->_tableName . '(nextexectime)')->execute();
 
 		$rows = $db->createCommand("SELECT name, options, lastexectime FROM {$this->_tableName} WHERE active IS NOT NULL")->query()->readAll();
 		$cmd = $db->createCommand("UPDATE {$this->_tableName} SET nextexectime=:ntime WHERE name=:name AND active IS NOT NULL");
+		$filled = 0;
 		foreach ($rows as $row) {
 			$task = @unserialize($row['options']);
 			if (!($task instanceof TCronTask)) {
@@ -546,8 +583,21 @@ class TDbCronManager extends TCronModule implements IDbModule
 			}
 			$cmd->bindValue(":ntime", $task->getNextTriggerTime((int) $row['lastexectime']), $db::PARAM_STR);
 			$cmd->bindValue(":name", $row['name'], $db::PARAM_STR);
-			$cmd->execute();
+			$filled += $cmd->execute();
 		}
+		return $filled;
+	}
+
+	/**
+	 * Names an index of the cron table after the table.  SQLite and PostgreSQL scope index names to
+	 * the schema, so two cron tables in one database need distinct index names.
+	 * @param string $suffix the index suffix: `tname`, `tclass`, `tnext`, `tuser`, or `tactive`
+	 * @return string the index name
+	 * @since 4.4.0
+	 */
+	protected function getIndexName(string $suffix): string
+	{
+		return preg_replace('/\W+/', '_', $this->_tableName) . '_' . $suffix;
 	}
 
 	/**
@@ -566,11 +616,11 @@ class TDbCronManager extends TCronModule implements IDbModule
 		} elseif ($driver === TDbDriver::DRIVER_PGSQL) {
 			$autotype = 'SERIAL';
 		}
-		$postIndices = '; CREATE INDEX tname ON ' . $this->_tableName . '(`name`);' .
-			'CREATE INDEX tclass ON ' . $this->_tableName . '(`task`);' .
-			'CREATE INDEX tnext ON ' . $this->_tableName . '(`nextexectime`);' .
-			'CREATE INDEX tuser ON ' . $this->_tableName . '(`username`);' .
-			'CREATE INDEX tactive ON ' . $this->_tableName . '(`active`);';
+		$postIndices = '; CREATE INDEX ' . $this->getIndexName('tname') . ' ON ' . $this->_tableName . '(`name`);' .
+			'CREATE INDEX ' . $this->getIndexName('tclass') . ' ON ' . $this->_tableName . '(`task`);' .
+			'CREATE INDEX ' . $this->getIndexName('tnext') . ' ON ' . $this->_tableName . '(`nextexectime`);' .
+			'CREATE INDEX ' . $this->getIndexName('tuser') . ' ON ' . $this->_tableName . '(`username`);' .
+			'CREATE INDEX ' . $this->getIndexName('tactive') . ' ON ' . $this->_tableName . '(`active`);';
 
 		$sql = 'CREATE TABLE IF NOT EXISTS ' . $this->_tableName . ' (
 			`tabuid` ' . $autotype . ' PRIMARY KEY' . $autoidAttributes . ',

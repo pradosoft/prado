@@ -71,7 +71,7 @@ Auto-created as `crontabs` (configurable via `TableName`):
 | `nextexectime` | INT | Unix timestamp of the next trigger after `lastexectime` (4.4.0); `getPendingTasks()` selects `nextexectime <= now` |
 | `active` | BOOLEAN | `1` = DB task, `0` = config task shadow, `NULL` = log entry |
 
-Active rows (`active IS NOT NULL`) are task definitions; rows with `active IS NULL` are execution log entries. `ensureTable()` adds the `nextexectime` column, its index, and the values for the active rows to a table created before 4.4.0.
+Active rows (`active IS NOT NULL`) are task definitions; rows with `active IS NULL` are execution log entries. `ensureTable()` adds the `nextexectime` column, its index, and the values for the active rows to a table created before 4.4.0. `migrateTable()` does the same on demand, creates a missing table whatever `AutoCreateCronTable` says, and returns what it did; `cron/migrate` calls it at deployment. The indexes are named `<table>_tname`, `<table>_tclass`, `<table>_tnext`, `<table>_tuser`, and `<table>_tactive`, so several cron tables share a SQLite or PostgreSQL schema (4.4.0; earlier tables keep `tname`, `tclass`, `tactive`).
 
 ## Key Properties
 
@@ -182,6 +182,7 @@ php prado-cli.php /app cron/update <name> [properties...]
 php prado-cli.php /app cron/remove <name>
 php prado-cli.php /app cron/log [name] [@user]
 php prado-cli.php /app cron/flush [period] [name] [@user]
+php prado-cli.php /app cron/migrate          # create the table when missing; add the 4.4.0 nextexectime column to an older one
 ```
 
 

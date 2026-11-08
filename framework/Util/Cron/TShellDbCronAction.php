@@ -32,9 +32,9 @@ use Prado\Shell\TShellWriter;
  */
 class TShellDbCronAction extends TShellCronAction
 {
-	protected $methods = ['tasks', 'run', 'index', 'add', 'update', 'remove', 'log', 'flush', 'daemon', 'retire', 'stop'];
-	protected $parameters = [null, null, null, ['task-name', 'task-id', 'schedule'], ['task-name'], ['task-name'], null, null, null, null, null];
-	protected $optional = [['task-name or @user'], null, null, ['parameters...'], ['parameters...'], [], ['task-name or @user'], ['task-name or @user or time (e.g. seconds or PHP DateInterval)'], null, ['seconds'], ['seconds']];
+	protected $methods = ['tasks', 'run', 'index', 'add', 'update', 'remove', 'log', 'flush', 'daemon', 'retire', 'stop', 'migrate'];
+	protected $parameters = [null, null, null, ['task-name', 'task-id', 'schedule'], ['task-name'], ['task-name'], null, null, null, null, null, null];
+	protected $optional = [['task-name or @user'], null, null, ['parameters...'], ['parameters...'], [], ['task-name or @user'], ['task-name or @user or time (e.g. seconds or PHP DateInterval)'], null, ['seconds'], ['seconds'], null];
 	protected $description = ['Manages DbCron time-based services',
 		'Displays the Cron tasks configured in the application and database. Filter by @user and task name.',
 		'Runs the DbCron Pending Tasks.',
@@ -47,6 +47,7 @@ class TShellDbCronAction extends TShellCronAction
 		'Shows whether a cron daemon holds the lease, and whether it is retiring.',
 		'Retires the running cron daemon: it hands the lease to the next cron/run tick with no gap.',
 		'Stops the running cron daemon at once; the next cron/run tick starts a new one.',
+		'Brings the cron table up to date: creates it when missing, adds the 4.4.0 nextexectime column to an older one.',
 	];
 
 	private $_user;
@@ -59,6 +60,7 @@ class TShellDbCronAction extends TShellCronAction
 			$this->_user = $user;
 			if (!$user->can(TDbCronManager::PERM_CRON_ADD_TASK) && !$user->can(TDbCronManager::PERM_CRON_ADD_TASK_GLOBAL)) {
 				$this->removeShellMethod('add');
+				$this->removeShellMethod('migrate');
 			}
 		}
 		parent::__construct();
@@ -71,6 +73,30 @@ class TShellDbCronAction extends TShellCronAction
 	public function getModuleClass()
 	{
 		return \Prado\Util\Cron\TDbCronManager::class;
+	}
+
+	/**
+	 * Brings the cron table up to date through {@see \Prado\Util\Cron\TDbCronManager::migrateTable}: a
+	 * missing table is created, and a table created before 4.4.0 gains the `nextexectime` column with
+	 * its index and values.  A deployment runs it once; the table is otherwise migrated on first use.
+	 * @param string[] $args the arguments to the command line action
+	 * @return bool whether the command ran
+	 * @since 4.4.0
+	 */
+	public function actionMigrate($args)
+	{
+		$module = $this->getCronModule();
+		if (!$module) {
+			return true;
+		}
+		$result = $module->migrateTable();
+		$table = $module->getTableName();
+		$this->_outWriter->writeLine("\n" . match (true) {
+			$result['created'] => "Created the cron table {$table}.",
+			$result['column'] !== null => "Added the nextexectime column to {$table} and set it on {$result['column']} task row(s).",
+			default => "The cron table {$table} is up to date.",
+		} . "\n");
+		return true;
 	}
 
 	/**

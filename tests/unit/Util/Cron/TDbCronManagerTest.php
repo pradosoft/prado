@@ -1114,4 +1114,37 @@ class TDbCronManagerTest extends TCronModuleTest
 		$this->obj->setAutoCreateCronTable('true');
 		self::assertTrue($this->obj->getAutoCreateCronTable());
 	}
+
+	public function testMigrateTable_CreatesTheTableAndAddsTheNextExecTimeColumn()
+	{
+		$manager = new TDbCronManager();
+		$manager->setTableName('migratetable');
+		$db = $manager->getDbConnection();
+		$db->createCommand('DROP TABLE IF EXISTS migratetable')->execute();
+		try {
+			// the table of a 4.3 installation: no nextexectime column, one active task row
+			$db->createCommand('CREATE TABLE migratetable (tabuid INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(127) NOT NULL, schedule VARCHAR(127) NOT NULL, task VARCHAR(256) NOT NULL, moduleid VARCHAR(127) NULL, username VARCHAR(127) NULL, options MEDIUMTEXT NULL, processcount INT NOT NULL DEFAULT 0, lastexectime VARCHAR(20) NULL DEFAULT NULL, active BOOLEAN NULL)')->execute();
+			$task = new TTestCronModuleTask();
+			$task->setName('migrated');
+			$task->setSchedule('0 * * * *');
+			$last = 1700000000;
+			$cmd = $db->createCommand("INSERT INTO migratetable (name, schedule, task, options, processcount, lastexectime, active) VALUES ('migrated', '0 * * * *', :task, :options, 3, :last, 1)");
+			$cmd->bindValue(':task', TTestCronModuleTask::class);
+			$cmd->bindValue(':options', serialize($task));
+			$cmd->bindValue(':last', (string) $last);
+			$cmd->execute();
+
+			self::assertSame(['created' => false, 'column' => 1], $manager->migrateTable());
+			self::assertEquals($task->getNextTriggerTime($last), $db->createCommand("SELECT nextexectime FROM migratetable WHERE name='migrated'")->queryScalar());
+			self::assertSame(['created' => false, 'column' => null], $manager->migrateTable(), 'a second run finds the column');
+
+			$db->createCommand('DROP TABLE migratetable')->execute();
+			$manager->setAutoCreateCronTable(false);
+			self::assertSame(['created' => true, 'column' => null], $manager->migrateTable(), 'a missing table is created with the column, whatever AutoCreateCronTable says');
+			self::assertSame(0, (int) $db->createCommand('SELECT COUNT(*) FROM migratetable')->queryScalar());
+		} finally {
+			$db->createCommand('DROP TABLE IF EXISTS migratetable')->execute();
+			$manager->unlisten();
+		}
+	}
 }

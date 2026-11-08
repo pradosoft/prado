@@ -276,4 +276,27 @@ class TShellDbCronActionTest extends \PHPUnit\Framework\TestCase
 		$cron->unlisten();
 	}
 	
+
+	public function testActionMigrate()
+	{
+		//  no TDbCronManager in the application
+		self::assertTrue($this->obj->actionMigrate(['cron/migrate']));
+		self::assertEquals(1, preg_match("/TDbCronManager/", $this->writer->flush()));
+
+		$cron = new TDbCronManager();
+		$cron->setId('cronmodule87');
+		$cron->setTableName('migrateshell');
+		$db = $cron->getDbConnection();
+		$db->createCommand('DROP TABLE IF EXISTS migrateshell')->execute();
+		try {
+			$this->obj->setCronModule($cron);
+			self::assertTrue($this->obj->actionMigrate(['cron/migrate']));
+			self::assertStringContainsString('Created the cron table migrateshell', $this->writer->flush());
+			self::assertTrue($this->obj->actionMigrate(['cron/migrate']));
+			self::assertStringContainsString('migrateshell is up to date', $this->writer->flush());
+		} finally {
+			$db->createCommand('DROP TABLE IF EXISTS migrateshell')->execute();
+			$cron->unlisten();
+		}
+	}
 }
