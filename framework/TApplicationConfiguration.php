@@ -50,7 +50,9 @@ use Prado\Xml\TXmlDocument;
  *   modules, parameters, and includes that do not affect the application until the
  *   service runs.
  * - **Parameters** are named values exposed via {@see TApplication::getParameters()},
- *   either bare scalars or component-typed entries.
+ *   either bare scalars or component-typed entries. A parameter with `final` set
+ *   true is finalized when applied ({@see TApplicationParameters}); later
+ *   configurations and code cannot change it. {@see getFinalParameters()} lists them.
  *
  * ### XML configuration
  *
@@ -68,6 +70,7 @@ use Prado\Xml\TXmlDocument;
  *
  *   <parameters>
  *     <parameter id="SiteName" value="My Site"/>
+ *     <parameter id="DeveloperMode" value="0" final="true"/>
  *     <parameter id="Mailer" class="MyMailer" Host="smtp.example.com"/>
  *   </parameters>
  *
@@ -112,6 +115,7 @@ use Prado\Xml\TXmlDocument;
  *
  *   'parameters' => [
  *     'SiteName' => 'My Site',
+ *     'DeveloperMode' => ['value' => '0', 'final' => true],
  *     'Mailer'   => ['class' => 'MyMailer', 'properties' => ['Host' => 'smtp.example.com']],
  *   ],
  *
@@ -268,6 +272,10 @@ class TApplicationConfiguration extends \Prado\TApplicationComponent
 	 * @var array list of parameters
 	 */
 	private $_parameters = [];
+	/**
+	 * @var array<int|string, true> ids of the parameters marked final
+	 */
+	private $_finalParameters = [];
 	/**
 	 * @var array list of module configurations
 	 */
@@ -659,17 +667,19 @@ class TApplicationConfiguration extends \Prado\TApplicationComponent
 	{
 		foreach ($parametersNode as $id => $parameter) {
 			if (is_array($parameter)) {
+				$final = TPropertyValue::ensureBoolean($parameter['final'] ?? false);
+				unset($parameter['final']);
 				if (isset($parameter['class'])) {
 					$type = $parameter['class'];
 					unset($parameter['class']);
 					$properties = $parameter['properties'] ?? [];
 					$properties['id'] = $id;
-					$this->_parameters[$id] = [$type, $properties, $parameter];
-					$this->_empty = false;
+					$this->setParameter($id, [$type, $properties, $parameter], $final);
+				} elseif (array_key_exists('value', $parameter)) {
+					$this->setParameter($id, $parameter['value'], $final);
 				}
 			} else {
-				$this->_parameters[$id] = $parameter;
-				$this->_empty = false;
+				$this->setParameter($id, $parameter, false);
 			}
 		}
 	}
@@ -687,16 +697,16 @@ class TApplicationConfiguration extends \Prado\TApplicationComponent
 				if (($id = $properties->remove('id')) === null) {
 					throw new TConfigurationException('appconfig_parameterid_required');
 				}
+				$final = TPropertyValue::ensureBoolean($properties->remove('final') ?? false);
 				if (($type = $properties->remove('class')) === null) {
 					if (($value = $properties->remove('value')) === null) {
-						$this->_parameters[$id] = $element;
+						$this->setParameter($id, $element, $final);
 					} else {
-						$this->_parameters[$id] = $value;
+						$this->setParameter($id, $value, $final);
 					}
 				} else {
-					$this->_parameters[$id] = [$type, $properties->toArray(), $element];
+					$this->setParameter($id, [$type, $properties->toArray(), $element], $final);
 				}
-				$this->_empty = false;
 			} else {
 				throw new TConfigurationException('appconfig_parameters_invalid', $element->getTagName());
 			}
@@ -823,6 +833,36 @@ class TApplicationConfiguration extends \Prado\TApplicationComponent
 	public function getParameters()
 	{
 		return $this->_parameters;
+	}
+
+	/**
+	 * Returns the parameters marked final by the `final` attribute or key.
+	 * {@see TApplication::applyConfiguration()} finalizes each of them after setting its value.
+	 * @return array<int|string, true> the final parameter ids as keys.
+	 * @since 4.4.0
+	 */
+	public function getFinalParameters(): array
+	{
+		return $this->_finalParameters;
+	}
+
+	/**
+	 * Stores a parsed parameter definition and its final flag.
+	 * A later definition of the same id replaces the value and the final flag.
+	 * @param int|string $id the parameter id.
+	 * @param mixed $parameter the parameter definition.
+	 * @param bool $final whether the parameter is final.
+	 * @since 4.4.0
+	 */
+	protected function setParameter($id, $parameter, bool $final): void
+	{
+		$this->_parameters[$id] = $parameter;
+		if ($final) {
+			$this->_finalParameters[$id] = true;
+		} else {
+			unset($this->_finalParameters[$id]);
+		}
+		$this->_empty = false;
 	}
 
 	/**

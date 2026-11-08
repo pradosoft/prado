@@ -1,7 +1,7 @@
 <?php
 
 /**
- * TQueue, TQueueIterator classes
+ * TQueueIterator class
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
@@ -15,8 +15,8 @@ namespace Prado\Collections;
  *
  * TQueueIterator implements \Iterator interface.
  *
- * TQueueIterator is used by TQueue. It allows TQueue to return a new iterator
- * for traversing the items in the queue.
+ * TQueueIterator traverses an array by reference. TQueue returns an \ArrayIterator
+ * and does not use this class.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.1

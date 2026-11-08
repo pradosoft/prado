@@ -18,7 +18,9 @@ Pre-built installable behaviors for common Prado application concerns; each beha
 
 - **`TMapLazyLoadBehavior`** — Attaches to `TMap` subclass; lazy-loads TMap items on first access.
 
-- **`TMapRouteBehavior`** — Attaches to `TMap` subclass; routes `TMap` read/write operations through a handler.
+- **`TMapRouteBehavior`** — Attaches to `TMap` subclass; routes `TMap` read/write operations through a handler. On an `IMapRouteIndex` map (`TApplicationParameters`) it is indexed by key.
+
+- **`IMapRouteIndex`** — Interface for a map that indexes `TMapRouteBehavior`s by key; a change calls only the routes for its key.
 
 - **`TNoUnserializeBehaviorTrait`** — Trait preventing behavior from being unserialized (stateless behaviors).
 

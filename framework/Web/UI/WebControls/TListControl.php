@@ -73,6 +73,9 @@ use Prado\Web\THttpUtility;
  * The {@see setPromptText PromptText} and {@see setPromptValue PromptValue} properties can
  * be used to add a dummy list item that will be rendered first.
  *
+ * An option renders the HTML {@see TListItem::setContent Content} of its item when set,
+ * otherwise the encoded Text.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
  */
@@ -844,7 +847,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 					}
 					$writer->addAttribute('value', $item->getValue());
 					$writer->renderBeginTag('option');
-					$writer->write(THttpUtility::htmlEncode($item->getText()));
+					$this->renderItemContent($writer, $item);
 					$writer->renderEndTag();
 					$writer->writeLine();
 				}
@@ -853,6 +856,22 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 				$writer->renderEndTag();
 				$writer->writeLine();
 			}
+		}
+	}
+
+	/**
+	 * Renders the body of an option: the item's HTML {@see TListItem::getContent Content}
+	 * when set, otherwise its encoded Text.
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer
+	 * @param TListItem $item the item being rendered
+	 * @since 4.4.0
+	 */
+	protected function renderItemContent($writer, $item)
+	{
+		if ($item->getHasContent()) {
+			$writer->write($item->getContent());
+		} else {
+			$writer->write(THttpUtility::htmlEncode($item->getText()));
 		}
 	}
 }

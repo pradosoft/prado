@@ -24,6 +24,20 @@ use Prado\TPropertyValue;
  * and it can have additional {@see getAttributes Attributes} which may be rendered
  * if the list control supports so.
  *
+ * {@see setContent Content} is HTML rendered inside the `<option>` of a
+ * {@see TDropDownList} or {@see TListBox} in place of the encoded Text. The body
+ * of a TListItem template tag sets it:
+ * ```xml
+ * <com:TListItem Value="cat" Text="Cat">
+ *   <img src="cat.svg" alt=""> Cat
+ * </com:TListItem>
+ * ```
+ * Content is not encoded; encode user data before adding it. A
+ * {@see TRichOptionsTrait RichOptions} select shows the elements of the
+ * content. A browser without customizable select support, and the accessible
+ * name of the option, use the text of the content, so the content contains the
+ * item's text. Decorative images and icons have `alt=""` or `aria-hidden="true"`.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
  */
@@ -49,6 +63,10 @@ class TListItem extends \Prado\TComponent
 	 * @var bool whether the item is selected
 	 */
 	protected $_selected = false;
+	/**
+	 * @var string HTML content of the item
+	 */
+	protected $_content = '';
 
 	/**
 	 * Constructor.
@@ -102,6 +120,9 @@ class TListItem extends \Prado\TComponent
 		}
 		if ($this->_selected === false) {
 			$exprops[] = "\0*\0_selected";
+		}
+		if ($this->_content === '') {
+			$exprops[] = "\0*\0_content";
 		}
 	}
 
@@ -167,6 +188,49 @@ class TListItem extends \Prado\TComponent
 	public function setValue($value)
 	{
 		$this->_value = TPropertyValue::ensureString($value);
+	}
+
+	/**
+	 * @return string HTML content rendered inside the option. Defaults to ''.
+	 * @since 4.4.0
+	 */
+	public function getContent()
+	{
+		return $this->_content;
+	}
+
+	/**
+	 * Sets the HTML content rendered inside the option in place of the encoded Text.
+	 * The content is not encoded.
+	 * @param string $value HTML content of the item
+	 * @since 4.4.0
+	 */
+	public function setContent($value)
+	{
+		$this->_content = trim(TPropertyValue::ensureString($value));
+	}
+
+	/**
+	 * @return bool whether the item has HTML {@see getContent Content}
+	 * @since 4.4.0
+	 */
+	public function getHasContent()
+	{
+		return $this->_content !== '';
+	}
+
+	/**
+	 * Appends template body text to {@see getContent Content}. Other objects are ignored.
+	 * @param mixed $object text or object parsed from the template body
+	 * @since 4.4.0
+	 */
+	public function addParsedObject($object)
+	{
+		if (is_string($object)) {
+			$this->setContent($this->_content . $object);
+		} else {
+			parent::addParsedObject($object);
+		}
 	}
 
 	/**
