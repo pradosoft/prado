@@ -24,6 +24,7 @@ Extends [TList](./TList.md). Implements [IWeakCollection](./IWeakCollection.md) 
 | `Closure` | Directly (strongly retained) |
 | `IWeakRetainable` / `TEventHandler` | Directly; inner callable object tracked in WeakMap |
 | Any other object | `WeakReference::create($object)` |
+| Explicit `WeakReference` | As given; its referent is tracked in WeakMap |
 | Array | Recursively weakened (nested objects become WeakReferences) |
 | `Traversable` + `ArrayAccess` container (e.g. `ArrayObject`) | A weakened copy (`clone`); the caller's container is unchanged |
 
@@ -83,8 +84,16 @@ protected function scrubWeakReferences(): void
 | `TEventHandler` without a handler object (e.g. `'strlen'`) | Counted; not tracked; kept when `DiscardInvalid` turns on |
 | `TEventHandler` whose handler object is collected before it is added | Counted; `weakMarkChanged()` so the next scrub removes it |
 | `Traversable` + `ArrayAccess` container | Not tracked (stored strongly, like an array) |
+| Explicit `WeakReference` with a live referent | Referent tracked, whichever type it is; a referent `TEventHandler` is not counted, because the stored entry is the `WeakReference` |
+| Explicit `WeakReference` with a collected referent | `weakMarkChanged()` so the next scrub removes it |
 
-`remove()`, `removeAt()`, and `offsetSet()` pass the removed stored entry to `weakCustomRemove()`, which resolves a stored `WeakReference`.
+`remove()`, `removeAt()`, and `offsetSet()` pass the removed stored entry to `weakCustomRemove()`, which resolves a stored `WeakReference` to the same referent `weakCustomAdd()` tracked.
+
+`internalInsertAt()` is the insert path of `add()`, `insertAt()`, `insertBefore()`, `insertAfter()`, `copyFrom()`, `mergeWith()`, and `offsetSet()`. It tracks the item after `TList::insertAt()` succeeds, so a read-only list or an invalid index leaves the WeakMap and `$_eventHandlerCount` unchanged.
+
+## clear()
+
+`clear()` removes from the end while `$_c > 0`, then resets `$_eventHandlerCount` and the WeakMap. See [TWeakCollectionTrait](./TWeakCollectionTrait.md) "Clear Contract". Invalid entries are scrubbed first, so a read-only list holding only collected objects clears without error; a read-only list with a live entry throws `list_readonly`.
 
 ## TEventHandler Search Semantics
 

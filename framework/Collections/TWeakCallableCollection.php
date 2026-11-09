@@ -154,12 +154,19 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 	 * This is a custom function for removing objects to the weak map.  Specifically,
 	 * if the object being removed is a TEventHandler, we use the {@see \Prado\TEventHandler::getHandlerObject}
 	 * object instead of the TEventHandler itself.  This mirrors {@see weakCustomAdd}.
-	 * @param object $object The object to remove to the managed weak map.
+	 * A stored WeakReference is resolved to its object; a collected object is already
+	 * gone from the WeakMap.
+	 * @param object $object The stored object to remove from the managed weak map.
 	 * @since 4.3.0
 	 */
 	protected function weakCustomRemove(object $object)
 	{
-		if ($object instanceof TEventHandler) {
+		if ($object instanceof WeakReference) {
+			$object = $object->get();
+			if ($object === null) {
+				return 0;
+			}
+		} elseif ($object instanceof TEventHandler) {
 			$this->_eventHandlerCount--;
 			$handlerObject = $object->getHandlerObject();
 			if ($handlerObject === null) {
@@ -341,7 +348,7 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 
 	/**
 	 * All invalid WeakReference[s] are optionally removed from the list on $value
-	 *  being "true".
+	 *  being "true", including on a read-only list.
 	 * @param null|bool|string $value Sets the TWeakList scrubbing of invalid WeakReferences.
 	 * @since 4.3.0
 	 */
@@ -372,7 +379,13 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 							if ($obj = $obj->get()) {
 								$this->weakAdd($obj);
 							} else {
-								parent::removeAtIndexInPriority($i, $priority);
+								// on read only, parent::removeAtIndexInPriority won't remove for scrub.
+								array_splice($this->_d[$priority], $i, 1);
+								if (!$this->_d[$priority]) {
+									unset($this->_d[$priority]);
+								}
+								$this->_c--;
+								$this->_fd = null;
 								if ($isEventHandler) {
 									$this->_eventHandlerCount--;
 								}
@@ -559,6 +572,8 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 	 * Inserts an item at the specified index within a priority.  This does not scrub the
 	 * list of WeakReference.  This converts the item into a WeakReference if it is an object
 	 * or contains an object in its callable.  This does not convert Closure into WeakReference.
+	 * The object is tracked after the insert, so a failed insert leaves the weak map and the
+	 * event handler count unchanged.
 	 * @param mixed $items item or array of items to add within the list.
 	 * @param null|false|int $index index within the priority to add the item, defaults to null
 	 *    which appends the item at the priority
@@ -589,11 +604,12 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 			if (($item instanceof IPriorityCapture) && (!$isPriorityItem || $itemPriority !== $priority)) {
 				$item->setPriority($priority);
 			}
-			if (($isObj = is_object($item)) || is_array($item) && is_object($item[0])) {
-				$this->weakCustomAdd($isObj ? $item : $item[0]);
-			}
+			$object = is_object($item) ? $item : (is_array($item) && is_object($item[0]) ? $item[0] : null);
 			$this->filterItemForInput($item, true);
 			$result = parent::insertAtIndexInPriority($item, $index, $priority, $preserveCache);
+			if ($object !== null) {
+				$this->weakCustomAdd($object);
+			}
 			if ($return === null) {
 				$return = $result;
 			} elseif (!is_array($return)) {
@@ -718,16 +734,19 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 	{
 		$priority = $this->ensurePriority($priority);
 		$item = parent::removeAtIndexInPriority($index, $priority);
-		$this->filterItemForOutput($item);
 		if (($isObj = is_object($item)) || is_array($item) && is_object($item[0])) {
-			$this->weakCustomRemove($obj = $isObj ? $item : $item[0]);
+			$this->weakCustomRemove($isObj ? $item : $item[0]);
 		}
+		$this->filterItemForOutput($item);
 		return $item;
 	}
 
 	/**
-	 * Removes all items in the priority list by calling removeAtIndexInPriority from the
-	 * last item to the first.
+	 * Removes all items in the priority list by calling removeAtIndexInPriority on the
+	 * last item of the first priority until no priority remains, then resets the Weak
+	 * Cache and event handler count.  A destructor run by a removed item can remove or
+	 * insert entries; the priorities are read on each pass, so the list ends empty.
+	 * @throws TInvalidOperationException if the list is read-only
 	 * @since 4.3.0
 	 */
 	public function clear(): void
@@ -737,13 +756,12 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 		}
 
 		$c = $this->_c;
-		foreach (array_keys($this->_d) as $priority) {
-			for ($index = count($this->_d[$priority]) - 1; $index >= 0; $index--) {
-				parent::removeAtIndexInPriority($index, $priority);
-			}
+		while (($priority = array_key_first($this->_d)) !== null) {
+			parent::removeAtIndexInPriority(count($this->_d[$priority]) - 1, $priority);
 		}
 
 		if ($c) {
+			$this->_eventHandlerCount = 0;
 			$this->weakRestart();
 		}
 	}

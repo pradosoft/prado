@@ -1,4 +1,6 @@
 ## Version 4.4.0 - TBA
+BUG: `TWeakMap::clear()` on a read-only map throws `map_readonly` like `TMap`, so `clear()` and `copyFrom()` no longer empty it; each weak collection's `clear()` survives a destructor removing or inserting an entry and resets its counts. (belisoful)
+BUG: `TWeakList` and `TWeakMap` track the referent of an explicit `WeakReference`, so a collected one is scrubbed; `TWeakCallableCollection` turning `DiscardInvalid` on removes collected entries on a read-only list; a failed insert leaves no bookkeeping. (belisoful)
 BUG: `TProcessFork` serialized with a Closure body threw because `_body` was excluded under its private name; `TList` and `TWebAttributeCollection` likewise keep a default `_r` and `_prefix` out of the payload. (belisoful)
 NEW: Issue #1401 - `TDrawer` is a `TDialog` at a page edge: `Placement` (`TDrawerPlacement`), `DockAt` docks it in the page layout on wide screens and opens it modally on narrow ones, shown inline without script, and `Swipe` closes it on touch. (belisoful)
 NEW: Issue #1401 - `TContextMenu` opens a `TDropdownMenu` on a right-click on `ForControl` at the pointer, or on Shift+F10 and the ContextMenu key below the target, in place of the browser context menu. (belisoful)

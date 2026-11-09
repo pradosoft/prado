@@ -3,9 +3,11 @@
 namespace Prado\Test\Unit\Collections;
 
 use Prado\Collections\IWeakRetainable;
+use Prado\Collections\TMap;
 use Prado\Collections\TWeakMap;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidOperationException;
+use Prado\Test\Unit\PradoUnit;
 use Prado\TEventHandler;
 
 /**
@@ -713,5 +715,127 @@ class TWeakMapTest extends TMapTest
 
 		$this->assertSame(1, $map->getCount());
 		$this->assertSame($eh, $map->itemAt('k'));
+	}
+
+	public function testClearReadOnly_TWeakMap()
+	{
+		$value = new WeakMapItem();
+		$map = new TWeakMap(['a' => $value], true, true);
+		$value = null;
+		$map->clear();
+		$this->assertSame(0, $map->getCount(), 'A read-only map holding only collected values clears without error');
+
+		$map = new TWeakMap(['a' => 1], true);
+		try {
+			$map->clear();
+			$this->fail('A read-only map with entries must not clear');
+		} catch (TInvalidOperationException $e) {
+			$this->assertSame('map_readonly', $e->getErrorCode());
+		}
+		$this->assertSame(['a' => 1], $map->toArray());
+	}
+
+	public function testReadOnlyMatchesTMap_TWeakMap()
+	{
+		$operations = [
+			'clear' => [['a' => 1], fn ($map) => $map->clear(), 'map_readonly'],
+			'copyFrom empty' => [['a' => 1], fn ($map) => $map->copyFrom([]), 'map_readonly'],
+			'copyFrom data' => [['a' => 1], fn ($map) => $map->copyFrom(['b' => 2]), 'map_readonly'],
+			'copyFrom null' => [['a' => 1], fn ($map) => $map->copyFrom(null), null],
+			'mergeWith data' => [['a' => 1], fn ($map) => $map->mergeWith(['b' => 2]), 'map_readonly'],
+			'mergeWith empty' => [['a' => 1], fn ($map) => $map->mergeWith([]), null],
+			'empty clear' => [[], fn ($map) => $map->clear(), null],
+			'empty copyFrom empty' => [[], fn ($map) => $map->copyFrom([]), null],
+			'empty copyFrom data' => [[], fn ($map) => $map->copyFrom(['b' => 2]), 'map_readonly'],
+			'empty mergeWith data' => [[], fn ($map) => $map->mergeWith(['b' => 2]), 'map_readonly'],
+		];
+		foreach ($operations as $name => [$data, $operation, $errorCode]) {
+			foreach ([TMap::class, TWeakMap::class] as $class) {
+				$map = new $class($data, true);
+				$code = null;
+				try {
+					$operation($map);
+				} catch (TInvalidOperationException $e) {
+					$code = $e->getErrorCode();
+				}
+				$this->assertSame($errorCode, $code, "$class $name error code");
+				$this->assertSame($data, $map->toArray(), "$class $name leaves the map unchanged");
+			}
+		}
+	}
+
+	public function testClearResetsBookkeeping_TWeakMap()
+	{
+		$map = new TWeakMapUnit();
+		$item = new WeakMapItem();
+		$map->add('h', new TEventHandler('strlen'));
+		$map->add('i', $item);
+		$map->clear();
+
+		$this->assertSame(0, PradoUnit::getProp($map, '_eventHandlerCount'));
+		$this->assertSame(0, PradoUnit::getProp($map, '_weakCount'));
+		$this->assertNull($map->getWeakObjectCount($item));
+	}
+
+	public function testExplicitWeakReferenceTracksReferent_TWeakMap()
+	{
+		$map = new TWeakMapUnit();
+		$object = new WeakMapItem();
+		$map->add('k', \WeakReference::create($object));
+		$this->assertSame(1, $map->getWeakObjectCount($object));
+		$this->assertSame($object, $map->itemAt('k'));
+
+		$map->remove('k');
+		$this->assertNull($map->getWeakObjectCount($object));
+
+		$map->add('k', \WeakReference::create($object));
+		$object = null;
+		$this->assertSame(0, $map->getCount(), 'A collected referent is scrubbed');
+		$this->assertSame([], $map->toArray());
+	}
+
+	public function testExplicitWeakReferenceSharesTrackingWithItsObject_TWeakMap()
+	{
+		$map = new TWeakMapUnit();
+		$object = new WeakMapItem();
+		$map->add('a', $object);
+		$map->add('b', \WeakReference::create($object));
+		$this->assertSame(2, $map->getWeakObjectCount($object));
+
+		$map->remove('a');
+		$this->assertSame(1, $map->getWeakObjectCount($object));
+
+		$object = null;
+		$this->assertSame(0, $map->getCount());
+	}
+
+	public function testExplicitWeakReferenceCollectedBeforeAdd_TWeakMap()
+	{
+		$object = new WeakMapItem();
+		$weak = \WeakReference::create($object);
+		$object = null;
+
+		$map = new TWeakMap();
+		$map->add('k', $weak);
+		$this->assertSame(0, $map->getCount(), 'A referent collected before it is added is scrubbed');
+		$this->assertSame([], $map->toArray());
+
+		$map = new TWeakMap(null, null, false);
+		$map->add('k', $weak);
+		$this->assertSame(['k' => null], $map->toArray(), 'DiscardInvalid false keeps the entry');
+	}
+
+	public function testExplicitWeakReferenceToEventHandler_TWeakMap()
+	{
+		$map = new TWeakMapUnit();
+		$target = new WeakMapItem();
+		$wrapped = new TEventHandler([$target, 'handle']);
+		$map->add('k', \WeakReference::create($wrapped));
+		$this->assertSame(1, $map->getWeakObjectCount($wrapped), 'The referent is tracked, not its handler object');
+		$this->assertNull($map->getWeakObjectCount($target));
+		$this->assertSame(0, PradoUnit::getProp($map, '_eventHandlerCount'));
+
+		$wrapped = null;
+		$this->assertSame(0, $map->getCount(), 'The entry ends with the referenced handler while its target lives');
 	}
 }

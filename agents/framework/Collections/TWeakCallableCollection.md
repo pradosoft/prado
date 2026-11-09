@@ -58,8 +58,8 @@ protected function internalInsertAtIndexInPriority(mixed $items, ...): mixed
 1. Calls `collapseDiscardInvalid()` to finalize the discard setting.
 2. Supports inserting an array of items in bulk.
 3. Honors [IPriorityItem](./IPriorityItem.md) and [IPriorityCapture](./IPriorityCapture.md) interfaces.
-4. Calls `weakCustomAdd()` to register the object in the WeakMap.
-5. Calls `filterItemForInput()` to weaken the callable before passing to `parent::`.
+4. Calls `filterItemForInput()` to validate and weaken the callable before passing to `parent::`.
+5. Calls `weakCustomAdd()` to register the object in the WeakMap after the insert succeeds, so a non-callable, an invalid index, or a read-only list leaves the WeakMap and `$_eventHandlerCount` unchanged.
 
 ### Removal
 
@@ -71,7 +71,9 @@ protected function internalRemoveAtIndexInPriority(int $index, numeric $priority
 public function clear(): void
 ```
 
-All public removal methods call `scrubWeakReferences()` first. The internal `internalRemoveAtIndexInPriority` resolves the stored item back to a real callable via `filterItemForOutput` before returning, and calls `weakCustomRemove()`.
+All public removal methods call `scrubWeakReferences()` first. The internal `internalRemoveAtIndexInPriority` passes the stored entry to `weakCustomRemove()`, which resolves a stored `WeakReference`, so a `TEventHandler` whose handler object is collected is uncounted. It then resolves the stored item back to a real callable via `filterItemForOutput` before returning.
+
+`clear()` throws `list_readonly` on a read-only list, removes the last item of the first priority until no priority remains, then resets `$_eventHandlerCount` and the WeakMap. See [TWeakCollectionTrait](./TWeakCollectionTrait.md) "Clear Contract".
 
 ### Search
 
@@ -128,7 +130,7 @@ protected function collapseDiscardInvalid(): void
 
 Setting `DiscardInvalid` to `true` on an already-populated list immediately:
 - Starts the WeakMap tracker (`weakStart()`).
-- Iterates existing items and registers all living objects; dead WeakReferences are removed inline and a removed `TEventHandler` is uncounted. A `TEventHandler` without a handler object is kept.
+- Iterates existing items and registers all living objects; dead WeakReferences are removed inline, without the read-only check, and a removed `TEventHandler` is uncounted. A `TEventHandler` without a handler object is kept.
 
 Setting it to `false` calls `weakStop()`.
 

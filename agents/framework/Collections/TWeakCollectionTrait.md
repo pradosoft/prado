@@ -27,7 +27,7 @@ Shared WeakMap bookkeeping for all weak collections. Tracks how many times each 
 ```php
 // WeakMap lifecycle:
 protected function weakStart(): void        // create a new WeakMap
-protected function weakRestart(): void      // replace with a fresh WeakMap (clear all entries)
+protected function weakRestart(): void      // replace with a fresh WeakMap (clear all entries); $_weakCount becomes 0
 protected function weakClone(): void        // clone the WeakMap (call in __clone)
 protected function weakStop(): void         // set WeakMap to null (disable tracking)
 
@@ -71,6 +71,12 @@ PHP's cyclic GC can fire destructors between any two opcodes, potentially callin
 ## Untracked Removal
 
 A destructor can remove an entry while turning `DiscardInvalid` on registers the existing entries. When that entry's object is not registered yet, `weakRemove()` is a no-op. [TWeakMap](./TWeakMap.md) iterates a snapshot during this pass, so an object whose duplicate entry was removed is registered again.
+
+## Clear Contract
+
+`clear()` in each implementing class re-reads its backing store on every pass and ends with the collection empty, `$_eventHandlerCount` at 0, and a fresh WeakMap. A removed `Closure` can hold the last reference to an object whose destructor removes or inserts entries while `clear()` runs. An inserted entry is removed by a later pass.
+
+A destructor calling `remove()` on an entry `clear()` already removed gets the normal result for a missing item: `list_item_inexistent` from a list, `null` from [TWeakMap](./TWeakMap.md). `clear()` does not catch the exception, so it propagates and the remaining entries stay until the next `clear()`. `TComponent::detachEventHandler()` catches it.
 
 ## Serialization
 
