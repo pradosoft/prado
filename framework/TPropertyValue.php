@@ -2006,6 +2006,9 @@ class TPropertyValue
 	 * The final assignment always goes through the object's normal `__set()` chain so that
 	 * events, behaviors, and `js`-prefix wrapping are preserved.
 	 *
+	 * A value that {@see coerceToType} passes through is assigned unchanged.  A typed setter
+	 * that cannot hold it raises PHP's `TypeError` and the property keeps its value.
+	 *
 	 * This is the recommended entry point for framework internals (configuration loaders,
 	 * template parsers, behavior injectors) that assign a property whose source type may
 	 * not match the setter's declared type.
@@ -2069,8 +2072,11 @@ class TPropertyValue
 	 * | Backed enum class     | `tryFrom()` exact backing value, then case-insensitive case-name scan |
 	 * | {@see IEnumerable}    | case-insensitive `valueOfConstant()` name→value; unknown → pass-through |
 	 * | {@see ICoercible}     | `coerceFromValue()` factory; `null` return → pass-through |
-	 * | Union type            | heuristic chain — see {@see _coerceUnionType}      |
+	 * | Union type            | heuristic chain — see {@see _coerceUnionType}; a value no member can hold → pass-through |
 	 * | Nullable (`?T`)       | empty string / `null` input → `null`               |
+	 *
+	 * A pass-through value is returned unchanged.  A typed setter given that value
+	 * raises PHP's `TypeError`.
 	 *
 	 * @param mixed $value the value to coerce.
 	 * @param null|\ReflectionType $type the reflection type to coerce toward, or `null`
@@ -2234,7 +2240,11 @@ class TPropertyValue
 	 *    wins.  Return shape per {@see _tryMatchEnum()}'s contract.
 	 * 4. `array` / typed object value whose type appears in the union → use it
 	 *    (pre-empts step 5 to prevent `(string)$array = "Array"` and
-	 *    `(string)$object` TypeError when the value has a native match)
+	 *    `(string)$object` TypeError when the value has a native match).
+	 *    A value without a string form that no member can hold passes through
+	 *    unchanged, so the TypeError surfaces at the setter boundary: an array
+	 *    when the union has no `array`/`iterable` member, and an object without
+	 *    `__toString()` that is not an instance of a class member.
 	 * 5. `string` in union → pass through / `ensureString` if not already a string
 	 *    (scalar non-string values such as `int` and `bool` are coerced to their
 	 *    string representation here when `string` is present in the union)
@@ -2316,13 +2326,16 @@ class TPropertyValue
 		// 4. Non-stringable native short-circuit.  Arrays and typed-object
 		// instances claim a native union match before step 5 —
 		// `(string)$arr` would be the useless `"Array"` and `(string)$obj`
-		// TypeErrors without `__toString()`.
+		// TypeErrors without `__toString()`.  An array or an object without
+		// `__toString()` that claims no match has no string form for the
+		// steps below and is returned unchanged.
 		if (!is_string($value)) {
 			if (is_array($value)) {
 				// PHP reports `iterable` in a union as `Traversable|array`.
 				if (isset($typeMap[static::TYPE_ARRAY])) {
 					return static::coerceToType($value, $typeMap[static::TYPE_ARRAY]);
 				}
+				return $value;
 			} elseif (is_object($value)) {
 				foreach ($nonNull as $t) {
 					$n = $t->getName();
@@ -2330,13 +2343,17 @@ class TPropertyValue
 						return static::coerceToType($value, $t);
 					}
 				}
+				if (!$value instanceof \Stringable) {
+					return $value;
+				}
 			}
 		}
 
 		// 5. String member.  Strings pass through; non-string scalars
-		// (bool, int, float) are coerced via {@see ensureString()}.
-		// Step 4 has already claimed any array or typed object with a
-		// native union match.
+		// (bool, int, float) and objects with `__toString()` are coerced
+		// via {@see ensureString()}.  Step 4 has already returned every
+		// array and every object that has a native union match or no
+		// `__toString()`.
 		if (in_array(static::TYPE_STRING, $names, true)) {
 			return is_string($value) ? $value : static::ensureString($value);
 		}
@@ -2371,7 +2388,8 @@ class TPropertyValue
 					return static::coerceToType($value, $typeMap[static::TYPE_FLOAT]);
 				}
 			}
-			// No match — convert to string and continue with shape heuristics
+			// No match — convert to string and continue with shape heuristics.
+			// Only scalars and objects with `__toString()` reach this point.
 		}
 
 		$strValue = is_string($value) ? $value : static::ensureString($value);
