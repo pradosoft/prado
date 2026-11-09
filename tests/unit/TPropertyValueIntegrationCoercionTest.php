@@ -884,6 +884,39 @@ class TPropertyValueIntegrationCoercionTest extends \PHPUnit\Framework\TestCase
 		}
 	}
 
+	public function testPhpModule_string_arrayRaisesTypeError(): void
+	{
+		// Issue #1497: a PHP configuration array reaches the `string` setter
+		// unchanged, so PHP raises its TypeError.
+		$phpConfig = [
+			'modules' => [
+				'm' => ['class' => TAppConfigTestModule::class, 'properties' => ['StringProp' => ['a']]],
+			],
+		];
+		$this->expectException(\TypeError::class);
+		$this->expectExceptionMessage('array given');
+		applyPhpModuleConfig($phpConfig);
+	}
+
+	public function testApplyProperty_string_withoutStringForm_leavesPropertyUnassigned(): void
+	{
+		foreach ([new TAppConfigTestModule(), new TAppConfigTestService(), new TAppConfigTestControl()] as $target) {
+			$target->setStringProp('kept');
+			$target->setNullableStringProp('kept');
+			foreach (['StringProp', 'NullableStringProp'] as $property) {
+				foreach (['array given' => ['a'], 'stdClass given' => new \stdClass()] as $given => $value) {
+					try {
+						TPropertyValue::applyProperty($target, $property, $value);
+						self::fail("$property must raise TypeError for " . get_debug_type($value) . '.');
+					} catch (\TypeError $e) {
+						self::assertStringContainsString($given, $e->getMessage());
+					}
+					self::assertSame('kept', $target->{'get' . $property}());
+				}
+			}
+		}
+	}
+
 	// ══════════════════════════════════════════════════════════════════════
 	// XML config → Service
 	// ══════════════════════════════════════════════════════════════════════

@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TPropertyValue::ensureString()` throws `TInvalidDataTypeException` (`propertyvalue_invalid_string_type`) for an array or an object without `__toString()`, with warnings reported or masked; `coerceToType()` passes such a value through unchanged for `string` and `?string`, so a typed setter raises PHP's `TypeError`. (belisoful)
 BUG: Issue #1497 - `TPropertyValue::coerceToType()` returns an array, or an object without `__toString()`, unchanged when no member of a union type can hold it, so a typed setter raises PHP's `TypeError` in place of "Array to string conversion" or `\Error`. (belisoful)
 BUG: `TPagedDataSource::getCount()` with paging on matches iteration: a page past the last page counts 0 and reports `IsLastPage`, and a short custom page counts its own items. (belisoful)
 NEW: Issue #1401 - `TDropdownMenu` renders a menu button and an action menu of its links and buttons, a `TPopover` with the ARIA `menu` role and the WAI-ARIA menu button keyboard. (belisoful)

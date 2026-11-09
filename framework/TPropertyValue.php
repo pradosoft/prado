@@ -10,6 +10,7 @@
 
 namespace Prado;
 
+use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Web\Javascripts\TJavaScript;
 use Prado\Web\UI\TWebColor;
@@ -30,7 +31,7 @@ use Prado\TComponentReflection;
  *
  * | Type | Rule |
  * |---|---|
- * | `string` | `bool` → `'true'`/`'false'`; `TJavaScriptLiteral` passed through; everything else via `(string)` cast |
+ * | `string` | `bool` → `'true'`/`'false'`; `TJavaScriptLiteral` passed through; `array` and object without `__toString()` → {@see TInvalidDataTypeException}; everything else via `(string)` cast |
  * | `bool` | `'true'` (case-insensitive) or numeric string `!= 0` (loose) → `true`; all else → `false` |
  * | `int` | `(int)` cast |
  * | `float` | `(float)` cast |
@@ -395,7 +396,9 @@ class TPropertyValue
 	 * `bool` is converted to `'true'` or `'false'`.  A {@see TJavaScriptLiteral} is returned
 	 * as-is (pass-through) because it carries an opaque JavaScript expression that must not
 	 * be re-encoded; callers that consume it as a plain string rely on its `__toString` cast.
-	 * All other values are cast via `(string)`.
+	 * An array and an object without `__toString()` have no string form and throw
+	 * {@see TInvalidDataTypeException}, with PHP warnings reported or masked (`@`,
+	 * `error_reporting`).  All other values are cast via `(string)`.
 	 *
 	 * ```php
 	 * TPropertyValue::ensureString(true);     // 'true'   (not '1')
@@ -404,23 +407,51 @@ class TPropertyValue
 	 * TPropertyValue::ensureString(1.5);      // '1.5'
 	 * TPropertyValue::ensureString(null);     // ''
 	 * TPropertyValue::ensureString(new TJavaScriptLiteral('alert(1)')); // pass-through, not stringified
+	 * TPropertyValue::ensureString($stringable);     // (string) $stringable, through __toString()
+	 * TPropertyValue::ensureString(['a']);           // throws TInvalidDataTypeException
+	 * TPropertyValue::ensureString(new \stdClass()); // throws TInvalidDataTypeException
 	 * ```
 	 *
 	 * @param mixed $value the value to be converted.
+	 * @throws TInvalidDataTypeException if the value is an array or an object without `__toString()`.
 	 * @return string|\Stringable
 	 */
 	public static function ensureString($value): string|\Stringable
 	{
-		if (TJavaScript::isJsLiteral($value)) {
+		if (is_string($value)) {
 			return $value;
 		}
 		if (is_bool($value)) {
 			return $value ? static::BOOL_TRUE : static::BOOL_FALSE;
-		} elseif (is_float($value) && is_nan($value)) {
-			return static::FLOAT_NAN;
-		} else {
+		}
+		if ($value === null) {
+			return '';
+		}
+		if (is_int($value)) {
 			return (string) $value;
 		}
+		if (is_float($value)) {
+			return is_nan($value) ? static::FLOAT_NAN : (string) $value;
+		}
+		if (TJavaScript::isJsLiteral($value)) {
+			return $value;
+		}
+		if (!self::_hasStringForm($value)) {
+			throw new TInvalidDataTypeException('propertyvalue_invalid_string_type', get_debug_type($value));
+		}
+		return (string) $value;
+	}
+
+	/**
+	 * Returns whether a value has a string form.
+	 * An array and an object without `__toString()` have none.
+	 * @param mixed $value the value to test.
+	 * @return bool `false` for an array or an object without `__toString()`.
+	 * @since 4.4.0
+	 */
+	private static function _hasStringForm(mixed $value): bool
+	{
+		return !is_array($value) && (!is_object($value) || $value instanceof \Stringable);
 	}
 
 	/**
@@ -1239,6 +1270,8 @@ class TPropertyValue
 	 *   combined with `|`.  Defaults to {@see DEFAULT_ARRAY_OF_TYPE} (trim
 	 *   and lowercase both axes, drop empties, compact integer keys).  Pass
 	 *   {@see FILTER_NONE} for raw pass-through.
+	 * @throws TInvalidDataTypeException if `$type` is `TYPE_STRING` and an element is an
+	 *   array or an object without `__toString()`.
 	 * @return array the normalized array.
 	 * @since 4.4.0
 	 */
@@ -2065,7 +2098,7 @@ class TPropertyValue
 	 * | `bool`                | {@see ensureBoolean} — 'true'/'false' aware        |
 	 * | `int`                 | {@see ensureInteger}                               |
 	 * | `float`               | {@see ensureFloat}                                 |
-	 * | `string`              | {@see ensureString} — bool→'true'/'false' aware    |
+	 * | `string`              | {@see ensureString} — bool→'true'/'false' aware; array / object without `__toString()` → pass-through |
 	 * | `array` / `iterable`  | {@see ensureArray} — `(a,b,c)`/`[a,b,c]` supported |
 	 * | `object`              | {@see ensureObject}                                |
 	 * | `mixed` / `null`      | pass-through / `null`                              |
@@ -2098,7 +2131,7 @@ class TPropertyValue
 				static::TYPE_BOOL => static::ensureBoolean($value),
 				static::TYPE_INT => static::ensureInteger($value),
 				static::TYPE_FLOAT => static::ensureFloat($value),
-				static::TYPE_STRING => static::ensureString($value),
+				static::TYPE_STRING => self::_hasStringForm($value) ? static::ensureString($value) : $value,
 				static::TYPE_ARRAY, static::TYPE_ITERABLE => static::ensureArray($value),
 				static::TYPE_OBJECT => static::ensureObject($value),
 				static::TYPE_MIXED, static::TYPE_NULL => $value,
