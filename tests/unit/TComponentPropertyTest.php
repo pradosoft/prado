@@ -537,6 +537,95 @@ class TComponentPropertyTest extends TComponentTestBase
 		$this->assertSame(['Color', 'Height', 'Width'], array_keys($reversed));
 	}
 
+	/**
+	 * A path whose final '.' segment holds an '@' behavior hop resolves its prefix
+	 * and then sets nothing.
+	 */
+	public function testSetSubPropertyDottedTerminalAtIsNoop()
+	{
+		$inner = new BehaviorTestBehavior();
+		$this->component->getObject()->attachBehavior('ob', $inner);
+
+		$this->component->setSubProperty('Object.Text@ob', 'changed');
+
+		$this->assertSame('object text', $this->component->getObject()->getText());
+		$this->assertSame('faa', $inner->getExcitement());
+
+		try {
+			$this->component->setSubProperty('Missing.Text@ob', 'changed');
+			$this->fail('TInvalidOperationException not raised for an undefined property in the path prefix');
+		} catch (TInvalidOperationException $e) {
+			$this->assertEquals('component_property_undefined', $e->getErrorCode());
+		}
+	}
+
+	/**
+	 * setSubProperties applies a traversable map holding one path without sorting
+	 * and applies nothing for an empty map or an empty array.
+	 */
+	public function testSetSubPropertiesWithOneAndNoEntries()
+	{
+		$map = new TAttributeCollection();
+		$map->add('Object.Text', 'only');
+		$this->component->setSubProperties($map);
+		$this->assertSame('only', $this->component->getObject()->getText());
+		$this->assertSame('default', $this->component->getText());
+
+		$this->component->setSubProperties(new \ArrayIterator(['Text' => 'iterated']));
+		$this->assertSame('iterated', $this->component->getText());
+
+		$this->component->setSubProperties(new TAttributeCollection());
+		$this->component->setSubProperties(new \ArrayIterator([]));
+		$this->component->setSubProperties([]);
+		$this->assertSame('iterated', $this->component->getText());
+		$this->assertSame('only', $this->component->getObject()->getText());
+	}
+
+	/**
+	 * tokenizePropertyPath splits a path into [separator, name] segments. The first
+	 * separator is '.' unless the path opens with '@', and an empty path is one
+	 * empty '.' name.
+	 */
+	public function testTokenizePropertyPath()
+	{
+		$this->assertSame([['.', '']], PradoUnit::invoke($this->component, 'tokenizePropertyPath', ''));
+		$this->assertSame([['.', 'Text']], PradoUnit::invoke($this->component, 'tokenizePropertyPath', 'Text'));
+		$this->assertSame([['@', 'beh']], PradoUnit::invoke($this->component, 'tokenizePropertyPath', '@beh'));
+		$this->assertSame(
+			[['.', 'a'], ['.', 'b'], ['@', 'c'], ['.', 'd']],
+			PradoUnit::invoke($this->component, 'tokenizePropertyPath', 'a.b@c.d')
+		);
+		$this->assertSame(
+			[['@', 'x'], ['@', 'y'], ['.', '']],
+			PradoUnit::invoke($this->component, 'tokenizePropertyPath', '@x@y.')
+		);
+	}
+
+	/**
+	 * An empty path names an empty property, which is undefined.
+	 */
+	public function testGetSubPropertyEmptyPathThrows()
+	{
+		try {
+			$this->component->getSubProperty('');
+			$this->fail('TInvalidOperationException not raised for an empty property path');
+		} catch (TInvalidOperationException $e) {
+			$this->assertEquals('component_property_undefined', $e->getErrorCode());
+		}
+	}
+
+	/**
+	 * sortPropertyPaths keeps an empty-path entry in declaration order among the
+	 * root properties.
+	 */
+	public function testSortPropertyPathsWithEmptyPath()
+	{
+		$sorted = PradoUnit::invoke($this->component, 'sortPropertyPaths', [
+			'a.b' => 1, '' => 2, 'a' => 3,
+		]);
+		$this->assertSame(['a' => 3, 'a.b' => 1, '' => 2], $sorted);
+	}
+
 	public function testHasMethod()
 	{
 		$behaviorTestBehaviorName = 'BehaviorTestBehaviorName';

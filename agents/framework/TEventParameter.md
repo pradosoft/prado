@@ -60,6 +60,7 @@ echo $param['key'];         // 'value'
 $param['key'] = 'updated';  // sets Parameter['key'], marks ParameterChanged
 unset($param['key']);        // unsets, marks ParameterChanged
 isset($param['key']);        // false
+$param[] = 'item';          // appends to an ArrayAccess Parameter without reading the offset first
 
 // If Parameter is null and you offsetSet, Parameter becomes []
 $param2 = new TEventParameter();

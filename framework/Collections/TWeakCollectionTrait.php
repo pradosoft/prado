@@ -58,6 +58,13 @@ namespace Prado\Collections;
  * a destructor that fires mid-scrub itself triggers another scrub; the write
  * paths do not consult it.
  *
+ * ## Clear contract
+ *
+ * `clear()` re-reads the backing store on every pass and ends with the collection
+ * empty, `_eventHandlerCount` at 0, and a fresh WeakMap. A removed `Closure` can hold
+ * the last reference to an object whose destructor removes or inserts entries during
+ * the clear. An exception thrown by such a destructor propagates from `clear()`.
+ *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.3.0
  * @see https://www.php.net/manual/en/class.weakmap.php
@@ -114,12 +121,13 @@ trait TWeakCollectionTrait
 	}
 
 	/**
-	 * Restarts the WeakMap cache if it exists.
+	 * Restarts the WeakMap cache if it exists, with no known objects.
 	 */
 	protected function weakRestart(): void
 	{
 		if ($this->_weakMap) {
 			$this->_weakMap = new \WeakMap();
+			$this->_weakCount = 0;
 		}
 	}
 

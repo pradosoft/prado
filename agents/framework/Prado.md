@@ -70,7 +70,7 @@ Every unmasked warning and notice throws `TPhpErrorException` at the call site, 
 - `getRequestStartNanoseconds(): int` — The monotonic request start, `$_SERVER["PRADO_REQUEST_HRTIME"]`, in `hrtime()` nanoseconds; measure from it with `TMonotonicClock::elapsed()` (4.4.0).
 
 ### Path and Namespace Management
-- `getPathOfNamespace(string $namespace, string $ext = ''): ?string` — Converts a dotted namespace to a filesystem path.
+- `getPathOfNamespace(string $namespace, string $ext = ''): ?string` — Converts a dotted namespace to a filesystem path. Only the root segment `System` converts to `Prado`; a name that starts with "System", such as `SystemTools`, keeps its root.
 - `getPathOfAlias(string $alias): ?string` — Returns the path registered for an alias.
 - `getPathAliases(): array` — Returns all registered path aliases.
 - `setPathOfAlias(string $alias, string $path): void` — Registers or overrides an alias.
@@ -91,6 +91,7 @@ Used internally (e.g., `TEventParameter::setReadOnly` uses `isCallingSelf()` to 
 ### Localization
 - `getUserLanguages(): array` — Parses `Accept-Language` header into a priority-ordered list.
 - `getPreferredLanguage(): string` — Returns the highest-priority language code.
+- `getApplicationLanguage(): string` — Returns the language of the globalization module's culture, or `getPreferredLanguage()` when there is no module or its culture is null or not alphabetic.
 - `localize(string $text, array $params, string $catalog, string $charset): string` — Translates text via `Translation`.
 
 ## Static Properties

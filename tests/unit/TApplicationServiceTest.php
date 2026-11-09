@@ -21,6 +21,36 @@ class TestUnrelatedService extends TService {}
 /** Not a TService — used to exercise the invalid-class guard in startService(). */
 class NotAService {}
 
+/** An IService that is not a TComponent; startService() cannot set its properties. */
+class BareInterfaceService implements \Prado\IService
+{
+	public function init($config)
+	{
+	}
+
+	public function getID()
+	{
+		return 'bare';
+	}
+
+	public function setID($id)
+	{
+	}
+
+	public function getEnabled()
+	{
+		return true;
+	}
+
+	public function setEnabled($value)
+	{
+	}
+
+	public function run()
+	{
+	}
+}
+
 /** A TService stub whose getEnabled() always returns false. */
 class DisabledTestService extends TestBaseService
 {
@@ -419,11 +449,37 @@ class TApplicationServiceTest extends \PHPUnit\Framework\TestCase
 		$this->_app->registerService('dirservice', 'System.Web.Services.*');
 	}
 
+	public function testRegisterService_withDirectoryNamespace_reportsTheGivenName(): void
+	{
+		foreach (['Prado\\Web\\Services\\*', 'System.Web.Services.*'] as $namespace) {
+			try {
+				$this->_app->registerService('dirservice', $namespace);
+				$this->fail('A directory namespace must not register as a service class.');
+			} catch (TConfigurationException $e) {
+				$this->assertSame('application_service_class_not_found', $e->getErrorCode());
+				$this->assertStringContainsString("'" . $namespace . "'", $e->getMessage());
+			}
+		}
+	}
+
 	public function testRegisterService_nonServiceClassThrows(): void
 	{
 		$this->expectException(\Prado\Exceptions\TConfigurationException::class);
 		$this->expectExceptionMessage(NotAService::class);
 		$this->_app->registerService('bad', NotAService::class);
+	}
+
+	public function testRegisterService_interfaceNameThrowsClassNotFound(): void
+	{
+		// usingClass() resolves an interface name to a string; class_exists() then rejects it.
+		try {
+			$this->_app->registerService('iface', \Prado\IService::class);
+			$this->fail('An interface name must not register as a service class.');
+		} catch (TConfigurationException $e) {
+			$this->assertSame('application_service_class_not_found', $e->getErrorCode());
+			$this->assertStringContainsString(\Prado\IService::class, $e->getMessage());
+		}
+		$this->assertFalse($this->_app->hasRegisteredService('iface'));
 	}
 
 	public function testRegisterService_validServiceClassSucceeds(): void
@@ -935,6 +991,21 @@ class TApplicationServiceTest extends \PHPUnit\Framework\TestCase
 		]);
 		$this->expectException(TConfigurationException::class);
 		$this->_app->startService('bad');
+	}
+
+	public function testStartService_serviceThatIsNotAComponentThrows(): void
+	{
+		// registerService() accepts any IService; startService() also requires a TComponent.
+		$this->_app->registerService('bare', BareInterfaceService::class);
+		$before = $this->_app->getService();
+		try {
+			$this->_app->startService('bare');
+			$this->fail('A service that is not a TComponent must not start.');
+		} catch (TConfigurationException $e) {
+			$this->assertSame('application_service_invalid', $e->getErrorCode());
+			$this->assertStringContainsString(BareInterfaceService::class, $e->getMessage());
+		}
+		$this->assertSame($before, $this->_app->getService(), 'The current service is unchanged.');
 	}
 
 	public function testStartService_disabledServiceThrows(): void

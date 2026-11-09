@@ -4,6 +4,8 @@ namespace Prado\Test\Unit;
 
 use PHPUnit\Framework\Attributes\PreserveGlobalState;
 use PHPUnit\Framework\Attributes\RunInSeparateProcess;
+use Prado\Collections\TList;
+use Prado\Exceptions\TInvalidDataValueException;
 use Prado\I18N\core\MessageFormat;
 use Prado\I18N\TGlobalization;
 use Prado\I18N\Translation;
@@ -11,6 +13,8 @@ use Prado\Prado;
 use Prado\TApplicationMode;
 use Prado\Test\Unit\Harness\TNestedPathComponent;
 use Prado\Test\Unit\Harness\TNestedPathObject;
+use Prado\Test\Unit\Harness\Traits\TCallCollectorTrait;
+use Prado\Test\Unit\Harness\Traits\TNestedPathTrait;
 use Prado\Test\Unit\Harness\TTestApplication;
 use Prado\Util\Log\TLogger;
 use Prado\Web\TAssetManager;
@@ -1809,5 +1813,449 @@ class PradoBaseTest extends \PHPUnit\Framework\TestCase
 			['Hi {name}', ['{name}' => 'Ann'], 'prado_test_catalogue', 'ISO-8859-1'],
 			['Bye', [], 'explicit', 'UTF-8'],
 		], $formatter->calls);
+	}
+
+	// -----------------------------------------------------------------------
+	// getRequestStartNanoseconds()
+	// -----------------------------------------------------------------------
+
+	public function testGetRequestStartNanoseconds_returnsServerRequestHrtimeAsInt(): void
+	{
+		$saved = $_SERVER['PRADO_REQUEST_HRTIME'];
+		try {
+			$this->assertSame((int) $saved, Prado::getRequestStartNanoseconds());
+			$this->assertLessThanOrEqual(hrtime(true), Prado::getRequestStartNanoseconds());
+
+			$_SERVER['PRADO_REQUEST_HRTIME'] = '123456789';
+			$this->assertSame(123456789, Prado::getRequestStartNanoseconds());
+		} finally {
+			$_SERVER['PRADO_REQUEST_HRTIME'] = $saved;
+		}
+	}
+
+	// -----------------------------------------------------------------------
+	// prado3NamespaceToPhpNamespace()
+	// -----------------------------------------------------------------------
+
+	public function testPrado3NamespaceToPhpNamespace_convertsSystemRootInEitherNotation(): void
+	{
+		$convert = fn (string $type) => PradoUnit::invoke(Prado::class, 'prado3NamespaceToPhpNamespace', $type);
+
+		$this->assertSame('Prado\\Web\\UI\\TPage', $convert('System\\Web\\UI\\TPage'));
+		$this->assertSame('Prado\\Web\\UI\\TPage', $convert('System.Web.UI.TPage'));
+		$this->assertSame('Prado', $convert('System'));
+		$this->assertSame('Application\\Pages\\Home', $convert('Application.Pages.Home'));
+		$this->assertSame('Application\\Pages\\Home', $convert('Application\\Pages\\Home'));
+	}
+
+	public function testPrado3NamespaceToPhpNamespace_keepsNamesThatOnlyStartWithSystem(): void
+	{
+		$convert = fn (string $type) => PradoUnit::invoke(Prado::class, 'prado3NamespaceToPhpNamespace', $type);
+
+		$this->assertSame('SystemStatus', $convert('SystemStatus'));
+		$this->assertSame('SystemTools\\TMonitor', $convert('SystemTools.TMonitor'));
+		$this->assertSame('SystemTools\\TMonitor', $convert('SystemTools\\TMonitor'));
+	}
+
+	public function testGetPathOfNamespace_aliasStartingWithSystem_resolvesThroughThatAlias(): void
+	{
+		$aliases = PradoUnit::getStaticProp(Prado::class, '_aliases');
+		try {
+			Prado::setPathOfAlias('SystemTools', __DIR__);
+
+			$path = Prado::getPathOfNamespace('SystemTools.Harness.TNestedPathObject', '.php');
+		} finally {
+			PradoUnit::setStaticProp(Prado::class, '_aliases', $aliases);
+		}
+		$this->assertSame(realpath(__DIR__) . DIRECTORY_SEPARATOR . 'Harness' . DIRECTORY_SEPARATOR . 'TNestedPathObject.php', $path);
+	}
+
+	public function testCreateComponent_globalClassNameStartingWithSystem_instantiatesThatClass(): void
+	{
+		if (!class_exists('SystemPrefixedPradoBaseTestList', false)) {
+			class_alias(TList::class, 'SystemPrefixedPradoBaseTestList');
+		}
+
+		$this->assertSame('SystemPrefixedPradoBaseTestList', Prado::using('SystemPrefixedPradoBaseTestList'));
+		$this->assertInstanceOf(TList::class, Prado::createComponent('SystemPrefixedPradoBaseTestList'));
+	}
+
+	// -----------------------------------------------------------------------
+	// createComponent() with constructor parameters
+	// -----------------------------------------------------------------------
+
+	public function testCreateComponent_withParameters_passesThemToTheConstructor(): void
+	{
+		$list = Prado::createComponent(TList::class, ['a', 'b'], true);
+
+		$this->assertInstanceOf(TList::class, $list);
+		$this->assertSame(['a', 'b'], $list->toArray());
+		$this->assertTrue($list->getReadOnly());
+	}
+
+	// -----------------------------------------------------------------------
+	// using() through the class map and through a using directory
+	// -----------------------------------------------------------------------
+
+	public function testUsing_classMapNameOfTrait_returnsFqnAndAliasesTheName(): void
+	{
+		$classMap = Prado::$classMap;
+		Prado::$classMap['TPradoBaseTestClassMapTrait'] = TCallCollectorTrait::class;
+		try {
+			$fqn = Prado::using('TPradoBaseTestClassMapTrait');
+		} finally {
+			Prado::$classMap = $classMap;
+		}
+		$this->assertSame(TCallCollectorTrait::class, $fqn);
+		$this->assertTrue(trait_exists('TPradoBaseTestClassMapTrait', false));
+		$this->assertContains(TCallCollectorTrait::class, class_uses(new class () {
+			use \TPradoBaseTestClassMapTrait;
+		}));
+	}
+
+	public function testUsing_classMapNameWithoutLoadableClass_returnsNull(): void
+	{
+		$classMap = Prado::$classMap;
+		Prado::$classMap['TPradoBaseTestClassMapMissing'] = 'Prado\\Test\\Unit\\TPradoBaseTestClassMapMissingXyz';
+		try {
+			$this->assertNull(Prado::using('TPradoBaseTestClassMapMissing'));
+			$this->assertNull(Prado::usingClass('TPradoBaseTestClassMapMissing'));
+		} finally {
+			Prado::$classMap = $classMap;
+		}
+		$this->assertFalse(class_exists('TPradoBaseTestClassMapMissing', false));
+	}
+
+	public function testUsing_shortTraitNameInRegisteredUsingDirectory_returnsFqn(): void
+	{
+		$usings = PradoUnit::getStaticProp(Prado::class, '_usings');
+		$usings['Prado\\Test\\Unit\\Harness\\Traits'] = __DIR__ . DIRECTORY_SEPARATOR . 'Harness' . DIRECTORY_SEPARATOR . 'Traits';
+		PradoUnit::setStaticProp(Prado::class, '_usings', $usings);
+		try {
+			$fqn = Prado::using('TNestedPathTrait');
+		} finally {
+			unset($usings['Prado\\Test\\Unit\\Harness\\Traits']);
+			PradoUnit::setStaticProp(Prado::class, '_usings', $usings);
+		}
+		$this->assertSame('\\' . TNestedPathTrait::class, $fqn);
+		$this->assertTrue(trait_exists('TNestedPathTrait', false));
+	}
+
+	// -----------------------------------------------------------------------
+	// getPathOfNamespace() — a using directory and a bare alias
+	// -----------------------------------------------------------------------
+
+	public function testGetPathOfNamespace_registeredUsingNamespace_returnsItsDirectory(): void
+	{
+		$directory = __DIR__ . DIRECTORY_SEPARATOR . 'Harness';
+		$usings = PradoUnit::getStaticProp(Prado::class, '_usings');
+		PradoUnit::setStaticProp(Prado::class, '_usings', ['Prado\\Test\\Unit\\Harness' => $directory] + $usings);
+		try {
+			$this->assertSame($directory, Prado::getPathOfNamespace('Prado.Test.Unit.Harness'));
+			$this->assertSame($directory, Prado::getPathOfNamespace('Prado\\Test\\Unit\\Harness', Prado::CLASS_FILE_EXT));
+			// Another extension names a file, so the using directory is not consulted.
+			$this->assertSame(
+				PRADO_DIR . DIRECTORY_SEPARATOR . 'Test' . DIRECTORY_SEPARATOR . 'Unit' . DIRECTORY_SEPARATOR . 'Harness.tpl',
+				Prado::getPathOfNamespace('Prado.Test.Unit.Harness', '.tpl')
+			);
+		} finally {
+			PradoUnit::setStaticProp(Prado::class, '_usings', $usings);
+		}
+	}
+
+	public function testGetPathOfNamespace_bareAlias_returnsAliasPath(): void
+	{
+		$this->assertSame(PRADO_DIR, Prado::getPathOfNamespace('Prado'));
+		$this->assertSame(PRADO_DIR, Prado::getPathOfNamespace('System'));
+		$this->assertSame(PRADO_VENDORDIR, Prado::getPathOfNamespace('Vendor', Prado::CLASS_FILE_EXT));
+		// With another extension a namespace needs a file segment after the alias.
+		$this->assertNull(Prado::getPathOfNamespace('Prado', '.tpl'));
+	}
+
+	// -----------------------------------------------------------------------
+	// setPathOfAlias() — invalid paths
+	// -----------------------------------------------------------------------
+
+	public function testSetPathOfAlias_fileInsteadOfDirectory_throwsAndDefinesNothing(): void
+	{
+		try {
+			Prado::setPathOfAlias('PradoBaseTestFileAlias', __FILE__);
+			$this->fail('setPathOfAlias() accepted a file path.');
+		} catch (TInvalidDataValueException $e) {
+			$this->assertSame('prado_alias_invalid', $e->getErrorCode());
+			$this->assertStringContainsString(__FILE__, $e->getMessage());
+		}
+		$this->assertNull(Prado::getPathOfAlias('PradoBaseTestFileAlias'));
+	}
+
+	public function testSetPathOfAlias_invalidPathForDefinedAlias_throwsAndKeepsThePath(): void
+	{
+		$aliases = PradoUnit::getStaticProp(Prado::class, '_aliases');
+		try {
+			Prado::setPathOfAlias('PradoBaseTestKeptAlias', __DIR__);
+			foreach ([__FILE__, __DIR__ . '/no/such/directory/xyz99999'] as $path) {
+				try {
+					Prado::setPathOfAlias('PradoBaseTestKeptAlias', $path);
+					$this->fail("setPathOfAlias() accepted '$path'.");
+				} catch (TInvalidDataValueException $e) {
+					$this->assertSame('prado_alias_invalid', $e->getErrorCode());
+				}
+				$this->assertSame(realpath(__DIR__), Prado::getPathOfAlias('PradoBaseTestKeptAlias'));
+			}
+		} finally {
+			PradoUnit::setStaticProp(Prado::class, '_aliases', $aliases);
+		}
+	}
+
+	// -----------------------------------------------------------------------
+	// callingObject(), isCallingSelf(), isCallingSelfClass() — callers without an object
+	// -----------------------------------------------------------------------
+
+	private static function isCallingSelfFromStatic(): bool
+	{
+		return Prado::isCallingSelf();
+	}
+
+	private static function isCallingSelfClassFromStatic(): bool
+	{
+		return Prado::isCallingSelfClass();
+	}
+
+	private static function callFromStatic(object $instance, string $method): bool
+	{
+		return $instance->$method();
+	}
+
+	public function testIsCallingSelf_staticMethodAsksForItsCaller_returnsFalse(): void
+	{
+		$this->assertFalse(self::isCallingSelfFromStatic());
+		$this->assertFalse(self::isCallingSelfClassFromStatic());
+	}
+
+	public function testIsCallingSelf_calledFromStaticMethod_returnsFalse(): void
+	{
+		$instance = new MethodVisibleTestClassB();
+
+		$this->assertFalse(self::callFromStatic($instance, 'isCallingSelfInA'));
+		$this->assertFalse(self::callFromStatic($instance, 'isCallingSelfClassInA'));
+	}
+
+	public function testCallerHelpers_asFiberEntryFunction(): void
+	{
+		// From PHP 8.3 the backtrace of a fiber entry function carries the object that started the fiber.
+		$caller = PHP_VERSION_ID >= 80300 ? $this : null;
+		$results = [];
+		foreach (['isCallingSelf', 'isCallingSelfClass', 'callingObject'] as $method) {
+			$fiber = new \Fiber([Prado::class, $method]);
+			$fiber->start();
+			$results[$method] = $fiber->getReturn();
+		}
+		$this->assertSame(['isCallingSelf' => false, 'isCallingSelfClass' => false, 'callingObject' => $caller], $results);
+	}
+
+	// -----------------------------------------------------------------------
+	// phpFatalErrorHandler() — a last error that is not reported
+	// -----------------------------------------------------------------------
+
+	public function testPhpFatalErrorHandler_nonFatalLastError_doesNothing(): void
+	{
+		set_error_handler(fn () => false);
+		try {
+			@trigger_error('PradoBaseTest notice', E_USER_NOTICE);
+		} finally {
+			restore_error_handler();
+		}
+		try {
+			$this->assertSame(E_USER_NOTICE, error_get_last()['type']);
+			$this->expectOutputString('');
+			Prado::phpFatalErrorHandler();
+			$this->assertSame('PradoBaseTest notice', error_get_last()['message']);
+		} finally {
+			error_clear_last();
+		}
+	}
+
+	public function testPhpFatalErrorHandler_fatalLastErrorMaskedByErrorReporting_doesNothing(): void
+	{
+		// An unknown declare directive is an E_COMPILE_WARNING, which no error handler receives.
+		@eval('declare(prado_base_test_directive=1);');
+		$reporting = error_reporting(E_ALL & ~E_COMPILE_WARNING);
+		try {
+			$this->assertSame(E_COMPILE_WARNING, error_get_last()['type']);
+			$this->expectOutputString('');
+			Prado::phpFatalErrorHandler();
+			$this->assertSame(E_COMPILE_WARNING, error_get_last()['type']);
+		} finally {
+			error_reporting($reporting);
+			error_clear_last();
+		}
+	}
+
+	// -----------------------------------------------------------------------
+	// trace(), log(), profileEnd()
+	// -----------------------------------------------------------------------
+
+	public function testTrace_performanceMode_logsNothing(): void
+	{
+		$app = Prado::getApplication();
+		$mode = $app->getMode();
+		$logger = Prado::getLogger();
+		$logger->deleteLogs();
+		$app->setMode(TApplicationMode::Performance);
+		try {
+			Prado::trace('msg', 'Category');
+			$this->assertSame(0, $logger->getLogCount());
+		} finally {
+			$app->setMode($mode);
+		}
+	}
+
+	public function testLog_withoutLogger_createsTheLoggerAndLogs(): void
+	{
+		$saved = PradoUnit::getStaticProp(Prado::class, '_logger');
+		try {
+			PradoUnit::setStaticProp(Prado::class, '_logger', null);
+			Prado::log('msg', TLogger::WARNING, 'My Category', 'ctlClass');
+			$logger = PradoUnit::getStaticProp(Prado::class, '_logger');
+			$this->assertInstanceOf(TLogger::class, $logger);
+			$this->assertNotSame($saved, $logger);
+			$logs = $logger->getLogs();
+			$this->assertCount(1, $logs);
+			$this->assertSame(['msg', TLogger::WARNING, 'My Category', 'ctlClass'], [$logs[0][0], $logs[0][1], $logs[0][2], $logs[0][5]]);
+
+			PradoUnit::setStaticProp(Prado::class, '_logger', null);
+			Prado::log('msg2', TLogger::DEBUG, null);
+			$logs = Prado::getLogger()->getLogs();
+			$this->assertCount(1, $logs);
+			$this->assertSame(['msg2', TLogger::DEBUG, $this::class], [$logs[0][0], $logs[0][1], $logs[0][2]]);
+		} finally {
+			PradoUnit::setStaticProp(Prado::class, '_logger', $saved);
+		}
+	}
+
+	public function testProfileEnd_withCategory_logsUnderThatCategory(): void
+	{
+		$logger = Prado::getLogger();
+		$logger->deleteLogs();
+		try {
+			Prado::profileBegin('PradoBaseTest token', 'Profile Category');
+			$elapsed = Prado::profileEnd('PradoBaseTest token', 'Profile Category', 'ctlClass');
+
+			$this->assertIsFloat($elapsed);
+			$this->assertGreaterThanOrEqual(0.0, $elapsed);
+			$logs = $logger->getLogs();
+			$this->assertCount(2, $logs);
+			$this->assertSame(['PradoBaseTest token', TLogger::PROFILE_END, 'Profile Category', 'ctlClass'], [$logs[1][0], $logs[1][1], $logs[1][2], $logs[1][5]]);
+		} finally {
+			$logger->deleteLogs();
+			$logger->deleteProfileLogs();
+		}
+	}
+
+	// -----------------------------------------------------------------------
+	// getApplicationLanguage()
+	// -----------------------------------------------------------------------
+
+	/**
+	 * Returns a globalization module whose culture is the public `$culture`, without initialization.
+	 */
+	private function newGlobalizationWithCulture(?string $culture): TGlobalization
+	{
+		$globalization = new class () extends TGlobalization {
+			public ?string $culture = null;
+			public function getCulture()
+			{
+				return $this->culture;
+			}
+		};
+		$globalization->culture = $culture;
+		return $globalization;
+	}
+
+	public function testGetApplicationLanguage_usesTheLanguageOfTheGlobalizationCulture(): void
+	{
+		$app = new TTestApplication();
+		try {
+			$this->assertSame(Prado::getPreferredLanguage(), Prado::getApplicationLanguage());
+
+			foreach (['fr_FR' => 'fr', 'DE-at' => 'de', 'ja' => 'ja'] as $culture => $language) {
+				$app->setGlobalization($this->newGlobalizationWithCulture($culture));
+				$this->assertSame($language, Prado::getApplicationLanguage(), "culture '$culture'");
+			}
+		} finally {
+			$app->restoreApplication();
+		}
+	}
+
+	public function testGetApplicationLanguage_cultureWithoutAlphabeticLanguage_usesThePreferredLanguage(): void
+	{
+		$app = new TTestApplication();
+		try {
+			foreach (['', '_US', '12_US', 'e2_US'] as $culture) {
+				$app->setGlobalization($this->newGlobalizationWithCulture($culture));
+				$this->assertSame(Prado::getPreferredLanguage(), Prado::getApplicationLanguage(), "culture '$culture'");
+			}
+		} finally {
+			$app->restoreApplication();
+		}
+	}
+
+	public function testGetApplicationLanguage_globalizationWithoutCulture_usesThePreferredLanguage(): void
+	{
+		$app = new TTestApplication();
+		try {
+			// A TGlobalization has no culture until init() runs.
+			$globalization = new TGlobalization();
+			$app->setGlobalization($globalization);
+			$this->assertNull($globalization->getCulture());
+
+			$this->assertSame(Prado::getPreferredLanguage(), Prado::getApplicationLanguage());
+		} finally {
+			$app->restoreApplication();
+		}
+	}
+
+	// -----------------------------------------------------------------------
+	// poweredByPrado() default logo, getUserLanguages(), getPreferredLanguage()
+	// -----------------------------------------------------------------------
+
+	public function testPoweredByPrado_defaultLogoWithApplication_publishesPoweredGif(): void
+	{
+		$app = new TTestApplication();
+		try {
+			$manager = new class () extends TAssetManager {
+				public array $published = [];
+				public function publishFilePath($path, $checkTimestamp = false)
+				{
+					$this->published[] = $path;
+					return '/assets/' . basename($path);
+				}
+			};
+			$app->setAssetManager($manager);
+
+			$result = Prado::poweredByPrado();
+		} finally {
+			$app->restoreApplication();
+		}
+		$this->assertStringContainsString('src="/assets/powered.gif"', $result);
+		$this->assertSame([Prado::getFrameworkPath() . DIRECTORY_SEPARATOR . 'powered.gif'], $manager->published);
+	}
+
+	#[RunInSeparateProcess]
+	#[PreserveGlobalState(false)]
+	public function testGetUserLanguages_singleLanguageWithQuality_returnsThatLanguage(): void
+	{
+		$_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'fr-CA;q=0.5';
+		$this->assertSame(['fr-CA'], Prado::getUserLanguages());
+		$this->assertSame('fr', Prado::getPreferredLanguage());
+	}
+
+	#[RunInSeparateProcess]
+	#[PreserveGlobalState(false)]
+	public function testGetPreferredLanguage_emptyPrimarySubtag_defaultsToEnglish(): void
+	{
+		$_SERVER['HTTP_ACCEPT_LANGUAGE'] = '-CH';
+		$this->assertSame(['-CH'], Prado::getUserLanguages());
+		$this->assertSame('en', Prado::getPreferredLanguage());
 	}
 }
