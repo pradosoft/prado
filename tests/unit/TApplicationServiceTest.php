@@ -455,11 +455,37 @@ class TApplicationServiceTest extends \PHPUnit\Framework\TestCase
 		$this->_app->registerService('dirservice', 'System.Web.Services.*');
 	}
 
+	public function testRegisterService_withDirectoryNamespace_reportsTheGivenName(): void
+	{
+		foreach (['Prado\\Web\\Services\\*', 'System.Web.Services.*'] as $namespace) {
+			try {
+				$this->_app->registerService('dirservice', $namespace);
+				$this->fail('A directory namespace must not register as a service class.');
+			} catch (TConfigurationException $e) {
+				$this->assertSame('application_service_class_not_found', $e->getErrorCode());
+				$this->assertStringContainsString("'" . $namespace . "'", $e->getMessage());
+			}
+		}
+	}
+
 	public function testRegisterService_nonServiceClassThrows(): void
 	{
 		$this->expectException(\Prado\Exceptions\TConfigurationException::class);
 		$this->expectExceptionMessage(NotAService::class);
 		$this->_app->registerService('bad', NotAService::class);
+	}
+
+	public function testRegisterService_interfaceNameThrowsClassNotFound(): void
+	{
+		// usingClass() resolves an interface name to a string; class_exists() then rejects it.
+		try {
+			$this->_app->registerService('iface', \Prado\IService::class);
+			$this->fail('An interface name must not register as a service class.');
+		} catch (TConfigurationException $e) {
+			$this->assertSame('application_service_class_not_found', $e->getErrorCode());
+			$this->assertStringContainsString(\Prado\IService::class, $e->getMessage());
+		}
+		$this->assertFalse($this->_app->hasRegisteredService('iface'));
 	}
 
 	public function testRegisterService_validServiceClassSucceeds(): void

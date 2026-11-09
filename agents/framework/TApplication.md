@@ -183,3 +183,4 @@ protected function newApplicationStatePersister(): IStatePersister
 - **`GlobalState`** — stored in a file in `RuntimePath`; loaded on `onLoadState`, saved on `onSaveState`. Don't store large data structures.
 - **`onError` vs `onEndRequest`** — `onEndRequest` always runs; `onError` fires on exceptions. Both can be used for cleanup, but `onEndRequest` is safer for mandatory cleanup.
 - **`Mode=Performance`** — templates and config are not recompiled even if changed. Only use in production with a proper deployment process.
+- **Module `lazy` attribute** — read with `TPropertyValue::ensureBoolean()`: `true` or a non-zero number defers the module until it is requested; `false` loads it at once.

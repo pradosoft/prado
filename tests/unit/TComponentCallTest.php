@@ -229,6 +229,59 @@ class TComponentCallTest extends TComponentTestBase
 		NewComponent::detachClassBehavior($behaviorName);
 		unset($this->tearDownScripts[$behaviorName]);
 	}
+
+	/**
+	 * A class behavior naming its static method as the single string form of
+	 * getOwnerVisibleMethods() exposes that method to the owner class.
+	 */
+	public function testCallStatic_classBehaviorOwnerVisibleMethodAsString()
+	{
+		$behaviorName = 'aStringVisibleStaticMethodBehavior';
+		$behavior = new TComponentCallTestListedStaticClassBehavior();
+		$behavior->visibleMethods = 'aStaticMethod';
+		NewComponent::attachClassBehavior($behaviorName, $behavior);
+		$this->tearDownScripts[$behaviorName] = function () use ($behaviorName) { NewComponent::detachClassBehavior($behaviorName); };
+
+		self::assertTrue(PradoUnit::invoke(NewComponent::class, 'isStaticBehaviorOwnerVisibleMethod', $behavior, 'ASTATICMETHOD'));
+		self::assertEquals(13, NewComponent::aStaticMethod(3));
+
+		NewComponent::detachClassBehavior($behaviorName);
+		unset($this->tearDownScripts[$behaviorName]);
+	}
+
+	/**
+	 * A class behavior whose getOwnerVisibleMethods() does not name its static method
+	 * hides that method from the owner class.
+	 */
+	public function testCallStatic_classBehaviorStaticMethodNotListed()
+	{
+		$behaviorName = 'anUnlistedStaticMethodBehavior';
+		$behavior = new TComponentCallTestListedStaticClassBehavior();
+		$behavior->visibleMethods = ['otherMethod'];
+		NewComponent::attachClassBehavior($behaviorName, $behavior);
+		$this->tearDownScripts[$behaviorName] = function () use ($behaviorName) { NewComponent::detachClassBehavior($behaviorName); };
+
+		self::assertFalse(PradoUnit::invoke(NewComponent::class, 'isStaticBehaviorOwnerVisibleMethod', $behavior, 'aStaticMethod'));
+		try {
+			NewComponent::aStaticMethod(3);
+			self::fail('failed to raise TUnknownMethodException for a static class-behavior method that is not owner visible.');
+		} catch (TUnknownMethodException $e) {
+			self::assertEquals('component_method_undefined', $e->getErrorCode());
+		}
+
+		NewComponent::detachClassBehavior($behaviorName);
+		unset($this->tearDownScripts[$behaviorName]);
+	}
+
+	/**
+	 * A protected static method called from outside its class is not run; the call
+	 * returns null without an exception, as an inaccessible instance method does.
+	 */
+	public function testCallStatic_inaccessibleStaticMethodReturnsNull()
+	{
+		self::assertTrue(method_exists(NewComponent::class, 'tokenizePropertyPath'));
+		self::assertNull(NewComponent::tokenizePropertyPath('a.b'));
+	}
 }
 
 /**
@@ -244,5 +297,24 @@ class TComponentCallTestVisibleStaticClassBehavior extends TClassBehavior
 	public function getOwnerVisibleMethods(): null|string|array
 	{
 		return ['otherMethod', 'ASTATICMETHOD'];
+	}
+}
+
+/**
+ * Class behavior whose owner-visible methods are set by the test.
+ */
+class TComponentCallTestListedStaticClassBehavior extends TClassBehavior
+{
+	/** @var null|array|string the value returned by {@see getOwnerVisibleMethods}. */
+	public null|string|array $visibleMethods = null;
+
+	public static function aStaticMethod(int $value)
+	{
+		return $value + 10;
+	}
+
+	public function getOwnerVisibleMethods(): null|string|array
+	{
+		return $this->visibleMethods;
 	}
 }

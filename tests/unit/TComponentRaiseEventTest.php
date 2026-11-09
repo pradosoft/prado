@@ -413,6 +413,31 @@ class TComponentRaiseEventTest extends \PHPUnit\Framework\TestCase
 	/**
 	 * A handler for which dyIntraRaiseEventTestHandler returns false is skipped.
 	 */
+	public function testRaiseEventWithNullDyPreRaiseEventKeepsTheEventName()
+	{
+		// The component's __dycall returns null for every dynamic event, dyPreRaiseEvent included.
+		$component = new DynamicCatchingComponent();
+		$handled = null;
+		$component->attachEventHandler('OnMyEvent', function ($sender, $param) use (&$handled) {
+			$handled = $param;
+		});
+		$param = new TEventParameter();
+		$this->assertSame([], $component->raiseEvent('OnMyEvent', $component, $param));
+		$this->assertSame($param, $handled);
+
+		// A behavior's __dycall returning null in the call chain keeps the name as well.
+		$component = new NewComponent();
+		$component->attachBehavior('nullDy', new TDynamicBehavior());
+		$handled = null;
+		$component->attachEventHandler('OnMyEvent', function ($sender, $param) use (&$handled) {
+			$handled = $param;
+			return 'response';
+		});
+		$this->assertSame(['response'], $component->raiseEvent('OnMyEvent', $component, $param));
+		$this->assertSame($param, $handled);
+		$this->assertEquals('dyPostRaiseEvent', $component->getLastBehaviorDynamicMethodCalled());
+	}
+
 	public function testRaiseEventSkipsHandlerRejectedByBehavior()
 	{
 		$component = new NewComponent();

@@ -905,6 +905,21 @@ class TApplicationTest extends \PHPUnit\Framework\TestCase
 		$this->assertNull($this->_app->getModule('does_not_exist_xyz'));
 	}
 
+	public function testGetModule_nullIdReturnsNull(): void
+	{
+		$this->assertNull($this->_app->getModule(null));
+	}
+
+	public function testGetModule_placeholderWithoutLazyRegistration_staysNull(): void
+	{
+		// setModule($id, null) reserves the ID; with no lazy registration there is nothing to load.
+		$this->_app->setModule('testmod_placeholder_only', null);
+
+		$this->assertNull($this->_app->getModule('testmod_placeholder_only'));
+		$this->assertArrayHasKey('testmod_placeholder_only', $this->_app->getModules());
+		$this->assertNull($this->_app->getModules()['testmod_placeholder_only']);
+	}
+
 	public function testGetModules_returnsArray(): void
 	{
 		$this->assertIsArray($this->_app->getModules());
@@ -2169,6 +2184,18 @@ class TApplicationTest extends \PHPUnit\Framework\TestCase
 		$config = [AppTestModule::class, ['prop' => 'val'], null];
 		$acc->pubSetLazyModule('mymod', $config);
 		$this->assertSame($config, $acc->pubGetLazyModule('mymod'));
+	}
+
+	public function testSetLazyModule_tupleWithoutClass_isStoredUnchanged(): void
+	{
+		// A null class has nothing to resolve; the tuple is written as given.
+		$acc = $this->newLazyAccessor();
+		$config = [null, ['prop' => 'val'], null];
+
+		$acc->pubSetLazyModule('classless', $config);
+
+		$this->assertSame($config, $acc->pubGetLazyModule('classless'));
+		$this->assertTrue($acc->pubHasLazyModule('classless'));
 	}
 
 	public function testHasLazyModule_trueAfterRegistration(): void

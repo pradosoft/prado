@@ -3,6 +3,7 @@
 namespace Prado\Test\Unit\Util\Log;
 
 use Prado\Test\Unit\Harness\Util\Clock\TTestMonotonicClock;
+use Prado\Test\Unit\Harness\Util\TTestNullDynamicBehavior;
 use Prado\Util\Clock\TMockClock;
 use Prado\Util\Log\TLogger;
 
@@ -179,6 +180,17 @@ class TLoggerTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals(1, $logger->getLogCount(false));
 	}
 	
+	public function testLog_ProfileWithADynamicBehaviorIgnoringTheRename()
+	{
+		// __dycall returns null for dyProfilerRename; each token keeps its own profile name.
+		$logger = new TTestLogger();
+		$logger->attachBehavior('nulldy', $behavior = new TTestNullDynamicBehavior());
+		$logger->log('token1', TLogger::PROFILE_BEGIN);
+		$logger->log('token2', TLogger::PROFILE_BEGIN);
+		$this->assertEquals(2, $logger->getLogCount());
+		$this->assertContains('dyProfilerRename', $behavior->events);
+	}
+
 	public function testLog_ProfileBeginMax()
 	{
 		$logger = new TTestLogger();

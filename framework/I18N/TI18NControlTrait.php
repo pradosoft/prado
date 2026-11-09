@@ -75,7 +75,7 @@ trait TI18NControlTrait
 					$charset = $appDefaultCharset;
 				}
 			} else {
-				$charset = $this->dyDefaultCharsetValue('UTF-8');
+				$charset = $this->callBehaviorsFilter('dyDefaultCharsetValue', 'UTF-8');
 			}
 		}
 
@@ -106,7 +106,7 @@ trait TI18NControlTrait
 			if ($app && ($globalize = $app->getGlobalization(false))) {
 				$culture = $globalize->getCulture();
 			} else {
-				$culture = $this->dyDefaultCultureValue('');
+				$culture = $this->callBehaviorsFilter('dyDefaultCultureValue', '');
 			}
 		}
 

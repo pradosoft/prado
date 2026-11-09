@@ -33,6 +33,7 @@ namespace Prado\Test\Unit;
 use Prado\Exceptions\TConfigurationException;
 use Prado\IModule;
 use Prado\IModuleDependency;
+use Prado\IStatePersister;
 use Prado\Prado;
 use Prado\TApplication;
 use Prado\TComponent;
@@ -168,6 +169,93 @@ class AppBootstrapDepSpyModule extends AppBootstrapSpyModule implements IModuleD
 	public function getModuleDependencies(bool $isPreInit): null|string|array
 	{
 		return $this->declaredDeps;
+	}
+}
+
+/**
+ * Application whose default-module factories create nothing, as a subclass
+ * does to leave a default module out.
+ */
+class TApplicationBootstrapNullFactoryAccessor extends TApplicationBootstrapAccessor
+{
+	protected function newRequest()
+	{
+		return null;
+	}
+
+	protected function newResponse()
+	{
+		return null;
+	}
+
+	protected function newSession()
+	{
+		return null;
+	}
+
+	protected function newErrorHandler()
+	{
+		return null;
+	}
+
+	protected function newSecurityManager()
+	{
+		return null;
+	}
+
+	protected function newAssetManager()
+	{
+		return null;
+	}
+
+	protected function newGlobalization()
+	{
+		return null;
+	}
+
+	protected function newTemplateManager()
+	{
+		return null;
+	}
+
+	protected function newThemeManager()
+	{
+		return null;
+	}
+
+	protected function newApplicationStatePersister()
+	{
+		return null;
+	}
+}
+
+/**
+ * Application whose state persister is a plain {@see IStatePersister}, not a module.
+ */
+class TApplicationBootstrapPlainPersisterAccessor extends TApplicationBootstrapAccessor
+{
+	protected function newApplicationStatePersister()
+	{
+		return new AppBootstrapPlainStatePersister();
+	}
+}
+
+/**
+ * State persister that is not an {@see IModule}; it has no `init()` for the
+ * application to call.
+ */
+class AppBootstrapPlainStatePersister implements IStatePersister
+{
+	public mixed $state = null;
+
+	public function load()
+	{
+		return $this->state;
+	}
+
+	public function save($state)
+	{
+		$this->state = $state;
 	}
 }
 
@@ -737,6 +825,57 @@ class TApplicationBootstrapTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame(TApplication::DEFAULT_THEME_MANAGER_ID, $instance->getID());
 	}
 
+	public function testLazyAccessor_assetManager_createsDefaultUnderTheScriptDirectory(): void
+	{
+		$dir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'tab_asset_' . uniqid('', true);
+		mkdir($dir . DIRECTORY_SEPARATOR . 'assets', 0o777, true);
+		$script = $dir . DIRECTORY_SEPARATOR . 'index.php';
+		file_put_contents($script, '');
+		$_SERVER['SCRIPT_FILENAME'] = $script;
+		$_SERVER['SCRIPT_NAME'] = '/site/index.php';
+		unset($_SERVER['ORIG_SCRIPT_NAME']);
+		PradoUnit::setProp($this->_app, '_assetManager', null);
+		try {
+			$instance = $this->_app->getAssetManager();
+
+			$this->assertSame(\Prado\Web\TAssetManager::class, $instance::class);
+			$this->assertSame(TApplication::DEFAULT_ASSET_MANAGER_ID, $instance->getID());
+			$this->assertSame(realpath($dir) . DIRECTORY_SEPARATOR . 'assets', $instance->getBasePath());
+			$this->assertSame('/site/assets', $instance->getBaseUrl());
+			$this->assertSame($instance, $this->_app->getAssetManager(), 'Second call returns same instance');
+		} finally {
+			PradoUnit::restoreInitialState();
+			unlink($script);
+			rmdir($dir . DIRECTORY_SEPARATOR . 'assets');
+			rmdir($dir);
+		}
+	}
+
+	public function testLazyAccessor_assetManager_afterSweep_registersTheDefault(): void
+	{
+		$dir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'tab_asset_' . uniqid('', true);
+		mkdir($dir . DIRECTORY_SEPARATOR . 'assets', 0o777, true);
+		$script = $dir . DIRECTORY_SEPARATOR . 'index.php';
+		file_put_contents($script, '');
+		$_SERVER['SCRIPT_FILENAME'] = $script;
+		$_SERVER['SCRIPT_NAME'] = '/index.php';
+		unset($_SERVER['ORIG_SCRIPT_NAME']);
+		PradoUnit::setProp($this->_app, '_assetManager', null);
+		PradoUnit::setProp($this->_app, '_modules', []);
+		PradoUnit::invoke($this->_app, 'setStateFlag', TApplication::STATE_DEFAULT_MODULES_BOOTSTRAPPED);
+		try {
+			$instance = $this->_app->getAssetManager();
+
+			$this->assertSame($instance, $this->_app->getModule(TApplication::DEFAULT_ASSET_MANAGER_ID));
+			$this->assertSame('/assets', $instance->getBaseUrl());
+		} finally {
+			PradoUnit::restoreInitialState();
+			unlink($script);
+			rmdir($dir . DIRECTORY_SEPARATOR . 'assets');
+			rmdir($dir);
+		}
+	}
+
 	public function testLazyAccessor_setterBypassesBootstrap(): void
 	{
 		// When the setter is called directly with a fully-constructed instance,
@@ -749,8 +888,121 @@ class TApplicationBootstrapTest extends \PHPUnit\Framework\TestCase
 	}
 
 	// =======================================================================
+	// Lazy accessors — a factory that creates nothing
+	// =======================================================================
+
+	public static function nullFactoryAccessorProvider(): array
+	{
+		return [
+			'request' => ['getRequest', '_request'],
+			'response' => ['getResponse', '_response'],
+			'session' => ['getSession', '_session'],
+			'errorHandler' => ['getErrorHandler', '_errorHandler'],
+			'securityManager' => ['getSecurityManager', '_security'],
+			'assetManager' => ['getAssetManager', '_assetManager'],
+			'globalization' => ['getGlobalization', '_globalization'],
+			'templateManager' => ['getTemplateManager', '_templateManager'],
+			'themeManager' => ['getThemeManager', '_themeManager'],
+			'applicationStatePersister' => ['getApplicationStatePersister', '_statePersister'],
+		];
+	}
+
+	/**
+	 * @dataProvider nullFactoryAccessorProvider
+	 */
+	public function testLazyAccessor_factoryCreatesNothing_returnsNullAndRegistersNothing(string $getter, string $field): void
+	{
+		$acc = $this->newAccessor(TApplicationBootstrapNullFactoryAccessor::class);
+		// After the sweep a created default registers at once, so an empty registry shows none was created.
+		$acc->pubBootstrapDefaultModules();
+
+		$this->assertNull($acc->$getter());
+		$this->assertNull(PradoUnit::getProp($acc, $field));
+		$this->assertSame([], $acc->getModules());
+	}
+
+	// =======================================================================
+	// getApplicationStatePersister — module and plain persisters
+	// =======================================================================
+
+	public function testApplicationStatePersister_plainPersister_isStoredWithoutInit(): void
+	{
+		$acc = $this->newAccessor(TApplicationBootstrapPlainPersisterAccessor::class);
+
+		$persister = $acc->getApplicationStatePersister();
+
+		$this->assertInstanceOf(AppBootstrapPlainStatePersister::class, $persister);
+		$this->assertNotInstanceOf(IModule::class, $persister);
+		$this->assertSame($persister, $acc->getApplicationStatePersister(), 'Second call returns same instance');
+		$this->assertSame([], $acc->getModules(), 'The persister is not an application module');
+	}
+
+	public function testApplicationStatePersister_plainPersister_carriesGlobalState(): void
+	{
+		$acc = $this->newAccessor(TApplicationBootstrapPlainPersisterAccessor::class);
+		PradoUnit::setProp($acc, '_globals', []);
+
+		$acc->setGlobalState('visits', 3, null, true);
+
+		$this->assertSame(['visits' => 3], $acc->getApplicationStatePersister()->state);
+	}
+
+	// =======================================================================
 	// bootstrapDefaultModules — registry sweep with type-collision suppression
 	// =======================================================================
+
+	/**
+	 * @return array<string, array{0: string, 1: IModule}> backing field and instance of each default module, by canonical ID.
+	 */
+	private function newAllDefaults(): array
+	{
+		return [
+			TApplication::DEFAULT_REQUEST_ID => ['_request', new \Prado\Web\THttpRequest()],
+			TApplication::DEFAULT_RESPONSE_ID => ['_response', new \Prado\Web\THttpResponse()],
+			TApplication::DEFAULT_SESSION_ID => ['_session', new \Prado\Web\THttpSession()],
+			TApplication::DEFAULT_ERROR_HANDLER_ID => ['_errorHandler', new \Prado\Exceptions\TErrorHandler()],
+			TApplication::DEFAULT_SECURITY_MANAGER_ID => ['_security', new \Prado\Security\TSecurityManager()],
+			TApplication::DEFAULT_ASSET_MANAGER_ID => ['_assetManager', new \Prado\Web\TAssetManager()],
+			TApplication::DEFAULT_GLOBALIZATION_ID => ['_globalization', new \Prado\I18N\TGlobalization()],
+			TApplication::DEFAULT_TEMPLATE_MANAGER_ID => ['_templateManager', new \Prado\Web\UI\TTemplateManager()],
+			TApplication::DEFAULT_THEME_MANAGER_ID => ['_themeManager', new \Prado\Web\UI\TThemeManager()],
+		];
+	}
+
+	public function testBootstrapDefaultModules_everyDefaultInstanced_registersAllNine(): void
+	{
+		$acc = $this->newAccessor();
+		$expected = [];
+		foreach ($this->newAllDefaults() as $id => [$field, $module]) {
+			$module->setID($id);
+			PradoUnit::setProp($acc, $field, $module);
+			$expected[$id] = $module;
+		}
+
+		$acc->pubBootstrapDefaultModules();
+
+		$this->assertSame($expected, $acc->getModules());
+		$this->assertTrue($acc->hasStateFlag(TApplication::STATE_DEFAULT_MODULES_BOOTSTRAPPED));
+	}
+
+	public function testBootstrapDefaultModules_everyDefaultCollides_registersNone(): void
+	{
+		$acc = $this->newAccessor();
+		$configured = [];
+		foreach ($this->newAllDefaults() as $id => [$field, $module]) {
+			$module->setID($id);
+			PradoUnit::setProp($acc, $field, $module);
+			$sameType = new ($module::class)();
+			$sameType->setID('configured_' . $id);
+			$configured['configured_' . $id] = $sameType;
+		}
+		PradoUnit::setProp($acc, '_modules', $configured);
+
+		$acc->pubBootstrapDefaultModules();
+
+		$this->assertSame($configured, $acc->getModules());
+		$this->assertTrue($acc->hasStateFlag(TApplication::STATE_DEFAULT_MODULES_BOOTSTRAPPED));
+	}
 
 	public function testBootstrapDefaultModules_emptyApp_registersNothing(): void
 	{

@@ -336,13 +336,15 @@ class Prado
 	}
 
 	/**
-	 * Convert old Prado namespaces to PHP namespaces
+	 * Converts an old Prado namespace to a PHP namespace. The root segment `System`
+	 * becomes `Prado`; a name that only starts with "System", such as `SystemTools`,
+	 * keeps its root. A dotted name has its dots replaced by backslashes.
 	 * @param string $type old class name in Prado3 namespace format
 	 * @return string Equivalent class name in PHP namespace format
 	 */
 	protected static function prado3NamespaceToPhpNamespace($type): string
 	{
-		if (substr($type, 0, 6) === 'System') {
+		if (substr($type, 0, strcspn($type, '.\\')) === 'System') {
 			$type = 'Prado' . substr($type, 6);
 		}
 
@@ -789,9 +791,10 @@ class Prado
 	/**
 	 * Returns the language of the application culture: the two-letter language of
 	 * {@see \Prado\I18N\TGlobalization::getCulture()} when the application has a
-	 * globalization module, otherwise {@see getPreferredLanguage()}. The error
-	 * handler and {@see \Prado\Exceptions\THttpException} select the visitor-facing
-	 * language with it.
+	 * globalization module, otherwise {@see getPreferredLanguage()}. A culture that
+	 * is null or has no alphabetic language also yields {@see getPreferredLanguage()}.
+	 * The error handler and {@see \Prado\Exceptions\THttpException} select the
+	 * visitor-facing language with it.
 	 * @return string the two-letter application language, defaults to English.
 	 * @since 4.4.0
 	 */
@@ -799,7 +802,7 @@ class Prado
 	{
 		$globalization = self::$_application?->getGlobalization(false);
 		if ($globalization !== null) {
-			$lang = strtolower(explode('_', str_replace('-', '_', $globalization->getCulture()))[0]);
+			$lang = strtolower(explode('_', str_replace('-', '_', (string) $globalization->getCulture()))[0]);
 			if ($lang !== '' && ctype_alpha($lang)) {
 				return $lang;
 			}

@@ -672,7 +672,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 */
 	public function redirect($url)
 	{
-		$url = $this->dyRedirect($url);
+		$url = $this->callBehaviorsFilter('dyRedirect', $url);
 		if ($this->getHasAdapter()) {
 			$this->_adapter->httpRedirect($url);
 		} else {
@@ -970,7 +970,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 */
 	public function addCookie($cookie)
 	{
-		$cookie = $this->dySetCookie($cookie, false);
+		$cookie = $this->callBehaviorsFilter('dySetCookie', $cookie, false);
 		$request = $this->getRequest();
 		if ($request->getEnableCookieValidation()) {
 			$value = $this->getApplication()->getSecurityManager()->hashCookieData($cookie->getValue());
@@ -994,7 +994,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 */
 	public function removeCookie($cookie)
 	{
-		$cookie = $this->dySetCookie($cookie, true);
+		$cookie = $this->callBehaviorsFilter('dySetCookie', $cookie, true);
 		$options = $cookie->getPhpOptions();
 		$options['expires'] = 0;
 		$this->responseSetCookie(
