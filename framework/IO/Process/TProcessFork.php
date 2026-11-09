@@ -613,7 +613,7 @@ class TProcessFork extends TComponent
 	{
 		parent::_getZappableSleepProps($exprops);
 		$exprops[] = "\0" . __CLASS__ . "\0_channel";
-		$exprops[] = "\0" . __CLASS__ . "\0_body";
+		$exprops[] = "\0*\0_body";
 		$exprops[] = "\0" . __CLASS__ . "\0_loop";
 		$exprops[] = "\0" . __CLASS__ . "\0_channelCallbackId";
 		$exprops[] = "\0" . __CLASS__ . "\0_exitCallbackIds";

@@ -415,4 +415,22 @@ class TListTest extends \PHPUnit\Framework\TestCase
 			$this->item1, $this->item3
 		], $list->toArray());
 	}
+
+	public function testSerializeOmitsUnsetReadOnlyFromThePayload()
+	{
+		$list = new TList();
+		$payload = serialize($list);
+		self::assertStringNotContainsString("\0*\0_r", $payload);
+		self::assertStringNotContainsString("\0" . TList::class . "\0_r", $payload);
+
+		$copy = unserialize($payload);
+		self::assertFalse($copy->getReadOnly());
+		$copy->setReadOnly(true);
+		self::assertTrue($copy->getReadOnly());
+
+		$list->setReadOnly(true);
+		$payload = serialize($list);
+		self::assertStringContainsString("\0*\0_r", $payload);
+		self::assertTrue(unserialize($payload)->getReadOnly());
+	}
 }

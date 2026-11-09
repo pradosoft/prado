@@ -368,7 +368,7 @@ class TStream extends TResource implements StreamInterface
 	public function isSeekable(): bool
 	{
 		$seekable = $this->getSeekableDirect();
-		$this->callBehaviorsMethod('dyIsSeekable', $seekable, $seekable);
+		$seekable = $this->callBehaviorsFilter('dyIsSeekable', $seekable);
 		return (bool) $seekable;
 	}
 
@@ -411,7 +411,7 @@ class TStream extends TResource implements StreamInterface
 	public function isWritable(): bool
 	{
 		$writable = $this->getWritableDirect();
-		$this->callBehaviorsMethod('dyIsWritable', $writable, $writable);
+		$writable = $this->callBehaviorsFilter('dyIsWritable', $writable);
 		return (bool) $writable;
 	}
 
@@ -437,7 +437,7 @@ class TStream extends TResource implements StreamInterface
 			$this->onError('write');
 			throw new \RuntimeException('Unable to write to stream');
 		}
-		$this->callBehaviorsMethod('dyWrite', $written, $written, $string);
+		$written = $this->callBehaviorsFilter('dyWrite', $written, $string);
 		return $written;
 	}
 
@@ -450,7 +450,7 @@ class TStream extends TResource implements StreamInterface
 	public function isReadable(): bool
 	{
 		$readable = $this->getReadableDirect();
-		$this->callBehaviorsMethod('dyIsReadable', $readable, $readable);
+		$readable = $this->callBehaviorsFilter('dyIsReadable', $readable);
 		return (bool) $readable;
 	}
 
@@ -481,7 +481,7 @@ class TStream extends TResource implements StreamInterface
 			$this->onError('read');
 			throw new \RuntimeException('Unable to read from stream');
 		}
-		$this->callBehaviorsMethod('dyRead', $data, $data, $length);
+		$data = $this->callBehaviorsFilter('dyRead', $data, $length);
 		if ($data === '' && feof($resource)) {
 			$this->onEndOfFile($length);
 		}

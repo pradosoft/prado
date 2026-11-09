@@ -4,6 +4,7 @@ namespace Prado\Test\Unit\IO\Process;
 
 use Prado\IO\Async\TAsync;
 use Prado\IO\Process\TProcessFork;
+use Prado\Test\Unit\PradoUnit;
 use Prado\IO\Socket\TSocketReactor;
 use Prado\Util\Helpers\TProcessHelper;
 use Prado\Util\TSignalsDispatcher;
@@ -267,5 +268,16 @@ class TProcessForkTest extends \PHPUnit\Framework\TestCase
 		} finally {
 			$created ? $dispatcher->detach() : TSignalsDispatcher::setAsyncSignals($priorAsync);
 		}
+	}
+
+	public function testSerializeExcludesAClosureBody()
+	{
+		$fork = new TProcessFork();
+		PradoUnit::setProp($fork, '_body', fn () => 1);
+
+		$payload = serialize($fork);
+
+		self::assertStringNotContainsString('_body', $payload);
+		self::assertNull(PradoUnit::getProp(unserialize($payload), '_body'));
 	}
 }

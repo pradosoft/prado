@@ -1,0 +1,85 @@
+/*! PRADO TDrawer stylesheet | github.com/pradosoft/prado */
+
+.prado-drawer {
+	position: fixed;
+	box-sizing: border-box;
+	max-width: none;
+	max-height: none;
+	margin: 0;
+	padding: 1rem;
+	overflow: auto;
+	color: CanvasText;
+	background: Canvas;
+	border: 0;
+	box-shadow: 0 0 1.5rem rgb(0 0 0 / 0.25);
+	transition: transform 0.2s ease, overlay 0.2s allow-discrete, display 0.2s allow-discrete;
+}
+
+.prado-drawer::backdrop {
+	background: rgb(0 0 0 / 0.4);
+}
+
+.prado-drawer[data-placement="start"],
+.prado-drawer[data-placement="end"] {
+	inset-block: 0;
+	width: min(20rem, 85vw);
+	height: 100dvh;
+}
+
+.prado-drawer[data-placement="start"] {
+	inset-inline: 0 auto;
+	--prado-drawer-closed: translateX(-100%);
+}
+
+.prado-drawer[data-placement="end"] {
+	inset-inline: auto 0;
+	--prado-drawer-closed: translateX(100%);
+}
+
+.prado-drawer[data-placement="start"]:dir(rtl) {
+	--prado-drawer-closed: translateX(100%);
+}
+
+.prado-drawer[data-placement="end"]:dir(rtl) {
+	--prado-drawer-closed: translateX(-100%);
+}
+
+.prado-drawer[data-placement="top"],
+.prado-drawer[data-placement="bottom"] {
+	inset-inline: 0;
+	width: 100%;
+	height: auto;
+	max-height: 85dvh;
+}
+
+.prado-drawer[data-placement="top"] {
+	inset-block: 0 auto;
+	--prado-drawer-closed: translateY(-100%);
+}
+
+.prado-drawer[data-placement="bottom"] {
+	inset-block: auto 0;
+	--prado-drawer-closed: translateY(100%);
+}
+
+/* Slides in from its edge when it opens, and out when it closes. */
+.prado-drawer:not([open]) {
+	transform: var(--prado-drawer-closed);
+}
+
+@starting-style {
+	.prado-drawer[open] {
+		transform: var(--prado-drawer-closed);
+	}
+}
+
+/* The page behind a modal drawer does not scroll. */
+html:has(.prado-drawer:modal) {
+	overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.prado-drawer {
+		transition: none;
+	}
+}

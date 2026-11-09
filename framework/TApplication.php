@@ -2534,7 +2534,7 @@ class TApplication extends TComponent implements ISingleton
 					}
 				}
 			}
-			$deps = $module->dyFilterDependencies($deps);
+			$deps = $module->callBehaviorsFilter('dyFilterDependencies', $deps);
 		}
 
 		return ['id' => $ownId, 'module' => $module, 'deps' => $deps];
@@ -2581,7 +2581,7 @@ class TApplication extends TComponent implements ISingleton
 	 */
 	protected function filterModuleDependencies(array $moduleRecords, array $pending, bool $isPreInit = false): array
 	{
-		return $this->dyFilterModuleDependencies($moduleRecords, $pending, $isPreInit);
+		return $this->callBehaviorsFilter('dyFilterModuleDependencies', $moduleRecords, $pending, $isPreInit);
 	}
 
 	/**
