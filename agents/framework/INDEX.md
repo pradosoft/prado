@@ -60,6 +60,8 @@ This is the root source directory of the **Prado** PHP framework (PSR-4 namespac
 
 - **`TPropertyValue.php`** — Static type-conversion utilities used in property setters:
   - `ensureBoolean()`, `ensureInteger()`, `ensureFloat()`, `ensureString()`, `ensureArray()`, `ensureEnum()`
+  - `ensureString()` throws `TInvalidDataTypeException` (`propertyvalue_invalid_string_type`) for an array or an object without `__toString()`.
+  - `applyProperty()` and `coerceToType()` coerce a value toward a setter's declared type. A value the type cannot hold is passed through unchanged, so the typed setter raises PHP's `TypeError`: an array or an object without `__toString()` for `string`, and for a union with no member that holds it.
 
 - **[`TComponentReflection.php`](TComponentReflection.md)** — Describes a class's properties, events, methods and attributes, and holds the framework's reflection cache: `getReflectionClassByType()`, `getReflectionMethodByType()`, `getReflectionPropertyByType()`, and the attribute lookups `getClassAttributesByType()`, `getMethodAttributesByType()`, `getPropertyAttributesByType()`, `getMethodsWithAttributeByType()`, `getPropertiesWithAttributeByType()`.
 

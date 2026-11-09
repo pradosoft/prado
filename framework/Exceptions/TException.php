@@ -87,7 +87,10 @@ class TException extends \Exception
 	 *   message is the error message.
 	 * @param array $args These are the arguments of the placeholders ({0}, {1}, {2}, etc.)
 	 *   in the message except the last argument.  If the last argument is a Throwable
-	 *   it is treated as the $previous Exception for exception chaining.
+	 *   it is treated as the $previous Exception for exception chaining.  Each argument
+	 *   is converted by {@see TPropertyValue::ensureString()}.
+	 * @throws TInvalidDataTypeException if an argument is an array or an object without
+	 *   `__toString()`.
 	 */
 	public function __construct($errorCode, $errorMessage = null, ...$args)
 	{

@@ -59,6 +59,8 @@ TConfirmButton (@since 4.4.0, #1401) asks for confirmation in a modal `<dialog r
 - `tests/playwright/web/ConfirmButtonTestCase.spec.js` with `tests/harness/web/protected/pages/ConfirmButtonTest.page`
 
 ## See Also
+- [TConfirmSubmit](./TConfirmSubmit.md): confirms any control inside it, with script
+- [TConfirmDialogTrait](./TConfirmDialogTrait.md): the dialog properties and rendering
 - [TButton](./TButton.md)
 - [TDialog](./TDialog.md)
 - [TTeleport](./TTeleport.md)

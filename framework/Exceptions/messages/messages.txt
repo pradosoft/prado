@@ -23,6 +23,7 @@ propertyvalue_enumvalue_invalid			= Value ''{0}'' is not a valid enumeration val
 propertyvalue_invalid_hex_color			= Value ''{0}'' is not a valid hex color value, e.g. "#112233".
 propertyvalue_invalid_array_literal		= Value ''{0}'' is not a valid array literal.
 propertyvalue_array_too_deep			= Array literal nests deeper than {0} levels.
+propertyvalue_invalid_string_type		= Value of type ''{0}'' cannot be converted to a string.
 
 eventhandler_lost_weak_ref				= TEventHandler cannot invoke the event handler because the callable object WeakReference was lost.
 eventhandler_no_set_handler				= TEventHandler cannot set the event handler, index "{0}".
@@ -61,6 +62,7 @@ application_includefile_invalid			= Unable to find application configuration {0}
 application_basepath_invalid			= Application base path ''{0}'' does not exist or is not a directory.
 application_runtimepath_invalid			= Application runtime path ''{0}'' does not exist or is not writable by Web server process.
 application_service_invalid				= Service ''{0}'' must implement IService interface.
+application_service_not_component		= Service ''{0}'' must extend TComponent.
 application_service_class_not_found		= Service class ''{0}'' does not exist.
 application_service_class_not_service	= Service class ''{0}'' does not implement IService.
 application_service_class_required		= TApplication::registerService() requires a class name or a service configuration array for service ''{0}''.
