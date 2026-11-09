@@ -2,6 +2,7 @@
 
 namespace Prado\Test\Unit;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\PreserveGlobalState;
 use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use Prado\Collections\TList;
@@ -305,6 +306,44 @@ class MethodVisibleTestClassB extends MethodVisibleTestClassA
 		$tester->assertFalse($instance->isCallingSelfClassInA());
 		$tester->assertTrue($instance->isCallingSelfClassInB());
 	}
+}
+
+/**
+ * Calls a Prado log method without a category from an instance method and from a static method.
+ */
+class PradoLogCategoryCaller
+{
+	public function fromInstance(string $method, array $args): void
+	{
+		Prado::$method(...$args);
+	}
+
+	public static function fromStatic(string $method, array $args): void
+	{
+		Prado::$method(...$args);
+	}
+}
+
+class PradoLogCategoryChildCaller extends PradoLogCategoryCaller
+{
+}
+
+/**
+ * Calls a Prado log method without a category from a function outside any class.
+ */
+function pradoLogCategoryFromFunction(string $method, array $args): void
+{
+	Prado::$method(...$args);
+}
+
+/**
+ * Returns a static closure, defined outside any class, that calls a Prado log method without a category.
+ */
+function pradoLogCategoryStaticClosure(): \Closure
+{
+	return static function (string $method, array $args): void {
+		Prado::$method(...$args);
+	};
 }
 
 /**
@@ -1723,6 +1762,92 @@ class PradoBaseTest extends \PHPUnit\Framework\TestCase
 	public function testCallingObject_staticCaller_returnsNull(): void
 	{
 		$this->assertNull(self::callingObjectFromStaticCaller());
+	}
+
+	// -----------------------------------------------------------------------
+	// Default log category of the caller (#1497)
+	// -----------------------------------------------------------------------
+
+	/**
+	 * Every Prado method that defaults its category to the caller, with arguments leaving the category out.
+	 */
+	public static function defaultCategoryMethodProvider(): array
+	{
+		return [
+			'trace' => ['trace', ['msg']],
+			'debug' => ['debug', ['msg']],
+			'info' => ['info', ['msg']],
+			'notice' => ['notice', ['msg']],
+			'warning' => ['warning', ['msg']],
+			'error' => ['error', ['msg']],
+			'alert' => ['alert', ['msg']],
+			'fatal' => ['fatal', ['msg']],
+			'profileBegin' => ['profileBegin', ['token']],
+			'profileEnd' => ['profileEnd', ['token']],
+			'log' => ['log', ['msg', TLogger::INFO, null]],
+		];
+	}
+
+	/**
+	 * Runs the caller against a private logger in Debug mode and returns the category of its one log.
+	 * The application logger and mode are restored.
+	 */
+	private function defaultLogCategory(callable $caller, string $method, array $args): string
+	{
+		$app = Prado::getApplication();
+		$mode = $app->getMode();
+		$saved = PradoUnit::getStaticProp(Prado::class, '_logger');
+		$logger = new TLogger(false);
+		PradoUnit::setStaticProp(Prado::class, '_logger', $logger);
+		$app->setMode(TApplicationMode::Debug);
+		try {
+			$caller($method, $args);
+		} finally {
+			$app->setMode($mode);
+			PradoUnit::setStaticProp(Prado::class, '_logger', $saved);
+		}
+		$logs = $logger->getLogs();
+		$this->assertCount(1, $logs, "Prado::{$method}() logs one message.");
+		return $logs[0][TLogger::LOG_CATEGORY];
+	}
+
+	#[DataProvider('defaultCategoryMethodProvider')]
+	public function testDefaultCategory_instanceMethod_isClassOfObject(string $method, array $args): void
+	{
+		$this->assertSame(PradoLogCategoryCaller::class, $this->defaultLogCategory([new PradoLogCategoryCaller(), 'fromInstance'], $method, $args));
+		$this->assertSame(PradoLogCategoryChildCaller::class, $this->defaultLogCategory([new PradoLogCategoryChildCaller(), 'fromInstance'], $method, $args), 'An inherited method logs under the class of the object.');
+	}
+
+	#[DataProvider('defaultCategoryMethodProvider')]
+	public function testDefaultCategory_staticMethod_isDeclaringClass(string $method, array $args): void
+	{
+		$this->assertSame(PradoLogCategoryCaller::class, $this->defaultLogCategory([PradoLogCategoryCaller::class, 'fromStatic'], $method, $args));
+		$this->assertSame(PradoLogCategoryCaller::class, $this->defaultLogCategory([PradoLogCategoryChildCaller::class, 'fromStatic'], $method, $args), 'An inherited static method logs under the class declaring it.');
+	}
+
+	#[DataProvider('defaultCategoryMethodProvider')]
+	public function testDefaultCategory_function_isPradoClass(string $method, array $args): void
+	{
+		$this->assertSame(Prado::class, $this->defaultLogCategory(pradoLogCategoryFromFunction(...), $method, $args));
+	}
+
+	#[DataProvider('defaultCategoryMethodProvider')]
+	public function testDefaultCategory_staticClosureOutsideClass_isPradoClass(string $method, array $args): void
+	{
+		$this->assertSame(Prado::class, $this->defaultLogCategory(pradoLogCategoryStaticClosure(), $method, $args));
+	}
+
+	#[DataProvider('defaultCategoryMethodProvider')]
+	public function testDefaultCategory_closureInClass_isClassOfClosure(string $method, array $args): void
+	{
+		$bound = function (string $method, array $args): void {
+			Prado::$method(...$args);
+		};
+		$static = static function (string $method, array $args): void {
+			Prado::$method(...$args);
+		};
+		$this->assertSame($this::class, $this->defaultLogCategory($bound, $method, $args), 'A closure bound to an object logs under the class of the object.');
+		$this->assertSame(self::class, $this->defaultLogCategory($static, $method, $args), 'A static closure of a class logs under the class declaring it.');
 	}
 
 	public function testGetPathAliases_returnsAliasTable(): void

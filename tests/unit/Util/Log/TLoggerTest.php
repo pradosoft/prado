@@ -15,6 +15,24 @@ class TTestLogger extends TLogger {
 	}
 }
 
+/**
+ * Logs without a category from a function outside any class.
+ */
+function loggerLogFromFunction(TLogger $logger): void
+{
+	$logger->log('function', TLogger::INFO);
+}
+
+/**
+ * Returns a static closure, defined outside any class, that logs without a category.
+ */
+function loggerLogStaticClosure(): \Closure
+{
+	return static function (TLogger $logger): void {
+		$logger->log('static closure', TLogger::INFO);
+	};
+}
+
 class TLoggerTest extends \PHPUnit\Framework\TestCase
 {
 	protected function setUp(): void
@@ -163,6 +181,39 @@ class TLoggerTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals(getmypid(), $logs[0][7]);	
 	}
 	
+	private static function logFromStaticMethod(TLogger $logger): void
+	{
+		$logger->log('static method', TLogger::INFO);
+	}
+
+	public function testLog_defaultCategory_instanceMethod_isClassOfObject(): void
+	{
+		$logger = new TTestLogger();
+		$logger->log('instance method', TLogger::INFO);
+		$this->assertSame($this::class, $logger->getLogs()[0][TLogger::LOG_CATEGORY]);
+	}
+
+	public function testLog_defaultCategory_staticMethod_isDeclaringClass(): void
+	{
+		$logger = new TTestLogger();
+		self::logFromStaticMethod($logger);
+		$this->assertSame(self::class, $logger->getLogs()[0][TLogger::LOG_CATEGORY]);
+	}
+
+	public function testLog_defaultCategory_function_isLoggerClass(): void
+	{
+		$logger = new TTestLogger();
+		loggerLogFromFunction($logger);
+		$this->assertSame(TTestLogger::class, $logger->getLogs()[0][TLogger::LOG_CATEGORY]);
+	}
+
+	public function testLog_defaultCategory_staticClosureOutsideClass_isLoggerClass(): void
+	{
+		$logger = new TTestLogger();
+		(loggerLogStaticClosure())($logger);
+		$this->assertSame(TTestLogger::class, $logger->getLogs()[0][TLogger::LOG_CATEGORY]);
+	}
+
 	public function testLog_ProfileBegin()
 	{
 		$logger = new TTestLogger();
