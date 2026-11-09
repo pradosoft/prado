@@ -1,4 +1,4 @@
-/*! PRADO TDropdownMenu javascript file | github.com/pradosoft/prado */
+/*! PRADO TDropdownMenu and TContextMenu javascript file | github.com/pradosoft/prado */
 
 /**
  * TDropdownMenu control.
@@ -172,3 +172,96 @@ Prado.WebUI.TDropdownMenu = Prado.Class(Prado.WebUI.Control,
  * The selector of the menu items: links, buttons, and elements with a menu item role.
  */
 Prado.WebUI.TDropdownMenu.ITEMS = 'a[href], button, input[type="submit"], input[type="button"], [role="menuitem"], [role="menuitemcheckbox"], [role="menuitemradio"]';
+
+/**
+ * TContextMenu control.
+ *
+ * A TDropdownMenu that opens on the `contextmenu` event of its target, in place of
+ * the browser context menu: at the pointer for a right-click or a long press, and
+ * below the start of the target for Shift+F10 or the ContextMenu key, which some
+ * browsers do not turn into a `contextmenu` event. The menu stays in the viewport.
+ *
+ * Where `contextmenu` fires while the button or finger is down, the menu opens
+ * after the pointerup; opened sooner, the pointerup outside it would light
+ * dismiss it.
+ */
+Prado.WebUI.TContextMenu = Prado.Class(Prado.WebUI.TDropdownMenu,
+{
+	onInit($super, options) {
+		$super(options);
+		this.target = document.getElementById(options.TargetID);
+		if (!this.element || !this.target)
+			return;
+		this.pointerDown = false;
+		this.pending = null;
+		this.observe(this.target, 'pointerdown', (event) => {
+			this.pointerDown = event.button === 2 || event.pointerType === 'touch';
+		});
+		this.observe(document, 'pointerup', () => this.onPointerUp());
+		this.observe(this.target, 'contextmenu', (event) => this.onContextMenu(event));
+		this.observe(this.target, 'keydown', (event) => this.onTargetKeyDown(event));
+	},
+
+	/**
+	 * Opens the menu at the pointer, or at the target for a keyboard request.
+	 * @param {MouseEvent} event - the contextmenu event of the target
+	 */
+	onContextMenu(event) {
+		event.preventDefault();
+		if (event.button === -1 || (event.clientX === 0 && event.clientY === 0))
+			this.openAtTarget();
+		else if (this.pointerDown)
+			this.pending = { x: event.clientX, y: event.clientY };
+		else
+			this.openAt(event.clientX, event.clientY);
+	},
+
+	/**
+	 * Opens a menu requested while the pointer was down, after the pointerup and
+	 * its light dismiss.
+	 */
+	onPointerUp() {
+		this.pointerDown = false;
+		const point = this.pending;
+		this.pending = null;
+		if (point)
+			setTimeout(() => this.openAt(point.x, point.y), 0);
+	},
+
+	/**
+	 * Opens the menu at the target on Shift+F10 or the ContextMenu key.
+	 * @param {KeyboardEvent} event - the keydown event of the target
+	 */
+	onTargetKeyDown(event) {
+		if (!(event.key === 'ContextMenu' || (event.key === 'F10' && event.shiftKey)))
+			return;
+		event.preventDefault();
+		this.openAtTarget();
+	},
+
+	openAtTarget() {
+		const rect = this.target.getBoundingClientRect();
+		this.openAt(rect.left, rect.bottom);
+	},
+
+	/**
+	 * Opens the menu with its top-left corner at a viewport point, moved back
+	 * into the viewport when it does not fit, and focuses its first item.
+	 * @param {number} x - the viewport x coordinate
+	 * @param {number} y - the viewport y coordinate
+	 */
+	openAt(x, y) {
+		const style = this.element.style;
+		style.inset = 'auto';
+		style.margin = '0';
+		style.left = x + 'px';
+		style.top = y + 'px';
+		if (!this.isOpen())
+			this.element.showPopover({ source: this.target });
+		const rect = this.element.getBoundingClientRect();
+		style.left = Math.max(0, Math.min(x, window.innerWidth - rect.width)) + 'px';
+		style.top = Math.max(0, Math.min(y, window.innerHeight - rect.height)) + 'px';
+		this.refreshItems();
+		this.focusItem('first');
+	}
+});

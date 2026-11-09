@@ -291,7 +291,7 @@ class TLogger extends \Prado\TComponent
 			return $return;
 		}
 		if ($log[static::LOG_LEVEL] & TLogger::PROFILE_BEGIN_SELECT) {
-			$profileName = $this->dyProfilerRename('[' . $log[static::LOG_MESSAGE] . '][' . $log[static::LOG_PID] . ']');
+			$profileName = $this->callBehaviorsFilter('dyProfilerRename', '[' . $log[static::LOG_MESSAGE] . '][' . $log[static::LOG_PID] . ']');
 			$add = !isset($this->_profileLogs[$profileName]);
 			$this->_profileLogs[$profileName] = $log;
 			$this->_profileBeginTimes[$profileName] = $log[static::LOG_TIME];
@@ -306,7 +306,7 @@ class TLogger extends \Prado\TComponent
 			}
 		} else {
 			if ($log[static::LOG_LEVEL] & TLogger::PROFILE_END_SELECT) { // Move ProfileBegin to the primary log.
-				$profileName = $this->dyProfilerRename('[' . $log[static::LOG_MESSAGE] . '][' . $log[static::LOG_PID] . ']');
+				$profileName = $this->callBehaviorsFilter('dyProfilerRename', '[' . $log[static::LOG_MESSAGE] . '][' . $log[static::LOG_PID] . ']');
 				if (isset($this->_profileLogs[$profileName])) {
 					$this->_logs[] = $this->_profileLogs[$profileName];
 

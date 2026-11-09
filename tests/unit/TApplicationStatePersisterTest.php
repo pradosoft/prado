@@ -82,6 +82,14 @@ class TApplicationStatePersisterTest extends TestCase
 		$this->assertSame(['from' => 'file'], $this->_persister->load());
 	}
 
+	public function testLoad_cacheMissNoFile_returnsNull(): void
+	{
+		$this->_app->setCache(new TTestArrayCache());
+
+		$this->assertNull($this->_persister->load());
+		$this->assertFileDoesNotExist($this->stateFile());
+	}
+
 	public function testSave_noCache_writesStateFile(): void
 	{
 		$this->_persister->save(['x' => 2]);

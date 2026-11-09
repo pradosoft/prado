@@ -7,6 +7,7 @@ use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Exceptions\TPhpErrorException;
+use Prado\Test\Unit\PradoUnit;
 use Prado\TComponent;
 use Prado\TEventHandler;
 use Prado\Collections\IWeakRetainable;
@@ -1398,5 +1399,88 @@ class TWeakCallableCollectionTest extends TPriorityListTest
 		self::assertSame([$handler, $objectHandler], $list->toArray());
 		self::assertSame(1, $list->getWeakObjectCount($item));
 		self::assertSame(1, $list->indexOf([$item, 'eventHandler']));
+	}
+
+	public function testReadOnlyDiscardInvalidTransitionRemovesCollected_TWCC()
+	{
+		$list = new TWeakCallableCollectionUnit(null, null, null, null, false);
+		$dead = new CallableListItem();
+		$deadHandler = new CallableListItem();
+		$live = new CallableListItem();
+		$list->add([$dead, 'eventHandler'], 5);
+		$list->add(new TEventHandler([$deadHandler, 'eventHandler']), 10);
+		$list->add([$live, 'eventHandler'], 10);
+		$list->resetReadOnly(true);
+		$dead = $deadHandler = null;
+
+		$list->resetDiscardInvalid(true);
+
+		self::assertTrue($list->getReadOnly());
+		self::assertSame(1, $list->getCount());
+		self::assertSame([[$live, 'eventHandler']], $list->toArray());
+		self::assertEquals([10], $list->getPriorities(), 'A priority left empty is removed');
+		self::assertSame(0, PradoUnit::getProp($list, '_eventHandlerCount'));
+		self::assertSame(1, $list->getWeakObjectCount($live));
+	}
+
+	public function testRemoveCollectedEventHandlerUncounts_TWCC()
+	{
+		$list = new TWeakCallableCollectionUnit(null, null, null, null, false);
+		$item = new CallableListItem();
+		$list->add(new TEventHandler([$item, 'eventHandler']));
+		$item = null;
+
+		self::assertNull($list->removeAt(0));
+		self::assertSame(0, $list->getCount());
+		self::assertSame(0, PradoUnit::getProp($list, '_eventHandlerCount'));
+	}
+
+	public function testClearResetsBookkeeping_TWCC()
+	{
+		$list = new TWeakCallableCollectionUnit();
+		$item = new CallableListItem();
+		$list->add(new TEventHandler('strlen'));
+		$list->add([$item, 'eventHandler']);
+		$list->clear();
+
+		self::assertSame(0, PradoUnit::getProp($list, '_eventHandlerCount'));
+		self::assertSame(0, PradoUnit::getProp($list, '_weakCount'));
+		self::assertFalse($list->getWeakChanged());
+		self::assertNull($list->getWeakObjectCount($item));
+	}
+
+	public function testFailedInsertLeavesNoBookkeeping_TWCC()
+	{
+		$item = new CallableListItem();
+
+		$list = new TWeakCallableCollectionUnit();
+		try {
+			$list->add([$item, 'noSuchMethod']);
+			self::fail('A non-callable must not be added');
+		} catch (TInvalidDataValueException $e) {
+			self::assertSame('weakcallablecollection_callable_required', $e->getErrorCode());
+		}
+		self::assertSame(0, $list->getCount());
+		self::assertNull($list->getWeakObjectCount($item));
+		self::assertSame(0, PradoUnit::getProp($list, '_weakCount'));
+
+		try {
+			$list->insertAtIndexInPriority([$item, 'eventHandler'], 9, 5);
+			self::fail('An index past the priority must throw');
+		} catch (TInvalidDataValueException $e) {
+			self::assertSame('prioritylist_index_invalid', $e->getErrorCode());
+		}
+		self::assertSame(0, $list->getCount());
+		self::assertNull($list->getWeakObjectCount($item));
+
+		$list = new TWeakCallableCollectionUnit(null, true, null, null, true);
+		try {
+			$list->insertAtIndexInPriority(new TEventHandler([$item, 'eventHandler']));
+			self::fail('A read-only list must not insert');
+		} catch (TInvalidOperationException $e) {
+			self::assertSame('list_readonly', $e->getErrorCode());
+		}
+		self::assertSame(0, PradoUnit::getProp($list, '_eventHandlerCount'));
+		self::assertNull($list->getWeakObjectCount($item));
 	}
 }
