@@ -1,0 +1,33 @@
+<com:TContent ID="Content">
+	<style>
+		.drawer-layout { display: grid; grid-template-columns: auto 1fr; min-height: 12rem; }
+		.drawer-main { grid-column: 2; padding: 1rem; }
+	</style>
+	<h1>Drawer Test Case</h1>
+
+	<div class="drawer-layout">
+		<com:TDrawer ID="nav" HeaderText="Site menu" DockAt="64rem">
+			<nav aria-label="Main"><a href="#home" id="home">Home</a></nav>
+		</com:TDrawer>
+		<div class="drawer-main">
+			<p>Status: <com:TLabel ID="status" Text="waiting" /></p>
+			<com:TButton ID="openNav" Text="Menu" CommandFor="nav" Command="show-modal" />
+			<com:TButton ID="openFilters" Text="Filters" CommandFor="filters" Command="show-modal" />
+			<com:TButton ID="openSheet" Text="Sheet" CommandFor="sheet" Command="show-modal" />
+			<com:TButton ID="openLocked" Text="Locked" CommandFor="locked" Command="show-modal" />
+			<p id="outside">Outside</p>
+		</div>
+	</div>
+
+	<com:TDrawer ID="filters" HeaderText="Filters" Placement="End">
+		<com:TLabel ForControl="term" Text="Term" />
+		<com:TTextBox ID="term" />
+		<com:TButton ID="apply" Text="Apply" OnClick="applyClicked" />
+	</com:TDrawer>
+
+	<com:TDrawer ID="sheet" HeaderText="Sheet" Placement="Bottom">
+		<div id="sheetList" style="height: 6rem; overflow-y: auto"><div style="height: 40rem">Long content</div></div>
+	</com:TDrawer>
+
+	<com:TDrawer ID="locked" HeaderText="Locked" ClosedBy="None" />
+</com:TContent>
