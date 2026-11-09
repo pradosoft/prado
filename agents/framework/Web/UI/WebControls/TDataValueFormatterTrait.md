@@ -16,7 +16,7 @@ TDataValueFormatterTrait formats bound data values. [TListControl](./TListContro
 | Format | Result |
 |---|---|
 | callable (not a function name string) | `$format($value)` |
-| `''` | `TPropertyValue::ensureString($value)` |
+| `''` | `TPropertyValue::ensureString($value)`; an array or an object without `__toString()` throws `TInvalidDataTypeException` |
 | starts with `#` | PHP expression after `#`; `{0}` and `$value` are the data value |
 | other string | `sprintf($format, $value)` |
 

@@ -12,6 +12,7 @@ namespace Prado\Test\Unit;
 
 use Prado\Prado;
 use Prado\TApplicationConfiguration;
+use Prado\TPropertyValue;
 use Prado\Web\UI\TControl;
 use Prado\Web\UI\TTemplate;
 use Prado\Xml\TXmlDocument;
@@ -845,6 +846,75 @@ class TPropertyValueIntegrationCoercionTest extends \PHPUnit\Framework\TestCase
 		];
 		[$module] = applyPhpModuleConfig($phpConfig);
 		self::assertSame(10.5, $module->getIntOrFloat());
+	}
+
+	public function testPhpModule_union_arrayNoMemberHolds_raisesTypeError(): void
+	{
+		// Issue #1497: a PHP configuration array reaches the `int|float` setter
+		// unchanged, so PHP raises its TypeError.
+		$phpConfig = [
+			'modules' => [
+				'm' => ['class' => TAppConfigTestModule::class, 'properties' => ['IntOrFloat' => ['a']]],
+			],
+		];
+		$this->expectException(\TypeError::class);
+		$this->expectExceptionMessage('array given');
+		applyPhpModuleConfig($phpConfig);
+	}
+
+	public function testApplyProperty_union_arrayNoMemberHolds_leavesPropertyUnassigned(): void
+	{
+		foreach ([new TAppConfigTestModule(), new TAppConfigTestService(), new TAppConfigTestControl()] as $target) {
+			$target->setIntOrFloat(3);
+			try {
+				TPropertyValue::applyProperty($target, 'IntOrFloat', ['a']);
+				self::fail('An array assigned to an int|float setter must raise TypeError.');
+			} catch (\TypeError $e) {
+				self::assertStringContainsString('array given', $e->getMessage());
+			}
+			self::assertSame(3, $target->getIntOrFloat());
+
+			try {
+				$target->setSubProperty('IntOrFloat', new \stdClass());
+				self::fail('An object assigned to an int|float setter must raise TypeError.');
+			} catch (\TypeError $e) {
+				self::assertStringContainsString('stdClass given', $e->getMessage());
+			}
+			self::assertSame(3, $target->getIntOrFloat());
+		}
+	}
+
+	public function testPhpModule_string_arrayRaisesTypeError(): void
+	{
+		// Issue #1497: a PHP configuration array reaches the `string` setter
+		// unchanged, so PHP raises its TypeError.
+		$phpConfig = [
+			'modules' => [
+				'm' => ['class' => TAppConfigTestModule::class, 'properties' => ['StringProp' => ['a']]],
+			],
+		];
+		$this->expectException(\TypeError::class);
+		$this->expectExceptionMessage('array given');
+		applyPhpModuleConfig($phpConfig);
+	}
+
+	public function testApplyProperty_string_withoutStringForm_leavesPropertyUnassigned(): void
+	{
+		foreach ([new TAppConfigTestModule(), new TAppConfigTestService(), new TAppConfigTestControl()] as $target) {
+			$target->setStringProp('kept');
+			$target->setNullableStringProp('kept');
+			foreach (['StringProp', 'NullableStringProp'] as $property) {
+				foreach (['array given' => ['a'], 'stdClass given' => new \stdClass()] as $given => $value) {
+					try {
+						TPropertyValue::applyProperty($target, $property, $value);
+						self::fail("$property must raise TypeError for " . get_debug_type($value) . '.');
+					} catch (\TypeError $e) {
+						self::assertStringContainsString($given, $e->getMessage());
+					}
+					self::assertSame('kept', $target->{'get' . $property}());
+				}
+			}
+		}
 	}
 
 	// ══════════════════════════════════════════════════════════════════════

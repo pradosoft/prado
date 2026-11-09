@@ -4,6 +4,7 @@ namespace Prado\Test\Unit\Exceptions;
 
 use Prado\Exceptions\TException;
 use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\TInvalidDataTypeException;
 
 /**
  * Tests for TException behavior, including old/new style constructors,
@@ -80,5 +81,24 @@ class TExceptionTest extends \PHPUnit\Framework\TestCase
         $ex = new TException('component_property_readonly', null, $cause);
         $this->assertInstanceOf(\RuntimeException::class, $ex->getPrevious());
         $this->assertEquals('boom', $ex->getPrevious()->getMessage());
+    }
+
+    public function testArgumentWithoutStringFormThrowsInvalidDataType()
+    {
+        // Issue #1497: the arguments are converted by TPropertyValue::ensureString().
+        foreach ([['a'], new \stdClass()] as $argument) {
+            try {
+                new TException('component_property_undefined', 'A', $argument);
+                $this->fail('An argument without a string form must throw.');
+            } catch (TInvalidDataTypeException $e) {
+                $this->assertSame('propertyvalue_invalid_string_type', $e->getErrorCode());
+                $this->assertStringContainsString("'" . get_debug_type($argument) . "'", $e->getMessage());
+            }
+        }
+
+        // An argument with a string form is converted as before.
+        $ex = new TException('component_property_undefined', true, 12);
+        $this->assertSame(['true', '12'], $ex->getErrorArguments());
+        $this->assertSame("Component property 'true.12' is not defined.", $ex->getMessage());
     }
 }

@@ -179,7 +179,7 @@ Error codes defined in `framework/Exceptions/messages/messages.txt`. Format: `er
 TPropertyValue::ensureBoolean($v);   // '1', 'true', 'yes', 'on' → true
 TPropertyValue::ensureInteger($v);   // '42' → 42
 TPropertyValue::ensureFloat($v);     // '3.14' → 3.14
-TPropertyValue::ensureString($v);    // any → string
+TPropertyValue::ensureString($v);    // scalar, null, Stringable → string; array or other object throws TInvalidDataTypeException
 TPropertyValue::ensureArray($v);     // CSV string or array → array
 TPropertyValue::ensureEnum($v, TMyEnum::class); // validates enum value
 ```
