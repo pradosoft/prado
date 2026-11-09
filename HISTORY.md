@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TPhpErrorException::isFatalError()` counted `E_CORE_WARNING` and `E_COMPILE_WARNING` as fatal, so a script that finished after one reported a `TPhpFatalErrorException` at shutdown. (belisoful)
 BUG: Issue #1497 - `TEventParameter::offsetSet()` with a null offset appends to an `ArrayAccess` parameter without reading the offset first, which PHP 8.5 deprecates for `ArrayObject`. (belisoful)
 BUG: Issue #1497 - Cloning a component with a behavior and a function-name or static-method event handler threw a `TypeError`; `TComponent::__clone()` keeps those handlers. (belisoful)
 BUG: Issue #1497 - A module configured with `lazy="false"` is loaded at once; the `lazy` attribute is read with `TPropertyValue::ensureBoolean()`. (belisoful)

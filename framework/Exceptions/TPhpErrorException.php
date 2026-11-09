@@ -51,13 +51,19 @@ class TPhpErrorException extends TSystemException
 	}
 
 	/**
-	 * Returns if error is one of fatal type.
+	 * Returns whether the error is of a type that stops PHP.
 	 *
-	 * @param array $error $error error got from error_get_last()
-	 * @return bool if error is one of fatal type
+	 * The fatal types are `E_ERROR`, `E_PARSE`, `E_CORE_ERROR`, and
+	 * `E_COMPILE_ERROR`. PHP continues after `E_CORE_WARNING` and
+	 * `E_COMPILE_WARNING`, so they are not fatal. `E_USER_ERROR` and
+	 * `E_RECOVERABLE_ERROR` are not fatal here:
+	 * {@see \Prado\Prado::phpErrorHandler()} throws for them before PHP stops.
+	 *
+	 * @param ?array $error the error from error_get_last()
+	 * @return bool whether the error type is fatal
 	 */
 	public static function isFatalError($error)
 	{
-		return isset($error['type']) && in_array($error['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_CORE_WARNING, E_COMPILE_ERROR, E_COMPILE_WARNING]);
+		return isset($error['type']) && in_array($error['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR]);
 	}
 }
