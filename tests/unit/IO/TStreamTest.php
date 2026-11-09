@@ -8,6 +8,7 @@ use Psr\Http\Message\StreamInterface;
 use Prado\Test\Unit\Harness\IO\TTestIOEventLog;
 use Prado\Test\Unit\Harness\IO\TTestIOHelper;
 use Prado\Test\Unit\Harness\IO\TTestStream;
+use Prado\Test\Unit\Harness\Util\TTestNullDynamicBehavior;
 
 /**
  * Unit tests for {@see \Prado\IO\TStream}, the PSR-7 byte-stream wrapper.
@@ -527,6 +528,24 @@ class TStreamTest extends \PHPUnit\Framework\TestCase
 		$s->detachBehavior('noio');
 		self::assertTrue($s->isReadable());
 		self::assertTrue($s->isWritable());
+		$s->close();
+	}
+
+	public function testDyHooksIgnoredByADynamicBehaviorKeepTheirValue()
+	{
+		// An IDynamicMethods behavior whose __dycall returns null for the dyRead, dyWrite, and dyIs* hooks
+		// leaves the data, the byte count, and the capabilities as they are.
+		$s = TStream::fromMemory();
+		$behavior = new TTestNullDynamicBehavior();
+		$s->attachBehavior('nulldy', $behavior);
+		self::assertSame(5, $s->write('abcde'));
+		self::assertContains('dyWrite', $behavior->events);
+		$s->rewind();
+		self::assertSame('abcde', $s->read(5));
+		self::assertContains('dyRead', $behavior->events);
+		self::assertTrue($s->isReadable());
+		self::assertTrue($s->isWritable());
+		self::assertTrue($s->isSeekable());
 		$s->close();
 	}
 }
