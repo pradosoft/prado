@@ -118,6 +118,33 @@ class LifecycleCustomStepsApp extends LifecycleTrackingApp
 // ---------------------------------------------------------------------------
 
 /**
+ * A LifecycleTrackingApp with an empty lifecycle; run() has no step to execute.
+ */
+class LifecycleNoStepsApp extends LifecycleTrackingApp
+{
+	protected function getSteps(): array
+	{
+		return [];
+	}
+}
+
+// ---------------------------------------------------------------------------
+
+/**
+ * A LifecycleTrackingApp that reports every request as completed, so run()
+ * finds the request complete before its first step.
+ */
+class LifecycleAlwaysCompletedApp extends LifecycleTrackingApp
+{
+	public function getRequestCompleted()
+	{
+		return true;
+	}
+}
+
+// ---------------------------------------------------------------------------
+
+/**
  * Tests for TApplication::run() lifecycle ordering and exception handling.
  *
  * Uses LifecycleTrackingApp — a subclass that overrides every lifecycle method
@@ -570,5 +597,29 @@ class TApplicationLifecycleTest extends \PHPUnit\Framework\TestCase
 
 		$this->assertSame(42, $app->capturedExitCode);
 		$this->assertNotContains('onSaveState', $app->callLog);
+	}
+
+	public function testRun_noSteps_initAndEndRequestOnly(): void
+	{
+		$app = (new \ReflectionClass(LifecycleNoStepsApp::class))->newInstanceWithoutConstructor();
+		$app->setMode(TApplicationMode::Debug);
+
+		$app->run();
+
+		$this->assertSame(['onConfiguration', 'onInitComplete', 'onEndRequest'], $app->callLog);
+		$this->assertNull($app->capturedError);
+		$this->assertSame(0, PradoUnit::invoke($app, 'getStep'));
+	}
+
+	public function testRun_requestCompletedBeforeFirstStep_runsNoStep(): void
+	{
+		$app = (new \ReflectionClass(LifecycleAlwaysCompletedApp::class))->newInstanceWithoutConstructor();
+		$app->setMode(TApplicationMode::Debug);
+
+		$app->run();
+
+		$this->assertSame(['onConfiguration', 'onInitComplete', 'onEndRequest'], $app->callLog);
+		$this->assertNull($app->capturedError);
+		$this->assertSame(0, PradoUnit::invoke($app, 'getStep'));
 	}
 }

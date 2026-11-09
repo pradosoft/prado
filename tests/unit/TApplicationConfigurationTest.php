@@ -254,6 +254,17 @@ class TApplicationConfigurationTest extends \PHPUnit\Framework\TestCase
 		$this->assertFalse($config->getIsEmpty());
 	}
 
+	public function testLoadPathsXml_absoluteAliasPath_ignoresTheConfigPath(): void
+	{
+		$sub = $this->makeDir('absolute');
+		$config = $this->config();
+		$config->loadFromXml($this->xml(
+			'<application><paths><alias id="Abs" path="' . $sub . '"/></paths></application>'
+		), $this->tmpDir . DIRECTORY_SEPARATOR . 'elsewhere');
+
+		$this->assertSame(['Abs' => realpath($sub)], $config->getAliases());
+	}
+
 	public function testLoadPathsXml_aliasMissingAttributesThrows(): void
 	{
 		$config = $this->config();
@@ -372,6 +383,96 @@ class TApplicationConfigurationTest extends \PHPUnit\Framework\TestCase
 		}
 	}
 
+	public function testLoadModulesPhp_composerPackageWithProperties(): void
+	{
+		$this->seedPackages([
+			'acme/mod' => ['name' => 'acme/mod', 'extra' => ['prado' => ['bootstrap' => 'Acme\\Module']]],
+		]);
+		$config = $this->config();
+		$config->loadFromPhp(['modules' => ['acme/mod' => ['properties' => ['Level' => '3']]]], $this->tmpDir);
+
+		$this->assertSame(['acme/mod' => ['Acme\\Module', ['Level' => '3', 'id' => 'acme/mod'], []]], $config->getModules());
+	}
+
+	public function testLoadModulesPhp_slashIdThatIsNotAPackage_usesTheGivenClass(): void
+	{
+		$this->seedPackages([]);
+		$config = $this->config();
+		$config->loadFromPhp(['modules' => ['group/cache' => ['class' => 'TFileCache']]], $this->tmpDir);
+
+		$this->assertSame(['group/cache' => ['TFileCache', ['id' => 'group/cache'], []]], $config->getModules());
+	}
+
+	public function testLoadModulesPhp_slashIdThatIsNotAPackage_keepsProperties(): void
+	{
+		$this->seedPackages([]);
+		$config = $this->config();
+		$config->loadFromPhp(['modules' => [
+			'group/cache' => ['class' => 'TFileCache', 'properties' => ['Directory' => 'runtime']],
+		]], $this->tmpDir);
+
+		$this->assertSame(
+			['group/cache' => ['TFileCache', ['Directory' => 'runtime', 'id' => 'group/cache'], []]],
+			$config->getModules()
+		);
+	}
+
+	public function testLoadModulesPhp_slashIdThatIsNotAPackage_withoutClassThrows(): void
+	{
+		$this->seedPackages([]);
+		$config = $this->config();
+		try {
+			$config->loadFromPhp(['modules' => ['group/cache' => ['properties' => []]]], $this->tmpDir);
+			$this->fail('Expected TConfigurationException');
+		} catch (TConfigurationException $e) {
+			$this->assertSame('appconfig_moduletype_required', $e->getErrorCode());
+			$this->assertStringContainsString('group/cache', $e->getMessage());
+		}
+		$this->assertSame([], $config->getModules());
+	}
+
+	/**
+	 * @dataProvider emptyPhpSectionProvider
+	 */
+	public function testLoadFromPhp_emptySection_staysEmpty(string $section, string $getter): void
+	{
+		$config = $this->config();
+		$config->loadFromPhp([$section => []], $this->tmpDir);
+
+		$this->assertSame([], $config->$getter());
+		$this->assertTrue($config->getIsEmpty());
+	}
+
+	public static function emptyPhpSectionProvider(): array
+	{
+		return [
+			'modules' => ['modules', 'getModules'],
+			'services' => ['services', 'getServices'],
+			'parameters' => ['parameters', 'getParameters'],
+			'includes' => ['includes', 'getExternalConfigurations'],
+		];
+	}
+
+	/**
+	 * @dataProvider emptyXmlSectionProvider
+	 */
+	public function testLoadFromXml_emptySection_staysEmpty(string $tag, string $getter): void
+	{
+		$config = $this->config();
+		$config->loadFromXml($this->xml("<application><{$tag}/></application>"), $this->tmpDir);
+
+		$this->assertSame([], $config->$getter());
+		$this->assertTrue($config->getIsEmpty());
+	}
+
+	public static function emptyXmlSectionProvider(): array
+	{
+		return [
+			'services' => ['services', 'getServices'],
+			'parameters' => ['parameters', 'getParameters'],
+		];
+	}
+
 	// =======================================================================
 	// Modules — XML
 	// =======================================================================
@@ -479,6 +580,18 @@ class TApplicationConfigurationTest extends \PHPUnit\Framework\TestCase
 			$this->fail('Expected TConfigurationException');
 		} catch (TConfigurationException $e) {
 			$this->assertSame('appconfig_servicetype_required', $e->getErrorCode());
+		}
+	}
+
+	public function testLoadServicesPhp_missingClass_namesTheService(): void
+	{
+		$config = $this->config();
+		try {
+			$config->loadFromPhp(['services' => ['feed' => ['properties' => []]]], $this->tmpDir);
+			$this->fail('Expected TConfigurationException');
+		} catch (TConfigurationException $e) {
+			$this->assertSame('appconfig_servicetype_required', $e->getErrorCode());
+			$this->assertStringContainsString('<service id="feed">', $e->getMessage());
 		}
 	}
 
@@ -758,6 +871,15 @@ class TApplicationConfigurationTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame(['extra.xml' => '(a) || (b)'], $config->getExternalConfigurations());
 	}
 
+	public function testLoadExternalPhp_secondLoadMergesWithTheEarlierCondition(): void
+	{
+		$config = $this->config();
+		$config->loadFromPhp(['includes' => [['file' => 'extra.xml', 'when' => 'a']]], $this->tmpDir);
+		$config->loadFromPhp(['includes' => [['file' => 'extra.xml', 'when' => 'b']]], $this->tmpDir);
+
+		$this->assertSame(['extra.xml' => '(a) || (b)'], $config->getExternalConfigurations());
+	}
+
 	public function testLoadExternalPhp_missingFileThrows(): void
 	{
 		$config = $this->config();
@@ -797,6 +919,33 @@ class TApplicationConfigurationTest extends \PHPUnit\Framework\TestCase
 			. '</application>'
 		), $this->tmpDir);
 		$this->assertSame(['extra.xml' => '(a) || (b)'], $config->getExternalConfigurations());
+	}
+
+	public function testLoadExternalXml_duplicateFileWithoutWhen_mergesTheDefaultCondition(): void
+	{
+		$config = $this->config();
+		$config->loadFromXml($this->xml(
+			'<application>'
+			. '<include file="extra.xml" when="a"/>'
+			. '<include file="extra.xml"/>'
+			. '</application>'
+		), $this->tmpDir);
+
+		// The default condition `true` is concatenated as the string "1".
+		$this->assertSame(['extra.xml' => '(a) || (1)'], $config->getExternalConfigurations());
+	}
+
+	public function testLoadExternalXml_noAttributesThrows(): void
+	{
+		$config = $this->config();
+		try {
+			$config->loadFromXml($this->xml('<application><include/></application>'), $this->tmpDir);
+			$this->fail('Expected TConfigurationException');
+		} catch (TConfigurationException $e) {
+			$this->assertSame('appconfig_includefile_required', $e->getErrorCode());
+		}
+		$this->assertSame([], $config->getExternalConfigurations());
+		$this->assertTrue($config->getIsEmpty());
 	}
 
 	public function testLoadExternalXml_missingFileThrows(): void
@@ -890,6 +1039,46 @@ class TApplicationConfigurationTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame([realpath($this->tmpDir) . DIRECTORY_SEPARATOR . 'msg'], $config->getErrorMessages());
 	}
 
+	public function testErrorMessages_namespaceResolvedToExistingFile_deduplicated(): void
+	{
+		$this->writeFile('msg', 'x');
+		Prado::setPathOfAlias('TacTmp', $this->tmpDir);
+		$config = $this->config();
+		$config->loadFromPhp(['errormessages' => ['TacTmp.msg', 'TacTmp.msg']], $this->tmpDir);
+
+		$this->assertSame([realpath($this->tmpDir) . DIRECTORY_SEPARATOR . 'msg'], $config->getErrorMessages());
+	}
+
+	public function testErrorMessages_namespaceWithoutAFile_isARelativePath(): void
+	{
+		// The alias resolves, but no such file exists, so the name is a path under the config directory.
+		Prado::setPathOfAlias('TacTmp', $this->tmpDir);
+		$config = $this->config();
+		$config->loadFromPhp(['errormessages' => ['TacTmp.absent', 'TacTmp.absent']], $this->tmpDir);
+
+		$this->assertSame([$this->tmpDir . DIRECTORY_SEPARATOR . 'TacTmp.absent'], $config->getErrorMessages());
+	}
+
+	public function testErrorMessages_absolutePath_deduplicated(): void
+	{
+		$abs = $this->writeFile('abs.txt', 'x');
+		$config = $this->config();
+		$config->loadFromPhp(['errormessages' => [$abs, $abs]], $this->tmpDir);
+
+		$this->assertSame([$abs], $config->getErrorMessages());
+	}
+
+	public function testErrorMessages_absolutePathUnderAnAliasNamedAsItsPrefix_isKept(): void
+	{
+		// The alias '/tac-root' lets the namespace lookup resolve '/tac-root.txt' to a
+		// path that is not a file; the absolute path is then used as given.
+		Prado::setPathOfAlias('/tac-root', $this->tmpDir);
+		$config = $this->config();
+		$config->loadFromPhp(['errormessages' => ['/tac-root.txt', '/tac-root.txt']], $this->tmpDir);
+
+		$this->assertSame(['/tac-root.txt'], $config->getErrorMessages());
+	}
+
 	// =======================================================================
 	// Composer extension class resolution
 	// =======================================================================
@@ -977,6 +1166,17 @@ class TApplicationConfigurationTest extends \PHPUnit\Framework\TestCase
 		$config = $this->config();
 		$config->captureComposerExtensions();
 		$this->assertSame([$base . DIRECTORY_SEPARATOR . 'm.txt'], $config->getErrorMessages());
+	}
+
+	public function testCaptureComposerExtensions_noInstalledPackages_capturesNothing(): void
+	{
+		$this->seedPackages([]);
+		$config = $this->config();
+		$config->captureComposerExtensions();
+
+		$this->assertSame([], $config->getErrorMessages());
+		$this->assertSame([], $config->getClassMap());
+		$this->assertTrue($config->getIsEmpty());
 	}
 
 	public function testCaptureComposerExtensions_skipsPackagesWithoutPradoExtra(): void

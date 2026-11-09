@@ -6,11 +6,14 @@ use Prado\Exceptions\TApplicationException;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Exceptions\TUnknownMethodException;
+use Prado\Collections\TPriorityPropertyTrait;
 use Prado\TComponent;
 use Prado\Util\IBaseBehavior;
+use Prado\Util\IBehavior;
 use Prado\Util\IDynamicMethods;
 use Prado\Util\IInstanceCheck;
 use Prado\Util\TBehavior;
+use Prado\Util\TCallChain;
 use Prado\Util\TClassBehaviorEventParameter;
 
 /**
@@ -1391,6 +1394,288 @@ class TComponentBehaviorTest extends TComponentTestBase
 		$this->assertNotSame($behavior, $attached);
 		$this->assertFalse($behavior->hasOwner());
 		$this->component->detachBehavior('plainBehavior');
+	}
+
+	/**
+	 * attachBehaviors() without $cloneIBehavior attaches the IBehavior instance held
+	 * by a TClassBehaviorEventParameter under the parameter's name and priority.
+	 */
+	public function testAttachBehaviors_classBehaviorEventParameterWithoutClone(): void
+	{
+		$behavior = new FooBehavior();
+		$param = new TClassBehaviorEventParameter(NewComponent::class, 'paramBehavior', $behavior, 5);
+
+		$this->component->attachBehaviors(['ignoredKey' => $param]);
+
+		$this->assertSame($behavior, $this->component->asa('paramBehavior'));
+		$this->assertNull($this->component->asa('ignoredKey'));
+		$this->assertSame($this->component, $behavior->getOwner());
+		$this->assertEquals(5, PradoUnit::getProp($this->component, '_m')->priorityAt('parambehavior'));
+
+		$this->component->detachBehaviors([$param]);
+		$this->assertNull($this->component->asa('paramBehavior'));
+		$this->assertFalse($behavior->hasOwner());
+	}
+
+	/**
+	 * attachBehaviors() with $cloneIBehavior attaches an IClassBehavior instance as
+	 * given, because only an IBehavior is cloned.
+	 */
+	public function testAttachBehaviors_cloneFlagKeepsClassBehaviorInstance(): void
+	{
+		$behavior = new FooClassBehavior();
+
+		$this->component->attachBehaviors(['sharedBehavior' => $behavior], true);
+
+		$this->assertSame($behavior, $this->component->asa('sharedBehavior'));
+		$this->assertTrue($behavior->isOwner($this->component));
+
+		$this->component->detachBehavior('sharedBehavior');
+		$this->assertFalse($behavior->hasOwner());
+	}
+
+	/**
+	 * attachBehaviors() with an empty list attaches nothing and creates no behavior map.
+	 */
+	public function testAttachBehaviors_emptyList(): void
+	{
+		$this->component->attachBehaviors([]);
+
+		$this->assertSame([], $this->component->getBehaviors());
+		$this->assertNull(PradoUnit::getProp($this->component, '_m'));
+	}
+
+	/**
+	 * detachBehavior() and detachBehaviors() on a component that never had a behavior
+	 * detach nothing and create no behavior map.
+	 */
+	public function testDetachBehavior_componentWithoutBehaviors(): void
+	{
+		$this->assertNull(PradoUnit::getProp($this->component, '_m'));
+
+		$this->assertNull($this->component->detachBehavior('missing'));
+		$this->component->detachBehaviors(['missing' => new FooBehavior(), 'other']);
+
+		$this->assertNull(PradoUnit::getProp($this->component, '_m'));
+		$this->assertSame([], $this->component->getBehaviors());
+	}
+
+	/**
+	 * detachBehaviors() with an empty list leaves the attached behaviors in place.
+	 */
+	public function testDetachBehaviors_emptyList(): void
+	{
+		$behavior = new FooBehavior();
+		$this->component->attachBehavior('kept', $behavior);
+
+		$this->component->detachBehaviors([]);
+
+		$this->assertSame($behavior, $this->component->asa('kept'));
+		$this->assertSame(0, $behavior->detached);
+
+		$this->component->detachBehavior('kept');
+		$this->assertSame(1, $behavior->detached);
+	}
+
+	/**
+	 * disableBehaviors() and enableBehaviors() raise their dynamic event only when
+	 * the state changes; a repeated call does nothing.
+	 */
+	public function testEnableDisableBehaviors_repeatedCallIsNoop(): void
+	{
+		$behavior = new TComponentBehaviorTestToggleCountingBehavior();
+		$this->component->attachBehavior('counter', $behavior);
+
+		$this->component->disableBehaviors();
+		$this->assertFalse($this->component->getBehaviorsEnabled());
+		$this->assertSame(1, $behavior->disabledCount);
+
+		$this->component->disableBehaviors();
+		$this->assertFalse($this->component->getBehaviorsEnabled());
+		$this->assertSame(1, $behavior->disabledCount);
+
+		$this->component->enableBehaviors();
+		$this->assertTrue($this->component->getBehaviorsEnabled());
+		$this->assertSame(1, $behavior->enabledCount);
+
+		$this->component->enableBehaviors();
+		$this->assertSame(1, $behavior->enabledCount);
+		$this->assertSame(1, $behavior->disabledCount);
+
+		$this->component->detachBehavior('counter');
+	}
+
+	/**
+	 * A behavior that does not implement IOwnerVisibleMethods places no restriction,
+	 * so the owner calls every public method of the behavior.
+	 */
+	public function testOwnerVisibleMethods_behaviorWithoutInterfaceIsUnrestricted(): void
+	{
+		$behavior = new TComponentBehaviorTestBareBehavior();
+		$this->assertNotInstanceOf(\Prado\Util\IOwnerVisibleMethods::class, $behavior);
+		$this->component->attachBehavior('bare', $behavior);
+
+		$this->assertSame($this->component, $behavior->getOwner());
+		$this->assertNull(PradoUnit::invoke($this->component, 'getBehaviorOwnerVisibleMethods', $behavior));
+		$this->assertTrue($this->component->hasMethod('bareMethod'));
+		$this->assertSame('bare', $this->component->bareMethod());
+
+		$this->assertSame($behavior, $this->component->detachBehavior('bare'));
+		$this->assertNull($behavior->getOwner());
+		$this->assertFalse($this->component->hasMethod('bareMethod'));
+	}
+
+	/**
+	 * getBehaviorsWithMethod() resolves an empty chain for a component without
+	 * behaviors, and attaching a behavior discards that memoized result.
+	 */
+	public function testGetBehaviorsWithMethod_noBehaviors(): void
+	{
+		$this->assertNull(PradoUnit::getProp($this->component, '_m'));
+		$this->assertSame([], PradoUnit::invoke($this->component, 'getBehaviorsWithMethod', 'dyTextFilter'));
+		$this->assertSame(['dytextfilter' => []], PradoUnit::getProp($this->component, '_bm'));
+
+		$behavior = new OwnerHiddenAllBehavior();
+		$this->component->attachBehavior('filter', $behavior);
+
+		$this->assertSame([$behavior], PradoUnit::invoke($this->component, 'getBehaviorsWithMethod', 'DYTEXTFILTER'));
+		$this->assertEquals('bbb', $this->component->dyTextFilter('aaa'));
+
+		$this->component->detachBehavior('filter');
+	}
+
+	/**
+	 * asa() and getBehaviors() match a behavior by an interface it implements, and
+	 * match nothing for an interface no behavior implements or for a trait name.
+	 */
+	public function testAsAAndGetBehaviors_withInterfaceAndTraitNames(): void
+	{
+		$foo = new FooBehavior();
+		$this->component->attachBehavior('fooIface', $foo);
+
+		$this->assertSame($foo, $this->component->asa(FooInterface::class));
+		$this->assertNull($this->component->asa(IInstanceCheck::class));
+		$this->assertSame([], $this->component->getBehaviors(IInstanceCheck::class));
+
+		$this->assertTrue(trait_exists(NewComponentTestTrait::class, false));
+		$this->assertNull($this->component->asa(NewComponentTestTrait::class));
+		$this->assertSame([], $this->component->getBehaviors(NewComponentTestTrait::class));
+
+		$this->component->detachBehavior('fooIface');
+	}
+}
+
+/**
+ * Counts the owner's behaviors-enabled state changes.
+ */
+class TComponentBehaviorTestToggleCountingBehavior extends TBehavior
+{
+	/** @var int the number of dyEnableBehaviors events received. */
+	public int $enabledCount = 0;
+
+	/** @var int the number of dyDisableBehaviors events received. */
+	public int $disabledCount = 0;
+
+	/**
+	 * Counts the owner enabling its behaviors.
+	 * @param ?TCallChain $chain the chain of dynamic events being raised.
+	 */
+	public function dyEnableBehaviors(?TCallChain $chain = null)
+	{
+		$this->enabledCount++;
+		parent::dyEnableBehaviors($chain);
+	}
+
+	/**
+	 * Counts the owner disabling its behaviors.
+	 * @param ?TCallChain $chain the chain of dynamic events being raised.
+	 */
+	public function dyDisableBehaviors(?TCallChain $chain = null)
+	{
+		$this->disabledCount++;
+		parent::dyDisableBehaviors($chain);
+	}
+}
+
+/**
+ * Minimal IBehavior that does not implement IOwnerVisibleMethods.
+ */
+class TComponentBehaviorTestBareBehavior extends TComponent implements IBehavior
+{
+	use TPriorityPropertyTrait;
+
+	private ?string $_name = null;
+
+	private bool $_enabled = true;
+
+	private ?\WeakReference $_owner = null;
+
+	/**
+	 * Returns a fixed value to the caller.
+	 * @return string the value 'bare'.
+	 */
+	public function bareMethod(): string
+	{
+		return 'bare';
+	}
+
+	public function init($config)
+	{
+	}
+
+	public function attach($component)
+	{
+		$this->_owner = \WeakReference::create($component);
+	}
+
+	public function detach($component)
+	{
+		$this->_owner = null;
+	}
+
+	public function getName(): ?string
+	{
+		return $this->_name;
+	}
+
+	public function setName($value)
+	{
+		$this->_name = $value;
+	}
+
+	public function getEnabled(): bool
+	{
+		return $this->_enabled;
+	}
+
+	public function setEnabled($value)
+	{
+		$this->_enabled = (bool) $value;
+	}
+
+	public function getOwner(): ?object
+	{
+		return $this->_owner?->get();
+	}
+
+	public function getOwners(): array
+	{
+		$owner = $this->getOwner();
+		return $owner === null ? [] : [$owner];
+	}
+
+	public function hasOwner(): bool
+	{
+		return $this->getOwner() !== null;
+	}
+
+	public function isOwner(object $component): bool
+	{
+		return $this->getOwner() === $component;
+	}
+
+	public function syncEventHandlers(?object $component = null, $attachOverride = 0)
+	{
 	}
 }
 

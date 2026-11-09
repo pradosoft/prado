@@ -304,6 +304,30 @@ class ReflectionAttributeBehavior extends \Prado\Util\TBehavior
 	}
 }
 
+class ReflectionNoMembersFixture
+{
+}
+
+class ReflectionOneAttributedMemberFixture
+{
+	#[ReflectionTestAttribute('only-prop')]
+	public int $only = 0;
+
+	#[ReflectionTestAttribute('only-method')]
+	public function only(): void
+	{
+	}
+}
+
+class ReflectionOnePlainMemberFixture
+{
+	public int $plain = 0;
+
+	public function plain(): void
+	{
+	}
+}
+
 // ---------------------------------------------------------------------------
 
 class TComponentReflectionTest extends TestCase
@@ -1531,5 +1555,109 @@ class TComponentReflectionTest extends TestCase
 	{
 		$reflection = new TComponentReflection(PlainPhpClass::class);
 		$this->assertSame([], $reflection->getAttributes());
+	}
+
+	// ========================================================================
+	// Reflection and attribute caches, starting empty
+	// ========================================================================
+
+	/**
+	 * Runs `$test` with empty class and attribute caches, then restores both caches.
+	 */
+	private function withEmptyReflectionCaches(callable $test): void
+	{
+		$caches = PradoUnit::snapshotStatic(TComponentReflection::class, ['_reflection_cache', '_reflection_attribute_cache']);
+		PradoUnit::setStaticProp(TComponentReflection::class, '_reflection_cache', []);
+		PradoUnit::setStaticProp(TComponentReflection::class, '_reflection_attribute_cache', []);
+		try {
+			$test();
+		} finally {
+			PradoUnit::restoreStatic(TComponentReflection::class, $caches);
+		}
+	}
+
+	public function testGetReflectionClassByTypeCachesFirstLookupFromObject(): void
+	{
+		$this->withEmptyReflectionCaches(function () {
+			$rc = TComponentReflection::getReflectionClassByType(new ReflectionNoMembersFixture());
+
+			$this->assertSame(ReflectionNoMembersFixture::class, $rc->getName());
+			$this->assertSame(
+				[strtolower(ReflectionNoMembersFixture::class) => $rc],
+				PradoUnit::getStaticProp(TComponentReflection::class, '_reflection_cache')
+			);
+			$this->assertSame($rc, TComponentReflection::getReflectionClassByType(ReflectionNoMembersFixture::class));
+		});
+	}
+
+	public function testGetPropertiesWithAttributeByTypeSingleAttributedProperty(): void
+	{
+		foreach ([ReflectionOneAttributedMemberFixture::class, new ReflectionOneAttributedMemberFixture()] as $class) {
+			$this->withEmptyReflectionCaches(function () use ($class) {
+				$map = TComponentReflection::getPropertiesWithAttributeByType($class, ReflectionTestAttribute::class);
+
+				$this->assertSame(['only'], array_keys($map));
+				$this->assertSame(['only-prop'], self::values($map['only']));
+				$cached = TComponentReflection::getPropertiesWithAttributeByType($class, ReflectionTestAttribute::class);
+				$this->assertSame($map['only'][0], $cached['only'][0]);
+			});
+		}
+	}
+
+	public function testGetPropertiesWithAttributeByTypeSinglePlainProperty(): void
+	{
+		foreach ([ReflectionOnePlainMemberFixture::class, new ReflectionOnePlainMemberFixture()] as $class) {
+			$this->withEmptyReflectionCaches(function () use ($class) {
+				$this->assertSame([], TComponentReflection::getPropertiesWithAttributeByType($class, ReflectionTestAttribute::class));
+				$this->assertArrayHasKey(
+					strtolower('properties::' . ReflectionOnePlainMemberFixture::class . '::' . ReflectionTestAttribute::class),
+					PradoUnit::getStaticProp(TComponentReflection::class, '_reflection_attribute_cache')
+				);
+			});
+		}
+	}
+
+	public function testGetMethodsWithAttributeByTypeSingleAttributedMethod(): void
+	{
+		foreach ([ReflectionOneAttributedMemberFixture::class, new ReflectionOneAttributedMemberFixture()] as $class) {
+			$this->withEmptyReflectionCaches(function () use ($class) {
+				$map = TComponentReflection::getMethodsWithAttributeByType($class, ReflectionTestAttribute::class);
+
+				$this->assertSame(['only'], array_keys($map));
+				$this->assertSame(['only-method'], self::values($map['only']));
+				$cached = TComponentReflection::getMethodsWithAttributeByType($class, ReflectionTestAttribute::class);
+				$this->assertSame($map['only'][0], $cached['only'][0]);
+			});
+		}
+	}
+
+	public function testGetMethodsWithAttributeByTypeSinglePlainMethod(): void
+	{
+		foreach ([ReflectionOnePlainMemberFixture::class, new ReflectionOnePlainMemberFixture()] as $class) {
+			$this->withEmptyReflectionCaches(function () use ($class) {
+				$this->assertSame([], TComponentReflection::getMethodsWithAttributeByType($class, ReflectionTestAttribute::class));
+				$this->assertArrayHasKey(
+					strtolower('methods::' . ReflectionOnePlainMemberFixture::class . '::' . ReflectionTestAttribute::class),
+					PradoUnit::getStaticProp(TComponentReflection::class, '_reflection_attribute_cache')
+				);
+			});
+		}
+	}
+
+	public function testMemberMapsOfClassWithoutMembersAreEmptyAndCached(): void
+	{
+		foreach ([ReflectionNoMembersFixture::class, new ReflectionNoMembersFixture()] as $class) {
+			$this->withEmptyReflectionCaches(function () use ($class) {
+				$this->assertSame([], TComponentReflection::getMethodsWithAttributeByType($class, ReflectionTestAttribute::class));
+				$this->assertSame([], TComponentReflection::getPropertiesWithAttributeByType($class, ReflectionTestAttribute::class));
+				$this->assertSame(
+					[
+						strtolower('methods::' . ReflectionNoMembersFixture::class . '::' . ReflectionTestAttribute::class) => [],
+						strtolower('properties::' . ReflectionNoMembersFixture::class . '::' . ReflectionTestAttribute::class) => [],
+					],
+					PradoUnit::getStaticProp(TComponentReflection::class, '_reflection_attribute_cache')
+				);
+			});
+		}
 	}
 }

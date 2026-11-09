@@ -6,6 +6,58 @@ use Prado\TEventParameter;
 use Prado\Collections\TAttributeCollection;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * Records every offset it receives and reports each offset as set to 'stored'.
+ */
+class OffsetRecordingArrayAccess implements \ArrayAccess
+{
+	public array $calls = [];
+
+	public function offsetExists(mixed $offset): bool
+	{
+		$this->calls[] = ['exists', $offset];
+		return true;
+	}
+
+	public function offsetGet(mixed $offset): mixed
+	{
+		$this->calls[] = ['get', $offset];
+		return 'stored';
+	}
+
+	public function offsetSet(mixed $offset, mixed $value): void
+	{
+		$this->calls[] = ['set', $offset, $value];
+	}
+
+	public function offsetUnset(mixed $offset): void
+	{
+		$this->calls[] = ['unset', $offset];
+	}
+}
+
+/**
+ * Seeds a default array when the parameter is initialized to an empty array.
+ */
+class SeededEventParameter extends TEventParameter
+{
+	public function setParameter(mixed $value)
+	{
+		parent::setParameter($value === [] ? ['count' => 0] : $value);
+	}
+}
+
+/**
+ * Stores the string 'scalar' in place of any array parameter.
+ */
+class ScalarOnlyEventParameter extends TEventParameter
+{
+	public function setParameter(mixed $value)
+	{
+		parent::setParameter(is_array($value) ? 'scalar' : $value);
+	}
+}
+
 class TEventParameterTest extends TestCase
 {
 	// ================================================================================
@@ -972,5 +1024,75 @@ class TEventParameterTest extends TestCase
 		$param->resetEventProperties();
 		$this->assertFalse($param->getParameterChanged());
 		$this->assertFalse($param->getStopped());
+	}
+
+	// ================================================================================
+	// Null offset on an ArrayAccess parameter
+	// ================================================================================
+
+	public function testOffsetSetWithNullKeyOnArrayAccessAppends()
+	{
+		$list = new \ArrayObject(['first']);
+		$param = new TEventParameter($list);
+
+		$param[] = 'second';
+
+		$this->assertSame(['first', 'second'], $list->getArrayCopy());
+		$this->assertTrue($param->getParameterChanged());
+	}
+
+	public function testNullKeyOnArrayAccessIsPassedUnchanged()
+	{
+		$store = new OffsetRecordingArrayAccess();
+		$param = new TEventParameter($store);
+
+		$this->assertTrue($param->offsetExists(null));
+		$this->assertSame('stored', $param->offsetGet(null));
+		$param->offsetSet(null, 'item');
+		$param->offsetUnset(null);
+
+		$this->assertSame([
+			['exists', null],
+			['exists', null], ['get', null],
+			['exists', null], ['get', null], ['set', null, 'item'],
+			['exists', null], ['unset', null],
+		], $store->calls);
+		$this->assertTrue($param->getParameterChanged());
+	}
+
+	// ================================================================================
+	// offsetSet on a null Parameter with an overridden setParameter
+	// ================================================================================
+
+	public function testOffsetSetOnNullParameterKeepsSeededValueWhenEqual()
+	{
+		$param = new SeededEventParameter();
+		$this->assertNull($param->getParameter());
+
+		$param['count'] = 0;
+
+		$this->assertSame(['count' => 0], $param->getParameter());
+		$this->assertTrue($param->getParameterChanged());
+	}
+
+	public function testOffsetSetOnNullParameterOverwritesSeededValue()
+	{
+		$param = new SeededEventParameter();
+
+		$param['count'] = 5;
+
+		$this->assertSame(['count' => 5], $param->getParameter());
+		$this->assertTrue($param->getParameterChanged());
+	}
+
+	public function testOffsetSetOnNullParameterIsIgnoredWhenParameterStaysNonArray()
+	{
+		$param = new ScalarOnlyEventParameter();
+
+		$param['key'] = 'value';
+
+		$this->assertSame('scalar', $param->getParameter());
+		$this->assertFalse($param->getParameterIsArray());
+		$this->assertNull($param['key']);
 	}
 }
