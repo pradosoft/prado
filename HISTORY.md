@@ -1,5 +1,6 @@
 ## Version 4.4.0 - TBA
 NEW: Issue #1401 - `TDrawer` is a `TDialog` at a page edge: `Placement` (`TDrawerPlacement`), `DockAt` docks it in the page layout on wide screens and opens it modally on narrow ones, shown inline without script, and `Swipe` closes it on touch. (belisoful)
+NEW: Issue #1401 - `TContextMenu` opens a `TDropdownMenu` on a right-click on `ForControl` at the pointer, or on Shift+F10 and the ContextMenu key below the target, in place of the browser context menu. (belisoful)
 BUG: `TPagedDataSource::getCount()` with paging on matches iteration: a page past the last page counts 0 and reports `IsLastPage`, and a short custom page counts its own items. (belisoful)
 NEW: Issue #1401 - `TDropdownMenu` renders a menu button and an action menu of its links and buttons, a `TPopover` with the ARIA `menu` role and the WAI-ARIA menu button keyboard. (belisoful)
 NEW: Issue #1401 - `TConfirmButton` asks for confirmation in a modal `alertdialog` before it posts back, without script, and replaces `onclick="return confirm()"`: `ConfirmText`, `ConfirmHeaderText`, `ConfirmButtonText`, and `CancelButtonText`. (belisoful)

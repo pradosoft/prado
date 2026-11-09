@@ -100,6 +100,7 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 | [`TTeleport`](TTeleport.md) | Renders its content after `</form>`, outside the page form: a native `<form method="dialog">`, overlays, toasts; JS in `controls/teleport.js` sets the `form` attribute of its fields (@since 4.4.0) |
 | [`TPopover`](TPopover.md) | `<div popover>` anchored to its invoker; `Popover` (`auto`), `Placement` ([`TPopoverPlacement`](TPopoverPlacement.md)), `ButtonText` renders its own invoker; no script (@since 4.4.0) |
 | [`TDropdownMenu`](TDropdownMenu.md) | A [`TPopover`](TPopover.md) menu button and ARIA `menu` of its links and buttons, with the menu keyboard; JS in `controls/menu.js` (@since 4.4.0) |
+| [`TContextMenu`](TContextMenu.md) | A [`TDropdownMenu`](TDropdownMenu.md) without a button that opens on a right-click on `ForControl` at the pointer, or Shift+F10 at the target; JS in `controls/menu.js` (@since 4.4.0) |
 | [`TTooltip`](TTooltip.md) | `<div popover="hint" role="tooltip">` that describes `ForControl` on hover and focus (WCAG 1.4.13); `Placement`, `ShowDelay`, `HideDelay`; JS in `controls/tooltip.js` (@since 4.4.0) |
 
 ## Data Controls
