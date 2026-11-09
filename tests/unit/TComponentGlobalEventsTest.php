@@ -3,6 +3,7 @@
 namespace Prado\Test\Unit;
 
 use Prado\TComponent;
+use Prado\Util\IDynamicMethods;
 
 /**
  * Tests for TComponent global-event listening: listen(), unlisten(),
@@ -152,5 +153,92 @@ class TComponentGlobalEventsTest extends TComponentTestBase
 		$this->assertFalse($copy->getListeningToGlobalEvents(), 'A clone of a component that does not listen does not listen');
 		$this->assertNull($copy->unlisten());
 		$this->assertEquals($count - 1, $handlers->getCount());
+	}
+
+	/**
+	 * listen() and unlisten() register only the events getClassFxEvents() reports.
+	 * A class reporting none changes its listening state, notifies its behaviors
+	 * with an empty list, and returns 0.
+	 */
+	public function testListenAndUnlisten_classWithoutFxEvents()
+	{
+		$component = new TComponentGlobalEventsTestNoFxComponent();
+		$behavior = new IntraObjectExtenderBehavior();
+		$component->attachBehavior('extender', $behavior);
+		$attachHandlers = $component->getEventHandlers('fxAttachClassBehavior');
+		$count = $attachHandlers->getCount();
+
+		$this->assertSame(0, $component->listen());
+		$this->assertTrue($component->getListeningToGlobalEvents());
+		$this->assertSame($count, $attachHandlers->getCount());
+		$this->assertSame(1, $behavior->getLastCall());
+		$this->assertSame([], $behavior->getLastArgumentList()[0]);
+		$this->assertNull($component->listen());
+
+		$this->assertSame(0, $component->unlisten());
+		$this->assertFalse($component->getListeningToGlobalEvents());
+		$this->assertSame($count, $attachHandlers->getCount());
+		$this->assertSame(2, $behavior->getLastCall());
+		$this->assertSame([], $behavior->getLastArgumentList()[0]);
+		$this->assertNull($component->unlisten());
+	}
+
+	/**
+	 * An IDynamicMethods class reporting no fx events registers only its __dycall as
+	 * the global raise-event listener.
+	 */
+	public function testListenAndUnlisten_dynamicClassWithoutFxEvents()
+	{
+		$component = new TComponentGlobalEventsTestNoFxDynamicComponent();
+		$behavior = new IntraObjectExtenderBehavior();
+		$component->attachBehavior('extender', $behavior);
+		$attachHandlers = $component->getEventHandlers('fxAttachClassBehavior');
+		$listeners = $component->getEventHandlers(TComponent::GLOBAL_RAISE_EVENT_LISTENER);
+		$count = $attachHandlers->getCount();
+		$this->assertSame(0, $listeners->getCount());
+
+		$this->assertSame(1, $component->listen());
+		$this->assertTrue($component->getListeningToGlobalEvents());
+		$this->assertSame($count, $attachHandlers->getCount());
+		$this->assertSame([[$component, '__dycall']], $listeners->toArray());
+		$this->assertSame([TComponent::GLOBAL_RAISE_EVENT_LISTENER], $behavior->getLastArgumentList()[0]);
+
+		$this->assertSame(1, $component->unlisten());
+		$this->assertFalse($component->getListeningToGlobalEvents());
+		$this->assertSame(0, $listeners->getCount());
+		$this->assertSame([TComponent::GLOBAL_RAISE_EVENT_LISTENER], $behavior->getLastArgumentList()[0]);
+	}
+}
+
+/**
+ * Component reporting no fx events for its class.
+ */
+class TComponentGlobalEventsTestNoFxComponent extends TComponent
+{
+	/**
+	 * Reports no fx events.
+	 * @param object $class the object to get the fx events of.
+	 * @return string[] an empty list.
+	 */
+	protected function getClassFxEvents($class)
+	{
+		return [];
+	}
+}
+
+/**
+ * Component reporting no fx events that catches undefined dynamic and global events.
+ */
+class TComponentGlobalEventsTestNoFxDynamicComponent extends TComponentGlobalEventsTestNoFxComponent implements IDynamicMethods
+{
+	/**
+	 * Passes the first argument through.
+	 * @param string $method the dynamic or global event name.
+	 * @param array $args the event arguments.
+	 * @return mixed the first argument, or null without arguments.
+	 */
+	public function __dycall($method, $args)
+	{
+		return $args[0] ?? null;
 	}
 }

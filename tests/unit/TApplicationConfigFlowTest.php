@@ -16,6 +16,7 @@
 namespace Prado\Test\Unit;
 
 use Prado\Exceptions\TConfigurationException;
+use Prado\IModuleDependency;
 use Prado\Prado;
 use Prado\TApplication;
 use Prado\TApplicationConfiguration;
@@ -38,6 +39,29 @@ class TApplicationConfigFlowTest_Module extends TModule
 	{
 		$this->initialized = true;
 		parent::init($config);
+	}
+}
+
+/**
+ * Module that declares the module IDs in its DependsOn property as dependencies.
+ */
+class TApplicationConfigFlowTest_DependentModule extends TApplicationConfigFlowTest_Module implements IModuleDependency
+{
+	private string $_dependsOn = '';
+
+	public function getDependsOn(): string
+	{
+		return $this->_dependsOn;
+	}
+
+	public function setDependsOn(string $value): void
+	{
+		$this->_dependsOn = $value;
+	}
+
+	public function getModuleDependencies(bool $isPreInit): null|string|array
+	{
+		return $this->_dependsOn === '' ? null : explode(',', $this->_dependsOn);
 	}
 }
 
@@ -262,6 +286,69 @@ class TApplicationConfigFlowTest extends \PHPUnit\Framework\TestCase
 		}
 	}
 
+	public function testResolveRuntimePath_existingVersionedDirectory_isReused(): void
+	{
+		mkdir($runtime = $this->_tmpDir . DIRECTORY_SEPARATOR . TApplication::RUNTIME_PATH);
+		$configFile = $this->writeFile(TApplication::CONFIG_FILE_XML, '<application/>');
+		$versioned = $runtime . DIRECTORY_SEPARATOR . TApplication::CONFIG_FILE_XML . '-' . Prado::getVersion();
+		mkdir($versioned);
+		$marker = $versioned . DIRECTORY_SEPARATOR . 'kept.cache';
+		file_put_contents($marker, 'kept');
+
+		$resolved = PradoUnit::invoke($this->bareApp(), 'resolveRuntimePath', $this->_tmpDir, $configFile);
+
+		$this->assertSame($versioned, $resolved);
+		$this->assertSame('kept', file_get_contents($marker));
+	}
+
+	// =======================================================================
+	// __construct()
+	// =======================================================================
+
+	public function testConstructor_registersTheApplicationAndCachesConfigurationByDefault(): void
+	{
+		mkdir($runtime = $this->_tmpDir . DIRECTORY_SEPARATOR . TApplication::RUNTIME_PATH);
+		$prado = PradoUnit::snapshotStatic(Prado::class);
+		$component = PradoUnit::snapshotStatic(TComponent::class);
+		$app = null;
+		try {
+			$app = new TApplication($this->_tmpDir);
+
+			$this->assertSame($app, Prado::getApplication());
+			$this->assertSame(TApplication::CONFIG_TYPE_XML, $app->getConfigurationType());
+			$this->assertSame(
+				realpath($runtime) . DIRECTORY_SEPARATOR . TApplication::CONFIGCACHE_FILE,
+				PradoUnit::invoke($app, 'getCacheFile')
+			);
+			$this->assertSame(realpath($this->_tmpDir), Prado::getPathOfAlias('Application'));
+			$this->assertSame(
+				[TApplication::DEFAULT_PAGE_SERVICE_CLASS, [], null],
+				$app->getRegisteredService(TApplication::PAGE_SERVICE_ID)
+			);
+		} finally {
+			$app?->unlisten();
+			PradoUnit::restoreStatic(Prado::class, $prado);
+			PradoUnit::restoreStatic(TComponent::class, $component);
+		}
+	}
+
+	public function testConstructor_explicitTypeWithCacheConfig_setsTheCacheFile(): void
+	{
+		$this->_app = new TApplicationConfigFlowTest_App($this->_tmpDir, true, TApplication::CONFIG_TYPE_PHP);
+
+		$this->assertSame(TApplication::CONFIG_TYPE_PHP, $this->_app->getConfigurationType());
+		$this->assertSame(TApplication::CONFIG_FILE_PHP, $this->_app->getConfigurationFileName());
+		$this->assertSame(
+			$this->_app->getRuntimePath() . DIRECTORY_SEPARATOR . TApplication::CONFIGCACHE_FILE,
+			PradoUnit::invoke($this->_app, 'getCacheFile')
+		);
+	}
+
+	public function testConstructor_withoutCacheConfig_leavesTheCacheFileUnset(): void
+	{
+		$this->assertNull(PradoUnit::invoke($this->app(), 'getCacheFile'));
+	}
+
 	// =======================================================================
 	// setClockClass()
 	// =======================================================================
@@ -358,6 +445,87 @@ class TApplicationConfigFlowTest extends \PHPUnit\Framework\TestCase
 		} catch (TConfigurationException $e) {
 			$this->assertSame('application_includefile_invalid', $e->getErrorCode());
 		}
+	}
+
+	public function testApplyConfiguration_emptyConfiguration_changesNothing(): void
+	{
+		$app = $this->app();
+		$before = TTestApplication::snapshotApp($app);
+		$aliases = PradoUnit::getStaticProp(Prado::class, '_aliases');
+
+		$app->applyConfiguration(new TApplicationConfiguration(), false);
+
+		$this->assertSame($before, TTestApplication::snapshotApp($app));
+		$this->assertSame($aliases, PradoUnit::getStaticProp(Prado::class, '_aliases'));
+	}
+
+	public function testApplyConfiguration_lazyTrueAttribute_defersTheModuleUntilRequested(): void
+	{
+		$app = $this->app();
+		$moduleClass = TApplicationConfigFlowTest_Module::class;
+
+		$app->applyConfiguration($this->xmlConfig('<application><modules><module id="deferred" class="' . $moduleClass . '" lazy="true"/></modules></application>'), false);
+
+		$this->assertArrayHasKey('deferred', $app->getModules());
+		$this->assertNull($app->getModules()['deferred']);
+		$module = $app->getModule('deferred');
+		$this->assertInstanceOf($moduleClass, $module);
+		$this->assertTrue($module->initialized);
+		$this->assertSame($module, $app->getModules()['deferred']);
+	}
+
+	public function testApplyConfiguration_lazyFalseProperty_loadsTheModuleAtOnce(): void
+	{
+		$app = $this->app();
+		$config = new TApplicationConfiguration();
+		$config->loadFromPhp(['modules' => [
+			'eager' => ['class' => TApplicationConfigFlowTest_Module::class, 'properties' => ['lazy' => false]],
+		]], $this->_tmpDir);
+
+		$app->applyConfiguration($config, false);
+
+		$module = $app->getModules()['eager'];
+		$this->assertInstanceOf(TApplicationConfigFlowTest_Module::class, $module);
+		$this->assertTrue($module->initialized);
+		$this->assertSame('eager', $module->getID());
+	}
+
+	public function testApplyConfiguration_lazyFalseAttribute_loadsTheModuleAtOnce(): void
+	{
+		$app = $this->app();
+		$moduleClass = TApplicationConfigFlowTest_Module::class;
+
+		$app->applyConfiguration($this->xmlConfig('<application><modules><module id="eager" class="' . $moduleClass . '" lazy="false"/></modules></application>'), false);
+
+		$module = $app->getModules()['eager'];
+		$this->assertInstanceOf($moduleClass, $module);
+		$this->assertTrue($module->initialized);
+	}
+
+	public function testApplyConfiguration_dependencyCycle_reportsTheCycleWithoutTheSortedDependency(): void
+	{
+		$app = $this->app();
+		$plain = TApplicationConfigFlowTest_Module::class;
+		$dependent = TApplicationConfigFlowTest_DependentModule::class;
+
+		try {
+			$app->applyConfiguration($this->xmlConfig(<<<XML
+				<application>
+					<modules>
+						<module id="free" class="{$plain}"/>
+						<module id="a" class="{$dependent}" DependsOn="free,b"/>
+						<module id="b" class="{$dependent}" DependsOn="a"/>
+					</modules>
+				</application>
+				XML), false);
+			$this->fail('applyConfiguration() did not throw for a module dependency cycle.');
+		} catch (TConfigurationException $e) {
+			$this->assertSame('application_module_dependency_cycle', $e->getErrorCode());
+			$this->assertStringContainsString('a -> b -> a', $e->getMessage());
+			$this->assertStringNotContainsString('free', $e->getMessage());
+		}
+		$this->assertFalse($app->getModules()['a']->initialized);
+		$this->assertFalse($app->getModules()['free']->initialized);
 	}
 
 	// =======================================================================

@@ -111,11 +111,19 @@ class TWeakList extends TList implements IWeakCollection, ICollectionFilter
 	 * object is counted and not tracked; one whose handler object is already collected
 	 * marks the WeakMap changed so the next scrub removes it.  Traversable ArrayAccess
 	 * containers are stored as weakened copies, like arrays, and are not tracked.
+	 * An explicit WeakReference tracks its referent, whichever type it is.  A referent
+	 * already collected marks the WeakMap changed.
 	 * @param object $object The object to add to the managed weak map.
 	 */
 	protected function weakCustomAdd(object $object)
 	{
-		if ($object instanceof TEventHandler) {
+		if ($object instanceof WeakReference) {
+			$object = $object->get();
+			if ($object === null) {
+				$this->weakMarkChanged();
+				return 0;
+			}
+		} elseif ($object instanceof TEventHandler) {
 			$this->_eventHandlerCount++;
 			$handlerObject = $object->getHandlerObject();
 			if ($handlerObject === null) {
@@ -135,7 +143,7 @@ class TWeakList extends TList implements IWeakCollection, ICollectionFilter
 	 * This is a custom function for removing objects to the weak map.  Specifically,
 	 * if the object being removed is a TEventHandler, we use the {@see \Prado\TEventHandler::getHandlerObject}
 	 * object instead of the TEventHandler itself.  This mirrors {@see weakCustomAdd}.
-	 * A stored WeakReference is resolved to its object; a collected object is
+	 * A stored WeakReference is resolved to its referent; a collected referent is
 	 * already gone from the WeakMap.
 	 * @param object $object The stored item to remove from the managed weak map.
 	 */
@@ -146,8 +154,7 @@ class TWeakList extends TList implements IWeakCollection, ICollectionFilter
 			if ($object === null) {
 				return 0;
 			}
-		}
-		if ($object instanceof TEventHandler) {
+		} elseif ($object instanceof TEventHandler) {
 			$this->_eventHandlerCount--;
 			$handlerObject = $object->getHandlerObject();
 			if ($handlerObject === null) {
@@ -158,6 +165,25 @@ class TWeakList extends TList implements IWeakCollection, ICollectionFilter
 			return 0;
 		}
 		return $this->weakRemove($object);
+	}
+
+	/**
+	 * Weakens and inserts an item, then tracks it.  A failed insert leaves the weak
+	 * map and the event handler count unchanged.
+	 * @param int $index the specified position.
+	 * @param mixed $item new item
+	 * @throws TInvalidDataValueException If the index specified exceeds the bound
+	 * @throws TInvalidOperationException if the list is read-only
+	 * @since 4.4.0
+	 */
+	protected function internalInsertAt($index, $item): void
+	{
+		$stored = $item;
+		$this->filterItemForInput($stored);
+		parent::insertAt($index, $stored);
+		if (is_object($item)) {
+			$this->weakCustomAdd($item);
+		}
 	}
 
 	/**
@@ -402,11 +428,7 @@ class TWeakList extends TList implements IWeakCollection, ICollectionFilter
 	{
 		$this->collapseDiscardInvalid();
 		$this->scrubWeakReferences();
-		if (is_object($item)) {
-			$this->weakCustomAdd($item);
-		}
-		$this->filterItemForInput($item);
-		parent::insertAt($this->_c, $item);
+		$this->internalInsertAt($this->_c, $item);
 		return $this->_c - 1;
 	}
 
@@ -424,11 +446,7 @@ class TWeakList extends TList implements IWeakCollection, ICollectionFilter
 	{
 		$this->collapseDiscardInvalid();
 		$this->scrubWeakReferences();
-		if (is_object($item)) {
-			$this->weakCustomAdd($item);
-		}
-		$this->filterItemForInput($item);
-		parent::insertAt($index, $item);
+		$this->internalInsertAt($index, $item);
 	}
 
 	/**
@@ -478,18 +496,22 @@ class TWeakList extends TList implements IWeakCollection, ICollectionFilter
 	}
 
 	/**
-	 * Removes all items in the list and resets the Weak Cache.
+	 * Removes all items in the list and resets the Weak Cache and event handler count.
+	 * A destructor run by a removed item can remove or insert entries; the count is
+	 * read on each pass, so the list ends empty.  Invalid WeakReference[s] are optionally
+	 * removed first, so a read-only list holding only invalid entries clears without error.
 	 * @throws TInvalidOperationException if the list is read-only
 	 */
 	public function clear(): void
 	{
-		$c = $this->_c;
-		for ($i = $this->_c - 1; $i >= 0; --$i) {
-			parent::removeAt($i);
+		if (!$this->_c || !$this->getCount()) {
+			return;
 		}
-		if ($c) {
-			$this->weakRestart();
+		while ($this->_c > 0) {
+			parent::removeAt($this->_c - 1);
 		}
+		$this->_eventHandlerCount = 0;
+		$this->weakRestart();
 	}
 
 	/**
@@ -541,11 +563,7 @@ class TWeakList extends TList implements IWeakCollection, ICollectionFilter
 			if (($index = $this->indexOf($baseitem)) === -1) {
 				throw new TInvalidDataValueException('list_item_inexistent');
 			}
-			if (is_object($item)) {
-				$this->weakCustomAdd($item);
-			}
-			$this->filterItemForInput($item);
-			parent::insertAt($index, $item);
+			$this->internalInsertAt($index, $item);
 			return $index;
 		} else {
 			throw new TInvalidOperationException('list_readonly', get_class($this));
@@ -567,11 +585,7 @@ class TWeakList extends TList implements IWeakCollection, ICollectionFilter
 			if (($index = $this->indexOf($baseitem)) === -1) {
 				throw new TInvalidDataValueException('list_item_inexistent');
 			}
-			if (is_object($item)) {
-				$this->weakCustomAdd($item);
-			}
-			$this->filterItemForInput($item);
-			parent::insertAt($index + 1, $item);
+			$this->internalInsertAt($index + 1, $item);
 			return $index + 1;
 		} else {
 			throw new TInvalidOperationException('list_readonly', get_class($this));
@@ -603,11 +617,7 @@ class TWeakList extends TList implements IWeakCollection, ICollectionFilter
 				$this->clear();
 			}
 			foreach ($data as $item) {
-				if (is_object($item)) {
-					$this->weakCustomAdd($item);
-				}
-				$this->filterItemForInput($item);
-				parent::insertAt($this->_c, $item);
+				$this->internalInsertAt($this->_c, $item);
 			}
 		} elseif ($data !== null) {
 			throw new TInvalidDataTypeException('list_data_not_iterable');
@@ -624,11 +634,7 @@ class TWeakList extends TList implements IWeakCollection, ICollectionFilter
 	{
 		if (is_array($data) || ($data instanceof Traversable)) {
 			foreach ($data as $item) {
-				if (is_object($item)) {
-					$this->weakCustomAdd($item);
-				}
-				$this->filterItemForInput($item);
-				parent::insertAt($this->_c, $item);
+				$this->internalInsertAt($this->_c, $item);
 			}
 		} elseif ($data !== null) {
 			throw new TInvalidDataTypeException('list_data_not_iterable');
@@ -658,21 +664,13 @@ class TWeakList extends TList implements IWeakCollection, ICollectionFilter
 	{
 		$this->scrubWeakReferences();
 		if ($offset === null || $offset === $this->_c) {
-			if (is_object($item)) {
-				$this->weakCustomAdd($item);
-			}
-			$this->filterItemForInput($item);
-			parent::insertAt($this->_c, $item);
+			$this->internalInsertAt($this->_c, $item);
 		} else {
 			$removed = parent::removeAt($offset);
 			if (is_object($removed)) {
 				$this->weakCustomRemove($removed);
 			}
-			if (is_object($item)) {
-				$this->weakCustomAdd($item);
-			}
-			$this->filterItemForInput($item);
-			parent::insertAt($offset, $item);
+			$this->internalInsertAt($offset, $item);
 		}
 	}
 

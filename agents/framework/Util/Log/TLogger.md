@@ -44,6 +44,8 @@ $logger->log('operation end', TLogger::PROFILE_END, 'perf.db');
 
 Category convention: dot-separated, e.g., `'Prado.Web.THttpRequest'`.
 
+A `null` category defaults to the caller of `log()` (`callingCategory()`): the class of the calling object, the declaring class of a calling static method or static closure, and the logger's class for a function, a closure outside a class, or a script. `Prado::log()` and its level and profile shortcuts resolve their own caller the same way, with `Prado::class` as the last case.
+
 ## TLogger Methods
 
 ```php

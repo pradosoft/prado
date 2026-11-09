@@ -23,6 +23,7 @@ Extends [TMap](./TMap.md). Implements [IWeakCollection](./IWeakCollection.md) an
 | `Closure` | Directly (strongly retained) |
 | `IWeakRetainable` / `TEventHandler` | Directly; for `TEventHandler`, the *inner* callable object is tracked in the WeakMap |
 | Any other object | Wrapped in `WeakReference::create($object)` |
+| Explicit `WeakReference` | As given; its referent is tracked in the WeakMap, and a referent already collected calls `weakMarkChanged()` so the next scrub removes it |
 
 ## DiscardInvalid Mode
 
@@ -55,7 +56,7 @@ new TWeakMap(
 $map->add($key, $value): mixed     // wraps object in WeakReference; removes old weak entry
 $map->remove($key): mixed          // returns dereferenced value (null if GC'd)
 $map->removeItem($item): array     // removes all entries matching $item; returns [key => value]
-$map->clear(): void                // removes all entries, restarts WeakMap cache
+$map->clear(): void                // removes all entries, restarts WeakMap cache, resets $_eventHandlerCount; throws map_readonly on a read-only map with entries
 $map->contains($key): bool         // scrubs first, then delegates to parent
 $map->itemAt($key): mixed          // scrubs, resolves WeakReference, calls dyNoItem if absent
 $map->toArray(): array             // scrubs, resolves all WeakReferences
@@ -65,6 +66,18 @@ $map->keyOf($item, bool $multiple = true): mixed  // returns all keys (array) or
 $map->copyFrom($data): void        // clears then adds all from $data
 $map->mergeWith($data): void       // adds all from $data, overwriting duplicate keys
 ```
+
+A read-only map behaves as [TMap](./TMap.md) does, and the failure leaves the map unchanged:
+
+| Call on a read-only map | Result |
+|---|---|
+| `clear()` or `copyFrom(iterable)` with entries | `map_readonly` |
+| `clear()` or `copyFrom([])` without entries | No-op |
+| `copyFrom(data)` or `mergeWith(data)` without entries | `map_readonly` from `add()` |
+| `mergeWith(data)` with entries | `map_readonly` from `add()` |
+| `mergeWith([])`, `copyFrom(null)` | No-op |
+
+`clear()` reads the entry count through `getCount()` on a read-only map, so with `DiscardInvalid` true a map holding only collected values has no entries. A destructor run during `clear()` can remove or add entries; see [TWeakCollectionTrait](./TWeakCollectionTrait.md) "Clear Contract".
 
 ## ICollectionFilter — WeakReference Encoding
 

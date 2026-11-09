@@ -32,7 +32,7 @@ db_query_failed=Database query failed: {0}
 cache_items_expired={0, plural, one{# item} other{# items}} expired.
 ```
 
-The constructor arguments, as strings (`getErrorArguments()`), are the `{0}`, `{1}`, … arguments. `formatErrorMessage()` formats a message defined in a file with `\MessageFormatter::formatMessage()` in the language of `getMessageFileLanguage()` (the file's `-xx` suffix, else `en`); ICU converts a string argument of a `plural`, `number`, or `date` argument. A code defined in no file, or a pattern ICU cannot parse, has its `{0}`, `{1}`, … replaced with `strtr()`.
+The constructor arguments, as strings (`getErrorArguments()`), are the `{0}`, `{1}`, … arguments. `TPropertyValue::ensureString()` converts each one, so an argument is a scalar, `null`, or an object with `__toString()`; an array or other object throws `TInvalidDataTypeException` (`propertyvalue_invalid_string_type`) from the constructor. Pass `get_debug_type($value)` to name the type of such a value. `formatErrorMessage()` formats a message defined in a file with `\MessageFormatter::formatMessage()` in the language of `getMessageFileLanguage()` (the file's `-xx` suffix, else `en`); ICU converts a string argument of a `plural`, `number`, or `date` argument. A code defined in no file, or a pattern ICU cannot parse, has its `{0}`, `{1}`, … replaced with `strtr()`.
 
 ICU apostrophe quoting:
 

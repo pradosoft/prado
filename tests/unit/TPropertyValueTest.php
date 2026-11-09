@@ -2,6 +2,7 @@
 
 namespace Prado\Test\Unit;
 
+use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\ICoercible;
 use Prado\IEnumerable;
@@ -286,6 +287,24 @@ class TPropertyValueTestCoercibleDirection implements IEnumerable, ICoercible
 
 /**
  */
+/** A class without constants, for enum validation that has only extras. */
+class TPropertyValueTestNoConstants
+{
+}
+
+/** Converts to the string it is constructed with. */
+class TPropertyValueTestStringable
+{
+	public function __construct(private string $_text)
+	{
+	}
+
+	public function __toString(): string
+	{
+		return $this->_text;
+	}
+}
+
 class TPropertyValueTest extends \PHPUnit\Framework\TestCase
 {
 	// ════════════════════════════════════════════════════════════════════════
@@ -480,6 +499,156 @@ class TPropertyValueTest extends \PHPUnit\Framework\TestCase
 		// accurately reflects this path.
 		$lit = new \Prado\Web\Javascripts\TJavaScriptLiteral('alert(1)');
 		self::assertSame($lit, TPropertyValue::ensureString($lit));
+	}
+
+	/**
+	 * Calls ensureString() expecting the Issue #1497 exception, and returns it.
+	 */
+	private function ensureStringException(mixed $value): TInvalidDataTypeException
+	{
+		try {
+			$result = TPropertyValue::ensureString($value);
+		} catch (TInvalidDataTypeException $e) {
+			return $e;
+		}
+		self::fail('ensureString() must throw for ' . get_debug_type($value) . '; it returned ' . var_export($result, true) . '.');
+	}
+
+	public function testEnsureString_array_throwsInvalidDataType(): void
+	{
+		// Issue #1497: the cast raised "Array to string conversion".
+		foreach ([['a'], [], ['k' => 'v'], [['a'], ['b' => ['c']]]] as $array) {
+			$e = $this->ensureStringException($array);
+			self::assertSame('propertyvalue_invalid_string_type', $e->getErrorCode());
+			self::assertSame("Value of type 'array' cannot be converted to a string.", $e->getMessage());
+		}
+	}
+
+	public function testEnsureString_objectWithoutToString_throwsInvalidDataType(): void
+	{
+		// Issue #1497: the cast raised \Error "could not be converted to string".
+		$e = $this->ensureStringException(new \stdClass());
+		self::assertSame('propertyvalue_invalid_string_type', $e->getErrorCode());
+		self::assertSame("Value of type 'stdClass' cannot be converted to a string.", $e->getMessage());
+
+		$e = $this->ensureStringException(fn() => 1);
+		self::assertStringContainsString("'Closure'", $e->getMessage());
+
+		$e = $this->ensureStringException(TPropertyValueTestColor::Red);
+		self::assertStringContainsString(TPropertyValueTestColor::class, $e->getMessage());
+
+		$e = $this->ensureStringException(new TComponent());
+		self::assertStringContainsString(TComponent::class, $e->getMessage());
+	}
+
+	public function testEnsureString_arrayAndObject_throwWithWarningsMasked(): void
+	{
+		// The exception does not depend on PHP reporting the warning: `@` and
+		// error_reporting() masked "Array to string conversion" and returned 'Array'.
+		$values = [['a'], [['nested']], new \stdClass()];
+		foreach ($values as $value) {
+			try {
+				$result = @TPropertyValue::ensureString($value);
+				self::fail('ensureString() under @ returned ' . var_export($result, true) . '.');
+			} catch (TInvalidDataTypeException $e) {
+				self::assertSame('propertyvalue_invalid_string_type', $e->getErrorCode());
+			}
+		}
+
+		foreach ([0, E_ALL & ~E_WARNING, E_ALL] as $level) {
+			$reporting = error_reporting($level);
+			try {
+				foreach ($values as $value) {
+					$e = $this->ensureStringException($value);
+					self::assertSame('propertyvalue_invalid_string_type', $e->getErrorCode());
+					self::assertStringContainsString("'" . get_debug_type($value) . "'", $e->getMessage());
+				}
+			} finally {
+				error_reporting($reporting);
+			}
+		}
+	}
+
+	public function testEnsureString_valuesWithStringForm_unchanged(): void
+	{
+		// bool, null, int, float, NAN
+		self::assertSame('true', TPropertyValue::ensureString(true));
+		self::assertSame('false', TPropertyValue::ensureString(false));
+		self::assertSame('', TPropertyValue::ensureString(null));
+		self::assertSame('0', TPropertyValue::ensureString(0));
+		self::assertSame('-12', TPropertyValue::ensureString(-12));
+		self::assertSame('4.8', TPropertyValue::ensureString(4.8));
+		self::assertSame('-0', TPropertyValue::ensureString(-0.0));
+		self::assertSame('1.0E+25', TPropertyValue::ensureString(1.0E+25));
+		self::assertSame('NAN', TPropertyValue::ensureString(NAN));
+		self::assertSame('INF', TPropertyValue::ensureString(INF));
+		// A string is returned as is, numeric or not.
+		self::assertSame('text', TPropertyValue::ensureString('text'));
+		self::assertSame('007', TPropertyValue::ensureString('007'));
+		self::assertSame('Array', TPropertyValue::ensureString('Array'));
+
+		// An object with __toString() is cast, declared Stringable or not.
+		$implicit = new class {
+			public function __toString(): string
+			{
+				return 'implicit';
+			}
+		};
+		$declared = new class implements \Stringable {
+			public function __toString(): string
+			{
+				return 'declared';
+			}
+		};
+		self::assertSame('implicit', TPropertyValue::ensureString($implicit));
+		self::assertSame('declared', TPropertyValue::ensureString($declared));
+		// A Throwable is Stringable.
+		self::assertStringContainsString('the message', TPropertyValue::ensureString(new \RuntimeException('the message')));
+
+		// A TJavaScriptLiteral is returned as the same object.
+		$lit = new TJavaScriptLiteral('alert(1)');
+		self::assertSame($lit, TPropertyValue::ensureString($lit));
+
+		// A resource keeps PHP's string form.
+		$resource = fopen('php://memory', 'r');
+		try {
+			self::assertSame((string) $resource, TPropertyValue::ensureString($resource));
+		} finally {
+			fclose($resource);
+		}
+	}
+
+	public function testEnsureString_untypedSetter_throwsAndLeavesPropertyUnassigned(): void
+	{
+		// An untyped setter has no boundary to raise TypeError; ensureString() throws.
+		$obj = new class extends TComponent {
+			private string $_label = 'initial';
+			public function getLabel(): string { return $this->_label; }
+			public function setLabel($v): void { $this->_label = TPropertyValue::ensureString($v); }
+		};
+		foreach ([['a'], new \stdClass()] as $value) {
+			try {
+				TPropertyValue::applyProperty($obj, 'Label', $value);
+				self::fail('An untyped ensureString() setter must throw for ' . get_debug_type($value) . '.');
+			} catch (TInvalidDataTypeException $e) {
+				self::assertSame('propertyvalue_invalid_string_type', $e->getErrorCode());
+			}
+			self::assertSame('initial', $obj->getLabel());
+		}
+		TPropertyValue::applyProperty($obj, 'Label', true);
+		self::assertSame('true', $obj->getLabel());
+	}
+
+	public function testEnsureArrayOfType_stringItemWithoutStringForm_throwsInvalidDataType(): void
+	{
+		foreach ([[['nested']], [new \stdClass()]] as $items) {
+			try {
+				TPropertyValue::ensureArrayOfType($items, TPropertyValue::TYPE_STRING, 0);
+				self::fail('A string item without a string form must throw.');
+			} catch (TInvalidDataTypeException $e) {
+				self::assertSame('propertyvalue_invalid_string_type', $e->getErrorCode());
+			}
+		}
 	}
 
 	public function testEnsureInteger()
@@ -3837,6 +4006,32 @@ class TPropertyValueTest extends \PHPUnit\Framework\TestCase
 		self::assertSame('',      TPropertyValue::coerceToType('',      $t));
 	}
 
+	public function testCoerceToTypeStringWithoutStringFormPassesThrough(): void
+	{
+		// Issue #1497: an array and an object without __toString() are returned
+		// unchanged, so a `string` setter raises PHP's TypeError.
+		$t = $this->typeOf(fn(string $x) => $x);
+		self::assertSame(['a'], TPropertyValue::coerceToType(['a'], $t));
+		self::assertSame([], TPropertyValue::coerceToType([], $t));
+		self::assertSame([['a']], TPropertyValue::coerceToType([['a']], $t));
+		$obj = new \stdClass();
+		self::assertSame($obj, TPropertyValue::coerceToType($obj, $t));
+		self::assertSame(TPropertyValueTestColor::Red, TPropertyValue::coerceToType(TPropertyValueTestColor::Red, $t));
+
+		// Values with a string form are coerced as before.
+		$stringable = new class {
+			public function __toString(): string
+			{
+				return 'stringified';
+			}
+		};
+		self::assertSame('stringified', TPropertyValue::coerceToType($stringable, $t));
+		$lit = new TJavaScriptLiteral('alert(1)');
+		self::assertSame($lit, TPropertyValue::coerceToType($lit, $t));
+		self::assertSame('1.5', TPropertyValue::coerceToType(1.5, $t));
+		self::assertNull(TPropertyValue::coerceToType(null, $t));
+	}
+
 	public function testCoerceToTypeArray(): void
 	{
 		$t = $this->typeOf(fn(array $x) => $x);
@@ -3944,6 +4139,19 @@ class TPropertyValueTest extends \PHPUnit\Framework\TestCase
 		self::assertNull(         TPropertyValue::coerceToType('',     $t));
 		self::assertNull(         TPropertyValue::coerceToType(null,   $t));
 		self::assertSame('hello', TPropertyValue::coerceToType('hello', $t));
+	}
+
+	public function testCoerceToTypeNullableStringWithoutStringFormPassesThrough(): void
+	{
+		$t = $this->typeOf(fn(?string $x) => $x);
+		self::assertSame(['a'], TPropertyValue::coerceToType(['a'], $t));
+		// An empty array is not the empty string; it is not collapsed to null.
+		self::assertSame([], TPropertyValue::coerceToType([], $t));
+		$obj = new \stdClass();
+		self::assertSame($obj, TPropertyValue::coerceToType($obj, $t));
+		// Values with a string form are coerced as before.
+		self::assertSame('false', TPropertyValue::coerceToType(false, $t));
+		self::assertSame('0', TPropertyValue::coerceToType(0, $t));
 	}
 
 	public function testCoerceToTypeNullableFloat(): void
@@ -4724,6 +4932,169 @@ class TPropertyValueTest extends \PHPUnit\Framework\TestCase
 	}
 
 	// ════════════════════════════════════════════════════════════════════════
+	// coerceToType — union miss: a value no member can hold passes through
+	// ════════════════════════════════════════════════════════════════════════
+
+	public function testCoerceToTypeUnionArrayWithoutArrayMemberPassesThrough(): void
+	{
+		// Issue #1497: an array given to `int|string` reached the string cast
+		// and raised "Array to string conversion".
+		$t = $this->typeOf(fn(int|string $x) => $x);
+		self::assertSame(['a'], TPropertyValue::coerceToType(['a'], $t));
+		self::assertSame([], TPropertyValue::coerceToType([], $t));
+		self::assertSame(['k' => ['n' => 1]], TPropertyValue::coerceToType(['k' => ['n' => 1]], $t));
+	}
+
+	public function testCoerceToTypeUnionNullableArrayWithoutArrayMemberPassesThrough(): void
+	{
+		$t = $this->typeOf(fn(int|string|null $x) => $x);
+		self::assertSame(['a'], TPropertyValue::coerceToType(['a'], $t));
+		// An empty array is not the empty string; it is not collapsed to null.
+		self::assertSame([], TPropertyValue::coerceToType([], $t));
+		// The null handling of the union is unchanged.
+		self::assertNull(TPropertyValue::coerceToType(null, $t));
+		self::assertNull(TPropertyValue::coerceToType('', $t));
+		self::assertSame('7', TPropertyValue::coerceToType(7, $t));
+	}
+
+	public function testCoerceToTypeUnionArrayToNumericUnionPassesThrough(): void
+	{
+		$t = $this->typeOf(fn(int|float $x) => $x);
+		self::assertSame(['a'], TPropertyValue::coerceToType(['a'], $t));
+		self::assertSame([1.5], TPropertyValue::coerceToType([1.5], $t));
+		$t = $this->typeOf(fn(int|bool $x) => $x);
+		self::assertSame([1], TPropertyValue::coerceToType([1], $t));
+	}
+
+	public function testCoerceToTypeUnionArrayToClassOrBoolPassesThrough(): void
+	{
+		$t = $this->typeOf(fn(\stdClass|bool $x) => $x);
+		self::assertSame(['a'], TPropertyValue::coerceToType(['a'], $t));
+		$t = $this->typeOf(fn(TPropertyValueTestColor|int $x) => $x);
+		self::assertSame(['red'], TPropertyValue::coerceToType(['red'], $t));
+		$t = $this->typeOf(fn(TPropertyValueTestColor|string $x) => $x);
+		self::assertSame(['red'], TPropertyValue::coerceToType(['red'], $t));
+	}
+
+	public function testCoerceToTypeUnionArrayDeclinedByCoerciblePassesThrough(): void
+	{
+		// Step 2 still offers the array to an ICoercible member first.
+		$t = $this->typeOf(fn(TPropertyValueTestPoint|string $x) => $x);
+		$p = TPropertyValue::coerceToType(['x' => 3, 'y' => 4], $t);
+		self::assertInstanceOf(TPropertyValueTestPoint::class, $p);
+		self::assertSame(3, $p->x);
+		// An array the member declines has no other member to hold it.
+		self::assertSame(['z' => 1], TPropertyValue::coerceToType(['z' => 1], $t));
+		$t = $this->typeOf(fn(TPropertyValueTestDecliner|int $x) => $x);
+		self::assertSame([1, 2], TPropertyValue::coerceToType([1, 2], $t));
+	}
+
+	public function testCoerceToTypeUnionArrayWithArrayOrIterableMemberUnchangedBehavior(): void
+	{
+		$t = $this->typeOf(fn(array|string $x) => $x);
+		self::assertSame(['a'], TPropertyValue::coerceToType(['a'], $t));
+		self::assertSame([], TPropertyValue::coerceToType([], $t));
+		$t = $this->typeOf(fn(iterable|string $x) => $x);
+		self::assertSame(['a'], TPropertyValue::coerceToType(['a'], $t));
+		self::assertSame([], TPropertyValue::coerceToType([], $t));
+		self::assertSame('text', TPropertyValue::coerceToType('text', $t));
+		$t = $this->typeOf(fn(iterable|int $x) => $x);
+		self::assertSame([1, 2], TPropertyValue::coerceToType([1, 2], $t));
+		// A Traversable is an instance of the `Traversable` half of `iterable`.
+		$it = new \ArrayIterator([1]);
+		self::assertSame($it, TPropertyValue::coerceToType($it, $t));
+	}
+
+	public function testCoerceToTypeUnionObjectWithoutToStringPassesThrough(): void
+	{
+		// Issue #1497: an object without __toString() reached the string cast
+		// and raised \Error "could not be converted to string".
+		$obj = new \stdClass();
+		foreach ([
+			$this->typeOf(fn(int|string $x) => $x),
+			$this->typeOf(fn(int|string|null $x) => $x),
+			$this->typeOf(fn(int|float $x) => $x),
+			$this->typeOf(fn(array|string $x) => $x),
+			$this->typeOf(fn(iterable|int $x) => $x),
+			$this->typeOf(fn(TPropertyValueTestPoint|bool $x) => $x),
+			$this->typeOf(fn(TPropertyValueTestColor|string $x) => $x),
+		] as $t) {
+			self::assertSame($obj, TPropertyValue::coerceToType($obj, $t), (string) $t);
+		}
+	}
+
+	public function testCoerceToTypeUnionEnumAndClosureWithoutAcceptingMemberPassThrough(): void
+	{
+		$t = $this->typeOf(fn(int|string $x) => $x);
+		// An enum case has no __toString(), and no member of the union is its enum.
+		self::assertSame(TPropertyValueTestColor::Red, TPropertyValue::coerceToType(TPropertyValueTestColor::Red, $t));
+		self::assertSame(TPropertyValueTestStatus::Active, TPropertyValue::coerceToType(TPropertyValueTestStatus::Active, $t));
+		$fn = fn() => 1;
+		self::assertSame($fn, TPropertyValue::coerceToType($fn, $t));
+	}
+
+	public function testCoerceToTypeUnionObjectMemberHoldsObject(): void
+	{
+		$t = $this->typeOf(fn(object|int $x) => $x);
+		$obj = new \stdClass();
+		self::assertSame($obj, TPropertyValue::coerceToType($obj, $t));
+		self::assertSame(TPropertyValueTestColor::Red, TPropertyValue::coerceToType(TPropertyValueTestColor::Red, $t));
+		$t = $this->typeOf(fn(object|string $x) => $x);
+		self::assertSame($obj, TPropertyValue::coerceToType($obj, $t));
+	}
+
+	public function testCoerceToTypeUnionCallableMemberHoldsArrayAndClosure(): void
+	{
+		// `callable` holds a callable array and a Closure; both reach the setter unchanged.
+		$t = $this->typeOf(fn(callable|string $x) => $x);
+		$callable = [$this, 'typeOf'];
+		self::assertSame($callable, TPropertyValue::coerceToType($callable, $t));
+		$fn = fn() => 1;
+		self::assertSame($fn, TPropertyValue::coerceToType($fn, $t));
+	}
+
+	public function testCoerceToTypeUnionStringableObjectStillCoerced(): void
+	{
+		$stringable = new class {
+			public function __toString(): string
+			{
+				return '15';
+			}
+		};
+		// `string` member: the object is cast to its string form.
+		$t = $this->typeOf(fn(int|string $x) => $x);
+		self::assertSame('15', TPropertyValue::coerceToType($stringable, $t));
+		// No `string` member: the string form runs through the shape heuristics.
+		$t = $this->typeOf(fn(int|float $x) => $x);
+		self::assertSame(15, TPropertyValue::coerceToType($stringable, $t));
+		$t = $this->typeOf(fn(TPropertyValueTestPriority|bool $x) => $x);
+		self::assertSame(true, TPropertyValue::coerceToType($stringable, $t));
+	}
+
+	public function testCoerceToTypeUnionJsLiteralStillPassesThroughStringMember(): void
+	{
+		$lit = new TJavaScriptLiteral('alert(1)');
+		$t = $this->typeOf(fn(int|string $x) => $x);
+		self::assertSame($lit, TPropertyValue::coerceToType($lit, $t));
+		$t = $this->typeOf(fn(TJavaScriptLiteral|int $x) => $x);
+		self::assertSame($lit, TPropertyValue::coerceToType($lit, $t));
+	}
+
+	public function testCoerceToTypeUnionObjectClaimedByMemberStillPreserved(): void
+	{
+		// An enum case, an ICoercible instance, and an interface instance are
+		// each held by their own member.
+		$t = $this->typeOf(fn(TPropertyValueTestColor|string $x) => $x);
+		self::assertSame(TPropertyValueTestColor::Blue, TPropertyValue::coerceToType(TPropertyValueTestColor::Blue, $t));
+		$point = new TPropertyValueTestPoint(1, 2);
+		$t = $this->typeOf(fn(TPropertyValueTestPoint|int $x) => $x);
+		self::assertSame($point, TPropertyValue::coerceToType($point, $t));
+		$counted = new \ArrayObject([1]);
+		$t = $this->typeOf(fn(\Countable|string $x) => $x);
+		self::assertSame($counted, TPropertyValue::coerceToType($counted, $t));
+	}
+
+	// ════════════════════════════════════════════════════════════════════════
 	// Step 2 — enumerable transition (name lookup precedes string member)
 	// ════════════════════════════════════════════════════════════════════════
 
@@ -4983,6 +5354,106 @@ class TPropertyValueTest extends \PHPUnit\Framework\TestCase
 
 		TPropertyValue::applyProperty($obj, 'Label', false);
 		self::assertSame('false', $obj->getLabel());
+	}
+
+	public function testApplyPropertyUnionSetterRaisesTypeErrorForArray(): void
+	{
+		// Issue #1497: the array reaches the `int|string` setter unchanged, PHP
+		// raises its TypeError, and the property keeps its value.
+		$obj = new class extends TComponent {
+			private int|string $_key = 'initial';
+			private int|float $_size = 2;
+			private \stdClass|bool $_flag = false;
+			public function getKey(): int|string { return $this->_key; }
+			public function setKey(int|string $v): void { $this->_key = $v; }
+			public function getSize(): int|float { return $this->_size; }
+			public function setSize(int|float $v): void { $this->_size = $v; }
+			public function getFlag(): \stdClass|bool { return $this->_flag; }
+			public function setFlag(\stdClass|bool $v): void { $this->_flag = $v; }
+		};
+
+		foreach (['Key' => 'initial', 'Size' => 2, 'Flag' => false] as $property => $initial) {
+			try {
+				TPropertyValue::applyProperty($obj, $property, ['a']);
+				self::fail("An array assigned to $property must raise TypeError.");
+			} catch (\TypeError $e) {
+				self::assertStringContainsString('array given', $e->getMessage());
+			}
+			self::assertSame($initial, $obj->{'get' . $property}());
+		}
+
+		// A value the union holds is still coerced and assigned.
+		TPropertyValue::applyProperty($obj, 'Key', 5);
+		self::assertSame('5', $obj->getKey());
+		TPropertyValue::applyProperty($obj, 'Size', '2.5');
+		self::assertSame(2.5, $obj->getSize());
+	}
+
+	public function testApplyPropertyUnionSetterRaisesTypeErrorForObjectWithoutToString(): void
+	{
+		$obj = new class extends TComponent {
+			private int|string $_key = 'initial';
+			public function getKey(): int|string { return $this->_key; }
+			public function setKey(int|string $v): void { $this->_key = $v; }
+		};
+
+		try {
+			TPropertyValue::applyProperty($obj, 'Key', new \stdClass());
+			self::fail('An object without __toString() must raise TypeError.');
+		} catch (\TypeError $e) {
+			self::assertStringContainsString('stdClass given', $e->getMessage());
+		}
+		self::assertSame('initial', $obj->getKey());
+
+		// An object with __toString() is assigned as its string form.
+		$stringable = new class {
+			public function __toString(): string
+			{
+				return 'named';
+			}
+		};
+		TPropertyValue::applyProperty($obj, 'Key', $stringable);
+		self::assertSame('named', $obj->getKey());
+	}
+
+	public function testApplyPropertyStringSetterRaisesTypeErrorWithoutStringForm(): void
+	{
+		// Issue #1497: the value reaches the `string` / `?string` setter unchanged,
+		// PHP raises its TypeError, and the property keeps its value.
+		$obj = new class extends TComponent {
+			private string $_label = 'initial';
+			private ?string $_note = 'initial';
+			public function getLabel(): string { return $this->_label; }
+			public function setLabel(string $v): void { $this->_label = $v; }
+			public function getNote(): ?string { return $this->_note; }
+			public function setNote(?string $v): void { $this->_note = $v; }
+		};
+
+		foreach (['Label', 'Note'] as $property) {
+			foreach (['array given' => ['a'], 'stdClass given' => new \stdClass()] as $given => $value) {
+				try {
+					TPropertyValue::applyProperty($obj, $property, $value);
+					self::fail("$property must raise TypeError for " . get_debug_type($value) . '.');
+				} catch (\TypeError $e) {
+					self::assertStringContainsString($given, $e->getMessage());
+				}
+				self::assertSame('initial', $obj->{'get' . $property}());
+			}
+		}
+
+		// Values with a string form are still coerced and assigned.
+		$stringable = new class {
+			public function __toString(): string
+			{
+				return 'named';
+			}
+		};
+		TPropertyValue::applyProperty($obj, 'Label', $stringable);
+		self::assertSame('named', $obj->getLabel());
+		TPropertyValue::applyProperty($obj, 'Note', 12);
+		self::assertSame('12', $obj->getNote());
+		TPropertyValue::applyProperty($obj, 'Note', '');
+		self::assertNull($obj->getNote());
 	}
 
 	public function testApplyPropertyGoesthroughSetterPipeline(): void
@@ -6020,5 +6491,186 @@ class TPropertyValueTest extends \PHPUnit\Framework\TestCase
 		$t = $this->typeOf(fn(TPropertyValueTestPriority|array $x) => $x);
 		self::assertSame(TPropertyValueTestPriority::Low, TPropertyValue::coerceToType(1.0, $t));
 		self::assertSame(TPropertyValueTestPriority::High, TPropertyValue::coerceToType(2.0, $t));
+	}
+
+	// ════════════════════════════════════════════════════════════════════════
+	// ensureEnum — error labels
+	// ════════════════════════════════════════════════════════════════════════
+
+	public function testEnsureEnum_classWithoutConstants_listsOnlyTheExtras(): void
+	{
+		try {
+			TPropertyValue::ensureEnum('x', TPropertyValueTestNoConstants::class, 'Auto');
+			self::fail('ensureEnum() accepted a value that is neither a constant nor an extra.');
+		} catch (TInvalidDataValueException $e) {
+			self::assertSame('propertyvalue_enumvalue_invalid', $e->getErrorCode());
+			self::assertStringContainsString("'x'", $e->getMessage());
+			self::assertStringContainsString('(Auto)', $e->getMessage());
+		}
+		self::assertSame('Auto', TPropertyValue::ensureEnum('auto', TPropertyValueTestNoConstants::class, 'Auto'));
+	}
+
+	public function testEnsureEnum_nonScalarValue_isReportedByItsType(): void
+	{
+		foreach (['array' => ['Alpha'], 'stdClass' => new \stdClass()] as $type => $value) {
+			try {
+				TPropertyValue::ensureEnum($value, TPropertyValueTestColor::class, 'Auto');
+				self::fail("ensureEnum() accepted a value of type $type.");
+			} catch (TInvalidDataValueException $e) {
+				self::assertSame('propertyvalue_enumvalue_invalid', $e->getErrorCode());
+				self::assertStringContainsString("'$type'", $e->getMessage());
+				self::assertStringContainsString('| Auto)', $e->getMessage());
+			}
+		}
+	}
+
+	// ════════════════════════════════════════════════════════════════════════
+	// ensureArray — ARRAY_SKIP_EMPTY under strict grammar
+	// ════════════════════════════════════════════════════════════════════════
+
+	public function testEnsureArray_strictGrammarWithSkipEmpty(): void
+	{
+		$strict = TPropertyValue::ARRAY_STRICT_GRAMMAR | TPropertyValue::ARRAY_SKIP_EMPTY;
+		$strictParen = $strict | TPropertyValue::ARRAY_STRICT_GRAMMAR_ALLOW_BARE_PAREN;
+
+		self::assertSame([1, 2], TPropertyValue::ensureArray('[1,, 2]', $strict));
+		self::assertSame(['(1,, 2)'], TPropertyValue::ensureArray('(1,, 2)', $strict));
+
+		self::assertSame([1, 2], TPropertyValue::ensureArray('(1,, 2)', $strictParen));
+		self::assertSame(['(1,, two)'], TPropertyValue::ensureArray('(1,, two)', $strictParen));
+	}
+
+	// ════════════════════════════════════════════════════════════════════════
+	// ensureArray — a quoted string that begins a bare-word key
+	// ════════════════════════════════════════════════════════════════════════
+
+	public function testEnsureArray_bareWordKeyStartingWithQuotedString(): void
+	{
+		self::assertSame(['"a"b' => 1], TPropertyValue::ensureArray('("a"b => 1)'));
+		self::assertSame(['"a" b' => 1], TPropertyValue::ensureArray('("a" b => 1)'));
+		self::assertSame(["'it's" => 1, 'k' => 2], TPropertyValue::ensureArray("('it's => 1, k => 2)"));
+		self::assertSame(["'a' 'b'" => 'v'], TPropertyValue::ensureArray("'a' 'b' => v"));
+		self::assertSame(
+			['"a"b' => 1],
+			TPropertyValue::ensureArray('("a"b => 1)', TPropertyValue::ARRAY_STRICT_ERRORS)
+		);
+		// A quoted key before `=>` is still decoded as a string.
+		self::assertSame(['a b' => 1, "it's" => 2], TPropertyValue::ensureArray('("a b" => 1, \'it\\\'s\'=> 2)'));
+		// A quoted value keeps the delimiters it contains.
+		self::assertSame(['a=>b', 'c,d', 'k' => '(e)'], TPropertyValue::ensureArray('("a=>b", \'c,d\', k => "(e)")'));
+		// Strict grammar has no bare words, so the literal does not parse.
+		self::assertSame(['["a"b => 1]'], TPropertyValue::ensureArray('["a"b => 1]', TPropertyValue::ARRAY_STRICT_GRAMMAR));
+	}
+
+	// ════════════════════════════════════════════════════════════════════════
+	// ensureArrayOfType — lowercase and blank filter without trim
+	// ════════════════════════════════════════════════════════════════════════
+
+	public function testEnsureArrayOfType_lowercaseAndBlankFilterWithoutTrim(): void
+	{
+		$flags = TPropertyValue::FILTER_LOWERCASE_VALUE | TPropertyValue::FILTER_BLANK;
+
+		self::assertSame([' ab '], TPropertyValue::ensureArrayOfType([' AB '], TPropertyValue::TYPE_STRING, $flags));
+		self::assertSame([], TPropertyValue::ensureArrayOfType(["  \t"], TPropertyValue::TYPE_STRING, $flags));
+		self::assertSame(
+			[1 => ' ab ', 'k' => 'c'],
+			TPropertyValue::ensureArrayOfType(['  ', ' AB ', 'k' => 'C'], TPropertyValue::TYPE_STRING, $flags)
+		);
+	}
+
+	// ════════════════════════════════════════════════════════════════════════
+	// applyProperty — no setter method
+	// ════════════════════════════════════════════════════════════════════════
+
+	public function testApplyProperty_plainObjectWithoutSetter_assignsTheValueUnchanged(): void
+	{
+		$obj = new class {
+			public mixed $Name = null;
+		};
+
+		TPropertyValue::applyProperty($obj, 'Name', '42');
+		self::assertSame('42', $obj->Name);
+
+		TPropertyValue::applyProperty($obj, 'Name', true);
+		self::assertSame(true, $obj->Name);
+	}
+
+	public function testApplyProperty_componentEvent_attachesTheHandler(): void
+	{
+		$handler = function ($sender, $param) {
+		};
+		foreach ([true, false] as $behaviorsEnabled) {
+			$obj = new NewComponent();
+			if (!$behaviorsEnabled) {
+				$obj->disableBehaviors();
+			}
+			self::assertSame($behaviorsEnabled, $obj->getBehaviorsEnabled());
+
+			TPropertyValue::applyProperty($obj, 'OnMyEvent', $handler);
+
+			self::assertSame([$handler], $obj->getEventHandlers('OnMyEvent')->toArray());
+		}
+	}
+
+	// ════════════════════════════════════════════════════════════════════════
+	// Union — object and bool values without a directly matching member
+	// ════════════════════════════════════════════════════════════════════════
+
+	public function testCoerceUnion_objectMatchingLaterClassMember_isPreserved(): void
+	{
+		$t = $this->typeOf(fn(\ArrayObject|\stdClass $x) => $x);
+		$value = new \stdClass();
+
+		self::assertSame($value, TPropertyValue::coerceToType($value, $t));
+	}
+
+	public function testCoerceUnion_stringableObjectWithoutClassMember_becomesStringWhenStringInUnion(): void
+	{
+		$t = $this->typeOf(fn(int|string $x) => $x);
+
+		self::assertSame('hello', TPropertyValue::coerceToType(new TPropertyValueTestStringable('hello'), $t));
+		self::assertSame('42', TPropertyValue::coerceToType(new TPropertyValueTestStringable('42'), $t));
+	}
+
+	public function testCoerceUnion_stringableObjectWithoutStringMember_followsItsStringShape(): void
+	{
+		self::assertSame(42, TPropertyValue::coerceToType(
+			new TPropertyValueTestStringable('42'),
+			$this->typeOf(fn(int|\ArrayObject $x) => $x)
+		));
+		self::assertSame(2.5, TPropertyValue::coerceToType(
+			new TPropertyValueTestStringable('2.5'),
+			$this->typeOf(fn(int|float $x) => $x)
+		));
+		self::assertSame(true, TPropertyValue::coerceToType(
+			new TPropertyValueTestStringable('TRUE'),
+			$this->typeOf(fn(bool|int $x) => $x)
+		));
+	}
+
+	public function testCoerceUnion_boolWithoutBoolIntOrFloatMember_fallsBackByCoerceOrder(): void
+	{
+		$t = $this->typeOf(fn(array|\ArrayObject $x) => $x);
+
+		self::assertSame([true], TPropertyValue::coerceToType(true, $t));
+		self::assertSame([false], TPropertyValue::coerceToType(false, $t));
+	}
+
+	public function testApplyProperty_arrayForUnionWithoutArrayMember_isNotAssigned(): void
+	{
+		$obj = new class extends TComponent {
+			public int|string $value = 'initial';
+			public function getValue(): int|string { return $this->value; }
+			public function setValue(int|string $v): void { $this->value = $v; }
+		};
+
+		try {
+			TPropertyValue::applyProperty($obj, 'Value', ['a', 'b']);
+			self::fail('applyProperty() assigned an array to an int|string setter.');
+		} catch (\PHPUnit\Framework\AssertionFailedError $e) {
+			throw $e;
+		} catch (\Throwable $e) {
+			self::assertSame('initial', $obj->getValue());
+		}
 	}
 }

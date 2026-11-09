@@ -10,6 +10,7 @@
 
 namespace Prado;
 
+use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Web\Javascripts\TJavaScript;
 use Prado\Web\UI\TWebColor;
@@ -30,7 +31,7 @@ use Prado\TComponentReflection;
  *
  * | Type | Rule |
  * |---|---|
- * | `string` | `bool` → `'true'`/`'false'`; `TJavaScriptLiteral` passed through; everything else via `(string)` cast |
+ * | `string` | `bool` → `'true'`/`'false'`; `TJavaScriptLiteral` passed through; `array` and object without `__toString()` → {@see TInvalidDataTypeException}; everything else via `(string)` cast |
  * | `bool` | `'true'` (case-insensitive) or numeric string `!= 0` (loose) → `true`; all else → `false` |
  * | `int` | `(int)` cast |
  * | `float` | `(float)` cast |
@@ -395,7 +396,9 @@ class TPropertyValue
 	 * `bool` is converted to `'true'` or `'false'`.  A {@see TJavaScriptLiteral} is returned
 	 * as-is (pass-through) because it carries an opaque JavaScript expression that must not
 	 * be re-encoded; callers that consume it as a plain string rely on its `__toString` cast.
-	 * All other values are cast via `(string)`.
+	 * An array and an object without `__toString()` have no string form and throw
+	 * {@see TInvalidDataTypeException}, with PHP warnings reported or masked (`@`,
+	 * `error_reporting`).  All other values are cast via `(string)`.
 	 *
 	 * ```php
 	 * TPropertyValue::ensureString(true);     // 'true'   (not '1')
@@ -404,23 +407,51 @@ class TPropertyValue
 	 * TPropertyValue::ensureString(1.5);      // '1.5'
 	 * TPropertyValue::ensureString(null);     // ''
 	 * TPropertyValue::ensureString(new TJavaScriptLiteral('alert(1)')); // pass-through, not stringified
+	 * TPropertyValue::ensureString($stringable);     // (string) $stringable, through __toString()
+	 * TPropertyValue::ensureString(['a']);           // throws TInvalidDataTypeException
+	 * TPropertyValue::ensureString(new \stdClass()); // throws TInvalidDataTypeException
 	 * ```
 	 *
 	 * @param mixed $value the value to be converted.
+	 * @throws TInvalidDataTypeException if the value is an array or an object without `__toString()`.
 	 * @return string|\Stringable
 	 */
 	public static function ensureString($value): string|\Stringable
 	{
-		if (TJavaScript::isJsLiteral($value)) {
+		if (is_string($value)) {
 			return $value;
 		}
 		if (is_bool($value)) {
 			return $value ? static::BOOL_TRUE : static::BOOL_FALSE;
-		} elseif (is_float($value) && is_nan($value)) {
-			return static::FLOAT_NAN;
-		} else {
+		}
+		if ($value === null) {
+			return '';
+		}
+		if (is_int($value)) {
 			return (string) $value;
 		}
+		if (is_float($value)) {
+			return is_nan($value) ? static::FLOAT_NAN : (string) $value;
+		}
+		if (TJavaScript::isJsLiteral($value)) {
+			return $value;
+		}
+		if (!self::_hasStringForm($value)) {
+			throw new TInvalidDataTypeException('propertyvalue_invalid_string_type', get_debug_type($value));
+		}
+		return (string) $value;
+	}
+
+	/**
+	 * Returns whether a value has a string form.
+	 * An array and an object without `__toString()` have none.
+	 * @param mixed $value the value to test.
+	 * @return bool `false` for an array or an object without `__toString()`.
+	 * @since 4.4.0
+	 */
+	private static function _hasStringForm(mixed $value): bool
+	{
+		return !is_array($value) && (!is_object($value) || $value instanceof \Stringable);
 	}
 
 	/**
@@ -1239,6 +1270,8 @@ class TPropertyValue
 	 *   combined with `|`.  Defaults to {@see DEFAULT_ARRAY_OF_TYPE} (trim
 	 *   and lowercase both axes, drop empties, compact integer keys).  Pass
 	 *   {@see FILTER_NONE} for raw pass-through.
+	 * @throws TInvalidDataTypeException if `$type` is `TYPE_STRING` and an element is an
+	 *   array or an object without `__toString()`.
 	 * @return array the normalized array.
 	 * @since 4.4.0
 	 */
@@ -1710,8 +1743,10 @@ class TPropertyValue
 	 * bare-word string) at `$pos`.  An int key has committed only when
 	 * directly followed by `=>` (after optional whitespace) so the bare-word
 	 * fallback can still claim the same span when the element has turned out
-	 * not to be a key⇒value pair.  Returns `null` without advancing `$pos`
-	 * when no key form has matched at all.
+	 * not to be a key⇒value pair.  Under loose grammar a quoted string that
+	 * has not reached an element end has been left to the bare-word fallback,
+	 * so `"a"b => 1` has the key `"a"b`.  Returns `null` without advancing
+	 * `$pos` when no key form has matched at all.
 	 *
 	 * The caller has decided whether to commit (when `=>` has followed) or
 	 * restore `$pos` and reparse the span as a value.
@@ -1727,9 +1762,14 @@ class TPropertyValue
 	private static function _consumeKey(string $s, int &$pos, bool $strict = false): null|int|string
 	{
 		if ($s[$pos] === '"' || $s[$pos] === "'") {
+			$saved = $pos;
 			$str = self::_tryConsumeString($s, $pos);
 			if ($str !== null) {
-				return $str;
+				if ($strict || self::_atElementEnd($s, $pos)) {
+					return $str;
+				}
+				// Text follows the closing quote, so the span is a bare word: `"a"b => 1`.
+				$pos = $saved;
 			}
 		}
 		if (preg_match(self::INT_LITERAL_PATTERN, $s, $m, 0, $pos)) {
@@ -2006,6 +2046,9 @@ class TPropertyValue
 	 * The final assignment always goes through the object's normal `__set()` chain so that
 	 * events, behaviors, and `js`-prefix wrapping are preserved.
 	 *
+	 * A value that {@see coerceToType} passes through is assigned unchanged.  A typed setter
+	 * that cannot hold it raises PHP's `TypeError` and the property keeps its value.
+	 *
 	 * This is the recommended entry point for framework internals (configuration loaders,
 	 * template parsers, behavior injectors) that assign a property whose source type may
 	 * not match the setter's declared type.
@@ -2062,15 +2105,18 @@ class TPropertyValue
 	 * | `bool`                | {@see ensureBoolean} — 'true'/'false' aware        |
 	 * | `int`                 | {@see ensureInteger}                               |
 	 * | `float`               | {@see ensureFloat}                                 |
-	 * | `string`              | {@see ensureString} — bool→'true'/'false' aware    |
+	 * | `string`              | {@see ensureString} — bool→'true'/'false' aware; array / object without `__toString()` → pass-through |
 	 * | `array` / `iterable`  | {@see ensureArray} — `(a,b,c)`/`[a,b,c]` supported |
 	 * | `object`              | {@see ensureObject}                                |
 	 * | `mixed` / `null`      | pass-through / `null`                              |
 	 * | Backed enum class     | `tryFrom()` exact backing value, then case-insensitive case-name scan |
 	 * | {@see IEnumerable}    | case-insensitive `valueOfConstant()` name→value; unknown → pass-through |
 	 * | {@see ICoercible}     | `coerceFromValue()` factory; `null` return → pass-through |
-	 * | Union type            | heuristic chain — see {@see _coerceUnionType}      |
+	 * | Union type            | heuristic chain — see {@see _coerceUnionType}; a value no member can hold → pass-through |
 	 * | Nullable (`?T`)       | empty string / `null` input → `null`               |
+	 *
+	 * A pass-through value is returned unchanged.  A typed setter given that value
+	 * raises PHP's `TypeError`.
 	 *
 	 * @param mixed $value the value to coerce.
 	 * @param null|\ReflectionType $type the reflection type to coerce toward, or `null`
@@ -2092,7 +2138,7 @@ class TPropertyValue
 				static::TYPE_BOOL => static::ensureBoolean($value),
 				static::TYPE_INT => static::ensureInteger($value),
 				static::TYPE_FLOAT => static::ensureFloat($value),
-				static::TYPE_STRING => static::ensureString($value),
+				static::TYPE_STRING => self::_hasStringForm($value) ? static::ensureString($value) : $value,
 				static::TYPE_ARRAY, static::TYPE_ITERABLE => static::ensureArray($value),
 				static::TYPE_OBJECT => static::ensureObject($value),
 				static::TYPE_MIXED, static::TYPE_NULL => $value,
@@ -2234,7 +2280,11 @@ class TPropertyValue
 	 *    wins.  Return shape per {@see _tryMatchEnum()}'s contract.
 	 * 4. `array` / typed object value whose type appears in the union → use it
 	 *    (pre-empts step 5 to prevent `(string)$array = "Array"` and
-	 *    `(string)$object` TypeError when the value has a native match)
+	 *    `(string)$object` TypeError when the value has a native match).
+	 *    A value without a string form that no member can hold passes through
+	 *    unchanged, so the TypeError surfaces at the setter boundary: an array
+	 *    when the union has no `array`/`iterable` member, and an object without
+	 *    `__toString()` that is not an instance of a class member.
 	 * 5. `string` in union → pass through / `ensureString` if not already a string
 	 *    (scalar non-string values such as `int` and `bool` are coerced to their
 	 *    string representation here when `string` is present in the union)
@@ -2316,13 +2366,16 @@ class TPropertyValue
 		// 4. Non-stringable native short-circuit.  Arrays and typed-object
 		// instances claim a native union match before step 5 —
 		// `(string)$arr` would be the useless `"Array"` and `(string)$obj`
-		// TypeErrors without `__toString()`.
+		// TypeErrors without `__toString()`.  An array or an object without
+		// `__toString()` that claims no match has no string form for the
+		// steps below and is returned unchanged.
 		if (!is_string($value)) {
 			if (is_array($value)) {
 				// PHP reports `iterable` in a union as `Traversable|array`.
 				if (isset($typeMap[static::TYPE_ARRAY])) {
 					return static::coerceToType($value, $typeMap[static::TYPE_ARRAY]);
 				}
+				return $value;
 			} elseif (is_object($value)) {
 				foreach ($nonNull as $t) {
 					$n = $t->getName();
@@ -2330,13 +2383,17 @@ class TPropertyValue
 						return static::coerceToType($value, $t);
 					}
 				}
+				if (!$value instanceof \Stringable) {
+					return $value;
+				}
 			}
 		}
 
 		// 5. String member.  Strings pass through; non-string scalars
-		// (bool, int, float) are coerced via {@see ensureString()}.
-		// Step 4 has already claimed any array or typed object with a
-		// native union match.
+		// (bool, int, float) and objects with `__toString()` are coerced
+		// via {@see ensureString()}.  Step 4 has already returned every
+		// array and every object that has a native union match or no
+		// `__toString()`.
 		if (in_array(static::TYPE_STRING, $names, true)) {
 			return is_string($value) ? $value : static::ensureString($value);
 		}
@@ -2371,7 +2428,8 @@ class TPropertyValue
 					return static::coerceToType($value, $typeMap[static::TYPE_FLOAT]);
 				}
 			}
-			// No match — convert to string and continue with shape heuristics
+			// No match — convert to string and continue with shape heuristics.
+			// Only scalars and objects with `__toString()` reach this point.
 		}
 
 		$strValue = is_string($value) ? $value : static::ensureString($value);

@@ -241,4 +241,95 @@ class TComponentClassBehaviorTest extends TComponentTestBase
 		//tear down function variables
 		$anothercomponent->unlisten();
 	}
+
+	/**
+	 * The constructor of a direct TComponent subclass attaches the class behaviors
+	 * registered for it: an IClassBehavior is shared and an IBehavior is cloned.
+	 * An instance that does not listen keeps them after the class behavior is detached.
+	 */
+	public function testConstruct_directSubclassReceivesClassBehaviors()
+	{
+		$class = TComponentClassBehaviorTestPlainComponent::class;
+		TComponent::attachClassBehavior('shared', $shared = new FooClassBehavior(), $class);
+		$this->tearDownScripts['shared'] = function () use ($class) {
+			TComponent::detachClassBehavior('shared', $class);
+		};
+		TComponent::attachClassBehavior('owned', $owned = new FooBehavior(), $class);
+		$this->tearDownScripts['owned'] = function () use ($class) {
+			TComponent::detachClassBehavior('owned', $class);
+		};
+
+		$component = new TComponentClassBehaviorTestPlainComponent();
+
+		$this->assertFalse($component->getListeningToGlobalEvents());
+		$this->assertSame(['owned', 'shared'], array_keys($component->getBehaviors()));
+		$this->assertSame($shared, $component->asa('shared'));
+		$this->assertTrue($shared->isOwner($component));
+		$this->assertInstanceOf(FooBehavior::class, $component->asa('owned'));
+		$this->assertNotSame($owned, $component->asa('owned'));
+		$this->assertSame($component, $component->asa('owned')->getOwner());
+		$this->assertFalse($owned->hasOwner());
+
+		TComponent::detachClassBehavior('shared', $class);
+		TComponent::detachClassBehavior('owned', $class);
+		$this->tearDownScripts = [];
+
+		$this->assertSame(['owned', 'shared'], array_keys($component->getBehaviors()));
+		$this->assertSame([], (new TComponentClassBehaviorTestPlainComponent())->getBehaviors());
+	}
+
+	/**
+	 * The constructor of a direct TComponent subclass that auto listens registers its
+	 * global handlers and attaches its class behaviors; detaching the class behavior
+	 * then reaches the listening instance.
+	 */
+	public function testConstruct_listeningDirectSubclassReceivesClassBehaviors()
+	{
+		$class = TComponentClassBehaviorTestListeningComponent::class;
+		TComponent::attachClassBehavior('shared', $shared = new FooClassBehavior(), $class);
+		$this->tearDownScripts['shared'] = function () use ($class) {
+			TComponent::detachClassBehavior('shared', $class);
+		};
+		$handlers = $this->component->getEventHandlers('fxDetachClassBehavior');
+		$count = $handlers->getCount();
+
+		$component = new TComponentClassBehaviorTestListeningComponent();
+
+		$this->assertTrue($component->getListeningToGlobalEvents());
+		$this->assertSame($count + 1, $handlers->getCount());
+		$this->assertSame($shared, $component->asa('shared'));
+		$this->assertSame(12, $component->faaEverMore(3, 4));
+		$this->assertSame($component, $shared->getLastClassObject());
+
+		$this->assertSame($shared, TComponent::detachClassBehavior('shared', $class));
+		unset($this->tearDownScripts['shared']);
+
+		$this->assertNull($component->asa('shared'));
+		$this->assertFalse($shared->hasOwner());
+
+		$this->assertSame(2, $component->unlisten());
+		$this->assertSame($count, $handlers->getCount());
+	}
+}
+
+/**
+ * Direct TComponent subclass without interfaces or traits; it does not listen.
+ */
+class TComponentClassBehaviorTestPlainComponent extends TComponent
+{
+}
+
+/**
+ * Direct TComponent subclass without interfaces or traits that auto listens.
+ */
+class TComponentClassBehaviorTestListeningComponent extends TComponent
+{
+	/**
+	 * Enables listening to global events on construction.
+	 * @return bool true.
+	 */
+	public function getAutoGlobalListen()
+	{
+		return true;
+	}
 }

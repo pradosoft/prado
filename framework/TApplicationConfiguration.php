@@ -622,7 +622,7 @@ class TApplicationConfiguration extends \Prado\TApplicationComponent
 	{
 		foreach ($servicesNode as $id => $service) {
 			if (!isset($service['class'])) {
-				throw new TConfigurationException('appconfig_servicetype_required');
+				throw new TConfigurationException('appconfig_servicetype_required', $id);
 			}
 			$type = $service['class'];
 			$properties = $service['properties'] ?? [];
