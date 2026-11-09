@@ -1,0 +1,13 @@
+<com:TContent ID="Content">
+	<h1>Context Menu Test Case</h1>
+
+	<p>Status: <com:TLabel ID="status" Text="waiting" /></p>
+	<com:TPanel ID="photo" TabIndex="0" Attributes.aria-label="Photo" Style="width: 20rem; height: 8rem; background: #ddd">
+		Right-click or press Shift+F10
+	</com:TPanel>
+	<com:TContextMenu ID="photoMenu" ForControl="photo">
+		<com:TButton ID="rotate" Text="Rotate" ButtonTag="Button" OnClick="itemClicked" />
+		<com:TButton ID="remove" Text="Delete" ButtonTag="Button" OnClick="itemClicked" />
+	</com:TContextMenu>
+	<p id="outside">Outside</p>
+</com:TContent>

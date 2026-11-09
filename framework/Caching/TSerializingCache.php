@@ -44,8 +44,8 @@ use Prado\Util\Traits\TInitializedTrait;
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0
- * @method string dySerialize(object $sentinel, mixed $value) Raised before serializing a value; return a string (different from `$sentinel`) to override the configured serialization type.
- * @method mixed dyUnserialize(object $sentinel, string $data) Raised before unserializing data; return any non-sentinel value to override the configured serialization type.
+ * @method string dySerialize(object $sentinel, mixed $value) Raised before serializing a value; return a string (different from `$sentinel`) to override the configured serialization type.  Null keeps the configured type.
+ * @method mixed dyUnserialize(object $sentinel, string $data) Raised before unserializing data; return any non-sentinel, non-null value to override the configured serialization type.
  */
 abstract class TSerializingCache extends TCache
 {
@@ -262,7 +262,7 @@ abstract class TSerializingCache extends TCache
 	 */
 	protected function serializeValue(mixed $value): string
 	{
-		$newValue = $this->dySerialize($value);
+		$newValue = $this->callBehaviorsFilter('dySerialize', $value);
 		if ($newValue !== $value) {
 			$data = (string) $newValue;
 		} elseif ($this->getSerializationType() === self::SERIALIZATION_JSON) {
@@ -300,7 +300,7 @@ abstract class TSerializingCache extends TCache
 				return false;
 			}
 		}
-		$newData = $this->dyUnserialize($data);
+		$newData = $this->callBehaviorsFilter('dyUnserialize', $data);
 		if ($newData !== $data) {
 			return $newData;
 		}
