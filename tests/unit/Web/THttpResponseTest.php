@@ -10,6 +10,7 @@ use Prado\Web\THttpCookie;
 use Prado\Web\THttpResponse;
 use Prado\Web\THttpResponseAdapter;
 use Prado\Test\Unit\Harness\TTestApplication;
+use Prado\Test\Unit\Harness\Util\TTestNullDynamicBehavior;
 use Prado\Test\Unit\PradoUnit;
 
 class TTestHttpResponse extends THttpResponse {
@@ -685,6 +686,24 @@ class THttpResponseTest extends \PHPUnit\Framework\TestCase
 		$response->redirect('/local/page');
 
 		$this->assertEquals(['https://elsewhere.example/', '/', '/', '/local/page'], $adapter->redirects);
+	}
+
+	public function testDynamicBehaviorIgnoringTheFiltersKeepsTheUrlAndTheCookie()
+	{
+		// __dycall returns null for dyRedirect and dySetCookie; the URL and the cookie pass through.
+		$response = new TTestHttpResponse();
+		$response->setAdapter($adapter = new TTestRecordingResponseAdapter($response));
+		$response->attachBehavior('nulldy', new TTestNullDynamicBehavior());
+		$response->redirect('/local/page');
+		$this->assertEquals(['/local/page'], $adapter->redirects);
+
+		$response = new TTestHttpResponse();
+		$response->attachBehavior('nulldy', $behavior = new TTestNullDynamicBehavior());
+		$response->addCookie(new THttpCookie('name', 'value'));
+		$response->removeCookie(new THttpCookie('gone', 'value'));
+		$this->assertEquals('name', $response->cookies[0][0]);
+		$this->assertEquals('gone', $response->cookies[1][0]);
+		$this->assertEquals(['dySetCookie', 'dySetCookie'], array_values(array_filter($behavior->events, static fn ($e) => $e === 'dySetCookie')));
 	}
 
 	public function testRedirectWithoutAdapterSendsFilteredUrl()

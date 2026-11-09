@@ -2,6 +2,7 @@
 
 namespace Prado\Test\Unit;
 
+use Composer\Autoload\ClassLoader;
 use PHPUnit\Framework\TestCase;
 use Prado\Prado;
 use Prado\TApplicationComponent;
@@ -27,6 +28,16 @@ class TApplicationComponentTest_FxComponent extends TApplicationComponent
 class TApplicationComponentTest_NormalFxComponent extends TApplicationComponent
 {
 	public function fxApplicationComponentTestNormalEvent($sender, $param)
+	{
+	}
+}
+
+/**
+ * Application component with an fx event, used by the test without an application.
+ */
+class TApplicationComponentTest_NoAppFxComponent extends TApplicationComponent
+{
+	public function fxApplicationComponentTestNoAppEvent($sender, $param)
 	{
 	}
 }
@@ -147,6 +158,99 @@ class TApplicationComponentTest extends TestCase
 
 		touch($cacheFile, $manifestsTime);
 		$this->assertSame(['Some\\Component' => ['fxA']], PradoUnit::invoke(TApplicationComponent::class, 'readFxCache', $cacheFile));
+	}
+
+	public function testClassFxEvents_withoutApplication_computesTheListAndWritesNoCache(): void
+	{
+		$this->_app->setMode(TApplicationMode::Performance);
+		$cacheFile = $this->_app->getRuntimePath() . DIRECTORY_SEPARATOR . TApplicationComponent::FX_CACHE_FILE;
+		$component = new TApplicationComponentTest_NoAppFxComponent();
+		$this->assertFileExists($cacheFile);
+		unlink($cacheFile);
+		PradoUnit::setStaticProp(TApplicationComponent::class, '_classFx', null);
+
+		PradoUnit::setStaticProp(Prado::class, '_application', null);
+		try {
+			$fx = PradoUnit::invoke($component, 'getClassFxEvents', $component);
+		} finally {
+			PradoUnit::setStaticProp(Prado::class, '_application', $this->_app);
+		}
+
+		$this->assertContains('fxApplicationComponentTestNoAppEvent', $fx);
+		$this->assertFileDoesNotExist($cacheFile);
+		$this->assertNull(PradoUnit::getStaticProp(TApplicationComponent::class, '_classFx'));
+		$component->unlisten();
+	}
+
+	public function testReadFxCache_unreadableFile_returnsAnEmptyArray(): void
+	{
+		$cacheFile = $this->_app->getRuntimePath() . DIRECTORY_SEPARATOR . TApplicationComponent::FX_CACHE_FILE;
+		file_put_contents($cacheFile, serialize(['Some\\Component' => ['fxA']]));
+		chmod($cacheFile, 0o000);
+		clearstatcache();
+		try {
+			if (is_readable($cacheFile)) {
+				$this->markTestSkipped('The file stays readable for this user.');
+			}
+			$this->assertSame([], PradoUnit::invoke(TApplicationComponent::class, 'readFxCache', $cacheFile));
+		} finally {
+			chmod($cacheFile, 0o644);
+		}
+	}
+
+	/**
+	 * Runs `$test` while Composer reports no vendor directory, so
+	 * {@see TComposerReflection::getInstalledManifestsTime()} is null.
+	 */
+	private function withoutComposerManifests(callable $test): void
+	{
+		$loaders = PradoUnit::getStaticProp(ClassLoader::class, 'registeredLoaders');
+		PradoUnit::setStaticProp(ClassLoader::class, 'registeredLoaders', []);
+		try {
+			$this->assertNull(TComposerReflection::getInstalledManifestsTime());
+			$test();
+		} finally {
+			PradoUnit::setStaticProp(ClassLoader::class, 'registeredLoaders', $loaders);
+		}
+	}
+
+	public function testReadFxCache_withoutComposerManifests_readsAFileOfAnyAge(): void
+	{
+		$cacheFile = $this->_app->getRuntimePath() . DIRECTORY_SEPARATOR . TApplicationComponent::FX_CACHE_FILE;
+		file_put_contents($cacheFile, serialize(['Some\\Component' => ['fxA']]));
+		touch($cacheFile, 1);
+
+		$this->withoutComposerManifests(function () use ($cacheFile) {
+			$this->assertSame(['Some\\Component' => ['fxA']], PradoUnit::invoke(TApplicationComponent::class, 'readFxCache', $cacheFile));
+		});
+	}
+
+	public function testReadFxCache_withoutComposerManifests_corruptFileGivesAnEmptyArray(): void
+	{
+		$cacheFile = $this->_app->getRuntimePath() . DIRECTORY_SEPARATOR . TApplicationComponent::FX_CACHE_FILE;
+		file_put_contents($cacheFile, 'not serialized');
+
+		$this->withoutComposerManifests(function () use ($cacheFile) {
+			$this->assertSame([], PradoUnit::invoke(TApplicationComponent::class, 'readFxCache', $cacheFile));
+		});
+	}
+
+	public function testReadFxCache_withoutComposerManifests_unreadableFileGivesAnEmptyArray(): void
+	{
+		$cacheFile = $this->_app->getRuntimePath() . DIRECTORY_SEPARATOR . TApplicationComponent::FX_CACHE_FILE;
+		file_put_contents($cacheFile, serialize(['Some\\Component' => ['fxA']]));
+		chmod($cacheFile, 0o000);
+		clearstatcache();
+		try {
+			if (is_readable($cacheFile)) {
+				$this->markTestSkipped('The file stays readable for this user.');
+			}
+			$this->withoutComposerManifests(function () use ($cacheFile) {
+				$this->assertSame([], PradoUnit::invoke(TApplicationComponent::class, 'readFxCache', $cacheFile));
+			});
+		} finally {
+			chmod($cacheFile, 0o644);
+		}
 	}
 
 	public function testAccessors_delegateToApplication(): void

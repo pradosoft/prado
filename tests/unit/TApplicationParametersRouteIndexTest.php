@@ -194,6 +194,23 @@ class TApplicationParametersRouteIndexTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame([2], $a->calls);
 	}
 
+	public function testDisabledAllKeysRoute_notCalled(): void
+	{
+		$params = new TApplicationParameters();
+		$all = new TApplicationParametersRouteRecorder();
+		$route = $this->route(null, $all);
+		$params->attachBehavior('all', $route);
+
+		$route->setEnabled(false);
+		$params['a'] = 1;
+		unset($params['a']);
+		$route->setEnabled(true);
+		$params['b'] = 2;
+
+		$this->assertSame([['b', 2]], $all->calls);
+		$this->assertSame(['b' => 2], $params->toArray());
+	}
+
 	public function testBehaviorsDisabled_routesNotCalled(): void
 	{
 		$params = new TApplicationParameters();

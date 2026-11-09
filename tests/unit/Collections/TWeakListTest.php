@@ -7,6 +7,7 @@ use Prado\Collections\TWeakList;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
+use Prado\Test\Unit\PradoUnit;
 use Prado\TEventHandler;
 
 class TWeakListUnit extends TWeakList
@@ -769,5 +770,169 @@ class TWeakListTest extends TListTest
 		self::assertNotSame($stored, $item);
 		self::assertSame($object, $item['x']);
 		self::assertInstanceOf(\WeakReference::class, $stored['x'], 'The stored container keeps its WeakReference');
+	}
+
+	public function testExplicitWeakReferenceTracksReferent_TWeakList()
+	{
+		$list = new TWeakListUnit();
+		$object = new WeakListInvokableItem();
+		$list->add(\WeakReference::create($object));
+
+		self::assertSame(1, $list->getWeakObjectCount($object));
+		self::assertSame($object, $list->itemAt(0));
+
+		$object = null;
+		self::assertSame(0, $list->getCount(), 'A collected referent is scrubbed');
+		self::assertSame([], $list->toArray());
+	}
+
+	public function testExplicitWeakReferenceSharesTrackingWithItsObject_TWeakList()
+	{
+		$list = new TWeakListUnit();
+		$object = new WeakListInvokableItem();
+		$list->add($object);
+		$list->add(\WeakReference::create($object));
+		self::assertSame(2, $list->getWeakObjectCount($object));
+
+		$list->removeAt(0);
+		self::assertSame(1, $list->getWeakObjectCount($object));
+
+		$object = null;
+		self::assertSame(0, $list->getCount());
+		self::assertSame([], $list->toArray());
+	}
+
+	public function testExplicitWeakReferenceCollectedBeforeAdd_TWeakList()
+	{
+		$object = new WeakListInvokableItem();
+		$weak = \WeakReference::create($object);
+		$object = null;
+
+		$list = new TWeakListUnit();
+		$list->add($weak);
+		self::assertSame(0, $list->getCount(), 'A referent collected before it is added is scrubbed');
+		self::assertSame([], $list->toArray());
+
+		$list = new TWeakListUnit(null, null, false);
+		$list->add($weak);
+		self::assertSame(1, $list->getCount(), 'DiscardInvalid false keeps the entry');
+		self::assertSame([null], $list->toArray());
+	}
+
+	public function testExplicitWeakReferenceToEventHandler_TWeakList()
+	{
+		$list = new TWeakListUnit();
+		$target = new WeakListInvokableItem();
+		$wrapped = new TEventHandler([$target, 'myHandler']);
+		$list->add(\WeakReference::create($wrapped));
+		self::assertSame(1, $list->getWeakObjectCount($wrapped), 'The referent is tracked, not its handler object');
+		self::assertNull($list->getWeakObjectCount($target));
+
+		$list->removeAt(0);
+		self::assertNull($list->getWeakObjectCount($wrapped));
+
+		$item = new WeakListInvokableItem();
+		$list->add(new TEventHandler([$item, 'myHandler']));
+		self::assertSame(0, $list->indexOf([$item, 'myHandler']), 'The removal keeps the event handler search on');
+		$list->clear();
+
+		$list->add(\WeakReference::create($wrapped));
+		$wrapped = null;
+		self::assertSame(0, $list->getCount(), 'The entry ends with the referenced handler while its target lives');
+	}
+
+	public function testExplicitWeakReferenceToContainer_TWeakList()
+	{
+		$list = new TWeakListUnit();
+		$container = new \ArrayObject();
+		$list->add(\WeakReference::create($container));
+		self::assertSame(1, $list->getWeakObjectCount($container));
+
+		$list->removeAt(0);
+		self::assertNull($list->getWeakObjectCount($container));
+
+		$list->add(\WeakReference::create($container));
+		$container = null;
+		self::assertSame(0, $list->getCount());
+	}
+
+	public function testClearResetsBookkeeping_TWeakList()
+	{
+		$list = new TWeakListUnit();
+		$item = new WeakListInvokableItem();
+		$list->add(new TEventHandler('strlen'));
+		$list->add($item);
+		$list->clear();
+
+		self::assertSame(0, PradoUnit::getProp($list, '_eventHandlerCount'));
+		self::assertSame(0, PradoUnit::getProp($list, '_weakCount'));
+		self::assertNull($list->getWeakObjectCount($item));
+	}
+
+	public function testClearReadOnly_TWeakList()
+	{
+		$item = new WeakListInvokableItem();
+		$list = new TWeakListUnit([$item], true, true);
+		$item = null;
+		$list->clear();
+		self::assertSame(0, $list->getCount(), 'A read-only list holding only collected objects clears without error');
+		self::assertSame([], $list->toArray());
+
+		$item = new WeakListInvokableItem();
+		$list = new TWeakListUnit([$item], true, true);
+		try {
+			$list->clear();
+			self::fail('A read-only list with a live item must not clear');
+		} catch (TInvalidOperationException $e) {
+			self::assertSame('list_readonly', $e->getErrorCode());
+		}
+		self::assertSame([$item], $list->toArray());
+	}
+
+	public function testFailedInsertLeavesNoBookkeeping_TWeakList()
+	{
+		$item = new WeakListInvokableItem();
+
+		$list = new TWeakListUnit(null, true, true);
+		$inserts = [
+			fn () => $list->add($item),
+			fn () => $list->insertAt(0, $item),
+			fn () => $list->mergeWith([$item]),
+			fn () => $list->copyFrom([$item]),
+			fn () => $list->offsetSet(null, $item),
+		];
+		foreach ($inserts as $insert) {
+			try {
+				$insert();
+				self::fail('Inserting into a read-only list must throw');
+			} catch (TInvalidOperationException $e) {
+				self::assertSame('list_readonly', $e->getErrorCode());
+			}
+			self::assertNull($list->getWeakObjectCount($item));
+		}
+
+		$list = new TWeakListUnit(null, true, false);
+		$this->expectFailure(TInvalidOperationException::class, fn () => $list->add(new TEventHandler('strlen')));
+		self::assertSame(0, PradoUnit::getProp($list, '_eventHandlerCount'));
+
+		$list = new TWeakListUnit();
+		$this->expectFailure(TInvalidDataValueException::class, fn () => $list->insertAt(9, $item));
+		self::assertSame(0, $list->getCount());
+		self::assertNull($list->getWeakObjectCount($item));
+		self::assertSame(0, PradoUnit::getProp($list, '_weakCount'));
+
+		$this->expectFailure(TInvalidDataValueException::class, fn () => $list->insertAt(9, new TEventHandler('strlen')));
+		self::assertSame(0, PradoUnit::getProp($list, '_eventHandlerCount'));
+	}
+
+	private function expectFailure(string $class, callable $call): void
+	{
+		try {
+			$call();
+		} catch (\Throwable $e) {
+			self::assertInstanceOf($class, $e);
+			return;
+		}
+		self::fail("Expected $class");
 	}
 }

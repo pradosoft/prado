@@ -75,5 +75,6 @@ The close button closes the dialog without script, with an empty `returnValue`. 
 - [TButton](./TButton.md): `CommandFor`, `Command`
 - [TActiveDialog](../ActiveControls/TActiveDialog.md)
 - [TTeleport](./TTeleport.md)
+- [TDrawer](./TDrawer.md): a dialog at a page edge
 
 **@since 4.4.0**

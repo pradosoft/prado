@@ -2,6 +2,7 @@
 
 namespace Prado\Test\Unit;
 
+use Prado\Prado;
 use Prado\TEventSubscription;
 use Prado\TComponent;
 use Prado\Collections\TMap;
@@ -136,4 +137,64 @@ class TEventSubscriptionTest extends \PHPUnit\Framework\TestCase
 		$this->subscription->setEvent('onEvent');
 	}
 
+	public function testConstruct_ComponentWithoutEvent_DoesNotSubscribe()
+	{
+		$this->subscription = new $this->_baseClass($this->component, null, function ($sender, $param) {});
+
+		self::assertSame($this->component, $this->subscription->getComponent());
+		self::assertNull($this->subscription->getEvent());
+		self::assertNull($this->subscription->getArray());
+		self::assertFalse($this->subscription->getIsSubscribed());
+	}
+
+	public function testConstruct_EventWithoutComponent_DoesNotSubscribe()
+	{
+		$this->subscription = new $this->_baseClass(null, 'onEvent', function ($sender, $param) {});
+
+		self::assertNull($this->subscription->getComponent());
+		self::assertSame('onevent', $this->subscription->getEvent());
+		self::assertNull($this->subscription->getArray());
+		self::assertFalse($this->subscription->getIsSubscribed());
+	}
+
+	public function testGlobalEvent_WithoutComponent_SubscribesThroughApplication()
+	{
+		$received = [];
+		$handler = function ($sender, $param) use (&$received) {
+			$received[] = $param;
+		};
+		$globalHandlers = PradoUnit::getStaticProp(TComponent::class, '_ue');
+		try {
+			$this->subscription = new $this->_baseClass(null, 'fxEventSubscriptionGlobalTest', $handler);
+
+			self::assertNull($this->subscription->getComponent());
+			self::assertSame('fxeventsubscriptionglobaltest', $this->subscription->getEvent());
+			self::assertSame(Prado::getApplication()->getEventHandlers('fxEventSubscriptionGlobalTest'), $this->subscription->getArray());
+			self::assertTrue($this->subscription->getIsSubscribed());
+
+			$this->component->raiseEvent('fxEventSubscriptionGlobalTest', $this->component, 'first');
+			self::assertSame(['first'], $received);
+
+			self::assertTrue($this->subscription->unsubscribe());
+			$this->component->raiseEvent('fxEventSubscriptionGlobalTest', $this->component, 'second');
+			self::assertSame(['first'], $received);
+		} finally {
+			$this->subscription = null;
+			PradoUnit::setStaticProp(TComponent::class, '_ue', $globalHandlers);
+		}
+	}
+
+	public function testGlobalEvent_WithoutComponentOrApplication_HasNoHandlers()
+	{
+		$app = Prado::getApplication();
+		Prado::setApplication(null);
+		try {
+			$this->subscription = new $this->_baseClass(null, 'fxEventSubscriptionGlobalTest', function ($sender, $param) {});
+
+			self::assertNull($this->subscription->getArray());
+			self::assertFalse($this->subscription->getIsSubscribed());
+		} finally {
+			Prado::setApplication($app);
+		}
+	}
 }

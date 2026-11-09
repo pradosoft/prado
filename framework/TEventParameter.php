@@ -329,7 +329,8 @@ class TEventParameter extends \Prado\TComponent implements IEventParameter, IEve
 	/**
 	 * This method is required by the interface \ArrayAccess. When the Parameter
 	 * is an array (or ArrayAccess) this will set the item at $offset.  Otherwise
-	 * this has no effect.
+	 * this has no effect.  A null offset on an ArrayAccess Parameter is an append:
+	 * the item is set without reading the offset first.
 	 * @param mixed $offset the offset to set element
 	 * @param mixed $item the element value
 	 * @throws TInvalidOperationException if the TEventParameter is read-only
@@ -347,7 +348,7 @@ class TEventParameter extends \Prado\TComponent implements IEventParameter, IEve
 
 		$offset = $this->normalizeOffset($offset);
 		$changed = true;
-		if (isset($this->_param[$offset])) {
+		if ($offset !== null && isset($this->_param[$offset])) {
 			$changed = ($item !== $this->_param[$offset]);
 		}
 		if (!$changed) {

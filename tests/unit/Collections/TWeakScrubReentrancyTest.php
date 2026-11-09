@@ -335,4 +335,133 @@ class TWeakScrubReentrancyTest extends \PHPUnit\Framework\TestCase
 		$value = null;
 		$this->assertSame(0, $map->getCount());
 	}
+
+	// -----------------------------------------------------------------------
+	// clear() with a destructor mutating the collection
+	// -----------------------------------------------------------------------
+
+	/**
+	 * Returns a Closure that is the only holder of a target whose destructor runs
+	 * $onDestruct, so removing the Closure from a collection fires the destructor.
+	 */
+	private function closureHoldingTrap(\Closure $onDestruct, ?bool &$fired): \Closure
+	{
+		$fired = false;
+		$trap = new WeakScrubReentryTarget();
+		$trap->onDestruct = function () use ($onDestruct, &$fired): void {
+			$fired = true;
+			$onDestruct();
+		};
+		return function () use ($trap): void {
+		};
+	}
+
+	public function testWeakList_clearSurvivesDestructorRemovingAnEntry(): void
+	{
+		$list = new TWeakList();
+		$keep = new WeakScrubReentryTarget();
+		$list->add($keep);
+		$list->add($this->closureHoldingTrap(function () use ($list, $keep): void {
+			$list->remove($keep);
+		}, $fired));
+
+		$list->clear();
+
+		$this->assertTrue($fired);
+		$this->assertSame(0, $list->getCount());
+		$this->assertSame([], $list->toArray());
+		$this->assertSame(0, $list->add($keep), 'The list is usable after clear');
+	}
+
+	public function testWeakList_clearRemovesEntryInsertedByDestructor(): void
+	{
+		$list = new TWeakList();
+		$inject = new WeakScrubReentryTarget();
+		$list->add($this->closureHoldingTrap(function () use ($list, $inject): void {
+			$list->add($inject);
+		}, $fired));
+
+		$list->clear();
+
+		$this->assertTrue($fired);
+		$this->assertSame(0, $list->getCount());
+	}
+
+	public function testWeakMap_clearSurvivesDestructorRemovingAnEntry(): void
+	{
+		$map = new TWeakMap();
+		$map->add('a', $this->closureHoldingTrap(function () use ($map): void {
+			$map->remove('c');
+		}, $fired));
+		$map->add('b', 'x');
+		$map->add('c', 'y');
+
+		$map->clear();
+
+		$this->assertTrue($fired);
+		$this->assertSame(0, $map->getCount());
+		$this->assertSame([], $map->toArray());
+	}
+
+	public function testWeakMap_clearRemovesEntryAddedByDestructor(): void
+	{
+		$map = new TWeakMap();
+		$map->add('a', $this->closureHoldingTrap(function () use ($map): void {
+			$map->add('added', 'x');
+		}, $fired));
+
+		$map->clear();
+
+		$this->assertTrue($fired);
+		$this->assertSame(0, $map->getCount());
+		$this->assertSame([], $map->toArray());
+	}
+
+	public function testWCC_clearSurvivesDestructorRemovingEntryAtAnotherPriority(): void
+	{
+		$col = new TWeakCallableCollection();
+		$keep = new WeakScrubReentryTarget();
+		$col->add($this->closureHoldingTrap(function () use ($col, $keep): void {
+			$col->remove([$keep, 'noopHandler']);
+		}, $fired), 5);
+		$col->add([$keep, 'noopHandler'], 10);
+
+		$col->clear();
+
+		$this->assertTrue($fired);
+		$this->assertSame(0, $col->getCount());
+		$this->assertSame([], $col->getPriorities());
+	}
+
+	public function testWCC_clearSurvivesDestructorRemovingEntryAtTheSamePriority(): void
+	{
+		$col = new TWeakCallableCollection();
+		$keep = new WeakScrubReentryTarget();
+		$col->add([$keep, 'noopHandler'], 5);
+		$col->add('strlen', 5);
+		$col->add($this->closureHoldingTrap(function () use ($col, $keep): void {
+			$col->remove([$keep, 'noopHandler']);
+		}, $fired), 5);
+
+		$col->clear();
+
+		$this->assertTrue($fired);
+		$this->assertSame(0, $col->getCount());
+		$this->assertSame([], $col->toArray());
+	}
+
+	public function testWCC_clearRemovesEntryInsertedByDestructor(): void
+	{
+		$col = new TWeakCallableCollection();
+		$inject = new WeakScrubReentryTarget();
+		$col->add($this->closureHoldingTrap(function () use ($col, $inject): void {
+			$col->add([$inject, 'noopHandler']);
+		}, $fired));
+
+		$col->clear();
+
+		$this->assertTrue($fired);
+		$this->assertSame(0, $col->getCount());
+		$this->assertSame([], $col->getPriorities());
+	}
 }

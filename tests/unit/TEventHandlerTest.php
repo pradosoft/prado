@@ -673,5 +673,49 @@ class TEventHandlerTest extends \PHPUnit\Framework\TestCase
 		}
 		self::assertSame($refData, $handler->getData());
 		self::assertSame($values['handler'], $handler->getHandler());
+  }
+
+	public function testOffsetGet_NonNumericOffset_Throws()
+	{
+		$handler = new TEventHandler([$object = new EventHandlerObject(), 'myHandler'], $refData = ['key1' => 'value1']);
+
+		try {
+			$handler->offsetGet('handler');
+			self::fail('offsetGet() did not throw for a non-numeric offset.');
+		} catch (TInvalidDataValueException $e) {
+			self::assertEquals('eventhandler_bad_offset', $e->getErrorCode());
+			self::assertStringContainsString('"handler"', $e->getMessage());
+		}
+		self::assertSame($refData, $handler[2]);
+	}
+
+	public function testInvoke_ArrayInvokeData_ScalarHandlerData_PassesInvokeData()
+	{
+		$object = new EventHandlerObject();
+		$handler = new TEventHandler($object, 'scalar');
+
+		self::assertEquals(1, $handler(null, null, $invokeData = ['key1' => 'invoke1']));
+		self::assertSame($invokeData, $object->data);
+		self::assertSame('scalar', $handler->getData());
+	}
+
+	public function testData_TEventHandler_ScalarChildData_IsNotCombined()
+	{
+		$handler1 = new TEventHandler([$object = new EventHandlerObject(), 'myHandler'], ['key1' => 'value1']);
+		$handler2 = new TEventHandler($handler1, 'scalar');
+
+		self::assertSame('scalar', $handler2->getData(true));
+		self::assertSame('scalar', $handler2->getData());
+	}
+
+	public function testData_TEventHandler_ScalarParentData_IsNotCombined()
+	{
+		$handler1 = new TEventHandler([$object = new EventHandlerObject(), 'myHandler'], 'scalar');
+		$handler2 = new TEventHandler($handler1, $refData2 = ['key1' => 'replace1']);
+		$handler3 = new TEventHandler($handler2, $refData3 = ['key3' => 'new3']);
+
+		self::assertSame('scalar', $handler1->getData(true));
+		self::assertSame($refData2, $handler2->getData(true));
+		self::assertSame(['key1' => 'replace1', 'key3' => 'new3'], $handler3->getData(true));
 	}
 }

@@ -79,6 +79,10 @@ $packages = [
 		'prado/controls/teleport.js',
 	],
 
+	'drawer' => [
+		'prado/controls/drawer.js',
+	],
+
   'menu' => [
 		'prado/controls/menu.js',
   ],
@@ -181,6 +185,7 @@ $dependencies = [
 	'proofofwork' => ['jquery', 'prado', 'proofofwork'],
 	'webtemplate' => ['jquery', 'prado', 'webtemplate'],
 	'teleport' => ['jquery', 'prado', 'teleport'],
+	'drawer' => ['jquery', 'prado', 'drawer'],
 	'menu' => ['jquery', 'prado', 'menu'],
 	'tooltip' => ['jquery', 'prado', 'tooltip'],
 	'safetycover' => ['jquery', 'prado', 'safetycover'],
