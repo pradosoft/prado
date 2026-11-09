@@ -79,7 +79,11 @@ $packages = [
 		'prado/controls/teleport.js',
 	],
 
-	'drawer' => [
+	'confirmsubmit' => [
+		'prado/controls/confirmsubmit.js',
+  ],
+
+  'drawer' => [
 		'prado/controls/drawer.js',
 	],
 
@@ -185,6 +189,7 @@ $dependencies = [
 	'proofofwork' => ['jquery', 'prado', 'proofofwork'],
 	'webtemplate' => ['jquery', 'prado', 'webtemplate'],
 	'teleport' => ['jquery', 'prado', 'teleport'],
+	'confirmsubmit' => ['jquery', 'prado', 'confirmsubmit'],
 	'drawer' => ['jquery', 'prado', 'drawer'],
 	'menu' => ['jquery', 'prado', 'menu'],
 	'tooltip' => ['jquery', 'prado', 'tooltip'],

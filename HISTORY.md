@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+NEW: Issue #1401 - `TConfirmSubmit` wraps controls and asks for confirmation in a modal `alertdialog` before their postback, callback, or navigation, through `TConfirmDialogTrait`, which `TConfirmButton` also uses. (belisoful)
 BUG: Issue #1497 - `TPropertyValue::ensureString()` throws `TInvalidDataTypeException` (`propertyvalue_invalid_string_type`) for an array or an object without `__toString()`, with warnings reported or masked; `coerceToType()` passes such a value through unchanged for `string` and `?string`, so a typed setter raises PHP's `TypeError`. (belisoful)
 BUG: Issue #1497 - `TPropertyValue::coerceToType()` returns an array, or an object without `__toString()`, unchanged when no member of a union type can hold it, so a typed setter raises PHP's `TypeError` in place of "Array to string conversion" or `\Error`. (belisoful)
 BUG: Issue #1497 - `Prado` log and profile methods and `TLogger::log()` threw `TypeError` on the default category when called from a static method, a function, or a script. (belisoful)
