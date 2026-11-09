@@ -228,9 +228,15 @@ class Prado
 
 	/**
 	 * PHP shutdown function used to catch fatal errors.
-	 * This method should be registered as PHP error handler using
-	 * {@see register_shutdown_function}. The method throws an exception that
-	 * contains the error information.
+	 * This method should be registered using {@see register_shutdown_function}.
+	 * When the last error is fatal by {@see TPhpErrorException::isFatalError()}
+	 * and {@see error_reporting} reports it, the method passes a
+	 * {@see TPhpFatalErrorException} with the error information to
+	 * {@see exceptionHandler()}.
+	 *
+	 * PHP does not pass `E_CORE_WARNING` and `E_COMPILE_WARNING` to
+	 * {@see phpErrorHandler()}, and the script continues after them. This
+	 * method does not report them; PHP logs them by its `log_errors` setting.
 	 */
 	public static function phpFatalErrorHandler(): void
 	{

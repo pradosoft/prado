@@ -1571,6 +1571,26 @@ class PradoBaseTest extends \PHPUnit\Framework\TestCase
 		Prado::phpFatalErrorHandler();
 	}
 
+	/**
+	 * A reported fatal error exits the process through exceptionHandler(), so
+	 * the handler runs in a child process.
+	 */
+	#[RunInSeparateProcess]
+	#[PreserveGlobalState(false)]
+	public function testPhpFatalErrorHandler_lastErrorIsCompileWarning_doesNothing(): void
+	{
+		error_reporting(E_ALL);
+		error_clear_last();
+		// PHP continues after an unsupported declare; `@` keeps it out of the output.
+		@eval('declare(prado_unknown_directive=1);');
+
+		$this->assertSame(E_COMPILE_WARNING, error_get_last()['type'] ?? null);
+		$this->assertSame(E_COMPILE_WARNING, error_reporting() & E_COMPILE_WARNING);
+
+		$this->expectOutputString('');
+		Prado::phpFatalErrorHandler();
+	}
+
 	// -----------------------------------------------------------------------
 	// getUserLanguages() / getPreferredLanguage() — statically cached, so each
 	// Accept-Language case runs in its own process.

@@ -44,7 +44,14 @@ public function __construct(int $errno, string $errstr, string $errfile, int $er
 public static function isFatalError(array $error): bool
 ```
 
-Checks if the error is a fatal-type error (E_ERROR, E_PARSE, etc.).
+Returns whether an `error_get_last()` array has a type that stops PHP. `Prado::phpFatalErrorHandler()` reports such an error at shutdown as a `TPhpFatalErrorException`.
+
+| `$error['type']` | Result |
+|---|---|
+| `E_ERROR`, `E_PARSE`, `E_CORE_ERROR`, `E_COMPILE_ERROR` | `true` |
+| `E_CORE_WARNING`, `E_COMPILE_WARNING` | `false`; PHP continues after a warning |
+| `E_USER_ERROR`, `E_RECOVERABLE_ERROR` | `false`; `Prado::phpErrorHandler()` throws for them before PHP stops |
+| any other type, a missing `type`, or `null` | `false` |
 
 ## Usage
 
