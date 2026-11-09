@@ -754,6 +754,8 @@ return [
 'TCompleteWizardStep' => 'Prado\Web\UI\WebControls\TCompleteWizardStep',
 'TConditional' => 'Prado\Web\UI\WebControls\TConditional',
 'TConfirmButton' => 'Prado\Web\UI\WebControls\TConfirmButton',
+'TConfirmDialogTrait' => 'Prado\Web\UI\WebControls\TConfirmDialogTrait',
+'TConfirmSubmit' => 'Prado\Web\UI\WebControls\TConfirmSubmit',
 'TContent' => 'Prado\Web\UI\WebControls\TContent',
 'TContentDirection' => 'Prado\Web\UI\WebControls\TContentDirection',
 'TContentPlaceHolder' => 'Prado\Web\UI\WebControls\TContentPlaceHolder',

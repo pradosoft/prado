@@ -88,6 +88,8 @@ trait TDataValueFormatterTrait
 	 * @param callable|string $format the format.
 	 * @param mixed $value the data to be formatted.
 	 * @throws TInvalidDataValueException if the `#` expression is invalid or throws.
+	 * @throws \Prado\Exceptions\TInvalidDataTypeException if the format is `''` and the data value
+	 *   is an array or an object without `__toString()`.
 	 * @return mixed the formatted result.
 	 */
 	protected function formatDataValue($format, $value)

@@ -1,5 +1,10 @@
 ## Version 4.4.0 - TBA
 BUG: Issue #1497 - `TApplication::startService()` throws `application_service_not_component` for an `IService` class that does not extend `TComponent`; it reported `application_service_invalid`, "must implement IService". (belisoful)
+NEW: Issue #1401 - `TConfirmSubmit` wraps controls and asks for confirmation in a modal `alertdialog` before their postback, callback, or navigation, through `TConfirmDialogTrait`, which `TConfirmButton` also uses. (belisoful)
+BUG: Issue #1497 - `TPropertyValue::ensureString()` throws `TInvalidDataTypeException` (`propertyvalue_invalid_string_type`) for an array or an object without `__toString()`, with warnings reported or masked; `coerceToType()` passes such a value through unchanged for `string` and `?string`, so a typed setter raises PHP's `TypeError`. (belisoful)
+BUG: Issue #1497 - `TPropertyValue::coerceToType()` returns an array, or an object without `__toString()`, unchanged when no member of a union type can hold it, so a typed setter raises PHP's `TypeError` in place of "Array to string conversion" or `\Error`. (belisoful)
+BUG: Issue #1497 - `Prado` log and profile methods and `TLogger::log()` threw `TypeError` on the default category when called from a static method, a function, or a script. (belisoful)
+BUG: Issue #1497 - `TPhpErrorException::isFatalError()` counted `E_CORE_WARNING` and `E_COMPILE_WARNING` as fatal, so a script that finished after one reported a `TPhpFatalErrorException` at shutdown. (belisoful)
 BUG: Issue #1497 - `TEventParameter::offsetSet()` with a null offset appends to an `ArrayAccess` parameter without reading the offset first, which PHP 8.5 deprecates for `ArrayObject`. (belisoful)
 BUG: Issue #1497 - Cloning a component with a behavior and a function-name or static-method event handler threw a `TypeError`; `TComponent::__clone()` keeps those handlers. (belisoful)
 BUG: Issue #1497 - A module configured with `lazy="false"` is loaded at once; the `lazy` attribute is read with `TPropertyValue::ensureBoolean()`. (belisoful)
