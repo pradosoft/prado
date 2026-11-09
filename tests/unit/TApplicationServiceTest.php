@@ -4,6 +4,7 @@ namespace Prado\Test\Unit;
 
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\THttpException;
+use Prado\IService;
 use Prado\Prado;
 use Prado\TApplication;
 use Prado\TService;
@@ -20,6 +21,41 @@ class TestUnrelatedService extends TService {}
 
 /** Not a TService — used to exercise the invalid-class guard in startService(). */
 class NotAService {}
+
+/** Implements IService without extending TComponent; startService() rejects it. */
+class BareInterfaceService implements IService
+{
+	private string $_id = '';
+	private bool $_enabled = true;
+
+	public function init($config)
+	{
+	}
+
+	public function getID()
+	{
+		return $this->_id;
+	}
+
+	public function setID($id)
+	{
+		$this->_id = $id;
+	}
+
+	public function getEnabled()
+	{
+		return $this->_enabled;
+	}
+
+	public function setEnabled($value)
+	{
+		$this->_enabled = $value;
+	}
+
+	public function run()
+	{
+	}
+}
 
 /** A TService stub whose getEnabled() always returns false. */
 class DisabledTestService extends TestBaseService
@@ -935,6 +971,57 @@ class TApplicationServiceTest extends \PHPUnit\Framework\TestCase
 		]);
 		$this->expectException(TConfigurationException::class);
 		$this->_app->startService('bad');
+	}
+
+	public function testStartService_nonServiceClassThrowsServiceInvalid(): void
+	{
+		$this->setServices([
+			'bad' => [NotAService::class, [], null],
+		]);
+		try {
+			$this->_app->startService('bad');
+			$this->fail('startService() must reject a class that does not implement IService');
+		} catch (TConfigurationException $e) {
+			$this->assertSame('application_service_invalid', $e->getErrorCode());
+			$this->assertStringContainsString(NotAService::class, $e->getMessage());
+		}
+	}
+
+	public function testStartService_bareIServiceClassThrowsNotComponent(): void
+	{
+		// registerService() accepts any IService; startService() also needs a TComponent.
+		$this->_app->registerService('bare', BareInterfaceService::class);
+		$this->assertTrue($this->_app->hasRegisteredService('bare'));
+		$service = $this->_app->getService();
+		try {
+			$this->_app->startService('bare');
+			$this->fail('startService() must reject an IService that does not extend TComponent');
+		} catch (TConfigurationException $e) {
+			$this->assertSame('application_service_not_component', $e->getErrorCode());
+			$this->assertStringContainsString(BareInterfaceService::class, $e->getMessage());
+			$this->assertStringContainsString('TComponent', $e->getMessage());
+			$this->assertStringNotContainsString('IService', $e->getMessage());
+		}
+		$this->assertSame($service, $this->_app->getService(), 'a rejected service must not become the current service');
+	}
+
+	public function testStartService_tServiceStartsAfterRejectedBareIService(): void
+	{
+		$this->_app->registerService('bare', BareInterfaceService::class);
+		$this->_app->registerService('good', InitTrackingService::class, ['TrackedProp' => 'ok']);
+		try {
+			$this->_app->startService('bare');
+			$this->fail('startService() must reject an IService that does not extend TComponent');
+		} catch (TConfigurationException $e) {
+			$this->assertSame('application_service_not_component', $e->getErrorCode());
+		}
+		$this->_app->startService('good');
+		/** @var InitTrackingService $service */
+		$service = $this->_app->getService();
+		$this->assertInstanceOf(InitTrackingService::class, $service);
+		$this->assertSame('good', $service->getID());
+		$this->assertSame('ok', $service->getTrackedProp());
+		$this->assertTrue($service->initCalled);
 	}
 
 	public function testStartService_disabledServiceThrows(): void

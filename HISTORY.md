@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TApplication::startService()` throws `application_service_not_component` for an `IService` class that does not extend `TComponent`; it reported `application_service_invalid`, "must implement IService". (belisoful)
 BUG: `TPagedDataSource::getCount()` with paging on matches iteration: a page past the last page counts 0 and reports `IsLastPage`, and a short custom page counts its own items. (belisoful)
 NEW: Issue #1401 - `TDropdownMenu` renders a menu button and an action menu of its links and buttons, a `TPopover` with the ARIA `menu` role and the WAI-ARIA menu button keyboard. (belisoful)
 NEW: Issue #1401 - `TConfirmButton` asks for confirmation in a modal `alertdialog` before it posts back, without script, and replaces `onclick="return confirm()"`: `ConfirmText`, `ConfirmHeaderText`, `ConfirmButtonText`, and `CancelButtonText`. (belisoful)
