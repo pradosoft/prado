@@ -39,7 +39,7 @@ A server that runs several requests in one process sets both keys at the start o
 
 ### Error Handling
 - `phpErrorHandler($errno, $errstr, $errfile, $errline): bool` — Throws `TPhpErrorException` for an error that `error_reporting()` reports; returns `true` for a masked error.
-- `phpFatalErrorHandler()` — Shutdown function; converts fatal errors to `TPhpFatalErrorException`.
+- `phpFatalErrorHandler()` — Shutdown function; passes a `TPhpFatalErrorException` to `exceptionHandler()` when `error_get_last()` is fatal by `TPhpErrorException::isFatalError()` (`E_ERROR`, `E_PARSE`, `E_CORE_ERROR`, `E_COMPILE_ERROR`) and `error_reporting()` reports it. `E_CORE_WARNING` and `E_COMPILE_WARNING` bypass `phpErrorHandler` and are not reported at shutdown; PHP logs them by `log_errors`.
 - `exceptionHandler(\Throwable $e)` — Fallback exception handler for uncaught exceptions.
 
 ### Error Suppression (`@`)
@@ -56,7 +56,7 @@ Every unmasked warning and notice throws `TPhpErrorException` at the call site, 
 - Removing such an `@` turns the expected failure into an exception and skips the fallback code.
 - A prior `is_file()` check does not replace `@`; the file can change between the check and the call.
 - Do not use `@` where a failure is a bug; the exception reports it.
-- Since PHP 8.0, `@` does not mask `E_ERROR`, `E_CORE_ERROR`, `E_COMPILE_ERROR`, `E_USER_ERROR`, `E_RECOVERABLE_ERROR`, or `E_PARSE`. `phpErrorHandler` throws for `E_USER_ERROR` and `E_RECOVERABLE_ERROR` under `@`, and `phpFatalErrorHandler` reports the fatal errors.
+- Since PHP 8.0, `@` does not mask `E_ERROR`, `E_CORE_ERROR`, `E_COMPILE_ERROR`, `E_USER_ERROR`, `E_RECOVERABLE_ERROR`, or `E_PARSE`. `phpErrorHandler` throws for `E_USER_ERROR` and `E_RECOVERABLE_ERROR` under `@`, and `phpFatalErrorHandler` reports `E_ERROR`, `E_CORE_ERROR`, `E_COMPILE_ERROR`, and `E_PARSE`.
 
 ### Component and Namespace Management
 - `createComponent(string $type, mixed ...$args): TComponent` — Instantiates a class by PRADO namespace or PHP class name.
@@ -70,7 +70,7 @@ Every unmasked warning and notice throws `TPhpErrorException` at the call site, 
 - `getRequestStartNanoseconds(): int` — The monotonic request start, `$_SERVER["PRADO_REQUEST_HRTIME"]`, in `hrtime()` nanoseconds; measure from it with `TMonotonicClock::elapsed()` (4.4.0).
 
 ### Path and Namespace Management
-- `getPathOfNamespace(string $namespace, string $ext = ''): ?string` — Converts a dotted namespace to a filesystem path.
+- `getPathOfNamespace(string $namespace, string $ext = ''): ?string` — Converts a dotted namespace to a filesystem path. Only the root segment `System` converts to `Prado`; a name that starts with "System", such as `SystemTools`, keeps its root.
 - `getPathOfAlias(string $alias): ?string` — Returns the path registered for an alias.
 - `getPathAliases(): array` — Returns all registered path aliases.
 - `setPathOfAlias(string $alias, string $path): void` — Registers or overrides an alias.
@@ -84,13 +84,26 @@ Used internally (e.g., `TEventParameter::setReadOnly` uses `isCallingSelf()` to 
 
 ### Logging and Debugging
 - `getLogger(): TLogger` — Returns (or lazily creates) the message logger.
-- `log(string $msg, int $level, string $category, float $time): void` — Writes a log entry.
-- `trace(string $msg, string $cat)` / `debug` / `info` / `warning` / `error` / `fatal` — Severity shortcuts.
+- `log(string $msg, int $level = TLogger::INFO, ?string $category = 'Uncategorized', $ctl = null): ?float` — Writes a log entry; returns the profiled seconds for `PROFILE_END`.
+- `trace(string $msg, ?string $category = null, $ctl = null)` / `debug` / `info` / `notice` / `warning` / `error` / `alert` / `fatal` — Severity shortcuts.
+- `profileBegin(string $token, ?string $category = null, $ctl = null)` / `profileEnd` — Profile a token; `profileEnd` returns the seconds since its `profileBegin`.
+- `callingCategory(): string` (protected, 4.4.0) — The default category for a `null` `$category` in the log and profile methods, taken from their caller.
 - `varDump(mixed $var): string` — Pretty-prints a variable via `TVarDumper`.
+
+Default category by caller of the log method:
+
+| Caller | Category |
+|---|---|
+| Object method, or closure bound to an object | The class of the object |
+| Static method, or static closure of a class | The class declaring it |
+| Function, closure outside a class, or script | `Prado::class` |
+
+`TLogger::log()` resolves a `null` category the same way for its own caller, with the logger's class as the last case.
 
 ### Localization
 - `getUserLanguages(): array` — Parses `Accept-Language` header into a priority-ordered list.
 - `getPreferredLanguage(): string` — Returns the highest-priority language code.
+- `getApplicationLanguage(): string` — Returns the language of the globalization module's culture, or `getPreferredLanguage()` when there is no module or its culture is null or not alphabetic.
 - `localize(string $text, array $params, string $catalog, string $charset): string` — Translates text via `Translation`.
 
 ## Static Properties

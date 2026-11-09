@@ -291,7 +291,7 @@ class TLogger extends \Prado\TComponent
 			return $return;
 		}
 		if ($log[static::LOG_LEVEL] & TLogger::PROFILE_BEGIN_SELECT) {
-			$profileName = $this->dyProfilerRename('[' . $log[static::LOG_MESSAGE] . '][' . $log[static::LOG_PID] . ']');
+			$profileName = $this->callBehaviorsFilter('dyProfilerRename', '[' . $log[static::LOG_MESSAGE] . '][' . $log[static::LOG_PID] . ']');
 			$add = !isset($this->_profileLogs[$profileName]);
 			$this->_profileLogs[$profileName] = $log;
 			$this->_profileBeginTimes[$profileName] = $log[static::LOG_TIME];
@@ -306,7 +306,7 @@ class TLogger extends \Prado\TComponent
 			}
 		} else {
 			if ($log[static::LOG_LEVEL] & TLogger::PROFILE_END_SELECT) { // Move ProfileBegin to the primary log.
-				$profileName = $this->dyProfilerRename('[' . $log[static::LOG_MESSAGE] . '][' . $log[static::LOG_PID] . ']');
+				$profileName = $this->callBehaviorsFilter('dyProfilerRename', '[' . $log[static::LOG_MESSAGE] . '][' . $log[static::LOG_PID] . ']');
 				if (isset($this->_profileLogs[$profileName])) {
 					$this->_logs[] = $this->_profileLogs[$profileName];
 
@@ -371,7 +371,7 @@ class TLogger extends \Prado\TComponent
 	 * TLogger::DEBUG, TLogger::INFO, TLogger::NOTICE, TLogger::WARNING,
 	 * TLogger::ERROR, TLogger::ALERT, TLogger::FATAL, TLogger::PROFILE,
 	 * TLogger::PROFILE_BEGIN, TLogger::PROFILE_END
-	 * @param ?string $category category of the message
+	 * @param ?string $category category of the message; null for the {@see callingCategory() calling class}.
 	 * @param null|string|TControl $ctl control of the message
 	 * @return ?float The seconds since the PROFILE_BEGIN of the token, on the monotonic clock, for
 	 *   PROFILE_END; and null in other cases.
@@ -387,7 +387,7 @@ class TLogger extends \Prado\TComponent
 		}
 
 		if ($category === null) {
-			$category = Prado::callingObject()::class;
+			$category = $this->callingCategory();
 		}
 
 		$traces = null;
@@ -415,6 +415,27 @@ class TLogger extends \Prado\TComponent
 		return $this->addLog([$token, $level, $category, $this->getClock()->microtime(), memory_get_usage(), $ctl, $traces, getmypid()]);
 	}
 
+	/**
+	 * Returns the default log category for the code calling {@see log()}.
+	 * {@see log()} calls this directly; the caller is the third backtrace frame.
+	 *
+	 * | Caller | Category |
+	 * |---|---|
+	 * | Object method, or closure bound to an object | The class of the object |
+	 * | Static method, or static closure of a class | The class declaring it |
+	 * | Function, closure outside a class, or script | The class of this logger |
+	 *
+	 * @return string The default category for the caller of {@see log()}.
+	 * @since 4.4.0
+	 */
+	protected function callingCategory(): string
+	{
+		$frame = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT | DEBUG_BACKTRACE_IGNORE_ARGS, 3)[2] ?? [];
+		if (!empty($frame['object'])) {
+			return $frame['object']::class;
+		}
+		return $frame['class'] ?? static::class;
+	}
 
 	/**
 	 * This event collects any logs from other aspects of the application that may

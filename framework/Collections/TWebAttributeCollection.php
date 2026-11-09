@@ -438,7 +438,7 @@ class TWebAttributeCollection extends TMap
 	{
 		parent::_getZappableSleepProps($exprops);
 		if ($this->_prefix === '') {
-			$exprops[] = "\0" . __CLASS__ . "\0_prefix";
+			$exprops[] = "\0*\0_prefix";
 		}
 	}
 }

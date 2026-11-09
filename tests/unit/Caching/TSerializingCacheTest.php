@@ -16,6 +16,7 @@ use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Security\TSecurityManager;
 use Prado\Test\Unit\Harness\Caching\TTestSerializingCache;
+use Prado\Test\Unit\Harness\Util\TTestNullDynamicBehavior;
 
 /**
  * Tests for TSerializingCache serialization, encryption, encoding, and security-manager
@@ -262,5 +263,19 @@ class TSerializingCacheTest extends \PHPUnit\Framework\TestCase
 		$key = array_key_first($cache->store);
 		$cache->store[$key] = base64_encode('totally bogus ciphertext bytes');
 		$this->assertFalse($cache->get('k'));
+	}
+
+	// ── A dynamic behavior that ignores dySerialize/dyUnserialize ───────────────
+
+	public function testDynamicBehaviorIgnoringTheHooksKeepsTheConfiguredSerialization(): void
+	{
+		// __dycall returns null for dySerialize and dyUnserialize; the value round-trips through the configured type.
+		$cache = $this->newCache();
+		$cache->attachBehavior('nulldy', $behavior = new TTestNullDynamicBehavior());
+		$cache->init(null);
+		$this->assertTrue($cache->set('key', ['a' => 1, 'b' => [2, 3]]));
+		$this->assertSame(['a' => 1, 'b' => [2, 3]], $cache->get('key'));
+		$this->assertContains('dySerialize', $behavior->events);
+		$this->assertContains('dyUnserialize', $behavior->events);
 	}
 }

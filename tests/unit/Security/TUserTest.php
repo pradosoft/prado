@@ -8,6 +8,7 @@ use Prado\Security\TUserManager;
 use Prado\Util\TBehavior;
 use Prado\Xml\TXmlDocument;
 use Prado\Test\Unit\Harness\TTestApplication;
+use Prado\Test\Unit\Harness\Util\TTestNullDynamicBehavior;
 
 class TUserBehavior extends TBehavior {
 	public function dyDefaultRoles($defaultRoles, $callchain){
@@ -78,6 +79,16 @@ class TUserTest extends \PHPUnit\Framework\TestCase
 		$user->setIsGuest(true);
 		self::assertTrue($user->getIsGuest());
 		self::assertEquals([], $user->getRoles());
+	}
+
+	public function testRolesWithADynamicBehaviorIgnoringDyDefaultRoles()
+	{
+		// __dycall returns null for dyDefaultRoles; the empty default set stays an array.
+		$user = new TUser(self::$mgr);
+		$user->attachBehavior('nulldy', $behavior = new TTestNullDynamicBehavior());
+		$user->setRoles(['Administrator', 'Writer']);
+		self::assertEquals(['Administrator', 'Writer'], $user->getRoles());
+		self::assertContains('dyDefaultRoles', $behavior->events);
 	}
 
 	public function testRoles()

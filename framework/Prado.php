@@ -228,9 +228,15 @@ class Prado
 
 	/**
 	 * PHP shutdown function used to catch fatal errors.
-	 * This method should be registered as PHP error handler using
-	 * {@see register_shutdown_function}. The method throws an exception that
-	 * contains the error information.
+	 * This method should be registered using {@see register_shutdown_function}.
+	 * When the last error is fatal by {@see TPhpErrorException::isFatalError()}
+	 * and {@see error_reporting} reports it, the method passes a
+	 * {@see TPhpFatalErrorException} with the error information to
+	 * {@see exceptionHandler()}.
+	 *
+	 * PHP does not pass `E_CORE_WARNING` and `E_COMPILE_WARNING` to
+	 * {@see phpErrorHandler()}, and the script continues after them. This
+	 * method does not report them; PHP logs them by its `log_errors` setting.
 	 */
 	public static function phpFatalErrorHandler(): void
 	{
@@ -336,13 +342,15 @@ class Prado
 	}
 
 	/**
-	 * Convert old Prado namespaces to PHP namespaces
+	 * Converts an old Prado namespace to a PHP namespace. The root segment `System`
+	 * becomes `Prado`; a name that only starts with "System", such as `SystemTools`,
+	 * keeps its root. A dotted name has its dots replaced by backslashes.
 	 * @param string $type old class name in Prado3 namespace format
 	 * @return string Equivalent class name in PHP namespace format
 	 */
 	protected static function prado3NamespaceToPhpNamespace($type): string
 	{
-		if (substr($type, 0, 6) === 'System') {
+		if (substr($type, 0, strcspn($type, '.\\')) === 'System') {
 			$type = 'Prado' . substr($type, 6);
 		}
 
@@ -789,9 +797,10 @@ class Prado
 	/**
 	 * Returns the language of the application culture: the two-letter language of
 	 * {@see \Prado\I18N\TGlobalization::getCulture()} when the application has a
-	 * globalization module, otherwise {@see getPreferredLanguage()}. The error
-	 * handler and {@see \Prado\Exceptions\THttpException} select the visitor-facing
-	 * language with it.
+	 * globalization module, otherwise {@see getPreferredLanguage()}. A culture that
+	 * is null or has no alphabetic language also yields {@see getPreferredLanguage()}.
+	 * The error handler and {@see \Prado\Exceptions\THttpException} select the
+	 * visitor-facing language with it.
 	 * @return string the two-letter application language, defaults to English.
 	 * @since 4.4.0
 	 */
@@ -799,7 +808,7 @@ class Prado
 	{
 		$globalization = self::$_application?->getGlobalization(false);
 		if ($globalization !== null) {
-			$lang = strtolower(explode('_', str_replace('-', '_', $globalization->getCulture()))[0]);
+			$lang = strtolower(explode('_', str_replace('-', '_', (string) $globalization->getCulture()))[0]);
 			if ($lang !== '' && ctype_alpha($lang)) {
 				return $lang;
 			}
@@ -827,15 +836,37 @@ class Prado
 	}
 
 	/**
+	 * Returns the default log category for the code calling a log method.
+	 * The log method calls this directly; the caller is the third backtrace frame.
+	 *
+	 * | Caller | Category |
+	 * |---|---|
+	 * | Object method, or closure bound to an object | The class of the object |
+	 * | Static method, or static closure of a class | The class declaring it |
+	 * | Function, closure outside a class, or script | `Prado::class` |
+	 *
+	 * @return string The default category for the caller of the log method.
+	 * @since 4.4.0
+	 */
+	protected static function callingCategory(): string
+	{
+		$frame = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT | DEBUG_BACKTRACE_IGNORE_ARGS, 3)[2] ?? [];
+		if (!empty($frame['object'])) {
+			return $frame['object']::class;
+		}
+		return $frame['class'] ?? self::class;
+	}
+
+	/**
 	 * Writes a profile begin message.
 	 * @param string $token The profile token.
-	 * @param ?string $category category of the message, default null for the calling class.
+	 * @param ?string $category category of the message; null for the {@see callingCategory() calling class}.
 	 * @param null|\Prado\Web\UI\TControl|string $ctl control of the message, default null
 	 */
 	public static function profileBegin($token, $category = null, $ctl = null): void
 	{
 		if ($category === null) {
-			$category = self::callingObject()::class;
+			$category = self::callingCategory();
 		}
 		self::log($token, TLogger::PROFILE_BEGIN, $category, $ctl);
 	}
@@ -843,14 +874,14 @@ class Prado
 	/**
 	 * Writes a profile end message.
 	 * @param string $token The profile token.
-	 * @param ?string $category category of the message, default null for the calling class.
+	 * @param ?string $category category of the message; null for the {@see callingCategory() calling class}.
 	 * @param null|\Prado\Web\UI\TControl|string $ctl control of the message, default null
 	 * @return ?float The time spent since the PROFILE_BEGIN of the same token.
 	 */
 	public static function profileEnd($token, $category = null, $ctl = null): ?float
 	{
 		if ($category === null) {
-			$category = self::callingObject()::class;
+			$category = self::callingCategory();
 		}
 		return self::log($token, TLogger::PROFILE_END, $category, $ctl);
 	}
@@ -863,7 +894,7 @@ class Prado
 	 * When the application is in Performance mode, this method does nothing.
 	 * Otherwise, the message is logged at INFO level.
 	 * @param string $msg message to be logged
-	 * @param ?string $category category of the message, null fills is with the calling class
+	 * @param ?string $category category of the message; null for the {@see callingCategory() calling class}.
 	 * @param null|\Prado\Web\UI\TControl|string $ctl control of the message
 	 * @see log, getLogger
 	 */
@@ -873,7 +904,7 @@ class Prado
 			return;
 		}
 		if ($category === null) {
-			$category = self::callingObject()::class;
+			$category = self::callingCategory();
 		}
 		if (!self::$_application || self::$_application->getMode() === TApplicationMode::Debug) {
 			$trace = debug_backtrace();
@@ -890,7 +921,7 @@ class Prado
 	/**
 	 * Writes a debug log message.
 	 * @param string $msg message to be logged
-	 * @param ?string $category category of the message, default null for the calling class.
+	 * @param ?string $category category of the message; null for the {@see callingCategory() calling class}.
 	 * @param null|\Prado\Web\UI\TControl|string $ctl control of the message, default null
 	 */
 	public static function debug($msg, $category = null, $ctl = null): void
@@ -899,7 +930,7 @@ class Prado
 			return;
 		}
 		if ($category === null) {
-			$category = self::callingObject()::class;
+			$category = self::callingCategory();
 		}
 		$trace = debug_backtrace();
 		if (isset($trace[0]['file']) && isset($trace[0]['line'])) {
@@ -911,13 +942,13 @@ class Prado
 	/**
 	 * Writes an info log message.
 	 * @param string $msg message to be logged
-	 * @param ?string $category category of the message, default null for the calling class.
+	 * @param ?string $category category of the message; null for the {@see callingCategory() calling class}.
 	 * @param null|\Prado\Web\UI\TControl|string $ctl control of the message, default null
 	 */
 	public static function info($msg, $category = null, $ctl = null): void
 	{
 		if ($category === null) {
-			$category = self::callingObject()::class;
+			$category = self::callingCategory();
 		}
 		self::log($msg, TLogger::INFO, $category, $ctl);
 	}
@@ -925,13 +956,13 @@ class Prado
 	/**
 	 * Writes a notice log message.
 	 * @param string $msg message to be logged
-	 * @param ?string $category category of the message, default null for the calling class.
+	 * @param ?string $category category of the message; null for the {@see callingCategory() calling class}.
 	 * @param null|\Prado\Web\UI\TControl|string $ctl control of the message, default null
 	 */
 	public static function notice($msg, $category = null, $ctl = null): void
 	{
 		if ($category === null) {
-			$category = self::callingObject()::class;
+			$category = self::callingCategory();
 		}
 		self::log($msg, TLogger::NOTICE, $category, $ctl);
 	}
@@ -939,13 +970,13 @@ class Prado
 	/**
 	 * Writes a warning log message.
 	 * @param string $msg message to be logged
-	 * @param ?string $category category of the message, default null for the calling class.
+	 * @param ?string $category category of the message; null for the {@see callingCategory() calling class}.
 	 * @param null|\Prado\Web\UI\TControl|string $ctl control of the message, default null
 	 */
 	public static function warning($msg, $category = null, $ctl = null): void
 	{
 		if ($category === null) {
-			$category = self::callingObject()::class;
+			$category = self::callingCategory();
 		}
 		self::log($msg, TLogger::WARNING, $category, $ctl);
 	}
@@ -953,13 +984,13 @@ class Prado
 	/**
 	 * Writes an error log message.
 	 * @param string $msg message to be logged
-	 * @param ?string $category category of the message, default null for the calling class.
+	 * @param ?string $category category of the message; null for the {@see callingCategory() calling class}.
 	 * @param null|\Prado\Web\UI\TControl|string $ctl control of the message, default null
 	 */
 	public static function error($msg, $category = null, $ctl = null): void
 	{
 		if ($category === null) {
-			$category = self::callingObject()::class;
+			$category = self::callingCategory();
 		}
 		self::log($msg, TLogger::ERROR, $category, $ctl);
 	}
@@ -967,13 +998,13 @@ class Prado
 	/**
 	 * Writes an alert log message.
 	 * @param string $msg message to be logged
-	 * @param ?string $category category of the message, default null for the calling class.
+	 * @param ?string $category category of the message; null for the {@see callingCategory() calling class}.
 	 * @param null|\Prado\Web\UI\TControl|string $ctl control of the message, default null
 	 */
 	public static function alert($msg, $category = null, $ctl = null): void
 	{
 		if ($category === null) {
-			$category = self::callingObject()::class;
+			$category = self::callingCategory();
 		}
 		self::log($msg, TLogger::ALERT, $category, $ctl);
 	}
@@ -981,13 +1012,13 @@ class Prado
 	/**
 	 * Writes a fatal log message.
 	 * @param string $msg message to be logged
-	 * @param ?string $category category of the message, default null for the calling class.
+	 * @param ?string $category category of the message; null for the {@see callingCategory() calling class}.
 	 * @param null|\Prado\Web\UI\TControl|string $ctl control of the message, default null
 	 */
 	public static function fatal($msg, $category = null, $ctl = null): void
 	{
 		if ($category === null) {
-			$category = self::callingObject()::class;
+			$category = self::callingCategory();
 		}
 		self::log($msg, TLogger::FATAL, $category, $ctl);
 	}
@@ -1001,7 +1032,7 @@ class Prado
 	 * @param int $level level of the message. Valid values include
 	 * TLogger::DEBUG, TLogger::INFO, TLogger::NOTICE, TLogger::WARNING,
 	 * TLogger::ERROR, TLogger::ALERT, TLogger::FATAL.
-	 * @param string $category category of the message
+	 * @param ?string $category category of the message; null for the {@see callingCategory() calling class}.
 	 * @param null|\Prado\Web\UI\TControl|string $ctl control of the message
 	 * @return ?float When the $level is PROFILE_END, this returns the delta time
 	 *   since the PROFILE_BEGIN of the same $msg.
@@ -1012,7 +1043,7 @@ class Prado
 			self::$_logger = new TLogger();
 		}
 		if ($category === null) {
-			$category = self::callingObject()::class;
+			$category = self::callingCategory();
 		}
 		return self::$_logger->log($msg, $level, $category, $ctl);
 	}
