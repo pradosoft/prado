@@ -100,6 +100,22 @@ $app->getModulesByType(ICache::class);            // all ICache modules
 $app->getModulesByType(TDbCache::class, strict: true); // only exact TDbCache (no subclasses)
 ```
 
+## Services
+
+`registerService($id, $class, $properties, $config)` stores a service class under an ID; `<service>` elements in `application.xml` register the same way. `startService($id)` creates the instance, applies `$properties` with `TComponent::setSubProperties()`, and calls `init($config)`. A service class implements `IService` and extends `TComponent`; `TService` does both.
+
+| Condition | Method | Result |
+|---|---|---|
+| Class name is null or empty | `registerService()` | `TConfigurationException` `application_service_class_required` |
+| Class does not exist | `registerService()` | `TConfigurationException` `application_service_class_not_found` |
+| Class does not implement `IService` | `registerService()` | `TConfigurationException` `application_service_class_not_service` |
+| ID is not registered | `startService()` | `THttpException` 404 `application_service_unknown` |
+| Instance does not implement `IService` | `startService()` | `TConfigurationException` `application_service_invalid` |
+| Instance implements `IService` and does not extend `TComponent` | `startService()` | `TConfigurationException` `application_service_not_component` |
+| `getEnabled()` is false | `startService()` | `TConfigurationException` `application_service_unavailable` |
+
+`registerService()` does not check for `TComponent`, so an `IService` class that does not extend it registers and fails when it is started.
+
 ## Configuration (application.xml)
 
 ```xml

@@ -62,6 +62,7 @@ application_includefile_invalid			= Unable to find application configuration {0}
 application_basepath_invalid			= Application base path ''{0}'' does not exist or is not a directory.
 application_runtimepath_invalid			= Application runtime path ''{0}'' does not exist or is not writable by Web server process.
 application_service_invalid				= Service ''{0}'' must implement IService interface.
+application_service_not_component		= Service ''{0}'' must extend TComponent.
 application_service_class_not_found		= Service class ''{0}'' does not exist.
 application_service_class_not_service	= Service class ''{0}'' does not implement IService.
 application_service_class_required		= TApplication::registerService() requires a class name or a service configuration array for service ''{0}''.

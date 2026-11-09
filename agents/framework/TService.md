@@ -79,6 +79,8 @@ class MyApiService extends TService
 </services>
 ```
 
+`TApplication::startService()` requires a service class to implement `IService` and extend `TComponent`; extending `TService` satisfies both. An `IService` class that does not extend `TComponent` throws `TConfigurationException` `application_service_not_component` when started.
+
 ## Built-in Services
 
 | Class | Default ID | Purpose |

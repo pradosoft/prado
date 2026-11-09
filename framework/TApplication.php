@@ -1274,6 +1274,8 @@ class TApplication extends TComponent implements ISingleton
 	 * @param string $id service ID to register; any existing entry under the same ID is overwritten.
 	 * @param ?string $class fully-qualified class name of the service. Must be non-empty and must
 	 *   implement {@see IService}; a null or empty value throws {@see TConfigurationException}.
+	 *   {@see startService()} also requires the class to extend {@see TComponent}, which
+	 *   registration does not check.
 	 * @param array $properties name → value map of initial properties applied to the service instance
 	 *   via {@see TComponent::setSubProperties()} before {@see TService::init()} is called.
 	 * @param null|array|TXmlElement $config optional extra configuration element passed to
@@ -2827,7 +2829,13 @@ class TApplication extends TComponent implements ISingleton
 	 * Starts the specified service.
 	 * The service instance will be created. Its properties will be initialized
 	 * and the configurations will be applied, if any.
+	 * The service class implements {@see IService} and extends {@see TComponent};
+	 * its initial properties are applied with {@see TComponent::setSubProperties()}.
 	 * @param string $serviceID service ID
+	 * @throws THttpException 404 if `$serviceID` is not registered.
+	 * @throws TConfigurationException if the service does not implement {@see IService}
+	 *   (`application_service_invalid`), does not extend {@see TComponent}
+	 *   (`application_service_not_component`), or is disabled (`application_service_unavailable`).
 	 */
 	public function startService($serviceID)
 	{
@@ -2837,8 +2845,11 @@ class TApplication extends TComponent implements ISingleton
 
 		[$serviceClass, $initProperties, $configElement] = $this->getRegisteredService($serviceID);
 		$service = Prado::createComponent($serviceClass);
-		if (!($service instanceof IService && $service instanceof TComponent)) {
+		if (!($service instanceof IService)) {
 			throw new TConfigurationException('application_service_invalid', $serviceClass);
+		}
+		if (!($service instanceof TComponent)) {
+			throw new TConfigurationException('application_service_not_component', $serviceClass);
 		}
 		if (!$service->getEnabled()) {
 			throw new TConfigurationException('application_service_unavailable', $serviceClass);
