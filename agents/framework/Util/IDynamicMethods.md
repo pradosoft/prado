@@ -22,6 +22,8 @@ public function __dycall(string $method, array $args): mixed;
 
 `$method` is the name of the dynamic method called (e.g., `'dyValidate'`). `$args` is the full argument list.
 
+**Return value** — the result of the event. An implementation returns null for the events it ignores. The framework raises the events that filter their first argument (`dyPreRaiseEvent`, `dyRedirect`, `dySetCookie`, `dyDefaultRoles`, `dySerialize`, `dyRead`, ...) through [`TComponent::callBehaviorsFilter()`](../TComponent.md), which keeps the argument on a null result (4.4.0). A handled filter event returns the filtered argument.
+
 ## Usage in TCallChain
 
 ```php

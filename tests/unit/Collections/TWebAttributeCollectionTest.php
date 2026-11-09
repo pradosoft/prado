@@ -541,4 +541,15 @@ class TWebAttributeCollectionTest extends \PHPUnit\Framework\TestCase
 		self::assertEquals('first', $this->collection->getAttribute('id'));
 		self::assertEquals('merged', $this->collection->getAttribute('name'));
 	}
+
+	public function testSerializeOmitsEmptyPrefixFromThePayload()
+	{
+		$payload = serialize(new TWebAttributeCollection());
+		self::assertStringNotContainsString('_prefix', $payload);
+		self::assertSame('', unserialize($payload)->getPrefix());
+
+		$payload = serialize(new TWebAttributeCollection('data'));
+		self::assertStringContainsString("\0*\0_prefix", $payload);
+		self::assertSame('data', unserialize($payload)->getPrefix());
+	}
 }

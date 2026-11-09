@@ -71,10 +71,10 @@ $component->detachEventHandler('OnClick', [$this, 'handleClick']);
 3. Calls `$param->postRaiseEvent(...)` after all handlers complete.
 
 **Dynamic events dispatched by `raiseEvent`:**
-- `dyPreRaiseEvent($name, $sender, $param, $responsetype, $postfunction)` — before handlers.
+- `dyPreRaiseEvent($name, $sender, $param, $responsetype, $postfunction)` — before handlers; filters the event name (null keeps it).
 - `dyIntraRaiseEventTestHandler($handler, $sender, $param, $name)` — return `false` to skip a handler.
 - `dyIntraRaiseEventPostHandler($name, $sender, $param, $handler, $response)` — after each handler.
-- `dyPostRaiseEvent($responses, $name, $sender, $param, $responsetype, $postfunction)` — after all handlers.
+- `dyPostRaiseEvent($responses, $name, $sender, $param, $responsetype, $postfunction)` — after all handlers; filters the responses (null keeps them).
 
 ### `fx*` — Global Events (static, application-wide)
 Handlers stored in static `$_ue` per event name. Any listening object receives them.
@@ -101,6 +101,20 @@ public function dyValidate($value, TCallChain $chain) {
     return $chain->dyValidate($newValue); // continue chain
 }
 ```
+
+**Filter events** — a dynamic event whose result replaces its first parameter is raised with `callBehaviorsFilter()` (4.4.0), which keeps the parameter when the result is null. A behavior or component implementing [`IDynamicMethods`](./Util/IDynamicMethods.md) often returns null from `__dycall()` for the events it ignores; `$value = $this->dyFilter($value)` would take that null.
+
+```php
+// In component code that filters a value through its behaviors:
+$url = $this->callBehaviorsFilter('dyRedirect', $url);
+// On another component:
+$deps = $module->callBehaviorsFilter('dyFilterDependencies', $deps);
+```
+
+| Call | Result when every handler returns null |
+|---|---|
+| `$this->dyFoo($value)` or `callBehaviorsMethod('dyFoo', $return, $value)` | null |
+| `$this->callBehaviorsFilter('dyFoo', $value)` | `$value` |
 
 ## Behavior System
 

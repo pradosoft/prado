@@ -114,7 +114,7 @@ class TUser extends \Prado\TComponent implements IUser
 	 */
 	public function getRoles()
 	{
-		return array_merge($this->getState('Roles', []), $this->dyDefaultRoles([]));
+		return array_merge($this->getState('Roles', []), $this->callBehaviorsFilter('dyDefaultRoles', []));
 	}
 
 	/**
@@ -125,7 +125,7 @@ class TUser extends \Prado\TComponent implements IUser
 		if (!is_array($value)) {
 			$value = array_filter(array_map('trim', explode(',', $value)));
 		}
-		$value = array_diff($value, $this->dyDefaultRoles([]));
+		$value = array_diff($value, $this->callBehaviorsFilter('dyDefaultRoles', []));
 		$this->setState('Roles', $value, []);
 	}
 

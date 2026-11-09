@@ -1285,7 +1285,8 @@ class TComponent
 	 * acting as a passthrough (filter) of the first $args parameter. In dy/fx methods,
 	 * there can be no $args parameters, the first parameter used as a pass through
 	 * filter, or act as a return variable with the first $args parameter being
-	 * the default return value.
+	 * the default return value.  {@see callBehaviorsFilter} wraps this for the events
+	 * that filter their first parameter.
 	 * @param string $method The method being called or dynamic/global event being raised.
 	 * @param mixed &$return The return value.
 	 * @param array $args The arguments to the method being called.
@@ -1321,6 +1322,24 @@ class TComponent
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * Raises a dynamic event that filters its first parameter, such as `dyPreRaiseEvent`
+	 * filtering the event name, through {@see callBehaviorsMethod}.  A null result, from a
+	 * behavior or an {@see \Prado\Util\IDynamicMethods::__dycall} that ignores the event, keeps
+	 * the parameter.  A class raises its filter events with this method, on itself or on
+	 * another component, where `$value = $this->dyFilter($value)` would take the null.
+	 * @param string $method the dynamic event
+	 * @param mixed $value the parameter being filtered
+	 * @param mixed ...$args the other parameters of the event
+	 * @return mixed the filtered parameter
+	 * @since 4.4.0
+	 */
+	public function callBehaviorsFilter(string $method, mixed $value, mixed ...$args): mixed
+	{
+		$this->callBehaviorsMethod($method, $return, $value, ...$args);
+		return $return ?? $value;
 	}
 
 	/**
@@ -1741,7 +1760,7 @@ class TComponent
 	 *
 	 * dyPreRaiseEvent has the effect of being able to change the event being raised.  This intra
 	 * object/behavior event returns the name of the desired event to be raised.  It will pass through
-	 * if no dynamic event is specified, or if the original event name is returned.
+	 * if no dynamic event is specified, or if the original event name or null is returned.
 	 * dyIntraRaiseEventTestHandler returns true or false as to whether a specific handler should be
 	 * called for a specific raised event (and associated event arguments)
 	 * dyIntraRaiseEventPostHandler does not return anything.  This allows behaviors to access the results
@@ -1803,7 +1822,7 @@ class TComponent
 			$param->preRaiseEvent($name, $sender, $param, $responsetype, $postfunction);
 		}
 
-		$this->callBehaviorsMethod('dyPreRaiseEvent', $name, $name, $sender, $param, $responsetype, $postfunction);
+		$name = $this->callBehaviorsFilter('dyPreRaiseEvent', $name, $sender, $param, $responsetype, $postfunction);
 
 		if ($this->hasEventHandler($name) || $this->hasEventHandler(TComponent::GLOBAL_RAISE_EVENT_LISTENER)) {
 			$handlers = $this->getEventHandlers($name);
@@ -1884,7 +1903,7 @@ class TComponent
 			$responses = array_filter($responses);
 		}
 
-		$this->callBehaviorsMethod('dyPostRaiseEvent', $responses, $responses, $name, $sender, $param, $responsetype, $postfunction);
+		$responses = $this->callBehaviorsFilter('dyPostRaiseEvent', $responses, $name, $sender, $param, $responsetype, $postfunction);
 
 		if (($param instanceof TComponent && $param->isa(IEventCycleParameter::class)) || $param instanceof IEventCycleParameter) {
 			$param->postRaiseEvent($responses, $name, $sender, $param, $responsetype, $postfunction);
@@ -1913,7 +1932,7 @@ class TComponent
 	 */
 	public function evaluateExpression($expression)
 	{
-		$this->callBehaviorsMethod('dyEvaluateExpressionFilter', $expression, $expression);
+		$expression = $this->callBehaviorsFilter('dyEvaluateExpressionFilter', $expression);
 		try {
 			return eval("return $expression;");
 		} catch (\Throwable $e) {
@@ -1941,7 +1960,7 @@ class TComponent
 	 */
 	public function evaluateStatements($statements)
 	{
-		$this->callBehaviorsMethod('dyEvaluateStatementsFilter', $statements, $statements);
+		$statements = $this->callBehaviorsFilter('dyEvaluateStatementsFilter', $statements);
 		try {
 			ob_start();
 			if (eval($statements) === false) {
@@ -1977,7 +1996,7 @@ class TComponent
 	 */
 	public function createdOnTemplate($parent)
 	{
-		$this->callBehaviorsMethod('dyCreatedOnTemplate', $parent, $parent);
+		$parent = $this->callBehaviorsFilter('dyCreatedOnTemplate', $parent);
 		$parent->addParsedObject($this);
 	}
 
