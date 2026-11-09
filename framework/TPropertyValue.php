@@ -1710,8 +1710,10 @@ class TPropertyValue
 	 * bare-word string) at `$pos`.  An int key has committed only when
 	 * directly followed by `=>` (after optional whitespace) so the bare-word
 	 * fallback can still claim the same span when the element has turned out
-	 * not to be a key⇒value pair.  Returns `null` without advancing `$pos`
-	 * when no key form has matched at all.
+	 * not to be a key⇒value pair.  Under loose grammar a quoted string that
+	 * has not reached an element end has been left to the bare-word fallback,
+	 * so `"a"b => 1` has the key `"a"b`.  Returns `null` without advancing
+	 * `$pos` when no key form has matched at all.
 	 *
 	 * The caller has decided whether to commit (when `=>` has followed) or
 	 * restore `$pos` and reparse the span as a value.
@@ -1727,9 +1729,14 @@ class TPropertyValue
 	private static function _consumeKey(string $s, int &$pos, bool $strict = false): null|int|string
 	{
 		if ($s[$pos] === '"' || $s[$pos] === "'") {
+			$saved = $pos;
 			$str = self::_tryConsumeString($s, $pos);
 			if ($str !== null) {
-				return $str;
+				if ($strict || self::_atElementEnd($s, $pos)) {
+					return $str;
+				}
+				// Text follows the closing quote, so the span is a bare word: `"a"b => 1`.
+				$pos = $saved;
 			}
 		}
 		if (preg_match(self::INT_LITERAL_PATTERN, $s, $m, 0, $pos)) {

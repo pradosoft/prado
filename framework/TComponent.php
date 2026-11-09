@@ -470,6 +470,7 @@ class TComponent
 	 * This reattaches the behaviors to the cloned object.
 	 * IBehavior objects are cloned, IClassBehaviors are not.
 	 * Clone object events are scrubbed of the old object behaviors' events.
+	 * Function and static method handlers have no object and are kept.
 	 * A clone of a component that listens to global events listens itself.
 	 * To finalize the behaviors, dyClone is raised.
 	 * @since 4.3.0
@@ -486,8 +487,8 @@ class TComponent
 			$behaviorArray = array_combine(array_map('spl_object_id', $behaviorArray), $behaviorArray);
 			foreach ($this->_e as $event => $handlers) {
 				foreach ($handlers->toArray() as $handler) {
-					$a = is_array($handler);
-					if ($a && array_key_exists(spl_object_id($handler[0]), $behaviorArray) || !$a && array_key_exists(spl_object_id($handler), $behaviorArray)) {
+					$object = is_array($handler) ? $handler[0] : $handler;
+					if (is_object($object) && array_key_exists(spl_object_id($object), $behaviorArray)) {
 						$handlers->remove($handler);
 					}
 				}

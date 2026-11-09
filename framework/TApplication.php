@@ -1288,8 +1288,11 @@ class TApplication extends TComponent implements ISingleton
 		}
 		$originalClass = $class;
 		$class = Prado::usingClass($class);
-		if (!is_string($class) || !class_exists($class, true)) {
-			throw new TConfigurationException('application_service_class_not_found', $class ?? $originalClass);
+		if (!is_string($class)) {
+			throw new TConfigurationException('application_service_class_not_found', $originalClass);
+		}
+		if (!class_exists($class, true)) {
+			throw new TConfigurationException('application_service_class_not_found', $class);
 		}
 		if (!is_a($class, IService::class, true)) {
 			throw new TConfigurationException('application_service_class_not_service', $class);
@@ -2248,8 +2251,9 @@ class TApplication extends TComponent implements ISingleton
 	 * Instantiates a single module from its lazy-module registration tuple and
 	 * applies its configuration properties (Phase 1 of module initialization).
 	 *
-	 * If the module's `lazy` property is `true` and `$force` is `false`, the module
-	 * is registered as a null placeholder in `$_modules` and this method returns `null`.
+	 * If the module's `lazy` property is true, as read by {@see TPropertyValue::ensureBoolean()},
+	 * and `$force` is `false`, the module is registered as a null placeholder in `$_modules`
+	 * and this method returns `null`.
 	 * Otherwise the module is instantiated, its properties are applied via setXxx()
 	 * calls, and it is stored in `$_modules`. The lazy-module slot is nullified to
 	 * prevent ID reuse.
@@ -2266,7 +2270,7 @@ class TApplication extends TComponent implements ISingleton
 			return false;
 		}
 		[$moduleClass, $initProperties, $configElement] = $lazy;
-		if (isset($initProperties['lazy']) && $initProperties['lazy'] && !$force) {
+		if (isset($initProperties['lazy']) && TPropertyValue::ensureBoolean($initProperties['lazy']) && !$force) {
 			Prado::trace("Postponed loading of lazy module $id ({$moduleClass})", TApplication::class);
 			$this->setModule($id, null);
 			return null;
