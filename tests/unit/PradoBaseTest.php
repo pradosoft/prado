@@ -2020,15 +2020,17 @@ class PradoBaseTest extends \PHPUnit\Framework\TestCase
 		$this->assertFalse(self::callFromStatic($instance, 'isCallingSelfClassInA'));
 	}
 
-	public function testCallerHelpers_asFiberEntryFunction_haveNoCaller(): void
+	public function testCallerHelpers_asFiberEntryFunction(): void
 	{
+		// From PHP 8.3 the backtrace of a fiber entry function carries the object that started the fiber.
+		$caller = PHP_VERSION_ID >= 80300 ? $this : null;
 		$results = [];
 		foreach (['isCallingSelf', 'isCallingSelfClass', 'callingObject'] as $method) {
 			$fiber = new \Fiber([Prado::class, $method]);
 			$fiber->start();
 			$results[$method] = $fiber->getReturn();
 		}
-		$this->assertSame(['isCallingSelf' => false, 'isCallingSelfClass' => false, 'callingObject' => null], $results);
+		$this->assertSame(['isCallingSelf' => false, 'isCallingSelfClass' => false, 'callingObject' => $caller], $results);
 	}
 
 	// -----------------------------------------------------------------------

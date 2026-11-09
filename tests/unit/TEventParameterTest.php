@@ -1054,7 +1054,7 @@ class TEventParameterTest extends TestCase
 		$this->assertSame([
 			['exists', null],
 			['exists', null], ['get', null],
-			['exists', null], ['get', null], ['set', null, 'item'],
+			['set', null, 'item'],
 			['exists', null], ['unset', null],
 		], $store->calls);
 		$this->assertTrue($param->getParameterChanged());
