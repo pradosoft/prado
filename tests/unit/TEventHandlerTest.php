@@ -512,6 +512,169 @@ class TEventHandlerTest extends \PHPUnit\Framework\TestCase
 		self::assertNull($handler[1]);
 	}
 
+	/**
+	 * Every offset paired with the item it addresses: null for the handler, 0 or 1 for
+	 * a handler element, 2 for the data, and false for no item; for each handler kind.
+	 */
+	public static function offsetProvider(): array
+	{
+		$offsets = [
+			'null' => [null, null],
+			'0' => [0, 0],
+			'1' => [1, 1],
+			'2' => [2, 2],
+			"'0'" => ['0', 0],
+			"'1'" => ['1', 1],
+			"'2'" => ['2', 2],
+			'0.0' => [0.0, 0],
+			'1.0' => [1.0, 1],
+			'2.0' => [2.0, 2],
+			'2.9' => [2.9, 2],
+			'1.5' => [1.5, 1],
+			'-0.5' => [-0.5, 0],
+			"'2.9'" => ['2.9', 2],
+			"' 2'" => [' 2', 2],
+			'3' => [3, false],
+			'-1' => [-1, false],
+			'3.0' => [3.0, false],
+			'-1.0' => [-1.0, false],
+			"'3'" => ['3', false],
+			"'-1'" => ['-1', false],
+			"'x'" => ['x', false],
+			"'2x'" => ['2x', false],
+			"''" => ['', false],
+			'true' => [true, false],
+			'false' => [false, false],
+			'NAN' => [NAN, false],
+			'INF' => [INF, false],
+			'-INF' => [-INF, false],
+			'1.0E+30' => [1.0E+30, false],
+			'2 ** 64' => [2.0 ** 64, false],
+		];
+		$cases = [];
+		foreach (['array', 'invokable', 'function'] as $kind) {
+			foreach ($offsets as $name => [$offset, $item]) {
+				$cases["$kind handler, offset $name"] = [$kind, $offset, $item];
+			}
+		}
+		return $cases;
+	}
+
+	/**
+	 * Builds a TEventHandler of the kind and the value each existing item reads as.
+	 * @return array The TEventHandler, the values keyed by item, and the handler object
+	 *   to keep referenced.
+	 */
+	private function newOffsetHandler(string $kind, mixed $data): array
+	{
+		$object = new EventHandlerObject();
+		if ($kind === 'array') {
+			$values = ['handler' => [$object, 'myHandler'], 0 => $object, 1 => 'myHandler', 2 => $data];
+		} elseif ($kind === 'invokable') {
+			$values = ['handler' => $object, 0 => $object, 2 => $data];
+		} else {
+			$values = ['handler' => 'trim', 0 => 'trim', 2 => $data];
+		}
+		return [new TEventHandler($values['handler'], $data), $values, $object];
+	}
+
+	/** @dataProvider offsetProvider */
+	public function testOffsetExists_AgreesWithOffsetGet(string $kind, mixed $offset, null|false|int $item)
+	{
+		[$handler, $values, $object] = $this->newOffsetHandler($kind, $refData = ['key' => 'value']);
+		$key = $item ?? 'handler';
+		$exists = $item !== false && array_key_exists($key, $values);
+
+		self::assertSame($exists, $handler->offsetExists($offset));
+		self::assertSame($exists, isset($handler[$offset]));
+		self::assertSame(!$exists, empty($handler[$offset]));
+
+		if ($exists) {
+			self::assertSame($values[$key], $handler->offsetGet($offset));
+			self::assertSame($values[$key], $handler[$offset]);
+			self::assertSame($values[$key], $handler[$offset] ?? 'default');
+		} else {
+			self::assertSame('default', $handler[$offset] ?? 'default');
+			if ($item === 1) {
+				self::assertNull($handler[$offset]);
+			} else {
+				try {
+					$handler[$offset];
+					self::fail("Failed to throw TInvalidDataValueException when getting an offset that does not exist.");
+				} catch (TInvalidDataValueException $e) {
+				}
+			}
+		}
+		self::assertSame($refData, $handler->getData());
+	}
+
+	/**
+	 * An offset exists while its value is null: the data is null and the handler object
+	 * is collected.
+	 * @dataProvider offsetProvider
+	 */
+	public function testOffsetExists_NullValues(string $kind, mixed $offset, null|false|int $item)
+	{
+		[$handler, $values, $object] = $this->newOffsetHandler($kind, null);
+		$exists = $item !== false && array_key_exists($item ?? 'handler', $values);
+		$value = ($kind === 'function' && $exists && $item !== 2) ? 'trim' : null;
+		$object = $values = null;
+
+		self::assertSame($exists, $handler->offsetExists($offset));
+		self::assertSame($exists, isset($handler[$offset]));
+		self::assertSame($value === null, empty($handler[$offset]));
+		self::assertSame($value ?? 'default', $handler[$offset] ?? 'default');
+		if ($exists) {
+			self::assertSame($value, $handler[$offset]);
+		}
+	}
+
+	/** @dataProvider offsetProvider */
+	public function testOffsetSet_AgreesWithOffsetGet(string $kind, mixed $offset, null|false|int $item)
+	{
+		[$handler, $values, $object] = $this->newOffsetHandler($kind, $refData = ['key' => 'value']);
+
+		if ($item === 2) {
+			$handler[$offset] = $refData = 'new data';
+			self::assertSame($refData, $handler[$offset]);
+		} else {
+			try {
+				$handler[$offset] = 'new data';
+				self::fail("Failed to throw when setting an offset that is not the data.");
+			} catch (TInvalidOperationException $e) {
+				self::assertNotFalse($item, "A handler offset throws TInvalidOperationException.");
+			} catch (TInvalidDataValueException $e) {
+				self::assertFalse($item, "An offset of no item throws TInvalidDataValueException.");
+			}
+		}
+		self::assertSame($refData, $handler->getData());
+		self::assertSame($values['handler'], $handler->getHandler());
+	}
+
+	/** @dataProvider offsetProvider */
+	public function testOffsetUnset_AgreesWithOffsetGet(string $kind, mixed $offset, null|false|int $item)
+	{
+		[$handler, $values, $object] = $this->newOffsetHandler($kind, $refData = ['key' => 'value']);
+
+		if ($item === 2) {
+			unset($handler[$offset]);
+			$refData = null;
+			self::assertTrue(isset($handler[$offset]));
+			self::assertNull($handler[$offset]);
+		} else {
+			try {
+				unset($handler[$offset]);
+				self::fail("Failed to throw when unsetting an offset that is not the data.");
+			} catch (TInvalidOperationException $e) {
+				self::assertNotFalse($item, "A handler offset throws TInvalidOperationException.");
+			} catch (TInvalidDataValueException $e) {
+				self::assertFalse($item, "An offset of no item throws TInvalidDataValueException.");
+			}
+		}
+		self::assertSame($refData, $handler->getData());
+		self::assertSame($values['handler'], $handler->getHandler());
+  }
+
 	public function testOffsetGet_NonNumericOffset_Throws()
 	{
 		$handler = new TEventHandler([$object = new EventHandlerObject(), 'myHandler'], $refData = ['key1' => 'value1']);

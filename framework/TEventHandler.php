@@ -66,6 +66,10 @@ use WeakReference;
  *		// Add the handler to the event at priority 12 (the default is 10)
  *		$component->attachEventHandler('onMyEvent', $handler, 12);
  * ```
+ * {@see resolveOffset} defines the offsets for `isset`, reading, writing, and `unset`.
+ * A numeric offset is truncated to an integer: `$handler['2']` and `$handler[2.0]`
+ * are `$handler[2]`.  Offset 1 exists only for an array callable.  Only the data,
+ * offset 2, can be set or unset.
  *
  * PRADO event handler objects are stored as WeakReference to improve PHP garbage
  * collection.  To enable this functionality, TEventHandler holds its callable object
@@ -296,18 +300,57 @@ class TEventHandler implements IPriorityProperty, IWeakRetainable, \ArrayAccess,
 	}
 
 	/**
-	 * These values exist: null (the handler), 0, 2, and conditionally 1 on the handler
-	 * being an array.
+	 * Resolves an ArrayAccess offset to the item it addresses.  {@see offsetExists},
+	 * {@see offsetGet}, {@see offsetSet}, and {@see offsetUnset} resolve their offset
+	 * here.  A numeric offset is an int, a float, or a numeric string, and is truncated
+	 * to its integer part.
+	 *
+	 * | Offset | Item | Result |
+	 * |---|---|---|
+	 * | `null` | the {@see getHandler Handler} | `null` |
+	 * | numeric, truncates to 0 | the handler, or the first element of an array callable | `0` |
+	 * | numeric, truncates to 1 | the second element of an array callable | `1` |
+	 * | numeric, truncates to 2 | the {@see getData Data} | `2` |
+	 * | any other value | no item | `false` |
+	 *
+	 * `2`, `'2'`, `2.0`, and `2.9` address the data.  `NAN`, `INF`, a number outside
+	 * 0 to 2 after truncation, a non-numeric string, and a bool address no item.
+	 * @param mixed $offset The ArrayAccess offset.
+	 * @return null|false|int null for the handler, 0 or 1 for a handler element, 2 for
+	 *   the data, and false when the offset addresses no item.
+	 * @since 4.4.0
+	 */
+	protected function resolveOffset(mixed $offset): null|false|int
+	{
+		if ($offset === null) {
+			return null;
+		}
+		if (is_numeric($offset) && $offset > -1 && $offset < 3) {
+			return (int) $offset;
+		}
+		return false;
+	}
+
+	/**
+	 * Returns whether the offset, resolved by {@see resolveOffset}, addresses an item
+	 * of the managed event handler.
+	 * - null (the handler), 0, and 2 (the data) exist.
+	 * - 1 exists when the handler is an array callable.
+	 *
+	 * An existing item can be null: the data, or a handler whose WeakReference object
+	 * is invalid.  {@see offsetGet} does not throw for an existing offset.
 	 * @param mixed $offset The offset to check existence.
 	 * @return bool Does the property exist for the managed event handler (with data).
 	 */
 	public function offsetExists(mixed $offset): bool
 	{
-		return $offset === null || $offset === 0 || $offset === 2 || (is_array($this->_handler) ? $offset === 1 : 0);
+		$item = $this->resolveOffset($offset);
+		return $item === null || $item === 0 || $item === 2 || ($item === 1 && is_array($this->_handler));
 	}
 
 	/**
-	 * This is a convenience method for getting the data of the TEventHandler.
+	 * This is a convenience method for getting the data of the TEventHandler.  The
+	 * offset is resolved by {@see resolveOffset}.
 	 * - Index null will return the {@see getHandler Handler},
 	 * - Index '0' will return the handler if its a string or object, or the first element
 	 *   of the callable array;
@@ -317,87 +360,83 @@ class TEventHandler implements IPriorityProperty, IWeakRetainable, \ArrayAccess,
 	 * If the WeakReference object of the managed event handler is invalid, this will return null
 	 * for all handler offsets (null, 0 and 1).  Data will still return properly even
 	 * when the handler is invalid.
+	 *
+	 * Index '1' does not {@see offsetExists exist} when the handler is not an array and
+	 * reads as null.  Every other offset that does not exist throws.
 	 * @param mixed $offset Which property of the managed event handler to retrieve.
-	 * @throws TInvalidDataValueException When $offset is not a property of the managed event handler.
+	 * @throws TInvalidDataValueException When $offset addresses no item of the managed event handler.
 	 * @return mixed The value of the handler, handler elements, or data.
 	 */
 	public function offsetGet(mixed $offset): mixed
 	{
-		if ($offset === null) {
+		$item = $this->resolveOffset($offset);
+		if ($item === null) {
 			return $this->getHandler();
+		} elseif ($item === 2) {
+			return $this->_data;
+		} elseif ($item === false) {
+			throw new TInvalidDataValueException('eventhandler_bad_offset', $offset);
 		}
-		if (is_numeric($offset)) {
-			$offset = (int) $offset;
-			if ($offset === 2) {
-				return $this->_data;
-			} elseif (is_array($this->_handler)) {
-				if ($offset === 0) {
-					if ($this->_weakObject) {
-						return $this->_handler[$offset]->get();
-					}
-					return $this->_handler[$offset];
-				} elseif ($offset === 1) {
-					if ($this->_weakObject && !$this->_handler[0]->get()) {
-						return null;
-					}
-					return $this->_handler[$offset];
-				}
-			} elseif ($offset === 0) {
+		if (is_array($this->_handler)) {
+			if ($item === 0) {
 				if ($this->_weakObject) {
-					return $this->_handler->get();
+					return $this->_handler[0]->get();
 				}
-				return $this->_handler;
-			} elseif ($offset === 1) {
+				return $this->_handler[0];
+			}
+			if ($this->_weakObject && !$this->_handler[0]->get()) {
 				return null;
 			}
+			return $this->_handler[1];
 		}
-		throw new TInvalidDataValueException('eventhandler_bad_offset', $offset);
+		if ($item === 1) {
+			return null;
+		}
+		if ($this->_weakObject) {
+			return $this->_handler->get();
+		}
+		return $this->_handler;
 	}
 
 	/**
 	 * This is a convenience method for setting the data of the managed event handler.
-	 * This cannot set the event handler but can set the data.
+	 * This cannot set the event handler but can set the data.  The offset is resolved
+	 * by {@see resolveOffset}.
 	 * - Index '2' will set the data associated with the managed event handler.
 	 * @param mixed $offset Only accepts '2' to set the data associated with the event handler.
 	 * @param mixed $value The data being set.
-	 * @throws TInvalidOperationException When trying to set the handler elements.
-	 * @throws TInvalidDataValueException When $offset is not a property of the managed event handler.
+	 * @throws TInvalidOperationException When $offset addresses the handler: null, 0, or 1.
+	 * @throws TInvalidDataValueException When $offset addresses no item of the managed event handler.
 	 */
 	public function offsetSet(mixed $offset, mixed $value): void
 	{
-		if (is_numeric($offset)) {
-			$offset = (int) $offset;
-			if ($offset === 2) {
-				$this->setData($value);
-				return;
-			}
+		$item = $this->resolveOffset($offset);
+		if ($item === false) {
+			throw new TInvalidDataValueException('eventhandler_bad_offset', $offset);
 		}
-		if ($offset === null || is_numeric($offset) && ($offset == 0 || $offset == 1)) {
+		if ($item !== 2) {
 			throw new TInvalidOperationException('eventhandler_no_set_handler', $offset);
 		}
-		throw new TInvalidDataValueException('eventhandler_bad_offset', $offset);
+		$this->setData($value);
 	}
 
 	/**
 	 * This is a convenience method for resetting the data to null.  The Handler cannot
 	 * be unset.  However, the data can be unset.  The only valid index for unsetting
-	 * the handler data is '2'.
+	 * the handler data is '2'.  The offset is resolved by {@see resolveOffset}.
 	 * @param mixed $offset Only accepts '2' for the data element.
-	 * @throws TInvalidOperationException When trying to set the handler elements.
-	 * @throws TInvalidDataValueException When $offset is not a property of the managed event handler.
+	 * @throws TInvalidOperationException When $offset addresses the handler: null, 0, or 1.
+	 * @throws TInvalidDataValueException When $offset addresses no item of the managed event handler.
 	 */
 	public function offsetUnset(mixed $offset): void
 	{
-		if (is_numeric($offset)) {
-			$offset = (int) $offset;
-			if ($offset === 2) {
-				$this->setData(null);
-				return;
-			}
+		$item = $this->resolveOffset($offset);
+		if ($item === false) {
+			throw new TInvalidDataValueException('eventhandler_bad_offset', $offset);
 		}
-		if ($offset === null || is_numeric($offset) && ($offset == 0 || $offset == 1)) {
+		if ($item !== 2) {
 			throw new TInvalidOperationException('eventhandler_no_set_handler', $offset);
 		}
-		throw new TInvalidDataValueException('eventhandler_bad_offset', $offset);
+		$this->setData(null);
 	}
 }

@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TEventHandler::offsetExists()` normalizes a numeric offset as `offsetGet()` does, so `isset($handler['2'])` and `isset($handler[2.0])` are true. (belisoful)
 BUG: Issue #1497 - `TApplication::startService()` throws `application_service_not_component` for an `IService` class that does not extend `TComponent`; it reported `application_service_invalid`, "must implement IService". (belisoful)
 NEW: Issue #1401 - `TConfirmSubmit` wraps controls and asks for confirmation in a modal `alertdialog` before their postback, callback, or navigation, through `TConfirmDialogTrait`, which `TConfirmButton` also uses. (belisoful)
 BUG: Issue #1497 - `TPropertyValue::ensureString()` throws `TInvalidDataTypeException` (`propertyvalue_invalid_string_type`) for an array or an object without `__toString()`, with warnings reported or masked; `coerceToType()` passes such a value through unchanged for `string` and `?string`, so a typed setter raises PHP's `TypeError`. (belisoful)
