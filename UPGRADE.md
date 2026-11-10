@@ -128,8 +128,6 @@ Upgrading from v4.3.3
   tag name. TXmlElement::getNodeType() returns `XML_ELEMENT_NODE`.
 - TTemplate strips only `<!--- ... --->` template comments; the 3.x `<!-- ... --!>` form is no longer recognized and
   renders as text.
-- TTarFileExtractor::extract() with an empty destination scans the archive without writing files; pass the
-  destination directory explicitly (previously an empty path extracted into the current working directory).
 - TShellAction::getApplication() returns `null` when the application is not a TShellApplication.
 - TTemplate applies a template attribute name as written instead of replacing its dashes with underscores.
   An `Attributes.<name>` subproperty now stores the hyphenated name it was given, so

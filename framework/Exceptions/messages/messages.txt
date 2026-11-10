@@ -765,6 +765,7 @@ closurecrontask_no_closure				= TClosureCronTask ''{0}'' has no closure to run.
 closurecrontask_closure_required		= TClosureCronTask requires a Closure.
 closurecrontask_invalid_securitymanager	= TClosureCronTask SecurityManagerID ''{0}'' is not a TSecurityManager.
 closurecrontask_decrypt_failed			= TClosureCronTask ''{0}'' could not decrypt its closure payload.
+closurecrontask_payload_invalid			= TClosureCronTask ''{0}'' has an invalid closure payload.
 cronmethodtask_no_module				= TCronMethodTask could not find module ''{0}''.
 cron_usermanager_nonexistent			= TCronModule could not find the UserManager of the name ''{0}''.
 cron_usermanager_invalid				= The TCronModule UserManager ''{0}'' is not a TUserManager.
