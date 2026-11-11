@@ -1,4 +1,5 @@
 ## Version 4.3.3 - TBA
+ENH: Issue #1517 - `composer.json` aliases the `prado-4.3` branch as `4.3.x-dev`, so a package can require `^4.3.3@dev` before 4.3.3 is tagged. (belisoful)
 ENH: Issue #831 - Virtual assets from 4.4: `TAssetManager::publish()` publishes a file, directory, or `IPublishable` object, and `TAssetManager.Atomic` copies each asset through a temporary file renamed into place. `TDot` is the first virtual asset, an SVG status dot of a given `Size` and `Color`; an Inline dot is named by `AlternateText` and has its own SVG IDs. TAssetManager gains subclass extension points, and a tar publish writes its completion marker last so a failed extraction retries. (belisoful)
 BUG: Issue #129 - Composite key lookups match an `OR` of `AND`-joined equalities in place of the row-value `IN`, which MySQL does not index in `DELETE` and `UPDATE` and SQL Server and DB2 reject; `TDbCommandBuilder::getIndexCondition()` builds it, and `createIndexCriteria()` gives `1=0` for no values in place of `FALSE`. (belisoful)
 BUG: ActiveRecord - `prado-cli activerecord/generate` and `generate-all` honor the `soap` and `overwrite` flags. (belisoful)
