@@ -747,7 +747,7 @@ class TStyle extends \Prado\TComponent implements \ArrayAccess
 	public function __call($method, $args)
 	{
 		$getset = substr($method, 0, 3);
-		if (($getset == 'get' || $getset == 'set') && !Prado::method_visible($this, $method)) {
+		if (($getset == 'get' || $getset == 'set') && !parent::hasMethod($method)) {
 			$propname = $this->methodToAttributeName(substr($method, 3));
 			if ($getset == 'get') {
 				return $this->getStyleField($propname);
