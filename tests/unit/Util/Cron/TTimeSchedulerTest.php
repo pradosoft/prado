@@ -199,6 +199,26 @@ class TTimeSchedulerTest extends \PHPUnit\Framework\TestCase
 		return $out;
 	}
 
+	public function testInvalidScheduleKeepsThePreviousSchedule()
+	{
+		$at = mktime(10, 0, 0, 6, 15, 2024);
+		foreach (['30 2 * * *', '@' . ($at + 120), 'every 15 minutes from @' . $at, 'H 3 * * *'] as $schedule) {
+			$this->obj->setHashContext('task');
+			$this->obj->setSchedule($schedule);
+			$expected = $this->obj->getSchedule();
+			$next = $this->obj->getNextTriggerTime($at);
+			foreach (['61 * * * *', 'every 0 minutes', 'not a schedule'] as $invalid) {
+				try {
+					$this->obj->setSchedule($invalid);
+					self::fail("'$invalid' is invalid");
+				} catch (\Prado\Exceptions\TInvalidDataValueException $e) {
+				}
+				self::assertSame($expected, $this->obj->getSchedule(), "'$invalid' leaves '$schedule' in place");
+				self::assertSame($next, $this->obj->getNextTriggerTime($at), "'$invalid' leaves the triggers of '$schedule'");
+			}
+		}
+	}
+
 	#[DataProvider('provideMatrixSchedules')]
 	public function testNextTriggerMatchesOracle(string $schedule)
 	{

@@ -11,6 +11,8 @@
 namespace Prado\Util\Cron;
 
 use Exception;
+use Prado\Caching\ICacheDependency;
+use Prado\Caching\TChainedCacheDependency;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidDataValueException;
@@ -89,7 +91,9 @@ use Prado\Xml\TXmlDocument;
  * mutex only cron uses: the component of `class` takes the other attributes as properties
  * and is initialized with its element, without a module ID.  The PHP form is the `wake`
  * or `mutex` key with `class` and `properties`, or a class name alone.  A transport or
- * mutex shared with other modules is a module of its own named by the property.
+ * mutex shared with other modules is a module of its own named by the property.  Each
+ * `<dependency>` element, or the `dependency` key with one element or a list, is a cache
+ * dependency of the {@see setDaemonDependency DaemonDependency}; several are chained.
  *
  * The schedule is formatted like a linux crontab schedule expression.
  * {@see \Prado\Util\Cron\TTimeScheduler} parses the schedule and supports 8
@@ -132,8 +136,9 @@ use Prado\Xml\TXmlDocument;
  * a wake from the {@see setWakeTransport WakeTransport}, or {@see setDaemonIdle DaemonIdle}, and
  * repeats.  After {@see setDaemonLifetime DaemonLifetime} the daemon retires: it keeps serving until a
  * tick's process waits for the lease, then hands it over without a gap, so the new process picks up
- * deployed code.  A changed configuration file ({@see setDaemonWatchConfig DaemonWatchConfig}) or
- * {@see retireDaemon} retires the daemon the same way; SIGTERM, SIGINT, or {@see stopDaemon} end it
+ * deployed code.  A changed configuration file ({@see setDaemonWatchConfig DaemonWatchConfig}), a
+ * changed {@see setDaemonDependency DaemonDependency}, or {@see retireDaemon} retires the daemon the
+ * same way; SIGTERM, SIGINT, or {@see stopDaemon} end it
  * at once.  {@see onDaemonStart}, {@see onDaemonIdle}
  * (before each wait, with the wait a handler changes), and {@see onDaemonEnd} are raised with a
  * {@see \Prado\Util\Cron\TCronDaemonEventParameter}.  A web request wakes a waiting process,
@@ -231,6 +236,9 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 
 	/** The configuration element and PHP key of the {@see setDaemonMutex DaemonMutex} */
 	public const MUTEX_KEY = 'mutex';
+
+	/** The configuration element and PHP key of the {@see setDaemonDependency DaemonDependency} */
+	public const DEPENDENCY_KEY = 'dependency';
 
 	/** Key to global state of the last time SystemCron was run */
 	public const LAST_CRON_TIME = 'prado:cron:lastcron';
@@ -337,6 +345,9 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	/** @var ?string the configuration fingerprint the running daemon started with */
 	private ?string $_daemonFingerprint = null;
 
+	/** @var ?ICacheDependency the dependency whose change retires the daemon */
+	private ?ICacheDependency $_daemonDependency = null;
+
 	/**
 	 * Initializes the module.  Read the configuration, installs Shell Actions,
 	 * and checks if Request-cron should be activated.  This lazy loads the
@@ -435,7 +446,7 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 			$isXml = true;
 			$config = $config->getElementsByTagName('job');
 		} elseif (is_array($config)) {
-			unset($config[self::WAKE_KEY], $config[self::MUTEX_KEY]);
+			unset($config[self::WAKE_KEY], $config[self::MUTEX_KEY], $config[self::DEPENDENCY_KEY]);
 			if (isset($config['jobs'])) {
 				$config = $config['jobs'];
 			}
@@ -465,11 +476,13 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	}
 
 	/**
-	 * Creates the {@see setWakeTransport WakeTransport} of the `<wake>` element and the
-	 * {@see setDaemonMutex DaemonMutex} of the `<mutex>` element, or of the `wake` and
-	 * `mutex` keys of a PHP configuration.  An absent element leaves the property as set.
+	 * Creates the {@see setWakeTransport WakeTransport} of the `<wake>` element, the
+	 * {@see setDaemonMutex DaemonMutex} of the `<mutex>` element, and the
+	 * {@see setDaemonDependency DaemonDependency} of the `<dependency>` elements, or of the `wake`,
+	 * `mutex`, and `dependency` keys of a PHP configuration.  Several dependencies are chained in a
+	 * {@see \Prado\Caching\TChainedCacheDependency}.  An absent element leaves the property as set.
 	 * @param null|array|\Prado\Xml\TXmlElement $config the settings for cron
-	 * @throws TConfigurationException when an element has no class, or its class is not a wake transport or mutex
+	 * @throws TConfigurationException when an element has no class, or its class is not a wake transport, mutex, or cache dependency
 	 * @since 4.4.0
 	 */
 	protected function readComponentConfiguration($config)
@@ -480,12 +493,23 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 		if (($mutex = $this->createConfigComponent($config, self::MUTEX_KEY, IMutex::class, 'cron_daemonmutex_invalid')) !== null) {
 			$this->setDaemonMutex($mutex);
 		}
+		$dependencies = [];
+		foreach ($this->getConfigElements($config, self::DEPENDENCY_KEY, true) as $element) {
+			$dependencies[] = $this->createElementComponent($element, self::DEPENDENCY_KEY, ICacheDependency::class, 'cron_daemondependency_invalid');
+		}
+		if (count($dependencies) === 1) {
+			$this->setDaemonDependency($dependencies[0]);
+		} elseif ($dependencies) {
+			$chain = Prado::createComponent(TChainedCacheDependency::class);
+			foreach ($dependencies as $dependency) {
+				$chain->getDependencies()->add($dependency);
+			}
+			$this->setDaemonDependency($chain);
+		}
 	}
 
 	/**
-	 * Creates the component of one child element of the configuration: the `class` attribute
-	 * names the class, the other attributes are its properties, and a module is initialized
-	 * with the element.  The PHP form is an array with `class` and `properties`, or a class name.
+	 * Creates the component of the first child element of the configuration with the tag.
 	 * @param null|array|\Prado\Xml\TXmlElement $config the settings for cron
 	 * @param string $tag the element tag name, and the PHP key
 	 * @param string $type the class or interface the component must be
@@ -496,23 +520,68 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	 */
 	protected function createConfigComponent($config, string $tag, string $type, string $error): ?object
 	{
+		$elements = $this->getConfigElements($config, $tag);
+		return $elements ? $this->createElementComponent($elements[0], $tag, $type, $error) : null;
+	}
+
+	/**
+	 * Returns the child elements of the configuration with the tag.  A PHP configuration gives an
+	 * element as an array with `class` and `properties`, or as a class name; with `$multiple`, the
+	 * key also holds a list of elements.
+	 * @param null|array|\Prado\Xml\TXmlElement $config the settings for cron
+	 * @param string $tag the element tag name, and the PHP key
+	 * @param bool $multiple whether the configuration may hold several elements with the tag
+	 * @throws TConfigurationException when a PHP element is not an array or a class name
+	 * @return array the XML elements or PHP element arrays, in order
+	 * @since 4.4.0
+	 */
+	protected function getConfigElements($config, string $tag, bool $multiple = false): array
+	{
 		if ($config instanceof TXmlElement) {
-			if (($element = $config->getElementByTagName($tag)) === null) {
-				return null;
+			if ($multiple) {
+				return $config->getElementsByTagName($tag)->toArray();
 			}
+			return ($element = $config->getElementByTagName($tag)) === null ? [] : [$element];
+		}
+		if (!is_array($config) || !isset($config[$tag])) {
+			return [];
+		}
+		$elements = $config[$tag];
+		if (!$multiple || !is_array($elements) || !array_is_list($elements)) {
+			$elements = [$elements];
+		}
+		foreach ($elements as $i => $element) {
+			if (is_string($element)) {
+				$elements[$i] = ['class' => $element];
+			} elseif (!is_array($element)) {
+				throw new TConfigurationException('cron_component_class_required', $tag);
+			}
+		}
+		return $elements;
+	}
+
+	/**
+	 * Creates the component of one configuration element: the `class` attribute names the class,
+	 * the other attributes are its properties, and a module is initialized with the element.  A PHP
+	 * element is an array with `class` and `properties`.
+	 * @param array|\Prado\Xml\TXmlElement $element the configuration element
+	 * @param string $tag the element tag name, and the PHP key
+	 * @param string $type the class or interface the component must be
+	 * @param string $error the message key when the component is not `$type`
+	 * @throws TConfigurationException when the element has no class, or the component is not `$type`
+	 * @return object the component
+	 * @since 4.4.0
+	 */
+	protected function createElementComponent($element, string $tag, string $type, string $error): object
+	{
+		if ($element instanceof TXmlElement) {
 			$properties = $element->getAttributes()->toArray();
 			$class = $properties['class'] ?? null;
 			unset($properties['class']);
-		} elseif (is_array($config) && isset($config[$tag])) {
-			$element = is_string($config[$tag]) ? ['class' => $config[$tag]] : $config[$tag];
-			if (!is_array($element)) {
-				throw new TConfigurationException('cron_component_class_required', $tag);
-			}
+		} else {
 			$class = $element['class'] ?? null;
 			$properties = $element['properties'] ?? [];
 			unset($element['class'], $element['properties']);
-		} else {
-			return null;
 		}
 		if (!is_string($class) || $class === '') {
 			throw new TConfigurationException('cron_component_class_required', $tag);
@@ -1720,6 +1789,28 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	}
 
 	/**
+	 * @return ?ICacheDependency the dependency whose change retires the daemon, checked on each idle;
+	 * default null
+	 * @since 4.4.0
+	 */
+	public function getDaemonDependency(): ?ICacheDependency
+	{
+		return $this->_daemonDependency;
+	}
+
+	/**
+	 * Sets the dependency whose change retires the daemon, handing the lease to the next tick.  The
+	 * daemon checks {@see \Prado\Caching\ICacheDependency::getHasChanged()} on each idle; the
+	 * dependency reports a change against its own state from when it was created.
+	 * @param ?ICacheDependency $dependency the dependency, or null for none
+	 * @since 4.4.0
+	 */
+	public function setDaemonDependency(?ICacheDependency $dependency)
+	{
+		$this->_daemonDependency = $dependency;
+	}
+
+	/**
 	 * Returns the mutex of the daemon lease: the configured mutex, the module of the configured ID,
 	 * or a {@see \Prado\Util\Mutex\TFileMutex} in the application runtime directory, which excludes
 	 * the processes of one host.  A database or cache mutex excludes the processes of every host.
@@ -2173,16 +2264,20 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	}
 
 	/**
-	 * Retires the daemon when a watched configuration file changed since it started.
+	 * Retires the daemon when a watched configuration file changed since it started, or the
+	 * {@see getDaemonDependency DaemonDependency} reports a change.
 	 * @since 4.4.0
 	 */
 	protected function checkDaemonConfig(): void
 	{
-		if ($this->_daemonFingerprint === null || $this->_daemonRetiring || $this->_daemonRetireRequested) {
+		if ($this->_daemonRetiring || $this->_daemonRetireRequested) {
 			return;
 		}
-		if ($this->_daemonFingerprint !== $this->getDaemonConfigFingerprint()) {
+		if ($this->_daemonFingerprint !== null && $this->_daemonFingerprint !== $this->getDaemonConfigFingerprint()) {
 			Prado::log('Cron daemon (' . $this->getDaemonLockName() . ') configuration changed; retiring for the next tick', TLogger::INFO, TCronModule::class);
+			$this->_daemonRetireRequested = true;
+		} elseif ($this->getDaemonDependency()?->getHasChanged()) {
+			Prado::log('Cron daemon (' . $this->getDaemonLockName() . ') dependency changed; retiring for the next tick', TLogger::INFO, TCronModule::class);
 			$this->_daemonRetireRequested = true;
 		}
 	}

@@ -785,6 +785,7 @@ cron_daemon_lifetime_invalid			= TCronModule DaemonLifetime must be zero or grea
 cron_daemon_idle_invalid				= TCronModule DaemonIdle must be greater than zero; ''{0}'' given.
 cron_daemon_handoff_invalid			= TCronModule DaemonHandoffTimeout must be zero or greater; ''{0}'' given.
 cron_daemonmutex_invalid				= TCronModule DaemonMutex ''{0}'' is not an IMutex module.
+cron_daemondependency_invalid			= TCronModule DaemonDependency ''{0}'' is not an ICacheDependency.
 cron_waketransport_invalid				= TCronModule WakeTransport ''{0}'' is not an ICronWakeTransport module.
 cron_component_class_required			= TCronModule <{0}> configuration element must have a class.
 cronwake_pollinterval_invalid			= Cron wake PollInterval must be greater than zero; ''{0}'' given.
@@ -809,7 +810,7 @@ dbcron_connectionid_invalid				= TDbCronManager.ConnectionID ''{0}'' is not a TD
 dbcron_period_invalid					= TDbCronManager period ''{0}'' is not a number of seconds, an ISO 8601 duration, or a relative date string.
 
 timescheduler_invalid_string			= TTimeScheduler could not parse the schedule element ''{0}''
-timescheduler_invalid_period			= TTimeScheduler could not parse the period ''{0}''; it must be a positive relative interval and the times must parse
+timescheduler_invalid_period			= TTimeScheduler could not parse the period ''{0}''; it must be a positive relative interval and the times must parse.
 
 rational_bad_offset						= "{0}" is not a valid property accessor of TRational.
 

@@ -2,6 +2,10 @@
 
 namespace Prado\Test\Unit\Util\Cron;
 
+use Prado\Caching\TApplicationStateCacheDependency;
+use Prado\Caching\TChainedCacheDependency;
+use Prado\Caching\TDirectoryCacheDependency;
+use Prado\Caching\TFileCacheDependency;
 use Prado\Exceptions\TCancelledException;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataTypeException;
@@ -1123,6 +1127,73 @@ class TCronModuleTest extends \PHPUnit\Framework\TestCase
 		}
 	}
 
+	public function testInit_DependencyElements()
+	{
+		$dir = sys_get_temp_dir() . '/cron-dependency-' . bin2hex(random_bytes(4));
+		mkdir($dir);
+		$file = $dir . '/watched';
+		file_put_contents($file, 'v1');
+		try {
+			$xmldoc = new TXmlDocument('1.0', 'utf-8');
+			$xmldoc->loadFromString('<module id="cron">
+				<dependency class="Prado\\Caching\\TFileCacheDependency" FileName="' . $file . '" />
+				<job name="elementTask" schedule="0 0 1 1 ? 2000" task="' . TTestCronModuleTask::class . '" />
+			</module>');
+			$this->obj->init($xmldoc);
+			$dependency = $this->obj->getDaemonDependency();
+			self::assertInstanceOf(TFileCacheDependency::class, $dependency);
+			self::assertSame($file, $dependency->getFileName());
+			self::assertArrayHasKey('elementTask', $this->obj->getRawTasks(), 'the element does not disturb the jobs');
+
+			$xmldoc = new TXmlDocument('1.0', 'utf-8');
+			$xmldoc->loadFromString('<module id="cron">
+				<dependency class="Prado\\Caching\\TFileCacheDependency" FileName="' . $file . '" />
+				<dependency class="Prado\\Caching\\TDirectoryCacheDependency" Directory="' . $dir . '" />
+			</module>');
+			$chained = new $this->baseClass();
+			$chained->init($xmldoc);
+			$dependency = $chained->getDaemonDependency();
+			self::assertInstanceOf(TChainedCacheDependency::class, $dependency, 'several dependencies are chained');
+			self::assertCount(2, $dependency->getDependencies());
+			self::assertInstanceOf(TFileCacheDependency::class, $dependency->getDependencies()[0]);
+			self::assertInstanceOf(TDirectoryCacheDependency::class, $dependency->getDependencies()[1]);
+
+			$php = new $this->baseClass();
+			$php->init(['dependency' => ['class' => TFileCacheDependency::class, 'properties' => ['FileName' => $file]]]);
+			self::assertSame($file, $php->getDaemonDependency()->getFileName());
+			self::assertSame([], $php->getRawTasks(), 'the key is not a job');
+
+			$php = new $this->baseClass();
+			$php->init(['dependency' => [
+				['class' => TFileCacheDependency::class, 'properties' => ['FileName' => $file]],
+				TApplicationStateCacheDependency::class,
+			]]);
+			self::assertInstanceOf(TChainedCacheDependency::class, $php->getDaemonDependency());
+			self::assertCount(2, $php->getDaemonDependency()->getDependencies());
+
+			$php = new $this->baseClass();
+			$php->init(['dependency' => TApplicationStateCacheDependency::class]);
+			self::assertInstanceOf(TApplicationStateCacheDependency::class, $php->getDaemonDependency());
+		} finally {
+			@unlink($file);
+			@rmdir($dir);
+		}
+
+		$xmldoc = new TXmlDocument('1.0', 'utf-8');
+		$xmldoc->loadFromString('<module id="cron"><dependency class="Prado\\Util\\Mutex\\TMemoryMutex" /></module>');
+		try {
+			(new $this->baseClass())->init($xmldoc);
+			self::fail('a dependency that is not an ICacheDependency is a configuration error');
+		} catch (TConfigurationException $e) {
+			self::assertStringContainsString('ICacheDependency', $e->getMessage());
+		}
+		try {
+			(new $this->baseClass())->init(['dependency' => [42]]);
+			self::fail('a PHP dependency that is neither an array nor a class is a configuration error');
+		} catch (TConfigurationException $e) {
+		}
+	}
+
 	public function testRunDaemon_RunsTheDueTasksAndRetiresAfterTheLifetime()
 	{
 		$now = $this->obj->fakeNow;
@@ -1322,6 +1393,48 @@ class TCronModuleTest extends \PHPUnit\Framework\TestCase
 		} finally {
 			@unlink($config);
 		}
+	}
+
+	public function testRunDaemon_RetiresWhenTheDependencyChanges()
+	{
+		$file = sys_get_temp_dir() . '/cron-dependency-' . bin2hex(random_bytes(4));
+		file_put_contents($file, 'v1');
+		try {
+			$this->obj->setDaemon(true);
+			$this->obj->setDaemonLifetime(0);
+			$this->obj->setDaemonIdle(0.05);
+			$this->obj->setDaemonMutex(new TMemoryMutex());
+			$this->obj->setDaemonWatchConfig(false);
+			$this->obj->setDaemonDependency(new TFileCacheDependency($file));
+			$this->obj->init(null);
+			$loop = TAsync::getLoop();
+			$retiringAt = [];
+			$probe = function () use (&$retiringAt) {
+				$mutex = new TMemoryMutex();
+				$retiringAt[] = !$mutex->acquire($this->obj->getDaemonRetiringLockName());
+				$mutex->releaseAll();
+			};
+			$loop->delay(0.1, $probe);                      // unchanged: not retiring
+			$loop->delay(0.15, static function () use ($file) {
+				touch($file, time() + 10);
+			});
+			$loop->delay(0.4, $probe);                      // changed: retiring, still serving
+			$loop->delay(0.45, fn () => $this->obj->stopDaemon());
+			self::assertEquals(0, $this->obj->processPendingTasks());
+			self::assertSame([false, true], $retiringAt, 'the daemon retires once the dependency changes');
+		} finally {
+			@unlink($file);
+		}
+	}
+
+	public function testDaemonDependency()
+	{
+		self::assertNull($this->obj->getDaemonDependency());
+		$dependency = new TApplicationStateCacheDependency();
+		$this->obj->setDaemonDependency($dependency);
+		self::assertSame($dependency, $this->obj->getDaemonDependency());
+		$this->obj->setDaemonDependency(null);
+		self::assertNull($this->obj->getDaemonDependency());
 	}
 
 	public function testRunDaemon_RetireDaemonHandsOffAtTheNextTick()

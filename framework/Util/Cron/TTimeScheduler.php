@@ -140,6 +140,9 @@ class TTimeScheduler extends \Prado\TComponent
 	/** the year attributes of the schedule */
 	protected const YEAR = 5;
 
+	/** @var string[] the properties holding a parsed schedule; restored when a new schedule is invalid */
+	private const SCHEDULE_STATE = ['_schedule', '_resolved', '_hasHash', '_period', '_triggerTime', '_attr', '_minutesCache', '_secondsCache', '_hoursCache', '_monthsCache'];
+
 	/** The cron schedule */
 	private $_schedule;
 
@@ -283,10 +286,55 @@ class TTimeScheduler extends \Prado\TComponent
 	}
 
 	/**
-	 * Parses a Cron Time Tag
+	 * Parses a Cron Time Tag.  An invalid schedule throws and leaves the previous
+	 * schedule in place.
 	 * @param mixed $schedule
+	 * @throws TInvalidDataValueException when the schedule does not parse
 	 */
 	public function setSchedule($schedule)
+	{
+		$state = $this->getScheduleState();
+		try {
+			$this->parseSchedule($schedule);
+		} catch (TInvalidDataValueException $e) {
+			$this->setScheduleState($state);
+			throw $e;
+		}
+	}
+
+	/**
+	 * Returns the parsed schedule state that {@see setSchedule} replaces.
+	 * @return array the property values, keyed by property name.
+	 * @since 4.4.0
+	 */
+	protected function getScheduleState(): array
+	{
+		$state = [];
+		foreach (self::SCHEDULE_STATE as $name) {
+			$state[$name] = $this->$name;
+		}
+		return $state;
+	}
+
+	/**
+	 * Restores a parsed schedule state from {@see getScheduleState}.
+	 * @param array $state the property values, keyed by property name.
+	 * @since 4.4.0
+	 */
+	protected function setScheduleState(array $state): void
+	{
+		foreach (self::SCHEDULE_STATE as $name) {
+			$this->$name = $state[$name];
+		}
+	}
+
+	/**
+	 * Parses a Cron Time Tag into the schedule state.
+	 * @param mixed $schedule
+	 * @throws TInvalidDataValueException when the schedule does not parse
+	 * @since 4.4.0
+	 */
+	protected function parseSchedule($schedule): void
 	{
 		$this->_attr = [];
 		$this->_triggerTime = null;

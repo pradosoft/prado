@@ -77,6 +77,7 @@ $cron->getTasksByType(TDbCronCleanLogTask::class);
 | `DaemonWatchConfig` | `true` | The daemon fingerprints `DaemonConfigFiles` (path, mtime, size, content hash) at start and on each idle; a change retires it, so the next tick's process, which read the new configuration, takes over without a gap. |
 | `DaemonConfigFiles` | the application configuration file | Paths or namespaces to watch, in an array or comma-separated; name an included configuration file here when cron is configured in one. |
 | `DaemonIdle` | `60` | Maximum seconds between sweeps when no trigger or wake comes sooner; also the poll period of a `TDbCronManager` table changed by a host without a shared wake transport. |
+| `DaemonDependency` | `null` | An [`ICacheDependency`](../../Caching/ICacheDependency.md), or `<dependency>` child elements; the daemon checks `getHasChanged()` on each idle and retires on a change, as for a configuration file. Any cache dependency watches its source: a file or directory, a global or application state, or a chain. |
 | `DaemonMutex` | a `TFileMutex` | The lease, an [`IMutex`](../Mutex/IMutex.md), its module ID, or a `<mutex>` child element. The lock name is `getDaemonLockName()`, `cron:daemon:<module id>`. A file mutex excludes the processes of one host; a database or Redis mutex excludes every host's. |
 | `WakeTransport` | a `TCronWakeSocket` | The [`ICronWakeTransport`](Wake/ICronWakeTransport.md), its module ID, or a `<wake>` child element, shared by per-minute waits (`waitForWake()`), the daemon (`watch()`), and `signalWake()`. |
 
@@ -121,12 +122,13 @@ Each `on` event of the module is also broadcast as a global event, so a module d
 <module id="cronwake" class="Prado\Util\Cron\Wake\TCronWakeCache" CacheID="memcache" PollInterval="0.5" />
 ```
 
-**Child elements.** A transport or mutex only cron uses is configured in place, without a module ID, as a `<wake>` or `<mutex>` child of the cron module (`readComponentConfiguration()`, `createConfigComponent()`): `class` names the class, the other attributes are its properties, and a module is initialized with the element. The PHP form is the `wake` or `mutex` key with `class` and `properties`, or a class name alone. An element without a class throws `cron_component_class_required`; a class of the wrong type throws `cron_waketransport_invalid` or `cron_daemonmutex_invalid`. The element replaces the `WakeTransport` or `DaemonMutex` attribute when both are given.
+**Child elements.** A transport, mutex, or dependency only cron uses is configured in place, without a module ID, as a `<wake>`, `<mutex>`, or `<dependency>` child of the cron module (`readComponentConfiguration()`, `getConfigElements()`, `createElementComponent()`): `class` names the class, the other attributes are its properties, and a module is initialized with the element. The PHP form is the `wake`, `mutex`, or `dependency` key with `class` and `properties`, or a class name alone; the `dependency` key also takes a list. Several `<dependency>` elements are chained in a [`TChainedCacheDependency`](../../Caching/TChainedCacheDependency.md), so any change retires the daemon. An element without a class throws `cron_component_class_required`; a class of the wrong type throws `cron_waketransport_invalid`, `cron_daemonmutex_invalid`, or `cron_daemondependency_invalid`. The element replaces the `WakeTransport`, `DaemonMutex`, or `DaemonDependency` property when both are given. A dependency reports a change against its own state from when it was created, at configuration.
 
 ```xml
 <module id="cron" class="Prado\Util\Cron\TDbCronManager" Daemon="true">
     <wake class="Prado\Util\Cron\Wake\TCronWakeCache" CacheID="memcache" PollInterval="0.5" />
     <mutex class="Prado\Util\Mutex\TDbMutex" ConnectionID="db" />
+    <dependency class="Prado\Caching\TFileCacheDependency" FileName="/srv/app/REVISION" />
 </module>
 ```
 
@@ -136,6 +138,10 @@ Each `on` event of the module is also broadcast as a global event, so a module d
     'properties' => ['Daemon' => true],
     'wake' => ['class' => Prado\Util\Cron\Wake\TCronWakeCache::class, 'properties' => ['CacheID' => 'memcache', 'PollInterval' => 0.5]],
     'mutex' => ['class' => Prado\Util\Mutex\TDbMutex::class, 'properties' => ['ConnectionID' => 'db']],
+    'dependency' => [
+        ['class' => Prado\Caching\TFileCacheDependency::class, 'properties' => ['FileName' => '/srv/app/REVISION']],
+        Prado\Caching\TApplicationStateCacheDependency::class,
+    ],
 ],
 ```
 

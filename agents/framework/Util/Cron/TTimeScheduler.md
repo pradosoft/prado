@@ -12,7 +12,7 @@ TTimeScheduler is a Quartz-style cron expression parser that calculates the next
 
 ## Key Properties/Methods
 
-- `getSchedule()` / `setSchedule($schedule)` — Gets/sets the cron schedule expression. `setSchedule` fully resets parsed state on every call (including the one-off `@<int>` trigger and the memoized field arrays).
+- `getSchedule()` / `setSchedule($schedule)` — Gets/sets the cron schedule expression. `setSchedule` fully resets parsed state on every call (including the one-off `@<int>` trigger and the memoized field arrays); an invalid schedule throws and leaves the previous schedule in place (`getScheduleState()`/`setScheduleState()` around `parseSchedule()`).
 - `getNextTriggerTime($priortime = false)` — The next Unix timestamp strictly after `$priortime` (default: now via the `time()` seam; a string is parsed with `strtotime`). Returns `?int` — null when the schedule is unset, a one-off has passed, or no trigger exists through `YEAR_MAX`. Computed in the application default timezone.
 - `getNextTriggerTimes(int $count, $priortime = false): int[]` — Up to the next `$count` trigger times in ascending order; stops early when the schedule is exhausted (one-off, or `YEAR_MAX`). **@since 4.4.0.**
 - `getDaysInMonth($month, $year)` — Days in a month, leap-aware. **@since 4.4.0**; `days_in_month()` is a deprecated alias.
