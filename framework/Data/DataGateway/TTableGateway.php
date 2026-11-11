@@ -442,7 +442,8 @@ class TTableGateway extends \Prado\TComponent
 	/**
 	 * Inserts a new record, silently ignoring if a duplicate key conflict occurs.
 	 * @param array $data new record data.
-	 * @return mixed last insert id, true on ignore, or false on failure.
+	 * @return mixed the last insert id when a row was inserted and a column has a sequence,
+	 *   true when a row was inserted, or false when the insert was ignored.
 	 * @since 4.4.0
 	 */
 	public function insertOrIgnore(array $data): mixed

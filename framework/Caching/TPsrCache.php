@@ -106,7 +106,8 @@ class TPsrCache extends TCache implements IModuleDependency
 	}
 
 	/**
-	 * @return bool whether the PSR-16 or PSR-6 interfaces are installed
+	 * @return bool whether the PSR-16 or PSR-6 interfaces are loadable; true with the
+	 *   `psr/simple-cache` and `psr/cache` dependencies Composer installs
 	 */
 	public static function getIsAvailable(): bool
 	{

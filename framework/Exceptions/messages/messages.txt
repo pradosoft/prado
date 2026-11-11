@@ -803,6 +803,7 @@ datasource_dbconnection_invalid			= TDataSourceConfig.DbConnection ''{0}'' is in
 datasource_dbconnection_exists				= TDataSourceConfig.ConnectionClass cannot be set to ''{0}'' after the database connection is created.
 
 response_status_reason_missing			= HTTP/1.1 requires a reason phrase for an extended status code.
+response_status_reason_barchars			= The HTTP reason phrase cannot contain a carriage return or line feed.
 
 activefileupload_temppath_invalid		= TActiveFileUpload TempPath path ''{0}'' does not exist or is not writable by Web server process.
 

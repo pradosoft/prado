@@ -584,6 +584,7 @@ class TAuthManager extends \Prado\TModule
 		}
 		$this->updateSessionUser($user);
 		$this->getApplication()->setUser($user);
+		$this->getRequest()->getCsrfToken(true);
 		return true;
 	}
 

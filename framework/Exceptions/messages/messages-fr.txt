@@ -11,6 +11,7 @@ pageservice_page_unknown				= La page ''{0}'' n'a pas été trouvée.
 pageservice_security_violation			= TPageService ne peut pas accéder au répertoire supplémentaire ''{0}''.
 
 page_csrf_token_invalid					= La page requiert un jeton CSRF valide.
+service_csrf_token_invalid				= Le service ''{0}'' requiert un jeton CSRF valide.
 
 pagestatepersister_pagestate_corrupted	= L'état de la page est corrompu.
 cachepagestatepersister_pagestate_corrupted	= L'état de la page est corrompu.
