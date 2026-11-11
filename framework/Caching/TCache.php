@@ -317,11 +317,18 @@ abstract class TCache extends TModule implements ICache, \ArrayAccess
 	// Subclass Provider Methods
 	// =========================================================================
 
-	/*
+	/**
 	 * Returns whether this cache backend's prerequisites (extensions, services) are met.
+	 * The base implementation has reported the backend available, so a cache without an
+	 * external prerequisite, and a cache class written before this method existed, need
+	 * no override.  A backend that depends on an extension or a service overrides it.
+	 * @return bool whether the backend can be used; true unless a subclass overrides it.
 	 * @since 4.4.0
 	 */
-	abstract public static function getIsAvailable(): bool;
+	public static function getIsAvailable(): bool
+	{
+		return true;
+	}
 
 	/**
 	 * Retrieves a value from cache with a specified key.

@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1515 - `TCache::getIsAvailable()` has a default that returns true; it was abstract, so a third-party cache class written for 4.3 failed to load on 4.4. A backend with an extension or service prerequisite overrides it. (belisoful)
 BUG: Issue #1513 - `TTableGateway` accepts any `IDataCriteria` as a criteria object and passes it to the command builder; it threw `dbtablegateway_invalid_criteria` for the criteria of a driver that is not SQL-backed. (belisoful)
 BUG: Issue #1513 - `IDataCommandBuilder` declares `setDbConnection()`, which `TActiveRecordGateway` calls on every builder, and `IDbCommandBuilder` declares `getIndexCondition()`, which `TDataGatewayCommand::getIndexKeyCondition()` calls; a driver extension's builder that lacked them failed with `TUnknownMethodException`. (belisoful)
 BUG: Issue #1513 - `TDbCommandBuilder` and the driver builders return `IDataCommand` from `createInsertOrIgnoreCommand()`, `createUpsertCommand()`, and `buildMergeStatement()`, as `IDataCommandBuilder` declares; the `TDbCommand` return type threw `TypeError` for a builder on a connection that is not PDO-backed. (belisoful)
