@@ -2,8 +2,11 @@
 
 namespace Prado\Test\Unit;
 
+use Prado\Exceptions\TConfigurationException;
 use Prado\TModule;
 use Prado\Util\TBehavior;
+use Prado\Xml\TXmlDocument;
+use Prado\Xml\TXmlElement;
 
 // =============================================================================
 // Helper fixtures
@@ -17,6 +20,31 @@ class ConcreteModule extends TModule
 	public function init($config): void
 	{
 		parent::init($config);
+	}
+}
+
+/**
+ * A module created from a child element; records its configuration.
+ */
+class ChildElementModule extends TModule
+{
+	public mixed $initConfig = null;
+	private string $_label = '';
+
+	public function init($config): void
+	{
+		$this->initConfig = $config;
+		parent::init($config);
+	}
+
+	public function getLabel(): string
+	{
+		return $this->_label;
+	}
+
+	public function setLabel($value): void
+	{
+		$this->_label = (string) $value;
 	}
 }
 
@@ -438,5 +466,85 @@ class TModuleTest extends \PHPUnit\Framework\TestCase
 		$m->attachBehavior('spy', $b);
 		$m->init(null);
 		$this->assertTrue($b->initCalled, 'init() must dispatch dyInit to attached behaviors.');
+	}
+
+	// =========================================================================
+	// Child elements
+	// =========================================================================
+
+	private function xmlConfig(string $inner): TXmlElement
+	{
+		$doc = new TXmlDocument('1.0', 'utf-8');
+		$doc->loadFromString('<module id="m">' . $inner . '</module>');
+		return $doc;
+	}
+
+	public function testGetConfigElements_xmlGivesTheDirectChildren(): void
+	{
+		$m = new ConcreteModule();
+		$config = $this->xmlConfig('<item class="A" /><other /><item class="B"><item class="nested" /></item>');
+		$first = PradoUnit::invoke($m, 'getConfigElements', $config, 'item');
+		$this->assertCount(1, $first);
+		$this->assertSame('A', $first[0]->getAttribute('class'));
+		$all = PradoUnit::invoke($m, 'getConfigElements', $config, 'item', true);
+		$this->assertSame(['A', 'B'], array_map(fn ($e) => $e->getAttribute('class'), $all), 'a nested element is not a child of the module');
+		$this->assertSame([], PradoUnit::invoke($m, 'getConfigElements', $config, 'missing', true));
+		$this->assertSame([], PradoUnit::invoke($m, 'getConfigElements', null, 'item'));
+	}
+
+	public function testGetConfigElements_phpNormalizesTheKey(): void
+	{
+		$m = new ConcreteModule();
+		$element = ['class' => 'A', 'properties' => ['X' => 1]];
+		$this->assertSame([$element], PradoUnit::invoke($m, 'getConfigElements', ['item' => $element], 'item'));
+		$this->assertSame([['class' => 'A']], PradoUnit::invoke($m, 'getConfigElements', ['item' => 'A'], 'item'), 'a class name is an element');
+		$this->assertSame([['class' => 'A'], $element], PradoUnit::invoke($m, 'getConfigElements', ['item' => ['A', $element]], 'item', true), 'a list holds several elements');
+		$this->assertSame([], PradoUnit::invoke($m, 'getConfigElements', ['other' => 'A'], 'item'));
+		$this->expectException(TConfigurationException::class);
+		PradoUnit::invoke($m, 'getConfigElements', ['item' => 42], 'item');
+	}
+
+	public function testCreateConfigComponent_createsAndConfiguresTheComponent(): void
+	{
+		$m = new ConcreteModule();
+		$config = $this->xmlConfig('<child class="' . ChildElementModule::class . '" Label="xml" /><child class="' . ChildElementModule::class . '" Label="second" />');
+		$child = PradoUnit::invoke($m, 'createConfigComponent', $config, 'child', TModule::class);
+		$this->assertInstanceOf(ChildElementModule::class, $child);
+		$this->assertSame('xml', $child->getLabel());
+		$this->assertInstanceOf(TXmlElement::class, $child->initConfig, 'a module is initialized with its element');
+		$this->assertNull($child->getID(), 'the component is not a registered module');
+
+		$child = PradoUnit::invoke($m, 'createConfigComponent', ['child' => ['class' => ChildElementModule::class, 'properties' => ['Label' => 'php']]], 'child', TModule::class);
+		$this->assertSame('php', $child->getLabel());
+		$this->assertSame(['class' => ChildElementModule::class, 'properties' => ['Label' => 'php']], $child->initConfig);
+
+		$this->assertNull(PradoUnit::invoke($m, 'createConfigComponent', $config, 'missing', TModule::class));
+	}
+
+	public function testCreateElementComponent_rejectsAMissingClassAndAWrongType(): void
+	{
+		$m = new ConcreteModule();
+		foreach (['missing class' => [['properties' => []], null], 'empty class' => [['class' => ''], null]] as $case => [$element, $error]) {
+			try {
+				PradoUnit::invoke($m, 'createElementComponent', $element, 'child', TModule::class, $error);
+				$this->fail("a {$case} is a configuration error");
+			} catch (TConfigurationException $e) {
+				$this->assertStringContainsString('<child>', $e->getMessage());
+				$this->assertStringContainsString(ConcreteModule::class, $e->getMessage());
+			}
+		}
+		try {
+			PradoUnit::invoke($m, 'createElementComponent', ['class' => TBehavior::class], 'child', TModule::class);
+			$this->fail('a component of the wrong type is a configuration error');
+		} catch (TConfigurationException $e) {
+			$this->assertStringContainsString(TBehavior::class, $e->getMessage());
+			$this->assertStringContainsString(TModule::class, $e->getMessage());
+		}
+		try {
+			PradoUnit::invoke($m, 'createElementComponent', ['class' => TBehavior::class], 'service', TModule::class, 'application_service_invalid');
+			$this->fail('a component of the wrong type is a configuration error');
+		} catch (TConfigurationException $e) {
+			$this->assertStringContainsString('IService', $e->getMessage(), 'the caller names its own message');
+		}
 	}
 }

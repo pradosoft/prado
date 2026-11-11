@@ -10,6 +10,9 @@
 
 namespace Prado;
 
+use Prado\Exceptions\TConfigurationException;
+use Prado\Xml\TXmlElement;
+
 /**
  * TModule class
  *
@@ -36,6 +39,22 @@ namespace Prado;
  *          $this->callBehaviorsMethod('dyPreInit', $return, $config);
  *      }
  *  }
+ * ```
+ *
+ * ## Child Elements
+ *
+ * A module creates a component it alone uses from a child element of its configuration with
+ * {@see createConfigComponent()}, or each of several with {@see getConfigElements()} and
+ * {@see createElementComponent()}.  The `class` attribute names the class, the other
+ * attributes are its properties, and a component that is a module is initialized with its
+ * element.  The PHP form is the tag's key holding `class` and `properties`, or a class name.
+ * ```xml
+ * <module id="mymodule" class="MyModule">
+ *     <mutex class="Prado\Util\Mutex\TDbMutex" ConnectionID="db" />
+ * </module>
+ * ```
+ * ```php
+ * $mutex = $this->createConfigComponent($config, 'mutex', \Prado\Util\Mutex\IMutex::class);
  * ```
  *
  * ## Dependencies
@@ -114,5 +133,99 @@ abstract class TModule extends \Prado\TApplicationComponent implements IModule
 	public function setID($value)
 	{
 		$this->_id = $value;
+	}
+
+	/**
+	 * Returns the child elements of a module configuration with a tag.  An XML configuration
+	 * gives its direct child elements.  A PHP configuration gives the value of the tag's key as
+	 * an element: an array with `class` and `properties`, or a class name alone; with
+	 * `$multiple`, the key also holds a list of elements.
+	 * @param null|array|\Prado\Xml\TXmlElement $config the module configuration
+	 * @param string $tag the element tag name, and the PHP key
+	 * @param bool $multiple whether the configuration may hold several elements with the tag
+	 * @throws TConfigurationException when a PHP element is not an array or a class name
+	 * @return array the XML elements or PHP element arrays, in order
+	 * @since 4.4.0
+	 */
+	protected function getConfigElements($config, string $tag, bool $multiple = false): array
+	{
+		if ($config instanceof TXmlElement) {
+			if ($multiple) {
+				return $config->getElementsByTagName($tag)->toArray();
+			}
+			return ($element = $config->getElementByTagName($tag)) === null ? [] : [$element];
+		}
+		if (!is_array($config) || !isset($config[$tag])) {
+			return [];
+		}
+		$elements = $config[$tag];
+		if (!$multiple || !is_array($elements) || !array_is_list($elements)) {
+			$elements = [$elements];
+		}
+		foreach ($elements as $i => $element) {
+			if (is_string($element)) {
+				$elements[$i] = ['class' => $element];
+			} elseif (!is_array($element)) {
+				throw new TConfigurationException('module_config_class_required', static::class, $tag);
+			}
+		}
+		return $elements;
+	}
+
+	/**
+	 * Creates the component of the first child element of a module configuration with a tag.
+	 * @param null|array|\Prado\Xml\TXmlElement $config the module configuration
+	 * @param string $tag the element tag name, and the PHP key
+	 * @param string $type the class or interface the component must be
+	 * @param ?string $error the message key when the component is not `$type`, with the class
+	 *   as its parameter; null for `module_config_component_invalid`
+	 * @throws TConfigurationException when the element has no class, or the component is not `$type`
+	 * @return ?object the component, or null when the configuration has no such element
+	 * @since 4.4.0
+	 */
+	protected function createConfigComponent($config, string $tag, string $type, ?string $error = null): ?object
+	{
+		$elements = $this->getConfigElements($config, $tag);
+		return $elements ? $this->createElementComponent($elements[0], $tag, $type, $error) : null;
+	}
+
+	/**
+	 * Creates the component of one configuration element: the `class` attribute names the
+	 * class, the other attributes are its properties, and a module is initialized with the
+	 * element.  A PHP element is an array with `class` and `properties`.
+	 * @param array|\Prado\Xml\TXmlElement $element the configuration element
+	 * @param string $tag the element tag name, and the PHP key
+	 * @param string $type the class or interface the component must be
+	 * @param ?string $error the message key when the component is not `$type`, with the class
+	 *   as its parameter; null for `module_config_component_invalid`
+	 * @throws TConfigurationException when the element has no class, or the component is not `$type`
+	 * @return object the component
+	 * @since 4.4.0
+	 */
+	protected function createElementComponent($element, string $tag, string $type, ?string $error = null): object
+	{
+		if ($element instanceof TXmlElement) {
+			$properties = $element->getAttributes()->toArray();
+			$class = $properties['class'] ?? null;
+			unset($properties['class']);
+		} else {
+			$class = $element['class'] ?? null;
+			$properties = $element['properties'] ?? [];
+		}
+		if (!is_string($class) || $class === '') {
+			throw new TConfigurationException('module_config_class_required', static::class, $tag);
+		}
+		$component = Prado::createComponent($class);
+		if (!($component instanceof $type)) {
+			if ($error !== null) {
+				throw new TConfigurationException($error, $class);
+			}
+			throw new TConfigurationException('module_config_component_invalid', static::class, $tag, $class, $type);
+		}
+		$component->setSubProperties($properties);
+		if ($component instanceof IModule) {
+			$component->init($element);
+		}
+		return $component;
 	}
 }
