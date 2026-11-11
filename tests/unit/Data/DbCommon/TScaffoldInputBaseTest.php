@@ -118,7 +118,7 @@ class TScaffoldInputBaseTest extends \PHPUnit\Framework\TestCase
 		$conn->expects($this->once())->method('raiseEvent')->willReturn([]);
 
 		$result = TScaffoldInputBase::createInputBuilder($record);
-		$this->assertInstanceOf(\Prado\Data\ActiveRecord\Scaffold\InputBuilder\TMssqlScaffoldInput::class, $result);
+		$this->assertInstanceOf(\Prado\Data\ActiveRecord\Scaffold\InputBuilder\TSqlSrvScaffoldInput::class, $result);
 	}
 
 	public function test_createInputBuilder_valid_ibm_driver()

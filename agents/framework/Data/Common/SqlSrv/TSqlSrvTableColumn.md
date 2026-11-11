@@ -1,7 +1,7 @@
 # Data/Common/SqlSrv/TSqlSrvTableColumn
 
 ### Directories
-[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [Common](../INDEX.md) / [Mssql](./INDEX.md) / **`TSqlSrvTableColumn`**
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [Common](../INDEX.md) / [SqlSrv](./INDEX.md) / **`TSqlSrvTableColumn`**
 
 ## Class Info
 **Location:** `framework/Data/Common/SqlSrv/TSqlSrvTableColumn.php`

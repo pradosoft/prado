@@ -1,7 +1,7 @@
 # Data/Common/SqlSrv/TSqlSrvCommandBuilder
 
 ### Directories
-[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [Common](../INDEX.md) / [Mssql](./INDEX.md) / **`TSqlSrvCommandBuilder`**
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [Common](../INDEX.md) / [SqlSrv](./INDEX.md) / **`TSqlSrvCommandBuilder`**
 
 ## Class Info
 **Location:** `framework/Data/Common/SqlSrv/TSqlSrvCommandBuilder.php`

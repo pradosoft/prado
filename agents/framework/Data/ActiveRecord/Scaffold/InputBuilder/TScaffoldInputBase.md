@@ -18,18 +18,18 @@
 TScaffoldInputBase::createInputBuilder(TActiveRecord $record): IScaffoldInput
 ```
 
-Selects the correct builder from the active record's database driver:
+First raises `fxActiveRecordScaffoldInputClass` on the connection with the driver name string as the parameter; the first returned class name wins, and handlers return null to decline. When no handler returns a value, it selects the built-in builder from the active record's database driver:
 
 | Driver string(s) | Class |
 |---|---|
 | `sqlite`, `sqlite2` | `TSqliteScaffoldInput` |
 | `mysql`, `mysqli` | `TMysqlScaffoldInput` |
 | `pgsql` | `TPgsqlScaffoldInput` |
-| `mssql` | `TMssqlScaffoldInput` |
+| `mssql`, `sqlsrv`, `dblib` | `TSqlSrvScaffoldInput` |
 | `ibm` | `TIbmScaffoldInput` |
 | `firebird`, `interbase` | `TFirebirdScaffoldInput` |
 
-**Unknown driver fallback:** raises `fxActiveRecordScaffoldInputClass` on the connection with the driver name string as the parameter. Handlers return a fully-qualified class name implementing [`IScaffoldInput`](./IScaffoldInput.md); the **first returned value** wins. The class is instantiated with `new $class()`. Throws `TConfigurationException('ar_invalid_database_driver')` if no handler responds, or `TConfigurationException('ar_not_input_base')` if the returned class does not implement `IScaffoldInput`.
+**Extension hook:** handlers of `fxActiveRecordScaffoldInputClass` return a fully-qualified class name implementing [`IScaffoldInput`](./IScaffoldInput.md); the **first returned value** wins, before the built-in drivers. The class is instantiated with `new $class()`. Throws `TConfigurationException('ar_invalid_database_driver')` if no handler responds, or `TConfigurationException('ar_not_input_base')` if the returned class does not implement `IScaffoldInput`.
 
 Built-in driver files are loaded via `require_once` (not PSR-4 autoload) because they live in the same directory without namespace registration.
 
@@ -67,6 +67,6 @@ $builder->createControlLabel($label, $column, $record)  // generates human-reada
 - [TMysqlScaffoldInput](./TMysqlScaffoldInput.md)
 - [TPgsqlScaffoldInput](./TPgsqlScaffoldInput.md)
 - [TSqliteScaffoldInput](./TSqliteScaffoldInput.md)
-- [TMssqlScaffoldInput](./TMssqlScaffoldInput.md)
+- [TSqlSrvScaffoldInput](./TSqlSrvScaffoldInput.md)
 - [TIbmScaffoldInput](./TIbmScaffoldInput.md)
 - [TFirebirdScaffoldInput](./TFirebirdScaffoldInput.md)

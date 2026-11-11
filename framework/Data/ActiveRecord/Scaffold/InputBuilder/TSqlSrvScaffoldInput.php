@@ -1,7 +1,7 @@
 <?php
 
 /**
- * TMssqlScaffoldInput class file.
+ * TSqlSrvScaffoldInput class file.
  *
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
@@ -9,14 +9,25 @@
 
 namespace Prado\Data\ActiveRecord\Scaffold\InputBuilder;
 
-use Prado\Prado;
-
 /**
- * TMssqlScaffoldInput class.
+ * TSqlSrvScaffoldInput class.
+ *
+ * Maps Microsoft SQL Server column types to Prado scaffold input controls for the
+ * `sqlsrv` and `dblib` drivers and the `mssql` extension.
+ *
+ * | SQL Server type | control |
+ * |---|---|
+ * | `bit` | check box |
+ * | `text` | multiline text box |
+ * | `smallint`, `int`, `bigint`, `tinyint` | integer text box |
+ * | `decimal`, `float`, `money`, `numeric`, `real`, `smallmoney` | float text box |
+ * | `datetime`, `smalldatetime` | date picker with time lists |
+ * | any other | text box; disabled for an excluded column such as `timestamp` |
  *
  * @link https://github.com/pradosoft/prado
+ * @since 4.3.3
  */
-class TMssqlScaffoldInput extends TScaffoldInputCommon
+class TSqlSrvScaffoldInput extends TScaffoldInputCommon
 {
 	protected function createControl($container, $column, $record)
 	{

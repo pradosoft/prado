@@ -26,7 +26,7 @@ Driver-specific input control builders for the Active Record scaffold UI. Each c
 
 - **`TPgsqlScaffoldInput`** — PostgreSQL-specific: handles `boolean`, `serial`, `bytea`, array types, PostgreSQL `date`/`timestamp`.
 
-- **`TMssqlScaffoldInput`** — SQL Server-specific: handles `bit`, `uniqueidentifier`, `money`, `nvarchar`, `datetime2`.
+- **`TSqlSrvScaffoldInput`** — SQL Server-specific: handles `bit`, `uniqueidentifier`, `money`, `nvarchar`, `datetime2`.
 
 - **`TSqliteScaffoldInput`** — SQLite-specific: handles SQLite's loose typing (`INTEGER`, `REAL`, `TEXT`, `BLOB`).
 

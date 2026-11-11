@@ -11,7 +11,6 @@
 | [`Firebird/`](Firebird/INDEX.md) | Firebird / InterBase - `firebird`, `interbase` |
 | [`Ibm/`](Ibm/INDEX.md) | IBM DB2 - `ibm` |
 | [`SqlSrv/`](SqlSrv/INDEX.md) | SQL Server - `mssql`, `sqlsrv`, `dblib` |
-| [`Mssql/`](Mssql/INDEX.md) | Deprecated `TMssql*` subclasses of the `SqlSrv` classes |
 | [`Mysql/`](Mysql/INDEX.md) | MySQL / MariaDB - `mysql`, `mysqli` |
 | [`Oracle/`](Oracle/INDEX.md) | Oracle - `oci` |
 | [`Pgsql/`](Pgsql/INDEX.md) | PostgreSQL - `pgsql` |

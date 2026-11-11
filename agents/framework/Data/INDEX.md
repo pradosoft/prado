@@ -86,7 +86,7 @@ Separates SQL from code via external XML mapping files.
 
 ### `Common/` — Driver-Specific Implementations
 
-Subdirs: `Firebird/`, `Ibm/`, `Mssql/`, `Mysql/`, `Oracle/`, `Pgsql/`, `Sqlite/`
+Subdirs: `Firebird/`, `Ibm/`, `Mysql/`, `Oracle/`, `Pgsql/`, `Sqlite/`
 
 Each subdir contains four classes: `T{Driver}MetaData`, `T{Driver}CommandBuilder`, `T{Driver}TableInfo`, `T{Driver}TableColumn`.
 

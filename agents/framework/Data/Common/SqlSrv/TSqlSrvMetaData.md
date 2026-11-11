@@ -1,7 +1,7 @@
 # Data/Common/SqlSrv/TSqlSrvMetaData
 
 ### Directories
-[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [Common](../INDEX.md) / [Mssql](./INDEX.md) / **`TSqlSrvMetaData`**
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [Common](../INDEX.md) / [SqlSrv](./INDEX.md) / **`TSqlSrvMetaData`**
 
 ## Class Info
 **Location:** `framework/Data/Common/SqlSrv/TSqlSrvMetaData.php`
