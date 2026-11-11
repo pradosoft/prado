@@ -2,6 +2,8 @@
 
 namespace Prado\Test\Unit\Data\DbCommon;
 
+use Prado\Data\ActiveRecord\Scaffold\InputBuilder\TMysqlScaffoldInput;
+use Prado\Data\ActiveRecord\Scaffold\InputBuilder\TPgsqlScaffoldInput;
 use Prado\Data\ActiveRecord\Scaffold\InputBuilder\TScaffoldInputBase;
 use Prado\Data\ActiveRecord\TActiveRecord;
 use Prado\Data\TDbDriver;
@@ -63,7 +65,7 @@ class TScaffoldInputBaseTest extends \PHPUnit\Framework\TestCase
 	{
 		$record = $this->createMockRecord(TDbDriver::EXTENSION_MYSQLI);
 		$conn = $record->getDbConnection();
-		$conn->expects($this->never())->method('raiseEvent');
+		$conn->expects($this->once())->method('raiseEvent')->willReturn([]);
 
 		$result = TScaffoldInputBase::createInputBuilder($record);
 		$this->assertInstanceOf(\Prado\Data\ActiveRecord\Scaffold\InputBuilder\TMysqlScaffoldInput::class, $result);
@@ -73,7 +75,7 @@ class TScaffoldInputBaseTest extends \PHPUnit\Framework\TestCase
 	{
 		$record = $this->createMockRecord(TDbDriver::DRIVER_MYSQL);
 		$conn = $record->getDbConnection();
-		$conn->expects($this->never())->method('raiseEvent');
+		$conn->expects($this->once())->method('raiseEvent')->willReturn([]);
 
 		$result = TScaffoldInputBase::createInputBuilder($record);
 		$this->assertInstanceOf(\Prado\Data\ActiveRecord\Scaffold\InputBuilder\TMysqlScaffoldInput::class, $result);
@@ -83,7 +85,7 @@ class TScaffoldInputBaseTest extends \PHPUnit\Framework\TestCase
 	{
 		$record = $this->createMockRecord(TDbDriver::DRIVER_SQLITE);
 		$conn = $record->getDbConnection();
-		$conn->expects($this->never())->method('raiseEvent');
+		$conn->expects($this->once())->method('raiseEvent')->willReturn([]);
 
 		$result = TScaffoldInputBase::createInputBuilder($record);
 		$this->assertInstanceOf(\Prado\Data\ActiveRecord\Scaffold\InputBuilder\TSqliteScaffoldInput::class, $result);
@@ -93,7 +95,7 @@ class TScaffoldInputBaseTest extends \PHPUnit\Framework\TestCase
 	{
 		$record = $this->createMockRecord(TDbDriver::DRIVER_SQLITE2);
 		$conn = $record->getDbConnection();
-		$conn->expects($this->never())->method('raiseEvent');
+		$conn->expects($this->once())->method('raiseEvent')->willReturn([]);
 
 		$result = TScaffoldInputBase::createInputBuilder($record);
 		$this->assertInstanceOf(\Prado\Data\ActiveRecord\Scaffold\InputBuilder\TSqliteScaffoldInput::class, $result);
@@ -103,7 +105,7 @@ class TScaffoldInputBaseTest extends \PHPUnit\Framework\TestCase
 	{
 		$record = $this->createMockRecord(TDbDriver::DRIVER_PGSQL);
 		$conn = $record->getDbConnection();
-		$conn->expects($this->never())->method('raiseEvent');
+		$conn->expects($this->once())->method('raiseEvent')->willReturn([]);
 
 		$result = TScaffoldInputBase::createInputBuilder($record);
 		$this->assertInstanceOf(\Prado\Data\ActiveRecord\Scaffold\InputBuilder\TPgsqlScaffoldInput::class, $result);
@@ -113,7 +115,7 @@ class TScaffoldInputBaseTest extends \PHPUnit\Framework\TestCase
 	{
 		$record = $this->createMockRecord(TDbDriver::EXTENSION_MSSQL);
 		$conn = $record->getDbConnection();
-		$conn->expects($this->never())->method('raiseEvent');
+		$conn->expects($this->once())->method('raiseEvent')->willReturn([]);
 
 		$result = TScaffoldInputBase::createInputBuilder($record);
 		$this->assertInstanceOf(\Prado\Data\ActiveRecord\Scaffold\InputBuilder\TMssqlScaffoldInput::class, $result);
@@ -123,7 +125,7 @@ class TScaffoldInputBaseTest extends \PHPUnit\Framework\TestCase
 	{
 		$record = $this->createMockRecord(TDbDriver::DRIVER_IBM);
 		$conn = $record->getDbConnection();
-		$conn->expects($this->never())->method('raiseEvent');
+		$conn->expects($this->once())->method('raiseEvent')->willReturn([]);
 
 		$result = TScaffoldInputBase::createInputBuilder($record);
 		$this->assertInstanceOf(\Prado\Data\ActiveRecord\Scaffold\InputBuilder\TIbmScaffoldInput::class, $result);
@@ -133,7 +135,7 @@ class TScaffoldInputBaseTest extends \PHPUnit\Framework\TestCase
 	{
 		$record = $this->createMockRecord(TDbDriver::DRIVER_FIREBIRD);
 		$conn = $record->getDbConnection();
-		$conn->expects($this->never())->method('raiseEvent');
+		$conn->expects($this->once())->method('raiseEvent')->willReturn([]);
 
 		$result = TScaffoldInputBase::createInputBuilder($record);
 		$this->assertInstanceOf(\Prado\Data\ActiveRecord\Scaffold\InputBuilder\TFirebirdScaffoldInput::class, $result);
@@ -143,7 +145,7 @@ class TScaffoldInputBaseTest extends \PHPUnit\Framework\TestCase
 	{
 		$record = $this->createMockRecord(TDbDriver::DRIVER_INTERBASE);
 		$conn = $record->getDbConnection();
-		$conn->expects($this->never())->method('raiseEvent');
+		$conn->expects($this->once())->method('raiseEvent')->willReturn([]);
 
 		$result = TScaffoldInputBase::createInputBuilder($record);
 		$this->assertInstanceOf(\Prado\Data\ActiveRecord\Scaffold\InputBuilder\TFirebirdScaffoldInput::class, $result);
@@ -153,10 +155,84 @@ class TScaffoldInputBaseTest extends \PHPUnit\Framework\TestCase
 	{
 		$record = $this->createMockRecord('PGSQL');
 		$conn = $record->getDbConnection();
-		$conn->expects($this->never())->method('raiseEvent');
+		$conn->expects($this->once())->method('raiseEvent')->willReturn([]);
 
 		$result = TScaffoldInputBase::createInputBuilder($record);
 		$this->assertInstanceOf(\Prado\Data\ActiveRecord\Scaffold\InputBuilder\TPgsqlScaffoldInput::class, $result);
+	}
+
+	public function test_createInputBuilder_event_class_overrides_built_in_driver()
+	{
+		$record = $this->createMockRecord(TDbDriver::EXTENSION_MYSQLI);
+		$conn = $record->getDbConnection();
+		$conn->expects($this->once())
+			->method('raiseEvent')
+			->with('fxActiveRecordScaffoldInputClass', $conn, TDbDriver::EXTENSION_MYSQLI)
+			->willReturn([TPgsqlScaffoldInput::class]);
+
+		$this->assertInstanceOf(TPgsqlScaffoldInput::class, TScaffoldInputBase::createInputBuilder($record));
+	}
+
+	public function test_createInputBuilder_rejects_invalid_event_class_for_built_in_driver()
+	{
+		$record = $this->createMockRecord(TDbDriver::DRIVER_MYSQL);
+		$record->getDbConnection()->method('raiseEvent')->willReturn([\stdClass::class]);
+
+		try {
+			TScaffoldInputBase::createInputBuilder($record);
+			$this->fail('TConfigurationException expected');
+		} catch (TConfigurationException $e) {
+			$this->assertSame('ar_not_input_base', $e->getErrorCode());
+		}
+	}
+
+	public function test_createInputBuilder_listening_handler_serves_only_its_connection()
+	{
+		$createConnection = fn () => new class () extends \Prado\TComponent {
+			public function setActive($value)
+			{
+			}
+
+			public function getDriverName()
+			{
+				return TDbDriver::EXTENSION_MYSQLI;
+			}
+		};
+		$pluginConn = $createConnection();
+		$otherConn = $createConnection();
+		$provider = new class ($pluginConn) extends \Prado\TComponent {
+			public function __construct(private object $_conn)
+			{
+				parent::__construct();
+			}
+
+			public function fxActiveRecordScaffoldInputClass($sender, $driver)
+			{
+				return $sender === $this->_conn ? TPgsqlScaffoldInput::class : null;
+			}
+		};
+		$createRecord = function (object $conn): TActiveRecord {
+			$record = $this->createMock(TActiveRecord::class);
+			$record->method('getDbConnection')->willReturn($conn);
+			return $record;
+		};
+
+		$provider->listen();
+		try {
+			$this->assertInstanceOf(TPgsqlScaffoldInput::class, TScaffoldInputBase::createInputBuilder($createRecord($pluginConn)));
+			$this->assertInstanceOf(TMysqlScaffoldInput::class, TScaffoldInputBase::createInputBuilder($createRecord($otherConn)));
+		} finally {
+			$provider->unlisten();
+		}
+	}
+
+	public function test_createInputBuilder_uses_first_class_from_fxActiveRecordScaffoldInputClass()
+	{
+		$record = $this->createMockRecord('custom_driver');
+		$record->getDbConnection()->method('raiseEvent')
+			->willReturn([TPgsqlScaffoldInput::class, TMysqlScaffoldInput::class]);
+
+		$this->assertInstanceOf(TPgsqlScaffoldInput::class, TScaffoldInputBase::createInputBuilder($record));
 	}
 
 	public function test_default_id_constant()

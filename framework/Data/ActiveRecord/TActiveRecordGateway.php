@@ -12,7 +12,7 @@ namespace Prado\Data\ActiveRecord;
 
 use Prado\Data\ActiveRecord\Exceptions\TActiveRecordException;
 use Prado\Data\ActiveRecord\Relations\TActiveRecordRelationContext;
-use Prado\Data\Common\TDbMetaData;
+use Prado\Data\Common\IDataMetaData;
 use Prado\Data\Common\TDbTableColumn;
 use Prado\Data\Common\TDbTableInfo;
 use Prado\Data\Common\IDataSchemalessTableInfo;
@@ -45,7 +45,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 	 */
 	private \WeakMap $_tables;
 	/**
-	 * @var \WeakMap<IDataConnection, TDbMetaData> meta data reader per connection
+	 * @var \WeakMap<IDataConnection, IDataMetaData> meta data reader per connection
 	 */
 	private \WeakMap $_meta;
 	private $_commandBuilders = [];
@@ -146,7 +146,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 			//call this first to ensure that unserializing the cache
 			//will find the correct driver dependent classes.
 			if (!isset($this->_meta[$connection])) {
-				$this->_meta[$connection] = TDbMetaData::getInstance($connection);
+				$this->_meta[$connection] = $connection->getDbMetaData();
 			}
 
 			$connStr = $connection instanceof TDbConnection
