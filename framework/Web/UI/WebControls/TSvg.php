@@ -20,7 +20,7 @@ use Prado\TPropertyValue;
  * - {@see setSvgFile() SvgFile}, a `.svg` file read on the server;
  * - {@see setSvg() Svg}, SVG markup as a string, such as from data binding.
  * ```html
- * <com:TSvg ViewBox="0 0 24 24" Width="24" Height="24" AlternateText="Settings">
+ * <com:TSvg ViewBox="0 0 24 24" PixelWidth="24" PixelHeight="24" AlternateText="Settings">
  *     <path d="M12 8a4 4 0 1 0 0 8a4 4 0 0 0 0-8z" />
  * </com:TSvg>
  * <com:TSvg SvgFile="Application.icons.logo" AlternateText="Prado" />
@@ -28,8 +28,9 @@ use Prado\TPropertyValue;
  * For SvgFile and Svg, the attributes of the file's root `<svg>`, such as
  * `viewBox` and `fill`, render on the element, and the control's properties
  * replace them. The child controls render after that content.
- * {@see setWidth() Width} and {@see setHeight() Height} are the size in CSS pixels,
- * rendered as attributes; {@see setViewBox() ViewBox} and
+ * {@see setPixelWidth() PixelWidth} and {@see setPixelHeight() PixelHeight} are the size
+ * in pixels, rendered as the `width` and `height` attributes. `Width` and `Height`
+ * are TWebControl's CSS lengths and render in `style`. {@see setViewBox() ViewBox} and
  * {@see setPreserveAspectRatio() PreserveAspectRatio} render as written.
  * {@see \Prado\Web\UI\ActiveControls\TActiveSvg} updates the graphic in a callback.
  *
@@ -161,41 +162,41 @@ class TSvg extends TWebControl
 	}
 
 	/**
-	 * @return int|string the width in CSS pixels, or -1 when not set. Defaults to -1.
+	 * @return int|string the width in pixels, or -1 when not set. Defaults to -1.
 	 */
-	public function getWidth()
+	public function getPixelWidth()
 	{
-		return $this->getViewState('Width', -1);
+		return $this->getViewState('PixelWidth', -1);
 	}
 
 	/**
-	 * @param int|string $value the width in CSS pixels; a negative value unsets it.
+	 * @param int|string $value the width in pixels; a negative value unsets it.
 	 */
-	public function setWidth($value)
+	public function setPixelWidth($value)
 	{
 		if (($value = TPropertyValue::ensureInteger($value)) < 0) {
 			$value = -1;
 		}
-		$this->setViewState('Width', $value, -1);
+		$this->setViewState('PixelWidth', $value, -1);
 	}
 
 	/**
-	 * @return int|string the height in CSS pixels, or -1 when not set. Defaults to -1.
+	 * @return int|string the height in pixels, or -1 when not set. Defaults to -1.
 	 */
-	public function getHeight()
+	public function getPixelHeight()
 	{
-		return $this->getViewState('Height', -1);
+		return $this->getViewState('PixelHeight', -1);
 	}
 
 	/**
-	 * @param int|string $value the height in CSS pixels; a negative value unsets it.
+	 * @param int|string $value the height in pixels; a negative value unsets it.
 	 */
-	public function setHeight($value)
+	public function setPixelHeight($value)
 	{
 		if (($value = TPropertyValue::ensureInteger($value)) < 0) {
 			$value = -1;
 		}
-		$this->setViewState('Height', $value, -1);
+		$this->setViewState('PixelHeight', $value, -1);
 	}
 
 	/**
@@ -462,10 +463,10 @@ class TSvg extends TWebControl
 		if (($ratio = $this->getPreserveAspectRatio()) !== '') {
 			$writer->addAttribute('preserveAspectRatio', $ratio);
 		}
-		if (($width = $this->getWidth()) !== -1) {
+		if (($width = $this->getPixelWidth()) !== -1) {
 			$writer->addAttribute('width', (string) $width);
 		}
-		if (($height = $this->getHeight()) !== -1) {
+		if (($height = $this->getPixelHeight()) !== -1) {
 			$writer->addAttribute('height', (string) $height);
 		}
 		if ($this->getDecorative()) {

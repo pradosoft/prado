@@ -17,7 +17,7 @@ Active counterpart of `TSvg`. During a callback, a change to the content or an S
 | Change in a callback | Client update |
 |---|---|
 | `Svg`, `SvgFile` | re-render |
-| `ViewBox`, `PreserveAspectRatio`, `Width`, `Height` | re-render |
+| `ViewBox`, `PreserveAspectRatio`, `PixelWidth`, `PixelHeight` | re-render |
 | `AlternateText`, `Description`, `Decorative` | re-render |
 | the same value | none |
 | `render($param->getNewWriter())` | re-render; for template content |

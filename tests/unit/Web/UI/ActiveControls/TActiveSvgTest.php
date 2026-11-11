@@ -100,11 +100,11 @@ class TActiveSvgTest extends TestCase
 		$svg = new TActiveSvg();
 		$svg->setSvg(self::CHART);
 		$svg->setViewBox('0 0 20 20');
-		$svg->setWidth(40);
+		$svg->setPixelWidth(40);
 		$svg->setDecorative(true);
 		$this->assertSame(self::CHART, $svg->getSvg());
 		$this->assertSame('0 0 20 20', $svg->getViewBox());
-		$this->assertSame(40, $svg->getWidth());
+		$this->assertSame(40, $svg->getPixelWidth());
 		$this->assertTrue($svg->getDecorative());
 	}
 
@@ -135,8 +135,8 @@ class TActiveSvgTest extends TestCase
 			'SvgFile' => ['SvgFile', 'Application.icons.chart'],
 			'ViewBox' => ['ViewBox', '0 0 20 20'],
 			'PreserveAspectRatio' => ['PreserveAspectRatio', 'xMinYMin slice'],
-			'Width' => ['Width', 40],
-			'Height' => ['Height', 30],
+			'PixelWidth' => ['PixelWidth', 40],
+			'PixelHeight' => ['PixelHeight', 30],
 			'AlternateText' => ['AlternateText', 'Sales'],
 			'Description' => ['Description', 'Sales by month'],
 			'Decorative' => ['Decorative', true],
@@ -148,7 +148,7 @@ class TActiveSvgTest extends TestCase
 		[, $adapter, $svg] = $this->createLoadedSvg();
 		$svg->setSvg(self::CHART);
 		$svg->setAlternateText('Sales');
-		$svg->setWidth(40);
+		$svg->setPixelWidth(40);
 		$this->assertCount(1, $adapter->rendered);
 	}
 

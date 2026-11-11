@@ -25,7 +25,7 @@
 	</com:TActivePanel>
 	<com:TActiveButton ID="btnRedraw" Text="Update chart" OnCallback="redraw" />
 
-	<com:TCanvas ID="interactive" Width="200" Height="100">
+	<com:TCanvas ID="interactive" PixelWidth="200" PixelHeight="100">
 		<button type="button" id="region">North region: 40%</button>
 	</com:TCanvas>
 </com:TContent>

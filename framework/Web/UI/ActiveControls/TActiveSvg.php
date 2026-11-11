@@ -34,7 +34,7 @@ use Prado\Web\UI\WebControls\TSvg;
  * | Change in a callback | Client update |
  * |---|---|
  * | {@see setSvg() Svg}, {@see setSvgFile() SvgFile} | the graphic re-renders |
- * | {@see setViewBox() ViewBox}, {@see setPreserveAspectRatio() PreserveAspectRatio}, {@see setWidth() Width}, {@see setHeight() Height} | the graphic re-renders |
+ * | {@see setViewBox() ViewBox}, {@see setPreserveAspectRatio() PreserveAspectRatio}, {@see setPixelWidth() PixelWidth}, {@see setPixelHeight() PixelHeight} | the graphic re-renders |
  * | {@see setAlternateText() AlternateText}, {@see setDescription() Description}, {@see setDecorative() Decorative} | the graphic re-renders |
  * | the same value | none |
  * | `render($param->getNewWriter())` | the graphic re-renders, for template content |
@@ -133,24 +133,24 @@ class TActiveSvg extends TSvg implements IActiveControl
 
 	/**
 	 * Sets the width. A change in a callback re-renders the graphic.
-	 * @param int|string $value the width in CSS pixels; a negative value unsets it.
+	 * @param int|string $value the width in pixels; a negative value unsets it.
 	 */
-	public function setWidth($value)
+	public function setPixelWidth($value)
 	{
-		$old = $this->getWidth();
-		parent::setWidth($value);
-		$this->updateIfChanged($old, $this->getWidth());
+		$old = $this->getPixelWidth();
+		parent::setPixelWidth($value);
+		$this->updateIfChanged($old, $this->getPixelWidth());
 	}
 
 	/**
 	 * Sets the height. A change in a callback re-renders the graphic.
-	 * @param int|string $value the height in CSS pixels; a negative value unsets it.
+	 * @param int|string $value the height in pixels; a negative value unsets it.
 	 */
-	public function setHeight($value)
+	public function setPixelHeight($value)
 	{
-		$old = $this->getHeight();
-		parent::setHeight($value);
-		$this->updateIfChanged($old, $this->getHeight());
+		$old = $this->getPixelHeight();
+		parent::setPixelHeight($value);
+		$this->updateIfChanged($old, $this->getPixelHeight());
 	}
 
 	/**
