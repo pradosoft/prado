@@ -56,6 +56,12 @@ class TTimeSchedulerTest extends \PHPUnit\Framework\TestCase
 	{
 		$schedules = [
 			'* * * * *', '* * ? * *', '* * * * ?',
+			// seconds on a minute element: minute:second
+			'0:30 * * * *', '*:*/10 * * * *', '*/5:15 * * * *', '0:0,30:0 * * * *', '10-50/5:20-40/10 * * * *',
+			'*:* * * * *', '59:59 23 31 12 ?', '0:*/15,30:5 * * * *',
+			// hashed fields: H or #, with a range and a step, and in the seconds position
+			'H * * * ?', '# # * * ?', 'H/15 * * * ?', 'H(10-20)/5 H * * ?', 'H:H * * * ?', 'H H H H H',
+			'h(0-29) * * * ?', '0 0 ? * 3#2',
 			'*/5 * * * *', '* */5 * * *', '* * */5 * *', '* * * */2 *', '* * * * */2',
 			'*/59 * * * *', '* */23 * * *', '* * */31 * *', '* * * */12 *', '* * * * */6',
 			'0 0 1 1 ?', '59 23 31 12 ?', '0 0 ? 1 0', '59 23 ? 12 6',
@@ -119,6 +125,13 @@ class TTimeSchedulerTest extends \PHPUnit\Framework\TestCase
 			'* * 1-5W * ?', '* * 6W-10W * ?', '* * 1W-5 * ?', '* * 15W/3 * ?',
 			// '@<int>' one-off accepts only a canonical non-negative integer
 			'@-5', '@3.5', '@1e3', '@+5', '@ 5',
+			// seconds: out of range, a second seconds part, or on a field other than the minute
+			'0:60 * * * *', '0:30:10 * * * *', '* * * * *:5', '* *:5 * * *', ':30 * * * *',
+			// hashed: an empty range, a hashed year, an unknown hashed shortcut
+			'H(5-3) * * * ?', '* * * * * H', '#hourly@midnight',
+			// periods: no interval, an unparsable or non-positive interval, an unparsable time
+			'every', 'every garbage text', 'every 0 seconds', 'every -1 day', 'every 10 seconds from nonsense',
+			'every 10 seconds until @5x',
 		];
 		$out = [];
 		foreach ($bad as $schedule) {
@@ -175,6 +188,9 @@ class TTimeSchedulerTest extends \PHPUnit\Framework\TestCase
 			'30 8 1 * *', '0 0 1 1,7 *', '15 6 * * 1-5', '0 0 29 2 *',
 			// year-bounded
 			'0 0 1 1 * 2020', '0 0 1 1 * 2020-2025', '0 0 1 1 * 2020-2030/5', '* * * * * 2020',
+			// seconds
+			'*:*/10 * * * *', '0:30 * * * *', '*/5:15 * * * *', '0:0,30:0 * * * *', '10-50/5:20-40/10 * * * *',
+			'*:* * * * *', '0:45 12 * * *', '0:*/15,30:5 * * * *', '59:59 23 31 12 ?',
 		];
 		$out = [];
 		foreach ($schedules as $s) {
@@ -510,6 +526,162 @@ class TTimeSchedulerTest extends \PHPUnit\Framework\TestCase
 	// Leap-year day count
 	// =========================================================================
 
+	public function testSecondsTriggerWithinTheMinute()
+	{
+		$t = strtotime('2026-03-10 12:00:30');
+		$this->obj->setSchedule('*:*/10 * * * *');
+		$this->assertSame([$t + 10, $t + 20, $t + 30], $this->obj->getNextTriggerTimes(3, $t));
+		$this->obj->setSchedule('0:30 * * * *');
+		$this->assertSame(strtotime('2026-03-10 13:00:30'), $this->obj->getNextTriggerTime($t), 'strictly after the prior time');
+		$this->assertSame($t, $this->obj->getNextTriggerTime($t - 1));
+		$this->obj->setSchedule('0:0,30:0 * * * *');
+		$this->assertSame(strtotime('2026-03-10 12:30:00'), $this->obj->getNextTriggerTime($t));
+		$this->obj->setSchedule('0:45 12 * * *');
+		$this->assertSame(strtotime('2026-03-10 12:00:45'), $this->obj->getNextTriggerTime($t));
+		$this->assertSame(strtotime('2026-03-11 12:00:45'), $this->obj->getNextTriggerTime(strtotime('2026-03-10 12:00:45')));
+		// a schedule without seconds keeps minute resolution: the seconds of the prior time are dropped
+		$this->obj->setSchedule('* * * * *');
+		$this->assertSame(strtotime('2026-03-10 12:01:00'), $this->obj->getNextTriggerTime($t));
+		$this->assertSame(strtotime('2026-03-10 12:01:00'), $this->obj->getNextTriggerTime(strtotime('2026-03-10 12:00:00')));
+	}
+
+	/** The documented derivation: min + crc32(context . "\0" . field) % (max - min + 1). */
+	private static function hashed(string $context, string $field, int $min, int $max): int
+	{
+		return $min + (crc32($context . "\0" . $field) % ($max - $min + 1));
+	}
+
+	public function testHashedFieldsResolveFromTheContext()
+	{
+		$this->assertSame('', $this->obj->getHashContext());
+		$this->obj->setHashContext('alpha');
+		$this->assertSame('alpha', $this->obj->getHashContext());
+		$expected = implode(' ', [
+			self::hashed('alpha', 'minute', 0, 59), self::hashed('alpha', 'hour', 0, 23), self::hashed('alpha', 'dom', 1, 28),
+			self::hashed('alpha', 'month', 1, 12), self::hashed('alpha', 'dow', 0, 6),
+		]);
+		$this->obj->setSchedule('H H H H H');
+		$this->assertSame('H H H H H', $this->obj->getSchedule(), 'the schedule is kept as written');
+		$this->assertSame($expected, $this->obj->getResolvedSchedule());
+		$this->obj->setSchedule('# # # # #');
+		$this->assertSame($expected, $this->obj->getResolvedSchedule(), '# and H are the same');
+		$this->obj->setSchedule('H:H * * * ?');
+		$this->assertSame(self::hashed('alpha', 'minute', 0, 59) . ':' . self::hashed('alpha', 'minute:second', 0, 59) . ' * * * ?', $this->obj->getResolvedSchedule());
+		$this->obj->setSchedule('H/15 * * * ?');
+		$this->assertSame(self::hashed('alpha', 'minute', 0, 14) . '/15 * * * ?', $this->obj->getResolvedSchedule(), 'a step hashes the offset below the step');
+		$this->obj->setSchedule('H(10-20)/5 H(0-2) * * ?');
+		$this->assertSame(self::hashed('alpha', 'minute', 10, 14) . '/5 ' . self::hashed('alpha', 'hour', 0, 2) . ' * * ?', $this->obj->getResolvedSchedule());
+		$this->obj->setSchedule('H,H * * * ?');
+		$this->assertSame(self::hashed('alpha', 'minute', 0, 59) . ',' . self::hashed('alpha', 'minute.1', 0, 59) . ' * * * ?', $this->obj->getResolvedSchedule(), 'list elements hash apart');
+		$this->obj->setSchedule('0 0 ? * 3#2');
+		$this->assertSame('0 0 ? * 3#2', $this->obj->getResolvedSchedule(), 'the nth weekday # is not a hashed field');
+		$this->obj->setSchedule('@daily');
+		$this->assertSame('0 0 * * ?', $this->obj->getResolvedSchedule(), 'a shortcut resolves to its expression');
+		$this->obj->setSchedule('@' . ($t = strtotime('2026-03-10 12:00:30')));
+		$this->assertSame('@' . $t, $this->obj->getResolvedSchedule());
+
+		$this->obj->setSchedule('H * * * ?');
+		$minute = self::hashed('alpha', 'minute', 0, 59);
+		$this->assertSame(strtotime('2026-03-10 13:00:00') + 60 * $minute, $this->obj->getNextTriggerTime(strtotime('2026-03-10 12:59:59')));
+		$this->obj->setHashContext('beta');
+		$this->assertSame(self::hashed('beta', 'minute', 0, 59) . ' * * * ?', $this->obj->getResolvedSchedule(), 'a context change re-resolves');
+		$this->assertSame('H * * * ?', $this->obj->getSchedule());
+		$this->obj->setHashContext(null);
+		$this->assertSame('', $this->obj->getHashContext());
+		$this->assertSame(self::hashed('', 'minute', 0, 59) . ' * * * ?', $this->obj->getResolvedSchedule());
+	}
+
+	public function testHashedShortcutsResolve()
+	{
+		$this->obj->setHashContext('alpha');
+		$m = self::hashed('alpha', 'minute', 0, 59);
+		$h = self::hashed('alpha', 'hour', 0, 23);
+		$hm = self::hashed('alpha', 'hour', 0, 2);
+		$d = self::hashed('alpha', 'dom', 1, 28);
+		$mo = self::hashed('alpha', 'month', 1, 12);
+		$w = self::hashed('alpha', 'dow', 0, 6);
+		$expected = [
+			'#hourly' => "$m * * * ?",
+			'#daily' => "$m $h * * ?",
+			'#midnight' => "$m $hm * * ?",
+			'#weekly' => "$m $h ? * $w",
+			'#weekly@midnight' => "$m $hm ? * $w",
+			'#monthly' => "$m $h $d * ?",
+			'#monthly@midnight' => "$m $hm $d * ?",
+			'#yearly' => "$m $h $d $mo ?",
+			'#yearly@midnight' => "$m $hm $d $mo ?",
+			'#annually' => "$m $h $d $mo ?",
+			'#annually@midnight' => "$m $hm $d $mo ?",
+		];
+		foreach ($expected as $shortcut => $resolved) {
+			$this->obj->setSchedule(strtoupper($shortcut));
+			$this->assertSame($resolved, $this->obj->getResolvedSchedule(), $shortcut);
+			$this->assertSame(strtoupper($shortcut), $this->obj->getSchedule());
+			$this->assertNotNull($this->obj->getNextTriggerTime(strtotime('2026-03-10 12:00:00')));
+		}
+	}
+
+	public function testEveryPeriod()
+	{
+		$t0 = strtotime('2026-03-10 12:00:00');
+		$this->obj->setSchedule("every 10 seconds from @$t0");
+		$this->assertSame("every 10 seconds from @$t0", $this->obj->getSchedule());
+		$this->assertSame("every 10 seconds from @$t0", $this->obj->getResolvedSchedule());
+		$this->assertSame($t0, $this->obj->getNextTriggerTime($t0 - 5), 'the anchor is the first trigger');
+		$this->assertSame($t0 + 10, $this->obj->getNextTriggerTime($t0));
+		$this->assertSame($t0 + 30, $this->obj->getNextTriggerTime($t0 + 25));
+		$this->assertSame([$t0 + 10, $t0 + 20, $t0 + 30], $this->obj->getNextTriggerTimes(3, $t0));
+		$this->obj->setSchedule("every  90   minutes from @$t0");
+		$this->assertSame("every 90 minutes from @$t0", $this->obj->getSchedule(), 'the interval text is normalized');
+		$this->assertSame($t0 + 5400, $this->obj->getNextTriggerTime($t0 + 3600));
+		$this->obj->setSchedule('every 1 day from 2026-03-01 08:00');
+		$this->assertSame('every 1 day from @' . strtotime('2026-03-01 08:00:00'), $this->obj->getSchedule());
+		$this->assertSame(strtotime('2026-03-11 08:00:00'), $this->obj->getNextTriggerTime($t0));
+
+		$anchor = strtotime('2026-01-31 10:00:00');
+		$this->obj->setSchedule("every 1 month from @$anchor");
+		$at = static fn (int $k) => (new \DateTimeImmutable('@' . $anchor))->setTimezone(new \DateTimeZone(date_default_timezone_get()))->add(new \DateInterval("P{$k}M"))->getTimestamp();
+		$this->assertSame($at(1), $this->obj->getNextTriggerTime($anchor), 'the k-th multiple of the interval from the anchor');
+		$this->assertSame($at(2), $this->obj->getNextTriggerTime($at(1)));
+		$this->assertSame($at(3), $this->obj->getNextTriggerTime($at(2)));
+		$this->assertSame($at(14), $this->obj->getNextTriggerTime($at(13)), 'a far time jumps to its multiple');
+
+		$this->obj->setSchedule('every first monday of next month from @' . strtotime('2026-01-15 00:00:00'));
+		$this->assertSame(strtotime('2026-02-02 00:00:00'), $this->obj->getNextTriggerTime(strtotime('2026-01-15 00:00:00')));
+		$this->assertSame(strtotime('2026-03-02 00:00:00'), $this->obj->getNextTriggerTime(strtotime('2026-02-02 00:00:00')));
+		$this->assertSame(strtotime('2026-04-06 00:00:00'), $this->obj->getNextTriggerTime($t0), 'a relative interval steps the calendar');
+
+		$until = $t0 + 86400 * 20;
+		$this->obj->setSchedule('every 2 weeks from @' . ($t0 - 86400 * 30) . " until @$until");
+		$this->assertSame('every 2 weeks from @' . ($t0 - 86400 * 30) . " until @$until", $this->obj->getSchedule());
+		$this->assertSame([$t0 - 86400 * 2, $t0 + 86400 * 12], $this->obj->getNextTriggerTimes(5, $t0 - 86400 * 3), 'nothing past until');
+		$this->assertNull($this->obj->getNextTriggerTime($until));
+
+		$this->obj->setSchedule('every 1 hour');
+		$this->assertMatchesRegularExpression('/^every 1 hour from @\d+$/', $this->obj->getSchedule(), 'the anchor defaults to the time the schedule is set');
+		$anchor = (int) substr($this->obj->getSchedule(), strlen('every 1 hour from @'));
+		$this->assertEqualsWithDelta(time(), $anchor, 5);
+		$this->obj->setSchedule($this->obj->getSchedule());
+		$this->assertSame($anchor + 3600, $this->obj->getNextTriggerTime($anchor), 'a persisted period keeps its anchor');
+	}
+
+	public function testEveryDayAcrossDaylightSaving()
+	{
+		$tz = date_default_timezone_get();
+		date_default_timezone_set('America/New_York');
+		try {
+			$anchor = strtotime('2026-03-07 09:00:00'); // DST starts 2026-03-08 02:00 local
+			$this->obj->setSchedule("every 1 day from @$anchor");
+			$next = $this->obj->getNextTriggerTime($anchor);
+			$this->assertSame('2026-03-08 09:00:00', date('Y-m-d H:i:s', $next), 'a day interval keeps the local time');
+			$this->assertSame(23 * 3600, $next - $anchor);
+			$this->obj->setSchedule("every 24 hours from @$anchor");
+			$this->assertSame(24 * 3600, $this->obj->getNextTriggerTime($anchor) - $anchor, 'an hour interval is a fixed length');
+		} finally {
+			date_default_timezone_set($tz);
+		}
+	}
+
 	public function testDaysInMonth()
 	{
 		$this->assertEquals(31, $this->obj->getDaysInMonth(1, 2021));
@@ -583,7 +755,14 @@ class TTimeSchedulerTest extends \PHPUnit\Framework\TestCase
 	private static function oracleNext(string $schedule, int $from): ?int
 	{
 		$parts = preg_split('/\s+/', trim($schedule));
-		$minute = self::oracleFieldSet($parts[0], 0, 59);
+		$minute = []; // minute => seconds set; an element without seconds is second 0
+		foreach (explode(',', $parts[0]) as $tok) {
+			[$mTok, $sTok] = array_pad(explode(':', $tok, 2), 2, null);
+			$secs = ($sTok === null) ? [0 => true] : self::oracleFieldSet($sTok, 0, 59);
+			foreach (self::oracleFieldSet($mTok, 0, 59) as $mv => $_) {
+				$minute[$mv] = ($minute[$mv] ?? []) + $secs;
+			}
+		}
 		$hour = self::oracleFieldSet($parts[1], 0, 23);
 		[$domDays, $domUnrestricted] = self::oracleDaySet($parts[2], 31, true);
 		$month = self::oracleFieldSet($parts[3], 1, 12);
@@ -591,7 +770,7 @@ class TTimeSchedulerTest extends \PHPUnit\Framework\TestCase
 		$year = isset($parts[5]) ? self::oracleFieldSet($parts[5], 1970, 2099) : self::oracleFieldSet('*', 1970, 2099);
 
 		$tz = new \DateTimeZone('UTC');
-		$start = (intdiv($from, 60) + 1) * 60; // strictly after, minute resolution
+		$start = $from + 1; // strictly after, second resolution (second 0 without a seconds part)
 		$day = (new \DateTimeImmutable('@' . $start))->setTimezone($tz)->setTime(0, 0, 0);
 		// Skip disallowed years/months wholesale (cheap set tests, never the buggy part) so the day-level
 		// predicate scan stays fast even for sparse/impossible schedules.
@@ -618,9 +797,13 @@ class TTimeSchedulerTest extends \PHPUnit\Framework\TestCase
 						if (!isset($minute[$m])) {
 							continue;
 						}
-						$ts = $day->setTime($h, $m, 0)->getTimestamp();
-						if ($ts >= $start) {
-							return $ts;
+						$secs = array_keys($minute[$m]);
+						sort($secs);
+						foreach ($secs as $sv) {
+							$ts = $day->setTime($h, $m, $sv)->getTimestamp();
+							if ($ts >= $start) {
+								return $ts;
+							}
 						}
 					}
 				}

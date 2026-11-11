@@ -803,6 +803,7 @@ dbcron_connectionid_invalid				= TDbCronManager.ConnectionID ''{0}'' is not a TD
 dbcron_period_invalid					= TDbCronManager period ''{0}'' is not a number of seconds, an ISO 8601 duration, or a relative date string.
 
 timescheduler_invalid_string			= TTimeScheduler could not parse the schedule element ''{0}''
+timescheduler_invalid_period			= TTimeScheduler could not parse the period ''{0}''; it must be a positive relative interval and the times must parse
 
 rational_bad_offset						= "{0}" is not a valid property accessor of TRational.
 

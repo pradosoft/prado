@@ -54,6 +54,20 @@ class TCronTaskTest extends \PHPUnit\Framework\TestCase
 		$this->assertInstanceOf(TCronTask::class, $this->obj);
 	}
 	
+	public function testSchedulerHashContextIsTheTaskName()
+	{
+		$task = new TTestCronTask();
+		$task->setName('alpha');
+		$task->setSchedule('H * * * ?');
+		$scheduler = $task->getScheduler();
+		self::assertSame('alpha', $scheduler->getHashContext());
+		self::assertSame((crc32("alpha\0minute") % 60) . ' * * * ?', $scheduler->getResolvedSchedule());
+		$task->setName('beta');
+		self::assertSame('beta', $scheduler->getHashContext(), 'a renamed task re-resolves its hashed schedule');
+		self::assertSame((crc32("beta\0minute") % 60) . ' * * * ?', $scheduler->getResolvedSchedule());
+		self::assertSame('H * * * ?', $task->getSchedule());
+	}
+
 	public function testSchedule()
 	{
 		$value = '* * * * *';

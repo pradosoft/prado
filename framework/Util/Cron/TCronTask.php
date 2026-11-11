@@ -87,6 +87,10 @@ abstract class TCronTask extends TApplicationComponent
 	public function setName($name)
 	{
 		$this->_name = TPropertyValue::ensureString($name);
+		if ($this->_scheduler) {
+			$this->_scheduler->setHashContext($this->_name);
+			$this->_nextexectime = false;
+		}
 	}
 
 	/**
@@ -320,12 +324,15 @@ abstract class TCronTask extends TApplicationComponent
 	}
 
 	/**
+	 * The scheduler's {@see \Prado\Util\Cron\TTimeScheduler::setHashContext HashContext} is the task
+	 * name, so a hashed schedule ('H', '#daily') spreads the tasks by name.
 	 * @return \Prado\Util\Cron\TTimeScheduler the time scheduler for processing the schedule
 	 */
 	public function getScheduler()
 	{
 		if ($this->_scheduler === null) {
 			$this->_scheduler = Prado::createComponent(TTimeScheduler::class);
+			$this->_scheduler->setHashContext($this->_name);
 			$this->_scheduler->setSchedule($this->_schedule);
 		}
 		return $this->_scheduler;

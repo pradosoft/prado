@@ -11,6 +11,7 @@
 namespace Prado\Util\Cron;
 
 use Prado\Exceptions\TInvalidDataValueException;
+use Prado\TPropertyValue;
 
 /**
  * TTimeScheduler class.
@@ -76,11 +77,44 @@ use Prado\Exceptions\TInvalidDataValueException;
  * '@now' and '@now+N' (N seconds, N >= 0) are resolved to a concrete '@(\d)' one-off at parse time
  * using {@see time}, so '@now+90' schedules a single run 90 seconds after the schedule is set.
  *
+ * Seconds attach to a minute element after a colon, 'minute:second', with the same syntax as the minute
+ * (single, range, step, star): '0:30 * * * *' is every hour at 00:30, '*:*\/10 * * * *' is every ten
+ * seconds, '*\/5:15 * * * *' is every five minutes at second 15, and '0:0,30:0 * * * *' is at :00 and
+ * :30.  An element without seconds triggers at second 0, so the field count and every existing
+ * expression are unchanged.  A sub-minute schedule runs on time under the cron daemon or
+ * {@see \Prado\Util\Cron\TDbCronManager::setPollsPerMinute PollsPerMinute}; a per-minute tick runs it
+ * at its next pass.
+ *
+ * A hashed field spreads the tasks of an application over a field's range so they do not all fire at
+ * the same instant: 'H' (Jenkins) or '#' (Symfony) in the minute, hour, day of month (1-28), month, day
+ * of week, or second position is a stable value derived from {@see setHashContext HashContext}, the
+ * task name in {@see \Prado\Util\Cron\TCronTask}; 'H(a-b)' hashes within a range and 'H/15' is every
+ * 15 from a hashed start below 15 ('H(a-b)/s' both).  The hashed schedule shortcuts are
+ *     '#hourly' => 'H * * * ?'
+ *     '#daily' => 'H H * * ?'
+ *     '#midnight' => 'H H(0-2) * * ?'
+ *     '#weekly' => 'H H ? * H'
+ *     '#weekly@midnight' => 'H H(0-2) ? * H'
+ *     '#monthly' => 'H H H * ?'
+ *     '#monthly@midnight' => 'H H(0-2) H * ?'
+ *     '#yearly', '#annually' => 'H H H H ?'
+ *     '#yearly@midnight', '#annually@midnight' => 'H H(0-2) H H ?'
+ * {@see getSchedule} keeps the expression as written and {@see getResolvedSchedule} is the concrete
+ * expression; the value is `min + crc32(context . "\0" . field) % (max - min + 1)`, so two tasks with
+ * the same schedule and different names fire at different times and a task keeps its times across runs.
+ *
+ * A period, 'every <interval>', triggers at a fixed interval from an anchor: 'every 10 seconds',
+ * 'every 90 minutes', 'every 2 days', 'every 1 month', 'every first monday of next month', any
+ * relative string of {@see \DateInterval::createFromDateString}.  'from <time>' sets the anchor, the
+ * first trigger (default: the time the schedule is set), and 'until <time>' the last; both take '@<unix
+ * time>' or a {@see \strtotime} string.  The anchor is resolved at parse time and the stored schedule is
+ * 'every <interval> from @<unix time>[ until @<unix time>]', so a persisted period keeps its anchor.
+ * Second, minute, and hour intervals are fixed lengths; day, month, year, and relative intervals step
+ * the calendar in the application time zone, as the k-th multiple of the interval from the anchor.
+ *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.2.0
  * @see https://crontab.guru For more info on Crontab Schedule Expressions.
- * @todo symfony style shortcuts
- * @todo add "seconds", maybe requires a special prefix character like ':'
  */
 class TTimeScheduler extends \Prado\TComponent
 {
@@ -109,6 +143,18 @@ class TTimeScheduler extends \Prado\TComponent
 	/** The cron schedule */
 	private $_schedule;
 
+	/** The concrete expression after shortcut and hashed field resolution, null for a one-off or a period */
+	private ?string $_resolved = null;
+
+	/** The string the hashed fields derive from */
+	private string $_hashContext = '';
+
+	/** whether the schedule holds a hashed field, so a context change re-resolves it */
+	private bool $_hasHash = false;
+
+	/** The parsed period: interval, anchor, until, fixed seconds, and whether the interval is relative */
+	private ?array $_period = null;
+
 	/** efficient one off trigger time */
 	protected $_triggerTime;
 
@@ -117,6 +163,9 @@ class TTimeScheduler extends \Prado\TComponent
 
 	/** schedule-invariant minute lookup, memoized between {@see getNextTriggerTime} calls */
 	private $_minutesCache;
+
+	/** schedule-invariant seconds per minute, memoized with the minute lookup */
+	private $_secondsCache;
 
 	/** schedule-invariant hour lookup, memoized between {@see getNextTriggerTime} calls */
 	private $_hoursCache;
@@ -134,6 +183,28 @@ class TTimeScheduler extends \Prado\TComponent
 		'@daily' => '0 0 * * ?',
 		'@hourly' => '0 * * * ?',
 		'@minute' => '* * * * ?',
+		];
+	/** The hashed schedule shortcuts, each resolved per {@see setHashContext HashContext} */
+	private static $_hashIntervals = [
+		'#hourly' => 'H * * * ?',
+		'#daily' => 'H H * * ?',
+		'#midnight' => 'H H(0-2) * * ?',
+		'#weekly' => 'H H ? * H',
+		'#weekly@midnight' => 'H H(0-2) ? * H',
+		'#monthly' => 'H H H * ?',
+		'#monthly@midnight' => 'H H(0-2) H * ?',
+		'#yearly' => 'H H H H ?',
+		'#yearly@midnight' => 'H H(0-2) H H ?',
+		'#annually' => 'H H H H ?',
+		'#annually@midnight' => 'H H(0-2) H H ?',
+		];
+	/** The hashed value range of each field; the day of month stops at 28 so every month has the day */
+	private static $_hashRanges = [
+		self::MINUTE => [0, 59],
+		self::HOUR => [0, 23],
+		self::DAY_OF_MONTH => [1, 28],
+		self::MONTH_OF_YEAR => [1, 12],
+		self::DAY_OF_WEEK => [0, 6],
 		];
 	private static $_keywords = [
 		self::MONTH_OF_YEAR => [
@@ -168,11 +239,47 @@ class TTimeScheduler extends \Prado\TComponent
 	private static $_validatorCache;
 
 	/**
-	 * @return string This returns the cron schedule
+	 * @return string This returns the cron schedule as written, with '@now' and a period's anchor resolved
 	 */
 	public function getSchedule()
 	{
 		return $this->_schedule;
+	}
+
+	/**
+	 * @return ?string the concrete expression the schedule resolves to: shortcuts expanded and hashed
+	 *   fields replaced by their values; the schedule itself for a one-off or a period; null when unset
+	 * @since 4.4.0
+	 */
+	public function getResolvedSchedule(): ?string
+	{
+		return $this->_resolved ?? $this->_schedule;
+	}
+
+	/**
+	 * @return string the string the hashed fields ('H', '#') derive their values from, default ''
+	 * @since 4.4.0
+	 */
+	public function getHashContext(): string
+	{
+		return $this->_hashContext;
+	}
+
+	/**
+	 * Sets the hash context and re-resolves a schedule with hashed fields.
+	 * @param ?string $context the string the hashed fields derive their values from, such as the task name
+	 * @since 4.4.0
+	 */
+	public function setHashContext($context)
+	{
+		$context = ($context === null) ? '' : TPropertyValue::ensureString($context);
+		if ($context === $this->_hashContext) {
+			return;
+		}
+		$this->_hashContext = $context;
+		if ($this->_hasHash) {
+			$this->setSchedule($this->_schedule);
+		}
 	}
 
 	/**
@@ -183,7 +290,11 @@ class TTimeScheduler extends \Prado\TComponent
 	{
 		$this->_attr = [];
 		$this->_triggerTime = null;
+		$this->_resolved = null;
+		$this->_period = null;
+		$this->_hasHash = false;
 		$this->_minutesCache = null;
+		$this->_secondsCache = null;
 		$this->_hoursCache = null;
 		$this->_monthsCache = null;
 		if ($schedule === '') {
@@ -206,7 +317,13 @@ class TTimeScheduler extends \Prado\TComponent
 			$this->_schedule = '@' . $this->_triggerTime;
 			return;
 		}
+		if (preg_match('/^every\s+(.+?)(?:\s+from\s+(\S+(?:\s+\S+)*?))?(?:\s+until\s+(\S+(?:\s+\S+)*?))?$/i', $schedule, $everyMatch)) {
+			$this->parsePeriod($everyMatch[1], $everyMatch[2] ?? null, $everyMatch[3] ?? null);
+			return;
+		}
 		$this->_schedule = $schedule;
+		$resolved = self::$_hashIntervals[strtolower($schedule)] ?? $schedule;
+		$resolved = $this->resolveHashedFields($resolved);
 
 		if (self::$_validatorCache) {
 			$minuteValidator = self::$_validatorCache['m'];
@@ -260,8 +377,9 @@ class TTimeScheduler extends \Prado\TComponent
 			$shortcutKeys = array_map(static fn ($k) => substr($k, 1), array_keys(self::$_intervals));
 			usort($shortcutKeys, static fn ($a, $b) => strlen($b) <=> strlen($a));
 			$shortcuts = implode('|', array_map(static fn ($k) => preg_quote($k, '/'), $shortcutKeys));
+			$secondsPart = '(?::(?:' . $minuteStar . '|' . $minuteRegex . '))?';
 			$fullValidator = '/^(?:(@(?:' . $shortcuts . '))|' .
-				'(?#minute)((?:' . $minuteStar . '|' . $minuteRegex . ')(?:\,(?:' . $minuteStar . '|' . $minuteRegex . '))*)[\s]+' .
+				'(?#minute)((?:' . $minuteStar . '|' . $minuteRegex . ')' . $secondsPart . '(?:\,(?:' . $minuteStar . '|' . $minuteRegex . ')' . $secondsPart . ')*)[\s]+' .
 				'(?#hour)((?:' . $hourStar . '|' . $hourRegex . ')(?:\,(?:' . $hourStar . '|' . $hourRegex . '))*)[\s]+' .
 				'(?#DoM)(\?|(?:(?:' . $domStar . '|' . $domRegex . ')(?:,(?:' . $domStar . '|' . $domRegex . '))*))[\s]+' .
 				'(?#month)((?:' . $monthStar . '|' . $monthRegex . ')(?:\,(?:' . $monthStar . '|' . $monthRegex . '))*)[\s]+' .
@@ -271,7 +389,7 @@ class TTimeScheduler extends \Prado\TComponent
 				')?' .
 			')$/iu';
 
-			$minuteValidator = '/^(\*|' . $minute . ')(?:\-(' . $minute . '))?(?:\/(' . $minute . '))?$/iu';
+			$minuteValidator = '/^(\*|' . $minute . ')(?:\-(' . $minute . '))?(?:\/(' . $minute . '))?(?::(\*|' . $minute . ')(?:\-(' . $minute . '))?(?:\/(' . $minute . '))?)?$/iu';
 			$hourValidator = '/^(\*|' . $hour . ')(?:\-(' . $hour . '))?(?:\/(' . $hour . '))?$/iu';
 			$domValidator = '/^(\*|\?|L|' . $domWOW . ')(W)?(?:\-(' . $domWOW . ')(W)?)?(?:\/(' . $domWOW . '))?$/iu';
 			$monthValidator = '/^(\*|' . $month . ')(?:\-(' . $month . '))?(?:\/(' . $month . '))?$/iu';
@@ -289,7 +407,7 @@ class TTimeScheduler extends \Prado\TComponent
 		}
 
 		do {
-			if (!preg_match($fullValidator, $schedule, $matches)) {
+			if (!preg_match($fullValidator, $resolved, $matches)) {
 				throw new TInvalidDataValueException('timescheduler_invalid_string', $schedule);
 			}
 			if ($matches[1]) {
@@ -300,9 +418,10 @@ class TTimeScheduler extends \Prado\TComponent
 				if (!isset(self::$_intervals[$key])) {
 					throw new TInvalidDataValueException('timescheduler_invalid_string', $schedule);
 				}
-				$schedule = self::$_intervals[$key];
+				$resolved = self::$_intervals[$key];
 			}
 		} while ($matches[1]);
+		$this->_resolved = $resolved;
 
 		$this->_attr[self::MINUTE] = [];
 		foreach (explode(',', $matches[2]) as $match) {
@@ -311,11 +430,21 @@ class TTimeScheduler extends \Prado\TComponent
 					$data = ['min' => 0, 'end' => 59];
 				} else {
 					$data = ['min' => $m2[1]];
-					$data['end'] = $m2[2] ?? $data['min'];
+					$data['end'] = (($m2[2] ?? '') !== '') ? $m2[2] : $data['min'];
 				}
 				$data['period'] = (int) max($m2[3] ?? 1, 1);
 				if ((($m2[2] ?? '') === '') && ($m2[3] ?? 0)) {
 					$data['end'] = 59; //No end with period
+				}
+				$data['sec'] = null;
+				if (($m2[4] ?? '') !== '') {
+					$sec = ['sec' => ($m2[4] === '*') ? 0 : (int) $m2[4]];
+					$sec['end'] = ($m2[4] === '*') ? 59 : (int) ((($m2[5] ?? '') !== '') ? $m2[5] : $m2[4]);
+					$sec['period'] = (int) max($m2[6] ?? 1, 1);
+					if ((($m2[5] ?? '') === '') && ($m2[6] ?? 0)) {
+						$sec['end'] = 59; //No end with period
+					}
+					$data['sec'] = $sec;
 				}
 				$this->_attr[self::MINUTE][] = $data;
 			} else {
@@ -423,6 +552,190 @@ class TTimeScheduler extends \Prado\TComponent
 		}
 	}
 
+	/**
+	 * Replaces each hashed token ('H', '#', 'H(a-b)', 'H/s', 'H(a-b)/s') of the minute, hour, day of
+	 * month, month, day of week, and second positions with its value for the {@see getHashContext
+	 * HashContext}.  The year field is never hashed.
+	 * @param string $schedule the expression
+	 * @throws TInvalidDataValueException when a hashed range is empty
+	 * @return string the expression with concrete values
+	 * @since 4.4.0
+	 */
+	protected function resolveHashedFields(string $schedule): string
+	{
+		if (!preg_match('/[#H]/i', $schedule)) {
+			return $schedule;
+		}
+		$names = [self::MINUTE => 'minute', self::HOUR => 'hour', self::DAY_OF_MONTH => 'dom', self::MONTH_OF_YEAR => 'month', self::DAY_OF_WEEK => 'dow'];
+		$fields = preg_split('/\s+/', $schedule);
+		foreach ($fields as $f => &$field) {
+			if (!isset(self::$_hashRanges[$f])) {
+				continue;
+			}
+			$elements = explode(',', $field);
+			foreach ($elements as $e => &$element) {
+				$parts = ($f === self::MINUTE) ? explode(':', $element, 2) : [$element];
+				foreach ($parts as $i => &$part) {
+					[$min, $max] = ($i === 1) ? [0, 59] : self::$_hashRanges[$f];
+					$part = $this->resolveHashedToken($part, $names[$f] . (($i === 1) ? ':second' : '') . (($e > 0) ? '.' . $e : ''), $min, $max);
+				}
+				unset($part);
+				$element = implode(':', $parts);
+			}
+			unset($element);
+			$field = implode(',', $elements);
+		}
+		return implode(' ', $fields);
+	}
+
+	/**
+	 * Resolves one hashed token to `min + crc32(context . "\0" . name) % (max - min + 1)`; a token that
+	 * is not hashed is returned as is.  'H(a-b)' narrows the range and 'H/s' narrows it to the first
+	 * step so the value is the offset of an every-s sequence.
+	 * @param string $token the field element
+	 * @param string $name the field name the hash is salted with
+	 * @param int $min the lowest value of the field
+	 * @param int $max the highest value of the field
+	 * @throws TInvalidDataValueException when the hashed range is empty
+	 * @return string the element with the hashed value
+	 * @since 4.4.0
+	 */
+	protected function resolveHashedToken(string $token, string $name, int $min, int $max): string
+	{
+		if (!preg_match('/^[#H](?:\((\d+)-(\d+)\))?(?:\/([1-9]\d*))?$/i', $token, $m)) {
+			return $token;
+		}
+		$this->_hasHash = true;
+		$lo = (($m[1] ?? '') !== '') ? max($min, (int) $m[1]) : $min;
+		$hi = (($m[2] ?? '') !== '') ? min($max, (int) $m[2]) : $max;
+		$step = (int) ($m[3] ?? 0);
+		if ($step > 0) {
+			$hi = min($hi, $lo + $step - 1);
+		}
+		if ($hi < $lo) {
+			throw new TInvalidDataValueException('timescheduler_invalid_string', $token);
+		}
+		$value = $lo + (crc32($this->_hashContext . "\0" . $name) % ($hi - $lo + 1));
+		return ($step > 0) ? $value . '/' . $step : (string) $value;
+	}
+
+	/**
+	 * Parses 'every <interval> [from <time>] [until <time>]' into the period and stores the schedule
+	 * with the anchor resolved: 'every <interval> from @<unix time>[ until @<unix time>]'.
+	 * @param string $text the interval, a relative string of {@see \DateInterval::createFromDateString}
+	 * @param ?string $from the anchor, '@<unix time>' or a {@see \strtotime} string; null for now
+	 * @param ?string $until the last trigger time, '@<unix time>' or a {@see \strtotime} string
+	 * @throws TInvalidDataValueException when the interval does not parse or is not positive, or a time does not parse
+	 * @since 4.4.0
+	 */
+	protected function parsePeriod(string $text, ?string $from, ?string $until)
+	{
+		$text = preg_replace('/\s+/', ' ', trim($text));
+		try {
+			$interval = @\DateInterval::createFromDateString($text); // false and a warning before PHP 8.3
+		} catch (\Throwable $e) { // @phpstan-ignore catch.neverThrown (DateMalformedIntervalStringException since PHP 8.3)
+			$interval = false;
+		}
+		if ($interval === false) {
+			throw new TInvalidDataValueException('timescheduler_invalid_period', $text);
+		}
+		$anchor = $this->parsePeriodTime($from) ?? $this->time();
+		$last = $this->parsePeriodTime($until);
+		$tz = new \DateTimeZone(date_default_timezone_get());
+		$start = (new \DateTimeImmutable('@' . $anchor))->setTimezone($tz);
+		if ($start->add($interval) <= $start) {
+			throw new TInvalidDataValueException('timescheduler_invalid_period', $text);
+		}
+		// A relative interval ('first monday of next month', 'next weekday') carries more than its y/m/d/h/i/s,
+		// so one step of it differs from one step of the plain copy; it is stepped cumulatively, never scaled.
+		// The probe is in UTC, where a daylight-saving change cannot make a plain interval look relative.
+		$probe = new \DateTimeImmutable('2026-01-15 00:00:00', new \DateTimeZone('UTC'));
+		$relative = $probe->add($interval) != $probe->add($this->scaleInterval($interval, 1));
+		$fixed = ($interval->y === 0 && $interval->m === 0 && $interval->d === 0 && !$relative)
+			? $interval->h * 3600 + $interval->i * 60 + $interval->s : null;
+		$this->_period = ['interval' => $interval, 'anchor' => $anchor, 'until' => $last, 'seconds' => $fixed, 'relative' => $relative];
+		$this->_schedule = 'every ' . $text . ' from @' . $anchor . (($last !== null) ? ' until @' . $last : '');
+	}
+
+	/**
+	 * @param ?string $value '@<unix time>' or a {@see \strtotime} string, relative to {@see time}
+	 * @throws TInvalidDataValueException when the string does not parse
+	 * @return ?int the unix time, or null for an absent value
+	 * @since 4.4.0
+	 */
+	protected function parsePeriodTime(?string $value): ?int
+	{
+		if ($value === null || $value === '') {
+			return null;
+		}
+		if (preg_match('/^@(\d+)$/', $value, $m)) {
+			return (int) $m[1];
+		}
+		$time = (str_starts_with($value, '@')) ? false : strtotime($value, $this->time());
+		if ($time === false) {
+			throw new TInvalidDataValueException('timescheduler_invalid_period', $value);
+		}
+		return $time;
+	}
+
+	/**
+	 * The next trigger of a period strictly after a time: the anchor, or the first multiple of the
+	 * interval from the anchor past the time, bounded by 'until'.  A fixed interval is integer
+	 * arithmetic; a calendar interval is the anchor plus k times the interval (a relative interval is
+	 * stepped cumulatively, as it cannot be scaled).
+	 * @param int $priortime the time to search after
+	 * @return ?int the next trigger, or null past 'until'
+	 * @since 4.4.0
+	 */
+	protected function getNextPeriodTime(int $priortime): ?int
+	{
+		$period = $this->_period;
+		if ($priortime < $period['anchor']) {
+			$next = $period['anchor'];
+		} elseif ($period['seconds'] !== null) {
+			$next = $period['anchor'] + (intdiv($priortime - $period['anchor'], $period['seconds']) + 1) * $period['seconds'];
+		} else {
+			$tz = new \DateTimeZone(date_default_timezone_get());
+			$anchor = (new \DateTimeImmutable('@' . $period['anchor']))->setTimezone($tz);
+			$interval = $period['interval'];
+			if ($period['relative']) {
+				$dt = $anchor;
+				while ($dt->getTimestamp() <= $priortime) {
+					$dt = $dt->add($interval);
+				}
+			} else {
+				$approx = ($interval->y * 365 + $interval->m * 28 + $interval->d) * 86400 + $interval->h * 3600 + $interval->i * 60 + $interval->s;
+				$k = max(1, intdiv($priortime - $period['anchor'], max($approx, 1)) - 1);
+				do {
+					$dt = $anchor->add($this->scaleInterval($interval, $k++));
+				} while ($dt->getTimestamp() <= $priortime);
+			}
+			$next = $dt->getTimestamp();
+		}
+		if ($period['until'] !== null && $next > $period['until']) {
+			return null;
+		}
+		return $next;
+	}
+
+	/**
+	 * @param \DateInterval $interval a plain interval
+	 * @param int $k the multiple
+	 * @return \DateInterval the interval times $k
+	 * @since 4.4.0
+	 */
+	protected function scaleInterval(\DateInterval $interval, int $k): \DateInterval
+	{
+		$scaled = new \DateInterval('PT0S');
+		$scaled->y = $interval->y * $k;
+		$scaled->m = $interval->m * $k;
+		$scaled->d = $interval->d * $k;
+		$scaled->h = $interval->h * $k;
+		$scaled->i = $interval->i * $k;
+		$scaled->s = $interval->s * $k;
+		return $scaled;
+	}
+
 	protected function translateMonthOfYear($v)
 	{
 		if (is_numeric($v)) {
@@ -466,14 +779,42 @@ class TTimeScheduler extends \Prado\TComponent
 			return $this->_minutesCache;
 		}
 		$ma = array_pad([], 60, null);
+		$sa = [];
 		foreach ($this->_attr[self::MINUTE] as $m) {
 			if (is_numeric($m['min'])) {
+				$seconds = [0];
+				if ($m['sec'] !== null) {
+					$seconds = [];
+					for ($s = $m['sec']['sec']; $s <= $m['sec']['end'] && $s < 60; $s += $m['sec']['period']) {
+						$seconds[] = $s;
+					}
+				}
 				for ($i = $m['min']; $i <= $m['end'] && $i < 60; $i += $m['period']) {
 					$ma[$i] = 1;
+					$sa[$i] = array_merge($sa[$i] ?? [], $seconds);
 				}
 			}
 		}
+		foreach ($sa as &$seconds) {
+			$seconds = array_values(array_unique($seconds));
+			sort($seconds);
+		}
+		unset($seconds);
+		$this->_secondsCache = $sa;
 		return $this->_minutesCache = $ma;
+	}
+
+	/**
+	 * @return array the sorted seconds that trigger in each valid minute, keyed by minute; [0] for a
+	 *   minute element without a seconds part
+	 * @since 4.4.0
+	 */
+	protected function getSecondsArray()
+	{
+		if ($this->_secondsCache === null) {
+			$this->getMinutesArray();
+		}
+		return $this->_secondsCache;
 	}
 
 
@@ -701,18 +1042,22 @@ class TTimeScheduler extends \Prado\TComponent
 			}
 			return $this->_triggerTime;
 		}
+		if ($this->_period !== null) {
+			return $this->getNextPeriodTime((int) $priortime);
+		}
 
 		$minutes = $this->getMinutesArray();
+		$seconds = $this->getSecondsArray();
 		$hours = $this->getHoursArray();
 		$months = $this->getMonthsArray();
 
-		// Search strictly after $priortime at minute resolution (seconds are dropped). The instant is
-		// advanced field-by-field from coarsest (year) to finest (minute); each carry resets the finer
-		// fields, and DateTimeImmutable handles month length and overflow, so the (year, month, day) tuple
-		// can never desync. The loop is bounded by YEAR_MAX.
+		// Search strictly after $priortime: from the next second, the instant is advanced field-by-field
+		// from coarsest (year) to finest (second); each carry resets the finer fields, and
+		// DateTimeImmutable handles month length and overflow, so the (year, month, day) tuple can never
+		// desync. A minute element without seconds triggers at second 0, so a schedule without seconds
+		// keeps minute resolution. The loop is bounded by YEAR_MAX.
 		$tz = new \DateTimeZone(date_default_timezone_get());
-		$dt = (new \DateTimeImmutable('@' . (int) $priortime))->setTimezone($tz);
-		$dt = $dt->setTime((int) $dt->format('G'), (int) $dt->format('i') + 1, 0);
+		$dt = (new \DateTimeImmutable('@' . ((int) $priortime + 1)))->setTimezone($tz);
 
 		$days = null;
 		$daysMonth = $daysYear = null;
@@ -746,7 +1091,13 @@ class TTimeScheduler extends \Prado\TComponent
 				$dt = $dt->setTime($hour, $minute + 1, 0); // next minute (60 rolls to next hour)
 				continue;
 			}
-			return $dt->getTimestamp();
+			$second = (int) $dt->format('s');
+			foreach ($seconds[$minute] as $s) {
+				if ($s >= $second) {
+					return $dt->setTime($hour, $minute, $s)->getTimestamp();
+				}
+			}
+			$dt = $dt->setTime($hour, $minute + 1, 0); // no second left in this minute
 		}
 		return null;
 	}

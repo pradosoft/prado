@@ -64,9 +64,13 @@ minute  hour  day  month  dayOfWeek
   *       *     *    *        *
 ```
 
-- Each field accepts: `*` (any), specific values, ranges (`1-5`), step values (`*/5`), lists (`1,3,5`).
-- Special expressions: `@yearly`, `@annually`, `@monthly`, `@weekly`, `@daily`, `@hourly`, `@midnight`, `@{time()}`.
+- Each field accepts: `*` (any), specific values, ranges (`1-5`), step values (`*/5`), lists (`1,3,5`); an optional sixth field is the year.
+- Special expressions: `@yearly`, `@annually`, `@monthly`, `@weekly`, `@daily`, `@hourly`, `@midnight`, `@noon`, `@minute`, `@{time()}`, `@now+N`.
 - Expressions are case-insensitive and support 8 language name sets for month/day names.
+- Seconds (4.4.0): `minute:second` on a minute element, `*:*/10 * * * *` is every 10 seconds; no seconds part means second 0.
+- Hashed fields (4.4.0): `H` or `#` in a field is a stable value from the task name, so `#daily` tasks spread over the day; `H/15`, `H(0-2)`, and the `#hourly` to `#yearly@midnight` shortcuts.
+- Periods (4.4.0): `every 10 seconds`, `every 2 days from 2026-12-01 08:00 until 2027-01-01`, `every first monday of next month`; the anchor is stored as `from @<unix time>`.
+- See [`TTimeScheduler`](TTimeScheduler.md) for the grammar.
 
 ## Conventions
 
