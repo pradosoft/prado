@@ -50,22 +50,25 @@ use Prado\Web\TMediaType;
  * ],
  * ```
  *
- * **Automatic wiring via `ReporterMode`.** Set
- * {@see \Prado\Web\HttpHeaders\THttpHeadersManager::setReporterMode() THttpHeadersManager.ReporterMode}
- * to wire this service into your CSP headers automatically — no manual URL
- * configuration required. Three values are supported:
+ * **Automatic wiring via `ReportingServiceMode`.** Set
+ * {@see \Prado\Web\HttpHeaders\THttpHeadersManager::setReportingServiceMode() THttpHeadersManager.ReportingServiceMode}
+ * to wire this service into your CSP headers without manual URL configuration.
+ * Three values are supported:
  *
- * - **`false`** *(default)* — no automatic wiring; configure headers manually.
+ * - **`'Auto'`** *(default)* — the manager registers this service and injects the
+ *   reporting endpoint only when a CSP header asks for reporting.
  * - **`true`** — the manager resolves this service's URL via the URL manager,
  *   injects it into `Reporting-Endpoints`, and adds a `report-to` directive to
  *   every CSP header that lacks one. CSP remains **enforcing**: resources are
  *   blocked *and* violations are reported.
- * - **`'Auto'`** — same as `true`, but additionally converts every enforcing
- *   `Content-Security-Policy` header to `Content-Security-Policy-Report-Only`
- *   before the response is sent. Resources are **never blocked**; only violation
- *   reports are generated. Use this during initial CSP roll-out or development
- *   to audit violations without breaking your pages, then switch to `true` once
- *   the policy is stable.
+ * - **`false`** — no automatic wiring; configure headers manually.
+ *
+ * {@see \Prado\Web\HttpHeaders\THttpHeadersManager::setReportOnly() THttpHeadersManager.ReportOnly}
+ * converts every enforcing `Content-Security-Policy` header to
+ * `Content-Security-Policy-Report-Only` before the response is sent. Resources are
+ * **never blocked**; only violation reports are generated. Use this during initial
+ * CSP roll-out to audit violations without breaking pages, then turn it off once
+ * the policy is stable.
  *
  * **Events.** Each violation fires {@see onViolation()} with a
  * {@see TCspViolationParameter} argument. Attach handlers to process or store
@@ -94,7 +97,7 @@ use Prado\Web\TMediaType;
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0
- * @see \Prado\Web\HttpHeaders\THttpHeadersManager::setReporterMode()
+ * @see \Prado\Web\HttpHeaders\THttpHeadersManager::setReportingServiceMode()
  * @see \Prado\Web\HttpHeaders\THttpHeaderCsp
  * @see \Prado\Web\HttpHeaders\THttpHeaderReportingEndpoints
  * @see TCspViolationParameter
@@ -109,7 +112,7 @@ class TCspReportingService extends TService
 
 	/**
 	 * @var bool `true` when this service was registered automatically by
-	 *   {@see \Prado\Web\HttpHeaders\THttpHeadersManager} (i.e. `ReporterMode`
+	 *   {@see \Prado\Web\HttpHeaders\THttpHeadersManager} (i.e. `ReportingServiceMode`
 	 *   is `true` or `'Auto'` and no service was found in the app config).
 	 *   `false` (default) means the developer declared the service explicitly.
 	 */
@@ -134,34 +137,6 @@ class TCspReportingService extends TService
 	public function setAutoRegistered(bool|string $value): void
 	{
 		$this->_autoRegistered = \Prado\TPropertyValue::ensureBoolean($value);
-	}
-
-	/**
-	 * Returns the running instance of TCspReportingService when this service is
-	 * the active service for the current request, or `null` in all other contexts
-	 * (e.g. during a normal page request).
-	 *
-	 * The service is instantiated during `TApplication::initApplication()`, so
-	 * `getInstance()` returns a non-null value from the `onInitComplete`
-	 * application event onwards. Both `onInitComplete` and `onPreRunService`
-	 * are valid points at which to attach {@see onViolation} handlers:
-	 *
-	 * ```php
-	 * $this->getApplication()->onInitComplete[] = function () {
-	 *     TCspReportingService::getInstance()?->onViolation[] = [$this, 'myHandler'];
-	 * };
-	 * ```
-	 *
-	 * @param ?\Prado\TApplication $app application instance; defaults to
-	 *   {@see \Prado\Prado::getApplication()}
-	 * @return ?static the active service instance, or `null`
-	 * @todo remove this, already added to TService on master branch
-	 */
-	public static function getInstance(?\Prado\TApplication $app = null): ?static
-	{
-		$app ??= Prado::getApplication();
-		$service = $app?->getService();
-		return ($service instanceof static) ? $service : null;
 	}
 
 	/**

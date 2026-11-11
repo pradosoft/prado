@@ -96,7 +96,7 @@ use Prado\Xml\TXmlElement;
  * | `<resource class prefix enabled …>` | A resource class; its routes come from {@see IRestResource::getRoutes()}. `prefix` replaces the class attribute prefix. Any other attribute, or a `properties` array in PHP, is a property of the resource |
  * | `<route verbs pattern class method name parameters.x query.x enabled>` | One route declared in the configuration; `class` and `method` name the handler |
  * | `<group prefix enabled>` | Resources, routes, groups and includes sharing a prefix |
- * | `<include file>` | A configuration file in PRADO namespace format, in the application's configuration type, whose root holds the same elements |
+ * | `<include file>` | A configuration file in PRADO namespace format, in the application's configuration type, whose root holds the same elements; in XML it goes inside a `<group>`, since an `<include>` directly under `<service>` is also loaded as an application configuration |
  * | `<authorization>` | `<allow>` and `<deny>` rules of {@see \Prado\Security\TAuthorizationRule}, applying to the routes of the element that holds it |
  *
  * `enabled` takes a boolean or `Debug`, which enables the element in
@@ -141,8 +141,8 @@ use Prado\Xml\TXmlElement;
  * ## Cross-origin requests
  *
  * {@see \Prado\Web\HttpHeaders\TCorsModule} answers preflights and sends the
- * `Access-Control-*` headers for every service, and a `PathPrefix` equal to
- * `BasePath` limits it to the API.
+ * `Access-Control-*` headers for every service; a `PathPrefix` of the service ID
+ * (`rest`), or of the path a `TUrlMapping` rule leaves (`api`), limits it to the API.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0

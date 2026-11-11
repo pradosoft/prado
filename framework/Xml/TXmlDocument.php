@@ -171,9 +171,8 @@ class TXmlDocument extends TXmlElement
 
 		$oldUseInternalErrors = libxml_use_internal_errors(true);
 		if ($doc->loadXML($string) === false) {
-			$errors = libxml_get_errors();
+			libxml_clear_errors();
 			libxml_use_internal_errors($oldUseInternalErrors);
-			// @todo throw Errors as Exceptions? or is returning false good enough?
 
 			// Reset
 			$this->_loaded = false;

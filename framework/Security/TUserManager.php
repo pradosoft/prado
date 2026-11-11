@@ -259,7 +259,7 @@ class TUserManager extends \Prado\TModule implements IUserManager
 	}
 
 	/**
-	 * @return string|TUserManagerPasswordMode how password is stored, clear text, or MD5 or SHA1 hashed. Default to TUserManagerPasswordMode::MD5.
+	 * @return string|TUserManagerPasswordMode how password is stored, clear text, or MD5 or SHA1 hashed. Default to TUserManagerPasswordMode::SHA1.
 	 */
 	public function getPasswordMode()
 	{

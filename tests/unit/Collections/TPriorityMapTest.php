@@ -11,6 +11,7 @@ use Prado\Util\IDynamicMethods;
 use Prado\Util\TBehavior;
 use Prado\Collections\IPriorityCapture;
 use Prado\Collections\IPriorityProperty;
+use Prado\Test\Unit\PradoUnit;
 
 class TPriorityMapTest_MapItem extends TMapTest_MapItem
 {
@@ -682,5 +683,117 @@ class TPriorityMapTest extends TMapTest
 		$array = $this->map->toArrayAbovePriority(0);
 		$this->assertEquals(['key3' => $this->item3, 'key5' => $this->item5, 'key1' => $this->item1, 'key2' => $this->item2, 6 => $this->item6, 'key4' => $this->item4], $array);
 		$this->assertEquals(6, count($array));
+	}
+
+	public function testSetPriorityAtMissingKeyOrSamePriorityTPriorityMap()
+	{
+		$this->assertFalse($this->map->setPriorityAt('unknown key', 5));
+		$this->assertFalse($this->map->contains('unknown key'));
+		$this->assertEquals(2, $this->map->getCount());
+
+		$this->assertEquals(10, $this->map->setPriorityAt('key1', 10));
+		$this->assertEquals(10, $this->map->priorityAt('key1'));
+		$this->assertEquals([10], $this->map->getPriorities());
+		$this->assertSame(['key1' => $this->item1, 'key2' => $this->item2], $this->map->toArray());
+	}
+
+	public function testRemoveNullValueAtPriorityTPriorityMap()
+	{
+		$this->map->add('null-alone', null, 5);
+		$this->map->add('null-shared', null, 20);
+		$this->map->add('shared', $this->item3, 20);
+		$this->assertEquals([5, 10, 20], $this->map->getPriorities());
+
+		$this->assertNull($this->map->remove('null-alone', 5));
+		$this->assertFalse($this->map->contains('null-alone'));
+		$this->assertEquals([10, 20], $this->map->getPriorities());
+
+		$this->assertNull($this->map->remove('null-shared', 20));
+		$this->assertFalse($this->map->contains('null-shared'));
+		$this->assertEquals([10, 20], $this->map->getPriorities());
+		$this->assertSame($this->item3, $this->map->itemAt('shared', 20));
+		$this->assertEquals(3, $this->map->getCount());
+	}
+
+	public function testRemoveFromEmptyTPriorityMap()
+	{
+		$map = new $this->_baseClass();
+		$this->assertNull($map->remove('key'));
+		$this->assertNull($map->remove('key', 10));
+		$this->assertEquals(0, $map->getCount());
+	}
+
+	public function testPriorityOfInEmptyTPriorityMap()
+	{
+		$map = new $this->_baseClass();
+		$this->assertFalse($map->priorityOf($this->item1));
+	}
+
+	public function testItemAtMissingPriorityTPriorityMap()
+	{
+		$this->assertNull($this->map->itemAt('key1', 50));
+		$this->assertNull($this->map->itemAt('unknown key', 10));
+		$this->assertSame($this->item1, $this->map->itemAt('key1', 10));
+	}
+
+	public function testPriorityAtInEmptyAndSinglePriorityTPriorityMap()
+	{
+		$map = new $this->_baseClass();
+		$this->assertFalse($map->priorityAt('key'));
+
+		$map->add('key', $this->item1, 15);
+		$map->add('null', null, 15);
+		$this->assertEquals(15, $map->priorityAt('key'));
+		$this->assertEquals(15, $map->priorityAt('null'));
+		$this->assertFalse($map->priorityAt('unknown key'));
+	}
+
+	public function testSerializeNewEmptyTPriorityMap()
+	{
+		$copy = unserialize(serialize(new TPriorityMap()));
+		$this->assertEquals(0, $copy->getCount());
+		$this->assertEquals(0, $copy->getNextIntegerKey());
+		$this->assertNull(PradoUnit::getProp($copy, '_dp'));
+		$this->assertNull(PradoUnit::getProp($copy, '_p'));
+
+		$this->assertEquals(0, $copy->add(null, 'a'));
+		$this->assertEquals(1, $copy->getCount());
+	}
+
+	public function testSerializeEmptiedTPriorityMapKeepsNextIntegerKey()
+	{
+		$map = new TPriorityMap();
+		$this->assertEquals(0, $map->add(null, 'a'));
+		$this->assertEquals(1, $map->add(null, 'b'));
+		$map->remove(0);
+		$map->remove(1);
+		$this->assertEquals(0, $map->getCount());
+
+		$copy = unserialize(serialize($map));
+		$this->assertEquals(0, $copy->getCount());
+		$this->assertEquals(2, $copy->getNextIntegerKey());
+		$this->assertEquals(2, $copy->add(null, 'c'));
+		$this->assertEquals([2 => 'c'], $copy->toArray());
+	}
+
+	public function testSerializeTPriorityMapKeepsItemsAndPriorities()
+	{
+		$map = new TPriorityMap(null, null, 20, 4);
+		$map->add('b', 'B', 30);
+		$map->add('a', 'A', 1);
+		$map->add('c', 'C');
+
+		$copy = unserialize(serialize($map));
+		$this->assertEquals(3, $copy->getCount());
+		$this->assertEquals(0, $copy->getNextIntegerKey());
+		$this->assertSame(['a' => 'A', 'c' => 'C', 'b' => 'B'], $copy->toArray());
+		$this->assertEquals(20, $copy->priorityAt('c'));
+		$this->assertEquals('20', $copy->getDefaultPriority());
+		$this->assertEquals(4, $copy->getPrecision());
+
+		$map->add(null, 'D', 5);
+		$copy = unserialize(serialize($map));
+		$this->assertEquals(1, $copy->getNextIntegerKey());
+		$this->assertSame(['a' => 'A', 0 => 'D', 'c' => 'C', 'b' => 'B'], $copy->toArray());
 	}
 }

@@ -5,6 +5,16 @@ namespace Prado\Test\Unit\Collections;
 use Prado\Collections\TAttributeCollection;
 use Prado\Exceptions\TInvalidOperationException;
 
+class TAttributeCollectionWriteOnlyFixture extends TAttributeCollection
+{
+	public $written;
+
+	public function setWriteOnly($value)
+	{
+		$this->written = $value;
+	}
+}
+
 class TAttributeCollectionTest extends \PHPUnit\Framework\TestCase
 {
 	protected function setUp(): void
@@ -99,5 +109,55 @@ class TAttributeCollectionTest extends \PHPUnit\Framework\TestCase
 		self::assertEquals(false, $collection->hasProperty('Property'));
 		$collection->Property = 'value';
 		self::assertEquals(true, $collection->hasProperty('Property'));
+	}
+
+	public function testCaseSensitiveRemoveMatchesExactKeyOnly()
+	{
+		$collection = new TAttributeCollection();
+		$collection->setCaseSensitive(true);
+		$collection->add('Property', 'value');
+		self::assertFalse($collection->contains('property'));
+		self::assertTrue($collection->contains('Property'));
+		self::assertNull($collection->remove('property'));
+		self::assertEquals(1, count($collection));
+		self::assertEquals('value', $collection->remove('Property'));
+		self::assertEquals(0, count($collection));
+	}
+
+	public function testGetFallsBackToComponentPropertyWhenKeyIsAbsent()
+	{
+		$collection = new TAttributeCollection();
+		self::assertFalse($collection->CaseSensitive);
+		$collection->add('CaseSensitive', 'stored');
+		self::assertEquals('stored', $collection->CaseSensitive);
+	}
+
+	public function testHasPropertyForComponentGetterAndSetterOnlyProperties()
+	{
+		$collection = new TAttributeCollectionWriteOnlyFixture();
+		self::assertTrue($collection->hasProperty('CaseSensitive'));
+		self::assertTrue($collection->hasProperty('WriteOnly'));
+		self::assertFalse($collection->hasProperty('Undefined'));
+		self::assertEquals(0, count($collection));
+	}
+
+	public function testSerializeKeepsCaseSensitive()
+	{
+		$collection = new TAttributeCollection();
+		$collection->setCaseSensitive(true);
+		$collection->add('Key', 'value');
+		$copy = unserialize(serialize($collection));
+		self::assertTrue($copy->getCaseSensitive());
+		self::assertEquals(['Key' => 'value'], $copy->toArray());
+		self::assertNull($copy->itemAt('key'));
+	}
+
+	public function testSerializeOmitsDefaultCaseInsensitivity()
+	{
+		$collection = new TAttributeCollection();
+		$collection->add('Key', 'value');
+		$copy = unserialize(serialize($collection));
+		self::assertFalse($copy->getCaseSensitive());
+		self::assertEquals('value', $copy->itemAt('KEY'));
 	}
 }

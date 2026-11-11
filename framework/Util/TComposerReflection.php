@@ -61,7 +61,7 @@ class TComposerReflection extends \Prado\TComponent
 	 */
 	protected static function loadInstalledPackages(): array
 	{
-		if ($cache = Prado::getApplication()->getCache()) {
+		if ($cache = Prado::getApplication()?->getCache()) {
 			$packages = $cache->get(static::COMPOSER_INSTALLED_CACHE);
 			if ($packages !== false && $packages !== null) {
 				return $packages;

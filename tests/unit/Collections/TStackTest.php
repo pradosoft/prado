@@ -129,4 +129,48 @@ class TStackTest extends \PHPUnit\Framework\TestCase
 		$stack = new TStack([1, 2, 3]);
 		self::assertEquals(3, count($stack));
 	}
+
+	public function testCopyFromTraversableReplacesExistingItems()
+	{
+		$stack = new TStack([1, 2, 3]);
+		$stack->copyFrom(new \ArrayIterator([7, 8]));
+		self::assertEquals([7, 8], $stack->toArray());
+		self::assertEquals(2, $stack->getCount());
+	}
+
+	public function testCopyFromEmptyTraversableClearsItems()
+	{
+		$stack = new TStack([1, 2, 3]);
+		$stack->copyFrom(new \ArrayIterator([]));
+		self::assertEquals([], $stack->toArray());
+		self::assertEquals(0, $stack->getCount());
+	}
+
+	public function testCopyFromEmptyArrayClearsItems()
+	{
+		$stack = new TStack([1, 2, 3]);
+		$stack->copyFrom([]);
+		self::assertEquals([], $stack->toArray());
+		self::assertEquals(0, $stack->getCount());
+	}
+
+	public function testCopyFromNullKeepsItems()
+	{
+		$stack = new TStack([1, 2, 3]);
+		$stack->copyFrom(null);
+		self::assertEquals([1, 2, 3], $stack->toArray());
+		self::assertEquals(3, $stack->getCount());
+	}
+
+	public function testCopyFromNonTraversableErrorCode()
+	{
+		$stack = new TStack([1]);
+		try {
+			$stack->copyFrom('string');
+			self::fail('TInvalidDataTypeException was not thrown for a non-iterable.');
+		} catch (TInvalidDataTypeException $e) {
+			self::assertEquals('stack_data_not_iterable', $e->getErrorCode());
+		}
+		self::assertEquals([1], $stack->toArray());
+	}
 }

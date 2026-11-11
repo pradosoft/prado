@@ -86,9 +86,20 @@ class TPgsqlCommandBuilder extends TDbCommandBuilder
 				}
 			}
 		} else {
+			// A string-keyed (explicit value) entry takes precedence over an int-keyed
+			// (source reference) entry for the same column.
+			$explicitCols = [];
+			foreach ($updateData as $key => $value) {
+				if (is_string($key)) {
+					$explicitCols[$key] = true;
+				}
+			}
 			// Process each entry in $updateData
 			foreach ($updateData as $key => $value) {
 				if (is_int($key)) {
+					if (isset($explicitCols[$value])) {
+						continue;
+					}
 					// Integer-keyed: column name → EXCLUDED pseudo-table reference
 					$quoted = $this->getTableInfo()->getColumn($value)->getColumnName();
 					$updateParts[] = $quoted . ' = EXCLUDED.' . $quoted;

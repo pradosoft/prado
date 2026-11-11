@@ -102,7 +102,8 @@ class THttpUtility
 			if ($value === null || $value === false) {
 				continue;
 			}
-			$raw = $name[0] === '!';
+			$name = (string) $name;
+			$raw = $name !== '' && $name[0] === '!';
 			if ($raw) {
 				$name = substr($name, 1);
 			}

@@ -14,6 +14,7 @@ use Prado\Collections\TWeakCallableCollection;
 use Prado\Collections\TWeakList;
 use Prado\Collections\TWeakMap;
 use Prado\TComponent;
+use Prado\TEventHandler;
 
 /**
  * Fixture component whose destructor calls a callable supplied at construction
@@ -94,6 +95,18 @@ class WeakMapTransitionInjector extends TWeakMap
 			$callable();
 		}
 		return $count;
+	}
+}
+
+/**
+ * TWeakMap whose DiscardInvalid can be turned on after it is set false, so a
+ * test can run the registration pass over a populated map.
+ */
+class WeakScrubReentryMap extends TWeakMap
+{
+	public function enableDiscardInvalid(): void
+	{
+		$this->setDiscardInvalid(true);
 	}
 }
 
@@ -463,5 +476,63 @@ class TWeakScrubReentrancyTest extends \PHPUnit\Framework\TestCase
 		$this->assertTrue($fired);
 		$this->assertSame(0, $col->getCount());
 		$this->assertSame([], $col->getPriorities());
+	}
+
+	/**
+	 * A stale TEventHandler whose data object's destructor removes a later key
+	 * while the scrub's removal pass runs. The pass skips the vanished key.
+	 */
+	public function testWeakMap_destructorRemoveDuringScrubIsSkipped(): void
+	{
+		$map = new TWeakMap();
+		$keep = new WeakScrubReentryTarget();
+		$dead = new WeakScrubReentryTarget();
+		$fired = false;
+		$trap = new WeakScrubReentryTarget();
+		$trap->onDestruct = function () use ($map, &$fired): void {
+			$fired = true;
+			$map->remove('victim');
+		};
+
+		$map->add('stale', new TEventHandler([$dead, 'noopHandler'], $trap));
+		$map->add('plain', 'text');
+		$map->add('victim', 'removed by the destructor');
+		$map->add('keep', $keep);
+		$trap = null;
+		$dead = null;
+
+		$this->assertSame(['plain' => 'text', 'keep' => $keep], $map->toArray());
+		$this->assertTrue($fired, 'The TEventHandler data destructor must run during the scrub.');
+		$this->assertSame(2, $map->getCount());
+	}
+
+	/**
+	 * The same destructor-time removal while DiscardInvalid turns on: the
+	 * registration pass skips the vanished key and drops the stale entry.
+	 */
+	public function testWeakMap_destructorRemoveDuringDiscardInvalidTransitionIsSkipped(): void
+	{
+		$map = new WeakScrubReentryMap(null, false, false);
+		$keep = new WeakScrubReentryTarget();
+		$dead = new WeakScrubReentryTarget();
+		$fired = false;
+		$trap = new WeakScrubReentryTarget();
+		$trap->onDestruct = function () use ($map, &$fired): void {
+			$fired = true;
+			$map->remove('victim');
+		};
+
+		$map->add('stale', new TEventHandler([$dead, 'noopHandler'], $trap));
+		$map->add('plain', 'text');
+		$map->add('victim', 'removed by the destructor');
+		$map->add('keep', $keep);
+		$trap = null;
+		$dead = null;
+
+		$map->enableDiscardInvalid();
+
+		$this->assertTrue($fired, 'The TEventHandler data destructor must run during the transition.');
+		$this->assertTrue($map->getDiscardInvalid());
+		$this->assertSame(['plain' => 'text', 'keep' => $keep], $map->toArray());
 	}
 }

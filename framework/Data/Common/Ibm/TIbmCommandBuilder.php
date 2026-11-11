@@ -35,6 +35,7 @@ class TIbmCommandBuilder extends TDbCommandBuilder
 	 * Uses DB2 MERGE with USING (SELECT ... FROM SYSIBM.SYSDUMMY1) AS s syntax.
 	 * @param array $data name-value pairs of data to be inserted.
 	 * @return IDataCommand insert-or-ignore MERGE command.
+	 * @since 4.4.0
 	 */
 	public function createInsertOrIgnoreCommand(array $data): IDataCommand
 	{
@@ -59,6 +60,7 @@ class TIbmCommandBuilder extends TDbCommandBuilder
 	 * @param null|array $updateData null, column-name list, explicit col=>value map, or mixed; controls what is updated on conflict.
 	 * @param null|array $conflictColumns conflict target columns; null = primary key columns.
 	 * @return IDataCommand upsert MERGE command.
+	 * @since 4.4.0
 	 */
 	public function createUpsertCommand(array $data, ?array $updateData = null, ?array $conflictColumns = null): IDataCommand
 	{

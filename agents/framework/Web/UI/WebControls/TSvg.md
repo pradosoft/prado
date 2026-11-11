@@ -14,7 +14,7 @@ TSvg renders an inline `<svg>`. Its content comes from the child controls (templ
 ## Template Usage
 
 ```xml
-<com:TSvg ViewBox="0 0 24 24" Width="24" Height="24" AlternateText="Settings">
+<com:TSvg ViewBox="0 0 24 24" PixelWidth="24" PixelHeight="24" AlternateText="Settings">
 	<path d="M12 8a4 4 0 1 0 0 8a4 4 0 0 0 0-8z" />
 </com:TSvg>
 <com:TSvg SvgFile="Application.icons.logo" AlternateText="Prado" />
@@ -28,7 +28,7 @@ TSvg renders an inline `<svg>`. Its content comes from the child controls (templ
 | `SvgFile` | File path or namespace (`.svg` extension) |
 | `Svg` | SVG markup with a root `<svg>` |
 | `ViewBox`, `PreserveAspectRatio` | Rendered as written |
-| `Width`, `Height` | CSS pixels as attributes; -1 unset; override TWebControl's CSS Width/Height |
+| `PixelWidth`, `PixelHeight` | Pixels as the `width`/`height` attributes; -1 unset. `Width`/`Height` remain TWebControl's CSS style lengths |
 | `AlternateText`, `Description` | Text alternative in a `<title>`, longer description in a `<desc>` |
 | `Decorative` | `aria-hidden="true"` |
 | `Sanitize` | SvgFile/Svg only; default true; [TSvgDocument](./TSvgDocument.md)`::sanitize()` |

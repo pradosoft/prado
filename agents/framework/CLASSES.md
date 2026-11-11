@@ -69,7 +69,6 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 ### Classes (18)
 
 - [Prado](./Prado.md)
-- PradoBase
 - [TApplication](./TApplication.md)
 - [TApplicationComponent](./TApplicationComponent.md)
 - [TApplicationConfiguration](./TApplicationConfiguration.md)
@@ -442,7 +441,6 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 - [TDbUser](./Security/TDbUser.md)
 - [TDbUserManager](./Security/TDbUserManager.md)
 - [TSecurityManager](./Security/TSecurityManager.md)
-- TSecurityManagerValidationMode
 - [TUser](./Security/TUser.md)
 - [TUserManager](./Security/TUserManager.md)
 - [TUserManagerPasswordMode](./Security/TUserManagerPasswordMode.md)

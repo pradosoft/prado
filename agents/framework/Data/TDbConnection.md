@@ -25,6 +25,8 @@ $conn->Active = true;  // opens connection
 $conn->close();        // or $conn->Active = false
 ```
 
+Opening creates the PDO through `createPdoInstance()`: `PDO::connect()` on PHP 8.4 and later returns the driver subclass (`Pdo\Sqlite`, `Pdo\Pgsql`, `Pdo\Mysql`, ...), which holds the driver methods that PHP 8.5 deprecates on `PDO` itself (`PDO::pgsqlGetNotify()` → `Pdo\Pgsql::getNotify()`); earlier versions get a `PDO`. A subclass overrides `createPdoInstance()` to construct the PDO another way.
+
 ### Key Properties
 
 | Property | Description |

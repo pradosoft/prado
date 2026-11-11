@@ -52,7 +52,7 @@ return [
 | `HashAlgorithm` | `sha256` | Hash algorithm for HMAC (any value from `hash_hmac_algos()`) |
 | `CryptAlgorithm` | `aes-256-cbc` | OpenSSL cipher algorithm |
 | `EncryptionKeyAlgorithm` | `sha256` | Algorithm used to hash `EncryptionKey` before passing to OpenSSL. Prado 4.3 defaulted to `md5`. @since 4.3.3 |
-| `UseEncryptionHmac` | `true` (4.4.0) | When `true`, `encrypt()` prepends an HMAC over `[IV][ciphertext]` to enable authenticated encryption. `decrypt()` always probes for an HMAC header regardless of this flag. @since 4.3.3 |
+| `UseEncryptionHmac` | `true` (4.4.0) | When `true`, `encrypt()` prepends an HMAC over `[IV][ciphertext]` and `decrypt()` returns `false` for input without a valid HMAC. When `false`, `decrypt()` still honors a valid HMAC prefix and otherwise decrypts plain input. @since 4.3.3 |
 
 ## Key Methods
 
@@ -63,7 +63,7 @@ return [
 | `hashCookieData(string $data): string` | Prefixes cookie data with an HMAC keyed by `CookieValidationKey` @since 4.4.0 |
 | `validateCookieData(string $data): string\|false` | Validates `hashCookieData()` output @since 4.4.0 |
 | `encrypt(string $data): string` | Encrypts with OpenSSL; prepends HMAC when `UseEncryptionHmac=true` |
-| `decrypt(string $data): string\|false` | Decrypts; always probes for HMAC header first; returns `false` on tamper |
+| `decrypt(string $data): string\|false` | Decrypts; a valid HMAC prefix is honored with either setting; with `UseEncryptionHmac=true`, input without one returns `false` |
 | `computeHMAC(string $data): string` | Protected: computes `hash_hmac(algo, data, validationKey)` |
 | `computeCookieHMAC(string $data): string` | Protected: computes `hash_hmac(algo, data, cookieValidationKey)` @since 4.4.0 |
 | `supportedHashAlgorithms(): array` | @since 4.3.3 — returns `hash_hmac_algos()` or `hash_algos()` |
@@ -77,17 +77,18 @@ When `UseEncryptionHmac=true`, encrypted data layout is:
 [HMAC (raw, N bytes)] [IV (raw, iv_len bytes)] [ciphertext (base64)]
 ```
 
-`decrypt()` always tries HMAC verification first:
+`decrypt()` checks the leading bytes as an HMAC over the remainder first:
 - HMAC valid → strips it, decrypts the authenticated payload, returns plaintext or `false` on cipher failure.
-- HMAC absent/invalid → falls back to unauthenticated decryption of the full input.
+- HMAC absent/invalid, `UseEncryptionHmac=true` → `false`. Altered or stripped ciphertext is rejected.
+- HMAC absent/invalid, `UseEncryptionHmac=false` → unauthenticated decryption of the full input.
 
-This dual-path design means ciphertext produced before or after enabling `UseEncryptionHmac` is always decryptable — migration in both directions is seamless.
+Turning the property off keeps HMAC-encrypted data readable. Turning it on makes data encrypted while it was off unreadable; an application keeping such data re-encrypts it first or leaves the property off until the data expires. Before 4.4.0, `decrypt()` fell back to unauthenticated decryption with the property on, which let altered or stripped ciphertext decrypt.
 
 ## Gotchas
 
 - **OpenSSL required** — `encrypt()` and `decrypt()` throw `TNotSupportedException` if the `openssl` extension is absent.
 - **`EncryptionKeyAlgorithm` defaults to `sha256`** since 4.4.0. Set it to `md5` to decrypt data encrypted under the Prado 4.3 default.
-- **`UseEncryptionHmac` defaults to `true`** since 4.4.0. `decrypt()` reads ciphertext with or without the HMAC, so data encrypted under the 4.3 default still decrypts.
+- **`UseEncryptionHmac` defaults to `true`** since 4.4.0, and `decrypt()` then rejects ciphertext without an HMAC. Data encrypted under the 4.3 default (no HMAC) decrypts only with `UseEncryptionHmac="false"`.
 - **Empty keys are rejected** — `setValidationKey('')`, `setCookieValidationKey('')`, and `setEncryptionKey('')` throw `TInvalidDataValueException`.
 - **Cookies use `CookieValidationKey`** — `THttpRequest`/`THttpResponse` cookie validation, the `TAuthManager` auto-login cookie, and the `TUserManager` auto-login token. Set it to sign out every remembered user without touching page state or encrypted data.
 - **Bytes, not characters** — HMAC and IV splitting use `strlen()` and `substr()`, which count bytes; PHP 8 removed `mbstring.func_overload`, so the old `mb_strlen(..., '8bit')` guard is gone.

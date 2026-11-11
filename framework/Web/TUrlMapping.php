@@ -185,7 +185,7 @@ class TUrlMapping extends TUrlManager implements IModuleDependency
 	 */
 	public function getModuleDependencies(bool $isPreInit): null|string|array
 	{
-		return array_keys($this->getApplication()?->getModulesByType(THttpRequest::class));
+		return array_keys($this->getApplication()?->getModulesByType(THttpRequest::class) ?? []);
 	}
 
 	/**

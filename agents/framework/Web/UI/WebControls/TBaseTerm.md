@@ -56,7 +56,7 @@ TBaseTerm renders a term element and marks the other occurrences of its terms in
 
 ## Depth limit
 
-`onPreRender` raises the target's `TControl.RenderFilterDepth` to at least `DepthLimit`, so the target writes depth markers to that level; other handlers on the target see the same levels or more. `markTerms` sets `TRenderFilterParameter::setDepthLimit()` to the control's own `DepthLimit` (0 sees all), marks through `markOutput()`, and restores the previous limit for the handlers that follow. Terms with different limits on one target each mark their own levels. A `RenderFilterDepth` the target keeps in viewstate stays raised after a term is removed.
+`onPreRender` raises the target's `TControl.RenderFilterDepth` to at least `DepthLimit`, so the target writes depth markers to that level; a target that showed all output (depth 0) then shows its other handlers only that many levels, and a handler that needs everything calls `setDepthLimit(0)`. `markTerms` sets `TRenderFilterParameter::setDepthLimit()` to the control's own `DepthLimit` (0 sees all) capped at the parameter's `getDepthMax()`, marks through `markOutput()`, and restores the previous limit for the handlers that follow. Terms with different limits on one target each mark their own levels. A `RenderFilterDepth` the target keeps in viewstate stays raised after a term is removed.
 
 ## Cost
 

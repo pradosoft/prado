@@ -325,7 +325,7 @@ $cmd->bindValue(':id', $id);
 $rows = $cmd->queryAll();
 ```
 
-**2. `TActiveRecord` (stateful ORM)**
+**2. `TActiveRecord` (stateful ORM, `pradosoft/prado-activerecord` package)**
 ```php
 class UserRecord extends TActiveRecord {
     const TABLENAME = 'users';
@@ -566,7 +566,7 @@ CLI support for the `prado-cli` executable (`bin/prado-cli`).
 - `TShellApplication` — CLI application; mirrors `TApplication` lifecycle for command-line use.
 - `TShellAction` — Base for shell actions (commands).
 - `TShellWriter` — ANSI-colored console output.
-- Built-in actions: `TWebServerAction`, `THelpAction`, `TFlushCachesAction`, `TDbParameterAction`, `TActiveRecordAction`, `TPhpShellAction`.
+- Built-in actions: `TWebServerAction`, `THelpAction`, `TFlushCachesAction`, `TDbParameterAction`, `TPhpShellAction`. The prado-activerecord package registers `TActiveRecordAction` through `addShellActionClass()`.
 - Cron actions: `TShellCronAction`, `TShellDbCronAction`.
 
 ---

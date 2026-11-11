@@ -202,7 +202,7 @@ class TRedisCache extends TCache
 	 * Creates the Redis instance.
 	 * Override in a subclass to substitute a mock or alternative implementation.
 	 * @return \Redis the new Redis instance
-	 * @since 4.3.3
+	 * @since 4.4.0
 	 */
 	protected function newRedis(): object
 	{
@@ -211,7 +211,7 @@ class TRedisCache extends TCache
 
 	/**
 	 * @return ?\Redis the underlying Redis instance, or null before initialization
-	 * @since 4.3.3
+	 * @since 4.4.0
 	 */
 	protected function getCacheDirect(): ?object
 	{
@@ -220,7 +220,7 @@ class TRedisCache extends TCache
 
 	/**
 	 * @param ?\Redis $value the underlying Redis instance
-	 * @since 4.3.3
+	 * @since 4.4.0
 	 */
 	protected function setCacheDirect(?object $value): void
 	{

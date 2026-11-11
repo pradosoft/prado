@@ -11,6 +11,7 @@
 namespace Prado\IO\Async;
 
 use Prado\Exceptions\TCancelledException;
+use Prado\Exceptions\TInvalidDataValueException;
 
 /**
  * TAsync class.
@@ -150,7 +151,8 @@ final class TAsync
 
 	/**
 	 * Combines futures into one that resolves with the first value, or rejects with the last
-	 * rejection once every one rejects.  An empty input rejects.
+	 * rejection once every one rejects.  An empty input rejects with a
+	 * {@see TInvalidDataValueException}.
 	 * @param iterable<array-key, TFuture> $futures The futures.
 	 * @return TFuture The combined future.
 	 */
@@ -172,7 +174,7 @@ final class TAsync
 			});
 		}
 		if ($pending === 0 && !$deferred->isComplete()) {
-			$deferred->reject(new TCancelledException('async_any_empty'));
+			$deferred->reject(new TInvalidDataValueException('async_any_empty'));
 		}
 		return $deferred->getFuture();
 	}

@@ -20,7 +20,7 @@ use Prado\Util\TSerializableClosure;
  * TClosureCronTask class
  *
  * TClosureCronTask runs a PHP {@see \Closure} as a cron task. The closure receives the task and the
- * calling {@see TDbCronModule} as arguments:
+ * calling {@see TCronModule} as arguments:
  * ```php
  * $task = new TClosureCronTask(function (TClosureCronTask $task, TCronModule $cron) {
  *     // ... do work ...
@@ -227,7 +227,8 @@ class TClosureCronTask extends TCronTask implements \ArrayAccess, \Countable, \I
 
 	/**
 	 * Decrypts (when needed) and unserializes the stored payload back into a closure.
-	 * @throws TConfigurationException when the encrypted payload cannot be decrypted
+	 * @throws TConfigurationException when the encrypted payload cannot be decrypted or the payload
+	 *   does not unserialize to a {@see TSerializableClosure}
 	 * @return ?Closure the decoded closure
 	 */
 	protected function decodeClosure(): ?Closure
@@ -245,7 +246,11 @@ class TClosureCronTask extends TCronTask implements \ArrayAccess, \Countable, \I
 				throw new TConfigurationException('closurecrontask_decrypt_failed', $this->getName());
 			}
 		}
-		return unserialize($payload)->getClosure();
+		$closure = @unserialize($payload);
+		if (!($closure instanceof TSerializableClosure)) {
+			throw new TConfigurationException('closurecrontask_payload_invalid', $this->getName());
+		}
+		return $closure->getClosure();
 	}
 
 	/**

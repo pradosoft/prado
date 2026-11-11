@@ -204,6 +204,7 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 * file picker. The attribute applies to media types listed in
 	 * {@see setAccept Accept} and desktop browsers ignore it.
 	 * @param string $value "user", "environment" or '' to render no capture attribute.
+	 * @since 4.4.0
 	 */
 	public function setCapture($value)
 	{

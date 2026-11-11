@@ -32,6 +32,30 @@ class TRevoltEventLoopTest extends EventLoopConformanceTestCase
 		self::assertNotContains($id, $other->getIdentifiers());
 	}
 
+	public function testCancellingTheLastSignalCallbackFromItsOwnCallbackRestoresThePriorHandler(): void
+	{
+		if (!function_exists('pcntl_signal') || !function_exists('posix_kill')) {
+			self::markTestSkipped('pcntl and posix are required to raise a signal.');
+		}
+		$original = pcntl_signal_get_handler(SIGUSR1);
+		$prior = static function (int $signal): void {
+		};
+		pcntl_signal(SIGUSR1, $prior);
+		try {
+			$ran = 0;
+			$this->loop->onSignal(SIGUSR1, function (string $id) use (&$ran): void {
+				$ran++;
+				$this->loop->cancel($id);
+			});
+			$this->loop->delay(0, fn () => posix_kill(posix_getpid(), SIGUSR1));
+			$this->loop->run();
+			self::assertSame(1, $ran, 'The signal callback ran once.');
+			self::assertSame($prior, pcntl_signal_get_handler(SIGUSR1), 'The prior handler returns when the callback cancels itself.');
+		} finally {
+			pcntl_signal(SIGUSR1, $original);
+		}
+	}
+
 	public function testErrorHandlerIsTheRevoltErrorHandler(): void
 	{
 		$handler = fn (\Throwable $e) => null;

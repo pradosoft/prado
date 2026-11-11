@@ -3,7 +3,7 @@
 namespace Prado\Test\Unit\Collections;
 
 use Prado\Collections\TArraySubscription;
-use Prado\Collections\{TList, TMap, TPriorityList, TPriorityMap, TWeakCallableCollection, TWeakList};
+use Prado\Collections\{TList, TMap, TPriorityList, TPriorityMap, TWeakCallableCollection, TWeakList, TWeakMap};
 use Prado\TEventHandler;
 
 use Prado\Exceptions\TInvalidDataTypeException;
@@ -742,5 +742,120 @@ class TArraySubscriptionTest extends \PHPUnit\Framework\TestCase
 		
 	}
 
+	public function testSetKeyConvertsBoolToInt()
+	{
+		$this->subscription = new $this->_baseClass();
+		$this->subscription->setKey(true);
+		self::assertSame(1, $this->subscription->getKey());
+		$this->subscription->setKey(false);
+		self::assertSame(0, $this->subscription->getKey());
+	}
 
+	public function testSetPriorityEmptyStringIsNull()
+	{
+		$this->subscription = new $this->_baseClass();
+		$this->subscription->setPriority(5);
+		self::assertSame(5.0, $this->subscription->getPriority());
+		$this->subscription->setPriority('');
+		self::assertNull($this->subscription->getPriority());
+	}
+
+	public function testSetIsAssociativeWhenSubscribedThrows()
+	{
+		$array = [];
+		$this->subscription = new $this->_baseClass($array, 'key', 'value');
+		self::assertTrue($this->subscription->getIsSubscribed());
+		try {
+			$this->subscription->setIsAssociative(false);
+			self::fail('TInvalidOperationException was not thrown when changing IsAssociative while subscribed.');
+		} catch (TInvalidOperationException $e) {
+			self::assertEquals('arraysubscription_no_change', $e->getErrorCode());
+		}
+		self::assertSame(true, $this->subscription->getIsAssociative());
+	}
+
+	public function testGetKeyOfListArrayItemRemovedExternally()
+	{
+		$array = ['first'];
+		$this->subscription = new $this->_baseClass($array, null, 'mine', isAssociative: false);
+		self::assertEquals(['first', 'mine'], $array);
+		self::assertSame(1, $this->subscription->getKey());
+
+		array_splice($array, 1, 1);
+		self::assertTrue($this->subscription->getIsSubscribed());
+		self::assertNull($this->subscription->getKey());
+	}
+
+	public function testGetKeyOfTListFollowsItem()
+	{
+		$list = new TList(['a']);
+		$this->subscription = new $this->_baseClass($list, null, 'mine');
+		self::assertSame(1, $this->subscription->getKey());
+
+		$list->insertAt(0, 'z');
+		self::assertSame(2, $this->subscription->getKey());
+
+		$list->remove('mine');
+		self::assertTrue($this->subscription->getIsSubscribed());
+		self::assertNull($this->subscription->getKey());
+	}
+
+	public function testGetKeyOfTPriorityListUsesItemPriority()
+	{
+		$list = new TPriorityList();
+		$list->add('low', 20);
+		$this->subscription = new $this->_baseClass($list, null, 'mine', 5);
+		self::assertSame(0, $this->subscription->getKey());
+		$list->add('high', 1);
+		self::assertSame(1, $this->subscription->getKey());
+
+		$list->remove('mine');
+		self::assertTrue($this->subscription->getIsSubscribed());
+		self::assertNull($this->subscription->getKey());
+	}
+
+	public function testGetKeyOfDestroyedCollectionIsNull()
+	{
+		$list = new TList();
+		$this->subscription = new $this->_baseClass($list, null, 'mine');
+		self::assertSame(0, $this->subscription->getKey());
+
+		$list = null;
+		self::assertNull($this->subscription->getArray());
+		self::assertTrue($this->subscription->getIsSubscribed());
+		self::assertNull($this->subscription->getKey());
+		self::assertNull($this->subscription->unsubscribe());
+	}
+
+	public function testSubscribeTWeakMapReplacesAndRestoresOriginal()
+	{
+		$original = new \stdClass();
+		$replacement = new \stdClass();
+		$map = new TWeakMap(['key' => $original]);
+
+		$this->subscription = new $this->_baseClass($map, 'key', $replacement);
+		self::assertTrue($this->subscription->getIsSubscribed());
+		self::assertSame($replacement, $map['key']);
+		self::assertInstanceOf(\WeakReference::class, $this->subscription->getItem(true));
+		self::assertSame($replacement, $this->subscription->getItem());
+
+		self::assertTrue($this->subscription->unsubscribe());
+		self::assertSame($original, $map['key']);
+		self::assertSame($replacement, $this->subscription->getItem(true));
+	}
+
+	public function testUnsubscribeTWeakMapDoesNotRestoreDestroyedOriginal()
+	{
+		$original = new \stdClass();
+		$replacement = new \stdClass();
+		$map = new TWeakMap(['key' => $original, 'other' => 'value']);
+
+		$this->subscription = new $this->_baseClass($map, 'key', $replacement);
+		self::assertSame($replacement, $map['key']);
+
+		$original = null;
+		self::assertTrue($this->subscription->unsubscribe());
+		self::assertFalse($map->contains('key'));
+		self::assertEquals(['other' => 'value'], $map->toArray());
+	}
 }

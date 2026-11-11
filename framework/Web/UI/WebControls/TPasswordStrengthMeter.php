@@ -44,7 +44,7 @@ use Prado\Web\Javascripts\TJavaScript;
  *
  * The element has `role="meter"` with `aria-valuenow` in bits and the level
  * name as `aria-valuetext`. Its accessible name defaults to "Password strength";
- * set the "aria-label" attribute to change it. The bar and the texts are hidden
+ * set `Aria.label` (or `Aria.labelledby`) to change it. The bar and the texts are hidden
  * from assistive technology, which reads the meter values instead. The fill
  * length and the level name keep the strength readable without color.
  *
@@ -318,7 +318,11 @@ class TPasswordStrengthMeter extends TWebControl
 		$writer->addAttribute('aria-valuemax', (string) $this->getMaxEntropy());
 		$writer->addAttribute('aria-valuenow', '0');
 		$writer->addAttribute('aria-valuetext', $this->getLevelTextList()[0]);
-		if (!$this->getHasAttributes() || (!$this->getAttributes()->contains('aria-label') && !$this->getAttributes()->contains('aria-labelledby'))) {
+		$aria = $this->getHasAria() ? $this->getAria() : null;
+		$attributes = $this->getHasAttributes() ? $this->getAttributes() : null;
+		$labelled = ($aria !== null && ($aria->contains('label') || $aria->contains('labelledby')))
+			|| ($attributes !== null && ($attributes->contains('aria-label') || $attributes->contains('aria-labelledby')));
+		if (!$labelled) {
 			$writer->addAttribute('aria-label', 'Password strength');
 		}
 	}
