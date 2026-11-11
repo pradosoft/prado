@@ -536,10 +536,10 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDbCommandBuilder
 	 * Base implementation always throws TDbException; driver-specific subclasses must override.
 	 * @param array $data name-value pairs of data to be inserted.
 	 * @throws TDbException always, in the base implementation.
-	 * @return TDbCommand insert-or-ignore command.
+	 * @return IDataCommand insert-or-ignore command.
 	 * @since 4.4.0
 	 */
-	public function createInsertOrIgnoreCommand(array $data): TDbCommand
+	public function createInsertOrIgnoreCommand(array $data): IDataCommand
 	{
 		throw new TDbException('dbcommandbuilder_insertorignore_not_supported');
 	}
@@ -553,10 +553,10 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDbCommandBuilder
 	 *   string-keyed column→value pairs: explicit override values; mixed: both.
 	 * @param null|array $conflictColumns conflict target columns; null = primary key columns.
 	 * @throws TDbException always, in the base implementation.
-	 * @return TDbCommand upsert command.
+	 * @return IDataCommand upsert command.
 	 * @since 4.4.0
 	 */
-	public function createUpsertCommand(array $data, ?array $updateData = null, ?array $conflictColumns = null): TDbCommand
+	public function createUpsertCommand(array $data, ?array $updateData = null, ?array $conflictColumns = null): IDataCommand
 	{
 		throw new TDbException('dbcommandbuilder_upsert_not_supported');
 	}
@@ -645,10 +645,10 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDbCommandBuilder
 	 * @param array $conflictColumns primary/conflict key column names.
 	 * @param string $dualSource dual/dummy table source, e.g. 'FROM DUAL', 'FROM SYSIBM.SYSDUMMY1', '' for SQL Server.
 	 * @param bool $useAsAlias true to emit 'AS t'/'AS s'; false to emit bare 't'/'s' (Oracle, Firebird).
-	 * @return TDbCommand prepared MERGE command with bound parameters.
+	 * @return IDataCommand prepared MERGE command with bound parameters.
 	 * @since 4.4.0
 	 */
-	protected function buildMergeStatement(array $data, ?array $updateData, array $conflictColumns, string $dualSource, bool $useAsAlias): TDbCommand
+	protected function buildMergeStatement(array $data, ?array $updateData, array $conflictColumns, string $dualSource, bool $useAsAlias): IDataCommand
 	{
 		$table = $this->getTableInfo()->getTableFullName();
 		$tableAlias = $useAsAlias ? 'AS t' : 't';

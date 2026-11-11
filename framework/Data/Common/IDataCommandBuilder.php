@@ -56,6 +56,15 @@ interface IDataCommandBuilder extends IDataCriteriaBuilder
 	public function getDbConnection();
 
 	/**
+	 * Binds the connection this builder creates its commands on.  The ActiveRecord
+	 * gateway has called this before every command, so a builder that is cached per
+	 * connection string follows the record's current connection object.
+	 * @param IDataConnection $value the connection.
+	 * @since 4.3.3
+	 */
+	public function setDbConnection($value);
+
+	/**
 	 * @return IDataTableInfo the table metadata this builder targets.
 	 */
 	public function getTableInfo();

@@ -151,7 +151,9 @@ abstract class TDbMetaData extends \Prado\TComponent implements IDbMetaData
 		$key = $tableName === null ? $this->getDbConnection()->getConnectionString() : $tableName;
 		if (!isset($this->_tableInfoCache[$key])) {
 			$class = $this->getTableInfoClass();
-			$class = Prado::usingClass($class);
+			// The Composer autoloader has loaded a fully-qualified class of an extension
+			// package; Prado::usingClass() resolves only framework and application classes.
+			$class = (str_contains($class, '\\') && class_exists($class)) ? $class : Prado::usingClass($class);
 			if (!is_string($class)) {
 				throw new TDbException('dbmetadata_tableinfo_class_invalid', $this->getTableInfoClass());
 			}

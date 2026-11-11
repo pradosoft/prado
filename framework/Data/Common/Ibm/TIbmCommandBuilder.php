@@ -11,6 +11,7 @@
 namespace Prado\Data\Common\Ibm;
 
 use Prado\Data\Common\TDbCommandBuilder;
+use Prado\Data\IDataCommand;
 use Prado\Data\TDbCommand;
 
 /**
@@ -33,9 +34,9 @@ class TIbmCommandBuilder extends TDbCommandBuilder
 	 * Requires an active transaction; throws TDbException otherwise.
 	 * Uses DB2 MERGE with USING (SELECT ... FROM SYSIBM.SYSDUMMY1) AS s syntax.
 	 * @param array $data name-value pairs of data to be inserted.
-	 * @return TDbCommand insert-or-ignore MERGE command.
+	 * @return IDataCommand insert-or-ignore MERGE command.
 	 */
-	public function createInsertOrIgnoreCommand(array $data): TDbCommand
+	public function createInsertOrIgnoreCommand(array $data): IDataCommand
 	{
 		$this->assertActiveTransaction();
 		$conflictColumns = $this->resolveConflictColumns(null);
@@ -57,9 +58,9 @@ class TIbmCommandBuilder extends TDbCommandBuilder
 	 * @param array $data name-value pairs of data to insert.
 	 * @param null|array $updateData null, column-name list, explicit col=>value map, or mixed; controls what is updated on conflict.
 	 * @param null|array $conflictColumns conflict target columns; null = primary key columns.
-	 * @return TDbCommand upsert MERGE command.
+	 * @return IDataCommand upsert MERGE command.
 	 */
-	public function createUpsertCommand(array $data, ?array $updateData = null, ?array $conflictColumns = null): TDbCommand
+	public function createUpsertCommand(array $data, ?array $updateData = null, ?array $conflictColumns = null): IDataCommand
 	{
 		$this->assertActiveTransaction();
 		$conflictColumns = $this->resolveConflictColumns($conflictColumns);
