@@ -1170,7 +1170,8 @@ class TCronModuleTest extends \PHPUnit\Framework\TestCase
 		self::assertCount(1, $events['OnDaemonStart']);
 		self::assertSame($this->obj->getDaemonLockName(), $events['OnDaemonStart'][0]->getLockName());
 		self::assertTrue($events['OnDaemonStart'][0]->getWatching());
-		self::assertGreaterThanOrEqual(6, count($events['OnDaemonIdle']), 'the shortened wait yields more idle events than DaemonIdle would');
+		self::assertGreaterThanOrEqual(3, count($events['OnDaemonIdle']), 'the daemon idles repeatedly through the shortened waits (a loaded runner yields few)');
+		self::assertSame(0.02, $events['OnDaemonIdle'][0]->getWait(), 'the handler shortened the wait');
 		self::assertSame(1, $events['OnDaemonIdle'][0]->getTasks(), 'the first idle follows the sweep that ran the task');
 		self::assertSame(0, $events['OnDaemonIdle'][1]->getTasks());
 		self::assertCount(1, $events['OnDaemonEnd']);
