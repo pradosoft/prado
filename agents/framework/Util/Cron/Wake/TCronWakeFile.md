@@ -13,7 +13,7 @@
 `TCronWakeFile` signals through a file: a wake writes the current microtime into `WakeFile`, and the waiting cron process polls the file's content every `PollInterval`. The content is the stamp rather than the modification time, which some file systems keep to the second. On a shared file system the wake reaches the cron process of another host.
 
 ```xml
-<module id="cronwake" class="Prado\Util\Cron\TCronWakeFile" WakeFile="Application.Runtime.cronwake" PollInterval="0.5" />
+<module id="cronwake" class="Prado\Util\Cron\Wake\TCronWakeFile" WakeFile="Application.Runtime.cronwake" PollInterval="0.5" />
 <module id="cron" class="Prado\Util\Cron\TDbCronManager" WakeTransport="cronwake" ... />
 ```
 

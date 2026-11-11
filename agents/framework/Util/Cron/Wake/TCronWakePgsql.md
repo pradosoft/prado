@@ -20,7 +20,7 @@
 | `close()` | cancels the watcher and closes the listening connection, which ends its `LISTEN` |
 
 ```xml
-<module id="cronwake" class="Prado\Util\Cron\TCronWakePgsql" ConnectionID="db" PollInterval="0.25" />
+<module id="cronwake" class="Prado\Util\Cron\Wake\TCronWakePgsql" ConnectionID="db" PollInterval="0.25" />
 <module id="cron" class="Prado\Util\Cron\TDbCronManager" ConnectionID="db" WakeTransport="cronwake" Daemon="true" />
 ```
 

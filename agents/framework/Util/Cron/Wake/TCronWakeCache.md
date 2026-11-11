@@ -13,7 +13,7 @@
 `TCronWakeCache` signals through a cache: a wake stores the current microtime under `CacheKey`, and the waiting cron process polls the key every `PollInterval`. A cache that several hosts share, such as memcached or Redis, carries the wake between hosts. The cache is the `CacheID` module, or the application cache when none is set; a `TMemoryCache` reaches only its own process.
 
 ```xml
-<module id="cronwake" class="Prado\Util\Cron\TCronWakeCache" CacheID="memcache" PollInterval="0.5" />
+<module id="cronwake" class="Prado\Util\Cron\Wake\TCronWakeCache" CacheID="memcache" PollInterval="0.5" />
 <module id="cron" class="Prado\Util\Cron\TDbCronManager" WakeTransport="cronwake" ... />
 ```
 

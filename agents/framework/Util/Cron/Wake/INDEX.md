@@ -7,7 +7,7 @@ This file provides guidance to Agents when working with code in this repository.
 
 ## Purpose
 
-The wake transports of [`TCronModule`](../TCronModule.md) (`Prado\Util\Cron\Wake`): a process that schedules a task sends a wake to the cron process waiting for its next trigger, so the task runs on time. [`ICronWakeTransport`](ICronWakeTransport.md) is the seam (`signal`, `wait`, `watch`, `unwatch`, `close`); the module holds one transport as `WakeTransport`, by module ID, and uses it for per-minute waits (`waitForWake()`), the daemon (`watch()`), and `signalWake()`. A wake carries no data; the cron process re-polls its pending tasks.
+The wake transports of [`TCronModule`](../TCronModule.md) (`Prado\Util\Cron\Wake`): a process that schedules a task sends a wake to the cron process waiting for its next trigger, so the task runs on time. [`ICronWakeTransport`](ICronWakeTransport.md) is the seam (`signal`, `wait`, `watch`, `unwatch`, `close`); the module holds one transport as `WakeTransport`, by module ID or as a `<wake>` child element of the cron module, and uses it for per-minute waits (`waitForWake()`), the daemon (`watch()`), and `signalWake()`. A wake carries no data; the cron process re-polls its pending tasks.
 
 ## Transports
 

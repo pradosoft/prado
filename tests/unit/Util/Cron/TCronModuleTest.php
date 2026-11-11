@@ -1071,6 +1071,58 @@ class TCronModuleTest extends \PHPUnit\Framework\TestCase
 		}
 	}
 
+	public function testInit_WakeAndMutexElements()
+	{
+		$suffix = substr(md5(static::class), 0, 6);
+		$wakeFile = sys_get_temp_dir() . '/cronwake-element-' . $suffix;
+		$xmldoc = new TXmlDocument('1.0', 'utf-8');
+		$xmldoc->loadFromString('<module id="cron">
+			<wake class="Prado\\Util\\Cron\\Wake\\TCronWakeFile" WakeFile="' . $wakeFile . '" PollInterval="0.25" />
+			<mutex class="Prado\\Util\\Mutex\\TMemoryMutex" />
+			<job name="elementTask" schedule="0 0 1 1 ? 2000" task="' . TTestCronModuleTask::class . '" />
+		</module>');
+		$this->obj->init($xmldoc);
+		$wake = $this->obj->getWakeTransport();
+		self::assertInstanceOf(TCronWakeFile::class, $wake);
+		self::assertSame($wakeFile, $wake->getWakeFile());
+		self::assertSame(0.25, $wake->getPollInterval());
+		self::assertNull($wake->getID(), 'the element component is not a registered module');
+		self::assertInstanceOf(TMemoryMutex::class, $this->obj->getDaemonMutex());
+		self::assertArrayHasKey('elementTask', $this->obj->getRawTasks(), 'the elements do not disturb the jobs');
+
+		$php = new $this->baseClass();
+		$php->init([
+			'wake' => ['class' => TCronWakeFile::class, 'properties' => ['WakeFile' => $wakeFile, 'PollInterval' => 0.5]],
+			'mutex' => TMemoryMutex::class,
+		]);
+		$wake = $php->getWakeTransport();
+		self::assertInstanceOf(TCronWakeFile::class, $wake);
+		self::assertSame($wakeFile, $wake->getWakeFile());
+		self::assertSame(0.5, $wake->getPollInterval());
+		self::assertInstanceOf(TMemoryMutex::class, $php->getDaemonMutex());
+		self::assertSame([], $php->getRawTasks(), 'the keys are not jobs');
+
+		$cases = [
+			'<module id="cron"><wake PollInterval="1" /></module>' => 'an element without a class',
+			'<module id="cron"><wake class="Prado\\Util\\Mutex\\TMemoryMutex" /></module>' => 'a wake that is not a transport',
+			'<module id="cron"><mutex class="Prado\\Util\\Cron\\Wake\\TCronWakeFile" /></module>' => 'a mutex that is not a mutex',
+		];
+		foreach ($cases as $xml => $message) {
+			$xmldoc = new TXmlDocument('1.0', 'utf-8');
+			$xmldoc->loadFromString($xml);
+			try {
+				(new $this->baseClass())->init($xmldoc);
+				self::fail($message . ' is a configuration error');
+			} catch (TConfigurationException $e) {
+			}
+		}
+		try {
+			(new $this->baseClass())->init(['mutex' => 42]);
+			self::fail('a PHP mutex that is neither an array nor a class is a configuration error');
+		} catch (TConfigurationException $e) {
+		}
+	}
+
 	public function testRunDaemon_RunsTheDueTasksAndRetiresAfterTheLifetime()
 	{
 		$now = $this->obj->fakeNow;

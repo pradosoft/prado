@@ -51,7 +51,9 @@ use Prado\Xml\TXmlDocument;
  *
  * XML configuration style:
  * ```xml
- * <module id="cron" class="Prado\Util\Cron\TCronModule" DefaultUserName="admin">
+ * <module id="cron" class="Prado\Util\Cron\TCronModule" DefaultUserName="admin" Daemon="true">
+ *   <wake class="Prado\Util\Cron\Wake\TCronWakeFile" PollInterval="0.5" />
+ *   <mutex class="Prado\Util\Mutex\TDbMutex" ConnectionID="db" />
  *   <job Name="cronclean" Schedule="0 0 1 * * *" Task="Prado\Util\Cron\TDbCronCleanLogTask" UserName="cron" />
  *   <job Name="dbcacheclean" Schedule="* * * * *" Task="dbcache->flushCacheExpired(true)" />
  *   <job Schedule="0 * * * *" Task="mymoduleid->taskmethod" />
@@ -66,7 +68,10 @@ use Prado\Xml\TXmlDocument;
  *             'class' => 'Prado\Util\Cron\TCronModule',
  *             'properties' => [
  *                 'DefaultUserName' => 'admin',
+ *                 'Daemon' => true,
  *             ],
+ *             'wake' => ['class' => 'Prado\Util\Cron\Wake\TCronWakeFile', 'properties' => ['PollInterval' => 0.5]],
+ *             'mutex' => ['class' => 'Prado\Util\Mutex\TDbMutex', 'properties' => ['ConnectionID' => 'db']],
  *             'jobs' => [
  *                 ['name' => 'cronclean', 'schedule' => '0 0 1 * * *', 'task' => 'Prado\Util\Cron\TDbCronCleanLogTask', 'username' => 'cron'],
  *                 ['name' => 'dbcacheclean', 'schedule' => '* * * * *', 'task' => 'dbcache->flushCacheExpired(true)'],
@@ -78,6 +83,13 @@ use Prado\Xml\TXmlDocument;
  * ```
  * XML `<job>` attribute names are case-insensitive. PHP job keys are lowercase:
  * `name`, `schedule`, `task`, and `username`.
+ *
+ * The `<wake>` element configures the {@see setWakeTransport WakeTransport} and the
+ * `<mutex>` element the {@see setDaemonMutex DaemonMutex} in place, for a transport or
+ * mutex only cron uses: the component of `class` takes the other attributes as properties
+ * and is initialized with its element, without a module ID.  The PHP form is the `wake`
+ * or `mutex` key with `class` and `properties`, or a class name alone.  A transport or
+ * mutex shared with other modules is a module of its own named by the property.
  *
  * The schedule is formatted like a linux crontab schedule expression.
  * {@see \Prado\Util\Cron\TTimeScheduler} parses the schedule and supports 8
@@ -213,6 +225,12 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	public const NAME_KEY = 'name';
 
 	public const USERNAME_KEY = 'username';
+
+	/** The configuration element and PHP key of the {@see setWakeTransport WakeTransport} */
+	public const WAKE_KEY = 'wake';
+
+	/** The configuration element and PHP key of the {@see setDaemonMutex DaemonMutex} */
+	public const MUTEX_KEY = 'mutex';
 
 	/** Key to global state of the last time SystemCron was run */
 	public const LAST_CRON_TIME = 'prado:cron:lastcron';
@@ -360,6 +378,9 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 		}
 		$this->_tasksInstanced = false;
 
+		//read the wake transport and daemon mutex elements
+		$this->readComponentConfiguration($config);
+
 		//read config tasks and schedule
 		$this->readConfiguration($config);
 
@@ -413,8 +434,11 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 		if ($config instanceof \Prado\Xml\TXmlElement) {
 			$isXml = true;
 			$config = $config->getElementsByTagName('job');
-		} elseif (is_array($config) && isset($config['jobs'])) {
-			$config = $config['jobs'];
+		} elseif (is_array($config)) {
+			unset($config[self::WAKE_KEY], $config[self::MUTEX_KEY]);
+			if (isset($config['jobs'])) {
+				$config = $config['jobs'];
+			}
 		}
 		foreach ($config as $properties) {
 			if ($isXml) {
@@ -438,6 +462,70 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 			$this->validateTask($properties);
 			$this->_tasks[$name] = $properties;
 		}
+	}
+
+	/**
+	 * Creates the {@see setWakeTransport WakeTransport} of the `<wake>` element and the
+	 * {@see setDaemonMutex DaemonMutex} of the `<mutex>` element, or of the `wake` and
+	 * `mutex` keys of a PHP configuration.  An absent element leaves the property as set.
+	 * @param null|array|\Prado\Xml\TXmlElement $config the settings for cron
+	 * @throws TConfigurationException when an element has no class, or its class is not a wake transport or mutex
+	 * @since 4.4.0
+	 */
+	protected function readComponentConfiguration($config)
+	{
+		if (($wake = $this->createConfigComponent($config, self::WAKE_KEY, ICronWakeTransport::class, 'cron_waketransport_invalid')) !== null) {
+			$this->setWakeTransport($wake);
+		}
+		if (($mutex = $this->createConfigComponent($config, self::MUTEX_KEY, IMutex::class, 'cron_daemonmutex_invalid')) !== null) {
+			$this->setDaemonMutex($mutex);
+		}
+	}
+
+	/**
+	 * Creates the component of one child element of the configuration: the `class` attribute
+	 * names the class, the other attributes are its properties, and a module is initialized
+	 * with the element.  The PHP form is an array with `class` and `properties`, or a class name.
+	 * @param null|array|\Prado\Xml\TXmlElement $config the settings for cron
+	 * @param string $tag the element tag name, and the PHP key
+	 * @param string $type the class or interface the component must be
+	 * @param string $error the message key when the component is not `$type`
+	 * @throws TConfigurationException when the element has no class, or the component is not `$type`
+	 * @return ?object the component, or null when the configuration has no such element
+	 * @since 4.4.0
+	 */
+	protected function createConfigComponent($config, string $tag, string $type, string $error): ?object
+	{
+		if ($config instanceof TXmlElement) {
+			if (($element = $config->getElementByTagName($tag)) === null) {
+				return null;
+			}
+			$properties = $element->getAttributes()->toArray();
+			$class = $properties['class'] ?? null;
+			unset($properties['class']);
+		} elseif (is_array($config) && isset($config[$tag])) {
+			$element = is_string($config[$tag]) ? ['class' => $config[$tag]] : $config[$tag];
+			if (!is_array($element)) {
+				throw new TConfigurationException('cron_component_class_required', $tag);
+			}
+			$class = $element['class'] ?? null;
+			$properties = $element['properties'] ?? [];
+			unset($element['class'], $element['properties']);
+		} else {
+			return null;
+		}
+		if (!is_string($class) || $class === '') {
+			throw new TConfigurationException('cron_component_class_required', $tag);
+		}
+		$component = Prado::createComponent($class);
+		if (!($component instanceof $type)) {
+			throw new TConfigurationException($error, $class);
+		}
+		$component->setSubProperties($properties);
+		if ($component instanceof \Prado\IModule) {
+			$component->init($element);
+		}
+		return $component;
 	}
 
 	/**
