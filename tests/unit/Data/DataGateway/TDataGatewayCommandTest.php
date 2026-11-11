@@ -2,11 +2,13 @@
 
 namespace Prado\Test\Unit\Data\DataGateway;
 
+use Prado\Data\Common\IDataCommandBuilder;
 use Prado\Data\Common\Sqlite\TSqliteMetaData;
 use Prado\Collections\TAttributeCollection;
 use Prado\Data\DataGateway\IDataCriteria;
 use Prado\Data\DataGateway\TDataGatewayCommand;
 use Prado\Data\DataGateway\TSqlCriteria;
+use Prado\Data\IDataCommand;
 use Prado\Data\TDbConnection;
 use Prado\Exceptions\TDbException;
 use Prado\Test\Unit\PradoUnit;
@@ -238,6 +240,23 @@ class TDataGatewayCommandTest extends \PHPUnit\Framework\TestCase
 			$param->setResult(0);
 		});
 		$this->assertFalse($command->upsert(['a' => 2, 'b' => 'y', 'val' => 'v']));
+	}
+
+	public function testInsertInsertOrIgnoreAndUpsertRunACommandThatIsNotSqlBacked()
+	{
+		// IDataCommand has no prepare(); only an IDbCommand compiles a statement.
+		$dataCommand = $this->createMock(IDataCommand::class);
+		$dataCommand->expects($this->exactly(3))->method('execute')->willReturn(1);
+		$builder = $this->createMock(IDataCommandBuilder::class);
+		$builder->method('createInsertCommand')->willReturn($dataCommand);
+		$builder->method('createInsertOrIgnoreCommand')->willReturn($dataCommand);
+		$builder->method('createUpsertCommand')->willReturn($dataCommand);
+		$builder->method('getLastInsertID')->willReturn(7);
+		$command = new TDataGatewayCommand($builder);
+
+		$this->assertSame(7, $command->insert(['name' => 'n']));
+		$this->assertSame(7, $command->insertOrIgnore(['name' => 'n']));
+		$this->assertSame(7, $command->upsert(['name' => 'n']));
 	}
 
 	public function testFindAllWithANonSqlCriteriaMatchesEveryRow()

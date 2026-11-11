@@ -11,6 +11,7 @@
 namespace Prado\Data\Common\Firebird;
 
 use PDOStatement;
+use Prado\Data\IDataCommand;
 use Prado\Data\TDbCommand;
 use Prado\Data\Common\TDbCommandBuilder;
 
@@ -36,9 +37,9 @@ class TFirebirdCommandBuilder extends TDbCommandBuilder
 	 * Requires an active transaction; throws TDbException otherwise.
 	 * Uses Firebird MERGE with USING (SELECT ... FROM RDB$DATABASE) and no AS keyword for aliases.
 	 * @param array $data name-value pairs of data to be inserted.
-	 * @return TDbCommand insert-or-ignore MERGE command.
+	 * @return IDataCommand insert-or-ignore MERGE command.
 	 */
-	public function createInsertOrIgnoreCommand(array $data): TDbCommand
+	public function createInsertOrIgnoreCommand(array $data): IDataCommand
 	{
 		$this->assertActiveTransaction();
 		$this->clearInsertIdentity();
@@ -61,9 +62,9 @@ class TFirebirdCommandBuilder extends TDbCommandBuilder
 	 * @param array $data name-value pairs of data to insert.
 	 * @param null|array $updateData null, column-name list, explicit col=>value map, or mixed; controls what is updated on conflict.
 	 * @param null|array $conflictColumns conflict target columns; null = primary key columns.
-	 * @return TDbCommand upsert MERGE command.
+	 * @return IDataCommand upsert MERGE command.
 	 */
-	public function createUpsertCommand(array $data, ?array $updateData = null, ?array $conflictColumns = null): TDbCommand
+	public function createUpsertCommand(array $data, ?array $updateData = null, ?array $conflictColumns = null): IDataCommand
 	{
 		$this->assertActiveTransaction();
 		$this->clearInsertIdentity();

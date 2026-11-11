@@ -2,6 +2,8 @@
 
 namespace Prado\Test\Unit\Data\DbSpecific\Sqlite\TableGateway;
 
+use Prado\Collections\TAttributeCollection;
+use Prado\Data\DataGateway\IDataCriteria;
 use Prado\Data\DataGateway\TSqlCriteria;
 use Prado\Data\DataGateway\TTableGateway;
 use Prado\Data\TDbConnection;
@@ -414,6 +416,46 @@ class TTableGatewaySqliteIntegrationTest extends \PHPUnit\Framework\TestCase
 		} catch (TDbException $e) {
 			$this->assertSame('dbtablegateway_invalid_criteria', $e->getErrorCode());
 		}
+	}
+
+	public function testACriteriaThatIsNotASqlCriteriaIsPassedToTheBuilder(): void
+	{
+		// The criteria of a driver that is not SQL-backed implements IDataCriteria only.
+		$criteria = new class () implements IDataCriteria {
+			public function getParameters()
+			{
+				return new TAttributeCollection();
+			}
+
+			public function getOrdersBy()
+			{
+				return new TAttributeCollection(['name' => 'desc']);
+			}
+
+			public function getLimit()
+			{
+				return -1;
+			}
+
+			public function getOffset()
+			{
+				return -1;
+			}
+
+			public function getSelect()
+			{
+				return '*';
+			}
+		};
+		$this->insertRow('Alice');
+		$this->insertRow('Bob');
+
+		$names = [];
+		foreach (self::$gw->findAll($criteria) as $row) {
+			$names[] = $row['name'];
+		}
+		$this->assertSame(['Bob', 'Alice'], $names);
+		$this->assertSame(2, self::$gw->count($criteria));
 	}
 
 	public function testMagicDeleteByRemovesMatchingRows(): void
