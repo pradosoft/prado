@@ -266,7 +266,7 @@ class TMemCache extends TCache
 	 * Override in a subclass to substitute a mock or alternative implementation.
 	 * @param ?string $persistentId the persistent ID; null creates a non-persistent instance
 	 * @return \Memcached the new Memcached instance
-	 * @since 4.3.3
+	 * @since 4.4.0
 	 */
 	protected function newMemcached($persistentId): object
 	{
@@ -275,7 +275,7 @@ class TMemCache extends TCache
 
 	/**
 	 * @return ?\Memcached the underlying Memcached instance, or null before initialization
-	 * @since 4.3.3
+	 * @since 4.4.0
 	 */
 	protected function getCacheDirect(): ?object
 	{
@@ -284,7 +284,7 @@ class TMemCache extends TCache
 
 	/**
 	 * @param ?\Memcached $value the underlying Memcached instance
-	 * @since 4.3.3
+	 * @since 4.4.0
 	 */
 	protected function setCacheDirect($value): void
 	{

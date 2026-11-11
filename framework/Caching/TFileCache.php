@@ -778,7 +778,7 @@ class TFileCache extends TSerializingCache implements ICacheSize
 
 	/**
 	 * Sets a file's modification time. {@see writeEntry()} sets it to the entry's absolute
-	 * expiry (`0` for never-expire) so that {@see deleteExpiredFiles()} and
+	 * expiry ({@see NEVER_EXPIRES_MTIME} for never-expire) so that {@see deleteExpiredFiles()} and
 	 * {@see evictToFitMaximumSize()} can read the expiry from `filemtime()` without opening
 	 * the file. The PHP stat cache for the path is cleared so the new mtime is seen
 	 * immediately within the same request.

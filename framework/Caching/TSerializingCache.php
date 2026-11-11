@@ -57,7 +57,7 @@ abstract class TSerializingCache extends TCache
 	/** serialization type constant for JSON encode/decode */
 	public const SERIALIZATION_JSON = 'JSON';
 
-	/** serialization type constant for JSON encode/decode */
+	/** default serialization type ({@see SERIALIZATION_PHP}) */
 	public const DEFAULT_SERIALIZATION_TYPE = self::SERIALIZATION_PHP;
 
 	/** encoding constant: store the payload verbatim (no encoding) */

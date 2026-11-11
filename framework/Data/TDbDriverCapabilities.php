@@ -91,9 +91,9 @@ class TDbDriverCapabilities
 	 *   Modern SQL Server connections use `'sqlsrv'` ({@see TDbDriver::DRIVER_SQLSRV})
 	 *   or `'dblib'` ({@see TDbDriver::DRIVER_DBLIB}).
 	 *
-	 * All capability methods in this class that accept a driver name delegate
-	 * alias resolution to this method, so callers may pass either the canonical
-	 * or the legacy name interchangeably.
+	 * {@see resolveCharset} and {@see unresolveCharset} resolve aliases through this
+	 * method; the other capability methods take the canonical PDO driver name, as
+	 * {@see \Prado\Data\TDbConnection::getDriverName} returns it.
 	 *
 	 * @param string $driver PDO driver name, possibly a legacy alias.
 	 * @return string the canonical PDO driver name.
@@ -720,7 +720,7 @@ class TDbDriverCapabilities
 	 *
 	 * The query must return a result set whose first column contains the table
 	 * name. Used by the ActiveRecord code-generation action
-	 * ({@see \Prado\Shell\Actions\TActiveRecordAction}).
+	 * (the prado-activerecord package's `TActiveRecordAction`).
 	 *
 	 * @param string $driver PDO driver name (lowercase)
 	 * @return ?string SQL query string, or null
@@ -1100,7 +1100,7 @@ class TDbDriverCapabilities
 		}
 		$class = array_pop($driverClasses);
 		if (!is_string($class) || !is_a($class, IDataMetaData::class, true)) {
-			throw new TDbException('dbmetadata_not_meta_data', is_string($class) ? $class : $class::class, IDataMetaData::class);
+			throw new TDbException('dbmetadata_not_meta_data', is_string($class) ? $class : get_debug_type($class), IDataMetaData::class);
 		}
 		return $class;
 	}

@@ -35,6 +35,15 @@ class TDbLogRouteTest extends \PHPUnit\Framework\TestCase
 		
 		$route->setRetainPeriod('20');
 		$this->assertEquals(20, $route->getRetainPeriod());
+
+		$this->assertNull(TDbLogRoute::timespanToSeconds('bogus'));
+		try {
+			$route->setRetainPeriod('bogus');
+			$this->fail('An invalid retain period throws TConfigurationException');
+		} catch (\Prado\Exceptions\TConfigurationException $e) {
+			$this->assertEquals('dblogroute_bad_retain_period', $e->getErrorCode());
+		}
+		$this->assertEquals(20, $route->getRetainPeriod());
 		
 		$route->setRetainPeriod(30);
 		$this->assertEquals(30, $route->getRetainPeriod());

@@ -79,9 +79,11 @@ use Prado\Web\UI\TRenderFilterParameter;
  * marked when MarkLimit is set, since the marks elsewhere in the target are unknown.
  *
  * A DepthLimit raises the {@see \Prado\Web\UI\TControl::getRenderFilterDepth} of
- * the target to at least the limit, so the other render filters of the target see
- * the same levels or more. Each control marks the levels of its own DepthLimit
- * ({@see TRenderFilterParameter::setDepthLimit}).
+ * the target to at least the limit, so the target writes depth markers to that
+ * level. A target whose RenderFilterDepth was 0 (all output) then shows its other
+ * render filters only that many levels; a handler that needs all of the output
+ * calls {@see TRenderFilterParameter::setDepthLimit} with 0. Each control marks
+ * the levels of its own DepthLimit.
  *
  * Accessibility: a mark keeps the text, so the names of links and buttons that
  * hold a term are unchanged. Do not add a `role` or `aria-label` to the control.
@@ -223,15 +225,16 @@ abstract class TBaseTerm extends THtmlElement implements \Prado\IDataRenderer
 
 	/**
 	 * Marks the occurrences of the terms in the rendered output of the target,
-	 * to the DepthLimit. This is the `onRenderFilter` handler on the target. The
-	 * handlers that follow see the depth of output they saw before.
+	 * to the DepthLimit, or to the marked depth of the output when that is less.
+	 * This is the `onRenderFilter` handler on the target. The handlers that
+	 * follow see the depth of output they saw before.
 	 * @param mixed $sender the target
 	 * @param TRenderFilterParameter $param the rendered output of the target
 	 */
 	public function markTerms($sender, $param)
 	{
 		$depth = $param->getDepthLimit();
-		$param->setDepthLimit($this->getDepthLimit());
+		$param->setDepthLimit(min($this->getDepthLimit(), $param->getDepthMax()));
 		try {
 			$this->markOutput($param);
 		} finally {

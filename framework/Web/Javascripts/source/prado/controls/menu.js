@@ -22,10 +22,14 @@ Prado.WebUI.TDropdownMenu = Prado.Class(Prado.WebUI.Control,
 			return;
 		this.element.setAttribute('role', 'menu');
 		this.refreshItems();
-		for (const invoker of this.getInvokers()) {
+		const invokers = this.getInvokers();
+		for (const invoker of invokers) {
 			invoker.setAttribute('aria-haspopup', 'menu');
 			this.observe(invoker, 'keydown', (event) => this.onInvokerKeyDown(event, invoker));
 		}
+		// The menu-button pattern names the menu after its button.
+		if (invokers.length > 0 && !this.element.hasAttribute('aria-labelledby') && invokers[0].id)
+			this.element.setAttribute('aria-labelledby', invokers[0].id);
 		this.observe(this.element, 'toggle', (event) => this.onToggle(event));
 		this.observe(this.element, 'keydown', (event) => this.onKeyDown(event));
 		this.observe(this.element, 'click', (event) => this.onClick(event));
@@ -194,6 +198,7 @@ Prado.WebUI.TContextMenu = Prado.Class(Prado.WebUI.TDropdownMenu,
 			return;
 		this.pointerDown = false;
 		this.pending = null;
+		this.target.setAttribute('aria-haspopup', 'menu');
 		this.observe(this.target, 'pointerdown', (event) => {
 			this.pointerDown = event.button === 2 || event.pointerType === 'touch';
 		});

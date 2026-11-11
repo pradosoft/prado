@@ -1087,7 +1087,7 @@ class TComponentReflectionTest extends TestCase
 		$this->assertSame(ReflectionFixtureComponent::class, $rm->getDeclaringClass()->getName());
 	}
 
-	public function testGetReflectionMethodByTypeBehaviorMethodCachedByBehaviorId(): void
+	public function testGetReflectionMethodByTypeBehaviorMethodCachedByBehaviorClass(): void
 	{
 		$component1 = new ReflectionFixtureComponent();
 		$behavior1 = new ReflectionTestBehavior();
@@ -1101,15 +1101,15 @@ class TComponentReflectionTest extends TestCase
 		$rm2 = TComponentReflection::getReflectionMethodByType($component2, 'behaviorOnlyMethod');
 
 		// Both return valid ReflectionMethod instances reflecting the same behavior class method.
-		// Each behavior instance has its own cache key (spl_object_id of the behavior).
+		// The cache key is the behavior class, so instances of one behavior class share the entry.
 		$this->assertInstanceOf(\ReflectionMethod::class, $rm1);
 		$this->assertInstanceOf(\ReflectionMethod::class, $rm2);
 		$this->assertSame('behaviorOnlyMethod', $rm1->getName());
 		$this->assertSame('behaviorOnlyMethod', $rm2->getName());
 		$this->assertSame(ReflectionTestBehavior::class, $rm1->getDeclaringClass()->getName());
 		$this->assertSame(ReflectionTestBehavior::class, $rm2->getDeclaringClass()->getName());
-		// Different behavior objects → different ReflectionMethod objects
-		$this->assertNotSame($rm1, $rm2);
+		// Same behavior class → the same cached ReflectionMethod object
+		$this->assertSame($rm1, $rm2);
 	}
 
 	public function testGetReflectionMethodByTypeClassMethodSharedAcrossInstances(): void

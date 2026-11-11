@@ -96,7 +96,7 @@ class TConfirmSubmit extends THtmlElement
 		$this->setEnsureId(true);
 		$cs = $this->getPage()->getClientScript();
 		$cs->registerPradoScript('confirmsubmit');
-		$cs->registerPostBackControl(self::CLIENT_CLASS, $this->getClientOptions());
+		$cs->registerPostBackControl(static::CLIENT_CLASS, $this->getClientOptions());
 		parent::render($writer);
 		$this->renderConfirmDialog($writer);
 	}

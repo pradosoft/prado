@@ -326,6 +326,8 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 				$pdo->exec($sql);
 			}
 		} catch (PDOException $e) {
+			$this->_pdo = null;
+			$this->_active = false;
 			throw new TDbException('dbconnection_open_failed', $e->getMessage());
 		}
 	}
@@ -349,12 +351,6 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	{
 		$driver = $this->extractDriverFromDsn($dsn);
 		if ($driver === null) {
-			return null;
-		}
-
-		$pattern = TDbDriverCapabilities::getCharsetDsnPattern($driver);
-
-		if ($pattern === null) {
 			return null;
 		}
 
@@ -706,8 +702,8 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	 */
 	public function setCharset($value)
 	{
-		$driver = $this->getDriverName();
-		if ($this->getActive() && !TDbDriverCapabilities::supportsRuntimeCharsetSet($driver)) {
+		$driver = $this->getActive() ? $this->getDriverName() : null;
+		if ($driver !== null && !TDbDriverCapabilities::supportsRuntimeCharsetSet($driver)) {
 			throw new TDbException('dbconnection_charset_unchangeable', $driver);
 		}
 		$value = TPropertyValue::ensureString($value);
@@ -717,7 +713,7 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 		// SQLite: PRAGMA encoding is silently ignored when tables already exist.
 		// Read back the actual encoding so _charset reflects what the DB has,
 		// not what was requested.
-		if ($this->getActive() && TDbDriverCapabilities::requiresPostConnectCharsetReadback($driver)) {
+		if ($driver !== null && TDbDriverCapabilities::requiresPostConnectCharsetReadback($driver)) {
 			$charsetQuerySql = TDbDriverCapabilities::getCharsetQuerySql($driver);
 			if ($charsetQuerySql !== null) {
 				$actual = $this->getPdoInstance()->query($charsetQuerySql)->fetchColumn();
@@ -1223,6 +1219,9 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	 */
 	public function getHasAutoCommit(): bool
 	{
+		if (!$this->getActive() && $this->getConnectionString() === '') {
+			return true;
+		}
 		return TDbDriverCapabilities::hasAutoCommitAttribute($this->getDriverName());
 	}
 

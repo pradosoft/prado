@@ -8,7 +8,9 @@
 
 namespace Prado\IO;
 
-define('PRADO_TAR_DIR_DEFAULT', true);
+if (!defined('PRADO_TAR_DIR_DEFAULT')) {
+	define('PRADO_TAR_DIR_DEFAULT', true);
+}
 
 /**
  * TTarFileExtractor class
@@ -583,7 +585,7 @@ class TTarFileExtractor
 	 */
 	public function extract(string $p_destPath = ''): bool
 	{
-		return $this->extractModify($p_destPath);
+		return $this->extractModify($p_destPath !== '' ? $p_destPath : (string) getcwd());
 	}
 
 	// =========================================================================
@@ -654,17 +656,14 @@ class TTarFileExtractor
 	/**
 	 * Enables or disables atomic extraction.
 	 *
-	 * When false (the default) files are written directly to the destination.
-	 * If {@see getRestoreOnFailure()} is also true (the default), pre-existing
-	 * files are backed up before overwriting and restored on failure.
+	 * When false (the default) files are written directly to the destination;
+	 * pre-existing files are backed up before overwriting and restored on failure.
 	 *
 	 * When true, files are staged in a private temp directory first; the
 	 * destination is modified only during the final merge phase, which backs up
 	 * any overwritten files so they can be restored on failure.  Atomic mode
 	 * provides a stronger all-or-nothing guarantee at the cost of extra I/O and
 	 * temporary disk space.
-	 *
-	 * Note: {@see getRestoreOnFailure()} has no bearing on atomic extraction.
 	 *
 	 * @param bool $value
 	 * @return static $this For method chaining.
@@ -837,12 +836,13 @@ class TTarFileExtractor
 	 * An unrecognised non-callable value falls back to
 	 * {@see resolveConflictOverwriteExisting()} (always overwrite).
 	 *
+	 * @param mixed $conflictMode a CONFLICT_* constant or callable; null uses {@see getConflictMode()}
 	 * @return callable(array,string,?string&):bool
 	 * @since 4.3.3
 	 */
-	protected function getConflictModeFunction(): callable
+	protected function getConflictModeFunction(mixed $conflictMode = null): callable
 	{
-		$conflictMode = $this->getConflictMode();
+		$conflictMode ??= $this->getConflictMode();
 		return match (true) {
 			$conflictMode === self::CONFLICT_ERROR => [$this, 'resolveConflictError'],
 			$conflictMode === self::CONFLICT_SKIP => [$this, 'resolveConflictSkipTar'],
@@ -1857,14 +1857,6 @@ class TTarFileExtractor
 		// letting callers distinguish security violations from conflict skips.
 		// ------------------------------------------------------------------
 		$recordEntryDetail = function (array $fileInfo, ?string $extractedPath, ?string $reason = null, ?string $security = null) use (&$p_manifest): void {
-			/*
-			$normKey = $fileInfo['filepath_norm'] ?? rtrim($fileInfo['filepath'] ?? '', '/\\');
-			if (($fileInfo['typeflag'] ?? 0) === self::TYPE_DIRECTORY) {
-				$mapKey = rtrim((string) $normKey, '/\\') . DIRECTORY_SEPARATOR;
-			} else {
-				$mapKey = (string) $normKey;
-			}
-			*/
 			$mapKey = $fileInfo['tarpath_norm'];
 
 			$fileInfo['path'] = $mapKey;
@@ -2039,7 +2031,7 @@ class TTarFileExtractor
 			$v_conflict_reason = null;
 
 			if ($typeFlag !== self::TYPE_DIRECTORY && $v_preexisted && $conflictMode !== null) {
-				$conflictModeFunction = $this->getConflictModeFunction();
+				$conflictModeFunction = $this->getConflictModeFunction($conflictMode);
 				$v_skip_conflict = !$conflictModeFunction($v_header, $extractedPath, $v_conflict_reason);
 			}
 
@@ -2653,8 +2645,9 @@ class TTarFileExtractor
 	/**
 	 * Returns the base directory under which staging directories are created.
 	 *
-	 * Defaults to {@see sys_get_temp_dir()}.  Override in a subclass or test
-	 * double to redirect staging I/O to a controlled location.
+	 * Defaults to the destination directory, so the final merge is a rename on the
+	 * same filesystem.  Override in a subclass or test double to redirect staging
+	 * I/O to a controlled location.
 	 *
 	 * @since 4.3.3
 	 * @param string $p_destPath
@@ -3083,10 +3076,11 @@ class TTarFileExtractor
 		$returnVar = -1;
 		exec($cmd, $output, $returnVar);
 
-		if (!file_exists($tempFile)) {
+		if ($returnVar !== 0 || !file_exists($tempFile) || filesize($tempFile) === 0) {
+			@unlink($tempFile);
 			return $returnVar !== 0
 				? "Unable to decompress archive via CLI: command failed (exit $returnVar)"
-				: "Unable to decompress archive via CLI: temp file not created '$tempFile'";
+				: "Unable to decompress archive via CLI: no output written to '$tempFile'";
 		}
 
 		if ($isTemporary) {

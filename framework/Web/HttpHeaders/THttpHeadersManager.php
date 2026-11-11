@@ -119,7 +119,7 @@ use Prado\Xml\TXmlElement;
  *
  * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
  * @author Brad Anderson <belisoful@icloud.com>
- * @since 4.3.3
+ * @since 4.4.0
  */
 class THttpHeadersManager extends TModule
 {

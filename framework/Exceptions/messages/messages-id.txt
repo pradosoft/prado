@@ -11,6 +11,7 @@ pageservice_page_unknown				= Halaman ''{0}'' tidak ditemukan.
 pageservice_security_violation			= TPageService tidak dapat mengakses direktori tambahan ''{0}''.
 
 page_csrf_token_invalid					= Halaman ini memerlukan token CSRF yang valid.
+service_csrf_token_invalid				= Layanan ''{0}'' memerlukan token CSRF yang valid.
 
 pagestatepersister_pagestate_corrupted	= Kondisi halaman rusak.
 cachepagestatepersister_pagestate_corrupted	= Kondisi halaman rusak.

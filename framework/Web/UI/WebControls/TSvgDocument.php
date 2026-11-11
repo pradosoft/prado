@@ -68,6 +68,9 @@ class TSvgDocument
 	 */
 	public function __construct(string $markup)
 	{
+		if (trim($markup) === '') {
+			throw new TInvalidDataValueException('svgdocument_invalid');
+		}
 		$doc = new DOMDocument();
 		$previous = libxml_use_internal_errors(true);
 		try {

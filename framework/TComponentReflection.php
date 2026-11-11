@@ -51,12 +51,12 @@ class TComponentReflection extends \Prado\TComponent
 
 	/** @var array<string,?\ReflectionMethod> Cached ReflectionMethod instances. Class-level entries use
 	 *   "{class}::{method}" lowercased (shared across all instances). Behavior-contributed methods use
-	 *   "{spl_object_id of behavior}::{method}" (shared across any component the behavior is attached to).
+	 *   "{behavior class}::{method}" lowercased (shared across any component the behavior is attached to).
 	 *   @since 4.4.0 */
 	private static array $_reflection_method_cache = [];
 
 	/** @var array<string,?\ReflectionProperty> Cached ReflectionProperty instances, keyed by
-	 *   "{class}::{property}" lowercased (shared across all instances).
+	 *   "{class}::{property}" with the class lowercased (shared across all instances).
 	 *   @since 4.4.0 */
 	private static array $_reflection_property_cache = [];
 
@@ -115,8 +115,8 @@ class TComponentReflection extends \Prado\TComponent
 	 * When the class does not have the method and the parameter is a
 	 * {@see \Prado\TComponent} instance with enabled behaviors, each behavior is
 	 * queried via {@see \Prado\Prado::method_visible()}. Behavior-contributed
-	 * methods are cached by the behavior's own `spl_object_id`, so the same
-	 * behavior instance attached to different components shares its cache.
+	 * methods are cached by the behavior's class name, so every instance of a
+	 * behavior class shares its cache.
 	 *
 	 * @param object|string $class  Class name or instance.
 	 * @param string        $method Method name.
@@ -154,7 +154,7 @@ class TComponentReflection extends \Prado\TComponent
 				if (!$behavior->getEnabled()) {
 					continue;
 				}
-				$behaviorKey = strtolower(spl_object_id($behavior) . '::' . $method);
+				$behaviorKey = strtolower($behavior::class . '::' . $method);
 				if (!array_key_exists($behaviorKey, self::$_reflection_method_cache)) {
 					if (Prado::method_visible($behavior, $method)) {
 						self::$_reflection_method_cache[$behaviorKey] = new \ReflectionMethod($behavior, $method);
@@ -198,7 +198,7 @@ class TComponentReflection extends \Prado\TComponent
 	public static function getReflectionPropertyByType(string|object $class, string $property): ?\ReflectionProperty
 	{
 		$className = is_object($class) ? $class::class : $class;
-		$key = strtolower($className . '::' . $property);
+		$key = strtolower($className) . '::' . $property;
 
 		if (array_key_exists($key, self::$_reflection_property_cache)) {
 			return self::$_reflection_property_cache[$key];

@@ -420,9 +420,9 @@ abstract class TBaseBehavior extends TApplicationComponent implements IBaseBehav
 
 	/**
 	 * This throws an exception if there is no owner on the behavior.
-	 * @param string $property     The name of the Property requiring no owner.
+	 * @param string $property     The name of the Property requiring an owner.
 	 * @param string $exceptionKey The key name of the exception message, default is null
-	 *							   and uses {@see getWithoutOwnerExceptionKey()} for the
+	 *							   and uses {@see getOwnerExceptionKey()} for the
 	 *							   backup default message.
 	 * @since 4.3.3
 	 */

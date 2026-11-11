@@ -684,6 +684,7 @@ class TMemoryCache extends TSerializingCache implements IModuleDependency, ICach
 				unset($this->_entrySizes[$key], $this->_accessTimes[$key]);
 			}
 			$this->clearStoreEntry($key);
+			$this->setChangedDirect(true);
 			if ($this->getMaximumSizeDirect() > 0 && $this->getCurrentSizeDirect() >= 0) {
 				$this->setSizeFingerprintDirect($this->computeSizeFingerprint());
 			}
