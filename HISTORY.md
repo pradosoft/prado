@@ -1,4 +1,6 @@
 ## Version 4.4.0 - TBA
+BUG: `TFileCacheDependency` and `TDirectoryCacheDependency` clear PHP's stat cache before each read, so a long-lived process sees a file changed by another process. (belisoful)
+ENH: The constructor argument of `TFileCacheDependency`, `TDirectoryCacheDependency`, and `TGlobalStateCacheDependency` is optional, so each is created from configuration and set through `FileName`, `Directory`, or `StateName`; `getHasChanged()` is false until then. (belisoful)
 BUG: Issue #1515 - `TCache::getIsAvailable()` has a default that returns true; it was abstract, so a third-party cache class written for 4.3 failed to load on 4.4. A backend with an extension or service prerequisite overrides it. (belisoful)
 BUG: Issue #1513 - `TTableGateway` accepts any `IDataCriteria` as a criteria object and passes it to the command builder; it threw `dbtablegateway_invalid_criteria` for the criteria of a driver that is not SQL-backed. (belisoful)
 BUG: Issue #1513 - `IDataCommandBuilder` declares `setDbConnection()`, which `TActiveRecordGateway` calls on every builder, and `IDbCommandBuilder` declares `getIndexCondition()`, which `TDataGatewayCommand::getIndexKeyCondition()` calls; a driver extension's builder that lacked them failed with `TUnknownMethodException`. (belisoful)

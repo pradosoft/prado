@@ -65,6 +65,34 @@ class TGlobalStateCacheDependencyTest extends \PHPUnit\Framework\TestCase
 	}
 
 	// -------------------------------------------------------------------------
+	// Construction without a state name
+	// -------------------------------------------------------------------------
+
+	public function testConstructorWithoutStateNameReportsUnchanged(): void
+	{
+		$dep = Prado::createComponent(TGlobalStateCacheDependency::class);
+		$this->assertSame('', $dep->getStateName());
+		$this->assertFalse($dep->getHasChanged());
+
+		$dep->updateStateValue();
+		$this->assertFalse($dep->getHasChanged());
+	}
+
+	public function testStateNamePropertyAfterConstructorWithoutStateName(): void
+	{
+		Prado::getApplication()->setGlobalState(self::$_prefix . 'key', 'before');
+
+		$dep = Prado::createComponent(TGlobalStateCacheDependency::class);
+		$dep->StateName = self::$_prefix . 'key';
+
+		$this->assertSame(self::$_prefix . 'key', $dep->getStateName());
+		$this->assertFalse($dep->getHasChanged());
+
+		Prado::getApplication()->setGlobalState(self::$_prefix . 'key', 'after');
+		$this->assertTrue($dep->getHasChanged());
+	}
+
+	// -------------------------------------------------------------------------
 	// setStateName
 	// -------------------------------------------------------------------------
 

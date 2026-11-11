@@ -21,7 +21,7 @@ use Prado\Caching\TGlobalStateCacheDependency;
  */
 class TTestGlobalStateCacheDependency extends TGlobalStateCacheDependency
 {
-	public function pubGetStateNameDirect(): string
+	public function pubGetStateNameDirect(): ?string
 	{
 		return $this->getStateNameDirect();
 	}

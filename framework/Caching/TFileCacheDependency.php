@@ -18,28 +18,39 @@ namespace Prado\Caching;
  * The dependency is reported as unchanged if and only if the file's
  * last modification time remains unchanged.
  *
+ * Each read of the modification time clears PHP's stat cache for the file, so a
+ * long-lived process sees a change made by another process.
+ *
+ * The constructor argument is optional. A dependency created without it, as from
+ * configuration, is given its file through {@see setFileName FileName} and
+ * reports unchanged until then.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.1.0
  */
 class TFileCacheDependency extends TCacheDependency
 {
-	/** @var string absolute path to the tracked file */
+	/** @var ?string absolute path to the tracked file, or `null` before it is set */
 	private $_fileName;
 	/** @var false|int last recorded modification time of the file */
-	private $_timestamp;
+	private $_timestamp = false;
 
 	/**
 	 * Constructor.
-	 * @param string $fileName name of the file whose change is to be checked.
+	 * @param ?string $fileName name of the file whose change is to be checked, or `null`
+	 *   to set it later through {@see setFileName FileName}.
 	 */
-	public function __construct($fileName)
+	public function __construct($fileName = null)
 	{
-		$this->setFileName($fileName);
+		if ($fileName !== null) {
+			$this->setFileName($fileName);
+		}
 		parent::__construct();
 	}
 
 	/**
-	 * @return string the name of the file whose change is to be checked
+	 * @return ?string the name of the file whose change is to be checked, or `null`
+	 *   before it is set.
 	 */
 	public function getFileName()
 	{
@@ -72,11 +83,26 @@ class TFileCacheDependency extends TCacheDependency
 	 */
 	public function updateTimestamp()
 	{
-		$this->setTimestamp(@filemtime($this->getFileName()));
+		$fileName = $this->getFileName();
+		$this->setTimestamp($fileName === null ? false : $this->readFileTime($fileName));
 	}
 
 	/**
-	 * @return int the last modification time of the file
+	 * Reads a file's modification time from the file system. PHP's stat cache is cleared
+	 * for the file first, so the read reflects a change made by another process.
+	 * @param string $fileName path of the file.
+	 * @return false|int the modification time, or `false` when the file cannot be read.
+	 * @since 4.4.0
+	 */
+	protected function readFileTime(string $fileName): false|int
+	{
+		clearstatcache(true, $fileName);
+		return @filemtime($fileName);
+	}
+
+	/**
+	 * @return false|int the last recorded modification time of the file, or `false` when
+	 *   the file did not exist or no file name is set.
 	 */
 	public function getTimestamp()
 	{
@@ -93,10 +119,15 @@ class TFileCacheDependency extends TCacheDependency
 	}
 
 	/**
-	 * @return bool true if the file's last modification time has changed.
+	 * @return bool true if the file's last modification time has changed; false before
+	 *   the file name is set.
 	 */
 	public function getHasChanged(): bool
 	{
-		return @filemtime($this->getFileName()) !== $this->getTimestamp();
+		$fileName = $this->getFileName();
+		if ($fileName === null) {
+			return false;
+		}
+		return $this->readFileTime($fileName) !== $this->getTimestamp();
 	}
 }

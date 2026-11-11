@@ -52,9 +52,9 @@ All caching in Prado 5 is PSR compliant. A new application reaches its cache thr
 
 ## Cache Dependencies
 
-- **[`TFileCacheDependency`](TFileCacheDependency.md)** — Invalidates when a file's `mtime` changes.
-- **[`TDirectoryCacheDependency`](TDirectoryCacheDependency.md)** — Invalidates when any file in a directory changes. Properties: `RecursiveCheck`, `RecursiveLevel`. Override `validateFile()`/`validateDirectory()` for custom filtering.
-- **[`TGlobalStateCacheDependency`](TGlobalStateCacheDependency.md)** — Invalidates when a named Prado global state variable changes.
+- **[`TFileCacheDependency`](TFileCacheDependency.md)** — Invalidates when a file's `mtime` changes. Property: `FileName`.
+- **[`TDirectoryCacheDependency`](TDirectoryCacheDependency.md)** — Invalidates when any file in a directory changes. Properties: `Directory`, `RecursiveCheck`, `RecursiveLevel`. Override `validateFile()`/`validateDirectory()` for custom filtering.
+- **[`TGlobalStateCacheDependency`](TGlobalStateCacheDependency.md)** — Invalidates when a named Prado global state variable changes. Property: `StateName`.
 - **[`TApplicationStateCacheDependency`](TApplicationStateCacheDependency.md)** — Invalidates unless the application is in `Performance` mode (useful for cache bypass in `Debug` mode).
 - **[`TChainedCacheDependency`](TChainedCacheDependency.md)** — Composite dependency: invalidates if **any** child dependency reports changed (OR logic). Child list is a [`TCacheDependencyList`](TCacheDependencyList.md).
 - **[`TCacheDependencyList`](TCacheDependencyList.md)** — Typed [`TList`](../Collections/TList.md) that enforces [`ICacheDependency`](ICacheDependency.md) on all items.
@@ -62,6 +62,8 @@ All caching in Prado 5 is PSR compliant. A new application reaches its cache thr
 ## Patterns & Gotchas
 
 - **Template Method pattern** — [`TCache`](TCache.md) defines the public API flow; subclasses only implement the four backend-specific protected methods.
+- **Dependency construction** — The constructor argument of `TFileCacheDependency`, `TDirectoryCacheDependency`, and `TGlobalStateCacheDependency` is optional. A dependency created without it is configured through its property and reports unchanged until the property is set.
+- **Stat cache** — The file and directory dependencies call `clearstatcache(true, $path)` before each read, so a long-lived process sees a change made by another process.
 - **Serialisation** — Values and dependencies are serialised together before storage. Ensure all objects stored in cache are serialisable.
 - **`add()` vs `set()`** — `add()` is a conditional set (no-op if the key already exists); `set()` always overwrites. `add()` is atomic on TAPCCache, TMemCache, TRedisCache, and TEtcdCache; TFileCache and TDbCache leave a race window. [`TCacheMutex`](../Util/Mutex/TCacheMutex.md) locks through `add()`. There is no increment.
 - **Key prefix** — Two apps sharing the same Memcached/Redis instance are isolated by default via the key prefix. Override `KeyPrefix` if intentional sharing is needed.
