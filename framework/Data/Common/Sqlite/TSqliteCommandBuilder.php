@@ -11,6 +11,7 @@
 namespace Prado\Data\Common\Sqlite;
 
 use Prado\Data\Common\TDbCommandBuilder;
+use Prado\Data\IDataCommand;
 use Prado\Data\TDbCommand;
 
 /**
@@ -29,10 +30,10 @@ class TSqliteCommandBuilder extends TDbCommandBuilder
 	 * Creates a SQLite INSERT OR IGNORE command.
 	 * Silently skips the insert when a unique/PK constraint is violated.
 	 * @param array $data name-value pairs of data to be inserted.
-	 * @return TDbCommand insert-or-ignore command.
+	 * @return IDataCommand insert-or-ignore command.
 	 * @since 4.4.0
 	 */
-	public function createInsertOrIgnoreCommand(array $data): TDbCommand
+	public function createInsertOrIgnoreCommand(array $data): IDataCommand
 	{
 		$table = $this->getTableInfo()->getTableFullName();
 		[$fields, $bindings] = $this->getInsertFieldBindings($data);
@@ -57,10 +58,10 @@ class TSqliteCommandBuilder extends TDbCommandBuilder
 	 * @param array $data name-value pairs of data to insert.
 	 * @param null|array $updateData null, column-name list, explicit col=>value map, or mixed; controls what is updated on conflict.
 	 * @param null|array $conflictColumns conflict target columns; null = primary key columns.
-	 * @return TDbCommand upsert command.
+	 * @return IDataCommand upsert command.
 	 * @since 4.4.0
 	 */
-	public function createUpsertCommand(array $data, ?array $updateData = null, ?array $conflictColumns = null): TDbCommand
+	public function createUpsertCommand(array $data, ?array $updateData = null, ?array $conflictColumns = null): IDataCommand
 	{
 		$conflictColumns = $this->resolveConflictColumns($conflictColumns);
 

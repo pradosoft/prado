@@ -372,6 +372,50 @@ class TDbMetaDataTest extends \PHPUnit\Framework\TestCase
 	// -----------------------------------------------------------------------
 
 	/**
+	 * A fully-qualified table-info class that only an autoloader provides, as the
+	 * class of a Composer extension package is, is resolved through that autoloader.
+	 * Prado::usingClass() resolves framework and application classes only.
+	 */
+	public function test_getTableInfo_withAutoloadedExtensionTableInfoClass(): void
+	{
+		$class = 'Prado\\Data\\Common\\TestExtension\\TDbMetaDataTestExtensionTableInfo';
+		$this->assertFalse(class_exists($class, false));
+		$this->assertNull(\Prado\Prado::usingClass($class));
+
+		$loader = static function (string $name) use ($class): void {
+			if ($name === $class) {
+				eval('namespace Prado\\Data\\Common\\TestExtension; class TDbMetaDataTestExtensionTableInfo extends \\Prado\\Data\\Common\\TDbTableInfo {}');
+			}
+		};
+		spl_autoload_register($loader);
+		try {
+			$conn = $this->createMockConnection('test');
+			$conn->method('getConnectionString')->willReturn('test_autoloaded_extension');
+
+			$metaData = new class($conn) extends TDbMetaData {
+				protected function createTableInfo($tableName)
+				{
+					return new \Prado\Data\Common\TDbTableInfo([]);
+				}
+
+				public function findTableNames($schema = '')
+				{
+					return [];
+				}
+
+				protected function getTableInfoClass(): string
+				{
+					return 'Prado\\Data\\Common\\TestExtension\\TDbMetaDataTestExtensionTableInfo';
+				}
+			};
+
+			$this->assertInstanceOf($class, $metaData->getTableInfo(null));
+		} finally {
+			spl_autoload_unregister($loader);
+		}
+	}
+
+	/**
 	 * A directory namespace returned by getTableInfoClass() (usingClass returns
 	 * false) must throw TDbException — a directory is not an instantiable class.
 	 */
