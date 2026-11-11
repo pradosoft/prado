@@ -1715,6 +1715,43 @@ class TWeakCallableCollectionTest extends TPriorityListTest
 		self::assertSame([$this->item1], $list->toArray());
 	}
 
+	/**
+	 * An object that is neither a WeakReference nor a TEventHandler is untracked by
+	 * its own instance count; the count at 0 drops the object from the WeakMap.
+	 */
+	public function testWeakCustomRemoveUntracksAPlainObject_TWCC()
+	{
+		$list = new $this->_baseClass(null, null, null, null, true);
+		$object = new CallableListItem();
+		self::assertSame(1, PradoUnit::invoke($list, 'weakCustomAdd', $object));
+		self::assertSame(2, PradoUnit::invoke($list, 'weakCustomAdd', $object));
+		self::assertSame(1, $list->getWeakCount());
+
+		self::assertSame(1, PradoUnit::invoke($list, 'weakCustomRemove', $object));
+		self::assertSame(1, $list->getWeakCount());
+		self::assertSame(0, PradoUnit::invoke($list, 'weakCustomRemove', $object));
+		self::assertSame(0, $list->getWeakCount());
+		self::assertSame(0, PradoUnit::invoke($list, 'weakCustomRemove', $object));
+	}
+
+	/**
+	 * A Closure is stored strongly and tracked as a plain object, so removing it
+	 * returns the Closure and releases its WeakMap entry.
+	 */
+	public function testRemoveClosureReleasesItsWeakMapEntry_TWCC()
+	{
+		$list = new $this->_baseClass();
+		$closure = function ($n) {
+			return $n + $n;
+		};
+		$list->add($closure);
+		self::assertSame(1, $list->getWeakCount());
+
+		self::assertSame($closure, $list->removeAt(0));
+		self::assertSame(0, $list->getWeakCount());
+		self::assertSame(0, $list->getCount());
+	}
+
 	public function testRemoveCollectedEntryWithoutDiscardInvalid_TWCC()
 	{
 		$dying = new CallableListItem();
@@ -1743,5 +1780,26 @@ class TWeakCallableCollectionTest extends TPriorityListTest
 		self::assertSame([], $list->toPriorityArray());
 		self::assertNull($dying);
 		self::assertSame(0, $list->getCount());
+	}
+
+	/**
+	 * Without DiscardInvalid there is no WeakMap; clear() empties the list, zeroes
+	 * the event handler count, and creates no WeakMap.
+	 */
+	public function testClearWithoutDiscardInvalidCreatesNoWeakMap_TWCC()
+	{
+		$handlerObject = new CallableListItem();
+		$list = new $this->_baseClass(null, null, null, null, false);
+		$list->add(new TEventHandler([$handlerObject, 'eventHandler']));
+		$list->add($this->item1);
+		self::assertFalse($list->getDiscardInvalid());
+		self::assertNull($list->getWeakCount());
+		self::assertSame(1, PradoUnit::getProp($list, '_eventHandlerCount'));
+
+		$list->clear();
+
+		self::assertSame(0, $list->getCount());
+		self::assertSame(0, PradoUnit::getProp($list, '_eventHandlerCount'));
+		self::assertNull($list->getWeakCount());
 	}
 }

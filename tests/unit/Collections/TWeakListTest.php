@@ -1275,5 +1275,22 @@ class TWeakListTest extends TListTest
 		self::assertSame(0, $list->getCount());
 	}
 
+	/**
+	 * Without DiscardInvalid there is no WeakMap; clear() empties the list, zeroes
+	 * the event handler count, and creates no WeakMap.
+	 */
+	public function testClearWithoutDiscardInvalidCreatesNoWeakMapTWeakList()
+	{
+		$handlerObject = new WeakListInvokableItem();
+		$list = new $this->_baseClass([new TEventHandler($handlerObject), $this->item1], false, false);
+		self::assertFalse($list->getDiscardInvalid());
+		self::assertNull($list->getWeakCount());
+		self::assertSame(1, PradoUnit::getProp($list, '_eventHandlerCount'));
 
+		$list->clear();
+
+		self::assertSame(0, $list->getCount());
+		self::assertSame(0, PradoUnit::getProp($list, '_eventHandlerCount'));
+		self::assertNull($list->getWeakCount());
+	}
 }

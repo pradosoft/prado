@@ -1093,4 +1093,21 @@ class TWeakMapTest extends TMapTest
 
 		$this->assertSame($ref, $item);
 	}
+
+	/**
+	 * Without DiscardInvalid there is no WeakMap; clear() empties the map, zeroes
+	 * the event handler count, and creates no WeakMap.
+	 */
+	public function testClearWithoutDiscardInvalidCreatesNoWeakMap()
+	{
+		$m = new $this->_baseClass(['a' => $this->item1, 'b' => $this->item2], false, false);
+		$this->assertFalse($m->getDiscardInvalid());
+		$this->assertNull($m->getWeakCount());
+
+		$m->clear();
+
+		$this->assertSame(0, $m->getCount());
+		$this->assertSame(0, PradoUnit::getProp($m, '_eventHandlerCount'));
+		$this->assertNull($m->getWeakCount());
+	}
 }
