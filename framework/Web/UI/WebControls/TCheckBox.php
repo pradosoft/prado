@@ -552,7 +552,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 			$writer->addAttribute('accesskey', $accesskey);
 		}
 		$this->addKeyShortcutsAttributesToRender($writer);
-		if (($tabindex = $this->getTabIndex()) > 0) {
+		if (($tabindex = $this->getTabIndex()) !== null) {
 			$writer->addAttribute('tabindex', "$tabindex");
 		}
 		if ($attributes = $this->getViewState('InputAttributes', null)) {

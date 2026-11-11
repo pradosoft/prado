@@ -46,13 +46,15 @@ use Prado\Prado;
  */
 trait TApplicationClockAwareTrait
 {
-	use TClockAwareTrait {
-		getClock as protected getLocalClock;
-	}
+	use TClockAwareTrait;
+
+	/** @var ?IClock the local default clock, lazily created when no application exists */
+	private ?IClock $_localClock = null;
 
 	/**
 	 * Returns the clock: an explicit local clock, otherwise the application clock read live, otherwise
-	 * a lazily created local default.
+	 * a lazily created local default. The local default is kept apart from the {@see setClock} override
+	 * so a holder created before the application still follows the application clock once one exists.
 	 * @return IClock the clock dependency
 	 */
 	public function getClock(): IClock
@@ -64,6 +66,6 @@ trait TApplicationClockAwareTrait
 		if ($application !== null) {
 			return $application->getClock();
 		}
-		return $this->getLocalClock();
+		return $this->_localClock ??= $this->createClock();
 	}
 }

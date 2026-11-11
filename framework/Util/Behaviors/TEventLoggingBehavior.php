@@ -278,15 +278,16 @@ class TEventLoggingBehavior extends TBehavior implements IDynamicMethods
 	 * Logs the event name and sender class when the event passes the filter.
 	 *
 	 * @param object $sender the component raising the event
-	 * @param TEventParameter $param the event parameter
+	 * @param mixed $param the event parameter; an event name is read from a {@see TEventParameter}
 	 */
-	public function logEvent(object $sender, TEventParameter $param): void
+	public function logEvent(object $sender, mixed $param = null): void
 	{
 		if (!$this->shouldLogEvent($param)) {
 			return;
 		}
+		$name = $param instanceof TEventParameter ? $param->getEventName() : null;
 		Prado::log(
-			sprintf('%s on %s', $param->getEventName() ?: '(unnamed)', get_class($sender)),
+			sprintf('%s on %s', $name ?: '(unnamed)', get_class($sender)),
 			$this->getLevel(),
 			$this->getCategory()
 		);
@@ -461,10 +462,10 @@ class TEventLoggingBehavior extends TBehavior implements IDynamicMethods
 	/**
 	 * Returns whether a given `on*` event parameter passes the log filter.
 	 *
-	 * @param TEventParameter $param the event parameter
+	 * @param mixed $param the event parameter; only a {@see TEventParameter} carries an event name
 	 * @return bool true when the event should be logged
 	 */
-	private function shouldLogEvent(TEventParameter $param): bool
+	private function shouldLogEvent(mixed $param): bool
 	{
 		if (!$this->getLogEvents()) {
 			return false;
@@ -472,6 +473,9 @@ class TEventLoggingBehavior extends TBehavior implements IDynamicMethods
 		$filter = $this->getEventFilter();
 		if ($filter === []) {
 			return true;
+		}
+		if (!($param instanceof TEventParameter)) {
+			return false;
 		}
 		return in_array(strtolower($param->getEventName()), array_map('strtolower', $filter), true);
 	}

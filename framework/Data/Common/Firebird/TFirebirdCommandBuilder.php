@@ -37,6 +37,7 @@ class TFirebirdCommandBuilder extends TDbCommandBuilder
 	 * Uses Firebird MERGE with USING (SELECT ... FROM RDB$DATABASE) and no AS keyword for aliases.
 	 * @param array $data name-value pairs of data to be inserted.
 	 * @return TDbCommand insert-or-ignore MERGE command.
+	 * @since 4.4.0
 	 */
 	public function createInsertOrIgnoreCommand(array $data): TDbCommand
 	{
@@ -62,6 +63,7 @@ class TFirebirdCommandBuilder extends TDbCommandBuilder
 	 * @param null|array $updateData null, column-name list, explicit col=>value map, or mixed; controls what is updated on conflict.
 	 * @param null|array $conflictColumns conflict target columns; null = primary key columns.
 	 * @return TDbCommand upsert MERGE command.
+	 * @since 4.4.0
 	 */
 	public function createUpsertCommand(array $data, ?array $updateData = null, ?array $conflictColumns = null): TDbCommand
 	{

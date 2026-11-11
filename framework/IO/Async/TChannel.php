@@ -56,10 +56,10 @@ class TChannel extends TComponent implements \IteratorAggregate, \Countable
 	/** @var array<int, mixed> The buffered values, in send order. */
 	private array $_buffer = [];
 
-	/** @var array<int, array{0: Suspension, 1: bool}> The waiting receivers: suspension and settled flag. */
+	/** @var array<int, array{0: Suspension}> The waiting receivers: the suspension. */
 	private array $_receivers = [];
 
-	/** @var array<int, array{0: Suspension, 1: mixed, 2: bool}> The waiting senders: suspension, value, and settled flag. */
+	/** @var array<int, array{0: Suspension, 1: mixed}> The waiting senders: suspension and value. */
 	private array $_senders = [];
 
 	/** @var int The next waiter id. */
@@ -133,7 +133,7 @@ class TChannel extends TComponent implements \IteratorAggregate, \Countable
 		$token?->throwIfCancelled();
 		$id = $this->_nextId++;
 		$suspension = TAsync::getLoop()->suspension();
-		$this->_senders[$id] = [$suspension, $value, false];
+		$this->_senders[$id] = [$suspension, $value];
 		$this->wait($suspension, $token, function (\Throwable $reason) use ($id): void {
 			unset($this->_senders[$id]);
 		});
@@ -179,7 +179,7 @@ class TChannel extends TComponent implements \IteratorAggregate, \Countable
 		$token?->throwIfCancelled();
 		$id = $this->_nextId++;
 		$suspension = TAsync::getLoop()->suspension();
-		$this->_receivers[$id] = [$suspension, false];
+		$this->_receivers[$id] = [$suspension];
 		return $this->wait($suspension, $token, function (\Throwable $reason) use ($id): void {
 			unset($this->_receivers[$id]);
 		});

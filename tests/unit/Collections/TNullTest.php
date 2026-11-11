@@ -378,6 +378,30 @@ class TNullTest extends TestCase
 	}
 
 	// -----------------------------------------------------------------------
+	// Predicates — is_null_object()
+	// -----------------------------------------------------------------------
+
+	/** is_null_object() returns true for the TNull singleton. */
+	public function testIsNullObjectWithSingleton(): void
+	{
+		$this->assertTrue(TNull::is_null_object(TNull::null()));
+	}
+
+	/** is_null_object() returns true for a deserialized TNull. */
+	public function testIsNullObjectWithDeserializedInstance(): void
+	{
+		$this->assertTrue(TNull::is_null_object(unserialize(serialize(TNull::null()))));
+	}
+
+	/** is_null_object() returns false for PHP null and other empty or non-null values. */
+	public function testIsNullObjectRejectsNonTNullValues(): void
+	{
+		foreach ([null, '', '0', 0, 0.0, false, [], 'hello', 42, true, new \stdClass()] as $v) {
+			$this->assertFalse(TNull::is_null_object($v), 'is_null_object() should be false for ' . var_export($v, true));
+		}
+	}
+
+	// -----------------------------------------------------------------------
 	// Predicates — is_null()
 	// -----------------------------------------------------------------------
 

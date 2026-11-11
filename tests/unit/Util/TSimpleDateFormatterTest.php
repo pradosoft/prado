@@ -282,18 +282,50 @@ class TSimpleDateFormatterTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame('14', $this->formatter->format($ts));
 	}
 
-	public function test_format_hour_kk_midnight_is_01(): void
+	public function test_format_hour_kk_midnight_is_24(): void
 	{
 		$ts = strtotime('2026-04-17 00:30:00');
+		$this->formatter->setPattern('kk');
+		$this->assertSame('24', $this->formatter->format($ts));
+	}
+
+	public function test_format_hour_k_midnight_is_24(): void
+	{
+		$ts = strtotime('2026-04-17 00:30:00');
+		$this->formatter->setPattern('k');
+		$this->assertSame('24', $this->formatter->format($ts));
+	}
+
+	public function test_format_hour_kk_one_am_is_01(): void
+	{
+		$ts = strtotime('2026-04-17 01:30:00');
 		$this->formatter->setPattern('kk');
 		$this->assertSame('01', $this->formatter->format($ts));
 	}
 
-	public function test_format_hour_k_midnight_is_1(): void
+	public function test_format_day_in_year_is_one_based(): void
 	{
-		$ts = strtotime('2026-04-17 00:30:00');
-		$this->formatter->setPattern('k');
-		$this->assertSame('1', $this->formatter->format($ts));
+		$this->formatter->setPattern('D');
+		$this->assertSame('1', $this->formatter->format(strtotime('2026-01-01 12:00:00')));
+		$this->assertSame('365', $this->formatter->format(strtotime('2026-12-31 12:00:00')));
+	}
+
+	public function test_format_day_of_week_in_month(): void
+	{
+		$this->formatter->setPattern('F');
+		$this->assertSame('1', $this->formatter->format(strtotime('2026-04-07 12:00:00')));
+		$this->assertSame('2', $this->formatter->format(strtotime('2026-04-14 12:00:00')));
+		$this->assertSame('5', $this->formatter->format(strtotime('2026-04-30 12:00:00')));
+	}
+
+	public function test_format_week_in_month(): void
+	{
+		// April 2026 starts on a Wednesday: the 1st is in week 1, the 5th (Sunday) starts week 2.
+		$this->formatter->setPattern('W');
+		$this->assertSame('1', $this->formatter->format(strtotime('2026-04-01 12:00:00')));
+		$this->assertSame('1', $this->formatter->format(strtotime('2026-04-04 12:00:00')));
+		$this->assertSame('2', $this->formatter->format(strtotime('2026-04-05 12:00:00')));
+		$this->assertSame('5', $this->formatter->format(strtotime('2026-04-30 12:00:00')));
 	}
 
 	public function test_format_hour_KK_returns_0_to_11(): void
@@ -581,10 +613,10 @@ class TSimpleDateFormatterTest extends \PHPUnit\Framework\TestCase
 	{
 		$this->formatter->setPattern('k:mm');
 		$result = $this->formatter->parse('1:30', false);
-		$this->assertSame('00:30', date('H:i', $result));
+		$this->assertSame('01:30', date('H:i', $result));
 
 		$result = $this->formatter->parse('24:00', false);
-		$this->assertSame('23:00', date('H:i', $result));
+		$this->assertSame('00:00', date('H:i', $result));
 	}
 
 	public function test_parse_invalid_k_hour_zero_returns_null(): void

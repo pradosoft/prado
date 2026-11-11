@@ -197,15 +197,7 @@ Format constants: `NORMAL`, `INFO`, `SUCCESS`, `WARNING`, `ERROR`, `DEBUG`.
 
 ### activerecord generate / generate-all
 
-```bash
-# Generate one AR class:
-php prado-cli.php /app activerecord generate users --connectionID=db
-
-# Generate all tables:
-php prado-cli.php /app activerecord generate-all --connectionID=db --directory=app/Records
-```
-
-Supported drivers: MySQL, PostgreSQL, SQLite, MSSQL/sqlsrv/dblib, Oracle, IBM DB2, Firebird.
+The `activerecord` command belongs to the `pradosoft/prado-activerecord` package, whose `TActiveRecordConfig` registers `TActiveRecordAction` through `addShellActionClass()`.
 
 ---
 
@@ -232,7 +224,7 @@ Prompts for username/password; calls `IUserManager::validateUser()`.
 
 - **Exit codes** — return `0` from `run()` for success, non-zero for error. The shell respects the return value.
 - **`QuietMode` range** — valid levels are `0`–`3`. An empty string (bare `--quiet` or `-q` flag) maps to `1`. Values are clamped. Check `$this->getApplication()->getQuietMode() === 0` before verbose output.
-- **Conditional actions** — `activerecord` and `cache` commands only appear when the corresponding module types are configured; `serve` only in Debug mode or with the dev-webserver param. Do not assume they are always present.
+- **Conditional actions** — the `cache` command only appears when a cache module is configured; `serve` only in Debug mode or with the dev-webserver param. Do not assume they are always present.
 - **No-config mode** — when running `prado-cli` without an `application.xml`, a hidden `.runtime` directory is created in the base path (or a temp fallback). No manual setup required.
 - **Module availability** — all `application.xml` modules are available, including DB connections, cache, etc. No special setup needed.
 - **Output format** — always use [TShellWriter](./TShellWriter.md) rather than `echo`/`print`; it supports color, structured formatting, and quiet-mode suppression.

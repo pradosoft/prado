@@ -256,7 +256,7 @@ class TTime extends TI18NWebControl
 			return;
 		}
 		try {
-			TPropertyValue::ensureEnum($value, TTimeFormat::class);
+			$value = TPropertyValue::ensureEnum($value, TTimeFormat::class);
 		} catch (\Exception $e) {
 			if (!static::isIcuPattern($value)) {
 				throw new TInvalidDataValueException('time_invalid_text_format', $value);

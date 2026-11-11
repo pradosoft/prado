@@ -56,4 +56,11 @@ class TEnumerable implements IEnumerable, \Iterator
 {
 	use TArrayCopyIteratorTrait;
 	use TConstantReflectionTrait;
+
+	/**
+	 * Constructor. Subclasses that call the parent constructor keep working.
+	 */
+	public function __construct()
+	{
+	}
 }

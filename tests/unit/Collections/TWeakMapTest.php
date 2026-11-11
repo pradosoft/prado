@@ -9,6 +9,8 @@ use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Test\Unit\PradoUnit;
 use Prado\TEventHandler;
+use ArrayIterator;
+use WeakReference;
 
 /**
  * Test-subclass that exposes WeakMap bookkeeping and allows DiscardInvalid to
@@ -837,5 +839,275 @@ class TWeakMapTest extends TMapTest
 
 		$wrapped = null;
 		$this->assertSame(0, $map->getCount(), 'The entry ends with the referenced handler while its target lives');
+	}
+
+	public function testCloneTWeakMapKeepsIndependentWeakMap()
+	{
+		$clone = clone $this->map;
+		$clone->add('key3', $this->item3);
+
+		$this->assertSame(2, $this->map->getWeakCount());
+		$this->assertSame(3, $clone->getWeakCount());
+		$this->assertNull($this->map->getWeakObjectCount($this->item3));
+
+		unset($this->item2);
+
+		$this->assertSame(['key1' => $this->item1], $this->map->toArray());
+		$this->assertSame(['key1' => $this->item1, 'key3' => $this->item3], $clone->toArray());
+		$this->assertSame(1, $this->map->getWeakCount());
+		$this->assertSame(2, $clone->getWeakCount());
+	}
+
+	public function testSerializeTWeakMapRestartsTrackingWhenDiscardInvalid()
+	{
+		$this->assertTrue($this->map->getDiscardInvalid());
+
+		$serialized = serialize($this->map);
+
+		$this->assertStringContainsString('_discardInvalid', $serialized);
+		$this->assertStringNotContainsString('_weakMap', $serialized);
+		$this->assertSame(['key1' => $this->item1, 'key2' => $this->item2], $this->map->toArray(), 'Sleeping must not change the source map.');
+
+		$restored = unserialize($serialized);
+
+		$this->assertTrue($restored->getDiscardInvalid());
+		$this->assertSame(0, $restored->getWeakCount());
+		$restored->add('k', $this->item3);
+		$this->assertSame(1, $restored->getWeakCount());
+		unset($this->item3);
+		$this->assertSame(0, $restored->getCount());
+	}
+
+	public function testSerializeTWeakMapKeepsDiscardInvalidFalse()
+	{
+		$m = new $this->_baseClass(null, false, false);
+		$m->add('a', $this->item1);
+
+		$restored = unserialize(serialize($m));
+
+		$this->assertFalse($restored->getDiscardInvalid());
+		$this->assertNull($restored->getWeakCount());
+		$restored->add('k', $this->item3);
+		unset($this->item3);
+		$this->assertSame(1, $restored->getCount());
+		$this->assertNull($restored['k']);
+	}
+
+	public function testSerializeTWeakMapLeavesUnresolvedDiscardInvalidLazy()
+	{
+		$m = new $this->_baseClass(null, true);
+
+		$serialized = serialize($m);
+
+		$this->assertStringNotContainsString('_discardInvalid', $serialized);
+		$restored = unserialize($serialized);
+		$this->assertTrue($restored->getReadOnly());
+		$this->assertFalse($restored->getDiscardInvalid());
+	}
+
+	public function testTEventHandlerWithoutHandlerObjectTWeakMap()
+	{
+		$eh = new TEventHandler('strlen', 3);
+
+		$this->map->add('fn', $eh);
+
+		$this->assertSame(1, PradoUnit::getProp($this->map, '_eventHandlerCount'));
+		$this->assertSame(2, $this->map->getWeakCount());
+		$this->assertSame($eh, $this->map['fn']);
+		$this->assertSame(3, $this->map->getCount());
+
+		$this->assertSame($eh, $this->map->remove('fn'));
+
+		$this->assertSame(0, PradoUnit::getProp($this->map, '_eventHandlerCount'));
+		$this->assertSame(2, $this->map->getWeakCount());
+		$this->assertSame(2, $this->map->getCount());
+	}
+
+	public function testRemoveClosureValueTWeakMap()
+	{
+		$fn = static fn () => 1;
+		$this->map->add('fn', $fn);
+
+		$this->assertSame($fn, $this->map->remove('fn'));
+
+		$this->assertFalse($this->map->contains('fn'));
+		$this->assertSame(2, $this->map->getWeakCount());
+	}
+
+	public function testRemoveIWeakRetainableValueTWeakMap()
+	{
+		$item = new WeakMapRetainableItem('kept');
+		$this->map->add('r', $item);
+		$this->assertSame(1, $this->map->getWeakObjectCount($item));
+
+		$this->assertSame($item, $this->map->remove('r'));
+
+		$this->assertNull($this->map->getWeakObjectCount($item));
+		$this->assertSame(2, $this->map->getWeakCount());
+	}
+
+	public function testRemoveCollectedAndNonObjectValuesWithoutDiscardInvalid()
+	{
+		$m = new $this->_baseClass(null, false, false);
+		$obj = new WeakMapItem('gone');
+		$m->add('k', $obj);
+		$m->add('n', null);
+		$m->add('s', 'text');
+		$obj = null;
+
+		$this->assertTrue($m->contains('k'));
+		$this->assertNull($m->remove('k'));
+		$this->assertFalse($m->contains('k'));
+
+		$this->assertNull($m->remove('n'));
+		$this->assertFalse($m->contains('n'));
+
+		$this->assertSame('text', $m->remove('s'));
+		$this->assertSame(0, $m->getCount());
+	}
+
+	public function testCollectedTEventHandlerOutputsNullWithoutDiscardInvalid()
+	{
+		$m = new $this->_baseClass(null, false, false);
+		$obj = new WeakMapItem('h');
+		$m->add('eh', new TEventHandler([$obj, 'handle']));
+		$obj = null;
+
+		$this->assertNull($m['eh']);
+		$this->assertSame(['eh' => null], $m->toArray());
+		$this->assertSame(1, $m->getCount());
+	}
+
+	public function testScrubKeepsNonObjectValuesTWeakMap()
+	{
+		$this->map->add('num', 42);
+		$this->map->add('arr', [1, 2]);
+
+		unset($this->item2);
+
+		$this->assertSame(['key1' => $this->item1, 'num' => 42, 'arr' => [1, 2]], $this->map->toArray());
+		$this->assertSame(1, $this->map->getWeakCount());
+	}
+
+	public function testDiscardInvalidTransitionKeepsNonObjectAndClosureValues()
+	{
+		$obj = new WeakMapItem('o');
+		$fn = static fn () => 1;
+		$m = new $this->_baseClass(null, false, false);
+		$m->add('s', 'text');
+		$m->add('o', $obj);
+		$m->add('fn', $fn);
+
+		$m->resetDiscardInvalid(true);
+
+		$this->assertSame(['s' => 'text', 'o' => $obj, 'fn' => $fn], $m->toArray());
+		$this->assertSame(1, $m->getWeakCount());
+		$this->assertSame(1, $m->getWeakObjectCount($obj));
+	}
+
+	public function testEmptyTWeakMapOperations()
+	{
+		$m = new $this->_baseClass();
+
+		$this->assertSame([], $m->toArray());
+		$this->assertSame([], $m->keyOf($this->item1));
+		$this->assertFalse($m->keyOf($this->item1, false));
+		$this->assertSame([], $m->removeItem($this->item1));
+		$m->clear();
+		$this->assertSame(0, $m->getCount());
+	}
+
+	public function testRemoveItemSingleMatchTWeakMap()
+	{
+		$m = new $this->_baseClass();
+		$m->add('only', $this->item3);
+
+		$this->assertSame(['only' => $this->item3], $m->removeItem($this->item3));
+
+		$this->assertSame(0, $m->getCount());
+		$this->assertNull($m->getWeakObjectCount($this->item3));
+	}
+
+	public function testCopyFromTraversableAndEmptySourcesTWeakMap()
+	{
+		$m = new $this->_baseClass();
+
+		$m->copyFrom(new ArrayIterator([]));
+		$m->copyFrom([]);
+		$this->assertSame([], $m->toArray());
+
+		$m->copyFrom(new ArrayIterator(['a' => $this->item3]));
+		$this->assertSame(['a' => $this->item3], $m->toArray());
+
+		$m->copyFrom(new ArrayIterator(['b' => 'text']));
+		$this->assertSame(['b' => 'text'], $m->toArray());
+		$this->assertSame(0, $m->getWeakCount());
+
+		$m->copyFrom(['c' => $this->item1]);
+		$m->copyFrom(null);
+		$this->assertSame(['c' => $this->item1], $m->toArray());
+
+		$m->copyFrom([]);
+		$this->assertSame([], $m->toArray());
+
+		$m->copyFrom(['d' => 'text']);
+		$m->copyFrom(new ArrayIterator([]));
+		$this->assertSame([], $m->toArray());
+
+		try {
+			$m->copyFrom('not iterable');
+			$this->fail('copyFrom did not throw TInvalidDataTypeException for a non-iterable.');
+		} catch (TInvalidDataTypeException $e) {
+			$this->assertSame('map_data_not_iterable', $e->getErrorCode());
+		}
+	}
+
+	public function testMergeWithTraversableAndEmptySourcesTWeakMap()
+	{
+		$m = new $this->_baseClass();
+
+		$m->mergeWith(new ArrayIterator([]));
+		$m->mergeWith([]);
+		$m->mergeWith(null);
+		$this->assertSame([], $m->toArray());
+
+		$m->mergeWith(new ArrayIterator(['a' => $this->item3]));
+		$m->mergeWith(['b' => 'text']);
+		$this->assertSame(['a' => $this->item3, 'b' => 'text'], $m->toArray());
+		$this->assertSame(1, $m->getWeakCount());
+
+		try {
+			$m->mergeWith('not iterable');
+			$this->fail('mergeWith did not throw TInvalidDataTypeException for a non-iterable.');
+		} catch (TInvalidDataTypeException $e) {
+			$this->assertSame('map_data_not_iterable', $e->getErrorCode());
+		}
+	}
+
+	public function testFilterItemForInputLeavesWeakReferenceUnchanged()
+	{
+		$ref = WeakReference::create($this->item1);
+		$item = $ref;
+
+		TWeakMap::filterItemForInput($item);
+
+		$this->assertSame($ref, $item);
+	}
+
+	/**
+	 * Without DiscardInvalid there is no WeakMap; clear() empties the map, zeroes
+	 * the event handler count, and creates no WeakMap.
+	 */
+	public function testClearWithoutDiscardInvalidCreatesNoWeakMap()
+	{
+		$m = new $this->_baseClass(['a' => $this->item1, 'b' => $this->item2], false, false);
+		$this->assertFalse($m->getDiscardInvalid());
+		$this->assertNull($m->getWeakCount());
+
+		$m->clear();
+
+		$this->assertSame(0, $m->getCount());
+		$this->assertSame(0, PradoUnit::getProp($m, '_eventHandlerCount'));
+		$this->assertNull($m->getWeakCount());
 	}
 }

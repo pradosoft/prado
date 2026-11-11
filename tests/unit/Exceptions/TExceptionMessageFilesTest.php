@@ -344,7 +344,7 @@ class TExceptionMessageFilesTest extends \PHPUnit\Framework\TestCase
 	{
 		$keys = [];
 		foreach (self::frameworkCode() as $code) {
-			if (preg_match_all("/new\\s+\\\\?(?:Prado\\\\[\\w\\\\]*\\\\)?T\\w*Exception\\s*\\(\\s*(?:\\d+\\s*,\\s*)?'([a-z][a-z0-9_]*)'/", $code, $matches)) {
+			if (preg_match_all("/new\\s+\\\\?(?:Prado\\\\[\\w\\\\]*\\\\)?T\\w*Exception\\s*\\(\\s*(?:\\d+\\s*,\\s*)?['\"]([a-z][a-z0-9_]*)['\"]/", $code, $matches)) {
 				$keys = array_merge($keys, $matches[1]);
 			}
 		}
@@ -407,7 +407,7 @@ class TExceptionMessageFilesTest extends \PHPUnit\Framework\TestCase
 		$keys = [];
 		$iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator(Prado::getFrameworkPath(), \FilesystemIterator::SKIP_DOTS));
 		foreach ($iterator as $file) {
-			if ($file->getExtension() === 'php' && preg_match_all("/new THttpException\(\s*\d+\s*,\s*'([a-z0-9_]+)'/", file_get_contents($file->getPathname()), $matches)) {
+			if ($file->getExtension() === 'php' && preg_match_all("/new (?:\\\\?Prado\\\\Exceptions\\\\)?THttpException\(\s*\d+\s*,\s*'([a-z0-9_]+)'/", file_get_contents($file->getPathname()), $matches)) {
 				$keys = array_merge($keys, $matches[1]);
 			}
 		}

@@ -2369,7 +2369,7 @@ class TComponent
 	 *
 	 * @param null|numeric|string $name the behavior's name. It should uniquely identify this behavior.
 	 * @param array|IBaseBehavior|string $behavior the behavior configuration. This is the name of the Behavior Class
-	 * instanced by {@see \Prado\PradoBase::createComponent}, or is a Behavior, or is an array of
+	 * instanced by {@see \Prado\Prado::createComponent}, or is a Behavior, or is an array of
 	 * ['class'=>'TBehavior' property1='value 1' property2='value2'...] with the class and properties
 	 * with values.
 	 * @param null|numeric $priority

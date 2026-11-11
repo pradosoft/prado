@@ -11,6 +11,7 @@
 namespace Prado\Data;
 
 use Prado\Exceptions\TDbException;
+use Prado\TPropertyValue;
 
 /**
  * TDataTransaction class.
@@ -106,6 +107,20 @@ class TDataTransaction extends \Prado\TComponent implements IDataTransaction
 	protected function activate(): void
 	{
 		$this->_active = true;
+	}
+
+	/**
+	 * Marks this transaction active or inactive.
+	 * @param mixed $value whether the transaction is active
+	 * @deprecated 4.4.0 use {@see activate} and {@see deactivate}
+	 */
+	protected function setActive($value): void
+	{
+		if (TPropertyValue::ensureBoolean($value)) {
+			$this->activate();
+		} else {
+			$this->deactivate();
+		}
 	}
 
 	//	-----   Methods  -----

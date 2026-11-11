@@ -214,7 +214,7 @@ class TEvaluationFilterBehaviorTest extends \PHPUnit\Framework\TestCase
 
 	public function testAllowedStaticMethods()
 	{
-		$this->assertSame(['prado::localize', 'prado\prado::localize'], $this->behavior->getAllowedStaticMethods());
+		$this->assertSame(['prado::localize', 'prado\prado::localize', 'prado\util\tmultibytestring::*'], $this->behavior->getAllowedStaticMethods());
 		$this->assertTrue($this->behavior->isAllowedStaticMethod('\Prado\Prado', 'Localize'));
 		$this->assertFalse($this->behavior->isAllowedStaticMethod('Prado', '*'));
 

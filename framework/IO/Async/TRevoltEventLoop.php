@@ -74,7 +74,8 @@ class TRevoltEventLoop extends TComponent implements IEventLoop
 	 * Gives a forked child a driver with no callbacks.  The inherited driver's callbacks are
 	 * cancelled and its error handler unset.  Outside a fiber the inherited driver is then run to
 	 * unwind its loop fiber and a new driver replaces it; inside a fiber the driver cannot be
-	 * replaced, so the emptied inherited driver stays.
+	 * replaced, so the emptied inherited driver stays.  The signal registries of the parent are
+	 * forgotten with the replaced driver, since its callback ids restart.
 	 */
 	public static function installFreshDriver(): void
 	{
@@ -90,6 +91,8 @@ class TRevoltEventLoop extends TComponent implements IEventLoop
 			$driver->run();
 		}
 		EventLoop::setDriver((new EventLoop\DriverFactory())->create());
+		self::$_signalIds = [];
+		self::$_priorSignalHandlers = [];
 	}
 
 	/**

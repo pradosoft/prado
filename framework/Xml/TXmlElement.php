@@ -587,8 +587,6 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 		parent::__clone();
 
 		$this->_parent = null;
-		$this->setTagName($this->getTagName());
-		$this->setValue($this->getValue());
 
 		// Clone attributes
 		if ($this->_attributes) {
@@ -893,7 +891,7 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 	 */
 	public function getNodeType(): int
 	{
-		return XML_ENTITY_NODE;
+		return XML_ELEMENT_NODE;
 	}
 
 	/**

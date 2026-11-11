@@ -81,17 +81,17 @@ $packages = [
 
 	'confirmsubmit' => [
 		'prado/controls/confirmsubmit.js',
-  ],
+	],
 
-  'drawer' => [
+	'drawer' => [
 		'prado/controls/drawer.js',
 	],
 
-  'menu' => [
+	'menu' => [
 		'prado/controls/menu.js',
-  ],
+	],
 
-  'tooltip' => [
+	'tooltip' => [
 		'prado/controls/tooltip.js',
 	],
 

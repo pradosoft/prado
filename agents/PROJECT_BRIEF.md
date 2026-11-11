@@ -7,10 +7,10 @@ The fast path to productive Prado coding. Quick-access API in [PROJECT_SUMMARY.m
 ## What Prado Is
 
 Component-based, event-driven PHP web framework.
-**Version:** `4.3.2` (next/`@since`: `4.3.3`). 
+**Version:** `4.3.3` (next/`@since`: `4.4.0`). 
 **Namespace:** `Prado\`.
-**PHP** 8.1+.
-**749 classes** across `framework/` (PSR-4). Every class must also be registered in `framework/classes.php`.
+**PHP** 8.2+.
+**1,000+ classes** across `framework/` (PSR-4). Every class must also be registered in `framework/classes.php`.
 
 ---
 
@@ -244,7 +244,7 @@ Error codes defined in `framework/Exceptions/messages/messages.txt` (English mas
 | `framework/classes.php` | Update for **every** new class added |
 | `if` blocks | Always use `{}` — never single-line |
 | Backward compat | All changes compatible within point versions |
-| `@since` | Next release `4.3.3`; omit on methods when class `@since` matches |
+| `@since` | Next release `4.4.0`; omit on methods when class `@since` matches |
 | `dy*` docblock | Every `dy*` call raised by a class → `@method` tag in that class |
 | Error codes | Add to `messages.txt` before throwing |
 | Self-encapsulate | Access own state through `getXxx()`/`setXxx()`, not raw fields |
@@ -281,6 +281,6 @@ Category convention: dot-separated — `'Prado.Web.THttpRequest'`, `'MyApp.Auth'
 | `agents/PROJECT_CONTEXT.md` | Complete architecture reference — all layers, APIs, patterns |
 | `agents/PROJECT_SUMMARY.md` | Quick-access API cheatsheet — common calls and patterns |
 | `agents/framework/INDEX.md` | Framework root knowledge |
-| `agents/framework/CLASSES.md` | All 749 classes by namespace |
+| `agents/framework/CLASSES.md` | All classes by namespace |
 | `agents/framework/<Dir>/INDEX.md` | Per-subsystem knowledge |
 | `agents/framework/<Class>.md` | Per-class knowledge (TComponent, TApplication, etc.) |

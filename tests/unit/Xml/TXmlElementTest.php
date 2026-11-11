@@ -1080,7 +1080,7 @@ class TXmlElementTest extends \PHPUnit\Framework\TestCase
 		self::assertEquals(true, $element->hasChildNodes());
 		
 		// Test getNodeType
-		self::assertEquals(XML_ENTITY_NODE, $element->getNodeType());
+		self::assertEquals(XML_ELEMENT_NODE, $element->getNodeType());
 		
 		// Test getFirstChild
 		$element = new TXmlElement('parent');
