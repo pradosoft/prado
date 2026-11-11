@@ -29,11 +29,11 @@ The minute **parity** keeps a process that overruns into the next minute from co
 |---|---|---|
 | `RuntimePath` | application runtime path | Directory of the `udg` socket files; a path or namespace. |
 | `BasePort` | `52800` | Base `udp` loopback port. |
-| `Key` | HMAC of the validation key | Signs the wake messages: by default `hash_hmac('sha256', 'prado:cron:wake', <TSecurityManager ValidationKey>)`, which every process of the application derives alike; without an application the key is the runtime path. |
+| `Key` | the key in `cronwake.key` | Signs the wake messages. By default the key is read from `KEY_FILE` (`cronwake.key`) in the `RuntimePath`, which every process of the application shares (`readKeyFile()`): the first process to need it creates the file, owner-only, with a random 64-hex-digit key through an exclusive create, and the others read it under a shared lock. A file left empty by a crashed author is rewritten after `KEY_FILE_ATTEMPTS` reads. When the file cannot be written, every process uses an HMAC of the file path. A key derived from the `TSecurityManager` validation key would not be shared: a fresh application generates that key on first use and saves it to global state only at the end of the process, which a daemon never reaches. |
 
 ## Wake message
 
-`createToken()` builds `time:nonce:signature`, a fresh 8-byte random nonce and the current time signed with the `Key`. `verifyToken()` accepts a message whose signature matches, whose time is within `TOKEN_WINDOW` (30 s) of now, and whose nonce was not accepted before (nonces are remembered until they expire), so a captured datagram cannot be replayed and a datagram from another local process is read and ignored. The `udg` socket file is owner-only.
+`createToken()` builds `time:nonce:signature`, a fresh 8-byte random nonce and the current time signed with the `Key`. `verifyToken()` accepts a message whose signature matches, whose time is within `TOKEN_WINDOW` (30 s) of now, and whose nonce was not accepted before (nonces are remembered until they expire), so a captured datagram cannot be replayed and a datagram from another local process is read and ignored. The key file and the `udg` socket file are owner-only, so the web server and cron run as one user.
 
 ## Methods
 

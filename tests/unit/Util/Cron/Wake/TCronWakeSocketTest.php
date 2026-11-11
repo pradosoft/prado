@@ -11,7 +11,16 @@ class TCronWakeSocketTest extends \PHPUnit\Framework\TestCase
 
 	protected function setUp(): void
 	{
-		$this->runtime = sys_get_temp_dir();
+		$this->runtime = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'cronwake-test-' . bin2hex(random_bytes(4));
+		mkdir($this->runtime);
+	}
+
+	protected function tearDown(): void
+	{
+		foreach (glob($this->runtime . DIRECTORY_SEPARATOR . '*') ?: [] as $file) {
+			@unlink($file);
+		}
+		@rmdir($this->runtime);
 	}
 
 	private function skipWithoutTransport(TCronWakeSocket $s): void
@@ -43,14 +52,46 @@ class TCronWakeSocketTest extends \PHPUnit\Framework\TestCase
 		self::assertSame($this->runtime . '/sub', $s->getRuntimePath());
 		$s->setBasePort('61000');
 		self::assertSame(61000, $s->getBasePort());
-		self::assertSame(64, strlen($s->getKey()), 'the default key is a SHA-256 HMAC of the validation key');
-		self::assertSame($s->getKey(), (new TCronWakeSocket($this->runtime))->getKey(), 'every transport of the application derives the same key');
+		$s = new TCronWakeSocket();
+		self::assertNotEmpty($s->getRuntimePath(), 'defaults to the application runtime path');
+	}
+
+	public function testKeyIsSharedThroughTheKeyFile()
+	{
+		$file = $this->runtime . DIRECTORY_SEPARATOR . TCronWakeSocket::KEY_FILE;
+		$s = new TCronWakeSocket($this->runtime);
+		self::assertFileDoesNotExist($file);
+		$key = $s->getKey();
+		self::assertSame(64, strlen($key), 'the first transport creates a random key');
+		self::assertSame($key, file_get_contents($file));
+		if (DIRECTORY_SEPARATOR === '/') {
+			self::assertSame(0o600, fileperms($file) & 0o777, 'the key file is owner-only');
+		}
+		self::assertSame($key, (new TCronWakeSocket($this->runtime))->getKey(), 'another transport, as in another process, reads the same key');
 		$s->setKey('secret');
 		self::assertSame('secret', $s->getKey());
 		$s->setKey('');
-		self::assertSame(64, strlen($s->getKey()));
-		$s = new TCronWakeSocket();
-		self::assertNotEmpty($s->getRuntimePath(), 'defaults to the application runtime path');
+		self::assertSame($key, $s->getKey(), "'' returns to the key file");
+
+		file_put_contents($file, '');
+		$rewritten = (new TCronWakeSocket($this->runtime))->getKey();
+		self::assertSame(64, strlen($rewritten), 'a file left empty is rewritten');
+		self::assertSame($rewritten, file_get_contents($file));
+
+		$missing = $this->runtime . DIRECTORY_SEPARATOR . 'missing';
+		$fallback = (new TCronWakeSocket($missing))->getKey();
+		self::assertSame($fallback, (new TCronWakeSocket($missing))->getKey(), 'an unwritable key file falls back to one key for every process');
+		self::assertNotSame($rewritten, $fallback);
+	}
+
+	public function testKeyFileSignsAcrossTransports()
+	{
+		$sender = new TCronWakeSocket($this->runtime);
+		$receiver = new TCronWakeSocket($this->runtime);
+		self::assertTrue($receiver->verifyToken($sender->createToken()), 'a message from another transport of the application verifies');
+		$foreign = new TCronWakeSocket($this->runtime);
+		$foreign->setKey('other');
+		self::assertFalse($receiver->verifyToken($foreign->createToken()), 'a message signed with another key does not');
 	}
 
 	public function testAddressKeyedByMinuteParityAndTheDaemon()

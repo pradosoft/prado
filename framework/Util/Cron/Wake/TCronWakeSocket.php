@@ -14,6 +14,7 @@ use Prado\IO\Async\IEventLoop;
 use Prado\Prado;
 use Prado\TModule;
 use Prado\TPropertyValue;
+use Prado\Util\Log\TLogger;
 
 /**
  * TCronWakeSocket class.
@@ -38,10 +39,11 @@ use Prado\TPropertyValue;
  *
  * Any process of the host can send a datagram to a loopback or `udg` address, so a wake is a signed
  * message ({@see createToken}): a fresh nonce and the time, authenticated with an HMAC of the
- * {@see getKey Key}, the application's validation key by default. The receiver ({@see verifyToken})
+ * {@see getKey Key}, a random key in the runtime directory's {@see KEY_FILE} by default, which every
+ * process of the application reads. The receiver ({@see verifyToken})
  * accepts a message once, within {@see TOKEN_WINDOW} seconds of its time, so a captured datagram
- * cannot be replayed and a datagram without a valid signature is read and ignored. A `udg` socket
- * file is also owner-only.
+ * cannot be replayed and a datagram without a valid signature is read and ignored. The key file and a
+ * `udg` socket file are owner-only.
  *
  * The socket is the default transport of {@see \Prado\Util\Cron\TCronModule}; as a module it
  * configures {@see setRuntimePath RuntimePath} and {@see setBasePort BasePort}.
@@ -63,13 +65,19 @@ class TCronWakeSocket extends TModule implements ICronWakeTransport
 	/** @var int the bytes of the random nonce in a wake message */
 	protected const NONCE_BYTES = 8;
 
+	/** @var string the file in the runtime directory holding the shared signing key */
+	public const KEY_FILE = 'cronwake.key';
+
+	/** @var int the reads of an empty key file, 10 ms apart, before it is rewritten */
+	protected const KEY_FILE_ATTEMPTS = 50;
+
 	/** @var ?string the runtime directory holding the udg socket files, or null for the application runtime path */
 	private ?string $_runtimePath;
 
 	/** @var ?int the base udp loopback port; null for {@see DEFAULT_WAKE_PORT} */
 	private ?int $_basePort;
 
-	/** @var ?string the signing key of the wake messages, or null to derive it from the application's validation key */
+	/** @var ?string the signing key of the wake messages, or null for the key in {@see KEY_FILE} */
 	private ?string $_key = null;
 
 	/** @var array<string, int> the nonces of the accepted messages, by their expiry time */
@@ -153,33 +161,67 @@ class TCronWakeSocket extends TModule implements ICronWakeTransport
 	}
 
 	/**
-	 * Returns the key that signs the wake messages.  Without a configured key it is the SHA-256 HMAC
-	 * of `prado:cron:wake` with the application's `TSecurityManager` validation key, which every
-	 * process of the application shares; without an application the key is the runtime path.
+	 * Returns the key that signs the wake messages: the configured key, or the key in
+	 * {@see KEY_FILE} in the {@see getRuntimePath RuntimePath}, which every process of the
+	 * application reads.  The first process to need the key creates the file with a random key.
 	 * @return string the signing key
 	 */
 	public function getKey(): string
 	{
 		if ($this->_key === null) {
-			$key = null;
-			try {
-				$key = Prado::getApplication()?->getSecurityManager()?->getValidationKey();
-			} catch (\Throwable $e) {
-				// no security manager; fall back to the runtime path
-			}
-			$this->_key = hash_hmac('sha256', 'prado:cron:wake', (string) ($key ?: $this->getRuntimePath()));
+			$this->_key = $this->readKeyFile($this->getRuntimePath() . DIRECTORY_SEPARATOR . static::KEY_FILE);
 		}
 		return $this->_key;
 	}
 
 	/**
-	 * @param ?string $value the key that signs the wake messages, or null or '' to derive it from the application's validation key
+	 * @param ?string $value the key that signs the wake messages, or null or '' for the key in {@see KEY_FILE}
 	 * @return static the current object
 	 */
 	public function setKey($value): static
 	{
 		$this->_key = ($value === null || $value === '') ? null : TPropertyValue::ensureString($value);
 		return $this;
+	}
+
+	/**
+	 * Reads the shared key from the key file, creating the file with a random key when it does not
+	 * exist.  An exclusive create makes one process the author; the others read the key it writes
+	 * under a shared lock.  A file left empty by a crashed author is rewritten.  When the file
+	 * cannot be written, every process falls back to a key derived from the file's path.
+	 * @param string $file the key file path
+	 * @return string the key
+	 */
+	protected function readKeyFile(string $file): string
+	{
+		for ($attempt = 0; $attempt < static::KEY_FILE_ATTEMPTS; $attempt++) {
+			if (($handle = @fopen($file, 'x')) !== false) {
+				@chmod($file, 0o600);
+				$key = bin2hex(random_bytes(32));
+				flock($handle, LOCK_EX);
+				fwrite($handle, $key);
+				fflush($handle);
+				flock($handle, LOCK_UN);
+				fclose($handle);
+				return $key;
+			}
+			if (($handle = @fopen($file, 'r')) !== false) {
+				flock($handle, LOCK_SH);
+				$key = trim((string) stream_get_contents($handle));
+				flock($handle, LOCK_UN);
+				fclose($handle);
+				if ($key !== '') {
+					return $key;
+				}
+			}
+			usleep(10000);
+		}
+		$key = bin2hex(random_bytes(32));
+		if (@file_put_contents($file, $key, LOCK_EX) === strlen($key)) {
+			return $key;
+		}
+		Prado::log('Cron wake key file ' . $file . ' cannot be written; wake messages are signed with a key derived from its path', TLogger::WARNING, self::class);
+		return hash_hmac('sha256', 'prado:cron:wake', $file);
 	}
 
 	/**
