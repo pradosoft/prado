@@ -292,6 +292,27 @@ class GatewaySqliteTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame($info, $gateway->getTableInfo($wrapped, 'gw_items'));
 	}
 
+	public function testTableInfo_readsMetaDataFromTheConnection()
+	{
+		$wrapped = new class ($this->database('meta')) extends GwWrappedConnection {
+			public int $metaCalls = 0;
+
+			public function getDbMetaData()
+			{
+				$this->metaCalls++;
+				return parent::getDbMetaData();
+			}
+		};
+		$gateway = $this->_manager->getRecordGateway();
+
+		$info = $gateway->getTableInfo($wrapped, 'gw_items');
+		$this->assertSame(['id', 'name', 'note'], $info->getColumns()->getKeys());
+		$this->assertSame(1, $wrapped->metaCalls);
+
+		$gateway->getTableInfo($wrapped, 'gw_plain');
+		$this->assertSame(1, $wrapped->metaCalls, 'the connection is asked for its meta data once');
+	}
+
 	public function testDataGatewayClass_createsTheCommand()
 	{
 		$gateway = $this->_manager->getRecordGateway();
