@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: `TSecurityManager::decrypt()` with `UseEncryptionHmac` on returns `false` for input without a valid HMAC; it decrypted such input unauthenticated, so altered or stripped ciphertext still decrypted. See UPGRADE.md. (belisoful)
 ENH: `TSvg` and `TCanvas` size the element with `PixelWidth` and `PixelHeight`, rendered as the `width` and `height` attributes; `Width` and `Height` are the CSS lengths inherited from `TWebControl`. (belisoful)
 BUG: `framework/classes.php` no longer maps `PradoBase` and `TSecurityManagerValidationMode`, which were removed in 4.0 and 4.2. (belisoful)
 BUG: `TStyle::__call()` reaches a `getXxx()` or `setXxx()` method an attached behavior contributes; it read or wrote a style field of that name. (belisoful)

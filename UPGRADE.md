@@ -65,9 +65,11 @@ Upgrading from v4.3.3
   `Prado\Data\Common\SqlSrv` replacements: `TMssqlCommandBuilder` → `TSqlSrvCommandBuilder`, `TMssqlMetaData` →
   `TSqlSrvMetaData`, `TMssqlTableColumn` → `TSqlSrvTableColumn`, and `TMssqlTableInfo` → `TSqlSrvTableInfo`. The
   `mssql`, `sqlsrv`, and `dblib` drivers already use the replacements, so code that only connects needs no change.
-- `TSecurityManager::UseEncryptionHmac` defaults to `true`; it was `false`. `decrypt()` reads data with or without the
-  HMAC, so existing encrypted data still decrypts. Prado versions before 4.3.3 cannot decrypt the new output; an
-  application sharing encrypted data with them sets `UseEncryptionHmac="false"`.
+- `TSecurityManager::UseEncryptionHmac` defaults to `true`; it was `false`. With it `true`, `decrypt()` returns `false`
+  for input without a valid HMAC, so data encrypted under the 4.3 default no longer decrypts; `decrypt()` accepted it
+  unauthenticated, which let altered or stripped ciphertext decrypt. An application keeping data it encrypted with
+  4.3, or sharing encrypted data with Prado versions before 4.3.3, sets `UseEncryptionHmac="false"`; it can re-encrypt
+  the data and turn the property on later, since `decrypt()` honors a valid HMAC with either setting.
 - `TDbParameterModule` binds `AutoLoadValue` and `AutoLoadValueFalse` as parameters. A value quoted as an SQL literal,
   such as `'yes'`, is bound without its quotes; an SQL expression is no longer evaluated. `TableName`, `KeyField`,
   `ValueField`, and `AutoLoadField` must be SQL identifiers.

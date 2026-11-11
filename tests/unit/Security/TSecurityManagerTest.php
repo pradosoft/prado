@@ -1075,7 +1075,7 @@ class TSecurityManagerTest extends \PHPUnit\Framework\TestCase
 	 * Ciphertext produced with UseEncryptionHmac=false must still be decryptable
 	 * after the property is switched to true (forward migration).
 	 */
-	public function testDecryptPlainCiphertextWhenHmacEnabled()
+	public function testDecryptPlainCiphertextWhenHmacEnabledReturnsFalse()
 	{
 		if (!extension_loaded('openssl')) {
 			self::markTestSkipped('openssl extension not loaded');
@@ -1088,14 +1088,78 @@ class TSecurityManagerTest extends \PHPUnit\Framework\TestCase
 
 		$plainText = 'Data encrypted before HMAC was enabled';
 
-		// Encrypt without HMAC (old behaviour).
+		// Encrypt without HMAC (the Prado 4.3 default).
 		$sec->setUseEncryptionHmac(false);
 		$encryptedWithoutHmac = $sec->encrypt($plainText);
+		self::assertEquals($plainText, $sec->decrypt($encryptedWithoutHmac));
 
-		// Switch property to true — decrypt must still recover the plaintext.
+		// With the property on, input without an HMAC is rejected.
 		$sec->setUseEncryptionHmac(true);
-		$decrypted = $sec->decrypt($encryptedWithoutHmac);
-		self::assertEquals($plainText, $decrypted);
+		self::assertFalse($sec->decrypt($encryptedWithoutHmac));
+	}
+
+	/**
+	 * With UseEncryptionHmac on, an HMAC-encrypted value whose HMAC prefix is removed
+	 * returns false; the remaining IV+ciphertext is never decrypted unauthenticated.
+	 */
+	public function testDecryptStrippedHmacWhenHmacEnabledReturnsFalse()
+	{
+		if (!extension_loaded('openssl')) {
+			self::markTestSkipped('openssl extension not loaded');
+		}
+
+		$sec = new TSecurityManager();
+		$sec->init(null);
+		$sec->setEncryptionKey('aKey');
+		$sec->setValidationKey('validationKey');
+		$sec->setUseEncryptionHmac(true);
+
+		$plainText = 'Three blocks of text so the IV covers only the first';
+		$encrypted = $sec->encrypt($plainText);
+		$hmacLen = strlen(hash_hmac($sec->getHashAlgorithm(), '', $sec->getValidationKey(), true));
+		$stripped = substr($encrypted, $hmacLen);
+
+		self::assertFalse($sec->decrypt($stripped));
+
+		// Flipping an IV byte of the stripped value alters the first plaintext block and
+		// leaves the padding block intact, so an unauthenticated decrypt would succeed.
+		$tampered = $stripped;
+		$tampered[0] = chr(ord($tampered[0]) ^ 0x01);
+		self::assertFalse($sec->decrypt($tampered));
+
+		// The untampered value still round-trips.
+		self::assertEquals($plainText, $sec->decrypt($encrypted));
+	}
+
+	/**
+	 * With UseEncryptionHmac off, plain IV+ciphertext decrypts, and so does an
+	 * HMAC-prefixed value whose IV byte is flipped after the HMAC is stripped.
+	 */
+	public function testDecryptPlainCiphertextWhenHmacDisabled()
+	{
+		if (!extension_loaded('openssl')) {
+			self::markTestSkipped('openssl extension not loaded');
+		}
+
+		$sec = new TSecurityManager();
+		$sec->init(null);
+		$sec->setEncryptionKey('aKey');
+		$sec->setValidationKey('validationKey');
+		$sec->setUseEncryptionHmac(false);
+
+		$plainText = 'Plain ciphertext with the property off';
+		$encrypted = $sec->encrypt($plainText);
+		$ivLen = openssl_cipher_iv_length($sec->getCryptAlgorithm());
+		self::assertEquals($ivLen + strlen(base64_encode(str_repeat('x', 48))), strlen($encrypted));
+
+		self::assertEquals($plainText, $sec->decrypt($encrypted));
+
+		// The property off accepts a stripped HMAC value as plain IV+ciphertext.
+		$sec->setUseEncryptionHmac(true);
+		$withHmac = $sec->encrypt($plainText);
+		$sec->setUseEncryptionHmac(false);
+		$hmacLen = strlen(hash_hmac($sec->getHashAlgorithm(), '', $sec->getValidationKey(), true));
+		self::assertEquals($plainText, $sec->decrypt(substr($withHmac, $hmacLen)));
 	}
 
 	/**
@@ -1313,8 +1377,9 @@ class TSecurityManagerTest extends \PHPUnit\Framework\TestCase
 
 	/**
 	 * Data exactly $hmacLen bytes long hits the `> $hmacLen` boundary: the HMAC
-	 * probe is skipped (condition is strictly greater-than), so the full blob is
-	 * treated as a plain IV+ciphertext, which cannot be valid.
+	 * probe is skipped (condition is strictly greater-than). With UseEncryptionHmac
+	 * on the blob is rejected; off, it is treated as plain IV+ciphertext, which
+	 * cannot be valid.
 	 */
 	public function testDecryptDataAtExactlyHmacLengthBoundarySkipsHmacPath()
 	{
@@ -1329,15 +1394,17 @@ class TSecurityManagerTest extends \PHPUnit\Framework\TestCase
 
 		// Build a blob that is exactly $hmacLen bytes so the HMAC probe is skipped.
 		// The bytes are crafted to equal the real HMAC of '' — if the probe ran, it
-		// would produce a false positive.  Since the probe is bypassed, the blob is
-		// handed to plain CBC decrypt as-is and cannot return our known plaintext.
+		// would produce a false positive.
 		$hmacLen = strlen(hash_hmac($sec->getHashAlgorithm(), '', $sec->getValidationKey(), true));
 		$blob = hash_hmac($sec->getHashAlgorithm(), '', $sec->getValidationKey(), true);
 		self::assertEquals($hmacLen, strlen($blob)); // confirm the probe boundary
 
-		$result = $sec->decrypt($blob);
+		$sec->setUseEncryptionHmac(true);
+		self::assertFalse($sec->decrypt($blob));
+
+		$sec->setUseEncryptionHmac(false);
 		// Result is false or garbage — definitely not a plaintext we encrypted.
-		self::assertNotEquals('any plaintext', $result);
+		self::assertNotEquals('any plaintext', $sec->decrypt($blob));
 	}
 
 	// -------------------------------------------------------------------------
@@ -1455,10 +1522,9 @@ class TSecurityManagerTest extends \PHPUnit\Framework\TestCase
 
 	/**
 	 * Changing the ValidationKey after HMAC-encrypt causes the HMAC probe to fail
-	 * during decrypt.  The fallback plain path then treats the HMAC prefix bytes
-	 * as part of the IV, so the recovered bytes are garbage — not the original text.
+	 * during decrypt, so decrypt returns false while UseEncryptionHmac is on.
 	 */
-	public function testUseEncryptionHmacWithChangedValidationKeyProducesGarbage()
+	public function testUseEncryptionHmacWithChangedValidationKeyReturnsFalse()
 	{
 		if (!extension_loaded('openssl')) {
 			self::markTestSkipped('openssl extension not loaded');
@@ -1474,13 +1540,13 @@ class TSecurityManagerTest extends \PHPUnit\Framework\TestCase
 		$encrypted = $sec->encrypt($plainText);
 
 		$sec->setValidationKey('differentKey');
-		self::assertNotEquals($plainText, $sec->decrypt($encrypted));
+		self::assertFalse($sec->decrypt($encrypted));
 	}
 
 	/**
 	 * Changing HashAlgorithm between HMAC-encrypt and decrypt alters both the
-	 * expected HMAC length and its value.  The probe fails, decrypt falls back to
-	 * the plain path with the HMAC bytes acting as a mangled IV, returning garbage.
+	 * expected HMAC length and its value. The probe fails and decrypt returns false
+	 * while UseEncryptionHmac is on.
 	 */
 	public function testUseEncryptionHmacWithChangedHashAlgorithmOnDecrypt()
 	{
@@ -1500,7 +1566,7 @@ class TSecurityManagerTest extends \PHPUnit\Framework\TestCase
 
 		// Switch to md5 — different HMAC length (16 raw bytes vs 32) and value.
 		$sec->setHashAlgorithm('md5');
-		self::assertNotEquals($plainText, $sec->decrypt($encrypted));
+		self::assertFalse($sec->decrypt($encrypted));
 	}
 
 	/**

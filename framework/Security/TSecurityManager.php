@@ -48,11 +48,13 @@ use Prado\TPropertyValue;
  * {@see setUseEncryptionHmac UseEncryptionHmac} (default `true`) enables
  * authenticated encryption: {@see encrypt()} prepends a raw HMAC (keyed on
  * {@see getValidationKey ValidationKey} with {@see getHashAlgorithm HashAlgorithm}) over
- * the IV+ciphertext block. {@see decrypt()} always attempts HMAC verification first
- * regardless of the property value, so data encrypted in either mode can be decrypted
- * transparently after the property changes — making migration in both directions seamless.
- * When HMAC is present and valid, ciphertext tampering is detected reliably and `false`
- * is returned deterministically instead of relying on PKCS7 padding luck.
+ * the IV+ciphertext block. {@see decrypt()} verifies a valid HMAC prefix whether the
+ * property is `true` or `false`. With the property `true`, input without a valid HMAC
+ * returns `false`, so altered or stripped ciphertext is rejected. With the property
+ * `false`, input without a valid HMAC is decrypted as plain IV+ciphertext. Data encrypted
+ * while the property was `false` no longer decrypts once it is `true`; an application
+ * keeping such data re-encrypts it before enabling the property, or leaves the property
+ * `false` until the data expires.
  *
  * Note, to use encryption, the PHP OpenSSL extension must be loaded. This was introduced in
  * Prado4, older versions used the deprecated mcrypt extension with rijndael-256 cipher as
@@ -413,9 +415,8 @@ class TSecurityManager extends \Prado\TModule
 	}
 
 	/**
-	 * @return bool Whether {@see encrypt()} prepends an HMAC over the IV+ciphertext block.
-	 * When `true`, {@see decrypt()} detects ciphertext tampering reliably and returns `false`
-	 * deterministically rather than relying on PKCS7 padding luck. Defaults to `true`;
+	 * @return bool Whether {@see encrypt()} prepends an HMAC over the IV+ciphertext block
+	 * and {@see decrypt()} returns `false` for input without a valid HMAC. Defaults to `true`;
 	 * Prado 4.3 defaulted to `false`.
 	 * @since 4.3.3
 	 */
@@ -432,9 +433,10 @@ class TSecurityManager extends \Prado\TModule
 	 * over the concatenated IV and ciphertext. The resulting layout is:
 	 * `[HMAC (raw, N bytes)][IV (raw, iv_len bytes)][ciphertext (base64)]`.
 	 *
-	 * {@see decrypt()} always attempts HMAC verification first regardless of this setting,
-	 * so ciphertext produced in either mode is decryptable after the property changes —
-	 * enabling seamless migration in both directions.
+	 * {@see decrypt()} honors a valid HMAC prefix with either setting. With `true`, input
+	 * without a valid HMAC returns `false`; with `false`, it is decrypted as plain
+	 * IV+ciphertext. Turning the property on makes data encrypted while it was off
+	 * undecryptable.
 	 *
 	 * @param bool $value `true` to enable authenticated encryption.
 	 * @since 4.3.3
@@ -496,20 +498,17 @@ class TSecurityManager extends \Prado\TModule
 	/**
 	 * Decrypts data with {@see getEncryptionKey EncryptionKey}.
 	 *
-	 * This method always attempts HMAC verification first, regardless of the current
-	 * {@see getUseEncryptionHmac UseEncryptionHmac} setting. If the leading bytes form a
-	 * valid HMAC over the remainder (verified with {@see getValidationKey ValidationKey}
-	 * and {@see getHashAlgorithm HashAlgorithm}), the HMAC is stripped and the authenticated
-	 * payload is decrypted. If HMAC verification fails, the method falls back to plain
-	 * (unauthenticated) CBC decryption of the full input.
-	 *
-	 * This dual-path behavior means ciphertext produced before or after the property
-	 * changes is always decryptable, enabling seamless migration in both directions.
+	 * The leading bytes are checked as an HMAC over the remainder, keyed on
+	 * {@see getValidationKey ValidationKey} with {@see getHashAlgorithm HashAlgorithm}:
+	 * - valid HMAC → the HMAC is stripped and the IV+ciphertext payload is decrypted.
+	 * - no valid HMAC, {@see getUseEncryptionHmac UseEncryptionHmac} `true` → `false`.
+	 * - no valid HMAC, UseEncryptionHmac `false` → the full input is decrypted as plain
+	 *   IV+ciphertext.
 	 *
 	 * @param string $data data to be decrypted.
 	 * @throws TNotSupportedException if PHP OpenSSL extension is not loaded
-	 * @return false|string the decrypted data, or `false` on failure (including
-	 *   detected HMAC tampering when the ciphertext carries a valid HMAC header)
+	 * @return false|string the decrypted data, or `false` on failure: a missing or
+	 *   mismatched HMAC with UseEncryptionHmac `true`, or a cipher failure
 	 */
 	public function decrypt($data)
 	{
@@ -518,30 +517,27 @@ class TSecurityManager extends \Prado\TModule
 		}
 		$key = hash($this->getEncryptionKeyAlgorithm(), $this->getEncryptionKey());
 		$cryptAlgorithm = $this->getCryptAlgorithm();
+		$ivLen = openssl_cipher_iv_length($cryptAlgorithm);
 
-		// Always probe for an HMAC header first.  The HMAC is a fixed-length raw-binary
-		// digest, so we can compute its expected length from a dummy call.  If the stored
-		// digest matches a freshly computed one over the remaining bytes, the ciphertext is
-		// authenticated; strip the HMAC and decrypt only the IV+ciphertext payload.
-		// Falling back to plain decryption when HMAC is absent lets data encrypted without
-		// UseEncryptionHmac be read back after the property is enabled, and vice-versa.
-		//
-		// Note: native strlen() is used here intentionally.
+		// The HMAC is a raw digest of fixed length, so the digest of '' gives its length.
+		// A valid HMAC prefix is honored with UseEncryptionHmac on or off; with it on, input
+		// without one is rejected, never decrypted unauthenticated.
+		// Native strlen() is used here intentionally.
 		$hmacLen = strlen(hash_hmac($this->getHashAlgorithm(), '', $this->getValidationKey(), true));
 		if ($this->strlen($data) > $hmacLen) {
 			$storedHmac = $this->substr($data, 0, $hmacLen);
 			$payload = $this->substr($data, $hmacLen);
 			$expectedHmac = hash_hmac($this->getHashAlgorithm(), $payload, $this->getValidationKey(), true);
 			if (hash_equals($expectedHmac, $storedHmac)) {
-				// Authenticated path: HMAC is valid — decrypt the inner IV+ciphertext.
-				$ivLen = openssl_cipher_iv_length($cryptAlgorithm);
 				$iv = $this->substr($payload, 0, $ivLen);
 				return openssl_decrypt($this->substr($payload, $ivLen), $cryptAlgorithm, $key, 0, $iv);
 			}
 		}
+		if ($this->getUseEncryptionHmac()) {
+			return false;
+		}
 
-		// Plain (unauthenticated) path: treat the full input as IV+ciphertext.
-		$ivLen = openssl_cipher_iv_length($cryptAlgorithm);
+		// UseEncryptionHmac off: the full input is plain IV+ciphertext.
 		$iv = $this->substr($data, 0, $ivLen);
 		return openssl_decrypt($this->substr($data, $ivLen), $cryptAlgorithm, $key, 0, $iv);
 	}
