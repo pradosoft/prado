@@ -253,6 +253,23 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	}
 
 	/**
+	 * Creates the PDO instance of the connection with {@see getUsername Username},
+	 * {@see getPassword Password}, and the attributes: the driver subclass (`Pdo\Pgsql`,
+	 * `Pdo\Sqlite`, `Pdo\Mysql`, ...) through `PDO::connect()` on PHP 8.4 and later, which
+	 * holds the driver methods, and a `PDO` on earlier versions.
+	 * @param string $dsn the data source name with the charset applied
+	 * @return PDO the connection
+	 * @since 4.4.0
+	 */
+	protected function createPdoInstance(string $dsn): PDO
+	{
+		if (method_exists(PDO::class, 'connect')) {
+			return PDO::connect($dsn, $this->getUsername(), $this->getPassword(), $this->_attributes);
+		}
+		return new PDO($dsn, $this->getUsername(), $this->getPassword(), $this->_attributes);
+	}
+
+	/**
 	 * Opens DB connection if it is currently not
 	 * @throws TDbException if connection fails
 	 */
@@ -268,12 +285,7 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 		$charsetInDsn = $this->extractCharsetFromDsn($dsn);
 
 		try {
-			$pdo = $this->_pdo = new PDO(
-				$this->applyCharsetToDsn($dsn),
-				$this->getUsername(),
-				$this->getPassword(),
-				$this->_attributes
-			);
+			$pdo = $this->_pdo = $this->createPdoInstance($this->applyCharsetToDsn($dsn));
 
 			$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 			$this->_active = true;

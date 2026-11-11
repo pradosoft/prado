@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+ENH: `TDbConnection` opens through `PDO::connect()` on PHP 8.4 and later (`createPdoInstance()`), so `getPdoInstance()` is the driver subclass (`Pdo\Pgsql`, `Pdo\Sqlite`, ...), whose driver methods replace the ones PHP 8.5 deprecates on `PDO`. (belisoful)
 BUG: Issue #1497 - `TEventHandler::offsetExists()` normalizes a numeric offset as `offsetGet()` does, so `isset($handler['2'])` and `isset($handler[2.0])` are true. (belisoful)
 BUG: Issue #1497 - `TApplication::startService()` throws `application_service_not_component` for an `IService` class that does not extend `TComponent`; it reported `application_service_invalid`, "must implement IService". (belisoful)
 NEW: Issue #1401 - `TConfirmSubmit` wraps controls and asks for confirmation in a modal `alertdialog` before their postback, callback, or navigation, through `TConfirmDialogTrait`, which `TConfirmButton` also uses. (belisoful)
