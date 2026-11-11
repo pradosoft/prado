@@ -1,8 +1,7 @@
 <?php
 
-/**
- * @package Prado\Util\Email\Tests
- */
+namespace Prado\Test\Unit\Util\Email\Cron;
+
 class TDbEmailCleanerTaskTest extends \PHPUnit\Framework\TestCase
 {
 	public function testGetTimePeriod()

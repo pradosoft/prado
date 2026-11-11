@@ -46,7 +46,7 @@ class TEmailerBehavior extends \Prado\Util\TBehavior
 	 * Sends a TEmail.  The Custom Data in the body (and text) adds a '{{'
 	 * before and '}}' after the key.  eg '{{CODE}}' ['CODE' =>  'value'] is
 	 * replaced by 'value'.
-	 * @param \Prado\Web\UI\TEmail|\Prado\Web\UI\TEmailPage $email the email to be sent
+	 * @param \Prado\Util\Email\TEmail|\Prado\Util\Email\UI\TEmailPage $email the email to be sent
 	 * @pparam null|array substitution replacement variables. keys are replaced by value
 	 * @param bool $many are there many emails to be sent, default false
 	 * @param null|mixed $customData

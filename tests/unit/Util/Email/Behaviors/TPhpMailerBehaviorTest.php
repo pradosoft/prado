@@ -1,8 +1,7 @@
 <?php
 
-/**
- * @package Prado\Util\Email\Tests
- */
+namespace Prado\Test\Unit\Util\Email\Behaviors;
+
 class TPhpMailerBehaviorTest extends \PHPUnit\Framework\TestCase
 {
 	public function testConstruct()

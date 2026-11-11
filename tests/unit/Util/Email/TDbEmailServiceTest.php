@@ -1,15 +1,14 @@
 <?php
 
-/**
- * @package Prado\Util\Email\Tests
- */
+namespace Prado\Test\Unit\Util\Email;
+
 class TDbEmailServiceTest extends \PHPUnit\Framework\TestCase
 {
 	public function testGetEmailerModuleWithString()
 	{
-		$service = $this->createPartialMock(\Prado\Web\Services\TDbEmailService::class, ['getApplication']);
+		$service = $this->createPartialMock(\Prado\Util\Email\TDbEmailService::class, ['getApplication']);
 		
-		$module = $this->createMock(\Prado\Util\Email\TDbEmailerModule::class);
+		$module = $this->createMock(\Prado\Util\Email\TDbEmailModule::class);
 		$app = $this->createMock(\Prado\TApplication::class);
 		$app->expects($this->once())
 			->method('getModule')
@@ -26,15 +25,15 @@ class TDbEmailServiceTest extends \PHPUnit\Framework\TestCase
 
 	public function testGetEmailerModuleWithModule()
 	{
-		$module = $this->createMock(\Prado\Util\Email\TDbEmailerModule::class);
-		$service = new \Prado\Web\Services\TDbEmailService();
+		$module = $this->createMock(\Prado\Util\Email\TDbEmailModule::class);
+		$service = new \Prado\Util\Email\TDbEmailService();
 		$service->setEmailerModule($module);
 		$this->assertSame($module, $service->getEmailerModule());
 	}
 
 	public function testGetEmailerModuleWithInvalidModule()
 	{
-		$service = $this->createPartialMock(\Prado\Web\Services\TDbEmailService::class, ['getApplication']);
+		$service = $this->createPartialMock(\Prado\Util\Email\TDbEmailService::class, ['getApplication']);
 		
 		$module = $this->createMock(\Prado\TModule::class);
 		$app = $this->createMock(\Prado\TApplication::class);
@@ -56,8 +55,8 @@ class TDbEmailServiceTest extends \PHPUnit\Framework\TestCase
 
 	public function testSetEmailerModule()
 	{
-		$module = $this->createMock(\Prado\Util\Email\TDbEmailerModule::class);
-		$service = new \Prado\Web\Services\TDbEmailService();
+		$module = $this->createMock(\Prado\Util\Email\TDbEmailModule::class);
+		$service = new \Prado\Util\Email\TDbEmailService();
 		$service->setEmailerModule($module);
 		$this->assertSame($module, $service->_emailer);
 	}

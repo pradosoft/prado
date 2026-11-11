@@ -16,6 +16,7 @@ use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Util\Cron\TCronModule;
 use Prado\Util\Cron\TCronTask;
 use Prado\Util\Email\TEmailModule;
+use Prado\Util\Cron\TDbCronManager;
 
 /**
  * TSendEmailTask class.
@@ -28,12 +29,12 @@ use Prado\Util\Email\TEmailModule;
 class TSendEmailTask extends TCronTask
 {
 	/**
-	 * @var \Prado\Util\Email\UI\TEmail the email to be sent.
+	 * @var \Prado\Util\Email\TEmail the email to be sent.
 	 */
 	private $_email;
 
 	/**
-	 * @param \Prado\Util\Email\UI\TEmail $email the email to send on execute.
+	 * @param \Prado\Util\Email\TEmail $email the email to send on execute.
 	 */
 	public function __construct($email = null)
 	{
@@ -48,7 +49,7 @@ class TSendEmailTask extends TCronTask
 
 	/**
 	 * This sends one email as a cron task.
-	 * @param TDbCronModule $cron
+	 * @param TDbCronManager $cron
 	 */
 	public function execute($cron)
 	{

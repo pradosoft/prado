@@ -12,7 +12,7 @@ namespace Prado\Util\Email\Behaviors;
 
 use Prado\Prado;
 use Prado\Exceptions\TConfigurationException;
-use Prado\Util\Cron\TDbCronModule;
+use Prado\Util\Cron\TDbCronManager;
 use Prado\Util\Email\Cron\TSendEmailTask;
 
 /**
@@ -20,18 +20,18 @@ use Prado\Util\Email\Cron\TSendEmailTask;
  *
  * TDelayedEmailerBehavior plugs into TEmailModule to delay sending
  * emails until the Application is ending after the page is rendered
- * and sent to the user.  It makes use of TDbCronModule realtime tasks
+ * and sent to the user.  It makes use of TDbCronManager realtime tasks
  * to ensure emails are sent.
  *
  * This can be used with the basic TEmailModule but should not be
- * used with TDbEmailerModule SendEmailsOffline feature.
+ * used with TDbEmailModule SendEmailsOffline feature.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.3.3
  */
 class TDelayedEmailerBehavior extends \Prado\Util\TBehavior
 {
-	/** @var \Prado\Util\Cron\TDbCronModule|string */
+	/** @var \Prado\Util\Cron\TDbCronManager|string */
 	private $_cron;
 
 	/**
@@ -58,7 +58,7 @@ class TDelayedEmailerBehavior extends \Prado\Util\TBehavior
 	 * This blocks all email handlers from further processing the email until
 	 * the end of the request.
 	 * @param \Prado\Util\Email\TEmailModule $sender
-	 * @param \Prado\Util\Email\TEmailEventPramater $param
+	 * @param \Prado\Util\Email\TEmailEventParameter $param
 	 */
 	public function delayedEmailHandler($sender, $param)
 	{
@@ -76,7 +76,7 @@ class TDelayedEmailerBehavior extends \Prado\Util\TBehavior
 	/**
 	 * removes the email delay handler to allow for normal email processing.
 	 * @param \Prado\Util\Email\TEmailModule $sender
-	 * @param \Prado\Util\Email\TEmailEventPramater $param
+	 * @param \Prado\Util\Email\TEmailEventParameter $param
 	 */
 	public function removeEmailHandler($sender, $param)
 	{
@@ -85,13 +85,13 @@ class TDelayedEmailerBehavior extends \Prado\Util\TBehavior
 
 
 	/**
-	 * @return null|\Prado\Util\Cron\TDbCronModule returns the Cron Module of the applications
+	 * @return null|\Prado\Util\Cron\TDbCronManager returns the Cron Module of the applications
 	 */
 	public function getCronModule()
 	{
 		if ($this->_cron === null) {
 			$app = Prado::getApplication();
-			$modules = $app->getModulesByType('Prado\\Util\\Cron\\TDbCronModule');
+			$modules = $app->getModulesByType('Prado\\Util\\Cron\\TDbCronManager');
 			foreach ($modules as $id => $m) {
 				if ($this->_cron = $app->getModule($id)) {
 					break;
@@ -105,14 +105,14 @@ class TDelayedEmailerBehavior extends \Prado\Util\TBehavior
 		if (!$this->_cron) {
 			throw new TConfigurationException('delayemailer_no_cron_found');
 		}
-		if (!($this->_cron instanceof TDbCronModule)) {
+		if (!($this->_cron instanceof TDbCronManager)) {
 			throw new TConfigurationException('delayemailer_not_cron');
 		}
 		return $this->_cron;
 	}
 
 	/**
-	 * @param null|\Prado\Util\Cron\TDbCronModule $cron sets the Cron Module
+	 * @param null|\Prado\Util\Cron\TDbCronManager $cron sets the Cron Module
 	 */
 	public function setCronModule($cron)
 	{

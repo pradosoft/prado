@@ -1,6 +1,6 @@
 <?php
 
-namespace Prado\Util\Email\Tests;
+namespace Prado\Test\Unit\Util\Email;
 
 use Prado\Util\Email\TEmailModule;
 use Prado\TPropertyValue;

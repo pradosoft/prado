@@ -13,6 +13,8 @@ namespace Prado\Util\Email\UI;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Util\Email\UI\TEmailPublishStyle;
 use Prado\Web\UI\TTemplate;
+use Prado\Web\UI\ActiveControls\IActiveControl;
+use Prado\Web\UI\TControl;
 
 /**
  * TEmailTemplate implements TTemplate but .
@@ -68,7 +70,7 @@ class TEmailTemplate extends TTemplate
 	public function addParsedObject($object)
 	{
 		//ERROR?  not getting the objects in the page?
-		if ($object instanceof Prado\Web\UI\ActiveControls\IActiveControl) {
+		if ($object instanceof \Prado\Web\UI\ActiveControls\IActiveControl) {
 			throw new TConfigurationException('emailtemplate_no_activecontrols');
 		}
 		parent::addParsedObject($object);

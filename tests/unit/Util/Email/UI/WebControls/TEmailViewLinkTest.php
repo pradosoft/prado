@@ -1,8 +1,7 @@
 <?php
 
-/**
- * @package Prado\Util\Email\Tests
- */
+namespace Prado\Test\Unit\Util\Email\UI\WebControls;
+
 class TEmailViewLinkTest extends \PHPUnit\Framework\TestCase
 {
 	public function testConstruct()

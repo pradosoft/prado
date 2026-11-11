@@ -20,6 +20,9 @@ use Prado\Web\UI\ITheme;
 use Prado\Web\UI\TPage;
 use Prado\Web\UI\TForm;
 use Prado\Web\UI\THtmlWriter;
+use Prado\Collections\TMap;
+use Prado\Exceptions\TInvalidOperationException;
+use Prado\Web\UI\ActiveControls\IActiveControl;
 
 /**
  * TEmailPage class
@@ -50,7 +53,7 @@ use Prado\Web\UI\THtmlWriter;
  */
 class TEmailPage extends TPage
 {
-	/** @var Prado\Util\Email\TEmail  */
+	/** @var \Prado\Util\Email\TEmail  */
 	private $_email;
 
 	/** @var null|string the cached body */
@@ -89,7 +92,7 @@ class TEmailPage extends TPage
 
 	/**
 	 * This generates the contents of the page body and returns the {@link TEmail}.
-	 * @return Prado\Util\Email\TEmail Email of the page.
+	 * @return \Prado\Util\Email\TEmail Email of the page.
 	 */
 	public function getEmail()
 	{
@@ -101,7 +104,7 @@ class TEmailPage extends TPage
 
 	/**
 	 * Sets the email of the TEmailPage.
-	 * @param Prado\Util\Email\TEmail $email Email of the page.
+	 * @param \Prado\Util\Email\TEmail $email Email of the page.
 	 */
 	public function setEmail($email)
 	{
@@ -225,7 +228,7 @@ class TEmailPage extends TPage
 
 
 	/**
-	 * @return TEmailerBehavior The manager that created the Email.
+	 * @return ?string Base URL for absolute links in the email, without a trailing slash.
 	 */
 	public function getAbsoluteUrl()
 	{
@@ -233,7 +236,7 @@ class TEmailPage extends TPage
 	}
 
 	/**
-	 * @param string $url TEmailerBehavior The manager that created the Email
+	 * @param string $url Base URL for absolute links in the email; a trailing slash is removed.
 	 */
 	public function setAbsoluteUrl($url)
 	{
@@ -253,7 +256,7 @@ class TEmailPage extends TPage
 	 */
 	public function addParsedObject($object)
 	{
-		if ($object instanceof Prado\Web\UI\ActiveControls\IActiveControl) {
+		if ($object instanceof \Prado\Web\UI\ActiveControls\IActiveControl) {
 			throw new TConfigurationException('emailtemplate_no_activecontrols');
 		}
 		parent::addParsedObject($object);

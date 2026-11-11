@@ -8,7 +8,7 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
-namespace Prado\Util\Cron;
+namespace Prado\Util\Email\Shell;
 
 use Prado\Prado;
 use Prado\Shell\TShellAppAction;

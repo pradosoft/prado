@@ -43,7 +43,7 @@ class TEmailEventParameter extends \Prado\TEventParameter
 	}
 
 	/**
-	 * @return \Prade\Util\Email\UI\TEmail The email being sent
+	 * @return \Prado\Util\Email\TEmail The email being sent
 	 */
 	public function getEmail()
 	{
@@ -51,7 +51,7 @@ class TEmailEventParameter extends \Prado\TEventParameter
 	}
 
 	/**
-	 * @param \Prade\Util\Email\UI\TEmail $email The email being sent
+	 * @param \Prado\Util\Email\TEmail $email The email being sent
 	 */
 	public function setEmail($email)
 	{

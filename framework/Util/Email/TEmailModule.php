@@ -10,7 +10,7 @@
 
 /*TODO:
  - Active Controls throw error.  addParsedObject not getting objects properly?
- - TDbEmailerModule (log emails, TDbEmailService for viewing emails)
+ - TDbEmailModule (log emails, TDbEmailService for viewing emails)
  - TEmailTrackerImage - img tag with url to email service to message ID
  - TEmailViewLink - Link to email service with message Id
  - unit tests
@@ -26,7 +26,11 @@ use Prado\TPropertyValue;
 use Prado\TEventResults;
 use Prado\Util\Email\UI\TEmailPage;
 use Prado\Util\Email\TEmail;
-use Prado\Util\Email\TEmailerBehavior;
+use Prado\Util\Email\Behaviors\TEmailerBehavior;
+use Prado\Exceptions\THttpException;
+use Prado\Exceptions\TInvalidOperationException;
+use Prado\TApplicationMode;
+use Prado\Web\UI\TTemplateManager;
 
 /**
  * TEmailModule class.
@@ -59,7 +63,7 @@ use Prado\Util\Email\TEmailerBehavior;
  *
  * Here is an example configuration.
  * <modules>
- *    <module id="emailer" class="Prado\Util\TEmailModule" DefaultBccAddress="debug@website.com, manager@website.com">
+ *    <module id="emailer" class="Prado\Util\Email\TEmailModule" DefaultBccAddress="debug@website.com, manager@website.com">
  *		<emails From="admin@mycompany.com" MasterClass="Application.Layouts.DefaultEmailLayout" AbsoluteUrl="https://www.absoluteurl.com/">
  *		   <email id="*" ReturnPath="noreply@mycompany.com" />
  *		   <email id="Help/*" From="help@mycompany.com" MasterClass="Application.Layouts.Help'`EmailLayout" />
@@ -258,7 +262,7 @@ class TEmailModule extends \Prado\TModule
 	 * Applies a email configuration.
 	 * @param TEmailConfiguration $config the configuration
 	 * @param string $pagePath the Path of the page in App format in relation to "Emails" directory.
-	 * @param \Prado\Util\Email\UI\TEmail $email the email receiving the configuration
+	 * @param \Prado\Util\Email\TEmail $email the email receiving the configuration
 	 */
 	protected function applyEmailConfiguration($pagePath, $email, $config)
 	{
@@ -382,7 +386,7 @@ class TEmailModule extends \Prado\TModule
 
 	/**
 	 *
-	 * @param \Prado\Util\Email\UI\TEmail $email
+	 * @param \Prado\Util\Email\TEmail $email
 	 * @param null|array substitution key-values.
 	 * @param bool $many
 	 * @param mixed $customData
@@ -393,7 +397,7 @@ class TEmailModule extends \Prado\TModule
 			throw new TConfigurationException("emailermodule_not_an_email");
 		}
 		$email->setCustomData($customData);
-		if ($email instanceof Prado\Util\Email\UI\TEmailPage) {
+		if ($email instanceof \Prado\Util\Email\UI\TEmailPage) {
 			echo("getting Email\n");
 			$email = $email->getEmail();
 		}
@@ -475,7 +479,7 @@ class TEmailModule extends \Prado\TModule
 	 * an error, it can return false to stop further processing and return that the email was not
 	 * sent.
 	 *
-	 * @param \Prado\Util\Email\UI\TEmail $email The Email being sent.
+	 * @param \Prado\Util\Email\TEmail $email The Email being sent.
 	 * @param bool $many
 	 * @return array results of raising the onSendMail event.
 	 */
@@ -588,7 +592,7 @@ class TEmailModule extends \Prado\TModule
 	}
 
 	/**
-	 * @return string base email class name in namespace format. Defaults to '\Prado\Util\Email\UI\TEmail'.
+	 * @return string base email class name in namespace format. Defaults to '\Prado\Util\Email\TEmail'.
 	 */
 	public function getBasePageClass()
 	{
@@ -622,7 +626,7 @@ class TEmailModule extends \Prado\TModule
 	/**
 	 * all emails get this CC in addition to the email's CC.  Multiple can be
 	 * specified with a comma between email addresses.
-	 * @return Default Reply Address, for when an email doesn't have its own.
+	 * @return string Default CC address, for when an email doesn't have its own.
 	 */
 	public function getDefaultCcAddress()
 	{
@@ -642,7 +646,7 @@ class TEmailModule extends \Prado\TModule
 	/**
 	 * all emails get this BCC in addition to the email's BCC.  Multiple can be
 	 * specified with a comma between email addresses.
-	 * @return Default Bcc Address.
+	 * @return string Default BCC address.
 	 */
 	public function getDefaultBccAddress()
 	{

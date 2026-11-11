@@ -1,8 +1,7 @@
 <?php
 
-/**
- * @package Prado\Util\Email\Tests
- */
+namespace Prado\Test\Unit\Util\Email\Behaviors;
+
 class TNativeMailBehaviorTest extends \PHPUnit\Framework\TestCase
 {
 	public function testAttach()

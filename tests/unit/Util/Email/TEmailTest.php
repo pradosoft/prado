@@ -1,12 +1,11 @@
 <?php
 
+namespace Prado\Test\Unit\Util\Email;
+
 use \Prado\Util\Email\TEmailModule;
 use \Prado\Util\Email\TEmail;
 use \Prado\Util\Email\TEmailAddress;
 
-/**
- * @package Prado\Util\Email\Tests
- */
 class TEmailTest extends \PHPUnit\Framework\TestCase
 {
 	/**
