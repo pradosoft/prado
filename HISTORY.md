@@ -1,4 +1,6 @@
 ## Version 4.4.0 - TBA
+BUG: `TApplication` enforces a module's required dependencies on eager load as it does on lazy load: a missing required dependency throws `application_module_required_dep_missing`, an advisory one is skipped, and a lazy dependency loads before the dependent's `init()`. (belisoful)
+BUG: A default module (`request`, `session`, ...) no longer replaces a configured module registered under the same ID; the configured module keeps the ID and the default stays available through its accessor. (belisoful)
 BUG: `TSecurityManager::decrypt()` with `UseEncryptionHmac` on returns `false` for input without a valid HMAC; it decrypted such input unauthenticated, so altered or stripped ciphertext still decrypted. See UPGRADE.md. (belisoful)
 ENH: `TSvg` and `TCanvas` size the element with `PixelWidth` and `PixelHeight`, rendered as the `width` and `height` attributes; `Width` and `Height` are the CSS lengths inherited from `TWebControl`. (belisoful)
 BUG: `framework/classes.php` no longer maps `PradoBase` and `TSecurityManagerValidationMode`, which were removed in 4.0 and 4.2. (belisoful)

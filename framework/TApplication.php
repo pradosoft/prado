@@ -206,7 +206,7 @@ class TApplication extends TComponent implements ISingleton
 	/**
 	 * Canonical IDs assigned to lazily-created default-core modules by
 	 * {@see bootstrapModule()}, and the registry keys
-	 * {@see bootstrapDefaultModules()} writes into `$_modules`.
+	 * {@see registerDefaultModule()} writes into `$_modules` when free.
 	 * @since 4.4.0
 	 */
 	public const DEFAULT_REQUEST_ID = 'request';
@@ -1613,9 +1613,7 @@ class TApplication extends TComponent implements ISingleton
 	/**
 	 * Runs the four post-construction lifecycle phases on `$module`:
 	 *  - `dyPreInit($config)`
-	 *  - dependency resolution — force-loads lazy deps via
-	 *    {@see getModule()}; missing required deps throw
-	 *    {@see TConfigurationException}
+	 *  - dependency resolution via {@see resolveModuleDependencies()}
 	 *  - `init($config)`
 	 *  - `dyPostInit($config)`
 	 *
@@ -1633,6 +1631,30 @@ class TApplication extends TComponent implements ISingleton
 		if ($isComponent) {
 			$module->dyPreInit($config);
 		}
+		$this->resolveModuleDependencies($module);
+		$module->init($config);
+		if ($isComponent) {
+			$module->dyPostInit($config);
+		}
+	}
+
+	/**
+	 * Brings the init-pass dependencies of `$module` online before its
+	 * {@see IModule::init()}. Each dependency from
+	 * {@see collectModuleDependencies()} is handled by one rule:
+	 *  - registered → loaded through {@see getModule()}, which force-loads a lazy module
+	 *  - not registered and required → {@see TConfigurationException}
+	 *  - not registered and advisory → skipped
+	 *
+	 * {@see runModuleLifecycle()} applies the rule to lazy and default modules;
+	 * {@see applyConfiguration()} applies it to eagerly loaded modules.
+	 * @param IModule $module the module about to be initialized.
+	 * @throws TConfigurationException `application_module_required_dep_missing`
+	 *   when a required dependency is not registered.
+	 * @since 4.4.0
+	 */
+	protected function resolveModuleDependencies(IModule $module): void
+	{
 		foreach ($this->collectModuleDependencies($module, false)['deps'] as $dep) {
 			if (!array_key_exists($dep['id'], $this->_modules)) {
 				if ($dep['required']) {
@@ -1642,23 +1664,20 @@ class TApplication extends TComponent implements ISingleton
 						$dep['id']
 					);
 				}
-				continue; // advisory dep absent — skip silently
+				continue;
 			}
-			$this->getModule($dep['id']); // force-load if lazy
-		}
-		$module->init($config);
-		if ($isComponent) {
-			$module->dyPostInit($config);
+			$this->getModule($dep['id']);
 		}
 	}
 
 	/**
 	 * Assigns the module's ID, runs its lifecycle via
-	 * {@see runModuleLifecycle()}, and — when `$register` is true —
-	 * enrolls it in `$_modules` under `$module->getID()`.
+	 * {@see runModuleLifecycle()}, and, when `$register` is true, registers it
+	 * through {@see registerDefaultModule()}; a module already registered under
+	 * the ID keeps it.
 	 * @param IModule $module   freshly-constructed module instance.
 	 * @param string  $id       ID to assign.
-	 * @param bool    $register write to `$_modules` after the lifecycle; `true` by default.
+	 * @param bool    $register register after the lifecycle; `true` by default.
 	 * @throws TConfigurationException when a required dependency is missing.
 	 * @since 4.4.0
 	 */
@@ -1667,15 +1686,36 @@ class TApplication extends TComponent implements ISingleton
 		$module->setID($id);
 		$this->runModuleLifecycle($module, null);
 		if ($register) {
-			$this->_modules[$module->getID()] = $module;
+			$this->registerDefaultModule($module);
 		}
+	}
+
+	/**
+	 * Registers a default module in `$_modules` under its ID when the ID is free.
+	 * {@see setModule()} refuses a duplicate ID; a default yields instead. A module
+	 * the configuration registers under the ID, loaded or pending as lazy, keeps
+	 * the ID and stays the result of {@see getModule()}; the default remains
+	 * available through its accessor, such as {@see getSession()}.
+	 * @param IModule $module the default module to register.
+	 * @return bool whether the module was registered.
+	 * @since 4.4.0
+	 */
+	protected function registerDefaultModule(IModule $module): bool
+	{
+		$id = $module->getID();
+		if (array_key_exists($id, $this->_modules)) {
+			return false;
+		}
+		$this->_modules[$id] = $module;
+		return true;
 	}
 
 	/**
 	 * Returns true when {@see bootstrapModule()} should register a
 	 * default-core module of `$type`: the
 	 * {@see STATE_DEFAULT_MODULES_BOOTSTRAPPED} flag is set AND no
-	 * same-type module is already in `$_modules`.
+	 * same-type module is already in `$_modules`. An ID collision is
+	 * resolved by {@see registerDefaultModule()}.
 	 * @param string $type FQN of the default's canonical class.
 	 * @since 4.4.0
 	 */
@@ -1686,8 +1726,9 @@ class TApplication extends TComponent implements ISingleton
 	}
 
 	/**
-	 * Enrols each instanced default-core module in `$_modules` unless a
-	 * same-type module is already registered; never instantiates. Sets
+	 * Registers each instanced default-core module through
+	 * {@see registerDefaultModule()} unless a same-type module is already
+	 * registered; never instantiates. Sets
 	 * {@see STATE_DEFAULT_MODULES_BOOTSTRAPPED} on completion so later
 	 * defaults register immediately via {@see bootstrapModule()}.
 	 * @since 4.4.0
@@ -1712,7 +1753,7 @@ class TApplication extends TComponent implements ISingleton
 			if (!empty($this->getModulesByType($type))) {
 				continue;
 			}
-			$this->_modules[$module->getID()] = $module;
+			$this->registerDefaultModule($module);
 		}
 		$this->setStateFlag(static::STATE_DEFAULT_MODULES_BOOTSTRAPPED);
 	}
@@ -2307,8 +2348,8 @@ class TApplication extends TComponent implements ISingleton
 	 *
 	 * Dependencies that reference module IDs outside of `$pending` (already
 	 * initialized or not present in this configuration batch) are silently
-	 * ignored for ordering purposes. The caller is responsible for ensuring
-	 * those modules are already live.
+	 * ignored for ordering purposes. {@see resolveModuleDependencies()} checks
+	 * them before each module's `init()`.
 	 *
 	 * `$cache` is a sort-result cache passed by reference, keyed by dependency-graph
 	 * fingerprint under {@see DEP_SORT_CACHE_KEY}. Passing the same array across both
@@ -2641,7 +2682,8 @@ class TApplication extends TComponent implements ISingleton
 	 * 5. Modules — four phases:
 	 *    a. Instantiate all modules and apply configuration properties via {@see setSubProperties()}
 	 *    b. Sort by dependency (pre-init pass), then raise {@see TModule::dyPreInit()} in order
-	 *    c. Sort by dependency (init pass), then call {@see IModule::init()} in order
+	 *    c. Sort by dependency (init pass), then for each module in order resolve its
+	 *       dependencies via {@see resolveModuleDependencies()} and call {@see IModule::init()}
 	 *    d. Raise {@see TModule::dyPostInit()} in the same order as step c — no re-sort
 	 *    Steps b–c share a sort-result cache ({@see DEP_SORT_CACHE_KEY}) if they remain the same.
 	 * 6. External configuration files (evaluated conditionally and applied recursively)
@@ -2723,9 +2765,10 @@ class TApplication extends TComponent implements ISingleton
 				$entry['module']->dyPreInit($entry['config']);
 			}
 
-			// Phase 3: sort → init() in dependency order; save result for post-init.
+			// Phase 3: sort → resolve dependencies → init() in dependency order; save result for post-init.
 			$initOrder = $this->sortModulesByDependency($pending, $depCache, false);
 			foreach ($initOrder as $entry) {
+				$this->resolveModuleDependencies($entry['module']);
 				$entry['module']->init($entry['config']);
 			}
 
