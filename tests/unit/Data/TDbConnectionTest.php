@@ -1214,6 +1214,19 @@ class TDbConnectionTest extends \PHPUnit\Framework\TestCase
 		$conn->Active = false;
 	}
 
+	public function testGetPdoInstanceIsTheDriverSubclassWherePdoConnectExists(): void
+	{
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$conn->Active = true;
+		$pdo = $conn->PdoInstance;
+		if (method_exists(PDO::class, 'connect')) {
+			$this->assertInstanceOf('Pdo\\Sqlite', $pdo, 'PDO::connect() returns the driver subclass');
+		} else {
+			$this->assertSame(PDO::class, get_class($pdo));
+		}
+		$conn->Active = false;
+	}
+
 	// -----------------------------------------------------------------------
 	// Persistent connection tests
 	// -----------------------------------------------------------------------
