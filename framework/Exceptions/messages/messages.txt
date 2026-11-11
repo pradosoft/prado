@@ -791,6 +791,12 @@ cronwake_pollinterval_invalid			= Cron wake PollInterval must be greater than ze
 cronwakecache_cacheid_invalid			= TCronWakeCache CacheID ''{0}'' is not an ICache module.
 cronwakepgsql_driver_invalid			= TCronWakePgsql needs a PostgreSQL connection; the connection driver is ''{0}''.
 cronwakepgsql_connectionid_invalid		= TCronWakePgsql.ConnectionID ''{0}'' is not a TDataSourceConfig.
+cronwakeoracle_driver_invalid			= TCronWakeOracle needs an Oracle connection; the connection driver is ''{0}''.
+cronwakeoracle_connectionid_invalid		= TCronWakeOracle.ConnectionID ''{0}'' is not a TDataSourceConfig.
+cronwakeoracle_alert_invalid			= TCronWakeOracle Alert ''{0}'' is longer than {1} characters.
+cronwakeredis_channel_invalid			= TCronWakeRedis Channel ''{0}'' must not be empty or hold whitespace.
+cronwakeredis_timeout_invalid			= TCronWakeRedis Timeout must be greater than zero; ''{0}'' given.
+cronwakeredis_protocol_invalid			= TCronWakeRedis received a reply that is not RESP (type byte ''{0}'').
 crontask_no_module						= TCronTask could not find module ''{0}''.
 crontask_timeout_invalid				= TCronTask Timeout must be greater than zero or null; ''{0}'' given.
 
