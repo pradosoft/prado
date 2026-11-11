@@ -38,11 +38,11 @@ class MyControl extends \Prado\Web\UI\TControl
 | Method | Description |
 |--------|-------------|
 | `getClock(): IClock` | Returns the explicit local clock, else the application clock read live, else a lazily created local [`TNativeClock`](TNativeClock.md). |
-| `getLocalClock(): IClock` | Protected alias of `TClockAwareTrait::getClock()`; the lazy local default used when no application is present. |
 
 `setClock()`, `createClock()`, and `getClockClass()` are inherited unchanged from [`TClockAwareTrait`](TClockAwareTrait.md).
 
 ## Notes
+- The no-application fallback lives in a private `_localClock`, apart from the `setClock()` override, so a holder created before the application follows the application clock once one exists.
 - Registered in `framework/classes.php` as `TApplicationClockAwareTrait`.
 - Uses `Prado::getApplication()` (static, nullable) rather than an instance `getApplication()`, so any class can use the trait, not only [`TApplicationComponent`](../../TApplicationComponent.md) descendants.
 - Pairs with [`TApplication`](../../TApplication.md), which holds the shared clock via `TClockAwareTrait`; its `DEFAULT_CLOCK_CLASS` constant and `setClockClass()` config seam pick the app-wide default (e.g. [`TUTCClock`](TUTCClock.md)), while `TApplication::setClock()` injects a [`TMockClock`](TMockClock.md) that freezes every follower at once.

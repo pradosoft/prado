@@ -152,14 +152,23 @@ $app->run();
 
 ## Default Modules (Auto-Loaded)
 
-Even with an empty `application.xml`, these are always present:
-- `THttpRequest` (id: `request`)
-- `THttpResponse` (id: `response`)
-- `TStatePersister` (page state serializer)
-- `THttpSession` (id: `session`, lazy)
-- `TSecurityManager` (id: `security`)
-- `TAssetManager` (id: `asset`)
-- `TPageService` (id: `page`)
+Even with an empty `application.xml`, each accessor creates its default module on first use; `bootstrapModule()` assigns the `DEFAULT_*_ID` constant as its ID and runs its lifecycle with a `null` configuration.
+
+| Accessor | Default class | `DEFAULT_*_ID` |
+|---|---|---|
+| `getRequest()` | `THttpRequest` | `request` |
+| `getResponse()` | `THttpResponse` | `response` |
+| `getSession()` | `THttpSession` | `session` |
+| `getErrorHandler()` | `TErrorHandler` | `errorHandler` |
+| `getSecurityManager()` | `TSecurityManager` | `securityManager` |
+| `getAssetManager()` | `TAssetManager` | `assetManager` |
+| `getGlobalization()` | `TGlobalization` | `globalization` |
+| `getTemplateManager()` | `TTemplateManager` | `templateManager` |
+| `getThemeManager()` | `TThemeManager` | `themeManager` |
+
+`TPageService` (id `page`) is the default service, not a module.
+
+A default enters `$_modules` through `registerDefaultModule()` only when no same-type module is configured (`shouldRegisterDefault()`; `bootstrapDefaultModules()` sweeps the instanced defaults after the configuration is applied, and the accessors register later ones) and the ID is free. A configured module registered under the same ID, loaded or pending as lazy, keeps it: `getModule('session')` returns the configured module and `getSession()` returns the default. `setModule()` throws `application_moduleid_duplicated` for a duplicate ID; a default yields instead.
 
 ## Extensibility Hooks (@since 4.3.3)
 
@@ -179,8 +188,8 @@ protected function newApplicationStatePersister(): IStatePersister
 
 ## Patterns & Gotchas
 
-- **Module init order matters** — modules initialize in declaration order. Dependencies (e.g., `TPermissionsManager` needs `TAuthManager`) must be declared after their dependencies.
+- **Module init order** — eager modules initialize in declaration order, reordered by the dependencies a module or its behavior declares through `IModuleDependency` (`sortModulesByDependency()`, Kahn sort; a cycle throws `application_module_dependency_cycle`). Before each module's `init()`, `resolveModuleDependencies()` applies one rule on the eager path (`applyConfiguration()`), the lazy path (`getModule()`) and the default modules (`bootstrapModule()`): a registered dependency is loaded first (a lazy one is force-loaded), a missing required dependency throws `TConfigurationException` `application_module_required_dep_missing`, a missing advisory dependency is skipped. A dependency on a module of a later configuration batch (an external file or a service configuration) is missing at that time.
 - **`GlobalState`** — stored in a file in `RuntimePath`; loaded on `onLoadState`, saved on `onSaveState`. Don't store large data structures.
 - **`onError` vs `onEndRequest`** — `onEndRequest` always runs; `onError` fires on exceptions. Both can be used for cleanup, but `onEndRequest` is safer for mandatory cleanup.
 - **`Mode=Performance`** — templates and config are not recompiled even if changed. Only use in production with a proper deployment process.
-- **Module `lazy` attribute** — read with `TPropertyValue::ensureBoolean()`: `true` or a non-zero number defers the module until it is requested; `false` loads it at once.
+- **Module `lazy` attribute** — read with `TPropertyValue::ensureBoolean()`: `true` or a non-zero number defers the module until it is requested; `false` loads it at once. A module that another module declares as a dependency is requested before that module's `init()`.

@@ -442,7 +442,8 @@ class TTableGateway extends \Prado\TComponent
 	/**
 	 * Inserts a new record, silently ignoring if a duplicate key conflict occurs.
 	 * @param array $data new record data.
-	 * @return mixed last insert id, true on ignore, or false on failure.
+	 * @return mixed the last insert id when a row was inserted and a column has a sequence,
+	 *   true when a row was inserted, or false when the insert was ignored.
 	 * @since 4.4.0
 	 */
 	public function insertOrIgnore(array $data): mixed
@@ -478,18 +479,22 @@ class TTableGateway extends \Prado\TComponent
 	/**
 	 * Create a new TSqlCriteria object from a string $criteria. The $args
 	 * are additional parameters and are used in place of the $parameters
-	 * if $parameters is not an array and $args is an arrary.
-	 * @param string|TSqlCriteria $criteria sql criteria
+	 * if $parameters is not an array and $args is an arrary.  A criteria object
+	 * is returned as it is: a {@see TSqlCriteria} for a SQL driver, or the
+	 * {@see IDataCriteria} of a driver that is not SQL-backed, which that driver's
+	 * command builder consumes.
+	 * @param IDataCriteria|string $criteria sql criteria, or a criteria object.
 	 * @param mixed $parameters parameters passed by the user.
 	 * @param array $args additional parameters obtained from function_get_args().
-	 * @return TSqlCriteria criteria object.
+	 * @throws TDbException when the criteria is neither a string nor an {@see IDataCriteria}.
+	 * @return IDataCriteria criteria object.
 	 */
 	protected function getCriteria($criteria, $parameters, $args)
 	{
 		if (is_string($criteria)) {
 			$useArgs = !is_array($parameters) && is_array($args);
 			return new TSqlCriteria($criteria, $useArgs ? $args : $parameters);
-		} elseif ($criteria instanceof TSqlCriteria) {
+		} elseif ($criteria instanceof IDataCriteria) {
 			return $criteria;
 		} else {
 			throw new TDbException('dbtablegateway_invalid_criteria');

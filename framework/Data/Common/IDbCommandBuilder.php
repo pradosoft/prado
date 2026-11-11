@@ -83,4 +83,19 @@ interface IDbCommandBuilder extends IDataCommandBuilder
 	 * @return IDataCommand the command ready for execution.
 	 */
 	public function applyCriterias($sql, $parameters = [], $ordering = [], $limit = -1, $offset = -1);
+
+	/**
+	 * Builds the SQL condition that matches the index column values of a table:
+	 * an `IN` list for one column, an `OR` of `AND`-joined equalities for several,
+	 * and a false predicate for no values.  {@see \Prado\Data\DataGateway\TDataGatewayCommand::getIndexKeyCondition()}
+	 * has called this on the gateway's builder.  The portable equivalent for a
+	 * non-SQL driver is {@see IDataCriteriaBuilder::createIndexCriteria()}.
+	 *
+	 * @param array $fields index column ids.
+	 * @param array $values index values, one value or one value array per row.
+	 * @param ?IDataTableInfo $table the table of the columns; null for this builder's table.
+	 * @return string the SQL condition.
+	 * @since 4.4.0
+	 */
+	public function getIndexCondition(array $fields, array $values, ?IDataTableInfo $table = null): string;
 }

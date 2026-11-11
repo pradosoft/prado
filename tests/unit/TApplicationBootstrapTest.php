@@ -674,6 +674,40 @@ class TApplicationBootstrapTest extends \PHPUnit\Framework\TestCase
 		$acc->pubBootstrapModule($module, 'spy_id');
 	}
 
+	public function testBootstrapModule_registerTrue_idTaken_keepsRegisteredModule(): void
+	{
+		// A configured module already holds the ID: the default runs its lifecycle
+		// but does not replace the configured module in $_modules.
+		$acc = $this->newAccessor();
+		$configured = new AppBootstrapSpyModule();
+		$configured->setID('spy_id');
+		PradoUnit::setProp($acc, '_modules', ['spy_id' => $configured]);
+		$default = new AppBootstrapSpyModule();
+
+		$acc->pubBootstrapModule($default, 'spy_id', true);
+
+		$this->assertSame($configured, $acc->getModules()['spy_id']);
+		$this->assertCount(1, $acc->getModules());
+		$this->assertSame(['dyPreInit', 'init', 'dyPostInit'], array_column($default->calls, 'phase'));
+	}
+
+	public function testBootstrapModule_registerTrue_idPendingLazy_keepsLazySlot(): void
+	{
+		// A lazy module registered under the ID is still pending (null placeholder):
+		// the default must not take the slot, or the lazy module could never load.
+		$acc = $this->newAccessor();
+		PradoUnit::setProp($acc, '_lazyModules', [
+			'spy_id' => [AppTestModule::class, [], null],
+		]);
+		PradoUnit::setProp($acc, '_modules', ['spy_id' => null]);
+
+		$acc->pubBootstrapModule(new AppBootstrapSpyModule(), 'spy_id', true);
+
+		$this->assertNull($acc->getModules()['spy_id']);
+		$this->assertInstanceOf(AppTestModule::class, $acc->getModule('spy_id'));
+	}
+
+
 	// =======================================================================
 	// shouldRegisterDefault — predicate the lazy default accessors call
 	// =======================================================================
@@ -775,6 +809,27 @@ class TApplicationBootstrapTest extends \PHPUnit\Framework\TestCase
 		$this->assertInstanceOf(\Prado\Web\THttpSession::class, $instance);
 		$this->assertSame(TApplication::DEFAULT_SESSION_ID, $instance->getID());
 	}
+
+	public function testLazyAccessor_session_idTakenByConfiguredModule_keepsIt(): void
+	{
+		// A configured module of another type is registered under 'session'; the
+		// accessor still creates the default session but getModule('session')
+		// keeps returning the configured module.
+		$configured = new AppBootstrapSpyModule();
+		$configured->setID(TApplication::DEFAULT_SESSION_ID);
+		$modules = $this->_app->getModules();
+		$modules[TApplication::DEFAULT_SESSION_ID] = $configured;
+		PradoUnit::setProp($this->_app, '_modules', $modules);
+		PradoUnit::setProp($this->_app, '_session', null);
+		PradoUnit::invoke($this->_app, 'setStateFlag', TApplication::STATE_DEFAULT_MODULES_BOOTSTRAPPED);
+
+		$instance = $this->_app->getSession();
+
+		$this->assertInstanceOf(\Prado\Web\THttpSession::class, $instance);
+		$this->assertSame($instance, $this->_app->getSession(), 'Second call returns same instance');
+		$this->assertSame($configured, $this->_app->getModule(TApplication::DEFAULT_SESSION_ID));
+	}
+
 
 	public function testLazyAccessor_errorHandler_assignsCanonicalId(): void
 	{
@@ -1047,6 +1102,26 @@ class TApplicationBootstrapTest extends \PHPUnit\Framework\TestCase
 		$this->assertCount(1, $acc->getModules());
 	}
 
+	public function testBootstrapDefaultModules_idCollision_keepsConfiguredModule(): void
+	{
+		// A configured module of another type holds the canonical ID: the sweep
+		// leaves it in place instead of overwriting it with the instanced default.
+		$acc = $this->newAccessor();
+		$configured = new AppBootstrapSpyModule();
+		$configured->setID(TApplication::DEFAULT_REQUEST_ID);
+		PradoUnit::setProp($acc, '_modules', [TApplication::DEFAULT_REQUEST_ID => $configured]);
+
+		$defaultReq = new \Prado\Web\THttpRequest();
+		$defaultReq->setID(TApplication::DEFAULT_REQUEST_ID);
+		PradoUnit::setProp($acc, '_request', $defaultReq);
+
+		$acc->pubBootstrapDefaultModules();
+
+		$this->assertSame([TApplication::DEFAULT_REQUEST_ID => $configured], $acc->getModules());
+		$this->assertTrue($acc->hasStateFlag(TApplication::STATE_DEFAULT_MODULES_BOOTSTRAPPED));
+	}
+
+
 	public function testBootstrapDefaultModules_neverInstantiatesAbsentSlot(): void
 	{
 		$acc = $this->newAccessor();
@@ -1154,6 +1229,30 @@ class TApplicationBootstrapTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame($configured, $acc->getModules()['configured_request']);
 		$this->assertCount(1, $acc->getModules());
 	}
+
+	public function testLateDefault_afterSweep_idCollisionKeepsConfiguredModule(): void
+	{
+		// No same-type module exists, so the predicate asks to register, but a
+		// configured module of another type holds the canonical ID and keeps it.
+		$acc = $this->newAccessor();
+		$configured = new AppBootstrapSpyModule();
+		$configured->setID(TApplication::DEFAULT_SESSION_ID);
+		PradoUnit::setProp($acc, '_modules', [TApplication::DEFAULT_SESSION_ID => $configured]);
+
+		$acc->pubBootstrapDefaultModules();
+		$this->assertTrue($acc->pubShouldRegisterDefault(\Prado\Web\THttpSession::class));
+
+		$lateDefault = new \Prado\Web\THttpSession();
+		$acc->pubBootstrapModule(
+			$lateDefault,
+			TApplication::DEFAULT_SESSION_ID,
+			$acc->pubShouldRegisterDefault(\Prado\Web\THttpSession::class)
+		);
+
+		$this->assertSame($configured, $acc->getModules()[TApplication::DEFAULT_SESSION_ID]);
+		$this->assertCount(1, $acc->getModules());
+	}
+
 
 	// =======================================================================
 	// initApplication — STATE_INITIALIZED set after onInitComplete

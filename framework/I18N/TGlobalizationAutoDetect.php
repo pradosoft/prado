@@ -104,7 +104,6 @@ class TGlobalizationAutoDetect extends TGlobalization
 	 * BCP 47→POSIX.
 	 * @param mixed $locale
 	 * @return bool
-	 * @since 4.3.3
 	 */
 	protected function getIsValidLocale($locale)
 	{

@@ -65,9 +65,11 @@ Upgrading from v4.3.3
   `Prado\Data\Common\SqlSrv` replacements: `TMssqlCommandBuilder` → `TSqlSrvCommandBuilder`, `TMssqlMetaData` →
   `TSqlSrvMetaData`, `TMssqlTableColumn` → `TSqlSrvTableColumn`, and `TMssqlTableInfo` → `TSqlSrvTableInfo`. The
   `mssql`, `sqlsrv`, and `dblib` drivers already use the replacements, so code that only connects needs no change.
-- `TSecurityManager::UseEncryptionHmac` defaults to `true`; it was `false`. `decrypt()` reads data with or without the
-  HMAC, so existing encrypted data still decrypts. Prado versions before 4.3.3 cannot decrypt the new output; an
-  application sharing encrypted data with them sets `UseEncryptionHmac="false"`.
+- `TSecurityManager::UseEncryptionHmac` defaults to `true`; it was `false`. With it `true`, `decrypt()` returns `false`
+  for input without a valid HMAC, so data encrypted under the 4.3 default no longer decrypts; `decrypt()` accepted it
+  unauthenticated, which let altered or stripped ciphertext decrypt. An application keeping data it encrypted with
+  4.3, or sharing encrypted data with Prado versions before 4.3.3, sets `UseEncryptionHmac="false"`; it can re-encrypt
+  the data and turn the property on later, since `decrypt()` honors a valid HMAC with either setting.
 - `TDbParameterModule` binds `AutoLoadValue` and `AutoLoadValueFalse` as parameters. A value quoted as an SQL literal,
   such as `'yes'`, is bound without its quotes; an SQL expression is no longer evaluated. `TableName`, `KeyField`,
   `ValueField`, and `AutoLoadField` must be SQL identifiers.
@@ -95,6 +97,40 @@ Upgrading from v4.3.3
   `EncryptionKeyAlgorithm="md5"` on the security manager module to keep reading it.
 - A PHP-configured `TFeedService` lists its feeds under a `feeds` key. Feeds beside the service `class` key still load when their class implements `IFeedContentProvider`; that form is deprecated.
 - `Prado::exceptionHandler()` and `Prado::fatalError()` return `never`. A subclass overriding either must declare `never`.
+- The RPC service and clients (`TRpcService`, `TRpcServer`, `TRpcProtocol`, `TJsonRpcProtocol`, `TXmlRpcProtocol`,
+  `TRpcApiProvider`, `TRpcException`, `TRpcClient`, `TJsonRpcClient`, `TXmlRpcClient`, `TRpcClientResponseException`
+  and `TRpcClientTypesEnumerable`) moved to the `pradosoft/prado-rpc` package. Require it and update the `class=`
+  attributes of the service and any client code to the package's namespace.
+- TWebControl::TabIndex defaults to `null` (not rendered) instead of `0`, and `0` and `-1` now render as
+  `tabindex="0"` / `tabindex="-1"`. Code that set `TabIndex="0"` to suppress the attribute should set it to `null`
+  or an empty string; TCheckBox and TRadioButton follow the same rule.
+- TAuthManager raises `OnAuthenticate` with the parameter passed to `onAuthenticate()` (the application's
+  `onAuthentication` parameter, `null` by default) instead of the TApplication. A handler that read the application
+  from the event parameter should use `$sender->getApplication()`.
+- THtmlWriter no longer treats the legacy `basefont`, `bgsound`, `frame` and `isindex` elements as void elements;
+  `renderEndTag()` now writes a closing tag for them.
+- TUserManager::PasswordMode defaults to `SHA1` instead of `MD5`. A user file or configuration holding MD5 hashes
+  must set `PasswordMode="MD5"`.
+- Caching: `ICacheDependency::getHasChanged()` declares `: bool`, `ICache` and `TCache` declare the abstract static
+  `getIsAvailable(): bool`, and the pre-existing methods of TDirectoryCacheDependency (`__construct`, `getDirectory`,
+  `getRecursiveCheck`, `getRecursiveLevel`, `validateFile`, `validateDirectory`, `generateTimestamps`),
+  TChainedCacheDependency (`getDependencies`) and TGlobalStateCacheDependency (`__construct`, `getStateName`) are
+  typed. A cache module or dependency subclass must add the matching types and implement `getIsAvailable()`.
+- TShellApplication keeps its writer and option fields private; a subclass reads them through `getWriter()`,
+  `getOptions()`, `getOptionAliases()` and `getOptionsData()`. TExitException keeps its exit code private; use
+  `getExitCode()`/`setExitCode()`.
+- TErrorHandler::hideSecurityRelated() is an instance method instead of static, and takes the exception as its
+  second argument. A subclass calling or overriding it statically must be updated.
+- Prado::using() returns the resolved class name (`?string`) instead of `void`; an override declared `: void` must
+  change its return type. Prado::usingClass() resolves a class name without including a directory namespace.
+- THttpResponse::appendHeader() declares `: void` and takes a third `int $response_code = 0` argument; an override
+  must match the new signature.
+- TXmlElement adds return types to `getElementByTagName()` (`?TXmlElement`), `getElementsByTagName()` (`TList`),
+  `toString()` (`string`) and `__clone()` (`void`), and its constructor and `setTagName()` reject a `null` or empty
+  tag name. TXmlElement::getNodeType() returns `XML_ELEMENT_NODE`.
+- TTemplate strips only `<!--- ... --->` template comments; the 3.x `<!-- ... --!>` form is no longer recognized and
+  renders as text.
+- TShellAction::getApplication() returns `null` when the application is not a TShellApplication.
 - TTemplate applies a template attribute name as written instead of replacing its dashes with underscores.
   An `Attributes.<name>` subproperty now stores the hyphenated name it was given, so
   `<com:TNav Attributes.aria-label="Primary" />` renders `aria-label="Primary"` where it previously rendered

@@ -8,9 +8,9 @@ Quick-access cheatsheet for common agent needs. For full detail see [PROJECT_CON
 
 | Item | Value |
 |---|---|
-| Current release | `4.3.2` |
-| **Next release (`@since` tag)** | **`4.3.3`** |
-| PHP minimum | 8.1 |
+| Current release | `4.3.3` |
+| **Next release (`@since` tag)** | **`4.4.0`** |
+| PHP minimum | 8.2 |
 | Namespace root | `Prado\` |
 | Total classes | 749 (see `agents/framework/CLASSES.md`) |
 
@@ -21,7 +21,7 @@ Quick-access cheatsheet for common agent needs. For full detail see [PROJECT_CON
 - `framework/classes.php` **must** be updated for every new class.
 - `if` statements **always** use a block `{}` — never a single-line body.
 - All changes must be **backward compatible** between point versions.
-- `@since` tag uses next release (`4.3.3`); omit on methods when class `@since` matches.
+- `@since` tag uses next release (`4.4.0`); omit on methods when class `@since` matches.
 - Documentation: **Present Perfect tense**, **American English**.
 - `dy*` dynamic events on a class **must** be documented with `@method` in the class docblock.
 - Error codes go in `framework/Exceptions/messages/messages.txt` first.
@@ -248,7 +248,7 @@ $cmd->execute();                // INSERT / UPDATE / DELETE (returns row count)
 $tx = $conn->beginTransaction();
 try { /* ... */ $tx->commit(); } catch (\Exception $e) { $tx->rollBack(); throw $e; }
 
-// ── 2. TActiveRecord (stateful ORM) ─────────────────────────────────────────
+// ── 2. TActiveRecord (prado-activerecord package) ─────────────────────────────────────────
 class UserRecord extends TActiveRecord {
     const TABLENAME = 'users';
     public $id, $name, $email;
@@ -275,7 +275,7 @@ $gw->update(['active' => 0], new TSqlCriteria('created_at < :d', [':d' => $date]
 $gw->deleteByPk(1);
 $gw->delete(new TSqlCriteria('active = 0'));
 
-// TSqlCriteria — used by TTableGateway and TActiveRecord finders:
+// TSqlCriteria — used by TTableGateway and the prado-activerecord package's finders:
 $c = new TSqlCriteria('active = :a AND role = :r', [':a' => 1, ':r' => 'admin']);
 $c->OrdersBy = ['name' => 'asc', 'created_at' => 'desc'];
 $c->Limit  = 20;
@@ -421,7 +421,7 @@ Scan: `find agents/ -type f -name '*.md' | sort`
 |---|---|
 | `agents/PROJECT_CONTEXT.md` | Full architecture reference |
 | `agents/PROJECT_SUMMARY.md` | This file — quick-access cheatsheet |
-| `agents/framework/CLASSES.md` | All 749 classes listed by namespace |
+| `agents/framework/CLASSES.md` | All classes listed by namespace |
 | `agents/framework/INDEX.md` | Root framework directory knowledge |
 | `agents/framework/SUMMARY.md` | Root class one-liners |
 | `agents/framework/<Class>.md` | Per-class knowledge (TComponent, TApplication, etc.) |

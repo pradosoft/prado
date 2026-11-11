@@ -572,18 +572,23 @@ class TErrorHandler extends \Prado\TModule
 
 	/**
 	 * Returns the HTML template used for displaying exceptions in debug mode.
-	 * Respects the configured {@see getErrorTemplatePath()}, selecting a
-	 * language-specific variant (`exception-{lang}.html`) when available and
-	 * falling back to `exception.html`.
+	 * Searches the configured {@see getErrorTemplatePath()} and then the framework
+	 * {@see getDefaultErrorTemplatePath()}, selecting a language-specific variant
+	 * (`exception-{lang}.html`) when available and falling back to `exception.html`,
+	 * so an ErrorTemplatePath holding only error templates keeps working.
 	 * @param \Exception $exception
 	 */
 	protected function getExceptionTemplate($exception)
 	{
 		$lang = Prado::getApplicationLanguage();
-		$templatePath = $this->getErrorTemplatePath();
-		$exceptionFile = $templatePath . DIRECTORY_SEPARATOR . static::EXCEPTION_FILE_NAME . '-' . $lang . '.html';
-		if (!is_file($exceptionFile)) {
-			$exceptionFile = $templatePath . DIRECTORY_SEPARATOR . static::EXCEPTION_FILE_NAME . '.html';
+		$exceptionFile = null;
+		foreach (array_unique([$this->getErrorTemplatePath(), $this->getDefaultErrorTemplatePath()]) as $templatePath) {
+			foreach ([static::EXCEPTION_FILE_NAME . '-' . $lang . '.html', static::EXCEPTION_FILE_NAME . '.html'] as $fileName) {
+				$exceptionFile = $templatePath . DIRECTORY_SEPARATOR . $fileName;
+				if (is_file($exceptionFile)) {
+					break 2;
+				}
+			}
 		}
 		if (($content = @file_get_contents($exceptionFile)) === false) {
 			die("Unable to open exception template file '$exceptionFile'.");

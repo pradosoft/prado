@@ -1270,17 +1270,27 @@ class TAssetManager extends \Prado\TModule
 	 * @param string $src the source directory
 	 * @param string $dst the destination directory
 	 * @param array $options the publishing options listed above
-	 * @param ?string $basePath @internal the root source directory relative paths are
-	 *   computed against; defaults to $src on the top-level call and preserved in recursion.
-	 * @param array $visited @internal realpaths already entered, keyed by realpath, used
-	 *   to break symlink cycles across recursion.
 	 */
-	public function copyDirectory($src, $dst, $options = [], $basePath = null, &$visited = [])
+	public function copyDirectory($src, $dst, $options = [])
 	{
-		$isRoot = $basePath === null;
-		if ($basePath === null) {
-			$basePath = $src;
-		}
+		$visited = [];
+		$this->copyDirectoryTree((string) $src, (string) $dst, (array) $options, (string) $src, $visited);
+	}
+
+	/**
+	 * Walks one directory of a {@see copyDirectory} publish and recurses into its
+	 * sub-directories, carrying the root source directory and the visited realpaths.
+	 * @param string $src the source directory
+	 * @param string $dst the destination directory
+	 * @param array $options the publishing options of {@see copyDirectory}
+	 * @param string $basePath the root source directory relative paths are computed against
+	 * @param array $visited realpaths already entered, keyed by realpath, breaking symlink cycles
+	 * @throws TInvalidDataValueException when the source directory cannot be opened
+	 * @since 4.4.0
+	 */
+	protected function copyDirectoryTree(string $src, string $dst, array $options, string $basePath, array &$visited): void
+	{
+		$isRoot = $src === $basePath;
 		$real = realpath($src);
 		if ($real !== false) {
 			if (isset($visited[$real])) {
@@ -1326,7 +1336,7 @@ class TAssetManager extends \Prado\TModule
 					if ($except !== null && $this->matchesAnyPattern($relativePath, $except, $caseSensitive)) {
 						continue;
 					}
-					$this->copyDirectory($srcPath, $dstPath, $options, $basePath, $visited);
+					$this->copyDirectoryTree($srcPath, $dstPath, $options, $basePath, $visited);
 				}
 			}
 			closedir($folder);

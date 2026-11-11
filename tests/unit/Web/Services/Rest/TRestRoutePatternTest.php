@@ -74,6 +74,16 @@ class TRestRoutePatternTest extends \PHPUnit\Framework\TestCase
 		$this->assertNull($route->matchPath($this->requestFor('/users/abc/posts/hello')));
 	}
 
+	public function testInlineConstraintKeepsQuantifierBraces(): void
+	{
+		$route = $this->route('archive/{year:\d{4}}/{code:[A-Z]{2,3}}');
+		$this->assertSame('archive/{year}/{code}', $route->getPattern());
+		$this->assertSame('\d{4}', $route->getParameters()->itemAt('year'));
+		$this->assertSame('[A-Z]{2,3}', $route->getParameters()->itemAt('code'));
+		$this->assertSame(['year' => '2026', 'code' => 'US'], $route->matchPath($this->requestFor('/archive/2026/US')));
+		$this->assertNull($route->matchPath($this->requestFor('/archive/26/US')));
+	}
+
 	public function testParametersConstraintIsKept(): void
 	{
 		$route = $this->route('users/{id}', ['id' => '\d{2}']);

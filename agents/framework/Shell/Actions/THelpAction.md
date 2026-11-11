@@ -18,7 +18,7 @@ php prado-cli.php help
 
 # Get help for specific command
 php prado-cli.php help cache
-php prado-cli.php help activerecord/generate
+php prado-cli.php help cache
 ```
 
 ## Action Definition

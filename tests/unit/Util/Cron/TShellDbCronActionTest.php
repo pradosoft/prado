@@ -7,7 +7,6 @@ use Prado\Shell\TShellWriter;
 use Prado\Prado;
 use Prado\Util\Cron\TShellCronAction;
 use Prado\Util\Cron\TCronModule;
-use Prado\Util\Cron\TDbCronModule;
 use Prado\Util\Cron\TDbCronManager;
 use Prado\Util\Cron\TShellDbCronAction;
 

@@ -104,7 +104,12 @@ class TCurlHttpClient extends THttpClient
 			$length = strlen($headerLine);
 			$trimmed = trim($headerLine);
 			// Skip status lines and empty separators between header blocks
-			if ($trimmed === '' || str_starts_with($trimmed, 'HTTP/')) {
+			// A status line starts a new header block (a followed redirect), so keep only the final block
+			if (str_starts_with($trimmed, 'HTTP/')) {
+				$responseHeaders = [];
+				return $length;
+			}
+			if ($trimmed === '') {
 				return $length;
 			}
 			$colon = strpos($trimmed, ':');

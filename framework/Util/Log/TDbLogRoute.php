@@ -464,12 +464,16 @@ class TDbLogRoute extends TLogRoute
 
 	/**
 	 * @param string $timespan The time span to compute the number of seconds.
-	 * @return ?int the number of seconds of the time span.
+	 * @return ?int the number of seconds of the time span; null for an invalid time span.
 	 * @since 4.3.0
 	 */
 	public static function timespanToSeconds(string $timespan): ?int
 	{
-		$interval = new \DateInterval($timespan);
+		try {
+			$interval = new \DateInterval($timespan);
+		} catch (\Exception $e) {
+			return null;
+		}
 
 		$datetime1 = new \DateTime();
 		$datetime2 = clone $datetime1;

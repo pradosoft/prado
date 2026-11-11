@@ -69,7 +69,7 @@ TApplication
       THttpRequest, THttpResponse, THttpSession
       TUrlManager / TUrlMapping (routing)
       TAssetManager
-      Services/      (TPageService, TJsonService, TFeedService, TRpcService, TSoapService)
+      Services/      (TPageService, TJsonService, TFeedService, TSoapService)
       UI/            (TControl, TPage, TTemplateControl, WebControls/, ActiveControls/, JuiControls/)
  └─ Data Layer     framework/Data/
       TDbConnection  (PDO wrapper)

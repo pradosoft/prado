@@ -212,10 +212,7 @@ class TSimpleDateFormatter
 			'mm' => 'i',
 			'ss' => 's',
 			'a' => 'A',
-			'D' => 'z',
-			'F' => 't',
 			'w' => 'W',
-			'W' => 'W',
 		];
 
 		$bits = [];
@@ -234,9 +231,15 @@ class TSimpleDateFormatter
 		}
 
 		$kHour = (int) $dt->format('G');
-		$kHour = $kHour === 0 ? 1 : $kHour;
+		$kHour = $kHour === 0 ? 24 : $kHour;
 		$bits['k'] = (string) $kHour;
 		$bits['kk'] = sprintf('%02d', $kHour);
+
+		$dayOfMonth = (int) $dt->format('j');
+		$bits['D'] = (string) ((int) $dt->format('z') + 1);
+		$bits['F'] = (string) (intdiv($dayOfMonth - 1, 7) + 1);
+		$firstWeekday = (int) (new \DateTime($dt->format('Y-m-01'), $dt->getTimezone()))->format('w');
+		$bits['W'] = (string) ((int) ceil(($dayOfMonth + $firstWeekday) / 7));
 
 		$KHour = (int) $dt->format('G');
 		$KHour = $KHour > 11 ? $KHour - 12 : $KHour;
@@ -766,7 +769,7 @@ class TSimpleDateFormatter
 		$hour = $hour !== null ? (int) $hour : 0;
 
 		if ($hourMode === 'k') {
-			$hour = $hour - 1;
+			$hour = $hour % 24;
 		} elseif ($hourMode === 'K') {
 		} elseif ($hourMode === 'h' && $ampm !== null) {
 			if ($ampm === 'PM' && $hour < 12) {

@@ -416,6 +416,10 @@ class TWebTemplate extends TWebControl implements IPostBackDataHandler
 			if (!($child instanceof TControl)) {
 				continue;
 			}
+			if ($child instanceof TWebTemplate) {
+				$this->validateContent($child);
+				continue;
+			}
 			if ($child instanceof IActiveControl
 				|| $child instanceof IPostBackDataHandler
 				|| $child instanceof IPostBackEventHandler

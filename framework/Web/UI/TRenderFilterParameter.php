@@ -150,6 +150,7 @@ class TRenderFilterParameter extends TEventParameter implements IEventCycleParam
 	 * The attribute that exempts an element and its content from the handlers.
 	 * Present, empty, or any value other than `false` exempts; `false` re-enables
 	 * the element inside an exempt ancestor.
+	 * @since 4.4.0
 	 */
 	public const EXEMPT_ATTRIBUTE = 'data-prado-filter-exempt';
 
@@ -276,6 +277,17 @@ class TRenderFilterParameter extends TEventParameter implements IEventCycleParam
 	public function getDepthLimit(): int
 	{
 		return $this->_depthLimit;
+	}
+
+	/**
+	 * Returns the deepest level the filtering control marked, the largest value
+	 * {@see setDepthLimit} accepts.
+	 * @return int the marked depth; 0 when the output carries no depth markers
+	 * @since 4.4.0
+	 */
+	public function getDepthMax(): int
+	{
+		return $this->_depthMax;
 	}
 
 	/**
@@ -886,6 +898,7 @@ class TRenderFilterParameter extends TEventParameter implements IEventCycleParam
 
 	/**
 	 * @return bool whether the HTML5 parser of PHP 8.4+ (`Dom\HTMLDocument`) parses the HTML
+	 * @since 4.4.0
 	 */
 	protected function getUseHtml5Parser(): bool
 	{
@@ -908,6 +921,7 @@ class TRenderFilterParameter extends TEventParameter implements IEventCycleParam
 	 *
 	 * @param string $html raw HTML fragment or document
 	 * @return string the context element name, or `#document`
+	 * @since 4.4.0
 	 */
 	protected function getFragmentContext(string $html): string
 	{
