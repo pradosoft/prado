@@ -79,6 +79,11 @@
 		"ext-zlib" : "Enables compression to reduce page size",
 		"pradosoft/prado-demos" : "Demo applications for Prado"
 	},
+	"extra": {
+		"branch-alias": {
+			"dev-prado-4.3": "4.3.x-dev"
+		}
+	},
     "autoload": {
         "psr-4": {
             "Prado\\": "framework"

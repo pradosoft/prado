@@ -1,4 +1,5 @@
 ## Version 4.3.3 - TBA
+ENH: Issue #1517 - `composer.json` aliases the `prado-4.3` branch as `4.3.x-dev`, so a package can require `^4.3.3@dev` before 4.3.3 is tagged. (belisoful)
 BUG: Issue #1516 - `TActiveRecordGateway::getTableInfo()` reads table metadata through `IDataConnection::getDbMetaData()`, so a driver extension's connection supplies its own metadata without a global event listener. (belisoful)
 BUG: Issue #1516 - `TScaffoldInputBase::createInputBuilder()` raises `fxActiveRecordScaffoldInputClass` before the driver switch, so an extension connection whose driver name is built in, such as `mysqli`, supplies its own scaffold input class; handlers return null to decline. (belisoful)
 BUG: Issue #1513 - `TTableGateway` accepts any `IDataCriteria` as a criteria object and passes it to the command builder; it threw `dbtablegateway_invalid_criteria` for the criteria of a driver that is not SQL-backed. (belisoful)
