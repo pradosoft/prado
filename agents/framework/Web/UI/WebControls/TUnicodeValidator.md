@@ -41,7 +41,7 @@ Invalid UTF-8 always fails.
 `Prado.WebUI.TUnicodeValidator` always passes, so a rejected value is posted again and the server decides each time.
 
 ## Accessibility
-Inherited from TBaseValidator: the message has `role="alert"` and is linked to the field through `aria-describedby`. A failure renders `aria-invalid="true"` on the field from the server (TBaseValidator `updateControlAria()`, 4.4.0); the client validator that failed takes over the attribute (`IsValid: false` option, `claimServerAria()`) and clears it when it passes.
+Inherited from TBaseValidator: the message has `role="alert"` and is linked to the field through `aria-describedby`. A failure renders `aria-invalid="true"` on the field from the server (the field's request-scoped `IsValid`, rendered by `TWebControl::addAriaInvalidAttributeToRender()`, 4.4.0); the client validator that failed takes over the attribute (`IsValid: false` option, `claimServerAria()`) and clears it when it passes.
 
 ## Tests
 

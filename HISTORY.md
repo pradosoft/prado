@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: A validator's server-side `aria-invalid="true"` renders from the target's request-scoped `IsValid` (`TWebControl::addAriaInvalidAttributeToRender()`) in place of the target's `Attributes` view state, where it stayed on a later request in which the validator did not run. (belisoful)
 BUG: `TApplication` enforces a module's required dependencies on eager load as it does on lazy load: a missing required dependency throws `application_module_required_dep_missing`, an advisory one is skipped, and a lazy dependency loads before the dependent's `init()`. (belisoful)
 BUG: A default module (`request`, `session`, ...) no longer replaces a configured module registered under the same ID; the configured module keeps the ID and the default stays available through its accessor. (belisoful)
 BUG: `TSecurityManager::decrypt()` with `UseEncryptionHmac` on returns `false` for input without a valid HMAC; it decrypted such input unauthenticated, so altered or stripped ciphertext still decrypted. See UPGRADE.md. (belisoful)

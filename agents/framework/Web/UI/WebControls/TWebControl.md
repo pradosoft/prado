@@ -38,6 +38,7 @@ Properties: `CssClass`, `Style`, `AccessKey`, `KeyShortcuts`, `TabIndex`, `ToolT
 | `Slot`, `Part`, `ExportParts` | `slot`, `part`, `exportparts` | shadow DOM names |
 | `ItemScope`, `ItemScopeType`, `ItemProp`, `ItemId`, `ItemRef` | `itemscope`, `itemtype`, `itemprop`, `itemid`, `itemref` | microdata |
 | `Role`, `Aria`, `Dataset` | `role`, `aria-*`, `data-*` | |
+| `IsValid` (`IValidatable` controls) | `aria-invalid="true"` while false | request state, not view state; `addAriaInvalidAttributeToRender()` (4.4.0) |
 
 ### Keyboard Shortcuts (4.4.0, #1408)
 

@@ -26,6 +26,26 @@ class TWebControlSubclass extends TWebControl
 	}
 }
 
+class TWebControlValidatableFixture extends TWebControl implements \Prado\Web\UI\IValidatable
+{
+	private bool $_isValid = true;
+
+	public function getValidationPropertyValue()
+	{
+		return '';
+	}
+
+	public function getIsValid()
+	{
+		return $this->_isValid;
+	}
+
+	public function setIsValid($value)
+	{
+		$this->_isValid = (bool) $value;
+	}
+}
+
 class TWebControlTest extends TestCase
 {
 	use TWebControlRenderTrait;
@@ -1466,5 +1486,40 @@ class TWebControlTest extends TestCase
 
 		$output = $this->render($control);
 		$this->assertStringNotContainsString('disabled', $output);
+	}
+
+	// aria-invalid tests
+
+	public function testAriaInvalidRendersFromIsValidOfAValidatableControl()
+	{
+		$control = new TWebControlValidatableFixture();
+		$control->setID('field');
+		$this->assertStringNotContainsString('aria-invalid', $this->render($control));
+
+		$control->setIsValid(false);
+		$this->assertStringContainsString('aria-invalid="true"', $this->render($control));
+		$this->assertFalse($control->getHasAttributes());
+		$this->assertFalse($control->getHasAria());
+		$this->assertNull($control->getViewState('Attributes'));
+
+		$control->setIsValid(true);
+		$this->assertStringNotContainsString('aria-invalid', $this->render($control));
+	}
+
+	public function testAriaInvalidOverridesTheAriaCollectionWhileInvalid()
+	{
+		$control = new TWebControlValidatableFixture();
+		$control->getAria()->add('invalid', 'false');
+		$this->assertStringContainsString('aria-invalid="false"', $this->render($control));
+		$control->setIsValid(false);
+		$this->assertStringContainsString('aria-invalid="true"', $this->render($control));
+		$this->assertStringNotContainsString('aria-invalid="false"', $this->render($control));
+	}
+
+	public function testNonValidatableControlRendersNoAriaInvalid()
+	{
+		$control = new TWebControl();
+		$control->setID('plain');
+		$this->assertStringNotContainsString('aria-invalid', $this->render($control));
 	}
 }
