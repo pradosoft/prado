@@ -15,6 +15,7 @@ use PHPMailer\PHPMailer\Exception;
 use Prado\TPropertyValue;
 use Prado\Util\TBehavior;
 use Prado\Util\Email\Behaviors\ISMTPEmailerBehavior;
+use Prado\Exceptions\TConfigurationException;
 
 /**
  * TPhpMailerBehavior class.

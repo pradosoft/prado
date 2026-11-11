@@ -13,7 +13,10 @@ namespace Prado\Util\Email\Cron;
 use Prado\Shell\TShellWriter;
 use Prado\TPropertyValue;
 use Prado\Exceptions\TInvalidDataValueException;
-use Prado\Util\Email\TDbEmailerModule;
+use Prado\Util\Email\TDbEmailModule;
+use Prado\Util\Cron\TCronModule;
+use Prado\Util\Cron\TCronTask;
+use Prado\Util\Cron\TDbCronManager;
 
 /**
  * TDbEmailSenderTask class.
@@ -28,7 +31,7 @@ class TDbEmailSenderTask extends TCronTask
 	/**
 	 * This clears the log of the TDBCronModule specified by the ModuleId,
 	 * or if none specified, then the cron executing this task.
-	 * @param TDbCronModule $cron
+	 * @param TDbCronManager $cron
 	 */
 	public function execute($cron)
 	{
@@ -39,7 +42,7 @@ class TDbEmailSenderTask extends TCronTask
 				throw new TInvalidDataValueException('dbemailsender_moduleid_is_null', $mid);
 			}
 		}
-		if (is_object($emailer) && $emailer instanceof TDbEmailerModule) {
+		if (is_object($emailer) && $emailer instanceof TDbEmailModule) {
 			$sent = $emailer->sendPendingEmails();
 
 			if (($b = $cron->asa(TCronModule::SHELL_LOG_BEHAVIOR)) && $b->getEnabled()) {
@@ -47,7 +50,7 @@ class TDbEmailSenderTask extends TCronTask
 				$cron->getOutputWriter()->writeLine($sent ? 'Sucess' : 'Failed', $sent ? TShellWriter::GREEN : TShellWriter::RED);
 			}
 		} elseif (is_object($emailer) && $cron->asa(TCronModule::SHELL_LOG_BEHAVIOR)) {
-			$cron->getOutputWriter()->writeLine("No TDbEmailerModule to process pending emails.", TShellWriter::RED);
+			$cron->getOutputWriter()->writeLine("No TDbEmailModule to process pending emails.", TShellWriter::RED);
 		}
 	}
 }

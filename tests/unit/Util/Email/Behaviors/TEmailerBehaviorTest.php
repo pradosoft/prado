@@ -1,8 +1,7 @@
 <?php
 
-/**
- * @package Prado\Util\Email\Tests
- */
+namespace Prado\Test\Unit\Util\Email\Behaviors;
+
 class TEmailerBehaviorTest extends \PHPUnit\Framework\TestCase
 {
 	public function testGetEmailerModule()

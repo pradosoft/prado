@@ -14,6 +14,9 @@ use Prado\Shell\TShellWriter;
 use Prado\TPropertyValue;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Util\Cron\TCronModule;
+use Prado\Exceptions\TConfigurationException;
+use Prado\Util\Cron\TCronTask;
+use Prado\Util\Email\TEmailModule;
 
 /**
  * TIMAPBouncedTask class.

@@ -1,8 +1,7 @@
 <?php
 
-/**
- * @package Prado\Util\Email\Tests
- */
+namespace Prado\Test\Unit\Util\Email\UI;
+
 class TEmailPageTest extends \PHPUnit\Framework\TestCase
 {
 	public function testGetEmail()

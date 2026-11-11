@@ -714,7 +714,7 @@ class TEmail extends TComponent
 	}
 
 	/**
-	 * @return \Prado\Util\TEmailModule The manager that created the Email.
+	 * @return \Prado\Util\Email\TEmailModule The manager that created the Email.
 	 */
 	public function getEmailerModule()
 	{
@@ -722,7 +722,7 @@ class TEmail extends TComponent
 	}
 
 	/**
-	 * @param \Prado\Util\TEmailModule $module TEmailerBehavior The manager that created the Email
+	 * @param \Prado\Util\Email\TEmailModule $module TEmailerBehavior The manager that created the Email
 	 */
 	public function setEmailerModule(TEmailModule $module)
 	{
@@ -781,31 +781,31 @@ class TEmail extends TComponent
 			$exprops[] = "\0Prado\Util\Email\TEmail\0_priority";
 		}
 		if ($this->_messageId == null) {
-			$exprops[] = "\0Prado\Util\Email\UI\TEmail\0_messageId";
+			$exprops[] = "\0Prado\Util\Email\TEmail\0_messageId";
 		}
 		if ($this->_contentType == null) {
-			$exprops[] = "\0Prado\Util\Email\UI\TEmail\0_contentType";
+			$exprops[] = "\0Prado\Util\Email\TEmail\0_contentType";
 		}
 		if ($this->_charset == null) {
-			$exprops[] = "\0Prado\Util\Email\UI\TEmail\0_charset";
+			$exprops[] = "\0Prado\Util\Email\TEmail\0_charset";
 		}
 		if ($this->_subject === true) {
-			$exprops[] = "\0Prado\Util\Email\UI\TEmail\0_subject";
+			$exprops[] = "\0Prado\Util\Email\TEmail\0_subject";
 		}
 		if ($this->_isHtml === true) {
-			$exprops[] = "\0Prado\Util\Email\UI\TEmail\0_isHtml";
+			$exprops[] = "\0Prado\Util\Email\TEmail\0_isHtml";
 		}
 		if ($this->_body == null) {
-			$exprops[] = "\0Prado\Util\Email\UI\TEmail\0_body";
+			$exprops[] = "\0Prado\Util\Email\TEmail\0_body";
 		}
 		if ($this->_textBody == null) {
-			$exprops[] = "\0Prado\Util\Email\UI\TEmail\0_textBody";
+			$exprops[] = "\0Prado\Util\Email\TEmail\0_textBody";
 		}
 		if ($this->_attachments == null) {
-			$exprops[] = "\0Prado\Util\Email\UI\TEmail\0_attachments";
+			$exprops[] = "\0Prado\Util\Email\TEmail\0_attachments";
 		}
 		if ($this->_customData == null) {
-			$exprops[] = "\0Prado\Util\Email\UI\TEmail\0_customData";
+			$exprops[] = "\0Prado\Util\Email\TEmail\0_customData";
 		}
 	}
 }

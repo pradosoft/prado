@@ -1,13 +1,14 @@
 <?php
+
 /**
- * TDbEmailerModule class file.
+ * TDbEmailModule class file.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
-namespace Prado\Web\Services;
+namespace Prado\Util\Email;
 
 use Prado\TApplication;
 use Prado\TApplicationConfiguration;
@@ -17,11 +18,20 @@ use Prado\Exceptions\THttpException;
 use Prado\Security\Permissions\IPermissions;
 use Prado\Web\Javascripts\TJavaScript;
 use Prado\Xml\TXmlElement;
+use Prado\Data\TDataSourceConfig;
+use Prado\Data\TDbConnection;
+use Prado\Exceptions\TInvalidOperationException;
+use Prado\Security\Permissions\TPermissionEvent;
+use Prado\Security\Permissions\TUserOwnerRule;
+use Prado\TPropertyValue;
+use Prado\Util\Cron\TCronTaskInfo;
+use Prado\Util\IDbModule;
+use Prado\Util\Cron\TDbCronManager;
 
 /**
  * TDbEmailModule class.
  *
- * TDbEmailerModule provides email logging, tracking, and sending emails offline.
+ * TDbEmailModule provides email logging, tracking, and sending emails offline.
  *
  * When specified, this module configures the application with an 'email' service,
  * {@link TDbEmailService} for accessing specific emails by the web and for tracking
@@ -33,7 +43,7 @@ use Prado\Xml\TXmlElement;
  *	 </module>
  *
  * </code>
- * 
+ *
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.3.3
@@ -41,13 +51,13 @@ use Prado\Xml\TXmlElement;
 class TDbEmailModule extends TEmailModule implements IDbModule, IPermissions
 {
 	public const EMAIL_SERVICE = 'email';
-	
+
 	private $_logging = true;
-	
+
 	private $_offlineEmail = false;
-	
+
 	private $_serviceID = '';
-	
+
 	// Database function
 	// log
 	// sent field, null is not sent
@@ -56,51 +66,52 @@ class TDbEmailModule extends TEmailModule implements IDbModule, IPermissions
 	// shell for: sending pending emails, show pending, display email log (w/ name and per user), display specific logged email
 	// resend last email of user from email path.
 	// db email service: view any non-secure email via trackingId, secure emails requires login, Log viewing of email via trackingID on image url.
-	// Prado::log 
+	// Prado::log
 	/**
-	 * @param Prado\Xml\TXmlElement|array $config
+	 * @param array|\Prado\Xml\TXmlElement $config
 	 */
 	public function init($config)
 	{
 		$properties = [];
-		if(is_array($config)) {
-			$service =  $config['service'] ?? null;
+		if (is_array($config)) {
+			$service = $config['service'] ?? null;
 			$properties = $config['service'] ?? [];
 			unset($config['service']);
-		} elseif($config instanceof TXmlElement) {
+		} elseif ($config instanceof TXmlElement) {
 			$service = $config->getElementByTagName('service');
-			if($service)
+			if ($service) {
 				$properties = array_change_key_case($service->getAttributes()->toArray());
+			}
 		}
 
 		$this->_serviceID = $properties['id'] ?? ($service ? self::EMAIL_SERVICE : null);
 		parent::init($config);
 
-		if($this->_serviceID) {
+		if ($this->_serviceID) {
 			$properties['EmailerModule'] = $this;
 			$emailServiceConfig = new TApplicationConfiguration();
-			$emailServiceConfig->loadFromPhp(['services'=> [$this->_serviceID => ['class' => 'Prado\\Util\\Email\\TDbEmailService', 'properties' => $properties]]]);
+			$emailServiceConfig->loadFromPhp(['services' => [$this->_serviceID => ['class' => 'Prado\\Util\\Email\\TDbEmailService', 'properties' => $properties]]]);
 			$this->getApplication()->applyConfiguration($emailServiceConfig, true);
 		}
 
 		if ($this->dyRegisterShellAction(false) !== true && ($app = $this->getApplication()) instanceof \Prado\Shell\TShellApplication) {
-			$app->addShellActionClass(['class' => 'Prado\\Util\\Email\\TShellEmailerAction', 'CronModule' => $this]);
+			$app->addShellActionClass(['class' => 'Prado\\Util\\Email\\Shell\\TShellEmailerAction', 'CronModule' => $this]);
 		}
 	}
-	
+
 	/**
 	 * the global event handling requests for cron task info
-	 * @param TDbCronModule $cron
+	 * @param TDbCronManager $cron
 	 * @param null $param
 	 * @return \Prado\Util\Cron\TCronTask[]
 	 */
 	public function fxGetCronTaskInfos($cron, $param)
 	{
 		return [
-				new TCronTaskInfo('sendmail', 'Prado\\Util\\Email\\TDbEmailSenderTask', $this->getId(), Prado::localize('DbCron Clean Log Task'), Prado::localize('Clears the database of cron log items before the specified time period.'))
+				new TCronTaskInfo('sendmail', 'Prado\\Util\\Email\\Cron\\TDbEmailSenderTask', $this->getId(), Prado::localize('DbCron Clean Log Task'), Prado::localize('Clears the database of cron log items before the specified time period.')),
 			];
 	}
-	
+
 	/**
 	 * Implements IPermissions for permissions on dyGetCronLogCount, dyClearCronLog, dyRemoveCronLogItem,
 	 * dyAddTask, dyUpdateTask, dyRemoveTask
@@ -111,56 +122,56 @@ class TDbEmailModule extends TEmailModule implements IDbModule, IPermissions
 	{
 		$userIsOwnerAllowedRule = new TUserOwnerRule();
 		return array_merge([
-			new TPermissionEvent(static::PERM_EMAIL_SHELL, 'Activates email shell commands.', 'dyRegisterShellAction')
+			new TPermissionEvent(static::PERM_EMAIL_SHELL, 'Activates email shell commands.', 'dyRegisterShellAction'),
 			new TPermissionEvent(static::PERM_EMAIL_LOG_READ, 'Email read Db log.', ['dyGetEmailLog', 'dyGetEmailLogCount'], $userIsOwnerAllowedRule),
-			new TPermissionEvent(static::PERM_EMAIL_LOG_DELETE, 'Email delete Db log.', ['dyClearEmailLog', 'dyRemoveEmailLogItem'], $userIsOwnerAllowedRule)
+			new TPermissionEvent(static::PERM_EMAIL_LOG_DELETE, 'Email delete Db log.', ['dyClearEmailLog', 'dyRemoveEmailLogItem'], $userIsOwnerAllowedRule),
 		], parent::getPermissions($manager));
 	}
-	
+
 	/**
 	 * Raises the onViewEmail event. This is raised when a user views their email with a {@link
-	 * TEmailTrackerImage} control in the TEmail.  The Email tracker image URL is loaded from the {@link 
+	 * TEmailTrackerImage} control in the TEmail.  The Email tracker image URL is loaded from the {@link
 	 * TDbEmailService} which flags the email as viewed and raises this event.
 	 *
 	 * The event $param is the TEmail.
 	 *
-	 * @param \Prado\Util\Email\UI\TEmail $email The Email being sent.
+	 * @param \Prado\Util\Email\TEmail $email The Email being sent.
 	 * @return array results of raising the onViewEmail event.
 	 */
 	public function onViewEmail($email)
 	{
 		return $this->raiseEvent('onViewEmail', $this, $email);
 	}
-	
+
 	public function getEmailByTrackerId()
 	{
-		
+
 	}
-	
+
 	public function getEmailByUID()
 	{
-		
+
 	}
-	
+
 	public function getUserEmailsCount()
 	{
-		
+
 	}
-	
+
 	public function getUserEmails()
 	{
-		
+
 	}
-	
+
 	public function getPendingEmails()
 	{
-		
+
 	}
 	public function sendPendingEmails()
 	{
-		
+
 	}
-	
+
 	/**
 	 * Creates the DB connection. If no ConnectionId is provided, then this
 	 * creates a sqlite database in runtime named 'cron.jobs'.
@@ -184,7 +195,7 @@ class TDbEmailModule extends TEmailModule implements IDbModule, IPermissions
 			return $db;
 		}
 	}
-	
+
 	/**
 	 * @return \Prado\Data\TDbConnection the DB connection instance
 	 */
@@ -196,7 +207,7 @@ class TDbEmailModule extends TEmailModule implements IDbModule, IPermissions
 		}
 		return $this->_conn;
 	}
-	
+
 	/**
 	 * @return null|string the ID of a {@link TDataSourceConfig} module. Defaults to empty string, meaning not set.
 	 */
@@ -204,7 +215,7 @@ class TDbEmailModule extends TEmailModule implements IDbModule, IPermissions
 	{
 		return $this->_connID;
 	}
-	
+
 	/**
 	 * Sets the ID of a TDataSourceConfig module.
 	 * The datasource module will be used to establish the DB connection for this cron module.
@@ -218,7 +229,7 @@ class TDbEmailModule extends TEmailModule implements IDbModule, IPermissions
 		}
 		$this->_connID = $value;
 	}
-	
+
 	/**
 	 * @return bool should tasks that run be logged, default true
 	 */
@@ -226,7 +237,7 @@ class TDbEmailModule extends TEmailModule implements IDbModule, IPermissions
 	{
 		return $this->_logCronTasks;
 	}
-	
+
 	/**
 	 * @param bool $log should tasks that run be logged
 	 */
@@ -234,7 +245,7 @@ class TDbEmailModule extends TEmailModule implements IDbModule, IPermissions
 	{
 		$this->_logCronTasks = TPropertyValue::ensureBoolean($log);
 	}
-	
+
 	/**
 	 * @return string table in the database for cron tasks and logs. Defaults to 'crontabs'
 	 */
@@ -242,7 +253,7 @@ class TDbEmailModule extends TEmailModule implements IDbModule, IPermissions
 	{
 		return $this->_tableName;
 	}
-	
+
 	/**
 	 * @param string $table table in the database for cron tasks and logs
 	 * @throws TInvalidOperationException when trying to set this property but the module is already initialized.
@@ -254,7 +265,7 @@ class TDbEmailModule extends TEmailModule implements IDbModule, IPermissions
 		}
 		$this->_tableName = TPropertyValue::ensureString($table);
 	}
-	
+
 	/**
 	 * @return bool whether the cron DB table should be automatically created if not exists. Defaults to true.
 	 * @see setTableName
@@ -263,7 +274,7 @@ class TDbEmailModule extends TEmailModule implements IDbModule, IPermissions
 	{
 		return $this->_autoCreate;
 	}
-	
+
 	/**
 	 * @param bool $value whether the cron DB table should be automatically created if not exists.
 	 * @throws TInvalidOperationException when trying to set this property but the module is already initialized.

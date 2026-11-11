@@ -13,6 +13,8 @@ namespace Prado\Util\Email\Behaviors;
 use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Util\TBehavior;
+use Prado\Util\Email\TEmailEventParameter;
+use Prado\Util\Email\TEmailModule;
 
 /**
  * TNativeMailBehavior interface.

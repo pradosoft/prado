@@ -1,8 +1,7 @@
 <?php
 
-/**
- * @package Prado\Util\Email\Tests
- */
+namespace Prado\Test\Unit\Util\Email;
+
 class TEmailEventParameterTest extends \PHPUnit\Framework\TestCase
 {
 	public function testConstructWithoutParameters()

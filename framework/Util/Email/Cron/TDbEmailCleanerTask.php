@@ -14,6 +14,8 @@ use Prado\Shell\TShellWriter;
 use Prado\TPropertyValue;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Util\Cron\TCronModule;
+use Prado\Util\Cron\TCronTask;
+use Prado\Util\Cron\TDbCronManager;
 
 /**
  * TDbCronCleanLogTask class.
@@ -44,7 +46,7 @@ class TDbEmailCleanerTask extends TCronTask
 	/**
 	 * This clears the log of the TDBCronModule specified by the ModuleId,
 	 * or if none specified, then the cron executing this task.
-	 * @param TDbCronModule $cron
+	 * @param TDbCronManager $cron
 	 */
 	public function execute($cron)
 	{
@@ -54,7 +56,7 @@ class TDbEmailCleanerTask extends TCronTask
 				throw new TInvalidDataValueException('dbcronclean_moduleid_is_null', $mid);
 			}
 		}
-		if (is_object($cron) && $cron instanceof \Prado\Util\Cron\TDbCronModule) {
+		if (is_object($cron) && $cron instanceof \Prado\Util\Cron\TDbCronManager) {
 			$count = $cron->clearCronLog($this->getTimePeriod(), $this->getTaskName(), $this->getUsername());
 
 			if ($cron->asa(TCronModule::SHELL_LOG_BEHAVIOR)) {

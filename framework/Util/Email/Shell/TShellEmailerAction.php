@@ -8,12 +8,14 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
-namespace Prado\Util\Cron;
+namespace Prado\Util\Email\Shell;
 
 use Prado\Prado;
 use Prado\Shell\TShellAction;
 use Prado\Shell\TShellWriter;
 use Prado\Util\Cron\TCronModule;
+use Prado\TApplicationMode;
+use Prado\Util\Cron\TShellCronLogBehavior;
 
 /**
  * TShellCronAction class.
@@ -60,7 +62,7 @@ class TShellEmailerAction extends TShellAction
 	 */
 	public function getModuleClass()
 	{
-		return 'Prado\\Util\\Email\\TDBEmailerModule';
+		return 'Prado\\Util\\Email\\TDbEmailModule';
 	}
 
 	/**
@@ -114,7 +116,7 @@ class TShellEmailerAction extends TShellAction
 	}
 
 	/**
-	 * Shows configured tasks and their run status.  For TDbCronModule, this also shows the
+	 * Shows configured tasks and their run status.  For TDbCronManager, this also shows the
 	 * database tasks as well.
 	 * @param mixed $args
 	 */
@@ -222,7 +224,7 @@ class TShellEmailerAction extends TShellAction
 
 	/**
 	 * shows the registered tasks from the application for possible configuration
-	 * or addition to TDbCronModule.
+	 * or addition to TDbCronManager.
 	 * @param mixed $args
 	 */
 	public function actionIndex($args)
