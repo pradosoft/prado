@@ -4,6 +4,7 @@ namespace Prado\Test\Unit\Web\UI\WebControls;
 
 use PHPUnit\Framework\TestCase;
 use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Test\Unit\Harness\Traits\TWebControlRenderTrait;
 use Prado\Test\Unit\PradoUnit;
 use Prado\Web\UI\TPage;
 use Prado\Web\UI\WebControls\TBaseValidator;
@@ -13,6 +14,8 @@ use Prado\Web\UI\WebControls\TUnicodeValidator;
 
 class TUnicodeValidatorTest extends TestCase
 {
+	use TWebControlRenderTrait;
+
 	private TTextBox $input;
 	private TUnicodeValidator $validator;
 
@@ -154,27 +157,40 @@ class TUnicodeValidatorTest extends TestCase
 		$this->assertTrue($this->valid("p\u{0430}ypal\u{200B}"));
 	}
 
+	/**
+	 * Renders the validated text box as it is rendered inside the page form.
+	 */
+	private function renderInput(): string
+	{
+		PradoUnit::setProp($this->input->getPage(), '_inFormRender', true);
+		$this->input->setEnableClientScript(false);
+		$this->validator->onPreRender(null);
+		return $this->render($this->input);
+	}
+
 	public function testServerFailureMarksAriaInvalid()
 	{
 		$this->input->setText("p\u{0430}ypal");
 		$this->assertFalse($this->validator->validate());
-		PradoUnit::invoke($this->validator, 'updateControlAria');
-		$this->assertSame('true', $this->input->getAttributes()->itemAt('aria-invalid'));
+		$this->assertStringContainsString('aria-invalid="true"', $this->renderInput());
 
-		// A later valid request removes the attribute kept in the view state.
+		// The attribute is request state, not view state.
+		$this->assertNull($this->input->getViewState('Attributes'));
+		$this->assertFalse($this->input->getHasAttributes());
+
+		// A later valid request renders no attribute.
 		$this->input->setIsValid(true);
 		$this->input->setText('paypal');
 		$this->assertTrue($this->validator->validate());
-		PradoUnit::invoke($this->validator, 'updateControlAria');
-		$this->assertFalse($this->input->getAttributes()->contains('aria-invalid'));
+		$this->assertStringNotContainsString('aria-invalid', $this->renderInput());
 	}
 
 	public function testValidControlGetsNoAriaAttribute()
 	{
 		$this->input->setText('paypal');
 		$this->validator->validate();
-		PradoUnit::invoke($this->validator, 'updateControlAria');
-		$this->assertFalse($this->input->getHasAttributes() && $this->input->getAttributes()->contains('aria-invalid'));
+		$this->assertStringNotContainsString('aria-invalid', $this->renderInput());
+		$this->assertFalse($this->input->getHasAttributes());
 	}
 
 	public function testFailedValidatorTellsTheClient()

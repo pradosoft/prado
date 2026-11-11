@@ -11,6 +11,7 @@ pageservice_page_unknown				= 无法找到页面“{0}”。
 pageservice_security_violation			= TPageService无法访问附加目录“{0}”。
 
 page_csrf_token_invalid					= 该页面需要有效的CSRF令牌。
+service_csrf_token_invalid				= 服务 ''{0}'' 需要有效的CSRF令牌。
 
 pagestatepersister_pagestate_corrupted	= 页面状态已损坏。
 cachepagestatepersister_pagestate_corrupted	= 页面状态已损坏。

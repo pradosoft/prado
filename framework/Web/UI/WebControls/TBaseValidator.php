@@ -282,32 +282,15 @@ abstract class TBaseValidator extends TLabel implements IValidator
 
 	/**
 	 * Override parent implementation to update the control CSS Class before
-	 * the validated control is rendered
+	 * the validated control is rendered. A failed validation sets the target's
+	 * IsValid to false for the current request, and {@see TWebControl::addAriaInvalidAttributeToRender()}
+	 * renders `aria-invalid="true"` from that property.
 	 * @param mixed $param
 	 */
 	public function onPreRender($param)
 	{
 		parent::onPreRender($param);
 		$this->updateControlCssClass();
-		$this->updateControlAria();
-	}
-
-	/**
-	 * Marks the validated control with aria-invalid="true" when it failed
-	 * validation on the server, and removes the attribute when it is valid, so
-	 * assistive technology reports a server side failure. The client validator
-	 * that failed takes over the attribute and clears it when it passes.
-	 */
-	protected function updateControlAria()
-	{
-		if (($id = $this->getControlToValidate()) === '' || !(($control = $this->findControl($id)) instanceof TWebControl) || !($control instanceof \Prado\Web\UI\IValidatable)) {
-			return;
-		}
-		if (!$control->getIsValid()) {
-			$control->getAttributes()->add('aria-invalid', 'true');
-		} elseif ($control->getHasAttributes()) {
-			$control->getAttributes()->remove('aria-invalid');
-		}
 	}
 
 	/**

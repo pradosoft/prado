@@ -24,7 +24,7 @@ use Traversable;
  * the primary object passed to `find()`, `findAll()`, `count()`, `update()`,
  * and `deleteAll()`.  Implements {@see IDataCriteria} (since 4.3.3) so that
  * portable consumers such as {@see TDataGatewayCommand} and
- * {@see \Prado\Data\ActiveRecord\TActiveRecord} accept it transparently.
+ * the prado-activerecord package's `TActiveRecord` accept it transparently.
  *
  * ## Constructor forms
  *

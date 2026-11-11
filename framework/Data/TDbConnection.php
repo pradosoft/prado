@@ -253,6 +253,23 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	}
 
 	/**
+	 * Creates the PDO instance of the connection with {@see getUsername Username},
+	 * {@see getPassword Password}, and the attributes: the driver subclass (`Pdo\Pgsql`,
+	 * `Pdo\Sqlite`, `Pdo\Mysql`, ...) through `PDO::connect()` on PHP 8.4 and later, which
+	 * holds the driver methods, and a `PDO` on earlier versions.
+	 * @param string $dsn the data source name with the charset applied
+	 * @return PDO the connection
+	 * @since 4.4.0
+	 */
+	protected function createPdoInstance(string $dsn): PDO
+	{
+		if (method_exists(PDO::class, 'connect')) {
+			return PDO::connect($dsn, $this->getUsername(), $this->getPassword(), $this->_attributes);
+		}
+		return new PDO($dsn, $this->getUsername(), $this->getPassword(), $this->_attributes);
+	}
+
+	/**
 	 * Opens DB connection if it is currently not
 	 * @throws TDbException if connection fails
 	 */
@@ -268,12 +285,7 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 		$charsetInDsn = $this->extractCharsetFromDsn($dsn);
 
 		try {
-			$pdo = $this->_pdo = new PDO(
-				$this->applyCharsetToDsn($dsn),
-				$this->getUsername(),
-				$this->getPassword(),
-				$this->_attributes
-			);
+			$pdo = $this->_pdo = $this->createPdoInstance($this->applyCharsetToDsn($dsn));
 
 			$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 			$this->_active = true;
@@ -326,6 +338,8 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 				$pdo->exec($sql);
 			}
 		} catch (PDOException $e) {
+			$this->_pdo = null;
+			$this->_active = false;
 			throw new TDbException('dbconnection_open_failed', $e->getMessage());
 		}
 	}
@@ -349,12 +363,6 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	{
 		$driver = $this->extractDriverFromDsn($dsn);
 		if ($driver === null) {
-			return null;
-		}
-
-		$pattern = TDbDriverCapabilities::getCharsetDsnPattern($driver);
-
-		if ($pattern === null) {
 			return null;
 		}
 
@@ -706,8 +714,8 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	 */
 	public function setCharset($value)
 	{
-		$driver = $this->getDriverName();
-		if ($this->getActive() && !TDbDriverCapabilities::supportsRuntimeCharsetSet($driver)) {
+		$driver = $this->getActive() ? $this->getDriverName() : null;
+		if ($driver !== null && !TDbDriverCapabilities::supportsRuntimeCharsetSet($driver)) {
 			throw new TDbException('dbconnection_charset_unchangeable', $driver);
 		}
 		$value = TPropertyValue::ensureString($value);
@@ -717,7 +725,7 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 		// SQLite: PRAGMA encoding is silently ignored when tables already exist.
 		// Read back the actual encoding so _charset reflects what the DB has,
 		// not what was requested.
-		if ($this->getActive() && TDbDriverCapabilities::requiresPostConnectCharsetReadback($driver)) {
+		if ($driver !== null && TDbDriverCapabilities::requiresPostConnectCharsetReadback($driver)) {
 			$charsetQuerySql = TDbDriverCapabilities::getCharsetQuerySql($driver);
 			if ($charsetQuerySql !== null) {
 				$actual = $this->getPdoInstance()->query($charsetQuerySql)->fetchColumn();
@@ -1223,6 +1231,9 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	 */
 	public function getHasAutoCommit(): bool
 	{
+		if (!$this->getActive() && $this->getConnectionString() === '') {
+			return true;
+		}
 		return TDbDriverCapabilities::hasAutoCommitAttribute($this->getDriverName());
 	}
 

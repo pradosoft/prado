@@ -11,6 +11,7 @@
 namespace Prado\Data\Common\Mysql;
 
 use Prado\Data\Common\TDbCommandBuilder;
+use Prado\Data\IDataCommand;
 use Prado\Data\TDbCommand;
 
 /**
@@ -29,10 +30,10 @@ class TMysqlCommandBuilder extends TDbCommandBuilder
 	 * Creates a MySQL INSERT IGNORE command.
 	 * Silently skips the insert when a duplicate key constraint is violated.
 	 * @param array $data name-value pairs of data to be inserted.
-	 * @return TDbCommand insert-or-ignore command.
+	 * @return IDataCommand insert-or-ignore command.
 	 * @since 4.4.0
 	 */
-	public function createInsertOrIgnoreCommand(array $data): TDbCommand
+	public function createInsertOrIgnoreCommand(array $data): IDataCommand
 	{
 		$table = $this->getTableInfo()->getTableFullName();
 		[$fields, $bindings] = $this->getInsertFieldBindings($data);
@@ -55,10 +56,10 @@ class TMysqlCommandBuilder extends TDbCommandBuilder
 	 * @param array $data name-value pairs of data to insert.
 	 * @param null|array $updateData null, column-name list, explicit col=>value map, or mixed; controls what is updated on conflict.
 	 * @param null|array $conflictColumns conflict target columns excluded from the update clause; null = primary key columns.
-	 * @return TDbCommand upsert command.
+	 * @return IDataCommand upsert command.
 	 * @since 4.4.0
 	 */
-	public function createUpsertCommand(array $data, ?array $updateData = null, ?array $conflictColumns = null): TDbCommand
+	public function createUpsertCommand(array $data, ?array $updateData = null, ?array $conflictColumns = null): IDataCommand
 	{
 		$conflictColumns = $this->resolveConflictColumns($conflictColumns);
 
@@ -77,9 +78,20 @@ class TMysqlCommandBuilder extends TDbCommandBuilder
 				}
 			}
 		} else {
+			// A string-keyed (explicit value) entry takes precedence over an int-keyed
+			// (source reference) entry for the same column.
+			$explicitCols = [];
+			foreach ($updateData as $key => $value) {
+				if (is_string($key)) {
+					$explicitCols[$key] = true;
+				}
+			}
 			// Process each entry in $updateData
 			foreach ($updateData as $key => $value) {
 				if (is_int($key)) {
+					if (isset($explicitCols[$value])) {
+						continue;
+					}
 					// Integer-keyed: column name → VALUES(col) from INSERT row
 					$quoted = $this->getTableInfo()->getColumn($value)->getColumnName();
 					$updateParts[] = $quoted . '=VALUES(' . $quoted . ')';

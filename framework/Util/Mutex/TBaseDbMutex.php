@@ -47,15 +47,6 @@ abstract class TBaseDbMutex extends TMutex implements IDbModule
 	private bool $_driverChecked = false;
 
 	/**
-	 * Releases the held names when {@see getAutoRelease AutoRelease} is true.  The
-	 * connection stays as it is, since other holders may share it.
-	 */
-	public function __destruct()
-	{
-		parent::__destruct();
-	}
-
-	/**
 	 * @return string[] the PDO driver names this mutex supports; empty for any driver.
 	 */
 	abstract public static function getSupportedDrivers(): array;

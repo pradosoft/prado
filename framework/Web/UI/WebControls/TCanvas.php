@@ -15,9 +15,10 @@ use Prado\Web\Javascripts\TJavaScript;
 /**
  * TCanvas class
  * TCanvas represents the HTML `<canvas>` element, a bitmap that client script
- * draws on. {@see setWidth() Width} and {@see setHeight() Height} are the size
- * of the bitmap in pixels, rendered as the `width` and `height` attributes; the
- * browser default is 300 by 150. The display size is CSS, set through `Style` or
+ * draws on. {@see setPixelWidth() PixelWidth} and
+ * {@see setPixelHeight() PixelHeight} are the size of the bitmap in pixels, rendered
+ * as the `width` and `height` attributes; the browser default is 300 by 150.
+ * The display size is CSS: TWebControl's `Width` and `Height`, `Style`, or
  * `CssClass`.
  * The child controls are the fallback content: the browser shows them when it
  * does not render the canvas, and assistive technology reads them in its place.
@@ -31,7 +32,7 @@ use Prado\Web\Javascripts\TJavaScript;
  *   with such content does not set AlternateText, because the children of an
  *   `img` are hidden from assistive technology.
  * ```html
- * <com:TCanvas Width="400" Height="200" AlternateText="Sales rose 20% in 2026" />
+ * <com:TCanvas PixelWidth="400" PixelHeight="200" AlternateText="Sales rose 20% in 2026" />
  * ```
  * ## Client-side drawing
  * {@see getClientSide() ClientSide}.OnDraw ({@see TCanvasClientScript}) is the
@@ -76,42 +77,42 @@ class TCanvas extends THtmlElement
 	 * @return int|string the width of the bitmap in pixels, or -1 for the browser default.
 	 *   Defaults to -1.
 	 */
-	public function getWidth()
+	public function getPixelWidth()
 	{
-		return $this->getViewState('Width', -1);
+		return $this->getViewState('PixelWidth', -1);
 	}
 
 	/**
 	 * @param int|string $value the width of the bitmap in pixels; a negative value is the
 	 *   browser default.
 	 */
-	public function setWidth($value)
+	public function setPixelWidth($value)
 	{
 		if (($value = TPropertyValue::ensureInteger($value)) < 0) {
 			$value = -1;
 		}
-		$this->setViewState('Width', $value, -1);
+		$this->setViewState('PixelWidth', $value, -1);
 	}
 
 	/**
 	 * @return int|string the height of the bitmap in pixels, or -1 for the browser default.
 	 *   Defaults to -1.
 	 */
-	public function getHeight()
+	public function getPixelHeight()
 	{
-		return $this->getViewState('Height', -1);
+		return $this->getViewState('PixelHeight', -1);
 	}
 
 	/**
 	 * @param int|string $value the height of the bitmap in pixels; a negative value is the
 	 *   browser default.
 	 */
-	public function setHeight($value)
+	public function setPixelHeight($value)
 	{
 		if (($value = TPropertyValue::ensureInteger($value)) < 0) {
 			$value = -1;
 		}
-		$this->setViewState('Height', $value, -1);
+		$this->setViewState('PixelHeight', $value, -1);
 	}
 
 	/**
@@ -145,10 +146,10 @@ class TCanvas extends THtmlElement
 			$writer->addAttribute('aria-label', $text);
 		}
 		parent::addAttributesToRender($writer);
-		if (($width = $this->getWidth()) !== -1) {
+		if (($width = $this->getPixelWidth()) !== -1) {
 			$writer->addAttribute('width', (string) $width);
 		}
-		if (($height = $this->getHeight()) !== -1) {
+		if (($height = $this->getPixelHeight()) !== -1) {
 			$writer->addAttribute('height', (string) $height);
 		}
 	}

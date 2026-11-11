@@ -12,6 +12,7 @@ namespace Prado\Test\Unit\Caching;
 
 use Prado\Caching\ICache;
 use Prado\Caching\ICacheDependency;
+use Prado\Caching\TCache;
 use Prado\Exceptions\TConfigurationException;
 use Prado\TApplication;
 use Prado\Util\Clock\TMockClock;
@@ -47,6 +48,34 @@ class TCacheTest extends \PHPUnit\Framework\TestCase
 	{
 		$this->assertInstanceOf(ICache::class, $this->newCache());
 		$this->assertTrue(TTestCache::getIsAvailable());
+	}
+
+	public function testACacheWithoutAnAvailabilityCheckIsAvailable(): void
+	{
+		// A cache class written for 4.3 has no getIsAvailable(); it still loads and is available.
+		$cache = new class() extends TCache {
+			protected function getValue($key)
+			{
+				return false;
+			}
+
+			protected function setValue($key, $value, $expire)
+			{
+				return true;
+			}
+
+			protected function addValue($key, $value, $expire)
+			{
+				return true;
+			}
+
+			protected function deleteValue($key)
+			{
+				return true;
+			}
+		};
+		$this->assertInstanceOf(ICache::class, $cache);
+		$this->assertTrue($cache::getIsAvailable());
 	}
 
 	public function testSetGetRoundTrip(): void

@@ -49,26 +49,46 @@ class TCanvasTest extends TestCase
 		return 'canvas';
 	}
 
-	public function testWidthAndHeightRenderAsAttributes()
+	public function testPixelWidthAndHeightRenderAsAttributes()
 	{
 		$control = new TCanvas();
-		$this->assertSame(-1, $control->getWidth());
-		$this->assertSame(-1, $control->getHeight());
+		$this->assertSame(-1, $control->getPixelWidth());
+		$this->assertSame(-1, $control->getPixelHeight());
 		$this->assertSame('<canvas></canvas>', $this->render($control));
-		$control->setWidth('400');
-		$control->setHeight(200);
-		$this->assertSame(400, $control->getWidth());
+		$control->setPixelWidth('400');
+		$control->setPixelHeight(200);
+		$this->assertSame(400, $control->getPixelWidth());
 		$this->assertSame('<canvas width="400" height="200"></canvas>', $this->render($control));
-		$control->setWidth(-5);
-		$this->assertSame(-1, $control->getWidth());
+		$control->setPixelWidth(-5);
+		$this->assertSame(-1, $control->getPixelWidth());
 	}
 
 	public function testDisplaySizeIsStyle()
 	{
 		$control = new TCanvas();
 		$control->getStyle()->setWidth('100%');
-		$control->setWidth(400);
+		$control->setPixelWidth(400);
 		$this->assertSame('<canvas width="400" style="width:100%;"></canvas>', $this->render($control));
+	}
+
+	public function testWidthAndHeightAreCssStyle()
+	{
+		$control = new TCanvas();
+		$control->setWidth('300px');
+		$control->setHeight('150px');
+		$this->assertSame(-1, $control->getPixelWidth());
+		$this->assertSame('300px', $control->getWidth());
+		$this->assertSame('<canvas style="width:300px;height:150px;"></canvas>', $this->render($control));
+	}
+
+	public function testPixelAndCssSizeCoexist()
+	{
+		$control = new TCanvas();
+		$control->setPixelWidth(400);
+		$control->setPixelHeight(200);
+		$control->setWidth('100%');
+		$control->setHeight('50%');
+		$this->assertSame('<canvas width="400" height="200" style="width:100%;height:50%;"></canvas>', $this->render($control));
 	}
 
 	public function testAlternateTextRendersImageRoleAndLabel()

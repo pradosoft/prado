@@ -56,7 +56,7 @@ interface IDataColumn
 	/**
 	 * Returns the PHP primitive type name (`'string'`, `'integer'`, `'boolean'`,
 	 * `'double'`) that best represents this column's declared type.  Used by
-	 * {@see \Prado\Shell\Actions\TActiveRecordAction} for code generation.
+	 * the prado-activerecord package's `TActiveRecordAction` for code generation.
 	 * @return string the PHP primitive type name.
 	 */
 	public function getPHPType();

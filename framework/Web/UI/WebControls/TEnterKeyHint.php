@@ -18,7 +18,7 @@ namespace Prado\Web\UI\WebControls;
  * keyboards. Use with {@see TWebControl::setEnterKeyHint}.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @since 4.3.3
+ * @since 4.4.0
  */
 class TEnterKeyHint extends \Prado\TEnumerable
 {

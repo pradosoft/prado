@@ -331,7 +331,7 @@ class TDbCache extends TSerializingCache implements IDbModule
 	 */
 	public function setFlushInterval($value)
 	{
-		$this->_flushInterval = $value;
+		$this->_flushInterval = TPropertyValue::ensureInteger($value);
 	}
 
 	/**

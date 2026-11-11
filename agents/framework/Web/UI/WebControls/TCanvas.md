@@ -9,16 +9,16 @@
 **Extends:** `THtmlElement`
 
 ## Overview
-TCanvas represents the HTML `<canvas>` element, a bitmap that client script draws on. `Width` and `Height` are the bitmap size in pixels; the display size is CSS. The child controls are the fallback content, which the browser shows when it does not render the canvas and which assistive technology reads in its place.
+TCanvas represents the HTML `<canvas>` element, a bitmap that client script draws on. `PixelWidth` and `PixelHeight` are the bitmap size in pixels; the display size is CSS. The child controls are the fallback content, which the browser shows when it does not render the canvas and which assistive technology reads in its place.
 
 The default tag is `canvas`. It can be overridden at runtime via the `TagName` property (inherited from [THtmlElement](./THtmlElement.md)).
 
 ## Template Usage
 
 ```xml
-<com:TCanvas Width="400" Height="200" AlternateText="Sales rose 20% in 2026" />
+<com:TCanvas PixelWidth="400" PixelHeight="200" AlternateText="Sales rose 20% in 2026" />
 
-<com:TCanvas Width="400" Height="200">
+<com:TCanvas PixelWidth="400" PixelHeight="200">
 	<com:TTable Caption="Sales by region">...</com:TTable>
 </com:TCanvas>
 ```
@@ -27,7 +27,7 @@ The default tag is `canvas`. It can be overridden at runtime via the `TagName` p
 
 | Property | Description |
 |---|---|
-| `Width`, `Height` | Bitmap size in pixels, rendered as `width` and `height`; default -1 (browser default 300 × 150); a negative value restores it. They override `TWebControl`'s CSS `Width`/`Height`, as [TInlineFrame](./TInlineFrame.md) does; the display size is set through `Style` or `CssClass` |
+| `PixelWidth`, `PixelHeight` | Bitmap size in pixels, rendered as `width` and `height`; default -1 (browser default 300 × 150); a negative value restores it. `Width`/`Height` remain TWebControl's CSS display size, as does `Style` or `CssClass` |
 | `AlternateText` | Text alternative of a static drawing: renders `role="img"` (unless `Role` is set) and `aria-label` (unless `Aria.label` is set) |
 | `ClientSide.OnDraw` | JavaScript that draws the canvas ([TCanvasClientScript](./TCanvasClientScript.md)); registers the `canvas` script package |
 | `MatchDisplaySize` | Bitmap = display size × `devicePixelRatio`, with a `2d` context scaled to CSS pixels; default true |

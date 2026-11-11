@@ -80,17 +80,17 @@ class TEtcdCache extends TSerializingCache
 	/**
 	 * @var string the etcd host
 	 */
-	private $_host = 'localhost';
+	protected $_host = 'localhost';
 
 	/**
 	 * @var int the etcd port
 	 */
-	private $_port = 2379;
+	protected $_port = 2379;
 
 	/**
 	 * @var string the directory to store values in
 	 */
-	private $_dir = 'pradocache';
+	protected $_dir = 'pradocache';
 
 	/**
 	 * @var ?THttpClient the transport for etcd requests, created on first use when null.

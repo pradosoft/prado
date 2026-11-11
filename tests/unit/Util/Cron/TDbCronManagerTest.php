@@ -5,7 +5,6 @@ namespace Prado\Test\Unit\Util\Cron;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
-use Prado\Util\Cron\TDbCronModule;
 use Prado\Util\Cron\TCronMethodTask;
 use Prado\Util\Cron\TDbCronManager;
 use Prado\Test\Unit\PradoUnit;

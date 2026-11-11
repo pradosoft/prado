@@ -538,11 +538,16 @@ abstract class TRestClient extends TApplicationComponent
 	}
 
 	/**
-	 * Replaces the entire default-headers map.
+	 * Replaces the entire default-headers map. Each name and value is validated by
+	 * {@see assertHeaderSafe()} to prevent header injection.
 	 * @param array<string,string> $value Default headers.
+	 * @throws TInvalidDataValueException when a name or value is unsafe.
 	 */
 	public function setDefaultHeaders(array $value): void
 	{
+		foreach ($value as $name => $header) {
+			$this->assertHeaderSafe((string) $name, (string) $header);
+		}
 		$this->setDefaultHeadersDirect($value);
 	}
 

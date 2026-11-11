@@ -47,8 +47,8 @@ class TSvgTest extends TestCase
 		foreach (['SvgFile', 'Svg', 'ViewBox', 'PreserveAspectRatio', 'AlternateText', 'Description'] as $name) {
 			$this->assertSame('', $svg->{'get' . $name}(), $name);
 		}
-		$this->assertSame(-1, $svg->getWidth());
-		$this->assertSame(-1, $svg->getHeight());
+		$this->assertSame(-1, $svg->getPixelWidth());
+		$this->assertSame(-1, $svg->getPixelHeight());
 		$this->assertFalse($svg->getDecorative());
 		$this->assertTrue($svg->getSanitize());
 		$this->assertTrue($svg->getPrefixIds());
@@ -63,12 +63,33 @@ class TSvgTest extends TestCase
 		$svg = new TSvg();
 		$svg->setViewBox(' 0 0 24 24 ');
 		$svg->setPreserveAspectRatio('xMidYMid meet');
-		$svg->setWidth('24');
-		$svg->setHeight(24);
+		$svg->setPixelWidth('24');
+		$svg->setPixelHeight(24);
 		$svg->getControls()->add('<path d="M0 0"/>');
 		$this->assertSame('<svg viewBox="0 0 24 24" preserveAspectRatio="xMidYMid meet" width="24" height="24"><path d="M0 0"/></svg>', $this->render($svg));
-		$svg->setWidth(-1);
-		$this->assertSame(-1, $svg->getWidth());
+		$svg->setPixelWidth(-1);
+		$this->assertSame(-1, $svg->getPixelWidth());
+	}
+
+	public function testWidthAndHeightAreCssStyle()
+	{
+		$svg = new TSvg();
+		$svg->setWidth('24px');
+		$svg->setHeight('12px');
+		$this->assertSame(-1, $svg->getPixelWidth());
+		$this->assertSame(-1, $svg->getPixelHeight());
+		$this->assertSame('24px', $svg->getWidth());
+		$this->assertSame('<svg style="width:24px;height:12px;"></svg>', $this->render($svg));
+	}
+
+	public function testPixelAndCssSizeCoexist()
+	{
+		$svg = new TSvg();
+		$svg->setPixelWidth(24);
+		$svg->setPixelHeight(12);
+		$svg->setWidth('1em');
+		$svg->setHeight('1em');
+		$this->assertSame('<svg width="24" height="12" style="width:1em;height:1em;"></svg>', $this->render($svg));
 	}
 
 	public function testAlternateTextAndDescription()

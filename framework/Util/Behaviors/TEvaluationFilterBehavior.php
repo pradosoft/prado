@@ -60,7 +60,11 @@ use Prado\Util\TClassBehavior;
  */
 class TEvaluationFilterBehavior extends TClassBehavior
 {
-	/** The default functions evaluated code may call.  None takes a callable or accesses files. */
+	/**
+	 * The default functions evaluated code may call.  None takes a callable or accesses files.
+	 * The `mb_*` functions need the mbstring extension; {@see \Prado\Util\TMultibyteString} is
+	 * allowed through {@see DEFAULT_ALLOWED_STATIC_METHODS} for a host without it.
+	 */
 	public const DEFAULT_ALLOWED_FUNCTIONS = [
 		'abs', 'array_key_exists', 'array_keys', 'array_merge', 'array_reverse', 'array_search',
 		'array_slice', 'array_sum', 'array_values', 'basename', 'boolval', 'ceil', 'checkdate',
@@ -75,7 +79,7 @@ class TEvaluationFilterBehavior extends TClassBehavior
 	];
 
 	/** The default static methods evaluated code may call.  `<%[ ]%>` template tags call `Prado::localize()`. */
-	public const DEFAULT_ALLOWED_STATIC_METHODS = ['Prado::localize', 'Prado\Prado::localize'];
+	public const DEFAULT_ALLOWED_STATIC_METHODS = ['Prado::localize', 'Prado\Prado::localize', 'Prado\Util\TMultibyteString::*'];
 
 	/** The default object members evaluated code may not access. */
 	public const DEFAULT_DENIED_MEMBERS = [

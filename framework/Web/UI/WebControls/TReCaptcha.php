@@ -203,10 +203,6 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	}
 
 	/**
-	 * Checks for API keys
-	 * @param mixed $param event parameter
-	 */
-	/**
 	 * Logs that TReCaptcha is deprecated.
 	 * @param mixed $param event parameter
 	 * @since 4.4.0
@@ -217,6 +213,10 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 		Prado::warning('TReCaptcha is deprecated: reCAPTCHA v1 is retired and cannot validate. Use TReCaptcha2.', static::class);
 	}
 
+	/**
+	 * Checks for API keys
+	 * @param mixed $param event parameter
+	 */
 	public function onPreRender($param)
 	{
 		parent::onPreRender($param);

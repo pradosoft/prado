@@ -239,7 +239,7 @@ class TTooltip extends TWebControl
 	{
 		$cs = $this->getPage()->getClientScript();
 		$cs->registerPradoScript('tooltip');
-		$cs->registerPostBackControl(self::CLIENT_CLASS, $this->getClientOptions());
+		$cs->registerPostBackControl(static::CLIENT_CLASS, $this->getClientOptions());
 	}
 
 	/**

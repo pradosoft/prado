@@ -2181,6 +2181,112 @@ class TApplicationDependencyTest extends \PHPUnit\Framework\TestCase
 	}
 
 	// -----------------------------------------------------------------------
+	// applyConfiguration() eager load — same dependency rule as getModule()
+	// -----------------------------------------------------------------------
+
+	public function testApplyConfiguration_requiredDepNotRegistered_throwsConfigurationException(): void
+	{
+		// An eager module declares a required dep on 'missing', which no configuration
+		// registers. applyConfiguration must throw before init(), as getModule() does.
+		$app = $this->newAccessor();
+		$modules = [
+			'dependent' => [InterfaceDepModule::class, ['DependencyId' => 'missing'], null],
+		];
+
+		try {
+			$app->applyConfiguration($this->moduleConfig($modules), false);
+			$this->fail('Expected TConfigurationException was not thrown');
+		} catch (\Prado\Exceptions\TConfigurationException $e) {
+			$this->assertSame('application_module_required_dep_missing', $e->getErrorCode());
+			$this->assertSame(['dependent', 'missing'], $e->getErrorArguments());
+		}
+		$this->assertSame([], DepOrderTracker::$order,
+			'a module whose required dep is absent must not be initialized');
+	}
+
+	public function testApplyConfiguration_requiredDepNotRegistered_inSortedBatch_throws(): void
+	{
+		// Two eager modules: the sort ignores the out-of-batch dep for ordering, but
+		// the required check must still run before init().
+		$app = $this->newAccessor();
+		$modules = [
+			'first' => [TrackingModule::class, [], null],
+			'dependent' => [InterfaceDepModule::class, ['DependencyId' => 'missing'], null],
+		];
+
+		try {
+			$app->applyConfiguration($this->moduleConfig($modules), false);
+			$this->fail('Expected TConfigurationException was not thrown');
+		} catch (\Prado\Exceptions\TConfigurationException $e) {
+			$this->assertSame('application_module_required_dep_missing', $e->getErrorCode());
+		}
+		$this->assertSame(['first'], DepOrderTracker::$order,
+			'modules sorted before the failing one are initialized; the failing one is not');
+	}
+
+	public function testApplyConfiguration_requiredDepNotRegistered_sameExceptionAsGetModule(): void
+	{
+		// The eager path and the lazy path raise the same error code and message.
+		$eager = $this->newAccessor();
+		$modules = [
+			'dependent' => [InterfaceDepModule::class, ['DependencyId' => 'missing'], null],
+		];
+		try {
+			$eager->applyConfiguration($this->moduleConfig($modules), false);
+			$this->fail('Expected TConfigurationException was not thrown');
+		} catch (\Prado\Exceptions\TConfigurationException $eagerException) {
+		}
+
+		$lazy = $this->newAccessor();
+		PradoUnit::setProp($lazy, '_lazyModules', [
+			'dependent' => [InterfaceDepModule::class, ['id' => 'dependent', 'DependencyId' => 'missing'], null],
+		]);
+		PradoUnit::setProp($lazy, '_modules', ['dependent' => null]);
+		try {
+			$lazy->getModule('dependent');
+			$this->fail('Expected TConfigurationException was not thrown');
+		} catch (\Prado\Exceptions\TConfigurationException $lazyException) {
+		}
+
+		$this->assertSame($lazyException->getErrorCode(), $eagerException->getErrorCode());
+		$this->assertSame($lazyException->getMessage(), $eagerException->getMessage());
+	}
+
+	public function testApplyConfiguration_advisoryDepNotRegistered_noException(): void
+	{
+		// An absent advisory dep is skipped on the eager path, as on the lazy path.
+		$app = $this->newAccessor();
+		$modules = [
+			'dependent' => [AdvisoryDepModule::class, ['AdvisoryDepId' => 'optional'], null],
+		];
+
+		$app->applyConfiguration($this->moduleConfig($modules), false);
+
+		$this->assertInstanceOf(AdvisoryDepModule::class, $app->getModule('dependent'));
+		$this->assertSame(['dependent'], DepOrderTracker::$order,
+			'the module must be initialized even though its advisory dep is absent');
+	}
+
+	public function testApplyConfiguration_requiredDepLazy_loadedBeforeDependentInit(): void
+	{
+		// 'dep' is configured lazy; the eager 'dependent' requires it, so the eager path
+		// force-loads it before dependent's init(), as getModule() does for a lazy module.
+		$app = $this->newAccessor();
+		$modules = [
+			'dependent' => [InterfaceDepModule::class, ['DependencyId' => 'dep'], null],
+			'dep' => [TrackingModule::class, ['lazy' => true], null],
+		];
+
+		$app->applyConfiguration($this->moduleConfig($modules), false);
+
+		$this->assertInstanceOf(TrackingModule::class, $app->getModules()['dep'],
+			'the lazy dependency must be loaded by the time applyConfiguration returns');
+		$this->assertSame(['dep', 'dependent'], DepOrderTracker::$order,
+			'the lazy dependency must be initialized before its dependent');
+	}
+
+
+	// -----------------------------------------------------------------------
 	// Phase parameter — passed to getModuleDependencies()
 	// -----------------------------------------------------------------------
 

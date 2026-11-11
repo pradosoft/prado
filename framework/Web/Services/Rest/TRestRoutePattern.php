@@ -27,8 +27,8 @@ use Prado\Web\TUrlMappingPattern;
  * {@see getVerbs() Verbs} and {@see getCaseSensitive() CaseSensitive} are the ones
  * of the URL manager. Two things are added for REST patterns:
  *
- * - A placeholder may carry its constraint inline, `{id:\d+}`, and a placeholder
- *   without a constraint matches one path segment, `[^/]+`.
+ * - A placeholder may carry its constraint inline, `{id:\d+}` or `{year:\d{4}}`, and
+ *   a placeholder without a constraint matches one path segment, `[^/]+`.
  * - The path is matched apart from the verb. {@see matchPath()} returns the path
  *   parameters of a path that matches, whatever the request verb, and
  *   {@see acceptsVerb()} tells whether the route serves a verb, so the service
@@ -54,9 +54,10 @@ class TRestRoutePattern extends TUrlMappingPattern
 	public const DEFAULT_CONSTRAINT = '[^/]+';
 
 	/**
-	 * @var string Pattern of one `{name}` or `{name:constraint}` placeholder.
+	 * @var string Pattern of one `{name}` or `{name:constraint}` placeholder; a constraint
+	 *   may hold a regex quantifier such as `{4}` or `{2,3}`.
 	 */
-	public const PLACEHOLDER_PATTERN = '/\{([A-Za-z_][A-Za-z0-9_]*)(?::([^{}]+))?\}/';
+	public const PLACEHOLDER_PATTERN = '/\{([A-Za-z_][A-Za-z0-9_]*)(?::((?:[^{}]|\{[0-9]+(?:,[0-9]*)?\})+))?\}/';
 
 	/**
 	 * @var ?string resource class, in namespace or dot notation.

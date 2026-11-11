@@ -80,12 +80,12 @@ class TCallbackPageStateTracker
 	{
 		$states = $this->getStatesToTrack();
 		$states['Visible'] = ['TScalarDiff', [$this, 'updateVisible']];
-		$states['Enabled'] = ['TScalarDiff', fn ($diff) => $this->updatePresenceAttribute('disabled', $diff === false)];
+		$states['Enabled'] = ['TScalarDiff', [$this, 'updateEnabled']];
 		$states['Attributes'] = ['TMapCollectionDiff', [$this, 'updateAttributes']];
 		$states['Style'] = ['TStyleDiff', [$this, 'updateStyle']];
-		$states['TabIndex'] = ['TScalarDiff', fn ($diff) => $this->updateAttribute('tabindex', $diff)];
-		$states['ToolTip'] = ['TScalarDiff', fn ($diff) => $this->updateAttribute('title', $diff)];
-		$states['AccessKey'] = ['TScalarDiff', fn ($diff) => $this->updateAttribute('accesskey', $diff)];
+		$states['TabIndex'] = ['TScalarDiff', [$this, 'updateTabIndex']];
+		$states['ToolTip'] = ['TScalarDiff', [$this, 'updateToolTip']];
+		$states['AccessKey'] = ['TScalarDiff', [$this, 'updateAccessKey']];
 		$states['KeyShortcuts'] = ['TScalarDiff', fn ($diff) => $this->updateKeyShortcuts()];
 		$states['KeyShortcutScope'] = ['TScalarDiff', fn ($diff) => $this->updateKeyShortcuts()];
 		$states['KeyShortcutAllowReserved'] = ['TScalarDiff', fn ($diff) => $this->updateKeyShortcuts()];
@@ -189,6 +189,42 @@ class TCallbackPageStateTracker
 	protected function updateAttribute($attrName, $value)
 	{
 		$this->client()->setAttribute($this->_control, $attrName, $value);
+	}
+
+	/**
+	 * Updates the tooltip.
+	 * @param string $value new tooltip
+	 */
+	protected function updateToolTip($value)
+	{
+		$this->updateAttribute('title', $value);
+	}
+
+	/**
+	 * Updates the tab index.
+	 * @param ?int $value tab index
+	 */
+	protected function updateTabIndex($value)
+	{
+		$this->updateAttribute('tabindex', $value);
+	}
+
+	/**
+	 * Updates the modifier access key.
+	 * @param string $value access key
+	 */
+	protected function updateAccessKey($value)
+	{
+		$this->updateAttribute('accesskey', $value);
+	}
+
+	/**
+	 * Enables or disables the control on the client side through the `disabled` attribute.
+	 * @param bool $enable true to enable the control, false to disable.
+	 */
+	protected function updateEnabled($enable)
+	{
+		$this->updatePresenceAttribute('disabled', $enable === false);
 	}
 
 	/**

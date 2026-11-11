@@ -10,6 +10,7 @@
 
 namespace Prado\Data\DataGateway;
 
+use Prado\Data\IDbCommand;
 use Prado\Data\TDbCommand;
 use Prado\Data\TDbDataReader;
 use Prado\Data\Common\TDbCommandBuilder;
@@ -369,7 +370,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	{
 		$command = $this->getBuilder()->createInsertCommand($data);
 		$this->onCreateCommand($command, new TSqlCriteria(null, $data));
-		$command->prepare();
+		$this->prepareCommand($command);
 		if ($this->onExecuteCommand($command, $command->execute()) > 0) {
 			$value = $this->getLastInsertId();
 			return $value !== null ? $value : true;
@@ -378,16 +379,31 @@ class TDataGatewayCommand extends \Prado\TComponent
 	}
 
 	/**
+	 * Compiles the statement of a SQL command before it is executed.  A command of a
+	 * driver that is not SQL-backed is an {@see \Prado\Data\IDataCommand} without a
+	 * statement to compile, and is left as it is.
+	 * @param \Prado\Data\IDataCommand $command the command about to be executed.
+	 * @since 4.4.0
+	 */
+	protected function prepareCommand($command): void
+	{
+		if ($command instanceof IDbCommand) {
+			$command->prepare();
+		}
+	}
+
+	/**
 	 * Inserts a new record, silently ignoring if a duplicate key conflict occurs.
 	 * @param array $data new record data.
-	 * @return mixed last insert id, true on ignore, or false on failure.
+	 * @return mixed the last insert id when a row was inserted and a column has a sequence,
+	 *   true when a row was inserted, or false when the insert was ignored.
 	 * @since 4.4.0
 	 */
 	public function insertOrIgnore(array $data): mixed
 	{
 		$command = $this->getBuilder()->createInsertOrIgnoreCommand($data);
 		$this->onCreateCommand($command, new TSqlCriteria(null, $data));
-		$command->prepare();
+		$this->prepareCommand($command);
 		if ($this->onExecuteCommand($command, $command->execute()) > 0) {
 			$value = $this->getLastInsertID();
 			return $value !== null ? $value : true;
@@ -409,7 +425,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	{
 		$command = $this->getBuilder()->createUpsertCommand($data, $updateData, $conflictColumns);
 		$this->onCreateCommand($command, new TSqlCriteria(null, $data));
-		$command->prepare();
+		$this->prepareCommand($command);
 		if ($this->onExecuteCommand($command, $command->execute()) > 0) {
 			$value = $this->getLastInsertID();
 			return $value !== null ? $value : true;

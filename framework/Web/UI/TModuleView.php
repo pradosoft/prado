@@ -152,10 +152,9 @@ class TModuleView extends TCompositeControl
 	}
 
 	/**
-	 * Creates child controls.
-	 * This method overrides the parent implementation. It evaluates {@see getCondition Condition}
-	 * and instantiate the corresponding template.
-	 * @return bool if the expression evaluates to true
+	 * Evaluates {@see getCondition Condition} against the template control.
+	 * @throws TInvalidDataValueException when the condition expression fails to evaluate
+	 * @return bool true when the expression evaluates to true; false without a template control
 	 */
 	protected function getConditionEvaluation(): bool
 	{

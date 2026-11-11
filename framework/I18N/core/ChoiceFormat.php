@@ -199,6 +199,7 @@ class ChoiceFormat
 	 * @param string $set the expression after "n:" in the set notation.
 	 * @throws Exception when the expression has a token or form outside the set notation.
 	 * @return Closure the expression as a function of the number.
+	 * @since 4.4.0
 	 */
 	protected function compileSetNotation($set): Closure
 	{
@@ -216,6 +217,7 @@ class ChoiceFormat
 	 * @param string $set the expression after "n:" in the set notation.
 	 * @throws Exception when the expression has a token outside the set notation.
 	 * @return string[] the tokens.
+	 * @since 4.4.0
 	 */
 	protected function tokenizeSetNotation($set): array
 	{
@@ -239,6 +241,7 @@ class ChoiceFormat
 	 * @param int $pos the position of the next token, advanced past the parsed tokens.
 	 * @throws Exception when the tokens do not form an expression.
 	 * @return Closure the parsed expression.
+	 * @since 4.4.0
 	 */
 	protected function parseSetTernary(array $tokens, int &$pos): Closure
 	{
@@ -267,6 +270,7 @@ class ChoiceFormat
 	 * @param int $level the index into {@see SET_OPERATORS}.
 	 * @throws Exception when the tokens do not form an expression.
 	 * @return Closure the parsed expression.
+	 * @since 4.4.0
 	 */
 	protected function parseSetBinary(array $tokens, int &$pos, int $level): Closure
 	{
@@ -309,6 +313,7 @@ class ChoiceFormat
 	 * @param int $pos the position of the next token, advanced past the parsed tokens.
 	 * @throws Exception when the tokens do not form an expression.
 	 * @return Closure the parsed expression.
+	 * @since 4.4.0
 	 */
 	protected function parseSetUnary(array $tokens, int &$pos): Closure
 	{

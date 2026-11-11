@@ -105,6 +105,9 @@ use Prado\Collections\TWebAttributeCollection;
  * $control->getAria()->add('label', 'Submit button');
  * $control->getAria()['describedby'] = 'help-text';
  * ```
+ * A control that implements {@see \Prado\Web\UI\IValidatable} renders
+ * `aria-invalid="true"` while its IsValid property is false, which a failed
+ * validator sets for the current request only.
  *
  * ### Data Attributes
  *
@@ -1509,7 +1512,8 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 * Renders in order: id, accesskey, role, disabled, tabindex, title, translate, lang,
 	 * dir, hidden, spellcheck, draggable, contenteditable, inputmode, enterkeyhint, inert,
 	 * popover, slot, autofocus, autocapitalize, autocorrect, writingsuggestions, part,
-	 * exportparts, microdata, aria-*, key shortcuts, data-*, style, custom attributes.
+	 * exportparts, microdata, aria-*, aria-invalid, key shortcuts, data-*, style,
+	 * custom attributes.
 	 *
 	 * @param \Prado\Web\UI\THtmlWriter $writer the HTML writer
 	 */
@@ -1591,6 +1595,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 		if ($aria = $this->getViewState('Aria', null)) {
 			$aria->addAttributesToRender($writer);
 		}
+		$this->addAriaInvalidAttributeToRender($writer);
 		$this->addKeyShortcutsAttributesToRender($writer);
 		if ($dataset = $this->getViewState('Dataset', null)) {
 			$dataset->addAttributesToRender($writer);
@@ -1602,6 +1607,24 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 			foreach ($this->getAttributes() as $name => $value) {
 				$writer->addAttribute($name, $value);
 			}
+		}
+	}
+
+	/**
+	 * Adds `aria-invalid="true"` when this control implements
+	 * {@see \Prado\Web\UI\IValidatable} and its IsValid property is false.
+	 * IsValid is not view state: a failed validator sets it for the current
+	 * request, and a request in which no validator runs renders no attribute.
+	 * The client validator that failed on the server takes the attribute over
+	 * and clears it when it passes.
+	 *
+	 * @param \Prado\Web\UI\THtmlWriter $writer the HTML writer
+	 * @since 4.4.0
+	 */
+	protected function addAriaInvalidAttributeToRender($writer)
+	{
+		if ($this instanceof \Prado\Web\UI\IValidatable && !$this->getIsValid()) {
+			$writer->addAttribute('aria-invalid', 'true');
 		}
 	}
 

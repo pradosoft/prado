@@ -45,6 +45,24 @@ class TStyleHiddenDefault extends TStyle
 }
 
 /**
+ * Behavior contributing a getter and a setter whose names look like style fields.
+ */
+class TStyleTestFooBehavior extends \Prado\Util\TBehavior
+{
+	public $bar;
+
+	public function getFoo()
+	{
+		return 'from-behavior';
+	}
+
+	public function setBar($value)
+	{
+		$this->bar = $value;
+	}
+}
+
+/**
  * Comprehensive tests for {@see TStyle}.
  *
  * Sections:
@@ -1691,6 +1709,25 @@ class TStyleTest extends TestCase
 	public function testCallGetEmptyWhenNotSet()
 	{
 		$this->assertEquals('', (new TStyle())->getBackgroundColor());
+	}
+
+	public function testCallReachesBehaviorGetAndSetMethods()
+	{
+		$style = new TStyle();
+		$style->attachBehavior('foo', $behavior = new TStyleTestFooBehavior());
+		$style->setBackgroundColor('blue');
+
+		$this->assertSame('from-behavior', $style->getFoo());
+		$style->setBar(5);
+		$this->assertSame(5, $behavior->bar);
+		$this->assertFalse($style->hasStyleField('foo'));
+		$this->assertFalse($style->hasStyleField('bar'));
+		$this->assertEquals('blue', $style->getBackgroundColor());
+
+		$style->detachBehavior('foo');
+		$this->assertEquals('', $style->getFoo());
+		$style->setBar('1px');
+		$this->assertEquals('1px', $style->getStyleField('bar'));
 	}
 
 	public function testCallRealMethodTakesPrecedenceOverCall()

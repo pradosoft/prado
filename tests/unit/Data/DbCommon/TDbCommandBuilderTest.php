@@ -2,9 +2,13 @@
 
 namespace Prado\Test\Unit\Data\DbCommon;
 
+use Prado\Data\Common\IDataCommandBuilder;
+use Prado\Data\Common\IDbCommandBuilder;
 use Prado\Data\Common\TDbCommandBuilder;
 use Prado\Data\Common\TDbTableInfo;
+use Prado\Data\Common\Sqlite\TSqliteCommandBuilder;
 use Prado\Data\Common\Sqlite\TSqliteMetaData;
+use Prado\Data\IDataCommand;
 use Prado\Data\TDbCommand;
 use Prado\Data\TDbConnection;
 use Prado\Exceptions\TDbException;
@@ -93,6 +97,48 @@ class TDbCommandBuilderTest extends \PHPUnit\Framework\TestCase
 	{
 		$tableInfo = self::$meta->getTableInfo('items');
 		return new TDbCommandBuilder(self::$conn, $tableInfo);
+	}
+
+	// -----------------------------------------------------------------------
+	// Driver-portability contract: what the gateways call on a builder
+	// -----------------------------------------------------------------------
+
+	public function test_builder_interfaces_declare_the_methods_the_gateways_call()
+	{
+		// TActiveRecordGateway::getCommand() calls setDbConnection() on every builder.
+		$this->assertTrue((new \ReflectionClass(IDataCommandBuilder::class))->hasMethod('setDbConnection'));
+		// TDataGatewayCommand::getIndexKeyCondition() calls getIndexCondition() on a SQL builder.
+		$this->assertTrue((new \ReflectionClass(IDbCommandBuilder::class))->hasMethod('getIndexCondition'));
+		$this->assertFalse((new \ReflectionClass(IDataCommandBuilder::class))->hasMethod('getIndexCondition'));
+		$this->assertInstanceOf(IDbCommandBuilder::class, $this->builder());
+	}
+
+	public function test_set_db_connection_replaces_the_connection()
+	{
+		$builder = $this->builder();
+		$other = new TDbConnection('sqlite::memory:');
+		$builder->setDbConnection($other);
+		$this->assertSame($other, $builder->getDbConnection());
+	}
+
+	public function test_driver_builder_returns_the_command_of_a_non_pdo_connection()
+	{
+		// A driver that is not PDO-backed creates IDataCommand objects that are not
+		// TDbCommand.  A builder extending the framework builder returns them as-is.
+		$command = $this->createMock(IDataCommand::class);
+		$builder = new class(self::$conn, self::$meta->getTableInfo('items')) extends TSqliteCommandBuilder {
+			public ?IDataCommand $command = null;
+
+			public function createCommand($sql)
+			{
+				return $this->command;
+			}
+		};
+		$builder->command = $command;
+
+		$row = ['id' => 9, 'name' => 'nine', 'price' => 9.0];
+		$this->assertSame($command, $builder->createInsertOrIgnoreCommand($row));
+		$this->assertSame($command, $builder->createUpsertCommand($row));
 	}
 
 	// -----------------------------------------------------------------------

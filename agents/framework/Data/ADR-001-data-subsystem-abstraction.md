@@ -31,8 +31,6 @@ These interfaces were designed with non-PDO back-ends in mind (the MongoDB plugi
 | `Common/TDbMetaData` | `TDbConnection` type hint | Constructor + `getDbConnection()` return type |
 | `Common/IDataTableInfo` | `TDbTableColumn` concrete type | `getColumns()` / `getColumn()` return `TDbTableColumn`, not an interface |
 | `Common/IDataCommandBuilder` | `TDbTableColumn` concrete type | Same leak through `getTableInfo()` |
-| `SqlMap/IMappedStatement` | `TDbConnection` type hints | All five `execute*` method `@param` signatures |
-| `SqlMap/TMappedStatement` | `TDbConnection` type hints | Implements IMappedStatement with concrete type |
 | `ActiveRecord/TActiveRecord` | `TDbConnection` type hint | Property `@var`, constructor `@param`, static `$db` |
 | `DataGateway/TTableGateway` | `TDbConnection` type hint | Constructor `@param`, `getDbConnection()` return type |
 
@@ -50,7 +48,6 @@ Targeted, low-risk changes that fix the type-hint inconsistencies without touchi
 
 1. **`TDbCommandBuilder::getPdoType()`** — Extract the four PDO type constants into a small internal helper method or use the integer values directly. `PDO::PARAM_NULL = 0`, `PARAM_INT = 1`, `PARAM_STR = 2`, `PARAM_BOOL = 5`. This eliminates the `use PDO;` in a file that is otherwise not PDO-specific. The method remains `public static` for back-compat; non-PDO builders simply never call it.
 
-2. **`IMappedStatement`** — Change the `@param TDbConnection` docblock type hints to `@param IDataConnection`. The actual PHP signatures use no type hint today, so this is a documentation-only fix. The SqlMap runtime already passes `TDbConnection`, which is an `IDataConnection`; non-SQL runners can pass any `IDataConnection` implementation.
 
 3. **`TDbMetaData`** — Change constructor and `getDbConnection()` to accept/return `IDataConnection` rather than `TDbConnection`. The internal `$_connection` field already calls only interface methods (`getDriverName()`, `setActive()`, `createCommand()`). This is a pure signature widening — backward compatible.
 
@@ -144,7 +141,7 @@ The `IDataCommandBuilder` SQL-flavored methods (`applyLimitOffset`, `getSearchEx
 
 **What we'll need to revisit:**
 - `IDataTableInfo::getColumns()` return type after `IDataColumn` is introduced — driver metadata classes must declare the return type.
-- SqlMap's `TSqlMapManager` still resolves connections through `TDbConnection`; a future phase will need to thread `IDataConnection` all the way through the mapper.
+- SqlMap moved to the `pradosoft/prado-sqlmap` package, which threads `IDataConnection` on its own.
 - `TActiveRecord::$GATEWAY` uses `TActiveRecordGateway` which internally creates `TDbCommandBuilder` — this chain needs `IDataCommandBuilder` at each step for full NoSQL support.
 
 ---
@@ -168,5 +165,4 @@ The `IDataCommandBuilder` SQL-flavored methods (`applyLimitOffset`, `getSearchEx
 
 11. [ ] **`IDataCollectionInfo extends IDataTableInfo`** — Add vocabulary for document collections (index metadata, nested field support).
 12. [ ] **`IDataField extends IDataColumn`** — Document field contract with type system decoupled from PDO/SQL.
-13. [ ] **SqlMap threading** — Thread `IDataConnection` through `TSqlMapManager` and `TSqlMapGateway`.
 14. [ ] **`TActiveRecord` gateway chain** — Replace `TActiveRecordGateway`'s internal `TDbCommandBuilder` assumption with `IDataCommandBuilder`.

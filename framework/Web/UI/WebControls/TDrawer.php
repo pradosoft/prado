@@ -191,7 +191,7 @@ class TDrawer extends TDialog
 			$cs->registerStyleSheet('prado:drawer:' . $this->getClientID(), $this->getDockCss());
 		}
 		$cs->registerPradoScript('drawer');
-		$cs->registerPostBackControl(self::CLIENT_CLASS, $this->getClientOptions());
+		$cs->registerPostBackControl(static::CLIENT_CLASS, $this->getClientOptions());
 	}
 
 	/**

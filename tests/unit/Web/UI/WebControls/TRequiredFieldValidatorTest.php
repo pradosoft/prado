@@ -437,4 +437,79 @@ class TRequiredFieldValidatorTest extends TestCase
 		$this->expectException(\Prado\Exceptions\TNotSupportedException::class);
 		$validator->setForControl('input1');
 	}
+
+	// ================================================================================
+	// aria-invalid Across Requests
+	// ================================================================================
+
+	/**
+	 * Builds a page in form-render mode with a text box and a validator, as one request sees it.
+	 * @return array{\Prado\Web\UI\TPage, TTextBox, TRequiredFieldValidator}
+	 */
+	private function createRequest(): array
+	{
+		[$page, $textbox] = $this->createPageWithControls();
+		PradoUnit::setProp($page, '_inFormRender', true);
+		$textbox->setEnableClientScript(false);
+		$validator = $this->createValidator($page, $textbox);
+		return [$page, $textbox, $validator];
+	}
+
+	/**
+	 * Pre-renders the page and renders the text box, then saves the page state as the response would.
+	 * @return array{string, array} the rendered text box and the saved state
+	 */
+	private function renderRequest($page, $textbox): array
+	{
+		PradoUnit::invoke($page, 'preRenderRecursive');
+		$html = $this->render($textbox);
+		return [$html, PradoUnit::invoke($page, 'saveStateRecursive')];
+	}
+
+	private function loadRequestState($page, array $state): void
+	{
+		(\Closure::bind(function (&$state) {
+			$this->loadStateRecursive($state);
+		}, $page, \Prado\Web\UI\TControl::class))($state);
+	}
+
+	public function testFailedValidationRendersAriaInvalidForTheRequestOnly()
+	{
+		[$page, $textbox, $validator] = $this->createRequest();
+		$this->assertFalse($validator->validate());
+		[$html, $state] = $this->renderRequest($page, $textbox);
+		$this->assertStringContainsString('aria-invalid="true"', $html);
+
+		// The attribute is not in the control's view state and not in the saved page state.
+		$this->assertNull($textbox->getViewState('Attributes'));
+		$this->assertFalse($textbox->getHasAttributes());
+		$this->assertArrayNotHasKey('Attributes', $state['input1'][0] ?? []);
+		$this->assertStringNotContainsString('aria-invalid', serialize($state));
+	}
+
+	public function testValidRequestRendersNoAriaInvalid()
+	{
+		[$page, $textbox, $validator] = $this->createRequest();
+		$textbox->setText('filled');
+		$this->assertTrue($validator->validate());
+		[$html] = $this->renderRequest($page, $textbox);
+		$this->assertStringNotContainsString('aria-invalid', $html);
+	}
+
+	public function testFollowingRequestWithoutValidationRendersNoAriaInvalid()
+	{
+		// Request 1: validation fails, the response carries the page state.
+		[$page, $textbox, $validator] = $this->createRequest();
+		$this->assertFalse($validator->validate());
+		[$html, $state] = $this->renderRequest($page, $textbox);
+		$this->assertStringContainsString('aria-invalid="true"', $html);
+
+		// Request 2: the state is restored and the validator neither runs nor pre-renders.
+		[$page, $textbox, $validator] = $this->createRequest();
+		$this->loadRequestState($page, unserialize(serialize($state)));
+		$validator->setVisible(false);
+		$this->assertTrue($textbox->getIsValid());
+		[$html] = $this->renderRequest($page, $textbox);
+		$this->assertStringNotContainsString('aria-invalid', $html);
+	}
 }
