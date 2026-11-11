@@ -1,6 +1,6 @@
 # PRADO Framework Classes
 
-**Total Classes: 775**
+**Total Classes: 771**
 
 This document lists all classes in the PRADO framework as defined in `classes.php`.
 
@@ -8,19 +8,18 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 | Directory | Classes | Interfaces | Total | Recursive |
 |-----------|---------|------------|-------|-----------|
-| [Prado](./INDEX.md) | 17 | 7 | 24 | 775 |
+| [Prado](./INDEX.md) | 17 | 7 | 24 | 771 |
 | [Prado\\Caching](./Caching/INDEX.md) | 11 | 2 | 13 | 13 |
 | [Prado\\Collections](./Collections/INDEX.md) | 27 | 7 | 34 | 34 |
-| [Prado\\Data](./Data/INDEX.md) | 10 | 5 | 15 | 136 |
+| [Prado\\Data](./Data/INDEX.md) | 10 | 5 | 15 | 132 |
 | [Prado\\Data\\ActiveRecord](./Data/ActiveRecord/INDEX.md) | 7 | 0 | 7 | 29 |
 | [Prado\\Data\\ActiveRecord\\Exceptions](./Data/ActiveRecord/Exceptions/INDEX.md) | 2 | 0 | 2 | 2 |
 | [Prado\\Data\\ActiveRecord\\Relations](./Data/ActiveRecord/Relations/INDEX.md) | 6 | 0 | 6 | 6 |
 | [Prado\\Data\\ActiveRecord\\Scaffold](./Data/ActiveRecord/Scaffold/INDEX.md) | 5 | 1 | 6 | 14 |
 | [Prado\\Data\\ActiveRecord\\Scaffold\\InputBuilder](./Data/ActiveRecord/Scaffold/InputBuilder/INDEX.md) | 8 | 1 | 9 | 9 |
-| [Prado\\Data\\Common](./Data/Common/INDEX.md) | 4 | 4 | 8 | 36 |
+| [Prado\\Data\\Common](./Data/Common/INDEX.md) | 4 | 4 | 8 | 32 |
 | [Prado\\Data\\Common\\Firebird](./Data/Common/Firebird/INDEX.md) | 4 | 0 | 4 | 4 |
 | [Prado\\Data\\Common\\Ibm](./Data/Common/Ibm/INDEX.md) | 4 | 0 | 4 | 4 |
-| [Prado\\Data\\Common\\Mssql](./Data/Common/Mssql/INDEX.md) | 4 | 0 | 4 | 4 |
 | [Prado\\Data\\Common\\Mysql](./Data/Common/Mysql/INDEX.md) | 4 | 0 | 4 | 4 |
 | [Prado\\Data\\Common\\Oracle](./Data/Common/Oracle/INDEX.md) | 4 | 0 | 4 | 4 |
 | [Prado\\Data\\Common\\Pgsql](./Data/Common/Pgsql/INDEX.md) | 4 | 0 | 4 | 4 |
@@ -61,7 +60,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 ## Class Listings
 
-## [Prado](./INDEX.md) - Classes: 17, Interfaces: 7, Total: 24, Recursive: 775
+## [Prado](./INDEX.md) - Classes: 17, Interfaces: 7, Total: 24, Recursive: 771
 
 ### Interfaces (6)
 
@@ -165,7 +164,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 ---
 
-## [Prado\Data](./Data/INDEX.md) - Classes: 10, Interfaces: 5, Total: 15, Recursive: 136
+## [Prado\Data](./Data/INDEX.md) - Classes: 10, Interfaces: 5, Total: 15, Recursive: 132
 
 ### Interfaces (5)
 
@@ -252,16 +251,16 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 - [TFirebirdScaffoldInput](./Data/ActiveRecord/Scaffold/InputBuilder/TFirebirdScaffoldInput.md)
 - [TIbmScaffoldInput](./Data/ActiveRecord/Scaffold/InputBuilder/TIbmScaffoldInput.md)
-- [TMssqlScaffoldInput](./Data/ActiveRecord/Scaffold/InputBuilder/TMssqlScaffoldInput.md)
 - [TMysqlScaffoldInput](./Data/ActiveRecord/Scaffold/InputBuilder/TMysqlScaffoldInput.md)
 - [TPgsqlScaffoldInput](./Data/ActiveRecord/Scaffold/InputBuilder/TPgsqlScaffoldInput.md)
 - [TScaffoldInputBase](./Data/ActiveRecord/Scaffold/InputBuilder/TScaffoldInputBase.md)
 - [TScaffoldInputCommon](./Data/ActiveRecord/Scaffold/InputBuilder/TScaffoldInputCommon.md)
+- [TSqlSrvScaffoldInput](./Data/ActiveRecord/Scaffold/InputBuilder/TSqlSrvScaffoldInput.md)
 - [TSqliteScaffoldInput](./Data/ActiveRecord/Scaffold/InputBuilder/TSqliteScaffoldInput.md)
 
 ---
 
-## [Prado\Data\Common](./Data/Common/INDEX.md) - Classes: 4, Interfaces: 3, Total: 7, Recursive: 35
+## [Prado\Data\Common](./Data/Common/INDEX.md) - Classes: 4, Interfaces: 3, Total: 7, Recursive: 31
 
 ### Interfaces (3)
 
@@ -297,17 +296,6 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 - [TIbmMetaData](./Data/Common/Ibm/TIbmMetaData.md)
 - [TIbmTableColumn](./Data/Common/Ibm/TIbmTableColumn.md)
 - [TIbmTableInfo](./Data/Common/Ibm/TIbmTableInfo.md)
-
----
-
-## [Prado\Data\Common\Mssql](./Data/Common/Mssql/INDEX.md) - Classes: 4, Interfaces: 0, Total: 4, Recursive: 4
-
-### Classes (4)
-
-- [TMssqlCommandBuilder](./Data/Common/Mssql/TMssqlCommandBuilder.md)
-- [TMssqlMetaData](./Data/Common/Mssql/TMssqlMetaData.md)
-- [TMssqlTableColumn](./Data/Common/Mssql/TMssqlTableColumn.md)
-- [TMssqlTableInfo](./Data/Common/Mssql/TMssqlTableInfo.md)
 
 ---
 

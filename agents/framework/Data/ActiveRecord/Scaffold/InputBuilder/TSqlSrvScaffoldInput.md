@@ -1,26 +1,26 @@
-# Data/ActiveRecord/Scaffold/InputBuilder/TMssqlScaffoldInput
+# Data/ActiveRecord/Scaffold/InputBuilder/TSqlSrvScaffoldInput
 
 ### Directories
-[framework](../../../../INDEX.md) / [Data](../../../INDEX.md) / [ActiveRecord](../../INDEX.md) / [Scaffold](../INDEX.md) / [InputBuilder](./INDEX.md) / **`TMssqlScaffoldInput`**
+[framework](../../../../INDEX.md) / [Data](../../../INDEX.md) / [ActiveRecord](../../INDEX.md) / [Scaffold](../INDEX.md) / [InputBuilder](./INDEX.md) / **`TSqlSrvScaffoldInput`**
 
 ## Class Info
-**Location:** `framework/Data/ActiveRecord/Scaffold/InputBuilder/TMssqlScaffoldInput.php`
+**Location:** `framework/Data/ActiveRecord/Scaffold/InputBuilder/TSqlSrvScaffoldInput.php`
 **Namespace:** `Prado\Data\ActiveRecord\Scaffold\InputBuilder`
 
 ## Overview
-`Prado\Data\ActiveRecord\Scaffold\InputBuilder\TMssqlScaffoldInput`
+`Prado\Data\ActiveRecord\Scaffold\InputBuilder\TSqlSrvScaffoldInput`
 
-MSSQL-specific scaffold input builder.
+SQL Server scaffold input builder for the `sqlsrv` and `dblib` drivers and the `mssql` extension (@since 4.3.3; it replaced `TMssqlScaffoldInput`).
 
 Inherits from [`TScaffoldInputCommon`](./TScaffoldInputCommon.md).
 
 ## Description
 
-`TMssqlScaffoldInput` maps MSSQL column types to appropriate Prado scaffold input controls.
+`TSqlSrvScaffoldInput` maps SQL Server column types to appropriate Prado scaffold input controls.
 
-## MSSQL Type Mappings
+## SQL Server Type Mappings
 
-| MSSQL Type | Control Created |
+| SQL Server Type | Control Created |
 |------------|-----------------|
 | `bit` | `TCheckBox` |
 | `text` | Multiline `TTextBox` |
@@ -43,7 +43,7 @@ If an empty string is submitted for a nullable column, `null` is stored instead.
 
 ### `createControl($container, $column, $record)`
 
-Creates the appropriate control based on MSSQL column type.
+Creates the appropriate control based on the SQL Server column type.
 
 ### `getControlValue($container, $column, $record)`
 

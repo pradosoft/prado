@@ -12,7 +12,7 @@ Driver-specific input control builders mapping database column types to Prado fo
 
 - **`TPgsqlScaffoldInput`** — PostgreSQL-specific: handles `boolean`, `serial`, `bytea`, array types.
 
-- **`TMssqlScaffoldInput`** — SQL Server-specific: handles `bit`, `uniqueidentifier`, `money`, `nvarchar`.
+- **`TSqlSrvScaffoldInput`** — SQL Server-specific: handles `bit`, `uniqueidentifier`, `money`, `nvarchar`.
 
 - **`TSqliteScaffoldInput`** — SQLite-specific: handles SQLite's affinity types (`INTEGER`, `REAL`, `TEXT`, `BLOB`).
 

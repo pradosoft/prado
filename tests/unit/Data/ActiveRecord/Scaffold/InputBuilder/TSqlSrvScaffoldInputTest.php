@@ -2,18 +2,18 @@
 
 namespace Prado\Test\Unit\Data\ActiveRecord\Scaffold\InputBuilder;
 
-use Prado\Data\ActiveRecord\Scaffold\InputBuilder\TMssqlScaffoldInput;
-use Prado\Data\Common\Mssql\TMssqlTableColumn;
+use Prado\Data\ActiveRecord\Scaffold\InputBuilder\TSqlSrvScaffoldInput;
+use Prado\Data\Common\SqlSrv\TSqlSrvTableColumn;
 
 /**
  * Covers the SQL Server column type to input control mapping and the value read back.
  * An empty text input of a nullable column reads back as null.
  */
-class TMssqlScaffoldInputTest extends ScaffoldInputTestCase
+class TSqlSrvScaffoldInputTest extends ScaffoldInputTestCase
 {
-	private function column(string $type, array $info = []): TMssqlTableColumn
+	private function column(string $type, array $info = []): TSqlSrvTableColumn
 	{
-		return new TMssqlTableColumn($this->columnInfo($type, $info));
+		return new TSqlSrvTableColumn($this->columnInfo($type, $info));
 	}
 
 	public static function controlProvider(): array
@@ -47,17 +47,17 @@ class TMssqlScaffoldInputTest extends ScaffoldInputTestCase
 	 */
 	public function testCreateControl(string $type, string $kind)
 	{
-		$item = $this->build(new TMssqlScaffoldInput(), $this->column($type), $this->newRecord());
+		$item = $this->build(new TSqlSrvScaffoldInput(), $this->column($type), $this->newRecord());
 
 		$this->assertSame($kind, $this->inputKind($item));
 	}
 
 	public function testCreateControl_rowVersionInputIsDisabled()
 	{
-		$item = $this->build(new TMssqlScaffoldInput(), $this->column('timestamp'), $this->newRecord());
+		$item = $this->build(new TSqlSrvScaffoldInput(), $this->column('timestamp'), $this->newRecord());
 		$this->assertFalse($this->input($item)->getEnabled());
 
-		$item = $this->build(new TMssqlScaffoldInput(), $this->column('varchar'), $this->newRecord());
+		$item = $this->build(new TSqlSrvScaffoldInput(), $this->column('varchar'), $this->newRecord());
 		$this->assertTrue($this->input($item)->getEnabled());
 	}
 
@@ -79,7 +79,7 @@ class TMssqlScaffoldInputTest extends ScaffoldInputTestCase
 	public function testValue_bitIsTheCheckedState(bool $allowNull, bool $checked)
 	{
 		$column = $this->column('bit', ['AllowNull' => $allowNull]);
-		$builder = new TMssqlScaffoldInput();
+		$builder = new TSqlSrvScaffoldInput();
 		$record = $this->newRecord(['value' => $checked ? '0' : '1']);
 		$item = $this->build($builder, $column, $record);
 
@@ -90,7 +90,7 @@ class TMssqlScaffoldInputTest extends ScaffoldInputTestCase
 	public function testValue_dateTime()
 	{
 		$column = $this->column('datetime');
-		$builder = new TMssqlScaffoldInput();
+		$builder = new TSqlSrvScaffoldInput();
 		$record = $this->newRecord(['value' => '2010-11-12 01:02:03.000']);
 		$item = $this->build($builder, $column, $record);
 
@@ -117,7 +117,7 @@ class TMssqlScaffoldInputTest extends ScaffoldInputTestCase
 	public function testValue_text(bool $allowNull, string $text, ?string $expected)
 	{
 		$column = $this->column('varchar', ['AllowNull' => $allowNull]);
-		$builder = new TMssqlScaffoldInput();
+		$builder = new TSqlSrvScaffoldInput();
 		$record = $this->newRecord(['value' => 'old']);
 		$item = $this->build($builder, $column, $record);
 
@@ -128,7 +128,7 @@ class TMssqlScaffoldInputTest extends ScaffoldInputTestCase
 	public function testValue_emptyNullableIntegerIsNull()
 	{
 		$column = $this->column('int');
-		$builder = new TMssqlScaffoldInput();
+		$builder = new TSqlSrvScaffoldInput();
 		$record = $this->newRecord(['value' => '5']);
 		$item = $this->build($builder, $column, $record);
 

@@ -17,6 +17,13 @@ Upgrading from v4.3.2
   and outbound HTTPS from the server to `www.google.com`, through cURL or `allow_url_fopen`. Before, any non-empty
   response passed. A token verifies once, so validate it in one request.
 - TReCaptcha2::getResponse() and setResponse() are deprecated; use getCaptchaResponse() and setCaptchaResponse().
+- The deprecated SQL Server classes in `Prado\Data\Common\Mssql` are removed. Code that names them uses the
+  `Prado\Data\Common\SqlSrv` replacements: `TMssqlCommandBuilder` → `TSqlSrvCommandBuilder`, `TMssqlMetaData` →
+  `TSqlSrvMetaData`, `TMssqlTableColumn` → `TSqlSrvTableColumn`, and `TMssqlTableInfo` → `TSqlSrvTableInfo`. The
+  `mssql`, `sqlsrv`, and `dblib` drivers already use the replacements, so code that only connects needs no change.
+- The ActiveRecord scaffold input class for SQL Server is renamed: `TMssqlScaffoldInput` → `TSqlSrvScaffoldInput`.
+  `TScaffoldInputBase::createInputBuilder()` returns it for the `mssql`, `sqlsrv`, and `dblib` drivers; code that
+  names or extends `TMssqlScaffoldInput` uses the new name.
 
 Upgrading from v4.2.2
 ---------------------

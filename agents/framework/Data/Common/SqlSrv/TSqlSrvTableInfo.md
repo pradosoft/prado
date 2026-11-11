@@ -1,7 +1,7 @@
 # Data/Common/SqlSrv/TSqlSrvTableInfo
 
 ### Directories
-[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [Common](../INDEX.md) / [Mssql](./INDEX.md) / **`TSqlSrvTableInfo`**
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [Common](../INDEX.md) / [SqlSrv](./INDEX.md) / **`TSqlSrvTableInfo`**
 
 ## Class Info
 **Location:** `framework/Data/Common/SqlSrv/TSqlSrvTableInfo.php`
