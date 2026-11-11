@@ -20,7 +20,7 @@ The wake transports of [`TCronModule`](../TCronModule.md) (`Prado\Util\Cron\Wake
 | [`TCronWakeCache`](TCronWakeCache.md) | clients of a cache | microtime stamp under a cache key, polled | `PollInterval` |
 | [`TCronWakePgsql`](TCronWakePgsql.md) | hosts sharing a PostgreSQL database | `NOTIFY` on the app connection, `LISTEN` on a connection of its own | immediate (per-minute); `PollInterval` (daemon) |
 | [`TCronWakeOracle`](TCronWakeOracle.md) | hosts sharing an Oracle database | `DBMS_ALERT.SIGNAL` and `WAITONE` on connections of its own | whole seconds (per-minute); `PollInterval` (daemon) |
-| [`TCronWakeRedis`](TCronWakeRedis.md) | clients of a Redis server | `PUBLISH`, `SUBSCRIBE` on a RESP socket of its own (no `redis` extension) | immediate |
+| [`TCronWakeRedis`](TCronWakeRedis.md) | clients of a Redis server | `PUBLISH`, `SUBSCRIBE` on a RESP socket of its own (no `redis` extension; TLS optional) | immediate |
 
 [`TCronWakePoll`](TCronWakePoll.md) is the abstract base of the file and cache transports: `readStamp()`/`writeStamp()`/`getIsAvailable()` behind a `PollInterval` wait and a `repeat` watcher.
 
