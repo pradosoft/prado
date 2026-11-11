@@ -31,6 +31,13 @@ use Prado\TPropertyValue;
  * Override {@see validateFile()} or {@see validateDirectory()} in a subclass
  * to restrict which files or subdirectories are included in the check.
  *
+ * Each scan clears PHP's stat cache for every path it reads, so a long-lived
+ * process sees a change made by another process.
+ *
+ * The constructor argument is optional. A dependency created without it, as from
+ * configuration, is given its directory through {@see setDirectory Directory}
+ * and reports unchanged until then.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.1.0
  */
@@ -46,11 +53,15 @@ class TDirectoryCacheDependency extends TCacheDependency
 	private int $_recursiveLevel = -1;
 
 	/**
-	 * @param string $directory path to the directory to be tracked.
+	 * Constructor.
+	 * @param ?string $directory path to the directory to be tracked, or `null` to set it
+	 *   later through {@see setDirectory Directory}.
 	 */
-	public function __construct(string $directory)
+	public function __construct(?string $directory = null)
 	{
-		$this->setDirectory($directory);
+		if ($directory !== null) {
+			$this->setDirectory($directory);
+		}
 		parent::__construct();
 	}
 
@@ -75,7 +86,8 @@ class TDirectoryCacheDependency extends TCacheDependency
 	}
 
 	/**
-	 * @return string the resolved absolute path of the tracked directory.
+	 * @return string the resolved absolute path of the tracked directory, or `''` before
+	 *   it is set.
 	 */
 	public function getDirectory(): string
 	{
@@ -90,6 +102,7 @@ class TDirectoryCacheDependency extends TCacheDependency
 	public function setDirectory($directory)
 	{
 		$directory = TPropertyValue::ensureString($directory);
+		clearstatcache(true, $directory);
 		if (($path = realpath($directory)) === false || !is_dir($path)) {
 			throw new TInvalidDataValueException('directorycachedependency_directory_invalid', $directory);
 		}
@@ -143,11 +156,16 @@ class TDirectoryCacheDependency extends TCacheDependency
 	}
 
 	/**
-	 * @return bool whether any tracked file's mtime or the file count has changed.
+	 * @return bool whether any tracked file's mtime or the file count has changed; false
+	 *   before the directory is set.
 	 */
 	public function getHasChanged(): bool
 	{
-		return $this->generateTimestamps($this->getDirectoryDirect()) !== $this->_timestamps;
+		$directory = $this->getDirectoryDirect();
+		if ($directory === null) {
+			return false;
+		}
+		return $this->generateTimestamps($directory) !== $this->_timestamps;
 	}
 
 	/**
@@ -179,6 +197,7 @@ class TDirectoryCacheDependency extends TCacheDependency
 	 * tracked files under `$directory`.
 	 * Recurses into subdirectories when {@see getRecursiveCheck RecursiveCheck}
 	 * is `true` and the current depth is within {@see getRecursiveLevel RecursiveLevel}.
+	 * PHP's stat cache is cleared for each path before it is read.
 	 * @param string $directory the directory to scan.
 	 * @param int $level the current recursion depth (0 = top level).
 	 * @throws TIOException if the directory cannot be opened.
@@ -195,7 +214,9 @@ class TDirectoryCacheDependency extends TCacheDependency
 			$path = $directory . DIRECTORY_SEPARATOR . $file;
 			if ($file === '.' || $file === '..') {
 				continue;
-			} elseif (is_dir($path)) {
+			}
+			clearstatcache(true, $path);
+			if (is_dir($path)) {
 				if ($this->getRecursiveCheck() && ($recursiveLevel < 0 || $level < $recursiveLevel) && $this->validateDirectory($path)) {
 					$timestamps = array_merge($timestamps, $this->generateTimestamps($path, $level + 1));
 				}

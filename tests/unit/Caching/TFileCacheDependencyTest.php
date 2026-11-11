@@ -11,6 +11,7 @@
 namespace Prado\Test\Unit\Caching;
 
 use Prado\Caching\TFileCacheDependency;
+use Prado\Prado;
 
 /**
  * Unit tests for {@see \Prado\Caching\TFileCacheDependency}.
@@ -168,6 +169,62 @@ class TFileCacheDependencyTest extends \PHPUnit\Framework\TestCase
 	}
 
 	// -------------------------------------------------------------------------
+	// Construction without a file name
+	// -------------------------------------------------------------------------
+
+	public function testConstructorWithoutFileNameReportsUnchanged(): void
+	{
+		$dep = Prado::createComponent(TFileCacheDependency::class);
+		$this->assertNull($dep->getFileName());
+		$this->assertFalse($dep->getTimestamp());
+		$this->assertFalse($dep->getHasChanged());
+
+		$dep->updateTimestamp();
+		$this->assertFalse($dep->getTimestamp());
+		$this->assertFalse($dep->getHasChanged());
+	}
+
+	public function testFileNamePropertyAfterConstructorWithoutFileName(): void
+	{
+		$dep = Prado::createComponent(TFileCacheDependency::class);
+		$dep->FileName = $this->_tempFile;
+
+		$this->assertSame($this->_tempFile, $dep->getFileName());
+		$this->assertSame(filemtime($this->_tempFile), $dep->getTimestamp());
+		$this->assertFalse($dep->getHasChanged());
+
+		touch($this->_tempFile, $dep->getTimestamp() - 10);
+		$this->assertTrue($dep->getHasChanged());
+	}
+
+	// -------------------------------------------------------------------------
+	// Stat cache: a change made by another process
+	// -------------------------------------------------------------------------
+
+	public function testGetHasChangedSeesMtimeChangedByAnotherProcess(): void
+	{
+		$dep = new TFileCacheDependency($this->_tempFile);
+		// This read leaves the file in the stat cache of this process.
+		$this->assertFalse($dep->getHasChanged());
+
+		$this->touchInChildProcess($this->_tempFile, $dep->getTimestamp() - 3600);
+
+		$this->assertTrue($dep->getHasChanged());
+	}
+
+	public function testUpdateTimestampSeesMtimeChangedByAnotherProcess(): void
+	{
+		// The constructor's read leaves the file in the stat cache of this process.
+		$dep = new TFileCacheDependency($this->_tempFile);
+		$mtime = $dep->getTimestamp() - 3600;
+
+		$this->touchInChildProcess($this->_tempFile, $mtime);
+
+		$dep->updateTimestamp();
+		$this->assertSame($mtime, $dep->getTimestamp());
+	}
+
+	// -------------------------------------------------------------------------
 	// Serialization round-trip
 	// -------------------------------------------------------------------------
 
@@ -206,6 +263,17 @@ class TFileCacheDependencyTest extends \PHPUnit\Framework\TestCase
 	// -------------------------------------------------------------------------
 	// Helper
 	// -------------------------------------------------------------------------
+
+	/**
+	 * Sets a file's modification time from a child PHP process. PHP's own `touch()`
+	 * clears the stat cache of the calling process, which hides a stale read.
+	 */
+	private function touchInChildProcess(string $file, int $mtime): void
+	{
+		$command = [PHP_BINARY, '-n', '-r', 'exit(touch($argv[1], (int) $argv[2]) ? 0 : 1);', $file, (string) $mtime];
+		$process = proc_open($command, [], $pipes);
+		$this->assertSame(0, proc_close($process), 'The child process must set the modification time.');
+	}
 
 	private function callProtected(object $obj, string $method, array $args = []): mixed
 	{

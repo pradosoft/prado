@@ -13,6 +13,7 @@ namespace Prado\Test\Unit\Caching;
 use Prado\Caching\TDirectoryCacheDependency;
 use Prado\Caching\TCacheDependency;
 use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Prado;
 
 /**
  * Unit tests for {@see \Prado\Caching\TDirectoryCacheDependency}.
@@ -65,6 +66,17 @@ class TDirectoryCacheDependencyTest extends \PHPUnit\Framework\TestCase
 		$this->_createdPaths[] = $path;
 		clearstatcache();
 		return $path;
+	}
+
+	/**
+	 * Sets a file's modification time from a child PHP process. PHP's own `touch()`
+	 * clears the stat cache of the calling process, which hides a stale read.
+	 */
+	private function touchInChildProcess(string $file, int $mtime): void
+	{
+		$command = [PHP_BINARY, '-n', '-r', 'exit(touch($argv[1], (int) $argv[2]) ? 0 : 1);', $file, (string) $mtime];
+		$process = proc_open($command, [], $pipes);
+		$this->assertSame(0, proc_close($process), 'The child process must set the modification time.');
 	}
 
 	// -------------------------------------------------------------------------
@@ -331,6 +343,55 @@ class TDirectoryCacheDependencyTest extends \PHPUnit\Framework\TestCase
 		// Change the included subdirectory's file — change expected.
 		touch($fileIn, filemtime($fileIn) - 10);
 		clearstatcache();
+		$this->assertTrue($dep->getHasChanged());
+	}
+
+	// -------------------------------------------------------------------------
+	// Construction without a directory
+	// -------------------------------------------------------------------------
+
+	public function testConstructorWithoutDirectoryReportsUnchanged(): void
+	{
+		$dep = Prado::createComponent(TDirectoryCacheDependency::class);
+		$this->assertSame('', $dep->getDirectory());
+		$this->assertFalse($dep->getHasChanged());
+
+		$dep->setRecursiveCheck(false);
+		$dep->setRecursiveLevel(2);
+		$this->assertFalse($dep->getHasChanged());
+	}
+
+	public function testDirectoryPropertyAfterConstructorWithoutDirectory(): void
+	{
+		$dir = $this->makeDir('dir_noarg');
+		$file = $this->makeFile($dir, 'a.txt');
+
+		$dep = Prado::createComponent(TDirectoryCacheDependency::class);
+		$dep->Directory = $dir;
+
+		$this->assertSame(realpath($dir), $dep->getDirectory());
+		$this->assertFalse($dep->getHasChanged());
+
+		touch($file, filemtime($file) - 10);
+		$this->assertTrue($dep->getHasChanged());
+	}
+
+	// -------------------------------------------------------------------------
+	// Stat cache: a change made by another process
+	// -------------------------------------------------------------------------
+
+	public function testGetHasChangedSeesMtimeChangedByAnotherProcess(): void
+	{
+		// With one file, the last path one scan reads is the first path the next scan
+		// reads, so the stat cache of this process still holds it.
+		$dir = $this->makeDir('dir_statcache');
+		$file = $this->makeFile($dir, 'only.txt');
+
+		$dep = new TDirectoryCacheDependency($dir);
+		$this->assertFalse($dep->getHasChanged());
+
+		$this->touchInChildProcess($file, filemtime($file) - 3600);
+
 		$this->assertTrue($dep->getHasChanged());
 	}
 
