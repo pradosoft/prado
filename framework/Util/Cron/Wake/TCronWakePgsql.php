@@ -33,7 +33,7 @@ use Prado\Util\IDbModule;
  *
  * The listening connection is separate from the application's connection because the cron
  * daemon closes that one while it waits, and because a `LISTEN` belongs to its session.
- * {@see wait()} blocks in `PDO::pgsqlGetNotify()` for the remaining time; {@see watch()} polls it
+ * {@see wait()} blocks in the driver's `getNotify()` for the remaining time; {@see watch()} polls it
  * every {@see setPollInterval PollInterval} on the loop.
  *
  * ```xml
@@ -206,13 +206,28 @@ class TCronWakePgsql extends TModule implements ICronWakeTransport, IDbModule
 	protected function takeNotifications(int $milliseconds): bool
 	{
 		$pdo = $this->getListener()->getPdoInstance();
-		if ($pdo->pgsqlGetNotify(\PDO::FETCH_ASSOC, $milliseconds) === false) {
+		if ($this->getNotify($pdo, $milliseconds) === false) {
 			return false;
 		}
-		while ($pdo->pgsqlGetNotify(\PDO::FETCH_ASSOC, 0) !== false) {
+		while ($this->getNotify($pdo, 0) !== false) {
 			// drain the notifications queued behind the first
 		}
 		return true;
+	}
+
+	/**
+	 * Reads one notification through `Pdo\Pgsql::getNotify()` on a driver instance (PHP 8.4
+	 * and later) and through `PDO::pgsqlGetNotify()`, deprecated since PHP 8.5, otherwise.
+	 * @param \PDO $pdo the listening connection's PDO
+	 * @param int $milliseconds the milliseconds to wait for a notification
+	 * @return array|false the notification, or false when none arrived in time
+	 */
+	protected function getNotify(\PDO $pdo, int $milliseconds): array|false
+	{
+		if ($pdo instanceof \Pdo\Pgsql) {
+			return $pdo->getNotify(\PDO::FETCH_ASSOC, $milliseconds);
+		}
+		return $pdo->pgsqlGetNotify(\PDO::FETCH_ASSOC, $milliseconds);
 	}
 
 	/**

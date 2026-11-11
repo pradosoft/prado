@@ -15,7 +15,7 @@
 
 | Side | Mechanism |
 |---|---|
-| per-minute `wait()` | blocks in `pgsqlGetNotify()` for the remaining milliseconds; notifications queued since the last wait are consumed at once |
+| per-minute `wait()` | blocks in the driver's `getNotify()` (`Pdo\Pgsql::getNotify()` on PHP 8.4 and later, else the deprecated `PDO::pgsqlGetNotify()`) for the remaining milliseconds; notifications queued since the last wait are consumed at once |
 | daemon `watch()` | a `repeat(PollInterval)` loop callback that takes the queued notifications |
 | `close()` | cancels the watcher and closes the listening connection, which ends its `LISTEN` |
 
