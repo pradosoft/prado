@@ -88,6 +88,10 @@ jobs:
         run: |
           composer unittest
 
+      - name: Cron daemon end-to-end
+        if: ${{ !cancelled() }}
+        run: php tests/cron-daemon/run.php
+
   prado-js:
     name: Prado JS (ESLint + Vitest)
     runs-on: ubuntu-latest
@@ -238,6 +242,10 @@ jobs:
       - name: Run Unit Tests
         run: composer unittest
 
+      - name: Cron daemon end-to-end
+        if: ${{ !cancelled() }}
+        run: php tests/cron-daemon/run.php
+
   prado-windows:
     name: Prado OS (Windows)
     runs-on: windows-latest
@@ -316,6 +324,10 @@ jobs:
 
       - name: Run Unit Tests
         run: composer unittest
+
+      - name: Cron daemon end-to-end
+        if: ${{ !cancelled() }}
+        run: php tests/cron-daemon/run.php
 
   db-sqlite:
     name: Prado Data (SQLite)
