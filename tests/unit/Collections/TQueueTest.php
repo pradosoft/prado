@@ -129,4 +129,48 @@ class TQueueTest extends \PHPUnit\Framework\TestCase
 		$queue = new TQueue([1, 2, 3]);
 		self::assertEquals(3, count($queue));
 	}
+
+	public function testCopyFromTraversableReplacesExistingItems()
+	{
+		$queue = new TQueue([1, 2, 3]);
+		$queue->copyFrom(new \ArrayIterator([7, 8]));
+		self::assertEquals([7, 8], $queue->toArray());
+		self::assertEquals(2, $queue->getCount());
+	}
+
+	public function testCopyFromEmptyTraversableClearsItems()
+	{
+		$queue = new TQueue([1, 2, 3]);
+		$queue->copyFrom(new \ArrayIterator([]));
+		self::assertEquals([], $queue->toArray());
+		self::assertEquals(0, $queue->getCount());
+	}
+
+	public function testCopyFromEmptyArrayClearsItems()
+	{
+		$queue = new TQueue([1, 2, 3]);
+		$queue->copyFrom([]);
+		self::assertEquals([], $queue->toArray());
+		self::assertEquals(0, $queue->getCount());
+	}
+
+	public function testCopyFromNullKeepsItems()
+	{
+		$queue = new TQueue([1, 2, 3]);
+		$queue->copyFrom(null);
+		self::assertEquals([1, 2, 3], $queue->toArray());
+		self::assertEquals(3, $queue->getCount());
+	}
+
+	public function testCopyFromNonTraversableErrorCode()
+	{
+		$queue = new TQueue([1]);
+		try {
+			$queue->copyFrom('string');
+			self::fail('TInvalidDataTypeException was not thrown for a non-iterable.');
+		} catch (TInvalidDataTypeException $e) {
+			self::assertEquals('queue_data_not_iterable', $e->getErrorCode());
+		}
+		self::assertEquals([1], $queue->toArray());
+	}
 }

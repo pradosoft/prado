@@ -4,6 +4,18 @@ namespace Prado\Test\Unit\Collections;
 
 use Prado\Collections\TMap;
 use Prado\Collections\TWebAttributeCollection;
+use Prado\Exceptions\TInvalidOperationException;
+use Prado\Exceptions\TUnknownMethodException;
+use Prado\Test\Unit\PradoUnit;
+use Prado\Util\TBehavior;
+
+class TWebAttributeCollectionPairBehavior extends TBehavior
+{
+	public function setPair($name, $value)
+	{
+		return $name . '=' . $value;
+	}
+}
 
 class TWebAttributeCollectionTest extends \PHPUnit\Framework\TestCase
 {
@@ -551,5 +563,87 @@ class TWebAttributeCollectionTest extends \PHPUnit\Framework\TestCase
 		$payload = serialize(new TWebAttributeCollection('data'));
 		self::assertStringContainsString("\0*\0_prefix", $payload);
 		self::assertSame('data', unserialize($payload)->getPrefix());
+	}
+
+	public function testStripDataAttributePrefixWithoutPrefixToCamelCase()
+	{
+		$attrs = new TWebAttributeCollection('');
+		self::assertEquals('dataItemId', $attrs->stripDataAttributePrefix('data-item-id', true));
+		self::assertEquals('id', $attrs->stripDataAttributePrefix('ID', true));
+	}
+
+	public function testMagicGetUsesDeclaredGetterBeforeAttribute()
+	{
+		$this->collection->setAttribute('prefix', 'attribute value');
+		self::assertEquals('data', $this->collection->Prefix);
+		self::assertEquals('data-', $this->collection->PrefixDash);
+		self::assertEquals('attribute value', $this->collection->getAttribute('prefix'));
+	}
+
+	public function testMagicSetUsesDeclaredSetterBeforeAttribute()
+	{
+		$attrs = new TWebAttributeCollection('data');
+		$attrs->ReadOnly = true;
+		self::assertTrue($attrs->getReadOnly());
+		self::assertFalse($attrs->hasAttribute('read-only'));
+
+		try {
+			$attrs->label = 'value';
+			self::fail('TInvalidOperationException was not thrown when setting on a read-only collection.');
+		} catch (TInvalidOperationException $e) {
+			self::assertEquals('map_readonly', $e->getErrorCode());
+		}
+	}
+
+	public function testMagicSetMethodWithOtherArgumentCountGoesToBehaviors()
+	{
+		$this->collection->attachBehavior('pair', new TWebAttributeCollectionPairBehavior());
+		self::assertEquals('a=b', $this->collection->setPair('a', 'b'));
+		self::assertFalse($this->collection->hasAttribute('pair'));
+
+		// A single argument is an attribute set.
+		self::assertNull($this->collection->setPair('c'));
+		self::assertEquals('c', $this->collection->getAttribute('pair'));
+	}
+
+	public function testMagicSetMethodWithOtherArgumentCountAndNoHandlerThrows()
+	{
+		try {
+			$this->collection->setLabel('a', 'b');
+			self::fail('TUnknownMethodException was not thrown for a two-argument set call.');
+		} catch (TUnknownMethodException $e) {
+			self::assertEquals('component_method_undefined', $e->getErrorCode());
+		}
+		self::assertFalse($this->collection->hasAttribute('label'));
+	}
+
+	public function testHasMethodForDeclaredAndDynamicMethods()
+	{
+		self::assertTrue($this->collection->hasMethod('toArray'));
+		self::assertTrue($this->collection->hasMethod('getAnything'));
+		self::assertTrue($this->collection->hasMethod('SETANYTHING'));
+		self::assertFalse($this->collection->hasMethod('fooBar'));
+	}
+
+	public function testSerializationWithoutPrefix()
+	{
+		$attrs = new TWebAttributeCollection('', ['id' => 'test']);
+		$copy = unserialize(serialize($attrs));
+		self::assertEquals('', $copy->getPrefix());
+		self::assertEquals('', $copy->getPrefixDash());
+		self::assertEquals(['id' => 'test'], $copy->getAttributes());
+		$copy->setAttribute('name', 'value');
+		self::assertEquals('value', $copy->getAttribute('name'));
+	}
+
+	public function testIsPropertyAccessorRequiresAnExistingMethodWithAMatchingSignature()
+	{
+		$isAccessor = fn (string $method, int $args) => PradoUnit::invoke($this->collection, 'isPropertyAccessor', $method, $args);
+
+		self::assertFalse($isAccessor('getNoSuchProperty', 0));
+		self::assertFalse($isAccessor('setNoSuchProperty', 1));
+		self::assertTrue($isAccessor('getPrefix', 0));
+		self::assertFalse($isAccessor('getAttribute', 0));
+		self::assertFalse($isAccessor('setAttribute', 1));
 	}
 }

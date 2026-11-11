@@ -24,6 +24,14 @@ class TMapTestBehavior extends TBehavior implements IDynamicMethods
 		$this->args = $args;
 	}
 }
+class TMapSeededStorage extends TMap
+{
+	public function seed(array $items): void
+	{
+		$this->_d = $items;
+	}
+}
+
 class TMapTest extends \PHPUnit\Framework\TestCase
 {
 	protected const BEHAVIOR_NAME = 'catcher';
@@ -332,5 +340,169 @@ class TMapTest extends \PHPUnit\Framework\TestCase
 	{
 		$map = new $this->_baseClass(['key' => 'value']);
 		self::assertEquals(['key' => 'value'], $map->toArray());
+	}
+
+	public function testCopyFromTraversableReplacesItems()
+	{
+		$this->map->copyFrom(new \ArrayIterator(['key3' => $this->item3]));
+		$this->assertEquals(1, $this->map->getCount());
+		$this->assertSame($this->item3, $this->map['key3']);
+		$this->assertFalse($this->map->contains('key1'));
+	}
+
+	public function testCopyFromEmptyDataClearsItems()
+	{
+		$this->map->copyFrom([]);
+		$this->assertEquals(0, $this->map->getCount());
+
+		$this->map->add('key3', $this->item3);
+		$this->map->copyFrom(new \ArrayIterator([]));
+		$this->assertEquals(0, $this->map->getCount());
+		$this->assertEquals([], $this->map->toArray());
+	}
+
+	public function testCopyFromIntoEmptyMap()
+	{
+		$map = new $this->_baseClass();
+		$map->copyFrom([]);
+		$this->assertEquals(0, $map->getCount());
+		$map->copyFrom(new \ArrayIterator([]));
+		$this->assertEquals(0, $map->getCount());
+		$map->copyFrom(new \ArrayIterator(['key3' => $this->item3]));
+		$this->assertEquals(1, $map->getCount());
+		$this->assertSame($this->item3, $map['key3']);
+	}
+
+	public function testCopyFromNullKeepsItems()
+	{
+		$this->map->copyFrom(null);
+		$this->assertEquals(2, $this->map->getCount());
+		$this->assertSame($this->item1, $this->map['key1']);
+		$this->assertSame($this->item2, $this->map['key2']);
+	}
+
+	public function testMergeWithTraversable()
+	{
+		$this->map->mergeWith(new \ArrayIterator(['key2' => $this->item3, 'key3' => $this->item3]));
+		$this->assertEquals(3, $this->map->getCount());
+		$this->assertSame($this->item1, $this->map['key1']);
+		$this->assertSame($this->item3, $this->map['key2']);
+		$this->assertSame($this->item3, $this->map['key3']);
+	}
+
+	public function testMergeWithEmptyOrNullKeepsItems()
+	{
+		$this->map->mergeWith([]);
+		$this->map->mergeWith(new \ArrayIterator([]));
+		$this->map->mergeWith(null);
+		$this->assertEquals(2, $this->map->getCount());
+		$this->assertSame($this->item1, $this->map['key1']);
+		$this->assertSame($this->item2, $this->map['key2']);
+	}
+
+	public function testKeyOfMissingItemAndEmptyMap()
+	{
+		$this->assertEquals([], $this->map->keyOf($this->item3));
+		$this->assertFalse($this->map->keyOf($this->item3, false));
+
+		$map = new $this->_baseClass();
+		$this->assertEquals([], $map->keyOf($this->item1));
+		$this->assertFalse($map->keyOf($this->item1, false));
+	}
+
+	public function testRemoveItemFromEmptyMap()
+	{
+		$map = new $this->_baseClass();
+		$this->assertEquals([], $map->removeItem($this->item1));
+		$this->assertEquals(0, $map->getCount());
+	}
+
+	public function testRemoveMissingKeyReturnsNull()
+	{
+		$this->assertNull($this->map->remove('unknown key'));
+		$this->assertEquals(2, $this->map->getCount());
+	}
+
+	public function testClearEmptyMap()
+	{
+		$map = new $this->_baseClass();
+		$map->clear();
+		$this->assertEquals(0, $map->getCount());
+	}
+
+	public function testSerializeNewEmptyMapKeepsReadOnlyUnset()
+	{
+		$copy = unserialize(serialize(new TMap()));
+		$this->assertEquals(0, $copy->getCount());
+		$this->assertFalse($copy->getReadOnly());
+
+		// The read-only state is still unset, so it can be set once.
+		$copy->setReadOnly(true);
+		$this->assertTrue($copy->getReadOnly());
+	}
+
+	public function testSerializeEmptyMapKeepsSetReadOnly()
+	{
+		$copy = unserialize(serialize(new TMap([], true)));
+		$this->assertEquals(0, $copy->getCount());
+		$this->assertTrue($copy->getReadOnly());
+		self::expectException(TInvalidOperationException::class);
+		$copy->setReadOnly(false);
+	}
+
+	public function testSerializeMapWithItemsKeepsItemsAndReadOnly()
+	{
+		$map = new TMap();
+		$map->add('a', 1);
+		$map->add('b', 2);
+		$copy = unserialize(serialize($map));
+		$this->assertEquals(['a' => 1, 'b' => 2], $copy->toArray());
+		$this->assertFalse($copy->getReadOnly());
+
+		// Adding an item collapses the unset read-only state to false.
+		self::expectException(TInvalidOperationException::class);
+		$copy->setReadOnly(true);
+	}
+
+	public function testKeyOfSingleItemMap()
+	{
+		$map = new $this->_baseClass(['only' => $this->item1]);
+		$this->assertEquals(['only' => $this->item1], $map->keyOf($this->item1));
+		$this->assertEquals([], $map->keyOf($this->item2));
+		$this->assertEquals('only', $map->keyOf($this->item1, false));
+	}
+
+	public function testRemoveItemSingleItemMap()
+	{
+		$map = new $this->_baseClass(['only' => $this->item1]);
+		$this->assertEquals([], $map->removeItem($this->item2));
+		$this->assertEquals(1, $map->getCount());
+		$this->assertEquals(['only' => $this->item1], $map->removeItem($this->item1));
+		$this->assertEquals(0, $map->getCount());
+	}
+
+	public function testRemoveNullValuedKey()
+	{
+		$this->map->add('nullkey', null);
+		$this->assertTrue($this->map->contains('nullkey'));
+		$this->assertNull($this->map->remove('nullkey'));
+		$this->assertFalse($this->map->contains('nullkey'));
+		$this->assertEquals(2, $this->map->getCount());
+	}
+
+	public function testSerializeSubclassSeededStorageKeepsReadOnlyUnset()
+	{
+		$map = new TMapSeededStorage();
+		$map->seed(['a' => 1, 'b' => 2]);
+		$serialized = serialize($map);
+		$this->assertStringNotContainsString('_r"', $serialized);
+
+		$copy = unserialize($serialized);
+		$this->assertEquals(['a' => 1, 'b' => 2], $copy->toArray());
+		$this->assertFalse($copy->getReadOnly());
+
+		// Seeding the storage skips add, so the read-only state is still unset and settable.
+		$copy->setReadOnly(true);
+		$this->assertTrue($copy->getReadOnly());
 	}
 }
