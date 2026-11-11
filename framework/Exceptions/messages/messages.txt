@@ -787,7 +787,6 @@ cron_daemon_handoff_invalid			= TCronModule DaemonHandoffTimeout must be zero or
 cron_daemonmutex_invalid				= TCronModule DaemonMutex ''{0}'' is not an IMutex module.
 cron_daemondependency_invalid			= TCronModule DaemonDependency ''{0}'' is not an ICacheDependency.
 cron_waketransport_invalid				= TCronModule WakeTransport ''{0}'' is not an ICronWakeTransport module.
-cron_component_class_required			= TCronModule <{0}> configuration element must have a class.
 cronwake_pollinterval_invalid			= Cron wake PollInterval must be greater than zero; ''{0}'' given.
 cronwakecache_cacheid_invalid			= TCronWakeCache CacheID ''{0}'' is not an ICache module.
 cronwakepgsql_driver_invalid			= TCronWakePgsql needs a PostgreSQL connection; the connection driver is ''{0}''.

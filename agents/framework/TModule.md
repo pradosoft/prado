@@ -90,7 +90,7 @@ A module creates a component that only it uses from a child element of its confi
 $mutex = $this->createConfigComponent($config, 'mutex', IMutex::class);
 ```
 
-`TLogRouter` creates each `<route>` with `getConfigElements()` and `createElementComponent()`; its PHP key is `routes`. Modules that configure an existing object from an element (`TDataSourceConfig` `<database>`, `TCompressionConfigTrait` `<compression>`) parse their elements themselves.
+`TCronModule` creates its `<wake>`, `<mutex>`, and `<dependency>` components this way. `TLogRouter` creates each `<route>` with `getConfigElements()` and `createElementComponent()`; its PHP key is `routes`. Modules that configure an existing object from an element (`TDataSourceConfig` `<database>`, `TCompressionConfigTrait` `<compression>`) parse their elements themselves.
 
 ### Dynamic Events
 
