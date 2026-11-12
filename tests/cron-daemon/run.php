@@ -480,8 +480,10 @@ final class CronDaemonE2E
 	{
 		$this->makeApp('Daemon="false"', '<job name="every5" schedule="*:*/5 * * * *" task="Application.CronE2ETask" />');
 		$start = microtime(true);
+		// Tick until 12 s into the next minute, so the ticks cross a minute boundary.
+		$until = max($start + 24.0, floor($start / 60) * 60 + 72.0);
 		$nextTick = $start;
-		while (($now = microtime(true)) < $start + 24.0) {
+		while (($now = microtime(true)) < $until) {
 			if ($now >= $nextTick) {
 				$this->tick(['--cron']);
 				$nextTick += TICK;
@@ -507,7 +509,23 @@ final class CronDaemonE2E
 		$pids = array_unique(array_column($runs, 'pid'));
 		$this->line('   every5 ran ' . count($runs) . ' time(s) in ' . count($pids) . ' tick(s)');
 		$this->check(count($pids) >= 2, 'more than one tick ran the task');
-		$this->checkRuns($runs, 5.0, null, 6);
+		$this->check(count($runs) >= 6, 'the task ran on its schedule; ' . count($runs) . ' runs');
+		$seen = [];
+		$previous = null;
+		foreach ($runs as $run) {
+			$trigger = floor($run['t'] / 5.0) * 5.0;
+			$at = date('H:i:s', (int) $trigger);
+			$this->check(!isset($seen[(string) $trigger]), "the trigger at {$at} ran once (again by {$run['pid']})");
+			$seen[(string) $trigger] = true;
+			// No tick lives across a minute boundary, so the :00 trigger waits for the minute's first tick,
+			// which a crontab starts at :00 and this harness up to TICK later.
+			$allowed = (((int) $trigger) % 60 === 0) ? TICK + SLACK : SLACK;
+			$this->check($run['t'] - $trigger <= $allowed, sprintf('the trigger at %s ran on time (%.2fs late by %d)', $at, $run['t'] - $trigger, $run['pid']));
+			if ($previous !== null) {
+				$this->check($trigger - $previous <= 5.0, sprintf('no trigger was skipped before %s', $at));
+			}
+			$previous = $trigger;
+		}
 		$skips = array_count_values(array_column(array_filter($events, fn ($e) => $e['e'] === 'tskip' && $e['task'] === 'every5'), 'reason'));
 		$this->line('   skipped triggers: ' . json_encode($skips));
 		$this->check(!array_diff(array_keys($skips), ['claimed']), 'an overlapping tick only finds a trigger claimed by another');
