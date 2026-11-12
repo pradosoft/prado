@@ -17,6 +17,7 @@ use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
+use Prado\Exceptions\TIOException;
 use Prado\Exceptions\TNotSupportedException;
 use Prado\IO\Async\IEventLoop;
 use Prado\IO\Async\TAsync;
@@ -1951,7 +1952,10 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	/**
 	 * Opens the child process of a Process task: {@see getTaskProcessCommand}, with no standard
 	 * input, and the standard output and error of this process, or appended to the task's ProcessOutputFile.
+	 * The file is opened once and both streams share the handle, as two append handles overwrite each
+	 * other on Windows.
 	 * @param \Prado\Util\Cron\TCronTask $task the task
+	 * @throws TIOException when the ProcessOutputFile cannot be opened
 	 * @return TProcess the running child process
 	 * @since 4.4.0
 	 */
@@ -1959,8 +1963,17 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	{
 		$null = TProcessHelper::isSystemWindows() ? 'NUL' : '/dev/null';
 		$output = $task->getProcessOutputFile();
-		$out = ($output === null) ? false : ['file', $output, 'a'];
-		return TProcess::open($this->getTaskProcessCommand($task), [0 => ['file', $null, 'r'], 1 => $out, 2 => $out], null, null, ['bypass_shell' => true]);
+		$out = false;
+		if ($output !== null && ($out = @fopen($output, 'ab')) === false) {
+			throw new TIOException('cron_processoutputfile_failed', $output);
+		}
+		try {
+			return TProcess::open($this->getTaskProcessCommand($task), [0 => ['file', $null, 'r'], 1 => $out, 2 => $out], null, null, ['bypass_shell' => true]);
+		} finally {
+			if (is_resource($out)) {
+				fclose($out);
+			}
+		}
 	}
 
 	/**

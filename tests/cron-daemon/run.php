@@ -600,7 +600,9 @@ final class CronDaemonE2E
 			echo 'ok';
 			PHP);
 		$out = $this->dir . DIRECTORY_SEPARATOR . 'server.out';
-		$proc = proc_open([PHP_BINARY, '-S', "127.0.0.1:{$port}", 'router.php'], [0 => $this->devNull('r'), 1 => ['file', $out, 'w'], 2 => ['file', $out, 'a']], $pipes, $this->dir);
+		$handle = fopen($out, 'wb');
+		$proc = proc_open([PHP_BINARY, '-S', "127.0.0.1:{$port}", 'router.php'], [0 => $this->devNull('r'), 1 => $handle, 2 => $handle], $pipes, $this->dir);
+		fclose($handle);
 		$this->server = ['proc' => $proc, 'port' => $port];
 		$deadline = microtime(true) + 10;
 		while (microtime(true) < $deadline && !($socket = @fsockopen('127.0.0.1', $port, $errno, $error, 0.2))) {
@@ -652,7 +654,9 @@ final class CronDaemonE2E
 	{
 		$n = count($this->procs);
 		$out = $this->dir . DIRECTORY_SEPARATOR . "tick{$n}.out";
-		$proc = proc_open([PHP_BINARY, $this->cli, '-d=' . $this->dir, 'cron/run'], [0 => $this->devNull('r'), 1 => ['file', $out, 'w'], 2 => ['file', $out, 'a']], $pipes, $this->cronCwd(), $this->cronEnv());
+		$handle = fopen($out, 'wb'); // one handle for both streams: two append handles overwrite each other on Windows
+		$proc = proc_open([PHP_BINARY, $this->cli, '-d=' . $this->dir, 'cron/run'], [0 => $this->devNull('r'), 1 => $handle, 2 => $handle], $pipes, $this->cronCwd(), $this->cronEnv());
+		fclose($handle);
 		if (!is_resource($proc)) {
 			$this->fail('a cron/run tick did not start');
 			return;
@@ -664,7 +668,9 @@ final class CronDaemonE2E
 	private function cli(array $args, float $timeout = 30.0): string
 	{
 		$out = $this->dir . DIRECTORY_SEPARATOR . 'cli-' . str_replace('/', '-', $args[0]) . '-' . bin2hex(random_bytes(2)) . '.out';
-		$proc = proc_open(array_merge([PHP_BINARY, $this->cli, '-d=' . $this->dir], $args), [0 => $this->devNull('r'), 1 => ['file', $out, 'w'], 2 => ['file', $out, 'a']], $pipes, $this->cronCwd(), $this->cronEnv());
+		$handle = fopen($out, 'wb');
+		$proc = proc_open(array_merge([PHP_BINARY, $this->cli, '-d=' . $this->dir], $args), [0 => $this->devNull('r'), 1 => $handle, 2 => $handle], $pipes, $this->cronCwd(), $this->cronEnv());
+		fclose($handle);
 		$deadline = microtime(true) + $timeout;
 		while (($status = proc_get_status($proc))['running'] && microtime(true) < $deadline) {
 			$this->reap();

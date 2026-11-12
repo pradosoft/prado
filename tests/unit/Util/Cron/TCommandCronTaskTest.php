@@ -62,6 +62,13 @@ class TCommandCronTaskTest extends \PHPUnit\Framework\TestCase
 		self::assertSame('hello', file_get_contents($this->log), 'without AppendLog each run starts the file over');
 	}
 
+	public function testExecute_WritesOutputAndErrorsInOrder()
+	{
+		$this->task->setCommand('@php -r "echo \'out\'; fwrite(STDERR, \'err\'); echo \'more\';"')->setLogFile($this->log);
+		$this->task->execute(new TCronModule());
+		self::assertSame('outerrmore', file_get_contents($this->log), 'the output and errors share the file without overwriting each other');
+	}
+
 	public function testExecute_ANonzeroExitThrows()
 	{
 		$this->task->setCommand('@php -r "exit(3);"');

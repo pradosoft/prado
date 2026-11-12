@@ -70,7 +70,7 @@ class TCommandCronTask extends TCronTask
 	 * Runs the command and waits for it to exit.
 	 * @param TCronModule $cronModule the module running the task
 	 * @throws TConfigurationException when the task has no Command
-	 * @throws TIOException when the command exits with a nonzero code
+	 * @throws TIOException when the LogFile cannot be opened, or the command exits with a nonzero code
 	 * @throws \Prado\Exceptions\TCancelledException when the run is cancelled at its Timeout
 	 */
 	public function execute($cronModule)
@@ -81,13 +81,16 @@ class TCommandCronTask extends TCronTask
 		}
 		$null = TProcessHelper::isSystemWindows() ? 'NUL' : '/dev/null';
 		$log = $this->getLogFile();
-		$descriptors = [
-			0 => ['file', $null, 'r'],
-			1 => ['file', $log ?? $null, ($log !== null && $this->getAppendLog()) ? 'a' : 'w'],
-			2 => ['file', $log ?? $null, 'a'],
-		];
+		// One handle serves both streams: two append handles overwrite each other on Windows.
+		if (($output = @fopen($log ?? $null, ($log !== null && !$this->getAppendLog()) ? 'wb' : 'ab')) === false) {
+			throw new TIOException('commandcrontask_log_failed', $this->getName(), $log);
+		}
 		$this->_exitCode = null;
-		$process = TProcess::open($command, $descriptors, $this->getDirectory());
+		try {
+			$process = TProcess::open($command, [0 => ['file', $null, 'r'], 1 => $output, 2 => $output], $this->getDirectory());
+		} finally {
+			fclose($output);
+		}
 		try {
 			$this->_exitCode = $this->waitForProcess($process);
 		} finally {
