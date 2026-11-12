@@ -141,6 +141,7 @@ assetmanager_tarchecksum_invalid		= TAssetManager is publishing a tar file with 
 assetmanager_tarfile_invalid			= TAssetManager is publishing an invalid tar file ''{0}''.
 assetmanager_tarfile_extract_failed		= TAssetManager failed to extract the tar file ''{0}''.
 assetmanager_source_directory_invalid	= TAssetManager is copying an invalid directory ''{0}''.
+assetmanager_cronclearage_invalid		= TAssetManager.CronClearAge ''{0}'' is invalid. It must be a positive number of seconds, or empty to disable the cron task.
 
 cache_primary_duplicated				= At most one primary cache module is allowed. {0} is trying to register as another primary cache.
 cache_flush_unsupported						= This cache module does not support flush().
