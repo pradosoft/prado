@@ -254,7 +254,8 @@ class TDbCronManager extends TCronModule implements IDbModule
 	}
 
 	/**
-	 * Queries the database for any pending cron tasks.
+	 * Queries the database for any pending cron tasks.  Each task takes its row's LastExecTime and
+	 * ProcessCount, so a run by another process since this one loaded the task is seen.
 	 * @param bool $futureSeconds false gets only pending tasks , true gets tasks to the 59th second of
 	 * the current minute too, ordered by their trigger time. default false.
 	 * @throws TConfigurationException when the configuration task names interfere with the db tasks names.
@@ -286,7 +287,12 @@ class TDbCronManager extends TCronModule implements IDbModule
 		foreach ($results as $properties) {
 			$name = $properties['name'];
 			$this->_taskRows[$name] = $properties;
-			$pendingtasks[$name] = $this->getTask($name);
+			if (($task = $this->getTask($name)) instanceof TCronTask) {
+				// Another process may have run the task since this process loaded it: the row is current.
+				$task->setLastExecTime($properties['lastexectime']);
+				$task->setProcessCount((int) $properties['processcount']);
+			}
+			$pendingtasks[$name] = $task;
 		}
 		return $pendingtasks;
 	}
@@ -748,6 +754,25 @@ class TDbCronManager extends TCronModule implements IDbModule
 			$this->removeTaskInternal($task);
 		}
 		return true;
+	}
+
+	/**
+	 * Takes back the run count of a claimed trigger that is skipped because a previous run holds the run
+	 * lock, in the task's row.
+	 * @param TCronTask $task the task
+	 * @since 4.4.0
+	 */
+	protected function uncountTaskRun($task)
+	{
+		$name = $task->getName();
+		$task->setProcessCount(max(0, $task->getProcessCount() - 1));
+		$db = $this->getDbConnection();
+		$cmd = $db->createCommand("UPDATE {$this->_tableName} SET processcount=processcount-1 WHERE name=:name AND active IS NOT NULL AND processcount > 0");
+		$cmd->bindValue(":name", $name, $db::PARAM_STR);
+		$cmd->execute();
+		if (isset($this->_taskRows[$name])) {
+			$this->_taskRows[$name]['processcount'] = $task->getProcessCount();
+		}
 	}
 
 	/**

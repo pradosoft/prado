@@ -1231,12 +1231,13 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	 *  - A triggered run is skipped when {@see getTaskSkipReason} gives a reason: the task is paused, its
 	 *    {@see \Prado\Util\Cron\TCronTask::getStartingDeadline() StartingDeadline} passed (recorded as
 	 *    {@see RESULT_MISSED}), the time is outside its time of day, or a behavior declines it.
-	 *  - Unless the task's {@see \Prado\Util\Cron\TCronTask::getOverlap() Overlap} is Allow, the run holds the
-	 *    task's run lock ({@see getTaskLockName}).  When another run holds it, the trigger is skipped (Skip),
-	 *    stops the run of this process and runs (Replace, {@see stopActiveRun}), or is claimed and waits for
-	 *    the lock (Queue, {@see getQueueTimeout}).
 	 *  - {@see onTaskStart} is raised; a handler cancels the run.
 	 *  - {@see updateTaskInfo} claims the run; when another process claimed it, the task is skipped.
+	 *  - Unless the task's {@see \Prado\Util\Cron\TCronTask::getOverlap() Overlap} is Allow, the run then holds
+	 *    the task's run lock ({@see getTaskLockName}), so of several processes that found the trigger only
+	 *    the claimer competes for it.  When a previous run holds it, the trigger is skipped and uncounted
+	 *    ({@see uncountTaskRun}) with Skip, stops the run of this process and runs with Replace
+	 *    ({@see stopActiveRun}), or waits for the lock with Queue ({@see getQueueTimeout}).
 	 *  - A Process task runs in a child process ({@see runTaskProcess}), any other in this fiber
 	 *    ({@see invokeTask}); a failed attempt is tried again up to the task's Retries ({@see onTaskRetry});
 	 *    a run past the task's WarnDuration raises {@see onTaskOverdue}; the result and seconds are recorded
@@ -1384,21 +1385,7 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 		$overlap = $task->getOverlap();
 		$mutex = $this->getDaemonMutex();
 		$lockName = ($overlap === TCronTaskOverlap::Allow) ? null : $this->getTaskLockName($name);
-		$locked = $queued = false;
-		if ($lockName !== null && !($locked = $mutex->acquire($lockName))) {
-			if ($overlap === TCronTaskOverlap::Replace && $this->stopActiveRun($name)) {
-				Prado::log('Cron task (' . $name . ') stops its running run to replace it', TLogger::INFO, TCronModule::class);
-				$locked = $mutex->acquire($lockName, static::REPLACE_TIMEOUT);
-			} elseif ($overlap === TCronTaskOverlap::Queue && !isset($this->_queuedRuns[$name])) {
-				$queued = $this->_queuedRuns[$name] = true;
-			}
-			if (!$locked && !$queued) {
-				Prado::log('Cron task (' . $name . ') is still running; this trigger is skipped', TLogger::INFO, TCronModule::class);
-				$this->updateTaskInfo($task, false);
-				$this->onTaskSkipped($param->setReason(TCronTaskEventParameter::REASON_RUNNING));
-				return false;
-			}
-		}
+		$locked = false;
 		try {
 			$this->onTaskStart($param);
 			if ($param->getCancel()) {
@@ -1412,13 +1399,24 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 				$this->onTaskSkipped($param->setReason(TCronTaskEventParameter::REASON_CLAIMED));
 				return false;
 			}
-			if ($queued) {
-				Prado::log('Cron task (' . $name . ') waits for its running run', TLogger::INFO, TCronModule::class);
-				$locked = $mutex->acquire($lockName, $this->getQueueTimeout($task));
-				unset($this->_queuedRuns[$name]);
-				$queued = false;
+			// The run lock is taken after the claim: of the processes that found the trigger pending, only
+			// the one that claimed it competes for the lock with a run still going.
+			if ($lockName !== null && !($locked = $mutex->acquire($lockName))) {
+				if ($overlap === TCronTaskOverlap::Replace && $this->stopActiveRun($name)) {
+					Prado::log('Cron task (' . $name . ') stops its running run to replace it', TLogger::INFO, TCronModule::class);
+					$locked = $mutex->acquire($lockName, static::REPLACE_TIMEOUT);
+				} elseif ($overlap === TCronTaskOverlap::Queue && !isset($this->_queuedRuns[$name])) {
+					Prado::log('Cron task (' . $name . ') waits for its running run', TLogger::INFO, TCronModule::class);
+					$this->_queuedRuns[$name] = true;
+					try {
+						$locked = $mutex->acquire($lockName, $this->getQueueTimeout($task));
+					} finally {
+						unset($this->_queuedRuns[$name]);
+					}
+				}
 				if (!$locked) {
-					Prado::log('Cron task (' . $name . ') waited too long for its running run; this trigger is skipped', TLogger::WARNING, TCronModule::class);
+					Prado::log('Cron task (' . $name . ') is still running; this trigger is skipped', TLogger::INFO, TCronModule::class);
+					$this->uncountTaskRun($task);
 					$this->onTaskSkipped($param->setReason(TCronTaskEventParameter::REASON_RUNNING));
 					return false;
 				}
@@ -1486,9 +1484,6 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 			$ran = true;
 			return $result === static::RESULT_OK;
 		} finally {
-			if ($queued) {
-				unset($this->_queuedRuns[$name]);
-			}
 			if ($locked) {
 				unset($this->_activeRuns[$name]);
 				$mutex->release($lockName);
@@ -2084,6 +2079,20 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 
 		$this->getApplication()->setGlobalState(self::TASKS_INFO, $tasksInfo, [], true);
 		return true;
+	}
+
+	/**
+	 * Takes back the run count of a claimed trigger that is skipped because a previous run holds the run lock.
+	 * @param TCronTask $task the task
+	 * @since 4.4.0
+	 */
+	protected function uncountTaskRun($task)
+	{
+		$app = $this->getApplication();
+		$tasksInfo = $app->getGlobalState(self::TASKS_INFO, []);
+		$task->setProcessCount(max(0, $task->getProcessCount() - 1));
+		$tasksInfo[$task->getName()]['processCount'] = $task->getProcessCount();
+		$app->setGlobalState(self::TASKS_INFO, $tasksInfo, [], true);
 	}
 
 	/**
@@ -3437,44 +3446,66 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 
 	/**
 	 * Returns the state of the module for monitoring: its cron processes and the tasks the current user
-	 * may read, read from the stores so another process's runs show.
+	 * may read, read from the stores so another process's runs show.  The `cron/report` shell command,
+	 * the `cron/top` view, and {@see \Prado\Util\Cron\TCronMonitorResponse} present it.
 	 *
 	 * | Key | Content |
 	 * |---|---|
 	 * | `module`, `time` | the module ID and the report time |
+	 * | `daemonMode`, `concurrency` | the module's {@see getDaemon Daemon} and {@see getConcurrency Concurrency} |
 	 * | `daemon` | the daemon's status, or null when no daemon runs |
 	 * | `processes` | the live statuses of {@see getStatuses}, without their file |
+	 * | `ended` | the statuses of processes that ended without removing them |
+	 * | `runs` | the runs in progress of the reported tasks: `name`, `mode`, `user`, `started`, `deadline`, `warn`, `overdue`, `pid` (the child of a Process task), and `owner` (the cron process) |
 	 * | `tasks` | by name: `mode`, `schedule`, `timezone`, `priority`, `description`, `paused`, `running` (the process IDs of its runs), `next`, `last`, `count`, `result`, `duration` |
+	 * @param ?array<string, TCronTask> $tasks the tasks to report, by name; null for {@see getTasks}
 	 * @return array the report
 	 * @since 4.4.0
 	 */
-	public function getMonitorReport(): array
+	public function getMonitorReport(?array $tasks = null): array
 	{
-		$processes = [];
+		$tasks ??= $this->getTasks() ?? [];
+		$processes = $ended = [];
 		$daemon = null;
 		foreach ($this->getStatuses() as $status) {
+			unset($status['file']);
 			if (!$status['alive']) {
+				$ended[] = $status;
 				continue;
 			}
-			unset($status['file']);
 			$processes[] = $status;
 			if (($status['role'] ?? null) === static::STATUS_ROLE_DAEMON) {
 				$daemon ??= $status;
 			}
 		}
-		$running = [];
+		$running = $runs = [];
 		foreach ($processes as $status) {
 			foreach ($status['running'] as $run) {
-				$running[$run['name'] ?? ''][] = (int) ($run['pid'] ?? 0);
+				$name = (string) ($run['name'] ?? '');
+				if (!isset($tasks[$name])) {
+					continue;
+				}
+				$running[$name][] = (int) ($run['pid'] ?? 0);
+				$runs[] = [
+					'name' => $name,
+					'mode' => $run['mode'] ?? null,
+					'user' => $run['user'] ?? null,
+					'started' => $run['started'] ?? null,
+					'deadline' => $run['deadline'] ?? null,
+					'warn' => $run['warn'] ?? null,
+					'overdue' => (bool) ($run['overdue'] ?? false),
+					'pid' => $run['pid'] ?? null,
+					'owner' => $status['pid'] ?? null,
+				];
 			}
 		}
 		$paused = array_flip($this->getPausedTasks());
 		$results = $this->getTaskResults(true);
 		$next = $this->getNextTriggers(PHP_INT_MAX, true);
-		$tasks = [];
-		foreach ($this->getTasks() ?? [] as $name => $task) {
+		$report = [];
+		foreach ($tasks as $name => $task) {
 			$result = $results[$name] ?? [];
-			$tasks[$name] = [
+			$report[$name] = [
 				'mode' => $task->getMode(),
 				'schedule' => $task->getSchedule(),
 				'timezone' => $task->getScheduleTimeZone() ?? date_default_timezone_get(),
@@ -3489,7 +3520,17 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 				'duration' => $result['duration'] ?? null,
 			];
 		}
-		return ['module' => $this->getID(), 'time' => $this->microtime(), 'daemon' => $daemon, 'processes' => $processes, 'tasks' => $tasks];
+		return [
+			'module' => $this->getID(),
+			'time' => $this->microtime(),
+			'daemonMode' => $this->getDaemon(),
+			'concurrency' => $this->getConcurrency(),
+			'daemon' => $daemon,
+			'processes' => $processes,
+			'ended' => $ended,
+			'runs' => $runs,
+			'tasks' => $report,
+		];
 	}
 
 	/**
@@ -3498,12 +3539,13 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	 * `prado_cron_task_paused`, `prado_cron_task_runs_total`, `prado_cron_task_last_run_timestamp_seconds`,
 	 * `prado_cron_task_last_duration_seconds`, `prado_cron_task_last_success`, and
 	 * `prado_cron_task_next_run_timestamp_seconds`, labeled by `module` and `task`.
+	 * @param ?array<string, TCronTask> $tasks the tasks to report, by name; null for {@see getTasks}
 	 * @return string the metrics
 	 * @since 4.4.0
 	 */
-	public function getMonitorMetrics(): string
+	public function getMonitorMetrics(?array $tasks = null): string
 	{
-		$report = $this->getMonitorReport();
+		$report = $this->getMonitorReport($tasks);
 		$label = static fn (array $labels): string => '{' . implode(',', array_map(static fn ($k, $v) => $k . '="' . addcslashes((string) $v, "\\\"\n") . '"', array_keys($labels), $labels)) . '}';
 		$module = ['module' => (string) $report['module']];
 		$lines = [];

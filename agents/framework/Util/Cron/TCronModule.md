@@ -164,9 +164,9 @@ Each `on` event of the module is also broadcast as a global event, so a module d
 | User | `runAsTaskUser()` → `resolveTaskUser()`: the task's `UserName`, else `DefaultUserName`, from the `UserManager`; else a guest clone of the application user; without a user manager the current user. The user goes into [`TFiberContext`](../../IO/Async/TFiberContext.md) under `TApplication::USER_CONTEXT_KEY`, so `TApplication::getUser()` returns it inside the task and the application user is untouched. `onSetUser` is raised for the task user and again for the restored user. |
 | Permission | a `dyRunTask` denial is logged, claims the run, and records `RESULT_DENIED`. |
 | Skip | a triggered run is skipped when `getTaskSkipReason()` gives a reason, in order: the task is paused (`pauseTask()`), its `StartingDeadline` passed (`RESULT_MISSED`), the time is outside its `Between`/`UnlessBetween` window, or a behavior's `dyShouldRunTask($run, $task)` returns false. A manual run (`cron/now`) is never skipped this way. |
-| Run lock | unless the task's `Overlap` is `Allow`, the run holds `getTaskLockName($name)` (`<lease>:task:<name>`) in the `DaemonMutex`. When another run holds it: `Skip` skips the trigger (`updateTaskInfo($task, false)` advances the task without counting a run); `Replace` stops the run of this process (`stopActiveRun()` terminates its child or cancels its token, then waits `REPLACE_TIMEOUT`, 10 s, for the lock; the stopped run ends `RESULT_REPLACED`); `Queue` claims the trigger and waits `getQueueTimeout()` for the lock, one waiter per task. The runs holding their lock are tracked by name in this process (`_activeRuns`). The default `TFileMutex` locks per host; a shared mutex (`TDbMutex`, `TRedisMutex`) locks across hosts. |
+| Run lock | unless the task's `Overlap` is `Allow`, the run holds `getTaskLockName($name)` (`<lease>:task:<name>`) in the `DaemonMutex`. When a previous run holds it: `Skip` skips the claimed trigger and takes back its run count (`uncountTaskRun()`); `Replace` stops the run of this process (`stopActiveRun()` terminates its child or cancels its token, then waits `REPLACE_TIMEOUT`, 10 s, for the lock; the stopped run ends `RESULT_REPLACED`); `Queue` claims the trigger and waits `getQueueTimeout()` for the lock, one waiter per task. The runs holding their lock are tracked by name in this process (`_activeRuns`). The default `TFileMutex` locks per host; a shared mutex (`TDbMutex`, `TRedisMutex`) locks across hosts. |
 | Start | `onTaskStart`; a handler's `Cancel` skips the run. |
-| Claim | `updateTaskInfo()`; a run another process claimed is skipped. |
+| Claim | `updateTaskInfo()`; a run another process claimed is skipped. The run lock is taken after the claim, so of several processes that found a trigger (overlapping crontab ticks) only the claimer competes for it. |
 | Run | `invokeTask()` in this fiber, or `runTaskProcess()` for a Process task. A loop timer at the task's `WarnDuration` marks the run overdue (`markTaskOverdue()`: a WARNING, the status entry's `overdue`, and `onTaskOverdue`), once; a run that blocked the loop is marked when it ends. A schedule `every <interval> after end` gets `updateTaskEnd()` after the run, which sets `LastExecTime` to the end, so the next trigger counts from it. A failed attempt (`error` or `timeout`) is tried again up to `Retries` times after `getRetryWait($retry)` seconds (`RetryDelay` × `RetryBackoff`^(retry−1)), raising `onTaskRetry`; the retries are one run with one claim, status entry, and result. |
 | Deadline | `$task->Timeout ?? $this->TaskTimeout` (seconds, null for none) becomes a [`TCancellationToken`](../../IO/Async/TCancellationToken.md) in `TCronTask::getCancellationToken()` for the run; a cooperative task passes it to its waits. A Process child that outlives it by `PROCESS_TIMEOUT_GRACE` (5 s) is terminated (SIGTERM, then SIGKILL): `RESULT_TIMEOUT`. |
 | Boundary | An exception from `execute()` goes to `logCronTaskError()`: an ERROR log entry and `dyLogCronTaskError($task, $exception)` (written to the shell by [`TShellCronLogBehavior`](TShellCronLogBehavior.md)); the sweep continues. |
@@ -205,7 +205,7 @@ The Process child is `getTaskProcessCommand($task)`: `PHP_BINARY` (under a web S
 | `onTaskSkipped` / `fxCronTaskSkipped` | a trigger that does not run | `Reason`: `denied`, `paused`, `deadline`, `window`, `condition`, `running` (run lock held), `cancelled`, `claimed` |
 | `onTaskPing` / `fxCronTaskPing` | before each ping is sent | `Ping`, `Url`, `Result`, `Duration`; a handler sets `Handled` when it delivered the ping |
 
-A started run ends with `onTaskEnd` or `onTaskSkipped`; `denied`, `paused`, `deadline`, `window`, `condition`, and `running` are raised without a start. `Manual` is true for `cron/now`.
+A started run ends with `onTaskEnd` or `onTaskSkipped` (`cancelled`, `claimed`, or `running`); `denied`, `paused`, `deadline`, `window`, and `condition` are raised without a start. `Manual` is true for `cron/now`.
 
 **StartingDeadline.** A triggered run more than `TCronTask::StartingDeadline` seconds after its trigger (`isTaskPastDeadline()`) is skipped: the trigger is claimed without a run and the result is `RESULT_MISSED`. A manual run has no deadline.
 
@@ -221,7 +221,7 @@ A started run ends with `onTaskEnd` or `onTaskSkipped`; `denied`, `paused`, `dea
 
 - **Priority.** `runTasks()` starts the tasks of a sweep in the order of their `Priority`, lower first, through `sortTasks()` (a stable sort, so equal priorities keep the order of `onSweepStart`); the second-resolution loop orders the due tasks by trigger, then priority.
 - **Chains.** `runTask()` runs `runChain()`: after the run, the task's `Then` (on success) or `ThenOnFailure` (on failure) tasks run in order as manual runs, after the run lock is released, each with its own claim, events, pings, and chain. A task already in the chain is not run again (a WARNING), an unknown task is skipped (a WARNING), and a paused task raises `onTaskSkipped` (`paused`). `TCronTaskEventParameter::getChain()` lists the tasks before a chained run. The schedule `@never` has no trigger, for a task that only runs from a chain or `cron/now`.
-- **Monitoring.** `getMonitorReport()` gathers the live cron processes (`getStatuses()`), the daemon among them, and per readable task its mode, schedule, zone, priority, description, paused state, running process IDs, next trigger, and last run, count, result, and seconds, from the stores. `getMonitorMetrics()` is the report in the Prometheus text format. [`TCronMonitorResponse`](TCronMonitorResponse.md) serves either from a `TJsonService`.
+- **Monitoring.** `getMonitorReport(?array $tasks)` gathers, from the stores, the module's `daemonMode` and `concurrency`, the live cron processes (`getStatuses()`) with the daemon among them, the processes that `ended` without removing their status, the `runs` in progress (name, mode, user, start, deadline, warning, overdue, child pid, owner), and per task (the given ones, else `getTasks()`) its mode, schedule, zone, priority, description, paused state, running process IDs, next trigger, and last run, count, result, and seconds. `getMonitorMetrics(?array $tasks)` is the report in the Prometheus text format. [`TCronMonitorResponse`](TCronMonitorResponse.md) serves either from a `TJsonService`, `prado-cli cron/report [json|prometheus]` prints either, and `cron/top` renders the report.
 
 ### Live status (4.4.0)
 
@@ -335,6 +335,9 @@ php prado-cli.php /path/to/app cron [name] [@user]
 
 # Run all pending tasks (the system crontab entry):
 php prado-cli.php /path/to/app cron/run
+
+# Print the monitor report as JSON, or Prometheus metrics (--quiet=1 drops the banner for scripts):
+php prado-cli.php /path/to/app --quiet=1 cron/report [json|prometheus]
 
 # Show the cron processes, running tasks, next triggers, and last results; a terminal redraws
 # every [seconds] (default 1) until Ctrl-C or [count] views; otherwise one view:

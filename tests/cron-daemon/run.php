@@ -14,9 +14,10 @@
  * window, an excepted date, jitter, priority, a chain, a compound task, a command task, an HTTP task,
  * an `after end` schedule, a Process task's warning, output, priority, and memory limit, and the
  * monitoring endpoint served by a PHP web server); the `overlap` scenario checks Replace and Queue on
- * Process tasks.
+ * Process tasks.  The `tick` scenario runs no daemon: overlapping `cron/run` crontab ticks each serve the
+ * rest of their minute at the trigger seconds, and each trigger of a five-second task runs once.
  *
- * Usage: php tests/cron-daemon/run.php [handoff|wake|process|features|overlap|all]
+ * Usage: php tests/cron-daemon/run.php [handoff|wake|process|features|overlap|tick|all]
  * Exit code 0 when every check passes, 1 otherwise.
  *
  * @author Brad Anderson <belisoful@icloud.com>
@@ -328,6 +329,9 @@ final class CronDaemonE2E
 				$this->check(str_contains($metrics, 'prado_cron_task_runs_total{module="cron",task="pinged"}'), 'the monitor metrics count the runs');
 				$this->check(str_contains($this->cli(['cron/next', 'zoned']), 'JST'), 'cron/next shows a task in its time zone');
 				$this->check(str_contains($this->cli(['cron/top']), 'Daemon'), 'cron/top shows the daemon');
+				$cliReport = json_decode($this->cli(['--quiet=1', 'cron/report']), true);
+				$this->check(is_array($cliReport) && ($cliReport['daemon']['role'] ?? null) === 'daemon' && isset($cliReport['tasks']['pinged']), 'cron/report prints the monitor report');
+				$this->check(str_contains($this->cli(['--quiet=1', 'cron/report', 'prometheus']), 'prado_cron_daemon_up{module="cron"} 1'), 'cron/report prints the metrics');
 			}
 			usleep(100000);
 		}
@@ -467,6 +471,48 @@ final class CronDaemonE2E
 		$this->checkQuickTicks($starts);
 	}
 
+	/**
+	 * Crontab ticks without a daemon: each `cron/run` (with `--cron`, so the runner's TERM does not
+	 * matter) serves the rest of its minute at the trigger seconds; the ticks overlap, and the claim and
+	 * the run lock let one of them run each trigger.
+	 */
+	private function scenarioTick(): void
+	{
+		$this->makeApp('Daemon="false"', '<job name="every5" schedule="*:*/5 * * * *" task="Application.CronE2ETask" />');
+		$start = microtime(true);
+		$nextTick = $start;
+		while (($now = microtime(true)) < $start + 24.0) {
+			if ($now >= $nextTick) {
+				$this->tick(['--cron']);
+				$nextTick += TICK;
+			}
+			$this->reap();
+			usleep(100000);
+		}
+		// A tick serves until its minute ends.
+		$deadline = microtime(true) + 70.0;
+		while (microtime(true) < $deadline && array_filter($this->procs, fn ($p) => $p['ended'] === null)) {
+			$this->reap();
+			usleep(200000);
+		}
+		foreach ($this->procs as $p) {
+			if ($p['ended'] === null) {
+				$this->fail("cron/run tick {$p['pid']} still runs after its minute");
+			}
+		}
+
+		$events = $this->events();
+		$this->check(!$this->select($events, 'start'), 'no daemon started');
+		$runs = array_values(array_filter($this->select($events, 'run'), fn ($e) => $e['task'] === 'every5'));
+		$pids = array_unique(array_column($runs, 'pid'));
+		$this->line('   every5 ran ' . count($runs) . ' time(s) in ' . count($pids) . ' tick(s)');
+		$this->check(count($pids) >= 2, 'more than one tick ran the task');
+		$this->checkRuns($runs, 5.0, null, 6);
+		$skips = array_count_values(array_column(array_filter($events, fn ($e) => $e['e'] === 'tskip' && $e['task'] === 'every5'), 'reason'));
+		$this->line('   skipped triggers: ' . json_encode($skips));
+		$this->check(!array_diff(array_keys($skips), ['claimed']), 'an overlapping tick only finds a trigger claimed by another');
+	}
+
 	// ---------------------------------------------------------------- checks
 
 	private function checkOneDaemonAtATime(array $starts, array $ends, ?array $killed): void
@@ -490,9 +536,9 @@ final class CronDaemonE2E
 	 * trigger runs twice, none is late, and none is skipped; a run after a killed daemon may catch
 	 * up a trigger the kill missed.
 	 */
-	private function checkRuns(array $runs, float $period, ?array $killed): void
+	private function checkRuns(array $runs, float $period, ?array $killed, int $minRuns = 10): void
 	{
-		$this->check(count($runs) >= 10, 'the task ran on its schedule; ' . count($runs) . ' runs');
+		$this->check(count($runs) >= $minRuns, 'the task ran on its schedule; ' . count($runs) . ' runs');
 		$inKillWindow = fn (float $t) => $killed !== null && $t >= $killed['t'] && $t <= $killed['t'] + 2 * TICK + SLACK;
 		$seen = [];
 		$previous = null;
@@ -545,6 +591,7 @@ final class CronDaemonE2E
 		$this->log = $this->dir . DIRECTORY_SEPARATOR . 'events.jsonl';
 		$db = $this->dir . DIRECTORY_SEPARATOR . 'cron.db';
 		$services = ($services === '') ? '' : "<services>{$services}</services>";
+		$daemonAttributes = str_contains($daemonAttributes, 'Daemon=') ? $daemonAttributes : 'Daemon="true" ' . $daemonAttributes;
 		file_put_contents($protected . DIRECTORY_SEPARATOR . 'application.xml', <<<XML
 			<?xml version="1.0" encoding="utf-8"?>
 			<application id="crone2e" mode="Debug">
@@ -553,7 +600,7 @@ final class CronDaemonE2E
 						<database ConnectionString="sqlite:{$db}" />
 					</module>
 					<module id="probe" class="Application.CronE2EProbe" LogFile="{$this->log}" />
-					<module id="cron" class="Prado\\Util\\Cron\\TDbCronManager" ConnectionID="db" Daemon="true" {$daemonAttributes}>
+					<module id="cron" class="Prado\\Util\\Cron\\TDbCronManager" ConnectionID="db" {$daemonAttributes}>
 						{$jobs}<!--jobs-->
 					</module>
 				</modules>
@@ -649,13 +696,13 @@ final class CronDaemonE2E
 		@rmdir($dir);
 	}
 
-	/** Starts a cron/run tick in the background, as a crontab entry does. */
-	private function tick(): void
+	/** Starts a cron/run tick in the background, as a crontab entry does, with options before the action. */
+	private function tick(array $options = []): void
 	{
 		$n = count($this->procs);
 		$out = $this->dir . DIRECTORY_SEPARATOR . "tick{$n}.out";
 		$handle = fopen($out, 'wb'); // one handle for both streams: two append handles overwrite each other on Windows
-		$proc = proc_open([PHP_BINARY, $this->cli, '-d=' . $this->dir, 'cron/run'], [0 => $this->devNull('r'), 1 => $handle, 2 => $handle], $pipes, $this->cronCwd(), $this->cronEnv());
+		$proc = proc_open(array_merge([PHP_BINARY, $this->cli, '-d=' . $this->dir], $options, ['cron/run']), [0 => $this->devNull('r'), 1 => $handle, 2 => $handle], $pipes, $this->cronCwd(), $this->cronEnv());
 		fclose($handle);
 		if (!is_resource($proc)) {
 			$this->fail('a cron/run tick did not start');
@@ -833,9 +880,9 @@ final class CronDaemonE2E
 }
 
 $arg = $argv[1] ?? 'all';
-$scenarios = $arg === 'all' ? ['handoff', 'wake', 'process', 'features', 'overlap'] : [$arg];
-if (array_diff($scenarios, ['handoff', 'wake', 'process', 'features', 'overlap'])) {
-	fwrite(STDERR, "Usage: php tests/cron-daemon/run.php [handoff|wake|process|features|overlap|all]\n");
+$scenarios = $arg === 'all' ? ['handoff', 'wake', 'process', 'features', 'overlap', 'tick'] : [$arg];
+if (array_diff($scenarios, ['handoff', 'wake', 'process', 'features', 'overlap', 'tick'])) {
+	fwrite(STDERR, "Usage: php tests/cron-daemon/run.php [handoff|wake|process|features|overlap|tick|all]\n");
 	exit(2);
 }
 exit((new CronDaemonE2E())->run($scenarios));

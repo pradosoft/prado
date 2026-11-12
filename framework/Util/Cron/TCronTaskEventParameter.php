@@ -23,8 +23,9 @@ use Prado\TPropertyValue;
  * {@see \Prado\Util\Cron\TCronModule::onTaskRetry onTaskRetry},
  * {@see \Prado\Util\Cron\TCronModule::onTaskSkipped onTaskSkipped}, and
  * {@see \Prado\Util\Cron\TCronModule::onTaskPing onTaskPing}.  A started run ends with `onTaskEnd`
- * (and `onTaskFailure` when it failed) or with `onTaskSkipped` when a start handler cancels it or
- * another process claimed it; a trigger skipped before the start raises only `onTaskSkipped`.
+ * (and `onTaskFailure` when it failed) or with `onTaskSkipped` when a start handler cancels it, another
+ * process claimed it, or a previous run holds its run lock; a trigger skipped before the start raises
+ * only `onTaskSkipped`.
  *
  * | Property | Set for | Meaning |
  * |---|---|---|

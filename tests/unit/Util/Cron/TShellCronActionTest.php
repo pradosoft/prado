@@ -391,4 +391,51 @@ class TShellCronActionTest extends \PHPUnit\Framework\TestCase
 		}
 	}
 
+
+	public function testActionReport()
+	{
+		$cronClass = $this->getTestCronClass();
+		$cron = new $cronClass();
+		$id = 'shellReport' . bin2hex(random_bytes(3));
+		$dir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'prado-cronstatus-' . bin2hex(random_bytes(4));
+		$cron->setID($id);
+		$cron->setStatusPath($dir);
+		$cron->init([['name' => 'reported', 'schedule' => '0 0 1 1 ? 2099', 'task' => TTestCronModuleTask::class, 'description' => 'In the report']]);
+		$this->obj->setCronModule($cron);
+		try {
+			mkdir($dir);
+			$now = microtime(true);
+			file_put_contents($dir . DIRECTORY_SEPARATOR . 'sweep.json', json_encode([
+				'module' => $id, 'role' => 'sweep', 'pid' => getmypid(), 'host' => (string) gethostname(), 'started' => $now - 5, 'updated' => $now,
+				'concurrency' => 1, 'recent' => [], 'daemon' => null,
+				'running' => [['name' => 'reported', 'mode' => 'Process', 'user' => 'cron', 'started' => $now - 2, 'deadline' => null, 'pid' => 4321]],
+			]));
+			self::assertTrue($this->obj->actionReport(['cron/report']));
+			$report = json_decode($this->writer->flush(), true);
+			self::assertIsArray($report);
+			self::assertSame($id, $report['module']);
+			self::assertNull($report['daemon']);
+			self::assertCount(1, $report['processes']);
+			self::assertSame('In the report', $report['tasks']['reported']['description']);
+			self::assertSame([4321], $report['tasks']['reported']['running']);
+			self::assertSame(['reported', 'Process', 4321, getmypid()], [$report['runs'][0]['name'], $report['runs'][0]['mode'], $report['runs'][0]['pid'], $report['runs'][0]['owner']]);
+
+			self::assertTrue($this->obj->actionReport(['cron/report', 'Prometheus']));
+			$metrics = $this->writer->flush();
+			self::assertStringContainsString('prado_cron_task_running{module="' . $id . '",task="reported"} 1', $metrics);
+			self::assertStringContainsString('prado_cron_processes{module="' . $id . '"} 1', $metrics);
+
+			self::assertTrue($this->obj->actionReport(['cron/report', 'xml']));
+			self::assertStringContainsString("The report format 'xml' is not json or prometheus", $this->writer->flush());
+		} finally {
+			$cron->unlisten();
+			foreach (glob($dir . DIRECTORY_SEPARATOR . '*') ?: [] as $file) {
+				unlink($file);
+			}
+			if (is_dir($dir)) {
+				rmdir($dir);
+			}
+		}
+	}
+
 }

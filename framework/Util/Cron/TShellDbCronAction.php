@@ -32,9 +32,9 @@ use Prado\Shell\TShellWriter;
  */
 class TShellDbCronAction extends TShellCronAction
 {
-	protected $methods = ['tasks', 'run', 'index', 'add', 'update', 'remove', 'log', 'flush', 'daemon', 'retire', 'stop', 'migrate', 'top', 'exec', 'now', 'next', 'pause', 'resume'];
-	protected $parameters = [null, null, null, ['task-name', 'task-id', 'schedule'], ['task-name'], ['task-name'], null, null, null, null, null, null, null, ['task-name'], ['task-name'], null, ['task-name'], ['task-name']];
-	protected $optional = [['task-name or @user'], null, null, ['parameters...'], ['parameters...'], [], ['task-name or @user'], ['task-name or @user or time (e.g. seconds or PHP DateInterval)'], null, ['seconds'], ['seconds'], null, ['seconds', 'count'], null, null, ['task-name', 'count'], null, null];
+	protected $methods = ['tasks', 'run', 'index', 'add', 'update', 'remove', 'log', 'flush', 'daemon', 'retire', 'stop', 'migrate', 'top', 'exec', 'now', 'next', 'pause', 'resume', 'report'];
+	protected $parameters = [null, null, null, ['task-name', 'task-id', 'schedule'], ['task-name'], ['task-name'], null, null, null, null, null, null, null, ['task-name'], ['task-name'], null, ['task-name'], ['task-name'], null];
+	protected $optional = [['task-name or @user'], null, null, ['parameters...'], ['parameters...'], [], ['task-name or @user'], ['task-name or @user or time (e.g. seconds or PHP DateInterval)'], null, ['seconds'], ['seconds'], null, ['seconds', 'count'], null, null, ['task-name', 'count'], null, null, ['json or prometheus']];
 	protected $description = ['Manages DbCron time-based services',
 		'Displays the Cron tasks configured in the application and database. Filter by @user and task name.',
 		'Runs the DbCron Pending Tasks.',
@@ -54,6 +54,7 @@ class TShellDbCronAction extends TShellCronAction
 		'Shows the next trigger times of the tasks; filter by task name.',
 		'Pauses a task: its triggers pass without runs until it is resumed.',
 		'Resumes a paused task.',
+		'Prints the monitor report as JSON, or Prometheus metrics.',
 	];
 
 	private $_user;

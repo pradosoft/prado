@@ -27,6 +27,8 @@ use Prado\Util\Cron\TCronModule;
  * possible cron tasks registered in the application.  A system crontab entry runs
  * "cron/run".  "cron/now" runs a task at once, whatever its schedule; "cron/next" shows the next
  * trigger times.  "cron/pause" and "cron/resume" stop and restart a task's triggered runs.
+ * "cron/report" prints the monitor report as JSON, or Prometheus metrics, as the
+ * {@see TCronMonitorResponse} endpoint does; "cron/top" renders the same report.
  * "cron/exec" runs one task in its process: the child process of a Process
  * task, which exits with {@see TCronModule::EXIT_ERROR}, {@see TCronModule::EXIT_NO_TASK},
  * or {@see TCronModule::EXIT_DENIED} when the task did not run cleanly.
@@ -40,9 +42,9 @@ class TShellCronAction extends TShellAction
 	public const TOP_ROWS = 10;
 
 	protected $action = 'cron';
-	protected $methods = ['tasks', 'run', 'index', 'daemon', 'retire', 'stop', 'top', 'exec', 'now', 'next', 'pause', 'resume'];
-	protected $parameters = [null, null, null, null, null, null, null, ['task-name'], ['task-name'], null, ['task-name'], ['task-name']];
-	protected $optional = [['task-name or @user'], null, null, null, ['seconds'], ['seconds'], ['seconds', 'count'], null, null, ['task-name', 'count'], null, null];
+	protected $methods = ['tasks', 'run', 'index', 'daemon', 'retire', 'stop', 'top', 'exec', 'now', 'next', 'pause', 'resume', 'report'];
+	protected $parameters = [null, null, null, null, null, null, null, ['task-name'], ['task-name'], null, ['task-name'], ['task-name'], null];
+	protected $optional = [['task-name or @user'], null, null, null, ['seconds'], ['seconds'], ['seconds', 'count'], null, null, ['task-name', 'count'], null, null, ['json or prometheus']];
 	protected $description = ['Manages Cron time-based services',
 		'Displays the Cron tasks configured in the application. Filter by @user and task name.',
 		'Runs the Cron Pending Tasks.',
@@ -56,6 +58,7 @@ class TShellCronAction extends TShellAction
 		'Shows the next trigger times of the tasks; filter by task name.',
 		'Pauses a task: its triggers pass without runs until it is resumed.',
 		'Resumes a paused task.',
+		'Prints the monitor report as JSON, or Prometheus metrics.',
 	];
 
 	private $_cron = false;
@@ -380,8 +383,9 @@ class TShellCronAction extends TShellAction
 	}
 
 	/**
-	 * Renders one view of {@see actionTop}: a line for each cron process, then the running tasks, the
-	 * next triggers, and the last results of the tasks the user may read.
+	 * Renders one view of {@see actionTop} from the module's {@see TCronModule::getMonitorReport() monitor report}
+	 * of the tasks the user may read: a line for each cron process, then the running tasks, the next
+	 * triggers, and the last results.
 	 * @param TCronModule $module the cron module
 	 * @return ?string the view, or null when the user may not read the tasks
 	 * @since 4.4.0
@@ -392,39 +396,26 @@ class TShellCronAction extends TShellAction
 		if ($tasks === null) {
 			return null;
 		}
+		$report = $module->getMonitorReport($tasks);
 		$w = $this->_outWriter;
 		$now = $this->microtime();
-		$out = $w->format('Cron ' . $module->getID(), [TShellWriter::BOLD]) . '  ' . date('Y-m-d H:i:s', (int) $now) . "\n";
-
-		$statuses = $module->getStatuses();
-		$running = [];
-		$children = 0;
-		$alive = 0;
-		foreach ($statuses as $status) {
+		$out = $w->format('Cron ' . $report['module'], [TShellWriter::BOLD]) . '  ' . date('Y-m-d H:i:s', (int) $now) . "\n";
+		foreach (array_merge($report['processes'], $report['ended']) as $status) {
 			$out .= '  ' . $this->formatStatus($status, $now) . "\n";
-			if (!$status['alive']) {
-				continue;
-			}
-			$alive++;
-			foreach ($status['running'] as $run) {
-				if (isset($tasks[$run['name'] ?? ''])) {
-					$running[] = $run + ['owner' => $status['pid']];
-					$children += (($run['mode'] ?? '') === TCronTaskMode::Process) ? 1 : 0;
-				}
-			}
 		}
-		if (!$alive) {
-			$out .= '  No cron process is running' . ($module->getDaemon() ? '; the next cron/run tick starts the daemon.' : '.') . "\n";
+		if (!$report['processes']) {
+			$out .= '  No cron process is running' . ($report['daemonMode'] ? '; the next cron/run tick starts the daemon.' : '.') . "\n";
 		}
-		$out .= '  Concurrency ' . $module->getConcurrency() . ' · ' . (count($running) - $children) . ' running in process · ' . $children . " child process(es)\n\n";
+		$children = count(array_filter($report['runs'], static fn (array $run): bool => $run['mode'] === TCronTaskMode::Process));
+		$out .= '  Concurrency ' . $report['concurrency'] . ' · ' . (count($report['runs']) - $children) . ' running in process · ' . $children . " child process(es)\n\n";
 
-		if ($running) {
+		if ($report['runs']) {
 			$rows = [];
-			foreach ($running as $run) {
+			foreach ($report['runs'] as $run) {
 				$started = (float) ($run['started'] ?? $now);
-				$deadline = $run['deadline'] ?? null;
+				$deadline = $run['deadline'];
 				$elapsed = $this->formatSeconds($now - $started);
-				if (($run['overdue'] ?? false) || (($run['warn'] ?? null) !== null && $now > $run['warn'])) {
+				if ($run['overdue'] || ($run['warn'] !== null && $now > $run['warn'])) {
 					$elapsed = $w->format($elapsed, [TShellWriter::RED, TShellWriter::BOLD]);
 				}
 				$rows[] = [$run['name'], $run['mode'] ?? '-', (string) ($run['pid'] ?? '-'), '@' . ($run['user'] ?? '-'), date('H:i:s', (int) $started),
@@ -433,33 +424,55 @@ class TShellCronAction extends TShellAction
 			$out .= $w->format('  Running', [TShellWriter::BOLD]) . "\n" . $w->tableWidget(['headers' => ['Task', 'Mode', 'Process', 'User', 'Started', 'Elapsed', 'Timeout in'], 'rows' => $rows]);
 		}
 
+		$next = array_filter($report['tasks'], static fn (array $task): bool => $task['next'] !== null);
+		uasort($next, static fn (array $a, array $b): int => $a['next'] <=> $b['next']);
 		$rows = [];
-		$paused = array_flip($module->getPausedTasks());
-		foreach ($module->getNextTriggers(PHP_INT_MAX, true) as $name => $trigger) {
-			if (!isset($tasks[$name])) {
-				continue;
-			}
-			$rows[] = [$name, $tasks[$name]->getMode(), date((abs($trigger - $now) > 86400) ? 'Y-m-d H:i:s' : 'H:i:s', $trigger),
-				isset($paused[$name]) ? $w->format('paused', [TShellWriter::DARK_GRAY]) : (($trigger <= $now) ? $w->format('due', [TShellWriter::GREEN, TShellWriter::BOLD]) : $this->formatSeconds($trigger - $now))];
-			if (count($rows) >= static::TOP_ROWS) {
-				break;
-			}
+		foreach (array_slice($next, 0, static::TOP_ROWS, true) as $name => $task) {
+			$trigger = (int) $task['next'];
+			$rows[] = [$name, $task['mode'], date((abs($trigger - $now) > 86400) ? 'Y-m-d H:i:s' : 'H:i:s', $trigger),
+				$task['paused'] ? $w->format('paused', [TShellWriter::DARK_GRAY]) : (($trigger <= $now) ? $w->format('due', [TShellWriter::GREEN, TShellWriter::BOLD]) : $this->formatSeconds($trigger - $now))];
 		}
 		if ($rows) {
 			$out .= $w->format('  Next', [TShellWriter::BOLD]) . "\n" . $w->tableWidget(['headers' => ['Task', 'Mode', 'Trigger', 'In'], 'rows' => $rows]);
 		}
 
-		$results = array_filter(array_intersect_key($module->getTaskResults(true), $tasks), static fn (array $r): bool => $r['result'] !== null);
-		uasort($results, static fn (array $a, array $b): int => ($b['time'] ?? 0) <=> ($a['time'] ?? 0));
+		$results = array_filter($report['tasks'], static fn (array $task): bool => $task['result'] !== null);
+		uasort($results, static fn (array $a, array $b): int => ($b['last'] ?? 0) <=> ($a['last'] ?? 0));
 		$rows = [];
-		foreach (array_slice($results, 0, static::TOP_ROWS, true) as $name => $r) {
-			$rows[] = [$name, $tasks[$name]->getMode(), ($r['time'] === null) ? '-' : date((abs($r['time'] - $now) > 86400) ? 'Y-m-d H:i:s' : 'H:i:s', $r['time']),
-				($r['duration'] === null) ? '-' : $this->formatSeconds($r['duration']), $this->formatResult($r['result']), (string) $r['count']];
+		foreach (array_slice($results, 0, static::TOP_ROWS, true) as $name => $task) {
+			$rows[] = [$name, $task['mode'], ($task['last'] === null) ? '-' : date((abs($task['last'] - $now) > 86400) ? 'Y-m-d H:i:s' : 'H:i:s', $task['last']),
+				($task['duration'] === null) ? '-' : $this->formatSeconds($task['duration']), $this->formatResult($task['result']), (string) $task['count']];
 		}
 		if ($rows) {
 			$out .= $w->format('  Last results', [TShellWriter::BOLD]) . "\n" . $w->tableWidget(['headers' => ['Task', 'Mode', 'Last Run', 'Took', 'Result', 'Run #'], 'rows' => $rows]);
 		}
 		return $out;
+	}
+
+	/**
+	 * Prints the module's {@see TCronModule::getMonitorReport() monitor report} of the tasks the user may
+	 * read as JSON, or with the argument `prometheus` its {@see TCronModule::getMonitorMetrics() metrics}:
+	 * the report of the {@see TCronMonitorResponse} endpoint for scripts and monitoring agents.  With
+	 * `--quiet=1` the output is the report alone.
+	 * @param string[] $args the arguments to the command line action; the optional format, `json` (default) or `prometheus`
+	 * @return bool whether the command ran
+	 * @since 4.4.0
+	 */
+	public function actionReport($args)
+	{
+		$module = $this->getCronModule();
+		if (!$module || ($tasks = $this->getReadableTasks($module)) === null) {
+			return true;
+		}
+		$format = strtolower($args[1] ?? TCronMonitorResponse::FORMAT_JSON);
+		if ($format === TCronMonitorResponse::FORMAT_PROMETHEUS) {
+			$this->_outWriter->write($module->getMonitorMetrics($tasks));
+		} elseif ($format === TCronMonitorResponse::FORMAT_JSON) {
+			$this->_outWriter->write(json_encode($module->getMonitorReport($tasks), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PARTIAL_OUTPUT_ON_ERROR) . "\n");
+		} else {
+			$this->_outWriter->writeError("The report format '{$format}' is not json or prometheus.");
+		}
+		return true;
 	}
 
 	/**

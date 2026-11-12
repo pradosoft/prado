@@ -2156,12 +2156,14 @@ class TCronModuleTest extends \PHPUnit\Framework\TestCase
 		self::assertFalse($task->getIsPending(), 'a cancelled run claims its trigger');
 
 		$events = [];
+		$cancel = false;
 		$other = new TMemoryMutex();
 		self::assertTrue($other->acquire($this->obj->getTaskLockName('evented')));
 		$task->setLastExecTime(null);
 		self::assertFalse($this->obj->runTask($task));
 		$other->releaseAll();
-		self::assertSame([['OnTaskSkipped', TCronTaskEventParameter::REASON_RUNNING, null, null]], $events, 'a held run lock skips before the start');
+		self::assertSame([['OnTaskStart', null, null, null], ['OnTaskSkipped', TCronTaskEventParameter::REASON_RUNNING, null, null]], $events, 'the claimer finds the run lock held and skips');
+		self::assertFalse($task->getIsPending(), 'the skipped trigger is claimed');
 	}
 
 	public function testRunTask_SendsThePings()
@@ -2452,6 +2454,11 @@ class TCronModuleTest extends \PHPUnit\Framework\TestCase
 		self::assertSame('cronMonitor', $report['module']);
 		self::assertNull($report['daemon']);
 		self::assertSame([], $report['processes']);
+		self::assertSame([], $report['ended']);
+		self::assertSame([], $report['runs']);
+		self::assertFalse($report['daemonMode']);
+		self::assertSame(1, $report['concurrency']);
+		self::assertSame(['idle'], array_keys($this->obj->getMonitorReport(['idle' => $this->obj->getTask('idle')])['tasks']), 'the report has the given tasks');
 		self::assertSame(['idle', 'monitored'], array_keys($report['tasks']), 'the tasks are by name');
 		$task = $report['tasks']['monitored'];
 		self::assertSame('Serial', $task['mode']);

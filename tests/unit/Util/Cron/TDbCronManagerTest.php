@@ -1128,4 +1128,27 @@ class TDbCronManagerTest extends TCronModuleTest
 		$this->obj->clearCronLog(null, 'logged');
 	}
 
+
+	public function testGetPendingTasks_TakesAnotherProcessRunFromTheRow()
+	{
+		$task = new TTestCronModuleTask();
+		$task->setName('pendingSync');
+		$task->setSchedule('* * * * *');
+		self::assertTrue($this->obj->addTask($task));
+		$loaded = $this->obj->getTask('pendingSync');
+		$now = $this->obj->fakeNow;
+		// another process ran the task: its row moved on while this process holds the loaded object
+		$db = $this->obj->getDbConnection();
+		$cmd = $db->createCommand("UPDATE {$this->obj->getTableName()} SET lastexectime=:last, nextexectime=:next, processcount=7 WHERE name='pendingSync' AND active IS NOT NULL");
+		$cmd->bindValue(':last', (string) ($now - 70));
+		$cmd->bindValue(':next', (string) ($now - 10));
+		$cmd->execute();
+		$pending = $this->obj->getPendingTasks();
+		self::assertArrayHasKey('pendingSync', $pending);
+		self::assertSame($loaded, $pending['pendingSync']);
+		self::assertEquals($now - 70, $loaded->getLastExecTime(), 'the task takes the row\'s last run');
+		self::assertSame(7, $loaded->getProcessCount());
+		$this->obj->removeTask($loaded);
+	}
+
 }
