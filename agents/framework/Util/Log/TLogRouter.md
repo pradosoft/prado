@@ -43,6 +43,13 @@ return [
 ];
 ```
 
+Each route is created with [`TModule::createElementComponent()`](../../TModule.md): the `class` attribute (PHP `class`) names the route, and the other attributes (PHP `properties`) are its properties. A PHP route may also be a class name alone, and the `routes` array may be keyed.
+
+| Condition | Exception |
+|---|---|
+| Route has no `class` | `module_config_class_required` |
+| Class is not a `TLogRoute` | `logrouter_routetype_invalid` |
+
 Alternatively, routes can be loaded from an external file:
 
 ```xml

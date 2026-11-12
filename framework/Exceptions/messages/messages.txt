@@ -445,7 +445,6 @@ bulletedlist_selectedvalue_unsupported	= TBulletedList.SelectedValue is read-onl
 radiobuttonlist_selectedindices_unsupported	= TRadioButtonList.SelectedIndices is read-only.
 
 logrouter_configfile_invalid			= TLogRouter.ConfigFile ''{0}'' does not exist.
-logrouter_routeclass_required			= Class attribute is required in <route> configuration.
 logrouter_routetype_invalid					= Log route must be an instance of TLogRoute or its derived class.
 
 dblogroute_connectionid_invalid			= TDbLogRoute unable to create the Database Connection ID ''{0}''.

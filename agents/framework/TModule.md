@@ -83,7 +83,7 @@ A module creates a component that only it uses from a child element of its confi
 $mutex = $this->createConfigComponent($config, 'mutex', IMutex::class);
 ```
 
-Modules that configure an existing object from an element (`TDataSourceConfig` `<database>`, `TCompressionConfigTrait` `<compression>`) or create a list (`TLogRouter` `<route>`) parse their elements themselves.
+`TLogRouter` creates each `<route>` with `getConfigElements()` and `createElementComponent()`; its PHP key is `routes`. Modules that configure an existing object from an element (`TDataSourceConfig` `<database>`, `TCompressionConfigTrait` `<compression>`) parse their elements themselves.
 
 ### Dynamic Events
 
