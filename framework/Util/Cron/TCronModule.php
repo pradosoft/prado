@@ -1081,6 +1081,7 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 				if (empty($pending)) {
 					break;
 				}
+				$pending = $this->sortTasks($pending, true);
 				$task = reset($pending);
 				$trigger = $task->getNextTriggerTime();
 				if (($now = $this->microtime()) < $trigger) {
@@ -1105,8 +1106,9 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	 *  - Serial: starts after the running tasks finish and runs alone.
 	 *  - Parallel: runs beside the other Parallel tasks, at most {@see getConcurrency} at once.
 	 *  - Process: starts a child process and is not waited for; {@see awaitProcessRuns} waits for it.
-	 * A task removed since it was collected ({@see taskExistsInternal}) is skipped.  Returns once
-	 * every Serial and Parallel task has finished.
+	 * The tasks start in the order of their {@see \Prado\Util\Cron\TCronTask::getPriority() Priority},
+	 * lower first; equal priorities keep their order ({@see sortTasks}).  A task removed since it was
+	 * collected ({@see taskExistsInternal}) is skipped.  Returns once every Serial and Parallel task has finished.
 	 * @param TCronTask[] $tasks the tasks to run, in order
 	 * @param ?int $startMinute the minute (`time() / 60`) after which no further task starts, or null for no limit
 	 * @return array<string, bool> whether each Serial and Parallel task that ran did so without an exception, by task name
@@ -1117,7 +1119,7 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 		$running = [];
 		$futures = [];
 		$this->awaitTasks($this->_processRuns, PHP_INT_MAX);
-		foreach ($tasks as $task) {
+		foreach ($this->sortTasks($tasks) as $task) {
 			if ($startMinute !== null && $startMinute != floor($this->time() / 60)) {
 				break;
 			}
@@ -1141,6 +1143,21 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 			$results[$name] = (bool) $future->await();
 		}
 		return $results;
+	}
+
+	/**
+	 * Orders tasks by their {@see \Prado\Util\Cron\TCronTask::getPriority() Priority}, lower first, keeping
+	 * the order of equal priorities.
+	 * @param TCronTask[] $tasks the tasks
+	 * @param bool $byTrigger whether the next trigger time orders them first, then the priority
+	 * @return TCronTask[] the ordered tasks, with their keys
+	 * @since 4.4.0
+	 */
+	protected function sortTasks(array $tasks, bool $byTrigger = false): array
+	{
+		uasort($tasks, static fn ($a, $b): int => ($byTrigger ? [(int) $a->getNextTriggerTime(), $a->getPriority()] : [$a->getPriority()])
+			<=> ($byTrigger ? [(int) $b->getNextTriggerTime(), $b->getPriority()] : [$b->getPriority()]));
+		return $tasks;
 	}
 
 	/**
@@ -1225,13 +1242,56 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	 *    by {@see updateTaskResult}, and
 	 *    {@see onTaskEnd}, on failure {@see onTaskFailure}, and the task's pings ({@see pingTask}) follow.
 	 * A skipped trigger advances the task without counting a run and raises {@see onTaskSkipped}.
+	 * After the run, the task's chained tasks run ({@see runChain}).
 	 * @param \Prado\Util\Cron\TCronTask $task the task to run.
 	 * @param bool $manual whether the run is asked for (`cron/now`) instead of triggered; it is not skipped by {@see getTaskSkipReason}
 	 * @return bool whether the task ran without an exception
 	 */
 	public function runTask($task, bool $manual = false)
 	{
-		return $this->runAsTaskUser($task, fn (string $username): bool => $this->runTaskAsUser($task, $username, $manual));
+		return $this->runChain($task, $manual, []);
+	}
+
+	/**
+	 * Runs a task as its user, then the tasks it chains: after a run without an exception the task's
+	 * {@see \Prado\Util\Cron\TCronTask::getThen() Then}, after a failed run its
+	 * {@see \Prado\Util\Cron\TCronTask::getThenOnFailure() ThenOnFailure}.  A chained task runs as a manual
+	 * run, after the run lock of the task before it is released; a paused chained task is skipped, and a
+	 * task already in the chain is not run again.
+	 * @param \Prado\Util\Cron\TCronTask $task the task
+	 * @param bool $manual whether the run is asked for or chained instead of triggered
+	 * @param string[] $chain the names of the tasks that ran before it in the chain
+	 * @return bool whether the task ran without an exception
+	 * @since 4.4.0
+	 */
+	protected function runChain($task, bool $manual, array $chain): bool
+	{
+		$ran = false;
+		$ok = $this->runAsTaskUser($task, function (string $username) use ($task, $manual, $chain, &$ran): bool {
+			return $this->runTaskAsUser($task, $username, $manual, $chain, $ran);
+		});
+		if (!$ran) {
+			return $ok;
+		}
+		$chain[] = $task->getName();
+		foreach ($ok ? $task->getThen() : $task->getThenOnFailure() as $name) {
+			if (in_array($name, $chain, true)) {
+				Prado::log('Cron task (' . $name . ') is already in the chain ' . implode(' > ', $chain) . '; it is not run again', TLogger::WARNING, TCronModule::class);
+				continue;
+			}
+			$this->ensureTasks();
+			if (!$this->taskExistsInternal($name) || ($next = $this->getTask($name)) === null) {
+				Prado::log('Cron task (' . $task->getName() . ') chains the unknown task (' . $name . ')', TLogger::WARNING, TCronModule::class);
+				continue;
+			}
+			if ($this->getIsTaskPaused($name)) {
+				$this->onTaskSkipped((new TCronTaskEventParameter($next, true))->setChain($chain)->setReason(TCronTaskEventParameter::REASON_PAUSED));
+				continue;
+			}
+			Prado::log('Cron task (' . $name . ') runs after (' . $task->getName() . ')', TLogger::INFO, TCronModule::class);
+			$this->runChain($next, true, $chain);
+		}
+		return $ok;
 	}
 
 	/**
@@ -1294,13 +1354,16 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	 * @param \Prado\Util\Cron\TCronTask $task the task
 	 * @param string $username the user name the task runs as
 	 * @param bool $manual whether the run is asked for instead of triggered
+	 * @param string[] $chain the names of the tasks that ran before it in a chain
+	 * @param ?bool $ran set to whether the task ran, so its chain follows
 	 * @return bool whether the task ran without an exception
 	 * @since 4.4.0
 	 */
-	protected function runTaskAsUser($task, string $username, bool $manual = false): bool
+	protected function runTaskAsUser($task, string $username, bool $manual = false, array $chain = [], ?bool &$ran = null): bool
 	{
+		$ran = false;
 		$name = $task->getName();
-		$param = new TCronTaskEventParameter($task, $manual);
+		$param = (new TCronTaskEventParameter($task, $manual))->setChain($chain);
 		if ($this->dyRunTask(false, $task, ['extra' => ['username' => $task->getUserName()]]) === true) {
 			$this->dyLogPermissionFailed(static::PERM_CRON_RUN_TASK, 'running cron task \'' . $name . '\'');
 			$this->updateTaskInfo($task);
@@ -1419,6 +1482,7 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 			}
 			$this->pingTask($task, TCronTask::PING_AFTER, $param);
 			$this->pingTask($task, ($result === static::RESULT_OK) ? TCronTask::PING_SUCCESS : TCronTask::PING_FAILURE, $param);
+			$ran = true;
 			return $result === static::RESULT_OK;
 		} finally {
 			if ($queued) {
@@ -1533,6 +1597,7 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	 */
 	public function pauseTask(string $name): bool
 	{
+		$this->ensureTasks();
 		if (!$this->taskExistsInternal($name)) {
 			return false;
 		}
@@ -1548,6 +1613,7 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	 */
 	public function resumeTask(string $name): bool
 	{
+		$this->ensureTasks();
 		if (!$this->taskExistsInternal($name)) {
 			return false;
 		}
@@ -3357,6 +3423,106 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 			}
 		}
 		return $ids;
+	}
+
+	/**
+	 * Returns the state of the module for monitoring: its cron processes and the tasks the current user
+	 * may read, read from the stores so another process's runs show.
+	 *
+	 * | Key | Content |
+	 * |---|---|
+	 * | `module`, `time` | the module ID and the report time |
+	 * | `daemon` | the daemon's status, or null when no daemon runs |
+	 * | `processes` | the live statuses of {@see getStatuses}, without their file |
+	 * | `tasks` | by name: `mode`, `schedule`, `timezone`, `priority`, `description`, `paused`, `running` (the process IDs of its runs), `next`, `last`, `count`, `result`, `duration` |
+	 * @return array the report
+	 * @since 4.4.0
+	 */
+	public function getMonitorReport(): array
+	{
+		$processes = [];
+		$daemon = null;
+		foreach ($this->getStatuses() as $status) {
+			if (!$status['alive']) {
+				continue;
+			}
+			unset($status['file']);
+			$processes[] = $status;
+			if (($status['role'] ?? null) === static::STATUS_ROLE_DAEMON) {
+				$daemon ??= $status;
+			}
+		}
+		$running = [];
+		foreach ($processes as $status) {
+			foreach ($status['running'] as $run) {
+				$running[$run['name'] ?? ''][] = (int) ($run['pid'] ?? 0);
+			}
+		}
+		$paused = array_flip($this->getPausedTasks());
+		$results = $this->getTaskResults(true);
+		$next = $this->getNextTriggers(PHP_INT_MAX, true);
+		$tasks = [];
+		foreach ($this->getTasks() ?? [] as $name => $task) {
+			$result = $results[$name] ?? [];
+			$tasks[$name] = [
+				'mode' => $task->getMode(),
+				'schedule' => $task->getSchedule(),
+				'timezone' => $task->getScheduleTimeZone() ?? date_default_timezone_get(),
+				'priority' => $task->getPriority(),
+				'description' => $task->getDescription(),
+				'paused' => isset($paused[$name]),
+				'running' => $running[$name] ?? [],
+				'next' => $next[$name] ?? null,
+				'last' => $result['time'] ?? null,
+				'count' => $result['count'] ?? 0,
+				'result' => $result['result'] ?? null,
+				'duration' => $result['duration'] ?? null,
+			];
+		}
+		return ['module' => $this->getID(), 'time' => $this->microtime(), 'daemon' => $daemon, 'processes' => $processes, 'tasks' => $tasks];
+	}
+
+	/**
+	 * Returns {@see getMonitorReport} in the Prometheus text exposition format:
+	 * `prado_cron_daemon_up`, `prado_cron_processes`, and per task `prado_cron_task_running`,
+	 * `prado_cron_task_paused`, `prado_cron_task_runs_total`, `prado_cron_task_last_run_timestamp_seconds`,
+	 * `prado_cron_task_last_duration_seconds`, `prado_cron_task_last_success`, and
+	 * `prado_cron_task_next_run_timestamp_seconds`, labeled by `module` and `task`.
+	 * @return string the metrics
+	 * @since 4.4.0
+	 */
+	public function getMonitorMetrics(): string
+	{
+		$report = $this->getMonitorReport();
+		$label = static fn (array $labels): string => '{' . implode(',', array_map(static fn ($k, $v) => $k . '="' . addcslashes((string) $v, "\\\"\n") . '"', array_keys($labels), $labels)) . '}';
+		$module = ['module' => (string) $report['module']];
+		$lines = [];
+		$metric = static function (string $name, string $type, string $help, array $samples) use (&$lines): void {
+			$lines[] = '# HELP ' . $name . ' ' . $help;
+			$lines[] = '# TYPE ' . $name . ' ' . $type;
+			foreach ($samples as [$labels, $value]) {
+				$lines[] = $name . $labels . ' ' . $value;
+			}
+		};
+		$metric('prado_cron_daemon_up', 'gauge', 'Whether a cron daemon runs.', [[$label($module), ($report['daemon'] !== null) ? 1 : 0]]);
+		$metric('prado_cron_processes', 'gauge', 'The cron processes that publish their status.', [[$label($module), count($report['processes'])]]);
+		$per = static function (callable $value) use ($report, $module, $label): array {
+			$samples = [];
+			foreach ($report['tasks'] as $name => $task) {
+				if (($v = $value($task)) !== null) {
+					$samples[] = [$label($module + ['task' => $name]), $v];
+				}
+			}
+			return $samples;
+		};
+		$metric('prado_cron_task_running', 'gauge', 'The runs of the task in progress.', $per(static fn ($t) => count($t['running'])));
+		$metric('prado_cron_task_paused', 'gauge', 'Whether the task is paused.', $per(static fn ($t) => $t['paused'] ? 1 : 0));
+		$metric('prado_cron_task_runs_total', 'counter', 'The runs of the task.', $per(static fn ($t) => $t['count']));
+		$metric('prado_cron_task_last_run_timestamp_seconds', 'gauge', 'The start of the last run of the task.', $per(static fn ($t) => $t['last']));
+		$metric('prado_cron_task_last_duration_seconds', 'gauge', 'The seconds the last finished run of the task took.', $per(static fn ($t) => $t['duration']));
+		$metric('prado_cron_task_last_success', 'gauge', 'Whether the last finished run of the task succeeded.', $per(static fn ($t) => ($t['result'] === null) ? null : (($t['result'] === static::RESULT_OK) ? 1 : 0)));
+		$metric('prado_cron_task_next_run_timestamp_seconds', 'gauge', 'The next trigger of the task.', $per(static fn ($t) => $t['next']));
+		return implode("\n", $lines) . "\n";
 	}
 
 	/**

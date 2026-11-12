@@ -77,6 +77,79 @@ class CronE2EProbe extends TModule
 	}
 
 	/**
+	 * Records the start of a sweep.
+	 * @param \Prado\Util\Cron\TCronModule $sender the cron module
+	 * @param \Prado\Util\Cron\TCronSweepEventParameter $param the sweep
+	 */
+	public function fxCronSweepStart($sender, $param)
+	{
+		$this->record(['e' => 'sweep', 'count' => $param->getCount()]);
+	}
+
+	/**
+	 * Records the start of a task run.
+	 * @param \Prado\Util\Cron\TCronModule $sender the cron module
+	 * @param \Prado\Util\Cron\TCronTaskEventParameter $param the run
+	 */
+	public function fxCronTaskStart($sender, $param)
+	{
+		$this->record(['e' => 'tstart', 'task' => $param->getTask()->getName(), 'chain' => $param->getChain(), 'manual' => $param->getManual()]);
+	}
+
+	/**
+	 * Records the end of a task run with its result.
+	 * @param \Prado\Util\Cron\TCronModule $sender the cron module
+	 * @param \Prado\Util\Cron\TCronTaskEventParameter $param the run
+	 */
+	public function fxCronTaskEnd($sender, $param)
+	{
+		$this->record(['e' => 'tend', 'task' => $param->getTask()->getName(), 'result' => $param->getResult(), 'attempt' => $param->getAttempt(), 'duration' => $param->getDuration()]);
+	}
+
+	/**
+	 * Records a retried attempt.
+	 * @param \Prado\Util\Cron\TCronModule $sender the cron module
+	 * @param \Prado\Util\Cron\TCronTaskEventParameter $param the attempt
+	 */
+	public function fxCronTaskRetry($sender, $param)
+	{
+		$this->record(['e' => 'tretry', 'task' => $param->getTask()->getName(), 'attempt' => $param->getAttempt()]);
+	}
+
+	/**
+	 * Records an overdue run.
+	 * @param \Prado\Util\Cron\TCronModule $sender the cron module
+	 * @param \Prado\Util\Cron\TCronTaskEventParameter $param the run
+	 */
+	public function fxCronTaskOverdue($sender, $param)
+	{
+		$this->record(['e' => 'toverdue', 'task' => $param->getTask()->getName(), 'duration' => $param->getDuration()]);
+	}
+
+	/**
+	 * Records a skipped trigger with its reason.
+	 * @param \Prado\Util\Cron\TCronModule $sender the cron module
+	 * @param \Prado\Util\Cron\TCronTaskEventParameter $param the trigger
+	 */
+	public function fxCronTaskSkipped($sender, $param)
+	{
+		$this->record(['e' => 'tskip', 'task' => $param->getTask()->getName(), 'reason' => $param->getReason()]);
+	}
+
+	/**
+	 * Delivers the pings to the host `probe.invalid` itself, as a webhook module would, and records them.
+	 * @param \Prado\Util\Cron\TCronModule $sender the cron module
+	 * @param \Prado\Util\Cron\TCronTaskEventParameter $param the ping
+	 */
+	public function fxCronTaskPing($sender, $param)
+	{
+		if (parse_url((string) $param->getUrl(), PHP_URL_HOST) === 'probe.invalid') {
+			$param->setHandled(true);
+			$this->record(['e' => 'tping', 'task' => $param->getTask()->getName(), 'ping' => $param->getPing(), 'result' => $param->getResult()]);
+		}
+	}
+
+	/**
 	 * Offers the `probe` task to `cron/add`.
 	 * @param \Prado\Util\Cron\TCronModule $sender the cron module
 	 * @param mixed $param unused

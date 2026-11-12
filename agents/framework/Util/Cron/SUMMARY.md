@@ -16,6 +16,10 @@ Cron-style scheduled task engine supporting both file-configured and database-ba
 
 - **`TCronTaskOverlap`** — The task `Overlap` enumerable: `Skip`, `Allow`, `Replace`, `Queue`.
 
+- **`TCompoundCronTask`** — Concrete task that runs several steps as one run.
+
+- **`TCronMonitorResponse`** — The cron monitoring endpoint for `TJsonService`: a JSON report or Prometheus metrics.
+
 - **`THttpCronTask`** — Concrete task that sends an HTTP request; a non-2xx status is an error.
 
 - **`TCommandCronTask`** — Concrete task that runs a shell command to completion, with its output to a log file.

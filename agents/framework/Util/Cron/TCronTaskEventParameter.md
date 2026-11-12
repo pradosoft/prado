@@ -15,7 +15,8 @@ The parameter of the [`TCronModule`](TCronModule.md#task-events-and-pings-440) t
 | Property | Set for | Meaning |
 |---|---|---|
 | `Task` | all | the `TCronTask` |
-| `Manual` | all | the run was asked for (`cron/now`) |
+| `Manual` | all | the run was asked for (`cron/now`) or chained |
+| `Chain` | all | the names of the tasks that ran before this one in a chain |
 | `Cancel` | start | a handler sets it to skip the run |
 | `Reason` | skipped | `REASON_DENIED`, `REASON_PAUSED`, `REASON_DEADLINE`, `REASON_WINDOW`, `REASON_CONDITION`, `REASON_RUNNING`, `REASON_CANCELLED`, or `REASON_CLAIMED` |
 | `Result` | end, failure, the pings after a run | a `TCronModule::RESULT_*` value |

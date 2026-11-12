@@ -29,7 +29,8 @@ use Prado\TPropertyValue;
  * | Property | Set for | Meaning |
  * |---|---|---|
  * | `Task` | all | the {@see \Prado\Util\Cron\TCronTask} |
- * | `Manual` | all | whether the run was asked for (`cron/now`) instead of triggered |
+ * | `Manual` | all | whether the run was asked for (`cron/now`) or chained instead of triggered |
+ * | `Chain` | all | the names of the tasks that ran before this one in a chain |
  * | `Cancel` | start | a handler sets it to skip the run |
  * | `Reason` | skipped | a `REASON_*` constant |
  * | `Result` | end, failure, retry, ping after the run | a `TCronModule::RESULT_*` constant |
@@ -101,6 +102,9 @@ class TCronTaskEventParameter extends TEventParameter
 
 	/** @var int the attempt of the run, from 1 */
 	private int $_attempt = 1;
+
+	/** @var string[] the names of the tasks that ran before this one in a chain */
+	private array $_chain = [];
 
 	/**
 	 * @param TCronTask $task the task
@@ -216,6 +220,24 @@ class TCronTaskEventParameter extends TEventParameter
 	public function setException(?\Throwable $value): static
 	{
 		$this->_exception = $value;
+		return $this;
+	}
+
+	/**
+	 * @return string[] the names of the tasks that ran before this one in a chain, first to last; empty for a run not chained
+	 */
+	public function getChain(): array
+	{
+		return $this->_chain;
+	}
+
+	/**
+	 * @param string[] $value the names of the tasks that ran before this one in a chain
+	 * @return static the current object
+	 */
+	public function setChain(array $value): static
+	{
+		$this->_chain = $value;
 		return $this;
 	}
 

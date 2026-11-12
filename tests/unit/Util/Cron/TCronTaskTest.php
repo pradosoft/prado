@@ -379,4 +379,25 @@ class TCronTaskTest extends \PHPUnit\Framework\TestCase
 		$this->obj->setJitter(-1);
 	}
 
+
+	public function testPriorityAndChains()
+	{
+		self::assertSame(10.0, $this->obj->getPriority());
+		$this->obj->setPriority('5');
+		self::assertSame(5.0, $this->obj->getPriority());
+		self::assertSame([], $this->obj->getThen());
+		$this->obj->setThen(' report, notify ,report,');
+		self::assertSame(['report', 'notify'], $this->obj->getThen());
+		$this->obj->setThenOnFailure(['alert']);
+		self::assertSame(['alert'], $this->obj->getThenOnFailure());
+		$copy = unserialize(serialize($this->obj));
+		self::assertSame(5.0, $copy->getPriority());
+		self::assertSame(['report', 'notify'], $copy->getThen());
+		$this->obj->setPriority('');
+		$this->obj->setThen(null);
+		$this->obj->setThenOnFailure('');
+		self::assertStringNotContainsString('_priority', serialize($this->obj));
+		self::assertStringNotContainsString('_then', serialize($this->obj));
+	}
+
 }

@@ -120,6 +120,8 @@ use Prado\TPropertyValue;
  * a range 'YYYY-MM-DD..YYYY-MM-DD', a yearly 'MM-DD', or a yearly range 'MM-DD..MM-DD' that may span
  * the new year, such as '0 9 * * 1-5 except 12-24..12-26, 01-01, 2026-04-03'.
  *
+ * '@never' has no trigger, for a task that only runs from a chain or on request.
+ *
  * The schedule is in the {@see setTimeZone TimeZone}, default the application time zone
  * ({@see \date_default_timezone_get()}); the trigger times are Unix timestamps.  Across a daylight
  * saving change, a time in the skipped hour does not trigger that day, and a time in the repeated
@@ -463,6 +465,12 @@ class TTimeScheduler extends \Prado\TComponent
 		if (preg_match('/^@(\d+)$/', $schedule, $atMatch)) {
 			$this->_triggerTime = (int) $atMatch[1];
 			$this->_schedule = '@' . $this->_triggerTime;
+			return;
+		}
+		// '@never' has no trigger: a task that only runs from a chain or on request.
+		if (strcasecmp($schedule, '@never') === 0) {
+			$this->_triggerTime = -1;
+			$this->_schedule = '@never';
 			return;
 		}
 		if (preg_match('/^every\s+(.+?)(\s+after\s+end)?(?:\s+from\s+(\S+(?:\s+\S+)*?))?(?:\s+until\s+(\S+(?:\s+\S+)*?))?$/i', $schedule, $everyMatch)) {

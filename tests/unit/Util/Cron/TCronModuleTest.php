@@ -2373,4 +2373,102 @@ class TCronModuleTest extends \PHPUnit\Framework\TestCase
 		$this->obj->fakeMicrotime = (float) $start;
 	}
 
+
+	public function testRunTasks_RunsByPriority()
+	{
+		$this->obj->setDaemonMutex(new TMemoryMutex());
+		TTestCronRecordingTask::$events = [];
+		$this->obj->init([
+			['name' => 'prioA', 'schedule' => '0 0 1 1 ? 2000', 'task' => TTestCronRecordingTask::class],
+			['name' => 'prioB', 'schedule' => '0 0 1 1 ? 2000', 'task' => TTestCronRecordingTask::class, 'priority' => 1],
+			['name' => 'prioC', 'schedule' => '0 0 1 1 ? 2000', 'task' => TTestCronRecordingTask::class, 'priority' => 20],
+			['name' => 'prioD', 'schedule' => '0 0 1 1 ? 2000', 'task' => TTestCronRecordingTask::class],
+		]);
+		self::assertEquals(4, $this->obj->processPendingTasks());
+		self::assertSame(['prioB', 'prioA', 'prioD', 'prioC'], array_values(array_unique(array_map(fn ($e) => explode(' ', $e)[0], TTestCronRecordingTask::$events))), 'lower first; equal priorities keep their order');
+	}
+
+	public function testRunTask_RunsTheChain()
+	{
+		$this->obj->setID('cronChain' . bin2hex(random_bytes(3)));
+		$this->obj->setDaemonMutex(new TMemoryMutex());
+		TTestCronRecordingTask::$events = [];
+		$this->obj->init([
+			['name' => 'chainHead', 'schedule' => '0 0 1 1 ? 2000', 'task' => TTestCronRecordingTask::class, 'then' => 'chainNext, chainMissing', 'thenonfailure' => 'chainAlert'],
+			['name' => 'chainNext', 'schedule' => '@never', 'task' => TTestCronRecordingTask::class, 'then' => 'chainHead, chainLast'],
+			['name' => 'chainLast', 'schedule' => '@never', 'task' => TTestCronRecordingTask::class],
+			['name' => 'chainAlert', 'schedule' => '@never', 'task' => TTestCronRecordingTask::class],
+		]);
+		$chains = [];
+		$this->obj->attachEventHandler('OnTaskStart', function ($sender, $param) use (&$chains) {
+			$chains[$param->getTask()->getName()] = $param->getChain();
+		});
+		$head = $this->obj->getTask('chainHead');
+		$debug = [];
+		$this->obj->attachEventHandler('OnTaskSkipped', function ($sender, $param) use (&$debug) {
+			$debug[] = [$param->getTask()->getName(), $param->getReason()];
+		});
+		self::assertFalse($this->obj->getTask('chainNext')->getIsPending(), '@never is never due');
+		self::assertTrue($this->obj->runTask($head));
+		self::assertSame([], $debug, 'no chained run is skipped');
+		self::assertSame(['chainHead start', 'chainHead end', 'chainNext start', 'chainNext end', 'chainLast start', 'chainLast end'], TTestCronRecordingTask::$events, 'a task already in the chain is not run again, an unknown one is skipped');
+		self::assertSame(['chainHead', 'chainNext'], $chains['chainLast']);
+		self::assertSame(1, $this->obj->getTask('chainNext')->getProcessCount(), 'a chained run is claimed');
+
+		TTestCronRecordingTask::$events = [];
+		$head->throw = true;
+		$head->setLastExecTime(null);
+		self::assertFalse($this->obj->runTask($head));
+		self::assertSame(['chainHead start', 'chainAlert start', 'chainAlert end'], TTestCronRecordingTask::$events, 'a failure runs ThenOnFailure');
+
+		$file = PradoUnit::invoke($this->obj, 'getPausedFile');
+		try {
+			TTestCronRecordingTask::$events = [];
+			$skipped = [];
+			$this->obj->attachEventHandler('OnTaskSkipped', function ($sender, $param) use (&$skipped) {
+				$skipped[] = [$param->getTask()->getName(), $param->getReason()];
+			});
+			$this->obj->pauseTask('chainAlert');
+			$head->setLastExecTime(null);
+			self::assertFalse($this->obj->runTask($head));
+			self::assertSame([['chainAlert', TCronTaskEventParameter::REASON_PAUSED]], $skipped, 'a paused chained task is skipped');
+		} finally {
+			if (is_file($file)) {
+				unlink($file);
+			}
+		}
+	}
+
+	public function testMonitorReportAndMetrics()
+	{
+		$this->obj->setID('cronMonitor');
+		$this->obj->setDaemonMutex(new TMemoryMutex());
+		$this->obj->init([
+			['name' => 'monitored', 'schedule' => '0 0 1 1 ? 2000', 'task' => TTestCronRecordingTask::class, 'description' => 'Watched "here"', 'priority' => 3],
+			['name' => 'idle', 'schedule' => '0 0 1 1 ? 2099', 'task' => TTestCronRecordingTask::class],
+		]);
+		self::assertTrue($this->obj->runTask($this->obj->getTask('monitored')));
+		$report = $this->obj->getMonitorReport();
+		self::assertSame('cronMonitor', $report['module']);
+		self::assertNull($report['daemon']);
+		self::assertSame([], $report['processes']);
+		self::assertSame(['idle', 'monitored'], array_keys($report['tasks']), 'the tasks are by name');
+		$task = $report['tasks']['monitored'];
+		self::assertSame('Serial', $task['mode']);
+		self::assertSame(3.0, $task['priority']);
+		self::assertSame('Watched "here"', $task['description']);
+		self::assertFalse($task['paused']);
+		self::assertSame([], $task['running']);
+		self::assertSame(1, $task['count']);
+		self::assertSame(TCronModule::RESULT_OK, $task['result']);
+		self::assertSame((int) mktime(0, 0, 0, 1, 1, 2099), $report['tasks']['idle']['next']);
+
+		$metrics = $this->obj->getMonitorMetrics();
+		self::assertStringContainsString("# TYPE prado_cron_daemon_up gauge\nprado_cron_daemon_up{module=\"cronMonitor\"} 0\n", $metrics);
+		self::assertStringContainsString('prado_cron_task_runs_total{module="cronMonitor",task="monitored"} 1', $metrics);
+		self::assertStringContainsString('prado_cron_task_last_success{module="cronMonitor",task="monitored"} 1', $metrics);
+		self::assertStringNotContainsString('prado_cron_task_last_success{module="cronMonitor",task="idle"}', $metrics, 'a task never run has no result');
+		self::assertStringEndsWith("\n", $metrics);
+	}
+
 }

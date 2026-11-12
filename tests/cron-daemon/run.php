@@ -9,9 +9,14 @@
  * a killed daemon replaced by the next tick, `cron/stop`, a wake from `cron/add` in another
  * process reaching the waiting daemon through the default TCronWakeSocket, and a Process task
  * run by a `cron/exec` child while the daemon serves on, shown by its status, `cron/top`, and
- * `cron/tasks`.
+ * `cron/tasks`.  The `features` scenario runs one daemon over every task feature (pings through HTTP
+ * and the `fxCronTaskPing` seam, failures and retries, pause and resume, the starting deadline, a time
+ * window, an excepted date, jitter, priority, a chain, a compound task, a command task, an HTTP task,
+ * an `after end` schedule, a Process task's warning, output, priority, and memory limit, and the
+ * monitoring endpoint served by a PHP web server); the `overlap` scenario checks Replace and Queue on
+ * Process tasks.
  *
- * Usage: php tests/cron-daemon/run.php [handoff|wake|process|all]
+ * Usage: php tests/cron-daemon/run.php [handoff|wake|process|features|overlap|all]
  * Exit code 0 when every check passes, 1 otherwise.
  *
  * @author Brad Anderson <belisoful@icloud.com>
@@ -37,6 +42,8 @@ final class CronDaemonE2E
 	private string $log = '';
 	private string $cli;
 	private bool $windows;
+	/** @var ?array{proc: resource, port: int} the PHP web server of a scenario */
+	private ?array $server = null;
 
 	public function __construct()
 	{
@@ -54,6 +61,7 @@ final class CronDaemonE2E
 			} catch (\Throwable $e) {
 				$this->fail($scenario . ' threw ' . $e::class . ': ' . $e->getMessage());
 			}
+			$this->stopServer();
 			$this->finish();
 			if (count($this->failures) > $before) {
 				$this->dump();
@@ -252,6 +260,213 @@ final class CronDaemonE2E
 		$this->checkQuickTicks($starts);
 	}
 
+	/**
+	 * Every task feature under one daemon, read from the task events the probe records and the
+	 * requests the web server records.
+	 */
+	private function scenarioFeatures(): void
+	{
+		$start = time();
+		$this->makeApp('DaemonLifetime="0" DaemonIdle="1" LogCronTasks="true"', '', <<<XML
+			<service id="json" class="Prado\\Web\\Services\\TJsonService">
+				<json id="cron" class="Prado\\Util\\Cron\\TCronMonitorResponse" />
+				<json id="metrics" class="Prado\\Util\\Cron\\TCronMonitorResponse" Format="prometheus" />
+			</service>
+			XML);
+		$port = $this->startServer();
+		$url = "http://127.0.0.1:{$port}";
+		$protected = $this->dir . DIRECTORY_SEPARATOR . 'protected';
+		file_put_contents($protected . DIRECTORY_SEPARATOR . 'cmd.php', '<?php file_put_contents(__DIR__ . "/../command.out", "x", FILE_APPEND);');
+		$today = date('m-d');
+		$window = sprintf('%02d:00-%02d:59', ((int) gmdate('G') + 2) % 24, ((int) gmdate('G') + 3) % 24);
+		$out = $this->dir . DIRECTORY_SEPARATOR . 'proc.out';
+		$task = 'Application.CronE2ETask';
+		$this->writeJobs(<<<XML
+			<job name="pinged" schedule="*:*/3 * * * *" task="{$task}" PingBeforeUrl="{$url}/ping/pinged/start" PingSuccessUrl="{$url}/ping/pinged/ok" PingAfterUrl="http://probe.invalid/after" />
+			<job name="failing" schedule="*:*/4 * * * *" task="{$task}" FailTimes="1000" PingFailureUrl="{$url}/ping/failing/fail" />
+			<job name="flaky" schedule="@{$this->at($start + 4)}" task="{$task}" FailTimes="2" Retries="2" RetryDelay="0.2" />
+			<job name="paused" schedule="*:*/2 * * * *" task="{$task}" />
+			<job name="late" schedule="@{$this->at($start - 120)}" task="{$task}" StartingDeadline="10" />
+			<job name="windowed" schedule="*:*/2 * * * *" task="{$task}" TimeZone="UTC" Between="{$window}" />
+			<job name="excepted" schedule="*:*/2 * * * * except {$today}" task="{$task}" />
+			<job name="jittered" schedule="*:*/6 * * * *" task="{$task}" Jitter="3" />
+			<job name="prioLast" schedule="*:*/5 * * * *" task="{$task}" Priority="20" />
+			<job name="prioFirst" schedule="*:*/5 * * * *" task="{$task}" Priority="1" />
+			<job name="head" schedule="*:*/7 * * * *" task="{$task}" Then="chained" />
+			<job name="chained" schedule="@never" task="{$task}" />
+			<job name="compound" schedule="*:*/7 * * * *" task="Prado\\Util\\Cron\\TCompoundCronTask" Tasks="{$task}; @stepRef" />
+			<job name="stepRef" schedule="@never" task="{$task}" />
+			<job name="command" schedule="*:*/5 * * * *" task="Prado\\Util\\Cron\\TCommandCronTask" Command="@php {$protected}/cmd.php" />
+			<job name="hook" schedule="*:*/5 * * * *" task="Prado\\Util\\Cron\\THttpCronTask" Url="{$url}/hook" Method="POST" Body="hello" />
+			<job name="delayed" schedule="every 3 seconds after end from @{$this->at($start)}" task="{$task}" Sleep="1" />
+			<job name="slowproc" schedule="*:*/6 * * * *" task="{$task}" Mode="Process" Sleep="2.5" WarnDuration="1" Echo="hello" ProcessOutputFile="{$out}" ProcessPriority="5" ProcessMemoryLimit="96M" />
+			<job name="zoned" schedule="0 9 * * *" task="{$task}" TimeZone="Asia/Tokyo" />
+			XML);
+		$this->cli(['cron/migrate']);
+		$this->cli(['cron/pause', 'paused']);
+		$t0 = microtime(true);
+		$nextTick = $t0;
+		$resumed = null;
+		$checked = false;
+		while (($now = microtime(true)) < $t0 + 30.0) {
+			if ($now >= $nextTick) {
+				$this->tick();
+				$nextTick += TICK;
+			}
+			$this->reap();
+			if ($resumed === null && $now >= $t0 + 12) {
+				$this->cli(['cron/resume', 'paused']);
+				$resumed = microtime(true);
+			}
+			if (!$checked && $now >= $t0 + 20) {
+				$checked = true;
+				$report = json_decode((string) $this->httpGet("/index.php?json=cron"), true);
+				$this->check(is_array($report) && ($report['daemon']['role'] ?? null) === 'daemon', 'the monitor report shows the daemon');
+				$this->check(is_array($report) && isset($report['tasks']['slowproc']) && $report['tasks']['slowproc']['mode'] === 'Process', 'the monitor report lists the tasks');
+				$metrics = (string) $this->httpGet("/index.php?json=metrics");
+				$this->check(str_contains($metrics, 'prado_cron_daemon_up{module="cron"} 1'), 'the monitor metrics show the daemon up');
+				$this->check(str_contains($metrics, 'prado_cron_task_runs_total{module="cron",task="pinged"}'), 'the monitor metrics count the runs');
+				$this->check(str_contains($this->cli(['cron/next', 'zoned']), 'JST'), 'cron/next shows a task in its time zone');
+				$this->check(str_contains($this->cli(['cron/top']), 'Daemon'), 'cron/top shows the daemon');
+			}
+			usleep(100000);
+		}
+		$this->stop();
+		$log = $this->cli(['cron/log']);
+		$this->stopServer();
+
+		$events = $this->events();
+		$starts = $this->select($events, 'start');
+		$daemon = $starts[0]['pid'] ?? null;
+		$this->check(count($starts) === 1, 'one daemon served the scenario; ' . count($starts) . ' started');
+		$runs = fn (string $name) => array_values(array_filter($events, fn ($e) => $e['e'] === 'run' && $e['task'] === $name));
+		$ends = fn (string $name) => array_values(array_filter($events, fn ($e) => $e['e'] === 'tend' && $e['task'] === $name));
+		$skips = fn (string $name) => array_values(array_filter($events, fn ($e) => $e['e'] === 'tskip' && $e['task'] === $name));
+		$http = fn (string $path) => array_values(array_filter($events, fn ($e) => $e['e'] === 'http' && $e['path'] === $path));
+
+		$ok = array_filter($ends('pinged'), fn ($e) => $e['result'] === 'ok');
+		$this->check(count($ok) >= 5, 'pinged ran on its schedule; ' . count($ok) . ' runs');
+		$this->check(count($http('/ping/pinged/start')) === count($ends('pinged')), 'each run of pinged pinged before it started');
+		$this->check(count($http('/ping/pinged/ok')) === count($ok), 'each successful run of pinged pinged its success URL');
+		$seam = array_filter($events, fn ($e) => $e['e'] === 'tping' && $e['task'] === 'pinged' && $e['ping'] === 'after' && $e['result'] === 'ok');
+		$this->check(count($seam) === count($ok), 'the fxCronTaskPing handler delivered the after ping of each run');
+
+		$failed = array_filter($ends('failing'), fn ($e) => $e['result'] === 'error');
+		$this->check(count($failed) >= 4 && count($failed) === count($ends('failing')), 'failing failed each run');
+		$this->check(count($http('/ping/failing/fail')) === count($failed), 'each failed run pinged its failure URL');
+
+		$retries = array_column(array_filter($events, fn ($e) => $e['e'] === 'tretry' && $e['task'] === 'flaky'), 'attempt');
+		$flaky = $ends('flaky');
+		$this->check($retries === [1, 2], 'flaky was tried again twice; ' . json_encode($retries));
+		$this->check(count($flaky) === 1 && $flaky[0]['result'] === 'ok' && $flaky[0]['attempt'] === 3, 'flaky succeeded on its third attempt as one run');
+
+		$pausedSkips = array_filter($skips('paused'), fn ($e) => $e['reason'] === 'paused');
+		$this->check(count($pausedSkips) >= 3, 'the paused task skipped its triggers; ' . count($pausedSkips));
+		$this->check($resumed !== null && !array_filter($runs('paused'), fn ($e) => $e['t'] < $resumed), 'the paused task did not run before it was resumed');
+		$this->check(count($runs('paused')) >= 3, 'the resumed task ran; ' . count($runs('paused')));
+
+		$this->check(array_column($skips('late'), 'reason') === ['deadline'] && !$runs('late'), 'a trigger past its starting deadline was skipped once');
+		$this->check(count($skips('windowed')) >= 5 && !array_diff(array_column($skips('windowed'), 'reason'), ['window']) && !$runs('windowed'), 'a task outside its time window was skipped');
+		$this->check(!$runs('excepted') && !$skips('excepted'), 'a task on an excepted date never came due');
+
+		$jitter = $runs('jittered');
+		$this->check(count($jitter) >= 3, 'jittered ran; ' . count($jitter));
+		foreach ($jitter as $run) {
+			$offset = $run['t'] - floor($run['t'] / 6.0) * 6.0;
+			$this->check($offset <= 3 + SLACK, sprintf('a jittered run is within its jitter (%.2fs)', $offset));
+		}
+
+		// A sweep runs its tasks in priority order; the runs of the daemon between two sweep starts are one sweep's.
+		$sweeps = [];
+		$current = -1;
+		foreach ($events as $e) {
+			if ($e['e'] === 'sweep' && $e['pid'] === $daemon) {
+				$sweeps[++$current] = [];
+			} elseif ($current >= 0 && $e['e'] === 'run' && in_array($e['task'], ['prioFirst', 'prioLast'], true)) {
+				$sweeps[$current][] = $e['task'];
+			}
+		}
+		$together = array_filter($sweeps, fn ($names) => count($names) === 2);
+		$this->check(count($together) >= 3, 'the priority tasks ran in the same sweeps; ' . count($together));
+		$this->check(!array_filter($together, fn ($names) => $names !== ['prioFirst', 'prioLast']), 'the lower priority runs first in its sweep');
+
+		$chained = array_filter($events, fn ($e) => $e['e'] === 'tstart' && $e['task'] === 'chained');
+		$this->check(count($chained) === count($ends('head')) && count($chained) >= 3, 'chained ran after each run of head');
+		$this->check(!array_filter($chained, fn ($e) => $e['chain'] !== ['head'] || !$e['manual']), 'a chained run carries its chain');
+
+		$this->check(count($runs('compound#1')) === count($ends('compound')) && count($runs('stepRef')) === count($ends('compound')) && count($ends('compound')) >= 3, 'the compound task ran both of its steps in each run');
+		$this->check(!array_filter($ends('compound'), fn ($e) => $e['result'] !== 'ok') && !$ends('stepRef'), 'the compound runs succeeded as one run each');
+
+		$this->check(count($ends('command')) >= 4 && !array_filter($ends('command'), fn ($e) => $e['result'] !== 'ok'), 'the command task ran');
+		$this->check(strlen((string) @file_get_contents($this->dir . DIRECTORY_SEPARATOR . 'command.out')) === count($ends('command')), 'each command run wrote its output');
+		$hooks = $http('/hook');
+		$this->check(count($hooks) === count($ends('hook')) && count($hooks) >= 4 && !array_filter($hooks, fn ($e) => $e['method'] !== 'POST' || $e['body'] !== 'hello'), 'the HTTP task posted its body each run');
+
+		$delayed = $runs('delayed');
+		$done = array_values(array_filter($events, fn ($e) => $e['e'] === 'done' && $e['task'] === 'delayed'));
+		$this->check(count($delayed) >= 5, 'delayed ran; ' . count($delayed));
+		for ($i = 1; $i < count($delayed); $i++) {
+			$gap = $delayed[$i]['t'] - $done[$i - 1]['t'];
+			// The end is stored in whole seconds, so the next trigger is 2 to 3 s after the end.
+			$this->check($gap >= 1.95 && $gap <= 3 + SLACK, sprintf('an after end run starts 3 s after the second the previous run ended (%.2fs)', $gap));
+		}
+
+		$slow = $runs('slowproc');
+		$this->check(count($slow) >= 3 && !array_filter($slow, fn ($e) => $e['pid'] === $daemon), 'slowproc ran in child processes');
+		$this->check(!array_filter($slow, fn ($e) => $e['memory'] !== '96M'), 'the child had its memory limit');
+		if (!$this->windows) {
+			$this->check(!array_filter($slow, fn ($e) => ($e['nice'] ?? null) !== 5), 'the child had its priority; ' . json_encode(array_column($slow, 'nice')));
+		}
+		$overdue = array_values(array_filter($events, fn ($e) => $e['e'] === 'toverdue' && $e['task'] === 'slowproc'));
+		$slowDone = array_values(array_filter($events, fn ($e) => $e['e'] === 'done' && $e['task'] === 'slowproc'));
+		$this->check(count($overdue) === count($ends('slowproc')), 'each slowproc run was overdue once');
+		for ($i = 0; $i < min(count($overdue), count($slowDone)); $i++) {
+			$this->check($overdue[$i]['t'] < $slowDone[$i]['t'], 'the warning came while the run was running');
+		}
+		$this->check(substr_count((string) @file_get_contents($out), 'hello') === count($slow), 'the child wrote its output to the ProcessOutputFile');
+
+		$this->check(str_contains($log, 'error') && str_contains($log, 'ok'), 'cron/log shows the results of the runs');
+		$this->checkQuickTicks($starts);
+	}
+
+	/**
+	 * Replace and Queue on Process tasks under one daemon.
+	 */
+	private function scenarioOverlap(): void
+	{
+		$this->makeApp('DaemonLifetime="0" DaemonIdle="1"', '<job name="replacer" schedule="*:*/3 * * * *" task="Application.CronE2ETask" Mode="Process" Sleep="8" Overlap="Replace" />' .
+			'<job name="queued" schedule="*:*/2 * * * *" task="Application.CronE2ETask" Mode="Process" Sleep="3" Overlap="Queue" />');
+		$t0 = microtime(true);
+		$nextTick = $t0;
+		while (($now = microtime(true)) < $t0 + 20.0) {
+			if ($now >= $nextTick) {
+				$this->tick();
+				$nextTick += TICK;
+			}
+			$this->reap();
+			usleep(100000);
+		}
+		$this->stop();
+
+		$events = $this->events();
+		$starts = $this->select($events, 'start');
+		$this->check(count($starts) === 1, 'one daemon served the scenario; ' . count($starts) . ' started');
+		$results = array_count_values(array_column(array_filter($events, fn ($e) => $e['e'] === 'tend' && $e['task'] === 'replacer'), 'result'));
+		$this->line('   replacer results: ' . json_encode($results));
+		$this->check(($results['replaced'] ?? 0) >= 4, 'each replacer trigger replaced the running child');
+		$this->check(!array_filter(array_filter($events, fn ($e) => $e['e'] === 'done' && $e['task'] === 'replacer'), fn ($e) => $e['t'] < $t0 + 19), 'a replaced child did not finish its work');
+
+		$runs = array_values(array_filter($events, fn ($e) => $e['e'] === 'run' && $e['task'] === 'queued'));
+		$done = array_values(array_filter($events, fn ($e) => $e['e'] === 'done' && $e['task'] === 'queued'));
+		$this->check(count($runs) >= 4, 'queued ran back to back; ' . count($runs) . ' runs');
+		$this->check(!array_filter(array_filter($events, fn ($e) => $e['e'] === 'tskip' && $e['task'] === 'queued'), fn ($e) => $e['reason'] !== 'running'), 'a queued trigger is skipped only while another waits');
+		for ($i = 1; $i < count($runs); $i++) {
+			$gap = $runs[$i]['t'] - ($done[$i - 1]['t'] ?? INF);
+			$this->check($gap >= -0.05 && $gap <= SLACK + 0.5, sprintf('a queued run starts when the previous one ends (%.2fs)', $gap));
+		}
+		$this->checkQuickTicks($starts);
+	}
+
 	// ---------------------------------------------------------------- checks
 
 	private function checkOneDaemonAtATime(array $starts, array $ends, ?array $killed): void
@@ -318,7 +533,7 @@ final class CronDaemonE2E
 
 	// ---------------------------------------------------------------- processes
 
-	private function makeApp(string $daemonAttributes, string $jobs): void
+	private function makeApp(string $daemonAttributes, string $jobs, string $services = ''): void
 	{
 		$base = getenv('RUNNER_TEMP') ?: sys_get_temp_dir();
 		$this->dir = rtrim($base, '/\\') . DIRECTORY_SEPARATOR . 'pce' . bin2hex(random_bytes(3));
@@ -329,6 +544,7 @@ final class CronDaemonE2E
 		}
 		$this->log = $this->dir . DIRECTORY_SEPARATOR . 'events.jsonl';
 		$db = $this->dir . DIRECTORY_SEPARATOR . 'cron.db';
+		$services = ($services === '') ? '' : "<services>{$services}</services>";
 		file_put_contents($protected . DIRECTORY_SEPARATOR . 'application.xml', <<<XML
 			<?xml version="1.0" encoding="utf-8"?>
 			<application id="crone2e" mode="Debug">
@@ -338,13 +554,84 @@ final class CronDaemonE2E
 					</module>
 					<module id="probe" class="Application.CronE2EProbe" LogFile="{$this->log}" />
 					<module id="cron" class="Prado\\Util\\Cron\\TDbCronManager" ConnectionID="db" Daemon="true" {$daemonAttributes}>
-						{$jobs}
+						{$jobs}<!--jobs-->
 					</module>
 				</modules>
+				{$services}
 			</application>
 			XML);
+		$autoload = var_export(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php', true);
+		file_put_contents($this->dir . DIRECTORY_SEPARATOR . 'index.php', "<?php\nrequire {$autoload};\n(new Prado\\TApplication(__DIR__ . '/protected'))->run();\n");
 		$this->procs = [];
 		$this->line("   app: {$protected}");
+	}
+
+	/** Adds jobs to the cron module of the application {@see makeApp} wrote. */
+	private function writeJobs(string $jobs): void
+	{
+		$file = $this->dir . DIRECTORY_SEPARATOR . 'protected' . DIRECTORY_SEPARATOR . 'application.xml';
+		file_put_contents($file, str_replace('<!--jobs-->', $jobs, (string) file_get_contents($file)));
+	}
+
+	/** Returns a Unix time for a schedule. */
+	private function at(int|float $time): int
+	{
+		return (int) $time;
+	}
+
+	/**
+	 * Starts a PHP web server on the application directory whose router records each request as an
+	 * `http` event and serves `/index.php` as the application.
+	 */
+	private function startServer(): int
+	{
+		$probe = stream_socket_server('tcp://127.0.0.1:0');
+		$name = (string) stream_socket_get_name($probe, false);
+		fclose($probe);
+		$port = (int) substr((string) strrchr($name, ':'), 1);
+		$log = var_export($this->log, true);
+		file_put_contents($this->dir . DIRECTORY_SEPARATOR . 'router.php', <<<PHP
+			<?php
+			\$path = parse_url(\$_SERVER['REQUEST_URI'], PHP_URL_PATH);
+			if (\$path === '/index.php') {
+				return false;
+			}
+			file_put_contents({$log}, json_encode(['e' => 'http', 'path' => \$path, 'method' => \$_SERVER['REQUEST_METHOD'], 'body' => file_get_contents('php://input'), 'pid' => getmypid(), 't' => microtime(true)]) . "\\n", FILE_APPEND | LOCK_EX);
+			echo 'ok';
+			PHP);
+		$out = $this->dir . DIRECTORY_SEPARATOR . 'server.out';
+		$proc = proc_open([PHP_BINARY, '-S', "127.0.0.1:{$port}", 'router.php'], [0 => $this->devNull('r'), 1 => ['file', $out, 'w'], 2 => ['file', $out, 'a']], $pipes, $this->dir);
+		$this->server = ['proc' => $proc, 'port' => $port];
+		$deadline = microtime(true) + 10;
+		while (microtime(true) < $deadline && !($socket = @fsockopen('127.0.0.1', $port, $errno, $error, 0.2))) {
+			usleep(100000);
+		}
+		if (empty($socket)) {
+			$this->fail('the PHP web server did not start');
+		} else {
+			fclose($socket);
+		}
+		return $port;
+	}
+
+	private function stopServer(): void
+	{
+		if ($this->server !== null) {
+			proc_terminate($this->server['proc']);
+			proc_close($this->server['proc']);
+			$this->server = null;
+		}
+	}
+
+	/** Requests a path of the scenario's web server. */
+	private function httpGet(string $path): ?string
+	{
+		$body = @file_get_contents('http://127.0.0.1:' . ($this->server['port'] ?? 0) . $path, false, stream_context_create(['http' => ['timeout' => 20]]));
+		if ($body === false) {
+			$this->fail("GET {$path} failed");
+			return null;
+		}
+		return $body;
 	}
 
 	/** Removes a passed scenario's application directory, which {@see makeApp} created. */
@@ -389,8 +676,8 @@ final class CronDaemonE2E
 		}
 		proc_close($proc);
 		$text = (string) @file_get_contents($out);
-		$this->line('   $ prado-cli ' . implode(' ', $args) . ' -> ' . trim(preg_replace('/\e\[[0-9;]*m|\s+/', ' ', $text)));
-		if (preg_match('/Fatal|Exception|Stack trace/i', $text)) {
+		$this->line('   $ prado-cli ' . implode(' ', $args) . ' -> ' . substr(trim(preg_replace('/\e\[[0-9;]*m|\s+/', ' ', $text)), 0, 600));
+		if (preg_match('/Fatal|Uncaught|Stack trace/i', $text)) {
 			$this->fail(implode(' ', $args) . ' failed: ' . $text);
 		}
 		return $text;
@@ -428,7 +715,7 @@ final class CronDaemonE2E
 				proc_terminate($p['proc'], 9);
 			}
 			proc_close($p['proc']);
-			$text = (string) @file_get_contents($p['out']);
+			$text = implode("\n", preg_grep('/planned failure|exited with code|outlived its timeout/', explode("\n", (string) @file_get_contents($p['out'])), PREG_GREP_INVERT));
 			if (preg_match('/Fatal|Exception|Stack trace|Warning|Deprecated/i', $text)) {
 				$this->fail("cron/run process {$p['pid']} reported an error:\n" . $text);
 			}
@@ -540,9 +827,9 @@ final class CronDaemonE2E
 }
 
 $arg = $argv[1] ?? 'all';
-$scenarios = $arg === 'all' ? ['handoff', 'wake', 'process'] : [$arg];
-if (array_diff($scenarios, ['handoff', 'wake', 'process'])) {
-	fwrite(STDERR, "Usage: php tests/cron-daemon/run.php [handoff|wake|process|all]\n");
+$scenarios = $arg === 'all' ? ['handoff', 'wake', 'process', 'features', 'overlap'] : [$arg];
+if (array_diff($scenarios, ['handoff', 'wake', 'process', 'features', 'overlap'])) {
+	fwrite(STDERR, "Usage: php tests/cron-daemon/run.php [handoff|wake|process|features|overlap|all]\n");
 	exit(2);
 }
 exit((new CronDaemonE2E())->run($scenarios));

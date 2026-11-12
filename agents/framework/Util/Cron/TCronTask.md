@@ -29,6 +29,8 @@ TCronTask is the abstract base class for all cron tasks. Subclasses must impleme
 - `getMode()` / `setMode($mode)` - How a sweep runs the task, a [`TCronTaskMode`](#mode-and-overlap-440) value; default `Serial` (4.4.0)
 - `getOverlap()` / `setOverlap($value)` - What a trigger does while the previous run holds the run lock, a `TCronTaskOverlap` value: `Skip` (default), `Allow`, `Replace`, or `Queue`; `true` is `Allow` and `false` is `Skip` (4.4.0)
 - `getProcessOutputFile()`, `getProcessPriority()`, `getProcessMemoryLimit()` and setters - For a Process task's child: the file its output and errors are appended to (null for the cron process's output), its scheduling priority (−20 to 19, POSIX nice; a Windows priority class), and its `memory_limit` (`512M`, `-1`) (4.4.0)
+- `getPriority()` / `setPriority($priority)` - The order among the tasks due in a sweep, lower first; default `DEFAULT_PRIORITY` (10), as other PRADO priorities (4.4.0)
+- `getThen()` / `setThen($names)`, `getThenOnFailure()` / `setThenOnFailure($names)` - The tasks the cron module runs after a successful or failed run, a comma list or array of names; see [TCronModule](TCronModule.md#chains-priority-and-monitoring-440) (4.4.0)
 - `getWarnDuration()` / `setWarnDuration($seconds)` - The seconds after which a run is overdue: a warning, the run's status marked, and `onTaskOverdue` (4.4.0)
 - `getTimeZone()` / `setTimeZone($timeZone)` - The time zone of the schedule, passed to the scheduler; null for the application time zone; setting it clears the cached next trigger time (4.4.0)
 - `getStartingDeadline()` / `setStartingDeadline($seconds)` - The seconds after its trigger a run may start; a later triggered run is skipped with the result `missed`; null (default) for no deadline (4.4.0)

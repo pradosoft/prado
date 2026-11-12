@@ -217,6 +217,12 @@ A started run ends with `onTaskEnd` or `onTaskSkipped`; `denied`, `paused`, `dea
      PingBeforeUrl="https://hc-ping.com/UUID/start" PingSuccessUrl="https://hc-ping.com/UUID" PingFailureUrl="https://hc-ping.com/UUID/fail" />
 ```
 
+### Chains, priority, and monitoring (4.4.0)
+
+- **Priority.** `runTasks()` starts the tasks of a sweep in the order of their `Priority`, lower first, through `sortTasks()` (a stable sort, so equal priorities keep the order of `onSweepStart`); the second-resolution loop orders the due tasks by trigger, then priority.
+- **Chains.** `runTask()` runs `runChain()`: after the run, the task's `Then` (on success) or `ThenOnFailure` (on failure) tasks run in order as manual runs, after the run lock is released, each with its own claim, events, pings, and chain. A task already in the chain is not run again (a WARNING), an unknown task is skipped (a WARNING), and a paused task raises `onTaskSkipped` (`paused`). `TCronTaskEventParameter::getChain()` lists the tasks before a chained run. The schedule `@never` has no trigger, for a task that only runs from a chain or `cron/now`.
+- **Monitoring.** `getMonitorReport()` gathers the live cron processes (`getStatuses()`), the daemon among them, and per readable task its mode, schedule, zone, priority, description, paused state, running process IDs, next trigger, and last run, count, result, and seconds, from the stores. `getMonitorMetrics()` is the report in the Prometheus text format. [`TCronMonitorResponse`](TCronMonitorResponse.md) serves either from a `TJsonService`.
+
 ### Live status (4.4.0)
 
 With `EnableStatus`, a cron process publishes its live status to a JSON file in `StatusPath` (default `cronstatus` in the runtime path), named by module ID, host, and process ID. `cron/run` turns it on when the property is unset (null); set `EnableStatus="false"` to keep it off. The file is written through a temporary file renamed over it, on each run's start and end and before each daemon wait, and removed when the process ends. A write failure is a WARNING log entry.

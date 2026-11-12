@@ -1039,4 +1039,14 @@ class TTimeSchedulerTest extends \PHPUnit\Framework\TestCase
 		}
 	}
 
+
+	public function testNever_HasNoTrigger()
+	{
+		$this->obj->setSchedule('@Never');
+		self::assertSame('@never', $this->obj->getSchedule());
+		self::assertNull($this->obj->getNextTriggerTime(0));
+		self::assertNull($this->obj->getNextTriggerTime());
+		self::assertSame([], $this->obj->getNextTriggerTimes(3, 0));
+	}
+
 }

@@ -36,7 +36,10 @@ use Prado\TPropertyValue;
  * replaces the previous run, or waits for it; see {@see \Prado\Util\Cron\TCronTaskOverlap}.  A Process
  * task's child takes {@see getProcessOutputFile() ProcessOutputFile}, {@see getProcessPriority() ProcessPriority},
  * and {@see getProcessMemoryLimit() ProcessMemoryLimit}.  A run longer than {@see getWarnDuration() WarnDuration}
- * raises {@see \Prado\Util\Cron\TCronModule::onTaskOverdue()}.
+ * raises {@see \Prado\Util\Cron\TCronModule::onTaskOverdue()}.  {@see getPriority() Priority} orders the tasks
+ * due in the same sweep, lower first.  {@see getThen() Then} and {@see getThenOnFailure() ThenOnFailure} name
+ * the tasks the cron module runs after a run succeeds or fails; '@never' is the schedule of a task
+ * that only runs from such a chain.
  *
  * The schedule is in the task's {@see getTimeZone() TimeZone}, else the cron module's
  * {@see \Prado\Util\Cron\TCronModule::getTimeZone() TimeZone} ({@see getDefaultTimeZone() DefaultTimeZone}),
@@ -57,6 +60,9 @@ use Prado\TPropertyValue;
  */
 abstract class TCronTask extends TApplicationComponent
 {
+	/** The default {@see getPriority() Priority}, as of other PRADO priorities. */
+	public const DEFAULT_PRIORITY = 10;
+
 	/** The ping before a run starts. */
 	public const PING_BEFORE = 'before';
 
@@ -119,6 +125,15 @@ abstract class TCronTask extends TApplicationComponent
 
 	/** @var ?float the seconds after which a run is overdue, or null */
 	private ?float $_warnDuration = null;
+
+	/** @var float the order of the task among the tasks due in a sweep; lower runs first */
+	private float $_priority = self::DEFAULT_PRIORITY;
+
+	/** @var string[] the tasks run after a run without an exception */
+	private array $_then = [];
+
+	/** @var string[] the tasks run after a failed run */
+	private array $_thenOnFailure = [];
 
 	/** @var ?string the time zone of the schedule, or null for the application time zone */
 	private ?string $_timeZone = null;
@@ -958,6 +973,74 @@ abstract class TCronTask extends TApplicationComponent
 	}
 
 	/**
+	 * @return float the order of the task among the tasks due in a sweep, lower first; default {@see DEFAULT_PRIORITY}
+	 * @since 4.4.0
+	 */
+	public function getPriority(): float
+	{
+		return $this->_priority;
+	}
+
+	/**
+	 * @param float|int|string $priority the order of the task among the tasks due in a sweep, lower first
+	 * @since 4.4.0
+	 */
+	public function setPriority($priority)
+	{
+		$this->_priority = ($priority === null || $priority === '') ? (float) self::DEFAULT_PRIORITY : TPropertyValue::ensureFloat($priority);
+	}
+
+	/**
+	 * @return string[] the names of the tasks the cron module runs after a run of this task without an exception
+	 * @since 4.4.0
+	 */
+	public function getThen(): array
+	{
+		return $this->_then;
+	}
+
+	/**
+	 * @param null|string|string[] $names the names of the tasks run after a successful run: a comma list or an array
+	 * @since 4.4.0
+	 */
+	public function setThen($names)
+	{
+		$this->_then = static::parseTaskNames($names);
+	}
+
+	/**
+	 * @return string[] the names of the tasks the cron module runs after a failed run of this task
+	 * @since 4.4.0
+	 */
+	public function getThenOnFailure(): array
+	{
+		return $this->_thenOnFailure;
+	}
+
+	/**
+	 * @param null|string|string[] $names the names of the tasks run after a failed run: a comma list or an array
+	 * @since 4.4.0
+	 */
+	public function setThenOnFailure($names)
+	{
+		$this->_thenOnFailure = static::parseTaskNames($names);
+	}
+
+	/**
+	 * @param null|string|string[] $names a comma list or an array of task names
+	 * @return string[] the trimmed, distinct, non-empty names
+	 * @since 4.4.0
+	 */
+	protected static function parseTaskNames($names): array
+	{
+		if ($names === null || $names === '') {
+			return [];
+		}
+		$names = is_array($names) ? $names : explode(',', TPropertyValue::ensureString($names));
+		return array_values(array_unique(array_filter(array_map(static fn ($name) => trim((string) $name), $names), static fn ($name) => $name !== '')));
+	}
+
+	/**
 	 * @return ?TCancellationToken the token of the current run, cancelled at the run's deadline; null outside a run or without a deadline
 	 * @since 4.4.0
 	 */
@@ -1049,6 +1132,15 @@ abstract class TCronTask extends TApplicationComponent
 			$exprops[] = "\0Prado\Util\Cron\TCronTask\0_pingUrls";
 		}
 		$exprops[] = "\0Prado\Util\Cron\TCronTask\0_defaultTimeZone";
+		if ($this->_priority === (float) self::DEFAULT_PRIORITY) {
+			$exprops[] = "\0Prado\Util\Cron\TCronTask\0_priority";
+		}
+		if ($this->_then === []) {
+			$exprops[] = "\0Prado\Util\Cron\TCronTask\0_then";
+		}
+		if ($this->_thenOnFailure === []) {
+			$exprops[] = "\0Prado\Util\Cron\TCronTask\0_thenOnFailure";
+		}
 		if ($this->_retries === 0) {
 			$exprops[] = "\0Prado\Util\Cron\TCronTask\0_retries";
 		}
