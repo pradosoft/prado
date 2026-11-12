@@ -32,9 +32,9 @@ use Prado\Shell\TShellWriter;
  */
 class TShellDbCronAction extends TShellCronAction
 {
-	protected $methods = ['tasks', 'run', 'index', 'add', 'update', 'remove', 'log', 'flush', 'daemon', 'retire', 'stop', 'migrate', 'top', 'exec', 'now', 'next'];
-	protected $parameters = [null, null, null, ['task-name', 'task-id', 'schedule'], ['task-name'], ['task-name'], null, null, null, null, null, null, null, ['task-name'], ['task-name'], null];
-	protected $optional = [['task-name or @user'], null, null, ['parameters...'], ['parameters...'], [], ['task-name or @user'], ['task-name or @user or time (e.g. seconds or PHP DateInterval)'], null, ['seconds'], ['seconds'], null, ['seconds', 'count'], null, null, ['task-name', 'count']];
+	protected $methods = ['tasks', 'run', 'index', 'add', 'update', 'remove', 'log', 'flush', 'daemon', 'retire', 'stop', 'migrate', 'top', 'exec', 'now', 'next', 'pause', 'resume'];
+	protected $parameters = [null, null, null, ['task-name', 'task-id', 'schedule'], ['task-name'], ['task-name'], null, null, null, null, null, null, null, ['task-name'], ['task-name'], null, ['task-name'], ['task-name']];
+	protected $optional = [['task-name or @user'], null, null, ['parameters...'], ['parameters...'], [], ['task-name or @user'], ['task-name or @user or time (e.g. seconds or PHP DateInterval)'], null, ['seconds'], ['seconds'], null, ['seconds', 'count'], null, null, ['task-name', 'count'], null, null];
 	protected $description = ['Manages DbCron time-based services',
 		'Displays the Cron tasks configured in the application and database. Filter by @user and task name.',
 		'Runs the DbCron Pending Tasks.',
@@ -52,6 +52,8 @@ class TShellDbCronAction extends TShellCronAction
 		'Runs one task in this process; a Process task\'s child process runs it.',
 		'Runs a task now, whatever its schedule, and shows its result.',
 		'Shows the next trigger times of the tasks; filter by task name.',
+		'Pauses a task: its triggers pass without runs until it is resumed.',
+		'Resumes a paused task.',
 	];
 
 	private $_user;
@@ -82,7 +84,7 @@ class TShellDbCronAction extends TShellCronAction
 	/**
 	 * Brings the cron table up to date through {@see \Prado\Util\Cron\TDbCronManager::migrateTable}: a
 	 * missing table is created, and a table created before 4.4.0 gains the `nextexectime` column with
-	 * its index and values, and the `lastresult` and `lastduration` columns.  A deployment runs it once; the table is otherwise migrated on first use.
+	 * its index and values, and the run columns `lastresult`, `lastduration`, and `paused`.  A deployment runs it once; the table is otherwise migrated on first use.
 	 * @param string[] $args the arguments to the command line action
 	 * @return bool whether the command ran
 	 * @since 4.4.0
@@ -102,8 +104,8 @@ class TShellDbCronAction extends TShellCronAction
 			if ($result['column'] !== null) {
 				$lines[] = "Added the nextexectime column to {$table} and set it on {$result['column']} task row(s).";
 			}
-			if ($result['results']) {
-				$lines[] = "Added the lastresult and lastduration columns to {$table}.";
+			if ($result['run']) {
+				$lines[] = "Added the run columns (lastresult, lastduration, paused) to {$table}.";
 			}
 		}
 		$this->_outWriter->writeLine("\n" . ($lines ? implode("\n", $lines) : "The cron table {$table} is up to date.") . "\n");
@@ -294,10 +296,11 @@ class TShellDbCronAction extends TShellCronAction
 
 		$rows = [];
 		foreach ($result as $row) {
-			$rows[] = [date('Y-m-d H:i:s', $row['lastexectime']), $row['name'], $row['task'], '@' . $row['username'], $row['processcount']];
+			$took = (($row['lastduration'] ?? null) === null) ? '-' : $this->formatSeconds((float) $row['lastduration']);
+			$rows[] = [date('Y-m-d H:i:s', (int) $row['lastexectime']), $row['name'], $row['task'], '@' . $row['username'], $row['processcount'], $this->formatResult($row['lastresult'] ?? null), $took];
 		}
 
-		$this->_outWriter->write($this->_outWriter->tableWidget(['headers' => ['Exec Time', 'Name', 'Task', 'User', 'Run #'],
+		$this->_outWriter->write($this->_outWriter->tableWidget(['headers' => ['Exec Time', 'Name', 'Task', 'User', 'Run #', 'Result', 'Took'],
 			'rows' => $rows]));
 		if (!$result) {
 			$this->_outWriter->writeLine("    ** Cron Logs are empty. **", [TShellWriter::BLUE, TShellWriter::BOLD]);

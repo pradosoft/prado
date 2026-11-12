@@ -263,4 +263,83 @@ class TCronTaskTest extends \PHPUnit\Framework\TestCase
 		self::assertEquals(null, $this->obj->getNextTriggerTime());
 		self::assertFalse($this->obj->getIsPending());
 	}
+
+	public function testDefaultTimeZone()
+	{
+		self::assertNull($this->obj->getScheduleTimeZone());
+		$this->obj->setDefaultTimeZone('Asia/Tokyo');
+		self::assertSame('Asia/Tokyo', $this->obj->getDefaultTimeZone());
+		self::assertSame('Asia/Tokyo', $this->obj->getScheduleTimeZone());
+		self::assertSame('Asia/Tokyo', $this->obj->getScheduler()->getTimeZone());
+		$this->obj->setTimeZone('Europe/Paris');
+		self::assertSame('Europe/Paris', $this->obj->getScheduleTimeZone(), 'the task zone wins');
+		self::assertSame('Europe/Paris', $this->obj->getScheduler()->getTimeZone());
+		self::assertStringNotContainsString('Asia/Tokyo', serialize($this->obj), 'the default zone is not serialized');
+	}
+
+	public function testRetries()
+	{
+		self::assertSame(0, $this->obj->getRetries());
+		self::assertSame(0.0, $this->obj->getRetryDelay());
+		self::assertSame(2.0, $this->obj->getRetryBackoff());
+		$this->obj->setRetries('3');
+		$this->obj->setRetryDelay('10');
+		self::assertSame([10.0, 20.0, 40.0], [$this->obj->getRetryWait(1), $this->obj->getRetryWait(2), $this->obj->getRetryWait(3)]);
+		$this->obj->setRetryBackoff(1);
+		self::assertSame(10.0, $this->obj->getRetryWait(3));
+		self::assertStringContainsString('_retries', serialize($this->obj));
+		foreach ([['setRetries', -1], ['setRetryDelay', -0.5], ['setRetryBackoff', 0.5]] as [$method, $value]) {
+			try {
+				$this->obj->$method($value);
+				self::fail($method . ' accepted ' . $value);
+			} catch (TInvalidDataValueException $e) {
+			}
+		}
+	}
+
+	public function testTimeWindows()
+	{
+		$this->obj->setDefaultTimeZone('UTC');
+		self::assertNull($this->obj->getBetween());
+		self::assertTrue($this->obj->getIsInWindow(gmmktime(3, 0, 0, 6, 1, 2026)));
+		$this->obj->setBetween('8:00-17:00');
+		self::assertSame('08:00-17:00', $this->obj->getBetween());
+		self::assertTrue($this->obj->getIsInWindow(gmmktime(8, 0, 0, 6, 1, 2026)));
+		self::assertTrue($this->obj->getIsInWindow(gmmktime(17, 0, 0, 6, 1, 2026)), 'the end is inside');
+		self::assertFalse($this->obj->getIsInWindow(gmmktime(17, 0, 1, 6, 1, 2026)));
+		$this->obj->setBetween('');
+		$this->obj->setUnlessBetween('23:00-04:00:30');
+		self::assertSame('23:00:00-04:00:30', $this->obj->getUnlessBetween());
+		self::assertFalse($this->obj->getIsInWindow(gmmktime(2, 0, 0, 6, 1, 2026)), 'a window past midnight wraps');
+		self::assertFalse($this->obj->getIsInWindow(gmmktime(23, 30, 0, 6, 1, 2026)));
+		self::assertTrue($this->obj->getIsInWindow(gmmktime(12, 0, 0, 6, 1, 2026)));
+		$this->obj->setTimeZone('Asia/Tokyo');
+		self::assertFalse($this->obj->getIsInWindow(gmmktime(15, 0, 0, 6, 1, 2026)), '15:00 UTC is 00:00 in Tokyo');
+		self::expectException(TInvalidDataValueException::class);
+		$this->obj->setBetween('25:00-26:00');
+	}
+
+	public function testJitter()
+	{
+		$this->obj->setName('jittered');
+		$this->obj->setSchedule('0 * * * *');
+		$from = gmmktime(0, 30, 0, 6, 1, 2026);
+		$raw = $this->obj->getNextTriggerTime($from);
+		self::assertSame(0, $this->obj->getJitter());
+		$this->obj->setJitter('300');
+		$delayed = $this->obj->getNextTriggerTime($from);
+		self::assertGreaterThanOrEqual($raw, $delayed);
+		self::assertLessThanOrEqual($raw + 300, $delayed);
+		self::assertSame($delayed, $this->obj->getNextTriggerTime($from), 'the delay is stable');
+		$times = $this->obj->getNextTriggerTimes(3, $from);
+		self::assertSame($delayed, $times[0]);
+		self::assertCount(3, $times);
+		self::assertEqualsWithDelta(3600, $times[1] - $times[0], 300, 'each trigger keeps its hour');
+		$other = clone $this->obj;
+		$other->setName('another');
+		self::assertNotSame($delayed, $other->getNextTriggerTime($from), 'the delay depends on the task name');
+		self::expectException(TInvalidDataValueException::class);
+		$this->obj->setJitter(-1);
+	}
+
 }

@@ -295,6 +295,8 @@ class TShellCronActionTest extends \PHPUnit\Framework\TestCase
 		$cronClass = $this->getTestCronClass();
 		$cron = new $cronClass();
 		$cron->setID('shellNow' . substr(md5(static::class), 0, 6));
+		$statusDir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'prado-cronstatus-' . bin2hex(random_bytes(4));
+		$cron->setStatusPath($statusDir);
 		$mutex = new TMemoryMutex();
 		$cron->setDaemonMutex($mutex);
 		$cron->init([
@@ -317,8 +319,13 @@ class TShellCronActionTest extends \PHPUnit\Framework\TestCase
 
 			self::assertTrue($this->obj->actionNow(['cron/now', 'noSuchTask']));
 			self::assertStringContainsString("Cron task 'noSuchTask' is not found", $this->writer->flush());
+			self::assertTrue($cron->getEnableStatus(), 'cron/now publishes its status');
+			self::assertSame([], glob($statusDir . DIRECTORY_SEPARATOR . '*'), 'the manual run removed its status file');
 		} finally {
 			$cron->unlisten();
+			if (is_dir($statusDir)) {
+				rmdir($statusDir);
+			}
 		}
 	}
 
@@ -353,6 +360,34 @@ class TShellCronActionTest extends \PHPUnit\Framework\TestCase
 			self::assertStringContainsString('Runs in 2098', $this->writer->flush(), 'cron/tasks shows the description');
 		} finally {
 			$cron->unlisten();
+		}
+	}
+
+
+	public function testActionPauseResume()
+	{
+		$cronClass = $this->getTestCronClass();
+		$cron = new $cronClass();
+		$cron->setID('shellPause' . bin2hex(random_bytes(3)));
+		$cron->init([['name' => 'pauseMe', 'schedule' => '0 0 1 1 ? 2099', 'task' => TTestCronModuleTask::class]]);
+		$this->obj->setCronModule($cron);
+		$file = \Prado\Test\Unit\PradoUnit::invoke($cron, 'getPausedFile');
+		try {
+			self::assertTrue($this->obj->actionPause(['cron/pause', 'pauseMe']));
+			self::assertStringContainsString("Cron task 'pauseMe' is paused", $this->writer->flush());
+			self::assertTrue($cron->getIsTaskPaused('pauseMe'));
+			self::assertTrue($this->obj->actionTasks(['cron/tasks']));
+			self::assertStringContainsString('paused', $this->writer->flush());
+			self::assertTrue($this->obj->actionResume(['cron/resume', 'pauseMe']));
+			self::assertStringContainsString("Cron task 'pauseMe' is resumed", $this->writer->flush());
+			self::assertFalse($cron->getIsTaskPaused('pauseMe'));
+			self::assertTrue($this->obj->actionPause(['cron/pause', 'noSuchTask']));
+			self::assertStringContainsString("Cron task 'noSuchTask' is not found", $this->writer->flush());
+		} finally {
+			$cron->unlisten();
+			if (is_file($file)) {
+				unlink($file);
+			}
 		}
 	}
 

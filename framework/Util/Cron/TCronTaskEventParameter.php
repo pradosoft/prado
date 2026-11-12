@@ -20,6 +20,7 @@ use Prado\TPropertyValue;
  * {@see \Prado\Util\Cron\TCronModule::onTaskStart onTaskStart},
  * {@see \Prado\Util\Cron\TCronModule::onTaskEnd onTaskEnd},
  * {@see \Prado\Util\Cron\TCronModule::onTaskFailure onTaskFailure},
+ * {@see \Prado\Util\Cron\TCronModule::onTaskRetry onTaskRetry},
  * {@see \Prado\Util\Cron\TCronModule::onTaskSkipped onTaskSkipped}, and
  * {@see \Prado\Util\Cron\TCronModule::onTaskPing onTaskPing}.  A started run ends with `onTaskEnd`
  * (and `onTaskFailure` when it failed) or with `onTaskSkipped` when a start handler cancels it or
@@ -31,9 +32,10 @@ use Prado\TPropertyValue;
  * | `Manual` | all | whether the run was asked for (`cron/now`) instead of triggered |
  * | `Cancel` | start | a handler sets it to skip the run |
  * | `Reason` | skipped | a `REASON_*` constant |
- * | `Result` | end, failure, ping after the run | a `TCronModule::RESULT_*` constant |
+ * | `Result` | end, failure, retry, ping after the run | a `TCronModule::RESULT_*` constant |
  * | `Duration` | end, failure, ping after the run | the seconds the run took |
- * | `Exception` | end, failure | the exception a task in the cron process threw |
+ * | `Exception` | end, failure, retry | the exception a task in the cron process threw |
+ * | `Attempt` | end, failure, retry | the attempt, from 1 |
  * | `Ping` | ping | a `TCronTask::PING_*` constant |
  * | `Url` | ping | the URL to ping |
  * | `Handled` | ping | a handler sets it when it delivered the ping |
@@ -57,6 +59,15 @@ class TCronTaskEventParameter extends TEventParameter
 
 	/** The task's user lacks the permission to run it. */
 	public const REASON_DENIED = 'denied';
+
+	/** The task is paused. */
+	public const REASON_PAUSED = 'paused';
+
+	/** The time is outside the task's Between, or inside its UnlessBetween. */
+	public const REASON_WINDOW = 'window';
+
+	/** A behavior's `dyShouldRunTask` declined the run. */
+	public const REASON_CONDITION = 'condition';
 
 	/** @var TCronTask the task */
 	private TCronTask $_task;
@@ -87,6 +98,9 @@ class TCronTaskEventParameter extends TEventParameter
 
 	/** @var bool whether a handler delivered the ping */
 	private bool $_handled = false;
+
+	/** @var int the attempt of the run, from 1 */
+	private int $_attempt = 1;
 
 	/**
 	 * @param TCronTask $task the task
@@ -202,6 +216,24 @@ class TCronTaskEventParameter extends TEventParameter
 	public function setException(?\Throwable $value): static
 	{
 		$this->_exception = $value;
+		return $this;
+	}
+
+	/**
+	 * @return int the attempt of the run, from 1; above 1 after a retry
+	 */
+	public function getAttempt(): int
+	{
+		return $this->_attempt;
+	}
+
+	/**
+	 * @param int $value the attempt of the run
+	 * @return static the current object
+	 */
+	public function setAttempt(int $value): static
+	{
+		$this->_attempt = $value;
 		return $this;
 	}
 

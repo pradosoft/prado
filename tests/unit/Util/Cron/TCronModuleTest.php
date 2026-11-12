@@ -166,6 +166,17 @@ class TTestCronPingHttpClient extends THttpClient
 	}
 }
 
+/**
+ * Declines every cron task run through `dyShouldRunTask`.
+ */
+class TTestCronDecliningBehavior extends TBehavior
+{
+	public function dyShouldRunTask($run, $task, $callchain)
+	{
+		return $callchain->dyShouldRunTask(false, $task);
+	}
+}
+
 class TCronModuleTest extends \PHPUnit\Framework\TestCase
 {
 	protected $obj;
@@ -2173,6 +2184,108 @@ class TCronModuleTest extends \PHPUnit\Framework\TestCase
 		$task->setLastExecTime(null);
 		self::assertTrue($this->obj->runTask($task));
 		self::assertSame(TCronModule::RESULT_OK, $this->obj->getTaskResults()['pinged']['result']);
+	}
+
+
+	public function testTimeZone_IsTheDefaultOfTheTasks()
+	{
+		self::assertNull($this->obj->getTimeZone());
+		$this->obj->setTimeZone('Asia/Tokyo');
+		$this->obj->init([
+			['name' => 'zoneDefault', 'schedule' => '0 9 * * *', 'task' => TTestCronModuleTask::class],
+			['name' => 'zoneOwn', 'schedule' => '0 9 * * *', 'task' => TTestCronModuleTask::class, 'timezone' => 'UTC'],
+		]);
+		self::assertSame('Asia/Tokyo', $this->obj->getTask('zoneDefault')->getScheduleTimeZone());
+		self::assertNull($this->obj->getTask('zoneDefault')->getTimeZone());
+		self::assertSame('UTC', $this->obj->getTask('zoneOwn')->getScheduleTimeZone());
+		$this->obj->setTimeZone('Europe/Paris');
+		self::assertSame('Europe/Paris', $this->obj->getTask('zoneDefault')->getScheduleTimeZone(), 'a change reaches the loaded tasks');
+		self::expectException(TInvalidDataValueException::class);
+		$this->obj->setTimeZone('Nowhere/Never');
+	}
+
+	public function testPauseAndResume()
+	{
+		$this->obj->setID('cronPause' . bin2hex(random_bytes(3)));
+		$this->obj->setDaemonMutex(new TMemoryMutex());
+		TTestCronRecordingTask::$events = [];
+		$this->obj->init([['name' => 'pausable', 'schedule' => '0 0 1 1 ? 2000', 'task' => TTestCronRecordingTask::class]]);
+		$task = $this->obj->getTask('pausable');
+		$skipped = [];
+		$this->obj->attachEventHandler('OnTaskSkipped', function ($sender, $param) use (&$skipped) {
+			$skipped[] = $param->getReason();
+		});
+		$file = PradoUnit::invoke($this->obj, 'getPausedFile');
+		try {
+			self::assertSame([], $this->obj->getPausedTasks());
+			self::assertFalse($this->obj->pauseTask('noSuchTask'));
+			self::assertTrue($this->obj->pauseTask('pausable'));
+			self::assertTrue($this->obj->getIsTaskPaused('pausable'));
+			self::assertSame(['pausable'], $this->obj->getPausedTasks());
+			self::assertFalse($this->obj->runTask($task));
+			self::assertSame([TCronTaskEventParameter::REASON_PAUSED], $skipped);
+			self::assertSame([], TTestCronRecordingTask::$events);
+			self::assertFalse($task->getIsPending(), 'the paused trigger passes');
+
+			$task->setLastExecTime(null);
+			self::assertTrue($this->obj->runTaskNow($task), 'a manual run runs a paused task');
+			self::assertSame(['pausable start', 'pausable end'], TTestCronRecordingTask::$events);
+
+			self::assertTrue($this->obj->resumeTask('pausable'));
+			self::assertFalse($this->obj->getIsTaskPaused('pausable'));
+			$task->setLastExecTime(null);
+			self::assertTrue($this->obj->runTask($task));
+		} finally {
+			if (is_file($file)) {
+				unlink($file);
+			}
+		}
+	}
+
+	public function testRunTask_SkipsOutsideTheWindowOrOnACondition()
+	{
+		$this->obj->setDaemonMutex(new TMemoryMutex());
+		$hour = (int) gmdate('G', $this->obj->fakeNow);
+		$this->obj->init([['name' => 'windowed', 'schedule' => '0 0 1 1 ? 2000', 'task' => TTestCronRecordingTask::class, 'timezone' => 'UTC',
+			'between' => sprintf('%02d:00-%02d:59', ($hour + 2) % 24, ($hour + 3) % 24)]]);
+		$task = $this->obj->getTask('windowed');
+		$skipped = [];
+		$this->obj->attachEventHandler('OnTaskSkipped', function ($sender, $param) use (&$skipped) {
+			$skipped[] = $param->getReason();
+		});
+		self::assertFalse($this->obj->runTask($task));
+		self::assertSame([TCronTaskEventParameter::REASON_WINDOW], $skipped);
+
+		$task->setBetween(null);
+		$task->setLastExecTime(null);
+		$this->obj->attachBehavior('declines', new TTestCronDecliningBehavior());
+		self::assertFalse($this->obj->runTask($task));
+		self::assertSame([TCronTaskEventParameter::REASON_WINDOW, TCronTaskEventParameter::REASON_CONDITION], $skipped);
+		$this->obj->detachBehavior('declines');
+		$task->setLastExecTime(null);
+		self::assertTrue($this->obj->runTask($task));
+	}
+
+	public function testRunTask_RetriesAFailedRun()
+	{
+		$this->obj->setDaemonMutex(new TMemoryMutex());
+		TTestCronRecordingTask::$events = [];
+		$this->obj->init([['name' => 'retried', 'schedule' => '0 0 1 1 ? 2000', 'task' => TTestCronRecordingTask::class, 'retries' => 2, 'retrydelay' => 0.01]]);
+		$task = $this->obj->getTask('retried');
+		$task->throw = true;
+		$retries = [];
+		$end = null;
+		$this->obj->attachEventHandler('OnTaskRetry', function ($sender, $param) use (&$retries) {
+			$retries[] = [$param->getAttempt(), $param->getResult()];
+		});
+		$this->obj->attachEventHandler('OnTaskEnd', function ($sender, $param) use (&$end) {
+			$end = $param->getAttempt();
+		});
+		self::assertFalse($this->obj->runTask($task));
+		self::assertSame([[1, TCronModule::RESULT_ERROR], [2, TCronModule::RESULT_ERROR]], $retries);
+		self::assertSame(3, $end, 'the run ends after the last retry');
+		self::assertSame(3, count(array_filter(TTestCronRecordingTask::$events, fn ($e) => $e === 'retried start')));
+		self::assertSame(1, $task->getProcessCount(), 'the retries are one run');
 	}
 
 }

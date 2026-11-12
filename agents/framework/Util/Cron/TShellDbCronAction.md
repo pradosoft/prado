@@ -28,7 +28,7 @@ php prado-cli.php /app cron/log [name] [@user]        # display the execution lo
 php prado-cli.php /app cron/flush [period] [name] [@user]   # delete log rows older than period, filtered
 php prado-cli.php /app cron/migrate                   # create the table when missing; add the 4.4.0 columns to an older one
 php prado-cli.php /app cron/daemon | cron/retire [seconds] | cron/stop [seconds]   # the daemon commands of TShellCronAction
-php prado-cli.php /app cron/top [seconds] [count] | cron/exec <name> | cron/now <name> | cron/next [name] [count]   # the commands of TShellCronAction
+php prado-cli.php /app cron/top [seconds] [count] | cron/exec <name> | cron/now <name> | cron/next [name] [count] | cron/pause <name> | cron/resume <name>   # the commands of TShellCronAction
 ```
 
 Name and user filters are `LIKE` patterns: `_` is a wild card and `%` a wild string. The `flush` period is seconds or a `\DateInterval` specification (`P7D`, `"1 week"`); without a period every matching log row is deleted.
@@ -39,7 +39,7 @@ Name and user filters are `LIKE` patterns: `_` is a wild card and `%` a wild str
 - `actionAdd($args)` — adds a task to the database with name, task ID, schedule, and optional properties
 - `actionUpdate($args)` — updates a task's schedule, username, moduleid, and other properties
 - `actionRemove($args)` — removes a task from the database by name
-- `actionLog($args)` — displays the cron log through `getCronLogCount()`/`getCronLog()` (4.4.0)
+- `actionLog($args)` — displays the cron log through `getCronLogCount()`/`getCronLog()`, with each run's result and seconds (4.4.0)
 - `actionFlush($args)` — deletes log rows through `clearCronLog()` (4.4.0)
 - `actionMigrate($args)` — brings the table up to date through `migrateTable()` and reports what it did (4.4.0)
 

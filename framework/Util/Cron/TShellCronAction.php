@@ -26,7 +26,8 @@ use Prado\Util\Cron\TCronModule;
  * next triggers, and last results, refreshing in a terminal; and "cron/index" reports the
  * possible cron tasks registered in the application.  A system crontab entry runs
  * "cron/run".  "cron/now" runs a task at once, whatever its schedule; "cron/next" shows the next
- * trigger times.  "cron/exec" runs one task in its process: the child process of a Process
+ * trigger times.  "cron/pause" and "cron/resume" stop and restart a task's triggered runs.
+ * "cron/exec" runs one task in its process: the child process of a Process
  * task, which exits with {@see TCronModule::EXIT_ERROR}, {@see TCronModule::EXIT_NO_TASK},
  * or {@see TCronModule::EXIT_DENIED} when the task did not run cleanly.
  *
@@ -39,9 +40,9 @@ class TShellCronAction extends TShellAction
 	public const TOP_ROWS = 10;
 
 	protected $action = 'cron';
-	protected $methods = ['tasks', 'run', 'index', 'daemon', 'retire', 'stop', 'top', 'exec', 'now', 'next'];
-	protected $parameters = [null, null, null, null, null, null, null, ['task-name'], ['task-name'], null];
-	protected $optional = [['task-name or @user'], null, null, null, ['seconds'], ['seconds'], ['seconds', 'count'], null, null, ['task-name', 'count']];
+	protected $methods = ['tasks', 'run', 'index', 'daemon', 'retire', 'stop', 'top', 'exec', 'now', 'next', 'pause', 'resume'];
+	protected $parameters = [null, null, null, null, null, null, null, ['task-name'], ['task-name'], null, ['task-name'], ['task-name']];
+	protected $optional = [['task-name or @user'], null, null, null, ['seconds'], ['seconds'], ['seconds', 'count'], null, null, ['task-name', 'count'], null, null];
 	protected $description = ['Manages Cron time-based services',
 		'Displays the Cron tasks configured in the application. Filter by @user and task name.',
 		'Runs the Cron Pending Tasks.',
@@ -53,6 +54,8 @@ class TShellCronAction extends TShellAction
 		'Runs one task in this process; a Process task\'s child process runs it.',
 		'Runs a task now, whatever its schedule, and shows its result.',
 		'Shows the next trigger times of the tasks; filter by task name.',
+		'Pauses a task: its triggers pass without runs until it is resumed.',
+		'Resumes a paused task.',
 	];
 
 	private $_cron = false;
@@ -68,6 +71,8 @@ class TShellCronAction extends TShellAction
 				$this->removeShellMethod('run');
 				$this->removeShellMethod('exec');
 				$this->removeShellMethod('now');
+				$this->removeShellMethod('pause');
+				$this->removeShellMethod('resume');
 				$this->removeShellMethod('retire');
 				$this->removeShellMethod('stop');
 			}
@@ -185,9 +190,9 @@ class TShellCronAction extends TShellAction
 	}
 
 	/**
-	 * Runs a task at once through {@see TCronModule::runTask}, whatever its schedule and without its
-	 * StartingDeadline, and shows the result.  The run lock, the claim, the task events, and the pings
-	 * apply as for a triggered run.
+	 * Runs a task at once through {@see TCronModule::runTaskNow}, whatever its schedule, pause, deadline,
+	 * or time of day, and shows the result.  The run lock, the claim, the task events, and the pings apply
+	 * as for a triggered run; with the module's EnableStatus unset, the run publishes its status for `cron/top`.
 	 * @param string[] $args the arguments to the command line action; the task name
 	 * @return bool whether the command ran
 	 * @since 4.4.0
@@ -209,8 +214,11 @@ class TShellCronAction extends TShellAction
 		};
 		$module->attachEventHandler('OnTaskSkipped', $record);
 		$module->attachEventHandler('OnTaskEnd', $record);
+		if ($module->getEnableStatus() === null) {
+			$module->setEnableStatus(true);
+		}
 		try {
-			$module->runTask($task, true);
+			$module->runTaskNow($task);
 		} finally {
 			$module->detachEventHandler('OnTaskSkipped', $record);
 			$module->detachEventHandler('OnTaskEnd', $record);
@@ -220,6 +228,50 @@ class TShellCronAction extends TShellAction
 			return true;
 		}
 		$this->_outWriter->writeLine("\nCron task '{$name}' ran: " . $this->formatResult($outcome->getResult()) . ' in ' . $this->formatSeconds((float) $outcome->getDuration()) . "\n");
+		return true;
+	}
+
+	/**
+	 * Pauses a task through {@see TCronModule::pauseTask}: its triggers pass without runs until resumed.
+	 * @param string[] $args the arguments to the command line action; the task name
+	 * @return bool whether the command ran
+	 * @since 4.4.0
+	 */
+	public function actionPause($args)
+	{
+		return $this->setTaskPaused($args[1] ?? '', true);
+	}
+
+	/**
+	 * Resumes a paused task through {@see TCronModule::resumeTask}.
+	 * @param string[] $args the arguments to the command line action; the task name
+	 * @return bool whether the command ran
+	 * @since 4.4.0
+	 */
+	public function actionResume($args)
+	{
+		return $this->setTaskPaused($args[1] ?? '', false);
+	}
+
+	/**
+	 * Pauses or resumes a task the user may read, and reports it.
+	 * @param string $name the task name
+	 * @param bool $paused whether to pause the task
+	 * @return bool whether the command ran
+	 * @since 4.4.0
+	 */
+	protected function setTaskPaused(string $name, bool $paused): bool
+	{
+		$module = $this->getCronModule();
+		if (!$module) {
+			return true;
+		}
+		if ($name === '' || !isset($this->getReadableTasks($module)[$name])) {
+			$this->_outWriter->writeError("Cron task '{$name}' is not found.");
+			return true;
+		}
+		$paused ? $module->pauseTask($name) : $module->resumeTask($name);
+		$this->_outWriter->writeLine("\nCron task '{$name}' is " . ($paused ? 'paused' : 'resumed') . ".\n", TShellWriter::GREEN);
 		return true;
 	}
 
@@ -258,7 +310,7 @@ class TShellCronAction extends TShellAction
 		$rows = [];
 		foreach ($times as $tname => $list) {
 			$task = $tasks[$tname];
-			$zone = new \DateTimeZone($task->getTimeZone() ?? date_default_timezone_get());
+			$zone = new \DateTimeZone($task->getScheduleTimeZone() ?? date_default_timezone_get());
 			foreach ($list as $i => $time) {
 				$rows[] = [($i === 0) ? $tname : '', ($i === 0) ? $task->getMode() : '',
 					(new \DateTimeImmutable('@' . $time))->setTimezone($zone)->format('Y-m-d H:i:s T'),
@@ -286,7 +338,7 @@ class TShellCronAction extends TShellAction
 			return [];
 		}
 		$first = (int) $first;
-		return array_merge([$first], ($count > 1) ? $task->getScheduler()->getNextTriggerTimes($count - 1, max($first, $now)) : []);
+		return array_merge([$first], ($count > 1) ? $task->getNextTriggerTimes($count - 1, max($first, $now)) : []);
 	}
 
 	/**
@@ -378,12 +430,13 @@ class TShellCronAction extends TShellAction
 		}
 
 		$rows = [];
+		$paused = array_flip($module->getPausedTasks());
 		foreach ($module->getNextTriggers(PHP_INT_MAX, true) as $name => $trigger) {
 			if (!isset($tasks[$name])) {
 				continue;
 			}
 			$rows[] = [$name, $tasks[$name]->getMode(), date((abs($trigger - $now) > 86400) ? 'Y-m-d H:i:s' : 'H:i:s', $trigger),
-				($trigger <= $now) ? $w->format('due', [TShellWriter::GREEN, TShellWriter::BOLD]) : $this->formatSeconds($trigger - $now)];
+				isset($paused[$name]) ? $w->format('paused', [TShellWriter::DARK_GRAY]) : (($trigger <= $now) ? $w->format('due', [TShellWriter::GREEN, TShellWriter::BOLD]) : $this->formatSeconds($trigger - $now))];
 			if (count($rows) >= static::TOP_ROWS) {
 				break;
 			}
@@ -416,7 +469,12 @@ class TShellCronAction extends TShellAction
 	{
 		$w = $this->_outWriter;
 		$daemon = $status['daemon'] ?? null;
-		$parts = [$w->format(($daemon !== null) ? 'Daemon' : 'Sweep ', [TShellWriter::BOLD]) . ' pid ' . ($status['pid'] ?? '?') . ' on ' . ($status['host'] ?? '?')];
+		$label = match ($status['role'] ?? '') {
+			TCronModule::STATUS_ROLE_DAEMON => 'Daemon',
+			TCronModule::STATUS_ROLE_MANUAL => 'Manual',
+			default => 'Sweep ',
+		};
+		$parts = [$w->format($label, [TShellWriter::BOLD]) . ' pid ' . ($status['pid'] ?? '?') . ' on ' . ($status['host'] ?? '?')];
 		if (!$status['alive']) {
 			$parts[] = $w->format('ended without removing its status', [TShellWriter::RED]);
 			return implode(' · ', $parts);
@@ -598,6 +656,9 @@ class TShellCronAction extends TShellAction
 		}
 		$rows = [];
 		$states = $this->getRunningStates($module);
+		foreach ($module->getPausedTasks() as $paused) {
+			$states[$paused] = isset($states[$paused]) ? 'paused, ' . $states[$paused] : 'paused';
+		}
 		$results = $module->getTaskResults();
 		foreach ($tasks as $task) {
 			$schedule = $task->getSchedule();

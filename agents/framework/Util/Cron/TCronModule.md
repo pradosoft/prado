@@ -163,11 +163,11 @@ Each `on` event of the module is also broadcast as a global event, so a module d
 |---|---|
 | User | `runAsTaskUser()` → `resolveTaskUser()`: the task's `UserName`, else `DefaultUserName`, from the `UserManager`; else a guest clone of the application user; without a user manager the current user. The user goes into [`TFiberContext`](../../IO/Async/TFiberContext.md) under `TApplication::USER_CONTEXT_KEY`, so `TApplication::getUser()` returns it inside the task and the application user is untouched. `onSetUser` is raised for the task user and again for the restored user. |
 | Permission | a `dyRunTask` denial is logged, claims the run, and records `RESULT_DENIED`. |
-| Deadline | a triggered run later than the task's `StartingDeadline` is skipped and records `RESULT_MISSED`. |
+| Skip | a triggered run is skipped when `getTaskSkipReason()` gives a reason, in order: the task is paused (`pauseTask()`), its `StartingDeadline` passed (`RESULT_MISSED`), the time is outside its `Between`/`UnlessBetween` window, or a behavior's `dyShouldRunTask($run, $task)` returns false. A manual run (`cron/now`) is never skipped this way. |
 | Run lock | without the task's `Overlap`, the run holds `getTaskLockName($name)` (`<lease>:task:<name>`) in the `DaemonMutex`. When another run holds it, the trigger is skipped: `updateTaskInfo($task, false)` advances the task without counting a run. The default `TFileMutex` locks per host; a shared mutex (`TDbMutex`, `TRedisMutex`) locks across hosts. |
 | Start | `onTaskStart`; a handler's `Cancel` skips the run. |
 | Claim | `updateTaskInfo()`; a run another process claimed is skipped. |
-| Run | `invokeTask()` in this fiber, or `runTaskProcess()` for a Process task. |
+| Run | `invokeTask()` in this fiber, or `runTaskProcess()` for a Process task. A failed attempt (`error` or `timeout`) is tried again up to `Retries` times after `getRetryWait($retry)` seconds (`RetryDelay` × `RetryBackoff`^(retry−1)), raising `onTaskRetry`; the retries are one run with one claim, status entry, and result. |
 | Deadline | `$task->Timeout ?? $this->TaskTimeout` (seconds, null for none) becomes a [`TCancellationToken`](../../IO/Async/TCancellationToken.md) in `TCronTask::getCancellationToken()` for the run; a cooperative task passes it to its waits. A Process child that outlives it by `PROCESS_TIMEOUT_GRACE` (5 s) is terminated (SIGTERM, then SIGKILL): `RESULT_TIMEOUT`. |
 | Boundary | An exception from `execute()` goes to `logCronTaskError()`: an ERROR log entry and `dyLogCronTaskError($task, $exception)` (written to the shell by [`TShellCronLogBehavior`](TShellCronLogBehavior.md)); the sweep continues. |
 | Result | `updateTaskResult($task, $result, $seconds)` stores `RESULT_OK`, `RESULT_ERROR`, `RESULT_DENIED`, `RESULT_TIMEOUT`, or `RESULT_MISSED` and the run's seconds: in the global state (`lastResult`, `lastDuration`), or the `lastresult` and `lastduration` columns of `TDbCronManager`. `getTaskResults($fresh)` reads them with the last run time and count. |
@@ -182,6 +182,13 @@ The Process child is `getTaskProcessCommand($task)`: `PHP_BINARY` (under a web S
 </module>
 ```
 
+### Time zone, pause, and manual runs (4.4.0)
+
+- **`TimeZone`** of the module is the zone of the tasks without their own: `prepareTask()` gives it to each task it constructs or loads as `TCronTask::DefaultTimeZone`, which is not serialized, so a changed module zone reaches every task.
+- **Pause.** `pauseTask($name)` and `resumeTask($name)` store the paused names for every process: TCronModule in `cronpaused-<module id>.json` in the runtime path (`getPausedFile()`, written under an exclusive lock), `TDbCronManager` in the `paused` column. A paused task's triggers pass without runs (`REASON_PAUSED`); `getPausedTasks()` and `getIsTaskPaused()` read the store each call. `cron/pause` and `cron/resume` are the shell commands.
+- **Manual runs.** `runTaskNow($task)` (`cron/now`) runs a task with `runTask($task, true)` and, with `EnableStatus`, publishes its status with the role `STATUS_ROLE_MANUAL`, so `cron/top` shows it.
+- **Run log.** `logCronTask()` returns the run's log entry ID, which `updateTaskResult()` receives: `TDbCronManager` writes the result and seconds on the log row too, and `cron/log` shows them.
+
 ### Task events and pings (4.4.0)
 
 `runTask($task, $manual = false)` raises the task events with a [`TCronTaskEventParameter`](TCronTaskEventParameter.md), each mirrored as a global `fx` event:
@@ -191,10 +198,11 @@ The Process child is `getTaskProcessCommand($task)`: `PHP_BINARY` (under a web S
 | `onTaskStart` / `fxCronTaskStart` | before the claim | `Cancel`: a handler skips the run |
 | `onTaskEnd` / `fxCronTaskEnd` | after a run | `Result`, `Duration`, `Exception` (a task in the cron process) |
 | `onTaskFailure` / `fxCronTaskFailure` | after `onTaskEnd` when the result is not `ok` | as `onTaskEnd` |
-| `onTaskSkipped` / `fxCronTaskSkipped` | a trigger that does not run | `Reason`: `denied`, `deadline`, `running` (run lock held), `cancelled`, `claimed` |
+| `onTaskRetry` / `fxCronTaskRetry` | after a failed attempt that is tried again | `Attempt`, `Result`, `Exception`, `Duration` so far |
+| `onTaskSkipped` / `fxCronTaskSkipped` | a trigger that does not run | `Reason`: `denied`, `paused`, `deadline`, `window`, `condition`, `running` (run lock held), `cancelled`, `claimed` |
 | `onTaskPing` / `fxCronTaskPing` | before each ping is sent | `Ping`, `Url`, `Result`, `Duration`; a handler sets `Handled` when it delivered the ping |
 
-A started run ends with `onTaskEnd` or `onTaskSkipped`; `denied`, `deadline`, and `running` are raised without a start. `Manual` is true for `cron/now`.
+A started run ends with `onTaskEnd` or `onTaskSkipped`; `denied`, `paused`, `deadline`, `window`, `condition`, and `running` are raised without a start. `Manual` is true for `cron/now`.
 
 **StartingDeadline.** A triggered run more than `TCronTask::StartingDeadline` seconds after its trigger (`isTaskPastDeadline()`) is skipped: the trigger is claimed without a run and the result is `RESULT_MISSED`. A manual run has no deadline.
 
@@ -332,6 +340,10 @@ php prado-cli.php /path/to/app cron/now <name>
 # Show the next trigger times, one per task, or [count] (default 5) for a name filter:
 php prado-cli.php /path/to/app cron/next [name] [count]
 
+# Pause a task's triggered runs, and resume them:
+php prado-cli.php /path/to/app cron/pause <name>
+php prado-cli.php /path/to/app cron/resume <name>
+
 # Manage DB cron tasks and the log (TDbCronManager):
 php prado-cli.php /path/to/app cron/add <name> <task-id> <schedule> [properties...]
 php prado-cli.php /path/to/app cron/update <name> [properties...]
@@ -348,6 +360,9 @@ php prado-cli.php /path/to/app cron/migrate
 - **User context** — tasks can run as a specific user via `UserName` property (requires `TUserManager` to be configured). The user is the task fiber's user in `TFiberContext`, so a task that calls `$app->setUser()` changes only its own fiber.
 - **A task future never rejects** — `runTask()` catches the task's exception; a rejection of the `TAsync::run()` future means `logCronTaskError()` itself threw.
 - **Deadlines are cooperative** — a task that blocks in PHP code is not interrupted by its `Timeout`; only a wait that takes the token ends. A Process task's child is terminated after its timeout and `PROCESS_TIMEOUT_GRACE`.
+- **Cron does not run while the application `Mode` is `Off`** — `TApplication::run()` answers every step with a 503, in the shell too.
+- **Retries hold the run** — a Serial task's retry delay holds the sweep; give long delays to Parallel or Process tasks.
+- **Run locks need a lease longer than the run** — a lease mutex (`TDbTableMutex`, `TRedisMutex`, `TCacheMutex`) releases a lock when its `Expire` passes, so a run longer than the lease loses its lock. A crashed holder's lock is released by the lease's expiry or, for a session lock (`TFileMutex`, `TMysqlMutex`, `TPgsqlMutex`), when its process ends; there is no stale lock to clear.
 - **Concurrency applies to Parallel tasks only** — Serial tasks (the default) run alone whatever `Concurrency` is.
 - **A Process task is found by name in the child** — a configured task or a `TDbCronManager` row; an in-memory runtime task (`addRuntimeTask()` without a row) is not found, and its run is `RESULT_ERROR`.
 - **A request cron waits for its Process tasks** — `processPendingTasks()` on `OnEndRequest` returns after the children exit.

@@ -336,7 +336,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 		foreach ($results->readAll() as $data) {
 			$name = $data['name'];
 			if ($data['active'] && !isset($this->_tasks[$name])) {
-				$this->_tasks[$name] = @unserialize($data['options']);
+				$this->_tasks[$name] = $this->unserializeTask($data['options']);
 			}
 			$tasks[$name] = $data['active'] ? $this->_tasks[$name] : parent::getTask($name);
 			$this->_taskRows[$name] = $data;
@@ -420,7 +420,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 		foreach ($cmd->query()->readAll() as $data) {
 			$name = $data['name'];
 			if ($data['active'] && !isset($this->_tasks[$name])) {
-				$this->_tasks[$name] = @unserialize($data['options']);
+				$this->_tasks[$name] = $this->unserializeTask($data['options']);
 			}
 			$userTasks[$name] = $data['active'] ? $this->_tasks[$name] : parent::getTask($name);
 			$this->_taskRows[$name] = $data;
@@ -496,7 +496,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 
 	/**
 	 * Checks for the table once per request: a missing table is created when {@see getAutoCreateCronTable AutoCreateCronTable}
-	 * allows, and a table created before 4.4.0 gains the `nextexectime`, `lastresult`, and `lastduration` columns.
+	 * allows, and a table created before 4.4.0 gains the `nextexectime`, `lastresult`, `lastduration`, and `paused` columns.
 	 * @throws TConfigurationException if the table does not exist and cannot autoCreate
 	 */
 	protected function ensureTable()
@@ -511,18 +511,19 @@ class TDbCronManager extends TCronModule implements IDbModule
 			$this->createDbTable();
 		}
 		$this->ensureNextExecTimeColumn();
-		$this->ensureResultColumns();
+		$this->ensureRunColumns();
 		$this->_tableEnsured = true;
 	}
 
 	/**
 	 * Brings the cron table up to date for the running version: a missing table is created, whatever
 	 * {@see getAutoCreateCronTable AutoCreateCronTable} says, and a table created before 4.4.0 gains the
-	 * `nextexectime` column with its index and values, and the `lastresult` and `lastduration` columns.  The
-	 * `cron/migrate` shell action calls this as a deployment step; {@see ensureTable} does the same on first use.
-	 * @return array{created: bool, column: ?int, results: bool} whether the table was created, the active rows
-	 *   given a `nextexectime` when the column was added (null when the column existed), and whether the result
-	 *   columns were added
+	 * `nextexectime` column with its index and values, and the run columns `lastresult`, `lastduration`, and
+	 * `paused`.  The `cron/migrate` shell action calls this as a deployment step; {@see ensureTable} does the
+	 * same on first use.
+	 * @return array{created: bool, column: ?int, run: bool} whether the table was created, the active rows
+	 *   given a `nextexectime` when the column was added (null when the column existed), and whether a run
+	 *   column was added
 	 * @since 4.4.0
 	 */
 	public function migrateTable(): array
@@ -532,9 +533,9 @@ class TDbCronManager extends TCronModule implements IDbModule
 			$this->createDbTable();
 		}
 		$column = $this->ensureNextExecTimeColumn();
-		$results = $this->ensureResultColumns();
+		$run = $this->ensureRunColumns();
 		$this->_tableEnsured = true;
-		return ['created' => $created, 'column' => $column, 'results' => $results];
+		return ['created' => $created, 'column' => $column, 'run' => $run];
 	}
 
 	/**
@@ -580,7 +581,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 		$cmd = $db->createCommand("UPDATE {$this->_tableName} SET nextexectime=:ntime WHERE name=:name AND active IS NOT NULL");
 		$filled = 0;
 		foreach ($rows as $row) {
-			$task = @unserialize($row['options']);
+			$task = $this->unserializeTask($row['options']);
 			if (!($task instanceof TCronTask)) {
 				continue;
 			}
@@ -592,19 +593,21 @@ class TDbCronManager extends TCronModule implements IDbModule
 	}
 
 	/**
-	 * Adds the `lastresult` and `lastduration` columns to a cron table created before 4.4.0.
-	 * @return bool whether the columns were added
+	 * Adds the run columns, `lastresult`, `lastduration`, and `paused`, that a cron table created before
+	 * 4.4.0 lacks.
+	 * @return bool whether a column was added
 	 * @since 4.4.0
 	 */
-	protected function ensureResultColumns(): bool
+	protected function ensureRunColumns(): bool
 	{
-		if ($this->columnExists('lastresult')) {
-			return false;
+		$added = false;
+		foreach (['lastresult' => 'VARCHAR (16)', 'lastduration' => 'VARCHAR (20)', 'paused' => 'INT'] as $column => $type) {
+			if (!$this->columnExists($column)) {
+				$this->getDbConnection()->createCommand('ALTER TABLE ' . $this->_tableName . ' ADD COLUMN ' . $column . ' ' . $type . ' NULL DEFAULT NULL')->execute();
+				$added = true;
+			}
 		}
-		$db = $this->getDbConnection();
-		$db->createCommand('ALTER TABLE ' . $this->_tableName . ' ADD COLUMN lastresult VARCHAR (16) NULL DEFAULT NULL')->execute();
-		$db->createCommand('ALTER TABLE ' . $this->_tableName . ' ADD COLUMN lastduration VARCHAR (20) NULL DEFAULT NULL')->execute();
-		return true;
+		return $added;
 	}
 
 	/**
@@ -654,6 +657,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 			`nextexectime` INT NULL DEFAULT NULL,
 			`lastresult` VARCHAR (16) NULL DEFAULT NULL,
 			`lastduration` VARCHAR (20) NULL DEFAULT NULL,
+			`paused` INT NULL DEFAULT NULL,
 			`active` BOOLEAN NULL
 			)' . $postIndices;
 
@@ -751,19 +755,66 @@ class TDbCronManager extends TCronModule implements IDbModule
 	}
 
 	/**
-	 * Records the result of a run and the seconds it took in the task's row.
+	 * Records the result of a run and the seconds it took in the task's row, and in the run's log row.
 	 * @param TCronTask $task the task
 	 * @param string $result the run's result
 	 * @param float $duration the seconds the run took
+	 * @param mixed $logId the run's log row ({@see logCronTask}), or null
 	 * @since 4.4.0
 	 */
-	protected function updateTaskResult($task, string $result, float $duration)
+	protected function updateTaskResult($task, string $result, float $duration, mixed $logId = null)
 	{
 		$db = $this->getDbConnection();
 		$cmd = $db->createCommand("UPDATE {$this->_tableName} SET lastresult=:result, lastduration=:duration WHERE name=:name AND active IS NOT NULL");
 		$cmd->bindValue(":result", $result, $db::PARAM_STR);
 		$cmd->bindValue(":duration", (string) round($duration, 6), $db::PARAM_STR);
 		$cmd->bindValue(":name", $task->getName(), $db::PARAM_STR);
+		$cmd->execute();
+		if ($logId !== null && $logId !== false && $logId !== '') {
+			$cmd = $db->createCommand("UPDATE {$this->_tableName} SET lastresult=:result, lastduration=:duration WHERE tabuid=:id AND active IS NULL");
+			$cmd->bindValue(":result", $result, $db::PARAM_STR);
+			$cmd->bindValue(":duration", (string) round($duration, 6), $db::PARAM_STR);
+			$cmd->bindValue(":id", $logId, $db::PARAM_STR);
+			$cmd->execute();
+		}
+	}
+
+	/**
+	 * Unserializes a task from its row and prepares it ({@see prepareTask}).
+	 * @param ?string $options the serialized task
+	 * @return mixed the task, or false when the value does not unserialize
+	 * @since 4.4.0
+	 */
+	protected function unserializeTask(?string $options): mixed
+	{
+		$task = @unserialize((string) $options);
+		if ($task instanceof TCronTask) {
+			$this->prepareTask($task);
+		}
+		return $task;
+	}
+
+	/**
+	 * @return string[] the names of the paused tasks, from their rows
+	 * @since 4.4.0
+	 */
+	public function getPausedTasks(): array
+	{
+		$this->ensureTable();
+		return array_map('strval', $this->getDbConnection()->createCommand("SELECT name FROM {$this->_tableName} WHERE paused=1 AND active IS NOT NULL ORDER BY name")->queryColumn());
+	}
+
+	/**
+	 * Stores whether a task is paused in its row.
+	 * @param string $name the task name
+	 * @param bool $paused whether the task is paused
+	 * @since 4.4.0
+	 */
+	protected function writeTaskPaused(string $name, bool $paused): void
+	{
+		$db = $this->getDbConnection();
+		$cmd = $db->createCommand("UPDATE {$this->_tableName} SET paused=" . ($paused ? '1' : 'NULL') . " WHERE name=:name AND active IS NOT NULL");
+		$cmd->bindValue(":name", $name, $db::PARAM_STR);
 		$cmd->execute();
 	}
 
@@ -931,7 +982,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 				} elseif (isset($configTasks[$taskName])) {
 					return parent::getTask($taskName);
 				} elseif (isset($this->_taskRows[$taskName])) {
-					$this->_tasks[$taskName] = @unserialize($this->_taskRows[$taskName]['options']);
+					$this->_tasks[$taskName] = $this->unserializeTask($this->_taskRows[$taskName]['options']);
 					return $this->_tasks[$taskName];
 				}
 			} else {
@@ -956,7 +1007,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 
 		$this->_taskRows[$taskName] = $result;
 		if (!isset($this->_tasks[$taskName])) {
-			$this->_tasks[$taskName] = @unserialize($result['options']);
+			$this->_tasks[$taskName] = $this->unserializeTask($result['options']);
 		}
 		if ($this->dyGetUserTasks(false, $username = $this->_tasks[$taskName]->getUserName(), $taskName, ['extra' => ['username' => $username]]) === true) {
 			$this->dyLogPermissionFailed(static::PERM_CRON_READ_TASKS, 'getting cron task \'' . $taskName . '\'');
@@ -1117,6 +1168,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 		if ($this->taskExistsInternal($name)) {
 			return false;
 		}
+		$this->prepareTask($task);
 		try {
 			$task->getScheduler();
 		} catch (TInvalidDataValueException $e) {
@@ -1195,6 +1247,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 		if (!$this->taskExistsInternal($name)) {
 			return false;
 		}
+		$this->prepareTask($task);
 		try {
 			$task->getScheduler();
 		} catch (TInvalidDataValueException $e) {

@@ -1134,18 +1134,32 @@ class TDbCronManagerTest extends TCronModuleTest
 			$cmd->bindValue(':last', (string) $last);
 			$cmd->execute();
 
-			self::assertSame(['created' => false, 'column' => 1, 'results' => true], $manager->migrateTable());
-			self::assertSame(['lastresult' => null, 'lastduration' => null], $db->createCommand("SELECT lastresult, lastduration FROM migratetable WHERE name='migrated'")->queryRow(), 'the result columns are added');
+			self::assertSame(['created' => false, 'column' => 1, 'run' => true], $manager->migrateTable());
+			self::assertSame(['lastresult' => null, 'lastduration' => null, 'paused' => null], $db->createCommand("SELECT lastresult, lastduration, paused FROM migratetable WHERE name='migrated'")->queryRow(), 'the run columns are added');
 			self::assertEquals($task->getNextTriggerTime($last), $db->createCommand("SELECT nextexectime FROM migratetable WHERE name='migrated'")->queryScalar());
-			self::assertSame(['created' => false, 'column' => null, 'results' => false], $manager->migrateTable(), 'a second run finds the columns');
+			self::assertSame(['created' => false, 'column' => null, 'run' => false], $manager->migrateTable(), 'a second run finds the columns');
 
 			$db->createCommand('DROP TABLE migratetable')->execute();
 			$manager->setAutoCreateCronTable(false);
-			self::assertSame(['created' => true, 'column' => null, 'results' => false], $manager->migrateTable(), 'a missing table is created with the columns, whatever AutoCreateCronTable says');
+			self::assertSame(['created' => true, 'column' => null, 'run' => false], $manager->migrateTable(), 'a missing table is created with the columns, whatever AutoCreateCronTable says');
 			self::assertSame(0, (int) $db->createCommand('SELECT COUNT(*) FROM migratetable')->queryScalar());
 		} finally {
 			$db->createCommand('DROP TABLE IF EXISTS migratetable')->execute();
 			$manager->unlisten();
 		}
 	}
+
+	public function testRunTask_RecordsTheResultOnTheLogRow()
+	{
+		$this->obj->setDaemonMutex(new \Prado\Util\Mutex\TMemoryMutex());
+		$this->obj->setLogCronTasks(true);
+		$this->obj->init([['name' => 'logged', 'schedule' => '0 0 1 1 ? 2000', 'task' => TTestCronModuleTask::class]]);
+		self::assertTrue($this->obj->runTask($this->obj->getTask('logged')));
+		$log = $this->obj->getCronLog('logged');
+		self::assertCount(1, $log);
+		self::assertSame(\Prado\Util\Cron\TCronModule::RESULT_OK, $log[0]['lastresult']);
+		self::assertIsNumeric($log[0]['lastduration']);
+		$this->obj->clearCronLog(null, 'logged');
+	}
+
 }

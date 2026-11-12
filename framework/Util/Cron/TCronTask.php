@@ -35,13 +35,19 @@ use Prado\TPropertyValue;
  * holds the task's run lock, and a trigger that comes while the previous run still holds it is
  * skipped.
  *
- * The schedule is in the task's {@see getTimeZone() TimeZone}, default the application time zone.  A
+ * The schedule is in the task's {@see getTimeZone() TimeZone}, else the cron module's
+ * {@see \Prado\Util\Cron\TCronModule::getTimeZone() TimeZone} ({@see getDefaultTimeZone() DefaultTimeZone}),
+ * else the application time zone.  {@see getJitter() Jitter} delays each trigger by a stable number of
+ * seconds from the task name and the trigger.  A
  * {@see getStartingDeadline() StartingDeadline} skips a run that would start more than that many seconds
  * after its trigger, such as after the cron process was down.  {@see getDescription() Description} is
  * shown by the shell commands.  The ping URLs ({@see getPingBeforeUrl() PingBeforeUrl},
  * {@see getPingAfterUrl() PingAfterUrl}, {@see getPingSuccessUrl() PingSuccessUrl}, and
  * {@see getPingFailureUrl() PingFailureUrl}) report runs to a monitor through
- * {@see \Prado\Util\Cron\TCronModule::onTaskPing()}.
+ * {@see \Prado\Util\Cron\TCronModule::onTaskPing()}.  A failed run is tried again up to
+ * {@see getRetries() Retries} times after {@see getRetryDelay() RetryDelay} seconds, multiplied by
+ * {@see getRetryBackoff() RetryBackoff} each time.  {@see getBetween() Between} and
+ * {@see getUnlessBetween() UnlessBetween} limit the runs to, or keep them out of, a time of day.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.2.0
@@ -110,6 +116,27 @@ abstract class TCronTask extends TApplicationComponent
 
 	/** @var array<string, string> the ping URLs, by {@see PING_BEFORE}, {@see PING_AFTER}, {@see PING_SUCCESS}, or {@see PING_FAILURE} */
 	private array $_pingUrls = [];
+
+	/** @var ?string the time zone the cron module gives a task without its own; not serialized */
+	private ?string $_defaultTimeZone = null;
+
+	/** @var int the number of times a failed run is tried again */
+	private int $_retries = 0;
+
+	/** @var float the seconds before the first retry */
+	private float $_retryDelay = 0.0;
+
+	/** @var float the factor of the delay before each further retry */
+	private float $_retryBackoff = 2.0;
+
+	/** @var ?array{0: int, 1: int} the seconds of the day the runs are limited to, [start, end] */
+	private ?array $_between = null;
+
+	/** @var ?array{0: int, 1: int} the seconds of the day the runs are kept out of, [start, end] */
+	private ?array $_unlessBetween = null;
+
+	/** @var int the most seconds a trigger is delayed */
+	private int $_jitter = 0;
 
 	/**
 	 * This is the abstract method for running a task.
@@ -298,13 +325,39 @@ abstract class TCronTask extends TApplicationComponent
 	public function getNextTriggerTime($time = null)
 	{
 		if ($time !== null) {
-			return $this->getScheduler()->getNextTriggerTime($time);
+			return $this->jitterTrigger($this->getScheduler()->getNextTriggerTime($time));
 		}
 		if ($this->_nextexectime === false) {
-			$s = $this->getScheduler();
-			$this->_nextexectime = $s->getNextTriggerTime($this->_lastexectime ?? 0);
+			$this->_nextexectime = $this->jitterTrigger($this->getScheduler()->getNextTriggerTime($this->_lastexectime ?? 0));
 		}
 		return $this->_nextexectime;
+	}
+
+	/**
+	 * Returns the next trigger times after a time, each delayed by the {@see getJitter() Jitter}.
+	 * @param int $count the number of times
+	 * @param int $time the time to start after
+	 * @return int[] the trigger times, ascending; fewer when the schedule ends
+	 * @since 4.4.0
+	 */
+	public function getNextTriggerTimes(int $count, int $time): array
+	{
+		return array_map(fn (int $trigger): int => (int) $this->jitterTrigger($trigger), $this->getScheduler()->getNextTriggerTimes($count, $time));
+	}
+
+	/**
+	 * Delays a trigger by the {@see getJitter() Jitter}: a stable number of seconds from the task name
+	 * and the trigger, so every process computes the same time.
+	 * @param ?int $trigger the trigger time
+	 * @return ?int the delayed trigger time
+	 * @since 4.4.0
+	 */
+	protected function jitterTrigger(?int $trigger): ?int
+	{
+		if ($trigger === null || $this->_jitter === 0) {
+			return $trigger;
+		}
+		return $trigger + crc32($this->_name . "\0" . $trigger) % ($this->_jitter + 1);
 	}
 
 	/**
@@ -410,8 +463,235 @@ abstract class TCronTask extends TApplicationComponent
 			}
 		}
 		$this->_timeZone = $timeZone;
-		$this->_scheduler?->setTimeZone($timeZone);
+		$this->_scheduler?->setTimeZone($this->getScheduleTimeZone());
 		$this->_nextexectime = false;
+	}
+
+	/**
+	 * @return ?string the time zone the cron module gives a task without its own TimeZone
+	 * @since 4.4.0
+	 */
+	public function getDefaultTimeZone(): ?string
+	{
+		return $this->_defaultTimeZone;
+	}
+
+	/**
+	 * Sets the time zone of the schedule when the task has no TimeZone; the cron module sets it from its
+	 * own TimeZone.  It is not serialized.
+	 * @param ?string $timeZone the time zone, or null for the application time zone
+	 * @since 4.4.0
+	 */
+	public function setDefaultTimeZone(?string $timeZone)
+	{
+		$this->_defaultTimeZone = ($timeZone === '') ? null : $timeZone;
+		$this->_scheduler?->setTimeZone($this->getScheduleTimeZone());
+		$this->_nextexectime = false;
+	}
+
+	/**
+	 * @return ?string the time zone the schedule is in: the TimeZone, else the DefaultTimeZone; null for the application time zone
+	 * @since 4.4.0
+	 */
+	public function getScheduleTimeZone(): ?string
+	{
+		return $this->_timeZone ?? $this->_defaultTimeZone;
+	}
+
+	/**
+	 * @return int the most seconds a trigger is delayed; default 0
+	 * @since 4.4.0
+	 */
+	public function getJitter(): int
+	{
+		return $this->_jitter;
+	}
+
+	/**
+	 * Sets the most seconds a trigger is delayed, and clears the cached next trigger time.  Keep it below
+	 * the time between triggers.
+	 * @param int|string $seconds the most seconds a trigger is delayed
+	 * @throws TInvalidDataValueException when the seconds are less than zero
+	 * @since 4.4.0
+	 */
+	public function setJitter($seconds)
+	{
+		$seconds = TPropertyValue::ensureInteger($seconds);
+		if ($seconds < 0) {
+			throw new TInvalidDataValueException('crontask_jitter_invalid', $seconds);
+		}
+		$this->_jitter = $seconds;
+		$this->_nextexectime = false;
+	}
+
+	/**
+	 * @return int the number of times a failed run is tried again; default 0
+	 * @since 4.4.0
+	 */
+	public function getRetries(): int
+	{
+		return $this->_retries;
+	}
+
+	/**
+	 * @param int|string $count the number of times a failed run is tried again
+	 * @throws TInvalidDataValueException when the count is less than zero
+	 * @since 4.4.0
+	 */
+	public function setRetries($count)
+	{
+		$count = TPropertyValue::ensureInteger($count);
+		if ($count < 0) {
+			throw new TInvalidDataValueException('crontask_retries_invalid', $count);
+		}
+		$this->_retries = $count;
+	}
+
+	/**
+	 * @return float the seconds before the first retry; default 0
+	 * @since 4.4.0
+	 */
+	public function getRetryDelay(): float
+	{
+		return $this->_retryDelay;
+	}
+
+	/**
+	 * @param float|string $seconds the seconds before the first retry
+	 * @throws TInvalidDataValueException when the seconds are less than zero
+	 * @since 4.4.0
+	 */
+	public function setRetryDelay($seconds)
+	{
+		$seconds = TPropertyValue::ensureFloat($seconds);
+		if ($seconds < 0) {
+			throw new TInvalidDataValueException('crontask_retrydelay_invalid', $seconds);
+		}
+		$this->_retryDelay = $seconds;
+	}
+
+	/**
+	 * @return float the factor of the delay before each further retry; default 2
+	 * @since 4.4.0
+	 */
+	public function getRetryBackoff(): float
+	{
+		return $this->_retryBackoff;
+	}
+
+	/**
+	 * @param float|string $factor the factor of the delay before each further retry; 1 keeps the delay
+	 * @throws TInvalidDataValueException when the factor is less than 1
+	 * @since 4.4.0
+	 */
+	public function setRetryBackoff($factor)
+	{
+		$factor = TPropertyValue::ensureFloat($factor);
+		if ($factor < 1) {
+			throw new TInvalidDataValueException('crontask_retrybackoff_invalid', $factor);
+		}
+		$this->_retryBackoff = $factor;
+	}
+
+	/**
+	 * @param int $retry the retry, from 1
+	 * @return float the seconds before the retry: RetryDelay times RetryBackoff to the power of the retry less one
+	 * @since 4.4.0
+	 */
+	public function getRetryWait(int $retry): float
+	{
+		return $this->_retryDelay * ($this->_retryBackoff ** max(0, $retry - 1));
+	}
+
+	/**
+	 * @return ?string the time of day the runs are limited to, 'HH:MM-HH:MM' in the schedule time zone, or null
+	 * @since 4.4.0
+	 */
+	public function getBetween(): ?string
+	{
+		return static::formatWindow($this->_between);
+	}
+
+	/**
+	 * @param ?string $window the time of day the runs are limited to, 'HH:MM-HH:MM' or 'HH:MM:SS-HH:MM:SS'; a
+	 *   start after the end spans midnight; null or '' for none
+	 * @throws TInvalidDataValueException when the window does not parse
+	 * @since 4.4.0
+	 */
+	public function setBetween($window)
+	{
+		$this->_between = static::parseWindow($window);
+	}
+
+	/**
+	 * @return ?string the time of day the runs are kept out of, 'HH:MM-HH:MM' in the schedule time zone, or null
+	 * @since 4.4.0
+	 */
+	public function getUnlessBetween(): ?string
+	{
+		return static::formatWindow($this->_unlessBetween);
+	}
+
+	/**
+	 * @param ?string $window the time of day the runs are kept out of, as {@see setBetween}
+	 * @throws TInvalidDataValueException when the window does not parse
+	 * @since 4.4.0
+	 */
+	public function setUnlessBetween($window)
+	{
+		$this->_unlessBetween = static::parseWindow($window);
+	}
+
+	/**
+	 * Tells whether a time is in the task's time of day: inside {@see getBetween() Between} and outside
+	 * {@see getUnlessBetween() UnlessBetween}, in the schedule time zone.  The end of a window is inside it.
+	 * @param ?int $time the time, default null for now
+	 * @return bool whether a run may start at the time
+	 * @since 4.4.0
+	 */
+	public function getIsInWindow(?int $time = null): bool
+	{
+		if ($this->_between === null && $this->_unlessBetween === null) {
+			return true;
+		}
+		$local = (new \DateTimeImmutable('@' . ($time ?? $this->time())))->setTimezone(new \DateTimeZone($this->getScheduleTimeZone() ?? date_default_timezone_get()));
+		$second = (int) $local->format('G') * 3600 + (int) $local->format('i') * 60 + (int) $local->format('s');
+		$inside = static fn (array $w): bool => ($w[0] <= $w[1]) ? ($second >= $w[0] && $second <= $w[1]) : ($second >= $w[0] || $second <= $w[1]);
+		return ($this->_between === null || $inside($this->_between)) && ($this->_unlessBetween === null || !$inside($this->_unlessBetween));
+	}
+
+	/**
+	 * @param mixed $window 'HH:MM[:SS]-HH:MM[:SS]', null, or ''
+	 * @throws TInvalidDataValueException when the window does not parse
+	 * @return ?array{0: int, 1: int} the start and end second of the day, or null
+	 * @since 4.4.0
+	 */
+	protected static function parseWindow($window): ?array
+	{
+		if ($window === null || $window === '') {
+			return null;
+		}
+		$window = TPropertyValue::ensureString($window);
+		if (!preg_match('/^\s*(\d{1,2}):(\d{2})(?::(\d{2}))?\s*-\s*(\d{1,2}):(\d{2})(?::(\d{2}))?\s*$/', $window, $m)
+				|| $m[1] > 23 || $m[2] > 59 || ($m[3] !== '' && $m[3] > 59) || $m[4] > 23 || $m[5] > 59 || (($m[6] ?? '') !== '' && $m[6] > 59)) {
+			throw new TInvalidDataValueException('crontask_window_invalid', $window);
+		}
+		return [(int) $m[1] * 3600 + (int) $m[2] * 60 + (int) $m[3], (int) $m[4] * 3600 + (int) $m[5] * 60 + (int) ($m[6] ?? 0)];
+	}
+
+	/**
+	 * @param ?array{0: int, 1: int} $window the start and end second of the day
+	 * @return ?string the window as 'HH:MM-HH:MM', with seconds when either has them
+	 * @since 4.4.0
+	 */
+	protected static function formatWindow(?array $window): ?string
+	{
+		if ($window === null) {
+			return null;
+		}
+		$seconds = ($window[0] % 60) || ($window[1] % 60);
+		$format = static fn (int $s): string => sprintf('%02d:%02d', intdiv($s, 3600), intdiv($s % 3600, 60)) . ($seconds ? sprintf(':%02d', $s % 60) : '');
+		return $format($window[0]) . '-' . $format($window[1]);
 	}
 
 	/**
@@ -585,7 +865,7 @@ abstract class TCronTask extends TApplicationComponent
 	{
 		if ($this->_scheduler === null) {
 			$this->_scheduler = Prado::createComponent(TTimeScheduler::class);
-			$this->_scheduler->setTimeZone($this->_timeZone);
+			$this->_scheduler->setTimeZone($this->getScheduleTimeZone());
 			$this->_scheduler->setHashContext($this->_name);
 			$this->_scheduler->setSchedule($this->_schedule);
 		}
@@ -641,6 +921,25 @@ abstract class TCronTask extends TApplicationComponent
 		}
 		if ($this->_pingUrls === []) {
 			$exprops[] = "\0Prado\Util\Cron\TCronTask\0_pingUrls";
+		}
+		$exprops[] = "\0Prado\Util\Cron\TCronTask\0_defaultTimeZone";
+		if ($this->_retries === 0) {
+			$exprops[] = "\0Prado\Util\Cron\TCronTask\0_retries";
+		}
+		if ($this->_retryDelay === 0.0) {
+			$exprops[] = "\0Prado\Util\Cron\TCronTask\0_retryDelay";
+		}
+		if ($this->_retryBackoff === 2.0) {
+			$exprops[] = "\0Prado\Util\Cron\TCronTask\0_retryBackoff";
+		}
+		if ($this->_between === null) {
+			$exprops[] = "\0Prado\Util\Cron\TCronTask\0_between";
+		}
+		if ($this->_unlessBetween === null) {
+			$exprops[] = "\0Prado\Util\Cron\TCronTask\0_unlessBetween";
+		}
+		if ($this->_jitter === 0) {
+			$exprops[] = "\0Prado\Util\Cron\TCronTask\0_jitter";
 		}
 	}
 

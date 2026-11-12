@@ -9,9 +9,9 @@
 **Extends:** `TShellAction`
 
 ## Overview
-`TShellCronAction` provides the `cron` CLI action for running and inspecting [`TCronModule`](TCronModule.md) from the command line. Sub-commands: `tasks` (the default action: list configured tasks with schedule, mode, last run and result, next run, running state, and description, filtered by task name and `@user`), `now` (run a task at once), `next` (the next trigger times), `run` (execute pending tasks; the system crontab entry), `top` (the live view of the cron processes), `exec` (run one task in this process: the child of a Process task), `index` (list all registered task infos from `fxGetCronTaskInfos`), and the daemon commands `daemon` (state), `retire` (hand the lease to the next tick with no gap), and `stop` (end at once).
+`TShellCronAction` provides the `cron` CLI action for running and inspecting [`TCronModule`](TCronModule.md) from the command line. Sub-commands: `tasks` (the default action: list configured tasks with schedule, mode, last run and result, next run, running or paused state, and description, filtered by task name and `@user`), `now` (run a task at once), `next` (the next trigger times), `pause` and `resume`, `run` (execute pending tasks; the system crontab entry), `top` (the live view of the cron processes), `exec` (run one task in this process: the child of a Process task), `index` (list all registered task infos from `fxGetCronTaskInfos`), and the daemon commands `daemon` (state), `retire` (hand the lease to the next tick with no gap), and `stop` (end at once).
 
-When the application user has the `TUserPermissionsBehavior`, the constructor removes `run`, `exec`, `now`, `retire`, and `stop` without `cron_run_pending` (`removeShellMethod()`), and `tasks` is limited to the user's own tasks without `cron_read_tasks` (4.4.0).
+When the application user has the `TUserPermissionsBehavior`, the constructor removes `run`, `exec`, `now`, `pause`, `resume`, `retire`, and `stop` without `cron_run_pending` (`removeShellMethod()`), and `tasks` is limited to the user's own tasks without `cron_read_tasks` (4.4.0).
 
 [`TDbCronManager`](TDbCronManager.md) replaces the shell class with [`TShellDbCronAction`](TShellDbCronAction.md) in its constructor, which extends this class with add/update/remove/log/flush commands.
 
@@ -24,6 +24,8 @@ php prado-cli.php /app cron/top [seconds] [count]   # live view of the cron proc
 php prado-cli.php /app cron/exec <name>       # run one task in this process; the child of a Process task (4.4.0)
 php prado-cli.php /app cron/now <name>        # run a task now, whatever its schedule, and show its result (4.4.0)
 php prado-cli.php /app cron/next [name] [count]   # the next trigger times, in each task's time zone (4.4.0)
+php prado-cli.php /app cron/pause <name>      # its triggers pass without runs until resumed (4.4.0)
+php prado-cli.php /app cron/resume <name>     # resume a paused task (4.4.0)
 php prado-cli.php /app cron/index             # display registered task info from fxGetCronTaskInfos
 php prado-cli.php /app cron/daemon            # running, retiring, or no daemon (4.4.0)
 php prado-cli.php /app cron/retire [seconds]  # retire the daemon: the next cron/run tick takes over with no gap (4.4.0)
@@ -41,7 +43,8 @@ Name and user filters are patterns: `_` is a wild card and `%` a wild string. A 
 - `actionRun($args)` — turns on the module's `EnableStatus` when it is unset, then calls `processPendingTasks()`; with `Daemon` this elects or defers to the cron daemon (see [TCronModule](TCronModule.md#daemon-mode-440))
 - `actionTasks($args)` — displays task table: name, schedule, task, mode, last run, last result and seconds (`getTaskResults()`), next run, user, run count, and state (`running`, or `pid <id>` for a Process task's child, from `getStatuses()`); through `getTasks()` or `getUserTasks()`
 - `actionTop($args)` — `renderTop()` once, or in a terminal (`isInteractive()`) every `[seconds]` (default 1) after clearing the screen, until interrupted or `[count]` views (4.4.0). A view has a line per cron process (`getStatuses()`: role, pid, host, uptime; for the daemon its state, wake transport, next sweep, and sweep and task counts), the concurrency, then tables of the running tasks, the next triggers (`getNextTriggers(…, true)`), and the last results (`getTaskResults(true)`), at most `TOP_ROWS` (10) each, limited to the tasks the user may read. `flushView()` and `sleep()` are the test seams.
-- `actionNow($args)` — `runTask($task, true)` (no StartingDeadline; run lock, claim, events, and pings apply), then the result from `onTaskEnd` or the reason from `onTaskSkipped` (4.4.0)
+- `actionNow($args)` — `runTaskNow($task)` (not skipped by pause, deadline, window, or condition; run lock, claim, events, and pings apply; turns on an unset `EnableStatus` so `cron/top` shows it), then the result from `onTaskEnd` or the reason from `onTaskSkipped` (4.4.0)
+- `actionPause($args)`, `actionResume($args)` — `pauseTask()`/`resumeTask()` on a task the user may read (4.4.0)
 - `actionNext($args)` — the next trigger times of the readable tasks, soonest first, one per task or `count` (default 5 with a name filter), each in the task's `TimeZone`; `getNextTriggerTimes()` is the pending or next trigger followed by the scheduler's times after it or after now (4.4.0)
 - `actionExec($args)` — `executeTask()` on the named task without claiming it; throws `TExitException` with `TCronModule::EXIT_ERROR`, `EXIT_NO_TASK`, or `EXIT_DENIED` (4.4.0)
 - `actionIndex($args)` — displays task info from `fxGetCronTaskInfos`
