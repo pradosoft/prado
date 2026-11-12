@@ -1952,8 +1952,8 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	/**
 	 * Opens the child process of a Process task: {@see getTaskProcessCommand}, with no standard
 	 * input, and the standard output and error of this process, or appended to the task's ProcessOutputFile.
-	 * The file is opened once and both streams share the handle, as two append handles overwrite each
-	 * other on Windows.
+	 * The file is opened once ({@see openAppendFile}) and both streams share the handle, as two append
+	 * handles overwrite each other on Windows.
 	 * @param \Prado\Util\Cron\TCronTask $task the task
 	 * @throws TIOException when the ProcessOutputFile cannot be opened
 	 * @return TProcess the running child process
@@ -1964,7 +1964,7 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 		$null = TProcessHelper::isSystemWindows() ? 'NUL' : '/dev/null';
 		$output = $task->getProcessOutputFile();
 		$out = false;
-		if ($output !== null && ($out = @fopen($output, 'ab')) === false) {
+		if ($output !== null && ($out = static::openAppendFile($output)) === false) {
 			throw new TIOException('cron_processoutputfile_failed', $output);
 		}
 		try {
@@ -1974,6 +1974,25 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 				fclose($out);
 			}
 		}
+	}
+
+	/**
+	 * Opens a file for a child process to append to.  POSIX keeps the append mode in the handle the child
+	 * inherits; Windows keeps it in this process, so there the file is opened without truncating and the
+	 * handle is positioned at its end.
+	 * @param string $file the file
+	 * @return false|resource the handle, or false when the file cannot be opened
+	 * @since 4.4.0
+	 */
+	public static function openAppendFile(string $file)
+	{
+		if (!TProcessHelper::isSystemWindows()) {
+			return @fopen($file, 'ab');
+		}
+		if (($handle = @fopen($file, 'cb')) !== false) {
+			fseek($handle, 0, SEEK_END);
+		}
+		return $handle;
 	}
 
 	/**

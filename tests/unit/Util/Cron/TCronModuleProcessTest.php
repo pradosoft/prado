@@ -178,6 +178,8 @@ class TCronModuleProcessTest extends \PHPUnit\Framework\TestCase
 			self::assertTrue($this->runChild('echo "out"; fwrite(STDERR, "err");'));
 			self::assertSame('outerr', file_get_contents($log), 'the child appends its output and errors to the file');
 			self::assertSame([5], array_values($this->module->priorities));
+			self::assertTrue($this->runChild('echo "again";'));
+			self::assertSame('outerragain', file_get_contents($log), 'the next run appends after it');
 		} finally {
 			if (is_file($log)) {
 				unlink($log);

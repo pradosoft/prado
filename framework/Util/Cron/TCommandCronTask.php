@@ -82,7 +82,8 @@ class TCommandCronTask extends TCronTask
 		$null = TProcessHelper::isSystemWindows() ? 'NUL' : '/dev/null';
 		$log = $this->getLogFile();
 		// One handle serves both streams: two append handles overwrite each other on Windows.
-		if (($output = @fopen($log ?? $null, ($log !== null && !$this->getAppendLog()) ? 'wb' : 'ab')) === false) {
+		$output = ($log === null) ? @fopen($null, 'wb') : ($this->getAppendLog() ? TCronModule::openAppendFile($log) : @fopen($log, 'wb'));
+		if ($output === false) {
 			throw new TIOException('commandcrontask_log_failed', $this->getName(), $log);
 		}
 		$this->_exitCode = null;
