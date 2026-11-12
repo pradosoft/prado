@@ -35,11 +35,31 @@ use Prado\TPropertyValue;
  * holds the task's run lock, and a trigger that comes while the previous run still holds it is
  * skipped.
  *
+ * The schedule is in the task's {@see getTimeZone() TimeZone}, default the application time zone.  A
+ * {@see getStartingDeadline() StartingDeadline} skips a run that would start more than that many seconds
+ * after its trigger, such as after the cron process was down.  {@see getDescription() Description} is
+ * shown by the shell commands.  The ping URLs ({@see getPingBeforeUrl() PingBeforeUrl},
+ * {@see getPingAfterUrl() PingAfterUrl}, {@see getPingSuccessUrl() PingSuccessUrl}, and
+ * {@see getPingFailureUrl() PingFailureUrl}) report runs to a monitor through
+ * {@see \Prado\Util\Cron\TCronModule::onTaskPing()}.
+ *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.2.0
  */
 abstract class TCronTask extends TApplicationComponent
 {
+	/** The ping before a run starts. */
+	public const PING_BEFORE = 'before';
+
+	/** The ping after every run. */
+	public const PING_AFTER = 'after';
+
+	/** The ping after a run without an exception. */
+	public const PING_SUCCESS = 'success';
+
+	/** The ping after a run with an exception, a failed child process, or a timeout. */
+	public const PING_FAILURE = 'failure';
+
 	/** @var string The name of the task */
 	private $_name;
 
@@ -78,6 +98,18 @@ abstract class TCronTask extends TApplicationComponent
 
 	/** @var bool whether a run may start while the previous run is still running */
 	private bool $_overlap = false;
+
+	/** @var ?string the time zone of the schedule, or null for the application time zone */
+	private ?string $_timeZone = null;
+
+	/** @var ?float the seconds after its trigger a run may start, or null for no deadline */
+	private ?float $_startingDeadline = null;
+
+	/** @var string what the task does, for display */
+	private string $_description = '';
+
+	/** @var array<string, string> the ping URLs, by {@see PING_BEFORE}, {@see PING_AFTER}, {@see PING_SUCCESS}, or {@see PING_FAILURE} */
+	private array $_pingUrls = [];
 
 	/**
 	 * This is the abstract method for running a task.
@@ -353,6 +385,178 @@ abstract class TCronTask extends TApplicationComponent
 	}
 
 	/**
+	 * @return ?string the time zone of the schedule, or null for the application time zone
+	 * @since 4.4.0
+	 */
+	public function getTimeZone(): ?string
+	{
+		return $this->_timeZone;
+	}
+
+	/**
+	 * Sets the time zone of the schedule and clears the cached next trigger time.
+	 * @param ?string $timeZone a time zone identifier such as 'America/New_York' or an offset such as '+02:00'; null or '' for the application time zone
+	 * @throws TInvalidDataValueException when the time zone is not known
+	 * @since 4.4.0
+	 */
+	public function setTimeZone($timeZone)
+	{
+		$timeZone = ($timeZone === null || $timeZone === '') ? null : TPropertyValue::ensureString($timeZone);
+		if ($timeZone !== null) {
+			try {
+				new \DateTimeZone($timeZone);
+			} catch (\Exception $e) {
+				throw new TInvalidDataValueException('crontask_timezone_invalid', $timeZone);
+			}
+		}
+		$this->_timeZone = $timeZone;
+		$this->_scheduler?->setTimeZone($timeZone);
+		$this->_nextexectime = false;
+	}
+
+	/**
+	 * @return ?float the seconds after its trigger a run may start, or null for no deadline
+	 * @since 4.4.0
+	 */
+	public function getStartingDeadline(): ?float
+	{
+		return $this->_startingDeadline;
+	}
+
+	/**
+	 * @param null|float|string $seconds the seconds after its trigger a run may start, or null for no deadline
+	 * @throws TInvalidDataValueException when the seconds are less than zero
+	 * @since 4.4.0
+	 */
+	public function setStartingDeadline($seconds)
+	{
+		if ($seconds !== null && $seconds !== '') {
+			$seconds = TPropertyValue::ensureFloat($seconds);
+			if ($seconds < 0) {
+				throw new TInvalidDataValueException('crontask_startingdeadline_invalid', $seconds);
+			}
+		} else {
+			$seconds = null;
+		}
+		$this->_startingDeadline = $seconds;
+	}
+
+	/**
+	 * @return string what the task does, for display; default ''
+	 * @since 4.4.0
+	 */
+	public function getDescription(): string
+	{
+		return $this->_description;
+	}
+
+	/**
+	 * @param ?string $description what the task does, for display
+	 * @since 4.4.0
+	 */
+	public function setDescription($description)
+	{
+		$this->_description = ($description === null) ? '' : TPropertyValue::ensureString($description);
+	}
+
+	/**
+	 * @return ?string the URL pinged before a run starts, or null
+	 * @since 4.4.0
+	 */
+	public function getPingBeforeUrl(): ?string
+	{
+		return $this->_pingUrls[self::PING_BEFORE] ?? null;
+	}
+
+	/**
+	 * @param ?string $url the URL pinged before a run starts, or null
+	 * @since 4.4.0
+	 */
+	public function setPingBeforeUrl($url)
+	{
+		$this->setPingUrl(self::PING_BEFORE, $url);
+	}
+
+	/**
+	 * @return ?string the URL pinged after every run, or null
+	 * @since 4.4.0
+	 */
+	public function getPingAfterUrl(): ?string
+	{
+		return $this->_pingUrls[self::PING_AFTER] ?? null;
+	}
+
+	/**
+	 * @param ?string $url the URL pinged after every run, or null
+	 * @since 4.4.0
+	 */
+	public function setPingAfterUrl($url)
+	{
+		$this->setPingUrl(self::PING_AFTER, $url);
+	}
+
+	/**
+	 * @return ?string the URL pinged after a run without an exception, or null
+	 * @since 4.4.0
+	 */
+	public function getPingSuccessUrl(): ?string
+	{
+		return $this->_pingUrls[self::PING_SUCCESS] ?? null;
+	}
+
+	/**
+	 * @param ?string $url the URL pinged after a run without an exception, or null
+	 * @since 4.4.0
+	 */
+	public function setPingSuccessUrl($url)
+	{
+		$this->setPingUrl(self::PING_SUCCESS, $url);
+	}
+
+	/**
+	 * @return ?string the URL pinged after a failed run, or null
+	 * @since 4.4.0
+	 */
+	public function getPingFailureUrl(): ?string
+	{
+		return $this->_pingUrls[self::PING_FAILURE] ?? null;
+	}
+
+	/**
+	 * @param ?string $url the URL pinged after a failed run, or null
+	 * @since 4.4.0
+	 */
+	public function setPingFailureUrl($url)
+	{
+		$this->setPingUrl(self::PING_FAILURE, $url);
+	}
+
+	/**
+	 * Returns the ping URL of a point in a run.
+	 * @param string $ping {@see PING_BEFORE}, {@see PING_AFTER}, {@see PING_SUCCESS}, or {@see PING_FAILURE}
+	 * @return ?string the URL, or null
+	 * @since 4.4.0
+	 */
+	public function getPingUrl(string $ping): ?string
+	{
+		return $this->_pingUrls[$ping] ?? null;
+	}
+
+	/**
+	 * @param string $ping {@see PING_BEFORE}, {@see PING_AFTER}, {@see PING_SUCCESS}, or {@see PING_FAILURE}
+	 * @param ?string $url the URL, or null or '' for none
+	 * @since 4.4.0
+	 */
+	protected function setPingUrl(string $ping, $url): void
+	{
+		if ($url === null || $url === '') {
+			unset($this->_pingUrls[$ping]);
+		} else {
+			$this->_pingUrls[$ping] = TPropertyValue::ensureString($url);
+		}
+	}
+
+	/**
 	 * @return ?TCancellationToken the token of the current run, cancelled at the run's deadline; null outside a run or without a deadline
 	 * @since 4.4.0
 	 */
@@ -381,6 +585,7 @@ abstract class TCronTask extends TApplicationComponent
 	{
 		if ($this->_scheduler === null) {
 			$this->_scheduler = Prado::createComponent(TTimeScheduler::class);
+			$this->_scheduler->setTimeZone($this->_timeZone);
 			$this->_scheduler->setHashContext($this->_name);
 			$this->_scheduler->setSchedule($this->_schedule);
 		}
@@ -424,6 +629,18 @@ abstract class TCronTask extends TApplicationComponent
 		}
 		if (!$this->_overlap) {
 			$exprops[] = "\0Prado\Util\Cron\TCronTask\0_overlap";
+		}
+		if ($this->_timeZone === null) {
+			$exprops[] = "\0Prado\Util\Cron\TCronTask\0_timeZone";
+		}
+		if ($this->_startingDeadline === null) {
+			$exprops[] = "\0Prado\Util\Cron\TCronTask\0_startingDeadline";
+		}
+		if ($this->_description === '') {
+			$exprops[] = "\0Prado\Util\Cron\TCronTask\0_description";
+		}
+		if ($this->_pingUrls === []) {
+			$exprops[] = "\0Prado\Util\Cron\TCronTask\0_pingUrls";
 		}
 	}
 

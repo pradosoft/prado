@@ -14,11 +14,15 @@ use Prado\Exceptions\TInvalidOperationException;
 use Prado\IO\Async\TAsync;
 use Prado\IO\Async\TDeferred;
 use Prado\IO\Async\TFiberContext;
+use Prado\IO\HttpClient\THttpClient;
+use Prado\IO\HttpClient\THttpClientException;
+use Prado\IO\HttpClient\THttpClientResponse;
 use Prado\Prado;
 use Prado\Test\Unit\PradoUnit;
 use Prado\Test\Unit\Harness\Util\Cron\TTestCronModule;
 use Prado\Util\Cron\TCronDaemonEventParameter;
 use Prado\Util\Cron\TCronSweepEventParameter;
+use Prado\Util\Cron\TCronTaskEventParameter;
 use Prado\Util\Cron\Wake\TCronWakeFile;
 use Prado\Util\Cron\Wake\TCronWakeSocket;
 use Prado\Util\Mutex\TFileMutex;
@@ -142,6 +146,25 @@ class TTestCronStatusTask extends TCronTask
 	}
 }
 
+
+/**
+ * Records the requests a cron module's pings make.
+ */
+class TTestCronPingHttpClient extends THttpClient
+{
+	public array $requests = [];
+	public int $status = 200;
+	public bool $fail = false;
+
+	public function download(string $method, string $url, array $headers = [], ?string $body = null): THttpClientResponse
+	{
+		if ($this->fail) {
+			throw new THttpClientException('httpclient_transport_error', 0, "Failed to open '{$url}'.");
+		}
+		$this->requests[] = [$method, $url];
+		return new THttpClientResponse($this->status);
+	}
+}
 
 class TCronModuleTest extends \PHPUnit\Framework\TestCase
 {
@@ -2041,6 +2064,115 @@ class TCronModuleTest extends \PHPUnit\Framework\TestCase
 				unlink($dir . '-wake');
 			}
 		}
+	}
+
+
+	public function testRunTask_StartingDeadlineSkipsALateTrigger()
+	{
+		$this->obj->setDaemonMutex(new TMemoryMutex());
+		TTestCronRecordingTask::$events = [];
+		$this->obj->init([['name' => 'late', 'schedule' => '0 0 1 1 ? 2000', 'task' => TTestCronRecordingTask::class, 'startingdeadline' => '60']]);
+		$task = $this->obj->getTask('late');
+		$skipped = [];
+		$this->obj->attachEventHandler('OnTaskSkipped', function ($sender, $param) use (&$skipped) {
+			$skipped[] = $param->getReason();
+		});
+		self::assertTrue($task->getIsPending());
+		self::assertFalse($this->obj->runTask($task), 'a trigger 26 years late is past its 60-second deadline');
+		self::assertSame([], TTestCronRecordingTask::$events);
+		self::assertSame([TCronTaskEventParameter::REASON_DEADLINE], $skipped);
+		self::assertSame(0, $task->getProcessCount());
+		self::assertFalse($task->getIsPending(), 'the missed trigger is claimed');
+		self::assertSame(TCronModule::RESULT_MISSED, $this->obj->getTaskResults()['late']['result']);
+
+		self::assertTrue($this->obj->runTask($task, true), 'a manual run has no deadline');
+		self::assertSame(['late start', 'late end'], TTestCronRecordingTask::$events);
+	}
+
+	public function testRunTask_RaisesTheTaskEvents()
+	{
+		$mutex = new TMemoryMutex();
+		$this->obj->setDaemonMutex($mutex);
+		$this->obj->init([['name' => 'evented', 'schedule' => '0 0 1 1 ? 2000', 'task' => TTestCronRecordingTask::class]]);
+		$task = $this->obj->getTask('evented');
+		$events = [];
+		$cancel = false;
+		foreach (['OnTaskStart', 'OnTaskEnd', 'OnTaskFailure', 'OnTaskSkipped'] as $event) {
+			$this->obj->attachEventHandler($event, function ($sender, $param) use (&$events, &$cancel, $event) {
+				self::assertInstanceOf(TCronTaskEventParameter::class, $param);
+				$events[] = [$event, $param->getReason(), $param->getResult(), $param->getException() ? $param->getException()->getMessage() : null];
+				if ($event === 'OnTaskStart' && $cancel) {
+					$param->setCancel(true);
+				}
+			});
+		}
+		self::assertTrue($this->obj->runTask($task));
+		self::assertSame([['OnTaskStart', null, null, null], ['OnTaskEnd', null, TCronModule::RESULT_OK, null]], $events);
+
+		$events = [];
+		$task->throw = true;
+		$task->setLastExecTime(null);
+		self::assertFalse($this->obj->runTask($task));
+		self::assertSame(['OnTaskStart', 'OnTaskEnd', 'OnTaskFailure'], array_column($events, 0));
+		self::assertSame([TCronModule::RESULT_ERROR, 'task failed: evented'], array_slice($events[2], 2));
+
+		$events = [];
+		$cancel = true;
+		$count = $task->getProcessCount();
+		$task->setLastExecTime(null);
+		self::assertFalse($this->obj->runTask($task));
+		self::assertSame([['OnTaskStart', null, null, null], ['OnTaskSkipped', TCronTaskEventParameter::REASON_CANCELLED, null, null]], $events);
+		self::assertSame($count, $task->getProcessCount(), 'a cancelled run is not counted');
+		self::assertFalse($task->getIsPending(), 'a cancelled run claims its trigger');
+
+		$events = [];
+		$other = new TMemoryMutex();
+		self::assertTrue($other->acquire($this->obj->getTaskLockName('evented')));
+		$task->setLastExecTime(null);
+		self::assertFalse($this->obj->runTask($task));
+		$other->releaseAll();
+		self::assertSame([['OnTaskSkipped', TCronTaskEventParameter::REASON_RUNNING, null, null]], $events, 'a held run lock skips before the start');
+	}
+
+	public function testRunTask_SendsThePings()
+	{
+		$this->obj->setDaemonMutex(new TMemoryMutex());
+		$client = new TTestCronPingHttpClient();
+		$this->obj->setHttpClient($client);
+		self::assertSame($client, $this->obj->getHttpClient());
+		$this->obj->init([['name' => 'pinged', 'schedule' => '0 0 1 1 ? 2000', 'task' => TTestCronRecordingTask::class,
+			'pingbeforeurl' => 'https://hc.test/u/start', 'pingafterurl' => 'https://hc.test/u/after',
+			'pingsuccessurl' => 'https://hc.test/u', 'pingfailureurl' => 'https://hc.test/u/fail']]);
+		$task = $this->obj->getTask('pinged');
+		self::assertTrue($this->obj->runTask($task));
+		self::assertSame([['GET', 'https://hc.test/u/start'], ['GET', 'https://hc.test/u/after'], ['GET', 'https://hc.test/u']], $client->requests);
+
+		$client->requests = [];
+		$task->throw = true;
+		$task->setLastExecTime(null);
+		self::assertFalse($this->obj->runTask($task));
+		self::assertSame(['https://hc.test/u/start', 'https://hc.test/u/after', 'https://hc.test/u/fail'], array_column($client->requests, 1));
+
+		// a handler delivers a ping itself: the module does not send it
+		$client->requests = [];
+		$pings = [];
+		$this->obj->attachEventHandler('OnTaskPing', function ($sender, $param) use (&$pings) {
+			$pings[] = [$param->getPing(), $param->getUrl(), $param->getResult()];
+			if ($param->getPing() === TCronTask::PING_FAILURE) {
+				$param->setHandled(true);
+			}
+		});
+		$task->setLastExecTime(null);
+		self::assertFalse($this->obj->runTask($task));
+		self::assertSame([[TCronTask::PING_BEFORE, 'https://hc.test/u/start', null], [TCronTask::PING_AFTER, 'https://hc.test/u/after', TCronModule::RESULT_ERROR], [TCronTask::PING_FAILURE, 'https://hc.test/u/fail', TCronModule::RESULT_ERROR]], $pings);
+		self::assertSame(['https://hc.test/u/start', 'https://hc.test/u/after'], array_column($client->requests, 1), 'the handled ping is not sent');
+
+		// a failed ping does not affect the run
+		$client->fail = true;
+		$task->throw = false;
+		$task->setLastExecTime(null);
+		self::assertTrue($this->obj->runTask($task));
+		self::assertSame(TCronModule::RESULT_OK, $this->obj->getTaskResults()['pinged']['result']);
 	}
 
 }

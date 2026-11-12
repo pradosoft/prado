@@ -159,6 +159,58 @@ class TCronTaskTest extends \PHPUnit\Framework\TestCase
 		self::assertFalse($this->obj->getOverlap());
 	}
 
+	public function testTimeZone()
+	{
+		self::assertNull($this->obj->getTimeZone());
+		$this->obj->setSchedule('0 9 * * *');
+		$this->obj->setLastExecTime(gmmktime(0, 0, 0, 6, 1, 2026));
+		$utc = $this->obj->getNextTriggerTime();
+		$this->obj->setTimeZone('Asia/Tokyo');
+		self::assertSame('Asia/Tokyo', $this->obj->getTimeZone());
+		self::assertSame('Asia/Tokyo', $this->obj->getScheduler()->getTimeZone());
+		self::assertNotEquals($utc, $this->obj->getNextTriggerTime(), 'the cached next trigger is cleared');
+		self::assertStringContainsString('Asia/Tokyo', serialize($this->obj));
+		$this->obj->setTimeZone(null);
+		self::assertNull($this->obj->getScheduler()->getTimeZone());
+		self::assertStringNotContainsString('_timeZone', serialize($this->obj));
+		self::expectException(TInvalidDataValueException::class);
+		$this->obj->setTimeZone('Nowhere/Never');
+	}
+
+	public function testStartingDeadline()
+	{
+		self::assertNull($this->obj->getStartingDeadline());
+		self::assertStringNotContainsString('_startingDeadline', serialize($this->obj));
+		$this->obj->setStartingDeadline('300');
+		self::assertSame(300.0, $this->obj->getStartingDeadline());
+		$this->obj->setStartingDeadline(0);
+		self::assertSame(0.0, $this->obj->getStartingDeadline());
+		$this->obj->setStartingDeadline('');
+		self::assertNull($this->obj->getStartingDeadline());
+		self::expectException(TInvalidDataValueException::class);
+		$this->obj->setStartingDeadline(-1);
+	}
+
+	public function testDescriptionAndPingUrls()
+	{
+		self::assertSame('', $this->obj->getDescription());
+		$this->obj->setDescription('Nightly backup');
+		self::assertSame('Nightly backup', $this->obj->getDescription());
+		self::assertStringNotContainsString('_pingUrls', serialize($this->obj));
+		foreach (['Before' => TCronTask::PING_BEFORE, 'After' => TCronTask::PING_AFTER, 'Success' => TCronTask::PING_SUCCESS, 'Failure' => TCronTask::PING_FAILURE] as $name => $ping) {
+			self::assertNull($this->obj->{'getPing' . $name . 'Url'}());
+			$this->obj->{'setPing' . $name . 'Url'}('https://example.test/' . $ping);
+			self::assertSame('https://example.test/' . $ping, $this->obj->{'getPing' . $name . 'Url'}());
+			self::assertSame('https://example.test/' . $ping, $this->obj->getPingUrl($ping));
+		}
+		$copy = unserialize(serialize($this->obj));
+		self::assertSame('https://example.test/failure', $copy->getPingFailureUrl());
+		self::assertSame('Nightly backup', $copy->getDescription());
+		$this->obj->setPingFailureUrl('');
+		self::assertNull($this->obj->getPingFailureUrl());
+		self::assertNull($this->obj->getPingUrl('unknown'));
+	}
+
 	public function testProcessCount()
 	{
 		$value = rand();

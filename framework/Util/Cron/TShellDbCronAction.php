@@ -32,9 +32,9 @@ use Prado\Shell\TShellWriter;
  */
 class TShellDbCronAction extends TShellCronAction
 {
-	protected $methods = ['tasks', 'run', 'index', 'add', 'update', 'remove', 'log', 'flush', 'daemon', 'retire', 'stop', 'migrate', 'top', 'exec'];
-	protected $parameters = [null, null, null, ['task-name', 'task-id', 'schedule'], ['task-name'], ['task-name'], null, null, null, null, null, null, null, ['task-name']];
-	protected $optional = [['task-name or @user'], null, null, ['parameters...'], ['parameters...'], [], ['task-name or @user'], ['task-name or @user or time (e.g. seconds or PHP DateInterval)'], null, ['seconds'], ['seconds'], null, ['seconds', 'count'], null];
+	protected $methods = ['tasks', 'run', 'index', 'add', 'update', 'remove', 'log', 'flush', 'daemon', 'retire', 'stop', 'migrate', 'top', 'exec', 'now', 'next'];
+	protected $parameters = [null, null, null, ['task-name', 'task-id', 'schedule'], ['task-name'], ['task-name'], null, null, null, null, null, null, null, ['task-name'], ['task-name'], null];
+	protected $optional = [['task-name or @user'], null, null, ['parameters...'], ['parameters...'], [], ['task-name or @user'], ['task-name or @user or time (e.g. seconds or PHP DateInterval)'], null, ['seconds'], ['seconds'], null, ['seconds', 'count'], null, null, ['task-name', 'count']];
 	protected $description = ['Manages DbCron time-based services',
 		'Displays the Cron tasks configured in the application and database. Filter by @user and task name.',
 		'Runs the DbCron Pending Tasks.',
@@ -50,6 +50,8 @@ class TShellDbCronAction extends TShellCronAction
 		'Brings the cron table up to date: creates it when missing, adds the 4.4.0 columns to an older one.',
 		'Shows the cron processes, running tasks, next triggers, and last results; live in a terminal.',
 		'Runs one task in this process; a Process task\'s child process runs it.',
+		'Runs a task now, whatever its schedule, and shows its result.',
+		'Shows the next trigger times of the tasks; filter by task name.',
 	];
 
 	private $_user;

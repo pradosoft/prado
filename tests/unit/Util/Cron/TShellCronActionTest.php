@@ -289,4 +289,71 @@ class TShellCronActionTest extends \PHPUnit\Framework\TestCase
 		}
 	}
 
+
+	public function testActionNow()
+	{
+		$cronClass = $this->getTestCronClass();
+		$cron = new $cronClass();
+		$cron->setID('shellNow' . substr(md5(static::class), 0, 6));
+		$mutex = new TMemoryMutex();
+		$cron->setDaemonMutex($mutex);
+		$cron->init([
+			['name' => 'nowGood', 'schedule' => '0 0 1 1 ? 2099', 'task' => TTestCronModuleTask::class],
+			['name' => 'nowBad', 'schedule' => '0 0 1 1 ? 2099', 'task' => TTestCronShellFailingTask::class],
+		]);
+		$this->obj->setCronModule($cron);
+		try {
+			self::assertTrue($this->obj->actionNow(['cron/now', 'nowGood']));
+			self::assertStringContainsString("Cron task 'nowGood' ran: ok", $this->writer->flush());
+			self::assertSame(1, $cron->getTask('nowGood')->getProcessCount(), 'a manual run is claimed and counted');
+			self::assertTrue($this->obj->actionNow(['cron/now', 'nowBad']));
+			self::assertStringContainsString("Cron task 'nowBad' ran: error", $this->writer->flush());
+
+			$other = new TMemoryMutex();
+			self::assertTrue($other->acquire($cron->getTaskLockName('nowGood')));
+			self::assertTrue($this->obj->actionNow(['cron/now', 'nowGood']));
+			$other->releaseAll();
+			self::assertStringContainsString("Cron task 'nowGood' did not run: running", $this->writer->flush());
+
+			self::assertTrue($this->obj->actionNow(['cron/now', 'noSuchTask']));
+			self::assertStringContainsString("Cron task 'noSuchTask' is not found", $this->writer->flush());
+		} finally {
+			$cron->unlisten();
+		}
+	}
+
+	public function testActionNext()
+	{
+		$cronClass = $this->getTestCronClass();
+		$cron = new $cronClass();
+		$cron->setID('shellNext' . substr(md5(static::class), 0, 6));
+		$cron->init([
+			['name' => 'nextYearly', 'schedule' => '0 0 1 1 ? 2098', 'task' => TTestCronModuleTask::class, 'description' => 'Runs in 2098'],
+			['name' => 'nextTokyo', 'schedule' => '0 9 * * *', 'task' => TTestCronModuleTask::class, 'timezone' => 'Asia/Tokyo', 'mode' => 'Parallel'],
+		]);
+		$this->obj->setCronModule($cron);
+		try {
+			self::assertTrue($this->obj->actionNext(['cron/next']));
+			$text = $this->writer->flush();
+			self::assertStringContainsString('Trigger', $text);
+			self::assertStringContainsString('JST', $text, 'a time is shown in the task time zone');
+			self::assertStringContainsString('Parallel', $text);
+			self::assertLessThan(strpos($text, 'nextYearly'), strpos($text, 'nextTokyo'), 'the soonest trigger is first');
+			self::assertSame(1, substr_count($text, ' 09:00:00 JST'));
+
+			self::assertTrue($this->obj->actionNext(['cron/next', 'nextTok%', '3']));
+			$text = $this->writer->flush();
+			self::assertSame(3, substr_count($text, ' 09:00:00 JST'), 'a count shows that many triggers');
+			self::assertStringNotContainsString('nextYearly', $text);
+
+			self::assertTrue($this->obj->actionNext(['cron/next', 'nextYearly']));
+			self::assertSame(1, substr_count($this->writer->flush(), '2098-01-01'), 'a one-year schedule has one trigger left');
+
+			self::assertTrue($this->obj->actionTasks(['cron/tasks']));
+			self::assertStringContainsString('Runs in 2098', $this->writer->flush(), 'cron/tasks shows the description');
+		} finally {
+			$cron->unlisten();
+		}
+	}
+
 }

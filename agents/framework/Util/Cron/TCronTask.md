@@ -28,6 +28,10 @@ TCronTask is the abstract base class for all cron tasks. Subclasses must impleme
 - `getTimeout()` / `setTimeout($seconds)` - Seconds one run may take, or null for the module's `TaskTimeout` (4.4.0); set per job with `Timeout="60"`
 - `getMode()` / `setMode($mode)` - How a sweep runs the task, a [`TCronTaskMode`](#mode-and-overlap-440) value; default `Serial` (4.4.0)
 - `getOverlap()` / `setOverlap($value)` - Whether a run may start while the previous run is still running; default false (4.4.0)
+- `getTimeZone()` / `setTimeZone($timeZone)` - The time zone of the schedule, passed to the scheduler; null for the application time zone; setting it clears the cached next trigger time (4.4.0)
+- `getStartingDeadline()` / `setStartingDeadline($seconds)` - The seconds after its trigger a run may start; a later triggered run is skipped with the result `missed`; null (default) for no deadline (4.4.0)
+- `getDescription()` / `setDescription($text)` - What the task does, shown by `cron/tasks` (4.4.0)
+- `getPingBeforeUrl()`, `getPingAfterUrl()`, `getPingSuccessUrl()`, `getPingFailureUrl()` and their setters - The URLs pinged before a run, after every run, after a run without an exception, and after a failed run; `getPingUrl($ping)` reads one by `PING_BEFORE`, `PING_AFTER`, `PING_SUCCESS`, or `PING_FAILURE` (4.4.0). See [TCronModule](TCronModule.md#task-events-and-pings-440).
 - `getCancellationToken()` / `setCancellationToken($token)` - The `TCancellationToken` of the current run, set by `TCronModule::runTask()` and cleared after; null outside a run or without a deadline (4.4.0). Pass it to `TFuture::await()` or call `throwIfCancelled()` at checkpoints.
 - `time()` - Protected clock seam wrapping `\time()`; override in subclasses and tests to control "now" (4.4.0)
 

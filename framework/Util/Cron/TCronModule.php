@@ -23,6 +23,7 @@ use Prado\IO\Async\TAsync;
 use Prado\IO\Async\TCancellationToken;
 use Prado\IO\Async\TFiberContext;
 use Prado\IO\Async\TFuture;
+use Prado\IO\HttpClient\THttpClient;
 use Prado\IO\Process\TProcess;
 use Prado\Prado;
 use Prado\Security\IUser;
@@ -151,10 +152,15 @@ use Prado\Xml\TXmlDocument;
  * per-minute or daemon, through {@see signalWake} when it schedules an earlier task.
  *
  * Each sweep raises {@see onSweepStart}, whose {@see \Prado\Util\Cron\TCronSweepEventParameter} lets a
- * handler change the tasks about to run, and {@see onSweepEnd} with their results.  Every `on` event
- * of the module is also broadcast as a global `fx` event (`fxCronSweepStart`, `fxCronSweepEnd`,
- * `fxCronDaemonStart`, `fxCronDaemonIdle`, `fxCronDaemonEnd`), so a module declaring the method is
- * called without configuration.  A component raises `fxRetireCronDaemon` or `fxStopCronDaemon` to
+ * handler change the tasks about to run, and {@see onSweepEnd} with their results.  Each run raises
+ * {@see onTaskStart}, which a handler cancels, then {@see onTaskEnd} and on failure {@see onTaskFailure};
+ * a trigger that does not run raises {@see onTaskSkipped}, all with a
+ * {@see \Prado\Util\Cron\TCronTaskEventParameter}.  A task's ping URLs go through {@see onTaskPing},
+ * which a module answers by delivering the ping itself, else through the {@see setHttpClient HttpClient}.
+ * Every `on` event of the module is also broadcast as a global `fx` event (`fxCronSweepStart`,
+ * `fxCronSweepEnd`, `fxCronDaemonStart`, `fxCronDaemonIdle`, `fxCronDaemonEnd`, `fxCronTaskStart`,
+ * `fxCronTaskEnd`, `fxCronTaskFailure`, `fxCronTaskSkipped`, `fxCronTaskPing`), so a module declaring
+ * the method is called without configuration.  A component raises `fxRetireCronDaemon` or `fxStopCronDaemon` to
  * retire or stop the daemon from inside its process; {@see requestDaemonRetire} and
  * {@see requestDaemonStop} do the same from another process, as the `cron/retire` and `cron/stop`
  * shell commands do.
@@ -242,6 +248,9 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 
 	/** A run's result: the task's child process outlived its timeout and was terminated. */
 	public const RESULT_TIMEOUT = 'timeout';
+
+	/** A trigger's result: the run would start later than the task's StartingDeadline and was skipped. */
+	public const RESULT_MISSED = 'missed';
 
 	/** The `cron/exec` exit code when the task threw. */
 	public const EXIT_ERROR = 1;
@@ -418,6 +427,9 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 
 	/** @var int the last run ID of the status */
 	private int $_statusRunId = 0;
+
+	/** @var ?THttpClient the client that sends the task pings */
+	private ?THttpClient $_httpClient = null;
 
 	/**
 	 * Initializes the module.  Read the configuration, installs Shell Actions,
@@ -1155,26 +1167,32 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 
 	/**
 	 * Runs a task in the current fiber as its user ({@see resolveTaskUser}), which is the
-	 * fiber's user in {@see \Prado\IO\Async\TFiberContext} for the run.  A `dyRunTask`
-	 * permission denial ({@see PERM_CRON_RUN_TASK}) is logged, advances the task's info like a
-	 * run, and returns false.  Without the task's {@see \Prado\Util\Cron\TCronTask::getOverlap() Overlap},
-	 * the run holds the task's run lock ({@see getTaskLockName}); when another run holds it, the
-	 * trigger is skipped: the task's info advances without a run.  {@see updateTaskInfo} claims the
-	 * run; when another process claimed it, the task is skipped.  A Process task runs in a child
-	 * process ({@see runTaskProcess}), any other in this fiber ({@see invokeTask}).  The result and
-	 * the seconds the run took are recorded by {@see updateTaskResult}.
+	 * fiber's user in {@see \Prado\IO\Async\TFiberContext} for the run:
+	 *  - A `dyRunTask` permission denial ({@see PERM_CRON_RUN_TASK}) is logged, advances the task's
+	 *    info like a run, and records {@see RESULT_DENIED}.
+	 *  - A triggered run later than the task's {@see \Prado\Util\Cron\TCronTask::getStartingDeadline() StartingDeadline}
+	 *    is skipped and records {@see RESULT_MISSED}.
+	 *  - Without the task's {@see \Prado\Util\Cron\TCronTask::getOverlap() Overlap}, the run holds the task's
+	 *    run lock ({@see getTaskLockName}); when another run holds it, the trigger is skipped.
+	 *  - {@see onTaskStart} is raised; a handler cancels the run.
+	 *  - {@see updateTaskInfo} claims the run; when another process claimed it, the task is skipped.
+	 *  - A Process task runs in a child process ({@see runTaskProcess}), any other in this fiber
+	 *    ({@see invokeTask}); the result and seconds are recorded by {@see updateTaskResult}, and
+	 *    {@see onTaskEnd}, on failure {@see onTaskFailure}, and the task's pings ({@see pingTask}) follow.
+	 * A skipped trigger advances the task without counting a run and raises {@see onTaskSkipped}.
 	 * @param \Prado\Util\Cron\TCronTask $task the task to run.
+	 * @param bool $manual whether the run is asked for (`cron/now`) instead of triggered; it has no StartingDeadline
 	 * @return bool whether the task ran without an exception
 	 */
-	public function runTask($task)
+	public function runTask($task, bool $manual = false)
 	{
-		return $this->runAsTaskUser($task, fn (string $username): bool => $this->runTaskAsUser($task, $username));
+		return $this->runAsTaskUser($task, fn (string $username): bool => $this->runTaskAsUser($task, $username, $manual));
 	}
 
 	/**
 	 * Runs one task now in this process, as its user, without claiming the run: the `cron/exec`
-	 * shell command of a Process task's child process.  The parent process claimed the run and
-	 * holds the task's run lock.
+	 * shell command of a Process task's child process.  The parent process claimed the run, holds the
+	 * task's run lock, raises the task events, and sends the pings.
 	 * @param \Prado\Util\Cron\TCronTask $task the task to run
 	 * @return string the result: {@see RESULT_OK}, {@see RESULT_ERROR}, or {@see RESULT_DENIED}
 	 * @since 4.4.0
@@ -1186,7 +1204,7 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 				$this->dyLogPermissionFailed(static::PERM_CRON_RUN_TASK, 'running cron task \'' . $task->getName() . '\'');
 				return static::RESULT_DENIED;
 			}
-			return $this->invokeTask($task);
+			return ($this->invokeTask($task) === null) ? static::RESULT_OK : static::RESULT_ERROR;
 		});
 	}
 
@@ -1225,40 +1243,63 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	}
 
 	/**
-	 * Runs a task as its user: checks the permission, holds the run lock, claims the run, runs the
-	 * task by its Mode, and records the result.  See {@see runTask}.
+	 * Runs a task as its user: checks the permission and the starting deadline, holds the run lock,
+	 * raises the task events, claims the run, runs the task by its Mode, records the result, and sends
+	 * the pings.  See {@see runTask}.
 	 * @param \Prado\Util\Cron\TCronTask $task the task
 	 * @param string $username the user name the task runs as
+	 * @param bool $manual whether the run is asked for instead of triggered
 	 * @return bool whether the task ran without an exception
 	 * @since 4.4.0
 	 */
-	protected function runTaskAsUser($task, string $username): bool
+	protected function runTaskAsUser($task, string $username, bool $manual = false): bool
 	{
 		$name = $task->getName();
+		$param = new TCronTaskEventParameter($task, $manual);
 		if ($this->dyRunTask(false, $task, ['extra' => ['username' => $task->getUserName()]]) === true) {
 			$this->dyLogPermissionFailed(static::PERM_CRON_RUN_TASK, 'running cron task \'' . $name . '\'');
 			$this->updateTaskInfo($task);
 			$this->updateTaskResult($task, static::RESULT_DENIED, 0.0);
+			$this->onTaskSkipped($param->setReason(TCronTaskEventParameter::REASON_DENIED));
+			return false;
+		}
+		if (!$manual && $this->isTaskPastDeadline($task)) {
+			Prado::log('Cron task (' . $name . ') missed its starting deadline; this trigger is skipped', TLogger::INFO, TCronModule::class);
+			$this->updateTaskInfo($task, false);
+			$this->updateTaskResult($task, static::RESULT_MISSED, 0.0);
+			$this->onTaskSkipped($param->setReason(TCronTaskEventParameter::REASON_DEADLINE));
 			return false;
 		}
 		$lockName = $task->getOverlap() ? null : $this->getTaskLockName($name);
 		if ($lockName !== null && !$this->getDaemonMutex()->acquire($lockName)) {
 			Prado::log('Cron task (' . $name . ') is still running; this trigger is skipped', TLogger::INFO, TCronModule::class);
 			$this->updateTaskInfo($task, false);
+			$this->onTaskSkipped($param->setReason(TCronTaskEventParameter::REASON_RUNNING));
 			return false;
 		}
 		try {
+			$this->onTaskStart($param);
+			if ($param->getCancel()) {
+				Prado::log('Cron task (' . $name . ') was cancelled by an onTaskStart handler', TLogger::INFO, TCronModule::class);
+				$this->updateTaskInfo($task, false);
+				$this->onTaskSkipped($param->setReason(TCronTaskEventParameter::REASON_CANCELLED));
+				return false;
+			}
 			if (!$this->updateTaskInfo($task)) {
 				Prado::log('Cron task (' . $name . ') was claimed by another process', TLogger::INFO, TCronModule::class);
+				$this->onTaskSkipped($param->setReason(TCronTaskEventParameter::REASON_CLAIMED));
 				return false;
 			}
 			$this->logCronTask($task, $username);
 			$runId = $this->beginRunStatus($task, $username);
+			$this->pingTask($task, TCronTask::PING_BEFORE, $param);
 			$start = $this->getMonotonicClock()->seconds();
+			$exception = null;
 			if ($task->getMode() === TCronTaskMode::Process) {
 				$result = $this->runTaskProcess($task, $runId);
 			} else {
-				$result = $this->invokeTask($task);
+				$exception = $this->invokeTask($task);
+				$result = ($exception === null) ? static::RESULT_OK : static::RESULT_ERROR;
 			}
 			$duration = $this->getMonotonicClock()->seconds() - $start;
 			if ($result === static::RESULT_OK) {
@@ -1266,6 +1307,13 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 			}
 			$this->updateTaskResult($task, $result, $duration);
 			$this->endRunStatus($runId, $result, $duration);
+			$param->setResult($result)->setDuration($duration)->setException($exception);
+			$this->onTaskEnd($param);
+			if ($result !== static::RESULT_OK) {
+				$this->onTaskFailure($param);
+			}
+			$this->pingTask($task, TCronTask::PING_AFTER, $param);
+			$this->pingTask($task, ($result === static::RESULT_OK) ? TCronTask::PING_SUCCESS : TCronTask::PING_FAILURE, $param);
 			return $result === static::RESULT_OK;
 		} finally {
 			if ($lockName !== null) {
@@ -1275,27 +1323,161 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	}
 
 	/**
+	 * Tells whether a run would start later than the task's
+	 * {@see \Prado\Util\Cron\TCronTask::getStartingDeadline() StartingDeadline} after its trigger.
+	 * @param \Prado\Util\Cron\TCronTask $task the task
+	 * @return bool whether the deadline passed
+	 * @since 4.4.0
+	 */
+	protected function isTaskPastDeadline($task): bool
+	{
+		$deadline = $task->getStartingDeadline();
+		$trigger = ($deadline === null) ? null : $task->getNextTriggerTime();
+		return $trigger !== null && $this->time() - $trigger > $deadline;
+	}
+
+	/**
 	 * Executes a task in the current fiber.  A deadline from the task's Timeout or the module's
 	 * {@see getTaskTimeout} becomes the task's
 	 * {@see \Prado\Util\Cron\TCronTask::getCancellationToken() CancellationToken}.  An exception from
 	 * the task is logged by {@see logCronTaskError} and does not leave this method.
 	 * @param \Prado\Util\Cron\TCronTask $task the task
-	 * @return string {@see RESULT_OK}, or {@see RESULT_ERROR} when the task threw
+	 * @return ?\Throwable the exception the task threw, or null when it ran without one
 	 * @since 4.4.0
 	 */
-	protected function invokeTask($task): string
+	protected function invokeTask($task): ?\Throwable
 	{
 		$timeout = $task->getTimeout() ?? $this->getTaskTimeout();
 		$task->setCancellationToken(($timeout !== null) ? new TCancellationToken($timeout) : null);
 		try {
 			$task->execute($this);
-			return static::RESULT_OK;
+			return null;
 		} catch (\Throwable $e) {
 			$this->logCronTaskError($task, $e);
-			return static::RESULT_ERROR;
+			return $e;
 		} finally {
 			$task->setCancellationToken(null);
 		}
+	}
+
+	/**
+	 * Sends a task's ping of a point in a run when the task has its URL.  {@see onTaskPing} is raised
+	 * first; when no handler delivered the ping, {@see sendPing} sends it.  A failed ping is a warning
+	 * log entry and does not affect the run.
+	 * @param \Prado\Util\Cron\TCronTask $task the task
+	 * @param string $ping {@see \Prado\Util\Cron\TCronTask::PING_BEFORE}, `PING_AFTER`, `PING_SUCCESS`, or `PING_FAILURE`
+	 * @param TCronTaskEventParameter $run the run's event parameter, with its result and seconds after the run
+	 * @since 4.4.0
+	 */
+	protected function pingTask($task, string $ping, TCronTaskEventParameter $run): void
+	{
+		if (($url = $task->getPingUrl($ping)) === null) {
+			return;
+		}
+		$param = (new TCronTaskEventParameter($task, $run->getManual()))->setPing($ping)->setUrl($url)
+			->setResult($run->getResult())->setDuration($run->getDuration());
+		try {
+			$this->onTaskPing($param);
+			if (!$param->getHandled()) {
+				$this->sendPing($param);
+			}
+		} catch (\Throwable $e) {
+			Prado::log('Cron task (' . $task->getName() . ') ' . $ping . ' ping to ' . parse_url($url, PHP_URL_HOST) . ' failed: ' . $e->getMessage(), TLogger::WARNING, TCronModule::class);
+		}
+	}
+
+	/**
+	 * Sends a ping as an HTTP GET request through the {@see getHttpClient HttpClient}.  A response
+	 * other than 2xx is a warning log entry.
+	 * @param TCronTaskEventParameter $param the ping, with its task, point, and URL
+	 * @throws \Prado\IO\HttpClient\THttpClientException when the request fails
+	 * @since 4.4.0
+	 */
+	protected function sendPing(TCronTaskEventParameter $param): void
+	{
+		$response = $this->getHttpClient()->download('GET', (string) $param->getUrl());
+		if (!$response->isSuccess()) {
+			Prado::log('Cron task (' . $param->getTask()->getName() . ') ' . $param->getPing() . ' ping to ' . parse_url((string) $param->getUrl(), PHP_URL_HOST) . ' answered ' . $response->getStatusCode(), TLogger::WARNING, TCronModule::class);
+		}
+	}
+
+	/**
+	 * @throws \Prado\IO\HttpClient\THttpClientException when no HTTP transport is available
+	 * @return THttpClient the client that sends the task pings; defaults to {@see THttpClient::create()}
+	 * @since 4.4.0
+	 */
+	public function getHttpClient(): THttpClient
+	{
+		return $this->_httpClient ??= THttpClient::create();
+	}
+
+	/**
+	 * @param ?THttpClient $client the client that sends the task pings; null restores the default
+	 * @since 4.4.0
+	 */
+	public function setHttpClient(?THttpClient $client): void
+	{
+		$this->_httpClient = $client;
+	}
+
+	/**
+	 * Raises the `OnTaskStart` event, and `fxCronTaskStart` globally, before a run is claimed.  A handler
+	 * sets {@see TCronTaskEventParameter::setCancel Cancel} to skip the run.
+	 * @param TCronTaskEventParameter $param the task and whether the run is manual
+	 * @since 4.4.0
+	 */
+	public function onTaskStart($param)
+	{
+		$this->raiseEvent('OnTaskStart', $this, $param);
+		$this->raiseEvent('fxCronTaskStart', $this, $param);
+	}
+
+	/**
+	 * Raises the `OnTaskEnd` event, and `fxCronTaskEnd` globally, after a run with its result, seconds, and exception.
+	 * @param TCronTaskEventParameter $param the finished run
+	 * @since 4.4.0
+	 */
+	public function onTaskEnd($param)
+	{
+		$this->raiseEvent('OnTaskEnd', $this, $param);
+		$this->raiseEvent('fxCronTaskEnd', $this, $param);
+	}
+
+	/**
+	 * Raises the `OnTaskFailure` event, and `fxCronTaskFailure` globally, after `onTaskEnd` for a run
+	 * whose result is not {@see RESULT_OK}.
+	 * @param TCronTaskEventParameter $param the failed run
+	 * @since 4.4.0
+	 */
+	public function onTaskFailure($param)
+	{
+		$this->raiseEvent('OnTaskFailure', $this, $param);
+		$this->raiseEvent('fxCronTaskFailure', $this, $param);
+	}
+
+	/**
+	 * Raises the `OnTaskSkipped` event, and `fxCronTaskSkipped` globally, for a trigger that does not run,
+	 * with the {@see TCronTaskEventParameter::getReason Reason}.
+	 * @param TCronTaskEventParameter $param the skipped trigger
+	 * @since 4.4.0
+	 */
+	public function onTaskSkipped($param)
+	{
+		$this->raiseEvent('OnTaskSkipped', $this, $param);
+		$this->raiseEvent('fxCronTaskSkipped', $this, $param);
+	}
+
+	/**
+	 * Raises the `OnTaskPing` event, and `fxCronTaskPing` globally, before a task's ping is sent.  A handler
+	 * that delivers the ping itself, such as a webhook module, sets {@see TCronTaskEventParameter::setHandled Handled}
+	 * so {@see sendPing} does not send it.
+	 * @param TCronTaskEventParameter $param the ping: the task, the point of the run, the URL, and after the run its result and seconds
+	 * @since 4.4.0
+	 */
+	public function onTaskPing($param)
+	{
+		$this->raiseEvent('OnTaskPing', $this, $param);
+		$this->raiseEvent('fxCronTaskPing', $this, $param);
 	}
 
 	/**

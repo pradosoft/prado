@@ -25,7 +25,8 @@ use Prado\Util\Cron\TCronModule;
  * "cron/run" runs all pending tasks; "cron/top" shows the cron processes, running tasks,
  * next triggers, and last results, refreshing in a terminal; and "cron/index" reports the
  * possible cron tasks registered in the application.  A system crontab entry runs
- * "cron/run".  "cron/exec" runs one task in its process: the child process of a Process
+ * "cron/run".  "cron/now" runs a task at once, whatever its schedule; "cron/next" shows the next
+ * trigger times.  "cron/exec" runs one task in its process: the child process of a Process
  * task, which exits with {@see TCronModule::EXIT_ERROR}, {@see TCronModule::EXIT_NO_TASK},
  * or {@see TCronModule::EXIT_DENIED} when the task did not run cleanly.
  *
@@ -38,9 +39,9 @@ class TShellCronAction extends TShellAction
 	public const TOP_ROWS = 10;
 
 	protected $action = 'cron';
-	protected $methods = ['tasks', 'run', 'index', 'daemon', 'retire', 'stop', 'top', 'exec'];
-	protected $parameters = [null, null, null, null, null, null, null, ['task-name']];
-	protected $optional = [['task-name or @user'], null, null, null, ['seconds'], ['seconds'], ['seconds', 'count'], null];
+	protected $methods = ['tasks', 'run', 'index', 'daemon', 'retire', 'stop', 'top', 'exec', 'now', 'next'];
+	protected $parameters = [null, null, null, null, null, null, null, ['task-name'], ['task-name'], null];
+	protected $optional = [['task-name or @user'], null, null, null, ['seconds'], ['seconds'], ['seconds', 'count'], null, null, ['task-name', 'count']];
 	protected $description = ['Manages Cron time-based services',
 		'Displays the Cron tasks configured in the application. Filter by @user and task name.',
 		'Runs the Cron Pending Tasks.',
@@ -50,6 +51,8 @@ class TShellCronAction extends TShellAction
 		'Stops the running cron daemon at once; the next cron/run tick starts a new one.',
 		'Shows the cron processes, running tasks, next triggers, and last results; live in a terminal.',
 		'Runs one task in this process; a Process task\'s child process runs it.',
+		'Runs a task now, whatever its schedule, and shows its result.',
+		'Shows the next trigger times of the tasks; filter by task name.',
 	];
 
 	private $_cron = false;
@@ -64,6 +67,7 @@ class TShellCronAction extends TShellAction
 			if (!$user->can(TCronModule::PERM_CRON_RUN_PENDING)) {
 				$this->removeShellMethod('run');
 				$this->removeShellMethod('exec');
+				$this->removeShellMethod('now');
 				$this->removeShellMethod('retire');
 				$this->removeShellMethod('stop');
 			}
@@ -178,6 +182,111 @@ class TShellCronAction extends TShellAction
 			throw new TExitException($code);
 		}
 		return true;
+	}
+
+	/**
+	 * Runs a task at once through {@see TCronModule::runTask}, whatever its schedule and without its
+	 * StartingDeadline, and shows the result.  The run lock, the claim, the task events, and the pings
+	 * apply as for a triggered run.
+	 * @param string[] $args the arguments to the command line action; the task name
+	 * @return bool whether the command ran
+	 * @since 4.4.0
+	 */
+	public function actionNow($args)
+	{
+		$module = $this->getCronModule();
+		$name = $args[1] ?? '';
+		$task = ($module && $name !== '') ? $module->getTask($name) : null;
+		if (!$task) {
+			$this->_outWriter->writeError("Cron task '{$name}' is not found.");
+			return true;
+		}
+		$outcome = null;
+		$record = static function ($sender, $param) use (&$outcome, $task) {
+			if ($param->getTask() === $task) {
+				$outcome = $param;
+			}
+		};
+		$module->attachEventHandler('OnTaskSkipped', $record);
+		$module->attachEventHandler('OnTaskEnd', $record);
+		try {
+			$module->runTask($task, true);
+		} finally {
+			$module->detachEventHandler('OnTaskSkipped', $record);
+			$module->detachEventHandler('OnTaskEnd', $record);
+		}
+		if ($outcome === null || $outcome->getReason() !== null) {
+			$this->_outWriter->writeError("Cron task '{$name}' did not run: " . ($outcome?->getReason() ?? 'unknown') . '.');
+			return true;
+		}
+		$this->_outWriter->writeLine("\nCron task '{$name}' ran: " . $this->formatResult($outcome->getResult()) . ' in ' . $this->formatSeconds((float) $outcome->getDuration()) . "\n");
+		return true;
+	}
+
+	/**
+	 * Shows the next trigger times of the tasks the user may read, soonest first: one per task, or with
+	 * a task name filter five per task; the count argument sets the number.  A time is shown in the
+	 * task's TimeZone.
+	 * @param string[] $args the arguments to the command line action; an optional task name filter, where
+	 *   `_` is a wild card and `%` a wild string, and count
+	 * @return bool whether the command ran
+	 * @since 4.4.0
+	 */
+	public function actionNext($args)
+	{
+		$module = $this->getCronModule();
+		if (!$module || ($tasks = $this->getReadableTasks($module)) === null) {
+			return true;
+		}
+		$name = (isset($args[1]) && $args[1] !== '') ? $args[1] : null;
+		if ($name !== null) {
+			$tasks = array_intersect_key($tasks, $module->getTasks($name) ?? []);
+		}
+		$count = (isset($args[2]) && is_numeric($args[2])) ? max(1, (int) $args[2]) : (($name !== null) ? 5 : 1);
+		$now = $this->time();
+		$times = [];
+		foreach ($tasks as $tname => $task) {
+			if ($list = $this->getNextTriggerTimes($task, $count, $now)) {
+				$times[$tname] = $list;
+			}
+		}
+		uasort($times, static fn (array $a, array $b): int => $a[0] <=> $b[0]);
+		if (!$times) {
+			$this->_outWriter->writeLine("\n     **  No task has a next trigger.  **\n");
+			return true;
+		}
+		$rows = [];
+		foreach ($times as $tname => $list) {
+			$task = $tasks[$tname];
+			$zone = new \DateTimeZone($task->getTimeZone() ?? date_default_timezone_get());
+			foreach ($list as $i => $time) {
+				$rows[] = [($i === 0) ? $tname : '', ($i === 0) ? $task->getMode() : '',
+					(new \DateTimeImmutable('@' . $time))->setTimezone($zone)->format('Y-m-d H:i:s T'),
+					($time <= $now) ? $this->_outWriter->format('due', [TShellWriter::GREEN, TShellWriter::BOLD]) : $this->formatSeconds($time - $now)];
+			}
+		}
+		$this->_outWriter->writeLine();
+		$this->_outWriter->write($this->_outWriter->tableWidget(['headers' => ['Name', 'Mode', 'Trigger', 'In'], 'rows' => $rows]));
+		$this->_outWriter->writeLine();
+		return true;
+	}
+
+	/**
+	 * Returns a task's next trigger times: its pending or next trigger, then those after it or after now.
+	 * @param TCronTask $task the task
+	 * @param int $count the number of times
+	 * @param int $now the current time
+	 * @return int[] the trigger times, ascending
+	 * @since 4.4.0
+	 */
+	protected function getNextTriggerTimes($task, int $count, int $now): array
+	{
+		$first = $task->getNextTriggerTime();
+		if ($first === null) {
+			return [];
+		}
+		$first = (int) $first;
+		return array_merge([$first], ($count > 1) ? $task->getScheduler()->getNextTriggerTimes($count - 1, max($first, $now)) : []);
 	}
 
 	/**
@@ -551,6 +660,9 @@ class TShellCronAction extends TShellAction
 			}
 
 			$rows[] = [$task->getName(), $schedule, $task->getTask(), $task->getMode(), $lastrun, $last, $nextrun, '@' . $user, $count, $state];
+			if (($description = $task->getDescription()) !== '') {
+				$rows[] = ['span' => $this->_outWriter->format('      ' . $description, TShellWriter::DARK_GRAY)];
+			}
 		}
 		$this->_outWriter->write($this->_outWriter->tableWidget(['headers' => ['Name', 'Schedule', 'Task', 'Mode', 'Last Run', 'Result', 'Next Run', 'User', 'Run #', 'State'],
 			'rows' => $rows]));

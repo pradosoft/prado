@@ -2,6 +2,7 @@
 
 namespace Prado\Test\Unit\Util\Cron;
 
+use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Util\Cron\TTimeScheduler;
 use PHPUnit\Framework\Attributes\DataProvider;
 
@@ -921,4 +922,56 @@ class TTimeSchedulerTest extends \PHPUnit\Framework\TestCase
 		}
 		return [$set, $unrestricted];
 	}
+
+	// =========================================================================
+	// TimeZone
+	// =========================================================================
+
+	public function testTimeZone()
+	{
+		self::assertNull($this->obj->getTimeZone());
+		$this->obj->setTimeZone('Asia/Tokyo');
+		self::assertSame('Asia/Tokyo', $this->obj->getTimeZone());
+		$this->obj->setTimeZone('');
+		self::assertNull($this->obj->getTimeZone());
+		$this->obj->setTimeZone('+02:00');
+		self::assertSame('+02:00', $this->obj->getTimeZone());
+		self::expectException(TInvalidDataValueException::class);
+		$this->obj->setTimeZone('Mars/Olympus_Mons');
+	}
+
+	public function testTimeZone_SchedulesInTheZone()
+	{
+		$from = gmmktime(0, 0, 0, 6, 1, 2026);
+		$this->obj->setSchedule('0 9 * * *');
+		self::assertSame(gmmktime(9, 0, 0, 6, 1, 2026), $this->obj->getNextTriggerTime($from), 'the application zone is UTC');
+		$this->obj->setTimeZone('Asia/Tokyo');
+		self::assertSame(gmmktime(0, 0, 0, 6, 2, 2026), $this->obj->getNextTriggerTime($from), '09:00 in Tokyo is 00:00 UTC');
+		$this->obj->setTimeZone('America/New_York');
+		self::assertSame(gmmktime(13, 0, 0, 6, 1, 2026), $this->obj->getNextTriggerTime($from), '09:00 EDT is 13:00 UTC');
+		self::assertSame(gmmktime(14, 0, 0, 12, 1, 2026), $this->obj->getNextTriggerTime(gmmktime(0, 0, 0, 12, 1, 2026)), '09:00 EST is 14:00 UTC');
+	}
+
+	public function testTimeZone_DaylightSavingChanges()
+	{
+		$this->obj->setTimeZone('America/New_York');
+		$zone = new \DateTimeZone('America/New_York');
+		$format = fn (array $times) => array_map(fn ($t) => (new \DateTimeImmutable('@' . $t))->setTimezone($zone)->format('m-d H:i T'), $times);
+
+		$this->obj->setSchedule('30 2 * * *');
+		self::assertSame(['03-07 02:30 EST', '03-09 02:30 EDT'], $format($this->obj->getNextTriggerTimes(2, gmmktime(0, 0, 0, 3, 7, 2026))), 'a time in the skipped hour does not trigger that day');
+
+		$this->obj->setSchedule('30 1 * * *');
+		self::assertSame(['11-01 01:30 EDT', '11-02 01:30 EST'], $format($this->obj->getNextTriggerTimes(2, gmmktime(0, 0, 0, 11, 1, 2026))), 'a time in the repeated hour triggers once');
+
+		$this->obj->setSchedule('every 1 day from 2026-10-31 08:00');
+		self::assertSame(['10-31 08:00 EDT', '11-01 08:00 EST'], $format($this->obj->getNextTriggerTimes(2, gmmktime(0, 0, 0, 10, 1, 2026))), 'a period anchor parses in the zone and steps the local calendar');
+	}
+
+	public function testGetNextTriggerTime_AnUnparsableTimeHasNoTrigger()
+	{
+		$this->obj->setSchedule('* * * * *');
+		self::assertNull($this->obj->getNextTriggerTime('not a time at all'));
+	}
+
 }

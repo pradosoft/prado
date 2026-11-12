@@ -15,9 +15,13 @@ Cron-style scheduled task engine for the Prado framework. Supports both file-con
 
 - **`TDbCronModule`** — Deprecated alias for `TDbCronManager` (since 4.3.3). Scheduled for removal in v4.4. Existing configs continue to work.
 
-- **`TCronTask`** — Abstract base for cron tasks. Implement `execute($cronModule)`. Properties: `Name`, `Schedule`, `UserName`, `Timeout`, `Mode`, `Overlap`.
+- **`TCronTask`** — Abstract base for cron tasks. Implement `execute($cronModule)`. Properties: `Name`, `Schedule`, `UserName`, `Timeout`, `Mode`, `Overlap`, `TimeZone`, `StartingDeadline`, `Description`, and the ping URLs.
 
 - **`TCronTaskMode`** — The `TEnumerable` of a task's `Mode`: `Serial`, `Parallel`, `Process`. **Since 4.4.0.**
+
+- **[`TCronTaskEventParameter`](TCronTaskEventParameter.md)** — Parameter of the task events `onTaskStart` (settable `Cancel`), `onTaskEnd`, `onTaskFailure`, `onTaskSkipped` (`Reason`), and `onTaskPing` (settable `Handled`). **Since 4.4.0.**
+
+- **[`TCommandCronTask`](TCommandCronTask.md)** — Concrete task that runs a shell command to completion: `@php`, `Directory`, `LogFile` (`AppendLog`), a nonzero exit code is an error, and the command is terminated when the run is cancelled at its Timeout. **Since 4.4.0.**
 
 - **`TCronMethodTask`** — Concrete task that calls a method on a module or class. Method and parameters are configured externally.
 
@@ -31,7 +35,7 @@ Cron-style scheduled task engine for the Prado framework. Supports both file-con
 
 - **`TDbCronCleanLogTask`** — Pre-built task that auto-purges old cron log entries from the database.
 
-- **`TShellCronAction`** — CLI action listing the tasks (`prado-cli cron`, the default action since 4.4.0), running the pending ones (`prado-cli cron/run`), the live view (`cron/top`), and a Process task's child (`cron/exec`).
+- **`TShellCronAction`** — CLI action listing the tasks (`prado-cli cron`, the default action since 4.4.0), running the pending ones (`prado-cli cron/run`), the live view (`cron/top`), a task now (`cron/now`), the next triggers (`cron/next`), and a Process task's child (`cron/exec`).
 
 - **`TShellDbCronAction`** — CLI action for managing database-backed cron tasks.
 

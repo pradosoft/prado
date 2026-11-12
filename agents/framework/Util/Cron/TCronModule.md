@@ -163,12 +163,14 @@ Each `on` event of the module is also broadcast as a global event, so a module d
 |---|---|
 | User | `runAsTaskUser()` → `resolveTaskUser()`: the task's `UserName`, else `DefaultUserName`, from the `UserManager`; else a guest clone of the application user; without a user manager the current user. The user goes into [`TFiberContext`](../../IO/Async/TFiberContext.md) under `TApplication::USER_CONTEXT_KEY`, so `TApplication::getUser()` returns it inside the task and the application user is untouched. `onSetUser` is raised for the task user and again for the restored user. |
 | Permission | a `dyRunTask` denial is logged, claims the run, and records `RESULT_DENIED`. |
+| Deadline | a triggered run later than the task's `StartingDeadline` is skipped and records `RESULT_MISSED`. |
 | Run lock | without the task's `Overlap`, the run holds `getTaskLockName($name)` (`<lease>:task:<name>`) in the `DaemonMutex`. When another run holds it, the trigger is skipped: `updateTaskInfo($task, false)` advances the task without counting a run. The default `TFileMutex` locks per host; a shared mutex (`TDbMutex`, `TRedisMutex`) locks across hosts. |
+| Start | `onTaskStart`; a handler's `Cancel` skips the run. |
 | Claim | `updateTaskInfo()`; a run another process claimed is skipped. |
 | Run | `invokeTask()` in this fiber, or `runTaskProcess()` for a Process task. |
 | Deadline | `$task->Timeout ?? $this->TaskTimeout` (seconds, null for none) becomes a [`TCancellationToken`](../../IO/Async/TCancellationToken.md) in `TCronTask::getCancellationToken()` for the run; a cooperative task passes it to its waits. A Process child that outlives it by `PROCESS_TIMEOUT_GRACE` (5 s) is terminated (SIGTERM, then SIGKILL): `RESULT_TIMEOUT`. |
 | Boundary | An exception from `execute()` goes to `logCronTaskError()`: an ERROR log entry and `dyLogCronTaskError($task, $exception)` (written to the shell by [`TShellCronLogBehavior`](TShellCronLogBehavior.md)); the sweep continues. |
-| Result | `updateTaskResult($task, $result, $seconds)` stores `RESULT_OK`, `RESULT_ERROR`, `RESULT_DENIED`, or `RESULT_TIMEOUT` and the run's seconds: in the global state (`lastResult`, `lastDuration`), or the `lastresult` and `lastduration` columns of `TDbCronManager`. `getTaskResults($fresh)` reads them with the last run time and count. |
+| Result | `updateTaskResult($task, $result, $seconds)` stores `RESULT_OK`, `RESULT_ERROR`, `RESULT_DENIED`, `RESULT_TIMEOUT`, or `RESULT_MISSED` and the run's seconds: in the global state (`lastResult`, `lastDuration`), or the `lastresult` and `lastduration` columns of `TDbCronManager`. `getTaskResults($fresh)` reads them with the last run time and count. |
 
 The Process child is `getTaskProcessCommand($task)`: `PHP_BINARY` (under a web SAPI, `php` in `PHP_BINDIR`), `bin/prado-cli.php`, `-d=<application base path>`, `--quiet=1`, `cron/exec`, and the task name. Its standard input is the null device; it writes to the cron process's standard output and error. `cron/exec` runs `executeTask($task)`: the user, permission, and deadline of `runTask()` without the run lock, claim, or result, which the parent holds. Its exit code is the result: 0, `EXIT_ERROR` (1), `EXIT_NO_TASK` (2), or `EXIT_DENIED` (3).
 
@@ -178,6 +180,30 @@ The Process child is `getTaskProcessCommand($task)`: `PHP_BINARY` (under a web S
     <job Name="report" Schedule="0 2 * * *" Task="MyApp\ReportTask" Mode="Process" Timeout="3600" />
     <job Name="index" Schedule="* * * * *" Task="MyApp\IndexTask" Overlap="true" />
 </module>
+```
+
+### Task events and pings (4.4.0)
+
+`runTask($task, $manual = false)` raises the task events with a [`TCronTaskEventParameter`](TCronTaskEventParameter.md), each mirrored as a global `fx` event:
+
+| Event | When | Parameter |
+|---|---|---|
+| `onTaskStart` / `fxCronTaskStart` | before the claim | `Cancel`: a handler skips the run |
+| `onTaskEnd` / `fxCronTaskEnd` | after a run | `Result`, `Duration`, `Exception` (a task in the cron process) |
+| `onTaskFailure` / `fxCronTaskFailure` | after `onTaskEnd` when the result is not `ok` | as `onTaskEnd` |
+| `onTaskSkipped` / `fxCronTaskSkipped` | a trigger that does not run | `Reason`: `denied`, `deadline`, `running` (run lock held), `cancelled`, `claimed` |
+| `onTaskPing` / `fxCronTaskPing` | before each ping is sent | `Ping`, `Url`, `Result`, `Duration`; a handler sets `Handled` when it delivered the ping |
+
+A started run ends with `onTaskEnd` or `onTaskSkipped`; `denied`, `deadline`, and `running` are raised without a start. `Manual` is true for `cron/now`.
+
+**StartingDeadline.** A triggered run more than `TCronTask::StartingDeadline` seconds after its trigger (`isTaskPastDeadline()`) is skipped: the trigger is claimed without a run and the result is `RESULT_MISSED`. A manual run has no deadline.
+
+**Pings.** `pingTask()` sends the task's `PingBeforeUrl` after the claim, then `PingAfterUrl` after every run, and `PingSuccessUrl` or `PingFailureUrl` by the result. Each ping raises `onTaskPing` first; when no handler set `Handled`, `sendPing()` sends an HTTP GET through `HttpClient` (`getHttpClient()`, default `THttpClient::create()`, or `setHttpClient()`). A module that delivers pings its own way, such as a webhook module, listens for `fxCronTaskPing` without configuration and sets `Handled`; a subclass overrides `sendPing()`. A failed or non-2xx ping is a WARNING log entry naming the URL's host and does not change the run. The pings run in the task's fiber in the cron process, for a Process task too.
+
+```xml
+<job Name="backup" Schedule="0 2 * * *" Task="Prado\Util\Cron\TCommandCronTask" Command="@php bin/backup.php"
+     TimeZone="America/New_York" StartingDeadline="3600" Description="Nightly database backup"
+     PingBeforeUrl="https://hc-ping.com/UUID/start" PingSuccessUrl="https://hc-ping.com/UUID" PingFailureUrl="https://hc-ping.com/UUID/fail" />
 ```
 
 ### Live status (4.4.0)
@@ -299,6 +325,12 @@ php prado-cli.php /path/to/app cron/top [seconds] [count]
 
 # Run one task in this process (the child of a Process task):
 php prado-cli.php /path/to/app cron/exec <name>
+
+# Run a task now, whatever its schedule, and show its result:
+php prado-cli.php /path/to/app cron/now <name>
+
+# Show the next trigger times, one per task, or [count] (default 5) for a name filter:
+php prado-cli.php /path/to/app cron/next [name] [count]
 
 # Manage DB cron tasks and the log (TDbCronManager):
 php prado-cli.php /path/to/app cron/add <name> <task-id> <schedule> [properties...]

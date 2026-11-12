@@ -110,7 +110,12 @@ use Prado\TPropertyValue;
  * time>' or a {@see \strtotime} string.  The anchor is resolved at parse time and the stored schedule is
  * 'every <interval> from @<unix time>[ until @<unix time>]', so a persisted period keeps its anchor.
  * Second, minute, and hour intervals are fixed lengths; day, month, year, and relative intervals step
- * the calendar in the application time zone, as the k-th multiple of the interval from the anchor.
+ * the calendar in the time zone, as the k-th multiple of the interval from the anchor.
+ *
+ * The schedule is in the {@see setTimeZone TimeZone}, default the application time zone
+ * ({@see \date_default_timezone_get()}); the trigger times are Unix timestamps.  Across a daylight
+ * saving change, a time in the skipped hour does not trigger that day, and a time in the repeated
+ * hour triggers once, at its first occurrence.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.2.0
@@ -139,6 +144,9 @@ class TTimeScheduler extends \Prado\TComponent
 
 	/** the year attributes of the schedule */
 	protected const YEAR = 5;
+
+	/** @var ?string the time zone of the schedule, or null for the application time zone */
+	private ?string $_timeZone = null;
 
 	/** @var string[] the properties holding a parsed schedule; restored when a new schedule is invalid */
 	private const SCHEDULE_STATE = ['_schedule', '_resolved', '_hasHash', '_period', '_triggerTime', '_attr', '_minutesCache', '_secondsCache', '_hoursCache', '_monthsCache'];
@@ -283,6 +291,60 @@ class TTimeScheduler extends \Prado\TComponent
 		if ($this->_hasHash) {
 			$this->setSchedule($this->_schedule);
 		}
+	}
+
+	/**
+	 * @return ?string the time zone of the schedule, or null for the application time zone
+	 * @since 4.4.0
+	 */
+	public function getTimeZone(): ?string
+	{
+		return $this->_timeZone;
+	}
+
+	/**
+	 * @param ?string $timeZone the time zone of the schedule, an identifier such as 'America/New_York' or
+	 *   an offset such as '+02:00'; null or '' for the application time zone
+	 * @throws TInvalidDataValueException when the time zone is not known
+	 * @since 4.4.0
+	 */
+	public function setTimeZone($timeZone)
+	{
+		$timeZone = ($timeZone === null || $timeZone === '') ? null : TPropertyValue::ensureString($timeZone);
+		if ($timeZone !== null) {
+			try {
+				new \DateTimeZone($timeZone);
+			} catch (\Exception $e) {
+				throw new TInvalidDataValueException('timescheduler_invalid_timezone', $timeZone);
+			}
+		}
+		$this->_timeZone = $timeZone;
+	}
+
+	/**
+	 * @return \DateTimeZone the time zone the schedule is evaluated in: {@see getTimeZone TimeZone}, or the application time zone
+	 * @since 4.4.0
+	 */
+	protected function getDateTimeZone(): \DateTimeZone
+	{
+		return new \DateTimeZone($this->_timeZone ?? date_default_timezone_get());
+	}
+
+	/**
+	 * Parses a time string in the {@see getDateTimeZone time zone}, relative to {@see time}.
+	 * @param string $value a {@see \strtotime} string
+	 * @return false|int the Unix timestamp, or false when the string does not parse
+	 * @since 4.4.0
+	 */
+	protected function parseTime(string $value): false|int
+	{
+		$now = (new \DateTimeImmutable('@' . $this->time()))->setTimezone($this->getDateTimeZone());
+		try {
+			$time = @$now->modify($value); // false and a warning before PHP 8.3
+		} catch (\Throwable $e) { // DateMalformedStringException since PHP 8.3
+			$time = false;
+		}
+		return ($time === false) ? false : $time->getTimestamp();
 	}
 
 	/**
@@ -689,7 +751,7 @@ class TTimeScheduler extends \Prado\TComponent
 		}
 		$anchor = $this->parsePeriodTime($from) ?? $this->time();
 		$last = $this->parsePeriodTime($until);
-		$tz = new \DateTimeZone(date_default_timezone_get());
+		$tz = $this->getDateTimeZone();
 		$start = (new \DateTimeImmutable('@' . $anchor))->setTimezone($tz);
 		if ($start->add($interval) <= $start) {
 			throw new TInvalidDataValueException('timescheduler_invalid_period', $text);
@@ -719,7 +781,7 @@ class TTimeScheduler extends \Prado\TComponent
 		if (preg_match('/^@(\d+)$/', $value, $m)) {
 			return (int) $m[1];
 		}
-		$time = (str_starts_with($value, '@')) ? false : strtotime($value, $this->time());
+		$time = (str_starts_with($value, '@')) ? false : $this->parseTime($value);
 		if ($time === false) {
 			throw new TInvalidDataValueException('timescheduler_invalid_period', $value);
 		}
@@ -743,7 +805,7 @@ class TTimeScheduler extends \Prado\TComponent
 		} elseif ($period['seconds'] !== null) {
 			$next = $period['anchor'] + (intdiv($priortime - $period['anchor'], $period['seconds']) + 1) * $period['seconds'];
 		} else {
-			$tz = new \DateTimeZone(date_default_timezone_get());
+			$tz = $this->getDateTimeZone();
 			$anchor = (new \DateTimeImmutable('@' . $period['anchor']))->setTimezone($tz);
 			$interval = $period['interval'];
 			if ($period['relative']) {
@@ -1072,7 +1134,7 @@ class TTimeScheduler extends \Prado\TComponent
 	 * @param false|numeric|string $priortime the time from which to compute the next trigger time
 	 * @return ?int the Unix timestamp of the next trigger, or null when the schedule is unset, a one-off
 	 *   time has already passed, or no trigger exists on or before {@see YEAR_MAX}. The instant is computed
-	 *   in the application default timezone.
+	 *   in the {@see getTimeZone TimeZone}.
 	 */
 	public function getNextTriggerTime($priortime = false)
 	{
@@ -1082,7 +1144,10 @@ class TTimeScheduler extends \Prado\TComponent
 		if ($priortime === false) {
 			$priortime = $this->time();
 		} elseif (!is_numeric($priortime)) {
-			$priortime = strtotime($priortime);
+			$priortime = $this->parseTime($priortime);
+			if ($priortime === false) {
+				return null;
+			}
 		}
 		if ($this->_triggerTime !== null) {
 			if ($priortime >= $this->_triggerTime) {
@@ -1104,7 +1169,7 @@ class TTimeScheduler extends \Prado\TComponent
 		// DateTimeImmutable handles month length and overflow, so the (year, month, day) tuple can never
 		// desync. A minute element without seconds triggers at second 0, so a schedule without seconds
 		// keeps minute resolution. The loop is bounded by YEAR_MAX.
-		$tz = new \DateTimeZone(date_default_timezone_get());
+		$tz = $this->getDateTimeZone();
 		$dt = (new \DateTimeImmutable('@' . ((int) $priortime + 1)))->setTimezone($tz);
 
 		$days = null;

@@ -8,9 +8,13 @@ Cron-style scheduled task engine supporting both file-configured and database-ba
 
 - **`TDbCronManager`** — Extends `TCronModule` with database-backed task storage, execution logging, runtime tasks (`deferTask`), sub-minute polling (`PollsPerMinute`), and a per-row run claim for several hosts.
 
-- **`TCronTask`** — Abstract base for cron tasks; implement `execute($cronModule)`; properties: `Name`, `Schedule`, `UserName`, `ModuleId`, `AutoRemove`, `Timeout`, `Mode`, `Overlap`.
+- **`TCronTask`** — Abstract base for cron tasks; implement `execute($cronModule)`; properties: `Name`, `Schedule`, `UserName`, `ModuleId`, `AutoRemove`, `Timeout`, `Mode`, `Overlap`, `TimeZone`, `StartingDeadline`, `Description`, and the ping URLs.
 
 - **`TCronTaskMode`** — The task `Mode` enumerable: `Serial`, `Parallel`, `Process`.
+
+- **`TCronTaskEventParameter`** — Parameter of the task events `onTaskStart`, `onTaskEnd`, `onTaskFailure`, `onTaskSkipped`, and `onTaskPing`.
+
+- **`TCommandCronTask`** — Concrete task that runs a shell command to completion, with its output to a log file.
 
 - **`TCronMethodTask`** — Concrete task that calls a method on a module or class.
 
@@ -30,7 +34,7 @@ Cron-style scheduled task engine supporting both file-configured and database-ba
 
 - **`TDbCronCleanLogTask`** — Pre-built task that auto-purges old cron log entries from the database.
 
-- **`TShellCronAction`** — CLI action listing the tasks (`prado-cli cron`), running the pending ones (`cron/run`), the live view (`cron/top`), a Process task's child (`cron/exec`), and showing, retiring, or stopping the daemon (`cron/daemon`, `cron/retire`, `cron/stop`).
+- **`TShellCronAction`** — CLI action listing the tasks (`prado-cli cron`), running the pending ones (`cron/run`), the live view (`cron/top`), a task now (`cron/now`), the next triggers (`cron/next`), a Process task's child (`cron/exec`), and showing, retiring, or stopping the daemon (`cron/daemon`, `cron/retire`, `cron/stop`).
 
 - **`TShellDbCronAction`** — CLI action for managing database-backed cron tasks and the cron log.
 
