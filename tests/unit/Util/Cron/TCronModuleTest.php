@@ -2498,4 +2498,27 @@ class TCronModuleTest extends \PHPUnit\Framework\TestCase
 		self::assertArrayNotHasKey('tickNextMinute start', $order, 'a trigger of the next minute is the next tick\'s');
 	}
 
+
+	public function testProcessPendingTasks_ACrontabTickRepeatsATaskWithinTheMinute()
+	{
+		$minute = (int) (floor(time() / 60) * 60);
+		$this->obj->fakeNow = $minute + 1;
+		$this->obj->fakeMicrotime = (float) $this->obj->fakeNow;
+		$this->obj->setInCronShell(true);
+		$this->obj->setDaemonMutex(new TMemoryMutex());
+		TTestCronRecordingTask::$events = [];
+		$this->obj->init([['name' => 'tickRepeat', 'schedule' => '*:*/20 * * * *', 'task' => TTestCronRecordingTask::class]]);
+		$task = $this->obj->getTask('tickRepeat');
+		$task->setLastExecTime($minute);
+		if ($this->obj instanceof \Prado\Util\Cron\TDbCronManager) {
+			self::assertTrue($this->obj->updateTask($task), 'the row holds the next trigger the pending query reads');
+		}
+		self::assertEquals($minute + 20, $task->getNextTriggerTime());
+		self::assertEquals(1, $this->obj->processPendingTasks(), 'one task is pending in the minute');
+		self::assertEquals([$minute + 20, $minute + 40], $this->obj->waitedFor, 'the tick waits for each trigger of the minute');
+		self::assertSame(['tickRepeat start', 'tickRepeat end', 'tickRepeat start', 'tickRepeat end'], TTestCronRecordingTask::$events, 'the task runs at :20 and :40');
+		self::assertSame(2, $task->getProcessCount());
+		self::assertEquals($minute + 60, $task->getNextTriggerTime(), 'the next trigger is the next tick\'s');
+	}
+
 }
