@@ -4,6 +4,8 @@ namespace Prado\Test\Unit\Web;
 
 use Prado\Web\THttpSession;
 use Prado\Web\THttpSessionCookieMode;
+use Prado\Web\TCacheHttpSession;
+use Prado\Util\Cron\TCronTaskInfo;
 
 class THttpSessionTestCookieParams extends THttpSession
 {
@@ -24,6 +26,44 @@ class THttpSessionTestCookieParams extends THttpSession
 	protected function sessionStart(): bool
 	{
 		return true;
+	}
+}
+
+class THttpSessionTestGc extends THttpSession
+{
+	public bool $headersSent = false;
+	public int $gcCalls = 0;
+
+	protected function sessionHeadersSent(): bool
+	{
+		return $this->headersSent;
+	}
+
+	protected function sessionStart(): bool
+	{
+		return true;
+	}
+
+	protected function sessionGc(): int|false
+	{
+		$this->gcCalls++;
+		return 2;
+	}
+
+	protected function sessionDestroy(): bool
+	{
+		return true;
+	}
+}
+
+class THttpSessionTestCustomGc extends THttpSession
+{
+	public ?int $maxLifetime = null;
+
+	public function _gc($maxLifetime)
+	{
+		$this->maxLifetime = $maxLifetime;
+		return 3;
 	}
 }
 
@@ -549,5 +589,87 @@ class THttpSessionTest extends \PHPUnit\Framework\TestCase
 		$session['key1'] = 'value1';
 		unset($session['key1']);
 		$this->assertFalse(isset($session['key1']));
+	}
+
+	public function testGcStartsAndDestroysSession()
+	{
+		$session = new THttpSessionTestGc();
+		$this->assertSame(2, $session->gc());
+		$this->assertSame(1, $session->gcCalls);
+		$this->assertFalse($session->getIsStarted());
+	}
+
+	public function testGcKeepsStartedSession()
+	{
+		$session = new THttpSessionTestGc();
+		$session->open();
+		$session->headersSent = true;
+		$this->assertSame(2, $session->gc());
+		$this->assertTrue($session->getIsStarted());
+	}
+
+	public function testGcFailsAfterHeadersSent()
+	{
+		$session = new THttpSessionTestGc();
+		$session->headersSent = true;
+		$this->assertFalse($session->gc());
+		$this->assertSame(0, $session->gcCalls);
+		$this->assertFalse($session->getIsStarted());
+	}
+
+	/**
+	 * @runInSeparateProcess
+	 */
+	public function testGcDeletesExpiredSessionFiles()
+	{
+		$dir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'prado-sessiongc-' . bin2hex(random_bytes(6));
+		mkdir($dir);
+		try {
+			$old = $dir . DIRECTORY_SEPARATOR . 'sess_oldsession0000000000';
+			$fresh = $dir . DIRECTORY_SEPARATOR . 'sess_freshsession00000000';
+			file_put_contents($old, '');
+			touch($old, time() - 1000);
+			file_put_contents($fresh, '');
+			$session = new THttpSession();
+			$session->setSavePath($dir);
+			$session->setTimeout(100);
+			$this->assertSame(1, $session->gc());
+			$this->assertFalse($session->getIsStarted());
+			$this->assertSame([basename($fresh)], array_values(array_diff(scandir($dir), ['.', '..'])));
+		} finally {
+			foreach (glob($dir . DIRECTORY_SEPARATOR . '*') as $file) {
+				unlink($file);
+			}
+			rmdir($dir);
+		}
+	}
+
+	/**
+	 * @runInSeparateProcess
+	 */
+	public function testGcCallsCustomStorage()
+	{
+		$session = new THttpSessionTestCustomGc();
+		$session->setUseCustomStorage(true);
+		$session->setTimeout(120);
+		$this->assertSame(3, $session->gc());
+		$this->assertSame(120, $session->maxLifetime);
+		$this->assertFalse($session->getIsStarted());
+	}
+
+	public function testCronTaskInfo()
+	{
+		$session = new THttpSession();
+		$this->assertNull($session->fxGetCronTaskInfos(null, null));
+		$session->setID('session');
+		$info = $session->fxGetCronTaskInfos(null, null);
+		$this->assertInstanceOf(TCronTaskInfo::class, $info);
+		$this->assertSame('sessiongc', $info->getName());
+		$this->assertSame('session->gc()', $info->getTask());
+		$this->assertSame('session', $info->getModuleId());
+
+		$cacheSession = new TCacheHttpSession();
+		$cacheSession->setID('session');
+		$this->assertNull($cacheSession->fxGetCronTaskInfos(null, null));
 	}
 }

@@ -69,6 +69,7 @@ return [
 - `close()`: Ends session and stores data
 - `destroy()`: Destroys all data registered to session
 - `regenerate($deleteOld = false)`: Update session ID with new one
+- `gc(): int|false` (4.4.0): Deletes the sessions older than `Timeout` through `session_gc()` (the `sessionGc()` wrapper), which calls `_gc()` with custom storage. Without a started session it starts one, collects, and destroys it; it returns false when headers are sent (`sessionHeadersSent()`), since no session can start then
 - `getSessionID()`: Gets current session ID
 - `setSessionID($value)`: Sets session ID for current session
 
@@ -93,6 +94,12 @@ When `UseCustomStorage` is true, the following methods can be overridden:
 - `_write($id, $data)`: Session write handler
 - `_destroy($id)`: Session destroy handler
 - `_gc($maxLifetime)`: Session garbage collection handler
+
+## Cron Garbage Collection
+A session module with an ID registers the cron task `sessiongc` (`'<id>->gc()'`) through `fxGetCronTaskInfos`. Schedule it and set `GCProbability="0"` so requests do not collect. Every session module registers the same task name, and `cron/add` takes the first.
+- Under `prado-cli`, `TShellWriter` writes to the `STDOUT` stream, which does not send headers, so `gc()` can start its session; a script that `echo`es first cannot.
+- PHP's `files` handler does not collect the `N;/path` nested save path; Debian and Ubuntu disable `session.gc_probability` and collect with their own `sessionclean` cron job.
+- [TCacheHttpSession](./TCacheHttpSession.md) returns null: its cache expires the sessions.
 
 ## Array Access Interface
 THttpSession implements ArrayAccess, IteratorAggregate, and Countable interfaces:
