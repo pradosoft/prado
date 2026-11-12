@@ -162,9 +162,9 @@ use Prado\Xml\TXmlDocument;
  * which a module answers by delivering the ping itself, else through the {@see setHttpClient HttpClient}.
  * Every `on` event of the module is also broadcast as a global `fx` event (`fxCronSweepStart`,
  * `fxCronSweepEnd`, `fxCronDaemonStart`, `fxCronDaemonIdle`, `fxCronDaemonEnd`, `fxCronTaskStart`,
- * `fxCronTaskEnd`, `fxCronTaskFailure`, `fxCronTaskSkipped`, `fxCronTaskPing`), so a module declaring
- * the method is called without configuration.  A component raises `fxRetireCronDaemon` or `fxStopCronDaemon` to
- * retire or stop the daemon from inside its process; {@see requestDaemonRetire} and
+ * `fxCronTaskEnd`, `fxCronTaskFailure`, `fxCronTaskRetry`, `fxCronTaskOverdue`, `fxCronTaskSkipped`,
+ * `fxCronTaskPing`), so a module declaring the method is called without configuration.  A component
+ * raises `fxRetireCronDaemon` or `fxStopCronDaemon` to retire or stop the daemon from inside its process; {@see requestDaemonRetire} and
  * {@see requestDaemonStop} do the same from another process, as the `cron/retire` and `cron/stop`
  * shell commands do.
  *
@@ -255,6 +255,15 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 
 	/** A trigger's result: the run would start later than the task's StartingDeadline and was skipped. */
 	public const RESULT_MISSED = 'missed';
+
+	/** A run's result: a trigger of the task with Overlap Replace stopped the run. */
+	public const RESULT_REPLACED = 'replaced';
+
+	/** The seconds a Replace trigger waits for the stopped run to release the run lock. */
+	public const REPLACE_TIMEOUT = 10;
+
+	/** The seconds a Queue trigger waits for the running run, without a task Timeout or TaskTimeout. */
+	public const DEFAULT_QUEUE_TIMEOUT = 3600;
 
 	/** The `cron/exec` exit code when the task threw. */
 	public const EXIT_ERROR = 1;
@@ -443,6 +452,12 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 
 	/** @var ?string the time zone of the tasks without their own, or null for the application time zone */
 	private ?string $_timeZone = null;
+
+	/** @var array<string, array{token: ?TCancellationToken, process: ?TProcess, replaced: bool}> the runs holding their run lock in this process, by task name */
+	private array $_activeRuns = [];
+
+	/** @var array<string, true> the tasks with a Queue trigger waiting in this process, by name */
+	private array $_queuedRuns = [];
 
 	/**
 	 * Initializes the module.  Read the configuration, installs Shell Actions,
@@ -1198,13 +1213,16 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	 *  - A triggered run is skipped when {@see getTaskSkipReason} gives a reason: the task is paused, its
 	 *    {@see \Prado\Util\Cron\TCronTask::getStartingDeadline() StartingDeadline} passed (recorded as
 	 *    {@see RESULT_MISSED}), the time is outside its time of day, or a behavior declines it.
-	 *  - Without the task's {@see \Prado\Util\Cron\TCronTask::getOverlap() Overlap}, the run holds the task's
-	 *    run lock ({@see getTaskLockName}); when another run holds it, the trigger is skipped.
+	 *  - Unless the task's {@see \Prado\Util\Cron\TCronTask::getOverlap() Overlap} is Allow, the run holds the
+	 *    task's run lock ({@see getTaskLockName}).  When another run holds it, the trigger is skipped (Skip),
+	 *    stops the run of this process and runs (Replace, {@see stopActiveRun}), or is claimed and waits for
+	 *    the lock (Queue, {@see getQueueTimeout}).
 	 *  - {@see onTaskStart} is raised; a handler cancels the run.
 	 *  - {@see updateTaskInfo} claims the run; when another process claimed it, the task is skipped.
 	 *  - A Process task runs in a child process ({@see runTaskProcess}), any other in this fiber
 	 *    ({@see invokeTask}); a failed attempt is tried again up to the task's Retries ({@see onTaskRetry});
-	 *    the result and seconds are recorded by {@see updateTaskResult}, and
+	 *    a run past the task's WarnDuration raises {@see onTaskOverdue}; the result and seconds are recorded
+	 *    by {@see updateTaskResult}, and
 	 *    {@see onTaskEnd}, on failure {@see onTaskFailure}, and the task's pings ({@see pingTask}) follow.
 	 * A skipped trigger advances the task without counting a run and raises {@see onTaskSkipped}.
 	 * @param \Prado\Util\Cron\TCronTask $task the task to run.
@@ -1299,12 +1317,23 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 			$this->onTaskSkipped($param->setReason($reason));
 			return false;
 		}
-		$lockName = $task->getOverlap() ? null : $this->getTaskLockName($name);
-		if ($lockName !== null && !$this->getDaemonMutex()->acquire($lockName)) {
-			Prado::log('Cron task (' . $name . ') is still running; this trigger is skipped', TLogger::INFO, TCronModule::class);
-			$this->updateTaskInfo($task, false);
-			$this->onTaskSkipped($param->setReason(TCronTaskEventParameter::REASON_RUNNING));
-			return false;
+		$overlap = $task->getOverlap();
+		$mutex = $this->getDaemonMutex();
+		$lockName = ($overlap === TCronTaskOverlap::Allow) ? null : $this->getTaskLockName($name);
+		$locked = $queued = false;
+		if ($lockName !== null && !($locked = $mutex->acquire($lockName))) {
+			if ($overlap === TCronTaskOverlap::Replace && $this->stopActiveRun($name)) {
+				Prado::log('Cron task (' . $name . ') stops its running run to replace it', TLogger::INFO, TCronModule::class);
+				$locked = $mutex->acquire($lockName, static::REPLACE_TIMEOUT);
+			} elseif ($overlap === TCronTaskOverlap::Queue && !isset($this->_queuedRuns[$name])) {
+				$queued = $this->_queuedRuns[$name] = true;
+			}
+			if (!$locked && !$queued) {
+				Prado::log('Cron task (' . $name . ') is still running; this trigger is skipped', TLogger::INFO, TCronModule::class);
+				$this->updateTaskInfo($task, false);
+				$this->onTaskSkipped($param->setReason(TCronTaskEventParameter::REASON_RUNNING));
+				return false;
+			}
 		}
 		try {
 			$this->onTaskStart($param);
@@ -1319,33 +1348,69 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 				$this->onTaskSkipped($param->setReason(TCronTaskEventParameter::REASON_CLAIMED));
 				return false;
 			}
+			if ($queued) {
+				Prado::log('Cron task (' . $name . ') waits for its running run', TLogger::INFO, TCronModule::class);
+				$locked = $mutex->acquire($lockName, $this->getQueueTimeout($task));
+				unset($this->_queuedRuns[$name]);
+				$queued = false;
+				if (!$locked) {
+					Prado::log('Cron task (' . $name . ') waited too long for its running run; this trigger is skipped', TLogger::WARNING, TCronModule::class);
+					$this->onTaskSkipped($param->setReason(TCronTaskEventParameter::REASON_RUNNING));
+					return false;
+				}
+			}
+			if ($locked) {
+				$this->_activeRuns[$name] = ['token' => null, 'process' => null, 'replaced' => false];
+			}
 			$logId = $this->logCronTask($task, $username);
 			$runId = $this->beginRunStatus($task, $username);
 			$this->pingTask($task, TCronTask::PING_BEFORE, $param);
 			$start = $this->getMonotonicClock()->seconds();
-			for ($attempt = 1; ; $attempt++) {
-				$exception = null;
-				if ($task->getMode() === TCronTaskMode::Process) {
-					$result = $this->runTaskProcess($task, $runId);
-				} else {
-					$exception = $this->invokeTask($task);
-					$result = ($exception === null) ? static::RESULT_OK : static::RESULT_ERROR;
+			$warn = $task->getWarnDuration();
+			$overdue = false;
+			$timer = ($warn === null) ? null : TAsync::getLoop()->delay($warn, function () use (&$overdue, $task, $param, $runId, $start) {
+				$overdue = true;
+				$this->markTaskOverdue($task, $param, $runId, $this->getMonotonicClock()->seconds() - $start);
+			});
+			try {
+				for ($attempt = 1; ; $attempt++) {
+					$exception = null;
+					if ($task->getMode() === TCronTaskMode::Process) {
+						$result = $this->runTaskProcess($task, $runId);
+					} else {
+						$exception = $this->invokeTask($task);
+						$result = ($exception === null) ? static::RESULT_OK : static::RESULT_ERROR;
+					}
+					if ($this->_activeRuns[$name]['replaced'] ?? false) {
+						$result = static::RESULT_REPLACED;
+						break;
+					}
+					if ($result === static::RESULT_OK || $result === static::RESULT_DENIED || $attempt > $task->getRetries()) {
+						break;
+					}
+					$wait = $task->getRetryWait($attempt);
+					Prado::log('Cron task (' . $name . ') ' . $result . '; retry ' . $attempt . ' of ' . $task->getRetries() . ' in ' . $wait . 's', TLogger::WARNING, TCronModule::class);
+					$this->onTaskRetry($param->setAttempt($attempt)->setResult($result)->setException($exception)->setDuration($this->getMonotonicClock()->seconds() - $start));
+					if ($wait > 0) {
+						TAsync::sleep($wait);
+					}
 				}
-				if ($result === static::RESULT_OK || $result === static::RESULT_DENIED || $attempt > $task->getRetries()) {
-					break;
-				}
-				$wait = $task->getRetryWait($attempt);
-				Prado::log('Cron task (' . $name . ') ' . $result . '; retry ' . $attempt . ' of ' . $task->getRetries() . ' in ' . $wait . 's', TLogger::WARNING, TCronModule::class);
-				$this->onTaskRetry($param->setAttempt($attempt)->setResult($result)->setException($exception)->setDuration($this->getMonotonicClock()->seconds() - $start));
-				if ($wait > 0) {
-					TAsync::sleep($wait);
+			} finally {
+				if ($timer !== null) {
+					TAsync::getLoop()->cancel($timer);
 				}
 			}
 			$duration = $this->getMonotonicClock()->seconds() - $start;
+			if ($warn !== null && !$overdue && $duration > $warn) {
+				$this->markTaskOverdue($task, $param, $runId, $duration);
+			}
 			if ($result === static::RESULT_OK) {
 				$this->logCronTaskEnd($task);
 			}
 			$this->updateTaskResult($task, $result, $duration, $logId);
+			if ($task->getScheduler()->getIsAfterEnd()) {
+				$this->updateTaskEnd($task);
+			}
 			$this->endRunStatus($runId, $result, $duration);
 			$param->setAttempt($attempt)->setResult($result)->setDuration($duration)->setException($exception);
 			$this->onTaskEnd($param);
@@ -1356,10 +1421,67 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 			$this->pingTask($task, ($result === static::RESULT_OK) ? TCronTask::PING_SUCCESS : TCronTask::PING_FAILURE, $param);
 			return $result === static::RESULT_OK;
 		} finally {
-			if ($lockName !== null) {
-				$this->getDaemonMutex()->release($lockName);
+			if ($queued) {
+				unset($this->_queuedRuns[$name]);
+			}
+			if ($locked) {
+				unset($this->_activeRuns[$name]);
+				$mutex->release($lockName);
 			}
 		}
+	}
+
+	/**
+	 * Stops the run of a task that holds its run lock in this process, for a trigger with Overlap
+	 * Replace: a Process task's child is terminated, and a task in this process is cancelled through
+	 * its {@see \Prado\Util\Cron\TCronTask::getCancellationToken() CancellationToken}.  The run ends with
+	 * {@see RESULT_REPLACED}.
+	 * @param string $name the task name
+	 * @return bool whether a run of the task holds its lock in this process
+	 * @since 4.4.0
+	 */
+	protected function stopActiveRun(string $name): bool
+	{
+		if (!isset($this->_activeRuns[$name])) {
+			return false;
+		}
+		$this->_activeRuns[$name]['replaced'] = true;
+		if (($process = $this->_activeRuns[$name]['process']) !== null) {
+			$process->terminate();
+		} elseif (($token = $this->_activeRuns[$name]['token']) !== null) {
+			$token->cancel();
+		}
+		return true;
+	}
+
+	/**
+	 * @param \Prado\Util\Cron\TCronTask $task the task
+	 * @return float the seconds a Queue trigger waits for the running run: the task's Timeout, else
+	 *   {@see getTaskTimeout TaskTimeout}, else {@see DEFAULT_QUEUE_TIMEOUT}
+	 * @since 4.4.0
+	 */
+	protected function getQueueTimeout($task): float
+	{
+		return $task->getTimeout() ?? $this->getTaskTimeout() ?? (float) static::DEFAULT_QUEUE_TIMEOUT;
+	}
+
+	/**
+	 * Warns that a run passed its task's {@see \Prado\Util\Cron\TCronTask::getWarnDuration() WarnDuration}:
+	 * a warning log entry, the run's status entry marked overdue, and {@see onTaskOverdue}.
+	 * @param \Prado\Util\Cron\TCronTask $task the task
+	 * @param TCronTaskEventParameter $param the run's event parameter
+	 * @param ?int $runId the run's status entry
+	 * @param float $elapsed the seconds the run has taken
+	 * @since 4.4.0
+	 */
+	protected function markTaskOverdue($task, TCronTaskEventParameter $param, ?int $runId, float $elapsed): void
+	{
+		Prado::log('Cron task (' . $task->getName() . ') has run ' . round($elapsed, 3) . 's, past its WarnDuration of ' . $task->getWarnDuration() . 's', TLogger::WARNING, TCronModule::class);
+		if ($runId !== null && isset($this->_status['running'][$runId])) {
+			$this->_status['running'][$runId]['overdue'] = true;
+			$this->writeStatus();
+		}
+		$this->onTaskOverdue($param->setDuration($elapsed));
 	}
 
 	/**
@@ -1518,7 +1640,8 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	/**
 	 * Executes a task in the current fiber.  A deadline from the task's Timeout or the module's
 	 * {@see getTaskTimeout} becomes the task's
-	 * {@see \Prado\Util\Cron\TCronTask::getCancellationToken() CancellationToken}.  An exception from
+	 * {@see \Prado\Util\Cron\TCronTask::getCancellationToken() CancellationToken}; a run holding its run
+	 * lock gets a token without a deadline too, which a Replace trigger cancels.  An exception from
 	 * the task is logged by {@see logCronTaskError} and does not leave this method.
 	 * @param \Prado\Util\Cron\TCronTask $task the task
 	 * @return ?\Throwable the exception the task threw, or null when it ran without one
@@ -1527,7 +1650,12 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	protected function invokeTask($task): ?\Throwable
 	{
 		$timeout = $task->getTimeout() ?? $this->getTaskTimeout();
-		$task->setCancellationToken(($timeout !== null) ? new TCancellationToken($timeout) : null);
+		$name = $task->getName();
+		$token = ($timeout !== null || isset($this->_activeRuns[$name])) ? new TCancellationToken($timeout) : null;
+		$task->setCancellationToken($token);
+		if (isset($this->_activeRuns[$name])) {
+			$this->_activeRuns[$name]['token'] = $token;
+		}
 		try {
 			$task->execute($this);
 			return null;
@@ -1536,6 +1664,9 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 			return $e;
 		} finally {
 			$task->setCancellationToken(null);
+			if (isset($this->_activeRuns[$name])) {
+				$this->_activeRuns[$name]['token'] = null;
+			}
 		}
 	}
 
@@ -1635,6 +1766,18 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	}
 
 	/**
+	 * Raises the `OnTaskOverdue` event, and `fxCronTaskOverdue` globally, once for a run that passes its
+	 * task's WarnDuration: while the run waits on the event loop, or after a run that blocked.
+	 * @param TCronTaskEventParameter $param the run, with the seconds it has taken
+	 * @since 4.4.0
+	 */
+	public function onTaskOverdue($param)
+	{
+		$this->raiseEvent('OnTaskOverdue', $this, $param);
+		$this->raiseEvent('fxCronTaskOverdue', $this, $param);
+	}
+
+	/**
 	 * Raises the `OnTaskRetry` event, and `fxCronTaskRetry` globally, after a failed attempt that is tried
 	 * again, with the {@see TCronTaskEventParameter::getAttempt Attempt}, its result, and its exception.
 	 * @param TCronTaskEventParameter $param the failed attempt
@@ -1691,6 +1834,13 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 		}
 		$pid = $process->getPid();
 		$this->setRunStatusPid($runId, $pid);
+		$name = $task->getName();
+		if (isset($this->_activeRuns[$name])) {
+			$this->_activeRuns[$name]['process'] = $process;
+		}
+		if (($priority = $task->getProcessPriority()) !== null && $pid !== null && !$this->setTaskProcessPriority($pid, $priority)) {
+			Prado::log('Cron task (' . $name . ') process ' . $pid . ' could not take the priority ' . $priority, TLogger::WARNING, TCronModule::class);
+		}
 		$timeout = $task->getTimeout() ?? $this->getTaskTimeout();
 		$limit = ($timeout === null) ? 0 : (int) (($timeout + static::PROCESS_TIMEOUT_GRACE) * 1_000_000);
 		$code = $process->wait(static::PROCESS_POLL_INTERVAL, $limit);
@@ -1701,9 +1851,15 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 				$process->terminate(9); // SIGKILL
 			}
 			$process->close();
+			if (isset($this->_activeRuns[$name])) {
+				$this->_activeRuns[$name]['process'] = null;
+			}
 			return static::RESULT_TIMEOUT;
 		}
 		$process->close();
+		if (isset($this->_activeRuns[$name])) {
+			$this->_activeRuns[$name]['process'] = null;
+		}
 		if ($code === 0) {
 			return static::RESULT_OK;
 		}
@@ -1715,8 +1871,20 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	}
 
 	/**
+	 * Sets the scheduling priority of a Process task's child through {@see TProcessHelper::setProcessPriority()}.
+	 * @param int $pid the child's process ID
+	 * @param int $priority the priority, -20 (highest) to 19 (lowest)
+	 * @return bool whether the priority was set
+	 * @since 4.4.0
+	 */
+	protected function setTaskProcessPriority(int $pid, int $priority): bool
+	{
+		return TProcessHelper::setProcessPriority($priority, $pid);
+	}
+
+	/**
 	 * Opens the child process of a Process task: {@see getTaskProcessCommand}, with no standard
-	 * input, and the standard output and error of this process.
+	 * input, and the standard output and error of this process, or appended to the task's ProcessOutputFile.
 	 * @param \Prado\Util\Cron\TCronTask $task the task
 	 * @return TProcess the running child process
 	 * @since 4.4.0
@@ -1724,12 +1892,15 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	protected function openTaskProcess($task): TProcess
 	{
 		$null = TProcessHelper::isSystemWindows() ? 'NUL' : '/dev/null';
-		return TProcess::open($this->getTaskProcessCommand($task), [0 => ['file', $null, 'r'], 1 => false, 2 => false], null, null, ['bypass_shell' => true]);
+		$output = $task->getProcessOutputFile();
+		$out = ($output === null) ? false : ['file', $output, 'a'];
+		return TProcess::open($this->getTaskProcessCommand($task), [0 => ['file', $null, 'r'], 1 => $out, 2 => $out], null, null, ['bypass_shell' => true]);
 	}
 
 	/**
 	 * Returns the command of a Process task's child process: `prado-cli -d=<app> --quiet=1 cron/exec <task>`
-	 * on the PHP command line binary, without the shell banner.  The PHP binary of a web server SAPI is replaced by `php` in
+	 * on the PHP command line binary, without the shell banner; the task's ProcessMemoryLimit is the
+	 * binary's `-d memory_limit=` option.  The PHP binary of a web server SAPI is replaced by `php` in
 	 * {@see PHP_BINDIR}.
 	 * @param \Prado\Util\Cron\TCronTask $task the task
 	 * @return string[] the command and its arguments
@@ -1739,7 +1910,8 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	{
 		$php = ($this->php_sapi_name() === 'cli') ? PHP_BINARY : PHP_BINDIR . DIRECTORY_SEPARATOR . (TProcessHelper::isSystemWindows() ? 'php.exe' : 'php');
 		$cli = dirname(Prado::getFrameworkPath()) . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'prado-cli.php';
-		return [$php, $cli, '-d=' . $this->getApplication()->getBasePath(), '--quiet=1', 'cron/exec', $task->getName()];
+		$limit = $task->getProcessMemoryLimit();
+		return array_merge([$php], ($limit === null) ? [] : ['-d', 'memory_limit=' . $limit], [$cli, '-d=' . $this->getApplication()->getBasePath(), '--quiet=1', 'cron/exec', $task->getName()]);
 	}
 
 	/**
@@ -1831,6 +2003,20 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 		$name = $task->getName();
 		$tasksInfo[$name]['lastResult'] = $result;
 		$tasksInfo[$name]['lastDuration'] = round($duration, 6);
+		$app->setGlobalState(self::TASKS_INFO, $tasksInfo, [], true);
+	}
+
+	/**
+	 * Sets the task's LastExecTime to the end of its run, for a schedule 'every <interval> after end', whose
+	 * next trigger counts from that time; saves it to the global state.
+	 * @param TCronTask $task the task
+	 * @since 4.4.0
+	 */
+	protected function updateTaskEnd($task)
+	{
+		$app = $this->getApplication();
+		$tasksInfo = $app->getGlobalState(self::TASKS_INFO, []);
+		$task->setLastExecTime($tasksInfo[$task->getName()]['lastExecTime'] = $this->time());
 		$app->setGlobalState(self::TASKS_INFO, $tasksInfo, [], true);
 	}
 
@@ -3260,6 +3446,7 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 			'user' => $username,
 			'started' => $now,
 			'deadline' => ($timeout === null) ? null : $now + $timeout,
+			'warn' => (($warn = $task->getWarnDuration()) === null) ? null : $now + $warn,
 			'pid' => $this->_status['pid'],
 		];
 		$this->writeStatus();
@@ -3297,7 +3484,7 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 		unset($this->_status['running'][$id]);
 		$run['result'] = $result;
 		$run['duration'] = round($duration, 6);
-		unset($run['deadline'], $run['user']);
+		unset($run['deadline'], $run['user'], $run['warn']);
 		array_unshift($this->_status['recent'], $run);
 		$this->_status['recent'] = array_slice($this->_status['recent'], 0, static::STATUS_RECENT);
 		$this->writeStatus();

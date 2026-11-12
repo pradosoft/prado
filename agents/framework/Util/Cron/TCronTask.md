@@ -27,7 +27,9 @@ TCronTask is the abstract base class for all cron tasks. Subclasses must impleme
 - `execute($cronModule)` - Abstract method; implement to run task logic
 - `getTimeout()` / `setTimeout($seconds)` - Seconds one run may take, or null for the module's `TaskTimeout` (4.4.0); set per job with `Timeout="60"`
 - `getMode()` / `setMode($mode)` - How a sweep runs the task, a [`TCronTaskMode`](#mode-and-overlap-440) value; default `Serial` (4.4.0)
-- `getOverlap()` / `setOverlap($value)` - Whether a run may start while the previous run is still running; default false (4.4.0)
+- `getOverlap()` / `setOverlap($value)` - What a trigger does while the previous run holds the run lock, a `TCronTaskOverlap` value: `Skip` (default), `Allow`, `Replace`, or `Queue`; `true` is `Allow` and `false` is `Skip` (4.4.0)
+- `getProcessOutputFile()`, `getProcessPriority()`, `getProcessMemoryLimit()` and setters - For a Process task's child: the file its output and errors are appended to (null for the cron process's output), its scheduling priority (−20 to 19, POSIX nice; a Windows priority class), and its `memory_limit` (`512M`, `-1`) (4.4.0)
+- `getWarnDuration()` / `setWarnDuration($seconds)` - The seconds after which a run is overdue: a warning, the run's status marked, and `onTaskOverdue` (4.4.0)
 - `getTimeZone()` / `setTimeZone($timeZone)` - The time zone of the schedule, passed to the scheduler; null for the application time zone; setting it clears the cached next trigger time (4.4.0)
 - `getStartingDeadline()` / `setStartingDeadline($seconds)` - The seconds after its trigger a run may start; a later triggered run is skipped with the result `missed`; null (default) for no deadline (4.4.0)
 - `getDefaultTimeZone()` / `setDefaultTimeZone($timeZone)` - The zone the cron module gives a task without its own `TimeZone`; not serialized. `getScheduleTimeZone()` is `TimeZone ?? DefaultTimeZone`, the zone of the scheduler (4.4.0)
@@ -49,9 +51,17 @@ TCronTask is the abstract base class for all cron tasks. Subclasses must impleme
 | `Parallel` | in a fiber beside the other Parallel tasks, at most the module's `Concurrency` at once; the sweep waits for it |
 | `Process` | in a child `prado-cli cron/exec <task>` process; the sweep does not wait, the cron process waits before it exits |
 
-Without `Overlap`, a run holds the task's run lock (`TCronModule::getTaskLockName()`), and a trigger that comes while another run holds it is skipped: the task advances to its next trigger without a run. With `Overlap`, runs of the task may run at once, which only a Process task (or another cron process) can do. There is no fork mode; see [TCronModule](TCronModule.md#task-modes-the-run-lock-and-the-task-fiber-440).
+`TCronTaskOverlap` is the task's `Overlap`. Unless it is `Allow`, a run holds the task's run lock (`TCronModule::getTaskLockName()`); a trigger that comes while another run holds it:
 
-`TCronModule::runTask()` runs the task in a fiber of its own as the task's user; see [TCronModule](TCronModule.md). The token, the scheduler, and the cached next trigger time are not serialized; default-valued properties, `Mode` `Serial` and `Overlap` false included, are excluded as well (`_getZappableSleepProps`).
+| Overlap | The trigger |
+|---|---|
+| `Skip` | is skipped: the task advances to its next trigger without a run |
+| `Allow` | takes no lock and runs beside the previous run, which only a Process task (or another cron process) can do |
+| `Replace` | stops the run of this process (a Process child is terminated, a task in the cron process is cancelled through its token) and runs; the stopped run's result is `replaced`. A run of another process is not stopped, and the trigger is skipped |
+| `Queue` | is claimed, then waits for the lock (the task's `Timeout`, else `TaskTimeout`, else an hour) and runs; one trigger waits at a time |
+ There is no fork mode; see [TCronModule](TCronModule.md#task-modes-the-run-lock-and-the-task-fiber-440).
+
+`TCronModule::runTask()` runs the task in a fiber of its own as the task's user; see [TCronModule](TCronModule.md). The token, the scheduler, and the cached next trigger time are not serialized; default-valued properties, `Mode` `Serial` and `Overlap` `Skip` included, are excluded as well (`_getZappableSleepProps`).
 
 ## See Also
 

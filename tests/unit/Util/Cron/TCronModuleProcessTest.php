@@ -24,9 +24,18 @@ class TTestCronProcessModule extends TTestCronModule
 		return $this->command ?: parent::getTaskProcessCommand($task);
 	}
 
+	/** @var array<int, int> the priorities set, by process ID */
+	public array $priorities = [];
+
 	public function callRunTasks(array $tasks): array
 	{
 		return $this->runTasks($tasks);
+	}
+
+	protected function setTaskProcessPriority(int $pid, int $priority): bool
+	{
+		$this->priorities[$pid] = $priority;
+		return true;
 	}
 }
 
@@ -72,6 +81,15 @@ class TCronModuleProcessTest extends \PHPUnit\Framework\TestCase
 	private function childResult(): ?string
 	{
 		return $this->module->getTaskResults()['child']['result'];
+	}
+
+	public function testTaskProcessCommand_MemoryLimit()
+	{
+		$task = $this->module->getTask('child');
+		$task->setProcessMemoryLimit('256M');
+		$command = (new TCronModule())->getTaskProcessCommand($task);
+		self::assertSame([PHP_BINARY, '-d', 'memory_limit=256M'], array_slice($command, 0, 3));
+		self::assertSame('prado-cli.php', basename($command[3]));
 	}
 
 	public function testTaskProcessCommand()
@@ -149,4 +167,66 @@ class TCronModuleProcessTest extends \PHPUnit\Framework\TestCase
 		self::assertSame([], $this->module->getStatuses());
 		self::assertSame(TCronModule::RESULT_OK, $this->childResult());
 	}
+
+	public function testRunTask_ProcessOutputFileAndPriority()
+	{
+		$log = $this->dir . '.out';
+		$task = $this->module->getTask('child');
+		$task->setProcessOutputFile($log);
+		$task->setProcessPriority(5);
+		try {
+			self::assertTrue($this->runChild('echo "out"; fwrite(STDERR, "err");'));
+			self::assertSame('outerr', file_get_contents($log), 'the child appends its output and errors to the file');
+			self::assertSame([5], array_values($this->module->priorities));
+		} finally {
+			if (is_file($log)) {
+				unlink($log);
+			}
+		}
+	}
+
+	public function testRunTask_ReplaceTerminatesTheChild()
+	{
+		$task = $this->module->getTask('child');
+		$task->setOverlap('Replace');
+		$results = [];
+		$this->module->attachEventHandler('OnTaskEnd', function ($sender, $param) use (&$results) {
+			$results[] = $param->getResult();
+		});
+		$this->module->command = [PHP_BINARY, '-r', 'sleep(20);'];
+		$first = TAsync::run([$this->module, 'runTask'], $task);
+		TAsync::sleep(0.5);
+		$start = microtime(true);
+		self::assertTrue($this->runChild('exit(0);'));
+		self::assertFalse($first->await());
+		self::assertLessThan(10.0, microtime(true) - $start, 'the running child is terminated');
+		self::assertSame([TCronModule::RESULT_REPLACED, TCronModule::RESULT_OK], $results);
+	}
+
+	public function testRunTask_QueueWaitsForTheRunningChild()
+	{
+		$task = $this->module->getTask('child');
+		$task->setOverlap('Queue');
+		$events = [];
+		$this->module->attachEventHandler('OnTaskEnd', function ($sender, $param) use (&$events) {
+			$events[] = ['end', microtime(true)];
+		});
+		$this->module->attachEventHandler('OnTaskSkipped', function ($sender, $param) use (&$events) {
+			$events[] = ['skipped', $param->getReason()];
+		});
+		$this->module->command = [PHP_BINARY, '-r', 'usleep(400000);'];
+		$first = TAsync::run([$this->module, 'runTask'], $task);
+		TAsync::sleep(0.1);
+		$task->setLastExecTime(null);
+		$second = TAsync::run([$this->module, 'runTask'], $task);
+		TAsync::sleep(0.05);
+		$task->setLastExecTime(null);
+		self::assertFalse($this->module->runTask($task), 'one trigger waits at a time');
+		self::assertTrue($first->await());
+		self::assertTrue($second->await(), 'the queued trigger runs after the first');
+		self::assertSame(['skipped', 'running'], $events[0]);
+		self::assertSame(['end', 'end'], [$events[1][0], $events[2][0]]);
+		self::assertSame(3, $task->getProcessCount() + 1, 'the queued trigger was claimed; the third was not');
+	}
+
 }

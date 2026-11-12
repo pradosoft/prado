@@ -780,6 +780,30 @@ class TDbCronManager extends TCronModule implements IDbModule
 	}
 
 	/**
+	 * Sets the task's LastExecTime to the end of its run, for a schedule 'every <interval> after end', and
+	 * stores it with the next execution time in the task's row.
+	 * @param TCronTask $task the task
+	 * @since 4.4.0
+	 */
+	protected function updateTaskEnd($task)
+	{
+		$name = $task->getName();
+		$task->setLastExecTime($time = $this->time());
+		$db = $this->getDbConnection();
+		$cmd = $db->createCommand("UPDATE {$this->_tableName} SET lastexectime=:time, nextexectime=:ntime, options=:task WHERE name=:name AND active IS NOT NULL");
+		$cmd->bindValue(":time", $time, $db::PARAM_STR);
+		$cmd->bindValue(":ntime", $ntime = $task->getNextTriggerTime($time), $db::PARAM_STR);
+		$cmd->bindValue(":task", $serial = serialize($task), $db::PARAM_STR);
+		$cmd->bindValue(":name", $name, $db::PARAM_STR);
+		$cmd->execute();
+		if (isset($this->_taskRows[$name])) {
+			$this->_taskRows[$name]['lastexectime'] = $time;
+			$this->_taskRows[$name]['nextexectime'] = $ntime;
+			$this->_taskRows[$name]['options'] = $serial;
+		}
+	}
+
+	/**
 	 * Unserializes a task from its row and prepares it ({@see prepareTask}).
 	 * @param ?string $options the serialized task
 	 * @return mixed the task, or false when the value does not unserialize

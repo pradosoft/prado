@@ -112,6 +112,14 @@ use Prado\TPropertyValue;
  * Second, minute, and hour intervals are fixed lengths; day, month, year, and relative intervals step
  * the calendar in the time zone, as the k-th multiple of the interval from the anchor.
  *
+ * 'every <interval> after end' counts each trigger from the time before it, which the cron module sets
+ * to the end of the previous run ({@see getIsAfterEnd}), instead of the anchor's grid: a fixed delay
+ * between runs.
+ *
+ * '<schedule> except <dates>' skips the triggers on excluded local dates: a comma list of 'YYYY-MM-DD',
+ * a range 'YYYY-MM-DD..YYYY-MM-DD', a yearly 'MM-DD', or a yearly range 'MM-DD..MM-DD' that may span
+ * the new year, such as '0 9 * * 1-5 except 12-24..12-26, 01-01, 2026-04-03'.
+ *
  * The schedule is in the {@see setTimeZone TimeZone}, default the application time zone
  * ({@see \date_default_timezone_get()}); the trigger times are Unix timestamps.  Across a daylight
  * saving change, a time in the skipped hour does not trigger that day, and a time in the repeated
@@ -148,8 +156,14 @@ class TTimeScheduler extends \Prado\TComponent
 	/** @var ?string the time zone of the schedule, or null for the application time zone */
 	private ?string $_timeZone = null;
 
+	/** @var ?array[] the excluded dates of the 'except' clause, each [yearly, from, to] */
+	private ?array $_except = null;
+
+	/** The most excluded spans a trigger search skips before it gives up. */
+	protected const EXCEPT_LIMIT = 1000;
+
 	/** @var string[] the properties holding a parsed schedule; restored when a new schedule is invalid */
-	private const SCHEDULE_STATE = ['_schedule', '_resolved', '_hasHash', '_period', '_triggerTime', '_attr', '_minutesCache', '_secondsCache', '_hoursCache', '_monthsCache'];
+	private const SCHEDULE_STATE = ['_schedule', '_resolved', '_hasHash', '_period', '_triggerTime', '_attr', '_minutesCache', '_secondsCache', '_hoursCache', '_monthsCache', '_except'];
 
 	/** The cron schedule */
 	private $_schedule;
@@ -414,6 +428,30 @@ class TTimeScheduler extends \Prado\TComponent
 			return;
 		}
 		$schedule = trim($schedule);
+		$this->_except = null;
+		$except = null;
+		if (preg_match('/^(.+?)\s+except\s+(.+)$/i', $schedule, $exceptMatch)) {
+			$schedule = trim($exceptMatch[1]);
+			$except = $this->parseExcept($exceptMatch[2]);
+		}
+		$this->parseExpression($schedule);
+		if ($except !== null) {
+			$this->_except = $except[0];
+			$this->_schedule .= ' except ' . $except[1];
+			if ($this->_resolved !== null) {
+				$this->_resolved .= ' except ' . $except[1];
+			}
+		}
+	}
+
+	/**
+	 * Parses a schedule without its 'except' clause into the schedule state.
+	 * @param string $schedule the trimmed schedule
+	 * @throws TInvalidDataValueException when the schedule does not parse
+	 * @since 4.4.0
+	 */
+	protected function parseExpression(string $schedule): void
+	{
 		// Resolve '@now' / '@now+N' to a concrete one-off timestamp at parse time (via the time() seam),
 		// so it becomes a stable one-off that survives persistence/reload without "now" drifting.
 		if (preg_match('/^@now(?:\+(\d+))?$/i', $schedule, $nowMatch)) {
@@ -427,8 +465,8 @@ class TTimeScheduler extends \Prado\TComponent
 			$this->_schedule = '@' . $this->_triggerTime;
 			return;
 		}
-		if (preg_match('/^every\s+(.+?)(?:\s+from\s+(\S+(?:\s+\S+)*?))?(?:\s+until\s+(\S+(?:\s+\S+)*?))?$/i', $schedule, $everyMatch)) {
-			$this->parsePeriod($everyMatch[1], $everyMatch[2] ?? null, $everyMatch[3] ?? null);
+		if (preg_match('/^every\s+(.+?)(\s+after\s+end)?(?:\s+from\s+(\S+(?:\s+\S+)*?))?(?:\s+until\s+(\S+(?:\s+\S+)*?))?$/i', $schedule, $everyMatch)) {
+			$this->parsePeriod($everyMatch[1], ($everyMatch[3] ?? '') ?: null, ($everyMatch[4] ?? '') ?: null, ($everyMatch[2] ?? '') !== '');
 			return;
 		}
 		$this->_schedule = $schedule;
@@ -730,15 +768,16 @@ class TTimeScheduler extends \Prado\TComponent
 	}
 
 	/**
-	 * Parses 'every <interval> [from <time>] [until <time>]' into the period and stores the schedule
-	 * with the anchor resolved: 'every <interval> from @<unix time>[ until @<unix time>]'.
+	 * Parses 'every <interval> [after end] [from <time>] [until <time>]' into the period and stores the
+	 * schedule with the anchor resolved: 'every <interval>[ after end] from @<unix time>[ until @<unix time>]'.
 	 * @param string $text the interval, a relative string of {@see \DateInterval::createFromDateString}
 	 * @param ?string $from the anchor, '@<unix time>' or a {@see \strtotime} string; null for now
 	 * @param ?string $until the last trigger time, '@<unix time>' or a {@see \strtotime} string
+	 * @param bool $afterEnd whether each trigger counts from the time before it instead of the anchor's grid
 	 * @throws TInvalidDataValueException when the interval does not parse or is not positive, or a time does not parse
 	 * @since 4.4.0
 	 */
-	protected function parsePeriod(string $text, ?string $from, ?string $until)
+	protected function parsePeriod(string $text, ?string $from, ?string $until, bool $afterEnd = false)
 	{
 		$text = preg_replace('/\s+/', ' ', trim($text));
 		try {
@@ -763,8 +802,8 @@ class TTimeScheduler extends \Prado\TComponent
 		$relative = $probe->add($interval) != $probe->add($this->scaleInterval($interval, 1));
 		$fixed = ($interval->y === 0 && $interval->m === 0 && $interval->d === 0 && !$relative)
 			? $interval->h * 3600 + $interval->i * 60 + $interval->s : null;
-		$this->_period = ['interval' => $interval, 'anchor' => $anchor, 'until' => $last, 'seconds' => $fixed, 'relative' => $relative];
-		$this->_schedule = 'every ' . $text . ' from @' . $anchor . (($last !== null) ? ' until @' . $last : '');
+		$this->_period = ['interval' => $interval, 'anchor' => $anchor, 'until' => $last, 'seconds' => $fixed, 'relative' => $relative, 'afterEnd' => $afterEnd];
+		$this->_schedule = 'every ' . $text . ($afterEnd ? ' after end' : '') . ' from @' . $anchor . (($last !== null) ? ' until @' . $last : '');
 	}
 
 	/**
@@ -802,6 +841,9 @@ class TTimeScheduler extends \Prado\TComponent
 		$period = $this->_period;
 		if ($priortime < $period['anchor']) {
 			$next = $period['anchor'];
+		} elseif ($period['afterEnd']) {
+			$next = ($period['seconds'] !== null) ? $priortime + $period['seconds']
+				: (new \DateTimeImmutable('@' . $priortime))->setTimezone($this->getDateTimeZone())->add($period['interval'])->getTimestamp();
 		} elseif ($period['seconds'] !== null) {
 			$next = $period['anchor'] + (intdiv($priortime - $period['anchor'], $period['seconds']) + 1) * $period['seconds'];
 		} else {
@@ -1149,6 +1191,24 @@ class TTimeScheduler extends \Prado\TComponent
 				return null;
 			}
 		}
+		$next = $this->getNextScheduledTime((int) $priortime);
+		for ($i = 0; $next !== null && $this->_except !== null && ($until = $this->getExcludedUntil($next)) !== null; $i++) {
+			if ($i >= static::EXCEPT_LIMIT) {
+				return null;
+			}
+			$next = $this->getNextScheduledTime($until);
+		}
+		return $next;
+	}
+
+	/**
+	 * Calculates the next trigger time strictly after a time, without the 'except' clause.
+	 * @param int $priortime the time to search after
+	 * @return ?int the Unix timestamp of the next trigger, or null
+	 * @since 4.4.0
+	 */
+	protected function getNextScheduledTime(int $priortime): ?int
+	{
 		if ($this->_triggerTime !== null) {
 			if ($priortime >= $this->_triggerTime) {
 				return null;
@@ -1156,7 +1216,7 @@ class TTimeScheduler extends \Prado\TComponent
 			return $this->_triggerTime;
 		}
 		if ($this->_period !== null) {
-			return $this->getNextPeriodTime((int) $priortime);
+			return $this->getNextPeriodTime($priortime);
 		}
 
 		$minutes = $this->getMinutesArray();
@@ -1170,7 +1230,7 @@ class TTimeScheduler extends \Prado\TComponent
 		// desync. A minute element without seconds triggers at second 0, so a schedule without seconds
 		// keeps minute resolution. The loop is bounded by YEAR_MAX.
 		$tz = $this->getDateTimeZone();
-		$dt = (new \DateTimeImmutable('@' . ((int) $priortime + 1)))->setTimezone($tz);
+		$dt = (new \DateTimeImmutable('@' . ($priortime + 1)))->setTimezone($tz);
 
 		$days = null;
 		$daysMonth = $daysYear = null;
@@ -1213,6 +1273,86 @@ class TTimeScheduler extends \Prado\TComponent
 			$dt = $dt->setTime($hour, $minute + 1, 0); // no second left in this minute
 		}
 		return null;
+	}
+
+	/**
+	 * @return bool whether the schedule is a period 'every <interval> after end', whose trigger counts from
+	 *   the time before it; the cron module sets that time to the end of each run
+	 * @since 4.4.0
+	 */
+	public function getIsAfterEnd(): bool
+	{
+		return (bool) ($this->_period['afterEnd'] ?? false);
+	}
+
+	/**
+	 * Parses the dates of an 'except' clause.
+	 * @param string $text a comma list of 'YYYY-MM-DD', 'YYYY-MM-DD..YYYY-MM-DD', 'MM-DD', or 'MM-DD..MM-DD'
+	 * @throws TInvalidDataValueException when an item is not a date or a range of dates of one kind
+	 * @return array{0: array[], 1: string} the items, each [yearly, from, to], and the normalized text
+	 * @since 4.4.0
+	 */
+	protected function parseExcept(string $text): array
+	{
+		$items = [];
+		$texts = [];
+		foreach (explode(',', $text) as $item) {
+			$item = trim($item);
+			if (preg_match('/^(\d{4}-\d{2}-\d{2})(?:\s*\.\.\s*(\d{4}-\d{2}-\d{2}))?$/', $item, $m)) {
+				$yearly = false;
+			} elseif (preg_match('/^(\d{2}-\d{2})(?:\s*\.\.\s*(\d{2}-\d{2}))?$/', $item, $m)) {
+				$yearly = true;
+			} else {
+				throw new TInvalidDataValueException('timescheduler_invalid_except', $item);
+			}
+			$from = $m[1];
+			$to = ($m[2] ?? '') ?: $from;
+			foreach ([$from, $to] as $date) {
+				$parts = array_map('intval', explode('-', $yearly ? '2000-' . $date : $date));
+				if (!checkdate($parts[1], $parts[2], $parts[0])) {
+					throw new TInvalidDataValueException('timescheduler_invalid_except', $item);
+				}
+			}
+			if (!$yearly && $from > $to) {
+				throw new TInvalidDataValueException('timescheduler_invalid_except', $item);
+			}
+			$items[] = [$yearly, $from, $to];
+			$texts[] = ($from === $to) ? $from : $from . '..' . $to;
+		}
+		return [$items, implode(', ', $texts)];
+	}
+
+	/**
+	 * Returns the end of the excluded dates that hold a time: the last second of the excluded span's
+	 * last local day.
+	 * @param int $time the time
+	 * @return ?int the last second of the exclusion, or null when the time is not excluded
+	 * @since 4.4.0
+	 */
+	protected function getExcludedUntil(int $time): ?int
+	{
+		$tz = $this->getDateTimeZone();
+		$local = (new \DateTimeImmutable('@' . $time))->setTimezone($tz);
+		$date = $local->format('Y-m-d');
+		$day = $local->format('m-d');
+		$year = (int) $local->format('Y');
+		$end = null;
+		foreach ($this->_except ?? [] as [$yearly, $from, $to]) {
+			if (!$yearly) {
+				$last = ($date >= $from && $date <= $to) ? $to : null;
+			} elseif ($from <= $to) {
+				$last = ($day >= $from && $day <= $to) ? sprintf('%04d-%s', $year, $to) : null;
+			} elseif ($day >= $from) {
+				$last = sprintf('%04d-%s', $year + 1, $to);
+			} else {
+				$last = ($day <= $to) ? sprintf('%04d-%s', $year, $to) : null;
+			}
+			if ($last !== null) {
+				$until = (new \DateTimeImmutable($last . ' 23:59:59', $tz))->getTimestamp();
+				$end = max($end ?? $until, $until);
+			}
+		}
+		return $end;
 	}
 
 	/**

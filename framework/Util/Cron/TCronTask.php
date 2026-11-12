@@ -31,9 +31,12 @@ use Prado\TPropertyValue;
  *
  * The {@see getMode() Mode} is how a sweep runs the task: Serial (the default) alone in the cron
  * process, Parallel in a fiber beside other Parallel tasks, or Process in a child `cron/exec`
- * process; see {@see \Prado\Util\Cron\TCronTaskMode}.  Without {@see getOverlap() Overlap}, a run
- * holds the task's run lock, and a trigger that comes while the previous run still holds it is
- * skipped.
+ * process; see {@see \Prado\Util\Cron\TCronTaskMode}.  Unless {@see getOverlap() Overlap} is Allow, a
+ * run holds the task's run lock; a trigger that comes while the previous run still holds it is skipped,
+ * replaces the previous run, or waits for it; see {@see \Prado\Util\Cron\TCronTaskOverlap}.  A Process
+ * task's child takes {@see getProcessOutputFile() ProcessOutputFile}, {@see getProcessPriority() ProcessPriority},
+ * and {@see getProcessMemoryLimit() ProcessMemoryLimit}.  A run longer than {@see getWarnDuration() WarnDuration}
+ * raises {@see \Prado\Util\Cron\TCronModule::onTaskOverdue()}.
  *
  * The schedule is in the task's {@see getTimeZone() TimeZone}, else the cron module's
  * {@see \Prado\Util\Cron\TCronModule::getTimeZone() TimeZone} ({@see getDefaultTimeZone() DefaultTimeZone}),
@@ -102,8 +105,20 @@ abstract class TCronTask extends TApplicationComponent
 	/** @var string how a sweep runs the task, a {@see TCronTaskMode} value */
 	private string $_mode = TCronTaskMode::Serial;
 
-	/** @var bool whether a run may start while the previous run is still running */
-	private bool $_overlap = false;
+	/** @var string what a trigger does while the previous run holds the run lock, a {@see TCronTaskOverlap} value */
+	private string $_overlap = TCronTaskOverlap::Skip;
+
+	/** @var ?string the file of a Process task child's output, or null for the cron process's output */
+	private ?string $_processOutputFile = null;
+
+	/** @var ?int the scheduling priority (nice) of a Process task's child, or null to keep the cron process's */
+	private ?int $_processPriority = null;
+
+	/** @var ?string the memory_limit of a Process task's child, or null for the php.ini value */
+	private ?string $_processMemoryLimit = null;
+
+	/** @var ?float the seconds after which a run is overdue, or null */
+	private ?float $_warnDuration = null;
 
 	/** @var ?string the time zone of the schedule, or null for the application time zone */
 	private ?string $_timeZone = null;
@@ -420,21 +435,127 @@ abstract class TCronTask extends TApplicationComponent
 	}
 
 	/**
-	 * @return bool whether a run may start while the previous run is still running; default false
+	 * @return string what a trigger does while the previous run holds the run lock: Skip, Allow, Replace, or Queue; default Skip
 	 * @since 4.4.0
 	 */
-	public function getOverlap(): bool
+	public function getOverlap(): string
 	{
 		return $this->_overlap;
 	}
 
 	/**
-	 * @param bool|string $value whether a run may start while the previous run is still running
+	 * @param bool|string $value a {@see TCronTaskOverlap} value; true is Allow and false is Skip
+	 * @throws TInvalidDataValueException when the value is not a TCronTaskOverlap value or a boolean
 	 * @since 4.4.0
 	 */
 	public function setOverlap($value)
 	{
-		$this->_overlap = TPropertyValue::ensureBoolean($value);
+		if (is_bool($value) || (is_string($value) && in_array(strtolower($value), ['true', 'false', '1', '0', ''], true))) {
+			$this->_overlap = TPropertyValue::ensureBoolean($value) ? TCronTaskOverlap::Allow : TCronTaskOverlap::Skip;
+			return;
+		}
+		$this->_overlap = TPropertyValue::ensureEnum($value, TCronTaskOverlap::class);
+	}
+
+	/**
+	 * @return ?string the file a Process task's child appends its output and errors to, or null for the cron process's output
+	 * @since 4.4.0
+	 */
+	public function getProcessOutputFile(): ?string
+	{
+		return $this->_processOutputFile;
+	}
+
+	/**
+	 * @param ?string $file the file a Process task's child appends its output and errors to, or null
+	 * @since 4.4.0
+	 */
+	public function setProcessOutputFile($file)
+	{
+		$this->_processOutputFile = ($file === null || $file === '') ? null : TPropertyValue::ensureString($file);
+	}
+
+	/**
+	 * @return ?int the scheduling priority of a Process task's child, -20 (highest) to 19 (lowest), or null
+	 * @since 4.4.0
+	 */
+	public function getProcessPriority(): ?int
+	{
+		return $this->_processPriority;
+	}
+
+	/**
+	 * Sets the scheduling priority (POSIX nice) of a Process task's child; Windows maps it to a priority class.
+	 * Raising the priority above the cron process's needs the privilege.
+	 * @param null|int|string $priority -20 (highest) to 19 (lowest), or null to keep the cron process's
+	 * @throws TInvalidDataValueException when the priority is outside -20 to 19
+	 * @since 4.4.0
+	 */
+	public function setProcessPriority($priority)
+	{
+		if ($priority === null || $priority === '') {
+			$this->_processPriority = null;
+			return;
+		}
+		$priority = TPropertyValue::ensureInteger($priority);
+		if ($priority < -20 || $priority > 19) {
+			throw new TInvalidDataValueException('crontask_processpriority_invalid', $priority);
+		}
+		$this->_processPriority = $priority;
+	}
+
+	/**
+	 * @return ?string the memory_limit of a Process task's child, such as '512M', or null for the php.ini value
+	 * @since 4.4.0
+	 */
+	public function getProcessMemoryLimit(): ?string
+	{
+		return $this->_processMemoryLimit;
+	}
+
+	/**
+	 * @param ?string $limit the memory_limit of a Process task's child: bytes with an optional K, M, or G, or -1 for none; null for the php.ini value
+	 * @throws TInvalidDataValueException when the limit is not a memory size
+	 * @since 4.4.0
+	 */
+	public function setProcessMemoryLimit($limit)
+	{
+		if ($limit === null || $limit === '') {
+			$this->_processMemoryLimit = null;
+			return;
+		}
+		$limit = TPropertyValue::ensureString($limit);
+		if (!preg_match('/^(?:-1|\d+[KMG]?)$/i', $limit)) {
+			throw new TInvalidDataValueException('crontask_processmemorylimit_invalid', $limit);
+		}
+		$this->_processMemoryLimit = $limit;
+	}
+
+	/**
+	 * @return ?float the seconds after which a run is overdue, or null
+	 * @since 4.4.0
+	 */
+	public function getWarnDuration(): ?float
+	{
+		return $this->_warnDuration;
+	}
+
+	/**
+	 * @param null|float|string $seconds the seconds after which a run is overdue and the cron module warns, or null
+	 * @throws TInvalidDataValueException when the seconds are not greater than zero
+	 * @since 4.4.0
+	 */
+	public function setWarnDuration($seconds)
+	{
+		if ($seconds === null || $seconds === '') {
+			$this->_warnDuration = null;
+			return;
+		}
+		$seconds = TPropertyValue::ensureFloat($seconds);
+		if ($seconds <= 0) {
+			throw new TInvalidDataValueException('crontask_warnduration_invalid', $seconds);
+		}
+		$this->_warnDuration = $seconds;
 	}
 
 	/**
@@ -907,8 +1028,13 @@ abstract class TCronTask extends TApplicationComponent
 		if ($this->_mode === TCronTaskMode::Serial) {
 			$exprops[] = "\0Prado\Util\Cron\TCronTask\0_mode";
 		}
-		if (!$this->_overlap) {
+		if ($this->_overlap === TCronTaskOverlap::Skip) {
 			$exprops[] = "\0Prado\Util\Cron\TCronTask\0_overlap";
+		}
+		foreach (['_processOutputFile', '_processPriority', '_processMemoryLimit', '_warnDuration'] as $property) {
+			if ($this->$property === null) {
+				$exprops[] = "\0Prado\Util\Cron\TCronTask\0" . $property;
+			}
 		}
 		if ($this->_timeZone === null) {
 			$exprops[] = "\0Prado\Util\Cron\TCronTask\0_timeZone";

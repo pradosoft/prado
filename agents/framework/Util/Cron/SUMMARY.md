@@ -14,6 +14,10 @@ Cron-style scheduled task engine supporting both file-configured and database-ba
 
 - **`TCronTaskEventParameter`** — Parameter of the task events `onTaskStart`, `onTaskEnd`, `onTaskFailure`, `onTaskSkipped`, and `onTaskPing`.
 
+- **`TCronTaskOverlap`** — The task `Overlap` enumerable: `Skip`, `Allow`, `Replace`, `Queue`.
+
+- **`THttpCronTask`** — Concrete task that sends an HTTP request; a non-2xx status is an error.
+
 - **`TCommandCronTask`** — Concrete task that runs a shell command to completion, with its output to a log file.
 
 - **`TCronMethodTask`** — Concrete task that calls a method on a module or class.

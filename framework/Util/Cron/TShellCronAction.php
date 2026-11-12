@@ -423,8 +423,12 @@ class TShellCronAction extends TShellAction
 			foreach ($running as $run) {
 				$started = (float) ($run['started'] ?? $now);
 				$deadline = $run['deadline'] ?? null;
+				$elapsed = $this->formatSeconds($now - $started);
+				if (($run['overdue'] ?? false) || (($run['warn'] ?? null) !== null && $now > $run['warn'])) {
+					$elapsed = $w->format($elapsed, [TShellWriter::RED, TShellWriter::BOLD]);
+				}
 				$rows[] = [$run['name'], $run['mode'] ?? '-', (string) ($run['pid'] ?? '-'), '@' . ($run['user'] ?? '-'), date('H:i:s', (int) $started),
-					$this->formatSeconds($now - $started), ($deadline === null) ? '-' : $this->formatSeconds(max(0.0, $deadline - $now))];
+					$elapsed, ($deadline === null) ? '-' : $this->formatSeconds(max(0.0, $deadline - $now))];
 			}
 			$out .= $w->format('  Running', [TShellWriter::BOLD]) . "\n" . $w->tableWidget(['headers' => ['Task', 'Mode', 'Process', 'User', 'Started', 'Elapsed', 'Timeout in'], 'rows' => $rows]);
 		}

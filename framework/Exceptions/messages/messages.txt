@@ -767,6 +767,9 @@ processcrontask_launch_failed			= TProcessCronTask failed to launch the process:
 processcrontask_write_failed			= TProcessCronTask could not write the pid file ''{0}''.
 commandcrontask_no_command				= TCommandCronTask ''{0}'' has no Command to run.
 commandcrontask_failed					= TCommandCronTask ''{0}'' command exited with code {1}.
+httpcrontask_no_url						= THttpCronTask ''{0}'' has no Url to request.
+httpcrontask_status						= THttpCronTask ''{0}'' request answered status {1}.
+httpcrontask_header_invalid				= THttpCronTask header ''{0}'' must be Name: value.
 closurecrontask_no_closure				= TClosureCronTask ''{0}'' has no closure to run.
 closurecrontask_closure_required		= TClosureCronTask requires a Closure.
 closurecrontask_invalid_securitymanager	= TClosureCronTask SecurityManagerID ''{0}'' is not a TSecurityManager.
@@ -809,6 +812,9 @@ crontask_retries_invalid				= TCronTask Retries must be zero or more; ''{0}'' gi
 crontask_retrydelay_invalid				= TCronTask RetryDelay must be zero or more seconds; ''{0}'' given.
 crontask_retrybackoff_invalid			= TCronTask RetryBackoff must be at least 1; ''{0}'' given.
 crontask_window_invalid					= TCronTask time window ''{0}'' must be HH:MM-HH:MM.
+crontask_processpriority_invalid		= TCronTask ProcessPriority must be -20 to 19; ''{0}'' given.
+crontask_processmemorylimit_invalid		= TCronTask ProcessMemoryLimit ''{0}'' must be bytes with an optional K, M, or G, or -1.
+crontask_warnduration_invalid			= TCronTask WarnDuration must be greater than zero or null; ''{0}'' given.
 
 dbcronclean_moduleid_is_null			= TDbCronCleanLogTask could not find the specified module ''{0}''.
 dbcronclean_timeperiod_invalid		= TDbCronCleanLogTask TimePeriod ''{0}'' is not a number of seconds, an ISO 8601 duration, or a relative date string.
@@ -821,6 +827,7 @@ dbcron_period_invalid					= TDbCronManager period ''{0}'' is not a number of sec
 timescheduler_invalid_string			= TTimeScheduler could not parse the schedule element ''{0}''
 timescheduler_invalid_period			= TTimeScheduler could not parse the period ''{0}''; it must be a positive relative interval and the times must parse.
 timescheduler_invalid_timezone			= TTimeScheduler TimeZone ''{0}'' is not a time zone.
+timescheduler_invalid_except			= TTimeScheduler could not parse the excepted date ''{0}''; it must be YYYY-MM-DD or MM-DD, or a range of them joined by two dots.
 
 rational_bad_offset						= "{0}" is not a valid property accessor of TRational.
 

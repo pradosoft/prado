@@ -974,4 +974,69 @@ class TTimeSchedulerTest extends \PHPUnit\Framework\TestCase
 		self::assertNull($this->obj->getNextTriggerTime('not a time at all'));
 	}
 
+
+	// =========================================================================
+	// 'after end' and 'except'
+	// =========================================================================
+
+	public function testAfterEnd_CountsFromThePriorTime()
+	{
+		$anchor = gmmktime(0, 0, 0, 6, 1, 2026);
+		$this->obj->setSchedule('every 10 minutes after end from @' . $anchor);
+		self::assertSame('every 10 minutes after end from @' . $anchor, $this->obj->getSchedule());
+		self::assertTrue($this->obj->getIsAfterEnd());
+		self::assertSame($anchor, $this->obj->getNextTriggerTime($anchor - 1), 'the anchor is the first trigger');
+		self::assertSame($anchor + 637, $this->obj->getNextTriggerTime($anchor + 37), 'the next trigger counts from the time, not the grid');
+		$this->obj->setSchedule('every 1 day after end from @' . $anchor);
+		self::assertSame($anchor + 86400 + 5, $this->obj->getNextTriggerTime($anchor + 5));
+		$this->obj->setSchedule('every 10 minutes from @' . $anchor);
+		self::assertFalse($this->obj->getIsAfterEnd());
+		self::assertSame($anchor + 600, $this->obj->getNextTriggerTime($anchor + 37), 'without after end the grid holds');
+	}
+
+	public function testExcept_SkipsTheExcludedDates()
+	{
+		$this->obj->setSchedule('0 9 * * * except 2026-06-02, 06-04..06-05');
+		self::assertSame('0 9 * * * except 2026-06-02, 06-04..06-05', $this->obj->getSchedule());
+		$days = array_map(fn ($t) => gmdate('m-d H:i', $t), $this->obj->getNextTriggerTimes(4, gmmktime(10, 0, 0, 6, 1, 2026)));
+		self::assertSame(['06-03 09:00', '06-06 09:00', '06-07 09:00', '06-08 09:00'], $days);
+		self::assertSame(gmmktime(9, 0, 0, 6, 2, 2027), $this->obj->getNextTriggerTime(gmmktime(10, 0, 0, 6, 1, 2027)), 'a dated exclusion is only that year');
+
+		$this->obj->setSchedule('0 0 * * * except 12-31..01-01');
+		$days = array_map(fn ($t) => gmdate('Y-m-d', $t), $this->obj->getNextTriggerTimes(2, gmmktime(1, 0, 0, 12, 30, 2026)));
+		self::assertSame(['2027-01-02', '2027-01-03'], $days, 'a yearly range spans the new year');
+
+		$this->obj->setSchedule('*/10 * * * * except 06-02');
+		self::assertSame(gmmktime(0, 0, 0, 6, 3, 2026), $this->obj->getNextTriggerTime(gmmktime(23, 55, 0, 6, 1, 2026)), 'an excluded day is skipped whole');
+
+		$this->obj->setSchedule('every 1 day from @' . gmmktime(8, 0, 0, 6, 1, 2026) . ' except 06-02');
+		self::assertSame(gmmktime(8, 0, 0, 6, 3, 2026), $this->obj->getNextTriggerTime(gmmktime(9, 0, 0, 6, 1, 2026)));
+
+		$this->obj->setSchedule('@' . gmmktime(8, 0, 0, 6, 2, 2026) . ' except 06-02');
+		self::assertNull($this->obj->getNextTriggerTime(gmmktime(0, 0, 0, 6, 1, 2026)), 'an excluded one-off never triggers');
+
+		$this->obj->setSchedule('#daily except 01-01');
+		self::assertStringEndsWith(' except 01-01', $this->obj->getResolvedSchedule());
+	}
+
+	public function testExcept_InTheTimeZone()
+	{
+		$this->obj->setTimeZone('Asia/Tokyo');
+		$this->obj->setSchedule('0 1 * * * except 06-02');
+		self::assertSame(gmmktime(16, 0, 0, 6, 2, 2026), $this->obj->getNextTriggerTime(gmmktime(0, 0, 0, 6, 1, 2026)), '01:00 on June 3 in Tokyo; June 2 there is excluded');
+	}
+
+	public function testExcept_RejectsABadDateAndKeepsTheSchedule()
+	{
+		$this->obj->setSchedule('0 9 * * *');
+		foreach (['0 9 * * * except 2026-02-30', '0 9 * * * except 13-01', '0 9 * * * except 2026-06-05..2026-06-01', '0 9 * * * except tomorrow'] as $schedule) {
+			try {
+				$this->obj->setSchedule($schedule);
+				self::fail($schedule . ' was accepted');
+			} catch (TInvalidDataValueException $e) {
+			}
+			self::assertSame('0 9 * * *', $this->obj->getSchedule());
+		}
+	}
+
 }

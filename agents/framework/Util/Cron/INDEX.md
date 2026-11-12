@@ -15,11 +15,15 @@ Cron-style scheduled task engine for the Prado framework. Supports both file-con
 
 - **`TDbCronModule`** — Deprecated alias for `TDbCronManager` (since 4.3.3). Scheduled for removal in v4.4. Existing configs continue to work.
 
-- **`TCronTask`** — Abstract base for cron tasks. Implement `execute($cronModule)`. Properties: `Name`, `Schedule`, `UserName`, `Timeout`, `Mode`, `Overlap`, `TimeZone`, `StartingDeadline`, `Description`, and the ping URLs.
+- **`TCronTask`** — Abstract base for cron tasks. Implement `execute($cronModule)`. Properties: `Name`, `Schedule`, `UserName`, `Timeout`, `Mode`, `Overlap`, `TimeZone`, `StartingDeadline`, `Description`, the ping URLs, `Retries`, `Between`, `Jitter`, the `Process*` child settings, and `WarnDuration`.
 
 - **`TCronTaskMode`** — The `TEnumerable` of a task's `Mode`: `Serial`, `Parallel`, `Process`. **Since 4.4.0.**
 
 - **[`TCronTaskEventParameter`](TCronTaskEventParameter.md)** — Parameter of the task events `onTaskStart` (settable `Cancel`), `onTaskEnd`, `onTaskFailure`, `onTaskSkipped` (`Reason`), and `onTaskPing` (settable `Handled`). **Since 4.4.0.**
+
+- **`TCronTaskOverlap`** — The `TEnumerable` of a task's `Overlap`: `Skip`, `Allow`, `Replace`, `Queue`. **Since 4.4.0.**
+
+- **[`THttpCronTask`](THttpCronTask.md)** — Concrete task that sends an HTTP request through `THttpClient`; a non-2xx status is an error. **Since 4.4.0.**
 
 - **[`TCommandCronTask`](TCommandCronTask.md)** — Concrete task that runs a shell command to completion: `@php`, `Directory`, `LogFile` (`AppendLog`), a nonzero exit code is an error, and the command is terminated when the run is cancelled at its Timeout. **Since 4.4.0.**
 

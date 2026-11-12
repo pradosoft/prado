@@ -10,7 +10,7 @@
 **Since:** 4.4.0
 
 ## Overview
-The parameter of the [`TCronModule`](TCronModule.md#task-events-and-pings-440) task events `onTaskStart`, `onTaskEnd`, `onTaskFailure`, `onTaskRetry`, `onTaskSkipped`, and `onTaskPing`, and their global mirrors `fxCronTaskStart`, `fxCronTaskEnd`, `fxCronTaskFailure`, `fxCronTaskRetry`, `fxCronTaskSkipped`, and `fxCronTaskPing`.
+The parameter of the [`TCronModule`](TCronModule.md#task-events-and-pings-440) task events `onTaskStart`, `onTaskEnd`, `onTaskFailure`, `onTaskRetry`, `onTaskOverdue`, `onTaskSkipped`, and `onTaskPing`, and their global mirrors `fxCronTaskStart`, `fxCronTaskEnd`, `fxCronTaskFailure`, `fxCronTaskRetry`, `fxCronTaskOverdue`, `fxCronTaskSkipped`, and `fxCronTaskPing`.
 
 | Property | Set for | Meaning |
 |---|---|---|
@@ -19,7 +19,7 @@ The parameter of the [`TCronModule`](TCronModule.md#task-events-and-pings-440) t
 | `Cancel` | start | a handler sets it to skip the run |
 | `Reason` | skipped | `REASON_DENIED`, `REASON_PAUSED`, `REASON_DEADLINE`, `REASON_WINDOW`, `REASON_CONDITION`, `REASON_RUNNING`, `REASON_CANCELLED`, or `REASON_CLAIMED` |
 | `Result` | end, failure, the pings after a run | a `TCronModule::RESULT_*` value |
-| `Duration` | end, failure, the pings after a run | the seconds the run took |
+| `Duration` | end, failure, overdue, the pings after a run | the seconds the run took, or so far |
 | `Exception` | end, failure, retry | the exception a task in the cron process threw; null for a Process task's child |
 | `Attempt` | end, failure, retry | the attempt, from 1 |
 | `Ping` | ping | `TCronTask::PING_BEFORE`, `PING_AFTER`, `PING_SUCCESS`, or `PING_FAILURE` |

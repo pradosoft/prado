@@ -116,6 +116,12 @@ class TTestCronWaitingTask extends TCronTask
 			throw $e;
 		}
 	}
+
+	protected function _getZappableSleepProps(&$exprops)
+	{
+		parent::_getZappableSleepProps($exprops);
+		$exprops[] = 'error';
+	}
 }
 
 /**
@@ -174,6 +180,19 @@ class TTestCronDecliningBehavior extends TBehavior
 	public function dyShouldRunTask($run, $task, $callchain)
 	{
 		return $callchain->dyShouldRunTask(false, $task);
+	}
+}
+
+/**
+ * Moves the fake clock of a cron test module 30 seconds forward when a run is logged, between its claim and its end.
+ */
+class TTestCronAdvancingBehavior extends TBehavior
+{
+	public function dyLogCronTask($task, $username, $callchain)
+	{
+		$this->getOwner()->fakeNow += 30;
+		$this->getOwner()->fakeMicrotime += 30;
+		return $callchain->dyLogCronTask($task, $username);
 	}
 }
 
@@ -2286,6 +2305,72 @@ class TCronModuleTest extends \PHPUnit\Framework\TestCase
 		self::assertSame(3, $end, 'the run ends after the last retry');
 		self::assertSame(3, count(array_filter(TTestCronRecordingTask::$events, fn ($e) => $e === 'retried start')));
 		self::assertSame(1, $task->getProcessCount(), 'the retries are one run');
+	}
+
+
+	public function testRunTask_ReplaceCancelsTheRunInThisProcess()
+	{
+		$this->obj->setDaemonMutex(new TMemoryMutex());
+		$this->obj->init([['name' => 'replaced', 'schedule' => '0 0 1 1 ? 2000', 'task' => TTestCronWaitingTask::class, 'overlap' => 'Replace', 'timeout' => 0.3]]);
+		$task = $this->obj->getTask('replaced');
+		$results = [];
+		$this->obj->attachEventHandler('OnTaskEnd', function ($sender, $param) use (&$results) {
+			$results[] = $param->getResult();
+		});
+		$first = TAsync::run([$this->obj, 'runTask'], $task);
+		TAsync::sleep(0.05);
+		$task->setLastExecTime(null);
+		self::assertFalse($this->obj->runTask($task), 'the replacing run waits on its own token until its timeout');
+		self::assertFalse($first->await());
+		self::assertSame([TCronModule::RESULT_REPLACED, TCronModule::RESULT_ERROR], $results, 'the first run is replaced, the second times out');
+	}
+
+	public function testRunTask_WarnDurationMarksAnOverdueRunOnce()
+	{
+		$this->obj->setDaemonMutex(new TMemoryMutex());
+		$this->obj->init([
+			['name' => 'slowWaits', 'schedule' => '0 0 1 1 ? 2000', 'task' => TTestCronRecordingTask::class, 'warnduration' => 0.02],
+			['name' => 'fast', 'schedule' => '0 0 1 1 ? 2000', 'task' => TTestCronRecordingTask::class, 'warnduration' => 5],
+		]);
+		$this->obj->getTask('slowWaits')->pause = 0.1;
+		$overdue = [];
+		$ended = [];
+		$this->obj->attachEventHandler('OnTaskOverdue', function ($sender, $param) use (&$overdue, &$ended) {
+			$overdue[] = [$param->getTask()->getName(), $param->getDuration(), isset($ended[$param->getTask()->getName()])];
+		});
+		$this->obj->attachEventHandler('OnTaskEnd', function ($sender, $param) use (&$ended) {
+			$ended[$param->getTask()->getName()] = true;
+		});
+		self::assertTrue($this->obj->runTask($this->obj->getTask('slowWaits')));
+		self::assertTrue($this->obj->runTask($this->obj->getTask('fast')));
+		self::assertCount(1, $overdue, 'one warning, for the slow run');
+		self::assertSame('slowWaits', $overdue[0][0]);
+		self::assertGreaterThanOrEqual(0.02, $overdue[0][1]);
+		self::assertFalse($overdue[0][2], 'a run waiting on the loop is overdue before it ends');
+	}
+
+
+	public function testRunTask_AfterEndCountsTheNextTriggerFromTheEnd()
+	{
+		$this->obj->setDaemonMutex(new TMemoryMutex());
+		$this->obj->init([['name' => 'delayed', 'schedule' => 'every 1 hour after end from @' . ($this->obj->fakeNow - 10), 'task' => TTestCronModuleTask::class]]);
+		$task = $this->obj->getTask('delayed');
+		$task->setLastExecTime(null);
+		self::assertTrue($task->getIsPending());
+		$start = $this->obj->fakeNow;
+		$this->obj->attachBehavior('advance', new TTestCronAdvancingBehavior());
+		try {
+			self::assertTrue($this->obj->runTask($task));
+		} finally {
+			$this->obj->detachBehavior('advance');
+		}
+		self::assertSame($start + 30, $task->getLastExecTime(), 'the last run time is the end of the run');
+		self::assertSame($start + 30 + 3600, $task->getNextTriggerTime());
+		if ($this->obj instanceof \Prado\Util\Cron\TDbCronManager) {
+			self::assertEquals($start + 30 + 3600, $this->obj->getTask('delayed', true, false)['nextexectime'], 'the row holds the next trigger from the end');
+		}
+		$this->obj->fakeNow = $start;
+		$this->obj->fakeMicrotime = (float) $start;
 	}
 
 }

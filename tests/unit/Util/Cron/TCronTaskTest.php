@@ -8,6 +8,7 @@ use Prado\Prado;
 use Prado\TModule;
 use Prado\Util\Cron\TCronTask;
 use Prado\Util\Cron\TCronTaskMode;
+use Prado\Util\Cron\TCronTaskOverlap;
 
 class TTestCronTask extends TCronTask 
 {
@@ -149,14 +150,50 @@ class TCronTaskTest extends \PHPUnit\Framework\TestCase
 
 	public function testOverlap()
 	{
-		self::assertFalse($this->obj->getOverlap());
+		self::assertSame(TCronTaskOverlap::Skip, $this->obj->getOverlap());
 		self::assertStringNotContainsString('_overlap', serialize($this->obj));
 		$this->obj->setOverlap('true');
-		self::assertTrue($this->obj->getOverlap());
+		self::assertSame(TCronTaskOverlap::Allow, $this->obj->getOverlap(), 'true is Allow');
 		$copy = unserialize(serialize($this->obj));
-		self::assertTrue($copy->getOverlap());
+		self::assertSame(TCronTaskOverlap::Allow, $copy->getOverlap());
 		$this->obj->setOverlap(false);
-		self::assertFalse($this->obj->getOverlap());
+		self::assertSame(TCronTaskOverlap::Skip, $this->obj->getOverlap(), 'false is Skip');
+		$this->obj->setOverlap('replace');
+		self::assertSame(TCronTaskOverlap::Replace, $this->obj->getOverlap());
+		$this->obj->setOverlap('Queue');
+		self::assertSame(TCronTaskOverlap::Queue, $this->obj->getOverlap());
+		self::expectException(TInvalidDataValueException::class);
+		$this->obj->setOverlap('Sometimes');
+	}
+
+	public function testProcessPropertiesAndWarnDuration()
+	{
+		self::assertNull($this->obj->getProcessOutputFile());
+		self::assertNull($this->obj->getProcessPriority());
+		self::assertNull($this->obj->getProcessMemoryLimit());
+		self::assertNull($this->obj->getWarnDuration());
+		$this->obj->setProcessOutputFile('/var/log/task.log');
+		$this->obj->setProcessPriority('10');
+		$this->obj->setProcessMemoryLimit('512M');
+		$this->obj->setWarnDuration('90');
+		$copy = unserialize(serialize($this->obj));
+		self::assertSame('/var/log/task.log', $copy->getProcessOutputFile());
+		self::assertSame(10, $copy->getProcessPriority());
+		self::assertSame('512M', $copy->getProcessMemoryLimit());
+		self::assertSame(90.0, $copy->getWarnDuration());
+		$this->obj->setProcessMemoryLimit('-1');
+		self::assertSame('-1', $this->obj->getProcessMemoryLimit());
+		foreach ([['setProcessPriority', 20], ['setProcessPriority', -21], ['setProcessMemoryLimit', '1T'], ['setWarnDuration', 0]] as [$method, $value]) {
+			try {
+				$this->obj->$method($value);
+				self::fail($method . ' accepted ' . $value);
+			} catch (TInvalidDataValueException $e) {
+			}
+		}
+		$this->obj->setProcessPriority('');
+		$this->obj->setWarnDuration(null);
+		self::assertNull($this->obj->getProcessPriority());
+		self::assertNull($this->obj->getWarnDuration());
 	}
 
 	public function testTimeZone()
