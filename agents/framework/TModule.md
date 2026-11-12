@@ -61,6 +61,30 @@ Access at runtime:
 $module = Prado::getApplication()->getModule('mymodule');
 ```
 
+### Child Elements (4.4.0)
+
+A module creates a component that only it uses from a child element of its configuration, with no module ID:
+
+| Method | Result |
+|---|---|
+| `getConfigElements($config, $tag, $multiple = false)` | XML: the direct child elements named `$tag` (the first only, unless `$multiple`). PHP: the `$tag` key as one element (`['class' => ..., 'properties' => [...]]`, or a class name), or with `$multiple` also a list of them. A PHP element that is neither throws `module_config_class_required`. |
+| `createElementComponent($element, $tag, $type, $error = null)` | Creates the `class` of one element, applies the other attributes (or `properties`) with `setSubProperties()`, and calls `init($element)` when it is an `IModule`. No class throws `module_config_class_required`; a component not `$type` throws `$error` with the class, or `module_config_component_invalid`. |
+| `createConfigComponent($config, $tag, $type, $error = null)` | The component of the first element with the tag, or null when there is none. |
+
+```xml
+<module id="mymodule" class="MyModule">
+    <mutex class="Prado\Util\Mutex\TDbMutex" ConnectionID="db" />
+</module>
+```
+
+```php
+'mymodule' => ['class' => MyModule::class, 'mutex' => ['class' => TDbMutex::class, 'properties' => ['ConnectionID' => 'db']]],
+// in MyModule::init($config):
+$mutex = $this->createConfigComponent($config, 'mutex', IMutex::class);
+```
+
+Modules that configure an existing object from an element (`TDataSourceConfig` `<database>`, `TCompressionConfigTrait` `<compression>`) or create a list (`TLogRouter` `<route>`) parse their elements themselves.
+
 ### Dynamic Events
 
 | Event | Signature | When |
