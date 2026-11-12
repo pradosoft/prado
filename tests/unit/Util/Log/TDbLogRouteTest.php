@@ -162,5 +162,64 @@ class TDbLogRouteTest extends \PHPUnit\Framework\TestCase
 		}
 		$this->assertSame(count($cases), $rejected);
 	}
-}
 
+	public function testPruneLogs()
+	{
+		if (!extension_loaded('pdo_sqlite')) {
+			$this->markTestSkipped('The pdo_sqlite extension is not available.');
+		}
+		$route = new TSqliteFileDbLogRoute();
+		try {
+			$route->init(null);
+			$now = microtime(true);
+			$route->insertAt($now - 1000);
+			$route->insertAt($now - 600);
+			$route->insertAt($now - 10);
+
+			$this->assertSame(0, $route->pruneLogs());
+			$this->assertSame(0, $route->pruneLogs(0.0));
+			$this->assertEquals(3, $route->getDBLogCount());
+
+			$this->assertSame(1, $route->pruneLogs(800));
+			$this->assertEquals(2, $route->getDBLogCount());
+
+			$route->setRetainPeriod(300);
+			$this->assertSame(1, $route->pruneLogs());
+			$this->assertEquals(1, $route->getDBLogCount());
+		} finally {
+			$route->removeTestFile();
+		}
+	}
+
+	public function testPruneOnFlush()
+	{
+		if (!extension_loaded('pdo_sqlite')) {
+			$this->markTestSkipped('The pdo_sqlite extension is not available.');
+		}
+		$route = new TSqliteFileDbLogRoute();
+		try {
+			$this->assertTrue($route->getPruneOnFlush());
+			$this->assertSame($route, $route->setPruneOnFlush('false'));
+			$this->assertFalse($route->getPruneOnFlush());
+			$route->init(null);
+			$route->setRetainPeriod(300);
+			$route->insertAt(microtime(true) - 1000);
+
+			$logger = new TLogger();
+			$logger->log('kept', TLogger::WARNING);
+			$route->collectLogs($logger);
+			$route->collectLogs(true);
+			$this->assertEquals(2, $route->getDBLogCount());
+
+			$route->setPruneOnFlush(true);
+			$logger = new TLogger();
+			$logger->log('pruning', TLogger::WARNING);
+			$route->collectLogs($logger);
+			$route->collectLogs(true);
+			$this->assertEquals(2, $route->getDBLogCount());
+			$this->assertEquals(0, $route->getDBLogCount(null, null, null, microtime(true) - 300));
+		} finally {
+			$route->removeTestFile();
+		}
+	}
+}

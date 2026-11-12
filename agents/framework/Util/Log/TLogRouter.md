@@ -67,6 +67,7 @@ $router->addRoute([TLogRoute](TLogRoute.md) $route, $config = null): void
 $router->removeRoute([TLogRoute](TLogRoute.md) $route): ?[TLogRoute](TLogRoute.md)
 $router->getRoutes(): array                  // all registered [TLogRoute](TLogRoute.md) instances
 $router->getRoutesCount(): int
+$router->pruneDbLogs(?float $retainPeriod = null): int  // TDbLogRoute::pruneLogs() on each DB route; returns rows deleted
 $router->collectLogs([TLogger](TLogger.md) $logger, bool $final): void  // called by [TLogger](TLogger.md)::onFlushLogs
 ```
 
@@ -75,5 +76,6 @@ $router->collectLogs([TLogger](TLogger.md) $logger, bool $final): void  // calle
 - **Multiple routes of the same type** — allowed; each can have different `Levels`/`Categories` filters.
 - **`collectLogs()` is the flush handler** — attached to `TLogger::onFlushLogs` in `init()`. Each route's `collectLogs()` is called in turn; routes that haven't reached `ProcessInterval` accumulate logs for later.
 - **`TraceLevel`** — setting this to `> 0` appends PHP call-stack frames to log messages. Useful for debugging but adds overhead.
+- **Cron task `dblogprune`** — a router with an ID and a `TDbLogRoute` registers `'<id>->pruneDbLogs()'` through `fxGetCronTaskInfos`; otherwise it returns null. Every router registers the same task name, and `cron/add` takes the first; configure a job with the task string for another router.
 - **External config file** — `ConfigFile` is merged with inline `<route>` elements; both can coexist.
 - **`[IOutputLogRoute](IOutputLogRoute.md)`** — routes implementing this interface (e.g., `TBrowserLogRoute`) are called at a special time during page rendering to inject their output; other routes flush at `onEndRequest`.
