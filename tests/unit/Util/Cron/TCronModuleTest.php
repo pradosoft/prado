@@ -2471,4 +2471,31 @@ class TCronModuleTest extends \PHPUnit\Framework\TestCase
 		self::assertStringEndsWith("\n", $metrics);
 	}
 
+
+	public function testProcessPendingTasks_ACrontabTickRunsTheMinuteAtItsSeconds()
+	{
+		$minute = (int) (floor(time() / 60) * 60);
+		$this->obj->fakeNow = $minute + 1;
+		$this->obj->fakeMicrotime = (float) $this->obj->fakeNow;
+		$this->obj->setInCronShell(true);
+		$this->obj->setConcurrency(2);
+		$this->obj->setDaemonMutex(new TMemoryMutex());
+		TTestCronRecordingTask::$events = [];
+		$this->obj->init([
+			['name' => 'tickNowA', 'schedule' => '@' . $minute, 'task' => TTestCronRecordingTask::class, 'mode' => 'Parallel'],
+			['name' => 'tickNowB', 'schedule' => '@' . $minute, 'task' => TTestCronRecordingTask::class, 'mode' => 'Parallel'],
+			['name' => 'tickLater', 'schedule' => '@' . ($minute + 30), 'task' => TTestCronRecordingTask::class],
+			['name' => 'tickNextMinute', 'schedule' => '@' . ($minute + 70), 'task' => TTestCronRecordingTask::class],
+		]);
+		foreach (['tickNowA', 'tickNowB'] as $name) {
+			$this->obj->getTask($name)->pause = 0.02;
+		}
+		self::assertEquals(3, $this->obj->processPendingTasks(), 'the tasks due within the minute are pending');
+		self::assertEquals([$minute + 30], $this->obj->waitedFor, 'the tick waits only for the later trigger');
+		$order = array_flip(TTestCronRecordingTask::$events);
+		self::assertLessThan($order['tickNowA end'], $order['tickNowB start'], 'the tasks due together run together, by their Mode');
+		self::assertGreaterThan($order['tickNowB end'], $order['tickLater start']);
+		self::assertArrayNotHasKey('tickNextMinute start', $order, 'a trigger of the next minute is the next tick\'s');
+	}
+
 }

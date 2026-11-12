@@ -18,7 +18,7 @@
 - Dynamic task CRUD (`addTask`, `updateTask`, `removeTask`) and filtered, paged reads (`getTasks`, `getUserTasks`, counts)
 - Execution logging to the DB (`LogCronTasks`), with name and user filters on the log reads and flush
 - Runtime task queue: tasks that run at `onEndRequest`, and `deferTask()` for a closure with a cron fallback (4.4.0)
-- A per-row next execution time (`nextexectime`), so `getPendingTasks()` is one query, the cron shell can poll within the minute (`PollsPerMinute`), and a run is claimed against the row so one of several hosts runs each trigger (4.4.0)
+- A per-row next execution time (`nextexectime`), so `getPendingTasks()` is one query, a crontab tick runs the tasks due within its minute at their trigger second, and a run is claimed against the row so one of several hosts runs each trigger (4.4.0)
 - Permission-gated CLI management via [`TShellDbCronAction`](TShellDbCronAction.md)
 - Auto-creates the DB table if needed, and adds the `nextexectime`, `lastresult`, and `lastduration` columns to a table created before 4.4.0
 
@@ -84,8 +84,6 @@ Active rows (`active IS NOT NULL`) are task definitions; rows with `active IS NU
 | `TableName` | `'crontabs'` | DB table for tasks and logs; an SQL identifier (4.4.0); frozen after `init()` |
 | `AutoCreateCronTable` | `true` | Create table automatically if absent; frozen after `init()` |
 | `LogCronTasks` | `true` | Insert a log row per task execution |
-| `PollsPerMinute` | `1` | Times per minute the cron shell polls for pending tasks, clamped to 1..60 (4.4.0); frozen after `init()`. Above 1, `processPendingTasks()` in a crontab shell runs the tasks due within the minute at their trigger second through `runPendingTasksWithWake()`. |
-| `SecondResolution` | `false` | Alias: `true` sets `PollsPerMinute` to 60, `false` to 1 (4.4.0) |
 
 ## Task CRUD
 

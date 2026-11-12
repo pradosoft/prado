@@ -832,39 +832,6 @@ class TDbCronManagerTest extends TCronModuleTest
 		$manager->unlisten();
 	}
 
-	public function testPollsPerMinute()
-	{
-		$o = new $this->baseClass();
-		self::assertEquals(1, $o->getPollsPerMinute());
-		self::assertFalse($o->getSecondResolution());
-
-		$o->setPollsPerMinute(4);
-		self::assertEquals(4, $o->getPollsPerMinute());
-		self::assertFalse($o->getSecondResolution());
-
-		$o->setPollsPerMinute(60);
-		self::assertEquals(60, $o->getPollsPerMinute());
-		self::assertTrue($o->getSecondResolution());
-
-		$o->setPollsPerMinute(0);   // clamps up to 1
-		self::assertEquals(1, $o->getPollsPerMinute());
-		$o->setPollsPerMinute(120); // clamps down to 60
-		self::assertEquals(60, $o->getPollsPerMinute());
-
-		// SecondResolution is an alias for PollsPerMinute 60/1
-		$o2 = new $this->baseClass();
-		$o2->setSecondResolution(true);
-		self::assertEquals(60, $o2->getPollsPerMinute());
-		self::assertTrue($o2->getSecondResolution());
-		$o2->setSecondResolution(false);
-		self::assertEquals(1, $o2->getPollsPerMinute());
-
-		// These auto-listen to global events on construction; unlisten so they do not
-		// pollute later tests' fxGetCronTaskInfos with their own task infos.
-		$o->unlisten();
-		$o2->unlisten();
-	}
-
 	public function testDeferTask()
 	{
 		if (!extension_loaded('openssl')) {
@@ -991,13 +958,12 @@ class TDbCronManagerTest extends TCronModuleTest
 		$this->obj->removeTask($task);
 	}
 
-	public function testProcessPendingTasks_SecondResolutionRunsAtTheTriggerSecond()
+	public function testProcessPendingTasks_ACrontabTickRunsAtTheTriggerSecond()
 	{
 		$minute = (int) (floor(time() / 60) * 60);
 		$this->obj->fakeNow = $minute + 1;
 		$this->obj->fakeMicrotime = (float) $this->obj->fakeNow;
 		$this->obj->setInCronShell(true);
-		$this->obj->setSecondResolution(true);
 		$this->obj->init(null);
 
 		$early = new TTestCronModuleTask();

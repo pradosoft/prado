@@ -44,10 +44,9 @@ use Prado\Util\IDbModule;
  * lower-level in-memory queue step those methods build on; on its own it queues for onEndRequest
  * without persisting, so it has no backend-cron fallback.
  *
- * Each task row carries its next execution time, so {@see getPendingTasks} is one query and the
- * cron shell can poll within the minute: {@see setPollsPerMinute PollsPerMinute} (or
- * {@see setSecondResolution SecondResolution}) runs the tasks due within the minute at their
- * trigger second, woken early by {@see signalWake} when a task is added or updated.
+ * Each task row carries its next execution time, so {@see getPendingTasks} is one query.  A crontab
+ * tick runs the tasks due within its minute at their trigger second, woken early by {@see signalWake}
+ * when a task is added or updated.
  *
  * XML configuration style:
  * ```xml
@@ -130,9 +129,6 @@ class TDbCronManager extends TCronModule implements IDbModule
 	public const PERM_CRON_LOG_READ = 'cron_log_read';
 
 	public const PERM_CRON_LOG_DELETE = 'cron_log_delete';
-
-	/** @var int the number of times per minute the cron shell polls for pending tasks, default 1 */
-	private $_pollsPerMinute = 1;
 
 	/** @var string name of the db table for cron tasks, default 'crontabs' */
 	private $_tableName = 'crontabs';
@@ -1417,51 +1413,6 @@ class TDbCronManager extends TCronModule implements IDbModule
 		);
 		$cmd->bindParameter(":name", $name, $db::PARAM_STR);
 		return $cmd->queryScalar() > 0;
-	}
-
-	/**
-	 * The number of times per minute the cron shell polls for pending tasks. 1 (default) polls
-	 * once per minute; higher values subdivide the minute (2 = every 30 seconds, 4 = every 15
-	 * seconds, 60 = every second) so tasks added during the minute run within the minute. This
-	 * does not guarantee execution at an exact time, only at or after the designated second.
-	 * Sub-minute polling applies only when run in the cron shell.
-	 * @return int the polls per minute, between 1 and 60
-	 * @since 4.4.0
-	 */
-	public function getPollsPerMinute()
-	{
-		return $this->_pollsPerMinute;
-	}
-
-	/**
-	 * @param int $value the polls per minute, clamped to between 1 and 60
-	 * @throws TInvalidOperationException if the module has been initialized
-	 * @since 4.4.0
-	 */
-	public function setPollsPerMinute($value)
-	{
-		$this->assertUninitialized('PollsPerMinute');
-		$this->_pollsPerMinute = max(1, min(60, TPropertyValue::ensureInteger($value)));
-	}
-
-	/**
-	 * Convenience alias for a {@see getPollsPerMinute PollsPerMinute} of 60 (once per second).
-	 * @return bool whether the cron shell polls every second
-	 * @since 4.4.0
-	 */
-	public function getSecondResolution()
-	{
-		return $this->_pollsPerMinute >= 60;
-	}
-
-	/**
-	 * @param bool $resolution true sets {@see setPollsPerMinute PollsPerMinute} to 60, false to 1
-	 * @throws TInvalidOperationException if the module has been initialized
-	 * @since 4.4.0
-	 */
-	public function setSecondResolution($resolution)
-	{
-		$this->setPollsPerMinute(TPropertyValue::ensureBoolean($resolution) ? 60 : 1);
 	}
 
 	/**

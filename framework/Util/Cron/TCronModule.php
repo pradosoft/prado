@@ -977,11 +977,11 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	}
 
 	/**
-	 * processPendingTasks executes pending tasks through {@see runTasks}.  In a crontab shell
-	 * no task starts after the minute the sweep began.  With {@see getSecondResolution} in a
-	 * crontab shell, the tasks due through the end of the minute run at their trigger second
-	 * through {@see runPendingTasksWithWake}.  The call returns after the Process tasks it started
-	 * finish.  With {@see getDaemon Daemon} in the CLI the call is {@see runDaemon}.
+	 * processPendingTasks executes pending tasks through {@see runTasks}.  In a crontab shell, the
+	 * tasks due through the end of the minute run at their trigger second through
+	 * {@see runPendingTasksWithWake}, and no task starts after the minute the sweep began; with only
+	 * tasks due at the start of the minute, the sweep ends after them.  The call returns after the
+	 * Process tasks it started finish.  With {@see getDaemon Daemon} in the CLI the call is {@see runDaemon}.
 	 * @return int number of tasks that were pending, or that the daemon ran
 	 */
 	public function processPendingTasks()
@@ -1008,10 +1008,9 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	protected function sweepPendingTasks(): int
 	{
 		$inCronTab = (($inCron = $this->getInCronShell()) !== null) ? $inCron : TShellApplication::detectCronTabShell();
-		$sleep = $inCronTab && $this->getSecondResolution();
 
 		$this->filterStaleTasks();
-		$pendingTasks = $this->getPendingTasks($sleep);
+		$pendingTasks = $this->getPendingTasks($inCronTab);
 		if ($pendingTasks === null) {
 			return 0;
 		}
@@ -1024,10 +1023,10 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 		$this->logCron($numtasks);
 		$results = [];
 		if ($numtasks) {
-			if ($sleep) {
+			if ($inCronTab) {
 				$results = $this->runPendingTasksWithWake($startMinute, $pendingTasks);
 			} else {
-				$results = $this->runTasks($pendingTasks, $inCronTab ? $startMinute : null);
+				$results = $this->runTasks($pendingTasks);
 			}
 		}
 		$this->onSweepEnd($sweep->setResults($results));
@@ -1061,11 +1060,12 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	}
 
 	/**
-	 * Second-resolution scheduling loop. Repeatedly polls for the earliest pending task and waits until
-	 * its trigger time through {@see waitForWake}, which returns early when a wake kick arrives. After
-	 * each wait it re-polls, so a task added or rescheduled mid-minute (a kick that makes a new task the
-	 * earliest, or a natural wake that reveals a later same-minute task) is honored. The loop ends when
-	 * the serviced minute rolls over or nothing remains pending. {@see runTask} advances each task's next
+	 * Second-resolution scheduling loop of a crontab tick.  Repeatedly polls for the pending tasks of the
+	 * minute: the ones due run together through {@see runTasks}, by their Mode and Priority; when none is
+	 * due, it waits until the earliest trigger through {@see waitForWake}, which returns early when a wake
+	 * kick arrives.  After each wait it re-polls, so a task added or rescheduled mid-minute (a kick that
+	 * makes a new task the earliest, or a natural wake that reveals a later same-minute task) is honored.
+	 * The loop ends when the serviced minute rolls over or nothing remains pending. {@see runTask} advances each task's next
 	 * execution time before running it, so an overlapping next-minute cron process never re-runs a task.
 	 * @param int $startMinute the minute (floor(timestamp / 60)) this invocation services
 	 * @param array<string, TCronTask> $tasks the tasks the sweep may run, by name; a task removed by an
@@ -1082,15 +1082,15 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 				if (empty($pending)) {
 					break;
 				}
-				$pending = $this->sortTasks($pending, true);
-				$task = reset($pending);
-				$trigger = $task->getNextTriggerTime();
-				if (($now = $this->microtime()) < $trigger) {
+				$now = $this->microtime();
+				$due = array_filter($pending, static fn ($task): bool => $task->getNextTriggerTime() <= $now);
+				if ($due === []) {
+					$trigger = min(array_map(static fn ($task) => (int) $task->getNextTriggerTime(), $pending));
 					$this->dyLogCronSleep($trigger - $now);
 					$this->waitForWake($trigger);
 					continue;
 				}
-				$results += $this->runTasks([$task]);
+				$results += $this->runTasks($due, $startMinute);
 			}
 		} finally {
 			// Release the wake transport held for this minute so nothing is bound into the next minute.
@@ -2250,28 +2250,6 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 			}
 		}
 		return $next;
-	}
-
-	/**
-	 * TCronModule does not support Second Resolution due to using the global state.
-	 * If you need this attribute, use the TDbCronManager.
-	 * @return bool returns false
-	 * @since 4.4.0
-	 */
-	public function getSecondResolution()
-	{
-		return false;
-	}
-
-	/**
-	 * TCronModule polls once per minute. Sub-minute polling requires the per-task next execution
-	 * times of the TDbCronManager; see {@see \Prado\Util\Cron\TDbCronManager::getPollsPerMinute PollsPerMinute}.
-	 * @return int returns 1
-	 * @since 4.4.0
-	 */
-	public function getPollsPerMinute()
-	{
-		return 1;
 	}
 
 	/**

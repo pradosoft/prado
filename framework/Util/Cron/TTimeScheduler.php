@@ -81,9 +81,8 @@ use Prado\TPropertyValue;
  * (single, range, step, star): '0:30 * * * *' is every hour at 00:30, '*:*\/10 * * * *' is every ten
  * seconds, '*\/5:15 * * * *' is every five minutes at second 15, and '0:0,30:0 * * * *' is at :00 and
  * :30.  An element without seconds triggers at second 0, so the field count and every existing
- * expression are unchanged.  A sub-minute schedule runs on time under the cron daemon or
- * {@see \Prado\Util\Cron\TDbCronManager::setPollsPerMinute PollsPerMinute}; a per-minute tick runs it
- * at its next pass.
+ * expression are unchanged.  A sub-minute schedule runs on time under the cron daemon or a crontab
+ * tick, which waits within its minute for the trigger seconds.
  *
  * A hashed field spreads the tasks of an application over a field's range so they do not all fire at
  * the same instant: 'H' (Jenkins) or '#' (Symfony) in the minute, hour, day of month (1-28), month, day

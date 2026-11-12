@@ -6,7 +6,7 @@ Cron-style scheduled task engine supporting both file-configured and database-ba
 
 - **`TCronModule`** — Main cron scheduler `TModule`; parses cron schedule expressions (standard Linux `minute hour day month dayOfWeek` format); runs each due task in its own fiber by its `Mode` (`Serial`, `Parallel` up to `Concurrency`, or `Process` in a child `cron/exec` process), with a per-task deadline, run lock, and exception boundary; publishes each cron process's live status for `cron/top`; an `IClock` whose `time()`/`microtime()` drive the scheduling; `Daemon` mode elects one long-running process per lease that waits on the event loop for the next trigger or a wake.
 
-- **`TDbCronManager`** — Extends `TCronModule` with database-backed task storage, execution logging, runtime tasks (`deferTask`), sub-minute polling (`PollsPerMinute`), and a per-row run claim for several hosts.
+- **`TDbCronManager`** — Extends `TCronModule` with database-backed task storage, execution logging, runtime tasks (`deferTask`), second-precise crontab ticks, and a per-row run claim for several hosts.
 
 - **`TCronTask`** — Abstract base for cron tasks; implement `execute($cronModule)`; properties: `Name`, `Schedule`, `UserName`, `ModuleId`, `AutoRemove`, `Timeout`, `Mode`, `Overlap`, `TimeZone`, `StartingDeadline`, `Description`, and the ping URLs.
 
