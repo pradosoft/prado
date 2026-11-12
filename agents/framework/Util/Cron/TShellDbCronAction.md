@@ -26,8 +26,9 @@ php prado-cli.php /app cron/update <name> [properties...]
 php prado-cli.php /app cron/remove <name>
 php prado-cli.php /app cron/log [name] [@user]        # display the execution log, filtered
 php prado-cli.php /app cron/flush [period] [name] [@user]   # delete log rows older than period, filtered
-php prado-cli.php /app cron/migrate                   # create the table when missing; add the 4.4.0 nextexectime column to an older one
+php prado-cli.php /app cron/migrate                   # create the table when missing; add the 4.4.0 columns to an older one
 php prado-cli.php /app cron/daemon | cron/retire [seconds] | cron/stop [seconds]   # the daemon commands of TShellCronAction
+php prado-cli.php /app cron/top [seconds] [count] | cron/exec <name>               # the live view and the Process task child of TShellCronAction
 ```
 
 Name and user filters are `LIKE` patterns: `_` is a wild card and `%` a wild string. The `flush` period is seconds or a `\DateInterval` specification (`P7D`, `"1 week"`); without a period every matching log row is deleted.

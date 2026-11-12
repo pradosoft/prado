@@ -1115,7 +1115,7 @@ class TDbCronManagerTest extends TCronModuleTest
 		self::assertTrue($this->obj->getAutoCreateCronTable());
 	}
 
-	public function testMigrateTable_CreatesTheTableAndAddsTheNextExecTimeColumn()
+	public function testMigrateTable_CreatesTheTableAndAddsThe440Columns()
 	{
 		$manager = new TDbCronManager();
 		$manager->setTableName('migratetable');
@@ -1134,13 +1134,14 @@ class TDbCronManagerTest extends TCronModuleTest
 			$cmd->bindValue(':last', (string) $last);
 			$cmd->execute();
 
-			self::assertSame(['created' => false, 'column' => 1], $manager->migrateTable());
+			self::assertSame(['created' => false, 'column' => 1, 'results' => true], $manager->migrateTable());
+			self::assertSame(['lastresult' => null, 'lastduration' => null], $db->createCommand("SELECT lastresult, lastduration FROM migratetable WHERE name='migrated'")->queryRow(), 'the result columns are added');
 			self::assertEquals($task->getNextTriggerTime($last), $db->createCommand("SELECT nextexectime FROM migratetable WHERE name='migrated'")->queryScalar());
-			self::assertSame(['created' => false, 'column' => null], $manager->migrateTable(), 'a second run finds the column');
+			self::assertSame(['created' => false, 'column' => null, 'results' => false], $manager->migrateTable(), 'a second run finds the columns');
 
 			$db->createCommand('DROP TABLE migratetable')->execute();
 			$manager->setAutoCreateCronTable(false);
-			self::assertSame(['created' => true, 'column' => null], $manager->migrateTable(), 'a missing table is created with the column, whatever AutoCreateCronTable says');
+			self::assertSame(['created' => true, 'column' => null, 'results' => false], $manager->migrateTable(), 'a missing table is created with the columns, whatever AutoCreateCronTable says');
 			self::assertSame(0, (int) $db->createCommand('SELECT COUNT(*) FROM migratetable')->queryScalar());
 		} finally {
 			$db->createCommand('DROP TABLE IF EXISTS migratetable')->execute();

@@ -29,6 +29,12 @@ use Prado\TPropertyValue;
  * {@see getCancellationToken() CancellationToken} at the deadline, which a cooperative task passes to its waits
  * or checks with {@see \Prado\IO\Async\TCancellationToken::throwIfCancelled()}.
  *
+ * The {@see getMode() Mode} is how a sweep runs the task: Serial (the default) alone in the cron
+ * process, Parallel in a fiber beside other Parallel tasks, or Process in a child `cron/exec`
+ * process; see {@see \Prado\Util\Cron\TCronTaskMode}.  Without {@see getOverlap() Overlap}, a run
+ * holds the task's run lock, and a trigger that comes while the previous run still holds it is
+ * skipped.
+ *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.2.0
  */
@@ -66,6 +72,12 @@ abstract class TCronTask extends TApplicationComponent
 
 	/** @var ?TCancellationToken the token of the current run, set by the module */
 	private ?TCancellationToken $_cancellationToken = null;
+
+	/** @var string how a sweep runs the task, a {@see TCronTaskMode} value */
+	private string $_mode = TCronTaskMode::Serial;
+
+	/** @var bool whether a run may start while the previous run is still running */
+	private bool $_overlap = false;
 
 	/**
 	 * This is the abstract method for running a task.
@@ -304,6 +316,43 @@ abstract class TCronTask extends TApplicationComponent
 	}
 
 	/**
+	 * @return string how a sweep runs the task: Serial, Parallel, or Process; default Serial
+	 * @since 4.4.0
+	 */
+	public function getMode(): string
+	{
+		return $this->_mode;
+	}
+
+	/**
+	 * @param string $mode how a sweep runs the task, a {@see TCronTaskMode} value
+	 * @throws TInvalidDataValueException when the mode is not a TCronTaskMode value
+	 * @since 4.4.0
+	 */
+	public function setMode($mode)
+	{
+		$this->_mode = TPropertyValue::ensureEnum($mode, TCronTaskMode::class);
+	}
+
+	/**
+	 * @return bool whether a run may start while the previous run is still running; default false
+	 * @since 4.4.0
+	 */
+	public function getOverlap(): bool
+	{
+		return $this->_overlap;
+	}
+
+	/**
+	 * @param bool|string $value whether a run may start while the previous run is still running
+	 * @since 4.4.0
+	 */
+	public function setOverlap($value)
+	{
+		$this->_overlap = TPropertyValue::ensureBoolean($value);
+	}
+
+	/**
 	 * @return ?TCancellationToken the token of the current run, cancelled at the run's deadline; null outside a run or without a deadline
 	 * @since 4.4.0
 	 */
@@ -370,6 +419,12 @@ abstract class TCronTask extends TApplicationComponent
 			$exprops[] = "\0Prado\Util\Cron\TCronTask\0_timeout";
 		}
 		$exprops[] = "\0Prado\Util\Cron\TCronTask\0_cancellationToken";
+		if ($this->_mode === TCronTaskMode::Serial) {
+			$exprops[] = "\0Prado\Util\Cron\TCronTask\0_mode";
+		}
+		if (!$this->_overlap) {
+			$exprops[] = "\0Prado\Util\Cron\TCronTask\0_overlap";
+		}
 	}
 
 	/**

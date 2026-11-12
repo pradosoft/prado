@@ -23,6 +23,7 @@ use Prado\IO\Async\TAsync;
 use Prado\IO\Async\TCancellationToken;
 use Prado\IO\Async\TFiberContext;
 use Prado\IO\Async\TFuture;
+use Prado\IO\Process\TProcess;
 use Prado\Prado;
 use Prado\Security\IUser;
 use Prado\Security\IUserManager;
@@ -37,6 +38,7 @@ use Prado\Util\Clock\TClockTrait;
 use Prado\Util\Clock\TMonotonicClockAwareTrait;
 use Prado\Util\Cron\Wake\ICronWakeTransport;
 use Prado\Util\Cron\Wake\TCronWakeSocket;
+use Prado\Util\Helpers\TProcessHelper;
 use Prado\Util\Log\TLogger;
 use Prado\Util\Mutex\IMutex;
 use Prado\Util\Mutex\TFileMutex;
@@ -123,12 +125,16 @@ use Prado\Xml\TXmlDocument;
  * {@see runTask()} runs each task in a fiber of its own.  The task's user is the
  * fiber's user in {@see \Prado\IO\Async\TFiberContext}, which
  * {@see \Prado\TApplication::getUser()} returns inside the task; the application
- * user is unchanged.  {@see setConcurrency Concurrency} is the number of tasks that
- * run at once (default 1, the tasks in order), so a task that waits on the event
- * loop lets the next one start.  An exception from a task is logged
- * ({@see logCronTaskError}) and the sweep continues.  {@see setTaskTimeout TaskTimeout}
- * and a task's own {@see \Prado\Util\Cron\TCronTask::setTimeout Timeout} bound a run with a
- * {@see \Prado\IO\Async\TCancellationToken} the task observes.
+ * user is unchanged.  The task's {@see \Prado\Util\Cron\TCronTask::getMode() Mode}
+ * ({@see \Prado\Util\Cron\TCronTaskMode}) is how {@see runTasks} runs it: Serial alone,
+ * Parallel beside other Parallel tasks with at most {@see setConcurrency Concurrency}
+ * (default 1) at once, or Process in a child `cron/exec` process the sweep does not
+ * wait for.  Without the task's Overlap, a run holds a run lock ({@see getTaskLockName}) in
+ * the {@see setDaemonMutex DaemonMutex}, and a trigger that comes while it is held is
+ * skipped.  An exception from a task is logged ({@see logCronTaskError}) and the sweep
+ * continues; each run's result and seconds are stored ({@see getTaskResults}).
+ * {@see setTaskTimeout TaskTimeout} and a task's own {@see \Prado\Util\Cron\TCronTask::setTimeout Timeout}
+ * bound a run with a {@see \Prado\IO\Async\TCancellationToken} the task observes.
  *
  * With {@see setDaemon Daemon}, the crontab's `cron/run` tick elects a daemon instead of sweeping:
  * the process acquires the {@see setDaemonMutex DaemonMutex} lease and, when another process holds
@@ -152,6 +158,11 @@ use Prado\Xml\TXmlDocument;
  * retire or stop the daemon from inside its process; {@see requestDaemonRetire} and
  * {@see requestDaemonStop} do the same from another process, as the `cron/retire` and `cron/stop`
  * shell commands do.
+ *
+ * With {@see setEnableStatus EnableStatus}, which the `cron/run` shell command turns on, a cron
+ * process publishes its live status (role, daemon state, running tasks and children, recent runs)
+ * to a file in {@see setStatusPath StatusPath}; {@see getStatuses} reads them for the `cron/top`
+ * shell command.
  *
  * TCronModule is an {@see \Prado\Util\Clock\IClock} through {@see \Prado\Util\Clock\TClockTrait}:
  * scheduling reads "now" through {@see time()} and {@see microtime()}, so a subclass or test harness
@@ -219,6 +230,51 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 
 	/** {@see getDaemonState}: a daemon holds the lease and waits to hand it to the next tick. */
 	public const DAEMON_STATE_RETIRING = 'retiring';
+
+	/** A run's result: the task ran without an exception. */
+	public const RESULT_OK = 'ok';
+
+	/** A run's result: the task threw, or its child process failed. */
+	public const RESULT_ERROR = 'error';
+
+	/** A run's result: the task's user lacks {@see PERM_CRON_RUN_TASK}. */
+	public const RESULT_DENIED = 'denied';
+
+	/** A run's result: the task's child process outlived its timeout and was terminated. */
+	public const RESULT_TIMEOUT = 'timeout';
+
+	/** The `cron/exec` exit code when the task threw. */
+	public const EXIT_ERROR = 1;
+
+	/** The `cron/exec` exit code when the task is not found. */
+	public const EXIT_NO_TASK = 2;
+
+	/** The `cron/exec` exit code when the task's user lacks {@see PERM_CRON_RUN_TASK}. */
+	public const EXIT_DENIED = 3;
+
+	/** The seconds a Process task's child may run past the task's timeout before it is terminated. */
+	public const PROCESS_TIMEOUT_GRACE = 5;
+
+	/** The microseconds between the exit polls of a Process task's child. */
+	protected const PROCESS_POLL_INTERVAL = 50000;
+
+	/** The directory of the status files in the runtime path. */
+	public const STATUS_DIRECTORY = 'cronstatus';
+
+	/** The number of finished runs a status file lists. */
+	public const STATUS_RECENT = 20;
+
+	/** The seconds past its expected update that the status of a process on another host is stale. */
+	public const STATUS_STALE = 120;
+
+	/** A status role: the process is the daemon. */
+	public const STATUS_ROLE_DAEMON = 'daemon';
+
+	/** A status role: the process sweeps the pending tasks once. */
+	public const STATUS_ROLE_SWEEP = 'sweep';
+
+	/** The daemon state of a status whose daemon released the lease and waits for its Process tasks. */
+	public const STATUS_DAEMON_ENDING = 'ending';
 
 	/** The behavior name for the Shell Log behavior */
 	public const SHELL_LOG_BEHAVIOR = 'shellLog';
@@ -347,6 +403,21 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 
 	/** @var ?ICacheDependency the dependency whose change retires the daemon */
 	private ?ICacheDependency $_daemonDependency = null;
+
+	/** @var TFuture[] the runs of Process tasks whose child processes may still run */
+	private array $_processRuns = [];
+
+	/** @var ?bool whether this process publishes its live status; null until set, which `cron/run` turns on */
+	private ?bool $_enableStatus = null;
+
+	/** @var ?string the directory of the status files, or null for {@see STATUS_DIRECTORY} in the runtime path */
+	private ?string $_statusPath = null;
+
+	/** @var ?array the live status of this process while it is published */
+	private ?array $_status = null;
+
+	/** @var int the last run ID of the status */
+	private int $_statusRunId = 0;
 
 	/**
 	 * Initializes the module.  Read the configuration, installs Shell Actions,
@@ -856,8 +927,8 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	 * processPendingTasks executes pending tasks through {@see runTasks}.  In a crontab shell
 	 * no task starts after the minute the sweep began.  With {@see getSecondResolution} in a
 	 * crontab shell, the tasks due through the end of the minute run at their trigger second
-	 * through {@see runPendingTasksWithWake}.  With {@see getDaemon Daemon} in the CLI the call is
-	 * {@see runDaemon}.
+	 * through {@see runPendingTasksWithWake}.  The call returns after the Process tasks it started
+	 * finish.  With {@see getDaemon Daemon} in the CLI the call is {@see runDaemon}.
 	 * @return int number of tasks that were pending, or that the daemon ran
 	 */
 	public function processPendingTasks()
@@ -865,6 +936,24 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 		if ($this->getDaemon() && $this->php_sapi_name() === 'cli') {
 			return $this->runDaemon();
 		}
+		$status = $this->beginStatus(static::STATUS_ROLE_SWEEP);
+		try {
+			return $this->sweepPendingTasks();
+		} finally {
+			$this->awaitProcessRuns();
+			if ($status) {
+				$this->endStatus();
+			}
+		}
+	}
+
+	/**
+	 * Sweeps the pending tasks once, as {@see processPendingTasks} describes without the daemon.
+	 * @return int the number of tasks that were pending
+	 * @since 4.4.0
+	 */
+	protected function sweepPendingTasks(): int
+	{
 		$inCronTab = (($inCron = $this->getInCronShell()) !== null) ? $inCron : TShellApplication::detectCronTabShell();
 		$sleep = $inCronTab && $this->getSecondResolution();
 
@@ -959,18 +1048,23 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	}
 
 	/**
-	 * Runs tasks, each in a fiber of its own through {@see runTask}, with at most
-	 * {@see getConcurrency} running at once.  A task removed since it was collected
-	 * ({@see taskExistsInternal}) is skipped.  Returns once every task has finished.
+	 * Runs tasks, each in a fiber of its own through {@see runTask}, by the task's
+	 * {@see \Prado\Util\Cron\TCronTask::getMode() Mode}:
+	 *  - Serial: starts after the running tasks finish and runs alone.
+	 *  - Parallel: runs beside the other Parallel tasks, at most {@see getConcurrency} at once.
+	 *  - Process: starts a child process and is not waited for; {@see awaitProcessRuns} waits for it.
+	 * A task removed since it was collected ({@see taskExistsInternal}) is skipped.  Returns once
+	 * every Serial and Parallel task has finished.
 	 * @param TCronTask[] $tasks the tasks to run, in order
 	 * @param ?int $startMinute the minute (`time() / 60`) after which no further task starts, or null for no limit
-	 * @return array<string, bool> whether each task that ran did so without an exception, by task name
+	 * @return array<string, bool> whether each Serial and Parallel task that ran did so without an exception, by task name
 	 * @since 4.4.0
 	 */
 	protected function runTasks(array $tasks, ?int $startMinute = null): array
 	{
 		$running = [];
 		$futures = [];
+		$this->awaitTasks($this->_processRuns, PHP_INT_MAX);
 		foreach ($tasks as $task) {
 			if ($startMinute !== null && $startMinute != floor($this->time() / 60)) {
 				break;
@@ -978,8 +1072,16 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 			if (!$this->taskExistsInternal($task->getName())) {
 				continue;
 			}
-			$this->awaitTasks($running, $this->getConcurrency() - 1);
+			$mode = $task->getMode();
+			if ($mode === TCronTaskMode::Process) {
+				$this->_processRuns[] = TAsync::run([$this, 'runTask'], $task);
+				continue;
+			}
+			$this->awaitTasks($running, ($mode === TCronTaskMode::Parallel) ? $this->getConcurrency() - 1 : 0);
 			$running[] = $futures[$task->getName()] = TAsync::run([$this, 'runTask'], $task);
+			if ($mode !== TCronTaskMode::Parallel) {
+				$this->awaitTasks($running, 0);
+			}
 		}
 		$this->awaitTasks($running, 0);
 		$results = [];
@@ -987,6 +1089,26 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 			$results[$name] = (bool) $future->await();
 		}
 		return $results;
+	}
+
+	/**
+	 * Waits until the Process tasks this process started have finished: their child processes
+	 * exited and their results are recorded.
+	 * @since 4.4.0
+	 */
+	public function awaitProcessRuns(): void
+	{
+		$this->awaitTasks($this->_processRuns, 0);
+	}
+
+	/**
+	 * @return int the number of Process tasks of this process whose child processes still run
+	 * @since 4.4.0
+	 */
+	public function getProcessRunCount(): int
+	{
+		$this->awaitTasks($this->_processRuns, PHP_INT_MAX);
+		return count($this->_processRuns);
 	}
 
 	/**
@@ -1033,17 +1155,50 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 
 	/**
 	 * Runs a task in the current fiber as its user ({@see resolveTaskUser}), which is the
-	 * fiber's user in {@see \Prado\IO\Async\TFiberContext} for the run.  A deadline from the
-	 * task's Timeout or the module's {@see getTaskTimeout} becomes the task's
-	 * {@see \Prado\Util\Cron\TCronTask::getCancellationToken() CancellationToken}.  A `dyRunTask`
+	 * fiber's user in {@see \Prado\IO\Async\TFiberContext} for the run.  A `dyRunTask`
 	 * permission denial ({@see PERM_CRON_RUN_TASK}) is logged, advances the task's info like a
-	 * run, and returns false.  {@see updateTaskInfo} claims the run first; when another process
-	 * claimed it, the task is skipped.  An exception from the task is logged by
-	 * {@see logCronTaskError} and does not leave this method.
+	 * run, and returns false.  Without the task's {@see \Prado\Util\Cron\TCronTask::getOverlap() Overlap},
+	 * the run holds the task's run lock ({@see getTaskLockName}); when another run holds it, the
+	 * trigger is skipped: the task's info advances without a run.  {@see updateTaskInfo} claims the
+	 * run; when another process claimed it, the task is skipped.  A Process task runs in a child
+	 * process ({@see runTaskProcess}), any other in this fiber ({@see invokeTask}).  The result and
+	 * the seconds the run took are recorded by {@see updateTaskResult}.
 	 * @param \Prado\Util\Cron\TCronTask $task the task to run.
 	 * @return bool whether the task ran without an exception
 	 */
 	public function runTask($task)
+	{
+		return $this->runAsTaskUser($task, fn (string $username): bool => $this->runTaskAsUser($task, $username));
+	}
+
+	/**
+	 * Runs one task now in this process, as its user, without claiming the run: the `cron/exec`
+	 * shell command of a Process task's child process.  The parent process claimed the run and
+	 * holds the task's run lock.
+	 * @param \Prado\Util\Cron\TCronTask $task the task to run
+	 * @return string the result: {@see RESULT_OK}, {@see RESULT_ERROR}, or {@see RESULT_DENIED}
+	 * @since 4.4.0
+	 */
+	public function executeTask($task): string
+	{
+		return $this->runAsTaskUser($task, function () use ($task): string {
+			if ($this->dyRunTask(false, $task, ['extra' => ['username' => $task->getUserName()]]) === true) {
+				$this->dyLogPermissionFailed(static::PERM_CRON_RUN_TASK, 'running cron task \'' . $task->getName() . '\'');
+				return static::RESULT_DENIED;
+			}
+			return $this->invokeTask($task);
+		});
+	}
+
+	/**
+	 * Calls a callback with the task's user ({@see resolveTaskUser}) as the current fiber's user,
+	 * and restores the prior fiber user after.
+	 * @param \Prado\Util\Cron\TCronTask $task the task
+	 * @param callable $callback `(string $username): mixed`, given the user name looked up
+	 * @return mixed the callback's result
+	 * @since 4.4.0
+	 */
+	protected function runAsTaskUser($task, callable $callback): mixed
 	{
 		$app = $this->getApplication();
 		[$user, $username] = $this->resolveTaskUser($task);
@@ -1053,30 +1208,9 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 			TFiberContext::set(TApplication::USER_CONTEXT_KEY, $user);
 			$app->onSetUser($user);
 		}
-		$timeout = $task->getTimeout() ?? $this->getTaskTimeout();
-		$token = ($timeout !== null) ? new TCancellationToken($timeout) : null;
-		$task->setCancellationToken($token);
 		try {
-			if ($this->dyRunTask(false, $task, ['extra' => ['username' => $task->getUserName()]]) === true) {
-				$this->dyLogPermissionFailed(static::PERM_CRON_RUN_TASK, 'running cron task \'' . $task->getName() . '\'');
-				$this->updateTaskInfo($task);
-				return false;
-			}
-			if (!$this->updateTaskInfo($task)) {
-				Prado::log('Cron task (' . $task->getName() . ') was claimed by another process', TLogger::INFO, TCronModule::class);
-				return false;
-			}
-			$this->logCronTask($task, $username);
-			try {
-				$task->execute($this);
-				$this->logCronTaskEnd($task);
-				return true;
-			} catch (\Throwable $e) {
-				$this->logCronTaskError($task, $e);
-				return false;
-			}
+			return $callback($username);
 		} finally {
-			$task->setCancellationToken(null);
 			if ($user !== null) {
 				if ($hadFiberUser) {
 					TFiberContext::set(TApplication::USER_CONTEXT_KEY, $priorFiberUser);
@@ -1088,6 +1222,161 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 				}
 			}
 		}
+	}
+
+	/**
+	 * Runs a task as its user: checks the permission, holds the run lock, claims the run, runs the
+	 * task by its Mode, and records the result.  See {@see runTask}.
+	 * @param \Prado\Util\Cron\TCronTask $task the task
+	 * @param string $username the user name the task runs as
+	 * @return bool whether the task ran without an exception
+	 * @since 4.4.0
+	 */
+	protected function runTaskAsUser($task, string $username): bool
+	{
+		$name = $task->getName();
+		if ($this->dyRunTask(false, $task, ['extra' => ['username' => $task->getUserName()]]) === true) {
+			$this->dyLogPermissionFailed(static::PERM_CRON_RUN_TASK, 'running cron task \'' . $name . '\'');
+			$this->updateTaskInfo($task);
+			$this->updateTaskResult($task, static::RESULT_DENIED, 0.0);
+			return false;
+		}
+		$lockName = $task->getOverlap() ? null : $this->getTaskLockName($name);
+		if ($lockName !== null && !$this->getDaemonMutex()->acquire($lockName)) {
+			Prado::log('Cron task (' . $name . ') is still running; this trigger is skipped', TLogger::INFO, TCronModule::class);
+			$this->updateTaskInfo($task, false);
+			return false;
+		}
+		try {
+			if (!$this->updateTaskInfo($task)) {
+				Prado::log('Cron task (' . $name . ') was claimed by another process', TLogger::INFO, TCronModule::class);
+				return false;
+			}
+			$this->logCronTask($task, $username);
+			$runId = $this->beginRunStatus($task, $username);
+			$start = $this->getMonotonicClock()->seconds();
+			if ($task->getMode() === TCronTaskMode::Process) {
+				$result = $this->runTaskProcess($task, $runId);
+			} else {
+				$result = $this->invokeTask($task);
+			}
+			$duration = $this->getMonotonicClock()->seconds() - $start;
+			if ($result === static::RESULT_OK) {
+				$this->logCronTaskEnd($task);
+			}
+			$this->updateTaskResult($task, $result, $duration);
+			$this->endRunStatus($runId, $result, $duration);
+			return $result === static::RESULT_OK;
+		} finally {
+			if ($lockName !== null) {
+				$this->getDaemonMutex()->release($lockName);
+			}
+		}
+	}
+
+	/**
+	 * Executes a task in the current fiber.  A deadline from the task's Timeout or the module's
+	 * {@see getTaskTimeout} becomes the task's
+	 * {@see \Prado\Util\Cron\TCronTask::getCancellationToken() CancellationToken}.  An exception from
+	 * the task is logged by {@see logCronTaskError} and does not leave this method.
+	 * @param \Prado\Util\Cron\TCronTask $task the task
+	 * @return string {@see RESULT_OK}, or {@see RESULT_ERROR} when the task threw
+	 * @since 4.4.0
+	 */
+	protected function invokeTask($task): string
+	{
+		$timeout = $task->getTimeout() ?? $this->getTaskTimeout();
+		$task->setCancellationToken(($timeout !== null) ? new TCancellationToken($timeout) : null);
+		try {
+			$task->execute($this);
+			return static::RESULT_OK;
+		} catch (\Throwable $e) {
+			$this->logCronTaskError($task, $e);
+			return static::RESULT_ERROR;
+		} finally {
+			$task->setCancellationToken(null);
+		}
+	}
+
+	/**
+	 * Runs a Process task in a child process ({@see openTaskProcess}) and waits for it in the current
+	 * fiber.  A child that outlives the task's timeout by {@see PROCESS_TIMEOUT_GRACE} seconds is
+	 * terminated.
+	 * @param \Prado\Util\Cron\TCronTask $task the task
+	 * @param ?int $runId the run's status entry ({@see beginRunStatus}), given the child's process ID
+	 * @return string {@see RESULT_OK} for exit code 0, {@see RESULT_DENIED} for {@see EXIT_DENIED},
+	 *   {@see RESULT_TIMEOUT} when terminated, else {@see RESULT_ERROR}
+	 * @since 4.4.0
+	 */
+	protected function runTaskProcess($task, ?int $runId = null): string
+	{
+		try {
+			$process = $this->openTaskProcess($task);
+		} catch (\Throwable $e) {
+			$this->logCronTaskError($task, $e);
+			return static::RESULT_ERROR;
+		}
+		$pid = $process->getPid();
+		$this->setRunStatusPid($runId, $pid);
+		$timeout = $task->getTimeout() ?? $this->getTaskTimeout();
+		$limit = ($timeout === null) ? 0 : (int) (($timeout + static::PROCESS_TIMEOUT_GRACE) * 1_000_000);
+		$code = $process->wait(static::PROCESS_POLL_INTERVAL, $limit);
+		if ($process->getIsRunning()) {
+			Prado::log('Cron task (' . $task->getName() . ') process ' . $pid . ' outlived its timeout and is terminated', TLogger::ERROR, TCronModule::class);
+			$process->terminate();
+			if ($process->wait(static::PROCESS_POLL_INTERVAL, (int) (static::PROCESS_TIMEOUT_GRACE * 1_000_000)) === -1) {
+				$process->terminate(9); // SIGKILL
+			}
+			$process->close();
+			return static::RESULT_TIMEOUT;
+		}
+		$process->close();
+		if ($code === 0) {
+			return static::RESULT_OK;
+		}
+		if ($code === static::EXIT_DENIED) {
+			return static::RESULT_DENIED;
+		}
+		Prado::log('Cron task (' . $task->getName() . ') process ' . $pid . ' exited with code ' . $code, TLogger::ERROR, TCronModule::class);
+		return static::RESULT_ERROR;
+	}
+
+	/**
+	 * Opens the child process of a Process task: {@see getTaskProcessCommand}, with no standard
+	 * input, and the standard output and error of this process.
+	 * @param \Prado\Util\Cron\TCronTask $task the task
+	 * @return TProcess the running child process
+	 * @since 4.4.0
+	 */
+	protected function openTaskProcess($task): TProcess
+	{
+		$null = TProcessHelper::isSystemWindows() ? 'NUL' : '/dev/null';
+		return TProcess::open($this->getTaskProcessCommand($task), [0 => ['file', $null, 'r'], 1 => false, 2 => false], null, null, ['bypass_shell' => true]);
+	}
+
+	/**
+	 * Returns the command of a Process task's child process: `prado-cli -d=<app> --quiet=1 cron/exec <task>`
+	 * on the PHP command line binary, without the shell banner.  The PHP binary of a web server SAPI is replaced by `php` in
+	 * {@see PHP_BINDIR}.
+	 * @param \Prado\Util\Cron\TCronTask $task the task
+	 * @return string[] the command and its arguments
+	 * @since 4.4.0
+	 */
+	public function getTaskProcessCommand($task): array
+	{
+		$php = ($this->php_sapi_name() === 'cli') ? PHP_BINARY : PHP_BINDIR . DIRECTORY_SEPARATOR . (TProcessHelper::isSystemWindows() ? 'php.exe' : 'php');
+		$cli = dirname(Prado::getFrameworkPath()) . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'prado-cli.php';
+		return [$php, $cli, '-d=' . $this->getApplication()->getBasePath(), '--quiet=1', 'cron/exec', $task->getName()];
+	}
+
+	/**
+	 * @param string $name the task name
+	 * @return string the lock name a run of the task holds without Overlap, {@see getDaemonLockName} and `:task:<name>`
+	 * @since 4.4.0
+	 */
+	public function getTaskLockName(string $name): string
+	{
+		return $this->getDaemonLockName() . ':task:' . $name;
 	}
 
 	/**
@@ -1131,23 +1420,107 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	}
 
 	/**
-	 * Claims the run of a task: sets the lastExecTime to now and increments the processCount, and
-	 * saves the new data to the global state.  TCronModule has one process per application, so
-	 * every claim succeeds; TDbCronManager claims against the database row.
+	 * Claims the run of a task: sets the lastExecTime to now and, for a run, increments the
+	 * processCount, and saves the new data to the global state.  A skipped trigger claims without a
+	 * run.  TCronModule has one process per application, so every claim succeeds; TDbCronManager
+	 * claims against the database row.
 	 * @param TCronTask $task
+	 * @param bool $run whether the task runs; false for a skipped trigger
 	 * @return bool whether this process claimed the run
 	 */
-	protected function updateTaskInfo($task)
+	protected function updateTaskInfo($task, bool $run = true)
 	{
 		$tasksInfo = $this->getApplication()->getGlobalState(self::TASKS_INFO, []);
 		$name = $task->getName();
 		$time = $tasksInfo[$name]['lastExecTime'] = $this->time();
-		$count = $tasksInfo[$name]['processCount'] = $task->getProcessCount() + 1;
+		$count = $tasksInfo[$name]['processCount'] = $task->getProcessCount() + ($run ? 1 : 0);
 		$task->setProcessCount($count);
 		$task->setLastExecTime($time);
 
 		$this->getApplication()->setGlobalState(self::TASKS_INFO, $tasksInfo, [], true);
 		return true;
+	}
+
+	/**
+	 * Records the result of a run and the seconds it took in the global state.
+	 * @param TCronTask $task the task
+	 * @param string $result {@see RESULT_OK}, {@see RESULT_ERROR}, {@see RESULT_DENIED}, or {@see RESULT_TIMEOUT}
+	 * @param float $duration the seconds the run took
+	 * @since 4.4.0
+	 */
+	protected function updateTaskResult($task, string $result, float $duration)
+	{
+		$app = $this->getApplication();
+		$tasksInfo = $app->getGlobalState(self::TASKS_INFO, []);
+		$name = $task->getName();
+		$tasksInfo[$name]['lastResult'] = $result;
+		$tasksInfo[$name]['lastDuration'] = round($duration, 6);
+		$app->setGlobalState(self::TASKS_INFO, $tasksInfo, [], true);
+	}
+
+	/**
+	 * Returns the run information of each task: the time of its last run, the run count, and the
+	 * result and seconds of its last finished run.
+	 * @param bool $fresh whether to read the stored information instead of this process's copy
+	 * @return array<string, array{time: ?int, count: int, result: ?string, duration: ?float}> the run information, by task name
+	 * @since 4.4.0
+	 */
+	public function getTaskResults(bool $fresh = false): array
+	{
+		$tasksInfo = $this->readTasksInfo($fresh);
+		$results = [];
+		foreach ($this->ensureTasks() as $name => $task) {
+			$info = $tasksInfo[$name] ?? [];
+			$results[$name] = [
+				'time' => isset($info['lastExecTime']) ? (int) $info['lastExecTime'] : null,
+				'count' => (int) ($info['processCount'] ?? 0),
+				'result' => $info['lastResult'] ?? null,
+				'duration' => isset($info['lastDuration']) ? (float) $info['lastDuration'] : null,
+			];
+		}
+		return $results;
+	}
+
+	/**
+	 * Returns the soonest next triggers of the tasks.
+	 * @param int $limit the number of triggers to return
+	 * @param bool $fresh whether to read the stored run information instead of this process's copy
+	 * @return array<string, int> the trigger times, by task name, soonest first
+	 * @since 4.4.0
+	 */
+	public function getNextTriggers(int $limit = 10, bool $fresh = false): array
+	{
+		$tasksInfo = $fresh ? $this->readTasksInfo(true) : null;
+		$triggers = [];
+		foreach ($this->ensureTasks() as $name => $task) {
+			if ($tasksInfo === null) {
+				$trigger = $task->getNextTriggerTime();
+			} else {
+				$trigger = $task->getNextTriggerTime(isset($tasksInfo[$name]['lastExecTime']) ? (int) $tasksInfo[$name]['lastExecTime'] : 0);
+			}
+			if ($trigger !== null) {
+				$triggers[$name] = (int) $trigger;
+			}
+		}
+		asort($triggers);
+		return array_slice($triggers, 0, max(0, $limit), true);
+	}
+
+	/**
+	 * Returns the run information of the tasks from the global state.
+	 * @param bool $fresh whether to read the stored global state, which another process may have
+	 *   changed, instead of this process's copy
+	 * @return array<string, array> the information of each task, by name
+	 * @since 4.4.0
+	 */
+	protected function readTasksInfo(bool $fresh = false): array
+	{
+		$app = $this->getApplication();
+		if ($fresh && ($persister = $app->getApplicationStatePersister()) !== null) {
+			$state = $persister->load();
+			return (is_array($state) && is_array($state[self::TASKS_INFO] ?? null)) ? $state[self::TASKS_INFO] : [];
+		}
+		return $app->getGlobalState(self::TASKS_INFO, []);
 	}
 
 	/**
@@ -1337,7 +1710,7 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	}
 
 	/**
-	 * @return int the number of tasks that run at once, default 1
+	 * @return int the number of Parallel tasks that run at once, default 1
 	 * @since 4.4.0
 	 */
 	public function getConcurrency(): int
@@ -1346,7 +1719,7 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	}
 
 	/**
-	 * @param int|string $count the number of tasks that run at once; 1 runs the tasks in order
+	 * @param int|string $count the number of Parallel tasks that run at once; 1 runs them in order
 	 * @throws TInvalidDataValueException when the count is less than 1
 	 * @since 4.4.0
 	 */
@@ -1384,6 +1757,43 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 			$seconds = null;
 		}
 		$this->_taskTimeout = $seconds;
+	}
+
+	/**
+	 * @return ?bool whether this process publishes its live status to a status file ({@see getStatuses});
+	 *   default null, which the `cron/run` shell command turns on and is off otherwise
+	 * @since 4.4.0
+	 */
+	public function getEnableStatus(): ?bool
+	{
+		return $this->_enableStatus;
+	}
+
+	/**
+	 * @param null|bool|string $value whether this process publishes its live status to a status file, or null for the default
+	 * @since 4.4.0
+	 */
+	public function setEnableStatus($value)
+	{
+		$this->_enableStatus = ($value === null || $value === '') ? null : TPropertyValue::ensureBoolean($value);
+	}
+
+	/**
+	 * @return string the directory of the status files; default {@see STATUS_DIRECTORY} in the application runtime path
+	 * @since 4.4.0
+	 */
+	public function getStatusPath(): string
+	{
+		return $this->_statusPath ?? $this->getApplication()->getRuntimePath() . DIRECTORY_SEPARATOR . static::STATUS_DIRECTORY;
+	}
+
+	/**
+	 * @param ?string $path the directory of the status files, or null for the default
+	 * @since 4.4.0
+	 */
+	public function setStatusPath($path)
+	{
+		$this->_statusPath = ($path === null || $path === '') ? null : TPropertyValue::ensureString($path);
 	}
 
 	/**
@@ -1793,7 +2203,7 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	 * {@see getDaemonLifetime DaemonLifetime} it retires: it holds the retiring lock and keeps serving
 	 * until a tick's process waits on the handoff lock, then releases the lease to it, so the module is
 	 * never without a daemon.  {@see stopDaemon}, SIGTERM, and SIGINT end it at once.  Tasks run through
-	 * {@see runTasks} with the module's Concurrency.
+	 * {@see runTasks} by their Mode; after releasing the lease, the process waits for its Process tasks.
 	 * @return int the number of tasks the daemon ran
 	 * @since 4.4.0
 	 */
@@ -1819,6 +2229,20 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 		$signals = $this->watchDaemonSignals($loop);
 		$this->_daemonReason = null;
 		$this->logCronDaemonStart($lockName, $watching);
+		$this->beginStatus(static::STATUS_ROLE_DAEMON);
+		$this->updateDaemonStatus([
+			'lock' => $lockName,
+			'state' => static::DAEMON_STATE_RUNNING,
+			'transport' => ($transport !== null) ? $transport::class : null,
+			'watching' => $watching,
+			'lifetime' => $this->getDaemonLifetime(),
+			'idle' => $this->getDaemonIdle(),
+			'sweeps' => 0,
+			'tasks' => 0,
+			'wake' => null,
+			'next' => [],
+		]);
+		$sweeps = 0;
 		$param = $this->newDaemonEventParameter($lockName, $watching);
 		$this->onDaemonStart($param);
 		try {
@@ -1829,6 +2253,7 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 				}
 				$swept = $this->sweepTasks();
 				$numtasks += $swept;
+				$sweeps++;
 				if ($this->consumeDaemonWake()) {
 					continue; // a wake arrived during the sweep: sweep again
 				}
@@ -1841,7 +2266,15 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 				if ($this->isDaemonDone($start)) {
 					break;
 				}
-				$this->waitDaemon($loop, max($param->getWait(), static::DAEMON_MIN_WAIT));
+				$wait = max($param->getWait(), static::DAEMON_MIN_WAIT);
+				$this->updateDaemonStatus([
+					'state' => $this->_daemonRetiring ? static::DAEMON_STATE_RETIRING : static::DAEMON_STATE_RUNNING,
+					'sweeps' => $sweeps,
+					'tasks' => $numtasks,
+					'wake' => $this->microtime() + $wait,
+					'next' => $this->getNextTriggers(5),
+				]);
+				$this->waitDaemon($loop, $wait);
 			}
 		} catch (\Throwable $e) {
 			$this->_daemonReason = TCronDaemonEventParameter::REASON_ERROR;
@@ -1858,6 +2291,9 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 				$this->_daemonRetiring = false;
 			}
 			$mutex->release($lockName);
+			$this->updateDaemonStatus(['state' => static::STATUS_DAEMON_ENDING, 'wake' => null]);
+			$this->awaitProcessRuns();
+			$this->endStatus();
 			$this->logCronDaemonEnd($numtasks);
 			$param = $this->newDaemonEventParameter($lockName, $watching)
 				->setTasks($numtasks)
@@ -2327,6 +2763,241 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 			}
 		}
 		return $ids;
+	}
+
+	/**
+	 * Starts publishing the live status of this process with {@see getEnableStatus EnableStatus}, and
+	 * removes the status files of this host's ended processes.  A process already publishing keeps its status.
+	 * @param string $role {@see STATUS_ROLE_DAEMON} or {@see STATUS_ROLE_SWEEP}
+	 * @return bool whether this call started the status
+	 * @since 4.4.0
+	 */
+	protected function beginStatus(string $role): bool
+	{
+		if (!$this->getEnableStatus() || $this->_status !== null) {
+			return false;
+		}
+		foreach ($this->getStatuses() as $status) {
+			if (!$status['alive'] && $status['host'] === (string) gethostname()) {
+				@unlink($status['file']);
+			}
+		}
+		$now = $this->microtime();
+		$this->_status = [
+			'module' => $this->getID(),
+			'class' => static::class,
+			'role' => $role,
+			'pid' => (int) getmypid(),
+			'host' => (string) gethostname(),
+			'php' => PHP_VERSION,
+			'started' => $now,
+			'updated' => $now,
+			'concurrency' => $this->getConcurrency(),
+			'daemon' => null,
+			'running' => [],
+			'recent' => [],
+		];
+		$this->writeStatus();
+		return true;
+	}
+
+	/**
+	 * Stops publishing the live status of this process and removes its status file.
+	 * @since 4.4.0
+	 */
+	protected function endStatus(): void
+	{
+		if ($this->_status === null) {
+			return;
+		}
+		$file = $this->getStatusFile();
+		$this->_status = null;
+		if (is_file($file)) {
+			@unlink($file);
+		}
+	}
+
+	/**
+	 * Merges values into the daemon part of the live status and writes it.
+	 * @param array $values the daemon values
+	 * @since 4.4.0
+	 */
+	protected function updateDaemonStatus(array $values): void
+	{
+		if ($this->_status === null) {
+			return;
+		}
+		$this->_status['daemon'] = array_merge($this->_status['daemon'] ?? [], $values);
+		$this->writeStatus();
+	}
+
+	/**
+	 * Adds a starting run to the live status.
+	 * @param TCronTask $task the task
+	 * @param string $username the user name the task runs as
+	 * @return ?int the run ID, or null without a live status
+	 * @since 4.4.0
+	 */
+	protected function beginRunStatus($task, string $username): ?int
+	{
+		if ($this->_status === null) {
+			return null;
+		}
+		$id = ++$this->_statusRunId;
+		$now = $this->microtime();
+		$timeout = $task->getTimeout() ?? $this->getTaskTimeout();
+		$this->_status['running'][$id] = [
+			'name' => $task->getName(),
+			'mode' => $task->getMode(),
+			'user' => $username,
+			'started' => $now,
+			'deadline' => ($timeout === null) ? null : $now + $timeout,
+			'pid' => $this->_status['pid'],
+		];
+		$this->writeStatus();
+		return $id;
+	}
+
+	/**
+	 * Sets the process ID of a run in the live status: the child process of a Process task.
+	 * @param ?int $id the run ID
+	 * @param ?int $pid the process ID
+	 * @since 4.4.0
+	 */
+	protected function setRunStatusPid(?int $id, ?int $pid): void
+	{
+		if ($id === null || !isset($this->_status['running'][$id])) {
+			return;
+		}
+		$this->_status['running'][$id]['pid'] = $pid;
+		$this->writeStatus();
+	}
+
+	/**
+	 * Moves a finished run from the running runs of the live status to its recent runs.
+	 * @param ?int $id the run ID
+	 * @param string $result the run's result
+	 * @param float $duration the seconds the run took
+	 * @since 4.4.0
+	 */
+	protected function endRunStatus(?int $id, string $result, float $duration): void
+	{
+		if ($id === null || !isset($this->_status['running'][$id])) {
+			return;
+		}
+		$run = $this->_status['running'][$id];
+		unset($this->_status['running'][$id]);
+		$run['result'] = $result;
+		$run['duration'] = round($duration, 6);
+		unset($run['deadline'], $run['user']);
+		array_unshift($this->_status['recent'], $run);
+		$this->_status['recent'] = array_slice($this->_status['recent'], 0, static::STATUS_RECENT);
+		$this->writeStatus();
+	}
+
+	/**
+	 * Writes the live status to the status file, through a temporary file renamed over it.  A failure is
+	 * logged and does not stop cron.
+	 * @since 4.4.0
+	 */
+	protected function writeStatus(): void
+	{
+		if ($this->_status === null) {
+			return;
+		}
+		$this->_status['updated'] = $this->microtime();
+		$file = $this->getStatusFile();
+		$dir = dirname($file);
+		if (!is_dir($dir) && !@mkdir($dir, 0o777, true) && !is_dir($dir)) {
+			Prado::log('Cron status directory (' . $dir . ') could not be created', TLogger::WARNING, TCronModule::class);
+			return;
+		}
+		$tmp = $file . '.' . bin2hex(random_bytes(4)) . '.tmp';
+		$json = json_encode($this->_status, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PARTIAL_OUTPUT_ON_ERROR);
+		if (@file_put_contents($tmp, (string) $json) === false || !@rename($tmp, $file)) {
+			if (is_file($tmp)) {
+				@unlink($tmp);
+			}
+			Prado::log('Cron status file (' . $file . ') could not be written', TLogger::WARNING, TCronModule::class);
+		}
+	}
+
+	/**
+	 * @return string the status file of this process: the module ID, host, and process ID in {@see getStatusPath}
+	 * @since 4.4.0
+	 */
+	protected function getStatusFile(): string
+	{
+		$name = $this->getID() . '.' . ($this->_status['host'] ?? gethostname()) . '.' . ($this->_status['pid'] ?? getmypid());
+		return $this->getStatusPath() . DIRECTORY_SEPARATOR . preg_replace('/[^\w.-]+/', '_', $name) . '.json';
+	}
+
+	/**
+	 * Returns the live status of each cron process of this module that publishes one: a daemon, or a
+	 * `cron/run` sweep.  Each status is an array:
+	 *  - `role`, `pid`, `host`, `php`, `started`, `updated`, `concurrency`: the process.
+	 *  - `daemon`: null for a sweep; else `state`, `lock`, `transport`, `watching`, `lifetime`, `idle`,
+	 *    `sweeps`, `tasks`, `wake` (the time of the next sweep), and `next` (the next triggers by task name).
+	 *  - `running`: the running runs, each with `name`, `mode`, `user`, `started`, `deadline`, and `pid` (the child process of a Process task).
+	 *  - `recent`: the finished runs, newest first, each with `name`, `mode`, `started`, `pid`, `result`, and `duration`.
+	 *  - `alive`: whether the process runs: a process of this host is checked by its ID, another host's by
+	 *    its last update within {@see STATUS_STALE} seconds.
+	 *  - `file`: the status file.
+	 * @return array[] the statuses, the daemon first, then by start time
+	 * @since 4.4.0
+	 */
+	public function getStatuses(): array
+	{
+		$statuses = [];
+		$host = (string) gethostname();
+		$now = $this->microtime();
+		foreach (glob($this->getStatusPath() . DIRECTORY_SEPARATOR . '*.json') ?: [] as $file) {
+			$status = json_decode((string) @file_get_contents($file), true);
+			if (!is_array($status) || ($status['module'] ?? null) !== $this->getID()) {
+				continue;
+			}
+			$status['host'] = (string) ($status['host'] ?? '');
+			$status['running'] = array_values((array) ($status['running'] ?? []));
+			$status['recent'] = array_values((array) ($status['recent'] ?? []));
+			$status['alive'] = $this->isStatusAlive($status, $host, $now);
+			$status['file'] = $file;
+			$statuses[] = $status;
+		}
+		usort($statuses, static fn (array $a, array $b): int => [($a['role'] ?? '') !== static::STATUS_ROLE_DAEMON, $a['started'] ?? 0] <=> [($b['role'] ?? '') !== static::STATUS_ROLE_DAEMON, $b['started'] ?? 0]);
+		return $statuses;
+	}
+
+	/**
+	 * Tells whether the process of a status runs.
+	 * @param array $status the status
+	 * @param string $host this host's name
+	 * @param float $now the current time
+	 * @return bool whether the process runs
+	 * @since 4.4.0
+	 */
+	protected function isStatusAlive(array $status, string $host, float $now): bool
+	{
+		$pid = (int) ($status['pid'] ?? 0);
+		if ($status['host'] === $host) {
+			return $pid > 0 && $this->isProcessRunning($pid);
+		}
+		$expected = max((float) ($status['updated'] ?? 0), (float) ($status['daemon']['wake'] ?? 0));
+		return $now - $expected <= static::STATUS_STALE;
+	}
+
+	/**
+	 * Tells whether a process of this host runs.  A process of another user, which cannot be
+	 * signaled (`EPERM`), runs.
+	 * @param int $pid the process ID
+	 * @return bool whether the process runs
+	 * @since 4.4.0
+	 */
+	protected function isProcessRunning(int $pid): bool
+	{
+		if (TProcessHelper::isRunning($pid)) {
+			return true;
+		}
+		return !TProcessHelper::isSystemWindows() && function_exists('posix_get_last_error') && posix_get_last_error() === 1;
 	}
 
 	/**

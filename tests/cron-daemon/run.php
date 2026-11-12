@@ -6,10 +6,12 @@
  * Runs real `prado-cli cron/run` processes on a fixed tick, as a crontab or the Windows Task
  * Scheduler does, against a throwaway application in the temp directory, and checks the daemon
  * from the outside: one daemon at a time, lifetime handoffs without a missed or doubled trigger,
- * a killed daemon replaced by the next tick, `cron/stop`, and a wake from `cron/add` in another
- * process reaching the waiting daemon through the default TCronWakeSocket.
+ * a killed daemon replaced by the next tick, `cron/stop`, a wake from `cron/add` in another
+ * process reaching the waiting daemon through the default TCronWakeSocket, and a Process task
+ * run by a `cron/exec` child while the daemon serves on, shown by its status, `cron/top`, and
+ * `cron/tasks`.
  *
- * Usage: php tests/cron-daemon/run.php [handoff|wake|all]
+ * Usage: php tests/cron-daemon/run.php [handoff|wake|process|all]
  * Exit code 0 when every check passes, 1 otherwise.
  *
  * @author Brad Anderson <belisoful@icloud.com>
@@ -175,6 +177,81 @@ final class CronDaemonE2E
 		$this->checkQuickTicks($starts);
 	}
 
+	/**
+	 * A Process task longer than its period runs in `cron/exec` children, one at a time, while a
+	 * Serial task keeps its schedule in the daemon; the daemon's status, `cron/top`, and `cron/tasks`
+	 * show the running child.
+	 */
+	private function scenarioProcess(): void
+	{
+		$this->makeApp('DaemonLifetime="0" DaemonIdle="2"', '<job name="slow" schedule="*:*/3 * * * *" task="Application.CronE2ETask" Mode="Process" Sleep="5" />' .
+			'<job name="quick" schedule="*:*/2 * * * *" task="Application.CronE2ETask" />');
+		// the runtime path is a directory per configuration file and version in protected/runtime
+		$statusGlob = $this->dir . DIRECTORY_SEPARATOR . 'protected' . DIRECTORY_SEPARATOR . 'runtime' . DIRECTORY_SEPARATOR . '*' . DIRECTORY_SEPARATOR . 'cronstatus' . DIRECTORY_SEPARATOR . '*.json';
+		$start = microtime(true);
+		$nextTick = $start;
+		$seen = null;
+		$shown = false;
+		while (($now = microtime(true)) < $start + 24.0) {
+			if ($now >= $nextTick) {
+				$this->tick();
+				$nextTick += TICK;
+			}
+			$this->reap();
+			if ($seen === null) {
+				foreach (glob($statusGlob) ?: [] as $file) {
+					$status = json_decode((string) @file_get_contents($file), true);
+					foreach ((array) ($status['running'] ?? []) as $run) {
+						if (($run['name'] ?? '') === 'slow' && ($run['pid'] ?? null) !== ($status['pid'] ?? null)) {
+							$seen = ['status' => $status, 'run' => $run];
+						}
+					}
+				}
+			} elseif (!$shown) {
+				$shown = true;
+				$top = $this->cli(['cron/top']);
+				$this->check(str_contains($top, 'Daemon') && str_contains($top, 'Running') && str_contains($top, 'pid ' . $seen['status']['pid']), 'cron/top shows the daemon and the running child');
+				$tasks = $this->cli(['cron/tasks']);
+				$this->check(str_contains($tasks, 'Process') && preg_match('/pid \d+/', $tasks) === 1, 'cron/tasks shows the Process mode and the running child');
+			}
+			usleep(100000);
+		}
+		$this->stop();
+		$tasks = $this->cli(['cron/tasks', 'slow']);
+
+		$events = $this->events();
+		$starts = $this->select($events, 'start');
+		$runs = $this->select($events, 'run');
+		$this->transport($starts);
+		$this->check(count($starts) === 1, 'one daemon served the scenario; ' . count($starts) . ' started');
+		$daemon = $starts[0]['pid'] ?? null;
+		$this->check($seen !== null, 'the daemon status listed the running child of slow');
+		if ($seen !== null) {
+			$this->check(($seen['run']['mode'] ?? '') === 'Process', 'the status lists slow as a Process task');
+			$this->check(($seen['status']['role'] ?? '') === 'daemon' && ($seen['status']['pid'] ?? null) === $daemon, 'the daemon published the status');
+		}
+		$slow = array_values(array_filter($runs, fn ($e) => $e['task'] === 'slow'));
+		$done = array_values(array_filter($this->select($events, 'done'), fn ($e) => $e['task'] === 'slow'));
+		$this->line('   slow ran ' . count($slow) . ' time(s) in process(es) ' . implode(',', array_column($slow, 'pid')));
+		$this->check(count($slow) >= 2, 'slow ran at least twice; ' . count($slow) . ' runs');
+		$this->check(count($done) === count($slow), 'each run of slow finished; the daemon waited for its child before it ended');
+		foreach ($slow as $i => $run) {
+			$this->check($run['pid'] !== $daemon, "run {$i} of slow ran in a child process");
+			if (isset($slow[$i + 1], $done[$i])) {
+				$this->check($slow[$i + 1]['t'] >= $done[$i]['t'] - 0.05, "run {$i} of slow ended before the next began; the run lock skips a trigger while it runs");
+			}
+		}
+		$quick = array_values(array_filter($runs, fn ($e) => $e['task'] === 'quick'));
+		$this->check(count($quick) >= 8, 'quick ran on its schedule beside the child; ' . count($quick) . ' runs');
+		foreach ($quick as $run) {
+			$late = $run['t'] - floor($run['t'] / 2.0) * 2.0;
+			$this->check($run['pid'] === $daemon && $late <= SLACK, sprintf('quick ran on time in the daemon while slow ran (%.2fs late)', $late));
+		}
+		$this->check(str_contains($tasks, 'ok'), 'cron/tasks shows the last result of slow');
+		$this->check(!glob($statusGlob), 'the daemon removed its status when it ended');
+		$this->checkQuickTicks($starts);
+	}
+
 	// ---------------------------------------------------------------- checks
 
 	private function checkOneDaemonAtATime(array $starts, array $ends, ?array $killed): void
@@ -296,8 +373,8 @@ final class CronDaemonE2E
 		$this->procs[] = ['proc' => $proc, 'pid' => proc_get_status($proc)['pid'], 'started' => microtime(true), 'ended' => null, 'out' => $out];
 	}
 
-	/** Runs a prado-cli command to completion. */
-	private function cli(array $args, float $timeout = 30.0): void
+	/** Runs a prado-cli command to completion and returns its output. */
+	private function cli(array $args, float $timeout = 30.0): string
 	{
 		$out = $this->dir . DIRECTORY_SEPARATOR . 'cli-' . str_replace('/', '-', $args[0]) . '-' . bin2hex(random_bytes(2)) . '.out';
 		$proc = proc_open(array_merge([PHP_BINARY, $this->cli, '-d=' . $this->dir], $args), [0 => $this->devNull('r'), 1 => ['file', $out, 'w'], 2 => ['file', $out, 'a']], $pipes, $this->cronCwd(), $this->cronEnv());
@@ -316,6 +393,7 @@ final class CronDaemonE2E
 		if (preg_match('/Fatal|Exception|Stack trace/i', $text)) {
 			$this->fail(implode(' ', $args) . ' failed: ' . $text);
 		}
+		return $text;
 	}
 
 	private function reap(): void
@@ -462,9 +540,9 @@ final class CronDaemonE2E
 }
 
 $arg = $argv[1] ?? 'all';
-$scenarios = $arg === 'all' ? ['handoff', 'wake'] : [$arg];
-if (array_diff($scenarios, ['handoff', 'wake'])) {
-	fwrite(STDERR, "Usage: php tests/cron-daemon/run.php [handoff|wake|all]\n");
+$scenarios = $arg === 'all' ? ['handoff', 'wake', 'process'] : [$arg];
+if (array_diff($scenarios, ['handoff', 'wake', 'process'])) {
+	fwrite(STDERR, "Usage: php tests/cron-daemon/run.php [handoff|wake|process|all]\n");
 	exit(2);
 }
 exit((new CronDaemonE2E())->run($scenarios));

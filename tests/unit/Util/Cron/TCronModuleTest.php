@@ -129,6 +129,20 @@ class TTestCronErrorLogBehavior extends TBehavior
 }
 
 
+/**
+ * Records the cron statuses its run sees.
+ */
+class TTestCronStatusTask extends TCronTask
+{
+	public array $seen = [];
+
+	public function execute($cron)
+	{
+		$this->seen = $cron->getStatuses();
+	}
+}
+
+
 class TCronModuleTest extends \PHPUnit\Framework\TestCase
 {
 	protected $obj;
@@ -866,9 +880,9 @@ class TCronModuleTest extends \PHPUnit\Framework\TestCase
 		$this->obj = new $this->baseClass();
 		$this->obj->setConcurrency(2);
 		$this->obj->init([
-			['name' => 'slowC', 'schedule' => '0 0 1 1 ? 2000', 'task' => TTestCronRecordingTask::class],
-			['name' => 'slowD', 'schedule' => '0 0 1 1 ? 2000', 'task' => TTestCronRecordingTask::class],
-			['name' => 'slowE', 'schedule' => '0 0 1 1 ? 2000', 'task' => TTestCronRecordingTask::class],
+			['name' => 'slowC', 'schedule' => '0 0 1 1 ? 2000', 'task' => TTestCronRecordingTask::class, 'mode' => 'Parallel'],
+			['name' => 'slowD', 'schedule' => '0 0 1 1 ? 2000', 'task' => TTestCronRecordingTask::class, 'mode' => 'parallel'],
+			['name' => 'slowE', 'schedule' => '0 0 1 1 ? 2000', 'task' => TTestCronRecordingTask::class, 'mode' => 'Parallel'],
 		]);
 		$tasks = $this->obj->getTasks();
 		$tasks['slowC']->pause = 0.02;
@@ -880,6 +894,21 @@ class TCronModuleTest extends \PHPUnit\Framework\TestCase
 		self::assertLessThan($order['slowC end'], $order['slowD start'], 'Concurrency 2 starts the second task while the first waits');
 		self::assertGreaterThan($order['slowC end'], $order['slowE start'], 'The third task waits for a slot');
 		self::assertGreaterThan($order['slowE start'], $order['slowE end']);
+
+		TTestCronRecordingTask::$events = [];
+		$this->obj->unlisten();
+		$this->obj = new $this->baseClass();
+		$this->obj->setConcurrency(2);
+		$this->obj->init([
+			['name' => 'slowF', 'schedule' => '0 0 1 1 ? 2000', 'task' => TTestCronRecordingTask::class, 'mode' => 'Parallel'],
+			['name' => 'slowG', 'schedule' => '0 0 1 1 ? 2000', 'task' => TTestCronRecordingTask::class],
+			['name' => 'slowH', 'schedule' => '0 0 1 1 ? 2000', 'task' => TTestCronRecordingTask::class, 'mode' => 'Parallel'],
+		]);
+		foreach ($this->obj->getTasks() as $task) {
+			$task->pause = 0.02;
+		}
+		self::assertEquals(3, $this->obj->processPendingTasks());
+		self::assertEquals(['slowF start', 'slowF end', 'slowG start', 'slowG end', 'slowH start', 'slowH end'], TTestCronRecordingTask::$events, 'a Serial task waits for the running tasks, and runs alone');
 	}
 
 	public function testRunTask_UserIsTheFiberUser()
@@ -1782,6 +1811,236 @@ class TCronModuleTest extends \PHPUnit\Framework\TestCase
 			$this->obj->setAdditionalCronTasks(null);
 			self::fail('failed to throw TInvalidOperationException when cannot set due to being initialized');
 		} catch(TInvalidOperationException $e) {}
+	}
+
+
+	public function testRunTask_SkipsATriggerWhileTheRunLockIsHeld()
+	{
+		$mutex = new TMemoryMutex();
+		$this->obj->setDaemonMutex($mutex);
+		TTestCronRecordingTask::$events = [];
+		$this->obj->init([['name' => 'locked', 'schedule' => '0 0 1 1 ? 2000', 'task' => TTestCronRecordingTask::class]]);
+		$task = $this->obj->getTask('locked');
+		$lock = $this->obj->getTaskLockName('locked');
+		self::assertSame($this->obj->getDaemonLockName() . ':task:locked', $lock);
+		$other = new TMemoryMutex();
+		self::assertTrue($other->acquire($lock));
+		try {
+			self::assertFalse($this->obj->runTask($task), 'the trigger is skipped while another run holds the lock');
+			self::assertSame([], TTestCronRecordingTask::$events);
+			self::assertSame(0, $task->getProcessCount(), 'a skipped trigger is not a run');
+			self::assertFalse($task->getIsPending(), 'a skipped trigger advances the task');
+
+			$task->setOverlap(true);
+			$task->setLastExecTime(null);
+			self::assertTrue($this->obj->runTask($task), 'with Overlap the run takes no lock');
+			self::assertSame(['locked start', 'locked end'], TTestCronRecordingTask::$events);
+		} finally {
+			$other->releaseAll();
+		}
+		$task->setOverlap(false);
+		$task->setLastExecTime(null);
+		self::assertTrue($this->obj->runTask($task));
+		self::assertSame(2, $task->getProcessCount());
+		self::assertFalse($mutex->isAcquired($lock), 'the run releases its lock');
+	}
+
+	public function testRunTask_RecordsTheResultAndDuration()
+	{
+		$this->obj->setDaemonMutex(new TMemoryMutex());
+		$this->obj->init([
+			['name' => 'resultGood', 'schedule' => '0 0 1 1 ? 2000', 'task' => TTestCronRecordingTask::class],
+			['name' => 'resultBad', 'schedule' => '0 0 1 1 ? 2000', 'task' => TTestCronRecordingTask::class],
+		]);
+		$results = $this->obj->getTaskResults();
+		self::assertNull($results['resultGood']['result'], 'a task never run has no result');
+		self::assertNull($results['resultGood']['duration']);
+		self::assertSame(0, $results['resultGood']['count']);
+
+		$this->obj->getTask('resultBad')->throw = true;
+		self::assertTrue($this->obj->runTask($this->obj->getTask('resultGood')));
+		self::assertFalse($this->obj->runTask($this->obj->getTask('resultBad')));
+		foreach ([false, true] as $fresh) {
+			$results = $this->obj->getTaskResults($fresh);
+			self::assertSame(TCronModule::RESULT_OK, $results['resultGood']['result']);
+			self::assertIsFloat($results['resultGood']['duration']);
+			self::assertGreaterThanOrEqual(0.0, $results['resultGood']['duration']);
+			self::assertSame(1, $results['resultGood']['count']);
+			self::assertSame($this->obj->fakeNow, $results['resultGood']['time']);
+			self::assertSame(TCronModule::RESULT_ERROR, $results['resultBad']['result']);
+		}
+	}
+
+	public function testExecuteTask_RunsWithoutAClaim()
+	{
+		TTestCronRecordingTask::$events = [];
+		$this->obj->init([['name' => 'executed', 'schedule' => '0 0 1 1 ? 2000', 'task' => TTestCronRecordingTask::class]]);
+		$task = $this->obj->getTask('executed');
+		$last = $task->getLastExecTime();
+		self::assertSame(TCronModule::RESULT_OK, $this->obj->executeTask($task));
+		self::assertSame(['executed start', 'executed end'], TTestCronRecordingTask::$events);
+		self::assertSame(0, $task->getProcessCount(), 'the parent process claimed the run');
+		self::assertSame($last, $task->getLastExecTime());
+		$task->throw = true;
+		self::assertSame(TCronModule::RESULT_ERROR, $this->obj->executeTask($task));
+	}
+
+	public function testGetNextTriggers()
+	{
+		$this->obj->init([
+			['name' => 'nextLast', 'schedule' => '0 0 1 1 ? 2099', 'task' => TTestCronModuleTask::class],
+			['name' => 'nextSecond', 'schedule' => '0 0 1 1 ? 2098', 'task' => TTestCronModuleTask::class],
+			['name' => 'nextDue', 'schedule' => '0 0 1 1 ? 2000', 'task' => TTestCronModuleTask::class],
+		]);
+		$due = $this->obj->getTask('nextDue')->getNextTriggerTime();
+		$expected = ['nextDue' => (int) $due, 'nextSecond' => (int) mktime(0, 0, 0, 1, 1, 2098), 'nextLast' => (int) mktime(0, 0, 0, 1, 1, 2099)];
+		self::assertSame($expected, $this->obj->getNextTriggers());
+		self::assertSame(array_slice($expected, 0, 2, true), $this->obj->getNextTriggers(2, true));
+		self::assertSame([], $this->obj->getNextTriggers(0));
+	}
+
+	public function testStatusProperties()
+	{
+		self::assertNull($this->obj->getEnableStatus(), 'cron/run turns the status on unless configured');
+		$this->obj->setEnableStatus('false');
+		self::assertFalse($this->obj->getEnableStatus());
+		$this->obj->setEnableStatus(null);
+		self::assertNull($this->obj->getEnableStatus());
+		self::assertSame(Prado::getApplication()->getRuntimePath() . DIRECTORY_SEPARATOR . TCronModule::STATUS_DIRECTORY, $this->obj->getStatusPath());
+		$this->obj->setStatusPath('/srv/status');
+		self::assertSame('/srv/status', $this->obj->getStatusPath());
+		$this->obj->setStatusPath('');
+		self::assertSame(Prado::getApplication()->getRuntimePath() . DIRECTORY_SEPARATOR . TCronModule::STATUS_DIRECTORY, $this->obj->getStatusPath());
+	}
+
+	public function testStatus_PublishesTheRunsOfASweep()
+	{
+		$dir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'prado-cronstatus-' . bin2hex(random_bytes(4));
+		$this->obj->setID('cronStatusSweep');
+		$this->obj->setDaemonMutex(new TMemoryMutex());
+		$this->obj->setStatusPath($dir);
+		$this->obj->init([['name' => 'watched', 'schedule' => '0 0 1 1 ? 2000', 'task' => TTestCronStatusTask::class, 'username' => 'cron']]);
+		try {
+			self::assertEquals(1, $this->obj->processPendingTasks());
+			self::assertSame([], $this->obj->getTask('watched')->seen, 'without EnableStatus no status is published');
+
+			$this->obj->unlisten();
+			$this->obj = new $this->baseClass();
+			$this->obj->setID('cronStatusSweep');
+			$this->obj->setDaemonMutex(new TMemoryMutex());
+			$this->obj->setStatusPath($dir);
+			$this->obj->setEnableStatus(true);
+			$this->obj->init([['name' => 'watchedOn', 'schedule' => '0 0 1 1 ? 2000', 'task' => TTestCronStatusTask::class, 'username' => 'cron']]);
+			self::assertEquals(1, $this->obj->processPendingTasks());
+			$seen = $this->obj->getTask('watchedOn')->seen;
+			self::assertCount(1, $seen);
+			$status = $seen[0];
+			self::assertSame(TCronModule::STATUS_ROLE_SWEEP, $status['role']);
+			self::assertSame(getmypid(), $status['pid']);
+			self::assertSame((string) gethostname(), $status['host']);
+			self::assertTrue($status['alive']);
+			self::assertNull($status['daemon']);
+			self::assertSame(1, $status['concurrency']);
+			self::assertCount(1, $status['running']);
+			self::assertSame('watchedOn', $status['running'][0]['name']);
+			self::assertSame('Serial', $status['running'][0]['mode']);
+			self::assertSame(getmypid(), $status['running'][0]['pid']);
+			self::assertSame([], $this->obj->getStatuses(), 'the sweep removes its status when it ends');
+			self::assertSame([], glob($dir . DIRECTORY_SEPARATOR . '*'));
+		} finally {
+			foreach (glob($dir . DIRECTORY_SEPARATOR . '*') ?: [] as $file) {
+				unlink($file);
+			}
+			if (is_dir($dir)) {
+				rmdir($dir);
+			}
+		}
+	}
+
+	public function testStatus_ReadsTheProcessesAndRemovesTheEndedOnesOfThisHost()
+	{
+		$dir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'prado-cronstatus-' . bin2hex(random_bytes(4));
+		mkdir($dir);
+		$this->obj->setID('cronStatusRead');
+		$this->obj->setDaemonMutex(new TMemoryMutex());
+		$this->obj->setStatusPath($dir);
+		$now = $this->obj->fakeMicrotime;
+		$write = function (string $file, array $status) use ($dir) {
+			file_put_contents($dir . DIRECTORY_SEPARATOR . $file, json_encode($status + ['module' => 'cronStatusRead', 'started' => 1.0, 'running' => [], 'recent' => []]));
+		};
+		$write('ended.json', ['role' => 'sweep', 'host' => (string) gethostname(), 'pid' => 2147483000, 'updated' => $now]);
+		$write('daemon.json', ['role' => 'daemon', 'host' => 'elsewhere.invalid', 'pid' => 10, 'updated' => $now - 30, 'daemon' => ['wake' => $now + 30]]);
+		$write('stale.json', ['role' => 'sweep', 'host' => 'elsewhere.invalid', 'pid' => 11, 'updated' => $now - TCronModule::STATUS_STALE - 10]);
+		$write('other.json', ['module' => 'otherCron', 'role' => 'sweep', 'host' => (string) gethostname(), 'pid' => 2147483001, 'updated' => $now]);
+		file_put_contents($dir . DIRECTORY_SEPARATOR . 'broken.json', '{');
+		try {
+			$statuses = $this->obj->getStatuses();
+			self::assertSame(['daemon', 'sweep', 'sweep'], array_column($statuses, 'role'), 'the daemon is first');
+			$alive = array_column($statuses, 'alive', 'pid');
+			self::assertSame([10 => true, 2147483000 => false, 11 => false], $alive, 'another host is alive until its expected update is stale');
+			self::assertSame($dir . DIRECTORY_SEPARATOR . 'daemon.json', $statuses[0]['file']);
+
+			$this->obj->setEnableStatus(true);
+			$this->obj->init([]);
+			$this->obj->processPendingTasks();
+			self::assertFileDoesNotExist($dir . DIRECTORY_SEPARATOR . 'ended.json', 'the status of an ended process of this host is removed');
+			self::assertFileExists($dir . DIRECTORY_SEPARATOR . 'stale.json', 'the status of another host is kept');
+			self::assertFileExists($dir . DIRECTORY_SEPARATOR . 'other.json', 'the status of another module is kept');
+		} finally {
+			foreach (glob($dir . DIRECTORY_SEPARATOR . '*') ?: [] as $file) {
+				unlink($file);
+			}
+			rmdir($dir);
+		}
+	}
+
+	public function testRunDaemon_PublishesItsStatus()
+	{
+		$dir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'prado-cronstatus-' . bin2hex(random_bytes(4));
+		$this->obj->setID('cronStatusDaemon');
+		$this->obj->setDaemon(true);
+		$this->obj->setDaemonLifetime(0);
+		$this->obj->setDaemonIdle(0.05);
+		$this->obj->setDaemonMutex(new TMemoryMutex());
+		$this->obj->setWakeTransport(new TCronWakeFile($dir . '-wake'));
+		$this->obj->setStatusPath($dir);
+		$this->obj->setEnableStatus(true);
+		$this->obj->init([
+			['name' => 'daemonStatus', 'schedule' => '0 0 1 1 ? 2000', 'task' => TTestCronModuleTask::class],
+			['name' => 'daemonStatusLater', 'schedule' => '0 0 1 1 ? 2099', 'task' => TTestCronModuleTask::class],
+		]);
+		$this->obj->getTask('daemonStatus')->testunit = $this;
+		$seen = [];
+		$this->obj->attachEventHandler('OnDaemonIdle', function ($sender, $param) use (&$seen) {
+			$seen[] = $this->obj->getStatuses();
+			if (count($seen) >= 2) {
+				$this->obj->stopDaemon();
+			}
+		});
+		try {
+			self::assertEquals(1, $this->obj->processPendingTasks());
+			self::assertCount(2, $seen);
+			$daemon = $seen[1][0];
+			self::assertSame(TCronModule::STATUS_ROLE_DAEMON, $daemon['role']);
+			self::assertSame(TCronModule::DAEMON_STATE_RUNNING, $daemon['daemon']['state']);
+			self::assertSame(TCronWakeFile::class, $daemon['daemon']['transport']);
+			self::assertSame($this->obj->getDaemonLockName(), $daemon['daemon']['lock']);
+			self::assertSame(1, $daemon['daemon']['sweeps']);
+			self::assertSame(1, $daemon['daemon']['tasks']);
+			self::assertIsFloat($daemon['daemon']['wake']);
+			self::assertSame(['daemonStatusLater'], array_keys($daemon['daemon']['next']));
+			self::assertSame([], $this->obj->getStatuses(), 'the daemon removes its status when it ends');
+		} finally {
+			foreach (glob($dir . DIRECTORY_SEPARATOR . '*') ?: [] as $file) {
+				unlink($file);
+			}
+			if (is_dir($dir)) {
+				rmdir($dir);
+			}
+			if (is_file($dir . '-wake')) {
+				unlink($dir . '-wake');
+			}
+		}
 	}
 
 }

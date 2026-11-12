@@ -3,9 +3,11 @@
 namespace Prado\Test\Unit\Util\Cron;
 
 use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Prado;
 use Prado\TModule;
 use Prado\Util\Cron\TCronTask;
+use Prado\Util\Cron\TCronTaskMode;
 
 class TTestCronTask extends TCronTask 
 {
@@ -131,6 +133,32 @@ class TCronTaskTest extends \PHPUnit\Framework\TestCase
 		return true;
 	}
 	
+	public function testMode()
+	{
+		self::assertSame(TCronTaskMode::Serial, $this->obj->getMode());
+		$this->obj->setMode('parallel');
+		self::assertSame(TCronTaskMode::Parallel, $this->obj->getMode(), 'the mode is case-insensitive');
+		$this->obj->setMode(TCronTaskMode::Process);
+		self::assertSame(TCronTaskMode::Process, $this->obj->getMode());
+		self::assertStringContainsString('_mode', serialize($this->obj), 'a mode other than Serial is serialized');
+		$this->obj->setMode('Serial');
+		self::assertStringNotContainsString('_mode', serialize($this->obj), 'the default mode is not serialized');
+		self::expectException(TInvalidDataValueException::class);
+		$this->obj->setMode('Fork');
+	}
+
+	public function testOverlap()
+	{
+		self::assertFalse($this->obj->getOverlap());
+		self::assertStringNotContainsString('_overlap', serialize($this->obj));
+		$this->obj->setOverlap('true');
+		self::assertTrue($this->obj->getOverlap());
+		$copy = unserialize(serialize($this->obj));
+		self::assertTrue($copy->getOverlap());
+		$this->obj->setOverlap(false);
+		self::assertFalse($this->obj->getOverlap());
+	}
+
 	public function testProcessCount()
 	{
 		$value = rand();

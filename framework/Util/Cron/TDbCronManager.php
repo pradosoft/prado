@@ -496,7 +496,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 
 	/**
 	 * Checks for the table once per request: a missing table is created when {@see getAutoCreateCronTable AutoCreateCronTable}
-	 * allows, and a table created before 4.4.0 gains the `nextexectime` column.
+	 * allows, and a table created before 4.4.0 gains the `nextexectime`, `lastresult`, and `lastduration` columns.
 	 * @throws TConfigurationException if the table does not exist and cannot autoCreate
 	 */
 	protected function ensureTable()
@@ -511,16 +511,18 @@ class TDbCronManager extends TCronModule implements IDbModule
 			$this->createDbTable();
 		}
 		$this->ensureNextExecTimeColumn();
+		$this->ensureResultColumns();
 		$this->_tableEnsured = true;
 	}
 
 	/**
 	 * Brings the cron table up to date for the running version: a missing table is created, whatever
 	 * {@see getAutoCreateCronTable AutoCreateCronTable} says, and a table created before 4.4.0 gains the
-	 * `nextexectime` column with its index and values.  The `cron/migrate` shell action calls this as a
-	 * deployment step; {@see ensureTable} does the same on first use.
-	 * @return array{created: bool, column: ?int} whether the table was created, and the active rows given
-	 *   a `nextexectime` when the column was added, null when the column existed
+	 * `nextexectime` column with its index and values, and the `lastresult` and `lastduration` columns.  The
+	 * `cron/migrate` shell action calls this as a deployment step; {@see ensureTable} does the same on first use.
+	 * @return array{created: bool, column: ?int, results: bool} whether the table was created, the active rows
+	 *   given a `nextexectime` when the column was added (null when the column existed), and whether the result
+	 *   columns were added
 	 * @since 4.4.0
 	 */
 	public function migrateTable(): array
@@ -530,8 +532,9 @@ class TDbCronManager extends TCronModule implements IDbModule
 			$this->createDbTable();
 		}
 		$column = $this->ensureNextExecTimeColumn();
+		$results = $this->ensureResultColumns();
 		$this->_tableEnsured = true;
-		return ['created' => $created, 'column' => $column];
+		return ['created' => $created, 'column' => $column, 'results' => $results];
 	}
 
 	/**
@@ -589,6 +592,22 @@ class TDbCronManager extends TCronModule implements IDbModule
 	}
 
 	/**
+	 * Adds the `lastresult` and `lastduration` columns to a cron table created before 4.4.0.
+	 * @return bool whether the columns were added
+	 * @since 4.4.0
+	 */
+	protected function ensureResultColumns(): bool
+	{
+		if ($this->columnExists('lastresult')) {
+			return false;
+		}
+		$db = $this->getDbConnection();
+		$db->createCommand('ALTER TABLE ' . $this->_tableName . ' ADD COLUMN lastresult VARCHAR (16) NULL DEFAULT NULL')->execute();
+		$db->createCommand('ALTER TABLE ' . $this->_tableName . ' ADD COLUMN lastduration VARCHAR (20) NULL DEFAULT NULL')->execute();
+		return true;
+	}
+
+	/**
 	 * Names an index of the cron table after the table.  SQLite and PostgreSQL scope index names to
 	 * the schema, so two cron tables in one database need distinct index names.
 	 * @param string $suffix the index suffix: `tname`, `tclass`, `tnext`, `tuser`, or `tactive`
@@ -633,6 +652,8 @@ class TDbCronManager extends TCronModule implements IDbModule
 			`processcount` INT NOT NULL DEFAULT 0,
 			`lastexectime` VARCHAR (20) NULL DEFAULT NULL,
 			`nextexectime` INT NULL DEFAULT NULL,
+			`lastresult` VARCHAR (16) NULL DEFAULT NULL,
+			`lastduration` VARCHAR (20) NULL DEFAULT NULL,
 			`active` BOOLEAN NULL
 			)' . $postIndices;
 
@@ -678,19 +699,20 @@ class TDbCronManager extends TCronModule implements IDbModule
 	/**
 	 * Claims the run of a task: updates the LastExecTime, ProcessCount, and next execution time in the
 	 * database on the condition that the row's next execution time is still the one this process read,
-	 * so of several cron processes (hosts) that found the task pending only one runs it.  A task with
-	 * {@see \Prado\Util\Cron\TCronTask::getAutoRemove AutoRemove} is removed.  A task without a row,
-	 * a runtime task that is not persisted, is always claimed.
+	 * so of several cron processes (hosts) that found the task pending only one runs it.  A skipped
+	 * trigger claims without counting a run.  A task with {@see \Prado\Util\Cron\TCronTask::getAutoRemove AutoRemove}
+	 * is removed after a run.  A task without a row, a runtime task that is not persisted, is always claimed.
 	 * @param TCronTask $task
+	 * @param bool $run whether the task runs; false for a skipped trigger
 	 * @return bool whether this process claimed the run; false when another process did
 	 */
-	protected function updateTaskInfo($task)
+	protected function updateTaskInfo($task, bool $run = true)
 	{
 		$name = $task->getName();
 		$priorTime = $task->getLastExecTime();
 		$priorCount = $task->getProcessCount();
 		$task->setLastExecTime($time = $this->time());
-		$task->setProcessCount($count = ($priorCount + 1));
+		$task->setProcessCount($count = ($priorCount + ($run ? 1 : 0)));
 
 		$row = $this->_taskRows[$name] ?? null;
 		$seen = ($row === null) ? null : $row['nextexectime'];
@@ -722,10 +744,73 @@ class TDbCronManager extends TCronModule implements IDbModule
 			$this->_taskRows[$name]['options'] = $serial;
 		}
 
-		if ($count && $task->getAutoRemove()) {
+		if ($run && $count && $task->getAutoRemove()) {
 			$this->removeTaskInternal($task);
 		}
 		return true;
+	}
+
+	/**
+	 * Records the result of a run and the seconds it took in the task's row.
+	 * @param TCronTask $task the task
+	 * @param string $result the run's result
+	 * @param float $duration the seconds the run took
+	 * @since 4.4.0
+	 */
+	protected function updateTaskResult($task, string $result, float $duration)
+	{
+		$db = $this->getDbConnection();
+		$cmd = $db->createCommand("UPDATE {$this->_tableName} SET lastresult=:result, lastduration=:duration WHERE name=:name AND active IS NOT NULL");
+		$cmd->bindValue(":result", $result, $db::PARAM_STR);
+		$cmd->bindValue(":duration", (string) round($duration, 6), $db::PARAM_STR);
+		$cmd->bindValue(":name", $task->getName(), $db::PARAM_STR);
+		$cmd->execute();
+	}
+
+	/**
+	 * Returns the run information of each task from its row.
+	 * @param bool $fresh unused; the rows are always read
+	 * @return array<string, array{time: ?int, count: int, result: ?string, duration: ?float}> the run information, by task name
+	 * @since 4.4.0
+	 */
+	public function getTaskResults(bool $fresh = false): array
+	{
+		$this->ensureTable();
+		parent::ensureTasks();
+		$results = [];
+		$rows = $this->getDbConnection()->createCommand("SELECT name, lastexectime, processcount, lastresult, lastduration FROM {$this->_tableName} WHERE active IS NOT NULL")->query()->readAll();
+		foreach ($rows as $row) {
+			$results[$row['name']] = [
+				'time' => ($row['lastexectime'] === null) ? null : (int) $row['lastexectime'],
+				'count' => (int) $row['processcount'],
+				'result' => $row['lastresult'],
+				'duration' => ($row['lastduration'] === null) ? null : (float) $row['lastduration'],
+			];
+		}
+		return $results;
+	}
+
+	/**
+	 * Returns the soonest next triggers of the tasks from their rows.
+	 * @param int $limit the number of triggers to return
+	 * @param bool $fresh unused; the rows are always read
+	 * @return array<string, int> the trigger times, by task name, soonest first
+	 * @since 4.4.0
+	 */
+	public function getNextTriggers(int $limit = 10, bool $fresh = false): array
+	{
+		$this->ensureTable();
+		parent::ensureTasks();
+		$limit = max(0, $limit);
+		if ($limit === 0) {
+			return [];
+		}
+		$rows = $this->getDbConnection()->createCommand("SELECT name, nextexectime FROM {$this->_tableName} WHERE active IS NOT NULL AND nextexectime IS NOT NULL ORDER BY nextexectime ASC, name ASC" . $this->limitClause($limit, 0))->query()->readAll();
+		$triggers = [];
+		foreach ($rows as $row) {
+			$triggers[$row['name']] = (int) $row['nextexectime'];
+		}
+		return $triggers;
 	}
 
 	/**

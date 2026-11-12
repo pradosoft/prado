@@ -61,6 +61,8 @@ class TShellDbCronActionTest extends \PHPUnit\Framework\TestCase
 		$cronClass = $this->getTestCronClass();
 		$cron = new $cronClass();
 		$cron->setId('cronmodule88');
+		$statusDir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'prado-cronstatus-' . bin2hex(random_bytes(4));
+		$cron->setStatusPath($statusDir);
 		$cron->init($jobs);
 		
 		$ttask = new TTestCronModuleTask();
@@ -81,6 +83,8 @@ class TShellDbCronActionTest extends \PHPUnit\Framework\TestCase
 			self::assertTrue($ntask === $task);
 			self::assertEquals(1, $task->getProcessCount());
 			self::assertEquals(1, $ttask->getProcessCount());
+			self::assertSame([], glob($statusDir . DIRECTORY_SEPARATOR . '*'), 'the sweep removed its status file');
+			rmdir($statusDir);
 			$this->writer->flush();
 		}
 		self::assertTrue(is_object($cron->asa(TCronModule::SHELL_LOG_BEHAVIOR)));

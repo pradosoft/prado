@@ -9,13 +9,15 @@ Cron-style scheduled task engine for the Prado framework. Supports both file-con
 
 ## Classes
 
-- **`TCronModule`** — Main cron scheduler [`TModule`](../../TModule.md). Parses cron schedule expressions (standard Linux `minute hour day month dayOfWeek` format plus special expressions like `@daily`, `@hourly`). Registers tasks and triggers execution. Designed to be called periodically by the system crontab (the `prado-cli cron/run` shell action). Runs each due task in a fiber of its own as the task's user (`TFiberContext`), `Concurrency` tasks at once (default 1), with a `TaskTimeout` deadline and an exception boundary per task (4.4.0).
+- **`TCronModule`** — Main cron scheduler [`TModule`](../../TModule.md). Parses cron schedule expressions (standard Linux `minute hour day month dayOfWeek` format plus special expressions like `@daily`, `@hourly`). Registers tasks and triggers execution. Designed to be called periodically by the system crontab (the `prado-cli cron/run` shell action). Runs each due task in a fiber of its own as the task's user (`TFiberContext`) by the task's `Mode`: `Serial` alone, `Parallel` up to `Concurrency` at once, or `Process` in a child `cron/exec` process; with a `TaskTimeout` deadline, a run lock unless the task's `Overlap`, an exception boundary, and a recorded result per run. Cron processes publish their live status (`EnableStatus`, `getStatuses()`), which `prado-cli cron/top` shows (4.4.0).
 
 - **`TDbCronManager`** — Extends `TCronModule` with database-backed task storage. Supports dynamic task CRUD, execution logging, runtime task queuing (onEndRequest), and permission-gated CLI management. **Since 4.3.3.**
 
 - **`TDbCronModule`** — Deprecated alias for `TDbCronManager` (since 4.3.3). Scheduled for removal in v4.4. Existing configs continue to work.
 
-- **`TCronTask`** — Abstract base for cron tasks. Implement `execute(TCronTaskInfo)`. Properties: `Name`, `Schedule`. Methods: `init()`, `run()`.
+- **`TCronTask`** — Abstract base for cron tasks. Implement `execute($cronModule)`. Properties: `Name`, `Schedule`, `UserName`, `Timeout`, `Mode`, `Overlap`.
+
+- **`TCronTaskMode`** — The `TEnumerable` of a task's `Mode`: `Serial`, `Parallel`, `Process`. **Since 4.4.0.**
 
 - **`TCronMethodTask`** — Concrete task that calls a method on a module or class. Method and parameters are configured externally.
 
@@ -29,7 +31,7 @@ Cron-style scheduled task engine for the Prado framework. Supports both file-con
 
 - **`TDbCronCleanLogTask`** — Pre-built task that auto-purges old cron log entries from the database.
 
-- **`TShellCronAction`** — CLI action listing the tasks (`prado-cli cron`, the default action since 4.4.0) and running the pending ones (`prado-cli cron/run`).
+- **`TShellCronAction`** — CLI action listing the tasks (`prado-cli cron`, the default action since 4.4.0), running the pending ones (`prado-cli cron/run`), the live view (`cron/top`), and a Process task's child (`cron/exec`).
 
 - **`TShellDbCronAction`** — CLI action for managing database-backed cron tasks.
 
@@ -51,7 +53,7 @@ With `Daemon="true"` the crontab tick `prado-cli cron/run` elects a daemon inste
 
 Several hosts may each run a daemon or per-minute sweeps against one cron table: `TDbCronManager::updateTaskInfo()` claims a run with `UPDATE ... WHERE nextexectime = <the value this process read>` and runs the task only when its row was affected, so one process runs each trigger.
 
-**End-to-end test.** The unit tests drive `runDaemon()` in one process with a pinned clock. `tests/cron-daemon/run.php` (`composer crontest`, a CI step on Linux, macOS, and Windows) runs real `prado-cli cron/run` ticks every 3 s, with a crontab's minimal environment, against a throwaway SQLite application in the temp directory, and reads the daemon's `fxCronDaemonStart`/`fxCronDaemonEnd` and task runs from a JSON-lines log (`tests/cron-daemon/app/CronE2EProbe.php`, `CronE2ETask.php`). The `handoff` scenario checks lifetime handoffs, a daemon killed by SIGTERM (terminated on Windows) and replaced by the next tick, `cron/stop`, no 2-second trigger run twice or missed, and that a tick not elected exits at once. The `wake` scenario checks that a task `cron/add` schedules from another process runs at its second while the daemon idles for 30 s, through the default `TCronWakeSocket` (`udg`, or `udp` on Windows). A failed scenario prints its event log and keeps its directory.
+**End-to-end test.** The unit tests drive `runDaemon()` in one process with a pinned clock. `tests/cron-daemon/run.php` (`composer crontest`, a CI step on Linux, macOS, and Windows) runs real `prado-cli cron/run` ticks every 3 s, with a crontab's minimal environment, against a throwaway SQLite application in the temp directory, and reads the daemon's `fxCronDaemonStart`/`fxCronDaemonEnd` and task runs from a JSON-lines log (`tests/cron-daemon/app/CronE2EProbe.php`, `CronE2ETask.php`). The `handoff` scenario checks lifetime handoffs, a daemon killed by SIGTERM (terminated on Windows) and replaced by the next tick, `cron/stop`, no 2-second trigger run twice or missed, and that a tick not elected exits at once. The `wake` scenario checks that a task `cron/add` schedules from another process runs at its second while the daemon idles for 30 s, through the default `TCronWakeSocket` (`udg`, or `udp` on Windows). The `process` scenario runs a 5-second Process task every 3 s beside a 2-second Serial task: the Process task runs in `cron/exec` children one at a time (the run lock skips the triggers that come while it runs), the Serial task keeps its schedule in the daemon, the daemon's status file lists the child, `cron/top` and `cron/tasks` show it, and the daemon waits for the child before it ends. A failed scenario prints its event log and keeps its directory.
 
 ## Runtime Tasks & `deferTask`
 

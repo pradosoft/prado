@@ -9,9 +9,9 @@
 **Extends:** `TShellAction`
 
 ## Overview
-`TShellCronAction` provides the `cron` CLI action for running and inspecting [`TCronModule`](TCronModule.md) from the command line. Sub-commands: `tasks` (the default action: list configured tasks with schedule/last-run/next-run info, filtered by task name and `@user`), `run` (execute pending tasks; the system crontab entry), `index` (list all registered task infos from `fxGetCronTaskInfos`), and the daemon commands `daemon` (state), `retire` (hand the lease to the next tick with no gap), and `stop` (end at once).
+`TShellCronAction` provides the `cron` CLI action for running and inspecting [`TCronModule`](TCronModule.md) from the command line. Sub-commands: `tasks` (the default action: list configured tasks with schedule, mode, last run and result, next run, and running state, filtered by task name and `@user`), `run` (execute pending tasks; the system crontab entry), `top` (the live view of the cron processes), `exec` (run one task in this process: the child of a Process task), `index` (list all registered task infos from `fxGetCronTaskInfos`), and the daemon commands `daemon` (state), `retire` (hand the lease to the next tick with no gap), and `stop` (end at once).
 
-When the application user has the `TUserPermissionsBehavior`, the constructor removes `run`, `retire`, and `stop` without `cron_run_pending` (`removeShellMethod()`), and `tasks` is limited to the user's own tasks without `cron_read_tasks` (4.4.0).
+When the application user has the `TUserPermissionsBehavior`, the constructor removes `run`, `exec`, `retire`, and `stop` without `cron_run_pending` (`removeShellMethod()`), and `tasks` is limited to the user's own tasks without `cron_read_tasks` (4.4.0).
 
 [`TDbCronManager`](TDbCronManager.md) replaces the shell class with [`TShellDbCronAction`](TShellDbCronAction.md) in its constructor, which extends this class with add/update/remove/log/flush commands.
 
@@ -20,6 +20,8 @@ When the application user has the `TUserPermissionsBehavior`, the constructor re
 ```bash
 php prado-cli.php /app cron [name] [@user]    # display configured tasks (schedule, last run, next run, count); the default action (4.4.0)
 php prado-cli.php /app cron/run               # run pending cron tasks; the system crontab entry
+php prado-cli.php /app cron/top [seconds] [count]   # live view of the cron processes, running tasks, next triggers, last results (4.4.0)
+php prado-cli.php /app cron/exec <name>       # run one task in this process; the child of a Process task (4.4.0)
 php prado-cli.php /app cron/index             # display registered task info from fxGetCronTaskInfos
 php prado-cli.php /app cron/daemon            # running, retiring, or no daemon (4.4.0)
 php prado-cli.php /app cron/retire [seconds]  # retire the daemon: the next cron/run tick takes over with no gap (4.4.0)
@@ -34,8 +36,10 @@ Name and user filters are patterns: `_` is a wild card and `%` a wild string. A 
 
 - `getModuleClass()` — returns `TCronModule::class`; override in subclasses to target a different module type
 - `getCronModule()` — finds and returns the first `TCronModule` instance from the application modules
-- `actionRun($args)` — calls `processPendingTasks()` on the cron module; with `Daemon` this elects or defers to the cron daemon (see [TCronModule](TCronModule.md#daemon-mode-440))
-- `actionTasks($args)` — displays task table: name, schedule, last run, next run, user, run count; through `getTasks()` or `getUserTasks()`
+- `actionRun($args)` — turns on the module's `EnableStatus` when it is unset, then calls `processPendingTasks()`; with `Daemon` this elects or defers to the cron daemon (see [TCronModule](TCronModule.md#daemon-mode-440))
+- `actionTasks($args)` — displays task table: name, schedule, task, mode, last run, last result and seconds (`getTaskResults()`), next run, user, run count, and state (`running`, or `pid <id>` for a Process task's child, from `getStatuses()`); through `getTasks()` or `getUserTasks()`
+- `actionTop($args)` — `renderTop()` once, or in a terminal (`isInteractive()`) every `[seconds]` (default 1) after clearing the screen, until interrupted or `[count]` views (4.4.0). A view has a line per cron process (`getStatuses()`: role, pid, host, uptime; for the daemon its state, wake transport, next sweep, and sweep and task counts), the concurrency, then tables of the running tasks, the next triggers (`getNextTriggers(…, true)`), and the last results (`getTaskResults(true)`), at most `TOP_ROWS` (10) each, limited to the tasks the user may read. `flushView()` and `sleep()` are the test seams.
+- `actionExec($args)` — `executeTask()` on the named task without claiming it; throws `TExitException` with `TCronModule::EXIT_ERROR`, `EXIT_NO_TASK`, or `EXIT_DENIED` (4.4.0)
 - `actionIndex($args)` — displays task info from `fxGetCronTaskInfos`
 - `actionDaemon($args)`, `actionRetire($args)`, `actionStop($args)` — `getDaemonState()`, `requestDaemonRetire()`, `requestDaemonStop()` on the module (4.4.0)
 - `time()` — protected clock seam for the displayed dates (4.4.0)

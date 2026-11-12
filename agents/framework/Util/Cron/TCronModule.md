@@ -145,23 +145,56 @@ Each `on` event of the module is also broadcast as a global event, so a module d
 ],
 ```
 
-### Concurrency and the task fiber (4.4.0)
+### Task modes, the run lock, and the task fiber (4.4.0)
 
-`processPendingTasks()` hands the due tasks to `runTasks()`, which starts each one in a fiber of its own through [`TAsync::run()`](../../IO/Async/TAsync.md) and keeps at most `Concurrency` (default 1) running; `awaitTasks()` waits on the loop (`TAsync::any()->await()`) for a slot. A task that pauses through `TAsync::sleep()` or awaits a `TFuture` yields to the other tasks; a task that never waits runs to completion before the next starts, as before. The crontab minute limit applies to starting a task, not to one already running.
+`processPendingTasks()` hands the due tasks to `runTasks()`, which starts each one in a fiber of its own through [`TAsync::run()`](../../IO/Async/TAsync.md). The task's `Mode` ([`TCronTaskMode`](TCronTask.md#mode-and-overlap-440)) decides how:
+
+| Mode | Runs | The sweep |
+|---|---|---|
+| `Serial` (default) | alone in the cron process, after the running tasks finish | waits for it |
+| `Parallel` | in a fiber beside the other Parallel tasks, at most `Concurrency` (default 1) at once | waits for it |
+| `Process` | in a child `prado-cli --quiet=1 cron/exec <task>` process (`TProcess`, `proc_open`) | does not wait; `awaitProcessRuns()` does |
+
+`awaitTasks()` waits on the loop (`TAsync::any()->await()`) for a slot. A Parallel task that pauses through `TAsync::sleep()` or awaits a `TFuture` yields to the other tasks; one that blocks in PHP code holds the process. The crontab minute limit applies to starting a task, not to one already running. A `cron/run` sweep returns after its Process tasks finish; a daemon releases the lease, then waits for its Process tasks before it ends.
 
 `runTask($task)` runs the task in the current fiber and returns whether it ran without an exception:
 
 | Step | Detail |
 |---|---|
-| User | `resolveTaskUser()` → the task's `UserName`, else `DefaultUserName`, from the `UserManager`; else a guest clone of the application user; without a user manager the current user. The user goes into [`TFiberContext`](../../IO/Async/TFiberContext.md) under `TApplication::USER_CONTEXT_KEY`, so `TApplication::getUser()` returns it inside the task and the application user is untouched. `onSetUser` is raised for the task user and again for the restored user. |
-| Deadline | `$task->Timeout ?? $this->TaskTimeout` (seconds, null for none) becomes a [`TCancellationToken`](../../IO/Async/TCancellationToken.md) in `TCronTask::getCancellationToken()` for the run; a cooperative task passes it to its waits. The token is cleared after the run, which cancels its timer. |
-| Boundary | An exception from `execute()` goes to `logCronTaskError()`: an ERROR log entry and `dyLogCronTaskError($task, $exception)` (written to the shell by [`TShellCronLogBehavior`](TShellCronLogBehavior.md)); the sweep continues. `logCronTask()` and `updateTaskInfo()` run outside the boundary. |
+| User | `runAsTaskUser()` → `resolveTaskUser()`: the task's `UserName`, else `DefaultUserName`, from the `UserManager`; else a guest clone of the application user; without a user manager the current user. The user goes into [`TFiberContext`](../../IO/Async/TFiberContext.md) under `TApplication::USER_CONTEXT_KEY`, so `TApplication::getUser()` returns it inside the task and the application user is untouched. `onSetUser` is raised for the task user and again for the restored user. |
+| Permission | a `dyRunTask` denial is logged, claims the run, and records `RESULT_DENIED`. |
+| Run lock | without the task's `Overlap`, the run holds `getTaskLockName($name)` (`<lease>:task:<name>`) in the `DaemonMutex`. When another run holds it, the trigger is skipped: `updateTaskInfo($task, false)` advances the task without counting a run. The default `TFileMutex` locks per host; a shared mutex (`TDbMutex`, `TRedisMutex`) locks across hosts. |
+| Claim | `updateTaskInfo()`; a run another process claimed is skipped. |
+| Run | `invokeTask()` in this fiber, or `runTaskProcess()` for a Process task. |
+| Deadline | `$task->Timeout ?? $this->TaskTimeout` (seconds, null for none) becomes a [`TCancellationToken`](../../IO/Async/TCancellationToken.md) in `TCronTask::getCancellationToken()` for the run; a cooperative task passes it to its waits. A Process child that outlives it by `PROCESS_TIMEOUT_GRACE` (5 s) is terminated (SIGTERM, then SIGKILL): `RESULT_TIMEOUT`. |
+| Boundary | An exception from `execute()` goes to `logCronTaskError()`: an ERROR log entry and `dyLogCronTaskError($task, $exception)` (written to the shell by [`TShellCronLogBehavior`](TShellCronLogBehavior.md)); the sweep continues. |
+| Result | `updateTaskResult($task, $result, $seconds)` stores `RESULT_OK`, `RESULT_ERROR`, `RESULT_DENIED`, or `RESULT_TIMEOUT` and the run's seconds: in the global state (`lastResult`, `lastDuration`), or the `lastresult` and `lastduration` columns of `TDbCronManager`. `getTaskResults($fresh)` reads them with the last run time and count. |
+
+The Process child is `getTaskProcessCommand($task)`: `PHP_BINARY` (under a web SAPI, `php` in `PHP_BINDIR`), `bin/prado-cli.php`, `-d=<application base path>`, `--quiet=1`, `cron/exec`, and the task name. Its standard input is the null device; it writes to the cron process's standard output and error. `cron/exec` runs `executeTask($task)`: the user, permission, and deadline of `runTask()` without the run lock, claim, or result, which the parent holds. Its exit code is the result: 0, `EXIT_ERROR` (1), `EXIT_NO_TASK` (2), or `EXIT_DENIED` (3).
 
 ```xml
 <module id="cron" class="Prado\Util\Cron\TCronModule" Concurrency="4" TaskTimeout="300">
-    <job Name="slow" Schedule="*/5 * * * *" Task="MyApp\SlowTask" Timeout="60" />
+    <job Name="fetch" Schedule="*/5 * * * *" Task="MyApp\FeedFetchTask" Mode="Parallel" Timeout="60" />
+    <job Name="report" Schedule="0 2 * * *" Task="MyApp\ReportTask" Mode="Process" Timeout="3600" />
+    <job Name="index" Schedule="* * * * *" Task="MyApp\IndexTask" Overlap="true" />
 </module>
 ```
+
+### Live status (4.4.0)
+
+With `EnableStatus`, a cron process publishes its live status to a JSON file in `StatusPath` (default `cronstatus` in the runtime path), named by module ID, host, and process ID. `cron/run` turns it on when the property is unset (null); set `EnableStatus="false"` to keep it off. The file is written through a temporary file renamed over it, on each run's start and end and before each daemon wait, and removed when the process ends. A write failure is a WARNING log entry.
+
+`getStatuses()` reads the statuses of the module's processes:
+
+| Key | Content |
+|---|---|
+| `role`, `pid`, `host`, `php`, `started`, `updated`, `concurrency` | the process (`STATUS_ROLE_DAEMON` or `STATUS_ROLE_SWEEP`) |
+| `daemon` | null for a sweep; `state` (`running`, `retiring`, or `ending` while it waits for its Process tasks), `lock`, `transport`, `watching`, `lifetime`, `idle`, `sweeps`, `tasks`, `wake` (the next sweep's time), `next` (the next triggers) |
+| `running` | each run: `name`, `mode`, `user`, `started`, `deadline`, `pid` (the child of a Process task) |
+| `recent` | the last `STATUS_RECENT` (20) finished runs, newest first, with `result` and `duration` |
+| `alive` | a process of this host is checked by its ID (`EPERM` counts as running); another host's is alive until `STATUS_STALE` (120 s) past its expected update |
+
+A process that starts publishing removes the status files of this host's ended processes. `getNextTriggers($limit, $fresh)` and `getTaskResults($fresh)` read the stored run information (`$fresh` reloads the global state from the state persister; `TDbCronManager` always reads its rows), which `cron/top` uses to stay current.
 
 ### fxGetCronTaskInfos
 
@@ -260,6 +293,13 @@ php prado-cli.php /path/to/app cron [name] [@user]
 # Run all pending tasks (the system crontab entry):
 php prado-cli.php /path/to/app cron/run
 
+# Show the cron processes, running tasks, next triggers, and last results; a terminal redraws
+# every [seconds] (default 1) until Ctrl-C or [count] views; otherwise one view:
+php prado-cli.php /path/to/app cron/top [seconds] [count]
+
+# Run one task in this process (the child of a Process task):
+php prado-cli.php /path/to/app cron/exec <name>
+
 # Manage DB cron tasks and the log (TDbCronManager):
 php prado-cli.php /path/to/app cron/add <name> <task-id> <schedule> [properties...]
 php prado-cli.php /path/to/app cron/update <name> [properties...]
@@ -275,5 +315,9 @@ php prado-cli.php /path/to/app cron/migrate
 - **Last-run tracking** — stored in application global state. If global state is cleared, tasks may run again immediately.
 - **User context** — tasks can run as a specific user via `UserName` property (requires `TUserManager` to be configured). The user is the task fiber's user in `TFiberContext`, so a task that calls `$app->setUser()` changes only its own fiber.
 - **A task future never rejects** — `runTask()` catches the task's exception; a rejection of the `TAsync::run()` future means `logCronTaskError()` itself threw.
-- **Deadlines are cooperative** — a task that blocks in PHP code is not interrupted by its `Timeout`; only a wait that takes the token ends.
+- **Deadlines are cooperative** — a task that blocks in PHP code is not interrupted by its `Timeout`; only a wait that takes the token ends. A Process task's child is terminated after its timeout and `PROCESS_TIMEOUT_GRACE`.
+- **Concurrency applies to Parallel tasks only** — Serial tasks (the default) run alone whatever `Concurrency` is.
+- **A Process task is found by name in the child** — a configured task or a `TDbCronManager` row; an in-memory runtime task (`addRuntimeTask()` without a row) is not found, and its run is `RESULT_ERROR`.
+- **A request cron waits for its Process tasks** — `processPendingTasks()` on `OnEndRequest` returns after the children exit.
+- **No fork mode** — a Process task starts a fresh PHP process; forking the cron process would share its database connections, locks, and wake transport with the child.
 - **`fxGetCronTaskInfos`** — the standard hook for modules to self-register maintenance tasks. Always prefer this over manual task registration.

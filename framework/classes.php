@@ -398,6 +398,7 @@ return [
 'TCronTask' => 'Prado\Util\Cron\TCronTask',
 'TCronSweepEventParameter' => 'Prado\Util\Cron\TCronSweepEventParameter',
 'TCronTaskInfo' => 'Prado\Util\Cron\TCronTaskInfo',
+'TCronTaskMode' => 'Prado\Util\Cron\TCronTaskMode',
 'TCronWakeCache' => 'Prado\Util\Cron\Wake\TCronWakeCache',
 'TCronWakeFile' => 'Prado\Util\Cron\Wake\TCronWakeFile',
 'TCronWakeFifo' => 'Prado\Util\Cron\Wake\TCronWakeFifo',
