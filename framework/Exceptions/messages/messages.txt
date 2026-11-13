@@ -94,6 +94,8 @@ appconfig_parameters_invalid			= Application configuration <parameters> cannot c
 appconfig_parameters_final_unsupported	= Application parameter ''{0}'' is final, but the application parameters {1} cannot finalize parameters. TApplication::newParameters() must return a TApplicationParameters.
 module_config_class_required			= {0} <{1}> configuration element must have a class.
 module_config_component_invalid		= {0} <{1}> class ''{2}'' is not a {3}.
+module_config_properties_invalid		= {0} <{1}> configuration element properties must be an array.
+module_config_properties_unsupported	= {0} <{1}> class ''{2}'' is not a TComponent and cannot take properties.
 appparameters_final						= Application parameter ''{0}'' is final and cannot be changed.
 
 securitymanager_validationkey_invalid	= TSecurityManager.ValidationKey must not be empty.
@@ -446,7 +448,6 @@ bulletedlist_selectedvalue_unsupported	= TBulletedList.SelectedValue is read-onl
 radiobuttonlist_selectedindices_unsupported	= TRadioButtonList.SelectedIndices is read-only.
 
 logrouter_configfile_invalid			= TLogRouter.ConfigFile ''{0}'' does not exist.
-logrouter_routeclass_required			= Class attribute is required in <route> configuration.
 logrouter_routetype_invalid					= Log route must be an instance of TLogRoute or its derived class.
 
 dblogroute_connectionid_invalid			= TDbLogRoute unable to create the Database Connection ID ''{0}''.
