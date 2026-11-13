@@ -40,6 +40,12 @@ class TApplicationComponent extends \Prado\TComponent
 	 */
 	public const FX_CACHE_FILE = 'fxevent.cache';
 	/**
+	 * @var ?array<string, string[]> the Performance-mode fx-event lists, keyed by class name;
+	 *   null until the {@see FX_CACHE_FILE} is first read in the process.
+	 * @since 4.3.3
+	 */
+	private static ?array $_classFx = null;
+	/**
 	 * TApplicationComponents auto listen to global events.
 	 *
 	 * @return bool returns whether or not to listen.
@@ -65,17 +71,15 @@ class TApplicationComponent extends \Prado\TComponent
 		if ($app === null || $app->getMode() !== TApplicationMode::Performance) {
 			return parent::getClassFxEvents($class);
 		}
-		static $_classfx = null;
-
 		$cacheFile = $app->getRuntimePath() . DIRECTORY_SEPARATOR . self::FX_CACHE_FILE;
-		$_classfx ??= static::readFxCache($cacheFile);
+		self::$_classFx ??= static::readFxCache($cacheFile);
 		$className = $class::class;
-		if (array_key_exists($className, $_classfx)) {
-			return $_classfx[$className];
+		if (array_key_exists($className, self::$_classFx)) {
+			return self::$_classFx[$className];
 		}
 		$fx = parent::getClassFxEvents($class);
-		$_classfx[$className] = $fx;
-		file_put_contents($cacheFile, serialize($_classfx), LOCK_EX);
+		self::$_classFx[$className] = $fx;
+		file_put_contents($cacheFile, serialize(self::$_classFx), LOCK_EX);
 		return $fx;
 	}
 
@@ -112,7 +116,7 @@ class TApplicationComponent extends \Prado\TComponent
 	}
 
 	/**
-	 * @return \Prado\TService the current service
+	 * @return ?IService the current service
 	 */
 	public function getService()
 	{

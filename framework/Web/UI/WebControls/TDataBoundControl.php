@@ -466,7 +466,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	 * If it is a string or an array, it will be converted as a TList object.
 	 * @param array|string|\Traversable $value data source to be validated
 	 * @throws TInvalidDataTypeException if the data is neither null nor Traversable
-	 * @return \Traversable the data that is traversable
+	 * @return array|\Traversable the data that is traversable
 	 */
 	protected function validateDataSource($value)
 	{

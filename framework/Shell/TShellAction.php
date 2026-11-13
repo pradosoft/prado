@@ -82,7 +82,7 @@ abstract class TShellAction extends \Prado\TComponent
 
 	/**
 	 * Aliases for the properties to be set by parameter
-	 * @return array<string, string> alias => property for the $actionID
+	 * @return array<int|string, string> alias => property for the $actionID
 	 */
 	public function optionAliases(): array
 	{
@@ -121,7 +121,7 @@ abstract class TShellAction extends \Prado\TComponent
 	/**
 	 * Checks if specified parameters are suitable for the specified action
 	 * @param array $args parameters
-	 * @return bool
+	 * @return ?bool
 	 */
 	public function isValidAction($args)
 	{

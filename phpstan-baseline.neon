@@ -1,0 +1,481 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Static property Prado\\Collections\\TNull\:\:\$null \(static\(Prado\\Collections\\TNull\)\|null\) does not accept Prado\\Collections\\TNull\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: framework/Collections/TNull.php
+
+		-
+			message: '#^Property Prado\\Collections\\TPagedMapIterator\:\:\$_map is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: framework/Collections/TPagedMapIterator.php
+
+		-
+			message: '#^Negated boolean expression is always true\.$#'
+			identifier: booleanNot.alwaysTrue
+			count: 1
+			path: framework/Data/ActiveRecord/Relations/TActiveRecordRelation.php
+
+		-
+			message: '#^Method Prado\\Data\\ActiveRecord\\Scaffold\\TScaffoldListView\:\:getEditViewControl\(\) should return Prado\\Data\\ActiveRecord\\Scaffold\\TScaffoldEditView\|null but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: framework/Data/ActiveRecord/Scaffold/TScaffoldListView.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 1
+			path: framework/Data/ActiveRecord/Scaffold/TScaffoldView.php
+
+		-
+			message: '#^Left side of && is always true\.$#'
+			identifier: booleanAnd.leftAlwaysTrue
+			count: 2
+			path: framework/Data/ActiveRecord/TActiveRecord.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between Prado\\Data\\ActiveRecord\\TActiveRecord and null will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: framework/Data/ActiveRecord/TActiveRecord.php
+
+		-
+			message: '#^Property Prado\\Data\\ActiveRecord\\TActiveRecordManager\:\:\$_meta is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: framework/Data/ActiveRecord/TActiveRecordManager.php
+
+		-
+			message: '#^Property Prado\\Data\\SqlMap\\Configuration\\TParameterMap\:\:\$_extendMap is unused\.$#'
+			identifier: property.unused
+			count: 1
+			path: framework/Data/SqlMap/Configuration/TParameterMap.php
+
+		-
+			message: '#^Property Prado\\Data\\SqlMap\\Configuration\\TResultMap\:\:\$_typeHandlers is unused\.$#'
+			identifier: property.unused
+			count: 1
+			path: framework/Data/SqlMap/Configuration/TResultMap.php
+
+		-
+			message: '#^Ternary operator condition is always false\.$#'
+			identifier: ternary.alwaysFalse
+			count: 1
+			path: framework/Data/SqlMap/Configuration/TResultMap.php
+
+		-
+			message: '#^Property Prado\\Data\\SqlMap\\Configuration\\TResultProperty\:\:\$_hostResultMapID is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: framework/Data/SqlMap/Configuration/TResultProperty.php
+
+		-
+			message: '#^Property Prado\\Data\\SqlMap\\Configuration\\TSqlMapCacheModel\:\:\$_properties is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: framework/Data/SqlMap/Configuration/TSqlMapCacheModel.php
+
+		-
+			message: '#^Property Prado\\Data\\SqlMap\\Configuration\\TSqlMapStatement\:\:\$_typeHandler is never written, only read\.$#'
+			identifier: property.onlyRead
+			count: 1
+			path: framework/Data/SqlMap/Configuration/TSqlMapStatement.php
+
+		-
+			message: '#^Return type \(object\) of method Prado\\Data\\SqlMap\\DataMapper\\TSqlMapCache\:\:delete\(\) should be compatible with return type \(bool\) of method Prado\\Caching\\ICache\:\:delete\(\)$#'
+			identifier: method.childReturnType
+			count: 1
+			path: framework/Data/SqlMap/DataMapper/TSqlMapCache.php
+
+		-
+			message: '#^Property Prado\\Data\\SqlMap\\Statements\\TPreparedStatementFactory\:\:\$_parameterPrefix is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: framework/Data/SqlMap/Statements/TPreparedStatementFactory.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 5
+			path: framework/I18N/core/TCache_Lite.php
+
+		-
+			message: '#^Call to function is_array\(\) with array will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: framework/IO/TTarFileExtractor.php
+
+		-
+			message: '#^Offset ''tarpath_norm'' on non\-empty\-array on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: framework/IO/TTarFileExtractor.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between non\-empty\-string\|false and null will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: framework/IO/TTarFileExtractor.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 18
+			path: framework/IO/TTarFileExtractor.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between string and null will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: framework/Security/TAuthorizationRule.php
+
+		-
+			message: '#^Method Prado\\Shell\\Actions\\TDbParameterAction\:\:actionIndex\(\) should return bool but empty return statement found\.$#'
+			identifier: return.empty
+			count: 1
+			path: framework/Shell/Actions/TDbParameterAction.php
+
+		-
+			message: '#^Method Prado\\Shell\\TShellAction\:\:getApplication\(\) should return Prado\\Shell\\TShellApplication but returns Prado\\TApplication\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: framework/Shell/TShellAction.php
+
+		-
+			message: '#^Cannot use array destructuring on \(ArrayAccess&callable\)\|\(callable&list\)\.$#'
+			identifier: offsetAccess.nonArray
+			count: 1
+			path: framework/TComponent.php
+
+		-
+			message: '#^Method Prado\\TComponent\:\:__set\(\) with return type void returns mixed but should not return anything\.$#'
+			identifier: return.void
+			count: 4
+			path: framework/TComponent.php
+
+		-
+			message: '#^Method Prado\\TComponent\:\:instanceBehavior\(\) should return Prado\\TComponent&Prado\\Util\\IBaseBehavior but returns Prado\\Util\\IBaseBehavior\.$#'
+			identifier: return.type
+			count: 1
+			path: framework/TComponent.php
+
+		-
+			message: '#^Method Prado\\TComponent\:\:listen\(\) should return int\|null but empty return statement found\.$#'
+			identifier: return.empty
+			count: 1
+			path: framework/TComponent.php
+
+		-
+			message: '#^Method Prado\\TComponent\:\:unlisten\(\) should return int\|null but empty return statement found\.$#'
+			identifier: return.empty
+			count: 1
+			path: framework/TComponent.php
+
+		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 2
+			path: framework/TComponent.php
+
+		-
+			message: '#^Instanceof between string and Prado\\TEnumerable will always evaluate to false\.$#'
+			identifier: instanceof.alwaysFalse
+			count: 1
+			path: framework/TPropertyValue.php
+
+		-
+			message: '#^Method Prado\\Util\\Behaviors\\TBehaviorParameterLoader\:\:__set\(\) with return type void returns mixed but should not return anything\.$#'
+			identifier: return.void
+			count: 1
+			path: framework/Util/Behaviors/TBehaviorParameterLoader.php
+
+		-
+			message: '#^Call to function is_object\(\) with Prado\\TModule will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: framework/Util/Cron/TDbCronCleanLogTask.php
+
+		-
+			message: '#^Method Prado\\Util\\Cron\\TDbCronManager\:\:executeRuntimeTasks\(\) should return int but empty return statement found\.$#'
+			identifier: return.empty
+			count: 1
+			path: framework/Util/Cron/TDbCronManager.php
+
+		-
+			message: '#^If condition is always false\.$#'
+			identifier: if.alwaysFalse
+			count: 1
+			path: framework/Util/Cron/TTimeScheduler.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between float and 0 will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: framework/Util/Math/TRational.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 1
+			path: framework/Util/TCallChain.php
+
+		-
+			message: '#^Call to Prado\\Util\\TLogRoute\:\:init\(\) on a separate line has no effect\.$#'
+			identifier: staticMethod.resultUnused
+			count: 1
+			path: framework/Util/TDbLogRoute.php
+
+		-
+			message: '#^Result of && is always false\.$#'
+			identifier: booleanAnd.alwaysFalse
+			count: 1
+			path: framework/Util/TDbLogRoute.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between DateInterval and false will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: framework/Util/TDbLogRoute.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between int\|null and false will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: framework/Util/TDbLogRoute.php
+
+		-
+			message: '#^Call to an undefined method Prado\\IService\:\:attachEventHandler\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: framework/Util/TDbParameterModule.php
+
+		-
+			message: '#^Call to an undefined method Prado\\IService\:\:hasEvent\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: framework/Util/TDbParameterModule.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between float and null will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: framework/Util/TLogRoute.php
+
+		-
+			message: '#^Call to function strpos\(\) with non\-falsy\-string and ''EEEE'' will always evaluate to false\.$#'
+			identifier: function.impossibleType
+			count: 2
+			path: framework/Util/TSimpleDateFormatter.php
+
+		-
+			message: '#^Method Prado\\Util\\TSimpleDateFormatter\:\:charEqual\(\) is unused\.$#'
+			identifier: method.unused
+			count: 1
+			path: framework/Util/TSimpleDateFormatter.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between false and false will always evaluate to true\.$#'
+			identifier: identical.alwaysTrue
+			count: 2
+			path: framework/Util/TSimpleDateFormatter.php
+
+		-
+			message: '#^Method Prado\\Web\\Behaviors\\TRequestConnectionUpgrade\:\:processHeaders\(\) should return array\|null but empty return statement found\.$#'
+			identifier: return.empty
+			count: 4
+			path: framework/Web/Behaviors/TRequestConnectionUpgrade.php
+
+		-
+			message: '#^Method Prado\\Web\\Behaviors\\TRequestConnectionUpgrade\:\:processHeaders\(\) should return array\|null but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: framework/Web/Behaviors/TRequestConnectionUpgrade.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 3
+			path: framework/Web/Javascripts/TJavaScript.php
+
+		-
+			message: '#^Dead catch \- Prado\\Exceptions\\TPhpErrorException is never thrown in the try block\.$#'
+			identifier: catch.neverThrown
+			count: 1
+			path: framework/Web/THttpRequest.php
+
+		-
+			message: '#^Property Prado\\Web\\THttpRequest\:\:\$_services is unused\.$#'
+			identifier: property.unused
+			count: 1
+			path: framework/Web/THttpRequest.php
+
+		-
+			message: '#^Property Prado\\Web\\THttpRequest\:\:\$_urlManager \(Prado\\Web\\TUrlManager\) does not accept Prado\\TModule\|null\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: framework/Web/THttpRequest.php
+
+		-
+			message: '#^Method Prado\\Web\\THttpSessionHandler\:\:gc\(\) should return int\|false but returns bool\.$#'
+			identifier: return.type
+			count: 1
+			path: framework/Web/THttpSessionHandler.php
+
+		-
+			message: '#^Static property Prado\\Web\\TUri\:\:\$_defaultPort is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: framework/Web/TUri.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 5
+			path: framework/Web/TUrlMappingPattern.php
+
+		-
+			message: '#^Method Prado\\Web\\UI\\ActiveControls\\TActiveHiddenField\:\:getActiveControl\(\) should return Prado\\Web\\UI\\ActiveControls\\TBaseActiveCallbackControl but returns Prado\\Web\\UI\\ActiveControls\\TBaseActiveControl\.$#'
+			identifier: return.type
+			count: 1
+			path: framework/Web/UI/ActiveControls/TActiveHiddenField.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between mixed and null will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: framework/Web/UI/TControl.php
+
+		-
+			message: '#^Call to an undefined method Prado\\IService\:\:getRequestedPage\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: framework/Web/UI/TTemplate.php
+
+		-
+			message: '#^Call to an undefined method Prado\\IService\:\:isa\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: framework/Web/UI/TTemplate.php
+
+		-
+			message: '#^Constant Prado\\Web\\UI\\TTemplate\:\:PARSE_COMMENTS is unused\.$#'
+			identifier: classConstant.unused
+			count: 1
+			path: framework/Web/UI/TTemplate.php
+
+		-
+			message: '#^Constant Prado\\Web\\UI\\TTemplate\:\:PARSE_CONTROL_NAME is unused\.$#'
+			identifier: classConstant.unused
+			count: 1
+			path: framework/Web/UI/TTemplate.php
+
+		-
+			message: '#^Constant Prado\\Web\\UI\\TTemplate\:\:PARSE_EQUALS is unused\.$#'
+			identifier: classConstant.unused
+			count: 1
+			path: framework/Web/UI/TTemplate.php
+
+		-
+			message: '#^Constant Prado\\Web\\UI\\TTemplate\:\:PARSE_PROP_NAME is unused\.$#'
+			identifier: classConstant.unused
+			count: 1
+			path: framework/Web/UI/TTemplate.php
+
+		-
+			message: '#^Instanceof between mixed and Prado\\Web\\UI\\WebControls\\TDatePicker will always evaluate to false\.$#'
+			identifier: instanceof.alwaysFalse
+			count: 2
+			path: framework/Web/UI/TTemplateControl.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 1
+			path: framework/Web/UI/TTheme.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between mixed and null will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: framework/Web/UI/WebControls/TBaseValidator.php
+
+		-
+			message: '#^Property Prado\\Web\\UI\\WebControls\\TBulletedList\:\:\$_postBackOptions is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: framework/Web/UI/WebControls/TBulletedList.php
+
+		-
+			message: '#^Left side of && is always true\.$#'
+			identifier: booleanAnd.leftAlwaysTrue
+			count: 1
+			path: framework/Web/UI/WebControls/TDataBoundControl.php
+
+		-
+			message: '#^Property Prado\\Web\\UI\\WebControls\\TDataGrid\:\:\$_pagedDataSource is unused\.$#'
+			identifier: property.unused
+			count: 1
+			path: framework/Web/UI/WebControls/TDataGrid.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 11
+			path: framework/Web/UI/WebControls/TDataSize.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between \-1 and \-1 will always evaluate to true\.$#'
+			identifier: identical.alwaysTrue
+			count: 1
+			path: framework/Web/UI/WebControls/TListControlValidator.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 1
+			path: framework/Web/UI/WebControls/TMultiView.php
+
+		-
+			message: '#^Left side of && is always true\.$#'
+			identifier: booleanAnd.leftAlwaysTrue
+			count: 4
+			path: framework/Web/UI/WebControls/TRangeValidator.php
+
+		-
+			message: '#^Property Prado\\Web\\UI\\WebControls\\TRatingList\:\:\$_ratingImages is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: framework/Web/UI/WebControls/TRatingList.php
+
+		-
+			message: '#^Return type \(string\) of method Prado\\Web\\UI\\WebControls\\TReCaptcha2\:\:getResponse\(\) should be compatible with return type \(Prado\\Web\\THttpResponse\) of method Prado\\TApplicationComponent\:\:getResponse\(\)$#'
+			identifier: method.childReturnType
+			count: 1
+			path: framework/Web/UI/WebControls/TReCaptcha2.php
+
+		-
+			message: '#^Method Prado\\Web\\UI\\WebControls\\TStyle\:\:__set\(\) with return type void returns mixed but should not return anything\.$#'
+			identifier: return.void
+			count: 2
+			path: framework/Web/UI/WebControls/TStyle.php
+
+		-
+			message: '#^Left side of && is always true\.$#'
+			identifier: booleanAnd.leftAlwaysTrue
+			count: 1
+			path: framework/Web/UI/WebControls/TValidationSummary.php
+
+		-
+			message: '#^Property Prado\\Web\\UI\\WebControls\\TWebControl\:\:\$_ensureid \(bool\) does not accept int\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: framework/Web/UI/WebControls/TWebControl.php
+
+		-
+			message: '#^Method Prado\\Web\\UI\\WebControls\\TWizard\:\:getActiveStep\(\) should return Prado\\Web\\UI\\WebControls\\TWizardStep but returns Prado\\Web\\UI\\WebControls\\TView\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: framework/Web/UI/WebControls/TWizard.php

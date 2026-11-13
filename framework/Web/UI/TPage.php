@@ -77,7 +77,7 @@ class TPage extends TTemplateControl
 	 */
 	private $_theme;
 	/**
-	 * @var string page title set when Head is not in page yet
+	 * @var ?string page title set when Head is not in page yet
 	 */
 	private $_title;
 	/**
@@ -89,7 +89,7 @@ class TPage extends TTemplateControl
 	 */
 	private $_clientScript;
 	/**
-	 * @var TMap data post back by user
+	 * @var null|\Prado\Web\THttpRequest|TMap data post back by user
 	 */
 	protected $_postData;
 	/**
@@ -175,7 +175,7 @@ class TPage extends TTemplateControl
 	 */
 	private $_enableJavaScript = true;
 	/**
-	 * @var THtmlWriter current html render writer
+	 * @var ?THtmlWriter current html render writer
 	 */
 	private $_writer;
 

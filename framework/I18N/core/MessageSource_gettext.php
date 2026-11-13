@@ -173,7 +173,7 @@ class MessageSource_gettext extends MessageSource
 	/**
 	 * Get the variant for a catalogue depending on the current culture.
 	 * @param string $catalogue catalogue
-	 * @return string the variant.
+	 * @return array|false the variant.
 	 * @see save()
 	 * @see update()
 	 * @see delete()

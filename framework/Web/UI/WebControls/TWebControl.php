@@ -42,7 +42,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	private $_ensureid = false;
 
 	/**
-	 *	@var TWebControlDecorator this render things before and after both the open and close tag
+	 *	@var ?TWebControlDecorator this render things before and after both the open and close tag
 	 */
 	protected $_decorator;
 
@@ -243,7 +243,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	}
 
 	/**
-	 * @param TDisplayStyle $value display style of the control, default is TDisplayStyle::Fixed
+	 * @param string $value display style of the control, a {@see TDisplayStyle} value, default is TDisplayStyle::Fixed
 	 */
 	public function setDisplay($value)
 	{
@@ -251,7 +251,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	}
 
 	/**
-	 * @return TDisplayStyle display style of the control, default is TDisplayStyle::Fixed
+	 * @return string display style of the control, a {@see TDisplayStyle} value, default is TDisplayStyle::Fixed
 	 */
 	public function getDisplay()
 	{

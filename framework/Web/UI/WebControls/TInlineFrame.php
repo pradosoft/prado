@@ -156,7 +156,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	}
 
 	/**
-	 * @return int the width of the control
+	 * @return int|string the width of the control
 	 */
 	public function getWidth()
 	{
@@ -164,7 +164,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	}
 
 	/**
-	 * @param int $value the width of the control
+	 * @param int|string $value the width of the control
 	 */
 	public function setWidth($value)
 	{
@@ -175,7 +175,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	}
 
 	/**
-	 * @return int the height of the control
+	 * @return int|string the height of the control
 	 */
 	public function getHeight()
 	{
@@ -183,7 +183,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	}
 
 	/**
-	 * @param int $value the height of the control
+	 * @param int|string $value the height of the control
 	 */
 	public function setHeight($value)
 	{
@@ -204,7 +204,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	}
 
 	/**
-	 * @param int $value the amount of space, in pixels, that should be left between
+	 * @param int|string $value the amount of space, in pixels, that should be left between
 	 * the frame's contents and the left and right margins.
 	 * @deprecated obsolete since html5
 	 */
@@ -227,7 +227,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	}
 
 	/**
-	 * @param int $value the amount of space, in pixels, that should be left between
+	 * @param int|string $value the amount of space, in pixels, that should be left between
 	 * the frame's contents and the top and bottom margins.
 	 * @deprecated obsolete since html5
 	 */

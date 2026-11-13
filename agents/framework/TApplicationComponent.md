@@ -45,6 +45,7 @@ TApplicationComponent is the base class for all application-related components i
 - Implements caching for global event handling in Normal and Performance modes
 - Uses runtime cache file (fxevent.cache) for performance optimization
 - Caches event data based on application mode and class mappings
+- The process-wide lists live in `private static ?array $_classFx`, seeded from the first file read. A unit test resets it with `PradoUnit::setStaticProp()`; otherwise a stale test-app runtime file (e.g. `tests/unit/Security/app/runtime/`) that already lists the class suppresses the write.
 
 ## Standards Followed
 - PSR-4 autoloading compatibility

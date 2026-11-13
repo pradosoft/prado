@@ -122,11 +122,11 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	 */
 	private $_items;
 	/**
-	 * @var \Prado\Web\UI\TControl header item
+	 * @var ?\Prado\Web\UI\TControl header item
 	 */
 	private $_header;
 	/**
-	 * @var \Prado\Web\UI\TControl footer item
+	 * @var ?\Prado\Web\UI\TControl footer item
 	 */
 	private $_footer;
 
@@ -461,8 +461,8 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	 * Creates a repeater item.
 	 * This method invokes {@see createItem} to create a new repeater item.
 	 * @param int $itemIndex zero-based item index.
-	 * @param TListItemType $itemType item type
-	 * @return \Prado\Web\UI\TControl the created item, null if item is not created
+	 * @param string|TListItemType $itemType item type
+	 * @return ?\Prado\Web\UI\TControl the created item, null if item is not created
 	 */
 	private function createItemInternal($itemIndex, $itemType)
 	{
@@ -480,9 +480,9 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	 * Creates a repeater item and performs databinding.
 	 * This method invokes {@see createItem} to create a new repeater item.
 	 * @param int $itemIndex zero-based item index.
-	 * @param TListItemType $itemType item type
+	 * @param string|TListItemType $itemType item type
 	 * @param mixed $dataItem data to be associated with the item
-	 * @return \Prado\Web\UI\TControl the created item, null if item is not created
+	 * @return ?\Prado\Web\UI\TControl the created item, null if item is not created
 	 */
 	private function createItemWithDataInternal($itemIndex, $itemType, $dataItem)
 	{
@@ -504,7 +504,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	/**
 	 * Creates a repeater item instance based on the item type and index.
 	 * @param int $itemIndex zero-based item index
-	 * @param TListItemType $itemType item type
+	 * @param string|TListItemType $itemType item type
 	 * @return \Prado\Web\UI\TControl created repeater item
 	 */
 	protected function createItem($itemIndex, $itemType)

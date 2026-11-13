@@ -44,7 +44,7 @@ use Prado\Web\UI\WebControls\TLabel;
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @since 3.1.9
- * @method TActiveControlAdapter getAdapter()
+ * @method TActiveControlAdapter<\Prado\Web\UI\ActiveControls\TBaseActiveControl> getAdapter()
  */
 class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 {
@@ -72,7 +72,7 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 	}
 
 	/**
-	 * @return TBaseActiveCallbackControl standard active control options.
+	 * @return TBaseActiveControl standard active control options.
 	 */
 	public function getActiveControl()
 	{
