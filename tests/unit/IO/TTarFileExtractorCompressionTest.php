@@ -340,4 +340,26 @@ class TTarFileExtractorCompressionTest extends TestCase
 		$this->assertFalse($extractor->hasSkippedFiles());
 	}
 
+	public function testExtractLzmaRemovesItsDecompressedTar()
+	{
+		$extractor = new TTarFileExtractor(__DIR__ . '/data/test_xz.tar.xz');
+		$this->assertTrue($extractor->extract($this->extractDir));
+		$this->assertNull($extractor->getTempPath(), 'the decompressed tar is deleted at the close');
+		$this->assertFileExists(__DIR__ . '/data/test_xz.tar.xz', 'the archive itself is kept');
+	}
+
+	public function testExtractLzmaRetainsAndReusesItsDecompressedTar()
+	{
+		$extractor = new TTarFileExtractor(__DIR__ . '/data/test_xz.tar.xz');
+		$extractor->setRetainTempFile(true);
+		$this->assertTrue($extractor->extract($this->extractDir));
+		$temp = $extractor->getTempPath();
+		$this->assertNotNull($temp);
+		$this->assertFileExists($temp, 'a retained tar stays for the next operation');
+		$this->assertTrue($extractor->extract($this->extractDir));
+		$this->assertSame($temp, $extractor->getTempPath(), 'the next operation reads the retained tar');
+		$extractor = null;
+		$this->assertFileDoesNotExist($temp, 'the destructor deletes the retained tar');
+		$this->assertFileExists(__DIR__ . '/data/test_xz.tar.xz');
+	}
 }
