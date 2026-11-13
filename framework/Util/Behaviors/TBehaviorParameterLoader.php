@@ -42,16 +42,16 @@ class TBehaviorParameterLoader extends TComponent
 {
 	use TPriorityPropertyTrait;
 
-	/** @var string name of the behavior attaching to the owner */
+	/** @var ?string name of the behavior attaching to the owner */
 	private $_behaviorName;
 
-	/** @var string class of the behavior attaching to the owner */
+	/** @var ?string class of the behavior attaching to the owner */
 	private $_behaviorClass;
 
-	/** @var string what object to attach the behavior */
+	/** @var ?string what object to attach the behavior */
 	private $_attachto;
 
-	/** @var string what class to attach the behavior */
+	/** @var ?string what class to attach the behavior */
 	private $_attachtoclass;
 
 	/** @var array<string, string> additional properties to feed the behavior */

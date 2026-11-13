@@ -155,7 +155,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	private $_enableCache = false;
 	/**
-	 * @var string request URL
+	 * @var ?TUri request URL
 	 */
 	private $_url;
 
@@ -313,7 +313,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 
 	/**
 	 * Loads UrlManager instance from cache.
-	 * @return TUrlManager intance if load was successful, null otherwise.
+	 * @return ?TUrlManager intance if load was successful, null otherwise.
 	 */
 	protected function loadCachedUrlManager()
 	{
@@ -794,6 +794,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 			$this->_cookieOnly = (int) ini_get('session.use_cookies') && (int) ini_get('session.use_only_cookies');
 		}
 		$url = $this->getUrlManagerModule()->constructUrl($serviceID, $serviceParam, $getItems, $encodeAmpersand, $encodeGetItems);
+		// @phpstan-ignore notEqual.alwaysTrue (The runtime SID value can be an empty string.)
 		if (PHP_VERSION_ID < 80400 && defined('SID') && SID != '' && !$this->_cookieOnly) {
 			return $url . (strpos($url, '?') === false ? '?' : ($encodeAmpersand ? '&amp;' : '&')) . SID;
 		} else {

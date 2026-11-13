@@ -91,7 +91,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	/**
 	 * Controls for which the client-side validation3.js file needs to handle
 	 * them specially.
-	 * @var array list of control class names
+	 * @var array<class-string<\Prado\Web\UI\TControl>, string> list of control class names
 	 */
 	private static $_clientClass = [
 		// normal controls needing special handling to extract their values
@@ -225,7 +225,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 *
 	 * You can attach custom javascript code to each of these events
 	 *
-	 * @return TValidatorClientSide javascript validator event options.
+	 * @return \Prado\Web\UI\ActiveControls\TCallbackClientSide|TValidatorClientSide javascript validator event options.
 	 */
 	public function getClientSide()
 	{
@@ -346,7 +346,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	}
 
 	/**
-	 * @return TValidatorDisplayStyle the style of displaying the error message. Defaults to TValidatorDisplayStyle::Fixed.
+	 * @return string a {@see TValidatorDisplayStyle} value, the style of displaying the error message. Defaults to TValidatorDisplayStyle::Fixed.
 	 */
 	public function getDisplay()
 	{
@@ -354,7 +354,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	}
 
 	/**
-	 * @param TValidatorDisplayStyle $value the style of displaying the error message
+	 * @param string $value a {@see TValidatorDisplayStyle} value, the style of displaying the error message
 	 */
 	public function setDisplay($value)
 	{

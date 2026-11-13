@@ -45,7 +45,7 @@ class MessageFormat
 {
 	/**
 	 * The message source.
-	 * @var MessageSource
+	 * @var IMessageSource
 	 */
 	protected $source;
 
@@ -217,7 +217,7 @@ class MessageFormat
 
 	/**
 	 * Get the message source.
-	 * @return MessageSource
+	 * @return IMessageSource
 	 */
 	public function getSource()
 	{

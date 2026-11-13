@@ -340,7 +340,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	 * The default implementation simply returns null, meaning no specific dependency.
 	 * This method may be overriden to associate the data to be cached
 	 * with additional dependencies.
-	 * @return \Prado\Caching\ICacheDependency
+	 * @return ?\Prado\Caching\ICacheDependency
 	 */
 	protected function getCacheDependency()
 	{

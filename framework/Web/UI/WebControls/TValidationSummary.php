@@ -53,7 +53,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @return TValidationSummaryDisplayStyle the style of displaying the error messages. Defaults to TValidationSummaryDisplayStyle::Fixed.
+	 * @return string a {@see TValidationSummaryDisplayStyle} value, the style of displaying the error messages. Defaults to TValidationSummaryDisplayStyle::Fixed.
 	 */
 	public function getDisplay()
 	{
@@ -61,7 +61,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param TValidationSummaryDisplayStyle $value the style of displaying the error messages
+	 * @param string $value a {@see TValidationSummaryDisplayStyle} value, the style of displaying the error messages
 	 */
 	public function setDisplay($value)
 	{
@@ -327,7 +327,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Checked if at least one validator failed.
-	 * @return bool wether validation failed
+	 * @return bool whether validation failed
 	 */
 	protected function getValidationFailed()
 	{

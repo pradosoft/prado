@@ -95,7 +95,7 @@ class TDateFormat extends TI18NControl implements \Prado\IDataRenderer
 	/**
 	 * For a given string, try and find a preset pattern.
 	 * @param string $string the preset pattern name
-	 * @return string a preset pattern if found, null otherwise.
+	 * @return ?string a preset pattern if found, null otherwise.
 	 */
 	protected function getPreset($string)
 	{
@@ -110,7 +110,7 @@ class TDateFormat extends TI18NControl implements \Prado\IDataRenderer
 
 	/**
 	 * Get the date-time value for this control.
-	 * @return string date time value.
+	 * @return int|string date time value.
 	 */
 	public function getValue()
 	{

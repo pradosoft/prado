@@ -421,7 +421,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 * @param \Prado\Data\TDbConnection $connection database connection
 	 * @param mixed $parameter insert statement parameter
 	 * @param TSqlMapSelectKey $selectKey select key statement
-	 * @return string last insert ID.
+	 * @return mixed last insert ID.
 	 */
 	protected function executeSelectKey($connection, $parameter, $selectKey)
 	{
@@ -496,7 +496,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 * pages through a ROW_NUMBER() subquery, and its outer "SELECT *" returns that helper column.
 	 * @param array $row a result set row retrieved from the database
 	 * @param null|object $resultObject the result object, will create if necessary.
-	 * @return object the result filled with data, null if not filled.
+	 * @return ?object the result filled with data, null if not filled.
 	 */
 	protected function applyResultMap($row, &$resultObject = null)
 	{
@@ -844,6 +844,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 * @param TResultProperty $property the result property to fill.
 	 * @param array $row a result set row retrieved from the database
 	 * @param object $resultObject the result object
+	 * @phpstan-impure
 	 */
 	protected function setObjectProperty($resultMap, $property, $row, &$resultObject)
 	{

@@ -23,6 +23,7 @@ use PHPStan\Type\Accessory\HasMethodType;
 use PHPStan\Type\Accessory\HasPropertyType;
 use PHPStan\Type\IntersectionType;
 use PHPStan\Type\MethodTypeSpecifyingExtension;
+use PHPStan\Type\ObjectWithoutClassType;
 use Prado\TComponent;
 
 /**
@@ -112,7 +113,7 @@ final class TComponentCanGetPropertyTypeSpecifyingExtension implements MethodTyp
 		// PRADO templates and code use `Title`, while `title` also reaches the same
 		// accessor because PHP method names are case-insensitive.
 		$types = [
-			$calledOnType,
+			new ObjectWithoutClassType(),
 			new HasMethodType('get' . $propertyName),
 		];
 		foreach (array_unique([$propertyName, lcfirst($propertyName)]) as $spelling) {

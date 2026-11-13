@@ -173,11 +173,11 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	private $_footerTemplate;
 	private $_separatorTemplate;
 	/**
-	 * @var \Prado\Web\UI\TControl header item
+	 * @var ?\Prado\Web\UI\TControl header item
 	 */
 	private $_header;
 	/**
-	 * @var \Prado\Web\UI\TControl footer item
+	 * @var ?\Prado\Web\UI\TControl footer item
 	 */
 	private $_footer;
 
@@ -702,7 +702,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @return \Prado\Web\UI\TControl the selected item, null if no item is selected.
+	 * @return ?\Prado\Web\UI\TControl the selected item, null if no item is selected.
 	 */
 	public function getSelectedItem()
 	{
@@ -767,7 +767,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @return \Prado\Web\UI\TControl the edit item
+	 * @return ?\Prado\Web\UI\TControl the edit item
 	 */
 	public function getEditItem()
 	{
@@ -841,7 +841,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @return TTableCaptionAlign alignment of the caption of the table layout. Defaults to TTableCaptionAlign::NotSet.
+	 * @return string|TTableCaptionAlign alignment of the caption of the table layout. Defaults to TTableCaptionAlign::NotSet.
 	 * @deprecated use the CSS properties caption-side and text-align instead.
 	 */
 	public function getCaptionAlign()
@@ -850,7 +850,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @param TTableCaptionAlign $value alignment of the caption of the table layout.
+	 * @param string|TTableCaptionAlign $value alignment of the caption of the table layout.
 	 * @deprecated use the CSS properties caption-side and text-align instead.
 	 */
 	public function setCaptionAlign($value)
@@ -875,7 +875,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @return TRepeatDirection the direction of traversing the list, defaults to TRepeatDirection::Vertical
+	 * @return string|TRepeatDirection the direction of traversing the list, defaults to TRepeatDirection::Vertical
 	 */
 	public function getRepeatDirection()
 	{
@@ -883,7 +883,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @param TRepeatDirection $value the direction of traversing the list
+	 * @param string|TRepeatDirection $value the direction of traversing the list
 	 */
 	public function setRepeatDirection($value)
 	{
@@ -891,7 +891,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @return TRepeatLayout how the list should be displayed, using table or using line breaks. Defaults to TRepeatLayout::Table.
+	 * @return string|TRepeatLayout how the list should be displayed, using table or using line breaks. Defaults to TRepeatLayout::Table.
 	 */
 	public function getRepeatLayout()
 	{
@@ -899,7 +899,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @param TRepeatLayout $value how the list should be displayed, using table or using line breaks
+	 * @param string|TRepeatLayout $value how the list should be displayed, using table or using line breaks
 	 */
 	public function setRepeatLayout($value)
 	{
@@ -1067,7 +1067,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 * This method is required by {@see \Prado\Web\UI\WebControls\IRepeatInfoUser} interface.
 	 * @param string $itemType item type (Header,Footer,Item,AlternatingItem,SelectedItem,EditItem,Separator,Pager)
 	 * @param int $index index of the item being rendered
-	 * @return TStyle item style
+	 * @return ?TStyle item style
 	 */
 	public function generateItemStyle($itemType, $index)
 	{
@@ -1098,9 +1098,9 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @param TListItemType $itemType item type
+	 * @param string|TListItemType $itemType item type
 	 * @param int $index item index
-	 * @return TDataListItem data list item with the specified item type and index
+	 * @return ?TDataListItem data list item with the specified item type and index
 	 */
 	private function getItem($itemType, $index)
 	{
@@ -1128,8 +1128,8 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 * Creates a datalist item.
 	 * This method invokes {@see createItem} to create a new datalist item.
 	 * @param int $itemIndex zero-based item index.
-	 * @param TListItemType $itemType item type
-	 * @return \Prado\Web\UI\TControl the created item, null if item is not created
+	 * @param string|TListItemType $itemType item type
+	 * @return ?\Prado\Web\UI\TControl the created item, null if item is not created
 	 */
 	private function createItemInternal($itemIndex, $itemType)
 	{
@@ -1147,9 +1147,9 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 * Creates a datalist item and performs databinding.
 	 * This method invokes {@see createItem} to create a new datalist item.
 	 * @param int $itemIndex zero-based item index.
-	 * @param TListItemType $itemType item type
+	 * @param string|TListItemType $itemType item type
 	 * @param mixed $dataItem data to be associated with the item
-	 * @return \Prado\Web\UI\TControl the created item, null if item is not created
+	 * @return ?\Prado\Web\UI\TControl the created item, null if item is not created
 	 */
 	private function createItemWithDataInternal($itemIndex, $itemType, $dataItem)
 	{
@@ -1202,7 +1202,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	/**
 	 * Creates a datalist item instance based on the item type and index.
 	 * @param int $itemIndex zero-based item index
-	 * @param TListItemType $itemType item type
+	 * @param string|TListItemType $itemType item type
 	 * @return \Prado\Web\UI\TControl created datalist item
 	 */
 	protected function createItem($itemIndex, $itemType)

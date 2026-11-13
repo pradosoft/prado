@@ -32,7 +32,7 @@ class TRepeaterItem extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INam
 	private $_itemIndex;
 	/**
 	 * type of the TRepeaterItem
-	 * @var TListItemType
+	 * @var string a {@see TListItemType} value
 	 */
 	private $_itemType;
 	/**
@@ -42,7 +42,7 @@ class TRepeaterItem extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INam
 	private $_data;
 
 	/**
-	 * @return TListItemType item type
+	 * @return string item type, a {@see TListItemType} value
 	 */
 	public function getItemType()
 	{
@@ -50,7 +50,7 @@ class TRepeaterItem extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INam
 	}
 
 	/**
-	 * @param TListItemType $value item type.
+	 * @param string $value item type, a {@see TListItemType} value.
 	 */
 	public function setItemType($value)
 	{

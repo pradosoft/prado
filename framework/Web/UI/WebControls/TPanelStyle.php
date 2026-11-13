@@ -22,27 +22,27 @@ use Prado\TPropertyValue;
 class TPanelStyle extends TStyle
 {
 	/**
-	 * @var string the URL of the background image for the panel component
+	 * @var ?string the URL of the background image for the panel component
 	 */
 	protected $_backImageUrl;
 	/**
-	 * @var string alignment of the content in the panel.
+	 * @var ?string alignment of the content in the panel.
 	 */
 	protected $_direction;
 	/**
-	 * @var string horizontal alignment of the contents within the panel
+	 * @var ?string horizontal alignment of the contents within the panel
 	 */
 	protected $_horizontalAlign;
 	/**
-	 * @var string visibility and position of scroll bars
+	 * @var ?string visibility and position of scroll bars
 	 */
 	protected $_scrollBars;
 	/**
-	 * @var bool whether the content wraps within the panel
+	 * @var ?bool whether the content wraps within the panel
 	 */
 	protected $_wrap;
 	/**
-	 * @var bool whether the content wraps within the panel
+	 * @var ?string the box shadow of the panel
 	 */
 	protected $_boxshadow;
 
@@ -138,7 +138,7 @@ class TPanelStyle extends TStyle
 	}
 
 	/**
-	 * @return TContentDirection alignment of the content in the panel. Defaults to TContentDirection::NotSet.
+	 * @return string|TContentDirection alignment of the content in the panel. Defaults to TContentDirection::NotSet.
 	 */
 	public function getDirection()
 	{
@@ -146,7 +146,7 @@ class TPanelStyle extends TStyle
 	}
 
 	/**
-	 * @param TContentDirection $value alignment of the content in the panel.
+	 * @param string|TContentDirection $value alignment of the content in the panel.
 	 */
 	public function setDirection($value)
 	{
@@ -171,7 +171,7 @@ class TPanelStyle extends TStyle
 	}
 
 	/**
-	 * @return THorizontalAlign the horizontal alignment of the contents within the panel, defaults to THorizontalAlign::NotSet.
+	 * @return string|THorizontalAlign the horizontal alignment of the contents within the panel, defaults to THorizontalAlign::NotSet.
 	 */
 	public function getHorizontalAlign()
 	{
@@ -180,7 +180,7 @@ class TPanelStyle extends TStyle
 
 	/**
 	 * Sets the horizontal alignment of the contents within the panel.
-	 * @param THorizontalAlign $value the horizontal alignment
+	 * @param string|THorizontalAlign $value the horizontal alignment
 	 */
 	public function setHorizontalAlign($value)
 	{
@@ -188,7 +188,7 @@ class TPanelStyle extends TStyle
 	}
 
 	/**
-	 * @return TScrollBars the visibility and position of scroll bars in a panel control, defaults to TScrollBars::None.
+	 * @return string|TScrollBars the visibility and position of scroll bars in a panel control, defaults to TScrollBars::None.
 	 */
 	public function getScrollBars()
 	{
@@ -196,7 +196,7 @@ class TPanelStyle extends TStyle
 	}
 
 	/**
-	 * @param TScrollBars $value the visibility and position of scroll bars in a panel control.
+	 * @param string|TScrollBars $value the visibility and position of scroll bars in a panel control.
 	 */
 	public function setScrollBars($value)
 	{

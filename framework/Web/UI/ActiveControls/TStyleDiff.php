@@ -94,7 +94,7 @@ class TStyleDiff extends TViewStateDiff
 	}
 
 	/**
-	 * @return array list of changes to the control style and CSS class name.
+	 * @return array|object list of changes to the control style and CSS class name, or null object.
 	 */
 	public function getDifference()
 	{

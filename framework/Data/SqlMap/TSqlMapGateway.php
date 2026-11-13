@@ -89,7 +89,7 @@ class TSqlMapGateway extends \Prado\TComponent
 	 * pass in null if want to return a list instead.
 	 * @param int $skip The number of rows to skip over.
 	 * @param int $max The maximum number of rows to return.
-	 * @return TList A List of result objects.
+	 * @return array|\ArrayAccess A List of result objects.
 	 */
 	public function queryForList($statementName, $parameter = null, $result = null, $skip = -1, $max = -1)
 	{
@@ -110,7 +110,7 @@ class TSqlMapGateway extends \Prado\TComponent
 	 * pass in null if want to return a list instead.
 	 * @param int $skip The number of rows to skip over.
 	 * @param int $max The maximum number of rows to return.
-	 * @return TList A List of result objects.
+	 * @return array|\ArrayAccess A List of result objects.
 	 */
 	public function queryWithRowDelegate($statementName, $delegate, $parameter = null, $result = null, $skip = -1, $max = -1)
 	{
@@ -168,7 +168,7 @@ class TSqlMapGateway extends \Prado\TComponent
 	 * @param null|string $valueProperty The property of the result object to be used as the value.
 	 * @param int $skip The number of rows to skip over.
 	 * @param int $max The maximum number of rows to return.
-	 * @return TMap Array object containing the rows keyed by keyProperty.
+	 * @return array Array object containing the rows keyed by keyProperty.
 	 */
 	public function queryForMap($statementName, $parameter = null, $keyProperty = null, $valueProperty = null, $skip = -1, $max = -1)
 	{
@@ -189,7 +189,7 @@ class TSqlMapGateway extends \Prado\TComponent
 	 * @param null|string $valueProperty The property of the result object to be used as the value.
 	 * @param int $skip The number of rows to skip over.
 	 * @param int $max The maximum number of rows to return.
-	 * @return TMap Array object containing the rows keyed by keyProperty.
+	 * @return array Array object containing the rows keyed by keyProperty.
 	 */
 	public function queryForMapWithRowDelegate($statementName, $delegate, $parameter = null, $keyProperty = null, $valueProperty = null, $skip = -1, $max = -1)
 	{

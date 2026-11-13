@@ -65,6 +65,7 @@ use Prado\Web\Javascripts\TJavaScript;
  *
  * @author Gabor Berczi, DevWorx Hungary <gabor.berczi@devworx.hu>
  * @since 3.2
+ * @method TAccordionViewCollection getControls()
  */
 class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web\UI\IPostBackDataHandler
 {
