@@ -1,4 +1,5 @@
 ## Version 4.3.3 - TBA
+BUG: The unit tests remove the temp files and directories they create. `TTestApplication` and `TTestShellApplication` default to a per-process base path in the temp directory, `TTestApplication::getDefaultBasePath()`, that is removed when the process ends. (belisoful)
 ENH: Data - The deprecated `Prado\Data\Common\Mssql` classes are removed; the `Prado\Data\Common\SqlSrv` classes replace them, as in 4.4. `TMssqlScaffoldInput` is renamed `TSqlSrvScaffoldInput`, and `TScaffoldInputBase::createInputBuilder()` returns it for the `mssql`, `sqlsrv`, and `dblib` drivers. (belisoful)
 ENH: Issue #1517 - `composer.json` aliases the `prado-4.3` branch as `4.3.x-dev`, so a package can require `^4.3.3@dev` before 4.3.3 is tagged. (belisoful)
 BUG: Issue #1516 - `TActiveRecordGateway::getTableInfo()` reads table metadata through `IDataConnection::getDbMetaData()`, so a driver extension's connection supplies its own metadata without a global event listener. (belisoful)

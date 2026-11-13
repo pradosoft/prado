@@ -39,8 +39,10 @@ use Prado\Test\Unit\PradoUnit;
  * sub-directories that the production implementation adds.
  *
  * **3. Sane test defaults.**
- * `$basePath` defaults to `sys_get_temp_dir()` and `$cacheConfig` defaults
+ * `$basePath` defaults to {@see getDefaultBasePath()} and `$cacheConfig` defaults
  * to `false`, so a plain `new TTestApplication()` works without any setup.
+ * The default base path is a directory in `sys_get_temp_dir()` that belongs to the
+ * test process and is removed, with its `runtime/`, when the process ends.
  * The mode defaults to Debug ({@see DEFAULT_APPLICATION_MODE}); Normal and
  * Performance mode write a class fx-event cache into the runtime directory that
  * a later run reads back, so a test of those modes sets the mode itself.
@@ -99,9 +101,15 @@ class TTestApplication extends TApplication
 	 */
 	public ?\Throwable $capturedError = null;
 
+	/** @var ?string The default base path, created by {@see getDefaultBasePath()}. */
+	private static ?string $_defaultBasePath = null;
+
+	/** @var ?int The process ID that created the default base path. */
+	private static ?int $_defaultBasePathOwner = null;
+
 	/**
 	 * Constructor.
-	 * @param ?string $basePath Application base path. Defaults to `sys_get_temp_dir()`.
+	 * @param ?string $basePath Application base path. Defaults to {@see getDefaultBasePath()}.
 	 * @param bool $cacheConfig Whether to cache parsed configuration to a file.
 	 *   Defaults to `false` — no cache file is written during unit tests.
 	 * @param ?string $configType Configuration type constant. Defaults to
@@ -109,7 +117,68 @@ class TTestApplication extends TApplication
 	 */
 	public function __construct($basePath = null, $cacheConfig = false, $configType = null)
 	{
-		parent::__construct($basePath ?? sys_get_temp_dir(), $cacheConfig, $configType);
+		parent::__construct($basePath ?? static::getDefaultBasePath(), $cacheConfig, $configType);
+	}
+
+	/**
+	 * Returns the default application base path of the test process.
+	 *
+	 * The first call creates `prado-test-app-<pid>-<random>` in `sys_get_temp_dir()` and
+	 * registers {@see removeDefaultBasePath()} as a shutdown function. Every harness
+	 * application in the process shares the directory and its `runtime/`.
+	 * @return string The absolute path of the directory.
+	 * @since 4.3.3
+	 */
+	public static function getDefaultBasePath(): string
+	{
+		if (self::$_defaultBasePath === null || !is_dir(self::$_defaultBasePath)) {
+			$path = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'prado-test-app-' . getmypid() . '-' . bin2hex(random_bytes(4));
+			mkdir($path, 0o777, true);
+			if (self::$_defaultBasePath === null) {
+				register_shutdown_function([self::class, 'removeDefaultBasePath']);
+			}
+			self::$_defaultBasePath = realpath($path);
+			self::$_defaultBasePathOwner = getmypid();
+		}
+		return self::$_defaultBasePath;
+	}
+
+	/**
+	 * Removes the default base path and everything in it.
+	 *
+	 * Only the process that created the directory removes it, so a forked child that
+	 * exits leaves the parent's directory in place.
+	 * @since 4.3.3
+	 */
+	public static function removeDefaultBasePath(): void
+	{
+		if (self::$_defaultBasePath === null || self::$_defaultBasePathOwner !== getmypid()) {
+			return;
+		}
+		static::removeTree(self::$_defaultBasePath);
+	}
+
+	/**
+	 * Removes a directory and everything in it without following symbolic links.
+	 * @param string $dir The directory to remove.
+	 */
+	private static function removeTree(string $dir): void
+	{
+		if (!is_dir($dir) || is_link($dir)) {
+			return;
+		}
+		foreach (scandir($dir) as $entry) {
+			if ($entry === '.' || $entry === '..') {
+				continue;
+			}
+			$path = $dir . DIRECTORY_SEPARATOR . $entry;
+			if (is_dir($path) && !is_link($path)) {
+				static::removeTree($path);
+			} else {
+				@unlink($path);
+			}
+		}
+		@rmdir($dir);
 	}
 
 	// =========================================================================
