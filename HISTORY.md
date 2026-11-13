@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: `TBaseBehavior::mergeHandlers()` appends each argument's handlers of an event; a list of handlers was merged by key, so a subclass's handlers for an event its parent also handled were dropped. (belisoful)
 BUG: `TTarFileExtractor` deletes the tar it decompresses from a local `.tar.xz` (or a gzip or bzip2 archive without the PHP extension) at the close, and reuses it with `RetainTempFile`; it was left in the temp directory. (belisoful)
 BUG: The unit tests remove the temp files and directories they create. `TTestApplication` and `TTestShellApplication` default to a per-process base path in the temp directory, `TTestApplication::getDefaultBasePath()`, that is removed when the process ends. (belisoful)
 BUG: `TAssetManager::validateSymlinks()` removes a broken link to a directory on Windows, where `unlink()` fails on it, with `rmdir()`. (belisoful)
