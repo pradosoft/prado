@@ -257,4 +257,26 @@ class TUserManagerTest extends \PHPUnit\Framework\TestCase
 		$userManager->saveUserToCookie($cookie);
 		self::assertSame('unchanged', $cookie->getValue());
 	}
+
+	public function testUsersWithoutANameAreSkipped()
+	{
+		$this->app->setConfigurationType(TApplication::CONFIG_TYPE_PHP);
+		$userManager = new TUserManager();
+		$userManager->setPasswordMode('Clear');
+		$userManager->init(['users' => [[], ['name' => ' ', 'password' => ''], ['name' => 'Joe', 'password' => 'demo']]]);
+		self::assertSame(['joe' => 'demo'], $userManager->getUsers());
+		self::assertFalse($userManager->validateUser('', ''));
+		self::assertNull($userManager->getUser(''));
+	}
+
+	public function testXmlUsersWithoutANameAreSkipped()
+	{
+		$config = new TXmlDocument('1.0', 'utf8');
+		$config->loadFromString('<users><user password="" /><user name=" " /><user name="Joe" password="demo" /></users>');
+		$userManager = new TUserManager();
+		$userManager->setPasswordMode('Clear');
+		$userManager->init($config);
+		self::assertSame(['joe' => 'demo'], $userManager->getUsers());
+		self::assertFalse($userManager->validateUser('', ''));
+	}
 }
