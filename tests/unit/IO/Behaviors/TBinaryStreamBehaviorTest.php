@@ -10,6 +10,11 @@ use Prado\Test\Unit\Harness\IO\TTestIOHelper;
 
 class TBinaryStreamBehaviorTest extends \PHPUnit\Framework\TestCase
 {
+	protected function tearDown(): void
+	{
+		TTestIOHelper::removeTempFiles();
+	}
+
 	private function stream(?int $order = null): TStream
 	{
 		$s = TStream::fromMemory();

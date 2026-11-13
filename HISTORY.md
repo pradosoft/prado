@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: The unit tests remove the temp files and directories they create. `TTestApplication` and `TTestShellApplication` default to a per-process base path in the temp directory, `TTestApplication::getDefaultBasePath()`, that is removed when the process ends. (belisoful)
 BUG: `TAssetManager::validateSymlinks()` removes a broken link to a directory on Windows, where `unlink()` fails on it, with `rmdir()`. (belisoful)
 ENH: `TAssetManager::clearPublished()` removes the published asset directories, all or those last published before an age; `CronClearAge` registers the cron task `assetsclear`, which also removes broken links with `LinkAssets`. (belisoful)
 ENH: `TDbLogRoute::pruneLogs()` and `TLogRouter::pruneDbLogs()` delete the log rows older than `RetainPeriod`, registered as the cron task `dblogprune`; `TDbLogRoute.PruneOnFlush` set false leaves the deletion to cron. (belisoful)

@@ -12,6 +12,11 @@ use Prado\Test\Unit\Harness\IO\TTestStream;
 
 class TBitReaderTest extends \PHPUnit\Framework\TestCase
 {
+	protected function tearDown(): void
+	{
+		TTestIOHelper::removeTempFiles();
+	}
+
 	private function reader(string $bytes): TBitReader
 	{
 		return new TBitReader(TStream::fromString($bytes));

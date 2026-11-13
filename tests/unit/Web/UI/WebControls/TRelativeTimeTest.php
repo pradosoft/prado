@@ -12,6 +12,7 @@ use Prado\Web\UI\WebControls\TRelativeTimeMode;
 use Prado\Web\UI\WebControls\TTime;
 use PHPUnit\Framework\TestCase;
 use Prado\Test\Unit\Harness\Traits\TWebControlRenderTrait;
+use Prado\Test\Unit\PradoUnit;
 
 /**
  * Records whether the client script hook fired, without publishing assets, so the
@@ -590,26 +591,53 @@ class TRelativeTimeTest extends TestCase
 	{
 		$app = \Prado\Prado::getApplication();
 		$originalService = $app->getService();
+		$originalAssetManager = PradoUnit::getProp($app, '_assetManager');
 		$app->setService(new TPageService());
 
 		$dir = sys_get_temp_dir() . '/prado-rt-assets-' . uniqid();
 		mkdir($dir, 0o777, true);
-		$alias = 'rtAssets' . str_replace('.', '', uniqid());
-		\Prado\Prado::setPathOfAlias($alias, $dir);
-
-		$assetManager = new TAssetManager();
-		$assetManager->setBasePath($alias);
-		$assetManager->setBaseUrl('/' . $alias);
-		$assetManager->init(null);
-		$app->setAssetManager($assetManager);
 
 		try {
+			$alias = 'rtAssets' . str_replace('.', '', uniqid());
+			\Prado\Prado::setPathOfAlias($alias, $dir);
+
+			$assetManager = new TAssetManager();
+			$assetManager->setBasePath($alias);
+			$assetManager->setBaseUrl('/' . $alias);
+			$assetManager->init(null);
+			$app->setAssetManager($assetManager);
+
 			[$control, $page] = $this->makeOnPage('RTscript');
 			$this->invokeMethod($control, 'registerClientScript');
 			$this->assertTrue($page->getClientScript()->isEndScriptRegistered('prado:RTscript'));
 		} finally {
 			$app->setService($originalService);
+			PradoUnit::setProp($app, '_assetManager', $originalAssetManager);
+			$this->removeDirectory($dir);
 		}
+	}
+
+	/**
+	 * Removes a directory and everything in it.
+	 * @param string $dir the directory to remove.
+	 */
+	private function removeDirectory(string $dir): void
+	{
+		if (!is_dir($dir) || is_link($dir)) {
+			return;
+		}
+		foreach (scandir($dir) as $entry) {
+			if ($entry === '.' || $entry === '..') {
+				continue;
+			}
+			$path = $dir . DIRECTORY_SEPARATOR . $entry;
+			if (is_dir($path) && !is_link($path)) {
+				$this->removeDirectory($path);
+			} else {
+				unlink($path);
+			}
+		}
+		rmdir($dir);
 	}
 
 	// ================================================================================
