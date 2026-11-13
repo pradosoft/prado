@@ -3311,10 +3311,15 @@ class TAssetManagerTest extends \PHPUnit\Framework\TestCase
 	{
 		foreach (array_diff(scandir($dir) ?: [], ['.', '..']) as $entry) {
 			$path = $dir . DIRECTORY_SEPARATOR . $entry;
-			if (is_link($path) || !is_dir($path)) {
-				unlink($path);
-			} else {
+			if (is_link($path)) {
+				// Windows removes a link to a directory with rmdir.
+				if (!@unlink($path)) {
+					rmdir($path);
+				}
+			} elseif (is_dir($path)) {
 				$this->removeClearFixture($path);
+			} else {
+				unlink($path);
 			}
 		}
 		rmdir($dir);

@@ -725,7 +725,8 @@ class TAssetManager extends \Prado\TModule
 
 	/**
 	 * Removes a published directory and its contents.  A symbolic link is unlinked and
-	 * never followed, so the removal stays inside the directory.
+	 * never followed, so the removal stays inside the directory.  Windows removes a link
+	 * to a directory with `rmdir()`, which leaves the link's target.
 	 * @param string $dir the directory to remove.
 	 * @return bool whether the directory is removed.
 	 * @since 4.4.0
@@ -740,10 +741,14 @@ class TAssetManager extends \Prado\TModule
 				continue;
 			}
 			$path = $dir . DIRECTORY_SEPARATOR . $entry;
-			if (is_link($path) || !is_dir($path)) {
-				@unlink($path);
-			} else {
+			if (is_link($path)) {
+				if (!@unlink($path)) {
+					@rmdir($path);
+				}
+			} elseif (is_dir($path)) {
 				$this->removePublishedDirectory($path);
+			} else {
+				@unlink($path);
 			}
 		}
 		return @rmdir($dir);
