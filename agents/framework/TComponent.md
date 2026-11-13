@@ -148,7 +148,8 @@ All existing + future instances of `MyClass` receive the behavior. Cannot attach
 ## Lifecycle / Serialization
 
 - `__clone()` — re-attaches behaviors; a clone of a listening component listens itself; fires `dyClone` dynamic event. Handlers of the original's behaviors are removed from the clone; function-name and static-method handlers are kept. Always call `parent::__clone()`.
-- `__sleep()` / `__wakeup()` — `_getZappableSleepProps()` returns an array of private property names (mangled format: `"\0ClassName\0_prop"`) that should be excluded from serialization. Every class adds its own zappable props by overriding and calling `parent::_getZappableSleepProps($exprops)`.
+- `__wakeup()` — re-attaches behaviors, replacing named class behaviors with their current instances; a component that listened to global events when serialized listens again; fires `dyWakeUp`.
+- `__sleep()` — `_getZappableSleepProps()` returns an array of private property names (mangled format: `"\0ClassName\0_prop"`) that should be excluded from serialization. Every class adds its own zappable props by overriding and calling `parent::_getZappableSleepProps($exprops)`.
 - `__destruct()` — removes all global event (`fx*`) listeners; detaches behaviors.
 
 ## Key Static Methods / Constants

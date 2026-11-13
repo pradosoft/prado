@@ -38,6 +38,7 @@ BUG: Issue #1497 - `TEventParameter::offsetSet()` with a null offset appends to 
 BUG: Issue #1497 - Cloning a component with a behavior and a function-name or static-method event handler threw a `TypeError`; `TComponent::__clone()` keeps those handlers. (belisoful)
 BUG: Issue #1497 - A module configured with `lazy="false"` is loaded at once; the `lazy` attribute is read with `TPropertyValue::ensureBoolean()`. (belisoful)
 BUG: Issue #1497 - `TApplication::registerService()` names the given class for a directory namespace, and a PHP-configured service without a class names the service id. (belisoful)
+BUG: Issue #1497 - An unserialized component that listened to global events registers its `fx` handlers again; `TComponent::__wakeup()` restored the listening flag without them. (belisoful)
 BUG: Issue #1497 - `Prado::using()`, `createComponent()`, and `getPathOfNamespace()` convert only the root segment `System` to `Prado`; a class or alias whose name starts with "System" keeps its name. (belisoful)
 BUG: Issue #1497 - `Prado::getApplicationLanguage()` returns the preferred language when the globalization module has no culture. (belisoful)
 BUG: Issue #1497 - `TPropertyValue::ensureArray()` parses a bare-word key that begins with a quoted string, such as `("a"b => 1)`, in place of wrapping the whole literal as one element. (belisoful)
