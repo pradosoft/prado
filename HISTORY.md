@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+ENH: `TAssetManager::clearPublished()` removes the published asset directories, all or those last published before an age; `CronClearAge` registers the cron task `assetsclear`, which also removes broken links with `LinkAssets`. (belisoful)
 ENH: `TDbLogRoute::pruneLogs()` and `TLogRouter::pruneDbLogs()` delete the log rows older than `RetainPeriod`, registered as the cron task `dblogprune`; `TDbLogRoute.PruneOnFlush` set false leaves the deletion to cron. (belisoful)
 ENH: `TDbTableMutex::flushExpired()` deletes the expired lock rows, registered as the cron task `dbmutexflushexpired`. (belisoful)
 ENH: `TModule::createConfigComponent()`, `getConfigElements()`, and `createElementComponent()` create a component a module alone uses from a child element of its configuration: `class` and the properties as attributes, or `class` and `properties` in PHP. (belisoful)
