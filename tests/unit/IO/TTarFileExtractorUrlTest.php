@@ -518,7 +518,7 @@ class TTarFileExtractorUrlTest extends TestCase
 		$result = $extractor->extract($this->extractDir);
 		$newTempXzFile = $tempTarnameProperty->getValue($extractor);
 		
-		$this->assertNotEquals($tempXzFile, $newTempXzFile);
+		$this->assertNotSame($tempXzFile, $newTempXzFile);
 		$this->assertTrue($result);
 		$this->assertFileExists($this->extractDir . '/xz_content.txt');
 		$this->assertEquals(TTarFileExtractor::COMPRESSION_LZMA, $extractor->getCompression());
@@ -544,7 +544,7 @@ class TTarFileExtractorUrlTest extends TestCase
 		$result = $extractor->extract($this->extractDir);
 		$newTempXzFile = $tempTarnameProperty->getValue($extractor);
 		
-		$this->assertNotEquals($tempXzFile, $newTempXzFile);
+		$this->assertNotSame($tempXzFile, $newTempXzFile);
 		$this->assertTrue($result);
 		$this->assertFileExists($this->extractDir . '/xz_content.txt');
 		$this->assertEquals(TTarFileExtractor::COMPRESSION_LZMA, $extractor->getCompression());

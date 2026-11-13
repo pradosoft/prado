@@ -148,7 +148,7 @@ $skipped = $extractor->getSkippedFiles();  // entries not extracted
 - **CLI fallback for gz/bz2** — if the PHP extension is absent, the corresponding CLI tool is tried. If neither is available, extraction fails.
 - **Strict mode default is `true`** — path traversal (Zip Slip) throws by default. Set `Strict=false` only if you control the archive source.
 - **Manifest `reason`/`security` keys** — present only on skipped entries. `security` is set only for security violations (not conflict skips), making it easy to distinguish the two categories.
-- **Temp files** — remote/LZMA archives are written to `sys_get_temp_dir()`. Set `RetainTempFile=true` when you need to call `getManifest()` and then `extract()` on the same remote archive without downloading twice.
+- **Temp files** — remote archives, and the tar a CLI decompression writes (LZMA always; gzip or bzip2 without their PHP extension), are written to `sys_get_temp_dir()` as the temp file (`getTempPath()`), deleted at the close of each operation. Set `RetainTempFile=true` when you need to call `getManifest()` and then `extract()` on the same archive without downloading or decompressing twice; the retained file is reused and deleted by the destructor.
 
 ## See Also
 
