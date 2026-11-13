@@ -21,7 +21,7 @@ use Prado\Web\UI\TPage;
  * TBaseActiveCallbackControl is created by {@see \Prado\Web\UI\ActiveControls\TActiveControlAdapter::getBaseActiveControl()}
  * method.
  *
- * The {@see setEnableUpdate EnableUpdate} property determines wether the active
+ * The {@see setEnableUpdate EnableUpdate} property determines whether the active
  * control is allowed to update the contents of the client-side when the callback
  * response returns.
  *

@@ -389,7 +389,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	/**
 	 * Sets the item at the specified offset.
 	 * This method is required by the interface \ArrayAccess.
-	 * @param int $offset the offset to set item
+	 * @param ?int $offset the offset to set item
 	 * @param mixed $item the item value
 	 */
 	public function offsetSet($offset, $item): void

@@ -57,7 +57,7 @@ class TShellApplication extends \Prado\TApplication
 	 */
 	public const SHELL_RUNTIME_PATH = '.runtime';
 
-	/** @var bool tells the application to be in quiet mode, levels [0..1], default 0, */
+	/** @var int tells the application to be in quiet mode, levels [0..1], default 0, */
 	private $_quietMode = 0;
 
 	/**

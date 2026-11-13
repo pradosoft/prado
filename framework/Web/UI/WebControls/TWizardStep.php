@@ -82,7 +82,7 @@ class TWizardStep extends TView
 	}
 
 	/**
-	 * @return TWizardStepType the wizard step type. Defaults to TWizardStepType::Auto.
+	 * @return string|TWizardStepType the wizard step type. Defaults to TWizardStepType::Auto.
 	 */
 	public function getStepType()
 	{
@@ -90,7 +90,7 @@ class TWizardStep extends TView
 	}
 
 	/**
-	 * @param TWizardStepType $type the wizard step type.
+	 * @param string|TWizardStepType $type the wizard step type.
 	 */
 	public function setStepType($type)
 	{

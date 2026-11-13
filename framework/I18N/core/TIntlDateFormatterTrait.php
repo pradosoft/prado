@@ -38,7 +38,7 @@ trait TIntlDateFormatterTrait
 	 * @param string $culture The Culture to get the format information about.
 	 * @param int $datetype The format of the date components, eg \IntlDateFormatter::LONG
 	 * @param int $timetype The format of the date components, eg \IntlDateFormatter::SHORT
-	 * @return \IntlDateFormatter
+	 * @return ?\IntlDateFormatter the formatter, or null when the intl extension is not loaded.
 	 * @see Format Types - Constants @ https://www.php.net/manual/en/class.intldateformatter.php
 	 */
 	protected function getIntlDateFormatter($culture, $datetype, $timetype)

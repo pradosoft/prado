@@ -1,8 +1,23 @@
+includes:
+    - phpstan-baseline.neon
 parameters:
-    phpVersion: 80300 # PHP 8.3
-    level: 2
+    phpVersion:
+        min: 80100
+        max: 80500
+    level: 4
+    treatPhpDocTypesAsCertain: false
     paths:
         - framework
+        - tests/phpstan
+    ignoreErrors:
+        # tests/phpstan/TraitUsage.php uses these traits. A run that names only
+        # framework/ on the command line does not analyse it.
+        -
+            identifier: trait.unused
+            paths:
+                - framework/Util/Behaviors/TNoUnserializeBehaviorTrait.php
+                - framework/Util/Behaviors/TNoUnserializeClassBehaviorTrait.php
+            reportUnmatched: false
 services:
     -
         class: Prado\PHPStan\DynamicMethodsClassReflectionExtension

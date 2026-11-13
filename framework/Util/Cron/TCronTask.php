@@ -45,7 +45,7 @@ abstract class TCronTask extends TApplicationComponent
 	/** @var int The number of times which the cron task has run since the counter has been cleared */
 	private $_processCount = 0;
 
-	/** @var int the last time this task was run */
+	/** @var ?int the last time this task was run */
 	private $_lastexectime;
 
 	/**

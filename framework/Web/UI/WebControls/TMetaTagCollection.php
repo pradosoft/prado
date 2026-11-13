@@ -60,7 +60,7 @@ class TMetaTagCollection extends \Prado\Collections\TList
 	/**
 	 * Finds the item whose value is the one being looked for.
 	 * @param string $id the id of the meta tag to be looked for
-	 * @return TMetaTag the meta tag found, null if not found.
+	 * @return ?TMetaTag the meta tag found, null if not found.
 	 */
 	public function findMetaTagByID($id)
 	{

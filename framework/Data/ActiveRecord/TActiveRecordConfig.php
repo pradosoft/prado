@@ -115,7 +115,7 @@ class TActiveRecordConfig extends TDataSourceConfig
 	/**
 	 * Defaults to '{@see \Prado\Data\ActiveRecord\TActiveRecordInvalidFinderResult::Null Null}'
 	 *
-	 * @var string|TActiveRecordInvalidFinderResult
+	 * @var string a {@see TActiveRecordInvalidFinderResult} value
 	 * @since 3.1.5
 	 */
 	private $_invalidFinderResult = TActiveRecordInvalidFinderResult::Null;
@@ -199,7 +199,7 @@ class TActiveRecordConfig extends TDataSourceConfig
 	}
 
 	/**
-	 * @return TActiveRecordInvalidFinderResult Defaults to '{@see \Prado\Data\ActiveRecord\TActiveRecordInvalidFinderResult::Null Null}'.
+	 * @return string|TActiveRecordInvalidFinderResult Defaults to '{@see \Prado\Data\ActiveRecord\TActiveRecordInvalidFinderResult::Null Null}'.
 	 * @see setInvalidFinderResult
 	 * @since 3.1.5
 	 */

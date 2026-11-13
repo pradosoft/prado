@@ -596,7 +596,7 @@ class TTimeScheduler extends \Prado\TComponent
 	 * This calculates the next trigger time for the schedule based on the $priortime
 	 * If no parameter time is given, the current system time is used.
 	 * @param false|numeric|string $priortime the time or date/time from which to compute the next Trigger Time
-	 * @return numeric the unix time of the next trigger event.
+	 * @return ?numeric the unix time of the next trigger event.
 	 */
 	public function getNextTriggerTime($priortime = false)
 	{

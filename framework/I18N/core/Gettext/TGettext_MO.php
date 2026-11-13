@@ -55,7 +55,7 @@ class TGettext_MO extends TGettext
 	 * file handle
 	 *
 	 * @access  private
-	 * @var     resource
+	 * @var     null|false|resource
 	 */
 	protected $_handle;
 
@@ -102,6 +102,7 @@ class TGettext_MO extends TGettext
 	 * @access  private
 	 * @param   bool $bigendian  $bigendian
 	 * @return  int
+	 * @phpstan-impure
 	 */
 	public function _readInt($bigendian = false)
 	{

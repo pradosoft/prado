@@ -39,6 +39,7 @@ use Prado\Web\UI\TControl;
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
+ * @method TViewCollection getControls()
  */
 class TMultiView extends \Prado\Web\UI\TControl
 {
@@ -113,7 +114,7 @@ class TMultiView extends \Prado\Web\UI\TControl
 
 	/**
 	 * @throws TInvalidDataValueException if the current active view index is invalid
-	 * @return TView the currently active view, null if no active view
+	 * @return ?TView the currently active view, null if no active view
 	 */
 	public function getActiveView()
 	{
