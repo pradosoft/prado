@@ -59,7 +59,7 @@ Handlers declared in `events()` are automatically attached on `attach()` and det
 | `events(): array` | Override to declare `['EventName' => 'handlerMethodName']` pairs |
 | `eventsLog(): ?array` | Returns cached event handler callables (Closures are cached across re-attaches) |
 | `syncEventHandlers(?object $component, $attachOverride)` | Attaches/detaches events based on enabled state and `RetainDisabledHandlers` |
-| `static mergeHandlers(...$args): array` | Merges multiple `events()` arrays from parent classes |
+| `static mergeHandlers(...$args): array` | Merges multiple `events()` arrays from parent classes; each argument's handlers of an event are appended after the earlier ones |
 | `getAutoGlobalListen(): bool` | Returns `false` — behaviors do not auto-listen to global `fx*` events |
 
 ## RetainDisabledHandlers Semantics
