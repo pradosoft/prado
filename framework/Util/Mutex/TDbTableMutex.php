@@ -14,6 +14,7 @@ use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Util\Clock\TApplicationClockAwareTrait;
+use Prado\Util\Cron\TCronTaskInfo;
 
 /**
  * TDbTableMutex class.
@@ -30,6 +31,11 @@ use Prado\Util\Clock\TApplicationClockAwareTrait;
  * The lock is a lease of {@see getExpire Expire} seconds.  An attempt deletes the
  * expired row of its name before it inserts, so a holder that crashes keeps the
  * lock until it expires, and a holder whose work outlasts it loses it.
+ *
+ * The row of a name that is not locked again stays after it expires.
+ * {@see flushExpired} deletes every expired row.  A mutex module with an ID
+ * registers the cron task `dbmutexflushexpired` for it through
+ * {@see fxGetCronTaskInfos}.
  *
  * With {@see getAutoCreateMutexTable AutoCreateMutexTable} true, the default, the
  * table is created on first use:
@@ -200,6 +206,35 @@ class TDbTableMutex extends TBaseDbMutex
 		$command->bindValue(':name', $this->getServerLockName($name));
 		$command->bindValue(':token', $token);
 		return $command->execute() > 0;
+	}
+
+	/**
+	 * Deletes every expired row of the lock table.  An attempt deletes the expired row
+	 * of its own name, so this removes the rows of names that are not locked again.
+	 * @return int the number of rows deleted.
+	 */
+	public function flushExpired(): int
+	{
+		$this->ensureMutexTable();
+		$command = $this->getLockConnection()->createCommand("DELETE FROM {$this->getMutexTableName()} WHERE expire<:now");
+		$command->bindValue(':now', $this->getClock()->time(), \PDO::PARAM_INT);
+		return $command->execute();
+	}
+
+	/**
+	 * Registers the cron task `dbmutexflushexpired`, which calls {@see flushExpired},
+	 * when the mutex is a module with an ID.  Another TDbTableMutex module registers
+	 * the same task name.
+	 * @param object $sender the object raising fxGetCronTaskInfos.
+	 * @param mixed $param the parameter.
+	 * @return ?TCronTaskInfo the task information; null without a module ID.
+	 */
+	public function fxGetCronTaskInfos($sender, $param): ?TCronTaskInfo
+	{
+		if (!($id = $this->getID())) {
+			return null;
+		}
+		return new TCronTaskInfo('dbmutexflushexpired', $id . '->flushExpired()', $this, Prado::localize('DbTableMutex Flush Expired Locks'), Prado::localize('Deletes the expired rows of the TDbTableMutex lock table.'));
 	}
 
 	/**

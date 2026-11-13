@@ -15,6 +15,7 @@ use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Prado;
 use Prado\TApplication;
 use Prado\TPropertyValue;
+use Prado\Util\Cron\TCronTaskInfo;
 use Prado\Xml\TXmlDocument;
 
 /**
@@ -66,6 +67,11 @@ use Prado\Xml\TXmlDocument;
  *     ],
  * ];
  * ```
+ * A PHP route entry may also be its class name alone.
+ *
+ * A router with an ID and a {@see \Prado\Util\Log\TDbLogRoute} registers the cron
+ * task `dblogprune`, which calls {@see pruneDbLogs} to delete the rows older than each
+ * route's RetainPeriod.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Carl G. Mathisen <carlgmathisen@gmail.com>
@@ -111,40 +117,20 @@ class TLogRouter extends \Prado\TModule
 	}
 
 	/**
-	 * Loads configuration from an XML element or PHP array
-	 * @param mixed $config configuration node
-	 * @throws TConfigurationException if log route class or type is not specified
+	 * Creates and adds a route for each `<route>` element of an XML configuration, or each
+	 * entry of the `routes` array of a PHP configuration.  A PHP entry is an array with
+	 * `class` and `properties`, or a class name alone.
+	 * @param null|array|\Prado\Xml\TXmlElement $config configuration node
+	 * @throws TConfigurationException if a route has no class, or its class is not a {@see TLogRoute}
 	 */
 	private function loadConfig($config)
 	{
 		if (is_array($config)) {
-			if (isset($config['routes']) && is_array($config['routes'])) {
-				foreach ($config['routes'] as $route) {
-					$properties = $route['properties'] ?? [];
-					if (!isset($route['class'])) {
-						throw new TConfigurationException('logrouter_routeclass_required');
-					}
-					$route = Prado::createComponent($route['class']);
-					if (!($route instanceof TLogRoute)) {
-						throw new TConfigurationException('logrouter_routetype_invalid');
-					}
-					$route->setSubProperties($properties);
-					$this->addRoute($route, $route);
-				}
-			}
-		} else {
-			foreach ($config->getElementsByTagName('route') as $routeConfig) {
-				$properties = $routeConfig->getAttributes();
-				if (($class = $properties->remove('class')) === null) {
-					throw new TConfigurationException('logrouter_routeclass_required');
-				}
-				$route = Prado::createComponent($class);
-				if (!($route instanceof TLogRoute)) {
-					throw new TConfigurationException('logrouter_routetype_invalid');
-				}
-				$route->setSubProperties($properties);
-				$this->addRoute($route, $routeConfig);
-			}
+			$config = ['route' => is_array($config['routes'] ?? null) ? array_values($config['routes']) : []];
+		}
+		foreach ($this->getConfigElements($config, 'route', true) as $element) {
+			$route = $this->createElementComponent($element, 'route', TLogRoute::class, 'logrouter_routetype_invalid');
+			$this->addRoute($route, $element);
 		}
 	}
 
@@ -181,6 +167,46 @@ class TLogRouter extends \Prado\TModule
 	public function getRoutes(): array
 	{
 		return $this->_routes;
+	}
+
+	/**
+	 * Deletes the old log rows of every {@see TDbLogRoute} of the router.
+	 * @param ?float $retainPeriod the seconds of the log to retain; null for each
+	 *   route's {@see TDbLogRoute::getRetainPeriod RetainPeriod}.
+	 * @return int the number of rows deleted.
+	 * @since 4.4.0
+	 */
+	public function pruneDbLogs(?float $retainPeriod = null): int
+	{
+		$count = 0;
+		foreach ($this->getRoutes() as $route) {
+			if ($route instanceof TDbLogRoute) {
+				$count += $route->pruneLogs($retainPeriod);
+			}
+		}
+		return $count;
+	}
+
+	/**
+	 * Registers the cron task `dblogprune`, which calls {@see pruneDbLogs}, when the
+	 * router has an ID and a {@see TDbLogRoute}.  Another TLogRouter module registers
+	 * the same task name.
+	 * @param object $sender the object raising fxGetCronTaskInfos.
+	 * @param mixed $param the parameter.
+	 * @return ?TCronTaskInfo the task information; null without an ID or a TDbLogRoute.
+	 * @since 4.4.0
+	 */
+	public function fxGetCronTaskInfos($sender, $param): ?TCronTaskInfo
+	{
+		if (!($id = $this->getID())) {
+			return null;
+		}
+		foreach ($this->getRoutes() as $route) {
+			if ($route instanceof TDbLogRoute) {
+				return new TCronTaskInfo('dblogprune', $id . '->pruneDbLogs()', $this, Prado::localize('DbLogRoute Prune Old Logs'), Prado::localize('Deletes the log rows older than the RetainPeriod of each TDbLogRoute.'));
+			}
+		}
+		return null;
 	}
 
 	/**

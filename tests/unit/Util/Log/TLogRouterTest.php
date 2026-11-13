@@ -2,9 +2,11 @@
 
 namespace Prado\Test\Unit\Util\Log;
 
+use Prado\Exceptions\TConfigurationException;
 use Prado\Util\Log\TLogger;
 use Prado\Util\Log\TLogRouter;
 use Prado\Util\Log\TBrowserLogRoute;
+use Prado\Util\Cron\TCronTaskInfo;
 use Prado\Test\Unit\Harness\Traits\TNestedPathTrait;
 use Prado\Xml\TXmlDocument;
 
@@ -61,8 +63,7 @@ class TLogRouterTest extends \PHPUnit\Framework\TestCase
 	}
 
 	/**
-	 * The XML branch orders a route's attributes the same way, and supplies a
-	 * TAttributeCollection rather than an array.
+	 * The XML branch orders a route's attributes the same way.
 	 */
 	public function testInitFromXmlAppliesParentPathBeforeNestedPath()
 	{
@@ -77,6 +78,68 @@ class TLogRouterTest extends \PHPUnit\Framework\TestCase
 			$router->init($config);
 			$routes = $router->getRoutes();
 			$this->assertEquals('child', $routes[0]->getCfg()->getSize(), "attributes: {$attributes}");
+		}
+	}
+
+	/**
+	 * A PHP route is an array with `class` and `properties` or a class name alone, and
+	 * the `routes` array may be keyed.
+	 */
+	public function testInitPhpRoutesAcceptClassNamesAndKeys()
+	{
+		$router = new TTestLogRouter();
+		$router->init(['routes' => [
+			'browser' => TBrowserLogRoute::class,
+			'nested' => ['class' => TNestedPathLogRoute::class, 'properties' => ['Cfg.Size' => 'child']],
+		]]);
+		$routes = $router->getRoutes();
+		$this->assertCount(2, $routes);
+		$this->assertInstanceOf(TBrowserLogRoute::class, $routes[0]);
+		$this->assertInstanceOf(TNestedPathLogRoute::class, $routes[1]);
+		$this->assertEquals('child', $routes[1]->getCfg()->getSize());
+	}
+
+	public function testInitWithoutRoutes()
+	{
+		foreach ([null, [], ['routes' => 'invalid']] as $config) {
+			$router = new TTestLogRouter();
+			$router->init($config);
+			$this->assertEquals(0, $router->getRoutesCount());
+		}
+	}
+
+	public function testInitRouteWithoutClassThrows()
+	{
+		$xml = new TXmlDocument('1.0', 'utf8');
+		$xml->loadFromString('<module><route Levels="Error" /></module>');
+		foreach ([
+			'php' => ['routes' => [['properties' => ['Levels' => 'Error']]]],
+			'php non-array' => ['routes' => [42]],
+			'xml' => $xml,
+		] as $form => $config) {
+			try {
+				(new TTestLogRouter())->init($config);
+				$this->fail("{$form}: expected TConfigurationException");
+			} catch (TConfigurationException $e) {
+				$this->assertEquals('module_config_class_required', $e->getErrorCode(), $form);
+			}
+		}
+	}
+
+	public function testInitRouteOfWrongTypeThrows()
+	{
+		$xml = new TXmlDocument('1.0', 'utf8');
+		$xml->loadFromString('<module><route class="' . TLogger::class . '" /></module>');
+		foreach ([
+			'php' => ['routes' => [['class' => TLogger::class]]],
+			'xml' => $xml,
+		] as $form => $config) {
+			try {
+				(new TTestLogRouter())->init($config);
+				$this->fail("{$form}: expected TConfigurationException");
+			} catch (TConfigurationException $e) {
+				$this->assertEquals('logrouter_routetype_invalid', $e->getErrorCode(), $form);
+			}
 		}
 	}
 
@@ -139,5 +202,44 @@ class TLogRouterTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals(0, $logger->getTraceLevel());
 	}
 	
-}
 
+	public function testPruneDbLogsAndCronTaskInfo()
+	{
+		if (!extension_loaded('pdo_sqlite')) {
+			$this->markTestSkipped('The pdo_sqlite extension is not available.');
+		}
+		$router = new TTestLogRouter();
+		$router->addRoute(new TBrowserLogRoute());
+		$this->assertSame(0, $router->pruneDbLogs());
+		$this->assertNull($router->fxGetCronTaskInfos(null, null));
+		$router->setID('log');
+		$this->assertNull($router->fxGetCronTaskInfos(null, null));
+
+		$a = new TSqliteFileDbLogRoute();
+		$b = new TSqliteFileDbLogRoute();
+		try {
+			$router->addRoute($a);
+			$router->addRoute($b);
+			$now = microtime(true);
+			$a->insertAt($now - 1000);
+			$a->insertAt($now - 10);
+			$b->insertAt($now - 1000);
+			$b->insertAt($now - 500);
+			$a->setRetainPeriod(300);
+
+			$this->assertSame(1, $router->pruneDbLogs());
+			$this->assertSame(2, $router->pruneDbLogs(100));
+			$this->assertEquals(1, $a->getDBLogCount());
+			$this->assertEquals(0, $b->getDBLogCount());
+
+			$info = $router->fxGetCronTaskInfos(null, null);
+			$this->assertInstanceOf(TCronTaskInfo::class, $info);
+			$this->assertSame('dblogprune', $info->getName());
+			$this->assertSame('log->pruneDbLogs()', $info->getTask());
+			$this->assertSame('log', $info->getModuleId());
+		} finally {
+			$a->removeTestFile();
+			$b->removeTestFile();
+		}
+	}
+}

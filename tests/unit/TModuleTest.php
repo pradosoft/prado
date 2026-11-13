@@ -49,6 +49,20 @@ class ChildElementModule extends TModule
 }
 
 /**
+ * The type of a child element component that need not be a TComponent.
+ */
+interface IChildElementThing
+{
+}
+
+/**
+ * A child element component that is not a TComponent.
+ */
+class PlainChildElement implements IChildElementThing
+{
+}
+
+/**
  * A behavior that implements dyFilterDependencies.
  * Removes any dep whose ID appears in $removals and appends any deps in $additions.
  */
@@ -620,5 +634,38 @@ class TModuleTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame('fromPhp', $component->getName());
 		$component = PradoUnit::invoke($m, 'createElementComponent', ['class' => TBehavior::class], 'child', TBehavior::class);
 		$this->assertInstanceOf(TBehavior::class, $component, 'properties are optional');
+  }
+  
+	public function testCreateElementComponent_rejectsPropertiesThatAreNotAnArray(): void
+	{
+		$m = new ConcreteModule();
+		try {
+			PradoUnit::invoke($m, 'createElementComponent', ['class' => ChildElementModule::class, 'properties' => 'Label'], 'child', TModule::class);
+			$this->fail('properties that are not an array are a configuration error');
+		} catch (TConfigurationException $e) {
+			$this->assertSame('module_config_properties_invalid', $e->getErrorCode());
+			$this->assertStringContainsString('<child>', $e->getMessage());
+		}
+		$child = PradoUnit::invoke($m, 'createElementComponent', ['class' => ChildElementModule::class, 'properties' => new \ArrayIterator(['Label' => 'iterable'])], 'child', TModule::class);
+		$this->assertSame('iterable', $child->getLabel(), 'iterable properties apply');
+	}
+
+	public function testCreateElementComponent_aComponentWithoutPropertiesMayBeAnyClass(): void
+	{
+		$m = new ConcreteModule();
+		$this->assertInstanceOf(PlainChildElement::class, PradoUnit::invoke($m, 'createElementComponent', ['class' => PlainChildElement::class], 'thing', IChildElementThing::class));
+		$xml = $this->xmlConfig('<thing class="' . PlainChildElement::class . '" />');
+		$this->assertInstanceOf(PlainChildElement::class, PradoUnit::invoke($m, 'createConfigComponent', $xml, 'thing', IChildElementThing::class));
+
+		$xml = $this->xmlConfig('<thing class="' . PlainChildElement::class . '" Label="x" />');
+		foreach (['php' => ['thing' => ['class' => PlainChildElement::class, 'properties' => ['Label' => 'x']]], 'xml' => $xml] as $form => $config) {
+			try {
+				PradoUnit::invoke($m, 'createConfigComponent', $config, 'thing', IChildElementThing::class);
+				$this->fail("{$form}: properties on a class that is not a TComponent are a configuration error");
+			} catch (TConfigurationException $e) {
+				$this->assertSame('module_config_properties_unsupported', $e->getErrorCode(), $form);
+				$this->assertStringContainsString(PlainChildElement::class, $e->getMessage(), $form);
+			}
+		}
 	}
 }

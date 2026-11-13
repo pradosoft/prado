@@ -14,6 +14,7 @@ use Prado\Data\IDataConnection;
 use Prado\Data\TDbConnection;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Util\Clock\TMockClock;
+use Prado\Util\Cron\TCronTaskInfo;
 use Prado\Util\Mutex\TDbTableMutex;
 
 /**
@@ -172,5 +173,40 @@ class TDbTableMutexTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame(TDbTableMutex::DEFAULT_EXPIRE, $mutex->getExpire());
 		$this->expectException(TInvalidDataValueException::class);
 		$mutex->setExpire(-1);
+	}
+
+	public function testFlushExpiredDeletesOnlyExpiredRows(): void
+	{
+		$a = $this->newMutex()->setExpire(10);
+		$b = $this->newMutex()->setExpire(30);
+		$this->assertTrue($a->acquire('short'));
+		$this->assertTrue($b->acquire('long'));
+		$this->assertSame(0, $a->flushExpired());
+		$this->clock->sleep(11);
+		$this->assertSame(1, $b->flushExpired());
+		$rows = $this->rows($b->testConnection);
+		$this->assertCount(1, $rows);
+		$this->assertSame('long', $rows[0]['lockname']);
+		$this->assertFalse($a->release('short'));
+		$this->assertTrue($b->release('long'));
+	}
+
+	public function testFlushExpiredCreatesMissingTable(): void
+	{
+		$mutex = $this->newMutex();
+		$this->assertSame(0, $mutex->flushExpired());
+		$this->assertSame([], $this->rows($mutex->testConnection));
+	}
+
+	public function testCronTaskInfoNeedsModuleId(): void
+	{
+		$mutex = $this->newMutex();
+		$this->assertNull($mutex->fxGetCronTaskInfos(null, null));
+		$mutex->setID('lockmod');
+		$info = $mutex->fxGetCronTaskInfos(null, null);
+		$this->assertInstanceOf(TCronTaskInfo::class, $info);
+		$this->assertSame('dbmutexflushexpired', $info->getName());
+		$this->assertSame('lockmod->flushExpired()', $info->getTask());
+		$this->assertSame('lockmod', $info->getModuleId());
 	}
 }
