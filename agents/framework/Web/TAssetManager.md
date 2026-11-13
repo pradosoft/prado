@@ -113,6 +113,8 @@ A subclass overrides these instead of re-implementing the surrounding machinery:
 
 Symlink publication retains the original existence guards. If a concurrent publisher creates any filesystem entry while `symlink()` reports failure, an `lstat()` check treats that entry as the completed publication; the original failure is rethrown only when the destination remains absent.
 
+`validateSymlinks(?string $path = null, bool $remove = true)` checks one link (bool) or sweeps a directory, default `BasePath`, without descending into linked directories (int count of broken links). A broken link is removed with `unlink()`, then `rmdir()`, which Windows needs for a link to a directory.
+
 `Prado\Test\Unit\Web\TAssetManagerTest` is written against `getTestClass()` and
 `newAssetManager()`, so a subclass test extends it and overrides those two methods to run the
 whole suite against the subclass.

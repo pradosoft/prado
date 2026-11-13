@@ -2175,6 +2175,26 @@ class TAssetManagerTest extends \PHPUnit\Framework\TestCase
 	}
 
 	/**
+	 * A broken link to a directory is removed; Windows removes it with rmdir.
+	 */
+	public function testValidateSymlinksBrokenDirectoryLink()
+	{
+		$this->requireSymlinks();
+		$manager = $this->newAssetManager();
+		$manager->setBaseUrl('/');
+		$manager->init(null);
+
+		$target = self::$assetDir . DIRECTORY_SEPARATOR . 'broken_dir_target';
+		$link = self::$assetDir . DIRECTORY_SEPARATOR . 'broken_dir_link';
+		mkdir($target, Prado::getDefaultDirPermissions());
+		symlink('broken_dir_target', $link);
+		rmdir($target);
+
+		self::assertSame(1, $manager->validateSymlinks());
+		self::assertFalse(is_link($link));
+	}
+
+	/**
 	 * validateSymlinks sweeps the hierarchy, removing broken links and keeping intact
 	 * ones, and returns the count of broken links found.
 	 */

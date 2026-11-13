@@ -1199,6 +1199,8 @@ class TAssetManager extends \Prado\TModule
 	 *
 	 * A directory is scanned recursively. Directory symlinks are validated but not
 	 * descended into, so the walk stays within the asset tree and cannot loop.
+	 * Windows removes a link to a directory with `rmdir()`, which leaves the link's
+	 * target.
 	 * Defaults to {@see getBasePath BasePath}.
 	 * @param ?string $path the link or directory to validate. Defaults to the
 	 * publishing root.
@@ -1213,8 +1215,8 @@ class TAssetManager extends \Prado\TModule
 			if (@file_exists($path)) {
 				return true;
 			}
-			if ($remove) {
-				@unlink($path);
+			if ($remove && !@unlink($path)) {
+				@rmdir($path);
 			}
 			return false;
 		}
