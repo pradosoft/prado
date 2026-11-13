@@ -28,8 +28,8 @@ use Prado\Test\Unit\Harness\Traits\TTestApplicationRestorationTrait;
  * `tearDown()`; the destructor provides a safety net if you forget.
  *
  * **2. Always-temp path resolution.**
- * {@see resolvePaths()} always uses `sys_get_temp_dir()` as the base path and
- * creates a `runtime/` subdirectory there. The `$basePath` argument passed to the
+ * {@see resolvePaths()} always uses {@see TTestApplication::getDefaultBasePath()} as the
+ * base path and creates a `runtime/` subdirectory there. The `$basePath` argument passed to the
  * constructor is silently ignored, so tests do not need a real application directory.
  *
  * **3. Protected accessors exposed for testing.**
@@ -65,7 +65,7 @@ class TTestShellApplication extends TShellApplication
 	/**
 	 * Constructor.
 	 * @param ?string $basePath Ignored — the base path is always resolved to
-	 *   `sys_get_temp_dir()` by {@see resolvePaths()}. Accepted only to match the
+	 *   {@see TTestApplication::getDefaultBasePath()} by {@see resolvePaths()}. Accepted only to match the
 	 *   parent signature.
 	 * @param bool $cacheConfig Whether to cache parsed configuration. Defaults to
 	 *   `false` — no cache file is written during unit tests.
@@ -74,23 +74,23 @@ class TTestShellApplication extends TShellApplication
 	 */
 	public function __construct($basePath = null, $cacheConfig = false, $configType = null)
 	{
-		parent::__construct($basePath ?? sys_get_temp_dir(), $cacheConfig, $configType);
+		parent::__construct($basePath ?? TTestApplication::getDefaultBasePath(), $cacheConfig, $configType);
 	}
 
 	/**
 	 * Resolves the base and runtime paths for a test environment.
 	 *
-	 * Unlike the production implementation this method always uses `sys_get_temp_dir()`
-	 * as the application base path, ignoring `$basePath`. This avoids the need for a
+	 * Unlike the production implementation this method always uses
+	 * {@see TTestApplication::getDefaultBasePath()} as the application base path, ignoring `$basePath`. This avoids the need for a
 	 * real application directory layout during unit tests.
 	 *
-	 * The `runtime/` sub-directory is created inside `sys_get_temp_dir()` when absent.
+	 * The `runtime/` sub-directory is created inside the base path when absent.
 	 *
 	 * @param string $basePath Ignored.
 	 */
 	protected function resolvePaths($basePath): void
 	{
-		$tmpDir = sys_get_temp_dir();
+		$tmpDir = TTestApplication::getDefaultBasePath();
 		$this->setBasePath($tmpDir);
 		$runtimePath = $tmpDir . DIRECTORY_SEPARATOR . static::RUNTIME_PATH;
 		if (!is_dir($runtimePath)) {

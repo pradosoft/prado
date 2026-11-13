@@ -94,7 +94,7 @@ abstract class TBaseDataList extends TDataBoundControl
 	}
 
 	/**
-	 * @return THorizontalAlign the horizontal alignment of the table content. Defaults to THorizontalAlign::NotSet.
+	 * @return string|THorizontalAlign the horizontal alignment of the table content. Defaults to THorizontalAlign::NotSet.
 	 */
 	public function getHorizontalAlign()
 	{
@@ -106,7 +106,7 @@ abstract class TBaseDataList extends TDataBoundControl
 	}
 
 	/**
-	 * @param THorizontalAlign $value the horizontal alignment of the table content.
+	 * @param string|THorizontalAlign $value the horizontal alignment of the table content.
 	 */
 	public function setHorizontalAlign($value)
 	{
@@ -114,7 +114,7 @@ abstract class TBaseDataList extends TDataBoundControl
 	}
 
 	/**
-	 * @return TTableGridLines the grid line setting of the table layout. Defaults to TTableGridLines::None.
+	 * @return string|TTableGridLines the grid line setting of the table layout. Defaults to TTableGridLines::None.
 	 */
 	public function getGridLines()
 	{
@@ -127,7 +127,7 @@ abstract class TBaseDataList extends TDataBoundControl
 
 	/**
 	 * Sets the grid line style of the table layout.
-	 * @param TTableGridLines $value the grid line setting of the table
+	 * @param string|TTableGridLines $value the grid line setting of the table
 	 */
 	public function setGridLines($value)
 	{

@@ -44,7 +44,7 @@ interface IMappedStatement
 	 * @param int $skip The number of rows to skip over.
 	 * @param int $max The maximum number of rows to return.
 	 * @param null|mixed $delegate
-	 * @return \Prado\Collections\TMap A map of object containing the rows keyed by <tt>$keyProperty</tt>.
+	 * @return array A map of object containing the rows keyed by <tt>$keyProperty</tt>.
 	 */
 	public function executeQueryForMap($connection, $parameter, $keyProperty, $valueProperty = null, $skip = -1, $max = -1, $delegate = null);
 
@@ -66,7 +66,7 @@ interface IMappedStatement
 	 * @param int $skip The number of rows to skip over.
 	 * @param int $max The maximum number of rows to return.
 	 * @param null|mixed $delegate
-	 * @return \Prado\Collections\TList A TList of result objects.
+	 * @return array|\ArrayAccess A TList of result objects.
 	 */
 	public function executeQueryForList($connection, $parameter, $result = null, $skip = -1, $max = -1, $delegate = null);
 

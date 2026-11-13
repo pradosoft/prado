@@ -38,12 +38,12 @@ interface IItemDataRenderer extends \Prado\IDataRenderer
 	public function setItemIndex($value);
 
 	/**
-	 * @return TListItemType the item type.
+	 * @return string the item type, a {@see TListItemType} value.
 	 */
 	public function getItemType();
 
 	/**
-	 * @param TListItemType $value the item type.
+	 * @param string $value the item type, a {@see TListItemType} value.
 	 */
 	public function setItemType($value);
 }

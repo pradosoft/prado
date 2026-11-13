@@ -25,7 +25,7 @@ interface IValidatable
 	 */
 	public function getValidationPropertyValue();
 	/**
-	 * @return bool wether this control's validators validated successfully (must default to true)
+	 * @return bool whether this control's validators validated successfully (must default to true)
 	 */
 	public function getIsValid();
 	/**

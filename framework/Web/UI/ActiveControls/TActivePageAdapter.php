@@ -74,7 +74,7 @@ class TActivePageAdapter extends TControlAdapter
 	public const CALLBACK_REDIRECT = 'X-PRADO-REDIRECT';
 
 	/**
-	 * @var ICallbackEventHandler callback event handler.
+	 * @var ?TControl callback event handler, must implement ICallbackEventHandler.
 	 */
 	private $_callbackEventTarget;
 	/**

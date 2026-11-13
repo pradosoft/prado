@@ -134,7 +134,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 	/** @var bool log the cron tasks, in the table, as they run, default true  */
 	private $_logCronTasks = true;
 
-	/** @var array[]|TCronTask[] the tasks created from the (parent) application configuration */
+	/** @var null|array[]|TCronTask[] the tasks created from the (parent) application configuration */
 	private $_configTasks;
 
 	/** @var bool are the tasks Initialized */
@@ -146,7 +146,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 	/** @var array[] the row data from the database */
 	private $_taskRows;
 
-	/** @var TCronTask[] */
+	/** @var ?TCronTask[] */
 	private $_runtimeTasks;
 
 	/**
@@ -509,6 +509,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 	 * @param string $taskName
 	 * @param bool $checkExisting
 	 * @param bool $asObject returns the database row if false.
+	 * @return null|array|TCronTask the task object, database row, or null when absent.
 	 */
 	public function getTask($taskName, $checkExisting = true, $asObject = true)
 	{
@@ -809,7 +810,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 
 	/**
 	 * @param null|string $name name of the logs to look for, or null for all
-	 * @return int the number of log items of all or of $name
+	 * @return false|int the number of log items of all or of $name
 	 */
 	public function getCronLogCount($name = null)
 	{

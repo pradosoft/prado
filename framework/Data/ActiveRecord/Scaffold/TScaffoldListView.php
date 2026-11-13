@@ -304,7 +304,7 @@ class TScaffoldListView extends TScaffoldBase
 	}
 
 	/**
-	 * @return TScaffoldEditView control for editing selected Active Record, null if EditViewID is not set.
+	 * @return ?TScaffoldEditView control for editing selected Active Record, null if EditViewID is not set.
 	 */
 	protected function getEditViewControl()
 	{

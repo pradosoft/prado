@@ -269,7 +269,7 @@ class TDbLogRoute extends TLogRoute
 	 *   such as `logtime DESC, log_id`.
 	 * @param string $limit The LIMIT row count, `count OFFSET offset`, or `offset, count`.
 	 * @throws TInvalidDataValueException if `$order` or `$limit` is not in that form.
-	 * @return \Prado\Data\TDbDataReader the logs from the database.
+	 * @return \Prado\Data\IDataReader the logs from the database.
 	 * @since 4.3.0
 	 */
 	public function getDBLogs(?int $level = null, null|string|array $categories = null, ?float $minTime = null, ?float $maxTime = null, string $order = '', string $limit = '')

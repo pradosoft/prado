@@ -241,7 +241,7 @@ class TButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 * invoke the page's {@see \Prado\Web\UI\TPage::validate validate} method first.
 	 * It will raise {@see onClick OnClick} and {@see onCommand OnCommand} events.
 	 * This method is mainly used by framework and control developers.
-	 * @param \Prado\TEventParameter $param the event parameter
+	 * @param string $param the parameter associated with the postback event
 	 */
 	public function raisePostBackEvent($param)
 	{

@@ -143,7 +143,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	/** @var string the cli class to instance for CLI command line actions; this changes for TDbCronManager */
 	protected $_shellClass = \Prado\Util\Cron\TShellCronAction::class;
 
-	/** @var array[] any additional tasks to install from properties */
+	/** @var ?array[] any additional tasks to install from properties */
 	private $_additionalCronTasks;
 
 	/**

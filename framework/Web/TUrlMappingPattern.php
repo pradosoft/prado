@@ -162,7 +162,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 	private $_separator = '/';
 
 	/**
-	 * @var TUrlMappingPatternSecureConnection
+	 * @var string a {@see TUrlMappingPatternSecureConnection} value
 	 * @since 3.2
 	 */
 	private $_secureConnection = TUrlMappingPatternSecureConnection::Automatic;
@@ -480,7 +480,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TUrlMappingPatternSecureConnection the SecureConnection behavior. Defaults to {@see \Prado\Web\TUrlMappingPatternSecureConnection::Automatic Automatic}
+	 * @return string|TUrlMappingPatternSecureConnection the SecureConnection behavior. Defaults to {@see \Prado\Web\TUrlMappingPatternSecureConnection::Automatic Automatic}
 	 * @since 3.2
 	 */
 	public function getSecureConnection()
@@ -489,7 +489,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TUrlMappingPatternSecureConnection $value the SecureConnection behavior.
+	 * @param string|TUrlMappingPatternSecureConnection $value the SecureConnection behavior.
 	 * @since 3.2
 	 */
 	public function setSecureConnection($value)
