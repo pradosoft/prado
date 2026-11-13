@@ -1,5 +1,5 @@
 ## Version 4.4.0 - TBA
-ENH: `TModule::createConfigComponent()`, `getConfigElements()`, and `createElementComponent()` create a component a module alone uses from a child element of its configuration: `class` and the properties as attributes, or `class` and `properties` in PHP. (belisoful)
+ENH: `TModule::createConfigComponent()`, `getConfigElements()`, and `createElementComponent()` create a component a module alone uses from a child element of its configuration: `class` and the properties as attributes, or `class` and `properties` in PHP. A component without properties may be any class. (belisoful)
 ENH: `TLogRouter` creates its routes with `TModule::createElementComponent()`; a PHP route may be a class name alone, and a route without a class throws `module_config_class_required`, which replaces `logrouter_routeclass_required`. (belisoful)
 BUG: `TFileCacheDependency` and `TDirectoryCacheDependency` clear PHP's stat cache before each read, so a long-lived process sees a file changed by another process. (belisoful)
 ENH: The constructor argument of `TFileCacheDependency`, `TDirectoryCacheDependency`, and `TGlobalStateCacheDependency` is optional, so each is created from configuration and set through `FileName`, `Directory`, or `StateName`; `getHasChanged()` is false until then. (belisoful)
