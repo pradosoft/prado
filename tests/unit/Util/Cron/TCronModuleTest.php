@@ -207,6 +207,9 @@ class TCronModuleTest extends \PHPUnit\Framework\TestCase
 
 	/** @var false|string the TERM environment variable before the test. */
 	private $_term;
+
+	/** @var string[] the wake files the test made */
+	private array $_wakeFiles = [];
 	
 	public const SEPARATOR = '->';
 	
@@ -244,6 +247,24 @@ class TCronModuleTest extends \PHPUnit\Framework\TestCase
 		Prado::getApplication()->setGlobalState(TCronModule::TASKS_INFO, null);
 
 		putenv($this->_term === false ? 'TERM' : 'TERM=' . $this->_term);
+		foreach ($this->_wakeFiles as $file) {
+			if (is_file($file)) {
+				unlink($file);
+			}
+		}
+		$this->_wakeFiles = [];
+	}
+
+	/**
+	 * Makes a file wake transport on a temporary file the test removes at its end.
+	 * @param ?float $pollInterval the seconds between polls, or null for the default
+	 * @return TCronWakeFile the transport
+	 */
+	protected function wakeFile(?float $pollInterval = null): TCronWakeFile
+	{
+		$this->_wakeFiles[] = $file = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'cronwake-' . bin2hex(random_bytes(4));
+		$transport = new TCronWakeFile($file);
+		return ($pollInterval === null) ? $transport : $transport->setPollInterval($pollInterval);
 	}
 
 	public function testConstruct()
@@ -1288,7 +1309,7 @@ class TCronModuleTest extends \PHPUnit\Framework\TestCase
 		$this->obj->setDaemonLifetime(0.3);
 		$this->obj->setDaemonIdle(0.05);
 		$this->obj->setDaemonMutex($mutex);
-		$this->obj->setWakeTransport(new TCronWakeFile(sys_get_temp_dir() . '/cronwake-' . bin2hex(random_bytes(4))));
+		$this->obj->setWakeTransport($this->wakeFile());
 		$this->obj->init([
 			['name' => 'daemonDue', 'schedule' => '@' . ($now - 10), 'task' => TTestCronModuleTask::class],
 			['name' => 'daemonLater', 'schedule' => '@' . ($now + 86400), 'task' => TTestCronModuleTask::class],
@@ -1361,7 +1382,7 @@ class TCronModuleTest extends \PHPUnit\Framework\TestCase
 		$retiring->setDaemonLifetime(0.05);
 		$retiring->setDaemonIdle(0.5); // the tick's wake ends the wait sooner; this bounds the test without one
 		$retiring->setDaemonMutex(new TMemoryMutex());
-		$retiring->setWakeTransport((new TCronWakeFile(sys_get_temp_dir() . '/cronwake-' . bin2hex(random_bytes(4))))->setPollInterval(0.02));
+		$retiring->setWakeTransport($this->wakeFile(0.02));
 		$retiring->init([['name' => 'handoffTask', 'schedule' => '@' . ($now - 10), 'task' => TTestCronModuleTask::class]]);
 
 		$tick = new $this->baseClass();
@@ -1667,7 +1688,7 @@ class TCronModuleTest extends \PHPUnit\Framework\TestCase
 	public function testRunDaemon_AWakeSweepsAndStopDaemonEndsTheWait()
 	{
 		$now = $this->obj->fakeNow;
-		$transport = (new TCronWakeFile(sys_get_temp_dir() . '/cronwake-' . bin2hex(random_bytes(4))))->setPollInterval(0.02);
+		$transport = $this->wakeFile(0.02);
 		$this->obj->setDaemon(true);
 		$this->obj->setDaemonLifetime(0);
 		$this->obj->setDaemonIdle(10);
@@ -2747,7 +2768,7 @@ class TCronModuleTest extends \PHPUnit\Framework\TestCase
 		self::assertGreaterThanOrEqual(0.015, microtime(true) - $start);
 		self::assertTrue(PradoUnit::invoke($module, 'time_sleep_until', microtime(true) - 1), 'a past time returns at once');
 
-		$transport = (new TCronWakeFile(sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'cronwake-' . bin2hex(random_bytes(4))))->setPollInterval(0.01);
+		$transport = $this->wakeFile(0.01);
 		$module->setWakeTransport($transport);
 		TAsync::getLoop()->delay(0.03, static fn () => $transport->signal(microtime(true)));
 		self::assertTrue(PradoUnit::invoke($module, 'waitForWake', microtime(true) + 2), 'a signal wakes the wait');
@@ -2788,7 +2809,7 @@ class TCronModuleTest extends \PHPUnit\Framework\TestCase
 		$this->obj->setDaemonLifetime(0);
 		$this->obj->setDaemonIdle(10);
 		$this->obj->setDaemonMutex(new TMemoryMutex());
-		$this->obj->setWakeTransport((new TCronWakeFile(sys_get_temp_dir() . '/cronwake-' . bin2hex(random_bytes(4))))->setPollInterval(0.02));
+		$this->obj->setWakeTransport($this->wakeFile(0.02));
 		$this->obj->init([['name' => 'wakes', 'schedule' => '@' . ($now - 10), 'task' => TTestCronRecordingTask::class]]);
 		$sweeps = 0;
 		$this->obj->attachEventHandler('OnSweepStart', function () use (&$sweeps) {
@@ -2805,7 +2826,7 @@ class TCronModuleTest extends \PHPUnit\Framework\TestCase
 		$this->obj->setDaemon(true);
 		$this->obj->setDaemonLifetime(0);
 		$this->obj->setDaemonMutex(new TMemoryMutex());
-		$this->obj->setWakeTransport((new TCronWakeFile(sys_get_temp_dir() . '/cronwake-' . bin2hex(random_bytes(4))))->setPollInterval(0.02));
+		$this->obj->setWakeTransport($this->wakeFile(0.02));
 		$this->obj->init(null);
 		$this->obj->attachEventHandler('OnSweepStart', function () {
 			throw new \RuntimeException('sweep failed');
@@ -2833,7 +2854,7 @@ class TCronModuleTest extends \PHPUnit\Framework\TestCase
 		$this->obj->setDaemonLifetime(0);
 		$this->obj->setDaemonIdle(10);
 		$this->obj->setDaemonMutex(new TMemoryMutex());
-		$this->obj->setWakeTransport((new TCronWakeFile(sys_get_temp_dir() . '/cronwake-' . bin2hex(random_bytes(4))))->setPollInterval(0.02));
+		$this->obj->setWakeTransport($this->wakeFile(0.02));
 		$this->obj->init(null);
 		$end = null;
 		$this->obj->attachEventHandler('OnDaemonEnd', function ($sender, $param) use (&$end) {
@@ -2944,7 +2965,7 @@ class TCronModuleTest extends \PHPUnit\Framework\TestCase
 		$this->obj->setDaemon(true);
 		$this->obj->setDaemonLifetime(0);
 		$this->obj->setDaemonMutex(new TMemoryMutex());
-		$this->obj->setWakeTransport((new TCronWakeFile(sys_get_temp_dir() . '/cronwake-' . bin2hex(random_bytes(4))))->setPollInterval(0.02));
+		$this->obj->setWakeTransport($this->wakeFile(0.02));
 		$this->obj->init([['name' => 'deniedSweep', 'schedule' => '@' . ($this->obj->fakeNow - 10), 'task' => TTestCronModuleTask::class]]);
 		$this->obj->attachBehavior('denies', new TTestCronDenyingBehavior(['dyGetPendingTasks']));
 		$this->obj->attachEventHandler('OnDaemonIdle', fn () => $this->obj->stopDaemon());
