@@ -94,7 +94,7 @@
 			"Prado\\Test\\Unit\\": "tests/unit/"
 		},
 		"exclude-from-classmap": [
-			"tests/unit/PHPStan/fixtures/",
+			"tests/unit/PHPStan/Fixtures/",
 			"tests/unit/Security/app/prado3stubs/",
 			"tests/unit/Exceptions/TErrorHandlerTestGlobalClass.php"
 		]
