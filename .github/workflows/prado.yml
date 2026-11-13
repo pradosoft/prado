@@ -359,6 +359,10 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --no-progress --prefer-dist --optimize-autoloader
 
+      # msodbcsql18 (pulled in by mssql-tools18) is the ODBC driver pdo_sqlsrv needs.
+      # The repo package must match the runner's Ubuntu release; ubuntu-latest
+      # rolls between releases. Newer images preinstall packages-microsoft-prod
+      # with its keyring deleted, so the conffile flags reinstall it without a prompt.
       - name: Install mssql-tools18
         run: |
           . /etc/os-release
