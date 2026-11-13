@@ -1,6 +1,11 @@
 ## Version 4.4.0 - TBA
 BUG: `TAssetManager::validateSymlinks()` removes a broken link to a directory on Windows, where `unlink()` fails on it, with `rmdir()`. (belisoful)
+ENH: `TAssetManager::clearPublished()` removes the published asset directories, all or those last published before an age; `CronClearAge` registers the cron task `assetsclear`, which also removes broken links with `LinkAssets`. (belisoful)
+ENH: `TDbLogRoute::pruneLogs()` and `TLogRouter::pruneDbLogs()` delete the log rows older than `RetainPeriod`, registered as the cron task `dblogprune`; `TDbLogRoute.PruneOnFlush` set false leaves the deletion to cron. (belisoful)
+ENH: `TDbTableMutex::flushExpired()` deletes the expired lock rows, registered as the cron task `dbmutexflushexpired`. (belisoful)
 ENH: `TModule::createConfigComponent()`, `getConfigElements()`, and `createElementComponent()` create a component a module alone uses from a child element of its configuration: `class` and the properties as attributes, or `class` and `properties` in PHP. (belisoful)
+ENH: `TModule::createConfigComponent()`, `getConfigElements()`, and `createElementComponent()` create a component a module alone uses from a child element of its configuration: `class` and the properties as attributes, or `class` and `properties` in PHP. A component without properties may be any class. (belisoful)
+ENH: `TLogRouter` creates its routes with `TModule::createElementComponent()`; a PHP route may be a class name alone, and a route without a class throws `module_config_class_required`, which replaces `logrouter_routeclass_required`. (belisoful)
 BUG: `TFileCacheDependency` and `TDirectoryCacheDependency` clear PHP's stat cache before each read, so a long-lived process sees a file changed by another process. (belisoful)
 ENH: The constructor argument of `TFileCacheDependency`, `TDirectoryCacheDependency`, and `TGlobalStateCacheDependency` is optional, so each is created from configuration and set through `FileName`, `Directory`, or `StateName`; `getHasChanged()` is false until then. (belisoful)
 BUG: Issue #1515 - `TCache::getIsAvailable()` has a default that returns true; it was abstract, so a third-party cache class written for 4.3 failed to load on 4.4. A backend with an extension or service prerequisite overrides it. (belisoful)
