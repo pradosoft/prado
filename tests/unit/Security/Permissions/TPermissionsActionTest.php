@@ -326,6 +326,7 @@ class TPermissionsActionTest extends \PHPUnit\Framework\TestCase
 			[['perm/role', 'sub_role', '+other_perm'], 'Could not add role children'],
 			[['perm/role', 'sub_role', '-other_perm'], 'Could not remove role children'],
 			[['perm/add-rule', 'perm_name', 'deny'], 'Could not add permission rule'],
+			[['perm/remove-rule', 'perm_name', '0'], 'Could not remove permission rule'],
 		];
 		foreach ($refused as [$args, $message]) {
 			$method = ['perm/role' => 'actionRole', 'perm/add-rule' => 'actionAddRule', 'perm/remove-rule' => 'actionRemoveRule'][$args[0]];
