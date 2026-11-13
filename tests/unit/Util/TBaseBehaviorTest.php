@@ -106,6 +106,21 @@ class TBaseBehaviorTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals(['onEvent' => ['h1', 'h2']], $result);
 	}
 
+	public function testMergeHandlers_appendsTheHandlersOfEachArgument()
+	{
+		$closure = function ($sender, $param) {};
+		$result = TBaseBehavior::mergeHandlers(
+			['onEvent' => ['parent1', 'parent2']],
+			['onEvent' => ['child1', $closure]],
+			['onEvent' => 'child2', 'onOther' => ['other1', 'other2']]
+		);
+		$this->assertSame([
+			'onEvent' => ['parent1', 'parent2', 'child1', $closure, 'child2'],
+			'onOther' => ['other1', 'other2'],
+		], $result, 'a subclass adds its handlers to its parent\'s; none is dropped');
+		$this->assertSame(['onEvent' => ['h1', 'h2']], TBaseBehavior::mergeHandlers(['onEvent' => ['a' => 'h1', 'b' => 'h2']]), 'the handlers are a list');
+	}
+
 	public function testMergeHandlers_mergesMultipleEvents()
 	{
 		$closure = function ($sender, $param) {};
