@@ -20,7 +20,7 @@
 - Runtime task queue: tasks that run at `onEndRequest`, and `deferTask()` for a closure with a cron fallback (4.4.0)
 - A per-row next execution time (`nextexectime`), so `getPendingTasks()` is one query, a crontab tick runs the tasks due within its minute at their trigger second, and a run is claimed against the row so one of several hosts runs each trigger (4.4.0)
 - Permission-gated CLI management via [`TShellDbCronAction`](TShellDbCronAction.md)
-- Auto-creates the DB table if needed, and adds the `nextexectime`, `lastresult`, and `lastduration` columns to a table created before 4.4.0
+- Auto-creates the DB table if needed, and adds the `nextexectime` column and the run columns (`RUN_COLUMNS`) to a table created before 4.4.0
 
 ## Configuration
 
@@ -72,9 +72,11 @@ Auto-created as `crontabs` (configurable via `TableName`):
 | `lastresult` | VARCHAR(16) | Result of the last finished run: `ok`, `error`, `denied`, `timeout`, or `missed` (4.4.0); on a log row, the result of that run |
 | `lastduration` | VARCHAR(20) | Seconds the last finished run took (4.4.0); on a log row, the seconds of that run |
 | `paused` | INT | `1` while the task is paused (`pauseTask()`), else `NULL` (4.4.0) |
+| `okcount`, `failcount` | INT | Finished runs that succeeded, and that failed (`error`, `timeout`) (4.4.0) |
+| `totalduration`, `maxduration` | DOUBLE PRECISION | Total and longest seconds of the finished runs (4.4.0) |
 | `active` | BOOLEAN | `1` = DB task, `0` = config task shadow, `NULL` = log entry |
 
-Active rows (`active IS NOT NULL`) are task definitions; rows with `active IS NULL` are execution log entries. `ensureTable()` adds the `nextexectime` column, its index, and the values for the active rows, and the run columns `lastresult`, `lastduration`, and `paused` (`ensureRunColumns()`, each when missing), to a table created before 4.4.0. `migrateTable()` does the same on demand, creates a missing table whatever `AutoCreateCronTable` says, and returns what it did (`created`, `column`, `run`); `cron/migrate` calls it at deployment. The indexes are named `<table>_tname`, `<table>_tclass`, `<table>_tnext`, `<table>_tuser`, and `<table>_tactive`, so several cron tables share a SQLite or PostgreSQL schema (4.4.0; earlier tables keep `tname`, `tclass`, `tactive`).
+Active rows (`active IS NOT NULL`) are task definitions; rows with `active IS NULL` are execution log entries. `ensureTable()` adds the `nextexectime` column, its index, and the values for the active rows, and the run columns of `RUN_COLUMNS` (`ensureRunColumns()`, each when missing), to a table created before 4.4.0. `migrateTable()` does the same on demand, creates a missing table whatever `AutoCreateCronTable` says, and returns what it did (`created`, `column`, `run`); `cron/migrate` calls it at deployment. The indexes are named `<table>_tname`, `<table>_tclass`, `<table>_tnext`, `<table>_tuser`, and `<table>_tactive`, so several cron tables share a SQLite or PostgreSQL schema (4.4.0; earlier tables keep `tname`, `tclass`, `tactive`).
 
 ## Key Properties
 
@@ -131,7 +133,7 @@ The first call to `addRuntimeTask()` automatically attaches `executeRuntimeTasks
 
 ## Multi-host and daemon
 
-- **Results.** `updateTaskResult()` writes `lastresult` and `lastduration` of the task's active row and of the run's log row (the ID `logCronTask()` returns) after each run; `getTaskResults()` and `getNextTriggers()` read the rows, so `cron/top` on any host shows the current state. A skipped trigger (`updateTaskInfo($task, false)`) claims the row without counting a run or removing an `AutoRemove` task.
+- **Results.** `updateTaskResult()` writes `lastresult` and `lastduration` of the task's active row and of the run's log row (the ID `logCronTask()` returns) after each run, and adds a finished run to the row's `okcount` or `failcount`, `totalduration`, and `maxduration` in the same statement, so concurrent processes lose no count; `getTaskResults()` and `getNextTriggers()` read the rows, so `cron/top` on any host shows the current state. A skipped trigger (`updateTaskInfo($task, false)`) claims the row without counting a run or removing an `AutoRemove` task.
 - **Pending.** `getPendingTasks()` sets each returned task's `LastExecTime` and `ProcessCount` from its row, so a run by another process (an overlapping crontab tick, another host) since this one loaded the task is seen and the trigger it ran is not taken as due again.
 - **Claim.** `updateTaskInfo()` updates `processcount`, `lastexectime`, `nextexectime`, and `options` with `WHERE name=:name AND active IS NOT NULL AND nextexectime = :seen`, where `:seen` is the value this process read; when no row is affected another process ran the trigger first, the task's count and time are restored, and `runTask()` skips it with an INFO log entry. A runtime task without a row is always claimed. `logCronTask()` runs after the claim, so a log row records the run's count and time.
 - **Daemon.** See [TCronModule](TCronModule.md#daemon-mode-440). `getNextPendingTime()` is `MIN(nextexectime)` of the active rows; `onDaemonIdle()` calls `deactivateDbConnection()` and `getDbConnectionActivationType()` is `true`, so the connection reopens on the next query. Hosts that do not share a wake transport see each other's new tasks within `DaemonIdle`.

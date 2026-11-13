@@ -130,6 +130,13 @@ class TDbCronManager extends TCronModule implements IDbModule
 
 	public const PERM_CRON_LOG_DELETE = 'cron_log_delete';
 
+	/**
+	 * The run columns, with their types, that {@see ensureRunColumns} adds to a table created before 4.4.0.
+	 * @since 4.4.0
+	 */
+	public const RUN_COLUMNS = ['lastresult' => 'VARCHAR (16)', 'lastduration' => 'VARCHAR (20)', 'paused' => 'INT',
+		'okcount' => 'INT', 'failcount' => 'INT', 'totalduration' => 'DOUBLE PRECISION', 'maxduration' => 'DOUBLE PRECISION'];
+
 	/** @var string name of the db table for cron tasks, default 'crontabs' */
 	private $_tableName = 'crontabs';
 
@@ -498,7 +505,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 
 	/**
 	 * Checks for the table once per request: a missing table is created when {@see getAutoCreateCronTable AutoCreateCronTable}
-	 * allows, and a table created before 4.4.0 gains the `nextexectime`, `lastresult`, `lastduration`, and `paused` columns.
+	 * allows, and a table created before 4.4.0 gains the `nextexectime` column and the run columns ({@see ensureRunColumns}).
 	 * @throws TConfigurationException if the table does not exist and cannot autoCreate
 	 */
 	protected function ensureTable()
@@ -520,8 +527,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 	/**
 	 * Brings the cron table up to date for the running version: a missing table is created, whatever
 	 * {@see getAutoCreateCronTable AutoCreateCronTable} says, and a table created before 4.4.0 gains the
-	 * `nextexectime` column with its index and values, and the run columns `lastresult`, `lastduration`, and
-	 * `paused`.  The `cron/migrate` shell action calls this as a deployment step; {@see ensureTable} does the
+	 * `nextexectime` column with its index and values, and the run columns ({@see ensureRunColumns}).  The `cron/migrate` shell action calls this as a deployment step; {@see ensureTable} does the
 	 * same on first use.
 	 * @return array{created: bool, column: ?int, run: bool} whether the table was created, the active rows
 	 *   given a `nextexectime` when the column was added (null when the column existed), and whether a run
@@ -595,15 +601,15 @@ class TDbCronManager extends TCronModule implements IDbModule
 	}
 
 	/**
-	 * Adds the run columns, `lastresult`, `lastduration`, and `paused`, that a cron table created before
-	 * 4.4.0 lacks.
+	 * Adds the run columns that a cron table created before 4.4.0 lacks: `lastresult`, `lastduration`, and
+	 * `paused`, and the run statistics `okcount`, `failcount`, `totalduration`, and `maxduration`.
 	 * @return bool whether a column was added
 	 * @since 4.4.0
 	 */
 	protected function ensureRunColumns(): bool
 	{
 		$added = false;
-		foreach (['lastresult' => 'VARCHAR (16)', 'lastduration' => 'VARCHAR (20)', 'paused' => 'INT'] as $column => $type) {
+		foreach (static::RUN_COLUMNS as $column => $type) {
 			if (!$this->columnExists($column)) {
 				$this->getDbConnection()->createCommand('ALTER TABLE ' . $this->_tableName . ' ADD COLUMN ' . $column . ' ' . $type . ' NULL DEFAULT NULL')->execute();
 				$added = true;
@@ -660,6 +666,10 @@ class TDbCronManager extends TCronModule implements IDbModule
 			`lastresult` VARCHAR (16) NULL DEFAULT NULL,
 			`lastduration` VARCHAR (20) NULL DEFAULT NULL,
 			`paused` INT NULL DEFAULT NULL,
+			`okcount` INT NULL DEFAULT NULL,
+			`failcount` INT NULL DEFAULT NULL,
+			`totalduration` DOUBLE PRECISION NULL DEFAULT NULL,
+			`maxduration` DOUBLE PRECISION NULL DEFAULT NULL,
 			`active` BOOLEAN NULL
 			)' . $postIndices;
 
@@ -710,14 +720,15 @@ class TDbCronManager extends TCronModule implements IDbModule
 	 * is removed after a run.  A task without a row, a runtime task that is not persisted, is always claimed.
 	 * @param TCronTask $task
 	 * @param bool $run whether the task runs; false for a skipped trigger
+	 * @param ?int $time the lastExecTime to record: the missed trigger of a caught-up run, or null for now
 	 * @return bool whether this process claimed the run; false when another process did
 	 */
-	protected function updateTaskInfo($task, bool $run = true)
+	protected function updateTaskInfo($task, bool $run = true, ?int $time = null)
 	{
 		$name = $task->getName();
 		$priorTime = $task->getLastExecTime();
 		$priorCount = $task->getProcessCount();
-		$task->setLastExecTime($time = $this->time());
+		$task->setLastExecTime($time ??= $this->time());
 		$task->setProcessCount($count = ($priorCount + ($run ? 1 : 0)));
 
 		$row = $this->_taskRows[$name] ?? null;
@@ -776,7 +787,9 @@ class TDbCronManager extends TCronModule implements IDbModule
 	}
 
 	/**
-	 * Records the result of a run and the seconds it took in the task's row, and in the run's log row.
+	 * Records the result of a run and the seconds it took in the task's row, and in the run's log row.  A
+	 * finished run ({@see getResultOutcome}) adds to the row's run statistics in the same statement, so
+	 * processes recording runs of one task at once lose no count.
 	 * @param TCronTask $task the task
 	 * @param string $result the run's result
 	 * @param float $duration the seconds the run took
@@ -786,9 +799,20 @@ class TDbCronManager extends TCronModule implements IDbModule
 	protected function updateTaskResult($task, string $result, float $duration, mixed $logId = null)
 	{
 		$db = $this->getDbConnection();
-		$cmd = $db->createCommand("UPDATE {$this->_tableName} SET lastresult=:result, lastduration=:duration WHERE name=:name AND active IS NOT NULL");
+		$stats = '';
+		if (($outcome = static::getResultOutcome($result)) !== null) {
+			$counter = ($outcome === 'ok') ? 'okcount' : 'failcount';
+			$stats = ", {$counter}=COALESCE({$counter}, 0) + 1, totalduration=COALESCE(totalduration, 0) + :sum"
+				. ", maxduration=CASE WHEN maxduration IS NULL OR maxduration < :max THEN :newmax ELSE maxduration END";
+		}
+		$cmd = $db->createCommand("UPDATE {$this->_tableName} SET lastresult=:result, lastduration=:duration{$stats} WHERE name=:name AND active IS NOT NULL");
 		$cmd->bindValue(":result", $result, $db::PARAM_STR);
 		$cmd->bindValue(":duration", (string) round($duration, 6), $db::PARAM_STR);
+		if ($stats !== '') {
+			foreach ([':sum', ':max', ':newmax'] as $param) {
+				$cmd->bindValue($param, round($duration, 6));
+			}
+		}
 		$cmd->bindValue(":name", $task->getName(), $db::PARAM_STR);
 		$cmd->execute();
 		if ($logId !== null && $logId !== false && $logId !== '') {
@@ -864,9 +888,9 @@ class TDbCronManager extends TCronModule implements IDbModule
 	}
 
 	/**
-	 * Returns the run information of each task from its row.
+	 * Returns the run information of each task from its row, with its run statistics.
 	 * @param bool $fresh unused; the rows are always read
-	 * @return array<string, array{time: ?int, count: int, result: ?string, duration: ?float}> the run information, by task name
+	 * @return array<string, array{time: ?int, count: int, result: ?string, duration: ?float, ok: int, failed: int, total: float, max: ?float}> the run information, by task name
 	 * @since 4.4.0
 	 */
 	public function getTaskResults(bool $fresh = false): array
@@ -874,13 +898,17 @@ class TDbCronManager extends TCronModule implements IDbModule
 		$this->ensureTable();
 		parent::ensureTasks();
 		$results = [];
-		$rows = $this->getDbConnection()->createCommand("SELECT name, lastexectime, processcount, lastresult, lastduration FROM {$this->_tableName} WHERE active IS NOT NULL")->query()->readAll();
+		$rows = $this->getDbConnection()->createCommand("SELECT name, lastexectime, processcount, lastresult, lastduration, okcount, failcount, totalduration, maxduration FROM {$this->_tableName} WHERE active IS NOT NULL")->query()->readAll();
 		foreach ($rows as $row) {
 			$results[$row['name']] = [
 				'time' => ($row['lastexectime'] === null) ? null : (int) $row['lastexectime'],
 				'count' => (int) $row['processcount'],
 				'result' => $row['lastresult'],
 				'duration' => ($row['lastduration'] === null) ? null : (float) $row['lastduration'],
+				'ok' => (int) $row['okcount'],
+				'failed' => (int) $row['failcount'],
+				'total' => (float) $row['totalduration'],
+				'max' => ($row['maxduration'] === null) ? null : (float) $row['maxduration'],
 			];
 		}
 		return $results;

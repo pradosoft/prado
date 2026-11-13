@@ -263,6 +263,13 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	/** The seconds a Replace trigger waits for the stopped run to release the run lock. */
 	public const REPLACE_TIMEOUT = 10;
 
+	/**
+	 * The most triggers a late sweep reads to find the missed ones of a task with a CatchUp above 1; a
+	 * longer backlog runs once, as with a CatchUp of 1.
+	 * @since 4.4.0
+	 */
+	public const CATCH_UP_SCAN_LIMIT = 10000;
+
 	/** The seconds a Queue trigger waits for the running run, without a task Timeout or TaskTimeout. */
 	public const DEFAULT_QUEUE_TIMEOUT = 3600;
 
@@ -1373,7 +1380,19 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 			$this->onTaskSkipped($param->setReason(TCronTaskEventParameter::REASON_DENIED));
 			return false;
 		}
-		if (!$manual && ($reason = $this->getTaskSkipReason($task)) !== null) {
+		// A caught-up run of the first of several missed triggers is claimed at that trigger.
+		$catchUp = $manual ? null : $this->getCatchUpTriggers($task);
+		$claimAt = (count($catchUp ?? []) > 1) ? $catchUp[0] : null;
+		if ($manual) {
+			$trigger = null;
+		} elseif ($catchUp) {
+			$trigger = $task->getJitteredTrigger($catchUp[0]);
+		} else {
+			$trigger = $task->getNextTriggerTime();
+		}
+		$task->setRunTrigger($trigger);
+		$param->setTrigger($trigger);
+		if (!$manual && ($reason = $this->getTaskSkipReason($task, $catchUp)) !== null) {
 			Prado::log('Cron task (' . $name . ') is skipped (' . $reason . ')', TLogger::INFO, TCronModule::class);
 			$this->updateTaskInfo($task, false);
 			if ($reason === TCronTaskEventParameter::REASON_DEADLINE) {
@@ -1394,7 +1413,7 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 				$this->onTaskSkipped($param->setReason(TCronTaskEventParameter::REASON_CANCELLED));
 				return false;
 			}
-			if (!$this->updateTaskInfo($task)) {
+			if (!$this->updateTaskInfo($task, true, $claimAt)) {
 				Prado::log('Cron task (' . $name . ') was claimed by another process', TLogger::INFO, TCronModule::class);
 				$this->onTaskSkipped($param->setReason(TCronTaskEventParameter::REASON_CLAIMED));
 				return false;
@@ -1545,6 +1564,43 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	}
 
 	/**
+	 * Returns the missed triggers a late sweep runs for a task with a {@see \Prado\Util\Cron\TCronTask::getCatchUp() CatchUp}
+	 * above 1: the latest CatchUp of the schedule's triggers from the pending one to now, without the Jitter,
+	 * oldest first, and only those within the {@see \Prado\Util\Cron\TCronTask::getStartingDeadline() StartingDeadline}.
+	 * The run of the first one is claimed at that trigger, so the next one stays pending and the next sweep
+	 * runs it; the last one runs as an on-time run.
+	 * @param \Prado\Util\Cron\TCronTask $task the task
+	 * @return ?int[] the triggers, oldest first; [] when every missed trigger is past the deadline; null
+	 *   when the task does not catch up: a CatchUp of 1, no pending trigger, a task never run, a schedule
+	 *   counted from the end of each run, or more than {@see CATCH_UP_SCAN_LIMIT} missed triggers
+	 * @since 4.4.0
+	 */
+	protected function getCatchUpTriggers($task): ?array
+	{
+		$limit = $task->getCatchUp();
+		$last = $task->getLastExecTime();
+		$scheduler = $task->getScheduler();
+		if ($limit < 2 || $last === null || !$task->getIsPending($now = $this->time()) || $scheduler->getIsAfterEnd()) {
+			return null;
+		}
+		$deadline = $task->getStartingDeadline();
+		$triggers = [];
+		$scanned = 0;
+		for ($trigger = $scheduler->getNextTriggerTime($last); $trigger !== null && $task->getJitteredTrigger($trigger) <= $now; $trigger = $scheduler->getNextTriggerTime($trigger)) {
+			if (++$scanned > static::CATCH_UP_SCAN_LIMIT) {
+				return null;
+			}
+			if ($deadline === null || $now - $task->getJitteredTrigger($trigger) <= $deadline) {
+				$triggers[] = $trigger;
+				if (count($triggers) > $limit) {
+					array_shift($triggers);
+				}
+			}
+		}
+		return $triggers;
+	}
+
+	/**
 	 * Tells whether a run would start later than the task's
 	 * {@see \Prado\Util\Cron\TCronTask::getStartingDeadline() StartingDeadline} after its trigger.
 	 * @param \Prado\Util\Cron\TCronTask $task the task
@@ -1561,17 +1617,19 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	/**
 	 * Returns why a triggered run does not start, in order: the task is paused ({@see pauseTask}), its
 	 * StartingDeadline passed, the time is outside its {@see \Prado\Util\Cron\TCronTask::getIsInWindow() time of day},
-	 * or a behavior's `dyShouldRunTask($run, $task)` returns false.
+	 * or a behavior's `dyShouldRunTask($run, $task)` returns false.  With missed triggers to catch up
+	 * ({@see getCatchUpTriggers}), the deadline passed only when none of them is within it.
 	 * @param \Prado\Util\Cron\TCronTask $task the task
+	 * @param ?int[] $catchUp the missed triggers within the deadline, or null when the task does not catch up
 	 * @return ?string a {@see TCronTaskEventParameter} `REASON_*` constant, or null when the run starts
 	 * @since 4.4.0
 	 */
-	protected function getTaskSkipReason($task): ?string
+	protected function getTaskSkipReason($task, ?array $catchUp = null): ?string
 	{
 		if ($this->getIsTaskPaused($task->getName())) {
 			return TCronTaskEventParameter::REASON_PAUSED;
 		}
-		if ($this->isTaskPastDeadline($task)) {
+		if (($catchUp === null) ? $this->isTaskPastDeadline($task) : ($catchUp === [])) {
 			return TCronTaskEventParameter::REASON_DEADLINE;
 		}
 		if (!$task->getIsInWindow($this->time())) {
@@ -1581,6 +1639,42 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 			return TCronTaskEventParameter::REASON_CONDITION;
 		}
 		return null;
+	}
+
+	/**
+	 * Returns the tasks with a tag that the current user may read ({@see getTasks}).
+	 * @param string $tag the tag, with or without a leading `#`, in any case
+	 * @return ?array<string, TCronTask> the tasks by name, or null when access is denied
+	 * @since 4.4.0
+	 */
+	public function getTasksByTag(string $tag): ?array
+	{
+		$tasks = $this->getTasks();
+		return ($tasks === null) ? null : array_filter($tasks, static fn ($task) => $task->hasTag($tag));
+	}
+
+	/**
+	 * Pauses every task with a tag ({@see pauseTask}).
+	 * @param string $tag the tag, with or without a leading `#`, in any case
+	 * @return string[] the names of the paused tasks
+	 * @since 4.4.0
+	 */
+	public function pauseTag(string $tag): array
+	{
+		$names = array_keys($this->getTasksByTag($tag) ?? []);
+		return array_values(array_filter($names, fn ($name) => $this->pauseTask($name)));
+	}
+
+	/**
+	 * Resumes every task with a tag ({@see resumeTask}).
+	 * @param string $tag the tag, with or without a leading `#`, in any case
+	 * @return string[] the names of the resumed tasks
+	 * @since 4.4.0
+	 */
+	public function resumeTag(string $tag): array
+	{
+		$names = array_keys($this->getTasksByTag($tag) ?? []);
+		return array_values(array_filter($names, fn ($name) => $this->resumeTask($name)));
 	}
 
 	/**
@@ -2068,19 +2162,20 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	}
 
 	/**
-	 * Claims the run of a task: sets the lastExecTime to now and, for a run, increments the
-	 * processCount, and saves the new data to the global state.  A skipped trigger claims without a
-	 * run.  TCronModule has one process per application, so every claim succeeds; TDbCronManager
-	 * claims against the database row.
+	 * Claims the run of a task: sets the lastExecTime to now, or to the missed trigger a caught-up run
+	 * serves, and, for a run, increments the processCount, and saves the new data to the global state.
+	 * A skipped trigger claims without a run.  TCronModule has one process per application, so every claim
+	 * succeeds; TDbCronManager claims against the database row.
 	 * @param TCronTask $task
 	 * @param bool $run whether the task runs; false for a skipped trigger
+	 * @param ?int $time the lastExecTime to record: the missed trigger of a caught-up run ({@see getCatchUpTriggers}), or null for now
 	 * @return bool whether this process claimed the run
 	 */
-	protected function updateTaskInfo($task, bool $run = true)
+	protected function updateTaskInfo($task, bool $run = true, ?int $time = null)
 	{
 		$tasksInfo = $this->getApplication()->getGlobalState(self::TASKS_INFO, []);
 		$name = $task->getName();
-		$time = $tasksInfo[$name]['lastExecTime'] = $this->time();
+		$time = $tasksInfo[$name]['lastExecTime'] = $time ?? $this->time();
 		$count = $tasksInfo[$name]['processCount'] = $task->getProcessCount() + ($run ? 1 : 0);
 		$task->setProcessCount($count);
 		$task->setLastExecTime($time);
@@ -2104,7 +2199,26 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	}
 
 	/**
-	 * Records the result of a run and the seconds it took in the global state.
+	 * Returns how a result counts in the run statistics: `ok` for {@see RESULT_OK}, `failed` for
+	 * {@see RESULT_ERROR} and {@see RESULT_TIMEOUT}, and null for a result that is no finished run
+	 * ({@see RESULT_DENIED}, {@see RESULT_MISSED}, {@see RESULT_REPLACED}).
+	 * @param string $result the run's result
+	 * @return ?string `ok`, `failed`, or null
+	 * @since 4.4.0
+	 */
+	public static function getResultOutcome(string $result): ?string
+	{
+		return match ($result) {
+			static::RESULT_OK => 'ok',
+			static::RESULT_ERROR, static::RESULT_TIMEOUT => 'failed',
+			default => null,
+		};
+	}
+
+	/**
+	 * Records the result of a run and the seconds it took in the global state, and adds a finished run
+	 * ({@see getResultOutcome}) to the task's run statistics: the ok and failed counts, and the total
+	 * and longest seconds.
 	 * @param TCronTask $task the task
 	 * @param string $result {@see RESULT_OK}, {@see RESULT_ERROR}, {@see RESULT_DENIED}, or {@see RESULT_TIMEOUT}
 	 * @param float $duration the seconds the run took
@@ -2118,6 +2232,13 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 		$name = $task->getName();
 		$tasksInfo[$name]['lastResult'] = $result;
 		$tasksInfo[$name]['lastDuration'] = round($duration, 6);
+		if (($outcome = static::getResultOutcome($result)) !== null) {
+			$info = $tasksInfo[$name];
+			$info[$outcome . 'Count'] = (int) ($info[$outcome . 'Count'] ?? 0) + 1;
+			$info['totalDuration'] = round((float) ($info['totalDuration'] ?? 0.0) + $duration, 6);
+			$info['maxDuration'] = round(max((float) ($info['maxDuration'] ?? 0.0), $duration), 6);
+			$tasksInfo[$name] = $info;
+		}
 		$app->setGlobalState(self::TASKS_INFO, $tasksInfo, [], true);
 	}
 
@@ -2136,10 +2257,11 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	}
 
 	/**
-	 * Returns the run information of each task: the time of its last run, the run count, and the
-	 * result and seconds of its last finished run.
+	 * Returns the run information of each task: the time of its last run, the run count, the
+	 * result and seconds of its last finished run, and its run statistics: the `ok` and `failed` runs
+	 * and their `total` and `max` seconds.
 	 * @param bool $fresh whether to read the stored information instead of this process's copy
-	 * @return array<string, array{time: ?int, count: int, result: ?string, duration: ?float}> the run information, by task name
+	 * @return array<string, array{time: ?int, count: int, result: ?string, duration: ?float, ok: int, failed: int, total: float, max: ?float}> the run information, by task name
 	 * @since 4.4.0
 	 */
 	public function getTaskResults(bool $fresh = false): array
@@ -2153,6 +2275,10 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 				'count' => (int) ($info['processCount'] ?? 0),
 				'result' => $info['lastResult'] ?? null,
 				'duration' => isset($info['lastDuration']) ? (float) $info['lastDuration'] : null,
+				'ok' => (int) ($info['okCount'] ?? 0),
+				'failed' => (int) ($info['failedCount'] ?? 0),
+				'total' => (float) ($info['totalDuration'] ?? 0.0),
+				'max' => isset($info['maxDuration']) ? (float) $info['maxDuration'] : null,
 			];
 		}
 		return $results;
@@ -3465,7 +3591,7 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	 * | `processes` | the live statuses of {@see getStatuses}, without their file |
 	 * | `ended` | the statuses of processes that ended without removing them |
 	 * | `runs` | the runs in progress of the reported tasks: `name`, `mode`, `user`, `started`, `deadline`, `warn`, `overdue`, `pid` (the child of a Process task), and `owner` (the cron process) |
-	 * | `tasks` | by name: `mode`, `schedule`, `timezone`, `priority`, `description`, `paused`, `running` (the process IDs of its runs), `next`, `last`, `count`, `result`, `duration` |
+	 * | `tasks` | by name: `mode`, `schedule`, `timezone`, `priority`, `description`, `tags`, `paused`, `running` (the process IDs of its runs), `next`, `last`, `count`, `result`, `duration`, and `stats` ({@see getRunStats}) |
 	 * @param ?array<string, TCronTask> $tasks the tasks to report, by name; null for {@see getTasks}
 	 * @return array the report
 	 * @since 4.4.0
@@ -3519,6 +3645,7 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 				'timezone' => $task->getScheduleTimeZone() ?? date_default_timezone_get(),
 				'priority' => $task->getPriority(),
 				'description' => $task->getDescription(),
+				'tags' => $task->getTags(),
 				'paused' => isset($paused[$name]),
 				'running' => $running[$name] ?? [],
 				'next' => $next[$name] ?? null,
@@ -3526,6 +3653,7 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 				'count' => $result['count'] ?? 0,
 				'result' => $result['result'] ?? null,
 				'duration' => $result['duration'] ?? null,
+				'stats' => static::getRunStats($result),
 			];
 		}
 		return [
@@ -3542,11 +3670,36 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	}
 
 	/**
+	 * Computes the run statistics of a task from its run information ({@see getTaskResults}).
+	 * @param array $result the task's run information
+	 * @return array{ok: int, failed: int, successRate: ?float, avgDuration: ?float, maxDuration: ?float, totalDuration: float}
+	 *   the finished runs that succeeded and failed, the share that succeeded, and the average, longest,
+	 *   and total seconds; the rate and average are null before a finished run
+	 * @since 4.4.0
+	 */
+	public static function getRunStats(array $result): array
+	{
+		$ok = (int) ($result['ok'] ?? 0);
+		$failed = (int) ($result['failed'] ?? 0);
+		$total = (float) ($result['total'] ?? 0.0);
+		$runs = $ok + $failed;
+		return [
+			'ok' => $ok,
+			'failed' => $failed,
+			'successRate' => $runs ? round($ok / $runs, 4) : null,
+			'avgDuration' => $runs ? round($total / $runs, 6) : null,
+			'maxDuration' => isset($result['max']) ? (float) $result['max'] : null,
+			'totalDuration' => $total,
+		];
+	}
+
+	/**
 	 * Returns {@see getMonitorReport} in the Prometheus text exposition format:
 	 * `prado_cron_daemon_up`, `prado_cron_processes`, and per task `prado_cron_task_running`,
 	 * `prado_cron_task_paused`, `prado_cron_task_runs_total`, `prado_cron_task_last_run_timestamp_seconds`,
-	 * `prado_cron_task_last_duration_seconds`, `prado_cron_task_last_success`, and
-	 * `prado_cron_task_next_run_timestamp_seconds`, labeled by `module` and `task`.
+	 * `prado_cron_task_last_duration_seconds`, `prado_cron_task_last_success`,
+	 * `prado_cron_task_next_run_timestamp_seconds`, `prado_cron_task_finished_total` (with `outcome` `ok`
+	 * or `failed`), and `prado_cron_task_run_seconds_sum`, `_count`, and `_max`, labeled by `module` and `task`.
 	 * @param ?array<string, TCronTask> $tasks the tasks to report, by name; null for {@see getTasks}
 	 * @return string the metrics
 	 * @since 4.4.0
@@ -3582,6 +3735,16 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 		$metric('prado_cron_task_last_duration_seconds', 'gauge', 'The seconds the last finished run of the task took.', $per(static fn ($t) => $t['duration']));
 		$metric('prado_cron_task_last_success', 'gauge', 'Whether the last finished run of the task succeeded.', $per(static fn ($t) => ($t['result'] === null) ? null : (($t['result'] === static::RESULT_OK) ? 1 : 0)));
 		$metric('prado_cron_task_next_run_timestamp_seconds', 'gauge', 'The next trigger of the task.', $per(static fn ($t) => $t['next']));
+		$finished = [];
+		foreach ($report['tasks'] as $name => $task) {
+			foreach (['ok', 'failed'] as $outcome) {
+				$finished[] = [$label($module + ['task' => $name, 'outcome' => $outcome]), $task['stats'][$outcome]];
+			}
+		}
+		$metric('prado_cron_task_finished_total', 'counter', 'The finished runs of the task, by outcome.', $finished);
+		$metric('prado_cron_task_run_seconds_sum', 'counter', 'The seconds the finished runs of the task took.', $per(static fn ($t) => $t['stats']['totalDuration']));
+		$metric('prado_cron_task_run_seconds_count', 'counter', 'The finished runs of the task.', $per(static fn ($t) => $t['stats']['ok'] + $t['stats']['failed']));
+		$metric('prado_cron_task_run_seconds_max', 'gauge', 'The seconds the longest finished run of the task took.', $per(static fn ($t) => $t['stats']['maxDuration']));
 		return implode("\n", $lines) . "\n";
 	}
 

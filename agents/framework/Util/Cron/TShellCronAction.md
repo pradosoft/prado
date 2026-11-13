@@ -18,15 +18,15 @@ When the application user has the `TUserPermissionsBehavior`, the constructor re
 ## CLI Commands
 
 ```bash
-php prado-cli.php /app cron [name] [@user]    # display configured tasks (schedule, last run, next run, count); the default action (4.4.0)
+php prado-cli.php /app cron [name] [@user] [#tag]   # display configured tasks (schedule, last run, next run, count); the default action (4.4.0)
 php prado-cli.php /app cron/run               # run pending cron tasks; the system crontab entry
-php prado-cli.php /app cron/top [seconds] [count]   # live view of the cron processes, running tasks, next triggers, last results (4.4.0)
-php prado-cli.php /app --quiet=1 cron/report [json|prometheus]   # the monitor report for scripts (4.4.0)
+php prado-cli.php /app cron/top [seconds] [count] [#tag]   # live view of the cron processes, running tasks, next triggers, last results with success rate and average seconds (4.4.0)
+php prado-cli.php /app --quiet=1 cron/report [json|prometheus] [#tag]   # the monitor report for scripts (4.4.0)
 php prado-cli.php /app cron/exec <name>       # run one task in this process; the child of a Process task (4.4.0)
 php prado-cli.php /app cron/now <name>        # run a task now, whatever its schedule, and show its result (4.4.0)
-php prado-cli.php /app cron/next [name] [count]   # the next trigger times, in each task's time zone (4.4.0)
-php prado-cli.php /app cron/pause <name>      # its triggers pass without runs until resumed (4.4.0)
-php prado-cli.php /app cron/resume <name>     # resume a paused task (4.4.0)
+php prado-cli.php /app cron/next [name|#tag] [count]   # the next trigger times, in each task's time zone (4.4.0)
+php prado-cli.php /app cron/pause <name|#tag>   # its triggers, or the triggers of the tag's tasks, pass without runs until resumed (4.4.0)
+php prado-cli.php /app cron/resume <name|#tag>  # resume a paused task, or the tag's tasks (4.4.0)
 php prado-cli.php /app cron/index             # display registered task info from fxGetCronTaskInfos
 php prado-cli.php /app cron/daemon            # running, retiring, or no daemon (4.4.0)
 php prado-cli.php /app cron/retire [seconds]  # retire the daemon: the next cron/run tick takes over with no gap (4.4.0)
@@ -46,7 +46,8 @@ Name and user filters are patterns: `_` is a wild card and `%` a wild string. A 
 - `actionReport($args)` — prints `getMonitorReport()` of the readable tasks as pretty JSON, or `getMonitorMetrics()` with `prometheus`; another format is an error (4.4.0)
 - `actionTop($args)` — `renderTop()` once, or in a terminal (`isInteractive()`) every `[seconds]` (default 1) after clearing the screen, until interrupted or `[count]` views (4.4.0). A view renders `getMonitorReport()` of the tasks the user may read (the same report as `cron/report` and `TCronMonitorResponse`): a line per live or ended cron process (role, pid, host, uptime; for the daemon its state, wake transport, next sweep, and sweep and task counts), the concurrency, then tables of the runs in progress, the next triggers, and the last results, at most `TOP_ROWS` (10) each. `flushView()` and `sleep()` are the test seams.
 - `actionNow($args)` — `runTaskNow($task)` (not skipped by pause, deadline, window, or condition; run lock, claim, events, and pings apply; turns on an unset `EnableStatus` so `cron/top` shows it), then the result from `onTaskEnd` or the reason from `onTaskSkipped` (4.4.0)
-- `actionPause($args)`, `actionResume($args)` — `pauseTask()`/`resumeTask()` on a task the user may read (4.4.0)
+- `actionPause($args)`, `actionResume($args)` — `pauseTask()`/`resumeTask()` on a task the user may read, or with `#tag` on each such task with the tag (4.4.0)
+- `extractTag(&$args)` — takes a `#tag` argument out of the arguments; `cron/tasks`, `cron/top`, and `cron/report` filter by it, and `cron/next` takes it in place of the name (4.4.0)
 - `actionNext($args)` — the next trigger times of the readable tasks, soonest first, one per task or `count` (default 5 with a name filter), each in the task's `TimeZone`; `getNextTriggerTimes()` is the pending or next trigger followed by the scheduler's times after it or after now (4.4.0)
 - `actionExec($args)` — `executeTask()` on the named task without claiming it; throws `TExitException` with `TCronModule::EXIT_ERROR`, `EXIT_NO_TASK`, or `EXIT_DENIED` (4.4.0)
 - `actionIndex($args)` — displays task info from `fxGetCronTaskInfos`

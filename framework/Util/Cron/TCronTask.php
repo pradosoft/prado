@@ -46,8 +46,11 @@ use Prado\TPropertyValue;
  * else the application time zone.  {@see getJitter() Jitter} delays each trigger by a stable number of
  * seconds from the task name and the trigger.  A
  * {@see getStartingDeadline() StartingDeadline} skips a run that would start more than that many seconds
- * after its trigger, such as after the cron process was down.  {@see getDescription() Description} is
- * shown by the shell commands.  The ping URLs ({@see getPingBeforeUrl() PingBeforeUrl},
+ * after its trigger, such as after the cron process was down; {@see getCatchUp() CatchUp} runs up to
+ * that many of the triggers missed while it was down, one run each, instead of one run for all.
+ * {@see getDescription() Description} is
+ * shown by the shell commands.  {@see getTags() Tags} group tasks: the shell commands filter by `#tag`,
+ * and the cron module pauses and resumes a tag's tasks together.  The ping URLs ({@see getPingBeforeUrl() PingBeforeUrl},
  * {@see getPingAfterUrl() PingAfterUrl}, {@see getPingSuccessUrl() PingSuccessUrl}, and
  * {@see getPingFailureUrl() PingFailureUrl}) report runs to a monitor through
  * {@see \Prado\Util\Cron\TCronModule::onTaskPing()}.  A failed run is tried again up to
@@ -141,8 +144,17 @@ abstract class TCronTask extends TApplicationComponent
 	/** @var ?float the seconds after its trigger a run may start, or null for no deadline */
 	private ?float $_startingDeadline = null;
 
+	/** @var int the missed triggers a late sweep runs, one run each; 1 runs them as one */
+	private int $_catchUp = 1;
+
+	/** @var ?int the trigger the current run serves, or null for a manual run; not serialized */
+	private ?int $_runTrigger = null;
+
 	/** @var string what the task does, for display */
 	private string $_description = '';
+
+	/** @var string[] the lowercase tags that group the task */
+	private array $_tags = [];
 
 	/** @var array<string, string> the ping URLs, by {@see PING_BEFORE}, {@see PING_AFTER}, {@see PING_SUCCESS}, or {@see PING_FAILURE} */
 	private array $_pingUrls = [];
@@ -355,10 +367,10 @@ abstract class TCronTask extends TApplicationComponent
 	public function getNextTriggerTime($time = null)
 	{
 		if ($time !== null) {
-			return $this->jitterTrigger($this->getScheduler()->getNextTriggerTime($time));
+			return $this->getJitteredTrigger($this->getScheduler()->getNextTriggerTime($time));
 		}
 		if ($this->_nextexectime === false) {
-			$this->_nextexectime = $this->jitterTrigger($this->getScheduler()->getNextTriggerTime($this->_lastexectime ?? 0));
+			$this->_nextexectime = $this->getJitteredTrigger($this->getScheduler()->getNextTriggerTime($this->_lastexectime ?? 0));
 		}
 		return $this->_nextexectime;
 	}
@@ -372,17 +384,17 @@ abstract class TCronTask extends TApplicationComponent
 	 */
 	public function getNextTriggerTimes(int $count, int $time): array
 	{
-		return array_map(fn (int $trigger): int => (int) $this->jitterTrigger($trigger), $this->getScheduler()->getNextTriggerTimes($count, $time));
+		return array_map(fn (int $trigger): int => (int) $this->getJitteredTrigger($trigger), $this->getScheduler()->getNextTriggerTimes($count, $time));
 	}
 
 	/**
-	 * Delays a trigger by the {@see getJitter() Jitter}: a stable number of seconds from the task name
-	 * and the trigger, so every process computes the same time.
-	 * @param ?int $trigger the trigger time
+	 * Delays a trigger of the schedule by the {@see getJitter() Jitter}: a stable number of seconds from
+	 * the task name and the trigger, so every process computes the same time.
+	 * @param ?int $trigger the trigger time of the schedule
 	 * @return ?int the delayed trigger time
 	 * @since 4.4.0
 	 */
-	protected function jitterTrigger(?int $trigger): ?int
+	public function getJitteredTrigger(?int $trigger): ?int
 	{
 		if ($trigger === null || $this->_jitter === 0) {
 			return $trigger;
@@ -858,6 +870,49 @@ abstract class TCronTask extends TApplicationComponent
 	}
 
 	/**
+	 * @return int the most missed triggers a late sweep runs, one run each, the latest ones oldest first;
+	 *   default 1, one run for all the missed triggers
+	 * @since 4.4.0
+	 */
+	public function getCatchUp(): int
+	{
+		return $this->_catchUp;
+	}
+
+	/**
+	 * @param int|string $value the most missed triggers a late sweep runs, one run each; 1 runs them as one
+	 * @throws TInvalidDataValueException when the value is less than 1
+	 * @since 4.4.0
+	 */
+	public function setCatchUp($value)
+	{
+		$value = TPropertyValue::ensureInteger($value);
+		if ($value < 1) {
+			throw new TInvalidDataValueException('crontask_catchup_invalid', $value);
+		}
+		$this->_catchUp = $value;
+	}
+
+	/**
+	 * @return ?int the trigger the current or last run in this process served, after the Jitter; null before
+	 *   a run and for a manual run.  A caught-up run ({@see getCatchUp CatchUp}) serves a missed trigger.
+	 * @since 4.4.0
+	 */
+	public function getRunTrigger(): ?int
+	{
+		return $this->_runTrigger;
+	}
+
+	/**
+	 * @param ?int $value the trigger the run serves, or null for a manual run; set by the cron module
+	 * @since 4.4.0
+	 */
+	public function setRunTrigger(?int $value): void
+	{
+		$this->_runTrigger = $value;
+	}
+
+	/**
 	 * @return string what the task does, for display; default ''
 	 * @since 4.4.0
 	 */
@@ -873,6 +928,46 @@ abstract class TCronTask extends TApplicationComponent
 	public function setDescription($description)
 	{
 		$this->_description = ($description === null) ? '' : TPropertyValue::ensureString($description);
+	}
+
+	/**
+	 * @return string[] the lowercase tags that group the task, for filtering and pausing together; default none
+	 * @since 4.4.0
+	 */
+	public function getTags(): array
+	{
+		return $this->_tags;
+	}
+
+	/**
+	 * Sets the tags.  A tag is trimmed, lowercased, and stripped of a leading `#`; tags are distinct.
+	 * @param null|string|string[] $tags a list separated by commas or spaces, or an array
+	 * @since 4.4.0
+	 */
+	public function setTags($tags)
+	{
+		$tags = ($tags === null || $tags === '') ? [] : (is_array($tags) ? $tags : preg_split('/[\s,]+/', TPropertyValue::ensureString($tags)));
+		$this->_tags = array_values(array_unique(array_filter(array_map(static fn ($tag) => static::normalizeTag((string) $tag), $tags), static fn ($tag) => $tag !== '')));
+	}
+
+	/**
+	 * @param string $tag the tag, with or without a leading `#`, in any case
+	 * @return bool whether the task has the tag
+	 * @since 4.4.0
+	 */
+	public function hasTag(string $tag): bool
+	{
+		return in_array(static::normalizeTag($tag), $this->_tags, true);
+	}
+
+	/**
+	 * @param string $tag a tag
+	 * @return string the tag trimmed, lowercased, and without a leading `#`
+	 * @since 4.4.0
+	 */
+	public static function normalizeTag(string $tag): string
+	{
+		return strtolower(ltrim(trim($tag), '#'));
 	}
 
 	/**
@@ -1125,8 +1220,15 @@ abstract class TCronTask extends TApplicationComponent
 		if ($this->_startingDeadline === null) {
 			$exprops[] = "\0Prado\Util\Cron\TCronTask\0_startingDeadline";
 		}
+		if ($this->_catchUp === 1) {
+			$exprops[] = "\0Prado\Util\Cron\TCronTask\0_catchUp";
+		}
+		$exprops[] = "\0Prado\Util\Cron\TCronTask\0_runTrigger";
 		if ($this->_description === '') {
 			$exprops[] = "\0Prado\Util\Cron\TCronTask\0_description";
+		}
+		if ($this->_tags === []) {
+			$exprops[] = "\0Prado\Util\Cron\TCronTask\0_tags";
 		}
 		if ($this->_pingUrls === []) {
 			$exprops[] = "\0Prado\Util\Cron\TCronTask\0_pingUrls";

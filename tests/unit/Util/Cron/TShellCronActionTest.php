@@ -696,4 +696,58 @@ class TShellCronActionTest extends \PHPUnit\Framework\TestCase
 		PradoUnit::invoke($action, 'flushView');
 		self::assertSame('', $this->writer->flush(), 'the view flushes the writer');
 	}
+
+	public function testTagArguments()
+	{
+		$action = new TTestShellCronTopAction();
+		$action->setWriter($this->writer);
+		$cron = new TCronModule();
+		$cron->setID('shellTags' . bin2hex(random_bytes(3)));
+		$cron->init([
+			['name' => 'tagWeb', 'schedule' => '0 9 * * *', 'task' => TTestCronModuleTask::class, 'tags' => 'web', 'description' => 'Web task'],
+			['name' => 'tagWebToo', 'schedule' => '0 10 * * *', 'task' => TTestCronModuleTask::class, 'tags' => 'web, mail'],
+			['name' => 'tagOther', 'schedule' => '0 11 * * *', 'task' => TTestCronModuleTask::class],
+		]);
+		$action->setCronModule($cron);
+		$file = PradoUnit::invoke($cron, 'getPausedFile');
+		try {
+			self::assertTrue($action->actionTasks(['cron/tasks', '#web']));
+			$text = $this->writer->flush();
+			self::assertStringContainsString('2 tasks found, filtered by #web', $text);
+			self::assertStringContainsString('#web Web task', $text);
+			self::assertStringContainsString('#web #mail', $text);
+			self::assertStringNotContainsString('tagOther', $text);
+			self::assertTrue($action->actionTasks(['cron/tasks', 'tagWeb%', '#mail']));
+			self::assertStringContainsString("filtered by task name 'tagWeb%' and #mail", $this->writer->flush());
+
+			self::assertTrue($action->actionNext(['cron/next', '#mail', '2']));
+			$text = $this->writer->flush();
+			self::assertStringContainsString('tagWebToo', $text);
+			self::assertStringNotContainsString('tagOther', $text);
+
+			self::assertTrue($action->actionTop(['cron/top', '#web']));
+			$text = $this->writer->flush();
+			self::assertStringContainsString('tagWeb', $text);
+			self::assertStringNotContainsString('tagOther', $text);
+
+			self::assertTrue($action->actionReport(['cron/report', '#mail']));
+			self::assertSame(['tagWebToo'], array_keys(json_decode($this->writer->flush(), true)['tasks']));
+			self::assertTrue($action->actionReport(['cron/report', 'prometheus', '#mail']));
+			self::assertStringNotContainsString('task="tagWeb"', $this->writer->flush());
+
+			self::assertTrue($action->actionPause(['cron/pause', '#web']));
+			self::assertStringContainsString('Cron tasks tagWeb, tagWebToo are paused', $this->writer->flush());
+			self::assertSame(['tagWeb', 'tagWebToo'], $cron->getPausedTasks());
+			self::assertTrue($action->actionResume(['cron/resume', '#WEB']));
+			self::assertStringContainsString('are resumed', $this->writer->flush());
+			self::assertSame([], $cron->getPausedTasks());
+			self::assertTrue($action->actionPause(['cron/pause', '#nothing']));
+			self::assertStringContainsString("No cron task has the tag 'nothing'", $this->writer->flush());
+		} finally {
+			$cron->unlisten();
+			if (is_file($file)) {
+				unlink($file);
+			}
+		}
+	}
 }

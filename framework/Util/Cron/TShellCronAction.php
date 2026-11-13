@@ -43,10 +43,10 @@ class TShellCronAction extends TShellAction
 
 	protected $action = 'cron';
 	protected $methods = ['tasks', 'run', 'index', 'daemon', 'retire', 'stop', 'top', 'exec', 'now', 'next', 'pause', 'resume', 'report'];
-	protected $parameters = [null, null, null, null, null, null, null, ['task-name'], ['task-name'], null, ['task-name'], ['task-name'], null];
-	protected $optional = [['task-name or @user'], null, null, null, ['seconds'], ['seconds'], ['seconds', 'count'], null, null, ['task-name', 'count'], null, null, ['json or prometheus']];
+	protected $parameters = [null, null, null, null, null, null, null, ['task-name'], ['task-name'], null, ['task-name or #tag'], ['task-name or #tag'], null];
+	protected $optional = [['task-name, @user, or #tag'], null, null, null, ['seconds'], ['seconds'], ['seconds', 'count', '#tag'], null, null, ['task-name or #tag', 'count'], null, null, ['json or prometheus', '#tag']];
 	protected $description = ['Manages Cron time-based services',
-		'Displays the Cron tasks configured in the application. Filter by @user and task name.',
+		'Displays the Cron tasks configured in the application. Filter by @user, #tag, and task name.',
 		'Runs the Cron Pending Tasks.',
 		'Displays the registered Cron tasks information.',
 		'Shows whether a cron daemon holds the lease, and whether it is retiring.',
@@ -55,9 +55,9 @@ class TShellCronAction extends TShellAction
 		'Shows the cron processes, running tasks, next triggers, and last results; live in a terminal.',
 		'Runs one task in this process; a Process task\'s child process runs it.',
 		'Runs a task now, whatever its schedule, and shows its result.',
-		'Shows the next trigger times of the tasks; filter by task name.',
-		'Pauses a task: its triggers pass without runs until it is resumed.',
-		'Resumes a paused task.',
+		'Shows the next trigger times of the tasks; filter by task name or #tag.',
+		'Pauses a task, or the tasks of a #tag: their triggers pass without runs until resumed.',
+		'Resumes a paused task, or the tasks of a #tag.',
 		'Prints the monitor report as JSON, or Prometheus metrics.',
 	];
 
@@ -244,7 +244,7 @@ class TShellCronAction extends TShellAction
 	 */
 	public function actionPause($args)
 	{
-		return $this->setTaskPaused($args[1] ?? '', true);
+		return $this->setTaskPaused((string) ($args[1] ?? ''), true);
 	}
 
 	/**
@@ -255,12 +255,12 @@ class TShellCronAction extends TShellAction
 	 */
 	public function actionResume($args)
 	{
-		return $this->setTaskPaused($args[1] ?? '', false);
+		return $this->setTaskPaused((string) ($args[1] ?? ''), false);
 	}
 
 	/**
-	 * Pauses or resumes a task the user may read, and reports it.
-	 * @param string $name the task name
+	 * Pauses or resumes a task the user may read, or with `#tag` every such task with the tag, and reports it.
+	 * @param string $name the task name, or `#` and a tag
 	 * @param bool $paused whether to pause the task
 	 * @return bool whether the command ran
 	 * @since 4.4.0
@@ -269,6 +269,18 @@ class TShellCronAction extends TShellAction
 	{
 		$module = $this->getCronModule();
 		if (!$module) {
+			return true;
+		}
+		if (str_starts_with($name, '#')) {
+			$names = array_keys($this->getReadableTasks($module, $name) ?? []);
+			foreach ($names as $tname) {
+				$paused ? $module->pauseTask($tname) : $module->resumeTask($tname);
+			}
+			if (!$names) {
+				$this->_outWriter->writeError("No cron task has the tag '" . TCronTask::normalizeTag($name) . "'.");
+				return true;
+			}
+			$this->_outWriter->writeLine("\nCron tasks " . implode(', ', $names) . ' are ' . ($paused ? 'paused' : 'resumed') . ".\n", TShellWriter::GREEN);
 			return true;
 		}
 		if ($name === '' || !isset($this->getReadableTasks($module)[$name])) {
@@ -291,12 +303,13 @@ class TShellCronAction extends TShellAction
 	 */
 	public function actionNext($args)
 	{
+		$name = (isset($args[1]) && $args[1] !== '') ? (string) $args[1] : null;
+		$tag = ($name !== null && str_starts_with($name, '#')) ? TCronTask::normalizeTag($name) : null;
 		$module = $this->getCronModule();
-		if (!$module || ($tasks = $this->getReadableTasks($module)) === null) {
+		if (!$module || ($tasks = $this->getReadableTasks($module, $tag)) === null) {
 			return true;
 		}
-		$name = (isset($args[1]) && $args[1] !== '') ? $args[1] : null;
-		if ($name !== null) {
+		if ($name !== null && $tag === null) {
 			$tasks = array_intersect_key($tasks, $module->getTasks($name) ?? []);
 		}
 		$count = (isset($args[2]) && is_numeric($args[2])) ? max(1, (int) $args[2]) : (($name !== null) ? 5 : 1);
@@ -357,6 +370,7 @@ class TShellCronAction extends TShellAction
 	 */
 	public function actionTop($args)
 	{
+		$tag = $this->extractTag($args);
 		$module = $this->getCronModule();
 		if (!$module) {
 			return true;
@@ -365,7 +379,7 @@ class TShellCronAction extends TShellAction
 		$live = $this->isInteractive();
 		$count = (isset($args[2]) && is_numeric($args[2])) ? max(1, (int) $args[2]) : ($live ? 0 : 1);
 		for ($i = 1; ; $i++) {
-			$view = $this->renderTop($module);
+			$view = $this->renderTop($module, $tag);
 			if ($view === null) {
 				return true;
 			}
@@ -387,14 +401,15 @@ class TShellCronAction extends TShellAction
 	/**
 	 * Renders one view of {@see actionTop} from the module's {@see TCronModule::getMonitorReport() monitor report}
 	 * of the tasks the user may read: a line for each cron process, then the running tasks, the next
-	 * triggers, and the last results.
+	 * triggers, and the last results with each task's share of successful runs and average seconds.
 	 * @param TCronModule $module the cron module
+	 * @param ?string $tag the tag of the tasks to show, or null for all
 	 * @return ?string the view, or null when the user may not read the tasks
 	 * @since 4.4.0
 	 */
-	public function renderTop($module): ?string
+	public function renderTop($module, ?string $tag = null): ?string
 	{
-		$tasks = $this->getReadableTasks($module);
+		$tasks = $this->getReadableTasks($module, $tag);
 		if ($tasks === null) {
 			return null;
 		}
@@ -443,10 +458,12 @@ class TShellCronAction extends TShellAction
 		$rows = [];
 		foreach (array_slice($results, 0, static::TOP_ROWS, true) as $name => $task) {
 			$rows[] = [$name, $task['mode'], ($task['last'] === null) ? '-' : date((abs($task['last'] - $now) > 86400) ? 'Y-m-d H:i:s' : 'H:i:s', $task['last']),
-				($task['duration'] === null) ? '-' : $this->formatSeconds($task['duration']), $this->formatResult($task['result']), (string) $task['count']];
+				($task['duration'] === null) ? '-' : $this->formatSeconds($task['duration']), $this->formatResult($task['result']), (string) $task['count'],
+				($task['stats']['successRate'] === null) ? '-' : round($task['stats']['successRate'] * 100, 1) . '%',
+				($task['stats']['avgDuration'] === null) ? '-' : $this->formatSeconds($task['stats']['avgDuration'])];
 		}
 		if ($rows) {
-			$out .= $w->format('  Last results', [TShellWriter::BOLD]) . "\n" . $w->tableWidget(['headers' => ['Task', 'Mode', 'Last Run', 'Took', 'Result', 'Run #'], 'rows' => $rows]);
+			$out .= $w->format('  Last results', [TShellWriter::BOLD]) . "\n" . $w->tableWidget(['headers' => ['Task', 'Mode', 'Last Run', 'Took', 'Result', 'Run #', 'OK', 'Avg'], 'rows' => $rows]);
 		}
 		return $out;
 	}
@@ -462,8 +479,9 @@ class TShellCronAction extends TShellAction
 	 */
 	public function actionReport($args)
 	{
+		$tag = $this->extractTag($args);
 		$module = $this->getCronModule();
-		if (!$module || ($tasks = $this->getReadableTasks($module)) === null) {
+		if (!$module || ($tasks = $this->getReadableTasks($module, $tag)) === null) {
 			return true;
 		}
 		$format = strtolower($args[1] ?? TCronMonitorResponse::FORMAT_JSON);
@@ -515,15 +533,35 @@ class TShellCronAction extends TShellAction
 	/**
 	 * Returns the tasks the shell user may read: all tasks with {@see TCronModule::PERM_CRON_READ_TASKS}, else the user's own.
 	 * @param TCronModule $module the cron module
+	 * @param ?string $tag the tag the tasks have, or null for all
 	 * @return ?array<string, TCronTask> the tasks by name, or null when access is denied
 	 * @since 4.4.0
 	 */
-	protected function getReadableTasks($module): ?array
+	protected function getReadableTasks($module, ?string $tag = null): ?array
 	{
 		if ($this->_user && !$this->_user->can(TCronModule::PERM_CRON_READ_TASKS)) {
-			return $module->getUserTasks($this->_user->getName());
+			$tasks = $module->getUserTasks($this->_user->getName());
+		} else {
+			$tasks = $module->getTasks();
 		}
-		return $module->getTasks();
+		return ($tasks === null || $tag === null) ? $tasks : array_filter($tasks, static fn ($task) => $task->hasTag($tag));
+	}
+
+	/**
+	 * Takes the first `#tag` argument out of the command arguments, so the others keep their positions.
+	 * @param string[] $args the command arguments, by reference
+	 * @return ?string the tag, normalized, or null when no argument is a tag
+	 * @since 4.4.0
+	 */
+	protected function extractTag(array &$args): ?string
+	{
+		foreach ($args as $i => $arg) {
+			if ($i > 0 && is_string($arg) && str_starts_with($arg, '#')) {
+				array_splice($args, $i, 1);
+				return TCronTask::normalizeTag($arg);
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -627,6 +665,7 @@ class TShellCronAction extends TShellAction
 	 */
 	public function actionTasks($args)
 	{
+		$tag = $this->extractTag($args);
 		$module = $this->getCronModule();
 		if (!$module) {
 			return true;
@@ -660,6 +699,9 @@ class TShellCronAction extends TShellAction
 		} else {
 			$filter = '';
 		}
+		if ($tag !== null) {
+			$filter .= ($filter === '' ? ', filtered by #' : ' and #') . $tag;
+		}
 		if ($username) {
 			$tasks = $module->getUserTasks($username, $taskName);
 		} else {
@@ -667,6 +709,9 @@ class TShellCronAction extends TShellAction
 		}
 		if ($tasks === null) {
 			return true;
+		}
+		if ($tag !== null) {
+			$tasks = array_filter($tasks, static fn ($task) => $task->hasTag($tag));
 		}
 		$count = count($tasks);
 
@@ -743,8 +788,9 @@ class TShellCronAction extends TShellAction
 			}
 
 			$rows[] = [$task->getName(), $schedule, $task->getTask(), $task->getMode(), $lastrun, $last, $nextrun, '@' . $user, $count, $state];
-			if (($description = $task->getDescription()) !== '') {
-				$rows[] = ['span' => $this->_outWriter->format('      ' . $description, TShellWriter::DARK_GRAY)];
+			$note = implode(' ', array_merge(array_map(static fn ($t) => '#' . $t, $task->getTags()), ($task->getDescription() !== '') ? [$task->getDescription()] : []));
+			if ($note !== '') {
+				$rows[] = ['span' => $this->_outWriter->format('      ' . $note, TShellWriter::DARK_GRAY)];
 			}
 		}
 		$this->_outWriter->write($this->_outWriter->tableWidget(['headers' => ['Name', 'Schedule', 'Task', 'Mode', 'Last Run', 'Result', 'Next Run', 'User', 'Run #', 'State'],

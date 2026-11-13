@@ -24,6 +24,7 @@ The monitoring endpoint of a [`TCronModule`](TCronModule.md#chains-priority-and-
 | Property | Default | Meaning |
 |---|---|---|
 | `CronModuleID` | null | The cron module; null for the first `TCronModule` of the application. An unknown module throws `cronmonitor_module_invalid`. |
+| `Tag` | null | The tag of the reported tasks (`TCronTask::Tags`); null for all tasks. |
 | `Format` | `json` | `json` (`FORMAT_JSON`) or `prometheus` (`FORMAT_PROMETHEUS`). |
 
 The report lists the tasks the requesting user may read (`cron_read_tasks`); restrict the service to monitoring users with the application's authorization rules.

@@ -32,6 +32,7 @@ use Prado\TPropertyValue;
  * | `Task` | all | the {@see \Prado\Util\Cron\TCronTask} |
  * | `Manual` | all | whether the run was asked for (`cron/now`) or chained instead of triggered |
  * | `Chain` | all | the names of the tasks that ran before this one in a chain |
+ * | `Trigger` | triggered runs | the trigger the run serves; a missed one when caught up |
  * | `Cancel` | start | a handler sets it to skip the run |
  * | `Reason` | skipped | a `REASON_*` constant |
  * | `Result` | end, failure, retry, ping after the run | a `TCronModule::RESULT_*` constant |
@@ -103,6 +104,9 @@ class TCronTaskEventParameter extends TEventParameter
 
 	/** @var int the attempt of the run, from 1 */
 	private int $_attempt = 1;
+
+	/** @var ?int the trigger the run serves */
+	private ?int $_trigger = null;
 
 	/** @var string[] the names of the tasks that ran before this one in a chain */
 	private array $_chain = [];
@@ -239,6 +243,25 @@ class TCronTaskEventParameter extends TEventParameter
 	public function setChain(array $value): static
 	{
 		$this->_chain = $value;
+		return $this;
+	}
+
+	/**
+	 * @return ?int the trigger the run serves, after the task's Jitter; a missed trigger for a caught-up run
+	 *   ({@see \Prado\Util\Cron\TCronTask::getCatchUp() CatchUp}); null for a manual run
+	 */
+	public function getTrigger(): ?int
+	{
+		return $this->_trigger;
+	}
+
+	/**
+	 * @param ?int $value the trigger the run serves
+	 * @return static the current object
+	 */
+	public function setTrigger(?int $value): static
+	{
+		$this->_trigger = $value;
 		return $this;
 	}
 

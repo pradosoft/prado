@@ -33,10 +33,10 @@ use Prado\Shell\TShellWriter;
 class TShellDbCronAction extends TShellCronAction
 {
 	protected $methods = ['tasks', 'run', 'index', 'add', 'update', 'remove', 'log', 'flush', 'daemon', 'retire', 'stop', 'migrate', 'top', 'exec', 'now', 'next', 'pause', 'resume', 'report'];
-	protected $parameters = [null, null, null, ['task-name', 'task-id', 'schedule'], ['task-name'], ['task-name'], null, null, null, null, null, null, null, ['task-name'], ['task-name'], null, ['task-name'], ['task-name'], null];
-	protected $optional = [['task-name or @user'], null, null, ['parameters...'], ['parameters...'], [], ['task-name or @user'], ['task-name or @user or time (e.g. seconds or PHP DateInterval)'], null, ['seconds'], ['seconds'], null, ['seconds', 'count'], null, null, ['task-name', 'count'], null, null, ['json or prometheus']];
+	protected $parameters = [null, null, null, ['task-name', 'task-id', 'schedule'], ['task-name'], ['task-name'], null, null, null, null, null, null, null, ['task-name'], ['task-name'], null, ['task-name or #tag'], ['task-name or #tag'], null];
+	protected $optional = [['task-name, @user, or #tag'], null, null, ['parameters...'], ['parameters...'], [], ['task-name or @user'], ['task-name or @user or time (e.g. seconds or PHP DateInterval)'], null, ['seconds'], ['seconds'], null, ['seconds', 'count', '#tag'], null, null, ['task-name or #tag', 'count'], null, null, ['json or prometheus', '#tag']];
 	protected $description = ['Manages DbCron time-based services',
-		'Displays the Cron tasks configured in the application and database. Filter by @user and task name.',
+		'Displays the Cron tasks configured in the application and database. Filter by @user, #tag, and task name.',
 		'Runs the DbCron Pending Tasks.',
 		'Displays the registered Cron tasks information.',
 		'Adds a Cron task to the database.',
@@ -51,9 +51,9 @@ class TShellDbCronAction extends TShellCronAction
 		'Shows the cron processes, running tasks, next triggers, and last results; live in a terminal.',
 		'Runs one task in this process; a Process task\'s child process runs it.',
 		'Runs a task now, whatever its schedule, and shows its result.',
-		'Shows the next trigger times of the tasks; filter by task name.',
-		'Pauses a task: its triggers pass without runs until it is resumed.',
-		'Resumes a paused task.',
+		'Shows the next trigger times of the tasks; filter by task name or #tag.',
+		'Pauses a task, or the tasks of a #tag: their triggers pass without runs until resumed.',
+		'Resumes a paused task, or the tasks of a #tag.',
 		'Prints the monitor report as JSON, or Prometheus metrics.',
 	];
 
@@ -106,7 +106,7 @@ class TShellDbCronAction extends TShellCronAction
 				$lines[] = "Added the nextexectime column to {$table} and set it on {$result['column']} task row(s).";
 			}
 			if ($result['run']) {
-				$lines[] = "Added the run columns (lastresult, lastduration, paused) to {$table}.";
+				$lines[] = "Added the run columns (lastresult, lastduration, paused, okcount, failcount, totalduration, maxduration) to {$table}.";
 			}
 		}
 		$this->_outWriter->writeLine("\n" . ($lines ? implode("\n", $lines) : "The cron table {$table} is up to date.") . "\n");

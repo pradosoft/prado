@@ -17,6 +17,7 @@ The parameter of the [`TCronModule`](TCronModule.md#task-events-and-pings-440) t
 | `Task` | all | the `TCronTask` |
 | `Manual` | all | the run was asked for (`cron/now`) or chained |
 | `Chain` | all | the names of the tasks that ran before this one in a chain |
+| `Trigger` | triggered runs | the trigger the run serves, after the Jitter; a missed trigger for a caught-up run; null for a manual run |
 | `Cancel` | start | a handler sets it to skip the run |
 | `Reason` | skipped | `REASON_DENIED`, `REASON_PAUSED`, `REASON_DEADLINE`, `REASON_WINDOW`, `REASON_CONDITION`, `REASON_RUNNING`, `REASON_CANCELLED`, or `REASON_CLAIMED` |
 | `Result` | end, failure, the pings after a run | a `TCronModule::RESULT_*` value |

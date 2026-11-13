@@ -286,7 +286,8 @@ final class CronDaemonE2E
 			<job name="pinged" schedule="*:*/3 * * * *" task="{$task}" PingBeforeUrl="{$url}/ping/pinged/start" PingSuccessUrl="{$url}/ping/pinged/ok" PingAfterUrl="http://probe.invalid/after" />
 			<job name="failing" schedule="*:*/4 * * * *" task="{$task}" FailTimes="1000" PingFailureUrl="{$url}/ping/failing/fail" />
 			<job name="flaky" schedule="@{$this->at($start + 4)}" task="{$task}" FailTimes="2" Retries="2" RetryDelay="0.2" />
-			<job name="paused" schedule="*:*/2 * * * *" task="{$task}" />
+			<job name="paused" schedule="*:*/2 * * * *" task="{$task}" Tags="halt, batch" />
+			<job name="caught" schedule="*:*/2 * * * *" task="{$task}" CatchUp="3" />
 			<job name="late" schedule="@{$this->at($start - 120)}" task="{$task}" StartingDeadline="10" />
 			<job name="windowed" schedule="*:*/2 * * * *" task="{$task}" TimeZone="UTC" Between="{$window}" />
 			<job name="excepted" schedule="*:*/2 * * * * except {$today}" task="{$task}" />
@@ -304,7 +305,12 @@ final class CronDaemonE2E
 			<job name="zoned" schedule="0 9 * * *" task="{$task}" TimeZone="Asia/Tokyo" />
 			XML);
 		$this->cli(['cron/migrate']);
-		$this->cli(['cron/pause', 'paused']);
+		$this->check(str_contains($this->cli(['cron/pause', '#halt']), 'paused'), 'cron/pause pauses the tasks of a tag');
+		// The caught task last ran 11 s ago: its missed triggers, every 2 s, wait for the first sweep.
+		$caughtLast = (int) (floor((time() - 11) / 2) * 2);
+		$pdo = new \PDO('sqlite:' . $this->dir . DIRECTORY_SEPARATOR . 'cron.db');
+		$pdo->prepare('UPDATE crontabs SET lastexectime=?, nextexectime=? WHERE name=? AND active IS NOT NULL')->execute([$caughtLast, $caughtLast + 2, 'caught']);
+		$pdo = null;
 		$t0 = microtime(true);
 		$nextTick = $t0;
 		$resumed = null;
@@ -316,7 +322,7 @@ final class CronDaemonE2E
 			}
 			$this->reap();
 			if ($resumed === null && $now >= $t0 + 12) {
-				$this->cli(['cron/resume', 'paused']);
+				$this->cli(['cron/resume', '#halt']);
 				$resumed = microtime(true);
 			}
 			if (!$checked && $now >= $t0 + 20) {
@@ -324,9 +330,17 @@ final class CronDaemonE2E
 				$report = json_decode((string) $this->httpGet("/index.php?json=cron"), true);
 				$this->check(is_array($report) && ($report['daemon']['role'] ?? null) === 'daemon', 'the monitor report shows the daemon');
 				$this->check(is_array($report) && isset($report['tasks']['slowproc']) && $report['tasks']['slowproc']['mode'] === 'Process', 'the monitor report lists the tasks');
+				$this->check(($report['tasks']['paused']['tags'] ?? null) === ['halt', 'batch'], 'the monitor report lists the tags');
+				$stats = $report['tasks']['failing']['stats'] ?? [];
+				$this->check(($stats['failed'] ?? 0) >= 3 && ($stats['ok'] ?? null) === 0 && ($stats['successRate'] ?? null) === 0, 'the monitor report counts the failed runs; ' . json_encode($stats));
+				$stats = $report['tasks']['pinged']['stats'] ?? [];
+				$this->check(($stats['ok'] ?? 0) >= 3 && ($stats['successRate'] ?? null) == 1 && ($stats['avgDuration'] ?? null) !== null, 'the monitor report counts the successful runs; ' . json_encode($stats));
 				$metrics = (string) $this->httpGet("/index.php?json=metrics");
 				$this->check(str_contains($metrics, 'prado_cron_daemon_up{module="cron"} 1'), 'the monitor metrics show the daemon up');
 				$this->check(str_contains($metrics, 'prado_cron_task_runs_total{module="cron",task="pinged"}'), 'the monitor metrics count the runs');
+				$this->check(str_contains($metrics, 'prado_cron_task_finished_total{module="cron",task="failing",outcome="failed"}'), 'the monitor metrics count the outcomes');
+				$tagReport = json_decode($this->cli(['--quiet=1', 'cron/report', '#batch']), true);
+				$this->check(is_array($tagReport) && array_keys($tagReport['tasks'] ?? []) === ['paused'], 'cron/report filters by tag');
 				$this->check(str_contains($this->cli(['cron/next', 'zoned']), 'JST'), 'cron/next shows a task in its time zone');
 				$this->check(str_contains($this->cli(['cron/top']), 'Daemon'), 'cron/top shows the daemon');
 				$cliReport = json_decode($this->cli(['--quiet=1', 'cron/report']), true);
@@ -370,6 +384,14 @@ final class CronDaemonE2E
 		$this->check(count($runs('paused')) >= 3, 'the resumed task ran; ' . count($runs('paused')));
 
 		$this->check(array_column($skips('late'), 'reason') === ['deadline'] && !$runs('late'), 'a trigger past its starting deadline was skipped once');
+
+		$caught = array_values(array_filter($events, fn ($e) => $e['e'] === 'tstart' && $e['task'] === 'caught'));
+		$first = array_column(array_slice($caught, 0, 3), 'trigger');
+		$this->check(count($caught) >= 6, 'caught ran; ' . count($caught));
+		$this->check(count($first) === 3 && $first[1] === $first[0] + 2 && $first[2] === $first[1] + 2 && $first[0] > $caughtLast + 2, 'the first sweeps ran the latest three missed triggers, oldest first; ' . json_encode($first));
+		$this->check(count($caught) >= 3 && $caught[2]['t'] - $caught[0]['t'] < 3.0, sprintf('the missed triggers ran one after another (%.2fs)', ($caught[2]['t'] ?? 0) - ($caught[0]['t'] ?? 0)));
+		$later = array_column(array_slice($caught, 3), 'trigger');
+		$this->check($later === array_values(array_unique($later)) && (!$later || $later[0] > $first[2]), 'each later run served a new trigger; ' . json_encode($later));
 		$this->check(count($skips('windowed')) >= 5 && !array_diff(array_column($skips('windowed'), 'reason'), ['window']) && !$runs('windowed'), 'a task outside its time window was skipped');
 		$this->check(!$runs('excepted') && !$skips('excepted'), 'a task on an excepted date never came due');
 

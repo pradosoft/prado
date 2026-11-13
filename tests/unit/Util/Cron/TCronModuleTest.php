@@ -83,8 +83,11 @@ class TTestCronRecordingTask extends TCronTask
 	public bool $throw = false;
 	public array $users = [];
 
+	public array $triggers = [];
+
 	public function execute($cron)
 	{
+		$this->triggers[] = $this->getRunTrigger();
 		self::$events[] = $this->getName() . ' start';
 		$this->users[] = $this->getApplication()->getUser()?->getName();
 		if ($this->pause > 0) {
@@ -2972,5 +2975,154 @@ class TCronModuleTest extends \PHPUnit\Framework\TestCase
 		self::assertSame(0, $this->obj->processPendingTasks());
 		$this->obj->detachBehavior('denies');
 		self::assertSame(0, $this->obj->getTask('deniedSweep')->getProcessCount());
+	}
+
+	public function testTags_SelectPauseAndResumeTogether()
+	{
+		$this->obj->init([
+			['name' => 'tagA', 'schedule' => '0 0 1 1 ? 2099', 'task' => TTestCronModuleTask::class, 'tags' => 'nightly, reports'],
+			['name' => 'tagB', 'schedule' => '0 0 1 1 ? 2099', 'task' => TTestCronModuleTask::class, 'tags' => 'nightly'],
+			['name' => 'tagC', 'schedule' => '0 0 1 1 ? 2099', 'task' => TTestCronModuleTask::class],
+		]);
+		try {
+			self::assertSame(['tagA', 'tagB'], array_keys($this->obj->getTasksByTag('#Nightly')));
+			self::assertSame(['tagA'], array_keys($this->obj->getTasksByTag('reports')));
+			self::assertSame([], $this->obj->getTasksByTag('none'));
+			self::assertSame(['tagA', 'tagB'], $this->obj->pauseTag('nightly'));
+			self::assertSame(['tagA', 'tagB'], $this->obj->getPausedTasks());
+			self::assertSame(['nightly', 'reports'], $this->obj->getMonitorReport()['tasks']['tagA']['tags']);
+			self::assertSame([], $this->obj->getMonitorReport()['tasks']['tagC']['tags']);
+			self::assertSame(['tagA'], $this->obj->resumeTag('reports'));
+			self::assertSame(['tagB'], $this->obj->getPausedTasks());
+			self::assertSame(['tagA', 'tagB'], $this->obj->resumeTag('nightly'));
+			self::assertSame([], $this->obj->getPausedTasks());
+			$this->obj->attachBehavior('denies', new TTestCronDenyingBehavior(['dyGetTasks']));
+			self::assertNull($this->obj->getTasksByTag('nightly'));
+			self::assertSame([], $this->obj->pauseTag('nightly'), 'a denied read pauses nothing');
+			$this->obj->detachBehavior('denies');
+		} finally {
+			foreach (['tagA', 'tagB'] as $name) {
+				$this->obj->resumeTask($name);
+			}
+			$file = $this->obj instanceof \Prado\Util\Cron\TDbCronManager ? null : PradoUnit::invoke($this->obj, 'getPausedFile');
+			if ($file !== null && is_file($file)) {
+				unlink($file);
+			}
+		}
+	}
+
+	public function testRunStats_CountTheFinishedRuns()
+	{
+		$this->obj->setDaemonMutex(new TMemoryMutex());
+		$this->obj->init([['name' => 'counted', 'schedule' => '0 0 1 1 ? 2000', 'task' => TTestCronRecordingTask::class]]);
+		$task = $this->obj->getTask('counted');
+		self::assertSame(['ok' => 0, 'failed' => 0, 'successRate' => null, 'avgDuration' => null, 'maxDuration' => null, 'totalDuration' => 0.0],
+			$this->obj->getMonitorReport()['tasks']['counted']['stats'], 'no finished run');
+		foreach ([false, false, true] as $throw) {
+			$task->throw = $throw;
+			$task->setLastExecTime(null);
+			$this->obj->runTask($task);
+		}
+		$this->obj->attachBehavior('denies', new TTestCronDenyingBehavior(['dyRunTask']));
+		$task->setLastExecTime(null);
+		self::assertFalse($this->obj->runTask($task));
+		$this->obj->detachBehavior('denies');
+		$stats = $this->obj->getMonitorReport()['tasks']['counted']['stats'];
+		self::assertSame(2, $stats['ok']);
+		self::assertSame(1, $stats['failed'], 'a denied run is no finished run');
+		self::assertSame(0.6667, $stats['successRate']);
+		self::assertGreaterThanOrEqual(0.0, $stats['avgDuration']);
+		self::assertGreaterThanOrEqual($stats['avgDuration'], $stats['maxDuration']);
+		self::assertEqualsWithDelta($stats['avgDuration'] * 3, $stats['totalDuration'], 0.00001);
+
+		$metrics = $this->obj->getMonitorMetrics();
+		self::assertStringContainsString('prado_cron_task_finished_total{module="' . $this->obj->getID() . '",task="counted",outcome="ok"} 2', $metrics);
+		self::assertStringContainsString('prado_cron_task_finished_total{module="' . $this->obj->getID() . '",task="counted",outcome="failed"} 1', $metrics);
+		self::assertStringContainsString('prado_cron_task_run_seconds_count{module="' . $this->obj->getID() . '",task="counted"} 3', $metrics);
+		self::assertStringContainsString('prado_cron_task_run_seconds_max{', $metrics);
+	}
+
+	public function testResultOutcome()
+	{
+		self::assertSame('ok', TCronModule::getResultOutcome(TCronModule::RESULT_OK));
+		self::assertSame('failed', TCronModule::getResultOutcome(TCronModule::RESULT_ERROR));
+		self::assertSame('failed', TCronModule::getResultOutcome(TCronModule::RESULT_TIMEOUT));
+		foreach ([TCronModule::RESULT_DENIED, TCronModule::RESULT_MISSED, TCronModule::RESULT_REPLACED] as $result) {
+			self::assertNull(TCronModule::getResultOutcome($result));
+		}
+	}
+
+	public function testCatchUp_RunsTheLatestMissedTriggersOldestFirst()
+	{
+		$hour = (int) (floor($this->obj->fakeNow / 3600) * 3600);
+		$this->obj->fakeNow = $hour + 600;
+		$this->obj->fakeMicrotime = (float) $this->obj->fakeNow;
+		$this->obj->setDaemonMutex(new TMemoryMutex());
+		$this->obj->init([
+			['name' => 'catchy', 'schedule' => '0 * * * *', 'task' => TTestCronRecordingTask::class, 'catchup' => 3],
+			['name' => 'coalesced', 'schedule' => '0 * * * *', 'task' => TTestCronRecordingTask::class],
+		]);
+		$triggers = [];
+		$this->obj->attachEventHandler('OnTaskStart', function ($sender, $param) use (&$triggers) {
+			$triggers[] = [$param->getTask()->getName(), $param->getTrigger()];
+		});
+		foreach (['catchy', 'coalesced'] as $name) {
+			$task = $this->obj->getTask($name);
+			$task->setLastExecTime($hour - 5 * 3600);
+			if ($this->obj instanceof \Prado\Util\Cron\TDbCronManager) {
+				$this->obj->updateTask($task);
+			}
+		}
+		for ($sweep = 0; $sweep < 5; $sweep++) {
+			$this->obj->processPendingTasks();
+		}
+		self::assertSame([['catchy', $hour - 2 * 3600], ['coalesced', $hour - 4 * 3600], ['catchy', $hour - 3600], ['catchy', $hour]], $triggers,
+			'the latest three missed triggers run one per sweep, oldest first; CatchUp 1 runs once for all');
+		$task = $this->obj->getTask('catchy');
+		self::assertSame(3, $task->getProcessCount());
+		self::assertSame($this->obj->fakeNow, $task->getLastExecTime(), 'the last caught-up run is on time');
+		self::assertFalse($task->getIsPending($this->obj->fakeNow));
+		self::assertSame($hour, $task->getRunTrigger());
+	}
+
+	public function testCatchUp_KeepsTheTriggersWithinTheStartingDeadline()
+	{
+		$hour = (int) (floor($this->obj->fakeNow / 3600) * 3600);
+		$this->obj->fakeNow = $hour + 600;
+		$this->obj->fakeMicrotime = (float) $this->obj->fakeNow;
+		$this->obj->setDaemonMutex(new TMemoryMutex());
+		$this->obj->init([
+			['name' => 'withinDeadline', 'schedule' => '0 * * * *', 'task' => TTestCronRecordingTask::class, 'catchup' => 5, 'startingdeadline' => 4000],
+			['name' => 'pastDeadline', 'schedule' => '0 * * * *', 'task' => TTestCronRecordingTask::class, 'catchup' => 5, 'startingdeadline' => 300],
+		]);
+		$skipped = [];
+		$this->obj->attachEventHandler('OnTaskSkipped', function ($sender, $param) use (&$skipped) {
+			$skipped[] = [$param->getTask()->getName(), $param->getReason()];
+		});
+		foreach (['withinDeadline', 'pastDeadline'] as $name) {
+			$task = $this->obj->getTask($name);
+			$task->setLastExecTime($hour - 3 * 3600);
+			if ($this->obj instanceof \Prado\Util\Cron\TDbCronManager) {
+				$this->obj->updateTask($task);
+			}
+		}
+		$this->obj->processPendingTasks();
+		$this->obj->processPendingTasks();
+		self::assertSame([$hour], $this->obj->getTask('withinDeadline')->triggers, 'only the trigger within the deadline runs, on time');
+		self::assertSame([], $this->obj->getTask('pastDeadline')->triggers);
+		self::assertSame([['pastDeadline', TCronTaskEventParameter::REASON_DEADLINE]], $skipped);
+	}
+
+	public function testCatchUp_ATaskNeverRunOrRunManuallyDoesNotCatchUp()
+	{
+		$this->obj->setDaemonMutex(new TMemoryMutex());
+		$this->obj->init([['name' => 'fresh', 'schedule' => '0 * * * *', 'task' => TTestCronRecordingTask::class, 'catchup' => 10]]);
+		$task = $this->obj->getTask('fresh');
+		self::assertNull(PradoUnit::invoke($this->obj, 'getCatchUpTriggers', $task), 'a task never run');
+		self::assertTrue($this->obj->runTask($task, true));
+		self::assertSame([null], $task->triggers, 'a manual run serves no trigger');
+		$task->setCatchUp(1);
+		$task->setLastExecTime($this->obj->fakeNow - 86400);
+		self::assertNull(PradoUnit::invoke($this->obj, 'getCatchUpTriggers', $task), 'a CatchUp of 1');
 	}
 }

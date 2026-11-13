@@ -12,7 +12,7 @@ Upgrading from v4.3.3
 - PHP 8.2 is now required. Applications running PHP 8.1 stay on Prado 4.3.
 - Issue #833 - The bare `prado-cli cron` shell action lists the cron tasks; in 4.3 it ran the pending tasks. Change the
   system crontab entry to `prado-cli <appdir> cron/run`. The `TDbCronManager` table gains the `nextexectime`,
-  `lastresult`, `lastduration`, and `paused` columns, added (and `nextexectime` filled) on the first use of an existing
+  `lastresult`, `lastduration`, `paused`, `okcount`, `failcount`, `totalduration`, and `maxduration` columns, added (and `nextexectime` filled) on the first use of an existing
   table, or by `prado-cli <appdir> cron/migrate` at deployment.
 - Issue #833 - A cron task no longer runs twice at once: a run holds the task's run lock, and a trigger that comes while
   the previous run still holds it is skipped. In 4.3 a long task could start again in an overlapping `cron/run`. Set

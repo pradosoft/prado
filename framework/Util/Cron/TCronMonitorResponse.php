@@ -31,6 +31,7 @@ use Prado\Web\Services\TJsonResponse;
  * tasks the requesting user may read ({@see \Prado\Util\Cron\TCronModule::PERM_CRON_READ_TASKS}); restrict
  * the service to monitoring users through the application's authorization rules.
  * {@see getCronModuleID CronModuleID} names the module, default the first {@see \Prado\Util\Cron\TCronModule}.
+ * {@see getTag Tag} limits the answer to the tasks with a tag.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0
@@ -49,6 +50,9 @@ class TCronMonitorResponse extends TJsonResponse
 	/** @var ?string the ID of the cron module, or null for the first */
 	private ?string $_cronModuleID = null;
 
+	/** @var ?string the tag of the reported tasks, or null for all */
+	private ?string $_tag = null;
+
 	/** @var string the format of the answer */
 	private string $_format = self::FORMAT_JSON;
 
@@ -60,14 +64,15 @@ class TCronMonitorResponse extends TJsonResponse
 	public function getJsonContent()
 	{
 		$module = $this->getCronModule();
+		$tasks = ($this->_tag === null) ? null : ($module->getTasksByTag($this->_tag) ?? []);
 		if ($this->_format === self::FORMAT_PROMETHEUS) {
 			$response = $this->getResponse();
 			$response->setContentType(self::PROMETHEUS_CONTENT_TYPE);
 			$response->setCharset('UTF-8');
-			$response->write($module->getMonitorMetrics());
+			$response->write($module->getMonitorMetrics($tasks));
 			return null;
 		}
-		return (object) $module->getMonitorReport();
+		return (object) $module->getMonitorReport($tasks);
 	}
 
 	/**
@@ -107,6 +112,23 @@ class TCronMonitorResponse extends TJsonResponse
 	public function setCronModuleID($value): void
 	{
 		$this->_cronModuleID = ($value === null || $value === '') ? null : TPropertyValue::ensureString($value);
+	}
+
+	/**
+	 * @return ?string the tag of the reported tasks, or null for all tasks
+	 */
+	public function getTag(): ?string
+	{
+		return $this->_tag;
+	}
+
+	/**
+	 * @param ?string $value the tag of the reported tasks, with or without a leading `#`; null or '' for all tasks
+	 */
+	public function setTag($value): void
+	{
+		$value = ($value === null) ? '' : TCronTask::normalizeTag(TPropertyValue::ensureString($value));
+		$this->_tag = ($value === '') ? null : $value;
 	}
 
 	/**

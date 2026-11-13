@@ -813,6 +813,7 @@ crontask_no_module						= TCronTask could not find module ''{0}''.
 crontask_timeout_invalid				= TCronTask Timeout must be greater than zero or null; ''{0}'' given.
 crontask_timezone_invalid				= TCronTask TimeZone ''{0}'' is not a time zone.
 crontask_startingdeadline_invalid		= TCronTask StartingDeadline must be zero or more seconds, or null; ''{0}'' given.
+crontask_catchup_invalid					= TCronTask CatchUp ''{0}'' must be 1 or more.
 crontask_jitter_invalid					= TCronTask Jitter must be zero or more seconds; ''{0}'' given.
 crontask_retries_invalid				= TCronTask Retries must be zero or more; ''{0}'' given.
 crontask_retrydelay_invalid				= TCronTask RetryDelay must be zero or more seconds; ''{0}'' given.

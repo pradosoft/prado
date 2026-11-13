@@ -345,7 +345,7 @@ class TShellDbCronActionTest extends \PHPUnit\Framework\TestCase
 			self::assertTrue($this->obj->actionMigrate(['cron/migrate']));
 			$text = $this->writer->flush();
 			self::assertStringContainsString('Added the nextexectime column to migrateoldshell and set it on 0 task row(s)', $text);
-			self::assertStringContainsString('Added the run columns (lastresult, lastduration, paused) to migrateoldshell', $text);
+			self::assertStringContainsString('Added the run columns (lastresult, lastduration, paused, okcount, failcount, totalduration, maxduration) to migrateoldshell', $text);
 		} finally {
 			$db->createCommand('DROP TABLE IF EXISTS migrateoldshell')->execute();
 			$cron->unlisten();

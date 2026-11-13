@@ -93,7 +93,7 @@ class CronE2EProbe extends TModule
 	 */
 	public function fxCronTaskStart($sender, $param)
 	{
-		$this->record(['e' => 'tstart', 'task' => $param->getTask()->getName(), 'chain' => $param->getChain(), 'manual' => $param->getManual()]);
+		$this->record(['e' => 'tstart', 'task' => $param->getTask()->getName(), 'chain' => $param->getChain(), 'manual' => $param->getManual(), 'trigger' => $param->getTrigger()]);
 	}
 
 	/**

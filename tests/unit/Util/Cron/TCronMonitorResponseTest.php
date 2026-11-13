@@ -106,4 +106,27 @@ class TCronMonitorResponseTest extends \PHPUnit\Framework\TestCase
 			$module->unlisten();
 		}
 	}
+
+	public function testTag_LimitsTheReport()
+	{
+		$module = new TCronModule();
+		$module->setID('monitorTagged');
+		$module->init([
+			['name' => 'taggedOne', 'schedule' => '0 0 1 1 ? 2099', 'task' => TTestCronModuleTask::class, 'tags' => 'web'],
+			['name' => 'taggedTwo', 'schedule' => '0 0 1 1 ? 2099', 'task' => TTestCronModuleTask::class],
+		]);
+		try {
+			$response = new TTestCronMonitorResponse();
+			$response->module = $module;
+			self::assertNull($response->getTag());
+			$response->setTag('#Web');
+			self::assertSame('web', $response->getTag());
+			self::assertSame(['taggedOne'], array_keys($response->getJsonContent()->tasks));
+			$response->setTag('');
+			self::assertNull($response->getTag());
+			self::assertSame(['taggedOne', 'taggedTwo'], array_keys($response->getJsonContent()->tasks));
+		} finally {
+			$module->unlisten();
+		}
+	}
 }

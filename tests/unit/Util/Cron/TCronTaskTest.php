@@ -415,4 +415,37 @@ class TCronTaskTest extends \PHPUnit\Framework\TestCase
 		$task->setProcessMemoryLimit('');
 		self::assertNull($task->getProcessMemoryLimit());
 	}
+
+	public function testTags()
+	{
+		$task = new TTestCronModuleTask();
+		self::assertSame([], $task->getTags());
+		self::assertStringNotContainsString('_tags', serialize($task));
+		$task->setTags(' Nightly, #reports  db,nightly ');
+		self::assertSame(['nightly', 'reports', 'db'], $task->getTags());
+		self::assertTrue($task->hasTag('#NIGHTLY'));
+		self::assertTrue($task->hasTag('db'));
+		self::assertFalse($task->hasTag('mail'));
+		self::assertSame(['nightly', 'reports', 'db'], unserialize(serialize($task))->getTags());
+		$task->setTags(['A', '', '#b']);
+		self::assertSame(['a', 'b'], $task->getTags());
+		$task->setTags(null);
+		self::assertSame([], $task->getTags());
+		self::assertSame('x', \Prado\Util\Cron\TCronTask::normalizeTag(' #X '));
+	}
+
+	public function testCatchUpAndRunTrigger()
+	{
+		$task = new TTestCronModuleTask();
+		self::assertSame(1, $task->getCatchUp());
+		$task->setCatchUp('4');
+		self::assertSame(4, $task->getCatchUp());
+		$task->setRunTrigger(123);
+		$copy = unserialize(serialize($task));
+		self::assertSame(4, $copy->getCatchUp());
+		self::assertNull($copy->getRunTrigger(), 'the run trigger is not serialized');
+		self::assertStringNotContainsString('_catchUp', serialize(new TTestCronModuleTask()));
+		$this->expectException(\Prado\Exceptions\TInvalidDataValueException::class);
+		$task->setCatchUp(0);
+	}
 }
