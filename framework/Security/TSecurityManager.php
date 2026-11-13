@@ -157,8 +157,8 @@ class TSecurityManager extends \Prado\TModule
 	}
 
 	/**
-	 * Helper that applies serializable closure protection to {@see \Prado\Util\TSerializableClosure},
-	 * when the class is available: the HMAC signing secret, and an encrypter that makes stored closures
+	 * Helper that applies serializable closure protection to {@see \Prado\Util\TSerializableClosure}:
+	 * the HMAC signing secret, and an encrypter that makes stored closures
 	 * unreadable. {@see setupSerializableClosure} calls this during {@see init()} with the SHA-512 closure
 	 * signing secret and the encrypter; behaviors and subclasses may call it with their own values.
 	 * @param string $secretKey the closure HMAC signing secret
@@ -168,9 +168,6 @@ class TSecurityManager extends \Prado\TModule
 	 */
 	protected function configureSerializableClosure($secretKey, $encrypt = null, $decrypt = null)
 	{
-		if (!class_exists(\Prado\Util\TSerializableClosure::class)) {
-			return;
-		}
 		\Prado\Util\TSerializableClosure::setSecretKey($secretKey);
 		\Prado\Util\TSerializableClosure::setEncryptionUsing($encrypt, $decrypt);
 	}
@@ -280,10 +277,10 @@ class TSecurityManager extends \Prado\TModule
 	{
 		try {
 			return bin2hex(random_bytes(16));
-		} catch (\Exception $e) {
+		} catch (\Exception $e) { // @codeCoverageIgnore
 			// @todo from PHP 8.2, this is \Random\RandomException
-			// Fallback for environments without proper random support
-			return sha1(uniqid(mt_rand(), true));
+			// Fallback for environments without proper random support; random_bytes() throws only without a system source.
+			return sha1(uniqid(mt_rand(), true)); // @codeCoverageIgnore
 		}
 	}
 
@@ -482,7 +479,8 @@ class TSecurityManager extends \Prado\TModule
 	public function encrypt($data)
 	{
 		if (!extension_loaded('openssl')) {
-			throw new TNotSupportedException('securitymanager_openssl_required');
+			// The tests run with openssl.
+			throw new TNotSupportedException('securitymanager_openssl_required'); // @codeCoverageIgnore
 		}
 		$key = hash($this->getEncryptionKeyAlgorithm(), $this->getEncryptionKey());
 		$cryptAlgorithm = $this->getCryptAlgorithm();
@@ -513,7 +511,8 @@ class TSecurityManager extends \Prado\TModule
 	public function decrypt($data)
 	{
 		if (!extension_loaded('openssl')) {
-			throw new TNotSupportedException('securitymanager_openssl_required');
+			// The tests run with openssl.
+			throw new TNotSupportedException('securitymanager_openssl_required'); // @codeCoverageIgnore
 		}
 		$key = hash($this->getEncryptionKeyAlgorithm(), $this->getEncryptionKey());
 		$cryptAlgorithm = $this->getCryptAlgorithm();
@@ -631,14 +630,13 @@ class TSecurityManager extends \Prado\TModule
 	}
 
 	/**
-	 * When `hash_hmac_algos` exists it is called and results returned.
-	 * Otherwise, this calls `hash_algos` and its results are returned.
+	 * Returns the hash algorithms `hash_hmac()` supports.
 	 * @return array Array of supported hash methods, eg md5, sha1, sha256
 	 * @since 4.3.3
 	 */
 	public function supportedHashAlgorithms()
 	{
-		return function_exists('hash_hmac_algos') ? hash_hmac_algos() : hash_algos();
+		return hash_hmac_algos();
 	}
 
 	/**

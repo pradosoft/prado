@@ -2,6 +2,8 @@
 
 namespace Prado\Test\Unit\Security;
 
+use Prado\Data\IDataConnection;
+use Prado\Data\TDbConnection;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidOperationException;
@@ -10,6 +12,7 @@ use Prado\Security\TDbUserManager;
 use Prado\Security\TUser;
 use Prado\Web\THttpCookie;
 use Prado\Test\Unit\Harness\TTestApplication;
+use Prado\Test\Unit\Harness\Util\Mutex\TTestLockConnection;
 use Prado\Test\Unit\PradoUnit;
 
 /**
@@ -60,6 +63,35 @@ class TTestNotADbUser extends \Prado\TComponent
 	public function __construct($manager = null)
 	{
 		parent::__construct();
+	}
+}
+
+/**
+ * {@see TDbUser} with only the abstract methods, so the default cookie methods run.
+ */
+class TTestPlainDbUser extends TDbUser
+{
+	public function validateUser($username, #[\SensitiveParameter] $password)
+	{
+		return false;
+	}
+
+	public function createUser($username)
+	{
+		return null;
+	}
+}
+
+/**
+ * {@see TDbUserManager} whose connection is set by the test.
+ */
+class TTestConnectionDbUserManager extends TDbUserManager
+{
+	public ?IDataConnection $connection = null;
+
+	public function getDbConnection(): IDataConnection
+	{
+		return $this->connection;
 	}
 }
 
@@ -269,5 +301,44 @@ class TDbUserManagerTest extends \PHPUnit\Framework\TestCase
 			'dbusermanager_connectionid_required',
 			PradoUnit::invoke($mgr, 'getConnectionRequiredExceptionKey')
 		);
+	}
+
+	// ---- TDbUser -----------------------------------------------------------
+
+	public function testDbUserActivatesAndKeepsTheManagerConnection()
+	{
+		$mgr = new TTestConnectionDbUserManager();
+		$mgr->connection = new TDbConnection('sqlite::memory:');
+		$user = new TTestPlainDbUser($mgr);
+		$connection = $user->getDbConnection();
+		self::assertSame($mgr->connection, $connection);
+		self::assertTrue($connection->getActive());
+
+		$mgr->connection = new TDbConnection('sqlite::memory:');
+		self::assertSame($connection, $user->getDbConnection());
+		$connection->setActive(false);
+	}
+
+	public function testDbUserRequiresAManagerWithADbConnection()
+	{
+		$mgr = new TTestConnectionDbUserManager();
+		$mgr->connection = new TTestLockConnection('plugin');
+		foreach ([new \Prado\Security\TUserManager(), $mgr] as $manager) {
+			try {
+				(new TTestPlainDbUser($manager))->getDbConnection();
+				self::fail('Expected TConfigurationException for ' . $manager::class);
+			} catch (TConfigurationException $e) {
+				self::assertSame('dbuser_dbconnection_invalid', $e->getErrorCode());
+			}
+		}
+	}
+
+	public function testDbUserCookieMethodsDefaultToNoAutoLogin()
+	{
+		$user = new TTestPlainDbUser(new TDbUserManager());
+		$cookie = new THttpCookie('auth', 'unchanged');
+		$user->saveUserToCookie($cookie);
+		self::assertSame('unchanged', $cookie->getValue());
+		self::assertNull($user->createUserFromCookie($cookie));
 	}
 }
