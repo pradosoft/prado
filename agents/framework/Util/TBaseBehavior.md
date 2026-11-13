@@ -72,7 +72,7 @@ Handlers declared in `events()` are automatically attached on `attach()` and det
 
 ## Cloning
 
-`__clone()` resets `_name = null`, clearing ownership metadata. The cloned behavior starts detached.
+`__clone()` resets `_name = null` and the `eventsLog()` cache, clearing ownership metadata. The cloned behavior starts detached, and its Closures and `TEventHandler`s from `events()` are bound to the clone.
 
 ## See Also
 
