@@ -163,7 +163,9 @@ abstract class TBaseBehavior extends TApplicationComponent implements IBaseBehav
 
 	/**
 	 * Merges the handlers of an event into an array of keys (as event names) and values
-	 * as an array of behavior method names (strings) and callable.
+	 * as an array of behavior method names (strings) and callable.  Each argument's handlers
+	 * of an event are appended after those of the arguments before it, so a subclass adds
+	 * its handlers to its parent's.
 	 * @param array $args The array of events (keys) and values of either behavior method
 	 *   names (strings), callable, or an array of the former.  Multiple handlers can be
 	 *   set on a single event to allow subclasses to have their own handlers.
@@ -184,7 +186,7 @@ abstract class TBaseBehavior extends TApplicationComponent implements IBaseBehav
 				if (is_string($handler) || is_callable($handler)) {
 					$combined[$name][] = $handler;
 				} elseif (is_array($handler)) {
-					$combined[$name] += $handler;
+					array_push($combined[$name], ...array_values($handler));
 				}
 			}
 		}

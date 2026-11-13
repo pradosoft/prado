@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: `TBaseBehavior::mergeHandlers()` appends each argument's handlers of an event; a list of handlers was merged by key, so a subclass's handlers for an event its parent also handled were dropped. (belisoful)
 ENH: `TModule::createConfigComponent()`, `getConfigElements()`, and `createElementComponent()` create a component a module alone uses from a child element of its configuration: `class` and the properties as attributes, or `class` and `properties` in PHP. (belisoful)
 BUG: `TFileCacheDependency` and `TDirectoryCacheDependency` clear PHP's stat cache before each read, so a long-lived process sees a file changed by another process. (belisoful)
 ENH: The constructor argument of `TFileCacheDependency`, `TDirectoryCacheDependency`, and `TGlobalStateCacheDependency` is optional, so each is created from configuration and set through `FileName`, `Directory`, or `StateName`; `getHasChanged()` is false until then. (belisoful)
