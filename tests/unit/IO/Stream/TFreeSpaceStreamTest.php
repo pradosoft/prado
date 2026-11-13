@@ -8,6 +8,11 @@ use Prado\Test\Unit\Harness\IO\TTestIOHelper;
 
 class TFreeSpaceStreamTest extends \PHPUnit\Framework\TestCase
 {
+	protected function tearDown(): void
+	{
+		TTestIOHelper::removeTempFiles();
+	}
+
 	public function testContiguousContents()
 	{
 		$f = new TFreeSpaceStream(TStream::fromString('AAA####BBB'), [[3, 4]]);
