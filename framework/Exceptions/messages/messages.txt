@@ -773,6 +773,7 @@ httpcrontask_status						= THttpCronTask ''{0}'' request answered status {1}.
 httpcrontask_header_invalid				= THttpCronTask header ''{0}'' must be Name: value.
 compoundcrontask_no_tasks				= TCompoundCronTask ''{0}'' has no Tasks to run.
 compoundcrontask_unknown_task			= TCompoundCronTask ''{0}'' references the unknown task ''{1}''.
+compoundcrontask_cycle					= TCompoundCronTask ''{0}'' runs ''{1}'', which leads back to it.
 cronmonitor_module_invalid				= TCronMonitorResponse could not find the cron module ''{0}''.
 closurecrontask_no_closure				= TClosureCronTask ''{0}'' has no closure to run.
 closurecrontask_closure_required		= TClosureCronTask requires a Closure.

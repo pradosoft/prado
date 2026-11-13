@@ -9,6 +9,14 @@ use Prado\IO\Async\TCancellationToken;
 use Prado\Util\Cron\TCommandCronTask;
 use Prado\Util\Cron\TCronModule;
 
+/**
+ * Terminates with a short grace before it kills.
+ */
+class TTestShortGraceCommandCronTask extends TCommandCronTask
+{
+	public const TERMINATE_GRACE = 0.2;
+}
+
 class TCommandCronTaskTest extends \PHPUnit\Framework\TestCase
 {
 	private TCommandCronTask $task;
@@ -98,5 +106,42 @@ class TCommandCronTaskTest extends \PHPUnit\Framework\TestCase
 		} catch (TCancelledException $e) {
 		}
 		self::assertLessThan(4.0, microtime(true) - $start, 'the command is terminated at the cancellation');
+	}
+
+	public function testSerialize_LeavesOutTheDefaults()
+	{
+		$text = serialize($this->task);
+		foreach (['_directory', '_logFile', '_appendLog', '_exitCode'] as $prop) {
+			self::assertStringNotContainsString($prop, $text);
+		}
+		$copy = unserialize($text);
+		self::assertNull($copy->getDirectory());
+		self::assertTrue($copy->getAppendLog());
+	}
+
+	public function testExecute_ALogFileThatCannotOpenThrows()
+	{
+		$this->task->setCommand('@php -v');
+		$this->task->setLogFile(sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'prado-missing-' . bin2hex(random_bytes(4)) . DIRECTORY_SEPARATOR . 'out.log');
+		self::expectException(TIOException::class);
+		$this->task->execute(new TCronModule());
+	}
+
+	public function testExecute_ACommandIgnoringTerminateIsKilled()
+	{
+		if (\Prado\Util\Helpers\TProcessHelper::isSystemWindows() || !function_exists('pcntl_signal')) {
+			self::markTestSkipped('ignoring SIGTERM needs pcntl on POSIX');
+		}
+		$task = new TTestShortGraceCommandCronTask();
+		$task->setName('stubborn');
+		$task->setCommand("exec @php -r 'pcntl_signal(SIGTERM, SIG_IGN); sleep(5);'");
+		$task->setCancellationToken(new TCancellationToken(0.3));
+		$start = microtime(true);
+		try {
+			$task->execute(new TCronModule());
+			self::fail('a cancelled run did not throw');
+		} catch (TCancelledException $e) {
+		}
+		self::assertLessThan(3.0, microtime(true) - $start, 'the command is killed after the grace');
 	}
 }

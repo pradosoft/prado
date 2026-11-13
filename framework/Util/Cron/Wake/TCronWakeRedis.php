@@ -563,10 +563,11 @@ class TCronWakeRedis extends TModule implements ICronWakeTransport
 	}
 
 	/**
-	 * Closes the subscribed socket; the next wait or watch reopens it.
+	 * Closes the subscribed socket and cancels the loop callback on it; the next wait or watch reopens it.
 	 */
 	protected function closeSubscriber(): void
 	{
+		$this->unwatch();
 		if ($this->_subscriber !== null) {
 			fclose($this->_subscriber);
 			$this->_subscriber = null;

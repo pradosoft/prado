@@ -143,6 +143,108 @@ class TCronWakeRedisTest extends \PHPUnit\Framework\TestCase
 		self::markTestSkipped('redis-server did not open its TLS port (built without TLS?).');
 	}
 
+	/**
+	 * Starts a plain redis-server for one test, or skips when `redis-server` is absent.
+	 * @param string $options the extra server options
+	 * @return array{0: resource, 1: int} the process and the port
+	 */
+	private function startRedis(string $options): array
+	{
+		$server = trim((string) @shell_exec('command -v redis-server 2>/dev/null'));
+		if ($server === '') {
+			self::markTestSkipped('No redis-server in the PATH.');
+		}
+		$port = random_int(20000, 40000);
+		$command = escapeshellarg($server) . ' --port ' . $port . ' --bind 127.0.0.1 ' . $options
+			. " --save '' --appendonly no --logfile '' --daemonize no";
+		$process = proc_open($command, [1 => ['pipe', 'w'], 2 => ['pipe', 'w']], $pipes);
+		if (!is_resource($process)) {
+			self::markTestSkipped('redis-server did not start.');
+		}
+		for ($i = 0; $i < 50; $i++) {
+			usleep(50000);
+			$probe = @stream_socket_client('tcp://127.0.0.1:' . $port, $errno, $errstr, 0.2);
+			if ($probe !== false) {
+				fclose($probe);
+				return [$process, $port];
+			}
+		}
+		proc_terminate($process);
+		self::markTestSkipped('redis-server did not open its port.');
+	}
+
+	private function stopRedis($process): void
+	{
+		proc_terminate($process, 9);
+		proc_close($process);
+	}
+
+	public function testAuthenticationAndAclUsers()
+	{
+		[$process, $port] = $this->startRedis("--requirepass secret --user nosub on '>pass' '~*' '&none' '+@all' --user acl on '>pass' '~*' '&*' '+@all'");
+		try {
+			$make = static fn () => (new TCronWakeRedis())->setHost('127.0.0.1')->setPort($port)->setTimeout(1.0)->setChannel('prado:unit:auth');
+			$now = microtime(true);
+			self::assertFalse($make()->signal($now), 'no password is rejected');
+			self::assertFalse($make()->setPassword('wrong')->signal($now), 'a wrong password is rejected');
+			$t = $make()->setPassword('secret');
+			self::assertFalse($t->wait($now + 0.05, $now), 'the password authenticates the subscriber');
+			self::assertTrue($t->signal($now));
+			self::assertTrue($t->wait(microtime(true) + 2.0, microtime(true)));
+			$t->close();
+			self::assertTrue($make()->setUsername('acl')->setPassword('pass')->signal($now), 'an ACL user authenticates with its name');
+			self::assertFalse($make()->setUsername('nosub')->setPassword('pass')->signal($now), 'a user without channel access cannot publish');
+			self::assertNull($make()->setUsername('nosub')->setPassword('pass')->wait($now + 0.5, $now), 'a user without channel access cannot subscribe');
+		} finally {
+			$this->stopRedis($process);
+		}
+	}
+
+	public function testALostConnection()
+	{
+		[$process, $port] = $this->startRedis('');
+		$make = static fn () => (new TCronWakeRedis())->setHost('127.0.0.1')->setPort($port)->setTimeout(0.5)->setChannel('prado:unit:lost');
+		$t = $make();
+		$watched = $make();
+		$now = microtime(true);
+		$loop = TAsync::getLoop();
+		try {
+			$init = new TCronWakeRedis();
+			$init->init(null);
+			self::assertSame(TCronWakeRedis::DEFAULT_CHANNEL, $init->getChannel());
+			self::assertFalse($t->wait($now - 1, $now), 'a wait already past returns at once');
+			$redisCli = trim((string) @shell_exec('command -v redis-cli 2>/dev/null'));
+			if ($redisCli !== '') {
+				exec('(sleep 0.2; ' . escapeshellarg($redisCli) . ' -p ' . $port . ' PUBLISH prado:unit:lost 1) > /dev/null 2>&1 &');
+				$start = microtime(true);
+				self::assertTrue($t->wait($start + 3.0, $start), 'a message during the wait wakes it');
+			}
+			self::assertTrue($watched->watch($loop, static fn () => null));
+		} finally {
+			$this->stopRedis($process);
+		}
+		usleep(100000);
+		$suspension = $loop->suspension();
+		$loop->delay(0.1, static fn () => $suspension->resume());
+		$suspension->suspend();
+		self::assertNull(\Prado\Test\Unit\PradoUnit::getProp($watched, '_watcher'), 'a watch that cannot reconnect stops watching');
+		$start = microtime(true);
+		self::assertNull($t->wait($start + 1.0, $start), 'a closed connection ends the wait');
+		$t->close();
+		$watched->close();
+	}
+
+	public function testGarbageOnTheSubscriberClosesIt()
+	{
+		$t = $this->liveTransport();
+		$now = microtime(true);
+		self::assertFalse($t->wait($now + 0.02, $now));
+		\Prado\Test\Unit\PradoUnit::setProp($t, '_buffer', "garbage\r\n");
+		self::assertNull($t->wait($now + 0.02, $now), 'a reply that is no RESP closes the subscriber');
+		self::assertNull(\Prado\Test\Unit\PradoUnit::getProp($t, '_subscriber'));
+		$t->close();
+	}
+
 	public function testTlsRoundTrip()
 	{
 		[$process, $port, $ca] = $this->startTlsRedis();
@@ -210,6 +312,7 @@ class TCronWakeRedisTest extends \PHPUnit\Framework\TestCase
 		self::assertSame([null, 10], $t->decodePublic("-ERR bad\r\n", 0));
 		self::assertSame(['hello', 11], $t->decodePublic("\$5\r\nhello\r\n", 0));
 		self::assertSame([null, 5], $t->decodePublic("\$-1\r\n", 0));
+		self::assertSame([null, 5], $t->decodePublic("*-1\r\n", 0), 'a null array');
 		$message = "*3\r\n\$7\r\nmessage\r\n\$4\r\nchan\r\n\$3\r\n1.5\r\n";
 		self::assertSame([['message', 'chan', '1.5'], strlen($message)], $t->decodePublic($message, 0));
 		self::assertSame([['message', 'chan', '1.5'], 5 + strlen($message)], $t->decodePublic("+OK\r\n" . $message, 5), 'decodes at a position');

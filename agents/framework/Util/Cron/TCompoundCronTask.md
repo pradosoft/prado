@@ -25,7 +25,7 @@ Runs several steps as one run: one claim, one result, one set of task events and
 | `StopOnFailure` | true | A step that throws stops the rest; false runs the rest, and the first exception ends the run. |
 | `Parallel` | false | The steps run at once in fibers of their own (`TAsync::run()`); the first exception ends the run after all finish. |
 
-A created step is named `<compound>#<n>` and takes the compound's `UserName`; every step runs with the compound's `CancellationToken` (`executeStep()`). An `@name` step runs only the task's work: its schedule, claim, and events are the compound's, and an unknown name throws `compoundcrontask_unknown_task`. Chains (`Then`) run whole tasks after a run instead; see [TCronModule](TCronModule.md#chains-priority-and-monitoring-440).
+A created step is named `<compound>#<n>` and takes the compound's `UserName`; every step runs with the compound's `CancellationToken` (`executeStep()`). An `@name` step runs only the task's work: its schedule, claim, and events are the compound's, and an unknown name throws `compoundcrontask_unknown_task`. Before any step runs, `checkReferences()` follows the `@name` steps through nested compounds; a step that leads back to a compound on the path throws `compoundcrontask_cycle`, and a compound referenced twice without a loop runs twice. Chains (`Then`) run whole tasks after a run instead; see [TCronModule](TCronModule.md#chains-priority-and-monitoring-440).
 
 ## See Also
 

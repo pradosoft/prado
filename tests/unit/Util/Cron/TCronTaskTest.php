@@ -400,4 +400,19 @@ class TCronTaskTest extends \PHPUnit\Framework\TestCase
 		self::assertStringNotContainsString('_then', serialize($this->obj));
 	}
 
+	public function testTimeoutAndMemoryLimitEdges()
+	{
+		$task = new TTestCronModuleTask();
+		$task->setTimeout(5);
+		$task->setTimeout('');
+		self::assertNull($task->getTimeout(), 'an empty timeout is none');
+		try {
+			$task->setTimeout(0);
+			self::fail('a zero timeout was accepted');
+		} catch (\Prado\Exceptions\TInvalidDataValueException $e) {
+		}
+		$task->setProcessMemoryLimit('256M');
+		$task->setProcessMemoryLimit('');
+		self::assertNull($task->getProcessMemoryLimit());
+	}
 }

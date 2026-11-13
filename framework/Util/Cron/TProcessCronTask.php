@@ -187,7 +187,9 @@ class TProcessCronTask extends TCronTask
 	 * Launches the command as a detached background process and returns its pid. This is the single
 	 * overridable seam for the OS-specific launch (tests override it to avoid spawning). The POSIX path
 	 * expects a single foreground command; a pipeline or a self-daemonizing command makes `$!` (and thus
-	 * the tracked pid) refer to a process that is not the long-running one.
+	 * the tracked pid) refer to a process that is not the long-running one.  The POSIX path changes to the
+	 * {@see getDirectory Directory} in its own statement (`cd dir || exit 1;`), so `$!` is the command's
+	 * process; a directory that cannot be entered launches nothing.
 	 * @param string $command the command to run, with `@php` already resolved
 	 * @return ?int the launched process id, or null on failure
 	 */
@@ -208,7 +210,7 @@ class TProcessCronTask extends TCronTask
 		$log = $this->getLogFile() ?? '/dev/null';
 		$prefix = '';
 		if (($dir = $this->getDirectory()) !== null && $dir !== '') {
-			$prefix = 'cd ' . TProcessHelper::escapeShellArg($dir) . ' && ';
+			$prefix = 'cd ' . TProcessHelper::escapeShellArg($dir) . ' 2>/dev/null || exit 1; ';
 		}
 		$out = shell_exec($prefix . 'nohup ' . $command . ' >> ' . TProcessHelper::escapeShellArg($log) . ' 2>&1 & echo $!');
 		$pid = (int) trim((string) $out);

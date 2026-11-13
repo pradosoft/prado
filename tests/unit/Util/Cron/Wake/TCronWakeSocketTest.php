@@ -273,4 +273,23 @@ class TCronWakeSocketTest extends \PHPUnit\Framework\TestCase
 		$socket->close();
 		self::assertSame(1, $wakes);
 	}
+
+	public function testInitUdpAddressesAndNonceExpiry()
+	{
+		$s = new TCronWakeSocket($this->runtime);
+		$s->init(null);
+		self::assertSame((int) TCronWakeSocket::DEFAULT_WAKE_PORT, $s->getBasePort());
+		\Prado\Test\Unit\PradoUnit::setProp($s, '_transport', 'udp');
+		self::assertSame('udp://127.0.0.1:' . ($s->getBasePort() + 1), $s->getAddress(1));
+		self::assertSame('udp://127.0.0.1:' . ($s->getBasePort() + 2), $s->getDaemonAddress());
+
+		$token = $s->createToken();
+		\Prado\Test\Unit\PradoUnit::setProp($s, '_seenNonces', ['expired' => time() - 1]);
+		self::assertTrue($s->verifyToken($token));
+		self::assertArrayNotHasKey('expired', \Prado\Test\Unit\PradoUnit::getProp($s, '_seenNonces'), 'an expired nonce is forgotten');
+
+		\Prado\Test\Unit\PradoUnit::setProp($s, '_transport', null);
+		$now = microtime(true);
+		self::assertNull($s->wait($now + 1, $now), 'without a transport the caller sleeps');
+	}
 }

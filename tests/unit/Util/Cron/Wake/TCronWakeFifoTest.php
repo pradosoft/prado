@@ -90,4 +90,43 @@ class TCronWakeFifoTest extends \PHPUnit\Framework\TestCase
 		self::assertNull($t->wait($now + 1, $now));
 		self::assertFalse($t->watch(TAsync::getLoop(), static fn () => null));
 	}
+
+	public function testAPlainFileIsNoPipe()
+	{
+		file_put_contents($this->fifo, 'not a pipe');
+		$t = new TCronWakeFifo($this->fifo);
+		$now = microtime(true);
+		self::assertFalse($t->signal($now));
+		self::assertNull($t->wait($now + 1, $now));
+	}
+
+	public function testAPipeThatCannotBeMadeOrOpened()
+	{
+		$dir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'cronwake-ro-' . bin2hex(random_bytes(4));
+		mkdir($dir);
+		chmod($dir, 0o500);
+		try {
+			$t = new TCronWakeFifo($dir . DIRECTORY_SEPARATOR . 'cronwake.fifo');
+			if (is_writable($dir)) {
+				self::markTestSkipped('the process can write to a read-only directory');
+			}
+			self::assertFalse($t->signal(microtime(true)), 'a pipe that cannot be made');
+		} finally {
+			chmod($dir, 0o700);
+			rmdir($dir);
+		}
+		posix_mkfifo($this->fifo, 0o000);
+		$t = new TCronWakeFifo($this->fifo);
+		self::assertFalse($t->signal(microtime(true)), 'a pipe that cannot be opened');
+	}
+
+	public function testAWaitAlreadyPastDrainsTheQueuedWakes()
+	{
+		$t = new TCronWakeFifo($this->fifo);
+		$now = microtime(true);
+		self::assertFalse($t->wait($now - 1, $now), 'nothing queued');
+		self::assertTrue($t->signal($now));
+		self::assertTrue($t->wait($now - 1, $now), 'a queued wake is consumed at once');
+		$t->close();
+	}
 }

@@ -97,5 +97,10 @@ class TCronTaskInfoTest extends \PHPUnit\Framework\TestCase
 		$this->obj->setDescription($value);
 		self::assertEquals($value, $this->obj->getDescription());
 	}
-	
+
+	public function testGetModuleWithoutAModuleID()
+	{
+		$info = new \Prado\Util\Cron\TCronTaskInfo('name', 'task', null, 'title', 'description');
+		self::assertNull($info->getModule());
+	}
 }

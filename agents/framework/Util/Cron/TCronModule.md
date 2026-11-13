@@ -187,7 +187,7 @@ The Process child is `getTaskProcessCommand($task)`: `PHP_BINARY` (under a web S
 ### Time zone, pause, and manual runs (4.4.0)
 
 - **`TimeZone`** of the module is the zone of the tasks without their own: `prepareTask()` gives it to each task it constructs or loads as `TCronTask::DefaultTimeZone`, which is not serialized, so a changed module zone reaches every task.
-- **Pause.** `pauseTask($name)` and `resumeTask($name)` store the paused names for every process: TCronModule in `cronpaused-<module id>.json` in the runtime path (`getPausedFile()`, written under an exclusive lock), `TDbCronManager` in the `paused` column. A paused task's triggers pass without runs (`REASON_PAUSED`); `getPausedTasks()` and `getIsTaskPaused()` read the store each call. `cron/pause` and `cron/resume` are the shell commands.
+- **Pause.** `pauseTask($name)` and `resumeTask($name)` store the paused names for every process: TCronModule in `cronpaused-<module id>.json` in the runtime path (`getPausedFile()`, written under an exclusive lock and read under a shared lock, so a read never sees a write in progress), `TDbCronManager` in the `paused` column. A paused task's triggers pass without runs (`REASON_PAUSED`); `getPausedTasks()` and `getIsTaskPaused()` read the store each call. `cron/pause` and `cron/resume` are the shell commands.
 - **Manual runs.** `runTaskNow($task)` (`cron/now`) runs a task with `runTask($task, true)` and, with `EnableStatus`, publishes its status with the role `STATUS_ROLE_MANUAL`, so `cron/top` shows it.
 - **Run log.** `logCronTask()` returns the run's log entry ID, which `updateTaskResult()` receives: `TDbCronManager` writes the result and seconds on the log row too, and `cron/log` shows them.
 
@@ -225,7 +225,7 @@ A started run ends with `onTaskEnd` or `onTaskSkipped` (`cancelled`, `claimed`, 
 
 ### Live status (4.4.0)
 
-With `EnableStatus`, a cron process publishes its live status to a JSON file in `StatusPath` (default `cronstatus` in the runtime path), named by module ID, host, and process ID. `cron/run` turns it on when the property is unset (null); set `EnableStatus="false"` to keep it off. The file is written through a temporary file renamed over it, on each run's start and end and before each daemon wait, and removed when the process ends. A write failure is a WARNING log entry.
+With `EnableStatus`, a cron process publishes its live status to a JSON file in `StatusPath` (default `cronstatus` in the runtime path), named by module ID (`cron` for a module without one, since a leading dot hides the file from the `*.json` match), host, and process ID. `cron/run` turns it on when the property is unset (null); set `EnableStatus="false"` to keep it off. The file is written through a temporary file renamed over it, on each run's start and end and before each daemon wait, and removed when the process ends. A write failure is a WARNING log entry.
 
 `getStatuses()` reads the statuses of the module's processes:
 

@@ -9,6 +9,10 @@ use Prado\Util\Cron\TShellCronAction;
 use Prado\Util\Cron\TCronModule;
 use Prado\Util\Cron\TDbCronManager;
 use Prado\Util\Cron\TShellDbCronAction;
+use Prado\Security\Permissions\TPermissionsManager;
+use Prado\Security\TUser;
+use Prado\Security\TUserManager;
+use Prado\Test\Unit\PradoUnit;
 
 
 class TShellDbCronActionTest extends \PHPUnit\Framework\TestCase
@@ -28,6 +32,10 @@ class TShellDbCronActionTest extends \PHPUnit\Framework\TestCase
 
 	protected function setUp(): void
 	{
+		// The cron table persists in a sqlite file across tests and runs; each test starts empty.
+		$cleaner = new TDbCronManager();
+		PradoUnit::invoke($cleaner, 'ensureTable');
+		$cleaner->getDbConnection()->createCommand('DELETE FROM ' . $cleaner->getTableName())->execute();
 		$this->obj = Prado::createComponent($this->getTestClass());
 		$this->writer = new TShellWriter(new TTextWriter());
 		$this->obj->setWriter($this->writer);
@@ -300,6 +308,169 @@ class TShellDbCronActionTest extends \PHPUnit\Framework\TestCase
 			self::assertStringContainsString('migrateshell is up to date', $this->writer->flush());
 		} finally {
 			$db->createCommand('DROP TABLE IF EXISTS migrateshell')->execute();
+			$cron->unlisten();
+		}
+	}
+
+	/**
+	 * @param string[] $names the user names
+	 * @return TUserManager a user manager of the users
+	 */
+	protected function createUsers(array $names): TUserManager
+	{
+		$users = new TUserManager();
+		$config = new \Prado\Xml\TXmlDocument('1.0', 'utf8');
+		$config->loadFromString('<users>' . implode('', array_map(fn ($name) => '<user name="' . $name . '" password="x"/>', $names)) . '</users>');
+		$app = Prado::getApplication();
+		$priorConfigType = $app->getConfigurationType();
+		$app->setConfigurationType(\Prado\TApplication::CONFIG_TYPE_XML);
+		try {
+			$users->init($config);
+		} finally {
+			$app->setConfigurationType($priorConfigType);
+		}
+		return $users;
+	}
+
+	public function testActionMigrateOldTable()
+	{
+		$cron = new TDbCronManager();
+		$cron->setId('cronmodule86');
+		$cron->setTableName('migrateoldshell');
+		$db = $cron->getDbConnection();
+		$db->createCommand('DROP TABLE IF EXISTS migrateoldshell')->execute();
+		$db->createCommand('CREATE TABLE migrateoldshell (tabuid INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(127) NOT NULL, schedule VARCHAR(127) NOT NULL, task VARCHAR(256) NOT NULL, moduleid VARCHAR(127) NULL, username VARCHAR(127) NULL, options MEDIUMTEXT NULL, processcount INT NOT NULL DEFAULT 0, lastexectime VARCHAR(20) NULL DEFAULT NULL, active BOOLEAN NULL)')->execute();
+		try {
+			$this->obj->setCronModule($cron);
+			self::assertTrue($this->obj->actionMigrate(['cron/migrate']));
+			$text = $this->writer->flush();
+			self::assertStringContainsString('Added the nextexectime column to migrateoldshell and set it on 0 task row(s)', $text);
+			self::assertStringContainsString('Added the run columns (lastresult, lastduration, paused) to migrateoldshell', $text);
+		} finally {
+			$db->createCommand('DROP TABLE IF EXISTS migrateoldshell')->execute();
+			$cron->unlisten();
+		}
+	}
+
+	public function testWithoutDbCronManager()
+	{
+		foreach (['actionAdd', 'actionUpdate', 'actionRemove', 'actionLog', 'actionFlush'] as $action) {
+			self::assertTrue($this->obj->$action(['cron/x', 'name', 'id', '* * * * *']), $action);
+			self::assertStringContainsString('TDbCronManager is not found', $this->writer->flush(), $action);
+		}
+	}
+
+	public function testActionLogAndFlush()
+	{
+		$cron = new TDbCronManager();
+		$cron->setId('cronmodule85');
+		$cron->setTableName('shelllog');
+		$cron->setUserManager($this->createUsers(['cron', 'dave', 'erin']));
+		$db = $cron->getDbConnection();
+		$db->createCommand('DROP TABLE IF EXISTS shelllog')->execute();
+		$cron->init([
+			['name' => 'logOne', 'schedule' => '0 0 1 1 ? 2099', 'task' => TTestCronModuleTask::class, 'username' => 'dave'],
+			['name' => 'logTwo', 'schedule' => '0 0 1 1 ? 2099', 'task' => TTestCronModuleTask::class, 'username' => 'erin'],
+		]);
+		$this->obj->setCronModule($cron);
+		try {
+			self::assertTrue($this->obj->actionLog(['cron/log']));
+			self::assertStringContainsString('Cron Logs are empty', $this->writer->flush());
+
+			self::assertTrue($cron->runTask($cron->getTask('logOne')));
+			self::assertTrue($cron->runTask($cron->getTask('logTwo')));
+			self::assertTrue($cron->runTask($cron->getTask('logTwo')));
+			self::assertTrue($this->obj->actionLog(['cron/log']));
+			$text = $this->writer->flush();
+			self::assertStringContainsString('Cron Log found 3 records', $text);
+			self::assertStringContainsString('Result', $text);
+			self::assertStringContainsString('ok', $text);
+
+			self::assertTrue($this->obj->actionLog(['cron/log', 'logTwo']));
+			self::assertStringContainsString("found 2 records, filtered by task name 'logTwo'", $this->writer->flush());
+			self::assertTrue($this->obj->actionLog(['cron/log', '@dave']));
+			self::assertStringContainsString('found 1 records, filtered by @dave', $this->writer->flush());
+			self::assertTrue($this->obj->actionLog(['cron/log', 'logTwo', '@dave']));
+			self::assertStringContainsString("found 0 records, filtered by task name 'logTwo' and @dave", $this->writer->flush());
+
+			self::assertTrue($this->obj->actionFlush(['cron/flush', '3600']));
+			self::assertStringContainsString(': 0', $this->writer->flush(), 'no run is an hour old');
+			self::assertTrue($this->obj->actionFlush(['cron/flush', 'P1D', 'logOne']));
+			self::assertStringContainsString("with task name='logOne'", $this->writer->flush());
+			self::assertTrue($this->obj->actionFlush(['cron/flush', '1 day', '@erin']));
+			self::assertStringContainsString("and user '@erin'", $this->writer->flush());
+			self::assertTrue($this->obj->actionFlush(['cron/flush', 'P1X']));
+			self::assertStringContainsString("with task name='P1X'", $this->writer->flush(), 'an argument that is no period is a task name');
+			self::assertTrue($this->obj->actionFlush(['cron/flush', '@erin']));
+			self::assertStringContainsString(': 2', $this->writer->flush());
+			self::assertSame(1, $cron->getCronLogCount());
+
+			$cron->attachBehavior('denies', new TTestCronDenyingBehavior(['dyGetCronLogCount', 'dyClearCronLog']));
+			self::assertTrue($this->obj->actionLog(['cron/log']));
+			self::assertTrue($this->obj->actionFlush(['cron/flush']));
+			self::assertSame('', $this->writer->flush(), 'a denied log or flush shows nothing');
+			$cron->detachBehavior('denies');
+			self::assertSame(1, $cron->getCronLogCount(), 'a denied flush removes nothing');
+			$remove = new TTestCronModuleTask();
+			$remove->setName('logRemove');
+			$remove->setSchedule('0 0 1 1 ? 2099');
+			$cron->addTask($remove);
+			$cron->attachBehavior('denies', new TTestCronDenyingBehavior(['dyRemoveTask']));
+			self::assertTrue($this->obj->actionRemove(['cron/remove', 'logRemove']));
+			self::assertStringContainsString("'logRemove' could not be removed", $this->writer->flush());
+			$cron->detachBehavior('denies');
+			$cron->removeTask('logRemove');
+		} finally {
+			$db->createCommand('DROP TABLE IF EXISTS shelllog')->execute();
+			$cron->unlisten();
+		}
+	}
+
+	public function testRestrictedUser()
+	{
+		$app = Prado::getApplication();
+		$prior = $app->getUser();
+		$user = new TUser(new TUserManager());
+		$user->setName('frank');
+		if ($user->asa(TPermissionsManager::USER_PERMISSIONS_BEHAVIOR)) {
+			$user->detachBehavior(TPermissionsManager::USER_PERMISSIONS_BEHAVIOR);
+		}
+		$user->attachBehavior(TPermissionsManager::USER_PERMISSIONS_BEHAVIOR, $permissions = new TTestCronUserPermissions());
+		$cron = new TDbCronManager();
+		$cron->setId('cronmodule84');
+		$cron->setTableName('shellrestricted');
+		$cron->setUserManager($this->createUsers(['cron', 'frank', 'gina']));
+		$db = $cron->getDbConnection();
+		$db->createCommand('DROP TABLE IF EXISTS shellrestricted')->execute();
+		$cron->init([
+			['name' => 'frankTask', 'schedule' => '0 0 1 1 ? 2099', 'task' => TTestCronModuleTask::class, 'username' => 'frank'],
+			['name' => 'ginaTask', 'schedule' => '0 0 1 1 ? 2099', 'task' => TTestCronModuleTask::class, 'username' => 'gina'],
+		]);
+		$app->setUser($user);
+		try {
+			$action = new TShellDbCronAction();
+			$action->setWriter($this->writer);
+			$action->setCronModule($cron);
+			$methods = PradoUnit::getProp($action, 'methods');
+			self::assertNotContains('add', $methods);
+			self::assertNotContains('migrate', $methods);
+			self::assertNotContains('run', $methods);
+			self::assertContains('log', $methods);
+
+			self::assertTrue($cron->runTask($cron->getTask('frankTask')));
+			self::assertTrue($cron->runTask($cron->getTask('ginaTask')));
+			self::assertTrue($action->actionLog(['cron/log']));
+			$text = $this->writer->flush();
+			self::assertStringContainsString('found 1 records, filtered by @frank', $text, 'a user without the log permission sees only their runs');
+			self::assertTrue($action->actionFlush(['cron/flush']));
+			self::assertStringContainsString("and user '@frank'", $this->writer->flush());
+			self::assertSame(1, $cron->getCronLogCount());
+
+			$permissions->allowed = [TDbCronManager::PERM_CRON_ADD_TASK_GLOBAL];
+			self::assertContains('add', PradoUnit::getProp(new TShellDbCronAction(), 'methods'));
+		} finally {
+			PradoUnit::setProp($app, '_user', $prior);
+			$db->createCommand('DROP TABLE IF EXISTS shellrestricted')->execute();
 			$cron->unlisten();
 		}
 	}

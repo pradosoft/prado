@@ -61,6 +61,7 @@ class TCompoundCronTask extends TCronTask
 		if ($this->_tasks === []) {
 			throw new TConfigurationException('compoundcrontask_no_tasks', $this->getName());
 		}
+		$this->checkReferences($cronModule, $this, [$this->getName()]);
 		$steps = [];
 		foreach ($this->_tasks as $i => $spec) {
 			$steps[] = $this->createStep($cronModule, $spec, $i + 1);
@@ -89,6 +90,29 @@ class TCompoundCronTask extends TCronTask
 		}
 		if ($failure !== null) {
 			throw $failure;
+		}
+	}
+
+	/**
+	 * Throws when the `@name` steps of a compound lead back to a compound on the path.
+	 * @param TCronModule $cronModule the module running the task
+	 * @param TCompoundCronTask $compound the compound whose steps are checked
+	 * @param string[] $path the names of the compounds from the running one to $compound
+	 * @throws TConfigurationException when a step references a compound on the path
+	 */
+	protected function checkReferences($cronModule, TCompoundCronTask $compound, array $path): void
+	{
+		foreach ($compound->getTasks() as $spec) {
+			if (!str_starts_with($spec, '@')) {
+				continue;
+			}
+			$name = substr($spec, 1);
+			if (in_array($name, $path, true)) {
+				throw new TConfigurationException('compoundcrontask_cycle', $this->getName(), $name);
+			}
+			if (($task = $cronModule->getTask($name)) instanceof TCompoundCronTask) {
+				$this->checkReferences($cronModule, $task, [...$path, $name]);
+			}
 		}
 	}
 

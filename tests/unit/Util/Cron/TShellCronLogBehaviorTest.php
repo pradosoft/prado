@@ -83,5 +83,30 @@ class TShellCronLogBehaviorTest extends \PHPUnit\Framework\TestCase
 		$component->dyLogCronTaskError($task, new \RuntimeException('boom'));
 		self::assertEquals(1, preg_match("/Task testName failed: RuntimeException: boom/", $this->writer->flush()));
 	}
-	
+
+	public function testSleepAndDaemonLogs()
+	{
+		$inner = new class () extends TTextWriter {
+			public string $flushed = '';
+
+			public function flush()
+			{
+				$text = parent::flush();
+				$this->flushed .= $text;
+				return $text;
+			}
+		};
+		$this->obj->setOutputWriter(new TShellWriter($inner));
+		$component = new TComponent();
+		$component->attachBehavior('behavior', $this->obj);
+		$component->dyLogCronSleep(1.23456);
+		self::assertStringContainsString('Sleeping for 1.235 seconds', $inner->flushed);
+		$component->dyLogCronDaemonStart('cron:lease', true);
+		self::assertStringContainsString('Cron daemon started (cron:lease), watching for wakes', $inner->flushed);
+		$inner->flushed = '';
+		$component->dyLogCronDaemonStart('cron:lease', false);
+		self::assertStringNotContainsString('watching', $inner->flushed);
+		$component->dyLogCronDaemonEnd(7);
+		self::assertStringContainsString('Cron daemon ended after 7 tasks', $inner->flushed);
+	}
 }

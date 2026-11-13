@@ -14,6 +14,10 @@ use Prado\Util\Cron\TClosureCronTask;
 use Prado\Data\IDataConnection;
 use Prado\Data\TDbConnection;
 use Prado\Exceptions\TDbException;
+use Prado\Util\Cron\TCronModule;
+use Prado\Util\Cron\TShellCronLogBehavior;
+use Prado\Shell\TShellWriter;
+use Prado\IO\TTextWriter;
 
 /**
  * SQLite connection that reports the PostgreSQL driver and records each command's SQL.
@@ -22,9 +26,11 @@ class TDbCronManagerTestPgsqlConnection extends TDbConnection
 {
 	public array $sql = [];
 
+	public string $driver = 'pgsql';
+
 	public function getDriverName()
 	{
-		return 'pgsql';
+		return $this->driver;
 	}
 
 	public function createCommand($sql)
@@ -1151,4 +1157,160 @@ class TDbCronManagerTest extends TCronModuleTest
 		$this->obj->removeTask($loaded);
 	}
 
+	public function testDbFilters_ByNameAndUser()
+	{
+		$this->obj->init(null);
+		foreach (['dbFilterOne' => 'hal', 'dbFilterTwo' => 'ivy', 'other' => null] as $name => $user) {
+			$task = new TTestCronModuleTask();
+			$task->setName($name);
+			$task->setSchedule('0 0 1 1 ? 2099');
+			$task->setUserName($user);
+			self::assertTrue($this->obj->addTask($task));
+		}
+		self::assertSame(['dbFilterOne', 'dbFilterTwo'], array_keys($this->obj->getTasks('dbFilter%')));
+		self::assertSame(2, $this->obj->getTasksCount('dbFilter%'));
+		self::assertSame(1, $this->obj->getUserTasksCount('ivy', 'dbFilter%'));
+		self::assertSame(0, $this->obj->getUserTasksCount('ivy', 'other'));
+		self::assertSame(['other'], array_keys($this->obj->getUserTasks('')), 'an empty user name matches the tasks without a user, as in TCronModule');
+
+		// another manager on the table reads the rows it has not loaded
+		$other = new TTestDbCronManager();
+		$other->init(null);
+		self::assertSame(['dbFilterOne'], array_keys($other->getUserTasks('hal')));
+		$row = $other->getTask('dbFilterTwo', true, false);
+		self::assertSame('ivy', $row['username']);
+		PradoUnit::setProp($other, '_tasks', []);
+		self::assertSame('dbFilterTwo', $other->getTask('dbFilterTwo')->getName(), 'a loaded row is made a task');
+
+		$task = $this->obj->getTask('other');
+		$fresh = new TTestDbCronManager();
+		$fresh->init(null);
+		$task->setSchedule('0 0 2 1 ? 2099');
+		self::assertTrue($fresh->updateTask($task), 'a manager updates a row it has not loaded');
+		self::assertSame('0 0 2 1 ? 2099', $fresh->getTask('other', false, false)['schedule']);
+		$missing = new TTestCronModuleTask();
+		$missing->setName('noSuchRow');
+		$missing->setSchedule('0 0 1 1 ? 2099');
+		self::assertFalse($this->obj->updateTask($missing));
+
+		$never = new TTestCronModuleTask();
+		$never->setName('dbNever');
+		$never->setSchedule('@never');
+		self::assertTrue($this->obj->addTask($never), 'a task without a next trigger wakes no cron');
+		self::assertSame([], $this->obj->wakeSignals);
+
+		foreach (['dbFilterOne', 'dbFilterTwo', 'other', 'dbNever'] as $name) {
+			$this->obj->removeTask($name);
+		}
+		$other->unlisten();
+		$fresh->unlisten();
+	}
+
+	public function testDbPermissions_DenyTheRowsAndTheLog()
+	{
+		$this->obj->init(null);
+		$task = new TTestCronModuleTask();
+		$task->setName('dbDenied');
+		$task->setSchedule('0 0 1 1 ? 2000');
+		self::assertTrue($this->obj->addTask($task));
+		self::assertTrue($this->obj->runTask($this->obj->getTask('dbDenied')));
+		$uid = $this->obj->getCronLog()[0]['tabuid'];
+
+		$this->obj->attachBehavior('denies', new TTestCronDenyingBehavior(['dyAddTask', 'dyAddTaskGlobal', 'dyUpdateTask', 'dyGetUserTasks', 'dyRemoveCronLogItem', 'dyGetCronLog']));
+		$another = new TTestCronModuleTask();
+		$another->setName('dbDeniedToo');
+		$another->setSchedule('0 0 1 1 ? 2099');
+		self::assertNull($this->obj->addTask($another));
+		self::assertNull($this->obj->updateTask($task));
+		self::assertNull($this->obj->getTask('dbDenied', false));
+		self::assertNull($this->obj->taskExists('dbDenied'));
+		self::assertNull($this->obj->removeCronLogItem($uid));
+		self::assertNull($this->obj->removeCronLogItem(999999), 'an unknown item is the default user');
+		self::assertNull($this->obj->getCronLog());
+		$this->obj->detachBehavior('denies');
+		self::assertSame(1, $this->obj->getCronLogCount(), 'a denied removal removes nothing');
+		$this->obj->removeTask('dbDenied');
+	}
+
+	public function testDbTable_MissingWithoutAutoCreate()
+	{
+		$manager = new TDbCronManager();
+		$manager->setTableName('nocrontable');
+		$manager->setAutoCreateCronTable(false);
+		$manager->getDbConnection()->createCommand('DROP TABLE IF EXISTS nocrontable')->execute();
+		try {
+			self::expectException(TConfigurationException::class);
+			$manager->getTasks();
+		} finally {
+			$manager->unlisten();
+		}
+	}
+
+	public function testMigrateTable_SkipsARowThatIsNoTask()
+	{
+		$manager = new TDbCronManager();
+		$manager->setTableName('migratebadrow');
+		$db = $manager->getDbConnection();
+		$db->createCommand('DROP TABLE IF EXISTS migratebadrow')->execute();
+		$db->createCommand('CREATE TABLE migratebadrow (tabuid INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(127) NOT NULL, schedule VARCHAR(127) NOT NULL, task VARCHAR(256) NOT NULL, moduleid VARCHAR(127) NULL, username VARCHAR(127) NULL, options MEDIUMTEXT NULL, processcount INT NOT NULL DEFAULT 0, lastexectime VARCHAR(20) NULL DEFAULT NULL, active BOOLEAN NULL)')->execute();
+		$db->createCommand("INSERT INTO migratebadrow (name, schedule, task, options, active) VALUES ('broken', '* * * * *', 'x', 'not serialized', 1)")->execute();
+		try {
+			self::assertSame(['created' => false, 'column' => 0, 'run' => true], $manager->migrateTable());
+		} finally {
+			$db->createCommand('DROP TABLE IF EXISTS migratebadrow')->execute();
+			$manager->unlisten();
+		}
+	}
+
+	public function testCreateDbTable_TheAutoIncrementOfEachDriver()
+	{
+		$manager = new TDbCronManagerTestPgsqlManager();
+		$manager->recorder = new TDbCronManagerTestPgsqlConnection('sqlite::memory:');
+		foreach (['mysql', 'pgsql'] as $driver) {
+			$manager->recorder->driver = $driver;
+			try {
+				PradoUnit::invoke($manager, 'createDbTable');
+			} catch (TDbException $e) {
+			}
+		}
+		self::assertStringContainsString('`tabuid` INTEGER PRIMARY KEY AUTO_INCREMENT', $manager->recorder->sql[0]);
+		self::assertStringContainsString('`tabuid` SERIAL PRIMARY KEY', $manager->recorder->sql[1]);
+		$manager->unlisten();
+	}
+
+	public function testExecuteRuntimeTasks_NoneAndTheShellLog()
+	{
+		$this->obj->init(null);
+		self::assertSame(0, $this->obj->executeRuntimeTasks());
+		$writer = new TShellWriter(new TTextWriter());
+		$this->obj->attachBehavior(TCronModule::SHELL_LOG_BEHAVIOR, new TShellCronLogBehavior($writer));
+		$task = new TTestCronModuleTask();
+		$task->setName('runtimeLogged');
+		$task->setSchedule('* * * * *');
+		$this->obj->addRuntimeTask($task);
+		self::assertSame(1, $this->obj->executeRuntimeTasks());
+		self::assertTrue($this->obj->asa(TCronModule::SHELL_LOG_BEHAVIOR)->getEnabled(), 'the shell log is enabled again after');
+		self::assertSame('', $writer->flush(), 'the runtime tasks do not write to the shell');
+		$this->obj->detachBehavior(TCronModule::SHELL_LOG_BEHAVIOR);
+	}
+
+	public function testClearCronLog_AnInvalidPeriodThrows()
+	{
+		$this->obj->init(null);
+		self::expectException(TInvalidDataValueException::class);
+		$this->obj->clearCronLog('Pnot a period');
+	}
+
+	public function testConnectionID_Invalid()
+	{
+		$manager = new TDbCronManager();
+		$manager->setConnectionID('noSuchDbModule');
+		try {
+			self::expectException(TConfigurationException::class);
+			self::expectExceptionMessage('noSuchDbModule');
+			$manager->getDbConnection();
+		} finally {
+			$manager->unlisten();
+		}
+	}
 }

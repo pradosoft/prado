@@ -16,7 +16,7 @@
 | Side | Mechanism |
 |---|---|
 | per-minute `wait()` | `drain()` takes the messages already received, else `stream_select()` on the subscribed socket for the remaining time |
-| daemon `watch()` | `onReadable()` of the subscribed socket, so the daemon wakes at once; a lost connection is reopened, resubscribed, and re-registered |
+| daemon `watch()` | `onReadable()` of the subscribed socket, so the daemon wakes at once; a lost connection cancels the watcher on the closed socket and is reopened, resubscribed, and re-registered; when the server stays unreachable the watch ends and the daemon polls on `DaemonIdle` |
 | `close()` | cancels the watcher and closes the subscribed socket |
 
 `Tls` connects with `tls://` and an `ssl` stream context (`getStreamContextOptions()`): the server certificate is verified against the system CA bundle or `CaFile` and must carry `PeerName` (default: the host); `LocalCert` and `LocalKey` present a client certificate; `VerifyPeer` false accepts any certificate. A Unix socket is never TLS. The subscribed TLS socket works on the loop like a plain one; the transport is unavailable without the `openssl` extension when `Tls` is set.

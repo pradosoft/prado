@@ -75,4 +75,14 @@ class TCronWakeCacheTest extends \PHPUnit\Framework\TestCase
 		$t->close();
 		self::assertSame(1, $wakes);
 	}
+
+	public function testInitAndTheApplicationCache()
+	{
+		$t = new TCronWakeCache();
+		$t->init(null);
+		self::assertSame(TCronWakeCache::DEFAULT_CACHE_KEY, $t->getCacheKey());
+		self::assertSame(Prado::getApplication()->getCache(), $t->getCache(), 'without a CacheID the application cache');
+		self::assertSame($t, $t->setCache($this->cache));
+		self::assertSame($this->cache, $t->getCache());
+	}
 }

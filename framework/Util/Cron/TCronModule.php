@@ -1628,16 +1628,24 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	}
 
 	/**
+	 * Reads the paused task names from the {@see getPausedFile paused file} under a shared lock, so a read
+	 * never sees the file emptied by a write in progress.
 	 * @return string[] the names of the paused tasks, read from the store each call
 	 * @since 4.4.0
 	 */
 	public function getPausedTasks(): array
 	{
 		$file = $this->getPausedFile();
-		if (!is_file($file)) {
+		if (!is_file($file) || ($handle = @fopen($file, 'r')) === false) {
 			return [];
 		}
-		$names = json_decode((string) @file_get_contents($file), true);
+		try {
+			flock($handle, LOCK_SH);
+			$names = json_decode((string) stream_get_contents($handle), true);
+			flock($handle, LOCK_UN);
+		} finally {
+			fclose($handle);
+		}
 		return is_array($names) ? array_values(array_filter($names, 'is_string')) : [];
 	}
 
@@ -3736,12 +3744,14 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	}
 
 	/**
+	 * Returns the status file of this process.  A module without an ID is named `cron` in the file, as a
+	 * file name starting with a dot is hidden from the `*.json` match of {@see getStatuses}.
 	 * @return string the status file of this process: the module ID, host, and process ID in {@see getStatusPath}
 	 * @since 4.4.0
 	 */
 	protected function getStatusFile(): string
 	{
-		$name = $this->getID() . '.' . ($this->_status['host'] ?? gethostname()) . '.' . ($this->_status['pid'] ?? getmypid());
+		$name = ((string) $this->getID() !== '' ? $this->getID() : 'cron') . '.' . ($this->_status['host'] ?? gethostname()) . '.' . ($this->_status['pid'] ?? getmypid());
 		return $this->getStatusPath() . DIRECTORY_SEPARATOR . preg_replace('/[^\w.-]+/', '_', $name) . '.json';
 	}
 

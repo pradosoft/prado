@@ -40,7 +40,7 @@ Name and user filters are patterns: `_` is a wild card and `%` a wild string. A 
 ## Key Methods
 
 - `getModuleClass()` — returns `TCronModule::class`; override in subclasses to target a different module type
-- `getCronModule()` — finds and returns the first `TCronModule` instance from the application modules
+- `getCronModule()` — returns the module set by `setCronModule()`, else the first `TCronModule` of the application modules; without one it writes an error and returns null, and every command then returns at once
 - `actionRun($args)` — turns on the module's `EnableStatus` when it is unset, then calls `processPendingTasks()`; with `Daemon` this elects or defers to the cron daemon (see [TCronModule](TCronModule.md#daemon-mode-440))
 - `actionTasks($args)` — displays task table: name, schedule, task, mode, last run, last result and seconds (`getTaskResults()`), next run, user, run count, and state (`running`, or `pid <id>` for a Process task's child, from `getStatuses()`); through `getTasks()` or `getUserTasks()`
 - `actionReport($args)` — prints `getMonitorReport()` of the readable tasks as pretty JSON, or `getMonitorMetrics()` with `prometheus`; another format is an error (4.4.0)

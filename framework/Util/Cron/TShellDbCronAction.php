@@ -120,6 +120,9 @@ class TShellDbCronAction extends TShellCronAction
 	public function actionAdd($args)
 	{
 		$module = $this->getCronModule();
+		if (!$module) {
+			return true;
+		}
 		$taskName = $args[1] ?? null;
 		$id = $args[2] ?? null;
 		$schedule = $args[3] ?? null;
@@ -190,6 +193,9 @@ class TShellDbCronAction extends TShellCronAction
 	public function actionUpdate($args)
 	{
 		$module = $this->getCronModule();
+		if (!$module) {
+			return true;
+		}
 		if (!($taskName = ($args[1] ?? null))) {
 			$this->_outWriter->writeError("Cannot update a task without a name");
 			return true;
@@ -237,6 +243,9 @@ class TShellDbCronAction extends TShellCronAction
 	public function actionRemove($args)
 	{
 		$module = $this->getCronModule();
+		if (!$module) {
+			return true;
+		}
 		if (!($taskName = $args[1] ?? null)) {
 			$this->_outWriter->writeError("Cannot remove a task without a name");
 			return true;
@@ -263,6 +272,9 @@ class TShellDbCronAction extends TShellCronAction
 	public function actionLog($args)
 	{
 		$module = $this->getCronModule();
+		if (!$module) {
+			return true;
+		}
 		$taskName = null;
 		$username = null;
 		if ($this->_user && !$this->_user->can(TDbCronManager::PERM_CRON_LOG_READ)) {
@@ -318,6 +330,9 @@ class TShellDbCronAction extends TShellCronAction
 	public function actionFlush($args)
 	{
 		$module = $this->getCronModule();
+		if (!$module) {
+			return true;
+		}
 		$taskName = null;
 		$username = null;
 		$period = null;

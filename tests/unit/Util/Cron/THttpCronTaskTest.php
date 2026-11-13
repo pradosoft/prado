@@ -105,4 +105,16 @@ class THttpCronTaskTest extends \PHPUnit\Framework\TestCase
 		self::expectException(TConfigurationException::class);
 		$this->task->execute(new TCronModule());
 	}
+
+	public function testHeadersSkipBlankLinesAndDefaultsSerializeSmall()
+	{
+		$task = new THttpCronTask();
+		$task->setHeaders("Accept: text/plain\n\n|X-Id: 7");
+		self::assertSame(['Accept' => 'text/plain', 'X-Id' => '7'], $task->getHeaders());
+		$text = serialize(new THttpCronTask());
+		foreach (['_method', '_headers', '_body', '_logFile', '_httpClient', '_statusCode'] as $prop) {
+			self::assertStringNotContainsString($prop, $text);
+		}
+		self::assertSame('GET', unserialize($text)->getMethod());
+	}
 }

@@ -111,11 +111,13 @@ class TShellCronAction extends TShellAction
 	}
 
 	/**
+	 * Returns the cron module set by {@see setCronModule}, else the first of the application's type; each call
+	 * without one searches the application again and writes an error when none is found.
 	 * @return ?\Prado\Util\Cron\TCronModule returns the Cron Module of the applications
 	 */
 	public function getCronModule()
 	{
-		if ($this->_cron === false) {
+		if (!$this->_cron) {
 			$app = Prado::getApplication();
 			$moduleClass = $this->getModuleClass();
 			$modules = $app->getModulesByType($moduleClass, false);
@@ -626,6 +628,9 @@ class TShellCronAction extends TShellAction
 	public function actionTasks($args)
 	{
 		$module = $this->getCronModule();
+		if (!$module) {
+			return true;
+		}
 
 		$time = $module->getLastCronTime();
 		$this->_outWriter->writeLine("\nThe system time is " . date('Y-m-d H:i:s TP'));
@@ -757,6 +762,9 @@ class TShellCronAction extends TShellAction
 	public function actionIndex($args)
 	{
 		$module = $this->getCronModule();
+		if (!$module) {
+			return true;
+		}
 
 		$infos = $module->getTaskInfos(true);
 		$this->_outWriter->writeLine();

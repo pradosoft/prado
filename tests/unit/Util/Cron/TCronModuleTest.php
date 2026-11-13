@@ -79,6 +79,7 @@ class TTestCronRecordingTask extends TCronTask
 {
 	public static array $events = [];
 	public float $pause = 0;
+	public float $block = 0;
 	public bool $throw = false;
 	public array $users = [];
 
@@ -89,6 +90,9 @@ class TTestCronRecordingTask extends TCronTask
 		if ($this->pause > 0) {
 			TAsync::sleep($this->pause);
 			$this->users[] = $this->getApplication()->getUser()?->getName();
+		}
+		if ($this->block > 0) {
+			usleep((int) ($this->block * 1_000_000));
 		}
 		if ($this->throw) {
 			throw new \RuntimeException('task failed: ' . $this->getName());
@@ -2528,4 +2532,424 @@ class TCronModuleTest extends \PHPUnit\Framework\TestCase
 		self::assertEquals($minute + 60, $task->getNextTriggerTime(), 'the next trigger is the next tick\'s');
 	}
 
+	public function testPermissions_DenyTheReadsAndRuns()
+	{
+		$this->obj->setDaemonMutex(new TMemoryMutex());
+		$this->obj->init([
+			['name' => 'permA', 'schedule' => '0 0 1 1 ? 2000', 'task' => TTestCronRecordingTask::class, 'username' => 'ann'],
+			['name' => 'permB', 'schedule' => '0 0 1 1 ? 2000', 'task' => TTestCronRecordingTask::class, 'username' => 'ben'],
+		]);
+		$permissions = $this->obj->getPermissions(null);
+		self::assertContainsOnlyInstancesOf(\Prado\Security\Permissions\TPermissionEvent::class, $permissions);
+		$names = array_map(fn ($permission) => $permission->getName(), $permissions);
+		self::assertContains(TCronModule::PERM_CRON_RUN_TASK, $names);
+		self::assertContains(TCronModule::PERM_CRON_READ_TASKS, $names);
+
+		self::assertSame(['permB', 'permA'], array_keys($this->obj->getTasks(null, 0, 0, false)), 'descending by name');
+		self::assertSame(2, $this->obj->getTasksCount());
+		self::assertSame(['permA'], array_keys($this->obj->getUserTasks('ann')));
+		self::assertSame(['permB', 'permA'], array_keys($this->obj->getUserTasks('%', 'perm_', 0, 0, false)));
+		self::assertSame(1, $this->obj->getUserTasksCount('ben'));
+		self::assertSame(['permB', 'permA'], array_keys($this->obj->getTasksByType(TTestCronRecordingTask::class, null, 0, 0, false)));
+		self::assertTrue($this->obj->taskExists('permA'));
+		self::assertFalse($this->obj->taskExists('permZ'));
+
+		$this->obj->attachBehavior('denies', new TTestCronDenyingBehavior(['dyGetTasks', 'dyGetUserTasks', 'dyGetPendingTasks']));
+		self::assertNull($this->obj->getTasks());
+		self::assertNull($this->obj->getTasksCount());
+		self::assertNull($this->obj->getUserTasks('ann'));
+		self::assertNull($this->obj->getUserTasksCount('ann'));
+		self::assertNull($this->obj->getTask('permA'));
+		self::assertNull($this->obj->getPendingTasks());
+		self::assertSame(0, $this->obj->processPendingTasks(), 'a denied sweep runs nothing');
+		$this->obj->detachBehavior('denies');
+		$task = $this->obj->getTask('permA');
+
+		$skipped = [];
+		$this->obj->attachEventHandler('OnTaskSkipped', function ($sender, $param) use (&$skipped) {
+			$skipped[] = $param->getReason();
+		});
+		$this->obj->attachBehavior('denies', new TTestCronDenyingBehavior(['dyRunTask']));
+		self::assertSame(TCronModule::RESULT_DENIED, $this->obj->executeTask($task));
+		self::assertFalse($this->obj->runTask($task));
+		self::assertSame([TCronTaskEventParameter::REASON_DENIED], $skipped);
+		self::assertSame(TCronModule::RESULT_DENIED, $this->obj->getTaskResults(true)['permA']['result']);
+		self::assertSame([], TTestCronRecordingTask::$events = array_values(array_filter(TTestCronRecordingTask::$events, fn ($e) => str_starts_with($e, 'perm'))), 'a denied task does not run');
+		$this->obj->detachBehavior('denies');
+	}
+
+	public function testInit_RejectsADuplicateTaskName()
+	{
+		$this->expectException(TConfigurationException::class);
+		$this->obj->init([
+			['name' => 'twice', 'schedule' => '0 0 1 1 ? 2000', 'task' => TTestCronModuleTask::class],
+			['name' => 'twice', 'schedule' => '0 0 1 1 ? 2001', 'task' => TTestCronModuleTask::class],
+		]);
+	}
+
+	public function testInit_RequestCronRunsAtTheEndOfARequest()
+	{
+		$app = Prado::getApplication();
+		$this->obj->fakeSapi = 'apache2handler';
+		$this->obj->fakeRand = 0;
+		$this->obj->setEnableRequestCron(true);
+		$this->obj->init(null);
+		$handler = [$this->obj, 'processPendingTasks'];
+		try {
+			self::assertTrue($app->getEventHandlers('OnEndRequest')->contains($handler));
+		} finally {
+			$app->detachEventHandler('OnEndRequest', $handler);
+		}
+		$other = new $this->baseClass();
+		$other->fakeSapi = 'apache2handler';
+		$other->fakeRand = mt_getrandmax();
+		$other->setEnableRequestCron(true);
+		$other->setRequestCronProbability(50);
+		$other->init(null);
+		self::assertFalse($app->getEventHandlers('OnEndRequest')->contains([$other, 'processPendingTasks']), 'a request past the probability does not run cron');
+		$other->unlisten();
+	}
+
+	public function testShell_RegistersTheOptionAndTheAction()
+	{
+		$shell = $this->createMock(\Prado\Shell\TShellApplication::class);
+		$shell->expects(self::once())->method('addShellActionClass');
+		$module = new class () extends TTestCronModule {
+			public $shell;
+			public function getApplication()
+			{
+				return $this->shell;
+			}
+		};
+		$module->shell = $shell;
+		$shell->expects(self::once())->method('registerOption')->with('cron', [$module, 'setInCronShell']);
+		$shell->expects(self::once())->method('registerOptionAlias')->with('c', 'cron');
+		$shell->method('getModulesByType')->willReturn([]);
+		$module->init(null);
+		$module->registerShellAction(null, null);
+		$module->attachBehavior('denies', new TTestCronDenyingBehavior(['dyRegisterShellAction']));
+		$module->registerShellAction(null, null);
+	}
+
+	public function testRunTasks_StopsAtTheMinuteAndSkipsRemovedTasks()
+	{
+		$this->obj->setDaemonMutex(new TMemoryMutex());
+		$this->obj->init([['name' => 'inSweep', 'schedule' => '0 0 1 1 ? 2000', 'task' => TTestCronRecordingTask::class]]);
+		$removed = new TTestCronRecordingTask();
+		$removed->setName('notInModule');
+		$removed->setSchedule('0 0 1 1 ? 2000');
+		$task = $this->obj->getTask('inSweep');
+		$minute = (int) floor($this->obj->fakeNow / 60);
+		self::assertSame([], PradoUnit::invoke($this->obj, 'runTasks', [$task], $minute - 1), 'a sweep of a past minute starts nothing');
+		self::assertSame(['inSweep' => true], PradoUnit::invoke($this->obj, 'runTasks', [$removed, $task], $minute), 'a task not in the module is skipped');
+		self::assertSame(0, $removed->getProcessCount());
+	}
+
+	public function testRunAsTaskUser_RestoresThePriorFiberUser()
+	{
+		$users = new TUserManager();
+		$prior = new TUser($users);
+		$prior->setName('prior');
+		$this->obj->setUserManager($users);
+		$this->obj->setDaemonMutex(new TMemoryMutex());
+		$this->obj->init([['name' => 'asUser', 'schedule' => '0 0 1 1 ? 2000', 'task' => TTestCronRecordingTask::class]]);
+		$result = TAsync::run(function () use ($prior) {
+			TFiberContext::set(TApplication::USER_CONTEXT_KEY, $prior);
+			$this->obj->runTask($this->obj->getTask('asUser'));
+			return TFiberContext::get(TApplication::USER_CONTEXT_KEY);
+		})->await();
+		self::assertSame($prior, $result, 'the fiber user before the run is restored');
+	}
+
+	public function testRunTask_ABlockingRunPastWarnDurationIsOverdueWhenItEnds()
+	{
+		$dir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'prado-cronstatus-' . bin2hex(random_bytes(4));
+		$this->obj->setStatusPath($dir);
+		$this->obj->setEnableStatus(true);
+		$this->obj->setDaemonMutex(new TMemoryMutex());
+		$this->obj->init([['name' => 'blocks', 'schedule' => '0 0 1 1 ? 2000', 'task' => TTestCronRecordingTask::class, 'warnduration' => 0.02]]);
+		$this->obj->getTask('blocks')->block = 0.06;
+		$overdue = [];
+		$this->obj->attachEventHandler('OnTaskOverdue', function ($sender, $param) use (&$overdue) {
+			$overdue[] = $param->getDuration();
+		});
+		$marked = null;
+		$this->obj->attachEventHandler('OnTaskOverdue', function ($sender, $param) use (&$marked) {
+			foreach ($sender->getStatuses() as $status) {
+				foreach ($status['running'] as $run) {
+					$marked = $run['overdue'];
+				}
+			}
+		});
+		try {
+			PradoUnit::invoke($this->obj, 'beginStatus', TCronModule::STATUS_ROLE_MANUAL);
+			self::assertTrue($this->obj->runTask($this->obj->getTask('blocks')));
+			self::assertCount(1, $overdue, 'a run that never waits on the loop is overdue when it ends');
+			self::assertGreaterThanOrEqual(0.02, $overdue[0]);
+			self::assertTrue($marked, 'the status of the run is marked overdue');
+		} finally {
+			PradoUnit::invoke($this->obj, 'endStatus');
+			if (is_dir($dir)) {
+				rmdir($dir);
+			}
+		}
+	}
+
+	public function testRunTask_ReplaceOfARunInAnotherProcessSkips()
+	{
+		$this->obj->setDaemonMutex(new TMemoryMutex());
+		$this->obj->init([['name' => 'replaces', 'schedule' => '0 0 1 1 ? 2000', 'task' => TTestCronRecordingTask::class, 'overlap' => 'Replace']]);
+		$other = new TMemoryMutex();
+		self::assertTrue($other->acquire($this->obj->getTaskLockName('replaces')));
+		try {
+			self::assertFalse($this->obj->runTask($this->obj->getTask('replaces')), 'a run of another process cannot be replaced from here');
+			self::assertSame(0, $this->obj->getTask('replaces')->getProcessCount(), 'the skipped trigger is uncounted');
+		} finally {
+			$other->releaseAll();
+		}
+	}
+
+	public function testPauseTask_UnknownAndUnwritable()
+	{
+		$this->obj->init([['name' => 'pausable', 'schedule' => '0 0 1 1 ? 2099', 'task' => TTestCronModuleTask::class]]);
+		self::assertFalse($this->obj->resumeTask('noSuchTask'));
+		self::assertFalse($this->obj->pauseTask('noSuchTask'));
+		if (!($this->obj instanceof \Prado\Util\Cron\TDbCronManager)) {
+			$module = new class () extends TTestCronModule {
+				protected function getPausedFile(): string
+				{
+					return sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'prado-missing-' . bin2hex(random_bytes(4)) . DIRECTORY_SEPARATOR . 'paused.json';
+				}
+			};
+			$module->init([['name' => 'pausable', 'schedule' => '0 0 1 1 ? 2099', 'task' => TTestCronModuleTask::class]]);
+			self::assertTrue($module->pauseTask('pausable'), 'the task exists');
+			self::assertFalse($module->getIsTaskPaused('pausable'), 'the pause could not be stored');
+			$module->unlisten();
+		}
+	}
+
+	public function testRunTask_APingAnsweredWithAnErrorStatusDoesNotFailTheRun()
+	{
+		$this->obj->setDaemonMutex(new TMemoryMutex());
+		$client = new TTestCronPingHttpClient();
+		$client->status = 503;
+		$this->obj->setHttpClient($client);
+		$this->obj->init([['name' => 'pingedDown', 'schedule' => '0 0 1 1 ? 2000', 'task' => TTestCronRecordingTask::class, 'pingafterurl' => 'https://hc.test/down']]);
+		self::assertTrue($this->obj->runTask($this->obj->getTask('pingedDown')));
+		self::assertSame([['GET', 'https://hc.test/down']], $client->requests);
+	}
+
+	public function testWaitSeams_SleepAndWaitForWake()
+	{
+		$module = new TCronModule();
+		$start = microtime(true);
+		self::assertTrue(PradoUnit::invoke($module, 'time_sleep_until', microtime(true) + 0.02));
+		self::assertGreaterThanOrEqual(0.015, microtime(true) - $start);
+		self::assertTrue(PradoUnit::invoke($module, 'time_sleep_until', microtime(true) - 1), 'a past time returns at once');
+
+		$transport = (new TCronWakeFile(sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'cronwake-' . bin2hex(random_bytes(4))))->setPollInterval(0.01);
+		$module->setWakeTransport($transport);
+		TAsync::getLoop()->delay(0.03, static fn () => $transport->signal(microtime(true)));
+		self::assertTrue(PradoUnit::invoke($module, 'waitForWake', microtime(true) + 2), 'a signal wakes the wait');
+		self::assertFalse(PradoUnit::invoke($module, 'waitForWake', microtime(true) + 0.03), 'no signal waits until the time');
+		$transport->close();
+
+		$module = new class () extends TCronModule {
+			public function getWakeTransport(): ?\Prado\Util\Cron\Wake\ICronWakeTransport
+			{
+				return null;
+			}
+		};
+		$start = microtime(true);
+		self::assertFalse(PradoUnit::invoke($module, 'waitForWake', microtime(true) + 0.02), 'without a transport the wait sleeps');
+		self::assertGreaterThanOrEqual(0.015, microtime(true) - $start);
+	}
+
+	public function testWakeTransport_InvalidAndWithoutApplication()
+	{
+		try {
+			$this->obj->setWakeTransport(new TComponent());
+			self::fail('a component that is no transport is accepted');
+		} catch (TConfigurationException $e) {
+		}
+		$module = new class () extends TCronModule {
+			public function getApplication()
+			{
+				return null;
+			}
+		};
+		self::assertNull($module->getWakeTransport(), 'without an application there is no runtime path for the socket');
+	}
+
+	public function testRunDaemon_AWakeDuringASweepSweepsAgain()
+	{
+		$now = $this->obj->fakeNow;
+		$this->obj->setDaemon(true);
+		$this->obj->setDaemonLifetime(0);
+		$this->obj->setDaemonIdle(10);
+		$this->obj->setDaemonMutex(new TMemoryMutex());
+		$this->obj->setWakeTransport((new TCronWakeFile(sys_get_temp_dir() . '/cronwake-' . bin2hex(random_bytes(4))))->setPollInterval(0.02));
+		$this->obj->init([['name' => 'wakes', 'schedule' => '@' . ($now - 10), 'task' => TTestCronRecordingTask::class]]);
+		$sweeps = 0;
+		$this->obj->attachEventHandler('OnSweepStart', function () use (&$sweeps) {
+			$sweeps++;
+		});
+		$this->obj->attachEventHandler('OnTaskStart', fn () => PradoUnit::invoke($this->obj, 'wakeDaemon'));
+		$this->obj->attachEventHandler('OnDaemonIdle', fn () => $this->obj->stopDaemon());
+		self::assertEquals(1, $this->obj->processPendingTasks());
+		self::assertSame(2, $sweeps, 'the wake during the first sweep sweeps again before idling');
+	}
+
+	public function testRunDaemon_AnErrorEndsTheDaemon()
+	{
+		$this->obj->setDaemon(true);
+		$this->obj->setDaemonLifetime(0);
+		$this->obj->setDaemonMutex(new TMemoryMutex());
+		$this->obj->setWakeTransport((new TCronWakeFile(sys_get_temp_dir() . '/cronwake-' . bin2hex(random_bytes(4))))->setPollInterval(0.02));
+		$this->obj->init(null);
+		$this->obj->attachEventHandler('OnSweepStart', function () {
+			throw new \RuntimeException('sweep failed');
+		});
+		$end = null;
+		$this->obj->attachEventHandler('OnDaemonEnd', function ($sender, $param) use (&$end) {
+			$end = $param->getReason();
+		});
+		try {
+			$this->obj->processPendingTasks();
+			self::fail('the error of a sweep is lost');
+		} catch (\RuntimeException $e) {
+			self::assertSame('sweep failed', $e->getMessage());
+		}
+		self::assertSame(TCronDaemonEventParameter::REASON_ERROR, $end);
+		self::assertFalse($this->obj->getDaemonMutex()->isAcquired($this->obj->getDaemonLockName()), 'the lease is released');
+	}
+
+	public function testRunDaemon_ASignalStopsTheDaemon()
+	{
+		if (!extension_loaded('pcntl') || !function_exists('posix_kill')) {
+			self::markTestSkipped('signals need pcntl and posix');
+		}
+		$this->obj->setDaemon(true);
+		$this->obj->setDaemonLifetime(0);
+		$this->obj->setDaemonIdle(10);
+		$this->obj->setDaemonMutex(new TMemoryMutex());
+		$this->obj->setWakeTransport((new TCronWakeFile(sys_get_temp_dir() . '/cronwake-' . bin2hex(random_bytes(4))))->setPollInterval(0.02));
+		$this->obj->init(null);
+		$end = null;
+		$this->obj->attachEventHandler('OnDaemonEnd', function ($sender, $param) use (&$end) {
+			$end = $param->getReason();
+		});
+		TAsync::getLoop()->delay(0.1, static fn () => posix_kill(getmypid(), SIGTERM));
+		$start = microtime(true);
+		self::assertEquals(0, $this->obj->processPendingTasks());
+		self::assertLessThan(5.0, microtime(true) - $start, 'the signal ends the wait');
+		self::assertSame(TCronDaemonEventParameter::REASON_SIGNAL, $end);
+	}
+
+	public function testRunDaemon_ATickExitsWhenAnotherWaitsForTheHandoff()
+	{
+		$this->obj->setDaemon(true);
+		$this->obj->setDaemonMutex(new TMemoryMutex());
+		$this->obj->init(null);
+		$other = new TMemoryMutex();
+		foreach ([$this->obj->getDaemonLockName(), $this->obj->getDaemonRetiringLockName(), $this->obj->getDaemonHandoffLockName()] as $lock) {
+			self::assertTrue($other->acquire($lock));
+		}
+		try {
+			$start = microtime(true);
+			self::assertSame(0, $this->obj->processPendingTasks());
+			self::assertLessThan(1.0, microtime(true) - $start, 'the tick does not wait for the lease');
+		} finally {
+			$other->releaseAll();
+		}
+	}
+
+	public function testRequestDaemon_AnotherRequestHoldsTheLock()
+	{
+		$this->obj->setDaemonMutex(new TMemoryMutex());
+		$this->obj->init(null);
+		$other = new TMemoryMutex();
+		self::assertTrue($other->acquire($this->obj->getDaemonLockName()));
+		self::assertTrue($other->acquire($this->obj->getDaemonRetireLockName()));
+		try {
+			self::assertFalse($this->obj->requestDaemonRetire(0.1), 'another request waits for the daemon');
+		} finally {
+			$other->releaseAll();
+		}
+	}
+
+	public function testStatus_WriteFailures()
+	{
+		PradoUnit::invoke($this->obj, 'writeStatus');
+		$file = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'prado-cronstatus-file-' . bin2hex(random_bytes(4));
+		file_put_contents($file, 'a file, not a directory');
+		$dir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'prado-cronstatus-ro-' . bin2hex(random_bytes(4));
+		mkdir($dir);
+		chmod($dir, 0o500);
+		try {
+			$this->obj->setStatusPath($file . DIRECTORY_SEPARATOR . 'status');
+			$this->obj->setEnableStatus(true);
+			PradoUnit::invoke($this->obj, 'beginStatus', TCronModule::STATUS_ROLE_MANUAL);
+			self::assertSame([], $this->obj->getStatuses(), 'a status directory that cannot be made has no status');
+			PradoUnit::invoke($this->obj, 'endStatus');
+
+			$this->obj->setStatusPath($dir);
+			PradoUnit::invoke($this->obj, 'beginStatus', TCronModule::STATUS_ROLE_MANUAL);
+			if (is_writable($dir)) {
+				PradoUnit::invoke($this->obj, 'endStatus');
+				self::markTestSkipped('the process can write to a read-only directory');
+			}
+			self::assertSame([], glob($dir . DIRECTORY_SEPARATOR . '*'), 'a status that cannot be written leaves no file');
+			PradoUnit::invoke($this->obj, 'endStatus');
+		} finally {
+			chmod($dir, 0o700);
+			rmdir($dir);
+			unlink($file);
+		}
+	}
+
+	public function testSweepEventParameter_Daemon()
+	{
+		$param = new TCronSweepEventParameter([], false);
+		self::assertFalse($param->getDaemon());
+		self::assertTrue($param->setDaemon('true')->getDaemon());
+	}
+
+	public function testStatus_ARenameFailureRemovesTheTemporaryFile()
+	{
+		$dir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'prado-cronstatus-' . bin2hex(random_bytes(4));
+		$this->obj->setStatusPath($dir);
+		$this->obj->setEnableStatus(true);
+		$target = PradoUnit::invoke($this->obj, 'getStatusFile');
+		mkdir($target, 0o777, true);
+		try {
+			PradoUnit::invoke($this->obj, 'beginStatus', TCronModule::STATUS_ROLE_MANUAL);
+			self::assertSame([basename($target)], array_map('basename', glob($dir . DIRECTORY_SEPARATOR . '*')), 'the temporary file is removed');
+			PradoUnit::invoke($this->obj, 'endStatus');
+		} finally {
+			rmdir($target);
+			rmdir($dir);
+		}
+	}
+
+	public function testWatchDaemonSignals_ALoopWithoutSignals()
+	{
+		$loop = $this->createMock(\Prado\IO\Async\IEventLoop::class);
+		$loop->method('onSignal')->willThrowException(new \Prado\Exceptions\TNotSupportedException('eventloop_signals_unsupported'));
+		self::assertSame([], PradoUnit::invoke($this->obj, 'watchDaemonSignals', $loop));
+	}
+
+	public function testRunDaemon_ADeniedSweepRunsNothing()
+	{
+		$this->obj->setDaemon(true);
+		$this->obj->setDaemonLifetime(0);
+		$this->obj->setDaemonMutex(new TMemoryMutex());
+		$this->obj->setWakeTransport((new TCronWakeFile(sys_get_temp_dir() . '/cronwake-' . bin2hex(random_bytes(4))))->setPollInterval(0.02));
+		$this->obj->init([['name' => 'deniedSweep', 'schedule' => '@' . ($this->obj->fakeNow - 10), 'task' => TTestCronModuleTask::class]]);
+		$this->obj->attachBehavior('denies', new TTestCronDenyingBehavior(['dyGetPendingTasks']));
+		$this->obj->attachEventHandler('OnDaemonIdle', fn () => $this->obj->stopDaemon());
+		self::assertSame(0, $this->obj->processPendingTasks());
+		$this->obj->detachBehavior('denies');
+		self::assertSame(0, $this->obj->getTask('deniedSweep')->getProcessCount());
+	}
 }

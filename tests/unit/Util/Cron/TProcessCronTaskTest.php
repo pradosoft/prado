@@ -6,6 +6,7 @@ use Prado\Util\Cron\TProcessCronTask;
 use Prado\Util\Helpers\TProcessHelper;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;
+use Prado\Test\Unit\PradoUnit;
 
 /**
  * Test double: stubs the OS launch so no real process is spawned.
@@ -238,5 +239,89 @@ class TProcessCronTaskTest extends \PHPUnit\Framework\TestCase
 			$message = (new TConfigurationException($code, 'CTX'))->getMessage();
 			self::assertStringNotContainsString($code, $message, "message code '$code' is missing from messages.txt");
 		}
+	}
+
+	public function testLaunchesARealDetachedProcess()
+	{
+		if (TProcessHelper::isSystemWindows()) {
+			self::markTestSkipped('the POSIX launch');
+		}
+		$dir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'prado-proccron-' . bin2hex(random_bytes(4));
+		$log = $dir . '.log';
+		$task = new TProcessCronTask();
+		$task->setName('realproc');
+		$task->setPidFile($dir . DIRECTORY_SEPARATOR . 'real.pid');
+		$task->setCommand('@php -r "echo getcwd(); sleep(3);"');
+		$task->setDirectory(sys_get_temp_dir());
+		$task->setLogFile($log);
+		self::assertSame(sys_get_temp_dir(), $task->getDirectory());
+		self::assertSame($log, $task->getLogFile());
+		$pid = null;
+		try {
+			$pid = $task->execute(null);
+			self::assertIsInt($pid);
+			self::assertTrue($task->isProcessRunning(), 'the launched process runs with its recorded start time');
+			self::assertNotNull(PradoUnit::invoke($task, 'getRecordedStart'));
+			self::assertFalse($task->execute(null), 'a running process is not launched again');
+			for ($wait = 0; $wait < 40 && (string) @file_get_contents($log) === ''; $wait++) {
+				usleep(50000);
+			}
+			self::assertStringContainsString(basename(realpath(sys_get_temp_dir())), (string) file_get_contents($log), 'the command runs in its Directory');
+
+			$missing = new TProcessCronTask();
+			$missing->setName('nodir');
+			$missing->setPidFile($dir . DIRECTORY_SEPARATOR . 'nodir.pid');
+			$missing->setCommand('@php -r "sleep(3);"');
+			$missing->setDirectory($dir . DIRECTORY_SEPARATOR . 'missing');
+			self::assertFalse($missing->execute(null), 'a Directory that cannot be entered launches nothing');
+		} finally {
+			if ($pid) {
+				posix_kill($pid, SIGTERM);
+			}
+			foreach ([$dir . DIRECTORY_SEPARATOR . 'real.pid', $dir . DIRECTORY_SEPARATOR . 'real.pid.lock', $dir . DIRECTORY_SEPARATOR . 'nodir.pid.lock', $log] as $file) {
+				if (is_file($file)) {
+					unlink($file);
+				}
+			}
+			if (is_dir($dir)) {
+				rmdir($dir);
+			}
+		}
+	}
+
+	public function testAPidFileThatCannotBeWrittenIsALaunchFailure()
+	{
+		$file = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'prado-proccron-file-' . bin2hex(random_bytes(4));
+		file_put_contents($file, 'a file, not a directory');
+		$dir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'prado-proccron-ro-' . bin2hex(random_bytes(4));
+		mkdir($dir);
+		chmod($dir, 0o500);
+		try {
+			$task = $this->makeTask();
+			$task->setPidFile($file . DIRECTORY_SEPARATOR . 'x.pid');
+			self::assertFalse($task->execute(null), 'a pid directory that cannot be made fails the launch');
+			self::assertNull(PradoUnit::invoke($task, 'getRecordedStart'));
+			$task->setPidFile($dir . DIRECTORY_SEPARATOR . 'x.pid');
+			if (is_writable($dir)) {
+				self::markTestSkipped('the process can write to a read-only directory');
+			}
+			self::assertFalse($task->execute(null), 'a pid file that cannot be written fails the launch');
+			self::assertSame([], glob($dir . DIRECTORY_SEPARATOR . '*'));
+		} finally {
+			chmod($dir, 0o700);
+			rmdir($dir);
+			unlink($file);
+		}
+	}
+
+	public function testSerializeLeavesOutTheDefaults()
+	{
+		$text = serialize(new TProcessCronTask());
+		foreach (['_command', '_pidFile', '_match', '_directory', '_logFile'] as $prop) {
+			self::assertStringNotContainsString($prop, $text);
+		}
+		$copy = unserialize(serialize($this->makeTask()->setMatch('websocket')));
+		self::assertSame('websocket', $copy->getMatch());
+		self::assertSame($this->pidFile, $copy->getPidFile());
 	}
 }

@@ -106,4 +106,40 @@ class TCronWakePgsqlTest extends \PHPUnit\Framework\TestCase
 		$t->close();
 		self::assertSame(1, $wakes);
 	}
+
+	public function testInitConnectionIDAndUnavailable()
+	{
+		$t = new TCronWakePgsql();
+		$t->init(null);
+		self::assertSame(TCronWakePgsql::DEFAULT_CHANNEL, $t->getChannel());
+		$t->setConnectionID('noSuchPgsqlModule');
+		try {
+			$t->getDbConnection();
+			self::fail('an unknown connection module was accepted');
+		} catch (TConfigurationException $e) {
+			self::assertStringContainsString('noSuchPgsqlModule', $e->getMessage());
+		}
+
+		$connection = $this->createMock(\Prado\Data\IDataConnection::class);
+		$connection->method('getActive')->willReturn(true);
+		$connection->method('getDriverName')->willReturn('pgsql');
+		self::assertSame($t, $t->setDbConnection($connection));
+		self::assertSame($connection, $t->getDbConnection());
+		try {
+			\Prado\Test\Unit\PradoUnit::invoke($t, 'getListener');
+			self::fail('a connection that is no TDbConnection was listened on');
+		} catch (TConfigurationException $e) {
+		}
+
+		$t = new class () extends TCronWakePgsql {
+			protected function getIsAvailable(): bool
+			{
+				return false;
+			}
+		};
+		$now = microtime(true);
+		self::assertFalse($t->signal($now));
+		self::assertNull($t->wait($now + 1, $now));
+		self::assertFalse($t->watch(TAsync::getLoop(), static fn () => null));
+	}
 }

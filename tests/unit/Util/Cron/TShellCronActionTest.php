@@ -11,6 +11,10 @@ use Prado\Util\Cron\TCronTask;
 use Prado\Util\Cron\TShellCronAction;
 use Prado\Util\Cron\TCronModule;
 use Prado\Util\Mutex\TMemoryMutex;
+use Prado\Security\Permissions\TPermissionsManager;
+use Prado\Security\TUser;
+use Prado\Security\TUserManager;
+use Prado\Test\Unit\PradoUnit;
 
 /**
  * Throws from its run.
@@ -43,6 +47,24 @@ class TTestShellCronTopAction extends TShellCronAction
 
 	protected function flushView(): void
 	{
+	}
+}
+
+/**
+ * Answers the daemon retire and stop requests with {@see $answer}.
+ */
+class TTestShellCronRequestModule extends TCronModule
+{
+	public ?bool $answer = null;
+
+	public function requestDaemonRetire(?float $timeout = null): ?bool
+	{
+		return $this->answer;
+	}
+
+	public function requestDaemonStop(?float $timeout = null): ?bool
+	{
+		return $this->answer;
 	}
 }
 
@@ -438,4 +460,240 @@ class TShellCronActionTest extends \PHPUnit\Framework\TestCase
 		}
 	}
 
+	public function testWithoutCronModule()
+	{
+		foreach (['actionTasks', 'actionIndex', 'actionNext', 'actionTop', 'actionReport', 'actionDaemon', 'actionRetire', 'actionStop', 'actionPause', 'actionResume', 'actionNow'] as $action) {
+			self::assertTrue($this->obj->$action(['cron/x', 'name']), $action);
+			self::assertStringContainsString('TCronModule is not found', $this->writer->flush(), $action);
+		}
+	}
+
+	public function testFindsTheCronModuleOfTheApplication()
+	{
+		$app = Prado::getApplication();
+		$snapshot = PradoUnit::snapshot($app, ['_modules']);
+		$cron = new TCronModule();
+		try {
+			$app->setModule('shellFound' . bin2hex(random_bytes(3)), $cron);
+			$action = new TShellCronAction();
+			$action->setWriter($this->writer);
+			self::assertSame($cron, $action->getCronModule());
+			self::assertNotNull($cron->asa(TCronModule::SHELL_LOG_BEHAVIOR), 'the shell attaches its log behavior');
+		} finally {
+			PradoUnit::restore($app, $snapshot);
+			$cron->unlisten();
+		}
+	}
+
+	public function testRestrictedUser()
+	{
+		$app = Prado::getApplication();
+		$prior = $app->getUser();
+		$user = new TUser(new TUserManager());
+		$user->setName('alice');
+		if ($user->asa(TPermissionsManager::USER_PERMISSIONS_BEHAVIOR)) {
+			$user->detachBehavior(TPermissionsManager::USER_PERMISSIONS_BEHAVIOR);
+		}
+		$user->attachBehavior(TPermissionsManager::USER_PERMISSIONS_BEHAVIOR, $permissions = new TTestCronUserPermissions());
+		$cron = new TCronModule();
+		$cron->setID('shellRestricted' . bin2hex(random_bytes(3)));
+		$cron->init([
+			['name' => 'aliceTask', 'schedule' => '0 0 1 1 ? 2099', 'task' => TTestCronModuleTask::class, 'username' => 'alice'],
+			['name' => 'bobTask', 'schedule' => '0 0 1 1 ? 2099', 'task' => TTestCronModuleTask::class, 'username' => 'bob'],
+		]);
+		$app->setUser($user);
+		try {
+			$action = new TShellCronAction();
+			$action->setWriter($this->writer);
+			$action->setCronModule($cron);
+			$methods = PradoUnit::getProp($action, 'methods');
+			foreach (['run', 'exec', 'now', 'pause', 'resume', 'retire', 'stop'] as $method) {
+				self::assertNotContains($method, $methods, 'a user without the run permission has no ' . $method);
+			}
+			self::assertContains('tasks', $methods);
+			self::assertCount(count($methods), PradoUnit::getProp($action, 'parameters'));
+			self::assertCount(count($methods), PradoUnit::getProp($action, 'optional'));
+			self::assertCount(count($methods) + 1, PradoUnit::getProp($action, 'description'));
+			PradoUnit::invoke($action, 'removeShellMethod', 'run');
+			self::assertSame($methods, PradoUnit::getProp($action, 'methods'), 'removing an absent method changes nothing');
+
+			self::assertTrue($action->actionTasks(['cron/tasks']));
+			$text = $this->writer->flush();
+			self::assertStringContainsString('filtered by @alice', $text);
+			self::assertStringContainsString('aliceTask', $text);
+			self::assertStringNotContainsString('bobTask', $text, 'a user without the read permission sees only their tasks');
+			self::assertTrue($action->actionReport(['cron/report']));
+			self::assertSame(['aliceTask'], array_keys(json_decode($this->writer->flush(), true)['tasks']));
+
+			$cron->attachBehavior('denies', new TTestCronDenyingBehavior(['dyGetUserTasks']));
+			foreach (['actionTasks', 'actionNext', 'actionTop', 'actionReport'] as $method) {
+				self::assertTrue($action->$method(['cron/x']), $method);
+			}
+			self::assertStringNotContainsString('aliceTask', $this->writer->flush(), 'a denied read shows no task');
+			$cron->detachBehavior('denies');
+
+			$permissions->allowed = [TCronModule::PERM_CRON_RUN_PENDING, TCronModule::PERM_CRON_READ_TASKS];
+			$action = new TShellCronAction();
+			self::assertContains('run', PradoUnit::getProp($action, 'methods'));
+		} finally {
+			PradoUnit::setProp($app, '_user', $prior);
+			$cron->unlisten();
+		}
+	}
+
+	public function testActionTasksFilters()
+	{
+		$cron = new TCronModule();
+		$cron->setID('shellFilters' . bin2hex(random_bytes(3)));
+		$now = time();
+		$cron->init([
+			['name' => 'filterSoon', 'schedule' => '@' . ($now + 3600), 'task' => TTestCronModuleTask::class, 'username' => 'carol'],
+			['name' => 'filterLater', 'schedule' => '@' . ($now + 5 * 86400), 'task' => TTestCronModuleTask::class],
+			['name' => 'filterDue', 'schedule' => '* * * * *', 'task' => TTestCronModuleTask::class],
+			['name' => 'filterNoRun', 'schedule' => '0 0 1 1 ? 2099', 'task' => TTestCronModuleTask::class],
+		]);
+		$cron->getTask('filterDue')->setLastExecTime($now - 3 * 86400);
+		$cron->getTask('filterDue')->setProcessCount(3);
+		$cron->getTask('filterNoRun')->setLastExecTime($now - 60);
+		$this->obj->setCronModule($cron);
+		try {
+			self::assertTrue($this->obj->actionTasks(['cron/tasks', 'filter%', '@carol']));
+			$text = $this->writer->flush();
+			self::assertStringContainsString("filtered by task name 'filter%' and @carol", $text);
+			self::assertStringContainsString('filterSoon', $text);
+			self::assertStringNotContainsString('filterLater', $text);
+			self::assertStringContainsString('@(' . date('H:i:s', $now + 3600) . ')', $text, 'a one-off within a day shows its time');
+
+			self::assertTrue($this->obj->actionTasks(['cron/tasks', '@carol']));
+			self::assertStringContainsString('filtered by @carol', $this->writer->flush());
+
+			self::assertTrue($this->obj->actionTasks(['cron/tasks', 'filter%']));
+			$text = $this->writer->flush();
+			self::assertStringContainsString("filtered by task name 'filter%'", $text);
+			self::assertStringContainsString('@(' . date('Y-m-d H:i:s', $now + 5 * 86400) . ')', $text, 'a one-off past a day shows its date');
+			self::assertStringContainsString(date('Y-m-d H:i:s', $now - 3 * 86400), $text, 'a run past a day shows its date');
+			self::assertStringContainsString('*', $text, 'a pending task is marked');
+			self::assertStringContainsString('- (' . date('H:i:s', $now - 60) . ')', $text, 'a time without runs is in parentheses');
+
+			self::assertTrue($this->obj->actionTasks(['cron/tasks', 'nothing%']));
+			self::assertStringContainsString('There are no configured Cron Tasks', $this->writer->flush());
+		} finally {
+			$cron->unlisten();
+		}
+	}
+
+	public function testActionNextWithoutTriggers()
+	{
+		$cron = new TCronModule();
+		$cron->setID('shellNever' . bin2hex(random_bytes(3)));
+		$cron->init([['name' => 'neverRuns', 'schedule' => '@never', 'task' => TTestCronModuleTask::class]]);
+		$this->obj->setCronModule($cron);
+		try {
+			self::assertTrue($this->obj->actionNext(['cron/next']));
+			self::assertStringContainsString('No task has a next trigger', $this->writer->flush());
+		} finally {
+			$cron->unlisten();
+		}
+	}
+
+	public function testActionExecDenied()
+	{
+		$cron = new TCronModule();
+		$cron->setID('shellDenied' . bin2hex(random_bytes(3)));
+		$cron->init([['name' => 'execDenied', 'schedule' => '0 0 1 1 ? 2099', 'task' => TTestCronModuleTask::class]]);
+		$cron->attachBehavior('denies', new TTestCronDenyingBehavior(['dyRunTask']));
+		$this->obj->setCronModule($cron);
+		try {
+			$this->obj->actionExec(['cron/exec', 'execDenied']);
+			self::fail('cron/exec of a denied task did not exit');
+		} catch (TExitException $e) {
+			self::assertSame(TCronModule::EXIT_DENIED, $e->getExitCode());
+		} finally {
+			$cron->unlisten();
+		}
+	}
+
+	public function testActionRetireStopAnswers()
+	{
+		$cron = new TTestShellCronRequestModule();
+		$cron->setID('shellAnswer' . bin2hex(random_bytes(3)));
+		$cron->init(null);
+		$this->obj->setCronModule($cron);
+		try {
+			$cron->answer = true;
+			self::assertTrue($this->obj->actionRetire(['cron/retire']));
+			self::assertStringContainsString('The cron daemon is retiring', $this->writer->flush());
+			self::assertTrue($this->obj->actionStop(['cron/stop']));
+			self::assertStringContainsString('The cron daemon stopped', $this->writer->flush());
+			$cron->answer = false;
+			self::assertTrue($this->obj->actionRetire(['cron/retire', '0.1']));
+			self::assertStringContainsString('did not acknowledge the retire request', $this->writer->flush());
+		} finally {
+			$cron->unlisten();
+		}
+	}
+
+	public function testActionTopEndedAndOverdue()
+	{
+		$action = new TTestShellCronTopAction();
+		$action->setWriter($this->writer);
+		$cron = new TCronModule();
+		$id = 'shellEnded' . bin2hex(random_bytes(3));
+		$dir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'prado-cronstatus-' . bin2hex(random_bytes(4));
+		$cron->setID($id);
+		$cron->setStatusPath($dir);
+		$cron->init([['name' => 'slowTask', 'schedule' => '0 0 1 1 ? 2099', 'task' => TTestCronModuleTask::class]]);
+		$action->setCronModule($cron);
+		try {
+			mkdir($dir);
+			$now = microtime(true);
+			file_put_contents($dir . DIRECTORY_SEPARATOR . 'manual.json', json_encode([
+				'module' => $id, 'role' => 'manual', 'pid' => getmypid(), 'host' => (string) gethostname(), 'started' => $now - 5, 'updated' => $now,
+				'concurrency' => 1, 'recent' => [], 'daemon' => null,
+				'running' => [
+					['name' => 'slowTask', 'mode' => 'Serial', 'user' => 'cron', 'started' => $now - 4, 'deadline' => $now + 60, 'warn' => $now - 1, 'overdue' => false],
+					['name' => 'unreadTask', 'mode' => 'Serial', 'user' => 'cron', 'started' => $now - 4, 'deadline' => null],
+				],
+			]));
+			file_put_contents($dir . DIRECTORY_SEPARATOR . 'gone.json', json_encode([
+				'module' => $id, 'role' => 'sweep', 'pid' => 12345, 'host' => 'another-host.invalid', 'started' => $now - 2000, 'updated' => $now - 1000,
+				'concurrency' => 1, 'recent' => [], 'daemon' => null,
+				'running' => [['name' => 'slowTask', 'mode' => 'Serial', 'user' => 'cron', 'started' => $now - 1500, 'deadline' => null]],
+			]));
+			$this->writer->setColorSupported(true);
+			self::assertTrue($action->actionTop(['cron/top']));
+			$this->writer->setColorSupported(false);
+			$text = $this->writer->flush();
+			self::assertStringContainsString('Manual', $text);
+			self::assertStringContainsString('ended without removing its status', $text);
+			self::assertMatchesRegularExpression('/\033\[31;1m4\.\d\ds/', $text, 'a run past its warning is red');
+			self::assertStringNotContainsString('unreadTask', $text, 'a run of a task not reported is left out');
+			self::assertStringContainsString('1 running in process', $text, 'the run of an ended process is not running');
+
+			self::assertTrue($action->actionTasks(['cron/tasks']));
+			self::assertSame(1, substr_count($this->writer->flush(), 'running'), 'an ended process runs nothing');
+		} finally {
+			$cron->unlisten();
+			foreach (glob($dir . DIRECTORY_SEPARATOR . '*') ?: [] as $file) {
+				unlink($file);
+			}
+			if (is_dir($dir)) {
+				rmdir($dir);
+			}
+		}
+	}
+
+	public function testShellSeams()
+	{
+		$action = new TShellCronAction();
+		$action->setWriter($this->writer);
+		self::assertSame('-', PradoUnit::invoke($action, 'formatResult', null));
+		self::assertIsBool(PradoUnit::invoke($action, 'isInteractive'));
+		$start = microtime(true);
+		PradoUnit::invoke($action, 'sleep', 0.01);
+		self::assertGreaterThanOrEqual(0.009, microtime(true) - $start);
+		$this->writer->write('flushed');
+		PradoUnit::invoke($action, 'flushView');
+		self::assertSame('', $this->writer->flush(), 'the view flushes the writer');
+	}
 }

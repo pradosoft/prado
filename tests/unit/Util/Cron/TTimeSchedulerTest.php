@@ -1049,4 +1049,23 @@ class TTimeSchedulerTest extends \PHPUnit\Framework\TestCase
 		self::assertSame([], $this->obj->getNextTriggerTimes(3, 0));
 	}
 
+	public function testExcept_AScheduleExcludedEveryDayHasNoTrigger()
+	{
+		$days = [];
+		for ($time = mktime(0, 0, 0, 1, 1, 2000); date('Y', $time) === '2000'; $time += 86400) {
+			$days[] = date('m-d', $time);
+		}
+		$scheduler = new TTimeScheduler();
+		$scheduler->setSchedule('0 12 * * * except ' . implode(',', $days));
+		self::assertNull($scheduler->getNextTriggerTime(time()), 'the exclusions stop after their limit');
+	}
+
+	public function testSecondsArray_BuildsTheMinutes()
+	{
+		$scheduler = new TTimeScheduler();
+		$scheduler->setSchedule('5:10,7 * * * *');
+		$seconds = \Prado\Test\Unit\PradoUnit::invoke($scheduler, 'getSecondsArray');
+		self::assertSame([10], $seconds[5]);
+		self::assertSame([0], $seconds[7]);
+	}
 }

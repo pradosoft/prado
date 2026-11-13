@@ -8,6 +8,8 @@ use Prado\Test\Unit\Harness\Util\Cron\TTestCronModule;
 use Prado\Util\Cron\TCronModule;
 use Prado\Util\Cron\TCronTaskMode;
 use Prado\Util\Mutex\TMemoryMutex;
+use Prado\Util\Helpers\TProcessHelper;
+use Prado\Test\Unit\PradoUnit;
 
 /**
  * Runs a Process task's child as a PHP one-liner, with a short timeout grace.
@@ -32,10 +34,13 @@ class TTestCronProcessModule extends TTestCronModule
 		return $this->runTasks($tasks);
 	}
 
+	/** @var bool whether setting a priority fails */
+	public bool $priorityFails = false;
+
 	protected function setTaskProcessPriority(int $pid, int $priority): bool
 	{
 		$this->priorities[$pid] = $priority;
-		return true;
+		return !$this->priorityFails;
 	}
 }
 
@@ -231,4 +236,47 @@ class TCronModuleProcessTest extends \PHPUnit\Framework\TestCase
 		self::assertSame(3, $task->getProcessCount() + 1, 'the queued trigger was claimed; the third was not');
 	}
 
+	public function testRunTask_AnOutputFileThatCannotOpenIsAnError()
+	{
+		$this->module->getTask('child')->setProcessOutputFile($this->dir . DIRECTORY_SEPARATOR . 'missing' . DIRECTORY_SEPARATOR . 'out.log');
+		self::assertFalse($this->runChild('echo "out";'));
+		self::assertSame(TCronModule::RESULT_ERROR, $this->childResult());
+	}
+
+	public function testRunTask_APriorityThatCannotBeSetStillRuns()
+	{
+		$this->module->getTask('child')->setProcessPriority(5);
+		$this->module->priorityFails = true;
+		self::assertTrue($this->runChild('exit(0);'));
+		self::assertSame([5], array_values($this->module->priorities));
+	}
+
+	public function testRunTask_AChildIgnoringTerminateIsKilled()
+	{
+		if (TProcessHelper::isSystemWindows()) {
+			self::markTestSkipped('Windows has no SIGTERM to ignore');
+		}
+		$this->module->getTask('child')->setTimeout(0.2);
+		$start = microtime(true);
+		self::assertFalse($this->runChild('if (function_exists("pcntl_signal")) { pcntl_signal(SIGTERM, SIG_IGN); } sleep(30);'));
+		self::assertLessThan(10.0, microtime(true) - $start, 'the child is killed after the grace');
+		self::assertSame(TCronModule::RESULT_TIMEOUT, $this->childResult());
+	}
+
+	public function testSetTaskProcessPriority()
+	{
+		if (TProcessHelper::isSystemWindows()) {
+			self::markTestSkipped('the priority of a child is set through its nice value');
+		}
+		$module = new TTestCronModule();
+		$child = proc_open([PHP_BINARY, '-r', 'sleep(5);'], [], $pipes);
+		try {
+			$pid = proc_get_status($child)['pid'];
+			self::assertTrue(PradoUnit::invoke($module, 'setTaskProcessPriority', $pid, 10));
+			self::assertSame('10', trim((string) shell_exec('ps -o nice= -p ' . $pid)));
+		} finally {
+			proc_terminate($child);
+			proc_close($child);
+		}
+	}
 }

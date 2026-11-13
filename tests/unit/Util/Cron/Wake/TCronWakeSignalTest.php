@@ -94,4 +94,22 @@ class TCronWakeSignalTest extends \PHPUnit\Framework\TestCase
 		$t->close();
 		self::assertSame(1, $wakes);
 	}
+
+	public function testUnavailableAndALoopWithoutSignals()
+	{
+		$t = new class ($this->pidFile) extends TCronWakeSignal {
+			protected function getIsAvailable(): bool
+			{
+				return false;
+			}
+		};
+		$now = microtime(true);
+		self::assertNull($t->wait($now + 1, $now));
+		self::assertFalse($t->watch(TAsync::getLoop(), static fn () => null));
+
+		$loop = $this->createMock(\Prado\IO\Async\IEventLoop::class);
+		$loop->method('onSignal')->willThrowException(new \Prado\Exceptions\TNotSupportedException('eventloop_signals_unsupported'));
+		$t = new TCronWakeSignal($this->pidFile);
+		self::assertFalse($t->watch($loop, static fn () => null), 'a loop without signals cannot watch');
+	}
 }

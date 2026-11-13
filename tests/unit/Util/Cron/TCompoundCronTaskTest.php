@@ -121,4 +121,35 @@ class TCompoundCronTaskTest extends \PHPUnit\Framework\TestCase
 		self::expectException(TConfigurationException::class);
 		$this->task->execute($this->module);
 	}
+
+	public function testSerialize_LeavesOutTheDefaults()
+	{
+		$copy = unserialize(serialize($this->task));
+		self::assertSame([], $copy->getTasks());
+		self::assertTrue($copy->getStopOnFailure());
+		self::assertFalse($copy->getParallel());
+		self::assertStringNotContainsString('_stopOnFailure', serialize($this->task));
+	}
+
+	public function testExecute_AReferenceBackToTheCompoundThrows()
+	{
+		$this->module->init([
+			['name' => 'outer', 'schedule' => '@never', 'task' => TCompoundCronTask::class, 'tasks' => '@inner'],
+			['name' => 'inner', 'schedule' => '@never', 'task' => TCompoundCronTask::class, 'tasks' => '@referenced;@outer'],
+			['name' => 'self', 'schedule' => '@never', 'task' => TCompoundCronTask::class, 'tasks' => '@self'],
+			['name' => 'nested', 'schedule' => '@never', 'task' => TCompoundCronTask::class, 'tasks' => '@referenced'],
+			['name' => 'top', 'schedule' => '@never', 'task' => TCompoundCronTask::class, 'tasks' => '@nested;@nested'],
+		]);
+		foreach (['outer', 'inner', 'self'] as $name) {
+			try {
+				$this->module->getTask($name)->execute($this->module);
+				self::fail("the cycle of '{$name}' did not throw");
+			} catch (TConfigurationException $e) {
+				self::assertStringContainsString('leads back to it', $e->getMessage());
+			}
+		}
+		self::assertSame([], TTestCompoundStepTask::$runs, 'a cycle runs no step');
+		$this->module->getTask('top')->execute($this->module);
+		self::assertSame(['referenced', 'referenced'], TTestCompoundStepTask::$runs, 'a compound referenced twice is no cycle');
+	}
 }

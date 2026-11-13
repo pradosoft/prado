@@ -21,7 +21,7 @@ Liveness is tracked with a **PID file**: `startProcess()` writes the launched pi
 
 - `@php` as a whole token in `Command` is replaced with `PHP_BINARY`.
 - The process is launched **detached**: POSIX `nohup … >> log 2>&1 &` (pid via `echo $!`); Windows a hidden `Start-Process cmd.exe /c …` whose wrapper pid is tracked as the liveness proxy.
-- Output goes to `LogFile` (default `/dev/null` / `NUL`); `Directory` is the working directory of the launch.
+- Output goes to `LogFile` (default `/dev/null` / `NUL`); `Directory` is the working directory of the launch. On POSIX the change of directory is a statement of its own (`cd <dir> || exit 1; nohup …`), so `$!` is the command's pid and a directory that cannot be entered launches nothing.
 - Pid reuse is guarded by the recorded start time of the launched process (`ps -o lstart` / `Get-Process … StartTime`): a live pid with another start time is a different process. `Match`, a substring of the command line, is an additional guard (POSIX only).
 - An advisory `flock()` on `<pidfile>.lock` prevents two overlapping sweeps from launching twice; the pid file is written atomically (temp + rename).
 - A command that exits within the launch grace period (`LAUNCH_GRACE_USEC`, a `TAsync::sleep()` that yields to other cron fibers) is reported as a launch failure, not as started.
