@@ -11,7 +11,7 @@
 **Since:** 4.4.0
 
 ## Overview
-`TCronWakeSocket` is the same-host wake transport and the default `WakeTransport` of [`TCronModule`](../TCronModule.md). It is a connectionless datagram socket: a unix-domain datagram (`udg`) when PHP has it, otherwise a `udp` loopback socket (`getTransport()`), and "no transport" when neither exists.
+`TCronWakeSocket` is the same-host wake transport and the default `WakeTransport` of [`TCronModule`](../TCronModule.md). It is a connectionless datagram socket: a unix-domain datagram (`udg`) when PHP has it and the longest socket path (`<RuntimePath>/cronwake-daemon.sock`) is at most `UDG_PATH_MAX` (103) bytes, otherwise a `udp` loopback socket (`getTransport()`), and "no transport" when neither exists. PHP truncates a longer `udg` path, which would make the even, odd, and daemon sockets one file; a deep runtime path such as `releases/<stamp>/protected/runtime/application.xml-4.4.0` can pass the limit.
 
 Addresses:
 

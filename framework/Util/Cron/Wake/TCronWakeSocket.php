@@ -23,8 +23,8 @@ use Prado\Util\Log\TLogger;
  * {@see \Prado\Util\Cron\TCronModule}. A cron process waiting for a task's trigger time wakes at
  * once when a web request that schedules an earlier task sends a datagram with {@see signal()}.
  *
- * The transport is a connectionless datagram socket: a unix-domain datagram (`udg`) when available,
- * otherwise a `udp` loopback socket, decided by {@see getTransport()}. When neither is available the
+ * The transport is a connectionless datagram socket: a unix-domain datagram (`udg`) when available and
+ * its socket paths fit {@see UDG_PATH_MAX}, otherwise a `udp` loopback socket, decided by {@see getTransport()}. When neither is available the
  * methods report "no transport" so the caller falls back to a plain sleep.
  *
  * A cron daemon ({@see watch()}) listens on one address, {@see getDaemonAddress()}. A per-minute cron
@@ -58,6 +58,13 @@ class TCronWakeSocket extends TModule implements ICronWakeTransport
 
 	/** @var string the udg socket file name prefix in the runtime directory */
 	public const SOCKET_PREFIX = 'cronwake-';
+
+	/**
+	 * The longest udg socket path PHP binds without truncating it (macOS; Linux allows 107).  A longer
+	 * path would truncate the minute and daemon sockets to one file, so a runtime path that long uses udp.
+	 * @since 4.4.0
+	 */
+	public const UDG_PATH_MAX = 103;
 
 	/** @var int the seconds a wake message stays valid after its time; a nonce is remembered for as long */
 	public const TOKEN_WINDOW = 30;
@@ -139,6 +146,7 @@ class TCronWakeSocket extends TModule implements ICronWakeTransport
 	{
 		$value = TPropertyValue::ensureString($value);
 		$this->_runtimePath = rtrim(Prado::getPathOfNamespace($value) ?? $value, '/\\');
+		$this->_transport = false;
 		return $this;
 	}
 
@@ -266,14 +274,17 @@ class TCronWakeSocket extends TModule implements ICronWakeTransport
 	}
 
 	/**
-	 * Resolves the datagram transport once: `udg` when supported, otherwise `udp`, otherwise null.
+	 * Resolves the datagram transport once: `udg` when supported and the longest socket path is at most
+	 * {@see UDG_PATH_MAX} bytes, otherwise `udp`, otherwise null.  Every process of the module has the
+	 * same runtime path, so all resolve the same transport.
 	 * @return ?string 'udg', 'udp', or null when neither datagram transport is available
 	 */
 	public function getTransport(): ?string
 	{
 		if ($this->_transport === false) {
 			$transports = @stream_get_transports() ?: [];
-			$this->_transport = in_array('udg', $transports, true) ? 'udg' : (in_array('udp', $transports, true) ? 'udp' : null);
+			$udgFits = strlen($this->getRuntimePath() . DIRECTORY_SEPARATOR . static::SOCKET_PREFIX . 'daemon.sock') <= static::UDG_PATH_MAX;
+			$this->_transport = (in_array('udg', $transports, true) && $udgFits) ? 'udg' : (in_array('udp', $transports, true) ? 'udp' : null);
 		}
 		return $this->_transport;
 	}

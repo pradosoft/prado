@@ -292,4 +292,16 @@ class TCronWakeSocketTest extends \PHPUnit\Framework\TestCase
 		$now = microtime(true);
 		self::assertNull($s->wait($now + 1, $now), 'without a transport the caller sleeps');
 	}
+
+	public function testALongRuntimePathUsesUdp()
+	{
+		if (!in_array('udp', stream_get_transports(), true)) {
+			self::markTestSkipped('no udp transport');
+		}
+		$s = new TCronWakeSocket($this->runtime . DIRECTORY_SEPARATOR . str_repeat('r', TCronWakeSocket::UDG_PATH_MAX));
+		self::assertSame('udp', $s->getTransport(), 'a socket path PHP would truncate is not used');
+		self::assertStringStartsWith('udp://127.0.0.1:', (string) $s->getDaemonAddress());
+		$s->setRuntimePath('/tmp');
+		self::assertSame(in_array('udg', stream_get_transports(), true) ? 'udg' : 'udp', $s->getTransport(), 'a new runtime path resolves the transport again');
+	}
 }
