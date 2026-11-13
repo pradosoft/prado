@@ -225,6 +225,35 @@ class ReflectionTestBehavior extends \Prado\Util\TBehavior
 	}
 }
 
+/** Each test of a behavior's protected method uses its own class: the reflection cache is static. */
+class ReflectionHiddenClassFirstBehavior extends \Prado\Util\TBehavior
+{
+	protected function hiddenMethod(): void
+	{
+	}
+}
+
+class ReflectionHiddenBehaviorFirstBehavior extends \Prado\Util\TBehavior
+{
+	protected function hiddenMethod(): void
+	{
+	}
+}
+
+class ReflectionHiddenThenPublicBehavior extends \Prado\Util\TBehavior
+{
+	protected function sharedName(): void
+	{
+	}
+}
+
+class ReflectionPublicSharedNameBehavior extends \Prado\Util\TBehavior
+{
+	public function sharedName(): void
+	{
+	}
+}
+
 // ---------------------------------------------------------------------------
 // Fixtures for getReflectionPropertyByType hierarchy walking
 // ---------------------------------------------------------------------------
@@ -1151,8 +1180,50 @@ class TComponentReflectionTest extends TestCase
 
 		$rm2 = TComponentReflection::getReflectionMethodByType($component2, 'behaviorOnlyMethod');
 
-		// Same behavior object → same spl_object_id → same cache entry → same ReflectionMethod
+		// Same behavior class → same cache entry → same ReflectionMethod
 		$this->assertSame($rm1, $rm2);
+	}
+
+	public function testGetReflectionMethodByTypeBehaviorProtectedMethodAfterClassLookup(): void
+	{
+		$classMethod = TComponentReflection::getReflectionMethodByType(ReflectionHiddenClassFirstBehavior::class, 'hiddenMethod');
+		$this->assertInstanceOf(\ReflectionMethod::class, $classMethod, 'a class lookup finds a protected method');
+
+		$component = new ReflectionFixtureComponent();
+		$component->attachBehavior('hidden', new ReflectionHiddenClassFirstBehavior());
+		$this->assertNull(TComponentReflection::getReflectionMethodByType($component, 'hiddenMethod'), 'a behavior contributes only its public methods');
+	}
+
+	public function testGetReflectionMethodByTypeBehaviorLookupKeepsTheClassLookup(): void
+	{
+		$component = new ReflectionFixtureComponent();
+		$component->attachBehavior('hidden', new ReflectionHiddenBehaviorFirstBehavior());
+		$this->assertNull(TComponentReflection::getReflectionMethodByType($component, 'hiddenMethod'));
+
+		$classMethod = TComponentReflection::getReflectionMethodByType(ReflectionHiddenBehaviorFirstBehavior::class, 'hiddenMethod');
+		$this->assertInstanceOf(\ReflectionMethod::class, $classMethod, 'a behavior lookup leaves the class lookup intact');
+		$this->assertTrue($classMethod->isProtected());
+	}
+
+	public function testGetReflectionMethodByTypeSkipsABehaviorWithANonPublicMethod(): void
+	{
+		$component = new ReflectionFixtureComponent();
+		$component->attachBehavior('hidden', new ReflectionHiddenThenPublicBehavior(), 10);
+		$component->attachBehavior('public', new ReflectionPublicSharedNameBehavior(), 20);
+
+		$rm = TComponentReflection::getReflectionMethodByType($component, 'sharedName');
+		$this->assertSame(ReflectionPublicSharedNameBehavior::class, $rm?->getDeclaringClass()->getName());
+	}
+
+	public function testGetReflectionMethodByTypeSkipsADisabledBehavior(): void
+	{
+		$component = new ReflectionFixtureComponent();
+		$component->attachBehavior('test', new ReflectionTestBehavior());
+		$component->disableBehavior('test');
+
+		$this->assertNull(TComponentReflection::getReflectionMethodByType($component, 'behaviorOnlyMethod'), 'a disabled behavior contributes no methods');
+		$component->enableBehavior('test');
+		$this->assertNotNull(TComponentReflection::getReflectionMethodByType($component, 'behaviorOnlyMethod'));
 	}
 
 	public function testGetReflectionMethodByTypeTComponentMissingMethodReturnsNull(): void

@@ -562,6 +562,80 @@ class TModuleTest extends \PHPUnit\Framework\TestCase
 		}
 	}
 
+	public function testGetConfigElements_xmlSingleMissingAndOtherConfigs(): void
+	{
+		$m = new ConcreteModule();
+		$this->assertSame([], PradoUnit::invoke($m, 'getConfigElements', $this->xmlConfig('<other />'), 'item'));
+		$this->assertSame([], PradoUnit::invoke($m, 'getConfigElements', 'item', 'item'), 'a string is no configuration');
+	}
+
+	public function testGetConfigElements_phpMultipleWrapsAnElement(): void
+	{
+		$m = new ConcreteModule();
+		$element = ['class' => 'A', 'properties' => ['X' => 1]];
+		$this->assertSame([$element], PradoUnit::invoke($m, 'getConfigElements', ['item' => $element], 'item', true), 'an element array is one element');
+		$this->assertSame([['class' => 'A']], PradoUnit::invoke($m, 'getConfigElements', ['item' => 'A'], 'item', true), 'a class name is one element');
+		$this->assertSame([$element, ['class' => 'B'], ['class' => 'C']], PradoUnit::invoke($m, 'getConfigElements', ['item' => [$element, 'B', 'C']], 'item', true));
+		$this->assertSame([['class' => 'B'], $element], PradoUnit::invoke($m, 'getConfigElements', ['item' => ['B', $element]], 'item', true));
+		$this->assertSame([$element], PradoUnit::invoke($m, 'getConfigElements', ['item' => [$element]], 'item', true), 'a list of one element');
+		$this->assertSame([['class' => 'B']], PradoUnit::invoke($m, 'getConfigElements', ['item' => ['B']], 'item', true), 'a list of one class name');
+		$this->assertSame([['A', 'B']], PradoUnit::invoke($m, 'getConfigElements', ['item' => ['A', 'B']], 'item'), 'without multiple, a list is one element');
+	}
+
+	public function testGetConfigElements_phpMultipleRejectsANonElement(): void
+	{
+		$m = new ConcreteModule();
+		foreach (['after valid elements' => ['A', ['class' => 'B'], 42], 'first in a list' => [42, 'A'], 'alone' => 42] as $case => $item) {
+			try {
+				PradoUnit::invoke($m, 'getConfigElements', ['item' => $item], 'item', true);
+				$this->fail("an element that is neither a class name nor an array is a configuration error: {$case}");
+			} catch (TConfigurationException $e) {
+				$this->assertStringContainsString('<item>', $e->getMessage());
+			}
+		}
+	}
+
+	public function testCreateElementComponent_xmlRejectsAMissingClassAndAWrongType(): void
+	{
+		$m = new ConcreteModule();
+		foreach (['missing class' => '<child Label="x" />', 'empty class' => '<child class="" />'] as $case => $xml) {
+			$element = $this->xmlConfig($xml)->getElementByTagName('child');
+			try {
+				PradoUnit::invoke($m, 'createElementComponent', $element, 'child', TModule::class);
+				$this->fail("a {$case} is a configuration error");
+			} catch (TConfigurationException $e) {
+				$this->assertStringContainsString('<child>', $e->getMessage());
+			}
+		}
+		$element = $this->xmlConfig('<child class="' . TBehavior::class . '" />')->getElementByTagName('child');
+		try {
+			PradoUnit::invoke($m, 'createElementComponent', $element, 'child', TModule::class);
+			$this->fail('a component of the wrong type is a configuration error');
+		} catch (TConfigurationException $e) {
+			$this->assertStringContainsString(TModule::class, $e->getMessage());
+		}
+		try {
+			PradoUnit::invoke($m, 'createElementComponent', $element, 'service', TModule::class, 'application_service_invalid');
+			$this->fail('a component of the wrong type is a configuration error');
+		} catch (TConfigurationException $e) {
+			$this->assertStringContainsString('IService', $e->getMessage());
+		}
+	}
+
+	public function testCreateElementComponent_aComponentThatIsNoModuleIsNotInitialized(): void
+	{
+		$m = new ConcreteModule();
+		$element = $this->xmlConfig('<child class="' . TBehavior::class . '" Name="fromXml" />')->getElementByTagName('child');
+		$component = PradoUnit::invoke($m, 'createElementComponent', $element, 'child', TBehavior::class);
+		$this->assertInstanceOf(TBehavior::class, $component);
+		$this->assertSame('fromXml', $component->getName(), 'the attributes other than class are properties');
+
+		$component = PradoUnit::invoke($m, 'createElementComponent', ['class' => TBehavior::class, 'properties' => ['Name' => 'fromPhp']], 'child', TBehavior::class);
+		$this->assertSame('fromPhp', $component->getName());
+		$component = PradoUnit::invoke($m, 'createElementComponent', ['class' => TBehavior::class], 'child', TBehavior::class);
+		$this->assertInstanceOf(TBehavior::class, $component, 'properties are optional');
+  }
+  
 	public function testCreateElementComponent_rejectsPropertiesThatAreNotAnArray(): void
 	{
 		$m = new ConcreteModule();

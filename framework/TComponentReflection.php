@@ -49,9 +49,8 @@ class TComponentReflection extends \Prado\TComponent
 	/** @var array<string,\ReflectionClass> Shared cache of ReflectionClass instances, keyed by lowercase FQN.  @since 4.4.0 */
 	private static array $_reflection_cache = [];
 
-	/** @var array<string,?\ReflectionMethod> Cached ReflectionMethod instances. Class-level entries use
-	 *   "{class}::{method}" lowercased (shared across all instances). Behavior-contributed methods use
-	 *   "{behavior class}::{method}" lowercased (shared across any component the behavior is attached to).
+	/** @var array<string,?\ReflectionMethod> Cached ReflectionMethod instances, keyed by
+	 *   "{class}::{method}" lowercased (shared across all instances).
 	 *   @since 4.4.0 */
 	private static array $_reflection_method_cache = [];
 
@@ -113,10 +112,9 @@ class TComponentReflection extends \Prado\TComponent
 	 * Class methods are resolved via `ReflectionClass::getMethod()` and cached
 	 * by class name ({className}::{method}), shared across all instances.
 	 * When the class does not have the method and the parameter is a
-	 * {@see \Prado\TComponent} instance with enabled behaviors, each behavior is
-	 * queried via {@see \Prado\Prado::method_visible()}. Behavior-contributed
-	 * methods are cached by the behavior's class name, so every instance of a
-	 * behavior class shares its cache.
+	 * {@see \Prado\TComponent} instance with enabled behaviors, the first enabled
+	 * behavior with a public method by that name contributes it. A behavior's
+	 * method is resolved and cached as a method of the behavior's class.
 	 *
 	 * @param object|string $class  Class name or instance.
 	 * @param string        $method Method name.
@@ -154,16 +152,8 @@ class TComponentReflection extends \Prado\TComponent
 				if (!$behavior->getEnabled()) {
 					continue;
 				}
-				$behaviorKey = strtolower($behavior::class . '::' . $method);
-				if (!array_key_exists($behaviorKey, self::$_reflection_method_cache)) {
-					if (Prado::method_visible($behavior, $method)) {
-						self::$_reflection_method_cache[$behaviorKey] = new \ReflectionMethod($behavior, $method);
-					} else {
-						self::$_reflection_method_cache[$behaviorKey] = null;
-					}
-				}
-				$behaviorMethod = self::$_reflection_method_cache[$behaviorKey];
-				if ($behaviorMethod !== null) {
+				$behaviorMethod = self::getReflectionMethodByType($behavior::class, $method);
+				if ($behaviorMethod !== null && $behaviorMethod->isPublic()) {
 					return $behaviorMethod;
 				}
 			}

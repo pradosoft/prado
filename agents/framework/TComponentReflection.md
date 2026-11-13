@@ -21,8 +21,8 @@ The static side accepts any class or object; only the instance side is specific 
 | Method | Returns | Cache key (lowercased) |
 |---|---|---|
 | `getReflectionClassByType($class)` | `?ReflectionClass` | `{class}` |
-| `getReflectionMethodByType($class, $method)` | `?ReflectionMethod` | `{class}::{method}`; a behavior method `{spl_object_id}::{method}` |
-| `getReflectionPropertyByType($class, $property)` | `?ReflectionProperty` | `{class}::{property}` |
+| `getReflectionMethodByType($class, $method)` | `?ReflectionMethod` | `{class}::{method}` |
+| `getReflectionPropertyByType($class, $property)` | `?ReflectionProperty` | `{class}::{property}`, the property keeping its case |
 | `getClassAttributesByType($class, $attribute, $inherit = true)` | `object[]` | `class::{class}::{0\|1}::{attribute}` |
 | `getMethodAttributesByType($class, $method, $attribute)` | `object[]` | `method::{declaring class}::{method}::{attribute}` |
 | `getPropertyAttributesByType($class, $property, $attribute)` | `object[]` | `property::{declaring class}::{property}::{attribute}` |
@@ -33,7 +33,7 @@ Rules:
 
 - A class that does not exist is not cached; it may be autoloaded later, so each call retries. The attribute methods return `[]` for it.
 - A method missing from a class is cached as `null`. A property missing from the hierarchy is cached as `null` unless the argument is a `TComponent` instance with behaviors enabled, since a behavior may contribute it.
-- `getReflectionMethodByType()` given a `TComponent` instance with enabled behaviors falls back to the attached behaviors through `Prado::method_visible()`. The entry is keyed by the behavior's `spl_object_id`, shared by every component the behavior is attached to.
+- `getReflectionMethodByType()` given a `TComponent` instance with enabled behaviors falls back to the enabled attached behaviors. The first behavior with a public method by that name contributes it. The behavior's method is the cached `{behavior class}::{method}` entry, so a class lookup and a behavior lookup share one entry; a protected or private behavior method is not contributed.
 - `getReflectionPropertyByType()` walks the hierarchy, so an ancestor's private property is found. `ReflectionClass::getProperty()` cannot see it.
 
 ## Attributes
@@ -82,5 +82,4 @@ $r->getAttributes();   // [[name, arguments, class], ...] own first, then parent
 ## Patterns & Gotchas
 
 - Keys are lowercased, so `getReflectionClassByType('prado\tcomponent')` and `TComponent::class` share one entry.
-- `spl_object_id` is reused after an object is collected. A behavior cache entry can outlive its behavior; a new behavior with the same id and a same-named method reuses the entry. The entry holds a `ReflectionMethod` on the behavior's class, so the reuse is harmless when the class matches.
 - The caches are process-lifetime statics with no eviction. Under a long-running process they grow with the number of distinct classes reflected, not with requests.
