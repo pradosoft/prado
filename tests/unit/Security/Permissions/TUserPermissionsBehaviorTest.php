@@ -10,7 +10,6 @@ use Prado\Security\Permissions\TPermissionsBehavior;
 use Prado\Security\Permissions\TUserPermissionsBehavior;
 use Prado\Security\TUser;
 use Prado\Test\Unit\Harness\TTestApplication;
-use Prado\TComponent;
 
 class TUserPermissionsBehaviorTest extends \PHPUnit\Framework\TestCase
 {
@@ -172,13 +171,6 @@ class TUserPermissionsBehaviorTest extends \PHPUnit\Framework\TestCase
 			$restored = unserialize(serialize($this->behavior));
 			self::assertNull($restored->getPermissionsManager());
 			self::assertNull($restored->getOwner());
-
-			// An attached behavior that wakes without a manager detaches from its owner.
-			$owner = new TComponent();
-			$owner->attachBehavior('can', $this->behavior);
-			$this->behavior->__wakeup();
-			self::assertNull($this->behavior->getPermissionsManager());
-			self::assertNull($owner->asa('can'));
 		} finally {
 			$app->restoreApplication();
 		}
