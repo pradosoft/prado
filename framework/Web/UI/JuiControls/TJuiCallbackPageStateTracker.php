@@ -10,7 +10,7 @@
 
 namespace Prado\Web\UI\JuiControls;
 
-use Prado\TPropertyValue;
+use Prado\Web\Javascripts\TJavaScript;
 use Prado\Web\UI\ActiveControls\TCallbackPageStateTracker;
 
 /**
@@ -34,7 +34,10 @@ class TJuiCallbackPageStateTracker extends TCallbackPageStateTracker
 	}
 
 	/**
-	 * Updates the options of the jQueryUI widget.
+	 * Updates the options of the jQueryUI widget.  Each value is encoded by
+	 * {@see TJavaScript::encode()}, empty strings included: a string is quoted and
+	 * escaped, an array becomes a JavaScript array or object, and a
+	 * {@see \Prado\Web\Javascripts\TJavaScriptLiteral} is kept as code.
 	 * @param array $options list of widget options to change.
 	 */
 	protected function updateJuiOptions($options)
@@ -42,7 +45,7 @@ class TJuiCallbackPageStateTracker extends TCallbackPageStateTracker
 		/** @var IJuiOptions|\Prado\Web\UI\TControl $control */
 		$control = $this->_control;
 		foreach ($options as $key => $value) {
-			$options[$key] = $key . ': ' . (is_string($value) ? "'{$value}'" : TPropertyValue::ensureString($value));
+			$options[$key] = $key . ': ' . TJavaScript::encode($value, true, true);
 		}
 		$code = "jQuery('#{$control->getWidgetID()}').{$control->getWidget()}('option', { " . implode(', ', $options) . " });";
 		$control->getPage()->getClientScript()->registerEndScript(sprintf('%08X', crc32($code)), $code);

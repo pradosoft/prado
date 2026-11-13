@@ -13,7 +13,7 @@ Extends TCallbackPageStateTracker to track changes to JuiOptions during callback
 ## Key Properties/Methods
 
 - `addStatesToTrack()` - Adds JuiOptions to tracked states
-- `updateJuiOptions($options)` - Updates widget options via JavaScript
+- `updateJuiOptions($options)` - Updates widget options via JavaScript; each value is encoded by `TJavaScript::encode()` with empty strings kept, so a string is quoted and escaped, an array becomes a JavaScript array or object, and a `TJavaScriptLiteral` stays code
 
 ## See Also
 
