@@ -88,9 +88,7 @@ class TException extends \Exception
 	 * @param array $args These are the arguments of the placeholders ({0}, {1}, {2}, etc.)
 	 *   in the message except the last argument.  If the last argument is a Throwable
 	 *   it is treated as the $previous Exception for exception chaining.  Each argument
-	 *   is converted by {@see TPropertyValue::ensureString()}.
-	 * @throws TInvalidDataTypeException if an argument is an array or an object without
-	 *   `__toString()`.
+	 *   is converted by {@see formatErrorArgument()}.
 	 */
 	public function __construct($errorCode, $errorMessage = null, ...$args)
 	{
@@ -110,9 +108,25 @@ class TException extends \Exception
 			$n--;
 		}
 		for ($i = 0; $i < $n; ++$i) {
-			$this->_errorArguments[$i] = TPropertyValue::ensureString($args[$i]);
+			$this->_errorArguments[$i] = $this->formatErrorArgument($args[$i]);
 		}
 		parent::__construct($this->formatErrorMessage($errorMessage, $this->_errorArguments), $errorCode, $previous);
+	}
+
+	/**
+	 * Converts a message argument to a string with {@see TPropertyValue::ensureString()}.
+	 * An array or an object without `__toString()` has no string form and is rendered as
+	 * its type name from `get_debug_type()`, such as `array` or `stdClass`.
+	 * @param mixed $value the message argument.
+	 * @return string the argument as a string.
+	 * @since 4.4.0
+	 */
+	protected function formatErrorArgument(mixed $value): string
+	{
+		if (is_array($value) || (is_object($value) && !($value instanceof \Stringable))) {
+			return get_debug_type($value);
+		}
+		return (string) TPropertyValue::ensureString($value);
 	}
 
 	/**
