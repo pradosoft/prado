@@ -17,6 +17,7 @@ Shared trait providing the `PermissionsManager` property accessor. Used by behav
 | `getPermissionsManager(): ?TPermissionsManager` | Gets the permissions manager |
 | `setPermissionsManager(null\|TPermissionsManager\|WeakReference $manager)` | Sets the permissions manager |
 | `__wakeup()` | On wakeup, reconnects to singleton manager |
+| `dyWakeUp(TCallChain $chain)` | Raised by the owner after its `__wakeup()` reattaches behaviors; detaches the behavior when the application has no manager. `__wakeup()` cannot: a `TBehavior` owner is not serialized, so it is attached only afterwards |
 
 ## Used By
 
