@@ -36,6 +36,11 @@ class TPageLoadTimeTest extends \PHPUnit\Framework\TestCase
 		self::assertLessThanOrEqual(hrtime(true), Prado::getRequestStartNanoseconds(), 'The request started before now.');
 	}
 
+	/**
+	 * The default monotonic clock renders the seconds since the request start and the
+	 * suffix.  The run may take any time, so the test bounds the value from below only;
+	 * {@see testLoadTimeIsMonotonicAndIgnoresAWallClockStep()} checks an exact value.
+	 */
 	public function testRenderContents()
 	{
 		$writer = new TTextWriter();
@@ -45,7 +50,9 @@ class TPageLoadTimeTest extends \PHPUnit\Framework\TestCase
 
 		$pageloadtime->renderContents($writer);
 
-		self::assertEquals(1, preg_match('/^1\.\d*test$/', $writer->flush()));
+		$output = $writer->flush();
+		self::assertMatchesRegularExpression('/^\d+(\.\d+)?test$/', $output);
+		self::assertGreaterThanOrEqual(1.0, (float) $output, 'One second has passed since the request start.');
 	}
 
 	public function testLoadTimeIsMonotonicAndIgnoresAWallClockStep()
