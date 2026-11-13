@@ -797,6 +797,28 @@ class PradoUnit
 	// =========================================================================
 
 	/**
+	 * The stacks of recent exceptions Xdebug keeps in its `develop` mode (Xdebug 3.3+).
+	 */
+	public const XDEBUG_EXCEPTION_SLOTS = 8;
+
+	/**
+	 * Releases the variables Xdebug keeps of recent thrown exceptions.  In Xdebug's `develop` mode the
+	 * stacks of the last {@see XDEBUG_EXCEPTION_SLOTS} thrown exceptions, with their frames' variables,
+	 * stay alive after the exceptions are caught and unset.  A test that throws an exception and then
+	 * checks that an object is released (a destructor ran, a weak reference cleared) calls this first;
+	 * it throws and catches that many exceptions from a frame that holds nothing.
+	 */
+	public static function releaseLastException(): void
+	{
+		for ($i = 0; $i < static::XDEBUG_EXCEPTION_SLOTS; $i++) {
+			try {
+				throw new \RuntimeException('releases the last exception');
+			} catch (\RuntimeException) {
+			}
+		}
+	}
+
+	/**
 	 * Returns `true` when any recognised continuous-integration environment variable
 	 * is set, indicating the tests are running in a CI pipeline rather than a local
 	 * developer machine.

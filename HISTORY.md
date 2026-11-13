@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: `TTarFileExtractor` deletes the tar it decompresses from a local `.tar.xz` (or a gzip or bzip2 archive without the PHP extension) at the close, and reuses it with `RetainTempFile`; it was left in the temp directory. (belisoful)
 ENH: `TModule::createConfigComponent()`, `getConfigElements()`, and `createElementComponent()` create a component a module alone uses from a child element of its configuration: `class` and the properties as attributes, or `class` and `properties` in PHP. (belisoful)
 BUG: `TFileCacheDependency` and `TDirectoryCacheDependency` clear PHP's stat cache before each read, so a long-lived process sees a file changed by another process. (belisoful)
 ENH: The constructor argument of `TFileCacheDependency`, `TDirectoryCacheDependency`, and `TGlobalStateCacheDependency` is optional, so each is created from configuration and set through `FileName`, `Directory`, or `StateName`; `getHasChanged()` is false until then. (belisoful)

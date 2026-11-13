@@ -10,8 +10,8 @@
  *       responds with 204 No Content (the expected response for CSP collectors).
  *
  * GET   Returns all stored bodies as a JSON array of strings (one element per
- *       report body) and atomically clears the file so the next GET starts
- *       fresh within the same test run.
+ *       report body) and deletes the file so the next GET starts fresh within
+ *       the same test run, and the folder when no other run's file is in it.
  */
 
 $token = preg_replace('/[^a-zA-Z0-9\-_]/', '', (string) ($_GET['t'] ?? 'default'));
@@ -43,6 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
 	$content = (string) file_get_contents($file);
 	@unlink($file);
+	@rmdir($dir); // removed when no other run has reports in it, so no folder is left in the temp directory
 
 	$lines = array_values(array_filter(array_map('trim', explode("\n", $content))));
 	echo json_encode($lines);

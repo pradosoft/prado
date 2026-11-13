@@ -2780,7 +2780,10 @@ class TTarFileExtractor
 
 	/**
 	 * Opens the archive for reading, downloading remote URLs to a temp file first.
-	 * Detects compression and sets the appropriate stream handle.
+	 * Detects compression and sets the appropriate stream handle.  A retained temp file
+	 * ({@see setRetainTempFile()}) is read instead of the archive.  The tar that CLI
+	 * decompression writes, for a local archive too, becomes the temp file, so it is
+	 * deleted at the close or, when retained, by the destructor.
 	 *
 	 * @param ?string $p_tempDir
 	 * @return bool True on success.
@@ -2790,7 +2793,10 @@ class TTarFileExtractor
 		$isTemporary = false;
 
 		$v_filepath = $this->getTarPath();
-		if (str_starts_with($v_filepath, 'http://')
+		if (($v_retained = $this->getTempPath()) !== null && !str_contains($v_filepath, '://')) {
+			$v_filepath = $v_retained;
+			$isTemporary = true;
+		} elseif (str_starts_with($v_filepath, 'http://')
 			|| str_starts_with($v_filepath, 'https://')
 			|| str_starts_with($v_filepath, 'ftp://')) {
 
@@ -2824,6 +2830,7 @@ class TTarFileExtractor
 
 		$this->setCompression($this->_detectCompression($v_filepath));
 
+		$v_opened = $v_filepath;
 		$fileHandle = $this->_openFile($v_filepath, $this->getCompression(), $isTemporary);
 		if ($fileHandle === false) {
 			return false;
@@ -2833,7 +2840,7 @@ class TTarFileExtractor
 		}
 
 		$this->_file = $fileHandle;
-		if ($isTemporary) {
+		if ($isTemporary || $v_filepath !== $v_opened) {
 			$this->setTempPath($v_filepath);
 		}
 
@@ -2902,12 +2909,12 @@ class TTarFileExtractor
 	 * `_workingCompression` is set to `COMPRESSION_NONE` so that subsequent read,
 	 * seek, and close calls use the plain-file variants.
 	 *
-	 * When `$isTemporary` is true and CLI decompression is used, the compressed
-	 * source file (e.g. a URL download) is deleted and `$filepath` is updated to
-	 * the decompressed temp path so that the caller can register it for cleanup.
+	 * When CLI decompression is used, `$filepath` is updated to the decompressed
+	 * temp path so that the caller registers it for cleanup; when `$isTemporary`
+	 * is true, the compressed source file (e.g. a URL download) is also deleted.
 	 *
-	 * @param string $filepath     Path to the file; updated in-place when CLI
-	 *                             decompression replaces a temp file.
+	 * @param string $filepath     Path to the file; updated in place to the
+	 *                             decompressed temp file when CLI decompression is used.
 	 * @param int    $compression  One of the COMPRESSION_* constants.
 	 * @param bool   $isTemporary  True when $filepath is a downloaded/decompressed temp file.
 	 * @return false|resource|string Resource handle on success; string error message on
@@ -2939,9 +2946,7 @@ class TTarFileExtractor
 				if ($err !== null) {
 					return $err;
 				}
-				if ($isTemporary) {
-					$filepath = $tempFile;
-				}
+				$filepath = $tempFile;
 				$handle = @fopen($tempFile, 'rb');
 				if ($handle === false) {
 					return "Unable to open CLI-decompressed gzip in read binary mode '$tempFile'";
@@ -2963,9 +2968,7 @@ class TTarFileExtractor
 				if ($err !== null) {
 					return $err;
 				}
-				if ($isTemporary) {
-					$filepath = $tempFile;
-				}
+				$filepath = $tempFile;
 				$handle = @fopen($tempFile, 'rb');
 				if ($handle === false) {
 					return "Unable to open CLI-decompressed bzip2 in read binary mode '$tempFile'";
@@ -2979,9 +2982,7 @@ class TTarFileExtractor
 				if ($err !== null) {
 					return $err;
 				}
-				if ($isTemporary) {
-					$filepath = $tempFile;
-				}
+				$filepath = $tempFile;
 				$handle = @fopen($tempFile, 'rb');
 				if ($handle === false) {
 					return "Unable to open CLI-decompressed LZMA in read binary mode '$tempFile'";
