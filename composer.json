@@ -57,6 +57,7 @@
 		"psy/psysh": "^0"
 	},
 	"require-dev" : {
+		"ext-bz2": "*",
 		"phpunit/phpunit" : "^10",
 		"php-webdriver/webdriver": "^1",
 		"phpdocumentor/shim": "^3",
