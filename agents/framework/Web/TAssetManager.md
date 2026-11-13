@@ -65,6 +65,7 @@ return [
 - `CaseSensitive` (bool): Whether `Only`/`Except` patterns are case sensitive. Default: `true`.
 - `FileMode` (?int): Unix permissions for newly published asset files.
 - `DirMode` (int): Unix permissions for newly created asset directories. Defaults to `Prado::getDefaultDirPermissions()`.
+- `CronClearAge` (?int): Seconds since a directory was last published after which the cron task `assetsclear` removes it; null (default), empty, or 0 registers no task. Negative throws `assetmanager_cronclearage_invalid` — @since 4.4.0
 
 ## Core Methods
 ### Initialization
@@ -99,6 +100,22 @@ nothing about whether the contents were ever extracted. The marker is keyed by t
 file path (`directoryCompleteMarker()`), so two tars whose checksums share a published
 directory each keep their own.
 
+### Clearing Published Directories — @since 4.4.0
+No usage record exists: Performance mode does not touch a published directory, and `hash()` mixes in the PRADO version, so an upgrade orphans the old directories. A removed directory still in use is republished by the next request that publishes it (the marker or the file is missing); a page cached before the removal may miss assets until then.
+
+- `clearPublished(?int $olderThan = null): int` removes published directories directly under `realpath(BasePath)`; null removes all of them (a redeploy).
+- `cronClearPublished(): int` is the `assetsclear` task: `clearPublished(CronClearAge)`, then `validateSymlinks()` with `LinkAssets`. Returns 0 without `CronClearAge`.
+- `fxGetCronTaskInfos()` registers `assetsclear` (`'<id>->cronClearPublished()'`) with an ID and a `CronClearAge`, otherwise null. Every asset manager registers the same name, and `cron/add` takes the first.
+
+| entry directly under BasePath | `clearPublished()` |
+|---|---|
+| file, dot-entry (`.htaccess`, `.gitignore`), symbolic link | kept |
+| directory not named 1-8 lowercase hex digits, no `HashCallback` | kept |
+| directory published within `$olderThan` seconds | kept |
+| other directory | removed; links inside are unlinked, never followed |
+
+`getPublishedTime($dir)` is the newest mtime of the directory and its `.copied-*` completion markers; a non-Performance publish touches the marker. `isPublishedDirectory()` and `removePublishedDirectory()` are the overridable selection and removal.
+
 ## Subclass Extension Points
 A subclass overrides these instead of re-implementing the surrounding machinery:
 
@@ -112,6 +129,8 @@ A subclass overrides these instead of re-implementing the surrounding machinery:
 | `symlink($target, $link)` | how a linked asset is created |
 
 Symlink publication retains the original existence guards. If a concurrent publisher creates any filesystem entry while `symlink()` reports failure, an `lstat()` check treats that entry as the completed publication; the original failure is rethrown only when the destination remains absent.
+
+`validateSymlinks(?string $path = null, bool $remove = true)` checks one link (bool) or sweeps a directory, default `BasePath`, without descending into linked directories (int count of broken links). A broken link is removed with `unlink()`, then `rmdir()`, which Windows needs for a link to a directory.
 
 `Prado\Test\Unit\Web\TAssetManagerTest` is written against `getTestClass()` and
 `newAssetManager()`, so a subclass test extends it and overrides those two methods to run the

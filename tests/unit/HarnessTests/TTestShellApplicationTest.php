@@ -15,6 +15,7 @@ use Prado\Shell\TShellApplication;
 use Prado\Shell\TShellWriter;
 use Prado\IO\TTextWriter;
 use Prado\TApplication;
+use Prado\Test\Unit\Harness\TTestApplication;
 use Prado\Test\Unit\Harness\TTestShellApplication;
 use Prado\Test\Unit\PradoUnit;
 
@@ -63,8 +64,8 @@ class TTestShellApplicationTest extends \PHPUnit\Framework\TestCase
 
 	public function testConstructor_resolvesToTempDir_regardlessOfArgument(): void
 	{
-		// resolvePaths() ignores $basePath and always uses sys_get_temp_dir().
-		$this->assertSame(realpath(sys_get_temp_dir()), realpath($this->_app->getBasePath()));
+		// resolvePaths() ignores $basePath and always uses the harness default base path.
+		$this->assertSame(TTestApplication::getDefaultBasePath(), realpath($this->_app->getBasePath()));
 	}
 
 	public function testConstructor_isInstanceOfTShellApplication(): void

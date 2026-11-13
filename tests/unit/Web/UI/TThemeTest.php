@@ -18,19 +18,46 @@ class TThemeTest extends \PHPUnit\Framework\TestCase
 	private $_themePath;
 	private $_app;
 
+	/** @var ?string The per-test directory holding the theme directory. */
+	private ?string $_tempDir = null;
+
 	protected function setUp(): void
 	{
-		$this->_themePath = sys_get_temp_dir() . '/testtheme';
-		if (!is_dir($this->_themePath)) {
-			mkdir($this->_themePath, 0755, true);
-		}
+		$this->_tempDir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'prado-theme-' . bin2hex(random_bytes(4));
+		$this->_themePath = $this->_tempDir . DIRECTORY_SEPARATOR . 'testtheme';
+		mkdir($this->_themePath, 0o755, true);
 		$this->_app = Prado::getApplication();
 	}
 
 	protected function tearDown(): void
 	{
+		$this->removeDirectory($this->_tempDir);
+		$this->_tempDir = null;
 		$this->_themePath = null;
 		$this->_app = null;
+	}
+
+	/**
+	 * Removes a directory and everything in it.
+	 * @param string $dir the directory to remove.
+	 */
+	private function removeDirectory(string $dir): void
+	{
+		if (!is_dir($dir) || is_link($dir)) {
+			return;
+		}
+		foreach (scandir($dir) as $entry) {
+			if ($entry === '.' || $entry === '..') {
+				continue;
+			}
+			$path = $dir . DIRECTORY_SEPARATOR . $entry;
+			if (is_dir($path) && !is_link($path)) {
+				$this->removeDirectory($path);
+			} else {
+				unlink($path);
+			}
+		}
+		rmdir($dir);
 	}
 
 	private function _createSkin($controlClass, $skinId, array $properties)
