@@ -43,6 +43,11 @@ use Prado\Util\Clock\TApplicationClockAwareTrait;
  *   );
  * ```
  *
+ * With a {@see setRetainPeriod RetainPeriod}, each flush deletes the rows older than
+ * the period.  Set {@see setPruneOnFlush PruneOnFlush} to false to leave the deletion
+ * to the cron task `dblogprune` of {@see \Prado\Util\Log\TLogRouter}, which calls
+ * {@see pruneLogs}.
+ *
  * 4.3.0 Notes: Add the `prefix` to the log table:
  * `ALTER TABLE pradolog ADD COLUMN prefix VARCHAR(128) AFTER category;`
  *
@@ -115,6 +120,11 @@ class TDbLogRoute extends TLogRoute
 	 * @since 4.3.0
 	 */
 	private ?float $_retainPeriod = null;
+	/**
+	 * @var bool whether each flush deletes the rows older than the retain period.
+	 * @since 4.4.0
+	 */
+	private bool $_pruneOnFlush = true;
 
 	/**
 	 * Initializes this module.
@@ -164,9 +174,25 @@ class TDbLogRoute extends TLogRoute
 				throw new TLogException('dblogroute_insert_failed', $this->_logTable);
 			}
 		}
-		if (!empty($seconds = $this->getRetainPeriod())) {
-			$this->deleteDbLog(null, null, null, $this->getClock()->microtime() - $seconds);
+		if ($this->getPruneOnFlush()) {
+			$this->pruneLogs();
 		}
+	}
+
+	/**
+	 * Deletes the log rows older than the retain period.
+	 * @param ?float $retainPeriod the seconds of the log to retain; null for
+	 *   {@see getRetainPeriod RetainPeriod}.
+	 * @return int the number of rows deleted; 0 without a positive period.
+	 * @since 4.4.0
+	 */
+	public function pruneLogs(?float $retainPeriod = null): int
+	{
+		$retainPeriod ??= $this->getRetainPeriod();
+		if ($retainPeriod === null || $retainPeriod <= 0) {
+			return 0;
+		}
+		return $this->deleteDBLog(null, null, null, $this->getClock()->microtime() - $retainPeriod);
 	}
 
 	/**
@@ -459,6 +485,28 @@ class TDbLogRoute extends TLogRoute
 
 		$this->_retainPeriod = ($seconds !== null) ? $seconds : $value;
 
+		return $this;
+	}
+
+	/**
+	 * @return bool whether each flush deletes the rows older than the retain period. Default true.
+	 * @since 4.4.0
+	 */
+	public function getPruneOnFlush(): bool
+	{
+		return $this->_pruneOnFlush;
+	}
+
+	/**
+	 * Sets whether each flush deletes the rows older than the retain period.  Set it
+	 * false when a cron task calls {@see pruneLogs}.
+	 * @param bool|string $value whether each flush deletes the old rows.
+	 * @return static The current object.
+	 * @since 4.4.0
+	 */
+	public function setPruneOnFlush($value): static
+	{
+		$this->_pruneOnFlush = TPropertyValue::ensureBoolean($value);
 		return $this;
 	}
 

@@ -192,13 +192,16 @@ abstract class TModule extends \Prado\TApplicationComponent implements IModule
 	/**
 	 * Creates the component of one configuration element: the `class` attribute names the
 	 * class, the other attributes are its properties, and a module is initialized with the
-	 * element.  A PHP element is an array with `class` and `properties`.
+	 * element.  A PHP element is an array with `class` and `properties`.  A component given
+	 * properties is a {@see TComponent}; one without may be any class.
 	 * @param array|\Prado\Xml\TXmlElement $element the configuration element
 	 * @param string $tag the element tag name, and the PHP key
 	 * @param string $type the class or interface the component must be
 	 * @param ?string $error the message key when the component is not `$type`, with the class
 	 *   as its parameter; null for `module_config_component_invalid`
-	 * @throws TConfigurationException when the element has no class, or the component is not `$type`
+	 * @throws TConfigurationException when the element has no class, its PHP properties are not
+	 *   an array, the component is not `$type`, or the component is given properties and is not a
+	 *   {@see TComponent}
 	 * @return object the component
 	 * @since 4.4.0
 	 */
@@ -215,6 +218,9 @@ abstract class TModule extends \Prado\TApplicationComponent implements IModule
 		if (!is_string($class) || $class === '') {
 			throw new TConfigurationException('module_config_class_required', static::class, $tag);
 		}
+		if (!is_iterable($properties)) {
+			throw new TConfigurationException('module_config_properties_invalid', static::class, $tag);
+		}
 		$component = Prado::createComponent($class);
 		if (!($component instanceof $type)) {
 			if ($error !== null) {
@@ -222,7 +228,15 @@ abstract class TModule extends \Prado\TApplicationComponent implements IModule
 			}
 			throw new TConfigurationException('module_config_component_invalid', static::class, $tag, $class, $type);
 		}
-		$component->setSubProperties($properties);
+		if (!is_array($properties)) {
+			$properties = iterator_to_array($properties);
+		}
+		if ($properties) {
+			if (!($component instanceof TComponent)) {
+				throw new TConfigurationException('module_config_properties_unsupported', static::class, $tag, $class);
+			}
+			$component->setSubProperties($properties);
+		}
 		if ($component instanceof IModule) {
 			$component->init($element);
 		}

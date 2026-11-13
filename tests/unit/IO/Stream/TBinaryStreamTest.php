@@ -11,6 +11,11 @@ use Prado\Test\Unit\Harness\IO\TTestIOHelper;
 
 class TBinaryStreamTest extends \PHPUnit\Framework\TestCase
 {
+	protected function tearDown(): void
+	{
+		TTestIOHelper::removeTempFiles();
+	}
+
 	private function over(string $bytes, ?int $order = null): TBinaryStream
 	{
 		return new TBinaryStream(TStream::fromString($bytes), $order);

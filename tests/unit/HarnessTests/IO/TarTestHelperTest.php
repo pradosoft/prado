@@ -275,7 +275,8 @@ class TarTestHelperTest extends \PHPUnit\Framework\TestCase
 
 	public function testWriteTarGz_producesGzipMagicBytes(): void
 	{
-		$path = tempnam(sys_get_temp_dir(), 'tarhelper_') . '.tgz';
+		$base = tempnam(sys_get_temp_dir(), 'tarhelper_');
+		$path = $base . '.tgz';
 		try {
 			TarTestHelper::writeTarGz($path, [TarTestHelper::entry('foo.txt', 'bar')]);
 			$bytes = file_get_contents($path);
@@ -287,6 +288,7 @@ class TarTestHelperTest extends \PHPUnit\Framework\TestCase
 			$this->assertStringContainsString('bar', $plain);
 		} finally {
 			@unlink($path);
+			@unlink($base);
 		}
 	}
 
@@ -295,7 +297,8 @@ class TarTestHelperTest extends \PHPUnit\Framework\TestCase
 		if (!function_exists('bzcompress')) {
 			$this->markTestSkipped('bz2 extension not available');
 		}
-		$path = tempnam(sys_get_temp_dir(), 'tarhelper_') . '.tbz2';
+		$base = tempnam(sys_get_temp_dir(), 'tarhelper_');
+		$path = $base . '.tbz2';
 		try {
 			TarTestHelper::writeTarBz2($path, [TarTestHelper::entry('foo.txt', 'bar')], $this);
 			$bytes = file_get_contents($path);
@@ -303,6 +306,7 @@ class TarTestHelperTest extends \PHPUnit\Framework\TestCase
 			$this->assertSame('BZh', substr($bytes, 0, 3));
 		} finally {
 			@unlink($path);
+			@unlink($base);
 		}
 	}
 

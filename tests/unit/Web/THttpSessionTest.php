@@ -29,6 +29,37 @@ class THttpSessionTestCookieParams extends THttpSession
 
 class THttpSessionTest extends \PHPUnit\Framework\TestCase
 {
+	/** @var string the directory of this test's session files, removed after the test */
+	private string $saveDir;
+
+	/** @var false|string the session save path before the test */
+	private $priorSavePath;
+
+	protected function setUp(): void
+	{
+		// The sessions the tests open write their files here instead of the system temp directory.
+		$this->saveDir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'prado-session-test-' . bin2hex(random_bytes(4));
+		mkdir($this->saveDir);
+		$this->priorSavePath = ini_get('session.save_path');
+		if (session_status() !== PHP_SESSION_ACTIVE) {
+			ini_set('session.save_path', $this->saveDir);
+		}
+	}
+
+	protected function tearDown(): void
+	{
+		if (session_status() === PHP_SESSION_ACTIVE) {
+			session_write_close();
+		}
+		foreach (glob($this->saveDir . DIRECTORY_SEPARATOR . '*') ?: [] as $file) {
+			unlink($file);
+		}
+		rmdir($this->saveDir);
+		if ($this->priorSavePath !== false) {
+			ini_set('session.save_path', $this->priorSavePath);
+		}
+	}
+
 	public function testInit()
 	{
 		$session = new THttpSession();
@@ -160,7 +191,7 @@ class THttpSessionTest extends \PHPUnit\Framework\TestCase
 	public function testSetSavePath()
 	{
 		$session = new THttpSession();
-		$path = sys_get_temp_dir();
+		$path = $this->saveDir;
 		$session->setSavePath($path);
 		$this->assertEquals(realpath($path), $session->getSavePath());
 		

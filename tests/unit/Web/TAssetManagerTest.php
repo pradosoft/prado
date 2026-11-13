@@ -11,6 +11,7 @@ use Prado\TApplication;
 use Prado\Web\TAssetManager;
 use Prado\Test\Unit\Harness\IO\TarTestHelper;
 use Prado\TApplicationMode;
+use Prado\Util\Cron\TCronTaskInfo;
 
 class TAssetManagerTest extends \PHPUnit\Framework\TestCase
 {
@@ -21,6 +22,12 @@ class TAssetManagerTest extends \PHPUnit\Framework\TestCase
 
 	/** @var ?string temp directory holding a tar fixture built by {@see buildTarFixture}. */
 	protected $tarDir = null;
+
+	/** @var ?string temp directory holding a clearPublished fixture built by {@see newClearFixture}. */
+	protected ?string $clearDir = null;
+
+	/** @var string the path alias of the clearPublished fixture's BasePath. */
+	protected string $clearAlias = '';
 
 	protected function getTestClass(): string
 	{
@@ -109,6 +116,10 @@ class TAssetManagerTest extends \PHPUnit\Framework\TestCase
 		if ($this->tarDir !== null) {
 			$this->removeDirectory($this->tarDir);
 			$this->tarDir = null;
+		}
+		if ($this->clearDir !== null) {
+			$this->removeClearFixture($this->clearDir);
+			$this->clearDir = null;
 		}
 	}
 
@@ -2175,6 +2186,26 @@ class TAssetManagerTest extends \PHPUnit\Framework\TestCase
 	}
 
 	/**
+	 * A broken link to a directory is removed; Windows removes it with rmdir.
+	 */
+	public function testValidateSymlinksBrokenDirectoryLink()
+	{
+		$this->requireSymlinks();
+		$manager = $this->newAssetManager();
+		$manager->setBaseUrl('/');
+		$manager->init(null);
+
+		$target = self::$assetDir . DIRECTORY_SEPARATOR . 'broken_dir_target';
+		$link = self::$assetDir . DIRECTORY_SEPARATOR . 'broken_dir_link';
+		mkdir($target, Prado::getDefaultDirPermissions());
+		symlink('broken_dir_target', $link);
+		rmdir($target);
+
+		self::assertSame(1, $manager->validateSymlinks());
+		self::assertFalse(is_link($link));
+	}
+
+	/**
 	 * validateSymlinks sweeps the hierarchy, removing broken links and keeping intact
 	 * ones, and returns the count of broken links found.
 	 */
@@ -3270,5 +3301,174 @@ class TAssetManagerTest extends \PHPUnit\Framework\TestCase
 		$plain->setBaseUrl('/');
 		$plain->init(null);
 		self::assertNotEquals($plain->getPublishedUrl($virtual), $url);
+	}
+
+	/**
+	 * Creates a temporary BasePath and a directory outside it, and returns an asset
+	 * manager over the BasePath.
+	 * @return array{0:TAssetManager,1:string,2:string} the manager, the BasePath, and the outside directory.
+	 */
+	protected function newClearFixture(): array
+	{
+		$root = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'tassetmgr_clear_' . bin2hex(random_bytes(6));
+		$this->clearDir = $root;
+		mkdir($root . DIRECTORY_SEPARATOR . 'assets', 0777, true);
+		mkdir($root . DIRECTORY_SEPARATOR . 'outside');
+		file_put_contents($root . DIRECTORY_SEPARATOR . 'outside' . DIRECTORY_SEPARATOR . 'keep.txt', 'keep');
+		$root = realpath($root);
+		$alias = $this->clearAlias = 'ClearAssets' . bin2hex(random_bytes(4));
+		Prado::setPathOfAlias($alias, $root . DIRECTORY_SEPARATOR . 'assets');
+		$manager = $this->newAssetManager();
+		$manager->setBasePath($alias);
+		$manager->setBaseUrl('/assets');
+		return [$manager, $root . DIRECTORY_SEPARATOR . 'assets', $root . DIRECTORY_SEPARATOR . 'outside'];
+	}
+
+	/**
+	 * Removes a clearPublished fixture, unlinking symbolic links without following them.
+	 */
+	protected function removeClearFixture(string $dir): void
+	{
+		foreach (array_diff(scandir($dir) ?: [], ['.', '..']) as $entry) {
+			$path = $dir . DIRECTORY_SEPARATOR . $entry;
+			if (is_link($path)) {
+				// Windows removes a link to a directory with rmdir.
+				if (!@unlink($path)) {
+					rmdir($path);
+				}
+			} elseif (is_dir($path)) {
+				$this->removeClearFixture($path);
+			} else {
+				unlink($path);
+			}
+		}
+		rmdir($dir);
+	}
+
+	/**
+	 * Makes a directory with a file, ages it by the seconds, and returns its path.
+	 */
+	protected function makeAgedDirectory(string $path, int $age): string
+	{
+		mkdir($path);
+		file_put_contents($path . DIRECTORY_SEPARATOR . 'a.js', 'a');
+		touch($path, time() - $age);
+		return $path;
+	}
+
+	protected function baseEntries(string $base): array
+	{
+		$entries = array_values(array_diff(scandir($base), ['.', '..']));
+		sort($entries);
+		return $entries;
+	}
+
+	public function testCronClearAge()
+	{
+		$manager = $this->newAssetManager();
+		self::assertNull($manager->getCronClearAge());
+		$manager->setCronClearAge('3600');
+		self::assertSame(3600, $manager->getCronClearAge());
+		$manager->setCronClearAge('');
+		self::assertNull($manager->getCronClearAge());
+		$manager->setCronClearAge(60);
+		$manager->setCronClearAge(0);
+		self::assertNull($manager->getCronClearAge());
+		$this->expectException(TInvalidDataValueException::class);
+		$manager->setCronClearAge(-1);
+	}
+
+	public function testClearPublishedRemovesOnlyPublishedDirectories()
+	{
+		[$manager, $base, $outside] = $this->newClearFixture();
+		$old = $this->makeAgedDirectory($base . DIRECTORY_SEPARATOR . 'abc123', 1000);
+		mkdir($old . DIRECTORY_SEPARATOR . 'sub');
+		file_put_contents($old . DIRECTORY_SEPARATOR . 'sub' . DIRECTORY_SEPARATOR . 'b.css', 'b');
+		$hasLinks = @symlink($outside, $old . DIRECTORY_SEPARATOR . 'linkdir') && @symlink($outside . DIRECTORY_SEPARATOR . 'keep.txt', $old . DIRECTORY_SEPARATOR . 'link.txt');
+		touch($old, time() - 1000);
+		$this->makeAgedDirectory($base . DIRECTORY_SEPARATOR . '1f', 10);
+		$this->makeAgedDirectory($base . DIRECTORY_SEPARATOR . 'images', 1000);
+		$this->makeAgedDirectory($base . DIRECTORY_SEPARATOR . '.hidden', 1000);
+		file_put_contents($base . DIRECTORY_SEPARATOR . 'index.html', '');
+		file_put_contents($base . DIRECTORY_SEPARATOR . 'deadbeef', '');
+		if ($hasLinks) {
+			symlink($outside, $base . DIRECTORY_SEPARATOR . 'cafe');
+		}
+
+		self::assertSame(1, $manager->clearPublished(500));
+		self::assertDirectoryDoesNotExist($old);
+		self::assertFileExists($outside . DIRECTORY_SEPARATOR . 'keep.txt');
+		$expected = ['.hidden', '1f', 'deadbeef', 'images', 'index.html'];
+		if ($hasLinks) {
+			$expected = ['.hidden', '1f', 'cafe', 'deadbeef', 'images', 'index.html'];
+		}
+		self::assertSame($expected, $this->baseEntries($base));
+
+		self::assertSame(1, $manager->clearPublished());
+		self::assertDirectoryDoesNotExist($base . DIRECTORY_SEPARATOR . '1f');
+
+		$manager->setHashCallback(fn ($path) => 'custom');
+		self::assertSame(1, $manager->clearPublished());
+		self::assertDirectoryDoesNotExist($base . DIRECTORY_SEPARATOR . 'images');
+		self::assertDirectoryExists($base . DIRECTORY_SEPARATOR . '.hidden');
+		self::assertFileExists($outside . DIRECTORY_SEPARATOR . 'keep.txt');
+		if ($hasLinks) {
+			self::assertTrue(is_link($base . DIRECTORY_SEPARATOR . 'cafe'));
+		}
+	}
+
+	public function testClearPublishedAgesByCompletionMarker()
+	{
+		[$manager, $base] = $this->newClearFixture();
+		$dir = $this->makeAgedDirectory($base . DIRECTORY_SEPARATOR . 'a1', 1000);
+		touch($dir . DIRECTORY_SEPARATOR . TAssetManager::DIRECTORY_COMPLETE_MARKER_PREFIX . sha1('src'), time() - 10);
+		touch($dir, time() - 1000);
+		self::assertSame(0, $manager->clearPublished(500));
+		self::assertDirectoryExists($dir);
+	}
+
+	public function testClearPublishedDirectoryIsPublishedAgain()
+	{
+		[$manager, $base, $outside] = $this->newClearFixture();
+		$url = $manager->publishFilePath($outside);
+		$dir = $base . DIRECTORY_SEPARATOR . basename($url);
+		self::assertFileExists($dir . DIRECTORY_SEPARATOR . 'keep.txt');
+		self::assertSame(1, $manager->clearPublished());
+		self::assertDirectoryDoesNotExist($dir);
+
+		// A later request has its own manager, without the published-URL cache.
+		$manager = $this->newAssetManager();
+		$manager->setBasePath($this->clearAlias);
+		$manager->setBaseUrl('/assets');
+		self::assertSame($url, $manager->publishFilePath($outside));
+		self::assertFileExists($dir . DIRECTORY_SEPARATOR . 'keep.txt');
+	}
+
+	public function testCronClearPublishedAndTaskInfo()
+	{
+		[$manager, $base, $outside] = $this->newClearFixture();
+		$old = $this->makeAgedDirectory($base . DIRECTORY_SEPARATOR . 'b2', 1000);
+		self::assertSame(0, $manager->cronClearPublished());
+		self::assertNull($manager->fxGetCronTaskInfos(null, null));
+		$manager->setID('assets');
+		self::assertNull($manager->fxGetCronTaskInfos(null, null));
+
+		$manager->setCronClearAge(500);
+		$info = $manager->fxGetCronTaskInfos(null, null);
+		self::assertInstanceOf(TCronTaskInfo::class, $info);
+		self::assertSame('assetsclear', $info->getName());
+		self::assertSame('assets->cronClearPublished()', $info->getTask());
+		self::assertSame('assets', $info->getModuleId());
+
+		$fresh = $this->makeAgedDirectory($base . DIRECTORY_SEPARATOR . 'c3', 10);
+		$broken = $fresh . DIRECTORY_SEPARATOR . 'broken.js';
+		$hasLink = @symlink($outside . DIRECTORY_SEPARATOR . 'missing.js', $broken);
+		$manager->setLinkAssets(true);
+		self::assertSame(1, $manager->cronClearPublished());
+		self::assertDirectoryDoesNotExist($old);
+		self::assertDirectoryExists($fresh);
+		if ($hasLink) {
+			self::assertFalse(is_link($broken));
+		}
 	}
 }

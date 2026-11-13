@@ -187,7 +187,8 @@ class TSvgTest extends TestCase
 
 	public function testSvgFile()
 	{
-		$path = tempnam(sys_get_temp_dir(), 'svg') . '.svg';
+		$base = tempnam(sys_get_temp_dir(), 'svg');
+		$path = $base . '.svg';
 		file_put_contents($path, '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><path d="M0 0"/></svg>');
 		try {
 			$svg = $this->svg();
@@ -196,6 +197,7 @@ class TSvgTest extends TestCase
 			$this->assertSame('<svg viewBox="0 0 1 1" aria-hidden="true" id="icon"><path d="M0 0"/></svg>', $this->render($svg));
 		} finally {
 			unlink($path);
+			unlink($base);
 		}
 	}
 

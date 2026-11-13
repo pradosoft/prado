@@ -648,6 +648,7 @@ class TComponentBehaviorTest extends TComponentTestBase
 		$this->assertTrue($behavior->isOwner($component));
 		$this->assertTrue($component->attachFailingMethod());
 		unset($e, $component);
+		PradoUnit::releaseLastException();
 		$this->assertFalse($behavior->hasOwner());
 	}
 
@@ -673,6 +674,7 @@ class TComponentBehaviorTest extends TComponentTestBase
 		unset($e, $other);
 		$this->assertSame($owner, $behavior->getOwner());
 		unset($owner);
+		PradoUnit::releaseLastException();
 		$this->assertNull($behavior->getOwner());
 	}
 

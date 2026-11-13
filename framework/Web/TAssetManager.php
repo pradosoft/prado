@@ -18,6 +18,7 @@ use Prado\Prado;
 use Prado\TApplicationMode;
 use Prado\IO\TTarFileExtractor;
 use Prado\TPropertyValue;
+use Prado\Util\Cron\TCronTaskInfo;
 use Prado\Util\Traits\TInitializedTrait;
 
 /**
@@ -180,6 +181,30 @@ use Prado\Util\Traits\TInitializedTrait;
  * following is scoped to the assets directory. Prefer copy publishing for untrusted
  * or mixed-content source directories.
  *
+ * ## Clearing Published Assets
+ *
+ * Nothing records when a published asset is last used, and the published directory
+ * name mixes in the PRADO version, so an upgrade leaves the old directories behind.
+ * {@see clearPublished} removes the published directories directly under the
+ * {@see getBasePath BasePath}, all of them or those last published before an age.
+ * A removed directory that is still in use is published again by the next request
+ * that publishes it; a page cached before the removal may miss its assets until then.
+ *
+ * {@see clearPublished} is bounded to the BasePath:
+ * - Only directories directly under the BasePath are removed; its files, dot-entries
+ *   (`.htaccess`, `.gitignore`), and symbolic links stay.
+ * - Without a {@see setHashCallback HashCallback}, only directories named as the
+ *   default hash names (1 to 8 lowercase hex digits) are removed.
+ * - A symbolic link inside a removed directory is unlinked and never followed.
+ *
+ * Set {@see setCronClearAge CronClearAge} to register the cron task `assetsclear`
+ * through {@see fxGetCronTaskInfos}.  It calls {@see cronClearPublished}, which
+ * removes the directories last published more than CronClearAge seconds ago and,
+ * with LinkAssets, the broken links.
+ * ```xml
+ * <module id="assets" class="Prado\Web\TAssetManager" CronClearAge="2592000" />
+ * ```
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
  */
@@ -228,6 +253,8 @@ class TAssetManager extends \Prado\TModule
 	private $_fileMode;
 	/** @var null|int the permission to be set for newly generated asset directories. */
 	private $_dirMode;
+	/** @var ?int the seconds since publishing after which the cron task removes a published directory. @since 4.4.0 */
+	private ?int $_cronClearAge = null;
 
 	/**
 	 * Initializes the module.
@@ -557,6 +584,174 @@ class TAssetManager extends \Prado\TModule
 	public function setDirMode($value)
 	{
 		$this->_dirMode = $value !== null ? TPropertyValue::ensureInteger($value) : null;
+	}
+
+	/**
+	 * @return ?int the seconds since publishing after which the cron task `assetsclear`
+	 *   removes a published directory; null for no cron task. Default null.
+	 * @since 4.4.0
+	 */
+	public function getCronClearAge(): ?int
+	{
+		return $this->_cronClearAge;
+	}
+
+	/**
+	 * Sets the age at which the cron task `assetsclear` removes a published directory.
+	 * The task is registered only while the age is set.
+	 * @param null|int|string $value the seconds since publishing; null, empty, or 0 for no cron task.
+	 * @throws TInvalidDataValueException when the value is negative.
+	 * @since 4.4.0
+	 */
+	public function setCronClearAge($value)
+	{
+		if ($value === null || $value === '') {
+			$this->_cronClearAge = null;
+			return;
+		}
+		$age = TPropertyValue::ensureInteger($value);
+		if ($age < 0) {
+			throw new TInvalidDataValueException('assetmanager_cronclearage_invalid', $value);
+		}
+		$this->_cronClearAge = $age ?: null;
+	}
+
+	/**
+	 * Removes the published directories directly under the {@see getBasePath BasePath}.
+	 * Without a {@see setHashCallback HashCallback}, only directories named as default
+	 * hash names are removed.  Files, dot-entries, and symbolic links directly under the
+	 * BasePath stay, and a symbolic link inside a removed directory is unlinked and
+	 * never followed.
+	 * @param ?int $olderThan the seconds since a directory was last published, by
+	 *   {@see getPublishedTime}; null removes every published directory.
+	 * @return int the number of directories removed.
+	 * @since 4.4.0
+	 */
+	public function clearPublished(?int $olderThan = null): int
+	{
+		$basePath = $this->getBasePath();
+		if ($basePath === null || ($basePath = realpath($basePath)) === false || !is_dir($basePath) || ($entries = @scandir($basePath)) === false) {
+			return 0;
+		}
+		$before = $olderThan === null ? null : time() - $olderThan;
+		$count = 0;
+		foreach ($entries as $entry) {
+			$path = $basePath . DIRECTORY_SEPARATOR . $entry;
+			if (!$this->isPublishedDirectory($path)) {
+				continue;
+			}
+			if ($before !== null && $this->getPublishedTime($path) >= $before) {
+				continue;
+			}
+			if ($this->removePublishedDirectory($path)) {
+				$count++;
+			}
+		}
+		return $count;
+	}
+
+	/**
+	 * Removes the published directories last published more than
+	 * {@see getCronClearAge CronClearAge} seconds ago and, with
+	 * {@see setLinkAssets LinkAssets}, the broken links under the BasePath.
+	 * This is the method of the cron task `assetsclear`.
+	 * @return int the number of directories removed; 0 without a CronClearAge.
+	 * @since 4.4.0
+	 */
+	public function cronClearPublished(): int
+	{
+		if (($age = $this->getCronClearAge()) === null) {
+			return 0;
+		}
+		$count = $this->clearPublished($age);
+		if ($this->getLinkAssets()) {
+			$this->validateSymlinks();
+		}
+		return $count;
+	}
+
+	/**
+	 * Registers the cron task `assetsclear`, which calls {@see cronClearPublished}, when
+	 * the module has an ID and a {@see getCronClearAge CronClearAge}.  Another asset
+	 * manager registers the same task name.
+	 * @param object $sender the object raising fxGetCronTaskInfos.
+	 * @param mixed $param the parameter.
+	 * @return ?TCronTaskInfo the task information; null without an ID or a CronClearAge.
+	 * @since 4.4.0
+	 */
+	public function fxGetCronTaskInfos($sender, $param): ?TCronTaskInfo
+	{
+		if (!($id = $this->getID()) || $this->getCronClearAge() === null) {
+			return null;
+		}
+		return new TCronTaskInfo('assetsclear', $id . '->cronClearPublished()', $this, Prado::localize('AssetManager Clear Published Assets'), Prado::localize('Removes the published asset directories last published before the CronClearAge.'));
+	}
+
+	/**
+	 * Whether an entry directly under the BasePath is a published directory that
+	 * {@see clearPublished} removes: a directory that is not a symbolic link or a
+	 * dot-entry and, without a {@see setHashCallback HashCallback}, is named as a
+	 * default hash name.
+	 * @param string $path the entry path.
+	 * @return bool whether the entry is a removable published directory.
+	 * @since 4.4.0
+	 */
+	protected function isPublishedDirectory(string $path): bool
+	{
+		$name = basename($path);
+		if ($name === '' || $name[0] === '.' || is_link($path) || !is_dir($path)) {
+			return false;
+		}
+		return is_callable($this->getHashCallback()) || preg_match('/^[0-9a-f]{1,8}$/', $name) === 1;
+	}
+
+	/**
+	 * The time a published directory was last published: the newest modification time
+	 * of the directory and its completion markers.  A publish adds files to the
+	 * directory or touches its marker; Performance mode does neither for a directory
+	 * already published.
+	 * @param string $dir the published directory.
+	 * @return int the Unix time the directory was last published.
+	 * @since 4.4.0
+	 */
+	protected function getPublishedTime(string $dir): int
+	{
+		$time = (int) @filemtime($dir);
+		foreach (glob($dir . DIRECTORY_SEPARATOR . static::DIRECTORY_COMPLETE_MARKER_PREFIX . '*', GLOB_NOSORT) ?: [] as $marker) {
+			$time = max($time, (int) @filemtime($marker));
+		}
+		return $time;
+	}
+
+	/**
+	 * Removes a published directory and its contents.  A symbolic link is unlinked and
+	 * never followed, so the removal stays inside the directory.  Windows removes a link
+	 * to a directory with `rmdir()`, which leaves the link's target.
+	 * @param string $dir the directory to remove.
+	 * @return bool whether the directory is removed.
+	 * @since 4.4.0
+	 */
+	protected function removePublishedDirectory(string $dir): bool
+	{
+		if (($entries = @scandir($dir)) === false) {
+			return false;
+		}
+		foreach ($entries as $entry) {
+			if ($entry === '.' || $entry === '..') {
+				continue;
+			}
+			$path = $dir . DIRECTORY_SEPARATOR . $entry;
+			if (is_link($path)) {
+				if (!@unlink($path)) {
+					@rmdir($path);
+				}
+			} elseif (is_dir($path)) {
+				$this->removePublishedDirectory($path);
+			} else {
+				@unlink($path);
+			}
+		}
+		return @rmdir($dir);
 	}
 
 	/**
@@ -1199,6 +1394,8 @@ class TAssetManager extends \Prado\TModule
 	 *
 	 * A directory is scanned recursively. Directory symlinks are validated but not
 	 * descended into, so the walk stays within the asset tree and cannot loop.
+	 * Windows removes a link to a directory with `rmdir()`, which leaves the link's
+	 * target.
 	 * Defaults to {@see getBasePath BasePath}.
 	 * @param ?string $path the link or directory to validate. Defaults to the
 	 * publishing root.
@@ -1213,8 +1410,8 @@ class TAssetManager extends \Prado\TModule
 			if (@file_exists($path)) {
 				return true;
 			}
-			if ($remove) {
-				@unlink($path);
+			if ($remove && !@unlink($path)) {
+				@rmdir($path);
 			}
 			return false;
 		}
