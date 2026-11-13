@@ -80,7 +80,7 @@ class TPermissionsBehavior extends TBehavior implements IDynamicMethods
 	/** @var array<string, string[]> key is the dynamic event, values are the permission names to check */
 	private $_permissionEvents;
 
-	/** @var \Prado\Security\Permissions\TPermissionEvent[] */
+	/** @var ?\Prado\Security\Permissions\TPermissionEvent[] */
 	private $_events;
 
 	/**

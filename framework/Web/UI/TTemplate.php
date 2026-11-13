@@ -126,7 +126,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 
 	/** @var array list of component tags and strings */
 	private $_tpl = [];
-	/** @var array list of directive settings */
+	/** @var ?array list of directive settings */
 	private $_directive = [];
 	/** @var string context path */
 	private $_contextPath;
@@ -134,7 +134,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 	private $_tplFile;
 	/** @var int the line number that parsing starts from (internal use) */
 	private $_startingLine = 0;
-	/** @var string template content to be parsed */
+	/** @var ?string template content to be parsed */
 	private $_content;
 	/** @var bool tells whether the class and attributes should be validated before moving on	 */
 	private $_attributevalidation = true;

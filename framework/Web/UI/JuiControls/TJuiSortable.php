@@ -42,7 +42,7 @@ use Prado\Web\UI\WebControls\TRepeater;
 class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHandler
 {
 	/**
-	 * @var \Prado\Web\UI\ITemplate template for repeater items
+	 * @var TRepeater template for repeater items
 	 */
 	private $_repeater;
 

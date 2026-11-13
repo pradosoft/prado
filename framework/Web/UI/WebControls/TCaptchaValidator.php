@@ -115,7 +115,7 @@ class TCaptchaValidator extends TBaseValidator
 
 	/**
 	 * @param string $token
-	 * @return string hash
+	 * @return int hash
 	 */
 	private function generateTokenHash($token)
 	{

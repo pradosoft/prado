@@ -1,47 +1,49 @@
 <?php
 
 /**
- * Fixture for PradoMethodVisibleStaticMethodTypeSpecifyingExtension tests.
+ * Fixture for TComponentHasMethodTypeSpecifyingExtension tests.
  *
  * PHPStan should not report any errors on this file when the extension is active.
  * When the extension is disabled, PHPStan should report "Call to an undefined
- * method" for every guarded call inside a Prado::method_visible() block.
+ * method" for every guarded method call inside an if ($this->hasMethod(...)) block.
  */
 
 declare(strict_types=1);
 
-namespace PradoTests\PHPStan\Fixtures;
+namespace Prado\Test\Unit\PHPStan\Fixtures;
 
-use Prado\Prado;
 use Prado\TComponent;
 
 /**
- * Declares two optional methods that callers check via method_visible().
+ * A concrete subclass that declares assertUninitialized() – this is the method
+ * the tests try to call after the hasMethod guard.
  */
-class MethodVisibleFixtureComponent extends TComponent
+class HasMethodFixtureComponent extends TComponent
 {
-	public function initialize(string $id): void
+	public function assertUninitialized(string $connectionId): void
 	{
 	}
 
-	public function configure(array $options): void
+	public function validate(mixed $value): bool
 	{
+		return true;
 	}
 }
 
 /**
- * Caller that uses Prado::method_visible() guards.
- * Mirrors the pattern used extensively inside TComponent itself.
+ * Caller that uses hasMethod() guards before invoking methods.
+ * Without the extension, PHPStan cannot prove the methods exist and emits errors.
  */
-class MethodVisibleCaller extends TComponent
+class HasMethodCaller extends TComponent
 {
 	/**
-	 * Guard on an external object.
+	 * The canonical motivating example from the bug report.
+	 * hasMethod guard for a method declared on a sibling subclass.
 	 */
-	public function testMethodVisibleOnObject(MethodVisibleFixtureComponent $component): void
+	public function testHasMethodGuard(HasMethodFixtureComponent $component): void
 	{
-		if (Prado::method_visible($component, 'initialize')) {
-			$component->initialize('myId');
+		if ($component->hasMethod('dynamicMethod')) {
+			$component->dynamicMethod('someValue');
 		}
 		
 		if ($component->hasMethod('getTitle')) {
@@ -60,12 +62,13 @@ class MethodVisibleCaller extends TComponent
 	}
 
 	/**
-	 * Guard on $this — used in TComponent::__get / __set and similar lifecycle code.
+	 * $this-based guard: the real-world pattern where a framework class checks
+	 * for an optional lifecycle method on itself.
 	 */
-	public function testMethodVisibleOnSelf(): void
+	public function testSelfHasMethodGuard(): void
 	{
-		if (Prado::method_visible($this, 'initialize')) {
-			$this->initialize('myId');
+		if ($this->hasMethod('dynamicMethod')) {
+			$this->dynamicMethod('Property');
 		}
 		
 		if ($this->hasMethod('getTitle')) {
@@ -84,12 +87,13 @@ class MethodVisibleCaller extends TComponent
 	}
 
 	/**
-	 * A second method name to confirm generality.
+	 * A second method name to confirm the extension handles any constant string,
+	 * not just 'assertUninitialized'.
 	 */
-	public function testMethodVisibleConfigure(MethodVisibleFixtureComponent $component): void
+	public function testAlternativeMethodGuard(HasMethodFixtureComponent $component): void
 	{
-		if (Prado::method_visible($component, 'configure')) {
-			$component->configure([]);
+		if ($component->hasMethod('validate')) {
+			$component->validate('someValue');
 		}
 		
 		if ($component->hasMethod('getValue')) {

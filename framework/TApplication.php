@@ -191,7 +191,7 @@ class TApplication extends TComponent implements ISingleton
 	 */
 	private $_id;
 	/**
-	 * @var string unique application ID
+	 * @var ?string unique application ID
 	 */
 	private $_uniqueID;
 	/**
@@ -203,7 +203,7 @@ class TApplication extends TComponent implements ISingleton
 	 */
 	private $_step;
 	/**
-	 * @var array available services and their configurations indexed by service IDs
+	 * @var ?array available services and their configurations indexed by service IDs
 	 */
 	private $_services;
 	/**
@@ -312,7 +312,7 @@ class TApplication extends TComponent implements ISingleton
 	 */
 	private $_authRules;
 	/**
-	 * @var string|TApplicationMode application mode
+	 * @var string application mode, a {@see TApplicationMode} value
 	 */
 	private $_mode;
 

@@ -57,12 +57,13 @@
 		"psy/psysh": "^0"
 	},
 	"require-dev" : {
+		"ext-bz2": "*",
 		"phpunit/phpunit" : "^10",
 		"php-webdriver/webdriver": "^1",
 		"phpdocumentor/shim": "^3",
 		"pradosoft/prado-phpdoc-template": "*",
-		"friendsofphp/php-cs-fixer": "^3.95",
-		"phpstan/phpstan": "^2.1"
+		"friendsofphp/php-cs-fixer": "3.95.27",
+		"phpstan/phpstan": "2.3.5"
 	},
 	"suggest" : {
 		"ext-apcu" : "Enables the use of TAPCCache as a cache handler",
@@ -94,7 +95,7 @@
 			"Prado\\Test\\Unit\\": "tests/unit/"
 		},
 		"exclude-from-classmap": [
-			"tests/unit/PHPStan/fixtures/",
+			"tests/unit/PHPStan/Fixtures/",
 			"tests/unit/Security/app/prado3stubs/",
 			"tests/unit/Exceptions/TErrorHandlerTestGlobalClass.php"
 		]
@@ -125,6 +126,14 @@
 		"fix": "vendor/bin/php-cs-fixer fix",
 		"stan": "vendor/bin/phpstan analyse --memory-limit=512M",
         "unittest": "vendor/bin/phpunit --testsuite unit,db-sqlite,db-mysql,db-pgsql",
+		"coverage": [
+			"@putenv XDEBUG_MODE=coverage",
+			"vendor/bin/phpunit --testsuite unit --coverage-text"
+		],
+		"coverage-html": [
+			"@putenv XDEBUG_MODE=coverage",
+			"vendor/bin/phpunit --testsuite unit --coverage-html build/coverage"
+		],
 		"fulltest": [
 			"@fix",
 			"@stan",

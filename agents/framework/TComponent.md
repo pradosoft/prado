@@ -132,6 +132,7 @@ TComponent::RAISE_EVENT_GLOBAL      // flag: also raise as global fx event
 ## Patterns & Gotchas
 
 - **`isa()` is not `instanceof`** — `isa()` returns true if the object IS the class OR has an attached behavior of that class. Use it for duck-typing with behaviors.
+- **`isa()` narrows for static analysis** — `isa()` declares `@template T of object`, `@param class-string<T>|T $class` and `@phpstan-assert-if-true T $this`, so PHPStan narrows the subject inside the guard exactly as `instanceof` does. The tag covers intersection subjects such as `IService&TComponent`, which never reach [TComponentIsaTypeSpecifyingExtension](./PHPStan/TComponentIsaTypeSpecifyingExtension.md). Never add an inline `@var` after an `isa()` guard.
 - **`dy*` must always accept `TCallChain` as last parameter** — even if the behavior doesn't continue the chain.
 - **`_getZappableSleepProps()` must call parent** — accumulated across the entire class hierarchy.
 - **`$_e` vs `$_ue`** — instance events use `$_e`, global events use static `$_ue`. Never access these directly; use the API.

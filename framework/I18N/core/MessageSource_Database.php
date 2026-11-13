@@ -156,7 +156,7 @@ class MessageSource_Database extends MessageSource
 	/**
 	 * Retrive catalogue details, array($cat_id, $variant, $count).
 	 * @param string $catalogue
-	 * @return array catalogue details, array($cat_id, $variant, $count).
+	 * @return array|false catalogue details, array($cat_id, $variant, $count).
 	 */
 	private function getCatalogueDetails($catalogue = 'messages')
 	{

@@ -398,7 +398,7 @@ class TComponent
 	protected $_behaviorsenabled = true;
 
 	/**
-	 * @var TPriorityMap list of object behaviors
+	 * @var ?TPriorityMap list of object behaviors
 	 */
 	protected $_m;
 
@@ -889,6 +889,7 @@ class TComponent
 	 * @param string $name the property name or event name
 	 * @param mixed $value the property value or event handler
 	 * @throws TInvalidOperationException If the property is not defined or read-only.
+	 * @return void
 	 */
 	public function __set($name, $value)
 	{
@@ -1856,7 +1857,7 @@ class TComponent
 	 * an existing class or interface, this will return the first instanceof.
 	 * The name 'asa' stands for 'as a'.
 	 * @param string $behaviorname the behavior name or the class name of the behavior.
-	 * @return object the behavior object of name or class, or null if the behavior does not exist
+	 * @return ?object the behavior object of name or class, or null if the behavior does not exist
 	 * @since 3.2.3
 	 */
 	public function asa($behaviorname)
@@ -1893,8 +1894,14 @@ class TComponent
 	 * The behavior {@see \Prado\Util\IInstanceCheck} is to allow a behavior to have the host object
 	 * act as a completely different object.
 	 *
-	 * @param mixed|string $class class or string
+	 * Static analysis narrows $this to $class when this returns true, the same way
+	 * `instanceof` narrows.  The narrowing is carried by the assertion tag below so
+	 * it applies to every subject type, including intersection types.
+	 *
+	 * @template T of object
+	 * @param class-string<T>|T $class class or string
 	 * @return bool whether or not the object or a behavior is an instance of a particular class
+	 * @phpstan-assert-if-true T $this
 	 * @since 3.2.3
 	 */
 	public function isa($class)

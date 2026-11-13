@@ -59,17 +59,32 @@ class TTestApplicationTest extends \PHPUnit\Framework\TestCase
 	// Constructor defaults
 	// -----------------------------------------------------------------------
 
-	public function testConstructor_defaultsBasePath_toTempDir(): void
+	public function testConstructor_defaultsBasePath_toDefaultBasePath(): void
 	{
-		$this->assertSame(realpath(sys_get_temp_dir()), realpath($this->_app->getBasePath()));
+		$this->assertSame(TTestApplication::getDefaultBasePath(), realpath($this->_app->getBasePath()));
+	}
+
+	public function testGetDefaultBasePath_isProcessDirectoryInTempDir(): void
+	{
+		$path = TTestApplication::getDefaultBasePath();
+		$this->assertDirectoryExists($path);
+		$this->assertSame(realpath(sys_get_temp_dir()), dirname($path));
+		$this->assertStringStartsWith('prado-test-app-' . getmypid() . '-', basename($path));
+		$this->assertSame($path, TTestApplication::getDefaultBasePath());
 	}
 
 	public function testConstructor_customBasePath_usedWhenProvided(): void
 	{
-		$tmpDir = sys_get_temp_dir();
-		$app = new TTestApplication($tmpDir);
-		$this->assertSame(realpath($tmpDir), realpath($app->getBasePath()));
-		$app->restoreApplication();
+		$tmpDir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'prado-test-app-custom-' . bin2hex(random_bytes(4));
+		mkdir($tmpDir);
+		try {
+			$app = new TTestApplication($tmpDir);
+			$this->assertSame(realpath($tmpDir), realpath($app->getBasePath()));
+			$app->restoreApplication();
+		} finally {
+			@rmdir($tmpDir . DIRECTORY_SEPARATOR . TApplication::RUNTIME_PATH);
+			@rmdir($tmpDir);
+		}
 	}
 
 	// -----------------------------------------------------------------------
@@ -83,8 +98,8 @@ class TTestApplicationTest extends \PHPUnit\Framework\TestCase
 
 	public function testConstructor_overwritesApplicationAlias(): void
 	{
-		// After construction, the alias points at the temp-dir basePath.
-		$expected = realpath(sys_get_temp_dir());
+		// After construction, the alias points at the default basePath.
+		$expected = TTestApplication::getDefaultBasePath();
 		$this->assertSame($expected, Prado::getPathOfAlias('Application'));
 	}
 
