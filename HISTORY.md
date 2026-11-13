@@ -1,4 +1,6 @@
 ## Version 4.4.0 - TBA
+ENH: `TDbTableMutex::flushExpired()` deletes the expired lock rows, registered as the cron task `dbmutexflushexpired`. (belisoful)
+ENH: `TModule::createConfigComponent()`, `getConfigElements()`, and `createElementComponent()` create a component a module alone uses from a child element of its configuration: `class` and the properties as attributes, or `class` and `properties` in PHP. (belisoful)
 ENH: `TModule::createConfigComponent()`, `getConfigElements()`, and `createElementComponent()` create a component a module alone uses from a child element of its configuration: `class` and the properties as attributes, or `class` and `properties` in PHP. A component without properties may be any class. (belisoful)
 ENH: `TLogRouter` creates its routes with `TModule::createElementComponent()`; a PHP route may be a class name alone, and a route without a class throws `module_config_class_required`, which replaces `logrouter_routeclass_required`. (belisoful)
 BUG: `TFileCacheDependency` and `TDirectoryCacheDependency` clear PHP's stat cache before each read, so a long-lived process sees a file changed by another process. (belisoful)
