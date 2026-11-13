@@ -17,8 +17,9 @@ use Prado\Web\UI\TCommandEventParameter;
  * Base of the scaffold control tests.
  *
  * Each test gets a fresh {@see ScaffoldTestPage} with a THead and a TForm, a page service for template
- * loading, and an asset manager publishing into a directory under the system temporary
- * directory. The application service and asset manager are restored afterwards.
+ * loading, and an asset manager publishing into its own directory under the system temporary
+ * directory. The application service and asset manager are restored and the directory is removed
+ * afterwards.
  * PHP notices and deprecations not suppressed with `@` raise an ErrorException so a test fails on them.
  */
 abstract class ScaffoldTestCase extends \PHPUnit\Framework\TestCase
@@ -27,6 +28,7 @@ abstract class ScaffoldTestCase extends \PHPUnit\Framework\TestCase
 	protected TForm $form;
 	private $_service;
 	private $_assetManager;
+	private ?string $_assetDir = null;
 
 	protected function setUp(): void
 	{
@@ -42,11 +44,9 @@ abstract class ScaffoldTestCase extends \PHPUnit\Framework\TestCase
 		$this->_assetManager = PradoUnit::getProp($app, '_assetManager');
 		$app->setService(new TPageService());
 
-		$dir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'prado-activerecord-scaffold-assets';
-		if (!is_dir($dir)) {
-			mkdir($dir, 0o777, true);
-		}
-		Prado::setPathOfAlias('ScaffoldTestAssets', $dir);
+		$this->_assetDir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'prado-activerecord-scaffold-assets-' . bin2hex(random_bytes(4));
+		mkdir($this->_assetDir, 0o777, true);
+		Prado::setPathOfAlias('ScaffoldTestAssets', $this->_assetDir);
 		$assets = new TAssetManager();
 		$assets->setBasePath('ScaffoldTestAssets');
 		$assets->setBaseUrl('/assets');
@@ -68,6 +68,33 @@ abstract class ScaffoldTestCase extends \PHPUnit\Framework\TestCase
 		$app->setService($this->_service);
 		PradoUnit::setProp($app, '_assetManager', $this->_assetManager);
 		restore_error_handler();
+		if ($this->_assetDir !== null) {
+			$this->removeDirectory($this->_assetDir);
+			$this->_assetDir = null;
+		}
+	}
+
+	/**
+	 * Removes a directory and everything in it without following symbolic links.
+	 * @param string $dir the directory to remove
+	 */
+	private function removeDirectory(string $dir): void
+	{
+		if (!is_dir($dir) || is_link($dir)) {
+			return;
+		}
+		foreach (scandir($dir) as $entry) {
+			if ($entry === '.' || $entry === '..') {
+				continue;
+			}
+			$path = $dir . DIRECTORY_SEPARATOR . $entry;
+			if (is_dir($path) && !is_link($path)) {
+				$this->removeDirectory($path);
+			} else {
+				unlink($path);
+			}
+		}
+		rmdir($dir);
 	}
 
 	/**
