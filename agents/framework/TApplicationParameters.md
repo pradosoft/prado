@@ -42,7 +42,7 @@ The map of application parameters returned by `TApplication::getParameters()` (c
 |---|---|
 | `itemAt()`, `$p[$key]` | value; null for an absent key, without `dyNoItem` |
 | `contains()` | whether a value is stored |
-| `add()`, `$p[$key] = $v`, `mergeWith()` | throws `TInvalidOperationException` (`appparameters_final`) |
+| `add()`, `$p[$key] = $v`, `mergeWith()`, `$p[] = $v` onto a final next integer key | throws `TInvalidOperationException` (`appparameters_final`) |
 | `remove()`, `unset($p[$key])`, `removeItem()`, `clear()`, `copyFrom()` | throws `appparameters_final` |
 | `finalize()` again | no change |
 
@@ -69,5 +69,6 @@ The map of application parameters returned by `TApplication::getParameters()` (c
 
 - **Guard precedes `dyAddItem`** — the final check runs before `TMap::add()`, so behaviors such as `TMapRouteBehavior` never see a rejected change.
 - **Same value still throws** — re-adding the identical value to a final key is rejected.
+- **Append checks its key** — `add(null, $v)` and `$p[] = $v` check the next integer key PHP assigns (`getNextIntegerKey()`, from a copy that keeps PHP's append counter) when any key is final.
 - **Custom `newParameters()`** — a subclass that returns a plain `TMap` cannot finalize; applying a configuration with a final parameter throws `TConfigurationException` (`appconfig_parameters_final_unsupported`). Non-final parameters still apply.
 - **Serialization** — the final-key list serializes with the map and is omitted when empty.

@@ -39,6 +39,7 @@ use Prado\Util\Behaviors\TMapRouteBehavior;
  * |---|---|
  * | {@see itemAt()}, `$params[$key]` | returns the value; null for an absent key, without `dyNoItem` |
  * | {@see add()}, `$params[$key] = $v`, {@see mergeWith()} | throws |
+ * | `$params[] = $v` when the next integer key is final | throws |
  * | {@see remove()}, `unset($params[$key])`, {@see clear()}, {@see copyFrom()} | throws |
  * | {@see finalize()} | no change |
  *
@@ -130,7 +131,7 @@ class TApplicationParameters extends TMap implements IMapRouteIndex
 	}
 
 	/**
-	 * Adds a parameter.
+	 * Adds a parameter.  An append checks the next integer key PHP assigns.
 	 * @param mixed $key the parameter key; null appends with the next integer key.
 	 * @param mixed $value the parameter value.
 	 * @throws TInvalidOperationException if the key is final or the map is read-only.
@@ -138,12 +139,27 @@ class TApplicationParameters extends TMap implements IMapRouteIndex
 	 */
 	public function add($key, $value): mixed
 	{
+		if ($key === null && $this->_final !== []) {
+			$key = $this->getNextIntegerKey();
+		}
 		if ($key !== null) {
 			$this->ensureNotFinal($key);
 		}
 		$key = parent::add($key, $value);
 		$this->routeKeyChange($key, $value);
 		return $key;
+	}
+
+	/**
+	 * Returns the integer key PHP assigns to the next append.  A copy of the data keeps
+	 * PHP's append counter, which a removal does not lower.
+	 * @return int the next integer key.
+	 */
+	protected function getNextIntegerKey(): int
+	{
+		$data = $this->toArray();
+		$data[] = null;
+		return array_key_last($data);
 	}
 
 	/**
