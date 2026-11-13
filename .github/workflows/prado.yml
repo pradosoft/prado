@@ -78,7 +78,10 @@ jobs:
           mysql -uroot -proot < ./tests/initdb_mysql.sql
 
       - name: Setup postgres service
+        # The PHPStan extension tests run first, and the 4.3 test listener initializes the
+        # test databases on every phpunit run, so prado_unitest can already exist here.
         run: |
+          dropdb -h 127.0.0.1 -U postgres --if-exists prado_unitest
           createdb -h 127.0.0.1 -U postgres prado_unitest
           psql -h 127.0.0.1 -U postgres -a -w prado_unitest -f ./tests/initdb_pgsql.sql
         env:
