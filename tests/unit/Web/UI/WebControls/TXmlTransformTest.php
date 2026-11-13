@@ -13,13 +13,23 @@ class TXmlTransformTest extends \PHPUnit\Framework\TestCase
 	private $transformContent;
 	private $documentPath;
 	private $transformPath;
+	private $_obLevel;
 
 	protected function setUp(): void
 	{
+		$this->_obLevel = ob_get_level();
 		$this->documentPath = __DIR__ . '/data/hello.xml';
 		$this->documentContent = file_get_contents($this->documentPath);
 		$this->transformPath = __DIR__ . '/data/hello.xsl';
 		$this->transformContent = file_get_contents($this->transformPath);
+	}
+
+	protected function tearDown(): void
+	{
+		// the first getResponse() of the run bootstraps the response, which starts a buffer
+		while (ob_get_level() > $this->_obLevel) {
+			ob_end_clean();
+		}
 	}
 
 	public function testSetDocumentContent()
@@ -84,7 +94,7 @@ class TXmlTransformTest extends \PHPUnit\Framework\TestCase
 		$parameters = $transform->getParameters();
 		$parameters->add('param1', 'value1');
 		$parameters->add('param2', 'value2');
-		
+
 		$this->assertEquals('value1', $transform->getParameters()->itemAt('param1'));
 		$this->assertEquals('value2', $transform->getParameters()->itemAt('param2'));
 		$this->assertCount(2, $transform->getParameters());
@@ -144,27 +154,19 @@ class TXmlTransformTest extends \PHPUnit\Framework\TestCase
 
 	public function testRenderWithBodyAsDocumentAndTransformPath()
 	{
-		// Set transform path but leave document unset so it uses body as document
+		// No document source: the body renders as the document, and an empty body is not loadable XML.
 		$transform = new TXmlTransform();
 		$transform->setTransformPath($this->transformPath);
-		
-		// Create a writer and render
-		$textWriter = new TTextWriter();
-		$htmlWriter = new THtmlWriter($textWriter);
-		
-		// Test with parameters to make sure they're processed even when falling back to body
 		$transform->getParameters()->add('testParam', 'testValue');
 		$this->assertEquals('testValue', $transform->getParameters()->itemAt('testParam'));
-		
+
+		$textWriter = new TTextWriter();
+		$htmlWriter = new THtmlWriter($textWriter);
 		try {
 			$transform->render($htmlWriter);
-			$this->fail("should have thrown \ValueError");
-		} catch (\ValueError) {}
-		$actual = $textWriter->flush();
-		
-		// Since we're transforming an empty XML document with our XSL,
-		// and our XSL expects a <greeting> element, we should get an empty <b> tag
-		$this->assertEquals('', $actual);
-		ob_end_clean();
+			$this->fail('render() should throw \\ValueError for an empty body document');
+		} catch (\ValueError) {
+		}
+		$this->assertEquals('', $textWriter->flush());
 	}
 }
