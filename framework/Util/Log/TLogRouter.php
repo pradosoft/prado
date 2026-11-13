@@ -66,6 +66,7 @@ use Prado\Xml\TXmlDocument;
  *     ],
  * ];
  * ```
+ * A PHP route entry may also be its class name alone.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Carl G. Mathisen <carlgmathisen@gmail.com>
@@ -111,40 +112,20 @@ class TLogRouter extends \Prado\TModule
 	}
 
 	/**
-	 * Loads configuration from an XML element or PHP array
-	 * @param mixed $config configuration node
-	 * @throws TConfigurationException if log route class or type is not specified
+	 * Creates and adds a route for each `<route>` element of an XML configuration, or each
+	 * entry of the `routes` array of a PHP configuration.  A PHP entry is an array with
+	 * `class` and `properties`, or a class name alone.
+	 * @param null|array|\Prado\Xml\TXmlElement $config configuration node
+	 * @throws TConfigurationException if a route has no class, or its class is not a {@see TLogRoute}
 	 */
 	private function loadConfig($config)
 	{
 		if (is_array($config)) {
-			if (isset($config['routes']) && is_array($config['routes'])) {
-				foreach ($config['routes'] as $route) {
-					$properties = $route['properties'] ?? [];
-					if (!isset($route['class'])) {
-						throw new TConfigurationException('logrouter_routeclass_required');
-					}
-					$route = Prado::createComponent($route['class']);
-					if (!($route instanceof TLogRoute)) {
-						throw new TConfigurationException('logrouter_routetype_invalid');
-					}
-					$route->setSubProperties($properties);
-					$this->addRoute($route, $route);
-				}
-			}
-		} else {
-			foreach ($config->getElementsByTagName('route') as $routeConfig) {
-				$properties = $routeConfig->getAttributes();
-				if (($class = $properties->remove('class')) === null) {
-					throw new TConfigurationException('logrouter_routeclass_required');
-				}
-				$route = Prado::createComponent($class);
-				if (!($route instanceof TLogRoute)) {
-					throw new TConfigurationException('logrouter_routetype_invalid');
-				}
-				$route->setSubProperties($properties);
-				$this->addRoute($route, $routeConfig);
-			}
+			$config = ['route' => is_array($config['routes'] ?? null) ? array_values($config['routes']) : []];
+		}
+		foreach ($this->getConfigElements($config, 'route', true) as $element) {
+			$route = $this->createElementComponent($element, 'route', TLogRoute::class, 'logrouter_routetype_invalid');
+			$this->addRoute($route, $element);
 		}
 	}
 
