@@ -81,17 +81,21 @@ class TStreamSubclassesTest extends \PHPUnit\Framework\TestCase
 		$s->close();
 	}
 
+	/**
+	 * STDIN is readable and STDOUT and STDERR are writable on any descriptor.  The other
+	 * capability follows the descriptor the run was started with, which
+	 * {@see TStreamPresetsTest::testStdStreamCapabilitiesFollowTheDescriptor()} checks.
+	 */
 	public function testStdStreamsCapabilitiesAndNonOwning()
 	{
 		$cases = [
-			[new TStdInStream(), TStdInStream::URI, 'php://stdin', true, false],
-			[new TStdOutStream(), TStdOutStream::URI, 'php://stdout', false, true],
-			[new TStdErrStream(), TStdErrStream::URI, 'php://stderr', false, true],
+			[new TStdInStream(), TStdInStream::URI, 'php://stdin', 'isReadable'],
+			[new TStdOutStream(), TStdOutStream::URI, 'php://stdout', 'isWritable'],
+			[new TStdErrStream(), TStdErrStream::URI, 'php://stderr', 'isWritable'],
 		];
-		foreach ($cases as [$s, $uri, $expectedUri, $readable, $writable]) {
+		foreach ($cases as [$s, $uri, $expectedUri, $capability]) {
 			self::assertSame($expectedUri, $uri);
-			self::assertSame($readable, $s->isReadable(), "{$uri} readable");
-			self::assertSame($writable, $s->isWritable(), "{$uri} writable");
+			self::assertTrue($s->$capability(), "{$uri} {$capability}");
 			self::assertFalse($s->getOwnsResource(), "{$uri} is non-owning (never closes the process handle).");
 		}
 	}
