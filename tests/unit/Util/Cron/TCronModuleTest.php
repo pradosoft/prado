@@ -2917,16 +2917,19 @@ class TCronModuleTest extends \PHPUnit\Framework\TestCase
 			self::assertSame([], $this->obj->getStatuses(), 'a status directory that cannot be made has no status');
 			PradoUnit::invoke($this->obj, 'endStatus');
 
-			$this->obj->setStatusPath($dir);
-			PradoUnit::invoke($this->obj, 'beginStatus', TCronModule::STATUS_ROLE_MANUAL);
-			if (is_writable($dir)) {
-				PradoUnit::invoke($this->obj, 'endStatus');
+			// Windows ignores the mode of a directory: probe it with a write.
+			if (@file_put_contents($dir . DIRECTORY_SEPARATOR . 'probe', '') !== false) {
 				self::markTestSkipped('the process can write to a read-only directory');
 			}
+			$this->obj->setStatusPath($dir);
+			PradoUnit::invoke($this->obj, 'beginStatus', TCronModule::STATUS_ROLE_MANUAL);
 			self::assertSame([], glob($dir . DIRECTORY_SEPARATOR . '*'), 'a status that cannot be written leaves no file');
 			PradoUnit::invoke($this->obj, 'endStatus');
 		} finally {
 			chmod($dir, 0o700);
+			foreach (glob($dir . DIRECTORY_SEPARATOR . '*') ?: [] as $left) {
+				unlink($left);
+			}
 			rmdir($dir);
 			unlink($file);
 		}

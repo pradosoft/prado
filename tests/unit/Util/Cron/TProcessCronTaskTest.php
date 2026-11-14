@@ -302,13 +302,17 @@ class TProcessCronTaskTest extends \PHPUnit\Framework\TestCase
 			self::assertFalse($task->execute(null), 'a pid directory that cannot be made fails the launch');
 			self::assertNull(PradoUnit::invoke($task, 'getRecordedStart'));
 			$task->setPidFile($dir . DIRECTORY_SEPARATOR . 'x.pid');
-			if (is_writable($dir)) {
+			// Windows ignores the mode of a directory: probe it with a write.
+			if (@file_put_contents($dir . DIRECTORY_SEPARATOR . 'probe', '') !== false) {
 				self::markTestSkipped('the process can write to a read-only directory');
 			}
 			self::assertFalse($task->execute(null), 'a pid file that cannot be written fails the launch');
 			self::assertSame([], glob($dir . DIRECTORY_SEPARATOR . '*'));
 		} finally {
 			chmod($dir, 0o700);
+			foreach (glob($dir . DIRECTORY_SEPARATOR . '*') ?: [] as $left) {
+				unlink($left);
+			}
 			rmdir($dir);
 			unlink($file);
 		}

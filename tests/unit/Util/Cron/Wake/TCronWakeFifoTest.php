@@ -107,12 +107,15 @@ class TCronWakeFifoTest extends \PHPUnit\Framework\TestCase
 		chmod($dir, 0o500);
 		try {
 			$t = new TCronWakeFifo($dir . DIRECTORY_SEPARATOR . 'cronwake.fifo');
-			if (is_writable($dir)) {
+			if (@file_put_contents($dir . DIRECTORY_SEPARATOR . 'probe', '') !== false) {
 				self::markTestSkipped('the process can write to a read-only directory');
 			}
 			self::assertFalse($t->signal(microtime(true)), 'a pipe that cannot be made');
 		} finally {
 			chmod($dir, 0o700);
+			foreach (glob($dir . DIRECTORY_SEPARATOR . '*') ?: [] as $left) {
+				unlink($left);
+			}
 			rmdir($dir);
 		}
 		posix_mkfifo($this->fifo, 0o000);
