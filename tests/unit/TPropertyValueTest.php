@@ -6563,6 +6563,50 @@ class TPropertyValueTest extends \PHPUnit\Framework\TestCase
 	}
 
 	// ════════════════════════════════════════════════════════════════════════
+	// ensureArray — the validator accepts only what the parser reads
+	// ════════════════════════════════════════════════════════════════════════
+
+	/**
+	 * Only the close bracket of the current array ends an element, so `","]` in a
+	 * `(...)` list is the bare word `"` followed by the string `"]"`.
+	 */
+	public function testEnsureArray_otherCloseBracketDoesNotEndAnElement(): void
+	{
+		$errors = TPropertyValue::ARRAY_STRICT_ERRORS;
+		self::assertSame(['"', ']'], TPropertyValue::ensureArray('(","]", )'));
+		self::assertSame(['"', ']'], TPropertyValue::ensureArray('(","]", )', $errors));
+		self::assertSame(['"', ')'], TPropertyValue::ensureArray('[",")", ]', $errors));
+		self::assertSame(['a]', 'b'], TPropertyValue::ensureArray('("a]", b)', $errors));
+		self::assertSame([['x'], 'y'], TPropertyValue::ensureArray('(["x"], y)', $errors));
+	}
+
+	/**
+	 * A literal the parser cannot read in full does not validate, so it is wrapped,
+	 * or throws with ARRAY_STRICT_ERRORS.  The parser commits to a quoted string
+	 * followed by its array's close bracket and to a key followed by `=>`.
+	 */
+	public function testEnsureArray_literalTheParserCannotReadDoesNotValidate(): void
+	{
+		$errors = TPropertyValue::ARRAY_STRICT_ERRORS;
+		$skipEmpty = TPropertyValue::ARRAY_SKIP_EMPTY;
+		$cases = [
+			['(",")")', 0],
+			['(array("\'),")', 0],
+			["[['true],']", 0],
+			['[,"\'y\',"=>=>"]', $skipEmpty],
+		];
+		foreach ($cases as [$literal, $flags]) {
+			self::assertSame([$literal], TPropertyValue::ensureArray($literal, $flags), $literal);
+			try {
+				TPropertyValue::ensureArray($literal, $flags | $errors);
+				self::fail('Expected TInvalidDataValueException for ' . $literal);
+			} catch (TInvalidDataValueException $e) {
+				self::assertSame('propertyvalue_invalid_array_literal', $e->getErrorCode(), $literal);
+			}
+		}
+	}
+
+	// ════════════════════════════════════════════════════════════════════════
 	// ensureArrayOfType — lowercase and blank filter without trim
 	// ════════════════════════════════════════════════════════════════════════
 
