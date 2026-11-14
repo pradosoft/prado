@@ -99,6 +99,24 @@ class TPermissionsConfigurationBehaviorTest extends \PHPUnit\Framework\TestCase
 		unset($config);
 		unset($manager);
 	}
-	
 
+	public function testConfigurationWithoutPermissionsAppliesNothing()
+	{
+		$manager = new TPermissionsManager();
+		$this->behavior->setPermissionsManager($manager);
+		$config = new TPageConfiguration('.');
+		$config->attachBehavior('permConfig', $this->behavior);
+
+		$config->loadFromPhp([], '', '');
+		$config->loadFromPhp(['permissions' => 'not an array'], '', '');
+		$dom = new TXmlDocument();
+		$dom->loadFromString('<configuration />');
+		$config->loadFromXml($dom, '', '');
+		self::assertSame([], \Prado\Test\Unit\PradoUnit::getProp($this->behavior, '_permissions'));
+
+		$roles = $manager->getHierarchyRoles();
+		$config->dyApplyConfiguration();
+		self::assertSame($roles, $manager->getHierarchyRoles());
+		$manager->__destruct();
+	}
 }

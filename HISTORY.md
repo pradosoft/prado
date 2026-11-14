@@ -1,4 +1,6 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TUserManager` skips a user without a name; PHP configuration registered it as an empty username, and XML configuration raised a deprecation error. (belisoful)
+BUG: Issue #1497 - `TPermissionsAction` `perm/remove-rule` reports "Could not remove permission rule" when the removal is refused. (belisoful)
 ENH: `THttpSession::gc()` deletes the expired sessions through `session_gc()`, registered as the cron task `sessiongc`, so `GCProbability` can be 0. (belisoful)
 BUG: `TBaseBehavior::mergeHandlers()` appends each argument's handlers of an event; a list of handlers was merged by key, so a subclass's handlers for an event its parent also handled were dropped. (belisoful)
 BUG: `TTarFileExtractor` deletes the tar it decompresses from a local `.tar.xz` (or a gzip or bzip2 archive without the PHP extension) at the close, and reuses it with `RetainTempFile`; it was left in the temp directory. (belisoful)

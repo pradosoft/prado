@@ -18,6 +18,11 @@ use Prado\Security\TAuthorizationRule;
 use Prado\Security\TAuthorizationRuleCollection;
 use Prado\Security\TUser;
 use Prado\Xml\TXmlDocument;
+use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Security\Permissions\TPermissionsAction;
+use Prado\TApplication;
+use Prado\Test\Unit\Harness\TTestShellApplication;
+use Prado\Test\Unit\PradoUnit;
 
 class TPermissionsManagerTest extends \PHPUnit\Framework\TestCase
 {
@@ -1076,5 +1081,207 @@ class TPermissionsManagerTest extends \PHPUnit\Framework\TestCase
 		self::assertNull(TPermissionsManager::getManager());
 		$app->setModule('permissionsManager', $manager);
 		self::assertEquals($manager, TPermissionsManager::getManager());
+	}
+
+	private function dbParameter(): TDbParameterModule
+	{
+		$dbparam = new TDbParameterModule();
+		$dbparam->unlisten();
+		$dbparam->init(null);
+		return $dbparam;
+	}
+
+	private function releaseDbParameter(TDbParameterModule $dbparam): void
+	{
+		$dbparam->remove($this->obj->getLoadParameter());
+		unset($this->obj->getApplication()->getParameters()[$this->obj->getLoadParameter()]);
+		$dbparam->__destruct();
+	}
+
+	public function testRuntimeChangesNeedADbParameter()
+	{
+		$rule = new TAuthorizationRule('deny');
+		self::assertFalse($this->obj->addRoleChildren('Administrator', 'Developer'));
+		self::assertFalse($this->obj->removeRoleChildren('Administrator', 'Developer'));
+		self::assertFalse($this->obj->addPermissionRule('perm', $rule));
+		self::assertFalse($this->obj->removePermissionRule('perm', $rule));
+		self::assertNull($this->obj->getHierarchyRoleChildren('Administrator'));
+		self::assertSame([], $this->obj->getDbConfigRoles());
+		self::assertSame([], $this->obj->getDbConfigPermissionRules());
+	}
+
+	public function testRuntimeChangesRefusedByABehavior()
+	{
+		$this->obj->setDbParameter($dbparam = $this->dbParameter());
+		$this->obj->attachBehavior('refuse', new TTestRefusePermissionChangesBehavior());
+		$rule = new TAuthorizationRule('deny');
+		self::assertFalse($this->obj->addRoleChildren('Administrator', 'Developer'));
+		self::assertFalse($this->obj->removeRoleChildren('Administrator', 'Developer'));
+		self::assertFalse($this->obj->addPermissionRule('perm', $rule));
+		self::assertFalse($this->obj->removePermissionRule('perm', $rule));
+		self::assertNull($this->obj->getHierarchyRoleChildren('Administrator'));
+		self::assertSame([], $this->obj->getDbConfigRoles());
+		$this->releaseDbParameter($dbparam);
+	}
+
+	public function testDbConfigNeedsALoadParameter()
+	{
+		$this->obj->setDbParameter($dbparam = $this->dbParameter());
+		$this->obj->setLoadParameter('');
+		self::assertSame([], $this->obj->getDbConfigRoles());
+		self::assertSame([], $this->obj->getDbConfigPermissionRules());
+		$dbparam->__destruct();
+	}
+
+	public function testRoleChildrenRejectAValueThatIsNoList()
+	{
+		$this->obj->setDbParameter($dbparam = $this->dbParameter());
+		foreach (['addRoleChildren', 'removeRoleChildren'] as $method) {
+			foreach ([new \stdClass(), 42] as $children) {
+				try {
+					$this->obj->$method('Administrator', $children);
+					self::fail("$method did not throw for " . get_debug_type($children));
+				} catch (TInvalidDataValueException $e) {
+					self::assertSame('permissions_children_invalid', $e->getErrorCode());
+				}
+			}
+		}
+		$this->releaseDbParameter($dbparam);
+	}
+
+	public function testRemovePermissionRuleKeepsTheOtherRulesOfThePermission()
+	{
+		$this->obj->setDbParameter($dbparam = $this->dbParameter());
+		$rule1 = new TAuthorizationRule('deny', 'joe');
+		$rule2 = new TAuthorizationRule('deny', 'john');
+		self::assertTrue($this->obj->addPermissionRule('perm', $rule1));
+		self::assertTrue($this->obj->addPermissionRule('perm', $rule2));
+
+		self::assertTrue($this->obj->removePermissionRule('perm', $rule1));
+		self::assertSame(['perm' => [$rule2]], $this->obj->getDbConfigPermissionRules());
+		self::assertFalse($this->obj->removePermissionRule('perm', $rule1), 'A rule not in the runtime data is not removed again');
+		self::assertTrue($this->obj->removePermissionRule('perm', $rule2));
+		self::assertSame([], $this->obj->getDbConfigPermissionRules());
+		$this->releaseDbParameter($dbparam);
+	}
+
+	public function testRulesFollowAMultiLevelHierarchy()
+	{
+		$this->obj->setAutoAllowWithPermission(false);
+		$this->obj->setAutoPresetRules(false);
+		$this->obj->setAutoDenyAll(false);
+		$this->obj->registerPermission('perm_leaf', 'Leaf permission');
+		$this->obj->loadPermissionsData(['roles' => [
+			'top' => 'middle',
+			'middle' => 'perm_leaf',
+		]]);
+		$rule = new TAuthorizationRule('deny', 'joe');
+		PradoUnit::invoke($this->obj, 'addPermissionRuleInternal', 'top', $rule);
+		self::assertSame([$rule], $this->obj->getPermissionRules('perm_leaf')->toArray());
+
+		PradoUnit::invoke($this->obj, 'removePermissionRuleInternal', 'top', $rule);
+		self::assertSame([], $this->obj->getPermissionRules('perm_leaf')->toArray());
+	}
+
+	public function testRegisterPermissionKeepsThePriorityOfAPresetRule()
+	{
+		$this->obj->setAutoAllowWithPermission(false);
+		$this->obj->setAutoDenyAll(false);
+		$this->obj->registerPermission('perm_preset', 'Preset', [$rule = new TAuthorizationRule('deny', 'joe', '', '', '', 7)]);
+		self::assertSame([$rule], $this->obj->getPermissionRules('perm_preset')->itemsAtPriority(7));
+	}
+
+	public function testLoadPermissionsDataRejectsInvalidRolesAndRules()
+	{
+		$invalid = [
+			'permissions_role_children_invalid' => [['roles' => ['r1' => 42]], ['roles' => ['r2' => new \stdClass()]]],
+			'permissions_rule_invalid' => [['permissionrules' => ['perm' => 'not an array']]],
+			'permissions_rules_require_name' => [['permissionrules' => [['action' => 'allow']]]],
+		];
+		foreach ($invalid as $code => $configs) {
+			foreach ($configs as $config) {
+				try {
+					$this->obj->loadPermissionsData($config);
+					self::fail("Expected $code");
+				} catch (TConfigurationException $e) {
+					self::assertSame($code, $e->getErrorCode());
+				}
+			}
+		}
+	}
+
+	public function testInitLoadsAPhpPermissionFile()
+	{
+		$this->app->setConfigurationType(TApplication::CONFIG_TYPE_PHP);
+		$this->obj->setPermissionFile('Application.Permissions');
+		self::assertStringEndsWith('Permissions.php', $this->obj->getPermissionFile());
+		$this->obj->setAutoAllowWithPermission(false);
+		$this->obj->setAutoPresetRules(false);
+		$this->obj->setAutoDenyAll(false);
+		$this->obj->init(null);
+
+		self::assertEquals(['cron', 'manager'], $this->obj->getHierarchyRoleChildren('phpFileRole'));
+		$rules = $this->obj->getPermissionRules(TPermissionsManager::PERM_PERMISSIONS_MANAGE_ROLES);
+		self::assertEquals(1, count($rules));
+		self::assertEquals(['cron'], $rules[0]->getRoles());
+	}
+
+	public function testNonNumericPrioritiesBecomeFloats()
+	{
+		$this->obj->setAutoRulePriority('high');
+		self::assertSame(0.0, $this->obj->getAutoRulePriority());
+		$this->obj->setAutoDenyAllPriority('last');
+		self::assertSame(0.0, $this->obj->getAutoDenyAllPriority());
+	}
+
+	public function testSetDbParameterNamesAnInvalidValue()
+	{
+		foreach ([42 => '42', 'object' => 'stdClass'] as $kind => $named) {
+			try {
+				$this->obj->setDbParameter($kind === 'object' ? new \stdClass() : 42);
+				self::fail('Expected TConfigurationException');
+			} catch (TConfigurationException $e) {
+				self::assertSame('permissions_dbparameter_invalid', $e->getErrorCode());
+				self::assertStringContainsString($named, $e->getMessage());
+			}
+		}
+	}
+
+	public function testRegisterShellActionInAShellApplication()
+	{
+		$shell = new TTestShellApplication();
+		try {
+			$this->obj->registerShellAction(null, null);
+			self::assertArrayHasKey(TPermissionsAction::class, $shell->getShellActions());
+			self::assertSame($this->obj, $shell->getShellActions()[TPermissionsAction::class]->getPermissionsManager());
+		} finally {
+			$shell->restoreApplication();
+		}
+	}
+
+	public function testRegisterShellActionOutsideAShellOrWhenRefused()
+	{
+		$this->obj->registerShellAction(null, null);
+		self::assertNotInstanceOf(\Prado\Shell\TShellApplication::class, Prado::getApplication());
+
+		$shell = new TTestShellApplication();
+		try {
+			$this->obj->attachBehavior('refuse', new TTestRefusePermissionChangesBehavior());
+			$this->obj->registerShellAction(null, null);
+			self::assertArrayNotHasKey(TPermissionsAction::class, $shell->getShellActions());
+		} finally {
+			$shell->restoreApplication();
+		}
+	}
+
+	public function testGetManagerWithoutAnApplication()
+	{
+		$app = PradoUnit::getStaticProp(Prado::class, '_application');
+		PradoUnit::setStaticProp(Prado::class, '_application', null);
+		try {
+			self::assertNull(TPermissionsManager::getManager());
+		} finally {
+			PradoUnit::setStaticProp(Prado::class, '_application', $app);
+		}
 	}
 }

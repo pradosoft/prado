@@ -96,6 +96,7 @@ External user file (set `UserFile` to a namespace path matching the config forma
 ## Patterns & Gotchas
 
 - **Usernames are normalized to lowercase** during load and lookup — `Joe` and `joe` are the same user.
+- **A user without a name is skipped** in XML and PHP configuration, so no user has an empty name.
 - **`UserFile` cannot be changed after `init()`** — throws [TInvalidOperationException](../Exceptions/TInvalidOperationException.md).
 - **Roles can be declared on `<user>` elements AND on `<role>` elements** — both are merged into the same per-user role list.
 - **Cookie auto-login token is an HMAC of the username and stored password** keyed by `CookieValidationKey` — a password or `CookieValidationKey` change invalidates existing cookies. `TAuthManager` signs the cookie itself.

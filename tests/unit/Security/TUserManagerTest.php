@@ -6,6 +6,7 @@ use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Prado;
+use Prado\TApplication;
 use Prado\Security\TUserManager;
 use Prado\Xml\TXmlDocument;
 use Prado\Test\Unit\Harness\TTestApplication;
@@ -194,5 +195,88 @@ class TUserManagerTest extends \PHPUnit\Framework\TestCase
 		$changed = new TUserManager();
 		$changed->init($config);
 		self::assertNull($changed->getUserFromCookie($cookie), 'A password change invalidates the token.');
+	}
+
+	public function testInitFromPhpConfiguration()
+	{
+		$this->app->setConfigurationType(TApplication::CONFIG_TYPE_PHP);
+		$userManager = new TUserManager();
+		$userManager->init([
+			'users' => [
+				['name' => ' Joe ', 'password' => 'demo', 'roles' => 'Reader, ,User'],
+				['name' => 'Mia', 'password' => 'demo'],
+				['name' => 'Ned', 'roles' => ''],
+			],
+			'roles' => [
+				['name' => 'Writer', 'users' => 'Joe, ,Mia'],
+				['name' => 'Nobody'],
+			],
+		]);
+		self::assertEquals(['joe' => 'demo', 'mia' => 'demo', 'ned' => ''], $userManager->getUsers());
+		self::assertEquals(['joe' => ['Reader', 'User', 'Writer'], 'mia' => ['Writer']], $userManager->getRoles());
+
+		$user = $userManager->getUser('Ned');
+		self::assertSame('ned', $user->getName());
+		self::assertSame([], $user->getRoles());
+	}
+
+	public function testInitFromPhpConfigurationIgnoresMissingAndNonArraySections()
+	{
+		$this->app->setConfigurationType(TApplication::CONFIG_TYPE_PHP);
+		foreach ([null, [], ['users' => 'Joe', 'roles' => 'Writer']] as $config) {
+			$userManager = new TUserManager();
+			$userManager->init($config);
+			self::assertSame([], $userManager->getUsers());
+			self::assertSame([], $userManager->getRoles());
+		}
+	}
+
+	public function testInitFromPhpUserFile()
+	{
+		$this->app->setConfigurationType(TApplication::CONFIG_TYPE_PHP);
+		$userManager = new TUserManager();
+		$userManager->setUserFile('App.fixtures.users');
+		$userManager->init(['users' => [['name' => 'Joe', 'password' => 'demo']]]);
+		self::assertEquals(['joe' => 'demo', 'ann' => 'filepass'], $userManager->getUsers());
+		self::assertEquals(['ann' => ['Editor']], $userManager->getRoles());
+	}
+
+	public function testSetUserFileRejectsAMissingFile()
+	{
+		$userManager = new TUserManager();
+		$this->expectException(TConfigurationException::class);
+		$userManager->setUserFile('App.fixtures.no_such_users');
+	}
+
+	public function testSaveUserToCookieLeavesTheCookieForAnUnknownUser()
+	{
+		$userManager = new TUserManager();
+		$userManager->init(self::$config);
+		$userManager->getApplication()->setUser($userManager->getUser(null));
+		$cookie = new THttpCookie('auth', 'unchanged');
+		$userManager->saveUserToCookie($cookie);
+		self::assertSame('unchanged', $cookie->getValue());
+	}
+
+	public function testUsersWithoutANameAreSkipped()
+	{
+		$this->app->setConfigurationType(TApplication::CONFIG_TYPE_PHP);
+		$userManager = new TUserManager();
+		$userManager->setPasswordMode('Clear');
+		$userManager->init(['users' => [[], ['name' => ' ', 'password' => ''], ['name' => 'Joe', 'password' => 'demo']]]);
+		self::assertSame(['joe' => 'demo'], $userManager->getUsers());
+		self::assertFalse($userManager->validateUser('', ''));
+		self::assertNull($userManager->getUser(''));
+	}
+
+	public function testXmlUsersWithoutANameAreSkipped()
+	{
+		$config = new TXmlDocument('1.0', 'utf8');
+		$config->loadFromString('<users><user password="" /><user name=" " /><user name="Joe" password="demo" /></users>');
+		$userManager = new TUserManager();
+		$userManager->setPasswordMode('Clear');
+		$userManager->init($config);
+		self::assertSame(['joe' => 'demo'], $userManager->getUsers());
+		self::assertFalse($userManager->validateUser('', ''));
 	}
 }
