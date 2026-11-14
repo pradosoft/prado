@@ -540,6 +540,7 @@ class TComponent
 	 * This reattaches the behaviors to the reconstructed object.
 	 * Any global class behaviors are used rather than their unserialized copy.
 	 * Any global behaviors not found in the object will be added.
+	 * A component that listened to global events when serialized listens again.
 	 * To finalize the behaviors, dyWakeUp is raised.
 	 * If a TModule needs to add events to an object during unserialization,
 	 * the module can use a small IClassBehavior [implementing dyWakeUp]
@@ -582,6 +583,10 @@ class TComponent
 					}
 				}
 			}
+		}
+		if ($this->_listeningenabled) {
+			$this->_listeningenabled = false;
+			$this->listen();
 		}
 		$this->callBehaviorsMethod('dyWakeUp', $return);
 	}

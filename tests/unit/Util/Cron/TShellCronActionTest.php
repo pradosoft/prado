@@ -4,6 +4,7 @@ namespace Prado\Test\Unit\Util\Cron;
 
 use Prado\IO\TTextWriter;
 use Prado\Shell\TShellWriter;
+use Prado\Test\Unit\PradoUnit;
 use Prado\Prado;
 use Prado\TComponent;
 use Prado\Util\Cron\TShellCronAction;
@@ -90,9 +91,19 @@ class TShellCronActionTest extends \PHPUnit\Framework\TestCase
 			self::assertEquals(0, preg_match("/(1969|1970)/", $text));
 		}
 		{	//cron index	
-			self::assertTrue($this->obj->actionIndex(['cron/index']));
-			$text = $this->writer->flush();
-			self::assertEquals(1, preg_match("/No registered application tasks/", $text));
+			// Hide the modules other tests leave listening to the global event, such
+			// as the application's session, so the catalog starts empty.
+			$globalEvents = PradoUnit::getStaticProp(TComponent::class, '_ue');
+			$isolatedEvents = $globalEvents;
+			unset($isolatedEvents['fxgetcrontaskinfos']);
+			PradoUnit::setStaticProp(TComponent::class, '_ue', $isolatedEvents);
+			try {
+				self::assertTrue($this->obj->actionIndex(['cron/index']));
+				$text = $this->writer->flush();
+				self::assertEquals(1, preg_match("/No registered application tasks/", $text));
+			} finally {
+				PradoUnit::setStaticProp(TComponent::class, '_ue', $globalEvents);
+			}
 			
 			//Register & call again
 			$fxtest = new TTestCronFXComponent();
