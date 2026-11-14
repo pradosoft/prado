@@ -96,6 +96,29 @@ class TDbCronZCleanLogTaskTest extends TCronTaskTest
 		
 		$this->obj->setTimePeriod('');
 		self::assertEquals(0, $this->obj->getTimePeriod());
+
+		$this->obj->setTimePeriod(' P7D ');
+		self::assertEquals('P7D', $this->obj->getTimePeriod());
+		$this->obj->setTimePeriod('1 week');
+		self::assertEquals('1 week', $this->obj->getTimePeriod());
+
+		self::expectException(TInvalidDataValueException::class);
+		$this->obj->setTimePeriod('not a period');
 	}
 
+	public function testTimePeriodAndTaskNameEdges()
+	{
+		$task = new \Prado\Util\Cron\TDbCronCleanLogTask();
+		$task->setTimePeriod('1 week');
+		self::assertSame('1 week', $task->getTimePeriod());
+		try {
+			$task->setTimePeriod('Pnot a period');
+			self::fail('an invalid period was accepted');
+		} catch (\Prado\Exceptions\TInvalidDataValueException $e) {
+		}
+		$task->setTaskName('nightly%');
+		self::assertSame('nightly%', $task->getTaskName());
+		$task->setTaskName('');
+		self::assertNull($task->getTaskName());
+	}
 }

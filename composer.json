@@ -164,6 +164,7 @@
 			"@stan",
 			"@unittest"
 		],
+		"crontest": "php tests/cron-daemon/run.php",
 		"stantest": "vendor/bin/phpunit --testsuite phpstan",
 
 		"dbtest": "vendor/bin/phpunit --testsuite db-sqlite,db-mysql,db-firebird,db-pgsql",

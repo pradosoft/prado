@@ -252,4 +252,46 @@ class TClosureCronTaskTest extends \PHPUnit\Framework\TestCase
 		self::assertSame(7, $task->execute(null));
 		self::assertSame(2, $task['runs']);
 	}
+
+	public function testWithoutAClosureRoundTrips()
+	{
+		$task = new TClosureCronTask();
+		$task->setName('cct_none');
+		$text = serialize($task);
+		self::assertStringNotContainsString('_payload', $text);
+		self::assertNull(unserialize($text)->getClosure());
+		self::assertNull(PradoUnit::invoke($task, 'decodeClosure'));
+	}
+
+	public function testSecurityManagerOfAModule()
+	{
+		$app = Prado::getApplication();
+		$snapshot = PradoUnit::snapshot($app, ['_modules']);
+		$manager = new \Prado\Security\TSecurityManager();
+		try {
+			$app->setModule('cctSecurity', $manager);
+			$task = new TClosureCronTask(fn ($t, $c) => 'module');
+			$task->setSecurityManagerID('cctSecurity');
+			self::assertSame($manager, $task->getSecurityManager());
+		} finally {
+			PradoUnit::restore($app, $snapshot);
+		}
+	}
+
+	public function testABadPayloadIsRejected()
+	{
+		$task = new TClosureCronTask();
+		$task->setName('cct_bad');
+		PradoUnit::setProp($task, '_payload', 'not a closure');
+		PradoUnit::setProp($task, '_payloadEncrypted', false);
+		try {
+			$task->getClosure();
+			self::fail('a payload that is no closure was accepted');
+		} catch (TConfigurationException $e) {
+			self::assertStringContainsString('cct_bad', $e->getMessage());
+		}
+		PradoUnit::setProp($task, '_payloadEncrypted', true);
+		self::expectException(TConfigurationException::class);
+		$task->getClosure();
+	}
 }

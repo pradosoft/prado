@@ -16,8 +16,8 @@ use Prado\TPropertyValue;
 /**
  * TCronMethodTask class.
  *
- * This class will evaluate a specific method with parameters when
- * running the task the specified module.
+ * This task evaluates a method with parameters on the specified module when
+ * it runs.
  * ```php
  *		<job schedule="* * * * *" task="dbcache->flushCacheExpired(true)" / >
  *		<job schedule="* * * * *" task="dbcache->flushCacheExpired" / >

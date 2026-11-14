@@ -8,9 +8,16 @@ use Prado\Exceptions\TInvalidOperationException;
 use Prado\Util\Cron\TCronMethodTask;
 use Prado\Util\Cron\TDbCronManager;
 use Prado\Test\Unit\PradoUnit;
+use Prado\Test\Unit\Harness\Util\Cron\TTestDbCronManager;
+use Prado\Prado;
+use Prado\Util\Cron\TClosureCronTask;
 use Prado\Data\IDataConnection;
 use Prado\Data\TDbConnection;
 use Prado\Exceptions\TDbException;
+use Prado\Util\Cron\TCronModule;
+use Prado\Util\Cron\TShellCronLogBehavior;
+use Prado\Shell\TShellWriter;
+use Prado\IO\TTextWriter;
 
 /**
  * SQLite connection that reports the PostgreSQL driver and records each command's SQL.
@@ -19,9 +26,11 @@ class TDbCronManagerTestPgsqlConnection extends TDbConnection
 {
 	public array $sql = [];
 
+	public string $driver = 'pgsql';
+
 	public function getDriverName()
 	{
-		return 'pgsql';
+		return $this->driver;
 	}
 
 	public function createCommand($sql)
@@ -52,7 +61,7 @@ class TDbCronManagerTest extends TCronModuleTest
 {
 	protected function getTestClass()
 	{
-		return TDbCronManager::class;
+		return TTestDbCronManager::class;
 	}
 	
 	protected function setUp(): void
@@ -300,32 +309,22 @@ class TDbCronManagerTest extends TCronModuleTest
 		
 		self::assertEquals('testTaskAA', $log[0]['name']);
 		$task = $this->obj->getTask('testTaskAA');
-		$task->setProcessCount(0);
-		$task->setLastExecTime(null);
 		self::assertEquals(serialize($task), $log[0]['options']);
 		
 		self::assertEquals('testTaskBB', $log[1]['name']);
 		$task = $this->obj->getTask('testTaskBB');
-		$task->setProcessCount(0);
-		$task->setLastExecTime(null);
 		self::assertEquals(serialize($task), $log[1]['options']);
 		
 		self::assertEquals('testTaskCC', $log[2]['name']);
 		$task = $this->obj->getTask('testTaskCC');
-		$task->setProcessCount(0);
-		$task->setLastExecTime(null);
 		self::assertEquals(serialize($task), $log[2]['options']);
 		
 		self::assertEquals('testTaskDD', $log[3]['name']);
 		$task = $this->obj->getTask('testTaskDD');
-		$task->setProcessCount(0);
-		$task->setLastExecTime(null);
 		self::assertEquals(serialize($task), $log[3]['options']);
 		
 		self::assertEquals('testTaskEE', $log[4]['name']);
 		$task = $this->obj->getTask('testTaskEE');
-		$task->setProcessCount(0);
-		$task->setLastExecTime(null);
 		self::assertEquals(serialize($task), $log[4]['options']);
 		
 		// Test when db logging is off
@@ -365,7 +364,7 @@ class TDbCronManagerTest extends TCronModuleTest
 	public function testExecuteRuntimeTasks()
 	{
 		$jobs = [
-			['name' => 'testTaskA', 'schedule' => '0 0 1 1 * 2099', 'task' => TTestCronModuleTask::class]
+			['name' => 'testTaskA', 'schedule' => '@' . ($this->obj->fakeNow + 86400), 'task' => TTestCronModuleTask::class]
 		];
 		$this->obj->init($jobs);
 		$task1 = $this->obj->getTask('testTaskA');
@@ -404,7 +403,7 @@ class TDbCronManagerTest extends TCronModuleTest
 		
 		$task = new TTestCronModuleTask();
 		$task->setName('runtimeTask1');
-		$task->setSchedule('0 0 1 0 ? 2099');
+		$task->setSchedule('@' . ($this->obj->fakeNow + 86400));
 		$task2 = new TTestCronModuleTask();
 		$task2->setName('runtimeTask2');
 		$task2->setSchedule('* * * * *');
@@ -841,6 +840,198 @@ class TDbCronManagerTest extends TCronModuleTest
 		$manager->unlisten();
 	}
 
+	public function testDeferTask()
+	{
+		if (!extension_loaded('openssl')) {
+			self::markTestSkipped('openssl extension not loaded');
+		}
+		$app = Prado::getApplication();
+		$this->obj->fakeNow = (int) (floor(time() / 60) * 60 + 10);
+		$this->obj->fakeMicrotime = (float) $this->obj->fakeNow;
+
+		$base = count($app->onEndRequest);
+		self::assertNull($this->obj->getRuntimeTasks());
+
+		$task = $this->obj->deferTask(function ($t, $cron) {
+			return 'deferred-ran';
+		});
+
+		// Queued as a runtime task (the onEndRequest fast path), auto-removing.
+		self::assertInstanceOf(TClosureCronTask::class, $task);
+		self::assertEquals($base + 1, count($app->onEndRequest));
+		$runtime = $this->obj->getRuntimeTasks();
+		self::assertEquals(1, count($runtime));
+		self::assertArrayHasKey($task->getName(), $runtime);
+		self::assertTrue($task->getAutoRemove());
+
+		// Persisted as an active task due now (the cron fallback).
+		self::assertTrue($this->obj->taskExists($task->getName()));
+		$row = $this->obj->getTask($task->getName(), false, false);
+		self::assertEquals('1', $row['active']);
+		self::assertLessThanOrEqual($this->obj->fakeNow, (int) $row['nextexectime']);
+
+		// The persisted closure round-trips and runs.
+		$reloaded = $this->obj->getTask($task->getName(), false, true);
+		self::assertEquals('deferred-ran', $reloaded->execute($this->obj));
+
+		$this->obj->clearRuntimeTasks();
+		$this->obj->removeTask($task->getName());
+		self::assertFalse($this->obj->taskExists($task->getName()));
+	}
+
+	public function testAddTaskSignalsWakeOnlyWhenEarliestThisMinute()
+	{
+		$this->obj->fakeNow = (int) (floor(time() / 60) * 60 + 10); // 10s into the current minute
+		$this->obj->fakeMicrotime = (float) $this->obj->fakeNow;
+
+		// A one-shot due at the start of this minute is the earliest pending task → kicks cron.
+		$now = new TTestCronModuleTask();
+		$now->setName('wakeNow');
+		$now->setSchedule('@' . (int) (floor($this->obj->fakeNow / 60) * 60));
+		$this->obj->wakeSignals = [];
+		self::assertTrue($this->obj->addTask($now));
+		self::assertNotEmpty($this->obj->wakeSignals, 'an earliest due-this-minute task should signal wake');
+
+		// A task due tomorrow is beyond this minute → no kick.
+		$later = new TTestCronModuleTask();
+		$later->setName('wakeLater');
+		$later->setSchedule('@' . ($this->obj->fakeNow + 86400));
+		$this->obj->wakeSignals = [];
+		self::assertTrue($this->obj->addTask($later));
+		self::assertEmpty($this->obj->wakeSignals, 'a far-future task should not signal wake');
+
+		$this->obj->removeTask($now);
+		$this->obj->removeTask($later);
+	}
+
+	public function testGetCronLogFiltersByUsernameAndClearsByPeriod()
+	{
+		$db = $this->obj->getDbConnection();
+		PradoUnit::invoke($this->obj, 'ensureTable');
+		$time = time();
+		$db->createCommand(
+			"INSERT INTO {$this->obj->getTableName()} " .
+				"(name, schedule, task, moduleid, username, processcount, lastexectime, active)" .
+				" VALUES ('logA', '* * * * *', 'TTestCronModuleTask', 'module1', 'alice', '1', " . ($time - 60) . ", NULL)" .
+				",('logB', '* * * * *', 'TTestCronModuleTask', 'module1', 'bob', '2', " . ($time - 60) . ", NULL)" .
+				",('logC', '* * * * *', 'TTestCronModuleTask', 'module1', NULL, '3', " . ($time - 7200) . ", NULL)"
+		)->execute();
+
+		self::assertEquals(3, $this->obj->getCronLogCount());
+		self::assertEquals(1, $this->obj->getCronLogCount(null, 'alice'));
+		self::assertEquals(3, $this->obj->getCronLogCount('log_'), 'the _ wild card matches one character');
+		self::assertEquals(1, $this->obj->getCronLogCount('logA'));
+		self::assertEquals(1, $this->obj->getCronLogCount(null, $this->obj->getDefaultUserName()), 'rows without a user belong to the default user');
+
+		$log = $this->obj->getCronLog(null, 0, 0, null, 'bob');
+		self::assertEquals(1, count($log));
+		self::assertEquals('logB', $log[0]['name']);
+		$log = $this->obj->getCronLog('log%', 1, 1, true);
+		self::assertEquals(1, count($log));
+
+		self::assertEquals(1, $this->obj->clearCronLog('1 hour'));
+		self::assertEquals(2, $this->obj->getCronLogCount());
+		self::assertEquals(1, $this->obj->clearCronLog(null, null, 'alice'));
+		self::assertEquals(1, $this->obj->getCronLogCount());
+		self::assertEquals(1, $this->obj->clearCronLog(0));
+		self::assertEquals(0, $this->obj->getCronLogCount());
+
+		self::assertEquals(0, $this->obj->clearCronLog('P7D'), 'an ISO 8601 duration is a period');
+		self::expectException(TInvalidDataValueException::class);
+		$this->obj->clearCronLog('not a period');
+	}
+
+	public function testGetUserTasks()
+	{
+		$this->obj->init([
+			['name' => 'userTaskA', 'schedule' => '0 0 1 1 * 2099', 'task' => TTestCronModuleTask::class, 'username' => 'alice'],
+			['name' => 'userTaskB', 'schedule' => '0 0 1 1 * 2099', 'task' => TTestCronModuleTask::class],
+		]);
+		$task = new TTestCronModuleTask();
+		$task->setName('userTaskC');
+		$task->setSchedule('0 0 1 1 * 2099');
+		$task->setUserName('alice');
+		self::assertTrue($this->obj->addTask($task));
+
+		self::assertEquals(3, $this->obj->getTasksCount());
+		self::assertEquals(3, $this->obj->getTasksCount('userTask_'));
+		self::assertEquals(1, $this->obj->getTasksCount('userTaskA'));
+		self::assertEquals(['userTaskA', 'userTaskC'], array_keys($this->obj->getUserTasks('alice')));
+		self::assertEquals(2, $this->obj->getUserTasksCount('alice'));
+		self::assertEquals(['userTaskB'], array_keys($this->obj->getUserTasks($this->obj->getDefaultUserName())), 'a task without a user belongs to the default user');
+		self::assertEquals(['userTaskC'], array_keys($this->obj->getUserTasks('alice', 'userTaskC')));
+		self::assertEquals(['userTaskC', 'userTaskA'], array_keys($this->obj->getUserTasks('al%', null, 0, 0, false)));
+		self::assertEquals(['userTaskB'], array_keys($this->obj->getTasks(null, 1, 1)));
+
+		$this->obj->removeTask($task);
+	}
+
+	public function testProcessPendingTasks_ACrontabTickRunsAtTheTriggerSecond()
+	{
+		$minute = (int) (floor(time() / 60) * 60);
+		$this->obj->fakeNow = $minute + 1;
+		$this->obj->fakeMicrotime = (float) $this->obj->fakeNow;
+		$this->obj->setInCronShell(true);
+		$this->obj->init(null);
+
+		$early = new TTestCronModuleTask();
+		$early->setName('secondEarly');
+		$early->setSchedule('@' . ($minute + 5));
+		$early->testunit = $this;
+		$late = new TTestCronModuleTask();
+		$late->setName('secondLate');
+		$late->setSchedule('@' . ($minute + 20));
+		$late->testunit = $this;
+		$next = new TTestCronModuleTask();
+		$next->setName('secondNextMinute');
+		$next->setSchedule('@' . ($minute + 65));
+		self::assertTrue($this->obj->addTask($late));
+		self::assertTrue($this->obj->addTask($early));
+		self::assertTrue($this->obj->addTask($next));
+
+		self::assertEquals(2, $this->obj->processPendingTasks(), 'the tasks due within the minute are pending');
+		self::assertEquals([$minute + 5, $minute + 20], $this->obj->waitedFor, 'waits until each trigger second, earliest first');
+		self::assertEquals(2, $this->_countTasks);
+		self::assertEquals(1, $this->obj->getTask('secondEarly')->getProcessCount());
+		self::assertEquals(1, $this->obj->getTask('secondLate')->getProcessCount());
+		self::assertEquals(0, $this->obj->getTask('secondNextMinute')->getProcessCount());
+		self::assertEquals($minute + 20, $this->obj->fakeNow, 'the pinned clock advanced to the last trigger');
+
+		$this->obj->removeTask($early);
+		$this->obj->removeTask($late);
+		$this->obj->removeTask($next);
+	}
+
+	public function testUpdateTaskInfoClaimsTheRunAgainstTheRow()
+	{
+		$task = new TTestCronModuleTask();
+		$task->setName('claimTask');
+		$task->setSchedule('@' . ($this->obj->fakeNow - 10));
+		$task->testunit = $this;
+		self::assertTrue($this->obj->addTask($task));
+
+		// Another process advanced the row since this process read it: the claim fails and the task is skipped.
+		$rows = PradoUnit::getProp($this->obj, '_taskRows');
+		$rows['claimTask']['nextexectime'] = 12345;
+		PradoUnit::setProp($this->obj, '_taskRows', $rows);
+		self::assertFalse($this->obj->runTask($task));
+		self::assertEquals(0, $task->getProcessCount());
+		self::assertEquals(0, $this->_countTasks);
+		self::assertEquals(0, $this->obj->getCronLogCount('claimTask'));
+
+		// A fresh read of the row claims and runs.
+		$pending = $this->obj->getPendingTasks();
+		self::assertArrayHasKey('claimTask', $pending);
+		self::assertTrue($this->obj->runTask($pending['claimTask']));
+		self::assertEquals(1, $task->getProcessCount());
+		self::assertEquals(1, $this->_countTasks);
+		self::assertEquals(1, $this->obj->getCronLogCount('claimTask'));
+		$log = $this->obj->getCronLog('claimTask');
+		self::assertEquals(1, $log[0]['processcount'], 'the log row records the claimed run');
+
+		$this->obj->removeTask($task);
+	}
+
 	public function testGetDbConnection()
 	{
 		self::assertInstanceOf(\Prado\Data\TDbConnection::class, $this->obj->getDbConnection());
@@ -896,5 +1087,232 @@ class TDbCronManagerTest extends TCronModuleTest
 		self::assertFalse($this->obj->getAutoCreateCronTable());
 		$this->obj->setAutoCreateCronTable('true');
 		self::assertTrue($this->obj->getAutoCreateCronTable());
+	}
+
+	public function testMigrateTable_CreatesTheTableAndAddsThe440Columns()
+	{
+		$manager = new TDbCronManager();
+		$manager->setTableName('migratetable');
+		$db = $manager->getDbConnection();
+		$db->createCommand('DROP TABLE IF EXISTS migratetable')->execute();
+		try {
+			// the table of a 4.3 installation: no nextexectime column, one active task row
+			$db->createCommand('CREATE TABLE migratetable (tabuid INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(127) NOT NULL, schedule VARCHAR(127) NOT NULL, task VARCHAR(256) NOT NULL, moduleid VARCHAR(127) NULL, username VARCHAR(127) NULL, options MEDIUMTEXT NULL, processcount INT NOT NULL DEFAULT 0, lastexectime VARCHAR(20) NULL DEFAULT NULL, active BOOLEAN NULL)')->execute();
+			$task = new TTestCronModuleTask();
+			$task->setName('migrated');
+			$task->setSchedule('0 * * * *');
+			$last = 1700000000;
+			$cmd = $db->createCommand("INSERT INTO migratetable (name, schedule, task, options, processcount, lastexectime, active) VALUES ('migrated', '0 * * * *', :task, :options, 3, :last, 1)");
+			$cmd->bindValue(':task', TTestCronModuleTask::class);
+			$cmd->bindValue(':options', serialize($task));
+			$cmd->bindValue(':last', (string) $last);
+			$cmd->execute();
+
+			self::assertSame(['created' => false, 'column' => 1, 'run' => true], $manager->migrateTable());
+			self::assertSame(['lastresult' => null, 'lastduration' => null, 'paused' => null], $db->createCommand("SELECT lastresult, lastduration, paused FROM migratetable WHERE name='migrated'")->queryRow(), 'the run columns are added');
+			self::assertEquals($task->getNextTriggerTime($last), $db->createCommand("SELECT nextexectime FROM migratetable WHERE name='migrated'")->queryScalar());
+			self::assertSame(['created' => false, 'column' => null, 'run' => false], $manager->migrateTable(), 'a second run finds the columns');
+
+			$db->createCommand('DROP TABLE migratetable')->execute();
+			$manager->setAutoCreateCronTable(false);
+			self::assertSame(['created' => true, 'column' => null, 'run' => false], $manager->migrateTable(), 'a missing table is created with the columns, whatever AutoCreateCronTable says');
+			self::assertSame(0, (int) $db->createCommand('SELECT COUNT(*) FROM migratetable')->queryScalar());
+		} finally {
+			$db->createCommand('DROP TABLE IF EXISTS migratetable')->execute();
+			$manager->unlisten();
+		}
+	}
+
+	public function testRunTask_RecordsTheResultOnTheLogRow()
+	{
+		$this->obj->setDaemonMutex(new \Prado\Util\Mutex\TMemoryMutex());
+		$this->obj->setLogCronTasks(true);
+		$this->obj->init([['name' => 'logged', 'schedule' => '0 0 1 1 ? 2000', 'task' => TTestCronModuleTask::class]]);
+		self::assertTrue($this->obj->runTask($this->obj->getTask('logged')));
+		$log = $this->obj->getCronLog('logged');
+		self::assertCount(1, $log);
+		self::assertSame(\Prado\Util\Cron\TCronModule::RESULT_OK, $log[0]['lastresult']);
+		self::assertIsNumeric($log[0]['lastduration']);
+		$this->obj->clearCronLog(null, 'logged');
+	}
+
+
+	public function testGetPendingTasks_TakesAnotherProcessRunFromTheRow()
+	{
+		$task = new TTestCronModuleTask();
+		$task->setName('pendingSync');
+		$task->setSchedule('* * * * *');
+		self::assertTrue($this->obj->addTask($task));
+		$loaded = $this->obj->getTask('pendingSync');
+		$now = $this->obj->fakeNow;
+		// another process ran the task: its row moved on while this process holds the loaded object
+		$db = $this->obj->getDbConnection();
+		$cmd = $db->createCommand("UPDATE {$this->obj->getTableName()} SET lastexectime=:last, nextexectime=:next, processcount=7 WHERE name='pendingSync' AND active IS NOT NULL");
+		$cmd->bindValue(':last', (string) ($now - 70));
+		$cmd->bindValue(':next', (string) ($now - 10));
+		$cmd->execute();
+		$pending = $this->obj->getPendingTasks();
+		self::assertArrayHasKey('pendingSync', $pending);
+		self::assertSame($loaded, $pending['pendingSync']);
+		self::assertEquals($now - 70, $loaded->getLastExecTime(), 'the task takes the row\'s last run');
+		self::assertSame(7, $loaded->getProcessCount());
+		$this->obj->removeTask($loaded);
+	}
+
+	public function testDbFilters_ByNameAndUser()
+	{
+		$this->obj->init(null);
+		foreach (['dbFilterOne' => 'hal', 'dbFilterTwo' => 'ivy', 'other' => null] as $name => $user) {
+			$task = new TTestCronModuleTask();
+			$task->setName($name);
+			$task->setSchedule('0 0 1 1 ? 2099');
+			$task->setUserName($user);
+			self::assertTrue($this->obj->addTask($task));
+		}
+		self::assertSame(['dbFilterOne', 'dbFilterTwo'], array_keys($this->obj->getTasks('dbFilter%')));
+		self::assertSame(2, $this->obj->getTasksCount('dbFilter%'));
+		self::assertSame(1, $this->obj->getUserTasksCount('ivy', 'dbFilter%'));
+		self::assertSame(0, $this->obj->getUserTasksCount('ivy', 'other'));
+		self::assertSame(['other'], array_keys($this->obj->getUserTasks('')), 'an empty user name matches the tasks without a user, as in TCronModule');
+
+		// another manager on the table reads the rows it has not loaded
+		$other = new TTestDbCronManager();
+		$other->init(null);
+		self::assertSame(['dbFilterOne'], array_keys($other->getUserTasks('hal')));
+		$row = $other->getTask('dbFilterTwo', true, false);
+		self::assertSame('ivy', $row['username']);
+		PradoUnit::setProp($other, '_tasks', []);
+		self::assertSame('dbFilterTwo', $other->getTask('dbFilterTwo')->getName(), 'a loaded row is made a task');
+
+		$task = $this->obj->getTask('other');
+		$fresh = new TTestDbCronManager();
+		$fresh->init(null);
+		$task->setSchedule('0 0 2 1 ? 2099');
+		self::assertTrue($fresh->updateTask($task), 'a manager updates a row it has not loaded');
+		self::assertSame('0 0 2 1 ? 2099', $fresh->getTask('other', false, false)['schedule']);
+		$missing = new TTestCronModuleTask();
+		$missing->setName('noSuchRow');
+		$missing->setSchedule('0 0 1 1 ? 2099');
+		self::assertFalse($this->obj->updateTask($missing));
+
+		$never = new TTestCronModuleTask();
+		$never->setName('dbNever');
+		$never->setSchedule('@never');
+		self::assertTrue($this->obj->addTask($never), 'a task without a next trigger wakes no cron');
+		self::assertSame([], $this->obj->wakeSignals);
+
+		foreach (['dbFilterOne', 'dbFilterTwo', 'other', 'dbNever'] as $name) {
+			$this->obj->removeTask($name);
+		}
+		$other->unlisten();
+		$fresh->unlisten();
+	}
+
+	public function testDbPermissions_DenyTheRowsAndTheLog()
+	{
+		$this->obj->init(null);
+		$task = new TTestCronModuleTask();
+		$task->setName('dbDenied');
+		$task->setSchedule('0 0 1 1 ? 2000');
+		self::assertTrue($this->obj->addTask($task));
+		self::assertTrue($this->obj->runTask($this->obj->getTask('dbDenied')));
+		$uid = $this->obj->getCronLog()[0]['tabuid'];
+
+		$this->obj->attachBehavior('denies', new TTestCronDenyingBehavior(['dyAddTask', 'dyAddTaskGlobal', 'dyUpdateTask', 'dyGetUserTasks', 'dyRemoveCronLogItem', 'dyGetCronLog']));
+		$another = new TTestCronModuleTask();
+		$another->setName('dbDeniedToo');
+		$another->setSchedule('0 0 1 1 ? 2099');
+		self::assertNull($this->obj->addTask($another));
+		self::assertNull($this->obj->updateTask($task));
+		self::assertNull($this->obj->getTask('dbDenied', false));
+		self::assertNull($this->obj->taskExists('dbDenied'));
+		self::assertNull($this->obj->removeCronLogItem($uid));
+		self::assertNull($this->obj->removeCronLogItem(999999), 'an unknown item is the default user');
+		self::assertNull($this->obj->getCronLog());
+		$this->obj->detachBehavior('denies');
+		self::assertSame(1, $this->obj->getCronLogCount(), 'a denied removal removes nothing');
+		$this->obj->removeTask('dbDenied');
+	}
+
+	public function testDbTable_MissingWithoutAutoCreate()
+	{
+		$manager = new TDbCronManager();
+		$manager->setTableName('nocrontable');
+		$manager->setAutoCreateCronTable(false);
+		$manager->getDbConnection()->createCommand('DROP TABLE IF EXISTS nocrontable')->execute();
+		try {
+			self::expectException(TConfigurationException::class);
+			$manager->getTasks();
+		} finally {
+			$manager->unlisten();
+		}
+	}
+
+	public function testMigrateTable_SkipsARowThatIsNoTask()
+	{
+		$manager = new TDbCronManager();
+		$manager->setTableName('migratebadrow');
+		$db = $manager->getDbConnection();
+		$db->createCommand('DROP TABLE IF EXISTS migratebadrow')->execute();
+		$db->createCommand('CREATE TABLE migratebadrow (tabuid INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(127) NOT NULL, schedule VARCHAR(127) NOT NULL, task VARCHAR(256) NOT NULL, moduleid VARCHAR(127) NULL, username VARCHAR(127) NULL, options MEDIUMTEXT NULL, processcount INT NOT NULL DEFAULT 0, lastexectime VARCHAR(20) NULL DEFAULT NULL, active BOOLEAN NULL)')->execute();
+		$db->createCommand("INSERT INTO migratebadrow (name, schedule, task, options, active) VALUES ('broken', '* * * * *', 'x', 'not serialized', 1)")->execute();
+		try {
+			self::assertSame(['created' => false, 'column' => 0, 'run' => true], $manager->migrateTable());
+		} finally {
+			$db->createCommand('DROP TABLE IF EXISTS migratebadrow')->execute();
+			$manager->unlisten();
+		}
+	}
+
+	public function testCreateDbTable_TheAutoIncrementOfEachDriver()
+	{
+		$manager = new TDbCronManagerTestPgsqlManager();
+		$manager->recorder = new TDbCronManagerTestPgsqlConnection('sqlite::memory:');
+		foreach (['mysql', 'pgsql'] as $driver) {
+			$manager->recorder->driver = $driver;
+			try {
+				PradoUnit::invoke($manager, 'createDbTable');
+			} catch (TDbException $e) {
+			}
+		}
+		self::assertStringContainsString('`tabuid` INTEGER PRIMARY KEY AUTO_INCREMENT', $manager->recorder->sql[0]);
+		self::assertStringContainsString('`tabuid` SERIAL PRIMARY KEY', $manager->recorder->sql[1]);
+		$manager->unlisten();
+	}
+
+	public function testExecuteRuntimeTasks_NoneAndTheShellLog()
+	{
+		$this->obj->init(null);
+		self::assertSame(0, $this->obj->executeRuntimeTasks());
+		$writer = new TShellWriter(new TTextWriter());
+		$this->obj->attachBehavior(TCronModule::SHELL_LOG_BEHAVIOR, new TShellCronLogBehavior($writer));
+		$task = new TTestCronModuleTask();
+		$task->setName('runtimeLogged');
+		$task->setSchedule('* * * * *');
+		$this->obj->addRuntimeTask($task);
+		self::assertSame(1, $this->obj->executeRuntimeTasks());
+		self::assertTrue($this->obj->asa(TCronModule::SHELL_LOG_BEHAVIOR)->getEnabled(), 'the shell log is enabled again after');
+		self::assertSame('', $writer->flush(), 'the runtime tasks do not write to the shell');
+		$this->obj->detachBehavior(TCronModule::SHELL_LOG_BEHAVIOR);
+	}
+
+	public function testClearCronLog_AnInvalidPeriodThrows()
+	{
+		$this->obj->init(null);
+		self::expectException(TInvalidDataValueException::class);
+		$this->obj->clearCronLog('Pnot a period');
+	}
+
+	public function testConnectionID_Invalid()
+	{
+		$manager = new TDbCronManager();
+		$manager->setConnectionID('noSuchDbModule');
+		try {
+			self::expectException(TConfigurationException::class);
+			self::expectExceptionMessage('noSuchDbModule');
+			$manager->getDbConnection();
+		} finally {
+			$manager->unlisten();
+		}
 	}
 }
