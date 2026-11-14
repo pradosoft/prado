@@ -156,6 +156,31 @@ class TComponentGlobalEventsTest extends TComponentTestBase
 	}
 
 	/**
+	 * An unserialized component that listened when serialized registers its own
+	 * global event handlers.  One that did not listen stays out of the lists.
+	 */
+	public function testWakeUpOfAListeningComponentListens()
+	{
+		$handlers = $this->component->getEventHandlers('fxAttachClassBehavior');
+		$count = $handlers->getCount();
+		$this->assertTrue($this->component->getListeningToGlobalEvents());
+
+		$copy = unserialize(serialize($this->component));
+		$this->assertTrue($copy->getListeningToGlobalEvents());
+		$this->assertEquals($count + 1, $handlers->getCount(), 'The unserialized copy registers its own global event handlers');
+		$this->assertTrue($handlers->contains([$copy, 'fxAttachClassBehavior']));
+		$this->assertGreaterThan(0, $copy->unlisten());
+		$this->assertEquals($count, $handlers->getCount());
+		$this->assertTrue($this->component->getListeningToGlobalEvents(), 'The original still listens');
+
+		$this->component->unlisten();
+		$copy = unserialize(serialize($this->component));
+		$this->assertFalse($copy->getListeningToGlobalEvents(), 'A copy of a component that does not listen does not listen');
+		$this->assertNull($copy->unlisten());
+		$this->assertEquals($count - 1, $handlers->getCount());
+	}
+
+	/**
 	 * listen() and unlisten() register only the events getClassFxEvents() reports.
 	 * A class reporting none changes its listening state, notifies its behaviors
 	 * with an empty list, and returns 0.

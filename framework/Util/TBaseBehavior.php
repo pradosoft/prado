@@ -67,11 +67,13 @@ abstract class TBaseBehavior extends TApplicationComponent implements IBaseBehav
 	private $_eventsLog = false;
 
 	/**
-	 * Cloning a new instance clears the behavior name.
+	 * Cloning a new instance clears the behavior name and the cached {@see eventsLog},
+	 * so the Closures and {@see \Prado\TEventHandler}s of the clone's events are its own.
 	 */
 	public function __clone()
 	{
 		$this->_name = null;
+		$this->_eventsLog = false;
 		parent::__clone();
 	}
 

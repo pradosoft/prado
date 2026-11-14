@@ -14,6 +14,7 @@ use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\TPropertyValue;
 use Prado\Prado;
+use Prado\Util\Cron\TCronTaskInfo;
 use Prado\Util\Traits\TInitializedTrait;
 
 /**
@@ -46,6 +47,11 @@ use Prado\Util\Traits\TInitializedTrait;
  * Override {@see _open}, {@see _close}, {@see _read}, {@see _write}, {@see _destroy} and {@see _gc}
  * and set {@see setUseCustomStorage UseCustomStorage} to true.
  * Then, the session data will be stored using the above methods.
+ *
+ * {@see gc} deletes the sessions older than {@see getTimeout Timeout} through
+ * `session_gc()`.  A session module with an ID registers it as the cron task
+ * `sessiongc` through {@see fxGetCronTaskInfos}.  With the task scheduled, set
+ * {@see setGCProbability GCProbability} to 0 so requests do not collect.
  *
  * By default, THttpSession is registered with {@see \Prado\TApplication} as the
  * request module. It can be accessed via {@see \Prado\TApplication::getSession()}.
@@ -240,6 +246,49 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 			$this->sessionDestroy();
 			$this->_started = false;
 		}
+	}
+
+	/**
+	 * Deletes the sessions older than {@see getTimeout Timeout} through `session_gc()`,
+	 * which calls the save handler's collection, {@see _gc} with
+	 * {@see setUseCustomStorage UseCustomStorage}.  Without a started session, a
+	 * session is started for the collection and then destroyed.
+	 * @return false|int the number of sessions deleted; false when the collection fails
+	 *   or a session cannot start because headers are sent.
+	 * @since 4.4.0
+	 */
+	public function gc(): int|false
+	{
+		$started = $this->getIsStarted();
+		if (!$started) {
+			if ($this->sessionHeadersSent()) {
+				return false;
+			}
+			$this->open();
+		}
+		try {
+			return $this->sessionGc();
+		} finally {
+			if (!$started) {
+				$this->destroy();
+			}
+		}
+	}
+
+	/**
+	 * Registers the cron task `sessiongc`, which calls {@see gc}, when the session
+	 * module has an ID.  Another session module registers the same task name.
+	 * @param object $sender the object raising fxGetCronTaskInfos.
+	 * @param mixed $param the parameter.
+	 * @return ?TCronTaskInfo the task information; null without a module ID.
+	 * @since 4.4.0
+	 */
+	public function fxGetCronTaskInfos($sender, $param): ?TCronTaskInfo
+	{
+		if (!($id = $this->getID())) {
+			return null;
+		}
+		return new TCronTaskInfo('sessiongc', $id . '->gc()', $this, Prado::localize('HttpSession Garbage Collection'), Prado::localize('Deletes the sessions older than the session Timeout.'));
 	}
 
 	/**
@@ -807,6 +856,28 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	protected function sessionDestroy(): bool
 	{
 		return session_destroy();
+	}
+
+	/**
+	 * Internal: Call sessionGc instead of `session_gc`.
+	 * This keeps `session_gc` isolated, and subject to children overrides.
+	 * @return false|int the number of sessions deleted, or false on failure.
+	 * @since 4.4.0
+	 */
+	protected function sessionGc(): int|false
+	{
+		return session_gc();
+	}
+
+	/**
+	 * Internal: Call sessionHeadersSent instead of `headers_sent`.
+	 * This keeps `headers_sent` isolated, and subject to children overrides.
+	 * @return bool whether the headers are sent, after which a session cannot start.
+	 * @since 4.4.0
+	 */
+	protected function sessionHeadersSent(): bool
+	{
+		return headers_sent();
 	}
 
 	/**
