@@ -11,6 +11,42 @@ use Prado\Test\Unit\Harness\Util\TTestNullDynamicBehavior;
 // =============================================================================
 
 /**
+ * Module that implements IModule without extending TComponent, with one property.
+ */
+class TApplicationDependencyTestBareModule implements \Prado\IModule
+{
+	/** @var list<mixed> the configuration passed to each init() call. */
+	public array $inits = [];
+	private string $_id = '';
+	private int $_size = 0;
+
+	public function init($config)
+	{
+		$this->inits[] = $config;
+	}
+
+	public function getID()
+	{
+		return $this->_id;
+	}
+
+	public function setID($id)
+	{
+		$this->_id = (string) $id;
+	}
+
+	public function getSize(): int
+	{
+		return $this->_size;
+	}
+
+	public function setSize(int $value): void
+	{
+		$this->_size = $value;
+	}
+}
+
+/**
  * Records the order in which test modules call init().
  */
 class DepOrderTracker
@@ -1758,6 +1794,55 @@ class TApplicationDependencyTest extends \PHPUnit\Framework\TestCase
 		// init() fired in dep order — basic sanity that all four phases completed.
 		$this->assertSame(['dep', 'dependent'], DepOrderTracker::$order,
 			'all four phases must complete with modules in dependency order');
+	}
+
+	/**
+	 * A module that is an IModule without extending TComponent loads at startup and on
+	 * first access: its properties are set through its setters, coerced to their
+	 * types, and it skips dyPreInit and dyPostInit.
+	 */
+	public function testApplyConfiguration_bareIModule_loadsEagerAndLazy(): void
+	{
+		$app = $this->newAccessor();
+		$modules = [
+			'bare' => [TApplicationDependencyTestBareModule::class, ['Size' => '3'], 'cfg'],
+			'lazybare' => [TApplicationDependencyTestBareModule::class, ['size' => '4', 'lazy' => 'true'], 'lazycfg'],
+		];
+
+		$app->applyConfiguration($this->moduleConfig($modules), false);
+
+		$bare = $app->getModules()['bare'];
+		$this->assertInstanceOf(TApplicationDependencyTestBareModule::class, $bare);
+		$this->assertSame('bare', $bare->getID());
+		$this->assertSame(3, $bare->getSize());
+		$this->assertSame(['cfg'], $bare->inits);
+		$this->assertNull($app->getModules()['lazybare']);
+
+		$lazy = $app->getModule('lazybare');
+		$this->assertInstanceOf(TApplicationDependencyTestBareModule::class, $lazy);
+		$this->assertSame('lazybare', $lazy->getID());
+		$this->assertSame(4, $lazy->getSize());
+		$this->assertSame(['lazycfg'], $lazy->inits);
+	}
+
+	/**
+	 * A property without a setter on a module that does not extend TComponent throws,
+	 * as an undefined property of a TComponent module does.
+	 */
+	public function testApplyConfiguration_bareIModule_undefinedPropertyThrows(): void
+	{
+		$app = $this->newAccessor();
+		$modules = [
+			'bare' => [TApplicationDependencyTestBareModule::class, ['Color' => 'red'], null],
+		];
+
+		try {
+			$app->applyConfiguration($this->moduleConfig($modules), false);
+			$this->fail('Expected TInvalidOperationException');
+		} catch (\Prado\Exceptions\TInvalidOperationException $e) {
+			$this->assertSame('component_property_undefined', $e->getErrorCode());
+			$this->assertStringContainsString(TApplicationDependencyTestBareModule::class . '.Color', $e->getMessage());
+		}
 	}
 
 	public function testApplyConfiguration_fourPhaseOrder_singleModule(): void

@@ -36,6 +36,7 @@ BUG: Issue #1497 - `TPropertyValue::coerceToType()` returns an array, or an obje
 BUG: Issue #1497 - `Prado` log and profile methods and `TLogger::log()` threw `TypeError` on the default category when called from a static method, a function, or a script. (belisoful)
 BUG: Issue #1497 - `TPhpErrorException::isFatalError()` counted `E_CORE_WARNING` and `E_COMPILE_WARNING` as fatal, so a script that finished after one reported a `TPhpFatalErrorException` at shutdown. (belisoful)
 BUG: Issue #1497 - `TEventParameter::offsetSet()` with a null offset appends to an `ArrayAccess` parameter without reading the offset first, which PHP 8.5 deprecates for `ArrayObject`. (belisoful)
+BUG: Issue #1497 - A module that implements `IModule` without extending `TComponent` loads from the configuration; `TApplication::applyModuleProperties()` sets its properties through its setters, and the eager path raises `dyPreInit` and `dyPostInit` only on a `TComponent`. (belisoful)
 BUG: Issue #1497 - `TApplicationParameters` rejects an append (`$params[] = $v`) whose next integer key is final; it wrote the final key. (belisoful)
 BUG: Issue #1497 - A clone of a component no longer holds a behavior's Closure and `TEventHandler` handlers twice, bound to the original's behavior; a cloned behavior rebuilds its `eventsLog()`. (belisoful)
 BUG: Issue #1497 - Cloning a component with a behavior and a function-name or static-method event handler threw a `TypeError`; `TComponent::__clone()` keeps those handlers. (belisoful)
