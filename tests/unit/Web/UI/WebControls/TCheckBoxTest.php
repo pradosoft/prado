@@ -124,4 +124,48 @@ class TCheckBoxTest extends TestCase
 		$this->assertTrue($checkBox->getChecked());
 		$this->assertFalse($checkBox->getIndeterminate());
 	}
+	private function renderControl(TCheckBox $checkBox): string
+	{
+		PradoUnit::setProp($checkBox->getPage(), '_inFormRender', true);
+		$tw = new TTextWriter();
+		$checkBox->render(new THtmlWriter($tw));
+		return $tw->flush();
+	}
+
+	/**
+	 * A box that failed validation renders aria-invalid on its input element, which
+	 * the client validator also updates, and not on the surrounding span.
+	 */
+	public function testInvalidRendersAriaInvalidOnTheInput()
+	{
+		foreach ([TCheckBox::class, TRadioButton::class] as $class) {
+			$box = $this->createCheckBox($class);
+			$box->setText('Agree');
+			$this->assertStringNotContainsString('aria-invalid', $this->renderControl($box), $class);
+
+			$box->setIsValid(false);
+			$output = $this->renderControl($box);
+			$this->assertSame(1, substr_count($output, 'aria-invalid'), $class);
+			$this->assertMatchesRegularExpression('/<input [^>]*aria-invalid="true"/', $output, $class);
+			$this->assertMatchesRegularExpression('/<span id="cb_parent">/', $output, $class);
+
+			$box->setText('');
+			$this->assertMatchesRegularExpression('/<input [^>]*aria-invalid="true"/', $this->renderControl($box), $class);
+		}
+	}
+
+	/**
+	 * The Aria collection renders on the input element, which carries the role and state.
+	 */
+	public function testAriaRendersOnTheInput()
+	{
+		foreach ([TCheckBox::class, TRadioButton::class] as $class) {
+			$box = $this->createCheckBox($class);
+			$box->setText('Agree');
+			$box->getAria()['describedby'] = 'help';
+			$output = $this->renderControl($box);
+			$this->assertSame(1, substr_count($output, 'aria-describedby'), $class);
+			$this->assertMatchesRegularExpression('/<input [^>]*aria-describedby="help"/', $output, $class);
+		}
+	}
 }

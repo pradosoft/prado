@@ -16,7 +16,7 @@ TCheckBox displays a check box on the page, with a caption, validation, AutoPost
 - **Postback Handling**: Supports AutoPostBack with validation
 - **Event Handling**: Raises OnCheckedChanged event for state changes
 - **Display Customization**: Caption positioning and appearance control
-- **Accessibility**: Support for labels and screen readers
+- **Accessibility**: Support for labels and screen readers. `Aria` and the `aria-invalid` of a failed validation render on the `<input>` (`renderInputTag()`), the element the client validator updates; `Attributes` render on the surrounding span when `Text` is set.
 
 ## Core Properties
 - `Checked` (bool): Whether check box is checked
