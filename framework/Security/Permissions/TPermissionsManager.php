@@ -227,6 +227,9 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 	/** @var string default name of the parameter to load */
 	private $_parameter = 'configuration:TPermissionsManager:runtime';
 
+	/** @var bool whether {@see init()} attached the automatic class behaviors */
+	private bool $_classBehaviorsAttached = false;
+
 	/**
 	 * @returtn ?TPermissionsManager The PermissionsManager for the application.
 	 */
@@ -279,6 +282,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 		TComponent::attachClassBehavior(static::PERMISSIONS_BEHAVIOR, ['class' => TPermissionsBehavior::class, 'permissionsmanager' => $manager], IPermissions::class, -10);
 		TComponent::attachClassBehavior(static::USER_PERMISSIONS_BEHAVIOR, ['class' => TUserPermissionsBehavior::class, 'permissionsmanager' => $manager], \Prado\Security\IUser::class, -10);
 		TComponent::attachClassBehavior(static::PERMISSIONS_CONFIG_BEHAVIOR, ['class' => TPermissionsConfigurationBehavior::class, 'permissionsmanager' => $manager], \Prado\Web\Services\TPageConfiguration::class, -10);
+		$this->_classBehaviorsAttached = true;
 
 		$this->loadPermissionsData($config);
 		if ($this->_permissionFile !== null) {
@@ -941,13 +945,17 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 	}
 
 	/**
-	 * detaches the automatic class behaviors
+	 * Detaches the automatic class behaviors that {@see init()} attached.  A manager that
+	 * did not attach them leaves the class behaviors of another manager in place.
 	 */
 	public function __destruct()
 	{
-		TComponent::detachClassBehavior(static::PERMISSIONS_BEHAVIOR, IPermissions::class);
-		TComponent::detachClassBehavior(static::USER_PERMISSIONS_BEHAVIOR, \Prado\Security\IUser::class);
-		TComponent::detachClassBehavior(static::PERMISSIONS_CONFIG_BEHAVIOR, \Prado\Web\Services\TPageConfiguration::class);
+		if ($this->_classBehaviorsAttached) {
+			$this->_classBehaviorsAttached = false;
+			TComponent::detachClassBehavior(static::PERMISSIONS_BEHAVIOR, IPermissions::class);
+			TComponent::detachClassBehavior(static::USER_PERMISSIONS_BEHAVIOR, \Prado\Security\IUser::class);
+			TComponent::detachClassBehavior(static::PERMISSIONS_CONFIG_BEHAVIOR, \Prado\Web\Services\TPageConfiguration::class);
+		}
 		parent::__destruct();
 	}
 }
