@@ -1374,6 +1374,12 @@ class TPropertyValue
 	 * `(?&name)` references.  {@see _parseArrayLiteral()} has used it as a
 	 * one-shot validator before the extraction pass.
 	 *
+	 * The grammar matches only the reading of the extraction pass:
+	 * - A quoted string followed by `,` or the close bracket of its own array is a
+	 *   string; any other span that starts with a quote is a bare word.  The `P` and
+	 *   `B` rules are the `(...)` and `[...]` element lists.
+	 * - A key followed by `=>` makes the element a `key => value` pair.
+	 *
 	 * @since 4.4.0
 	 */
 	private const ARRAY_LITERAL_PATTERN = <<<'REGEX'
@@ -1398,14 +1404,21 @@ class TPropertyValue
 			(?<bool>    (?i: true | false ) \b )
 			(?<null>    (?i: null ) \b )
 			(?<bare>    [^,()[\]=\s] [^,()[\]=]* )
-			(?<scalar>  (?&float) | (?&int) | (?&str) | (?&bool) | (?&null) | (?&bare) )
-			(?<key>     (?&int) | (?&str) | (?&bare) )
-			(?<value>   (?&scalar) | (?&arr) )
-			(?<elem>    (?: (?&key) (?&ws) => (?&ws) )? (?&value) )
-			(?<elist>   (?&elem) (?: (?&ws) , (?&ws) (?&elem) )* (?: (?&ws) , )? )
-			(?<arr>     \( (?&ws) (?: (?&elist) (?&ws) )? \)
-					  | \[ (?&ws) (?: (?&elist) (?&ws) )? \]
-					  | (?i:array) (?&ws) \( (?&ws) (?: (?&elist) (?&ws) )? \) )
+			(?<scalarP> (?(?= (?&str) (?&ws) [,)] ) (?&str)
+						| (?: (?&float) | (?&int) | (?&bool) | (?&null) | (?&bare) ) ) )
+			(?<scalarB> (?(?= (?&str) (?&ws) [,\]] ) (?&str)
+						| (?: (?&float) | (?&int) | (?&bool) | (?&null) | (?&bare) ) ) )
+			(?<keyP>    (?(?= (?&str) (?&ws) (?: [,)] | => ) ) (?&str) | (?: (?&int) | (?&bare) ) ) )
+			(?<keyB>    (?(?= (?&str) (?&ws) (?: [,\]] | => ) ) (?&str) | (?: (?&int) | (?&bare) ) ) )
+			(?<valueP>  (?&scalarP) | (?&arr) )
+			(?<valueB>  (?&scalarB) | (?&arr) )
+			(?<elemP>   (?(?= (?&keyP) (?&ws) => ) (?&keyP) (?&ws) => (?&ws) (?&valueP) | (?&valueP) ) )
+			(?<elemB>   (?(?= (?&keyB) (?&ws) => ) (?&keyB) (?&ws) => (?&ws) (?&valueB) | (?&valueB) ) )
+			(?<elistP>  (?&elemP) (?: (?&ws) , (?&ws) (?&elemP) )* (?: (?&ws) , )? )
+			(?<elistB>  (?&elemB) (?: (?&ws) , (?&ws) (?&elemB) )* (?: (?&ws) , )? )
+			(?<arr>     \( (?&ws) (?: (?&elistP) (?&ws) )? \)
+					  | \[ (?&ws) (?: (?&elistB) (?&ws) )? \]
+					  | (?i:array) (?&ws) \( (?&ws) (?: (?&elistP) (?&ws) )? \) )
 		)
 		(?&ws) (?&arr) (?&ws)
 		\z/sx
@@ -1568,8 +1581,8 @@ class TPropertyValue
 			// Relax the element-list rule so elements may be absent between
 			// commas; the extraction pass skips the resulting empty slots.
 			$pattern = preg_replace(
-				'/\(\?<elist>.*/',
-				'(?<elist>  (?&elem)? (?: (?&ws) , (?&ws) (?&elem)? )* )',
+				'/\(\?<elist(\w*)>.*/',
+				'(?<elist$1>  (?&elem$1)? (?: (?&ws) , (?&ws) (?&elem$1)? )* )',
 				$pattern
 			);
 		}
@@ -1674,18 +1687,18 @@ class TPropertyValue
 				continue;
 			}
 			$saved = $pos;
-			$key = self::_consumeKey($s, $pos, $strict);
+			$key = self::_consumeKey($s, $pos, $close, $strict);
 			self::_skipWs($s, $pos);
 			if ($key !== null && isset($s[$pos + 1]) && $s[$pos] === '=' && $s[$pos + 1] === '>') {
 				$pos += 2;
 				self::_skipWs($s, $pos);
-				$result[$key] = self::_consumeValue($s, $pos, $strict, $skipEmpty, $depth);
+				$result[$key] = self::_consumeValue($s, $pos, $close, $strict, $skipEmpty, $depth);
 				if (is_int($key) && $key >= $nextAutoKey) {
 					$nextAutoKey = $key + 1;
 				}
 			} else {
 				$pos = $saved;
-				$result[$nextAutoKey++] = self::_consumeValue($s, $pos, $strict, $skipEmpty, $depth);
+				$result[$nextAutoKey++] = self::_consumeValue($s, $pos, $close, $strict, $skipEmpty, $depth);
 			}
 			self::_skipWs($s, $pos);
 			if ($pos < $len && $s[$pos] === ',') {
@@ -1707,6 +1720,7 @@ class TPropertyValue
 	 *
 	 * @param string $s the source string.
 	 * @param int &$pos the position cursor (in/out).
+	 * @param string $close the close bracket of the array holding this value.
 	 * @param bool $strict propagated to {@see _consumeArray()} and
 	 *   {@see _consumeScalar()} so the bare-word fallback has been disabled
 	 *   under strict grammar.
@@ -1716,7 +1730,7 @@ class TPropertyValue
 	 * @return mixed the parsed value.
 	 * @since 4.4.0
 	 */
-	private static function _consumeValue(string $s, int &$pos, bool $strict = false, bool $skipEmpty = false, int $depth = 1): mixed
+	private static function _consumeValue(string $s, int &$pos, string $close, bool $strict = false, bool $skipEmpty = false, int $depth = 1): mixed
 	{
 		$c = $s[$pos];
 		if ($c === '(' || $c === '[') {
@@ -1735,7 +1749,7 @@ class TPropertyValue
 				return self::_consumeArray($s, $pos, $strict, $skipEmpty, $depth + 1);
 			}
 		}
-		return self::_consumeScalar($s, $pos, $strict);
+		return self::_consumeScalar($s, $pos, $close, $strict);
 	}
 
 	/**
@@ -1753,19 +1767,20 @@ class TPropertyValue
 	 *
 	 * @param string $s the source string.
 	 * @param int &$pos the position cursor (in/out).
+	 * @param string $close the close bracket of the array holding this key.
 	 * @param bool $strict when `true`, the bare-word key fallback has been
 	 *   skipped so non-int / non-string spans have returned `null` and the
 	 *   caller has reparsed the span as a value.
 	 * @return null|int|string the key, or `null` if no key has been present.
 	 * @since 4.4.0
 	 */
-	private static function _consumeKey(string $s, int &$pos, bool $strict = false): null|int|string
+	private static function _consumeKey(string $s, int &$pos, string $close, bool $strict = false): null|int|string
 	{
 		if ($s[$pos] === '"' || $s[$pos] === "'") {
 			$saved = $pos;
 			$str = self::_tryConsumeString($s, $pos);
 			if ($str !== null) {
-				if ($strict || self::_atElementEnd($s, $pos)) {
+				if ($strict || self::_atElementEnd($s, $pos, $close)) {
 					return $str;
 				}
 				// Text follows the closing quote, so the span is a bare word: `"a"b => 1`.
@@ -1808,7 +1823,7 @@ class TPropertyValue
 	 * Has consumed a scalar at `$pos` in priority order: quoted string, float,
 	 * int, reserved keyword (`null`/`true`/`false`), and — under loose grammar
 	 * only — bare-word string.  Each string, numeric, or keyword candidate has had to
-	 * reach an element-end (top-level `,`, `=>`, `)`, `]`, or end of input)
+	 * reach an element-end (top-level `,`, `=>`, the array's close bracket, or end of input)
 	 * to commit; otherwise the span has fallen through to the bare-word
 	 * fallback so that mistyped or suffixed tokens (`1abc`, `truely`, `0xZZ`)
 	 * have become strings rather than being silently truncated.  Under strict
@@ -1817,43 +1832,44 @@ class TPropertyValue
 	 *
 	 * @param string $s the source string.
 	 * @param int &$pos the position cursor (in/out).
+	 * @param string $close the close bracket of the array holding this scalar.
 	 * @param bool $strict whether to skip the bare-word fallback.
 	 * @return null|bool|float|int|string the parsed scalar.
 	 * @since 4.4.0
 	 */
-	private static function _consumeScalar(string $s, int &$pos, bool $strict = false): null|bool|float|int|string
+	private static function _consumeScalar(string $s, int &$pos, string $close, bool $strict = false): null|bool|float|int|string
 	{
 		if ($s[$pos] === '"' || $s[$pos] === "'") {
 			$saved = $pos;
 			$str = self::_tryConsumeString($s, $pos);
-			if ($str !== null && self::_atElementEnd($s, $pos, false)) {
+			if ($str !== null && self::_atElementEnd($s, $pos, $close, false)) {
 				return $str;
 			}
 			$pos = $saved;
 		}
 		if (preg_match(self::FLOAT_LITERAL_PATTERN, $s, $m, 0, $pos)) {
 			$end = $pos + strlen($m[0]);
-			if (self::_atElementEnd($s, $end)) {
+			if (self::_atElementEnd($s, $end, $close)) {
 				$pos = $end;
 				return self::_floatFromLiteral($m[0]);
 			}
 		}
 		if (preg_match(self::INT_LITERAL_PATTERN, $s, $m, 0, $pos)) {
 			$end = $pos + strlen($m[0]);
-			if (self::_atElementEnd($s, $end)) {
+			if (self::_atElementEnd($s, $end, $close)) {
 				$pos = $end;
 				return self::_intFromLiteral($m[0]);
 			}
 		}
-		if (preg_match('/\Gnull\b/iA', $s, $m, 0, $pos) && self::_atElementEnd($s, $pos + 4)) {
+		if (preg_match('/\Gnull\b/iA', $s, $m, 0, $pos) && self::_atElementEnd($s, $pos + 4, $close)) {
 			$pos += 4;
 			return null;
 		}
-		if (preg_match('/\Gtrue\b/iA', $s, $m, 0, $pos) && self::_atElementEnd($s, $pos + 4)) {
+		if (preg_match('/\Gtrue\b/iA', $s, $m, 0, $pos) && self::_atElementEnd($s, $pos + 4, $close)) {
 			$pos += 4;
 			return true;
 		}
-		if (preg_match('/\Gfalse\b/iA', $s, $m, 0, $pos) && self::_atElementEnd($s, $pos + 5)) {
+		if (preg_match('/\Gfalse\b/iA', $s, $m, 0, $pos) && self::_atElementEnd($s, $pos + 5, $close)) {
 			$pos += 5;
 			return false;
 		}
@@ -2004,18 +2020,21 @@ class TPropertyValue
 
 	/**
 	 * Has reported whether the next non-whitespace character at `$pos` ends
-	 * the current element — a top-level `,`, `=>`, `)`, `]`, or end of input.
+	 * the current element — a top-level `,`, `=>`, the close bracket of the
+	 * current array, or end of input.  The close bracket of another array type
+	 * does not end an element: `]` in a `(...)` list is part of a bare word.
 	 * Used by {@see _consumeScalar()} to decide when a number or reserved
 	 * keyword has committed cleanly versus fallen through to bare-word.
 	 *
 	 * @param string $s the source string.
 	 * @param int $pos the position to inspect (not advanced).
+	 * @param string $close the close bracket of the current array, `)` or `]`.
 	 * @param bool $allowArrow whether `=>` ends the element; `false` for a
 	 *   quoted string value, which the grammar never follows with `=>`.
 	 * @return bool whether `$pos` has been at an element boundary.
 	 * @since 4.4.0
 	 */
-	private static function _atElementEnd(string $s, int $pos, bool $allowArrow = true): bool
+	private static function _atElementEnd(string $s, int $pos, string $close, bool $allowArrow = true): bool
 	{
 		$len = strlen($s);
 		while ($pos < $len && ($s[$pos] === ' ' || $s[$pos] === "\t"
@@ -2029,7 +2048,7 @@ class TPropertyValue
 			return true; // @codeCoverageIgnore
 		}
 		$c = $s[$pos];
-		if ($c === ',' || $c === ')' || $c === ']') {
+		if ($c === ',' || $c === $close) {
 			return true;
 		}
 		return $allowArrow && $c === '=' && isset($s[$pos + 1]) && $s[$pos + 1] === '>';

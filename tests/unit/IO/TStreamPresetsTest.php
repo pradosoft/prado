@@ -63,12 +63,15 @@ class TStreamPresetsTest extends \PHPUnit\Framework\TestCase
 		$s->close();
 	}
 
+	/**
+	 * The writability of STDIN follows the descriptor the run was started with, so
+	 * {@see testStdStreamCapabilitiesFollowTheDescriptor()} checks it in a child process.
+	 */
 	public function testStdInStream()
 	{
 		$s = new TStdInStream();
 		self::assertFalse($s->getOwnsResource(), 'STDIN must be non-owning.');
 		self::assertTrue($s->isReadable());
-		self::assertFalse($s->isWritable());
 		self::assertSame(TStdInStream::URI, $s->getURI());
 		// Do not read (would block); just verify closing leaves the fd intact.
 		$resource = $s->getResource();
@@ -81,7 +84,6 @@ class TStreamPresetsTest extends \PHPUnit\Framework\TestCase
 		$s = new TStdOutStream();
 		self::assertFalse($s->getOwnsResource(), 'STDOUT must be non-owning.');
 		self::assertTrue($s->isWritable());
-		self::assertFalse($s->isReadable());
 		self::assertTrue(method_exists($s, 'flush'));
 		$resource = $s->getResource();
 		$s->close();
@@ -93,11 +95,72 @@ class TStreamPresetsTest extends \PHPUnit\Framework\TestCase
 		$s = new TStdErrStream();
 		self::assertFalse($s->getOwnsResource(), 'STDERR must be non-owning.');
 		self::assertTrue($s->isWritable());
-		self::assertFalse($s->isReadable());
 		self::assertSame(TStdErrStream::URI, $s->getURI());
 		$resource = $s->getResource();
 		$s->close();
 		self::assertTrue(is_resource($resource), 'Non-owning close must leave STDERR open.');
+	}
+
+	/**
+	 * The standard streams take their capabilities from the process descriptors.  A
+	 * child process with pipes for its descriptors has a read-only STDIN and write-only
+	 * STDOUT and STDERR.  A socket STDIN, as a terminal application may attach, is
+	 * read-write.
+	 */
+	public function testStdStreamCapabilitiesFollowTheDescriptor()
+	{
+		$pipes = ['pipe', 'r'];
+		self::assertSame(
+			[[true, false], [false, true], [false, true]],
+			$this->childStdStreamCapabilities($pipes),
+			'Pipe descriptors: STDIN is read-only; STDOUT and STDERR are write-only.'
+		);
+		if (PHP_OS_FAMILY === 'Windows') {
+			return;
+		}
+		$pair = stream_socket_pair(STREAM_PF_UNIX, STREAM_SOCK_STREAM, STREAM_IPPROTO_IP);
+		try {
+			self::assertSame(
+				[true, true],
+				$this->childStdStreamCapabilities($pair[1])[0],
+				'A socket STDIN is read-write.'
+			);
+		} finally {
+			fclose($pair[0]);
+			fclose($pair[1]);
+		}
+	}
+
+	/**
+	 * Runs a child PHP process with the given STDIN descriptor and pipes for STDOUT and
+	 * STDERR, and returns the readable and writable flags of TStdInStream,
+	 * TStdOutStream, and TStdErrStream in the child.
+	 * @param array|resource $stdin the proc_open() descriptor of the child's STDIN.
+	 * @return array<int, array{bool, bool}> the readable and writable flags of each stream.
+	 */
+	private function childStdStreamCapabilities($stdin): array
+	{
+		$code = 'require ' . var_export(dirname(__DIR__, 3) . '/vendor/autoload.php', true) . ';'
+			. '$flags = [];'
+			. 'foreach ([new \\Prado\\IO\\TStdInStream(), new \\Prado\\IO\\TStdOutStream(), new \\Prado\\IO\\TStdErrStream()] as $s) {'
+			. '$flags[] = [$s->isReadable(), $s->isWritable()];'
+			. '}'
+			. 'echo json_encode($flags);';
+		$proc = proc_open([PHP_BINARY, '-r', $code], [0 => $stdin, 1 => ['pipe', 'w'], 2 => ['pipe', 'w']], $pipes);
+		if (!is_resource($proc)) {
+			self::markTestSkipped('proc_open unavailable.');
+		}
+		if (isset($pipes[0])) {
+			fclose($pipes[0]);
+		}
+		$output = stream_get_contents($pipes[1]);
+		$errors = stream_get_contents($pipes[2]);
+		fclose($pipes[1]);
+		fclose($pipes[2]);
+		proc_close($proc);
+		$flags = json_decode($output, true);
+		self::assertIsArray($flags, 'The child process reports its flags. ' . $output . $errors);
+		return $flags;
 	}
 
 	public function testInputStreamReadOnlyOwned()

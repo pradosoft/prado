@@ -18,6 +18,18 @@ async function submit(page, text1, text2 = '') {
 }
 
 /**
+ * Waits for the page's validator scripts to register the validator with its
+ * form's Prado.Validation manager, after which the client owns aria-invalid.
+ */
+async function waitForClientValidator(page, id) {
+	await page.waitForFunction(
+		(validatorId) => Object.values(globalThis.Prado?.Validation?.managers ?? {})
+			.some((manager) => manager.validators.some((v) => v.options.ID === validatorId)),
+		id
+	);
+}
+
+/**
  * The client lets every value through and the server rejects suspicious ones.
  */
 test('UnicodeValidatorTestCase: server validation', async ({ page }) => {
@@ -67,6 +79,7 @@ test('UnicodeValidatorTestCase: accessibility', async ({ page }) => {
 	await expect(page.getByLabel('User name')).toHaveValue('pаypal');
 	// The server marks the field invalid; the failed validator owns the attribute on the client.
 	await expect(input).toHaveAttribute('aria-invalid', 'true');
+	await waitForClientValidator(page, `${base}validator1`);
 	expect(await input.evaluate((el) => el.lastAriaValidator)).toBe(`${base}validator1`);
 
 	// A valid postback renders the field without the attribute.
@@ -84,6 +97,7 @@ test('UnicodeValidatorTestCase: client clears a server aria-invalid', async ({ p
 	const input = page.locator(`#${base}text1`);
 	await submit(page, 'abc​def');
 	await expect(input).toHaveAttribute('aria-invalid', 'true');
+	await waitForClientValidator(page, `${base}validator1`);
 	await input.fill('abcdef');
 	await input.dispatchEvent('change');
 	await input.evaluate((el) => Prado.Validation.validate(el.form.id));
