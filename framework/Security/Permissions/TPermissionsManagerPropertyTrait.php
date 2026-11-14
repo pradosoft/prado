@@ -10,6 +10,7 @@
 
 namespace Prado\Security\Permissions;
 
+use Prado\Util\TCallChain;
 use WeakReference;
 
 /**
@@ -20,7 +21,9 @@ use WeakReference;
  * and {@see \Prado\Security\Permissions\TUserPermissionsBehavior}.
  *
  * The Permissions Manager property is important to zap when sleeping.  On waking
- * up, the PermissionsManager is set to the current instance manager.
+ * up, the PermissionsManager is set to the current instance manager.  When the
+ * application has no manager, the behavior detaches from its owner in {@see dyWakeUp},
+ * which the owner raises after its behaviors are attached again.
  *
  * This functionality is important to replicate if-when overriding.
  *
@@ -44,15 +47,30 @@ trait TPermissionsManagerPropertyTrait
 	}
 
 	/**
-	 * Sets the TPermissionsManager to the current singleton instance.
+	 * Sets the TPermissionsManager to the current singleton instance.  The owner is
+	 * not attached yet; {@see dyWakeUp} detaches the behavior when there is no manager.
 	 */
 	public function __wakeup()
 	{
 		$this->setPermissionsManager(TPermissionsManager::getManager());
 		parent::__wakeup();
-		if (!$this->getPermissionsManager() && ($owner = $this->getOwner())) {
-			$owner->detachBehavior($this->getName());
+	}
+
+	/**
+	 * Detaches the behavior from its unserialized owner when the application has no
+	 * TPermissionsManager.  The owner raises this dynamic event after it attaches its
+	 * behaviors again in {@see \Prado\TComponent::__wakeup()}.
+	 * @param TCallChain $chain The chain of dynamic event method handlers.
+	 * @return mixed The result of the rest of the chain.
+	 * @since 4.4.0
+	 */
+	public function dyWakeUp(TCallChain $chain)
+	{
+		if (!$this->getPermissionsManager() && ($owner = $this->getOwner())
+			&& ($name = array_search($this, $owner->getBehaviors(), true)) !== false) {
+			$owner->detachBehavior($name);
 		}
+		return $chain->dyWakeUp();
 	}
 
 	/**
