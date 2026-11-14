@@ -549,7 +549,8 @@ class TTimeScheduler extends \Prado\TComponent
 			$domValidator = '/^(\*|\?|L|' . $domWOW . ')(W)?(?:\-(' . $domWOW . ')(W)?)?(?:\/(' . $domWOW . '))?$/iu';
 			$monthValidator = '/^(\*|' . $month . ')(?:\-(' . $month . '))?(?:\/(' . $month . '))?$/iu';
 			$dowValidator = '/^(\*|\?|' . $dow . ')(L)?(?:\-(' . $dow . ')(L)?)?(?:\/(' . $dow . '))?(?:#([1-5]))?$/iu';
-			$yearValidator = '/^(\*|' . $year . ')(?:\-(' . $year . '))?(?:\/([1-9]?[0-9]))?$/iu';
+			// The step takes a leading zero ('/05'), as the full validator does.
+			$yearValidator = '/^(\*|' . $year . ')(?:\-(' . $year . '))?(?:\/([0-9]?[0-9]))?$/iu';
 			self::$_validatorCache = [
 					'm' => $minuteValidator,
 					'h' => $hourValidator,
@@ -696,7 +697,7 @@ class TTimeScheduler extends \Prado\TComponent
 					$data = ['year' => $m2[1]];
 					$data['end'] = $m2[2] ?? $m2[1];
 				}
-				$data['period'] = max($m2[3] ?? 1, 1);
+				$data['period'] = (int) max($m2[3] ?? 1, 1);
 				if ((($m2[2] ?? '') === '') && ($m2[3] ?? 0)) {
 					$data['end'] = self::YEAR_MAX; //No end with period
 				}

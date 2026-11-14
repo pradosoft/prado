@@ -1068,4 +1068,14 @@ class TTimeSchedulerTest extends \PHPUnit\Framework\TestCase
 		self::assertSame([10], $seconds[5]);
 		self::assertSame([0], $seconds[7]);
 	}
+
+	public function testYearStepWithALeadingZero()
+	{
+		$scheduler = new TTimeScheduler();
+		$scheduler->setSchedule('0 0 1 1 * 2026/05');
+		$next = $scheduler->getNextTriggerTime(mktime(0, 0, 0, 6, 1, 2026));
+		self::assertSame('2031-01-01 00:00', date('Y-m-d H:i', $next), 'a step of 05 is every five years');
+		$scheduler->setSchedule('0 0 1 1 * 2026/00');
+		self::assertSame('2027-01-01 00:00', date('Y-m-d H:i', $scheduler->getNextTriggerTime(mktime(0, 0, 0, 6, 1, 2026))), 'a step of 00 is every year');
+	}
 }
