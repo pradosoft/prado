@@ -4675,6 +4675,16 @@ class TPropertyValueTest extends \PHPUnit\Framework\TestCase
 		self::assertSame(['not-numeric'], TPropertyValue::coerceToType('not-numeric', $ta));
 	}
 
+	public function testCoerceToTypeUnionFallbackSortsClassesAfterBuiltins(): void
+	{
+		// Neither class accepts 'nothing', so the fallback sorts the members.
+		// Classes are not in TYPE_COERCE_ORDER and sort after array, which wins.
+		$t = $this->typeOf(fn(TPropertyValueTestPoint|TPropertyValueTestRange|array $x) => $x);
+		self::assertSame(['nothing'], TPropertyValue::coerceToType('nothing', $t));
+		$t = $this->typeOf(fn(array|TPropertyValueTestRange|TPropertyValueTestPoint $x) => $x);
+		self::assertSame(['nothing'], TPropertyValue::coerceToType('nothing', $t));
+	}
+
 	public function testCoerceToTypeUnionNullWithoutNullMemberReturnsNull(): void
 	{
 		// The `$value === null` check in _coerceUnionType (step 1) is unconditional —
