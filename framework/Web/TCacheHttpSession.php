@@ -15,6 +15,7 @@ namespace Prado\Web;
 use Prado\Caching\ICache;
 use Prado\Exceptions\TConfigurationException;
 use Prado\IModuleDependency;
+use Prado\Util\Cron\TCronTaskInfo;
 
 /**
  * TCacheHttpSession class
@@ -37,6 +38,9 @@ use Prado\IModuleDependency;
  * Beware, by definition cache storage are volatile, which means the data stored on them
  * may be swapped out and get lost. This may not be the case for certain cache storage,
  * such as database. So make sure you manage your cache properly to avoid loss of session data.
+ *
+ * The cache expires the sessions, so TCacheHttpSession registers no `sessiongc` cron
+ * task.  A TDbCache store is flushed by its own task, `dbcacheflushexpired`.
  *
  * @author Carl G. Mathisen <carlgmathisen@gmail.com>
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -138,6 +142,18 @@ class TCacheHttpSession extends THttpSession implements IModuleDependency
 	public function _destroy($id)
 	{
 		return $this->getCache()->delete($this->calculateKey($id));
+	}
+
+	/**
+	 * Registers no cron task, as the cache expires the sessions.
+	 * @param object $sender the object raising fxGetCronTaskInfos.
+	 * @param mixed $param the parameter.
+	 * @return ?TCronTaskInfo null.
+	 * @since 4.4.0
+	 */
+	public function fxGetCronTaskInfos($sender, $param): ?TCronTaskInfo
+	{
+		return null;
 	}
 
 	/**

@@ -100,14 +100,16 @@ class TDbCronManagerTest extends TCronModuleTest
 		self::assertEquals('fxgetcrontaskinfos', $task->dyMethod);
 		self::assertEquals($this->obj, $task->args[0]);
 		
-		$taskInfo = $taskInfos[0];
+		// Other modules listening to the global event add their own task infos.
+		$cleanInfos = array_values(array_filter($taskInfos, fn ($info) => $info->getName() === 'cronclean' && $info->getModuleId() === 'testCronModule100'));
+		self::assertCount(1, $cleanInfos);
+		$taskInfo = $cleanInfos[0];
 		self::assertInstanceOf(\Prado\Util\Cron\TCronTaskInfo::class, $taskInfo);
-		self::assertEquals('cronclean', $taskInfo->getName());
 		self::assertEquals(\Prado\Util\Cron\TDbCronCleanLogTask::class, $taskInfo->getTask());
-		self::assertEquals('testCronModule100', $taskInfo->getModuleId());
 		
-		$taskInfos = $taskInfos[1];
-		self::assertEquals('taskName', $taskInfos->getName());
+		$testInfos = array_values(array_filter($taskInfos, fn ($info) => $info->getName() === 'taskName'));
+		self::assertCount(1, $testInfos);
+		$taskInfos = $testInfos[0];
 		self::assertEquals('taskDefinition', $taskInfos->getTask());
 		self::assertEquals('module1', $taskInfos->getModuleId());
 		self::assertEquals('text title', $taskInfos->getTitle());

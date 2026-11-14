@@ -193,6 +193,30 @@ class TApplicationParametersTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame('appended', $params[0]);
 	}
 
+	/**
+	 * An append whose next integer key is final throws and leaves the key absent.
+	 * The next integer key follows PHP's append counter, which a removal does not lower.
+	 */
+	public function testNullKeyAdd_finalNextIntegerKeyThrows(): void
+	{
+		$params = $this->params();
+		$params->finalize(0);
+		$this->assertFinalThrows(fn () => $params->add(null, 'appended'), '0');
+		$this->assertFinalThrows(function () use ($params) {
+			$params[] = 'appended';
+		}, '0');
+		$this->assertFalse($params->contains(0));
+		$this->assertSame(0, $params->getCount());
+
+		$params = $this->params([3 => 'three']);
+		$params->remove(3);
+		$params->finalize(4);
+		$this->assertFinalThrows(fn () => $params->add(null, 'appended'), '4');
+		$this->assertFalse($params->contains(4));
+		$params->finalize(3);
+		$this->assertFinalThrows(fn () => $params->add(null, 'appended'), '4');
+	}
+
 	public function testIntegerKey_finalize(): void
 	{
 		$params = $this->params([5 => 'five']);

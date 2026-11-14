@@ -151,6 +151,25 @@ class TUserTest extends \PHPUnit\Framework\TestCase
 		self::assertEquals($user, $user2);
 	}
 
+	public function testLoadFromStringResetsANonArrayStateAndKeepsStateForEmptyData()
+	{
+		$user = new TUser(self::$mgr);
+		$user->setName('John');
+		self::assertSame($user, $user->loadFromString(''));
+		self::assertSame('John', $user->getName());
+
+		self::assertSame($user, $user->loadFromString(serialize('not an array')));
+		self::assertSame(serialize([]), $user->saveToString());
+		self::assertSame('', $user->getName());
+	}
+
+	public function testIsInRoleWithNoRoles()
+	{
+		$user = new TUser(self::$mgr);
+		self::assertSame([], $user->getRoles());
+		self::assertFalse($user->isInRole('Administrator'));
+	}
+
 	/* getState & setState are protected methods, will be tested with other tests.
 	public function testState() {
 		throw new PHPUnit\Framework\IncompleteTestError();

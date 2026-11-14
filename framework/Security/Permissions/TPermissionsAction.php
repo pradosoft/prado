@@ -362,7 +362,7 @@ class TPermissionsAction extends TShellAction
 		}
 
 		if (!$manager->removePermissionRule($name, $dbConfigRules[$name][$index])) {
-			$writer->writeError('Could not add permission rule');
+			$writer->writeError('Could not remove permission rule');
 			return true;
 		}
 		$writer->writeLine();

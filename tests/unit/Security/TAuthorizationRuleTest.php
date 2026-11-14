@@ -5,6 +5,7 @@ namespace Prado\Test\Unit\Security;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Security\TAuthorizationRule;
 use Prado\Security\TUser;
+use Prado\Security\TUserManager;
 
 class TAuthorizationRuleTest extends \PHPUnit\Framework\TestCase
 {
@@ -108,9 +109,11 @@ class TAuthorizationRuleTest extends \PHPUnit\Framework\TestCase
 		self::assertEquals('post', $rule->getVerb());
 		
 		try {
-			$rule = new TAuthorizationRule('test', '*', '*', 'test');
-			self::fail('TInvalidDataValueException not thrown when action is invalid');
-		} catch(TInvalidDataValueException $e) {}
+			$rule = new TAuthorizationRule('allow', '*', '*', 'test');
+			self::fail('TInvalidDataValueException not thrown when verb is invalid');
+		} catch(TInvalidDataValueException $e) {
+			self::assertSame('authorizationrule_verb_invalid', $e->getErrorCode());
+		}
 	}
 
 	public function testIPRules()
@@ -127,7 +130,7 @@ class TAuthorizationRuleTest extends \PHPUnit\Framework\TestCase
 
 	public function testIsUserAllowed()
 	{
-		$user = new TUser(TAuthManagerTest::$usrMgr);
+		$user = new TUser(new TUserManager());
 		
 		$rule = new TAuthorizationRule('allow', '', '', '', '');
 		self::assertEquals(1, $rule->isUserAllowed($user, 'get', '192.168.0.10'));
@@ -141,7 +144,7 @@ class TAuthorizationRuleTest extends \PHPUnit\Framework\TestCase
 
 	public function testIsIpMatched()
 	{
-		$user = new TUser(TAuthManagerTest::$usrMgr);
+		$user = new TUser(new TUserManager());
 		
 		$rule = new TAuthorizationRule('allow', '', '', '', '');
 		self::assertEquals(1, $rule->isUserAllowed($user, 'get', '192.168.0.10'));
@@ -160,7 +163,7 @@ class TAuthorizationRuleTest extends \PHPUnit\Framework\TestCase
 
 	public function testIsUserMatched()
 	{
-		$user = new TUser(TAuthManagerTest::$usrMgr);
+		$user = new TUser(new TUserManager());
 		
 		$allrule = new TAuthorizationRule('allow', '*', '');
 		$guestrule = new TAuthorizationRule('allow', '?', '');
@@ -196,7 +199,7 @@ class TAuthorizationRuleTest extends \PHPUnit\Framework\TestCase
 
 	public function testIsRoleMatched()
 	{
-		$user = new TUser(TAuthManagerTest::$usrMgr);
+		$user = new TUser(new TUserManager());
 		
 		$rule = new TAuthorizationRule('allow', '', '*');
 		$rule2 = new TAuthorizationRule('allow', '', 'admin, writer, contributor');
@@ -215,11 +218,14 @@ class TAuthorizationRuleTest extends \PHPUnit\Framework\TestCase
 		
 		self::assertEquals(1, $rule->isUserAllowed($user, 'get', '192.168.0.10'));
 		self::assertEquals(0, $rule2->isUserAllowed($user, 'get', '192.168.0.10'));
+
+		$rule3 = new TAuthorizationRule('allow', '', 'admin');
+		self::assertEquals(0, $rule3->isUserAllowed($user, 'get', '192.168.0.10'));
 	}
 
 	public function testIsVerbMatched()
 	{
-		$user = new TUser(TAuthManagerTest::$usrMgr);
+		$user = new TUser(new TUserManager());
 		$rule = new TAuthorizationRule('allow', '', '', '*');
 		self::assertEquals(1, $rule->isUserAllowed($user, 'post', '192.168.0.10'));
 		self::assertEquals(1, $rule->isUserAllowed($user, 'get', '192.168.0.10'));

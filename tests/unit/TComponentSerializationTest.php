@@ -2,7 +2,9 @@
 
 namespace Prado\Test\Unit;
 
+use Prado\TEventHandler;
 use Prado\Util\TBehavior;
+use Prado\Util\TClassBehavior;
 
 /**
  * Tests for TComponent serialization: __clone() and __wakeup() behaviour,
@@ -154,6 +156,38 @@ class TComponentSerializationTest extends TComponentTestBase
 	}
 
 	/**
+	 * A behavior whose events() returns a Closure and a TEventHandler attaches them
+	 * once to a clone, bound to the clone's behavior.  A class behavior's handlers
+	 * are attached once to the clone.
+	 */
+	public function testClone_behaviorClosureAndEventHandlerAreTheClonesOwn()
+	{
+		$this->component->attachBehavior('closures', $behavior = new TComponentSerializationTestClosureBehavior());
+		$this->component->attachBehavior('classClosures', $classBehavior = new TComponentSerializationTestClosureClassBehavior());
+		$this->assertSame(3, $this->component->onMyEvent->getCount());
+
+		$copy = clone $this->component;
+
+		$copyBehavior = $copy->asa('closures');
+		$this->assertNotSame($behavior, $copyBehavior);
+		$this->assertSame($classBehavior, $copy->asa('classClosures'));
+		$this->assertSame(3, $copy->onMyEvent->getCount());
+		$this->assertSame(3, $this->component->onMyEvent->getCount());
+
+		$copy->onMyEvent(null);
+		$this->assertSame(0, $behavior->count);
+		$this->assertSame(11, $copyBehavior->count);
+		$this->assertSame(1, $classBehavior->count);
+
+		$this->component->onMyEvent(null);
+		$this->assertSame(11, $behavior->count);
+		$this->assertSame(11, $copyBehavior->count);
+		$this->assertSame(2, $classBehavior->count);
+
+		$copy->unlisten();
+	}
+
+	/**
 	 * A function name, a 'Class::method' string, and a [class, method] pair have no
 	 * handler object, so a clone of a component with behaviors keeps all three.
 	 */
@@ -271,5 +305,58 @@ class TComponentSerializationTestInvokableBehavior extends TBehavior
 	public function __invoke($sender, $param): void
 	{
 		$this->invoked++;
+	}
+}
+
+/**
+ * Behavior whose events() returns a Closure and a TEventHandler.
+ */
+class TComponentSerializationTestClosureBehavior extends TBehavior
+{
+	/** @var int the sum the handlers add when invoked. */
+	public int $count = 0;
+
+	/**
+	 * Handles onMyEvent with a Closure that adds 1 and a TEventHandler that adds 10.
+	 * @return array the events and their handlers.
+	 */
+	public function events()
+	{
+		return ['onMyEvent' => [
+			function ($sender, $param) {
+				$this->count++;
+			},
+			new TEventHandler([$this, 'addTen']),
+		]];
+	}
+
+	/**
+	 * Adds 10 to the count.
+	 * @param mixed $sender the event sender.
+	 * @param mixed $param the event parameter.
+	 */
+	public function addTen($sender, $param): void
+	{
+		$this->count += 10;
+	}
+}
+
+/**
+ * Class behavior whose events() returns a Closure.
+ */
+class TComponentSerializationTestClosureClassBehavior extends TClassBehavior
+{
+	/** @var int the number of times the handler was invoked. */
+	public int $count = 0;
+
+	/**
+	 * Handles onMyEvent with a Closure that adds 1.
+	 * @return array the events and their handlers.
+	 */
+	public function events()
+	{
+		return ['onMyEvent' => function ($sender, $param) {
+			$this->count++;
+		}];
 	}
 }

@@ -1322,6 +1322,15 @@ class TSecurityManagerTest extends \PHPUnit\Framework\TestCase
 		self::assertMatchesRegularExpression('/^[0-9a-f]+$/', $key, 'Random key must be a lowercase hexadecimal string');
 	}
 
+	public function testCSPNonceIsHexadecimalAndStablePerManager()
+	{
+		$sec = new TSecurityManager();
+		$nonce = $sec->getCSPNonce();
+		self::assertMatchesRegularExpression('/^[0-9a-f]{32}$/', $nonce);
+		self::assertSame($nonce, $sec->getCSPNonce());
+		self::assertNotSame($nonce, (new TSecurityManager())->getCSPNonce());
+	}
+
 	// -------------------------------------------------------------------------
 	// getValidationKey / getEncryptionKey: global-state load branch
 	// (null _key, global state already populated by a prior instance)

@@ -469,8 +469,9 @@ class TComponent
 	 * The common __clone magic method from PHP's "clone".
 	 * This reattaches the behaviors to the cloned object.
 	 * IBehavior objects are cloned, IClassBehaviors are not.
-	 * Clone object events are scrubbed of the old object behaviors' events.
-	 * Function and static method handlers have no object and are kept.
+	 * Clone object events are scrubbed of the old object behaviors' events: each handler
+	 * whose object is a behavior of the original, including a {@see TEventHandler} and a
+	 * Closure bound to one.  Function and static method handlers have no object and are kept.
 	 * A clone of a component that listens to global events listens itself.
 	 * To finalize the behaviors, dyClone is raised.
 	 * @since 4.3.0
@@ -487,8 +488,8 @@ class TComponent
 			$behaviorArray = array_combine(array_map('spl_object_id', $behaviorArray), $behaviorArray);
 			foreach ($this->_e as $event => $handlers) {
 				foreach ($handlers->toArray() as $handler) {
-					$object = is_array($handler) ? $handler[0] : $handler;
-					if (is_object($object) && array_key_exists(spl_object_id($object), $behaviorArray)) {
+					$object = self::getCallableObject($handler);
+					if ($object !== null && array_key_exists(spl_object_id($object), $behaviorArray)) {
 						$handlers->remove($handler);
 					}
 				}
@@ -513,10 +514,33 @@ class TComponent
 	}
 
 	/**
+	 * Returns the object an event handler calls: the object of an `[object, method]`
+	 * array, the object of a {@see TEventHandler}, the `$this` of a Closure, or an
+	 * invokable object.
+	 * @param mixed $handler The event handler.
+	 * @return ?object The object of the handler, or null for a function, a static
+	 *   method, or a static Closure.
+	 * @since 4.4.0
+	 */
+	private static function getCallableObject(mixed $handler): ?object
+	{
+		if ($handler instanceof TEventHandler) {
+			$handler = $handler->getHandlerObject();
+		} elseif (is_array($handler)) {
+			$handler = $handler[0];
+		}
+		if ($handler instanceof \Closure) {
+			$handler = (new \ReflectionFunction($handler))->getClosureThis();
+		}
+		return is_object($handler) ? $handler : null;
+	}
+
+	/**
 	 * The common __wakeup magic method from PHP's "unserialize".
 	 * This reattaches the behaviors to the reconstructed object.
 	 * Any global class behaviors are used rather than their unserialized copy.
 	 * Any global behaviors not found in the object will be added.
+	 * A component that listened to global events when serialized listens again.
 	 * To finalize the behaviors, dyWakeUp is raised.
 	 * If a TModule needs to add events to an object during unserialization,
 	 * the module can use a small IClassBehavior [implementing dyWakeUp]
@@ -559,6 +583,10 @@ class TComponent
 					}
 				}
 			}
+		}
+		if ($this->_listeningenabled) {
+			$this->_listeningenabled = false;
+			$this->listen();
 		}
 		$this->callBehaviorsMethod('dyWakeUp', $return);
 	}
