@@ -909,7 +909,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 	}
 
 	/**
-	 * @param \Prado\Security\IUserManager|string $provider the user manager module ID or the DbParameter object
+	 * @param null|\Prado\Util\TDbParameterModule|string $provider the TDbParameterModule module ID or object
 	 * @throws \Prado\Exceptions\TInvalidOperationException if the module is already initialized
 	 * @throws \Prado\Exceptions\TConfigurationException if the $provider is not a TDbParameterModule
 	 */

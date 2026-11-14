@@ -144,6 +144,22 @@ class TTestSkipSessionBehavior extends \Prado\Util\TBehavior
 	}
 }
 
+/**
+ * User manager that validates every credential but cannot load the user.
+ */
+class TTestValidatingNoUserManager extends TUserManager
+{
+	public function validateUser($username, #[\SensitiveParameter] $password)
+	{
+		return true;
+	}
+
+	public function getUser($username = null)
+	{
+		return $username === null ? parent::getUser(null) : null;
+	}
+}
+
 class TAuthManagerTest extends \PHPUnit\Framework\TestCase
 {
 	public static TTestApplication $app;
@@ -1265,5 +1281,154 @@ class TAuthManagerTest extends \PHPUnit\Framework\TestCase
 		} finally {
 			self::$app->setService($savedService);
 		}
+	}
+
+	public function testInitKeepsAPresetReturnUrlVarName()
+	{
+		$authManager = new TAuthManager();
+		$authManager->setReturnUrlVarName('custom-return');
+		$authManager->setUserManager('users');
+		$authManager->init(null);
+		self::assertSame('custom-return', $authManager->getReturnUrlVarName());
+		self::assertSame(self::$usrMgr, $authManager->getUserManager());
+
+		$authManager = new TAuthManager();
+		$authManager->setReturnUrlVarName('custom-return');
+		$authManager->setUserManager(self::$usrMgr);
+		$authManager->init(null);
+		self::assertSame('custom-return', $authManager->getReturnUrlVarName());
+		self::assertSame(self::$usrMgr, $authManager->getUserManager());
+
+		$security = new \Prado\Security\TSecurityManager();
+		$security->init(null);
+		self::$app->setModule('preset-not-a-usermgr', $security);
+		foreach (['no-such-module', 'preset-not-a-usermgr'] as $id) {
+			$authManager = new TAuthManager();
+			$authManager->setReturnUrlVarName('custom-return');
+			$authManager->setUserManager($id);
+			try {
+				$authManager->init(null);
+				self::fail("Expected TConfigurationException for UserManager '$id'");
+			} catch (TConfigurationException $e) {
+			}
+		}
+	}
+
+	public function testLoginFailsWhenTheValidatedUserCannotBeLoaded()
+	{
+		$authManager = new TAuthManager();
+		$authManager->setUserManager(new TTestValidatingNoUserManager());
+		$authManager->init(null);
+		$loggedIn = false;
+		$authManager->onLogin[] = function () use (&$loggedIn) {
+			$loggedIn = true;
+		};
+		self::assertFalse($authManager->login('Nobody', 'any'));
+		self::assertFalse($loggedIn);
+	}
+
+	public function testDoAuthenticationWithoutAPageServiceKeepsAuthorization()
+	{
+		$auth = $this->makeSessionAuth();
+		$auth->setLoginPage('Pages.Login');
+		$savedService = self::$app->getService();
+		self::$app->setService(null);
+		try {
+			$auth->doAuthentication(null, null);
+			self::assertFalse(PradoUnit::getProp($auth, '_skipAuthorization'));
+		} finally {
+			self::$app->setService($savedService);
+			self::$usrMgr->setPasswordMode('MD5');
+		}
+	}
+
+	public function testOnAuthorizeRaisesOnAuthorizeBeforeDenying()
+	{
+		$authManager = new TAuthManager();
+		$authManager->setUserManager('users');
+		$authManager->init(null);
+
+		self::$app->setUser(self::$usrMgr->getUser(null));
+		PradoUnit::setProp(self::$app, '_requestCompleted', false);
+		self::$app->getResponse()->setStatusCode(200);
+		$rules = self::$app->getAuthorizationRules();
+		$rules->add(new TAuthorizationRule('deny', '*'));
+		$fired = false;
+		$authManager->onAuthorize[] = function () use (&$fired) {
+			$fired = true;
+		};
+
+		$obLevel = ob_get_level();
+		try {
+			$authManager->onAuthorize(null);
+			self::assertTrue($fired);
+			self::assertEquals(401, self::$app->getResponse()->getStatusCode());
+			self::assertTrue(self::$app->getRequestCompleted());
+		} finally {
+			$rules->clear();
+			self::$app->getResponse()->setStatusCode(200);
+			PradoUnit::setProp(self::$app, '_requestCompleted', false);
+			while (ob_get_level() > $obLevel) {
+				ob_end_clean();
+			}
+		}
+	}
+
+	public function testOnAuthExpireWithoutAHandlerLogsOut()
+	{
+		$auth = $this->makeSessionAuth();
+		try {
+			self::$app->setUser(self::$usrMgr->getUser('Joe'));
+			$auth->onAuthExpire(null);
+			self::assertTrue($auth->fakeSession->destroyed);
+			self::assertTrue(self::$app->getUser()->getIsGuest());
+		} finally {
+			self::$usrMgr->setPasswordMode('MD5');
+		}
+	}
+
+	public function testOnAuthenticateAutoLoginRenewsAnExpiredSessionUser()
+	{
+		$auth = $this->makeSessionAuth();
+		$savedResponse = self::$app->getResponse();
+		self::$app->setResponse(new TTestAuthResponse());
+		try {
+			$auth->setAllowAutoLogin(true);
+			$auth->setAuthExpire(3600);
+
+			self::$app->setUser(self::$usrMgr->getUser('Joe'));
+			$authCookie = new THttpCookie($auth->getUserKey(), '');
+			self::$usrMgr->saveUserToCookie($authCookie);
+			$authCookie->setValue(self::$app->getSecurityManager()->hashCookieData($authCookie->getValue()));
+			self::$app->getRequest()->getCookies()->add($authCookie);
+			self::$app->setUser(self::$usrMgr->getUser(null));
+
+			// The session holds Joe, whose authentication has expired.
+			$auth->fakeSession->data[$auth->getUserKey()] = self::$usrMgr->getUser('Joe')->saveToString();
+			$auth->fakeSession->data[TAuthManager::AUTH_EXPIRE_TIME] = time() - 100;
+			$expired = false;
+			$auth->onAuthExpire[] = function () use (&$expired) {
+				$expired = true;
+			};
+
+			$auth->onAuthenticate(null);
+
+			self::assertFalse($expired, 'A user restored from the auto-login cookie does not expire');
+			self::assertFalse($auth->fakeSession->destroyed);
+			self::assertEquals('joe', self::$app->getUser()->getName());
+			self::assertGreaterThan(time(), $auth->fakeSession->data[TAuthManager::AUTH_EXPIRE_TIME]);
+		} finally {
+			self::$app->getRequest()->getCookies()->clear();
+			self::$app->setResponse($savedResponse);
+			self::$usrMgr->setPasswordMode('MD5');
+		}
+	}
+
+	public function testConstructLoginUrlRequiresANonEmptyLoginPage()
+	{
+		$authManager = new TAuthManager();
+		$authManager->setLoginPage('');
+		$this->expectException(TConfigurationException::class);
+		$authManager->constructLoginUrl();
 	}
 }

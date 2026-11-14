@@ -239,7 +239,9 @@ class TRadioButton extends TCheckBox
 	}
 
 	/**
-	 * Renders a radiobutton input element.
+	 * Renders a radiobutton input element.  The {@see getAria Aria} attributes and the
+	 * `aria-invalid` of a failed validation render on the input, which carries the
+	 * role and the state; {@see getInputAttributes InputAttributes} render last.
 	 * @param \Prado\Web\UI\THtmlWriter $writer the writer for the rendering purpose
 	 * @param string $clientID checkbox id
 	 * @param string $onclick onclick js
@@ -277,6 +279,10 @@ class TRadioButton extends TCheckBox
 		if (($tabindex = $this->getTabIndex()) !== null) {
 			$writer->addAttribute('tabindex', "$tabindex");
 		}
+		if ($aria = $this->getViewState('Aria', null)) {
+			$aria->addAttributesToRender($writer);
+		}
+		$this->addAriaInvalidAttributeToRender($writer);
 		if ($attributes = $this->getViewState('InputAttributes', null)) {
 			$writer->addAttributes($attributes);
 		}

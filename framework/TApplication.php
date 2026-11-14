@@ -13,7 +13,7 @@ namespace Prado;
 use Prado\Caching\ICache;
 use Prado\Collections\TCollectionItemChangeParameter;
 use Prado\Collections\TMap;
-use Prado\Exceptions\{TConfigurationException, TException, TExitException, THttpException};
+use Prado\Exceptions\{TConfigurationException, TException, TExitException, THttpException, TInvalidOperationException};
 use Prado\Exceptions\TErrorHandler;
 use Prado\I18N\TGlobalization;
 use Prado\IO\Async\TFiberContext;
@@ -2297,8 +2297,8 @@ class TApplication extends TComponent implements ISingleton
 	 * If the module's `lazy` property is true, as read by {@see TPropertyValue::ensureBoolean()},
 	 * and `$force` is `false`, the module is registered as a null placeholder in `$_modules`
 	 * and this method returns `null`.
-	 * Otherwise the module is instantiated, its properties are applied via setXxx()
-	 * calls, and it is stored in `$_modules`. The lazy-module slot is nullified to
+	 * Otherwise the module is instantiated, its properties are applied by
+	 * {@see applyModuleProperties()}, and it is stored in `$_modules`. The lazy-module slot is nullified to
 	 * prevent ID reuse.
 	 *
 	 * @param string $id module ID registered in `$_lazyModules`.
@@ -2323,12 +2323,39 @@ class TApplication extends TComponent implements ISingleton
 		$module = Prado::createComponent($moduleClass);
 		$moduleProperties = $initProperties;
 		unset($moduleProperties['lazy']);
-		$module->setSubProperties($moduleProperties);
+		$this->applyModuleProperties($module, $moduleProperties);
 		$this->setModule($id, $module);
 		// keep the key to avoid reuse of the old module id
 		$this->setLazyModule($id, null);
 
 		return [$module, $configElement];
+	}
+
+	/**
+	 * Sets the configured properties of a module.  A {@see TComponent} module receives
+	 * them through {@see TComponent::setSubProperties()}.  A module that does not extend
+	 * TComponent has each property set through its `set` method, coerced to the
+	 * setter's parameter type by {@see TPropertyValue::coerceForSetter()}.
+	 * @param object $module the module.
+	 * @param array<string, mixed> $properties the property values, by property name.
+	 * @throws TInvalidOperationException `component_property_undefined` when a module that
+	 *   does not extend TComponent has no public setter for a property.
+	 * @since 4.4.0
+	 */
+	protected function applyModuleProperties(object $module, array $properties): void
+	{
+		if ($module instanceof TComponent) {
+			$module->setSubProperties($properties);
+			return;
+		}
+		foreach ($properties as $name => $value) {
+			$setter = 'set' . $name;
+			if (!is_callable([$module, $setter])) {
+				throw new TInvalidOperationException('component_property_undefined', $module::class, $name);
+			}
+			TPropertyValue::coerceForSetter($module, $setter, $value);
+			$module->$setter($value);
+		}
 	}
 
 	/**
@@ -2762,7 +2789,9 @@ class TApplication extends TComponent implements ISingleton
 
 			// Phase 2: sort → dyPreInit in dependency order.
 			foreach ($this->sortModulesByDependency($pending, $depCache, true) as $entry) {
-				$entry['module']->dyPreInit($entry['config']);
+				if ($entry['module'] instanceof TComponent) {
+					$entry['module']->dyPreInit($entry['config']);
+				}
 			}
 
 			// Phase 3: sort → resolve dependencies → init() in dependency order; save result for post-init.
@@ -2774,7 +2803,9 @@ class TApplication extends TComponent implements ISingleton
 
 			// Phase 4: dyPostInit in the same order as init() — no re-sort.
 			foreach ($initOrder as $entry) {
-				$entry['module']->dyPostInit($entry['config']);
+				if ($entry['module'] instanceof TComponent) {
+					$entry['module']->dyPostInit($entry['config']);
+				}
 			}
 		}
 

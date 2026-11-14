@@ -19,6 +19,7 @@ TRadioButton displays a radio button on the page. It extends TCheckBox and uses 
 - `getChecked()` / `setChecked($value)` - Whether the radio button is checked
 - `getAutoPostBack()` / `setAutoPostBack($value)` - Whether to postback on change
 - `getEnableClientScript()` / `setEnableClientScript($value)` - Whether to render JavaScript
+- `renderInputTag()` - Renders the `<input>` with `Aria` and the `aria-invalid` of a failed validation, as TCheckBox does
 
 ## See Also
 

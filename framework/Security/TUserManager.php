@@ -136,7 +136,7 @@ class TUserManager extends \Prado\TModule implements IUserManager
 	}
 
 	/**
-	 * Loads user/role information from an php array.
+	 * Loads user/role information from an php array.  A user without a name is skipped.
 	 * @param array $config the array containing the user information
 	 */
 	private function loadUserDataFromPhp($config)
@@ -144,6 +144,9 @@ class TUserManager extends \Prado\TModule implements IUserManager
 		if (isset($config['users']) && is_array($config['users'])) {
 			foreach ($config['users'] as $user) {
 				$name = trim(strtolower($user['name'] ?? ''));
+				if ($name === '') {
+					continue;
+				}
 				$password = $user['password'] ?? '';
 				$this->_users[$name] = $password;
 				$roles = $user['roles'] ?? '';
@@ -170,13 +173,16 @@ class TUserManager extends \Prado\TModule implements IUserManager
 	}
 
 	/**
-	 * Loads user/role information from an XML node.
+	 * Loads user/role information from an XML node.  A user without a name is skipped.
 	 * @param \Prado\Xml\TXmlElement $xmlNode the XML node containing the user information
 	 */
 	private function loadUserDataFromXml($xmlNode)
 	{
 		foreach ($xmlNode->getElementsByTagName('user') as $node) {
-			$name = trim(strtolower($node->getAttribute('name')));
+			$name = trim(strtolower($node->getAttribute('name') ?? ''));
+			if ($name === '') {
+				continue;
+			}
 			$this->_users[$name] = $node->getAttribute('password');
 			if (($roles = trim($node->getAttribute('roles') ?? '')) !== '') {
 				foreach (explode(',', $roles) as $role) {

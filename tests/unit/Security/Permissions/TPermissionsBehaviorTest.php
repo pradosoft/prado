@@ -15,6 +15,26 @@ use Prado\Xml\TXmlDocument;
 use Prado\Prado;
 use Prado\Security\Permissions\TUserOwnerRule;
 use Prado\Security\TAuthorizationRuleCollection;
+use Prado\Security\Permissions\IPermissions;
+use Prado\Shell\TShellWriter;
+use Prado\IO\TTextWriter;
+use Prado\TApplicationMode;
+use Prado\TComponent;
+use Prado\Test\Unit\Harness\TTestApplication;
+use Prado\Test\Unit\Harness\TTestShellApplication;
+
+/**
+ * {@see IPermissions} owner whose permission events are set by the test.
+ */
+class TTestPermissionsOwner extends TComponent implements IPermissions
+{
+	public ?array $events = [];
+
+	public function getPermissions($manager)
+	{
+		return $this->events;
+	}
+}
 
 
 class TPermissionsBehaviorTest extends \PHPUnit\Framework\TestCase
@@ -125,6 +145,76 @@ class TPermissionsBehaviorTest extends \PHPUnit\Framework\TestCase
 		self::assertTrue($manager->dyAddRoleChildren(false, $role, $children, $_extra));
 		self::assertTrue($manager->dyRemoveRoleChildren(false, $role, $children, $_extra));
 	}
-	
 
+	public function testAttachToAnOwnerWithoutPermissionsRegistersNothing()
+	{
+		$this->manager = $manager = new TPermissionsManager();
+		$this->behavior->setPermissionsManager($manager);
+		(new TComponent())->attachBehavior('permissions', $this->behavior);
+		self::assertSame([], $this->behavior->getPermissionEvents());
+		self::assertNull(\Prado\Test\Unit\PradoUnit::getProp($this->behavior, '_permissionEvents'));
+	}
+
+	public function testAttachWithoutAManagerRegistersNothing()
+	{
+		$owner = new TTestPermissionsOwner();
+		$owner->events = [new TPermissionEvent('perm_unmanaged', 'Unmanaged', 'dyUnmanaged')];
+		$owner->attachBehavior('permissions', $this->behavior);
+		self::assertSame([], $this->behavior->getPermissionEvents());
+	}
+
+	public function testAttachRegistersEachPermissionEvent()
+	{
+		$this->manager = $manager = new TPermissionsManager();
+		foreach ([null, [], [new TPermissionEvent('perm_no_events', 'No events')], [new TPermissionEvent('perm_one_event', 'One event', 'dyOneEvent')]] as $events) {
+			$behavior = new TPermissionsBehavior($manager);
+			$owner = new TTestPermissionsOwner();
+			$owner->events = $events;
+			$owner->attachBehavior('permissions', $behavior);
+			self::assertSame($events ?? [], $behavior->getPermissionEvents());
+		}
+		self::assertSame('No events', $manager->getPermissionDescription('perm_no_events'));
+		self::assertSame('One event', $manager->getPermissionDescription('perm_one_event'));
+		self::assertSame(['dyoneevent' => ['perm_one_event']], \Prado\Test\Unit\PradoUnit::getProp($behavior, '_permissionEvents'));
+	}
+
+	public function testLogPermissionFailedWritesTheShellAndHidesThePermissionOutsideDebug()
+	{
+		$app = new TTestShellApplication();
+		try {
+			$text = new TTextWriter();
+			$app->setWriter(new TShellWriter($text));
+			$owner = new TComponent();
+			$owner->attachBehavior('permissions', $this->behavior);
+
+			$app->setMode(TApplicationMode::Debug);
+			self::assertSame('s ("perm_a", "perm_b")', $owner->dyLogPermissionFailed(['perm_a', 'perm_b'], 'acting'));
+			self::assertStringContainsString('@(undefined) failed permissions ("perm_a", "perm_b") when "acting"', $text->flush());
+
+			$this->usermanager = new TUserManager();
+			$this->user = $user = new TUser($this->usermanager);
+			$user->setName('joe');
+			$app->setUser($user);
+			$app->setMode(TApplicationMode::Normal);
+			self::assertSame('s', $owner->dyLogPermissionFailed('perm_a', 'acting'));
+			$output = $text->flush();
+			self::assertStringContainsString('@joe failed permissions when "acting"', $output);
+			self::assertStringNotContainsString('perm_a', $output);
+		} finally {
+			$app->restoreApplication();
+		}
+	}
+
+	public function testLogPermissionFailedOutsideTheShellOnlyLogs()
+	{
+		$app = new TTestApplication();
+		try {
+			$app->setMode(TApplicationMode::Debug);
+			$owner = new TComponent();
+			$owner->attachBehavior('permissions', $this->behavior);
+			self::assertSame(' ("perm_a")', $owner->dyLogPermissionFailed('perm_a', 'acting'));
+		} finally {
+			$app->restoreApplication();
+		}
+	}
 }
