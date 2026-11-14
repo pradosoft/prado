@@ -990,8 +990,10 @@ class TCronModuleTest extends \PHPUnit\Framework\TestCase
 		self::assertEquals('fxgetcrontaskinfos', $task->dyMethod);
 		self::assertEquals($this->obj, $task->args[0]);
 		
-		$taskInfos = $taskInfos[0];
-		self::assertEquals('taskName', $taskInfos->getName());
+		// Other modules listening to the global event add their own task infos.
+		$testInfos = array_values(array_filter($taskInfos, fn ($info) => $info->getName() === 'taskName'));
+		self::assertCount(1, $testInfos);
+		$taskInfos = $testInfos[0];
 		self::assertEquals('taskDefinition', $taskInfos->getTask());
 		self::assertEquals('module1', $taskInfos->getModuleId());
 		self::assertEquals('text title', $taskInfos->getTitle());

@@ -121,4 +121,16 @@ class TPermissionEventTest extends \PHPUnit\Framework\TestCase
 		} catch(TConfigurationException $e) {}
 	}
 
+	public function testEventsAndRulesRejectAnObjectNamingItsClass()
+	{
+		$perm = new TPermissionEvent();
+		foreach (['setEvents', 'setRules'] as $setter) {
+			try {
+				$perm->$setter(new \stdClass());
+				self::fail("$setter did not throw TConfigurationException for an object");
+			} catch (TConfigurationException $e) {
+				self::assertStringContainsString('stdClass', $e->getMessage());
+			}
+		}
+	}
 }

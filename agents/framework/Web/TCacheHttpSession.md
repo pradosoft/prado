@@ -18,6 +18,7 @@ TCacheHttpSession extends THttpSession and provides session storage using a cach
 - `_read($id)` - Reads session data from cache
 - `_write($id, $data)` - Writes session data to cache
 - `_destroy($id)` - Destroys session data from cache
+- `fxGetCronTaskInfos()` - Returns null; the cache expires sessions, so no `sessiongc` task is registered. A [TDbCache](../Caching/TDbCache.md) store is flushed by its `dbcacheflushexpired` task (4.4.0)
 
 ## See Also
 

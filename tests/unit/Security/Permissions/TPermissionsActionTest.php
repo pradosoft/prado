@@ -11,6 +11,8 @@ use Prado\Util\TDbParameterModule;
 use Prado\Prado;
 use Prado\Security\Permissions\TUserOwnerRule;
 use Prado\Security\TAuthorizationRule;
+use Prado\Test\Unit\Harness\TTestApplication;
+use Prado\Test\Unit\PradoUnit;
 
 class TPermissionsActionTest extends \PHPUnit\Framework\TestCase
 {
@@ -33,6 +35,7 @@ class TPermissionsActionTest extends \PHPUnit\Framework\TestCase
 	protected function tearDown(): void
 	{
 		$this->dbparam->remove($this->manager->getLoadParameter());
+		unset(Prado::getApplication()->getParameters()[$this->manager->getLoadParameter()]);
 		$this->manager->__destruct();
 		$this->manager = null;
 		$this->dbparam->__destruct();
@@ -296,4 +299,73 @@ class TPermissionsActionTest extends \PHPUnit\Framework\TestCase
 		self::assertEquals($v, $this->obj->getPermissionsManager());
 	}
 
+	public function testOptionsAndAliases()
+	{
+		self::assertSame(['all'], $this->obj->options('index'));
+		self::assertSame([], $this->obj->options('role'));
+		self::assertSame(['a' => 'all'], $this->obj->optionAliases());
+		self::assertFalse($this->obj->getAll());
+		$this->obj->setAll('');
+		self::assertTrue($this->obj->getAll());
+	}
+
+	public function testRuleToStringNamesAuthenticatedAndGuestUsersWithTheActionWriter()
+	{
+		$text = PradoUnit::invoke($this->obj, 'ruleToString', new TAuthorizationRule('allow', '@, ?'));
+		self::assertStringContainsString('users="@, ?"', $text);
+	}
+
+	public function testActionsReportRefusedChanges()
+	{
+		$this->obj->setPermissionsManager($this->manager);
+		self::assertTrue($this->obj->actionAddRule(['perm/add-rule', 'perm_name', 'allow', 'user1']));
+		$this->writer->flush();
+		$this->manager->attachBehavior('refuse', new TTestRefusePermissionChangesBehavior());
+
+		$refused = [
+			[['perm/role', 'sub_role', '+other_perm'], 'Could not add role children'],
+			[['perm/role', 'sub_role', '-other_perm'], 'Could not remove role children'],
+			[['perm/add-rule', 'perm_name', 'deny'], 'Could not add permission rule'],
+			[['perm/remove-rule', 'perm_name', '0'], 'Could not remove permission rule'],
+		];
+		foreach ($refused as [$args, $message]) {
+			$method = ['perm/role' => 'actionRole', 'perm/add-rule' => 'actionAddRule', 'perm/remove-rule' => 'actionRemoveRule'][$args[0]];
+			self::assertTrue($this->obj->$method($args));
+			self::assertStringContainsString($message, $this->writer->flush());
+		}
+		self::assertEquals(1, count($this->manager->getDbConfigPermissionRules()['perm_name']));
+	}
+
+	public function testRuleActionsRequireAnActionAndANumericIndex()
+	{
+		$this->obj->setPermissionsManager($this->manager);
+		self::assertTrue($this->obj->actionAddRule(['perm/add-rule', 'perm_name']));
+		self::assertStringContainsString('needs an action', $this->writer->flush());
+		self::assertTrue($this->obj->actionRemoveRule(['perm/remove-rule', 'perm_name', 'first']));
+		self::assertStringContainsString("Permission rule index 'first' is not valid", $this->writer->flush());
+	}
+
+	public function testRemoveTheLastRuleOfAPermission()
+	{
+		$this->obj->setPermissionsManager($this->manager);
+		self::assertTrue($this->obj->actionAddRule(['perm/add-rule', 'perm_name', 'allow', 'user1']));
+		$this->writer->flush();
+		self::assertTrue($this->obj->actionRemoveRule(['perm/remove-rule', 'perm_name', '0']));
+		$text = $this->writer->flush();
+		self::assertStringContainsString('Remove Permission Rule Successful', $text);
+		self::assertStringContainsString('(No Rules for Permission)', $text);
+		self::assertSame([], $this->manager->getDbConfigPermissionRules());
+	}
+
+	public function testPermissionsManagerIsFoundInTheApplication()
+	{
+		$app = new TTestApplication();
+		try {
+			self::assertNull((new TPermissionsAction())->getPermissionsManager());
+			$app->setModule('permissions', $this->manager);
+			self::assertSame($this->manager, (new TPermissionsAction())->getPermissionsManager());
+		} finally {
+			$app->restoreApplication();
+		}
+	}
 }
