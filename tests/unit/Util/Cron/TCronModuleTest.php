@@ -3129,4 +3129,20 @@ class TCronModuleTest extends \PHPUnit\Framework\TestCase
 		$task->setLastExecTime($this->obj->fakeNow - 86400);
 		self::assertNull(PradoUnit::invoke($this->obj, 'getCatchUpTriggers', $task), 'a CatchUp of 1');
 	}
+
+	public function testCatchUp_ABacklogPastTheScanLimitRunsOnce()
+	{
+		$module = new class () extends TTestCronModule {
+			public const CATCH_UP_SCAN_LIMIT = 5;
+		};
+		$module->fakeNow = $this->obj->fakeNow;
+		$module->fakeMicrotime = (float) $module->fakeNow;
+		$module->init([['name' => 'longBacklog', 'schedule' => '*:* * * * *', 'task' => TTestCronRecordingTask::class, 'catchup' => 3]]);
+		$task = $module->getTask('longBacklog');
+		$task->setLastExecTime($module->fakeNow - 60);
+		self::assertNull(PradoUnit::invoke($module, 'getCatchUpTriggers', $task), 'sixty missed triggers pass the scan limit of five');
+		$task->setLastExecTime($module->fakeNow - 4);
+		self::assertCount(3, PradoUnit::invoke($module, 'getCatchUpTriggers', $task), 'four missed triggers keep the latest three');
+		$module->unlisten();
+	}
 }

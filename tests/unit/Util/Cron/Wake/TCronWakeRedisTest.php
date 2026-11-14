@@ -390,4 +390,16 @@ class TCronWakeRedisTest extends \PHPUnit\Framework\TestCase
 		self::assertTrue($t->wait($start + 2.0, $start), 'a message from any client wakes the subscriber');
 		$t->close();
 	}
+
+	public function testACommandThatCannotBeWrittenHasNoReply()
+	{
+		$file = tempnam(sys_get_temp_dir(), 'prado-redis-ro-');
+		$readOnly = fopen($file, 'r');
+		try {
+			self::assertNull(\Prado\Test\Unit\PradoUnit::invoke(new TCronWakeRedis(), 'command', $readOnly, ['PING']));
+		} finally {
+			fclose($readOnly);
+			unlink($file);
+		}
+	}
 }

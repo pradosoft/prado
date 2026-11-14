@@ -304,4 +304,20 @@ class TCronWakeSocketTest extends \PHPUnit\Framework\TestCase
 		$s->setRuntimePath('/tmp');
 		self::assertSame(in_array('udg', stream_get_transports(), true) ? 'udg' : 'udp', $s->getTransport(), 'a new runtime path resolves the transport again');
 	}
+
+	public function testWithoutAnAddressOrABindableSocket()
+	{
+		$s = new TCronWakeSocket($this->runtime);
+		\Prado\Test\Unit\PradoUnit::setProp($s, '_transport', null);
+		self::assertFalse($s->watch(TAsync::getLoop(), static fn () => null), 'without a transport there is no daemon address');
+
+		$s = new TCronWakeSocket($this->runtime . DIRECTORY_SEPARATOR . 'missing');
+		$this->skipWithoutTransport($s);
+		if ($s->getTransport() !== 'udg') {
+			self::markTestSkipped('a udp socket binds without a directory');
+		}
+		$now = microtime(true);
+		self::assertFalse($s->watch(TAsync::getLoop(), static fn () => null), 'a socket in a missing directory cannot be bound');
+		self::assertNull($s->wait($now + 1, $now));
+	}
 }
