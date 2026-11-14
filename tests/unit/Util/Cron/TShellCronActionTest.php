@@ -689,9 +689,10 @@ class TShellCronActionTest extends \PHPUnit\Framework\TestCase
 		$action->setWriter($this->writer);
 		self::assertSame('-', PradoUnit::invoke($action, 'formatResult', null));
 		self::assertIsBool(PradoUnit::invoke($action, 'isInteractive'));
+		// Windows times sleeps to its clock tick (about 15.6 ms): the margin is wide.
 		$start = microtime(true);
-		PradoUnit::invoke($action, 'sleep', 0.01);
-		self::assertGreaterThanOrEqual(0.009, microtime(true) - $start);
+		PradoUnit::invoke($action, 'sleep', 0.05);
+		self::assertGreaterThanOrEqual(0.03, microtime(true) - $start);
 		$this->writer->write('flushed');
 		PradoUnit::invoke($action, 'flushView');
 		self::assertSame('', $this->writer->flush(), 'the view flushes the writer');

@@ -2766,9 +2766,10 @@ class TCronModuleTest extends \PHPUnit\Framework\TestCase
 	public function testWaitSeams_SleepAndWaitForWake()
 	{
 		$module = new TCronModule();
+		// Windows times sleeps to its clock tick (about 15.6 ms): the margins are wide.
 		$start = microtime(true);
-		self::assertTrue(PradoUnit::invoke($module, 'time_sleep_until', microtime(true) + 0.02));
-		self::assertGreaterThanOrEqual(0.015, microtime(true) - $start);
+		self::assertTrue(PradoUnit::invoke($module, 'time_sleep_until', microtime(true) + 0.05));
+		self::assertGreaterThanOrEqual(0.03, microtime(true) - $start);
 		self::assertTrue(PradoUnit::invoke($module, 'time_sleep_until', microtime(true) - 1), 'a past time returns at once');
 
 		$transport = $this->wakeFile(0.01);
@@ -2785,8 +2786,8 @@ class TCronModuleTest extends \PHPUnit\Framework\TestCase
 			}
 		};
 		$start = microtime(true);
-		self::assertFalse(PradoUnit::invoke($module, 'waitForWake', microtime(true) + 0.02), 'without a transport the wait sleeps');
-		self::assertGreaterThanOrEqual(0.015, microtime(true) - $start);
+		self::assertFalse(PradoUnit::invoke($module, 'waitForWake', microtime(true) + 0.05), 'without a transport the wait sleeps');
+		self::assertGreaterThanOrEqual(0.03, microtime(true) - $start);
 	}
 
 	public function testWakeTransport_InvalidAndWithoutApplication()
