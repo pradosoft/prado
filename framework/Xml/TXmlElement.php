@@ -545,6 +545,7 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 	/**
 	 * Find elements matching an XPath expression.
 	 * This method allows you to use XPath expressions to query elements within the XML structure.
+	 * The internal ID attributes are removed when the query throws.
 	 * @param string $xpath XPath expression
 	 * @return TList List of matching elements
 	 * @since 4.3.3
@@ -553,26 +554,28 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 	{
 		$idAttrName = $this->insertPradoXmlId();
 
-		$doc = new \DOMDocument();
-		$doc->loadXML($this->toString(0, false));
+		try {
+			$doc = new \DOMDocument();
+			$doc->loadXML($this->toString(0, false));
 
-		$xpathObj = new \DOMXPath($doc);
-		$nodes = $xpathObj->query($xpath);
+			$xpathObj = new \DOMXPath($doc);
+			$nodes = $xpathObj->query($xpath);
 
-		$results = new TList();
-		foreach ($nodes as $node) {
-			if ($node instanceof \DOMElement) {
-				$xmlId = $node->getAttribute($idAttrName);
+			$results = new TList();
+			foreach ($nodes as $node) {
+				if ($node instanceof \DOMElement) {
+					$xmlId = $node->getAttribute($idAttrName);
 
-				// @todo This can be sped up with a private focused search function due to the known ordering of each node $xmlId.
-				$element = $this->getElementByAttribute($idAttrName, $xmlId, self::SEARCH_BREADTH_FIRST);
-				if ($element) {
-					$results->add($element);
+					// @todo This can be sped up with a private focused search function due to the known ordering of each node $xmlId.
+					$element = $this->getElementByAttribute($idAttrName, $xmlId, self::SEARCH_BREADTH_FIRST);
+					if ($element) {
+						$results->add($element);
+					}
 				}
 			}
+		} finally {
+			$this->removePradoXmlId($idAttrName);
 		}
-
-		$this->removePradoXmlId($idAttrName);
 
 		return $results;
 	}

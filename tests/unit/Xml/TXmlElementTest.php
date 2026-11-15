@@ -7,6 +7,7 @@ use Prado\Xml\TXmlElement;
 
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Exceptions\TPhpErrorException;
 
 class TXmlElementTest extends \PHPUnit\Framework\TestCase
 {
@@ -1204,5 +1205,22 @@ class TXmlElementTest extends \PHPUnit\Framework\TestCase
 		self::assertTrue(isset($element[null]));
 		self::assertSame('0', $element[null]);
 		self::assertSame('<tag>0</tag>', $element->toString());
+	}
+
+	public function testXPathRemovesTheInternalIdAttributesWhenTheQueryThrows()
+	{
+		$parent = new TXmlElement('parent');
+		$child = new TXmlElement('child');
+		$parent[] = $child;
+
+		try {
+			$parent->xpath('//[');
+			self::fail('An invalid XPath expression did not throw.');
+		} catch (TPhpErrorException $e) {
+			self::assertStringContainsString('DOMXPath::query()', $e->getMessage());
+		}
+
+		self::assertFalse($parent->getHasAttribute());
+		self::assertFalse($child->getHasAttribute());
 	}
 }
