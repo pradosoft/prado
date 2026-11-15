@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TI18NControlTrait` falls back to the `dyDefaultCharsetValue` and `dyDefaultCultureValue` filters when the globalization's charsets or culture are empty; it returned an empty charset or a null culture. (belisoful)
 CHG: Issue #1497 - `TTableGateway` dynamic finders throw `dbtablegateway_mismatch_column_name` unless the whole condition is column names joined by `And` or `Or`; text that matched no column was ignored, so `findByFooAndName()` searched by `Name` alone. See UPGRADE.md. (belisoful)
 BUG: Issue #1497 - `TWebServerAction` `http/serve` in quiet mode 2 or 3 no longer throws a `TypeError` when the web server exits. (belisoful)
 BUG: Issue #1497 - `TWebServerAction::setAddress()` brackets a bare IPv6 address such as `::1`, which it read as address `:` and port 1; a taken address reports its port. (belisoful)
