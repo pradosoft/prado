@@ -10,6 +10,10 @@ for both A and B.
 Upgrading from v4.3.3
 ---------------------
 - PHP 8.2 is now required. Applications running PHP 8.1 stay on Prado 4.3.
+- Issue #1497 - A `TTableGateway` dynamic finder (`findBy...`, `findAllBy...`, `deleteBy...`, `deleteAllBy...`) throws
+  `dbtablegateway_mismatch_column_name` unless its whole condition is column names joined by `And` or `Or`. In 4.3 the
+  text that matched no column was ignored, so `findByFooAndName($a, $b)` searched by `Name` alone, and `deleteBy...`
+  deleted by the columns it found. Rename such a call to the columns it means.
 - Issue #833 - The bare `prado-cli cron` shell action lists the cron tasks; in 4.3 it ran the pending tasks. Change the
   system crontab entry to `prado-cli <appdir> cron/run`. The `TDbCronManager` table gains the `nextexectime`,
   `lastresult`, `lastduration`, `paused`, `okcount`, `failcount`, `totalduration`, and `maxduration` columns, added (and `nextexectime` filled) on the first use of an existing
