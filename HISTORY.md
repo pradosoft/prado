@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - A `TPermissionsManager` created while another is initialized no longer registers its permissions with that manager, which threw `permissions_duplicate_permission`. (belisoful)
 BUG: Issue #1497 - `TAuthorizationRule` throws `authorizationrule_list_empty` for a users, roles, or IP list of only separators, such as `','`; such a users or roles list matched no one, while such an IP list matched every IP. (belisoful)
 BUG: Issue #1497 - `TPagedDataSource` applies custom paging only while `AllowPaging` is true; with paging off, `Count` followed `VirtualItemCount` and disagreed with iteration. (belisoful)
 BUG: Issue #1497 - `TPermissionsManager::__destruct()` detaches the permissions class behaviors only when its `init()` attached them; destroying a manager that was never initialized removed another manager's behaviors. (belisoful)

@@ -1112,6 +1112,18 @@ class TPermissionsManagerTest extends \PHPUnit\Framework\TestCase
 		$dbparam->__destruct();
 	}
 
+	public function testAnotherManagerRegistersNoPermissionsWithTheInitializedManager()
+	{
+		$this->obj->init(null);
+		$descriptions = PradoUnit::getProp($this->obj, '_descriptions');
+
+		$other = new TPermissionsManager();
+		self::assertInstanceOf(TPermissionsBehavior::class, $other->asa(TPermissionsManager::PERMISSIONS_BEHAVIOR));
+		self::assertSame($descriptions, PradoUnit::getProp($this->obj, '_descriptions'));
+		$other->unlisten();
+		$other->__destruct();
+	}
+
 	public function testLoadPermissionsData_numericKeyNamesAPermission()
 	{
 		$this->obj->setAutoAllowWithPermission(false);
