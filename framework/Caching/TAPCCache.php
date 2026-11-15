@@ -77,6 +77,9 @@ class TAPCCache extends TCache
 	public function init($config)
 	{
 		if (!static::getIsAvailable()) {
+			// The reason follows php.ini, which a running process cannot change, so one
+			// process reaches only one of these throws.
+			// @codeCoverageIgnoreStart
 			if (!extension_loaded('apcu')) {
 				throw new TConfigurationException('apccache_extension_required');
 			}
@@ -88,6 +91,7 @@ class TAPCCache extends TCache
 			if (substr(php_sapi_name(), 0, 3) === 'cli' && ini_get('apc.enable_cli') == false) {
 				throw new TConfigurationException('apccache_extension_not_enabled_cli');
 			}
+			// @codeCoverageIgnoreEnd
 		}
 
 		parent::init($config);

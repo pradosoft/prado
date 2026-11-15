@@ -8,6 +8,7 @@ use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Test\Unit\Harness\Caching\TTestDbCache;
 use Prado\Test\Unit\Harness\TTestApplication;
+use Prado\Prado;
 use Prado\Test\Unit\PradoUnit;
 
 if (!defined('TEST_CACHE_DB_DIR')) {
@@ -790,6 +791,112 @@ class TDbCacheTest extends \PHPUnit\Framework\TestCase
 		$this->_cache->getDbConnection()->createCommand('DROP TABLE ' . $this->_cache->getCacheTableName())->execute();
 	}
 
+	public function testInitThrowsWhenUnavailable(): void
+	{
+		TDbCacheTestCache::$available = false;
+		$cache = new TDbCacheTestCache();
+		$cache->setPrimaryCache(false);
+		try {
+			$cache->init(null);
+			$this->fail('init() did not throw while unavailable.');
+		} catch (TConfigurationException $e) {
+			$this->assertSame('dbcache_unavailable', $e->getErrorCode());
+		}
+		$this->assertTrue(TDbCache::getIsAvailable());
+	}
+
+	public function testInitializeCacheRunsOnceUnlessForced(): void
+	{
+		$cache = $this->initTestCache();
+		$cache->pubInitializeCache();
+		$this->assertTrue($cache->pubGetIsCacheInitialized());
+		$this->dropCacheTable();
+		$count = 'SELECT COUNT(*) FROM pradocache';
+		$cache->pubInitializeCache();
+		// Already initialized: the dropped table is not checked for or created again.
+		try {
+			$cache->getDbConnection()->createCommand($count)->queryScalar();
+			$this->fail('The dropped table was created again.');
+		} catch (\Prado\Exceptions\TDbException $e) {
+		}
+		$cache->pubInitializeCache(true);
+		$this->assertEquals(0, $cache->getDbConnection()->createCommand($count)->queryScalar());
+	}
+
+	public function testInitWithoutAnApplicationAttachesNoHandlers(): void
+	{
+		$cache = new TDbCacheTestCache();
+		$cache->setPrimaryCache(false);
+		$cache->setConnectionString('sqlite:' . $this->_dbFile);
+		PradoUnit::setStaticProp(Prado::class, '_application', null);
+		try {
+			$cache->init(null);
+		} finally {
+			PradoUnit::setStaticProp(Prado::class, '_application', $this->_app);
+		}
+		$this->assertTrue($cache->getIsInitialized());
+		$this->assertFalse($this->_app->getEventHandlers('OnSaveState')->contains([$cache, 'doFlushCacheExpired']));
+	}
+
+	/**
+	 * @dataProvider credentialProvider
+	 */
+	public function testCustomConnectionTakesOnlyTheGivenCredentials(string $username, string $password): void
+	{
+		$cache = new TDbCacheTestCache();
+		$cache->setConnectionString('sqlite:' . $this->_dbFile);
+		$cache->setUsername($username);
+		$cache->setPassword($password);
+		$db = $cache->pubGetCustomDbConnection();
+		$this->assertSame($username, $db->getUsername());
+		$this->assertSame($password, $db->getPassword());
+	}
+
+	public static function credentialProvider(): array
+	{
+		return ['username only' => ['user', ''], 'password only' => ['', 'secret']];
+	}
+
+	public function testAnAddWithAnExpiryInitializesTheCache(): void
+	{
+		$cache = $this->initTestCache();
+		$cache->fakeNow = 1_000_000;
+		$this->assertFalse($cache->pubGetIsCacheInitialized());
+		$this->assertTrue($cache->add('k', 'v', 30));
+		$this->assertTrue($cache->pubGetIsCacheInitialized());
+		$expire = $cache->getDbConnection()->createCommand('SELECT expire FROM pradocache')->queryScalar();
+		$this->assertEquals(1_000_030, $expire);
+	}
+
+	public function testWithoutAConnectionStringThereIsNoCustomConnection(): void
+	{
+		$cache = new TDbCacheTestCache();
+		$this->assertNull($cache->pubGetCustomDbConnection());
+	}
+
+	public function testFlushCacheExpiredInitializesTheCache(): void
+	{
+		$cache = $this->initTestCache();
+		$this->assertFalse($cache->pubGetIsCacheInitialized());
+		$cache->flushCacheExpired(true);
+		$this->assertTrue($cache->pubGetIsCacheInitialized());
+	}
+
+	public function testFlushCacheExpiredWithZeroIntervalSkipsWhenNotForced(): void
+	{
+		$cache = $this->initTestCache();
+		$cache->setFlushInterval(0);
+		$cache->fakeNow = 1_000_000;
+		$cache->set('exp', 'v', 10);
+		$cache->fakeNow = 1_000_011;
+		$cache->flushCacheExpired(false);
+		$count = $cache->getDbConnection()->createCommand('SELECT COUNT(*) FROM pradocache')->queryScalar();
+		$this->assertEquals(1, $count);
+		$cache->flushCacheExpired(true);
+		$count = $cache->getDbConnection()->createCommand('SELECT COUNT(*) FROM pradocache')->queryScalar();
+		$this->assertEquals(0, $count);
+	}
+
 	/**
 	 * @dataProvider droppedTableProvider
 	 */
@@ -823,6 +930,34 @@ class TDbCacheTest extends \PHPUnit\Framework\TestCase
 	public function testWithoutAutoCreateAddToAMissingTableFails(): void
 	{
 		$this->assertFalse($this->initTestCache(false)->add('k', 'v'));
+	}
+
+	public function testWithoutAutoCreateFlushOfAMissingTableFails(): void
+	{
+		$this->assertFalse($this->initTestCache(false)->flush());
+	}
+
+	public function testADriverWithoutAnUpsertReplacesInATransaction(): void
+	{
+		$cache = $this->initTestCache(true, true);
+		$this->assertSame('odbc', $cache->getDbConnection()->getDriverName());
+		$this->assertTrue($cache->set('k', 'first'));
+		$this->assertTrue($cache->set('k', 'second', 60));
+		$this->assertSame('second', $cache->get('k'));
+		$this->assertNull($cache->getDbConnection()->getCurrentTransaction());
+		$count = $cache->getDbConnection()->createCommand('SELECT COUNT(*) FROM pradocache')->queryScalar();
+		$this->assertEquals(1, $count);
+	}
+
+	public function testADriverWithoutAnUpsertJoinsTheCurrentTransaction(): void
+	{
+		$cache = $this->initTestCache(true, true);
+		$cache->set('k', 'first');
+		$transaction = $cache->getDbConnection()->beginTransaction();
+		$this->assertTrue($cache->set('k', 'second'));
+		$this->assertSame($transaction, $cache->getDbConnection()->getCurrentTransaction());
+		$transaction->rollback();
+		$this->assertSame('first', $cache->get('k'));
 	}
 
 	/**
