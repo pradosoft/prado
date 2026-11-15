@@ -17,14 +17,17 @@
 
 namespace Prado\I18N\core;
 
-use Prado\Exceptions\TException;
+use Prado\Exceptions\TIOException;
 
 /**
- * TMessageSourceIOException thrown when unable to modify message source
- * data.
+ * TMessageSourceIOException is thrown when a message source cannot write its catalogue.
+ *
+ * The XLIFF, PHP, and gettext message sources throw it for a catalogue file that is
+ * not writable, and for a catalogue directory or template file they cannot create.
+ * It extends {@see TIOException}, so code that catches TIOException catches it.
  *
  * @author Wei Zhuo<weizhuo[at]gmail[dot]com>
  */
-class TMessageSourceIOException extends TException
+class TMessageSourceIOException extends TIOException
 {
 }

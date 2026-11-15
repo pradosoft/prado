@@ -578,6 +578,9 @@ globalization_source_invalid			= The translation source ''{0}'' is not a namespa
 translateparameter_key_required			= TTranslateParameter.Key is required.
 messagesource_connectionid_invalid      = MessageSource_Database.source ''{0}'' does not point to a valid TDataSourceConfig module.
 messagesource_connectionid_required     = ConnectionID in MessageSource_Database.source is required.
+messagesource_file_unwritable			= Unable to write the message catalogue file ''{0}''. The file must be writable by the Web process.
+messagesource_directory_failed			= Unable to create the message catalogue directory ''{0}''. Make sure the parent directory exists and is writable by the Web process.
+messagesource_template_failed			= Unable to create the message catalogue files ''{0}'' and ''{1}''.
 
 callback_invalid_callback_options		= ''{1}'' is not a valid TCallbackOptions control for Callback control ''{0}''.
 callback_invalid_handler				= Invalid callback handler, control {0} must implement ICallbackEventHandler.

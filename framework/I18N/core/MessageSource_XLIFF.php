@@ -20,8 +20,6 @@ namespace Prado\I18N\core;
 use DOMDocument;
 use DOMXPath;
 use DOMElement;
-use Prado\Exceptions\TException;
-use Prado\Exceptions\TIOException;
 use Prado\Prado;
 
 /**
@@ -273,7 +271,7 @@ class MessageSource_XLIFF extends MessageSource
 		}
 
 		if (!is_writable($filename)) {
-			throw new TIOException("Unable to save to file {$filename}, file must be writable.");
+			throw new TMessageSourceIOException('messagesource_file_unwritable', $filename);
 		}
 
 		//create a new dom, import the existing xml
@@ -348,7 +346,7 @@ class MessageSource_XLIFF extends MessageSource
 		}
 
 		if (!is_writable($filename)) {
-			throw new TIOException("Unable to update file {$filename}, file must be writable.");
+			throw new TMessageSourceIOException('messagesource_file_unwritable', $filename);
 		}
 
 		//create a new dom, import the existing xml
@@ -442,7 +440,7 @@ class MessageSource_XLIFF extends MessageSource
 		}
 
 		if (!is_writable($filename)) {
-			throw new TIOException("Unable to modify file {$filename}, file must be writable.");
+			throw new TMessageSourceIOException('messagesource_file_unwritable', $filename);
 		}
 
 		//create a new dom, import the existing xml
@@ -503,7 +501,7 @@ class MessageSource_XLIFF extends MessageSource
 		}
 
 		if (!is_dir($dir)) {
-			throw new TException("Unable to create directory $dir");
+			throw new TMessageSourceIOException('messagesource_directory_failed', $dir);
 		}
 
 		file_put_contents($file, $this->getTemplate($catalogue));

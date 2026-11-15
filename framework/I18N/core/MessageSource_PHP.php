@@ -19,8 +19,6 @@ namespace Prado\I18N\core;
 /**
  * Get the MessageSource class file.
  */
-use Prado\Exceptions\TException;
-use Prado\Exceptions\TIOException;
 use Prado\Prado;
 
 /**
@@ -282,7 +280,7 @@ class MessageSource_PHP extends MessageSource
 		}
 
 		if (!is_writable($filename)) {
-			throw new TIOException("Unable to save to file {$filename}, file must be writable.");
+			throw new TMessageSourceIOException('messagesource_file_unwritable', $filename);
 		}
 
 		//import the existing php file
@@ -321,7 +319,7 @@ class MessageSource_PHP extends MessageSource
 		}
 
 		if (!is_writable($filename)) {
-			throw new TIOException("Unable to update file {$filename}, file must be writable.");
+			throw new TMessageSourceIOException('messagesource_file_unwritable', $filename);
 		}
 
 		//import the existing php file
@@ -358,7 +356,7 @@ class MessageSource_PHP extends MessageSource
 		}
 
 		if (!is_writable($filename)) {
-			throw new TIOException("Unable to modify file {$filename}, file must be writable.");
+			throw new TMessageSourceIOException('messagesource_file_unwritable', $filename);
 		}
 
 		//import the existing php file
@@ -395,7 +393,7 @@ class MessageSource_PHP extends MessageSource
 		}
 
 		if (!is_dir($dir)) {
-			throw new TException("Unable to create directory $dir");
+			throw new TMessageSourceIOException('messagesource_directory_failed', $dir);
 		}
 
 		file_put_contents($file, $this->getTemplate($catalogue));

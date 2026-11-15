@@ -9,6 +9,7 @@ use Prado\Exceptions\TException;
 use Prado\Exceptions\TIOException;
 use Prado\I18N\core\MessageCache;
 use Prado\I18N\core\MessageSource_XLIFF;
+use Prado\I18N\core\TMessageSourceIOException;
 use Prado\Test\Unit\Harness\Traits\TTempDirectoryTrait;
 use Prado\Test\Unit\PradoUnit;
 
@@ -321,8 +322,8 @@ class MessageSource_XLIFFTest extends TestCase
 		file_put_contents($file, '');
 		$source = $this->createSource('en', $file);
 
-		$this->expectException(TException::class);
-		$this->expectExceptionMessage("Unable to create directory $file/en");
+		$this->expectException(TMessageSourceIOException::class);
+		$this->expectExceptionMessage("Unable to create the message catalogue directory '$file/en'");
 		PradoUnit::invoke($source, 'createMessageTemplate', 'messages');
 	}
 
@@ -332,8 +333,8 @@ class MessageSource_XLIFFTest extends TestCase
 		file_put_contents($file, '');
 		$source = $this->createSource('en', $file);
 
-		$this->expectException(TException::class);
-		$this->expectExceptionMessage("Unable to create directory $file/en");
+		$this->expectException(TMessageSourceIOException::class);
+		$this->expectExceptionMessage("Unable to create the message catalogue directory '$file/en'");
 		PradoUnit::invoke($source, 'createMessageTemplate', null);
 	}
 

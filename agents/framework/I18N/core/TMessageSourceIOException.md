@@ -8,7 +8,13 @@
 **Namespace:** `Prado\I18N\core`
 
 ## Overview
-Exception thrown when unable to read or write message source data (file system errors, permission issues).
+Extends `TIOException`. The XLIFF, PHP, and gettext message sources throw it when they cannot write a catalogue:
+
+| Error code | Condition |
+|---|---|
+| `messagesource_file_unwritable` | `save()`, `update()`, or `delete()` finds a catalogue file that is not writable |
+| `messagesource_directory_failed` | `createMessageTemplate()` cannot create the culture directory |
+| `messagesource_template_failed` | gettext `createMessageTemplate()` cannot write the `.po` and `.mo` files |
 
 ## Example
 

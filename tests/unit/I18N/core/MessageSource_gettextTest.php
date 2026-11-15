@@ -11,6 +11,7 @@ use Prado\I18N\core\Gettext\TGettext_PO;
 use Prado\I18N\core\MessageCache;
 use Prado\I18N\core\MessageSource;
 use Prado\I18N\core\MessageSource_gettext;
+use Prado\I18N\core\TMessageSourceIOException;
 use Prado\Test\Unit\Harness\Traits\TTempDirectoryTrait;
 use Prado\Test\Unit\PradoUnit;
 
@@ -245,8 +246,8 @@ class MessageSource_gettextTest extends TestCase
 		$source = $this->source();
 		$source->append('New');
 
-		$this->expectException(TIOException::class);
-		$this->expectExceptionMessage('messages.mo, file must be writable.');
+		$this->expectException(TMessageSourceIOException::class);
+		$this->expectExceptionMessage("messages.mo'. The file must be writable");
 
 		$source->save();
 	}
@@ -257,8 +258,8 @@ class MessageSource_gettextTest extends TestCase
 		$source = $this->source();
 		$source->append('New');
 
-		$this->expectException(TIOException::class);
-		$this->expectExceptionMessage('messages.po, file must be writable.');
+		$this->expectException(TMessageSourceIOException::class);
+		$this->expectExceptionMessage("messages.po'. The file must be writable");
 
 		$source->save();
 	}
@@ -269,8 +270,8 @@ class MessageSource_gettextTest extends TestCase
 		$source = $this->source('');
 		$source->append('New');
 
-		$this->expectException(TIOException::class);
-		$this->expectExceptionMessage('Unable to save to file ' . $this->_dir . '/messages.mo, file must be writable.');
+		$this->expectException(TMessageSourceIOException::class);
+		$this->expectExceptionMessage("Unable to write the message catalogue file '" . $this->_dir . "/messages.mo'");
 
 		$source->save();
 	}
@@ -284,8 +285,8 @@ class MessageSource_gettextTest extends TestCase
 		$source = $this->source();
 		$source->append('New');
 
-		$this->expectException(TException::class);
-		$this->expectExceptionMessage('Unable to create directory ' . $this->_dir . '/en_AU');
+		$this->expectException(TMessageSourceIOException::class);
+		$this->expectExceptionMessage("Unable to create the message catalogue directory '" . $this->_dir . "/en_AU'");
 
 		$source->save();
 	}
@@ -297,8 +298,8 @@ class MessageSource_gettextTest extends TestCase
 		}
 		chmod($this->_dir, 0o555);
 
-		$this->expectException(TException::class);
-		$this->expectExceptionMessage('Unable to create directory ' . $this->_dir . '/en_AU');
+		$this->expectException(TMessageSourceIOException::class);
+		$this->expectExceptionMessage("Unable to create the message catalogue directory '" . $this->_dir . "/en_AU'");
 
 		PradoUnit::invoke($this->source(), 'createMessageTemplate', null);
 	}
@@ -317,8 +318,8 @@ class MessageSource_gettextTest extends TestCase
 	{
 		$this->writeCatalogue('messages.mo', ['Hello' => 'Hi'], true, false);
 
-		$this->expectException(TIOException::class);
-		$this->expectExceptionMessage('Unable to modify file ' . $this->_dir . '/messages.mo, file must be writable.');
+		$this->expectException(TMessageSourceIOException::class);
+		$this->expectExceptionMessage("Unable to write the message catalogue file '" . $this->_dir . "/messages.mo'");
 
 		$this->source('')->delete('Hello', null);
 	}
@@ -350,8 +351,8 @@ class MessageSource_gettextTest extends TestCase
 		$this->writeCatalogue('messages.mo', ['Hello' => 'Hi']);
 		chmod($this->_dir . '/messages.mo', 0o444);
 
-		$this->expectException(TIOException::class);
-		$this->expectExceptionMessage('messages.mo, file must be writable.');
+		$this->expectException(TMessageSourceIOException::class);
+		$this->expectExceptionMessage("messages.mo'. The file must be writable");
 
 		$this->source()->delete('Hello');
 	}
@@ -361,8 +362,8 @@ class MessageSource_gettextTest extends TestCase
 		$this->writeCatalogue('messages.mo', ['Hello' => 'Hi']);
 		chmod($this->_dir . '/messages.po', 0o444);
 
-		$this->expectException(TIOException::class);
-		$this->expectExceptionMessage('messages.po, file must be writable.');
+		$this->expectException(TMessageSourceIOException::class);
+		$this->expectExceptionMessage("messages.po'. The file must be writable");
 
 		$this->source()->delete('Hello');
 	}
@@ -399,8 +400,8 @@ class MessageSource_gettextTest extends TestCase
 		$this->writeCatalogue('messages.mo', ['Hello' => 'Hi']);
 		chmod($this->_dir . '/messages.mo', 0o444);
 
-		$this->expectException(TIOException::class);
-		$this->expectExceptionMessage('messages.mo, file must be writable.');
+		$this->expectException(TMessageSourceIOException::class);
+		$this->expectExceptionMessage("messages.mo'. The file must be writable");
 
 		$this->source()->update('Hello', 'Hey', '');
 	}
@@ -410,8 +411,8 @@ class MessageSource_gettextTest extends TestCase
 		$this->writeCatalogue('messages.mo', ['Hello' => 'Hi']);
 		chmod($this->_dir . '/messages.po', 0o444);
 
-		$this->expectException(TIOException::class);
-		$this->expectExceptionMessage('messages.po, file must be writable.');
+		$this->expectException(TMessageSourceIOException::class);
+		$this->expectExceptionMessage("messages.po'. The file must be writable");
 
 		$this->source()->update('Hello', 'Hey', '');
 	}
@@ -503,8 +504,8 @@ class MessageSource_gettextTest extends TestCase
 			$this->markTestSkipped('The process writes into a read-only directory.');
 		}
 
-		$this->expectException(TException::class);
-		$this->expectExceptionMessage('Unable to create file');
+		$this->expectException(TMessageSourceIOException::class);
+		$this->expectExceptionMessage('Unable to create the message catalogue files');
 
 		PradoUnit::invoke($this->source(), 'createMessageTemplate', 'messages');
 	}
