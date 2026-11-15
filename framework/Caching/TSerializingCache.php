@@ -284,6 +284,7 @@ abstract class TSerializingCache extends TCache
 	 * {@see dyUnserialize()} is always raised first; if a behavior returns a value
 	 * that differs from the sentinel, that value is used. Otherwise the
 	 * configured {@see getSerializationType SerializationType} is applied.
+	 * PHP data that does not unserialize returns false, so a corrupted entry is a miss.
 	 * @param string $data the serialized string to restore.
 	 * @return mixed the unserialized value.
 	 */
@@ -306,7 +307,7 @@ abstract class TSerializingCache extends TCache
 		}
 		return $this->getSerializationType() === self::SERIALIZATION_JSON
 			? json_decode($data, true)
-			: unserialize($data);
+			: @unserialize($data);
 	}
 
 	/**

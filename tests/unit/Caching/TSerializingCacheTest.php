@@ -119,6 +119,17 @@ class TSerializingCacheTest extends \PHPUnit\Framework\TestCase
 		$this->assertFalse($cache->get('k'));
 	}
 
+	public function testCorruptPhpPayloadIsAMiss(): void
+	{
+		$cache = $this->newCache();
+		$cache->init(null);
+		$cache->set('k', 'v');
+		// Replace the stored payload with data unserialize() rejects → miss, not a PHP notice.
+		$key = array_key_first($cache->store);
+		$cache->store[$key] = 'not-serialized';
+		$this->assertFalse($cache->get('k'));
+	}
+
 	// ── setEncoding validation ─────────────────────────────────────────────────
 
 	public function testSetEncodingRejectsUnknownValue(): void
