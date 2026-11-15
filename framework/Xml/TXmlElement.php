@@ -744,6 +744,7 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 
 	/**
 	 * This method is required by the \ArrayAccess interface.
+	 * A null offset exists when the value is neither null nor empty, as `toString()` renders it.
 	 * @param mixed $offset The offset to check on
 	 * @return bool Whether an item exists at the specified offset
 	 * @see https://www.php.net/manual/en/class.arrayaccess.php
@@ -752,7 +753,7 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 	public function offsetExists($offset): bool
 	{
 		if ($offset === null) {
-			return !empty($this->_value);
+			return ($value = $this->getValue()) !== null && $value !== '';
 		} elseif (is_int($offset) || (is_string($offset) && filter_var($offset, FILTER_VALIDATE_INT) !== false)) {
 			$offset = (int) $offset;
 			return 0 <= $offset && $offset < $this->getElements()->getCount();

@@ -1193,4 +1193,16 @@ class TXmlElementTest extends \PHPUnit\Framework\TestCase
 		self::assertNull($orphan->getPreviousElementSibling());
 		self::assertNull($orphan->getNextElementSibling());
 	}
+
+	public function testOffsetExistsNullForAZeroValue()
+	{
+		$element = new TXmlElement('tag');
+		self::assertFalse(isset($element[null]));
+		$element->setValue('');
+		self::assertFalse(isset($element[null]));
+		$element->setValue('0');
+		self::assertTrue(isset($element[null]));
+		self::assertSame('0', $element[null]);
+		self::assertSame('<tag>0</tag>', $element->toString());
+	}
 }
