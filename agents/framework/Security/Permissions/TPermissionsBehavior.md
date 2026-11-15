@@ -20,7 +20,7 @@ Class behavior automatically attached to [IPermissions](./IPermissions.md) imple
 
 | Method | Description |
 |--------|-------------|
-| `attach(TComponent $owner)` | On attach, calls `getPermissions()` and registers with manager |
+| `attach(TComponent $owner)` | On attach, calls `getPermissions()` and registers with manager; another `TPermissionsManager` registers nothing |
 | `__dycall(string $method, array $args)` | Intercepts `dy*` calls to check permissions |
 | `getPermissionEvents(): TPermissionEvent[]` | Returns registered permission events |
 | `dyLogPermissionFailed(...)` | Logs permission failures |

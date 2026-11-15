@@ -142,7 +142,8 @@ class TPagedDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 	}
 
 	/**
-	 * @return bool whether to allow custom paging. Defaults to false.
+	 * @return bool whether to allow custom paging. Defaults to false. Custom paging
+	 *   applies only while {@see getAllowPaging AllowPaging} is true.
 	 */
 	public function getAllowCustomPaging()
 	{
@@ -150,7 +151,8 @@ class TPagedDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 	}
 
 	/**
-	 * @param bool $value whether to allow custom paging
+	 * @param bool $value whether to allow custom paging. Custom paging applies only
+	 *   while {@see setAllowPaging AllowPaging} is true.
 	 */
 	public function setAllowCustomPaging($value)
 	{
@@ -266,13 +268,14 @@ class TPagedDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 	}
 
 	/**
-	 * @return int number of items in data source, if available
+	 * @return int number of items in data source, if available: {@see getVirtualItemCount
+	 *   VirtualItemCount} under custom paging, otherwise the count of the data source
 	 */
 	public function getDataSourceCount()
 	{
 		if ($this->_dataSource === null) {
 			return 0;
-		} elseif ($this->_allowCustomPaging) {
+		} elseif ($this->_allowPaging && $this->_allowCustomPaging) {
 			return $this->_virtualCount;
 		} else {
 			return $this->_dataSource->getCount();

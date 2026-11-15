@@ -29,6 +29,8 @@ public function __construct(
 )
 ```
 
+An empty `users`, `roles`, or `ipRules` list applies the rule to everyone (`*`). A list of only separators, such as `','`, throws `authorizationrule_list_empty`, so a mistyped list neither allows nor denies everyone.
+
 ## Key Methods
 
 | Method | Description |
