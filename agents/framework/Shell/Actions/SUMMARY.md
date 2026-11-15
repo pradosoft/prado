@@ -1,19 +1,17 @@
 # Shell/Actions/SUMMARY.md
 
-Built-in CLI action handlers for the Prado shell (`php protected/index.php`); each class provides one or more subcommands.
+Built-in CLI action handlers for the Prado shell (`prado-cli`); each class provides one or more subcommands.
 
 ## Classes
 
-- **`TDbParameterAction`** — Action `param`; manages `TDbParameterModule` parameters (list, get, set, delete).
+- **`TDbParameterAction`** — Action `param`; lists, gets, and sets `TDbParameterModule` parameters; subcommands: `index`, `get`, `set`.
 
-- **`TFlushCachesAction`** — Action `cache`; clears application cache modules implementing `ICache`; subcommands: `index`, `flush`, `flush-all`.
+- **`TFlushCachesAction`** — Action `cache`; lists and flushes application cache modules implementing `ICache`; subcommands: `index`, `flush`, `flush-all`.
 
-- **`THelpAction`** — Action `help`; prints usage information for all registered shell actions.
+- **`THelpAction`** — Action `help`; prints the general help, or the subcommands of one command.
 
-- **`TPhpShellAction`** — Action `shell`; launches interactive PHP REPL with Prado application bootstrapped.
+- **`TPhpShellAction`** — Action `shell`; launches the PsySH REPL with the Prado application bound.
 
-- **`TWebServerAction`** — Action `serve`; starts PHP built-in development web server with `--address=host:port`.
+- **`TWebServerAction`** — Action `http`; `http/serve` starts the PHP built-in development web server with `--address=host:port`.
 
-- **`TShellCronAction`** / **`TShellDbCronAction`** — Manually trigger cron tasks via CLI.
-
-- **`TShellCronLogBehavior`** — Behavior that adds execution logging to cron tasks.
+The `cron` action, `TShellCronAction` and `TShellDbCronAction`, lives in `Util/Cron/`.

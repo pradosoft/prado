@@ -17,8 +17,10 @@ CLI application support for Prado. [TShellApplication](./TShellApplication.md) l
 Extends [TApplication](../TApplication.md). Same configuration as the web app; all modules initialized identically. The CLI entry point is:
 
 ```bash
-php vendor/bin/prado-cli /path/to/protected [command] [args...]
+vendor/bin/prado-cli [-d=<folder>] [--quiet[=<level>]] <command>[/<method>] [args...]
 ```
+
+`bin/prado-cli.php` finds the application configuration in the package's host project, the working directory, or its `protected/` folder; `-d=<folder>` (`--directory`) names the folder.
 
 ### Key Properties
 
@@ -58,7 +60,7 @@ php vendor/bin/prado-cli /path/to/protected [command] [args...]
 - **With config file** — delegates to `TApplication::resolveRuntimePath()` normally.
 - **Without config file** (no-config mode) — two-level fallback:
   1. `<basePath>/.runtime` — created automatically if absent and writable (hidden dot-directory).
-  2. `sys_get_temp_dir()/prado-<md5(basePath)>/.runtime` — stable temp path keyed to the base path, so concurrent invocations of the same project share a runtime without colliding with other Prado installations.
+  2. `sys_get_temp_dir()/prado-<sha1(basePath)>/.runtime` — stable temp path keyed to the base path, so concurrent invocations of the same project share a runtime without colliding with other Prado installations.
   3. Throws `TConfigurationException` if neither location is writable.
 
 ---
@@ -108,78 +110,11 @@ Override `createStdOutWriter()` in a subclass to inject a test double or file wr
 
 ---
 
-## TShellAction (Abstract Base)
+## Command Dispatch
 
-Extend to create custom CLI commands:
+`runService()` prints the greeting, then asks each registered action, in registration order, whether it accepts the arguments (`TShellAction::isValidAction()`). The first match has its options stripped by `processActionArguments()`, and `action<Method>($args)` is called; a `-` in the method name is dropped. A falsy return, or no matching action, prints the general help when `QuietMode` is `0`.
 
-```php
-class MyDeployAction extends TShellAction
-{
-    protected $action = 'deploy';
-    protected $parameters = ['environment'];     // required
-    protected $optional = ['version', 'force'];  // optional
-
-    public function run(array $args, array $opts): int
-    {
-        $env = $args[0];
-        $this->getWriter()->writeLine("Deploying to {$env}...", TShellWriter::INFO);
-        // ... do work ...
-        return 0;  // 0 = success, non-zero = error
-    }
-}
-```
-
-### Properties to Override
-
-| Property | Purpose |
-|----------|---------|
-| `$action` | Command name (e.g., `'deploy'`) |
-| `$parameters` | Required positional arguments |
-| `$optional` | Optional positional arguments |
-| `$methods` | Subcommand names |
-
-### Methods
-
-```php
-$this->getWriter();                    // TShellWriter instance
-$this->getApplication();               // TShellApplication instance
-$this->outError($message);             // Write to stderr
-```
-
----
-
-## TShellWriter
-
-Formatted console output. Access via `$this->getWriter()` inside actions.
-
-[TShellWriter](./TShellWriter.md)
-
-```php
-$writer = $this->getWriter();
-
-// Text output:
-$writer->write('text');                            // no newline
-$writer->writeLine('text');                        // with newline
-$writer->writeLine('Success!', TShellWriter::SUCCESS);
-$writer->writeLine('Warning!', TShellWriter::WARNING);
-$writer->writeLine('Error!',   TShellWriter::ERROR);
-$writer->writeLine('Info',     TShellWriter::INFO);
-$writer->writeLine('Debug',    TShellWriter::DEBUG);
-
-// Tables:
-$writer->table(['ID', 'Name', 'Status'], [
-    [1, 'Alice', 'active'],
-    [2, 'Bob',   'inactive'],
-]);
-
-// Section header:
-$writer->writeHeader('Deployment Report');
-
-// Block comment:
-$writer->writeBlock('Note: this may take a while.', TShellWriter::WARNING);
-```
-
-Format constants: `NORMAL`, `INFO`, `SUCCESS`, `WARNING`, `ERROR`, `DEBUG`.
+Writing an action is described in [TShellAction](./TShellAction.md); output formatting in [TShellWriter](./TShellWriter.md).
 
 ---
 
@@ -187,13 +122,14 @@ Format constants: `NORMAL`, `INFO`, `SUCCESS`, `WARNING`, `ERROR`, `DEBUG`.
 
 | Command | Class | Purpose |
 |---------|-------|---------|
-| `help` | [THelpAction](./Actions/THelpAction.md) | List commands and usage |
-| `param` | [TDbParameterAction](./Actions/TDbParameterAction.md) | Manage `TDbParameterModule` entries |
+| `help` | [THelpAction](./Actions/THelpAction.md) | List commands, or the subcommands of one |
 | `shell` | [TPhpShellAction](./Actions/TPhpShellAction.md) | Interactive PHP REPL with app context |
-| `serve` | [TWebServerAction](./Actions/TWebServerAction.md) | Start PHP's built-in dev web server (Debug mode or param) |
-| `cache` | [TFlushCachesAction](./Actions/TFlushCachesAction.md) | List/flush one or all `ICache` modules (requires `ICache` module) |
-| `cron` | `TShellCronAction` | Run pending cron tasks |
-| `db-cron` | `TShellDbCronAction` | Manage database-backed cron tasks |
+| `http` | [TWebServerAction](./Actions/TWebServerAction.md) | `http/serve` starts PHP's built-in dev web server (Debug mode or param) |
+| `cache` | [TFlushCachesAction](./Actions/TFlushCachesAction.md) | List/flush one or all `ICache` modules (requires an `ICache` module) |
+| `param` | [TDbParameterAction](./Actions/TDbParameterAction.md) | Manage `TDbParameterModule` entries (registered by the module) |
+| `cron` | `TShellCronAction` / `TShellDbCronAction` | Run and manage cron tasks (registered by `TCronModule`) |
+| `perm` | `TPermissionsAction` | Manage permission rules (registered by `TPermissionsManager`) |
+| `socket` | `TSocketServerAction` | Run the socket server (registered by `TSocketServerModule`) |
 
 ### activerecord generate / generate-all
 
@@ -203,29 +139,24 @@ The `activerecord` command belongs to the `pradosoft/prado-activerecord` package
 
 ## TShellLoginBehavior
 
-Attach to [TShellApplication](./TShellApplication.md) to require credentials before any action runs:
-
-[TShellLoginBehavior](./TShellLoginBehavior.md)
+[TShellLoginBehavior](./TShellLoginBehavior.md) attaches to [TAuthManager](../Security/TAuthManager.md) and requires a login before any action runs:
 
 ```xml
-<modules>
-    <module id="shell" class="Prado\Shell\TShellApplication" />
-    <module id="behaviors" class="Prado\Util\TBehaviorsModule">
-        <behavior class="Prado\Shell\TShellLoginBehavior" UserManager="users" AttachTo="module:shell" />
-    </module>
-</modules>
+<module id="behaviors" class="Prado\Util\TBehaviorsModule">
+    <behavior name="shellLogin" Class="Prado\Shell\TShellLoginBehavior" AttachTo="module:auth" />
+</module>
 ```
 
-Prompts for username/password; calls `IUserManager::validateUser()`.
+It registers the `--user` (`-u`) and `--password` (`-p`) options, prompts for what is missing, and calls `TAuthManager::login()`.
 
 ---
 
 ## Patterns & Gotchas
 
-- **Exit codes** — return `0` from `run()` for success, non-zero for error. The shell respects the return value.
+- **Return values and exit status** — an `action<Method>()` returns `true` when it handled the command. The process exits with status `0` unless an action throws `TExitException` with another code.
 - **`QuietMode` range** — valid levels are `0`–`3`. An empty string (bare `--quiet` or `-q` flag) maps to `1`. Values are clamped. Check `$this->getApplication()->getQuietMode() === 0` before verbose output.
-- **Conditional actions** — the `cache` command only appears when a cache module is configured; `serve` only in Debug mode or with the dev-webserver param. Do not assume they are always present.
+- **Conditional actions** — the `cache` command only appears when a cache module is configured; `http` only in Debug mode or with the dev-webserver param. Do not assume they are always present.
 - **No-config mode** — when running `prado-cli` without an `application.xml`, a hidden `.runtime` directory is created in the base path (or a temp fallback). No manual setup required.
 - **Module availability** — all `application.xml` modules are available, including DB connections, cache, etc. No special setup needed.
-- **Output format** — always use [TShellWriter](./TShellWriter.md) rather than `echo`/`print`; it supports color, structured formatting, and quiet-mode suppression.
-- **Writer extensibility** — override `createStdOutWriter()` / `createShellWriter()` in `TTestApplication` subclasses to capture output in tests without touching the real TTY.
+- **Output format** — use [TShellWriter](./TShellWriter.md) rather than `echo`/`print`; it formats ANSI color when the terminal supports it. Quiet mode is checked by each action.
+- **Writer extensibility** — override `createStdOutWriter()` / `createShellWriter()` in a `TShellApplication` subclass, such as the test harness `TTestShellApplication`, to capture output without touching the real TTY.

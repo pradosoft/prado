@@ -35,10 +35,10 @@ Note: `<behavior>` children are not supported directly within `<module>` configu
 ## Behavior
 
 When attached and running in CLI:
-1. Prompts for username (or uses `--user` option)
-2. Prompts for password (or uses `--password` option, hidden input)
-3. Calls `TAuthManager::login()` with credentials
-4. On failure, displays error and exits
+1. Uses the `--user` option, or prompts for the username
+2. Uses the `--password` option, or prompts for the password with hidden input
+3. Calls `TAuthManager::login()` with the credentials and discards the password
+4. On failure, displays an error and throws `TExitException`, which ends the process
 
 ## Options
 

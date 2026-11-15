@@ -32,29 +32,28 @@ class THelpAction extends TShellAction
 		'Displays available commands or detailed command information.'];
 
 	/**
-	 * displays help for a specific command or the general help
+	 * Displays the general help, or the help of the command named by `$args[1]`.  The
+	 * command matches an action name case-insensitively; a `/<method>` suffix is ignored.
 	 * @param array $args parameters
-	 * @return bool is the action handled
+	 * @return bool whether help was displayed; false without a shell application or
+	 *   when no action has the command name.
 	 */
 	public function actionIndex($args)
 	{
-		if (isset($args[1])) {
-			$app = $this->getApplication();
-			if ($app === null) {
-				return false;
-			}
-			foreach ($app->getShellActions() as $action) {
-				$cmdname = $action->getAction();
-				if (0 === strncasecmp($cmdname, $args[1], strlen($cmdname))) {
-					$action->setWriter($this->getWriter());
-					$action->renderHelpCommand($args[1]);
-					return true;
-				}
-			}
-		} else {
-			$app = $this->getApplication();
+		if (($app = $this->getApplication()) === null) {
+			return false;
+		}
+		if (!isset($args[1])) {
 			$app->printHelp($this->getWriter());
 			return true;
+		}
+		$command = explode('/', $args[1], 2)[0];
+		foreach ($app->getShellActions() as $action) {
+			if (strcasecmp($action->getAction(), $command) === 0) {
+				$action->setWriter($this->getWriter());
+				$action->renderHelpCommand($args[1]);
+				return true;
+			}
 		}
 		return false;
 	}

@@ -49,8 +49,10 @@ php prado-cli.php http/serve --workers=4
 ## Notes
 
 - Only available in Debug mode or when `Prado:PhpWebServer` parameter is `true`
-- Uses PHP's built-in web server via `proc_open()`
-- Supports router scripts
+- Uses PHP's built-in web server via `proc_open()`, serving the directory of the entry script (`$_SERVER['SCRIPT_FILENAME']`)
+- `http/serve <router-filepath>` passes a router script to `php -S`
+- `--address` takes a port after the last colon (`localhost:8777`, `[::1]:8777`); a bare IPv6 address such as `::1` has no port and is bracketed
+- Quiet mode 2 or 3 sends the server's output to the null device; quiet mode 3 also hides the startup errors
 
 ## See Also
 
