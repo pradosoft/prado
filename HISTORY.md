@@ -1,5 +1,7 @@
 ## Version 4.4.0 - TBA
 CHG: Issue #1497 - `TTableGateway` dynamic finders throw `dbtablegateway_mismatch_column_name` unless the whole condition is column names joined by `And` or `Or`; text that matched no column was ignored, so `findByFooAndName()` searched by `Name` alone. See UPGRADE.md. (belisoful)
+ENH: `TShellLoginBehavior` hides the password prompt with `stty -echo` on a terminal; it ran `read -s`, which `/bin/sh` shells such as dash do not support. `readLine()` and `setTerminalEcho()` are its input seams. (belisoful)
+ENH: `psy/psysh` moves from `require` to `suggest`; `TPhpShellAction` names the package when it is missing, and `createShell()` is its seam (see UPGRADE.md). (belisoful)
 ENH: `prado-cli` writes error blocks to standard error: `TShellWriter::ErrorStream` receives `writeError()`, which `TShellApplication::createStdErrStream()` sets to a `TStdErrStream` (see UPGRADE.md). (belisoful)
 ENH: `TShellWriter` detects color from `NO_COLOR`, `FORCE_COLOR`, `CLICOLOR_FORCE`, the Windows console, and any terminal `TERM` but `dumb`, each time one is constructed; `Width` sets the `wrapText()` width, and `COLUMNS` and `LINES` take precedence in `getScreenSize()`. (belisoful)
 ENH: `TShellApplication::printHelp()` shows `TShellAction::getExample()` of each registered action, and the `QUIET_NONE`, `QUIET_INFO`, `QUIET_OUTPUT`, and `QUIET_ERRORS` constants name the `QuietMode` levels. (belisoful)

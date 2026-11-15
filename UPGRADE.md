@@ -127,6 +127,8 @@ Upgrading from v4.3.3
   `getRecursiveCheck`, `getRecursiveLevel`, `validateFile`, `validateDirectory`, `generateTimestamps`),
   TChainedCacheDependency (`getDependencies`) and TGlobalStateCacheDependency (`__construct`, `getStateName`) are
   typed. A cache module or dependency subclass must add the matching types and implement `getIsAvailable()`.
+- Prado suggests `psy/psysh` instead of requiring it. An application that uses `prado-cli shell` adds
+  `composer require psy/psysh`.
 - `prado-cli` writes `TShellWriter::writeError()` blocks to standard error; in 4.3 they went to standard output. A
   script that read errors from standard output reads standard error, or a `TShellApplication` subclass returns null
   from `createStdErrStream()`. `TShellWriter` shows color on any terminal whose `TERM` is not `dumb`, follows
