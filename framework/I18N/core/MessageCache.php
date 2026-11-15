@@ -10,7 +10,7 @@ namespace Prado\I18N\core;
 /**
  * Load the cache lite library.
  */
-use Exception;
+use Prado\Exceptions\TConfigurationException;
 
 require_once(__DIR__ . '/TCache_Lite.php');
 
@@ -42,16 +42,10 @@ class MessageCache
 		$cacheDir = $cacheDir . '/';
 
 		if (!is_dir($cacheDir)) {
-			throw new Exception(
-				'The cache directory ' . $cacheDir . ' does not exists.' .
-				'The cache directory must be writable by the server.'
-			);
+			throw new TConfigurationException('messagecache_directory_invalid', $cacheDir);
 		}
 		if (!is_writable($cacheDir)) {
-			throw new Exception(
-				'The cache directory ' . $cacheDir . ' must be writable ' .
-				'by the server.'
-			);
+			throw new TConfigurationException('messagecache_directory_unwritable', $cacheDir);
 		}
 
 		$options = [

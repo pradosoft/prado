@@ -130,8 +130,8 @@ class TCache_LiteTest extends TestCase
 	{
 		$cache = $this->createCache(['readControlType' => 'sha1', 'fileLocking' => false]);
 
-		$this->expectException(\Exception::class);
-		$this->expectExceptionMessage('Unknown controlType');
+		$this->expectException(\Prado\Exceptions\TInvalidDataValueException::class);
+		$this->expectExceptionMessage("Unknown message cache read control type 'sha1'");
 		$cache->save('data', 'id');
 	}
 
@@ -250,8 +250,8 @@ class TCache_LiteTest extends TestCase
 			$this->markTestSkipped('The process reads a file without read permission.');
 		}
 
-		$this->expectException(\Exception::class);
-		$this->expectExceptionMessage('Cache_Lite: Unable to read cache');
+		$this->expectException(\Prado\Exceptions\TIOException::class);
+		$this->expectExceptionMessage('Unable to read the message cache file');
 		$cache->get('id', 'default', true);
 	}
 
@@ -259,8 +259,8 @@ class TCache_LiteTest extends TestCase
 	{
 		$cache = new TCache_Lite(['cacheDir' => $this->makeTempDirectory('prado_cachelite_') . '/missing/']);
 
-		$this->expectException(\Exception::class);
-		$this->expectExceptionMessage('Cache_Lite: Unable to write cache');
+		$this->expectException(\Prado\Exceptions\TIOException::class);
+		$this->expectExceptionMessage('Unable to write the message cache file');
 		$cache->save('data', 'id');
 	}
 
@@ -335,8 +335,8 @@ class TCache_LiteTest extends TestCase
 	{
 		$cache = $this->createCache();
 
-		$this->expectException(\Exception::class);
-		$this->expectExceptionMessage('TCache_Lite: Unable to remove cache');
+		$this->expectException(\Prado\Exceptions\TIOException::class);
+		$this->expectExceptionMessage('Unable to remove the message cache file');
 		$cache->remove('missing');
 	}
 
@@ -422,8 +422,8 @@ class TCache_LiteTest extends TestCase
 			$this->markTestSkipped('The process writes into a directory without write permission.');
 		}
 
-		$this->expectException(\Exception::class);
-		$this->expectExceptionMessage('Cache_Lite: Unable to remove cache');
+		$this->expectException(\Prado\Exceptions\TIOException::class);
+		$this->expectExceptionMessage('Unable to remove the message cache file');
 		$cache->clean();
 	}
 
@@ -455,16 +455,16 @@ class TCache_LiteTest extends TestCase
 			$this->markTestSkipped('The process reads a file without read permission.');
 		}
 
-		$this->expectException(\Exception::class);
-		$this->expectExceptionMessage('Cache_Lite: Unable to read cache');
+		$this->expectException(\Prado\Exceptions\TIOException::class);
+		$this->expectExceptionMessage('Unable to read the message cache file');
 		$cache->get('id', 'default', true);
 	}
 
 	public function testCleanOfAMissingDirectoryThrows()
 	{
 		$cache = new TCache_Lite(['cacheDir' => $this->makeTempDirectory('prado_cachelite_') . '/missing/']);
-		$this->expectException(\Exception::class);
-		$this->expectExceptionMessage('TCache_Lite: Unable to open cache directory');
+		$this->expectException(\Prado\Exceptions\TIOException::class);
+		$this->expectExceptionMessage('Unable to open the message cache directory');
 		$cache->clean();
 	}
 

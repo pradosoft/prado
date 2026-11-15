@@ -50,6 +50,19 @@ When loading `zh_CN`, the source tries:
 $source->setCache(new MessageCache('/tmp'));
 ```
 
+## Exceptions
+
+| Condition | Exception, error code |
+|---|---|
+| `factory()` with an unknown type | `TConfigurationException` `messagesource_type_invalid` |
+| `factory()` with a missing class file | `TConfigurationException` `messagesource_file_missing` |
+| a catalogue cannot be written | [TMessageSourceIOException](./TMessageSourceIOException.md) |
+| `new MessageCache($dir)` of a missing or unwritable directory | `TConfigurationException` `messagecache_directory_invalid`, `messagecache_directory_unwritable` |
+| `TCache_Lite` cannot open, read, write, or remove | `TIOException` `cachelite_directory_failed`, `cachelite_read_failed`, `cachelite_write_failed`, `cachelite_remove_failed` |
+| `TCache_Lite` with an unknown `readControlType` | `TInvalidDataValueException` `cachelite_readcontroltype_invalid` |
+| `TGettext::factory()` of an unknown format; `poFile2moFile()` of a missing PO file | `TInvalidDataValueException` `gettext_format_invalid`; `TIOException` `gettext_pofile_missing` |
+| `ChoiceFormat::isValid()` of a malformed set | `TInvalidDataValueException` `choiceformat_set_invalid`; a malformed `{n: ...}` notation is false |
+
 ## Clock
 
 `MessageSource` uses `TApplicationClockAwareTrait`; `setClock()` overrides the application clock. `formatNow($format, $utc)` stamps the dates the sources write:

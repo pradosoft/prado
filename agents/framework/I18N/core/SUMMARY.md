@@ -22,7 +22,7 @@ Core I18N engine providing culture information, message source backends, message
 
 - **`MessageSource_Database`** — Database-backed message storage using `TDbConnection`.
 
-- **`TMessageSourceIOException`** — Exception thrown on catalogue read/write failures.
+- **`TMessageSourceIOException`** — `TIOException` thrown when a message source cannot write its catalogue.
 
 - **`MessageFormat`** — Looks up translated strings from a `MessageSource` and applies token substitution.
 

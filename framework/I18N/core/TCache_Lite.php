@@ -17,7 +17,8 @@
 
 namespace Prado\I18N\core;
 
-use Exception;
+use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Exceptions\TIOException;
 use Prado\Util\Clock\TApplicationClockAwareTrait;
 
 /**
@@ -348,7 +349,7 @@ class TCache_Lite
 	{
 		$this->_setFileName($id, $group);
 		if (!@unlink($this->_file)) {
-			throw new Exception('TCache_Lite: Unable to remove cache');
+			throw new TIOException('cachelite_remove_failed', $this->_file);
 		}
 		return true;
 	}
@@ -383,7 +384,7 @@ class TCache_Lite
 			}
 		}
 		if (!($dh = @opendir($this->_cacheDir))) {
-			throw new Exception('TCache_Lite: Unable to open cache directory');
+			throw new TIOException('cachelite_directory_failed', $this->_cacheDir);
 		}
 		while (($file = readdir($dh)) !== false) {
 			if (($file != '.') && ($file != '..')) {
@@ -392,7 +393,7 @@ class TCache_Lite
 					if (str_contains($file, $motif)) {
 						if (!@unlink($file)) {
 							closedir($dh);
-							throw new Exception('Cache_Lite: Unable to remove cache');
+							throw new TIOException('cachelite_remove_failed', $file);
 						}
 					}
 				}
@@ -504,7 +505,7 @@ class TCache_Lite
 			}
 			return $data;
 		}
-		throw new Exception('Cache_Lite: Unable to read cache');
+		throw new TIOException('cachelite_read_failed', $this->_file);
 	}
 
 	/**
@@ -533,7 +534,7 @@ class TCache_Lite
 			@fclose($fp);
 			return true;
 		}
-		throw new Exception('Cache_Lite: Unable to write cache');
+		throw new TIOException('cachelite_write_failed', $this->_file);
 	}
 
 	/**
@@ -569,7 +570,7 @@ class TCache_Lite
 			case 'strlen':
 				return sprintf('% 32d', strlen($data));
 			default:
-				throw new Exception('Unknown controlType (available values are only \'md5\', \'crc32\', \'strlen\')');
+				throw new TInvalidDataValueException('cachelite_readcontroltype_invalid', $controlType);
 		}
 	}
 }

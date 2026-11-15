@@ -20,7 +20,7 @@ namespace Prado\I18N\core;
 /**
  * Get the IMessageSource interface.
  */
-use Exception;
+use Prado\Exceptions\TConfigurationException;
 use Prado\Util\Clock\TApplicationClockAwareTrait;
 
 require_once(__DIR__ . '/IMessageSource.php');
@@ -123,7 +123,7 @@ abstract class MessageSource implements IMessageSource
 	 * @param string $type the message source type.
 	 * @param string $source the location of the resource or the ConnectionID.
 	 * @param string $filename the filename of the custom message source.
-	 * @throws \Exception if the file is not found
+	 * @throws TConfigurationException when the type is unknown or the class file does not exist.
 	 * @return MessageSource a new message source of the specified type.
 	 */
 	public static function &factory($type, $source = '.', $filename = '')
@@ -131,8 +131,7 @@ abstract class MessageSource implements IMessageSource
 		$types = ['XLIFF', 'PHP', 'gettext', 'Database'];
 
 		if (empty($filename) && !in_array($type, $types)) {
-			throw new Exception('Invalid type "' . $type . '", valid types are ' .
-				implode(', ', $types));
+			throw new TConfigurationException('messagesource_type_invalid', $type, implode(', ', $types));
 		}
 
 		$class = 'MessageSource_' . $type;
@@ -142,7 +141,7 @@ abstract class MessageSource implements IMessageSource
 		}
 
 		if (!is_file($filename)) {
-			throw new Exception("File $filename not found");
+			throw new TConfigurationException('messagesource_file_missing', $filename);
 		}
 
 		include_once $filename;
