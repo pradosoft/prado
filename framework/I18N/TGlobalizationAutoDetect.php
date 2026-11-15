@@ -134,9 +134,10 @@ class TGlobalizationAutoDetect extends TGlobalization
 
 		foreach (explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']) as $lang) {
 			// Cut off any q-value that might come after a semi-colon
-			if ($pos = strpos($lang, ';')) {
-				$lang = trim(substr($lang, 0, $pos));
+			if (($pos = strpos($lang, ';')) !== false) {
+				$lang = substr($lang, 0, $pos);
 			}
+			$lang = trim($lang);
 
 			if (strstr($lang, '-')) {
 				$codes = explode('-', $lang);
@@ -144,9 +145,7 @@ class TGlobalizationAutoDetect extends TGlobalization
 					// Language not listed in ISO 639 that are not variants
 					// of any listed language, which can be registerd with the
 					// i-prefix, such as i-cherokee
-					if (count($codes) > 1) {
-						$lang = $codes[1];
-					}
+					$lang = $codes[1];
 				} else {
 					for ($i = 0, $k = count($codes); $i < $k; ++$i) {
 						if ($i == 0) {
@@ -183,8 +182,8 @@ class TGlobalizationAutoDetect extends TGlobalization
 		}
 
 		foreach (explode(',', $_SERVER['HTTP_ACCEPT_CHARSET']) as $charset) {
-			if (!empty($charset)) {
-				$this->charsets[] = preg_replace('/;.*/', '', $charset);
+			if (($charset = trim(preg_replace('/;.*/', '', $charset))) !== '') {
+				$this->charsets[] = $charset;
 			}
 		}
 

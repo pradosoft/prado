@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TGlobalizationAutoDetect` trims the spaces around each `Accept-Language` and `Accept-Charset` entry; an entry after `, ` without a q-value was dropped. (belisoful)
 BUG: Issue #1497 - `Translation` reads the optional `filename`, `marker`, and `autosave` keys of a PHP `translate` array without a warning, and `saveMessages()` saves only when `autosave` is true. (belisoful)
 BUG: Issue #1497 - `TGlobalization` throws `globalization_source_required` or `globalization_source_invalid` for a file translation source that is missing or not a namespace path, and `getTranslationCatalogue()` is null without a configuration; each raised a PHP warning or deprecation. (belisoful)
 BUG: Issue #1497 - `TI18NControlTrait` falls back to the `dyDefaultCharsetValue` and `dyDefaultCultureValue` filters when the globalization's charsets or culture are empty; it returned an empty charset or a null culture. (belisoful)
