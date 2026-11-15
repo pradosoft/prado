@@ -308,4 +308,16 @@ class TDataGatewayCommandTest extends \PHPUnit\Framework\TestCase
 		$command = $this->command();
 		$this->assertSame(['a', 'b', 'c'], array_column($command->findAllBySql($criteria)->readAll(), 'name'));
 	}
+
+	public function testZeroConditionMatchesNoRow()
+	{
+		$command = $this->command();
+
+		$this->assertSame([], $command->findAll(new TSqlCriteria('0'))->readAll());
+		$this->assertSame(0, (int) $command->count(new TSqlCriteria('0')));
+		$this->assertSame(0, $command->update(['name' => 'z'], new TSqlCriteria('0')));
+		$this->assertSame(0, $command->delete(new TSqlCriteria('0')));
+		$this->assertSame(['a', 'b', 'c'], $this->names());
+	}
+
 }

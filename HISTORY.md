@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - A `'0'` condition is kept by `TSqlCriteria` and `TDbCommandBuilder`'s find, update, and delete commands; it was dropped as empty, so `TTableGateway::deleteAll('0')` deleted every row. (belisoful)
 BUG: Issue #1497 - `TXmlElement::getNextElementSibling()` returns null for an element absent from its parent's element list; it returned the parent's first child. (belisoful)
 BUG: Issue #1497 - `TXmlElement` reports `isset($element[null])` true for the value `'0'`. (belisoful)
 BUG: Issue #1497 - `TXmlElement::getElementsByTagName()` reads `getTagName()` in breadth-first search, as the other search modes do. (belisoful)
