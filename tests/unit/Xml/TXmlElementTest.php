@@ -1181,4 +1181,16 @@ class TXmlElementTest extends \PHPUnit\Framework\TestCase
 		self::assertEquals($child3, $child2->getNextElementSibling());
 		self::assertEquals(null, $child3->getNextElementSibling());
 	}
+
+	public function testSiblingsOfAnElementAbsentFromItsParentsList()
+	{
+		$parent = new TXmlElement('parent');
+		$parent[] = new TXmlElement('first');
+		$parent[] = new TXmlElement('second');
+		$orphan = new TXmlElement('orphan');
+		$orphan->setParent($parent);
+
+		self::assertNull($orphan->getPreviousElementSibling());
+		self::assertNull($orphan->getNextElementSibling());
+	}
 }

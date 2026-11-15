@@ -1030,6 +1030,7 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 	/**
 	 * Gets the previous sibling element.
 	 * This method mimics the DOMElement::previousElementSibling property.
+	 * An element that is absent from its parent's element list has no siblings.
 	 * @return ?TXmlElement Previous sibling element or null if none exists
 	 * @see https://www.php.net/manual/en/class.domelement.php
 	 * @since 4.3.3
@@ -1041,7 +1042,7 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 		}
 		$elements = $this->_parent->getElements();
 		$index = $elements->indexOf($this);
-		if ($index !== false && $index > 0) {
+		if ($index > 0) {
 			return $elements->itemAt($index - 1);
 		}
 		return null;
@@ -1050,6 +1051,7 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 	/**
 	 * Gets the next sibling element.
 	 * This method mimics the DOMElement::nextElementSibling property.
+	 * An element that is absent from its parent's element list has no siblings.
 	 * @return ?TXmlElement Next sibling element or null if none exists
 	 * @see https://www.php.net/manual/en/class.domelement.php
 	 * @since 4.3.3
@@ -1061,7 +1063,7 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 		}
 		$elements = $this->_parent->getElements();
 		$index = $elements->indexOf($this);
-		if ($index !== false && $index < $elements->getCount() - 1) {
+		if ($index >= 0 && $index < $elements->getCount() - 1) {
 			return $elements->itemAt($index + 1);
 		}
 		return null;
