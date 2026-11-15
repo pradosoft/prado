@@ -367,6 +367,11 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 	/**
 	 * Loads the roles, children, and permission rules.
 	 * Keys and attribute names are case-insensitive in both PHP and XML configurations.
+	 * In PHP configuration, a `permissionrules` entry is either a rule definition, which
+	 * names its permission with `name`, or a list of {@see \Prado\Security\TAuthorizationRule}s
+	 * under the name of its permission. PHP stores a numeric permission name, such as
+	 * `'404'`, as an integer key, so a list of rules under a numeric key belongs to the
+	 * permission of that number.
 	 * @param array|\Prado\Xml\TXmlElement $config configurations to parse
 	 * @throws TConfigurationException when a `<role>` contains a `<permissionrule>`.
 	 */

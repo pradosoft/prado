@@ -1112,6 +1112,17 @@ class TPermissionsManagerTest extends \PHPUnit\Framework\TestCase
 		$dbparam->__destruct();
 	}
 
+	public function testLoadPermissionsData_numericKeyNamesAPermission()
+	{
+		$this->obj->setAutoAllowWithPermission(false);
+		$this->obj->setAutoDenyAll(false);
+		$this->obj->registerPermission('404', 'Numeric permission name');
+		$this->obj->loadPermissionsData(['permissionrules' => [
+			'404' => [$rule = new TAuthorizationRule('deny', 'joe')],
+		]]);
+		self::assertSame([$rule], $this->obj->getPermissionRules('404')->toArray());
+	}
+
 	public function testRuntimeChangesNeedADbParameter()
 	{
 		$rule = new TAuthorizationRule('deny');
