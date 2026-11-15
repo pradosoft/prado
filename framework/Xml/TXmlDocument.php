@@ -158,6 +158,7 @@ class TXmlDocument extends TXmlElement
 	/**
 	 * Loads and parses an XML string.
 	 * The version and encoding will be determined based on the parsing result.
+	 * A recoverable libxml error, such as an undeclared namespace prefix, does not fail the parse.
 	 * @param ?string $string The XML string
 	 * @return bool Whether the XML string was parsed successfully
 	 */
@@ -191,7 +192,6 @@ class TXmlDocument extends TXmlElement
 
 			return false;
 		}
-		libxml_use_internal_errors($oldUseInternalErrors);
 
 		$this->setEncoding($doc->encoding);
 		$this->setVersion($doc->xmlVersion);
@@ -221,6 +221,8 @@ class TXmlDocument extends TXmlElement
 				}
 			}
 		}
+		libxml_clear_errors();
+		libxml_use_internal_errors($oldUseInternalErrors);
 
 		foreach ($element->attributes as $name => $attr) {
 			$attributes->add(($attr->prefix === '' ? '' : $attr->prefix . ':') . $name, $attr->value);

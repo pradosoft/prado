@@ -294,4 +294,18 @@ class TXmlDocumentTest extends \PHPUnit\Framework\TestCase
 		$this->expectException(TIOException::class);
 		$xmldoc->saveToFile($file);
 	}
+
+	public function testLoadFromStringWithAnUndeclaredNamespacePrefix()
+	{
+		$useInternalErrors = libxml_use_internal_errors(false);
+		try {
+			$xmldoc = new TXmlDocument();
+			self::assertTrue($xmldoc->loadFromString('<root><y:child/></root>'));
+			self::assertSame('y:child', $xmldoc->getElements()->itemAt(0)->getTagName());
+			self::assertFalse(libxml_use_internal_errors());
+			self::assertFalse(libxml_get_last_error());
+		} finally {
+			libxml_use_internal_errors($useInternalErrors);
+		}
+	}
 }
