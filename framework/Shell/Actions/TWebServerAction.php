@@ -142,6 +142,10 @@ class TWebServerAction extends TShellAction
 	}
 
 	/**
+	 * Sets the network address, with an optional port, to serve pages from.  A
+	 * numeric port after the last colon sets {@see self::setPort()}.  A bracketed
+	 * IPv6 address, such as `[::1]:8777`, takes a port after the bracket.  A bare
+	 * IPv6 address, such as `::1`, has no port and is stored bracketed.
 	 * @param ?string $address The network address to serve pages from.
 	 * @return static The current object.
 	 */
@@ -157,6 +161,8 @@ class TWebServerAction extends TShellAction
 						$port = substr($address, $pos + 1);
 					}
 				}
+			} elseif (substr_count($address, ':') > 1) {
+				$address = '[' . $address . ']';
 			} else {
 				if (($pos = strrpos($address, ':')) !== false) {
 					$port = substr($address, $pos + 1);
@@ -304,7 +310,7 @@ class TWebServerAction extends TShellAction
 
 		if ($this->isAddressTaken($address, $port)) {
 			if ($quiet !== 3) {
-				$writer->writeError("http://$address is taken by another process.");
+				$writer->writeError("http://$address:$port is taken by another process.");
 				$writer->flush();
 			}
 			return true;

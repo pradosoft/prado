@@ -3,9 +3,9 @@
 namespace Prado\Test\Unit\Shell\Actions;
 
 use PHPUnit\Framework\TestCase;
-use Prado\IO\TTextWriter;
 use Prado\Shell\Actions\TWebServerAction;
 use Prado\Shell\TShellWriter;
+use Prado\Test\Unit\Harness\IO\TTestCapturingTextWriter;
 use Prado\Test\Unit\Harness\TTestShellApplication;
 
 /**
@@ -28,13 +28,13 @@ class TWebServerActionTestExitingServer extends TWebServerAction
 class TWebServerActionTest extends TestCase
 {
 	private TTestShellApplication $_app;
-	private TTextWriter $_text;
+	private TTestCapturingTextWriter $_text;
 	private mixed $_scriptFilename;
 
 	protected function setUp(): void
 	{
 		$this->_app = new TTestShellApplication();
-		$this->_text = new TTextWriter();
+		$this->_text = new TTestCapturingTextWriter();
 		$this->_scriptFilename = $_SERVER['SCRIPT_FILENAME'] ?? null;
 		$_SERVER['SCRIPT_FILENAME'] = __FILE__;
 	}
@@ -72,6 +72,44 @@ class TWebServerActionTest extends TestCase
 		$this->assertTrue($action->actionServe(['http/serve']));
 
 		$this->assertSame(['-S', "127.0.0.1:$port", '-t', __DIR__], array_slice($action->command, 1, 4));
-		$this->assertSame('', $this->_text->flush());
+		$this->assertSame('', $this->_text->getCaptured());
+	}
+
+	public function testActionServeNamesTheTakenAddressAndPort(): void
+	{
+		$server = stream_socket_server('tcp://127.0.0.1:0', $errno, $errstr);
+		$name = stream_socket_get_name($server, false);
+		$port = (int) substr($name, strrpos($name, ':') + 1);
+		try {
+			$action = $this->createAction(TWebServerActionTestExitingServer::class);
+			$action->setAddress('127.0.0.1')->setPort($port);
+
+			$this->assertTrue($action->actionServe(['http/serve']));
+		} finally {
+			fclose($server);
+		}
+
+		$this->assertNull($action->command);
+		$this->assertStringContainsString("http://127.0.0.1:$port is taken by another process.", $this->_text->getCaptured());
+	}
+
+	public function testSetAddressBracketsABareIpv6Address(): void
+	{
+		$action = $this->createAction();
+
+		$action->setAddress('::1');
+
+		$this->assertSame('[::1]', $action->getAddress());
+		$this->assertSame(8080, $action->getPort());
+	}
+
+	public function testSetAddressReadsThePortAfterABracketedIpv6Address(): void
+	{
+		$action = $this->createAction();
+
+		$action->setAddress('[::1]:8777');
+
+		$this->assertSame('[::1]', $action->getAddress());
+		$this->assertSame(8777, $action->getPort());
 	}
 }
