@@ -526,7 +526,7 @@ class TDbCache extends TSerializingCache implements IDbModule
 			if (in_array($driver, [TDbDriver::DRIVER_MYSQL, TDbDriver::DRIVER_SQLITE])) {
 				$sql = "REPLACE INTO {$cacheTable} (itemkey,value,expire) VALUES (:key,:value,$expire)";
 			} elseif ($driver === TDbDriver::DRIVER_PGSQL) {
-				$sql = "INSERT INTO {$cacheTable} (itemkey, value, expire) VALUES (:key, :value, :expire) " .
+				$sql = "INSERT INTO {$cacheTable} (itemkey, value, expire) VALUES (:key, :value, $expire) " .
 					"ON CONFLICT (itemkey) DO UPDATE SET value = EXCLUDED.value, expire = EXCLUDED.expire";
 			} else {
 				$sql = "MERGE INTO {$cacheTable} AS c " .

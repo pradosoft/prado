@@ -708,6 +708,69 @@ class TDbCacheTest extends \PHPUnit\Framework\TestCase
 	}
 
 	/**
+	 * Initializes a cache on a database server, in a table named for this process.
+	 * @param string $setup the PradoUnit connection setup method.
+	 * @param string $dsn the connection string of the cache.
+	 * @return ?string the table name; null when the server is unavailable.
+	 */
+	private function initServerCache(string $setup, string $dsn): ?string
+	{
+		$conn = PradoUnit::$setup('prado_unitest');
+		if (is_array($conn)) {
+			PradoUnit::failFirstThenSkip($this, $conn[0], null, $conn[1]);
+			return null;
+		} elseif ($conn instanceof \Exception) {
+			throw $conn;
+		}
+		$conn->setActive(false);
+		$cred = getenv('SCRUTINIZER') ? 'scrutinizer' : 'prado_unitest';
+		$table = 'pradocache_test_' . getmypid();
+		$this->_cache->setConnectionString($dsn);
+		$this->_cache->setUsername($cred);
+		$this->_cache->setPassword($cred);
+		$this->_cache->setCacheTableName($table);
+		$this->_cache->init(null);
+		return $table;
+	}
+
+	/**
+	 * Drops the per-process cache table of a database server test.
+	 */
+	private function dropServerCacheTable(string $table): void
+	{
+		$this->_cache->getDbConnection()->createCommand("DROP TABLE IF EXISTS {$table}")->execute();
+		$this->_cache->deactivateDbConnection(true);
+		$this->_cache = null;
+	}
+
+	public static function serverProvider(): array
+	{
+		return [
+			'mysql' => ['setupMysqlConnection', 'mysql:host=localhost;dbname=prado_unitest'],
+			'pgsql' => ['setupPgsqlConnection', 'pgsql:host=localhost;dbname=prado_unitest'],
+		];
+	}
+
+	/**
+	 * @dataProvider serverProvider
+	 */
+	public function testSetUpsertsOnTheServer(string $setup, string $dsn): void
+	{
+		if (($table = $this->initServerCache($setup, $dsn)) === null) {
+			return;
+		}
+		try {
+			$this->assertTrue($this->_cache->set('upsert', 'first'));
+			$this->assertTrue($this->_cache->set('upsert', 'second', 60));
+			$this->assertSame('second', $this->_cache->get('upsert'));
+			$count = $this->_cache->getDbConnection()->createCommand("SELECT COUNT(*) FROM {$table}")->queryScalar();
+			$this->assertEquals(1, $count);
+		} finally {
+			$this->dropServerCacheTable($table);
+		}
+	}
+
+	/**
 	 * @dataProvider frozenSetterProvider
 	 */
 	public function testConfigPropertiesCannotChangeAfterInit($setter, $value)
