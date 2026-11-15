@@ -326,4 +326,10 @@ class TXmlElementListTest extends \PHPUnit\Framework\TestCase
 		$this->expectException(\Prado\Exceptions\TInvalidDataTypeException::class);
 		$list->insertAt(0, new \stdClass());
 	}
+
+	public function testGetOwner()
+	{
+		$element = new TXmlElement('owner');
+		self::assertSame($element, PradoUnit::invoke($element->getElements(), 'getOwner'));
+	}
 }

@@ -284,4 +284,84 @@ class TXmlDocumentTest extends \PHPUnit\Framework\TestCase
 		self::assertEquals('1.0', $document2->getVersion());
 		self::assertEquals('', $document2->getEncoding());
 	}
+
+	public function testSaveToFileThrowsTIOExceptionWhenTheFileCannotBeOpened()
+	{
+		$file = __DIR__ . '/data/missing-directory/tmp.xml';
+		$xmldoc = new TXmlDocument('1.0', 'utf-8');
+		$xmldoc->setTagName('root');
+
+		$this->expectException(TIOException::class);
+		$xmldoc->saveToFile($file);
+	}
+
+	public function testLoadFromStringWithAnUndeclaredNamespacePrefix()
+	{
+		$useInternalErrors = libxml_use_internal_errors(false);
+		try {
+			$xmldoc = new TXmlDocument();
+			self::assertTrue($xmldoc->loadFromString('<root><y:child/></root>'));
+			self::assertSame('y:child', $xmldoc->getElements()->itemAt(0)->getTagName());
+			self::assertFalse(libxml_use_internal_errors());
+			self::assertFalse(libxml_get_last_error());
+		} finally {
+			libxml_use_internal_errors($useInternalErrors);
+		}
+	}
+
+	public function testSaveToStringWithEmptyVersionAndEncoding()
+	{
+		$xmldoc = new TXmlDocument('', '');
+		$xmldoc->setTagName('root');
+		self::assertSame("<?xml version=\"1.0\"?>\n<root />", $xmldoc->saveToString());
+
+		$xmldoc->setEncoding('utf-8');
+		self::assertSame("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<root />", $xmldoc->saveToString());
+
+		$xmldoc->setVersion('1.1');
+		$xmldoc->setEncoding(null);
+		self::assertSame("<?xml version=\"1.1\"?>\n<root />", $xmldoc->saveToString());
+	}
+
+	public function testLoadFromStringBuildsEachAttributeAndChildCombination()
+	{
+		$xml = '<root xmlns:x="urn:x" x:a="r">'
+			. '<c a="1"><d/></c>'
+			. '<c a="2">text</c>'
+			. '<c a="3"/>'
+			. '<c x:a="4"><d/></c>'
+			. '<c x:a="5">text</c>'
+			. '<c x:a="6"/>'
+			. '<c><d/></c>'
+			. '<c>text</c>'
+			. '<c/>'
+			. '</root>';
+		$xmldoc = new TXmlDocument();
+		self::assertTrue($xmldoc->loadFromString($xml));
+
+		self::assertSame(['xmlns:x' => 'urn:x', 'x:a' => 'r'], $xmldoc->getAttributes()->toArray());
+		$elements = $xmldoc->getElements();
+		self::assertSame(9, $elements->getCount());
+		$expected = [
+			[['a' => '1'], 1, ''],
+			[['a' => '2'], 0, 'text'],
+			[['a' => '3'], 0, ''],
+			[['x:a' => '4'], 1, ''],
+			[['x:a' => '5'], 0, 'text'],
+			[['x:a' => '6'], 0, ''],
+			[[], 1, ''],
+			[[], 0, 'text'],
+			[[], 0, ''],
+		];
+		foreach ($expected as $i => [$attributes, $count, $value]) {
+			$element = $elements->itemAt($i);
+			self::assertSame('c', $element->getTagName(), "Element $i");
+			self::assertSame($attributes, $element->getAttributes()->toArray(), "Element $i");
+			self::assertSame($count, $element->getCount(), "Element $i");
+			self::assertSame($value, $element->getValue(), "Element $i");
+			if ($count) {
+				self::assertSame('d', $element[0]->getTagName(), "Element $i");
+			}
+		}
+	}
 }

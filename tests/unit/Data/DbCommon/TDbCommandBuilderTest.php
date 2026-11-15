@@ -791,4 +791,15 @@ class TDbCommandBuilderTest extends \PHPUnit\Framework\TestCase
 			$cmd->getText()
 		);
 	}
+
+	public function test_zero_condition_is_a_where_clause()
+	{
+		$builder = $this->builder();
+
+		$this->assertStringEndsWith(' WHERE 0', $builder->createFindCommand('0')->getText());
+		$this->assertStringEndsWith(' WHERE 0', $builder->createDeleteCommand('0')->getText());
+		$this->assertStringEndsWith(' WHERE 0', $builder->createUpdateCommand(['name' => 'x'], '0')->getText());
+		$this->assertStringNotContainsString('WHERE', $builder->createDeleteCommand('')->getText());
+	}
+
 }

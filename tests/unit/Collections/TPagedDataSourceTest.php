@@ -285,9 +285,24 @@ class TPagedDataSourceTest extends \PHPUnit\Framework\TestCase
 		self::assertSame(0, $ds->getDataSourceCount());
 		$ds->setDataSource(new TList([1, 2, 3]));
 		self::assertSame(3, $ds->getDataSourceCount());
+		$ds->setAllowPaging(true);
 		$ds->setAllowCustomPaging(true);
 		$ds->setVirtualItemCount(40);
 		self::assertSame(40, $ds->getDataSourceCount());
+	}
+
+	public function testCustomPagingWithoutPagingHasNoEffect()
+	{
+		foreach ([0, 2, 5] as $virtual) {
+			$ds = new TPagedDataSource();
+			$ds->setDataSource(new TList(['a', 'b', 'c']));
+			$ds->setAllowCustomPaging(true);
+			$ds->setVirtualItemCount($virtual);
+			self::assertSame(3, $ds->getDataSourceCount());
+			self::assertSame(3, $ds->getCount());
+			self::assertSame(1, $ds->getPageCount());
+			self::assertSame(['a', 'b', 'c'], iterator_to_array($ds->getIterator(), false));
+		}
 	}
 
 	public function testIteratorWithoutDataSourceIsNull()

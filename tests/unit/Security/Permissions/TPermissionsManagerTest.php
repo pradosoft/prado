@@ -860,6 +860,20 @@ class TPermissionsManagerTest extends \PHPUnit\Framework\TestCase
 		$userManager = null;
 	}
 
+	public function testDestructOfAnUninitializedManagerKeepsTheClassBehaviors()
+	{
+		// An uninitialized manager that does not listen gets no class behaviors of its own.
+		$other = new TPermissionsManager();
+		$other->unlisten();
+		$this->obj->init(null);
+		$other->__destruct();
+		$other = null;
+
+		$user = new TUser(new TUserManager());
+		self::assertInstanceOf(TUserPermissionsBehavior::class, $user->asa(TPermissionsManager::USER_PERMISSIONS_BEHAVIOR));
+		self::assertNotNull((new TPageConfiguration('.'))->asa(TPermissionsManager::PERMISSIONS_CONFIG_BEHAVIOR));
+	}
+
 	// -----------------------------------------------------------------------
 	// loadPermissionsData() — Prado3 dot-notation rule class resolution
 	// -----------------------------------------------------------------------
@@ -1096,6 +1110,29 @@ class TPermissionsManagerTest extends \PHPUnit\Framework\TestCase
 		$dbparam->remove($this->obj->getLoadParameter());
 		unset($this->obj->getApplication()->getParameters()[$this->obj->getLoadParameter()]);
 		$dbparam->__destruct();
+	}
+
+	public function testAnotherManagerRegistersNoPermissionsWithTheInitializedManager()
+	{
+		$this->obj->init(null);
+		$descriptions = PradoUnit::getProp($this->obj, '_descriptions');
+
+		$other = new TPermissionsManager();
+		self::assertInstanceOf(TPermissionsBehavior::class, $other->asa(TPermissionsManager::PERMISSIONS_BEHAVIOR));
+		self::assertSame($descriptions, PradoUnit::getProp($this->obj, '_descriptions'));
+		$other->unlisten();
+		$other->__destruct();
+	}
+
+	public function testLoadPermissionsData_numericKeyNamesAPermission()
+	{
+		$this->obj->setAutoAllowWithPermission(false);
+		$this->obj->setAutoDenyAll(false);
+		$this->obj->registerPermission('404', 'Numeric permission name');
+		$this->obj->loadPermissionsData(['permissionrules' => [
+			'404' => [$rule = new TAuthorizationRule('deny', 'joe')],
+		]]);
+		self::assertSame([$rule], $this->obj->getPermissionRules('404')->toArray());
 	}
 
 	public function testRuntimeChangesNeedADbParameter()

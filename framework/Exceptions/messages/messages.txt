@@ -305,6 +305,7 @@ xmlelement_empty_tag					= TXmlElement Tag Name cannot be an empty string.
 
 authorizationrule_action_invalid		= TAuthorizationRule.Action can only take 'allow' or 'deny' as the value.
 authorizationrule_verb_invalid			= TAuthorizationRule.Verb can only take 'get' or 'post' as the value.
+authorizationrule_list_empty			= TAuthorizationRule {0} list ''{1}'' has no entries. Leave it empty to apply the rule to everyone.
 
 authorizationrulecollection_authorizationrule_required = TAuthorizationRuleCollection can only accept TAuthorizationRule objects.
 

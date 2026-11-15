@@ -344,4 +344,16 @@ class TDataGatewayCommandTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame('"name" = ? OR "kind" = ?', $command->createCriteriaFromString('findByNameOrKind', 'NameOrKind', ['a', 'b'])->getCondition());
 		$this->assertSame('"brand" = ? AND "name" = ?', $command->createCriteriaFromString('findByBrandAndName', 'BrandAndName', ['a', 'b'])->getCondition());
 	}
+
+	public function testZeroConditionMatchesNoRow()
+	{
+		$command = $this->command();
+
+		$this->assertSame([], $command->findAll(new TSqlCriteria('0'))->readAll());
+		$this->assertSame(0, (int) $command->count(new TSqlCriteria('0')));
+		$this->assertSame(0, $command->update(['name' => 'z'], new TSqlCriteria('0')));
+		$this->assertSame(0, $command->delete(new TSqlCriteria('0')));
+		$this->assertSame(['a', 'b', 'c'], $this->names());
+	}
+
 }
