@@ -3,6 +3,7 @@
 namespace Prado\Test\Unit\I18N\core;
 
 use Prado\I18N\core\ChoiceFormat;
+use Prado\Test\Unit\PradoUnit;
 
 class ChoiceFormatTest extends \PHPUnit\Framework\TestCase
 {
@@ -142,5 +143,58 @@ class ChoiceFormatTest extends \PHPUnit\Framework\TestCase
 		$this->assertFalse($choice->isValid(1, '{n: n > 0)}'));
 		$this->assertFalse($choice->isValid(1, '{n: n >}'));
 		$this->assertFalse($choice->isValid(1, '{n: 1 2}'));
+	}
+
+	public function testIsValidRejectsASetOfFewerThanThreeParts()
+	{
+		$choice = new ChoiceFormat();
+
+		$this->expectException(\Exception::class);
+		$this->expectExceptionMessage('Invalid set "[]"');
+		$choice->isValid(1, '[]');
+	}
+
+	public function testIsValidWithNegativeInfinityAndAnOpenUpperBound()
+	{
+		$choice = new ChoiceFormat();
+
+		$this->assertTrue($choice->isValid(-5, '(-Inf,0)'));
+		$this->assertFalse($choice->isValid(0, '(-Inf,0)'));
+		$this->assertTrue($choice->isValid(-5, '[-Inf,0]'));
+	}
+
+	public function testIsValidOfMismatchedBracketsIsFalse()
+	{
+		$choice = new ChoiceFormat();
+
+		$this->assertFalse($choice->isValid(1, '[0,2}'));
+		$this->assertFalse($choice->isValid(1, '{0,2]'));
+	}
+
+	public function testSetNotationUnarySigns()
+	{
+		$choice = new ChoiceFormat();
+
+		$this->assertTrue($choice->isValid(2, '{n: -n < 0}'));
+		$this->assertFalse($choice->isValid(-2, '{n: -n < 0}'));
+		$this->assertTrue($choice->isValid(2, '{n: +n == 2}'));
+	}
+
+	public function testTokenizeAnEmptySetNotation()
+	{
+		$this->assertSame([], PradoUnit::invoke(new ChoiceFormat(), 'tokenizeSetNotation', ''));
+	}
+
+	public function testParseOfOneOrNoChoices()
+	{
+		$choice = new ChoiceFormat();
+
+		$this->assertSame([['[1]'], ['one']], $choice->parse('[1] one'));
+		$this->assertSame([[], []], $choice->parse('no choices'));
+	}
+
+	public function testFormatOfAStringWithoutChoicesIsFalse()
+	{
+		$this->assertFalse((new ChoiceFormat())->format('no choices', 1));
 	}
 }
