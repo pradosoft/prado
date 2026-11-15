@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `CultureInfo::getEnglishName()` of a neutral culture threw a `ValueError` on PHP 8.4 and later. (belisoful)
 BUG: Issue #1497 - `MessageSource_Database::catalogues()` reads the catalogue name, and `update()` and `delete()` in an unknown catalogue return false. (belisoful)
 BUG: Issue #1497 - `MessageCache::setLifeTime()` applies to its cache; `TCache_Lite` reads and saves an empty string, treats a file shorter than its hash as a miss, and `clean()` closes the directory and removes every matching entry. (belisoful)
 BUG: Issue #1497 - `MessageFormat` matches the message source exactly, treats a translation of `0` as translated, and accepts null arguments and a catalogue that failed to load. (belisoful)
