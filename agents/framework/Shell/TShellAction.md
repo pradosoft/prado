@@ -37,17 +37,22 @@ class MyAction extends TShellAction
 
 | Property | Type | Description |
 |----------|------|-------------|
-| `action` | string | Command name (derived from class name) |
-| `methods` | array | Subcommand names |
+| `action` | string | Command name, matched literally by `isValidAction()` |
+| `defaultMethod` | int | Index of the method run without `/<method>`, default `0` |
+| `methods` | array | Subcommand names; `action<Method>()` implements each, a `-` dropped |
 | `parameters` | array | Required parameters per method |
 | `optional` | array | Optional parameters per method |
 | `description` | array | [0]=command, [1+]=method descriptions |
 
 ## Methods
 
-### `getWriter(): TShellWriter`
+### `getWriter(): TShellWriter` / `setWriter(TShellWriter $writer)`
 
-Get the output writer.
+The output writer; `TShellApplication::runService()` sets it before dispatch.
+
+### `getApplication(): ?TShellApplication`
+
+The running application, or null when it is not a `TShellApplication`.
 
 ### `options($actionID): array`
 
@@ -59,7 +64,7 @@ Override to define option aliases (e.g., `['u' => 'user']`).
 
 ### `isValidAction($args): ?string`
 
-Validate arguments and return matched subcommand or null.
+Returns the method named by `$args[0]` (`<action>` or `<action>/<method>`), or null when the action name differs, the method is unknown, or fewer arguments than the method's `$parameters` follow.
 
 ### `renderHelpCommand($cmd)`
 

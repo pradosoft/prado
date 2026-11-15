@@ -16,9 +16,7 @@ Starts an interactive PHP shell (REPL) with the PRADO application bootstrapped.
 php prado-cli.php shell
 ```
 
-This starts [PsySH](https://psysh.org/), a PHP interactive shell, with access to:
-- `$app` - The PRADO application
-- All application services and modules
+This starts [PsySH](https://psysh.org/), a PHP interactive shell, with the PRADO application bound as `$this`, so `$this->getModule('cache')` and the other application methods work at the prompt.
 
 ## Action Definition
 
