@@ -18,8 +18,10 @@ php prado-cli.php help
 
 # Get help for specific command
 php prado-cli.php help cache
-php prado-cli.php help cache
+php prado-cli.php help cache/flush
 ```
+
+The command name matches an action name case-insensitively; a `/<method>` suffix is ignored. An unknown command, or an application that is not a `TShellApplication`, returns `false`, and `runService()` then prints the general help.
 
 ## Action Definition
 

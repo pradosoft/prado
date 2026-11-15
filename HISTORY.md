@@ -1,5 +1,11 @@
 ## Version 4.4.0 - TBA
 CHG: Issue #1497 - `TTableGateway` dynamic finders throw `dbtablegateway_mismatch_column_name` unless the whole condition is column names joined by `And` or `Or`; text that matched no column was ignored, so `findByFooAndName()` searched by `Name` alone. See UPGRADE.md. (belisoful)
+BUG: Issue #1497 - `TWebServerAction` `http/serve` in quiet mode 2 or 3 no longer throws a `TypeError` when the web server exits. (belisoful)
+BUG: Issue #1497 - `TWebServerAction::setAddress()` brackets a bare IPv6 address such as `::1`, which it read as address `:` and port 1; a taken address reports its port. (belisoful)
+BUG: Issue #1497 - `TDbParameterAction` `param/index` heads its columns "Parameter Key" and "Value" with a gap between them, and `param/set` stores `0` and the empty string; it reported them missing. (belisoful)
+BUG: Issue #1497 - `TShellApplication::processActionArguments()` keeps every `=` after the first in an action option's value, as `processArguments()` does; `--option=a=b` set `a`. (belisoful)
+BUG: Issue #1497 - `TShellAction::isValidAction()` matches the action name literally; a name holding a regular expression character, such as `.`, matched other commands. (belisoful)
+BUG: Issue #1497 - `THelpAction` `help <command>` matches the whole command name, so `help cachexyz` no longer shows `cache`, and it returns false without a shell application, where `help` threw an `Error`. (belisoful)
 BUG: Issue #1497 - A `'0'` condition is kept by `TSqlCriteria` and `TDbCommandBuilder`'s find, update, and delete commands; it was dropped as empty, so `TTableGateway::deleteAll('0')` deleted every row. (belisoful)
 BUG: Issue #1497 - `TXmlElement::getNextElementSibling()` returns null for an element absent from its parent's element list; it returned the parent's first child. (belisoful)
 BUG: Issue #1497 - `TXmlElement` reports `isset($element[null])` true for the value `'0'`. (belisoful)

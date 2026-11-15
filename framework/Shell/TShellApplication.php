@@ -358,7 +358,8 @@ class TShellApplication extends \Prado\TApplication
 	/**
 	 * Strips option flags accepted by `$action` for `$method` from `$args`. Recognized
 	 * `--option` flags and `-alias` shortcuts are set as properties on `$action` and removed
-	 * from `$args`; unrecognized entries are left in place. `$args` is re-indexed on return.
+	 * from `$args`; unrecognized entries are left in place. The value is everything after the
+	 * first `=`. `$args` is re-indexed on return.
 	 * @param array $args
 	 * @param TShellAction $action
 	 * @param string $method
@@ -368,13 +369,12 @@ class TShellApplication extends \Prado\TApplication
 	{
 		$options = $action->options($method);
 		$aliases = $action->optionAliases();
-		$skip = false;
 		if (!$options) {
 			return;
 		}
 		$keys = array_flip($options);
 		foreach ($args as $i => $arg) {
-			$arg = explode('=', $arg);
+			$arg = explode('=', $arg, 2);
 			$processed = false;
 			foreach ($options as $_option) {
 				$option = '--' . $_option;

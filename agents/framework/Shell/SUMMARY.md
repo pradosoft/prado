@@ -1,13 +1,13 @@
 # Shell/SUMMARY.md
 
-CLI application support via `prado-cli` executable allowing command-line scripts to access application configuration, modules, and services.
+CLI application support via the `prado-cli` executable, which gives command-line actions the application configuration, modules, and services.
 
 ## Classes
 
-- **`TShellApplication`** — Extends `TApplication` for CLI contexts; properties: `QuietMode`, `OutputWriter`; methods: `run()`, `renderException()`, `processRequest()`.
+- **`TShellApplication`** — Extends `TApplication` for CLI contexts; properties: `QuietMode`, `Writer`; methods: `run()`, `runService()`, `printHelp()`, `addShellActionClass()`, `registerOption()`.
 
-- **`TShellAction`** — Abstract base for CLI commands; subclass and implement `run(array $args)`; properties: `Action`, `Parameters`, `Optional`, `Methods`.
+- **`TShellAction`** — Abstract base for CLI commands; a subclass sets `$action`, `$methods`, `$parameters`, `$optional`, and `$description` and implements `action<Method>($args)`.
 
-- **`TShellWriter`** — Formatted console output; methods: `write($text, $format)`, `writeLine($text, $format)`; format constants: `NORMAL`, `INFO`, `SUCCESS`, `WARNING`, `ERROR`, `DEBUG`.
+- **`TShellWriter`** — ANSI console output; methods: `write($str, $attr)`, `writeLine($str, $attr)`, `writeError($text)`, `tableWidget()`, `wrapText()`; attribute constants are ANSI styles and colors (`BOLD`, `RED`, `BG_RED`, ...).
 
-- **`TShellLoginBehavior`** — Behavior that prompts for user credentials at CLI startup.
+- **`TShellLoginBehavior`** — `TAuthManager` behavior that logs in a user from `--user`/`--password` or a prompt before actions run.

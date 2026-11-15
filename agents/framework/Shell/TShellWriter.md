@@ -44,7 +44,7 @@ Terminal output writer with ANSI color formatting, cursor movement, and UI widge
 $writer = new TShellWriter(new TStdOutWriter());
 
 // Simple colored output
-$writer->writeLine('Success!', [TShellWriter::GREEN, [TShellWriter](./TShellWriter.md)::BOLD]);
+$writer->writeLine('Success!', [TShellWriter::GREEN, TShellWriter::BOLD]);
 
 // Error block
 $writer->writeError('Something went wrong');

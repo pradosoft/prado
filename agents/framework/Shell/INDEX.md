@@ -5,17 +5,17 @@
 
 ## Purpose
 
-CLI application support for the Prado framework. Allows command-line scripts to access the full application configuration, modules, and services via the `prado-cli` executable (`bin/prado-cli`).
+CLI application support for the Prado framework. The `prado-cli` executable (`bin/prado-cli`) runs a [`TShellApplication`](TShellApplication.md) that loads the application configuration, so command-line actions use the same modules, parameters, and path aliases as the web application.
 
 ## Classes
 
-- **[`TShellApplication`](TShellApplication.md)** — Extends [`TApplication`](../TApplication.md) for CLI contexts. Loads the same `application.xml` as the web app; all configured modules are available. Properties: `QuietMode` (0=normal, 1=quiet, 2=silent), `OutputWriter`. Methods: `run()`, `renderException()`, `processRequest()`. Registers application shell actions on startup.
+- **[`TShellApplication`](TShellApplication.md)** — Extends [`TApplication`](../TApplication.md) for CLI contexts. Loads the same `application.xml` as the web app; all configured modules are available. Properties: `QuietMode` (`0` full output, `1`–`3` quieter), `Writer`. Methods: `run()`, `runService()`, `printHelp()`, `installShellActions()`, `addShellActionClass()`, `registerOption()`, `registerOptionAlias()`.
 
-- **[`TShellAction`](TShellAction.md)** — Abstract base for CLI commands. Subclass and implement `run(array $args)`. Define `Action` (command name), `Parameters` (required), `Optional` (optional params), `Methods` (subcommands). Use `getWriter()` for output. `options()` method provides parameter definitions.
+- **[`TShellAction`](TShellAction.md)** — Abstract base for CLI commands. A subclass sets `$action` (the command name), `$methods` (subcommands), `$parameters` (required), `$optional`, and `$description`, and implements `action<Method>($args)` for each entry of `$methods`. `options()` and `optionAliases()` declare per-method `--option` flags. Output goes through `getWriter()`.
 
-- **[`TShellWriter`](TShellWriter.md)** — Formatted console output. Methods: `write($text, $format)`, `writeLine($text, $format)`. Format constants: `NORMAL`, `INFO`, `SUCCESS`, `WARNING`, `ERROR`, `DEBUG`. Supports tables, progress indicators, block comments, and section headers.
+- **[`TShellWriter`](TShellWriter.md)** — ANSI console output over an `ITextWriter`. Methods: `write($str, $attr)`, `writeLine($str, $attr)`, `writeError($text)`, `format()`, `unformat()`, `pad()`, `tableWidget()`, `wrapText()`, cursor and screen control. Attribute constants are ANSI styles and colors: `BOLD`, `UNDERLINE`, `RED`, `GREEN`, `BLUE`, `DARK_GRAY`, `BG_RED`, and so on.
 
-- **[`TShellLoginBehavior`](TShellLoginBehavior.md)** — Behavior that prompts for user credentials at CLI startup. Integrates with [`TUserManager`](../Security/TUserManager.md); sets `Prado::getUser()` for the authenticated context.
+- **[`TShellLoginBehavior`](TShellLoginBehavior.md)** — Behavior for [`TAuthManager`](../Security/TAuthManager.md) that logs in a user before a shell action runs. It handles `OnAuthenticate`, takes `--user` and `--password` or prompts for them, and calls `TAuthManager::login()`.
 
 ## Subdirectory: [`Actions/`](Actions/INDEX.md)
 
@@ -23,17 +23,19 @@ Built-in shell commands:
 
 | Class | Command | Purpose |
 |---|---|---|
-| [`THelpAction`](Actions/THelpAction.md) | `help` | List available commands and usage |
-| [`TDbParameterAction`](Actions/TDbParameterAction.md) | `param` | Manage [`TDbParameterModule`](../Util/TDbParameterModule.md) entries (list, get, set, delete) |
-| [`TPhpShellAction`](Actions/TPhpShellAction.md) | `shell` | Interactive PHP REPL with bootstrapped app context |
-| [`TWebServerAction`](Actions/TWebServerAction.md) | `serve` | Start PHP's built-in dev web server (`--address=host:port`) |
+| [`THelpAction`](Actions/THelpAction.md) | `help` | List available commands, or the subcommands of one |
+| [`TDbParameterAction`](Actions/TDbParameterAction.md) | `param` | List, get, and set [`TDbParameterModule`](../Util/TDbParameterModule.md) parameters |
+| [`TPhpShellAction`](Actions/TPhpShellAction.md) | `shell` | Interactive PHP REPL with the application bound |
+| [`TWebServerAction`](Actions/TWebServerAction.md) | `http` | `http/serve` starts PHP's built-in dev web server (`--address=host:port`) |
 | [`TFlushCachesAction`](Actions/TFlushCachesAction.md) | `cache` | List, flush one, or flush all `ICache` modules |
-| [`TShellCronAction`](../Util/Cron/TShellCronAction.md), [`TShellDbCronAction`](../Util/Cron/TShellDbCronAction.md) | `cron` | Manually trigger cron tasks (see `Util/Cron/`) |
+| [`TShellCronAction`](../Util/Cron/TShellCronAction.md), [`TShellDbCronAction`](../Util/Cron/TShellDbCronAction.md) | `cron` | Run and manage cron tasks (see `Util/Cron/`) |
+
+Modules register their own actions with `addShellActionClass()`: `perm` ([`TPermissionsManager`](../Security/Permissions/TPermissionsManager.md)), `socket` (`TSocketServerModule`, [IO/Socket](../IO/Socket/INDEX.md)), and `activerecord` (`pradosoft/prado-activerecord`).
 
 ## Patterns & Conventions
 
-- **Action naming** — Command name is derived from class name: `THelpAction` → `help`.
-- **Output** — Always use [`TShellWriter`](TShellWriter.md) for consistent formatting. Access via `$this->getWriter()`.
-- **Exit codes** — Return non-zero from `run()` to signal error.
-- **User context** — Attach [`TShellLoginBehavior`](TShellLoginBehavior.md) to require authentication before action runs.
-- **Quiet mode** — Check `$this->getApplication()->getQuietMode()` before verbose output.
+- **Action naming** — the command name is the `$action` property; `<action>/<method>` selects a subcommand, and `$defaultMethod` (index `0`) runs without one.
+- **Output** — use [`TShellWriter`](TShellWriter.md) through `$this->getWriter()`.
+- **Return values** — an `action<Method>()` returns `true` when it handled the command. A falsy return makes `runService()` print the general help when `QuietMode` is `0`. The process exits with status `0` unless an action throws `TExitException`.
+- **User context** — attach [`TShellLoginBehavior`](TShellLoginBehavior.md) to `TAuthManager` to require a login before actions run.
+- **Quiet mode** — check `$this->getApplication()->getQuietMode()` before verbose output.
