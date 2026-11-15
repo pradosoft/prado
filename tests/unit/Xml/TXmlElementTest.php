@@ -8,6 +8,7 @@ use Prado\Xml\TXmlElement;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TPhpErrorException;
+use Prado\Test\Unit\PradoUnit;
 
 class TXmlElementTest extends \PHPUnit\Framework\TestCase
 {
@@ -1233,6 +1234,161 @@ class TXmlElementTest extends \PHPUnit\Framework\TestCase
 			self::assertSame(1, $parent->getElementsByTagName('alias', $mode)->getCount(), "Search mode $mode");
 			self::assertSame(0, $parent->getElementsByTagName('real', $mode)->getCount(), "Search mode $mode");
 		}
+	}
+
+	public function testSetTagNameNullThrows()
+	{
+		$element = new TXmlElement('tag');
+		$this->expectException(TInvalidDataTypeException::class);
+		$element->setTagName(null);
+	}
+
+	public function testRemoveAttributeWithoutAttributes()
+	{
+		$element = new TXmlElement('tag');
+		$element->removeAttribute('missing');
+		self::assertFalse($element->getHasAttribute());
+		self::assertNull($element->getAttribute('missing'));
+	}
+
+	public function testSiblingsWithoutParent()
+	{
+		$element = new TXmlElement('tag');
+		self::assertNull($element->getPreviousElementSibling());
+		self::assertNull($element->getNextElementSibling());
+	}
+
+	public function testCloneWithAnEmptyElementList()
+	{
+		$element = new TXmlElement('tag');
+		$element->setAttribute('id', '1');
+		$elements = $element->getElements();
+
+		$clone = clone $element;
+		self::assertNotSame($elements, $clone->getElements());
+		self::assertSame(0, $clone->getElements()->getCount());
+		self::assertSame('1', $clone->getAttribute('id'));
+
+		$bare = new TXmlElement('bare');
+		$bare->getElements();
+		$bareClone = clone $bare;
+		self::assertSame(0, $bareClone->getElements()->getCount());
+		self::assertFalse($bareClone->getHasAttribute());
+	}
+
+	public function testCloneWithoutAttributesWithAChild()
+	{
+		$element = new TXmlElement('tag');
+		$child = new TXmlElement('child');
+		$element[] = $child;
+
+		$clone = clone $element;
+		self::assertFalse($clone->getHasAttribute());
+		self::assertSame(1, $clone->getCount());
+		self::assertNotSame($child, $clone[0]);
+		self::assertSame('child', $clone[0]->getTagName());
+		self::assertSame($clone, $clone[0]->getParent());
+		self::assertSame($element, $child->getParent());
+	}
+
+	public function testXPathOnALeafElement()
+	{
+		$element = new TXmlElement('leaf');
+		self::assertSame(0, $element->xpath('//child')->getCount());
+		self::assertFalse($element->getHasAttribute());
+	}
+
+	public function testToStringExcludesTheInternalIdAttributes()
+	{
+		$element = new TXmlElement('tag');
+		$element->setAttribute('id', '1');
+		$idAttrName = PradoUnit::invoke($element, 'insertPradoXmlId');
+
+		self::assertSame('<tag id="1" />', $element->toString());
+		self::assertSame('<tag id="1" ' . $idAttrName . '="0" />', $element->toString(0, false));
+	}
+
+	public function testOffsetGetWithNumericStringAndMissingOffsets()
+	{
+		$element = new TXmlElement('tag');
+		self::assertNull($element['missing']);
+
+		try {
+			$element['0'];
+			self::fail('A numeric string offset without children did not throw.');
+		} catch (TInvalidDataValueException $e) {
+		}
+		try {
+			$element[0];
+			self::fail('An integer offset without children did not throw.');
+		} catch (TInvalidDataValueException $e) {
+		}
+
+		$child = new TXmlElement('child');
+		$element[] = $child;
+		self::assertSame($child, $element['0']);
+	}
+
+	public function testOffsetExistsWithNumericStringOffsets()
+	{
+		$element = new TXmlElement('tag');
+		$element[] = new TXmlElement('child');
+		self::assertTrue(isset($element['0']));
+		self::assertFalse(isset($element['1']));
+		self::assertFalse(isset($element['-1']));
+	}
+
+	public function testOffsetSetAndUnsetWithNumericStringOffsets()
+	{
+		$element = new TXmlElement('tag');
+		$first = new TXmlElement('first');
+		$second = new TXmlElement('second');
+		$element[] = $first;
+
+		$element['0'] = $second;
+		self::assertSame(1, $element->getCount());
+		self::assertSame($second, $element[0]);
+		self::assertNull($first->getParent());
+
+		unset($element['0']);
+		self::assertSame(0, $element->getCount());
+		self::assertNull($second->getParent());
+	}
+
+	public function testGetElementByTagNameBreadthFirstWithoutAMatch()
+	{
+		$element = new TXmlElement('root');
+		$child = new TXmlElement('child');
+		$child[] = new TXmlElement('grandchild');
+		$element[] = $child;
+
+		self::assertNull($element->getElementByTagName('missing', TXmlElement::SEARCH_BREADTH_FIRST));
+	}
+
+	public function testGetElementByAttributeInElementAndDepthFirstSearch()
+	{
+		$root = new TXmlElement('root');
+		self::assertNull($root->getElementByAttribute('id', null));
+
+		$plain = new TXmlElement('plain');
+		$other = new TXmlElement('other');
+		$other->setAttribute('id', 'b');
+		$nested = new TXmlElement('nested');
+		$nested->setAttribute('id', 'a');
+		$plain[] = $nested;
+		$root[] = $plain;
+		$root[] = $other;
+
+		self::assertSame($other, $root->getElementByAttribute('id', null));
+		self::assertSame($other, $root->getElementByAttribute('id', 'b'));
+		self::assertNull($root->getElementByAttribute('id', 'a'));
+		self::assertNull($root->getElementByAttribute('id', 'c'));
+
+		self::assertSame($nested, $root->getElementByAttribute('id', null, TXmlElement::SEARCH_DEPTH_FIRST));
+		self::assertSame($nested, $root->getElementByAttribute('id', 'a', TXmlElement::SEARCH_DEPTH_FIRST));
+		self::assertSame($other, $root->getElementByAttribute('id', 'b', TXmlElement::SEARCH_DEPTH_FIRST));
+		self::assertNull($root->getElementByAttribute('id', 'c', TXmlElement::SEARCH_DEPTH_FIRST));
+		self::assertNull($root->getElementByAttribute('id', 'c', TXmlElement::SEARCH_BREADTH_FIRST));
 	}
 }
 
