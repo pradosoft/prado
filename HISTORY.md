@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `MessageSource_gettext::save()` keeps numeric message ids, `update()` and `delete()` match the id exactly, and `catalogues()` splits the extension at the end of the file name. (belisoful)
 BUG: Issue #1497 - `TGettext::toMO()`, `toPO()`, and `poFile2moFile()` included missing files, so every `MessageSource_gettext` save, update, and delete threw; `prepare()` escapes backslashes, `meta2array()` skips a line without a colon, and `fromArray()` without meta sets an empty meta. (belisoful)
 BUG: Issue #1497 - `TGettext_PO::load()` reads a string with an escaped quote. (belisoful)
 BUG: Issue #1497 - `TGettext_MO::load()` reads an empty string as `''`, so a file with meta loads on PHP 8.5, and returns false with the file closed for a short file or an unknown magic number or revision. (belisoful)
