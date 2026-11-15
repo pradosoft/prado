@@ -528,6 +528,27 @@ class TShellApplicationTest extends \PHPUnit\Framework\TestCase
 		$this->assertNotContains('--verbose=3', $args);
 	}
 
+	public function testProcessActionArguments_keepsEqualsSignsInTheAliasValue()
+	{
+		$action = new ShellTestAction();
+		$args = ['test', '-v=c=d'];
+
+		$this->_app->processActionArguments($args, $action, 'run');
+
+		$this->assertSame('c=d', $action->verbose);
+		$this->assertSame(['test'], $args);
+	}
+
+	public function testProcessActionArguments_keepsEqualsSignsInTheOptionValue()
+	{
+		$action = new ShellTestAction();
+		$args = ['test', '--verbose=a=b'];
+
+		$this->_app->processActionArguments($args, $action, 'run');
+
+		$this->assertSame('a=b', $action->verbose);
+	}
+
 	public function testProcessActionArguments_stripsAlias()
 	{
 		$action = new ShellTestAction();
