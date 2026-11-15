@@ -284,4 +284,14 @@ class TXmlDocumentTest extends \PHPUnit\Framework\TestCase
 		self::assertEquals('1.0', $document2->getVersion());
 		self::assertEquals('', $document2->getEncoding());
 	}
+
+	public function testSaveToFileThrowsTIOExceptionWhenTheFileCannotBeOpened()
+	{
+		$file = __DIR__ . '/data/missing-directory/tmp.xml';
+		$xmldoc = new TXmlDocument('1.0', 'utf-8');
+		$xmldoc->setTagName('root');
+
+		$this->expectException(TIOException::class);
+		$xmldoc->saveToFile($file);
+	}
 }

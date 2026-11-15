@@ -241,7 +241,7 @@ class TXmlDocument extends TXmlElement
 	 */
 	public function saveToFile($file)
 	{
-		if (($fw = fopen($file, 'w')) !== false) {
+		if (($fw = @fopen($file, 'w')) !== false) {
 			fwrite($fw, $this->saveToString());
 			fclose($fw);
 		} else {
