@@ -89,15 +89,14 @@ class TXmlElementList extends \Prado\Collections\TList
 	 * Removes an item at the specified position.
 	 * This overrides the parent implementation by performing additional
 	 * cleanup work when removing a TXmlElement object.
+	 * The list holds only TXmlElement objects, since {@see insertAt()} rejects any other item.
 	 * @param int $index The index of the item to be removed.
-	 * @return mixed The removed item.
+	 * @return TXmlElement The removed item.
 	 */
 	public function removeAt($index)
 	{
 		$item = parent::removeAt($index);
-		if ($item instanceof TXmlElement) {
-			$item->setParent(null);
-		}
+		$item->setParent(null);
 		return $item;
 	}
 }

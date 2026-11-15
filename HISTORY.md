@@ -1,4 +1,10 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TXmlElement::getNextElementSibling()` returns null for an element absent from its parent's element list; it returned the parent's first child. (belisoful)
+BUG: Issue #1497 - `TXmlElement` reports `isset($element[null])` true for the value `'0'`. (belisoful)
+BUG: Issue #1497 - `TXmlElement::getElementsByTagName()` reads `getTagName()` in breadth-first search, as the other search modes do. (belisoful)
+BUG: Issue #1497 - `TXmlElement::xpath()` removes its internal `prado-xml-id-*` attributes when the query throws. (belisoful)
+BUG: Issue #1497 - `TXmlDocument::saveToFile()` throws `TIOException` when the file cannot be opened; a PHP warning was raised instead. (belisoful)
+BUG: Issue #1497 - `TXmlDocument::loadFromString()` loads XML with a recoverable libxml error, such as an undeclared namespace prefix; its namespace scan raised a PHP warning. (belisoful)
 BUG: Issue #1497 - A `TPermissionsManager` created while another is initialized no longer registers its permissions with that manager, which threw `permissions_duplicate_permission`. (belisoful)
 BUG: Issue #1497 - `TAuthorizationRule` throws `authorizationrule_list_empty` for a users, roles, or IP list of only separators, such as `','`; such a users or roles list matched no one, while such an IP list matched every IP. (belisoful)
 BUG: Issue #1497 - `TPagedDataSource` applies custom paging only while `AllowPaging` is true; with paging off, `Count` followed `VirtualItemCount` and disagreed with iteration. (belisoful)

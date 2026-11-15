@@ -62,6 +62,7 @@ public function __construct(string $tagName)
 - `childElementCount()` - Gets number of child elements
 - `getPreviousElementSibling()` - Gets previous sibling element
 - `getNextElementSibling()` - Gets next sibling element
+- An element absent from its parent's element list has no siblings (both getters return null)
 
 ## Validation
 
