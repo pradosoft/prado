@@ -524,12 +524,14 @@ class TErrorHandler extends \Prado\TModule
 
 		if ($exception instanceof TTemplateException) {
 			$fileName = $exception->getTemplateFile();
-			$lines = empty($fileName) ? explode("\n", $exception->getTemplateSource()) : @file($fileName);
-			$source = $this->getSourceCode($lines, $exception->getLineNumber());
-			if ($fileName === '') {
+			if (empty($fileName)) {
+				$lines = explode("\n", $exception->getTemplateSource());
 				$fileName = '---embedded template---';
+			} else {
+				$lines = @file($fileName);
 			}
 			$errorLine = $exception->getLineNumber();
+			$source = $this->getSourceCode($lines, $errorLine);
 		} else {
 			if (($trace = $this->getExactTrace($exception)) !== null) {
 				$fileName = $trace['file'];
@@ -584,7 +586,8 @@ class TErrorHandler extends \Prado\TModule
 			}
 		}
 		if (($content = @file_get_contents($exceptionFile)) === false) {
-			die("Unable to open exception template file '$exceptionFile'.");
+			// Exits the process: no exception template is readable.
+			die("Unable to open exception template file '$exceptionFile'."); // @codeCoverageIgnore
 		}
 		return $content;
 	}
@@ -619,7 +622,8 @@ class TErrorHandler extends \Prado\TModule
 			$errorFile = "$base.html";
 		}
 		if (($content = @file_get_contents($errorFile)) === false) {
-			die("Unable to open error template file '$errorFile'.");
+			// Exits the process: the error template is missing or unreadable.
+			die("Unable to open error template file '$errorFile'."); // @codeCoverageIgnore
 		}
 		return $content;
 	}
