@@ -91,7 +91,8 @@ class TDbParameterAction extends TShellAction
 		}
 
 		$params = Prado::getApplication()->getParameters();
-		$len = 0;
+		$heading = 'Parameter Key';
+		$len = strlen($heading);
 		foreach ($params as $key => $value) {
 			$_len = strlen($key);
 			if ($len < $_len) {
@@ -99,8 +100,8 @@ class TDbParameterAction extends TShellAction
 			}
 		}
 		$writer->writeLine();
-		$writer->write($writer->pad($writer->format('Parameter Key', TShellWriter::UNDERLINE), $len + 1));
-		$writer->writeLine('Parameter Key', TShellWriter::UNDERLINE);
+		$writer->write($writer->pad($writer->format($heading, TShellWriter::UNDERLINE), $len + 1));
+		$writer->writeLine('Value', TShellWriter::UNDERLINE);
 		foreach ($params as $key => $value) {
 			if (!$this->getAll() && !$module->exists($key)) {
 				continue;
@@ -143,7 +144,8 @@ class TDbParameterAction extends TShellAction
 	}
 
 	/**
-	 * Sets a parameter value
+	 * Sets parameter `<param-key>` to `<param-value>`.  Any string is a value, `0` and
+	 * the empty string included; a missing value is an error.
 	 * @param array $args parameters
 	 * @return bool is the action handled
 	 */
@@ -153,11 +155,11 @@ class TDbParameterAction extends TShellAction
 		$writer->writeLine();
 
 		if (!($key = ($args[1] ?? null))) {
-			$this->getWriter()->writeError('Get Parameter needs a key');
+			$writer->writeError('Set Parameter needs a key');
 			return true;
 		}
-		if (!($value = ($args[2] ?? null))) {
-			$this->getWriter()->writeError('Set Parameter needs a key and Value');
+		if (($value = ($args[2] ?? null)) === null) {
+			$writer->writeError('Set Parameter needs a key and Value');
 			return true;
 		}
 		$autoload = TPropertyValue::ensureBoolean($args[3] ?? true);
