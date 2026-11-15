@@ -175,6 +175,20 @@ class TExceptionMessageFilesTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame("Raw 'A' text", (new TException("Raw '{0}' text", 'A'))->getMessage());
 	}
 
+	public function testZeroErrorCodeIsTheMessage(): void
+	{
+		// Issue #1497: the error code '0' is a message; it rendered as an empty message.
+		$e = new TException('0');
+		$this->assertSame('0', $e->getMessage());
+		$this->assertSame('0', $e->getErrorCode());
+	}
+
+	public function testEmptyErrorCodeIsAnEmptyMessage(): void
+	{
+		$this->assertSame('', (new TException(''))->getMessage());
+		$this->assertSame('', (new TException(5, null))->getMessage());
+	}
+
 	public function testMessageFileLanguage(): void
 	{
 		$e = new TException('component_property_undefined', 'A', 'B');

@@ -207,7 +207,7 @@ class TException extends \Exception
 	 */
 	protected function translateErrorMessage($key)
 	{
-		if (empty($key)) {
+		if ($key === null || $key === '') {
 			return '';
 		}
 		$file = $this->findErrorMessageFile($key);
