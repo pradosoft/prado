@@ -318,7 +318,6 @@ class TWebServerAction extends TShellAction
 			return true;
 		}
 
-		$nullFile = null;
 		if ($quiet >= 2) {
 			$nullFile = TProcessHelper::isSystemWindows() ? 'NUL' : '/dev/null';
 			$descriptors = [STDIN, ['file', $nullFile, 'w'], ['file', $nullFile, 'w']];
@@ -340,11 +339,6 @@ class TWebServerAction extends TShellAction
 
 		$process = proc_open($command, $descriptors, $pipes, $cwd, $env);
 		proc_close($process);
-
-		if ($nullFile) {
-			fclose($descriptors[1]);
-			fclose($descriptors[2]);
-		}
 
 		return true;
 	}
