@@ -575,6 +575,7 @@ globalization_cache_path_failed			= Unable to create translation message cache p
 globalization_source_path_failed		= Unable to create translation message path ''{0}''. Make sure the parent directory exists and is writable by the Web process.
 globalization_source_required			= The translation type ''{0}'' requires a source path.
 globalization_source_invalid			= The translation source ''{0}'' is not a namespace path.
+translateparameter_key_required			= TTranslateParameter.Key is required.
 messagesource_connectionid_invalid      = MessageSource_Database.source ''{0}'' does not point to a valid TDataSourceConfig module.
 messagesource_connectionid_required     = ConnectionID in MessageSource_Database.source is required.
 

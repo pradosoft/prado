@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+CHG: Issue #1497 - `TTranslateParameter::getKey()` throws `TConfigurationException` `translateparameter_key_required` for an empty key. (belisoful)
 BUG: Issue #1497 - `TChoiceFormat` renders a chosen string of `0`; it rendered an empty string. (belisoful)
 BUG: Issue #1497 - `TGlobalizationAutoDetect` trims the spaces around each `Accept-Language` and `Accept-Charset` entry; an entry after `, ` without a q-value was dropped. (belisoful)
 BUG: Issue #1497 - `Translation` reads the optional `filename`, `marker`, and `autosave` keys of a PHP `translate` array without a warning, and `saveMessages()` saves only when `autosave` is true. (belisoful)
