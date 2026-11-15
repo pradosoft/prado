@@ -211,6 +211,35 @@ class TFirebirdMetaDataTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame(['address', 'table1'], $meta->findTableNames('ignored'));
 		$this->assertStringContainsString('RDB$VIEW_BLR IS NULL', $conn->getCommands()[0]->getText());
 	}
+
+	public function test_find_table_names_without_tables()
+	{
+		[$meta] = $this->makeMetaData([]);
+
+		$this->assertSame([], $meta->findTableNames());
+	}
+
+	public function test_command_builder_of_a_table_without_columns()
+	{
+		[$meta, $conn] = $this->makeMetaData([]);
+		$builder = new TFirebirdCommandBuilder($conn, new TFirebirdTableInfo(['TableName' => 'EMPTY']));
+
+		$this->assertNull(PradoUnit::invoke($builder, 'getIdentityColumn'));
+		$this->assertNull($builder->getLastInsertID());
+	}
+
+	public function test_last_insert_id_is_read_once_from_the_returning_row()
+	{
+		[$meta, $conn] = $this->makeMetaData([]);
+		$builder = new TFirebirdCommandBuilder($conn, new TFirebirdTableInfo(['TableName' => 'T']));
+		$returning = new TDbCommand($conn, 'SELECT 7 AS ID');
+		$returning->prepare();
+		$returning->execute();
+		PradoUnit::setProp($builder, '_insertCommand', $returning);
+
+		$this->assertSame(7, $builder->getLastInsertID());
+		$this->assertSame(7, $builder->getLastInsertID());
+	}
 }
 
 /**
