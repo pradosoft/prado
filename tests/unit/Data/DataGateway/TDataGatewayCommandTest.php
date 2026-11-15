@@ -309,6 +309,42 @@ class TDataGatewayCommandTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame(['a', 'b', 'c'], array_column($command->findAllBySql($criteria)->readAll(), 'name'));
 	}
 
+	public static function unmatchedConditionProvider(): array
+	{
+		return [
+			'unknown column before a known one' => ['findByFooAndName', 'FooAndName'],
+			'unknown text after a column' => ['findByNameIsSet', 'NameIsSet'],
+			'columns without an operator' => ['findByNameKind', 'NameKind'],
+			'trailing operator' => ['findByNameAnd', 'NameAnd'],
+			'leading operator' => ['findByAndName', 'AndName'],
+			'empty condition' => ['findBy', ''],
+		];
+	}
+
+	/**
+	 * @dataProvider unmatchedConditionProvider
+	 */
+	public function testCreateCriteriaFromStringRejectsTextThatIsNotColumnsJoinedByAndOrOr(string $method, string $condition)
+	{
+		$this->assertDbErrorCode('dbtablegateway_mismatch_column_name', fn () => $this->command()->createCriteriaFromString($method, $condition, ['a', 'b']));
+	}
+
+	public function testCreateCriteriaFromStringAcceptsEveryOperatorSpelling()
+	{
+		$criteria = $this->command()->createCriteriaFromString('findBy_Name_and_Kind_OR_Id', 'Name_and_Kind_OR_Id', ['a', 'x', 1]);
+		$this->assertSame('"name" = ? AND "kind" = ? OR "id" = ?', $criteria->getCondition());
+	}
+
+	public function testCreateCriteriaFromStringPrefersTheLongerColumnAndBacktracks()
+	{
+		$this->_conn->createCommand('CREATE TABLE people (name TEXT, nameor TEXT, kind TEXT, brand TEXT)')->execute();
+		$command = $this->command('people');
+
+		$this->assertSame('"nameor" = ? AND "kind" = ?', $command->createCriteriaFromString('findByNameorAndKind', 'NameorAndKind', ['a', 'b'])->getCondition());
+		$this->assertSame('"name" = ? OR "kind" = ?', $command->createCriteriaFromString('findByNameOrKind', 'NameOrKind', ['a', 'b'])->getCondition());
+		$this->assertSame('"brand" = ? AND "name" = ?', $command->createCriteriaFromString('findByBrandAndName', 'BrandAndName', ['a', 'b'])->getCondition());
+	}
+
 	public function testZeroConditionMatchesNoRow()
 	{
 		$command = $this->command();

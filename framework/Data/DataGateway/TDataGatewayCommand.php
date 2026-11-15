@@ -467,17 +467,24 @@ class TDataGatewayCommand extends \Prado\TComponent
 	/**
 	 * Calculates the AND/OR condition from dynamic method substrings using
 	 * table meta data, allows for any AND-OR combinations.
+	 *
+	 * The whole condition must be column names joined by `And`, `Or`, `_And_`, or
+	 * `_Or_`, in any case: `NameAndKind` and `Name_Or_Kind` parse, while `FooAndName`
+	 * (unknown column), `NameKind` (no operator), and `NameAnd` (trailing operator)
+	 * do not. A longer column name is tried before a shorter one that it begins with.
 	 * @param string $method dynamic method name
 	 * @param string $condition dynamic method search criteria
+	 * @throws TDbException if the condition is not column names joined by And or Or.
 	 * @return array search condition substrings
 	 */
 	protected function extractMatchingConditions($method, $condition)
 	{
 		$table = $this->getTableInfo();
 		$columns = $table->getLowerCaseColumnNames();
-		$regexp = '/(' . implode('|', array_keys($columns)) . ')(and|_and_|or|_or_)?/i';
-		$matches = [];
-		if (!preg_match_all($regexp, strtolower($condition), $matches, PREG_SET_ORDER)) {
+		$names = array_map('strval', array_keys($columns));
+		usort($names, fn ($a, $b) => strlen($b) <=> strlen($a));
+		$parts = $this->parseMatchingConditions(strtolower($condition), 0, $names);
+		if ($parts === null) {
 			throw new TDbException(
 				'dbtablegateway_mismatch_column_name',
 				$method,
@@ -487,16 +494,51 @@ class TDataGatewayCommand extends \Prado\TComponent
 		}
 
 		$fields = [];
-		foreach ($matches as $match) {
-			$key = $columns[$match[1]];
-			$column = $table->getColumn($key)->getColumnName();
-			$sql = $column . ' = ? ';
-			if (count($match) > 2) {
-				$sql .= strtoupper(str_replace('_', '', $match[2]));
+		foreach ($parts as [$name, $operator]) {
+			$sql = $table->getColumn($columns[$name])->getColumnName() . ' = ? ';
+			if ($operator !== null) {
+				$sql .= $operator;
 			}
 			$fields[] = $sql;
 		}
 		return $fields;
+	}
+
+	/**
+	 * Splits a lower-case dynamic method condition, from an offset, into column
+	 * names joined by `and`, `or`, `_and_`, or `_or_`.
+	 * @param string $condition lower-case condition text.
+	 * @param int $offset position to parse from.
+	 * @param string[] $names lower-case column names, longest first.
+	 * @return ?array list of `[column name, operator]`, the operator `'AND'`, `'OR'`,
+	 *   or null after the last column; null when the text from $offset does not parse.
+	 * @since 4.4.0
+	 */
+	protected function parseMatchingConditions(string $condition, int $offset, array $names): ?array
+	{
+		$length = strlen($condition);
+		if ($offset >= $length) {
+			return null;
+		}
+		foreach ($names as $name) {
+			$end = $offset + strlen($name);
+			if ($end > $length || substr_compare($condition, $name, $offset, strlen($name)) !== 0) {
+				continue;
+			}
+			if ($end === $length) {
+				return [[$name, null]];
+			}
+			foreach (['_and_', 'and', '_or_', 'or'] as $operator) {
+				if (substr_compare($condition, $operator, $end, strlen($operator)) !== 0) {
+					continue;
+				}
+				$rest = $this->parseMatchingConditions($condition, $end + strlen($operator), $names);
+				if ($rest !== null) {
+					return array_merge([[$name, strtoupper(trim($operator, '_'))]], $rest);
+				}
+			}
+		}
+		return null;
 	}
 
 	/**
