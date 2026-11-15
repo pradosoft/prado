@@ -849,12 +849,17 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	/**
 	 * Creates a new {@see IDataTransaction} for this connection.
 	 *
+	 * @throws TDbException if {@see getTransactionClass TransactionClass} does not create an {@see IDataTransaction}.
 	 * @return IDataTransaction A new transaction from this connection.
 	 * @since 4.4.0
 	 */
 	protected function createTransaction(): IDataTransaction
 	{
-		return Prado::createComponent($this->getTransactionClass(), $this);
+		$transaction = Prado::createComponent($this->getTransactionClass(), $this);
+		if (!($transaction instanceof IDataTransaction)) {
+			throw new TDbException('dbconnection_transaction_class_invalid', get_debug_type($transaction), IDataTransaction::class);
+		}
+		return $transaction;
 	}
 
 	/**

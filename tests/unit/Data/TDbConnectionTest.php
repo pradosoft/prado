@@ -2058,4 +2058,17 @@ class TDbConnectionTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame(TDbColumnCaseMode::Preserved, $conn->getColumnCase());
 		$this->assertSame(TDbNullConversionMode::Preserved, $conn->getNullConversion());
 	}
+
+	public function testBeginTransactionRejectsAClassThatIsNotATransaction(): void
+	{
+		$this->_connection1->setTransactionClass(\stdClass::class);
+		try {
+			$this->_connection1->beginTransaction();
+			$this->fail('Expected TDbException for a TransactionClass that is not an IDataTransaction');
+		} catch (TDbException $e) {
+			$this->assertSame('dbconnection_transaction_class_invalid', $e->getErrorCode());
+			$this->assertStringContainsString('stdClass', $e->getMessage());
+		}
+		$this->assertFalse($this->_connection1->getPdoInstance()->inTransaction());
+	}
 }
