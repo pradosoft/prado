@@ -312,4 +312,18 @@ class TSqlCriteriaTest extends \PHPUnit\Framework\TestCase
 		$this->assertNull($c->getCondition());
 	}
 
+	public function testSetParametersFromArrayAccess()
+	{
+		$c = new TSqlCriteria();
+		$c->setParameters(new \ArrayObject([':id' => 7]));
+		$this->assertSame(7, $c->getParameters()[':id']);
+		$this->assertTrue($c->getIsNamedParameters());
+	}
+
+	public function testSetOrdersByFromTraversable()
+	{
+		$c = new TSqlCriteria();
+		$c->setOrdersBy(new \ArrayIterator(['name' => 'desc', 'id' => 'asc']));
+		$this->assertSame(['name' => 'desc', 'id' => 'asc'], $c->getOrdersBy()->toArray());
+	}
 }

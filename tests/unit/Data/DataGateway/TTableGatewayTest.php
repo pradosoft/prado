@@ -2,9 +2,11 @@
 
 namespace Prado\Test\Unit\Data\DataGateway;
 
+use Prado\Data\DataGateway\TSqlCriteria;
 use Prado\Data\DataGateway\TTableGateway;
 use Prado\Data\TDbConnection;
 use Prado\Exceptions\TDbException;
+use Prado\Test\Unit\PradoUnit;
 
 /**
  * TTableGateway over an in-memory SQLite database.
@@ -48,5 +50,30 @@ class TTableGatewayTest extends \PHPUnit\Framework\TestCase
 			}
 		}
 		$this->assertSame(3, $this->gateway()->count());
+	}
+
+	public function testFindAllWithANullCriteriaAndParametersReturnsEveryRow()
+	{
+		$this->assertCount(3, $this->gateway()->findAll(null, 'ignored')->readAll());
+	}
+
+	public function testCountWithANullCriteriaAndParametersCountsEveryRow()
+	{
+		$this->assertSame(3, $this->gateway()->count(null, 'ignored'));
+	}
+
+	public function testFindAllByPksWithOneArrayOfKeys()
+	{
+		$rows = $this->gateway()->findAllByPks([1, 3])->readAll();
+		$this->assertSame(['a', 'c'], array_column($rows, 'name'));
+	}
+
+	public function testCriteriaFromAStringWithAScalarParameterAndNoArguments()
+	{
+		$criteria = PradoUnit::invoke($this->gateway(), 'getCriteria', 'kind = ?', 'y', null);
+
+		$this->assertInstanceOf(TSqlCriteria::class, $criteria);
+		$this->assertSame('kind = ?', $criteria->getCondition());
+		$this->assertSame(['y'], $criteria->getParameters()->toArray());
 	}
 }
