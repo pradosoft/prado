@@ -15,9 +15,10 @@
  * an `after end` schedule, a Process task's warning, output, priority, and memory limit, and the
  * monitoring endpoint served by a PHP web server); the `overlap` scenario checks Replace and Queue on
  * Process tasks.  The `tick` scenario runs no daemon: overlapping `cron/run` crontab ticks each serve the
- * rest of their minute at the trigger seconds, and each trigger of a five-second task runs once.
+ * rest of their minute at the trigger seconds, and each trigger of a five-second task runs once.  The
+ * `replay` scenario runs the run checks over recorded event sequences.
  *
- * Usage: php tests/cron-daemon/run.php [handoff|wake|process|features|overlap|tick|all]
+ * Usage: php tests/cron-daemon/run.php [replay|handoff|wake|process|features|overlap|tick|all]
  * Exit code 0 when every check passes, 1 otherwise.
  *
  * @author Brad Anderson <belisoful@icloud.com>
@@ -45,6 +46,8 @@ final class CronDaemonE2E
 	private bool $windows;
 	/** @var ?array{proc: resource, port: int} the PHP web server of a scenario */
 	private ?array $server = null;
+	/** @var bool whether {@see fail} leaves out its output, for checks meant to fail */
+	private bool $muted = false;
 
 	public function __construct()
 	{
@@ -57,6 +60,7 @@ final class CronDaemonE2E
 		foreach ($scenarios as $scenario) {
 			$this->line("== {$scenario} (" . PHP_OS_FAMILY . ', PHP ' . PHP_VERSION . ')');
 			$before = count($this->failures);
+			$this->dir = $this->log = '';
 			try {
 				$this->{'scenario' . ucfirst($scenario)}();
 			} catch (\Throwable $e) {
@@ -65,8 +69,10 @@ final class CronDaemonE2E
 			$this->stopServer();
 			$this->finish();
 			if (count($this->failures) > $before) {
-				$this->dump();
-				$this->line("   kept for inspection: {$this->dir}");
+				if ($this->dir !== '') {
+					$this->dump();
+					$this->line("   kept for inspection: {$this->dir}");
+				}
 			} else {
 				$this->line("   {$scenario} passed");
 				$this->removeApp($this->dir);
@@ -76,6 +82,38 @@ final class CronDaemonE2E
 			$this->line(($this->ci() ? '::error::' : 'FAIL: ') . $failure);
 		}
 		return $this->failures ? 1 : 0;
+	}
+
+	/**
+	 * The run checks over recorded event sequences, without processes.  A daemon that replaces a killed
+	 * one catches up the missed trigger more than one period late and then runs the next trigger in the
+	 * same second; this passes, as in CI run 43711240523.  A trigger run by two daemons fails.
+	 */
+	private function scenarioReplay(): void
+	{
+		$base = 1794744436;
+		$events = [];
+		$record = function (int $pid, int $trigger, float $t) use (&$events): void {
+			$events[] = ['e' => 'tstart', 'task' => 'every2', 'trigger' => $trigger, 'pid' => $pid, 't' => $t];
+			$events[] = ['e' => 'run', 'task' => 'every2', 'pid' => $pid, 't' => $t + 0.01];
+		};
+		for ($trigger = $base; $trigger <= $base + 16; $trigger += 2) {
+			$record(101, $trigger, $trigger + 0.06);
+		}
+		$killed = ['pid' => 101, 't' => $base + 17.96, 'graceful' => true];
+		$record(102, $base + 18, $base + 20.05);
+		$record(102, $base + 20, $base + 20.11);
+		$record(102, $base + 22, $base + 22.06);
+		$this->checkRuns($this->runs($events, 'every2'), 2.0, $killed, 12);
+
+		$events = [];
+		$record(101, $base, $base + 0.06);
+		$record(101, $base + 2, $base + 2.06);
+		$record(101, $base + 4, $base + 4.06);
+		$record(102, $base + 4, $base + 4.5);
+		$record(102, $base + 6, $base + 6.06);
+		$found = $this->failuresOf(fn () => $this->checkRuns($this->runs($events, 'every2'), 2.0, null, 5));
+		$this->check(count($found) === 1 && str_contains($found[0], 'ran once (again by 102)'), 'a trigger run by two daemons fails the check; found: ' . json_encode($found));
 	}
 
 	/**
@@ -105,7 +143,7 @@ final class CronDaemonE2E
 		$events = $this->events();
 		$starts = $this->select($events, 'start');
 		$ends = $this->select($events, 'end');
-		$runs = $this->select($events, 'run');
+		$runs = $this->runs($events, 'every2');
 		$this->transport($starts);
 		$this->check(count($starts) >= 4, 'at least four daemons ran (lifetime handoffs and a replaced kill); ' . count($starts) . ' started');
 		$this->check(count(array_unique(array_column($starts, 'pid'))) === count($starts), 'each daemon is a process of its own');
@@ -527,7 +565,7 @@ final class CronDaemonE2E
 
 		$events = $this->events();
 		$this->check(!$this->select($events, 'start'), 'no daemon started');
-		$runs = array_values(array_filter($this->select($events, 'run'), fn ($e) => $e['task'] === 'every5'));
+		$runs = $this->runs($events, 'every5');
 		$pids = array_unique(array_column($runs, 'pid'));
 		$this->line('   every5 ran ' . count($runs) . ' time(s) in ' . count($pids) . ' tick(s)');
 		$this->check(count($pids) >= 2, 'more than one tick ran the task');
@@ -535,7 +573,7 @@ final class CronDaemonE2E
 		$seen = [];
 		$previous = null;
 		foreach ($runs as $run) {
-			$trigger = floor($run['t'] / 5.0) * 5.0;
+			$trigger = $run['trigger'];
 			$at = date('H:i:s', (int) $trigger);
 			$this->check(!isset($seen[(string) $trigger]), "the trigger at {$at} ran once (again by {$run['pid']})");
 			$seen[(string) $trigger] = true;
@@ -572,9 +610,9 @@ final class CronDaemonE2E
 	}
 
 	/**
-	 * Assigns each run to its trigger, the period grid second at or before it, and checks that no
-	 * trigger runs twice, none is late, and none is skipped; a run after a killed daemon may catch
-	 * up a trigger the kill missed.
+	 * Checks the runs of {@see runs} by the trigger each one claimed: no trigger runs twice, none is
+	 * late, and none is skipped.  A run after a killed daemon may catch up a trigger the kill missed,
+	 * more than one period late.
 	 */
 	private function checkRuns(array $runs, float $period, ?array $killed, int $minRuns = 10): void
 	{
@@ -583,7 +621,7 @@ final class CronDaemonE2E
 		$seen = [];
 		$previous = null;
 		foreach ($runs as $run) {
-			$trigger = floor($run['t'] / $period) * $period;
+			$trigger = $run['trigger'];
 			$late = $run['t'] - $trigger;
 			$at = date('H:i:s', (int) $trigger);
 			$this->check(!isset($seen[(string) $trigger]), "the trigger at {$at} ran once (again by {$run['pid']})");
@@ -879,6 +917,30 @@ final class CronDaemonE2E
 		return array_values(array_filter($events, fn ($e) => $e['e'] === $type));
 	}
 
+	/**
+	 * Returns the `run` events of a Serial task, each with the `trigger` of the `tstart` event its
+	 * process recorded before it.  The trigger is the one the run claimed; a caught-up run comes
+	 * later than one period after it.
+	 */
+	private function runs(array $events, string $task): array
+	{
+		$runs = [];
+		$triggers = [];
+		foreach ($events as $e) {
+			if (($e['task'] ?? null) !== $task) {
+				continue;
+			}
+			if ($e['e'] === 'tstart') {
+				$triggers[$e['pid']] = $e['trigger'];
+			} elseif ($e['e'] === 'run') {
+				$this->check(isset($triggers[$e['pid']]), "a run of {$task} by {$e['pid']} has a tstart event");
+				$runs[] = $e + ['trigger' => $triggers[$e['pid']] ?? $e['t']];
+				unset($triggers[$e['pid']]);
+			}
+		}
+		return $runs;
+	}
+
 	private function dump(): void
 	{
 		$t0 = null;
@@ -905,7 +967,22 @@ final class CronDaemonE2E
 	private function fail(string $message): void
 	{
 		$this->failures[] = $message;
-		$this->line('   FAIL ' . $message);
+		if (!$this->muted) {
+			$this->line('   FAIL ' . $message);
+		}
+	}
+
+	/** Runs checks that are meant to fail and returns their failures, which leave the scenario's. */
+	private function failuresOf(callable $checks): array
+	{
+		$before = count($this->failures);
+		$this->muted = true;
+		try {
+			$checks();
+		} finally {
+			$this->muted = false;
+		}
+		return array_splice($this->failures, $before);
 	}
 
 	private function line(string $text): void
@@ -920,9 +997,9 @@ final class CronDaemonE2E
 }
 
 $arg = $argv[1] ?? 'all';
-$scenarios = $arg === 'all' ? ['handoff', 'wake', 'process', 'features', 'overlap', 'tick'] : [$arg];
-if (array_diff($scenarios, ['handoff', 'wake', 'process', 'features', 'overlap', 'tick'])) {
-	fwrite(STDERR, "Usage: php tests/cron-daemon/run.php [handoff|wake|process|features|overlap|tick|all]\n");
+$scenarios = $arg === 'all' ? ['replay', 'handoff', 'wake', 'process', 'features', 'overlap', 'tick'] : [$arg];
+if (array_diff($scenarios, ['replay', 'handoff', 'wake', 'process', 'features', 'overlap', 'tick'])) {
+	fwrite(STDERR, "Usage: php tests/cron-daemon/run.php [replay|handoff|wake|process|features|overlap|tick|all]\n");
 	exit(2);
 }
 exit((new CronDaemonE2E())->run($scenarios));
