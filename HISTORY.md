@@ -1,5 +1,8 @@
 ## Version 4.4.0 - TBA
 CHG: Issue #1497 - `TTableGateway` dynamic finders throw `dbtablegateway_mismatch_column_name` unless the whole condition is column names joined by `And` or `Or`; text that matched no column was ignored, so `findByFooAndName()` searched by `Name` alone. See UPGRADE.md. (belisoful)
+ENH: `prado-cli` writes error blocks to standard error: `TShellWriter::ErrorStream` receives `writeError()`, which `TShellApplication::createStdErrStream()` sets to a `TStdErrStream` (see UPGRADE.md). (belisoful)
+ENH: `TShellWriter` detects color from `NO_COLOR`, `FORCE_COLOR`, `CLICOLOR_FORCE`, the Windows console, and any terminal `TERM` but `dumb`, each time one is constructed; `Width` sets the `wrapText()` width, and `COLUMNS` and `LINES` take precedence in `getScreenSize()`. (belisoful)
+ENH: `TShellApplication::printHelp()` shows `TShellAction::getExample()` of each registered action, and the `QUIET_NONE`, `QUIET_INFO`, `QUIET_OUTPUT`, and `QUIET_ERRORS` constants name the `QuietMode` levels. (belisoful)
 BUG: Issue #1497 - `TWebServerAction` `http/serve` in quiet mode 2 or 3 no longer throws a `TypeError` when the web server exits. (belisoful)
 BUG: Issue #1497 - `TWebServerAction::setAddress()` brackets a bare IPv6 address such as `::1`, which it read as address `:` and port 1; a taken address reports its port. (belisoful)
 BUG: Issue #1497 - `TDbParameterAction` `param/index` heads its columns "Parameter Key" and "Value" with a gap between them, and `param/set` stores `0` and the empty string; it reported them missing. (belisoful)

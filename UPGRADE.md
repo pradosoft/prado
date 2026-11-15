@@ -127,6 +127,10 @@ Upgrading from v4.3.3
   `getRecursiveCheck`, `getRecursiveLevel`, `validateFile`, `validateDirectory`, `generateTimestamps`),
   TChainedCacheDependency (`getDependencies`) and TGlobalStateCacheDependency (`__construct`, `getStateName`) are
   typed. A cache module or dependency subclass must add the matching types and implement `getIsAvailable()`.
+- `prado-cli` writes `TShellWriter::writeError()` blocks to standard error; in 4.3 they went to standard output. A
+  script that read errors from standard output reads standard error, or a `TShellApplication` subclass returns null
+  from `createStdErrStream()`. `TShellWriter` shows color on any terminal whose `TERM` is not `dumb`, follows
+  `NO_COLOR`, `FORCE_COLOR`, and `CLICOLOR_FORCE`, and `COLUMNS` and `LINES` take precedence over `stty` and `tput`.
 - TShellApplication keeps its writer and option fields private; a subclass reads them through `getWriter()`,
   `getOptions()`, `getOptionAliases()` and `getOptionsData()`. TExitException keeps its exit code private; use
   `getExitCode()`/`setExitCode()`.

@@ -11,6 +11,7 @@
 namespace Prado\Shell;
 
 use Prado\IO\TStdOutWriter;
+use Prado\IO\TStream;
 use Prado\TPropertyValue;
 use Prado\Util\Helpers\TProcessHelper;
 
@@ -19,6 +20,20 @@ use Prado\Util\Helpers\TProcessHelper;
  *
  * Similar to the {@see \Prado\Web\UI\THtmlWriter}, the TShellWriter writes and formats text
  * with color, and processes other commands to the terminal to another ITextWriter.
+ *
+ * {@see writeError()} writes its error block to {@see getErrorStream() ErrorStream} when one
+ * is set, such as the standard error that {@see TShellApplication} sets, and to the writer
+ * otherwise.
+ *
+ * {@see getColorSupported() ColorSupported} is detected at construction from the environment:
+ * - `NO_COLOR` set and not empty → no color.
+ * - `FORCE_COLOR` set → color unless it is `0` or `false`.
+ * - `CLICOLOR_FORCE` set and not `0` → color.
+ * - Windows → color when the console has VT100 processing, `ANSICON` is set, or
+ *   `ConEmuANSI` is `ON`.
+ * - Otherwise → color when standard output is a terminal and `TERM` is set and not `dumb`.
+ *
+ * {@see getWidth() Width} overrides the detected screen width that {@see wrapText()} uses.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.2.0
@@ -85,6 +100,12 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 	/** @var bool is color supported on tty */
 	protected $_color;
 
+	/** @var ?TStream the stream receiving {@see writeError()} blocks, or null for the writer */
+	private ?TStream $_errorStream = null;
+
+	/** @var ?int the screen width {@see wrapText()} uses, or null to detect it */
+	private ?int $_width = null;
+
 	/**
 	 * Constructor.
 	 * @param \Prado\IO\ITextWriter $writer a writer that THtmlWriter will pass its rendering result to
@@ -126,6 +147,47 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 	public function setWriter($writer)
 	{
 		$this->_writer = $writer;
+	}
+
+	/**
+	 * Returns the stream that receives {@see writeError()} blocks.
+	 * @return ?TStream the error stream, or null when error blocks go to the writer.
+	 * @since 4.4.0
+	 */
+	public function getErrorStream(): ?TStream
+	{
+		return $this->_errorStream;
+	}
+
+	/**
+	 * Sets the stream that receives {@see writeError()} blocks.
+	 * @param ?TStream $stream the error stream, or null to write error blocks to the writer.
+	 * @since 4.4.0
+	 */
+	public function setErrorStream(?TStream $stream): void
+	{
+		$this->_errorStream = $stream;
+	}
+
+	/**
+	 * Returns the screen width that {@see wrapText()} uses in place of the detected one.
+	 * @return ?int the width in columns, or null to detect it with {@see getScreenSize()}.
+	 * @since 4.4.0
+	 */
+	public function getWidth(): ?int
+	{
+		return $this->_width;
+	}
+
+	/**
+	 * Sets the screen width that {@see wrapText()} uses in place of the detected one.
+	 * @param null|int|string $width the width in columns; null, empty, or below 1 detects it.
+	 * @since 4.4.0
+	 */
+	public function setWidth($width): void
+	{
+		$width = ($width === null || $width === '') ? 0 : TPropertyValue::ensureInteger($width);
+		$this->_width = $width > 0 ? $width : null;
 	}
 
 	/**
@@ -178,20 +240,38 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 	}
 
 	/**
-	 * Writes an error block to the writer with color
-	 * @param string $text
+	 * Writes an error block with color.  With an {@see getErrorStream() ErrorStream}, the
+	 * writer is flushed first, so output written before the error precedes it, and the block
+	 * is written to the stream.  Without one, the block is written to the writer.
+	 * @param string $text the error message
 	 */
 	public function writeError($text)
 	{
-		$len = 78;
-		$lines = explode("\n", wordwrap($text, $len - 4, "\n"));
-		$this->writeLine();
-		$this->writeLine("*" . str_pad(' Error ', $len, '-', STR_PAD_BOTH) . "*", [self::BG_RED, self::WHITE, self::BOLD]);
-		foreach ($lines as $i => $line) {
-			$this->writeLine('*  ' . str_pad($line, $len - 4, ' ', STR_PAD_BOTH) . '  *', [self::BG_RED, self::WHITE, self::BOLD]);
+		$block = $this->formatError($text);
+		if (($stream = $this->getErrorStream()) === null) {
+			$this->_writer->write($block);
+			return;
 		}
-		$this->writeLine('*' . str_repeat('-', $len) . "*", [self::BG_RED, self::WHITE, self::BOLD]);
-		$this->writeLine();
+		$this->flush();
+		$stream->write($block);
+	}
+
+	/**
+	 * Formats `$text` as the error block {@see writeError()} writes: a blank line, a
+	 * 78-column frame of the wrapped and centered text, and a blank line.
+	 * @param string $text the error message
+	 * @return string the error block.
+	 * @since 4.4.0
+	 */
+	public function formatError($text): string
+	{
+		$len = 78;
+		$attr = [self::BG_RED, self::WHITE, self::BOLD];
+		$block = "\n" . $this->format('*' . str_pad(' Error ', $len, '-', STR_PAD_BOTH) . '*', $attr) . "\n";
+		foreach (explode("\n", wordwrap($text, $len - 4, "\n")) as $line) {
+			$block .= $this->format('*  ' . str_pad($line, $len - 4, ' ', STR_PAD_BOTH) . '  *', $attr) . "\n";
+		}
+		return $block . $this->format('*' . str_repeat('-', $len) . '*', $attr) . "\n\n";
 	}
 
 	/**
@@ -306,32 +386,64 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 	}
 
 	/**
-	 * is color TTY supported
+	 * Detects whether the output supports ANSI color, from the `NO_COLOR`, `FORCE_COLOR`,
+	 * and `CLICOLOR_FORCE` environment variables, the Windows console, or a standard output
+	 * terminal with a `TERM` other than `dumb`.
 	 * @return bool color is supported
 	 */
 	protected function isColorSupported()
 	{
-		static $hasColor = null;
-
-		if ($hasColor === null) {
-			if (TProcessHelper::isSystemWindows()) {
-				return getenv('ANSICON') !== false || getenv('ConEmuANSI') === 'ON';
-			}
-
-			if ($hasStdOut = !defined('STDOUT')) {
-				$stdOut = fopen(TStdOutWriter::STDOUT_URI, 'wb');
-			} else {
-				$stdOut = STDOUT;
-			}
-
-			$hasColor = function_exists('posix_isatty') && @posix_isatty($stdOut) && strpos(getenv('TERM'), '256color') !== false;
-
-			if ($hasStdOut) {
-				fclose($stdOut);
-			}
+		if (($noColor = getenv('NO_COLOR')) !== false && $noColor !== '') {
+			return false;
 		}
+		if (($force = getenv('FORCE_COLOR')) !== false) {
+			return !in_array(strtolower($force), ['0', 'false'], true);
+		}
+		if (($force = getenv('CLICOLOR_FORCE')) !== false && $force !== '' && $force !== '0') {
+			return true;
+		}
+		if (TProcessHelper::isSystemWindows()) {
+			return $this->isWindowsConsoleColor(); // @codeCoverageIgnore Only Windows runs this branch.
+		}
+		$term = getenv('TERM');
+		return $term !== false && $term !== '' && $term !== 'dumb' && $this->isStdOutTerminal();
+	}
 
-		return $hasColor;
+	/**
+	 * Returns whether the Windows console processes ANSI escape codes: VT100 processing is on
+	 * for standard output, `ANSICON` is set, or `ConEmuANSI` is `ON`.
+	 * @return bool whether the Windows console shows color.
+	 * @since 4.4.0
+	 * @codeCoverageIgnore Only Windows runs this method.
+	 */
+	protected function isWindowsConsoleColor(): bool
+	{
+		if (function_exists('sapi_windows_vt100_support') && defined('STDOUT') && @sapi_windows_vt100_support(STDOUT)) {
+			return true;
+		}
+		return getenv('ANSICON') !== false || getenv('ConEmuANSI') === 'ON';
+	}
+
+	/**
+	 * Returns whether the process standard output is a terminal.
+	 * @return bool whether standard output is a terminal.
+	 * @since 4.4.0
+	 */
+	protected function isStdOutTerminal(): bool
+	{
+		if (!function_exists('posix_isatty')) {
+			return function_exists('stream_isatty') && defined('STDOUT') && @stream_isatty(STDOUT);
+		}
+		if ($opened = !defined('STDOUT')) {
+			$stdOut = fopen(TStdOutWriter::STDOUT_URI, 'wb');
+		} else {
+			$stdOut = STDOUT;
+		}
+		$isTerminal = @posix_isatty($stdOut);
+		if ($opened) {
+			fclose($stdOut);
+		}
+		return $isTerminal;
 	}
 
 	/**
@@ -518,7 +630,8 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 
 
 	/**
-	 * Returns terminal screen size.
+	 * Returns terminal screen size.  `COLUMNS` and `LINES`, when both are positive, give the
+	 * size; otherwise `mode con` on Windows, else `stty -a` and then `tput` detect it.
 	 *
 	 * Usage:
 	 *
@@ -536,6 +649,11 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 		static $size;
 		if ($size !== null && !$refresh) {
 			return $size;
+		}
+
+		// ENV variables set by the user take precedence over the terminal
+		if (($width = (int) getenv('COLUMNS')) > 0 && ($height = (int) getenv('LINES')) > 0) {
+			return $size = [$width, $height];
 		}
 
 		if (TProcessHelper::isSystemWindows()) {
@@ -565,11 +683,6 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 			if (($width = (int) exec('tput cols 2>&1')) > 0 && ($height = (int) exec('tput lines 2>&1')) > 0) {
 				return $size = [$width, $height];
 			}
-
-			// fallback to ENV variables, which may not be updated on terminal resize
-			if (($width = (int) getenv('COLUMNS')) > 0 && ($height = (int) getenv('LINES')) > 0) {
-				return $size = [$width, $height];
-			}
 		}
 
 		return $size = false;
@@ -578,6 +691,7 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 	/**
 	 * Word wrap text with indentation to fit the screen size.
 	 *
+	 * {@see getWidth() Width}, when set, replaces the screen width from {@see getScreenSize()}.
 	 * If screen size could not be detected, or the indentation is greater than the screen size, the text will not be wrapped.
 	 *
 	 * The first line will **not** be indented, so `TShellWriter::wrapText("Lorem ipsum dolor sit amet.", 4)` will result in the
@@ -597,12 +711,15 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 	 */
 	public function wrapText($text, $indent = 0, $refresh = false)
 	{
-		$size = static::getScreenSize($refresh);
-		if ($size === false || $size[0] <= $indent) {
+		if (($width = $this->getWidth()) === null) {
+			$size = static::getScreenSize($refresh);
+			$width = $size === false ? 0 : $size[0];
+		}
+		if ($width <= $indent) {
 			return $text;
 		}
 		$pad = str_repeat(' ', $indent);
-		$lines = explode("\n", wordwrap($text, $size[0] - $indent, "\n"));
+		$lines = explode("\n", wordwrap($text, $width - $indent, "\n"));
 		$first = true;
 		foreach ($lines as $i => $line) {
 			if ($first) {

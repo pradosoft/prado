@@ -18,7 +18,7 @@ use Prado\Test\Unit\Harness\Traits\TTestApplicationRestorationTrait;
 /**
  * TTestShellApplication extends {@see TShellApplication} with test-friendly behaviour.
  *
- * Three things differ from the production class:
+ * Four things differ from the production class:
  *
  * **1. Full global-state safety.**
  * {@see TTestApplicationRestorationTrait} snapshots the complete static state of both
@@ -35,6 +35,10 @@ use Prado\Test\Unit\Harness\Traits\TTestApplicationRestorationTrait;
  * **3. Protected accessors exposed for testing.**
  * A suite of `pub*` wrapper methods expose protected `TShellApplication` getters and
  * setters as public, eliminating the need for reflection boilerplate in test classes.
+ *
+ * **4. Error blocks stay in the output writer.**
+ * {@see createStdErrStream()} returns null, so `writeError()` output is captured with the
+ * rest of the output instead of reaching the process standard error.
  *
  * Typical usage:
  *
@@ -97,6 +101,15 @@ class TTestShellApplication extends TShellApplication
 			@mkdir($runtimePath, 0777, true);
 		}
 		$this->setRuntimePathDirect($runtimePath);
+	}
+
+	/**
+	 * Returns null, so the shell writer keeps error blocks in its output writer.
+	 * @return ?\Prado\IO\TStream null.
+	 */
+	protected function createStdErrStream(): ?\Prado\IO\TStream
+	{
+		return null;
 	}
 
 	// =========================================================================
