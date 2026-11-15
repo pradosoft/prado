@@ -127,8 +127,6 @@ class TGettext
 			throw new Exception("File $pofile doesn't exist.");
 		}
 
-		include_once __DIR__ . '/PO.php';
-
 		$PO = new TGettext_PO($pofile);
 		if (true !== ($e = $PO->load())) {
 			return $e;
@@ -155,14 +153,10 @@ class TGettext
 	public static function prepare($string, $reverse = false)
 	{
 		if ($reverse) {
-			$smap = ['"', "\n", "\t", "\r"];
-			$rmap = ['\"', '\\n"' . "\n" . '"', '\\t', '\\r'];
-			return (string) str_replace($smap, $rmap, $string);
+			return strtr((string) $string, ['\\' => '\\\\', '"' => '\"', "\n" => '\\n"' . "\n" . '"', "\t" => '\\t', "\r" => '\\r']);
 		} else {
-			$string = preg_replace('/"\s+"/', '', $string);
-			$smap = ['\\n', '\\r', '\\t', '\"'];
-			$rmap = ["\n", "\r", "\t", '"'];
-			return (string) str_replace($smap, $rmap, $string);
+			$string = preg_replace('/"\s+"/', '', (string) $string);
+			return strtr($string, ['\\\\' => '\\', '\\n' => "\n", '\\r' => "\r", '\\t' => "\t", '\"' => '"']);
 		}
 	}
 
@@ -178,7 +172,7 @@ class TGettext
 	{
 		$array = [];
 		foreach (explode("\n", $meta) as $info) {
-			if ($info = trim($info)) {
+			if (($info = trim($info)) && str_contains($info, ':')) {
 				[$key, $value] = explode(':', $info, 2);
 				$array[trim($key)] = trim($value);
 			}
@@ -249,8 +243,8 @@ class TGettext
 				[$this->meta, $this->strings] = $array;
 			}
 		} else {
-			$this->meta = @$array['meta'];
-			$this->strings = @$array['strings'];
+			$this->meta = $array['meta'] ?? [];
+			$this->strings = $array['strings'];
 		}
 		return true;
 	}
@@ -263,7 +257,6 @@ class TGettext
 	 */
 	public function toMO()
 	{
-		include_once __DIR__ . '/MO.php';
 		$MO = new TGettext_MO();
 		$MO->fromArray($this->toArray());
 		return $MO;
@@ -277,7 +270,6 @@ class TGettext
 	 */
 	public function toPO()
 	{
-		include_once __DIR__ . '/PO.php';
 		$PO = new TGettext_PO();
 		$PO->fromArray($this->toArray());
 		return $PO;
