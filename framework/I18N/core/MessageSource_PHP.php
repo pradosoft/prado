@@ -64,12 +64,12 @@ class MessageSource_PHP extends MessageSource
 	 */
 	protected function &loadData($filename)
 	{
-		//load it.
+		$translations = false;
 		if (false === ($php = include($filename))) {
-			return false;
+			return $translations;
 		}
 
-		$translationUnit = $php['trans-unit'];
+		$translationUnit = $php['trans-unit'] ?? [];
 
 		$translations = [];
 
@@ -122,7 +122,7 @@ class MessageSource_PHP extends MessageSource
 	 */
 	protected function getCatalogueList($catalogue)
 	{
-		$variants = explode('_', $this->culture);
+		$variants = explode('_', (string) $this->culture);
 		$source = $catalogue . $this->dataExt;
 		$catalogues = [$source];
 		$variant = null;
@@ -147,7 +147,7 @@ class MessageSource_PHP extends MessageSource
 	 */
 	private function getCatalogueByDir($catalogue)
 	{
-		$variants = explode('_', $this->culture);
+		$variants = explode('_', (string) $this->culture);
 		$catalogues = [];
 		$variant = null;
 
@@ -183,7 +183,7 @@ class MessageSource_PHP extends MessageSource
 	protected function getCatalogues($dir = null, $variant = null)
 	{
 		$dir = $dir ? $dir : $this->source;
-		$files = scandir($dir);
+		$files = @scandir($dir) ?: [];
 		$catalogue = [];
 
 		foreach ($files as $file) {
@@ -194,9 +194,8 @@ class MessageSource_PHP extends MessageSource
 				);
 			}
 
-			$pos = strpos($file, $this->dataExt);
-			if ($pos > 0 && substr($file, -1 * strlen($this->dataExt)) == $this->dataExt) {
-				$name = substr($file, 0, $pos);
+			if (strlen($file) > strlen($this->dataExt) && str_ends_with($file, $this->dataExt)) {
+				$name = substr($file, 0, -strlen($this->dataExt));
 				$dot = strrpos($name, $this->dataSeparator);
 				$culture = $variant;
 				$cat = $name;
@@ -249,7 +248,8 @@ class MessageSource_PHP extends MessageSource
 
 		//save it and clear the cache for this variant
 		if (false === file_put_contents($filename, "<?php\nreturn " . var_export($php, true) . ';')) {
-			return false;
+			// A write fails after is_writable() only when the file system changes in between.
+			return false; // @codeCoverageIgnore
 		}
 
 		if (!empty($this->cache)) {
@@ -296,7 +296,10 @@ class MessageSource_PHP extends MessageSource
 			];
 		}
 
-		return $this->internalSaveFile($php, $filename, $variant);
+		if ($saved = $this->internalSaveFile($php, $filename, $variant)) {
+			$this->untranslated = [];
+		}
+		return $saved;
 	}
 
 	/**
@@ -326,17 +329,17 @@ class MessageSource_PHP extends MessageSource
 
 		//for each of the existin units
 		foreach ($php['trans-unit'] as $k => $unit) {
-			if ($unit['source'] == $text) {
+			if ((string) $unit['source'] === (string) $text) {
 				$php['trans-unit'][$k]['target'] = $target;
 				if (!empty($comments)) {
 					$php['trans-unit'][$k]['note'] = $comments;
 				}
 
-				break;
+				return $this->internalSaveFile($php, $filename, $variant);
 			}
 		}
 
-		return $this->internalSaveFile($php, $filename, $variant);
+		return false;
 	}
 
 	/**
@@ -363,7 +366,7 @@ class MessageSource_PHP extends MessageSource
 
 		//for each of the existin units
 		foreach ($php['trans-unit'] as $k => $unit) {
-			if ($unit['source'] == $message) {
+			if ((string) $unit['source'] === (string) $message) {
 				unset($php['trans-unit'][$k]);
 				return $this->internalSaveFile($php, $filename, $variant);
 			}

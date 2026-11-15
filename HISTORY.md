@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - The PHP and XLIFF message sources load a file that fails to parse as no messages, match the source exactly in `update()` and `delete()`, return false from `update()` when no message matches, and find the messages `save()` writes; XLIFF `update()` writes `&`, and `catalogues()` lists `.xlf` files. A source without a culture, or a missing directory, no longer raises a PHP error, and `save()` clears the saved messages. (belisoful)
 BUG: Issue #1497 - `MessageSource_gettext::save()` keeps numeric message ids, `update()` and `delete()` match the id exactly, and `catalogues()` splits the extension at the end of the file name. (belisoful)
 BUG: Issue #1497 - `TGettext::toMO()`, `toPO()`, and `poFile2moFile()` included missing files, so every `MessageSource_gettext` save, update, and delete threw; `prepare()` escapes backslashes, `meta2array()` skips a line without a colon, and `fromArray()` without meta sets an empty meta. (belisoful)
 BUG: Issue #1497 - `TGettext_PO::load()` reads a string with an escaped quote. (belisoful)

@@ -69,8 +69,8 @@ class MessageSource_XLIFF extends MessageSource
 	protected function &loadData($filename)
 	{
 		//load it.
-		if (false === ($XML = simplexml_load_file($filename))) {
-			return false;
+		if (false === ($XML = @simplexml_load_file($filename))) {
+			return $XML;
 		}
 
 		$translationUnit = $XML->xpath('//trans-unit');
@@ -126,7 +126,7 @@ class MessageSource_XLIFF extends MessageSource
 	 */
 	protected function getCatalogueList($catalogue)
 	{
-		$variants = explode('_', $this->culture);
+		$variants = explode('_', (string) $this->culture);
 		$source = $catalogue . $this->dataExt;
 		$catalogues = [$source];
 		$variant = null;
@@ -159,7 +159,7 @@ class MessageSource_XLIFF extends MessageSource
 	 */
 	private function getCatalogueByDir($catalogue)
 	{
-		$variants = explode('_', $this->culture);
+		$variants = explode('_', (string) $this->culture);
 		$catalogues = [];
 		$variant = null;
 
@@ -195,7 +195,7 @@ class MessageSource_XLIFF extends MessageSource
 	protected function getCatalogues($dir = null, $variant = null)
 	{
 		$dir = $dir ? $dir : $this->source;
-		$files = scandir($dir);
+		$files = @scandir($dir) ?: [];
 		$catalogue = [];
 
 		foreach ($files as $file) {
@@ -206,9 +206,9 @@ class MessageSource_XLIFF extends MessageSource
 				);
 			}
 
-			$pos = strpos($file, $this->dataExt);
-			if ($pos > 0 && substr($file, -1 * strlen($this->dataExt)) == $this->dataExt) {
-				$name = substr($file, 0, $pos);
+			$ext = str_ends_with($file, '.xlf') ? '.xlf' : $this->dataExt;
+			if (strlen($file) > strlen($ext) && str_ends_with($file, $ext)) {
+				$name = substr($file, 0, -strlen($ext));
 				$dot = strrpos($name, $this->dataSeparator);
 				$culture = $variant;
 				$cat = $name;
@@ -321,6 +321,7 @@ class MessageSource_XLIFF extends MessageSource
 
 		//save it and clear the cache for this variant
 		$dom->save($filename);
+		$this->untranslated = [];
 		if (!empty($this->cache)) {
 			$this->cache->clean($variant, $this->culture);
 		}
@@ -359,8 +360,8 @@ class MessageSource_XLIFF extends MessageSource
 		$units = $xpath->query('//trans-unit');
 
 		//for each of the existin units
+		$found = false;
 		foreach ($units as $unit) {
-			$found = false;
 			$targetted = false;
 			$commented = false;
 
@@ -368,9 +369,7 @@ class MessageSource_XLIFF extends MessageSource
 			//it will assume that the source is before the target.
 			foreach ($unit->childNodes as $node) {
 				//source node
-				/** @var \DOMText $firstChild */
-				$firstChild = $node->firstChild;
-				if ($node->nodeName == 'source' && $firstChild->nodeType === XML_TEXT_NODE && $firstChild->wholeText == $text) {
+				if ($node->nodeName == 'source' && $node->textContent === (string) $text) {
 					$found = true;
 				}
 
@@ -378,13 +377,13 @@ class MessageSource_XLIFF extends MessageSource
 				if ($found) {
 					//set the new translated string
 					if ($node->nodeName == 'target') {
-						$node->nodeValue = $target;
+						$node->textContent = (string) $target;
 						$targetted = true;
 					}
 
 					//set the notes
 					if (!empty($comments) && $node->nodeName == 'note') {
-						$node->nodeValue = $comments;
+						$node->textContent = (string) $comments;
 						$commented = true;
 					}
 				}
@@ -392,18 +391,22 @@ class MessageSource_XLIFF extends MessageSource
 
 			//append a target
 			if ($found && !$targetted) {
-				$unit->appendChild($dom->createElement('target', $target));
+				$unit->appendChild($dom->createElement('target'))->textContent = (string) $target;
 			}
 
 			//append a note
 			if ($found && !$commented && !empty($comments)) {
-				$unit->appendChild($dom->createElement('note', $comments));
+				$unit->appendChild($dom->createElement('note'))->textContent = (string) $comments;
 			}
 
 			//finished searching
 			if ($found) {
 				break;
 			}
+		}
+
+		if (!$found) {
+			return false;
 		}
 
 		$fileNode = $xpath->query('//file')->item(0);
@@ -419,7 +422,8 @@ class MessageSource_XLIFF extends MessageSource
 			return true;
 		}
 
-		return false;
+		// A write fails after is_writable() only when the file system changes in between.
+		return false; // @codeCoverageIgnore
 	}
 
 	/**
@@ -455,9 +459,7 @@ class MessageSource_XLIFF extends MessageSource
 			//it will assume that the source is before the target.
 			foreach ($unit->childNodes as $node) {
 				//source node
-				/** @var \DOMText $firstChild */
-				$firstChild = $node->firstChild;
-				if ($node->nodeName == 'source' && $firstChild->nodeType === XML_TEXT_NODE && $firstChild->wholeText == $message) {
+				if ($node->nodeName == 'source' && $node->textContent === (string) $message) {
 					//we found it, remove and save the xml file.
 					$unit->parentNode->removeChild($unit);
 					$fileNode = $xpath->query('//file')->item(0);
@@ -472,7 +474,8 @@ class MessageSource_XLIFF extends MessageSource
 						return true;
 					}
 
-					return false;
+					// A write fails after is_writable() only when the file system changes in between.
+					return false; // @codeCoverageIgnore
 				}
 			}
 		}
