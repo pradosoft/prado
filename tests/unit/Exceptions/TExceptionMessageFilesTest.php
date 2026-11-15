@@ -276,6 +276,25 @@ class TExceptionMessageFilesTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame('English only', (new TException('app_key'))->getMessage());
 	}
 
+	#[RunInSeparateProcess]
+	#[PreserveGlobalState(false)]
+	public function testAddedFileWithoutAShortExtensionIsUsedAsIs(): void
+	{
+		$_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'fr';
+		$dir = sys_get_temp_dir() . '/' . uniqid('prado_variant_', true);
+		mkdir($dir);
+		file_put_contents($dir . '/app.messages', "app_key = English\n");
+		file_put_contents($dir . '/app-fr.messages', "app_key = Français\n");
+		try {
+			TException::addMessageFile($dir . '/app.messages');
+			$this->assertSame('English', (new TException('app_key'))->getMessage());
+		} finally {
+			unlink($dir . '/app.messages');
+			unlink($dir . '/app-fr.messages');
+			rmdir($dir);
+		}
+	}
+
 	// ── Message file lint ────────────────────────────────────────────────────
 
 	public function testEnglishMasterHasNoDuplicateKeys(): void

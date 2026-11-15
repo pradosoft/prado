@@ -107,7 +107,7 @@ Third-party modules can register additional message files:
 ```php
 TException::addMessageFile('path/to/messages.txt');
 ```
-The method resolves a `-{lang}` variant (`messages-fr.txt`) when one exists for `Prado::getPreferredLanguage()`. A registered file overrides the framework's English text and the files registered before it. Composer extensions declare the path in `extra.prado.error-messages` instead.
+The method resolves a `-{lang}` variant (`messages-fr.txt`) when one exists for `Prado::getPreferredLanguage()`; the file needs an extension of 2 to 4 characters, and a suffix already in the name stays (`app-de.txt` has the variant `app-de-fr.txt`). A registered file overrides the framework's English text and the files registered before it. Composer extensions declare the path in `extra.prado.error-messages` instead.
 
 ## Gotchas
 
