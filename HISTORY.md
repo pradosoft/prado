@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `MessageCache::setLifeTime()` applies to its cache; `TCache_Lite` reads and saves an empty string, treats a file shorter than its hash as a miss, and `clean()` closes the directory and removes every matching entry. (belisoful)
 BUG: Issue #1497 - `MessageFormat` matches the message source exactly, treats a translation of `0` as translated, and accepts null arguments and a catalogue that failed to load. (belisoful)
 BUG: Issue #1497 - The PHP and XLIFF message sources load a file that fails to parse as no messages, match the source exactly in `update()` and `delete()`, return false from `update()` when no message matches, and find the messages `save()` writes; XLIFF `update()` writes `&`, and `catalogues()` lists `.xlf` files. A source without a culture, or a missing directory, no longer raises a PHP error, and `save()` clears the saved messages. (belisoful)
 BUG: Issue #1497 - `MessageSource_gettext::save()` keeps numeric message ids, `update()` and `delete()` match the id exactly, and `catalogues()` splits the extension at the end of the file name. (belisoful)

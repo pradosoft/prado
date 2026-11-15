@@ -39,7 +39,7 @@ Creates cache in the specified directory. Directory must exist and be writable.
 | `clean($catalogue, $culture)` | Remove cache for specific catalogue |
 | `clear()` | Flush all cache |
 | `getLifeTime(): int` | Get cache TTL |
-| `setLifeTime(int $time)` | Set cache TTL (seconds) |
+| `setLifeTime(int $time)` | Set cache TTL (seconds) of the cache and its `TCache_Lite` |
 
 ## Cache Invalidation
 
