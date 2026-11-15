@@ -440,7 +440,7 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDbCommandBuilder
 	/**
 	 * Creates a SELECT command for the table.
 	 * The table name is obtained from the {@see setTableInfo TableInfo} property.
-	 * @param string $where query condition.
+	 * @param string $where query condition; an empty string selects every row, and `'0'` is a condition.
 	 * @param array $parameters condition parameters.
 	 * @param array $ordering ORDER BY clause.
 	 * @param int $limit maximum rows.
@@ -453,7 +453,7 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDbCommandBuilder
 		$table = $this->getTableInfo()->getTableFullName();
 		$fields = implode(', ', $this -> getSelectFieldList($select));
 		$sql = "SELECT {$fields} FROM {$table}";
-		if (!empty($where)) {
+		if ((string) $where !== '') {
 			$sql .= " WHERE {$where}";
 		}
 		return $this->applyCriterias($sql, $parameters, $ordering, $limit, $offset);
@@ -499,14 +499,14 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDbCommandBuilder
 	 * Creates a delete command for the table described in {@see setTableInfo TableInfo}.
 	 * The conditions for delete is given by the $where argument and the parameters
 	 * for the condition is given by $parameters.
-	 * @param string $where delete condition.
+	 * @param string $where delete condition; an empty string deletes every row, and `'0'` is a condition.
 	 * @param array $parameters delete parameters.
 	 * @return TDbCommand delete command.
 	 */
 	public function createDeleteCommand($where, $parameters = [])
 	{
 		$table = $this->getTableInfo()->getTableFullName();
-		if (!empty($where)) {
+		if ((string) $where !== '') {
 			$where = ' WHERE ' . $where;
 		}
 		$command = $this->createCommand("DELETE FROM {$table}" . $where);
@@ -770,7 +770,7 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDbCommandBuilder
 	 * Creates an update command for the table described in {@see setTableInfo TableInfo} for the given data.
 	 * Each array key in the $data array must correspond to the column name to be updated with the corresponding array value.
 	 * @param array $data name-value pairs of data to be updated.
-	 * @param string $where update condition.
+	 * @param string $where update condition; an empty string updates every row, and `'0'` is a condition.
 	 * @param array $parameters update parameters.
 	 * @return TDbCommand update command.
 	 */
@@ -783,7 +783,7 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDbCommandBuilder
 			$fields = implode(', ', $this->getColumnBindings($data));
 		}
 
-		if (!empty($where)) {
+		if ((string) $where !== '') {
 			$where = ' WHERE ' . $where;
 		}
 		$command = $this->createCommand("UPDATE {$table} SET {$fields}" . $where);

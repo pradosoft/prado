@@ -195,11 +195,12 @@ class TSqlCriteria extends \Prado\TComponent implements IDataCriteria
 
 	/**
 	 * Sets the search conditions to be placed after the WHERE clause in the SQL.
+	 * A null or empty string resets the condition; `'0'` and other numeric values are conditions.
 	 * @param string $value search conditions.
 	 */
 	public function setCondition($value)
 	{
-		if (empty($value)) {
+		if (empty($value) && !is_numeric($value)) {
 			// reset the condition
 			$this->_condition = null;
 			return;

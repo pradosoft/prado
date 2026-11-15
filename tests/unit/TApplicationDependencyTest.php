@@ -1826,6 +1826,23 @@ class TApplicationDependencyTest extends \PHPUnit\Framework\TestCase
 	}
 
 	/**
+	 * A module that does not extend TComponent loads with only its ID configured.
+	 */
+	public function testApplyConfiguration_bareIModule_onlyItsId(): void
+	{
+		$app = $this->newAccessor();
+		$app->applyConfiguration($this->moduleConfig([
+			'bare' => [TApplicationDependencyTestBareModule::class, [], 'cfg'],
+		]), false);
+
+		$bare = $app->getModules()['bare'];
+		$this->assertInstanceOf(TApplicationDependencyTestBareModule::class, $bare);
+		$this->assertSame('bare', $bare->getID());
+		$this->assertSame(0, $bare->getSize());
+		$this->assertSame(['cfg'], $bare->inits);
+	}
+
+	/**
 	 * A property without a setter on a module that does not extend TComponent throws,
 	 * as an undefined property of a TComponent module does.
 	 */

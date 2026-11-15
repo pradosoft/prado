@@ -189,6 +189,7 @@ PHP format:
 ## Patterns & Gotchas
 
 - **`<permissionrule>` elements are direct children of the module** — `loadPermissionsData()` reads rules with the default `TXmlElement::SEARCH_ELEMENT`. A `<permissionrule>` anywhere inside a `<role>` throws `permissions_role_rule_nested` so the rule is not silently dropped.
+- **A numeric `permissionrules` key names a permission** when its value is a list of `TAuthorizationRule`s: PHP stores a numeric permission name, such as `'404'`, as an integer key. A rule definition under a numeric key names its permission with `name`.
 - **Keys are case-insensitive** — both branches apply `array_change_key_case()`: the PHP branch to the top-level config (`roles`, `permissionrules`) and to each rule (`name`, `class`, `action`, `users`, `roles`, `verb`, `ips`, `priority`), the XML branch to each element's attributes.
 - **Every rule needs an `action`** — the loader passes `action ?? ''`, which `TAuthorizationRule::__construct()` rejects. This includes a rule naming a `class` such as [TUserOwnerRule](./TUserOwnerRule.md).
 - **`TPermissionsManager` must be registered after `TAuthManager`** in `application.xml` — auth state must be established before behavior attachment and permission checks can run.
@@ -202,7 +203,7 @@ PHP format:
 - **Circular hierarchy** — `isInHierarchy()` and `addPermissionRuleInternal()` both guard against infinite loops via a visited-set.
 - **`AutoAllowWithPermission`** — by default, if a user's roles include the permission name itself (because the role hierarchy includes it), they are automatically allowed. Disable with `AutoAllowWithPermission="false"` if you want fully explicit rules.
 - **All config properties are read-only after `init()`** — setting them post-init throws [TInvalidOperationException](../../Exceptions/TInvalidOperationException.md).
-- **`__destruct()` detaches all three class behaviors** — this is important in long-running CLI processes where the module may be destroyed and re-created.
+- **`__destruct()` detaches all three class behaviors when `init()` attached them** — this is important in long-running CLI processes where the module may be destroyed and re-created. A manager that was never initialized leaves another manager's class behaviors in place.
 - **`TDbParameterModule` runtime data** is loaded during `init()` and merged on top of static config — runtime changes via `addRoleChildren()` / `addPermissionRule()` take effect immediately in the current request.
 
 ---

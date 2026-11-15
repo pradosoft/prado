@@ -60,7 +60,7 @@ Returns `true` on success. libxml errors are suppressed internally (`libxml_use_
 |--------|-------------|
 | `loadFromFile($path)` | Load and parse XML file |
 | `loadFromString($xml)` | Parse XML string |
-| `saveToFile($path)` | Write XML to file |
+| `saveToFile($path)` | Write XML to file; throws `TIOException` when the file cannot be opened |
 | `saveToString()` | Return XML as string |
 | `__toString()` | Alias for `saveToString()` |
 
@@ -73,7 +73,7 @@ $results = $doc->xpath('//module[@class="TAuthManager"]');
 // Returns array of [TXmlElement](./TXmlElement.md)
 ```
 
-XPath temporarily adds `prado-xml-id-*` attributes for node tracking — do not rely on these.
+XPath temporarily adds `prado-xml-id-*` attributes for node tracking and removes them, also when the query throws — do not rely on these.
 
 ### ArrayAccess / Countable / IteratorAggregate
 
@@ -110,6 +110,6 @@ $element->getElementsByAttribute('class', 'Foo'); // find by attribute value
 
 - **Root element = document** — `$doc->TagName` sets the root tag. Elements are added directly to `$doc->Elements`.
 - **`Value` is text content only** — CDATA sections and comments are not included in `Value`.
-- **libxml error handling** — malformed XML returns `false` from `loadFromString()`; it does not throw. Always check return value.
+- **libxml error handling** — malformed XML returns `false` from `loadFromString()`; it does not throw. Always check return value. A recoverable libxml error, such as an undeclared namespace prefix, still loads and returns `true`.
 - **XPath internal attributes** — `prado-xml-id-*` attributes appear transiently during XPath calls; never persist them.
 - **Serialisation** — `TXmlDocument` is serialisable; used by Prado's template/config cache.

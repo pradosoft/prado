@@ -194,6 +194,21 @@ class TApplicationParametersTest extends \PHPUnit\Framework\TestCase
 	}
 
 	/**
+	 * An append without final keys takes PHP's next integer key.  With a final key
+	 * elsewhere, an append to a key that is not final succeeds.
+	 */
+	public function testNullKeyAdd_appendsWhenTheNextIntegerKeyIsNotFinal(): void
+	{
+		$params = $this->params();
+		$this->assertSame(0, $params->add(null, 'first'));
+		$this->assertSame('first', $params[0]);
+
+		$params->finalize('locked');
+		$this->assertSame(1, $params->add(null, 'second'));
+		$this->assertSame('second', $params[1]);
+	}
+
+	/**
 	 * An append whose next integer key is final throws and leaves the key absent.
 	 * The next integer key follows PHP's append counter, which a removal does not lower.
 	 */

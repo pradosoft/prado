@@ -12,7 +12,7 @@
 
 ## Properties
 
-- `Condition` - SQL WHERE clause
+- `Condition` - SQL WHERE clause; null or `''` resets it, and `'0'` is a condition that matches no row
 - `Parameters` - Named parameters for the condition
 - `OrdersBy` - Ordering specifications
 - `Limit` - Maximum number of rows

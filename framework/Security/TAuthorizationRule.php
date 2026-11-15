@@ -26,6 +26,9 @@ use Prado\Exceptions\TInvalidDataValueException;
  * Different users/roles are separated by comma ','.
  * Verb can be either 'get' or 'post'. If it is absent, it means both.
  * IP rules are separated by comma ',' and can contain wild card in the rules (e.g. '192.132.23.33, 192.122.*.*')
+ * An empty users, roles, or IP list applies the rule to everyone. A list of only
+ * separators, such as ',', is rejected, so a mistyped list neither allows nor
+ * denies everyone.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
@@ -77,6 +80,8 @@ class TAuthorizationRule extends \Prado\TComponent implements \Prado\Collections
 	 * @param string $verb verb, can be empty, 'get', or 'post'
 	 * @param string $ipRules IP rules (separated by comma, can contain wild card *)
 	 * @param null|numeric $priority
+	 * @throws TInvalidDataValueException if the action or verb is invalid, or a users,
+	 *   roles, or IP list has separators but no entries.
 	 */
 	public function __construct($action = 'allow', $users = '', $roles = '', $verb = '', $ipRules = '', $priority = null)
 	{
@@ -108,6 +113,9 @@ class TAuthorizationRule extends \Prado\TComponent implements \Prado\Collections
 				}
 			}
 		}
+		if (!$this->_everyone && !$this->_guest && !$this->_authenticated && $this->_users === []) {
+			throw new TInvalidDataValueException('authorizationrule_list_empty', 'users', $users);
+		}
 
 		$this->_roles = [];
 		if ($roles === null || trim($roles) === '') {
@@ -117,6 +125,9 @@ class TAuthorizationRule extends \Prado\TComponent implements \Prado\Collections
 			if (($role = trim(strtolower($role))) !== '') {
 				$this->_roles[] = $role;
 			}
+		}
+		if ($this->_roles === []) {
+			throw new TInvalidDataValueException('authorizationrule_list_empty', 'roles', $roles);
 		}
 
 		if ($verb === null || ($verb = trim(strtolower($verb))) === '') {
@@ -136,6 +147,9 @@ class TAuthorizationRule extends \Prado\TComponent implements \Prado\Collections
 			if (($ipRule = trim($ipRule)) !== '') {
 				$this->_ipRules[] = $ipRule;
 			}
+		}
+		if ($this->_ipRules === []) {
+			throw new TInvalidDataValueException('authorizationrule_list_empty', 'ips', $ipRules);
 		}
 
 		$this->_priority = is_numeric($priority) ? $priority : null;
@@ -235,9 +249,6 @@ class TAuthorizationRule extends \Prado\TComponent implements \Prado\Collections
 
 	private function isIpMatched($ip)
 	{
-		if (empty($this->_ipRules)) {
-			return 1;
-		}
 		foreach ($this->_ipRules as $rule) {
 			if ($rule === '*' || $rule === $ip || (($pos = strpos($rule, '*')) !== false && strncmp($ip, $rule, $pos) === 0)) {
 				return 1;
