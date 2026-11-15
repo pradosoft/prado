@@ -3,6 +3,7 @@
 namespace Prado\Test\Unit\I18N\core;
 
 use PHPUnit\Framework\TestCase;
+use Prado\Util\Clock\TMockClock;
 use Prado\Exceptions\TException;
 use Prado\Exceptions\TIOException;
 use Prado\I18N\core\Gettext\TGettext_MO;
@@ -506,5 +507,21 @@ class MessageSource_gettextTest extends TestCase
 		$this->expectExceptionMessage('Unable to create file');
 
 		PradoUnit::invoke($this->source(), 'createMessageTemplate', 'messages');
+	}
+
+	public function testRevisionDatesComeFromTheClock()
+	{
+		$source = $this->source('fr');
+		$source->setClock((new TMockClock())->setNow(new \DateTimeImmutable('2024-01-15T10:30:00+02:00')));
+		$source->append('Hello');
+		$this->assertTrue($source->save());
+		$po = new TGettext_PO($this->_dir . '/fr/messages.po');
+		$po->load();
+		$this->assertSame('2024-01-15 10:30+0200', $po->toArray()['meta']['PO-Revision-Date']);
+
+		$source->setClock((new TMockClock())->setNow(new \DateTimeImmutable('2024-02-01T00:00:00Z')));
+		$this->assertTrue($source->update('Hello', 'Bonjour', ''));
+		$po->load();
+		$this->assertSame('2024-02-01 00:00+0000', $po->toArray()['meta']['PO-Revision-Date']);
 	}
 }

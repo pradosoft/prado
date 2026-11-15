@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+ENH: Issue #1497 - The XLIFF, PHP, and gettext message sources and `TCache_Lite` read time from `IClock` (`MessageSource` and `TCache_Lite` use `TApplicationClockAwareTrait`); the XLIFF and PHP sources write their UTC dates in UTC, where they wrote local time with a `Z`, and gettext writes `PO-Revision-Date` with its offset. (belisoful)
 BUG: Issue #1497 - `CultureInfo::getEnglishName()` of a neutral culture threw a `ValueError` on PHP 8.4 and later. (belisoful)
 BUG: Issue #1497 - `MessageSource_Database::catalogues()` reads the catalogue name, and `update()` and `delete()` in an unknown catalogue return false. (belisoful)
 BUG: Issue #1497 - `MessageCache::setLifeTime()` applies to its cache; `TCache_Lite` reads and saves an empty string, treats a file shorter than its hash as a miss, and `clean()` closes the directory and removes every matching entry. (belisoful)

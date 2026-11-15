@@ -20,7 +20,6 @@ use Prado\Data\TDataSourceConfig;
 use Prado\Data\TDbPropertiesTrait;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;
-use Prado\Util\Clock\TApplicationClockAwareTrait;
 
 /**
  * MessageSource_Database class.
@@ -33,7 +32,6 @@ use Prado\Util\Clock\TApplicationClockAwareTrait;
 class MessageSource_Database extends MessageSource
 {
 	use TDbPropertiesTrait;
-	use TApplicationClockAwareTrait;
 
 	/**
 	 * Constructor.

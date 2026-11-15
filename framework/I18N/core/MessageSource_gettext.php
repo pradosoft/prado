@@ -250,7 +250,7 @@ class MessageSource_gettext extends MessageSource
 
 		if ($new > $existing) {
 			//change the date 2004-12-25 12:26
-			$result['meta']['PO-Revision-Date'] = @date('Y-m-d H:i:s');
+			$result['meta']['PO-Revision-Date'] = $this->formatNow('Y-m-d H:iO');
 
 			$po->fromArray($result);
 			$mo = $po->toMO();
@@ -299,7 +299,7 @@ class MessageSource_gettext extends MessageSource
 		}
 
 		unset($result['strings'][$message]);
-		$result['meta']['PO-Revision-Date'] = @date('Y-m-d H:i:s');
+		$result['meta']['PO-Revision-Date'] = $this->formatNow('Y-m-d H:iO');
 
 		$po->fromArray($result);
 		$mo = $po->toMO();
@@ -348,7 +348,7 @@ class MessageSource_gettext extends MessageSource
 		}
 
 		$result['strings'][$text] = $target;
-		$result['meta']['PO-Revision-Date'] = @date('Y-m-d H:i:s');
+		$result['meta']['PO-Revision-Date'] = $this->formatNow('Y-m-d H:iO');
 
 		$po->fromArray($result);
 		$mo = $po->toMO();
@@ -438,7 +438,7 @@ class MessageSource_gettext extends MessageSource
 		}
 
 		$po = TGettext::factory('PO', $po_file);
-		$result['meta']['PO-Revision-Date'] = @date('Y-m-d H:i:s');
+		$result['meta']['PO-Revision-Date'] = $this->formatNow('Y-m-d H:iO');
 		$result['strings'] = [];
 
 		$po->fromArray($result);

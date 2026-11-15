@@ -3,6 +3,7 @@
 namespace Prado\Test\Unit\I18N\core;
 
 use PHPUnit\Framework\TestCase;
+use Prado\Util\Clock\TMockClock;
 use Prado\Exceptions\TException;
 use Prado\Exceptions\TIOException;
 use Prado\I18N\core\MessageCache;
@@ -514,5 +515,15 @@ class MessageSource_PHPTest extends TestCase
 		$this->assertFalse($source->delete('10.0'));
 		$this->assertSame([['source' => '10', 'target' => 'ten']], $this->readUnits('messages.php'));
 		$this->assertTrue($source->delete('10'));
+	}
+
+	public function testDatesComeFromTheClock()
+	{
+		$source = $this->createSource('fr');
+		$source->setClock((new TMockClock())->setNow(new \DateTimeImmutable('2024-01-15T10:30:00+02:00')));
+		$this->assertStringContainsString("'date' => '2024-01-15T08:30:00Z'", PradoUnit::invoke($source, 'getTemplate', 'messages'));
+		$source->append('Hello');
+		$this->assertTrue($source->save());
+		$this->assertSame('2024-01-15T08:30:00Z', (include $this->_dir . '/fr/messages.php')['info']['date']);
 	}
 }

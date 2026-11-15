@@ -50,6 +50,20 @@ When loading `zh_CN`, the source tries:
 $source->setCache(new MessageCache('/tmp'));
 ```
 
+## Clock
+
+`MessageSource` uses `TApplicationClockAwareTrait`; `setClock()` overrides the application clock. `formatNow($format, $utc)` stamps the dates the sources write:
+
+| Source | Date | Format |
+|---|---|---|
+| XLIFF | `<file date>` on save, update, delete | UTC, `Y-m-d\TH:i:s\Z` |
+| XLIFF | template `date` | clock time zone, `c` |
+| PHP | `info.date` | UTC, `Y-m-d\TH:i:s\Z` |
+| gettext | `PO-Revision-Date` | clock time zone, `Y-m-d H:iO` |
+| Database | `date_added`, `date_modified` | Unix time |
+
+A cache hit compares a source's last-modified time with the cache file's modification time. The file sources report file times, and the database reports clock times.
+
 ## See Also
 
 - [IMessageSource](./IMessageSource.md) - Interface definition

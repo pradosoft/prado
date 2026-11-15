@@ -21,6 +21,7 @@ namespace Prado\I18N\core;
  * Get the IMessageSource interface.
  */
 use Exception;
+use Prado\Util\Clock\TApplicationClockAwareTrait;
 
 require_once(__DIR__ . '/IMessageSource.php');
 
@@ -71,6 +72,8 @@ require_once(__DIR__ . '/MessageCache.php');
  */
 abstract class MessageSource implements IMessageSource
 {
+	use TApplicationClockAwareTrait;
+
 	/**
 	 * The culture name for this message source.
 	 * @var string
@@ -266,6 +269,22 @@ abstract class MessageSource implements IMessageSource
 	public function getCulture()
 	{
 		return $this->culture;
+	}
+
+	/**
+	 * Formats the current time of {@see getClock()}.
+	 * @param string $format the date format.
+	 * @param bool $utc whether to format the time in UTC; false formats it in the clock's time zone.
+	 * @return string the formatted time.
+	 * @since 4.4.0
+	 */
+	protected function formatNow(string $format, bool $utc = false): string
+	{
+		$now = $this->getClock()->now();
+		if ($utc) {
+			$now = $now->setTimezone(new \DateTimeZone('UTC'));
+		}
+		return $now->format($format);
 	}
 
 	/**

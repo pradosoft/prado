@@ -3,6 +3,7 @@
 namespace Prado\Test\Unit\I18N\core;
 
 use PHPUnit\Framework\TestCase;
+use Prado\Util\Clock\TMockClock;
 use Prado\I18N\core\TCache_Lite;
 use Prado\Test\Unit\Harness\Traits\TTempDirectoryTrait;
 use Prado\Test\Unit\PradoUnit;
@@ -496,5 +497,29 @@ class TCache_LiteTest extends TestCase
 		$this->assertSame('a2', $cache->get('a'));
 		$this->assertSame('b', $cache->get('b'));
 		$this->assertSame(2, PradoUnit::getProp($cache, '_memoryCachingCounter'));
+	}
+
+	public function testExpiryFollowsTheClock()
+	{
+		$cache = $this->createCache(['lifeTime' => 100]);
+		$clock = (new TMockClock())->setTime(time());
+		$cache->setClock($clock);
+		$cache->save('data', 'id');
+		$this->assertSame('data', $cache->get('id'));
+		$clock->setTime(time() + 200);
+		$this->assertFalse($cache->get('id'));
+		$clock->setTime(time() - 1000);
+		$this->assertSame('data', $cache->get('id'));
+	}
+
+	public function testACorruptedFileIsExpiredByTheClock()
+	{
+		$cache = $this->createCache(['lifeTime' => 100]);
+		$cache->setClock((new TMockClock())->setTime(1700000000));
+		$cache->save('data', 'id');
+		file_put_contents($cache->getCacheFile(), str_repeat('0', 32) . 'data');
+		$this->assertFalse($cache->get('id', 'default', true));
+		clearstatcache();
+		$this->assertSame(1700000000 - 200, filemtime($cache->getCacheFile()));
 	}
 }

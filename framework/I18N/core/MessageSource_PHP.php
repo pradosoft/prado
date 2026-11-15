@@ -244,7 +244,7 @@ class MessageSource_PHP extends MessageSource
 	 */
 	protected function internalSaveFile($php, $filename, $variant)
 	{
-		$php['info']['date'] = @date('Y-m-d\TH:i:s\Z');
+		$php['info']['date'] = $this->formatNow('Y-m-d\TH:i:s\Z', true);
 
 		//save it and clear the cache for this variant
 		if (false === file_put_contents($filename, "<?php\nreturn " . var_export($php, true) . ';')) {
@@ -406,7 +406,7 @@ class MessageSource_PHP extends MessageSource
 
 	protected function getTemplate($catalogue)
 	{
-		$date = @date('Y-m-d\TH:i:s\Z');
+		$date = $this->formatNow('Y-m-d\TH:i:s\Z', true);
 		$php =
 <<<EOD
 	<?php
