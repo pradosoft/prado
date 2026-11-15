@@ -6,11 +6,49 @@ use Prado\Caching\TDbCache;
 use Prado\Data\TDbConnection;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Test\Unit\Harness\Caching\TTestDbCache;
 use Prado\Test\Unit\Harness\TTestApplication;
 use Prado\Test\Unit\PradoUnit;
 
 if (!defined('TEST_CACHE_DB_DIR')) {
 	define('TEST_CACHE_DB_DIR', __DIR__ . '/../Data/db');
+}
+
+/**
+ * A SQLite connection that reports a driver without an upsert, so TDbCache stores
+ * through its delete-and-insert transaction.
+ */
+class TDbCacheTestOdbcConnection extends TDbConnection
+{
+	public function getDriverName()
+	{
+		return 'odbc';
+	}
+}
+
+/**
+ * A TDbCache whose availability is switchable and whose connection can be an
+ * {@see TDbCacheTestOdbcConnection}.
+ */
+class TDbCacheTestCache extends TTestDbCache
+{
+	public static bool $available = true;
+	public bool $odbc = false;
+
+	public static function getIsAvailable(): bool
+	{
+		return static::$available;
+	}
+
+	protected function getCustomDbConnection(): ?TDbConnection
+	{
+		if (!$this->odbc) {
+			return parent::getCustomDbConnection();
+		}
+		$db = new TDbCacheTestOdbcConnection();
+		$db->setConnectionString($this->getConnectionString());
+		return $db;
+	}
 }
 
 class TDbCacheTest extends \PHPUnit\Framework\TestCase
@@ -39,6 +77,7 @@ class TDbCacheTest extends \PHPUnit\Framework\TestCase
 
 	protected function tearDown(): void
 	{
+		TDbCacheTestCache::$available = true;
 		if ($this->_cache && $this->_cache->getHasDbConnection()) {
 			$this->_cache->flush();
 			$this->_cache->deactivateDbConnection(true);
@@ -481,8 +520,8 @@ class TDbCacheTest extends \PHPUnit\Framework\TestCase
 		$key = 'no_auto_create_key';
 		$value = 'no_auto_create_value';
 
-		$this->expectException(\Prado\Exceptions\TDbException::class);
-		$this->_cache->set($key, $value);
+		// Without the table, set() fails and returns false on every driver.
+		$this->assertFalse($this->_cache->set($key, $value));
 	}
 
 	public function testCustomCacheTableName()
@@ -731,6 +770,59 @@ class TDbCacheTest extends \PHPUnit\Framework\TestCase
 		$this->_cache->add($key, 'after_delete');
 		$result = $this->_cache->get($key);
 		$this->assertEquals('after_delete', $result);
+	}
+
+	/**
+	 * Replaces the cache under test with an initialized {@see TDbCacheTestCache} on the SQLite file.
+	 */
+	private function initTestCache(bool $autoCreate = true, bool $odbc = false): TDbCacheTestCache
+	{
+		$this->_cache = new TDbCacheTestCache();
+		$this->_cache->setPrimaryCache(false);
+		$this->_cache->odbc = $odbc;
+		$this->_cache->setAutoCreateCacheTable($autoCreate);
+		$this->initCache();
+		return $this->_cache;
+	}
+
+	private function dropCacheTable(): void
+	{
+		$this->_cache->getDbConnection()->createCommand('DROP TABLE ' . $this->_cache->getCacheTableName())->execute();
+	}
+
+	/**
+	 * @dataProvider droppedTableProvider
+	 */
+	public function testADroppedTableIsCreatedAgain(string $operation, mixed $expected): void
+	{
+		$cache = $this->initTestCache();
+		$this->assertTrue($cache->set('k', 'v'));
+		$this->dropCacheTable();
+		$this->assertSame($expected, match ($operation) {
+			'get' => $cache->get('k'),
+			'set' => $cache->set('k', 'w'),
+			'add' => $cache->add('k', 'w'),
+			'delete' => $cache->delete('k'),
+			'flush' => $cache->flush(),
+		});
+		$this->assertTrue($cache->set('after', 'x'));
+		$this->assertSame('x', $cache->get('after'));
+	}
+
+	public static function droppedTableProvider(): array
+	{
+		return [
+			'get'    => ['get', false],
+			'set'    => ['set', true],
+			'add'    => ['add', true],
+			'delete' => ['delete', true],
+			'flush'  => ['flush', true],
+		];
+	}
+
+	public function testWithoutAutoCreateAddToAMissingTableFails(): void
+	{
+		$this->assertFalse($this->initTestCache(false)->add('k', 'v'));
 	}
 
 	/**

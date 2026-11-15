@@ -506,14 +506,7 @@ class TDbCache extends TSerializingCache implements IDbModule
 
 		$sql = 'SELECT value FROM ' . $this->getCacheTableName() . ' WHERE itemkey=:key AND (expire=0 OR expire>=' . $this->getClock()->time() . ') ORDER BY expire DESC';
 		$db = $this->getDbConnection();
-		$command = $db->createCommand($sql);
-		$command->bindValue(':key', $key, $db::PARAM_STR);
-		try {
-			return $command->queryScalar();
-		} catch (\Exception $e) {
-			$this->initializeCache(true);
-			return $command->queryScalar();
-		}
+		return $this->runCacheCommand($sql, [':key' => [$key, $db::PARAM_STR]], 'queryScalar');
 	}
 
 	/**
@@ -548,21 +541,11 @@ class TDbCache extends TSerializingCache implements IDbModule
 					"INSERT (itemkey, value, expire) " .
 					"VALUES (data.itemkey, data.value, data.expire)";
 			}
-			$command = $db->createCommand($sql);
-			$command->bindValue(':key', $key, $db::PARAM_STR);
-			$command->bindValue(':value', $value, $db::PARAM_LOB);
-
 			try {
-				$command->execute();
+				$this->runCacheCommand($sql, [':key' => [$key, $db::PARAM_STR], ':value' => [$value, $db::PARAM_LOB]]);
 				return true;
 			} catch (\Exception $e) {
-				try {
-					$this->initializeCache(true);
-					$command->execute();
-					return true;
-				} catch (\Exception $e) {
-					return false;
-				}
+				return false;
 			}
 		} else {
 			$isCurrentTransaction = $this->getDbConnection()->getCurrentTransaction();
@@ -594,21 +577,11 @@ class TDbCache extends TSerializingCache implements IDbModule
 		$expire = ($expire <= 0) ? 0 : $this->getClock()->time() + $expire;
 		$sql = "INSERT INTO {$this->getCacheTableName()} (itemkey,value,expire) VALUES(:key,:value,$expire)";
 		$db = $this->getDbConnection();
-		$command = $db->createCommand($sql);
-		$command->bindValue(':key', $key, $db::PARAM_STR);
-		$command->bindValue(':value', $value, $db::PARAM_LOB);
-
 		try {
-			$command->execute();
+			$this->runCacheCommand($sql, [':key' => [$key, $db::PARAM_STR], ':value' => [$value, $db::PARAM_LOB]]);
 			return true;
 		} catch (\Exception $e) {
-			try {
-				$this->initializeCache(true);
-				$command->execute();
-				return true;
-			} catch (\Exception $e) {
-				return false;
-			}
+			return false;
 		}
 	}
 
@@ -623,16 +596,8 @@ class TDbCache extends TSerializingCache implements IDbModule
 		}
 
 		$db = $this->getDbConnection();
-		$command = $db->createCommand("DELETE FROM {$this->getCacheTableName()} WHERE itemkey=:key");
-		$command->bindValue(':key', $key, $db::PARAM_STR);
-		try {
-			$command->execute();
-			return true;
-		} catch (\Exception $e) {
-			$this->initializeCache(true);
-			$command->execute();
-			return true;
-		}
+		$this->runCacheCommand("DELETE FROM {$this->getCacheTableName()} WHERE itemkey=:key", [':key' => [$key, $db::PARAM_STR]]);
+		return true;
 	}
 
 	/**
@@ -643,18 +608,40 @@ class TDbCache extends TSerializingCache implements IDbModule
 		if (!$this->getIsCacheInitialized()) {
 			$this->initializeCache();
 		}
-		$command = $this->getDbConnection()->createCommand("DELETE FROM {$this->getCacheTableName()}");
 		try {
-			$command->execute();
+			$this->runCacheCommand("DELETE FROM {$this->getCacheTableName()}");
 		} catch (\Exception $e) {
-			try {
-				$this->initializeCache(true);
-				$command->execute();
-				return true;
-			} catch (\Exception $e) {
-				return false;
-			}
+			return false;
 		}
 		return true;
+	}
+
+	/**
+	 * Runs a command on the cache table, and runs it once more after initializing the
+	 * table again when it fails. Each attempt creates and binds its own command, since a
+	 * driver that prepares a statement as it is bound, such as SQLite, fails there for a
+	 * missing table.
+	 * @param string $sql the SQL statement.
+	 * @param array<string, array{0: mixed, 1: int}> $params the value and PDO type of each parameter, by name.
+	 * @param string $method the {@see \Prado\Data\TDbCommand} method that runs the command: `execute` or `queryScalar`.
+	 * @throws \Exception if the second attempt fails.
+	 * @return mixed the result of $method.
+	 * @since 4.4.0
+	 */
+	protected function runCacheCommand(string $sql, array $params = [], string $method = 'execute'): mixed
+	{
+		$attempt = function () use ($sql, $params, $method): mixed {
+			$command = $this->getDbConnection()->createCommand($sql);
+			foreach ($params as $name => [$value, $type]) {
+				$command->bindValue($name, $value, $type);
+			}
+			return $command->$method();
+		};
+		try {
+			return $attempt();
+		} catch (\Exception $e) {
+			$this->initializeCache(true);
+			return $attempt();
+		}
 	}
 }
