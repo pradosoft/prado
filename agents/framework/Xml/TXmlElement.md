@@ -12,6 +12,7 @@ TXmlElement represents an XML element node. It provides properties for tag-name,
 
 ## Key Features
 - Implements IteratorAggregate, ArrayAccess, and Countable interfaces
+- ArrayAccess offsets are normalized by `normalizeOffset()`: null is the value, an int or a numeric string is a child index, any other string is an attribute name, and a `Stringable` is its string; any other type throws `TInvalidDataTypeException`
 - Supports XPath expressions through xpath() method
 - Implements DOM compatibility methods for better integration
 - Provides search functionality for elements and attributes
@@ -74,3 +75,4 @@ public function __construct(string $tagName)
 |------------|-----------|-------------|
 | `xmlelement_null_tag` | `TInvalidDataTypeException` | Tag name cannot be null |
 | `xmlelement_empty_tag` | `TInvalidDataValueException` | Tag name cannot be empty |
+| `xmlelement_offset_invalid` | `TInvalidDataTypeException` | Array access offset is not null, an int, a string, or a `Stringable` |

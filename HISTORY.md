@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TXmlElement` array access treats a `Stringable` offset as its string and throws `TInvalidDataTypeException` for any other offset that is not null, an int, or a string; a float or bool offset addressed an attribute or raised a PHP error. See UPGRADE.md. (belisoful)
 CHG: Issue #1497 - `TTableGateway` dynamic finders throw `dbtablegateway_mismatch_column_name` unless the whole condition is column names joined by `And` or `Or`; text that matched no column was ignored, so `findByFooAndName()` searched by `Name` alone. See UPGRADE.md. (belisoful)
 BUG: Issue #1497 - `TWebServerAction` `http/serve` in quiet mode 2 or 3 no longer throws a `TypeError` when the web server exits. (belisoful)
 BUG: Issue #1497 - `TWebServerAction::setAddress()` brackets a bare IPv6 address such as `::1`, which it read as address `:` and port 1; a taken address reports its port. (belisoful)
