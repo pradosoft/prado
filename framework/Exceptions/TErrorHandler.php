@@ -633,7 +633,9 @@ class TErrorHandler extends \Prado\TModule
 
 	/**
 	 * Returns the most relevant stack frame from an exception's trace.
-	 * For {@see TPhpErrorException}, returns the frame where the PHP error occurred.
+	 * For {@see TPhpErrorException}, returns the first frame with a file: the code that
+	 * raised the PHP error. The error handler frame, and an internal function called by
+	 * an internal function, have no file.
 	 * For {@see TInvalidOperationException}, returns the frame that called __get or __set.
 	 * Returns null when no actionable frame is found or the frame is inside eval'd code
 	 * (detected by `": eval()'d code"` in the file path on PHP < 8, or `'function' => 'eval'`
@@ -650,13 +652,12 @@ class TErrorHandler extends \Prado\TModule
 			$trace = $exception->getTrace();
 		}
 
-		// if PHP exception, we want to show the 2nd stack level context
-		// because the 1st stack level is of little use (it's in error handler)
 		if ($exception instanceof TPhpErrorException) {
-			if (isset($trace[0]['file'])) {
-				$result = $trace[0];
-			} elseif (isset($trace[1])) {
-				$result = $trace[1];
+			foreach ($trace as $frame) {
+				if (isset($frame['file'])) {
+					$result = $frame;
+					break;
+				}
 			}
 		} elseif ($exception instanceof TInvalidOperationException) {
 			// in case of getter or setter error, find out the exact file and row

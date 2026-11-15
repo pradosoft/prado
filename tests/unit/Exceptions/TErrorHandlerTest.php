@@ -1113,6 +1113,27 @@ class TErrorHandlerTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame($trace[0], $result);
 	}
 
+	public function testGetExactTraceTPhpErrorExceptionSkipsFramesWithoutFile(): void
+	{
+		// A warning raised in an internal callback: the error handler frame and the
+		// hex2bin() frame have no file; the array_map() call is the first frame with one.
+		$line = 0;
+		try {
+			$line = __LINE__ + 1;
+			array_map('hex2bin', ['abc']);
+			$this->fail('hex2bin() of an odd-length string must raise a warning.');
+		} catch (TPhpErrorException $ex) {
+		}
+		$trace = $ex->getTrace();
+		$this->assertArrayNotHasKey('file', $trace[0]);
+		$this->assertArrayNotHasKey('file', $trace[1]);
+
+		$result = $this->handler->pubGetExactTrace($ex);
+		$this->assertSame(__FILE__, $result['file']);
+		$this->assertSame($line, $result['line']);
+		$this->assertSame('array_map', $result['function']);
+	}
+
 	public function testGetExactTraceTPhpErrorExceptionEvalFrameReturnsNull(): void
 	{
 		// When the exception is constructed inside eval(), trace[0]['file'] contains
