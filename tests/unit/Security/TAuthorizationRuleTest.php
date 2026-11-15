@@ -116,7 +116,24 @@ class TAuthorizationRuleTest extends \PHPUnit\Framework\TestCase
 		}
 	}
 
-	public function testIPRules()
+	public function testListsOfOnlySeparatorsAreRejected()
+	{
+		foreach ([['users', [',', '']], ['roles', ['', ' , ']], ['ips', ['', '', '', ',']]] as [$list, $args]) {
+			try {
+				new TAuthorizationRule('allow', ...$args);
+				self::fail("A $list list of only separators did not throw");
+			} catch (TInvalidDataValueException $e) {
+				self::assertSame('authorizationrule_list_empty', $e->getErrorCode());
+				self::assertStringContainsString($list, $e->getMessage());
+			}
+		}
+		$rule = new TAuthorizationRule('deny', '', '', '', '');
+		self::assertTrue($rule->getEveryoneApplied());
+		self::assertSame(['*'], $rule->getRoles());
+		self::assertSame(['*'], $rule->getIPRules());
+	}
+
+		public function testIPRules()
 	{
 		$rule = new TAuthorizationRule('allow', '', '', '', '');
 		self::assertEquals(['*'], $rule->getIPRules());

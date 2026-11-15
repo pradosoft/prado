@@ -370,7 +370,7 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 				}
 				while (!empty($queue)) {
 					$element = array_shift($queue);
-					if ($element->_tagName === $tagName) {
+					if ($element->getTagName() === $tagName) {
 						$results->add($element);
 					}
 					if ($element->getHasElement()) {
@@ -545,6 +545,7 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 	/**
 	 * Find elements matching an XPath expression.
 	 * This method allows you to use XPath expressions to query elements within the XML structure.
+	 * The internal ID attributes are removed when the query throws.
 	 * @param string $xpath XPath expression
 	 * @return TList List of matching elements
 	 * @since 4.3.3
@@ -553,26 +554,28 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 	{
 		$idAttrName = $this->insertPradoXmlId();
 
-		$doc = new \DOMDocument();
-		$doc->loadXML($this->toString(0, false));
+		try {
+			$doc = new \DOMDocument();
+			$doc->loadXML($this->toString(0, false));
 
-		$xpathObj = new \DOMXPath($doc);
-		$nodes = $xpathObj->query($xpath);
+			$xpathObj = new \DOMXPath($doc);
+			$nodes = $xpathObj->query($xpath);
 
-		$results = new TList();
-		foreach ($nodes as $node) {
-			if ($node instanceof \DOMElement) {
-				$xmlId = $node->getAttribute($idAttrName);
+			$results = new TList();
+			foreach ($nodes as $node) {
+				if ($node instanceof \DOMElement) {
+					$xmlId = $node->getAttribute($idAttrName);
 
-				// @todo This can be sped up with a private focused search function due to the known ordering of each node $xmlId.
-				$element = $this->getElementByAttribute($idAttrName, $xmlId, self::SEARCH_BREADTH_FIRST);
-				if ($element) {
-					$results->add($element);
+					// @todo This can be sped up with a private focused search function due to the known ordering of each node $xmlId.
+					$element = $this->getElementByAttribute($idAttrName, $xmlId, self::SEARCH_BREADTH_FIRST);
+					if ($element) {
+						$results->add($element);
+					}
 				}
 			}
+		} finally {
+			$this->removePradoXmlId($idAttrName);
 		}
-
-		$this->removePradoXmlId($idAttrName);
 
 		return $results;
 	}
@@ -744,6 +747,7 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 
 	/**
 	 * This method is required by the \ArrayAccess interface.
+	 * A null offset exists when the value is neither null nor empty, as `toString()` renders it.
 	 * @param mixed $offset The offset to check on
 	 * @return bool Whether an item exists at the specified offset
 	 * @see https://www.php.net/manual/en/class.arrayaccess.php
@@ -752,7 +756,7 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 	public function offsetExists($offset): bool
 	{
 		if ($offset === null) {
-			return !empty($this->_value);
+			return ($value = $this->getValue()) !== null && $value !== '';
 		} elseif (is_int($offset) || (is_string($offset) && filter_var($offset, FILTER_VALIDATE_INT) !== false)) {
 			$offset = (int) $offset;
 			return 0 <= $offset && $offset < $this->getElements()->getCount();
@@ -1030,6 +1034,7 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 	/**
 	 * Gets the previous sibling element.
 	 * This method mimics the DOMElement::previousElementSibling property.
+	 * An element that is absent from its parent's element list has no siblings.
 	 * @return ?TXmlElement Previous sibling element or null if none exists
 	 * @see https://www.php.net/manual/en/class.domelement.php
 	 * @since 4.3.3
@@ -1041,7 +1046,7 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 		}
 		$elements = $this->_parent->getElements();
 		$index = $elements->indexOf($this);
-		if ($index !== false && $index > 0) {
+		if ($index > 0) {
 			return $elements->itemAt($index - 1);
 		}
 		return null;
@@ -1050,6 +1055,7 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 	/**
 	 * Gets the next sibling element.
 	 * This method mimics the DOMElement::nextElementSibling property.
+	 * An element that is absent from its parent's element list has no siblings.
 	 * @return ?TXmlElement Next sibling element or null if none exists
 	 * @see https://www.php.net/manual/en/class.domelement.php
 	 * @since 4.3.3
@@ -1061,7 +1067,7 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 		}
 		$elements = $this->_parent->getElements();
 		$index = $elements->indexOf($this);
-		if ($index !== false && $index < $elements->getCount() - 1) {
+		if ($index >= 0 && $index < $elements->getCount() - 1) {
 			return $elements->itemAt($index + 1);
 		}
 		return null;

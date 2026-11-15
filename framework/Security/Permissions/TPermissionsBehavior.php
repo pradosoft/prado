@@ -84,6 +84,9 @@ class TPermissionsBehavior extends TBehavior implements IDynamicMethods
 	private array $_events = [];
 
 	/**
+	 * Registers the permissions of the owner with the permissions manager.  Another
+	 * {@see TPermissionsManager} registers nothing; it registers its own permissions
+	 * with itself.
 	 * @param \Prado\TComponent $owner the object being attached to
 	 */
 	public function attach($owner)
@@ -91,7 +94,7 @@ class TPermissionsBehavior extends TBehavior implements IDynamicMethods
 		parent::attach($owner);
 		if (method_exists($owner, 'getPermissions')) {
 			$manager = $this->getPermissionsManager();
-			if (!$manager) {
+			if (!$manager || ($owner instanceof TPermissionsManager && $owner !== $manager)) {
 				return;
 			}
 			$this->_permissionEvents = [];
