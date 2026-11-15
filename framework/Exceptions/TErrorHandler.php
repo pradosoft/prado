@@ -319,14 +319,7 @@ class TErrorHandler extends \Prado\TModule
 	{
 		$aRpl = [];
 		if ($exception !== null && $exception instanceof \Exception) {
-			if ($exception instanceof TPhpFatalErrorException &&
-				function_exists('xdebug_get_function_stack')) {
-				$aTrace = array_slice(array_reverse(xdebug_get_function_stack()), static::FATAL_ERROR_TRACE_DROP_LINES, -1);
-			} else {
-				$aTrace = $exception->getTrace();
-			}
-
-			foreach ($aTrace as $item) {
+			foreach ($this->getErrorTrace($exception) as $item) {
 				if (isset($item['file'])) {
 					$aRpl[dirname($item['file']) . DIRECTORY_SEPARATOR] = '<hidden>' . DIRECTORY_SEPARATOR;
 				}
@@ -645,13 +638,7 @@ class TErrorHandler extends \Prado\TModule
 	protected function getExactTrace($exception)
 	{
 		$result = null;
-		if ($exception instanceof TPhpFatalErrorException &&
-			function_exists('xdebug_get_function_stack')) {
-			$trace = array_slice(array_reverse(xdebug_get_function_stack()), static::FATAL_ERROR_TRACE_DROP_LINES, -1);
-		} else {
-			$trace = $exception->getTrace();
-		}
-
+		$trace = $this->getErrorTrace($exception);
 		if ($exception instanceof TPhpErrorException) {
 			foreach ($trace as $frame) {
 				if (isset($frame['file'])) {
@@ -677,14 +664,12 @@ class TErrorHandler extends \Prado\TModule
 
 	/**
 	 * Returns the exception stack trace as a string, with private paths sanitized.
-	 * When xdebug is active and the exception is a fatal error, uses the xdebug stack.
+	 * A fatal error uses the stack of {@see getFatalErrorTrace()} when there is one.
 	 * @param \Exception $exception
 	 */
 	protected function getExactTraceAsString($exception)
 	{
-		if ($exception instanceof TPhpFatalErrorException &&
-			function_exists('xdebug_get_function_stack')) {
-			$trace = array_slice(array_reverse(xdebug_get_function_stack()), static::FATAL_ERROR_TRACE_DROP_LINES, -1);
+		if ($exception instanceof TPhpFatalErrorException && ($trace = $this->getFatalErrorTrace()) !== null) {
 			$txt = '';
 			$row = 0;
 
@@ -704,6 +689,38 @@ class TErrorHandler extends \Prado\TModule
 		}
 
 		return $this->hidePrivatePathParts($exception->getTraceAsString());
+	}
+
+	/**
+	 * Returns the stack frames of an exception: the {@see getFatalErrorTrace()} stack for a
+	 * {@see TPhpFatalErrorException} when there is one, else the exception trace.
+	 * @param \Throwable $exception the exception being rendered.
+	 * @return array the stack frames, innermost first.
+	 * @since 4.4.0
+	 */
+	protected function getErrorTrace(\Throwable $exception): array
+	{
+		if ($exception instanceof TPhpFatalErrorException && ($trace = $this->getFatalErrorTrace()) !== null) {
+			return $trace;
+		}
+		return $exception->getTrace();
+	}
+
+	/**
+	 * Returns the Xdebug function stack of a PHP fatal error, without the
+	 * {@see FATAL_ERROR_TRACE_DROP_LINES} frames of the error handling. A fatal error
+	 * has no exception trace. Xdebug provides the stack in its develop mode only.
+	 * @return ?array the stack frames, innermost first, or null when Xdebug is not
+	 *   loaded in develop mode.
+	 * @since 4.4.0
+	 */
+	protected function getFatalErrorTrace(): ?array
+	{
+		if (!function_exists('xdebug_info') || !in_array('develop', xdebug_info('mode'), true)) {
+			return null;
+		}
+		// Xdebug develop mode only; the coverage run uses its coverage mode.
+		return array_slice(array_reverse(xdebug_get_function_stack()), static::FATAL_ERROR_TRACE_DROP_LINES, -1); // @codeCoverageIgnore
 	}
 
 	/**

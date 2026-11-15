@@ -13,6 +13,7 @@ use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\THttpException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Exceptions\TPhpErrorException;
+use Prado\Exceptions\TPhpFatalErrorException;
 use Prado\Prado;
 use Prado\TApplicationMode;
 
@@ -76,6 +77,27 @@ class TErrorHandlerAccessor extends TErrorHandler
 	protected function phpSapiName(): string
 	{
 		return $this->fakePhpSapiName ?? parent::phpSapiName();
+	}
+
+	/** @var bool when true, getFatalErrorTrace() returns $fakeFatalErrorTrace */
+	public bool $useFakeFatalErrorTrace = false;
+
+	/** @var ?array the stack getFatalErrorTrace() returns when $useFakeFatalErrorTrace is true */
+	public ?array $fakeFatalErrorTrace = null;
+
+	protected function getFatalErrorTrace(): ?array
+	{
+		return $this->useFakeFatalErrorTrace ? $this->fakeFatalErrorTrace : parent::getFatalErrorTrace();
+	}
+
+	public function pubGetFatalErrorTrace(): ?array
+	{
+		return parent::getFatalErrorTrace();
+	}
+
+	public function pubGetErrorTrace(\Throwable $exception): array
+	{
+		return $this->getErrorTrace($exception);
 	}
 
 	/**
@@ -1161,7 +1183,123 @@ class TErrorHandlerTest extends \PHPUnit\Framework\TestCase
 		$this->assertNull($result);
 	}
 
+	// ── getFatalErrorTrace / getErrorTrace ────────────────────────────────────
+
+	/**
+	 * Returns whether Xdebug is loaded in its develop mode, which provides the fatal error stack.
+	 */
+	private static function isXdebugDevelopMode(): bool
+	{
+		return function_exists('xdebug_info') && in_array('develop', xdebug_info('mode'), true);
+	}
+
+	/**
+	 * Returns an Xdebug-style stack of two frames: one with a function and one without.
+	 */
+	private static function fakeFatalStack(): array
+	{
+		return [
+			['file' => '/srv/pages/Home.php', 'line' => 12, 'function' => 'render', 'params' => ['$a', '$b']],
+			['file' => '/opt/boot/index.php', 'line' => 3],
+		];
+	}
+
+	public function testGetFatalErrorTraceIsNullOutsideXdebugDevelopMode(): void
+	{
+		if (self::isXdebugDevelopMode()) {
+			$this->markTestSkipped('Xdebug develop mode provides the fatal error stack.');
+		}
+		$this->assertNull($this->handler->pubGetFatalErrorTrace());
+	}
+
+	public function testGetFatalErrorTraceInXdebugDevelopModeDropsTheHandlerFrames(): void
+	{
+		if (!self::isXdebugDevelopMode()) {
+			$this->markTestSkipped('Xdebug develop mode is off.');
+		}
+		// The stack inside getFatalErrorTrace() has two more frames than this method's:
+		// pubGetFatalErrorTrace() and getFatalErrorTrace(). The outermost frame is dropped.
+		$stack = xdebug_get_function_stack();
+		$trace = $this->handler->pubGetFatalErrorTrace();
+		$this->assertCount(count($stack) + 2 - TErrorHandler::FATAL_ERROR_TRACE_DROP_LINES - 1, $trace);
+	}
+
+	public function testHideSecurityRelatedFatalErrorOutsideXdebugDevelopModeHidesTheTraceDirectories(): void
+	{
+		// With Xdebug loaded outside develop mode, xdebug_get_function_stack() warns and
+		// returns no frames; the exception trace is used instead.
+		if (self::isXdebugDevelopMode()) {
+			$this->markTestSkipped('Xdebug develop mode provides the fatal error stack.');
+		}
+		$ex = new TPhpFatalErrorException(E_ERROR, 'fatal', __FILE__, __LINE__);
+		$callerDir = dirname($ex->getTrace()[0]['file']);
+		$result = $this->handler->pubHideSecurityRelated($callerDir . DIRECTORY_SEPARATOR . 'x.php', $ex);
+		$this->assertStringStartsWith('<hidden>' . DIRECTORY_SEPARATOR, $result);
+		$this->assertStringEndsWith(DIRECTORY_SEPARATOR . 'x.php', $result);
+		$this->assertStringNotContainsString($callerDir, $result);
+	}
+
+	public function testGetErrorTraceOfAFatalErrorIsTheFatalErrorStack(): void
+	{
+		$this->handler->useFakeFatalErrorTrace = true;
+		$this->handler->fakeFatalErrorTrace = self::fakeFatalStack();
+		$ex = new TPhpFatalErrorException(E_ERROR, 'fatal', '/app/index.php', 3);
+		$this->assertSame(self::fakeFatalStack(), $this->handler->pubGetErrorTrace($ex));
+	}
+
+	public function testGetErrorTraceOfAFatalErrorWithoutAStackIsTheExceptionTrace(): void
+	{
+		$this->handler->useFakeFatalErrorTrace = true;
+		$ex = new TPhpFatalErrorException(E_ERROR, 'fatal', '/app/index.php', 3);
+		$this->assertSame($ex->getTrace(), $this->handler->pubGetErrorTrace($ex));
+	}
+
+	public function testGetErrorTraceOfAnotherExceptionIsItsTrace(): void
+	{
+		$this->handler->useFakeFatalErrorTrace = true;
+		$this->handler->fakeFatalErrorTrace = self::fakeFatalStack();
+		$ex = new TPhpErrorException(E_WARNING, 'warning', '/app/index.php', 3);
+		$this->assertSame($ex->getTrace(), $this->handler->pubGetErrorTrace($ex));
+	}
+
+	public function testHideSecurityRelatedFatalErrorHidesTheFatalStackDirectories(): void
+	{
+		$this->handler->useFakeFatalErrorTrace = true;
+		$this->handler->fakeFatalErrorTrace = self::fakeFatalStack();
+		$ex = new TPhpFatalErrorException(E_ERROR, 'fatal', '/app/index.php', 3);
+		$result = $this->handler->pubHideSecurityRelated('/srv/pages/Home.php', $ex);
+		$this->assertSame('<hidden>' . DIRECTORY_SEPARATOR . 'Home.php', $result);
+	}
+
+	public function testGetExactTraceFatalErrorReturnsTheFirstStackFrameWithAFile(): void
+	{
+		$this->handler->useFakeFatalErrorTrace = true;
+		$this->handler->fakeFatalErrorTrace = self::fakeFatalStack();
+		$ex = new TPhpFatalErrorException(E_ERROR, 'fatal', '/app/index.php', 3);
+		$this->assertSame(self::fakeFatalStack()[0], $this->handler->pubGetExactTrace($ex));
+	}
+
 	// ── getExactTraceAsString ─────────────────────────────────────────────────
+
+	public function testGetExactTraceAsStringFatalErrorFormatsTheFatalStack(): void
+	{
+		$this->handler->useFakeFatalErrorTrace = true;
+		$this->handler->fakeFatalErrorTrace = self::fakeFatalStack();
+		$this->handler->pubSetPrivatePathReplacementsDirect(['/srv/' => '${Srv}/']);
+		$ex = new TPhpFatalErrorException(E_ERROR, 'fatal', '/app/index.php', 3);
+		$this->assertSame(
+			'#0 ${Srv}/pages/Home.php(12): render($a,$b)' . "\n" . '#1 /opt/boot/index.php(3): unknown' . "\n",
+			$this->handler->pubGetExactTraceAsString($ex)
+		);
+	}
+
+	public function testGetExactTraceAsStringFatalErrorWithoutAStackFormatsTheExceptionTrace(): void
+	{
+		$this->handler->useFakeFatalErrorTrace = true;
+		$this->handler->pubSetPrivatePathReplacementsDirect([]);
+		$ex = new TPhpFatalErrorException(E_ERROR, 'fatal', '/app/index.php', 3);
+		$this->assertSame($ex->getTraceAsString(), $this->handler->pubGetExactTraceAsString($ex));
+	}
 
 	public function testGetExactTraceAsStringReturnsString(): void
 	{
