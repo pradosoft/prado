@@ -296,4 +296,15 @@ class TSqlCriteriaTest extends \PHPUnit\Framework\TestCase
 		$this->expectException(\Prado\Exceptions\TException::class);
 		$c->setParameters('not an array');
 	}
+
+	public function testZeroConditionIsKept()
+	{
+		$this->assertSame('0', (new TSqlCriteria('0'))->getCondition());
+		$c = new TSqlCriteria('some condition');
+		$c->setCondition(0);
+		$this->assertSame('0', $c->getCondition());
+		$c->setCondition(null);
+		$this->assertNull($c->getCondition());
+	}
+
 }
