@@ -293,8 +293,13 @@ class TSqlCriteriaTest extends \PHPUnit\Framework\TestCase
 	public function testSetParametersRejectsScalar()
 	{
 		$c = new TSqlCriteria();
-		$this->expectException(\Prado\Exceptions\TException::class);
-		$c->setParameters('not an array');
+		try {
+			$c->setParameters('not an array');
+			$this->fail('Expected TInvalidDataTypeException for a scalar');
+		} catch (\Prado\Exceptions\TInvalidDataTypeException $e) {
+			$this->assertSame('sqlcriteria_parameters_invalid', $e->getErrorCode());
+			$this->assertStringContainsString('string', $e->getMessage());
+		}
 	}
 
 	public function testZeroConditionIsKept()

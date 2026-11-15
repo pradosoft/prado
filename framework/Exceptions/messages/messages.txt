@@ -625,6 +625,7 @@ dbtablegateway_pk_value_count_mismatch	= Composite key value count mismatch in f
 dbtablegateway_mismatch_args_exception	= TTableGateway finder method ''{0}'' expects {1} parameters but found only {2} parameters instead.
 dbtablegateway_mismatch_column_name		= In dynamic __call() method ''{0}'', the condition is not column names joined by And or Or; valid columns for table ''{2}'' are ''{1}''.
 dbtablegateway_invalid_table_info		= Table must be a string or an instance of TDbTableInfo.
+sqlcriteria_parameters_invalid			= TSqlCriteria.Parameters must be an array or an ArrayAccess, but ''{0}'' was given.
 
 resource_not_a_resource					= Expected an open PHP resource but got ''{0}''.
 processfork_failed						= Unable to fork the process.
