@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TGettext_PO::load()` reads a string with an escaped quote. (belisoful)
 BUG: Issue #1497 - `TGettext_MO::load()` reads an empty string as `''`, so a file with meta loads on PHP 8.5, and returns false with the file closed for a short file or an unknown magic number or revision. (belisoful)
 CHG: Issue #1497 - `TTranslateParameter::getKey()` throws `TConfigurationException` `translateparameter_key_required` for an empty key. (belisoful)
 BUG: Issue #1497 - `TChoiceFormat` renders a chosen string of `0`; it rendered an empty string. (belisoful)
