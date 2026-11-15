@@ -41,15 +41,15 @@ use Prado\Util\IDbModule;
  * By default, the name of the table is called 'pradocache'. If the table does not
  * exist in the database, it will be automatically created with the following structure:
  * ```sql
- * CREATE TABLE pradocache (itemkey CHAR(128), value BLOB, expire INT)
- * CREATE INDEX IX_itemkey ON pradocache (itemkey)
- * CREATE INDEX IX_expire ON pradocache (expire)
+ * CREATE TABLE pradocache (itemkey CHAR(128) PRIMARY KEY, value BLOB, expire INTEGER)
+ * CREATE INDEX IX_pradocache_expire ON pradocache (expire)
  * ```
  *
  * Note, some DBMS might not support BLOB type. In this case, replace 'BLOB' with a suitable
  * binary data type (e.g. LONGBLOB in MySQL, BYTEA in PostgreSQL.)
  *
- * Important: Make sure that the indices are non-unique!
+ * `itemkey` is the primary key; the upsert of {@see set()} replaces the row with the same key.
+ * The `expire` index is named after the table.
  *
  * If you want to change the cache table name, or if you want to create the table by yourself,
  * you may set {@see \Prado\Caching\TDbCache::setCacheTableName() CacheTableName} and {@see \Prado\Caching\TDbCache::setAutoCreateCacheTable() AutoCreateCacheTable} properties.
@@ -265,13 +265,24 @@ class TDbCache extends TSerializingCache implements IDbModule
 			$sql = 'CREATE TABLE ' . $cacheTable . " (itemkey CHAR(128) PRIMARY KEY, value $blob, expire INTEGER)";
 			$db->createCommand($sql)->execute();
 
-			$sql = 'CREATE INDEX IX_expire ON ' . $cacheTable . ' (expire)';
+			$sql = 'CREATE INDEX ' . $this->getExpireIndexName() . ' ON ' . $cacheTable . ' (expire)';
 			$db->createCommand($sql)->execute();
 
 			$this->_createCheck = true;
 			$this->getApplication()->setGlobalState($key, $this->getClock()->time());
 		}
 		$this->setIsCacheInitialized(true);
+	}
+
+	/**
+	 * Returns the name of the index on the `expire` column, derived from the table name.
+	 * SQLite and PostgreSQL scope index names to the schema, so each cache table has its own.
+	 * @return string `IX_`, the table name with each run of non-word characters as `_`, and `_expire`.
+	 * @since 4.4.0
+	 */
+	protected function getExpireIndexName(): string
+	{
+		return 'IX_' . preg_replace('/\W+/', '_', $this->getCacheTableName()) . '_expire';
 	}
 
 	/**
@@ -444,15 +455,14 @@ class TDbCache extends TSerializingCache implements IDbModule
 	 * and you want to create the DB table manually by yourself,
 	 * you need to make sure the DB table is of the following structure:
 	 * ```sql
-	 * CREATE TABLE pradocache (itemkey CHAR(128), value BLOB, expire INT)
-	 * CREATE INDEX IX_itemkey ON pradocache (itemkey)
-	 * CREATE INDEX IX_expire ON pradocache (expire)
+	 * CREATE TABLE pradocache (itemkey CHAR(128) PRIMARY KEY, value BLOB, expire INTEGER)
+	 * CREATE INDEX IX_pradocache_expire ON pradocache (expire)
 	 * ```
 	 *
 	 * Note, some DBMS might not support BLOB type. In this case, replace 'BLOB' with a suitable
 	 * binary data type (e.g. LONGBLOB in MySQL, BYTEA in PostgreSQL.)
 	 *
-	 * Important: Make sure that the indices are non-unique!
+	 * `itemkey` is the primary key; the upsert of {@see set()} replaces the row with the same key.
 	 *
 	 * @param string $value the name of the DB table to store cache content, an SQL identifier
 	 * @throws \Prado\Exceptions\TInvalidDataValueException if the name is not an SQL identifier

@@ -505,6 +505,32 @@ class TDbCacheTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals($value, $result);
 	}
 
+	public function testTwoCacheTablesInOneDatabase()
+	{
+		$this->initCache();
+		$this->assertTrue($this->_cache->set('key', 'first'));
+
+		$second = new TDbCache();
+		$second->setPrimaryCache(false);
+		$second->setConnectionString('sqlite:' . $this->_dbFile);
+		$second->setCacheTableName('pradocache_second');
+		$second->init(null);
+		try {
+			$this->assertTrue($second->set('key', 'second'));
+			$this->assertSame('second', $second->get('key'));
+			$this->assertSame('first', $this->_cache->get('key'));
+			$this->assertSame('IX_pradocache_second_expire', PradoUnit::invoke($second, 'getExpireIndexName'));
+		} finally {
+			$second->deactivateDbConnection(true);
+		}
+	}
+
+	public function testExpireIndexNameReplacesNonWordCharacters()
+	{
+		$this->_cache->setCacheTableName('main."my cache"');
+		$this->assertSame('IX_main_my_cache__expire', PradoUnit::invoke($this->_cache, 'getExpireIndexName'));
+	}
+
 	public function testSqliteDatabaseName()
 	{
 		$dbName = PradoUnit::invoke($this->_cache, 'getSqliteDatabaseName');
