@@ -120,13 +120,15 @@ abstract class TShellAction extends \Prado\TComponent
 	}
 
 	/**
-	 * Checks if specified parameters are suitable for the specified action
+	 * Checks if specified parameters are suitable for the specified action.  `$args[0]`
+	 * matches the action name literally, optionally followed by `/<method>`.
 	 * @param array $args parameters
-	 * @return ?bool
+	 * @return ?string the method name, or null when `$args` do not match the action.
 	 */
 	public function isValidAction($args)
 	{
-		if (preg_match("/^{$this->action}(?:\\/([-\w\d]*))?$/", $args[0] ?? '', $match)) {
+		$action = preg_quote($this->action, '/');
+		if (preg_match("/^{$action}(?:\\/([-\w\d]*))?$/", $args[0] ?? '', $match)) {
 			if (isset($match[1]) && $match[1]) {
 				$i = array_flip($this->methods)[$match[1]] ?? null;
 				if ($i === null) {
