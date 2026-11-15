@@ -860,6 +860,20 @@ class TPermissionsManagerTest extends \PHPUnit\Framework\TestCase
 		$userManager = null;
 	}
 
+	public function testDestructOfAnUninitializedManagerKeepsTheClassBehaviors()
+	{
+		// An uninitialized manager that does not listen gets no class behaviors of its own.
+		$other = new TPermissionsManager();
+		$other->unlisten();
+		$this->obj->init(null);
+		$other->__destruct();
+		$other = null;
+
+		$user = new TUser(new TUserManager());
+		self::assertInstanceOf(TUserPermissionsBehavior::class, $user->asa(TPermissionsManager::USER_PERMISSIONS_BEHAVIOR));
+		self::assertNotNull((new TPageConfiguration('.'))->asa(TPermissionsManager::PERMISSIONS_CONFIG_BEHAVIOR));
+	}
+
 	// -----------------------------------------------------------------------
 	// loadPermissionsData() — Prado3 dot-notation rule class resolution
 	// -----------------------------------------------------------------------

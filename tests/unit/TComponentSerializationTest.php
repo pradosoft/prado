@@ -156,6 +156,26 @@ class TComponentSerializationTest extends TComponentTestBase
 	}
 
 	/**
+	 * The object of each kind of event handler, as __clone() matches it to a behavior.
+	 */
+	public function testGetCallableObject_eachKindOfHandler()
+	{
+		$object = new \stdClass();
+		$bound = \Closure::bind(fn () => null, $object, null);
+		$static = static fn () => null;
+		$get = fn ($handler) => PradoUnit::invoke(\Prado\TComponent::class, 'getCallableObject', $handler);
+
+		$this->assertSame($object, $get(new TEventHandler($bound)));
+		$this->assertNull($get(new TEventHandler($static)));
+		$this->assertNull($get(new TEventHandler('strlen')));
+		$this->assertSame($object, $get([$bound, '__invoke']));
+		$this->assertNull($get([$static, '__invoke']));
+		$this->assertNull($get($static));
+		$this->assertSame($object, $get($bound));
+		$this->assertNull($get('strlen'));
+	}
+
+	/**
 	 * A behavior whose events() returns a Closure and a TEventHandler attaches them
 	 * once to a clone, bound to the clone's behavior.  A class behavior's handlers
 	 * are attached once to the clone.

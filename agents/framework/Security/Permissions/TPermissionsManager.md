@@ -202,7 +202,7 @@ PHP format:
 - **Circular hierarchy** — `isInHierarchy()` and `addPermissionRuleInternal()` both guard against infinite loops via a visited-set.
 - **`AutoAllowWithPermission`** — by default, if a user's roles include the permission name itself (because the role hierarchy includes it), they are automatically allowed. Disable with `AutoAllowWithPermission="false"` if you want fully explicit rules.
 - **All config properties are read-only after `init()`** — setting them post-init throws [TInvalidOperationException](../../Exceptions/TInvalidOperationException.md).
-- **`__destruct()` detaches all three class behaviors** — this is important in long-running CLI processes where the module may be destroyed and re-created.
+- **`__destruct()` detaches all three class behaviors when `init()` attached them** — this is important in long-running CLI processes where the module may be destroyed and re-created. A manager that was never initialized leaves another manager's class behaviors in place.
 - **`TDbParameterModule` runtime data** is loaded during `init()` and merged on top of static config — runtime changes via `addRoleChildren()` / `addPermissionRule()` take effect immediately in the current request.
 
 ---
