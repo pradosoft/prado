@@ -1223,4 +1223,26 @@ class TXmlElementTest extends \PHPUnit\Framework\TestCase
 		self::assertFalse($parent->getHasAttribute());
 		self::assertFalse($child->getHasAttribute());
 	}
+
+	public function testGetElementsByTagNameReadsTheTagNameGetterInEverySearchMode()
+	{
+		$parent = new TXmlElement('parent');
+		$parent[] = new TXmlElementTestAliasElement('real');
+
+		foreach ([TXmlElement::SEARCH_ELEMENT, TXmlElement::SEARCH_DEPTH_FIRST, TXmlElement::SEARCH_BREADTH_FIRST] as $mode) {
+			self::assertSame(1, $parent->getElementsByTagName('alias', $mode)->getCount(), "Search mode $mode");
+			self::assertSame(0, $parent->getElementsByTagName('real', $mode)->getCount(), "Search mode $mode");
+		}
+	}
+}
+
+/**
+ * Reports a fixed tag name through getTagName().
+ */
+class TXmlElementTestAliasElement extends TXmlElement
+{
+	public function getTagName()
+	{
+		return 'alias';
+	}
 }

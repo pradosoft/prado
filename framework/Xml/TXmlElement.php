@@ -370,7 +370,7 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 				}
 				while (!empty($queue)) {
 					$element = array_shift($queue);
-					if ($element->_tagName === $tagName) {
+					if ($element->getTagName() === $tagName) {
 						$results->add($element);
 					}
 					if ($element->getHasElement()) {
