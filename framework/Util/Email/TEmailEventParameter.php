@@ -25,7 +25,6 @@ use Prado\Util\Email\TEmail;
  */
 class TEmailEventParameter extends \Prado\TEventParameter
 {
-	private $_email;
 	private $_many;
 
 	/**
@@ -37,9 +36,8 @@ class TEmailEventParameter extends \Prado\TEventParameter
 	 */
 	public function __construct(TEmail $email = null, $many = null)
 	{
-		$this->_email = $email;
 		$this->_many = $many;
-		parent::__construct();
+		parent::__construct($email);
 	}
 
 	/**
@@ -47,7 +45,7 @@ class TEmailEventParameter extends \Prado\TEventParameter
 	 */
 	public function getEmail()
 	{
-		return $this->_email;
+		return $this->getParameter();
 	}
 
 	/**
@@ -55,7 +53,7 @@ class TEmailEventParameter extends \Prado\TEventParameter
 	 */
 	public function setEmail($email)
 	{
-		$this->_email = $value;
+		$this->setParameter($value);
 	}
 
 	/**

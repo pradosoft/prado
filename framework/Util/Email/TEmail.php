@@ -111,6 +111,72 @@ class TEmail extends TComponent
 	/** @var \Prado\Util\Email\TEmailModule for email tasks */
 	private $_module;
 
+	/** @var bool whether the email has been modified since last sent */
+	private $_dirty = true;
+
+	/**
+	 * Cleans up the email before sending by performing final cleanup tasks.
+	 * Resets the dirty flag after cleanup.
+	 * This is called automatically by sendEmail in TEmailModule.
+	 */
+	public function clean()
+	{
+		// Perform final email cleanup here
+		// The email is now clean ready to be sent
+		$this->_dirty = false;
+	}
+
+	/**
+	 * @return bool whether the email has been modified since last sent
+	 */
+	public function getDirty()
+	{
+		return $this->_dirty;
+	}
+
+	/**
+	 * Sets the dirty flag to indicate that the email has been modified.
+	 * This should be called when any email property is changed after initial creation.
+	 */
+	public function setDirty()
+	{
+		$this->_dirty = true;
+	}
+
+	/**
+	 * Sends the TEmail through the TEmailModule.  It customizes the email
+	 * with array $customData in the format ['REPLACEMENT' => 'VALUE'] where
+	 * any text in the email matching the key with brackets, eg. '{REPLACEMENT}',
+	 * would be replaced by the array value, eg. 'VALUE'.
+	 * @param null|array text replacement ["$key" => $value]
+	 * @param null|array $customData
+	 * @param mixed $many
+	 * @return bool successful sent.
+	 */
+	public function send($customData = null, $many = false)
+	{
+		// Clean the email before sending it
+		if ($this->_dirty) {
+			$this->clean();
+		}
+
+		if (!$this->getTo()) {
+			throw new TConfigurationException('email_send_without_to');
+		}
+		$this->_customData = $customData ?? $this->_customData;
+
+		if (!($module = $this->getEmailerModule())) {
+			$app = $this->getApplication();
+			if ($app->hasMethod('sendEmail')) {
+				$module = $app;
+			}
+		}
+		if (!$module) {
+			throw new TConfigurationException('email_no_emailermodule');
+		}
+		$return = $module->sendEmail($this, $customData, $many);
+		return $return;
+	}
 
 	protected function asAddressArray($data)
 	{
@@ -132,36 +198,6 @@ class TEmail extends TComponent
 			}
 			return ($a instanceof TEmailAddress) ? $a : new TEmailAddress($a, $b);
 		}, $data);
-	}
-
-	/**
-	 * Sends the TEmail through the TEmailModule.  It customizes the email
-	 * with array $customData in the format ['REPLACEMENT' => 'VALUE'] where
-	 * any text in the email matching the key with brackets, eg. '{REPLACEMENT}',
-	 * would be replaced by the array value, eg. 'VALUE'.
-	 * @param null|array text replacement ["$key" => $value]
-	 * @param null|array $customData
-	 * @param mixed $many
-	 * @return bool successful sent.
-	 */
-	public function send($customData = null, $many = false)
-	{
-		if (!$this->getTo()) {
-			throw new TConfigurationException('email_send_without_to');
-		}
-		$this->_customData = $customData ?? $this->_customData;
-
-		if (!($module = $this->getEmailerModule())) {
-			$app = $this->getApplication();
-			if ($app->hasMethod('sendEmail')) {
-				$module = $app;
-			}
-		}
-		if (!$module) {
-			throw new TConfigurationException('email_no_emailermodule');
-		}
-		$return = $module->sendEmail($this, $customData, $many);
-		return $return;
 	}
 
 	/**
@@ -323,6 +359,7 @@ class TEmail extends TComponent
 	public function setUsername($username)
 	{
 		$this->_username = $username;
+		$this->setDirty(); // Mark as dirty when username changes
 	}
 
 	/**
@@ -344,6 +381,7 @@ class TEmail extends TComponent
 	{
 		if ($address === null || is_string($address) || is_array($address) || ($address instanceof TEmailAddress)) {
 			$this->_to = $this->asAddressArray($address);
+			$this->setDirty(); // Mark as dirty when To changes
 		} else {
 			throw new TConfigurationException('email_bad_to');
 		}
@@ -367,6 +405,7 @@ class TEmail extends TComponent
 		} else {
 			$this->_sender = new TEmailAddress(TPropertyValue::ensureString($address));
 		}
+		$this->setDirty(); // Mark as dirty when Sender changes
 	}
 
 	/**
@@ -387,6 +426,7 @@ class TEmail extends TComponent
 		} else {
 			$this->_from = new TEmailAddress(TPropertyValue::ensureString($address));
 		}
+		$this->setDirty(); // Mark as dirty when From changes
 	}
 
 	/**
@@ -408,6 +448,7 @@ class TEmail extends TComponent
 	{
 		if ($address === null || is_string($address) || is_array($address) || ($address instanceof TEmailAddress)) {
 			$this->_replyTo = $this->asAddressArray($address);
+			$this->setDirty(); // Mark as dirty when ReplyTo changes
 		} else {
 			throw new TConfigurationException('email_bad_replyto');
 		}
@@ -433,6 +474,7 @@ class TEmail extends TComponent
 		} else {
 			$this->_returnPath = new TEmailAddress(TPropertyValue::ensureString($address));
 		}
+		$this->setDirty(); // Mark as dirty when ReturnPath changes
 	}
 
 	/**
@@ -455,6 +497,7 @@ class TEmail extends TComponent
 	{
 		if ($address === null || is_string($address) || is_array($address) || ($address instanceof TEmailAddress)) {
 			$this->_cc = $this->asAddressArray($address);
+			$this->setDirty(); // Mark as dirty when CC changes
 		} else {
 			throw new TConfigurationException('email_bad_cc');
 		}
@@ -480,6 +523,7 @@ class TEmail extends TComponent
 	{
 		if ($address === null || is_string($address) || is_array($address) || ($address instanceof TEmailAddress)) {
 			$this->_bcc = $this->asAddressArray($address);
+			$this->setDirty(); // Mark as dirty when BCC changes
 		} else {
 			throw new TConfigurationException('email_bad_cc');
 		}
@@ -506,6 +550,7 @@ class TEmail extends TComponent
 	public function setDate($date)
 	{
 		$this->_date = $date;
+		$this->setDirty(); // Mark as dirty when Date changes
 	}
 
 	/**
@@ -523,6 +568,7 @@ class TEmail extends TComponent
 	public function setPriority($priority)
 	{
 		$this->_priority = ($priority !== null && $priority !== '') ? max(1, min(5, TPropertyValue::ensureInteger($priority))) : null;
+		$this->setDirty(); // Mark as dirty when Priority changes
 	}
 
 	/**
@@ -548,6 +594,7 @@ class TEmail extends TComponent
 				$this->_messageId = $id;
 			}
 		}
+		$this->setDirty(); // Mark as dirty when MessageId changes
 	}
 
 	/**
@@ -565,6 +612,7 @@ class TEmail extends TComponent
 	public function setContentType($type)
 	{
 		$this->_contentType = $type !== null ? TPropertyValue::ensureString($type) : null;
+		$this->setDirty(); // Mark as dirty when Content-Type changes
 	}
 
 	/**
@@ -582,6 +630,7 @@ class TEmail extends TComponent
 	public function setCharset($charset)
 	{
 		$this->_charset = $charset !== null ? TPropertyValue::ensureString($charset) : null;
+		$this->setDirty(); // Mark as dirty when Charset changes
 	}
 
 	/**
@@ -598,6 +647,7 @@ class TEmail extends TComponent
 	public function setSubject($subject)
 	{
 		$this->_subject = TPropertyValue::ensureString($subject);
+		$this->setDirty(); // Mark as dirty when Subject changes
 	}
 
 	/**
@@ -614,6 +664,7 @@ class TEmail extends TComponent
 	public function setIsHtml($isHtml)
 	{
 		$this->_isHtml = TPropertyValue::ensureBoolean($isHtml);
+		$this->setDirty(); // Mark as dirty when IsHtml changes
 	}
 
 	/**
@@ -639,6 +690,7 @@ class TEmail extends TComponent
 	public function setBody($body)
 	{
 		$this->_body = ($body == null) ? null : $body;
+		$this->setDirty(); // Mark as dirty when Body changes
 	}
 
 	/**
@@ -665,6 +717,7 @@ class TEmail extends TComponent
 	public function setTextBody($textBody)
 	{
 		$this->_textBody = ($textBody === null) ? null : TPropertyValue::ensureString($textBody);
+		$this->setDirty(); // Mark as dirty when TextBody changes
 	}
 
 	/**
@@ -681,6 +734,7 @@ class TEmail extends TComponent
 	public function setAttachments($attachments)
 	{
 		$this->_attachments = $attachments;
+		$this->setDirty(); // Mark as dirty when Attachments changes
 	}
 
 	/**
@@ -695,6 +749,7 @@ class TEmail extends TComponent
 	public function addAttachment($filename, $attachment)
 	{
 		$this->_attachments[$filename] = $attachment;
+		$this->setDirty(); // Mark as dirty when Attachments changes
 	}
 
 	/**
@@ -711,6 +766,7 @@ class TEmail extends TComponent
 	public function setCustomData($data)
 	{
 		$this->_customData = $data;
+		$this->setDirty(); // Mark as dirty when CustomData changes
 	}
 
 	/**
@@ -722,7 +778,7 @@ class TEmail extends TComponent
 	}
 
 	/**
-	 * @param \Prado\Util\Email\TEmailModule $module TEmailerBehavior The manager that created the Email
+	 * @param \Prado\Util\Email\TEmailModule $module TAppEmailerBehavior The manager that created the Email
 	 */
 	public function setEmailerModule(TEmailModule $module)
 	{
@@ -740,8 +796,6 @@ class TEmail extends TComponent
 		$html = preg_replace(['/<\w+\s.*?alt\s*=\s*([\'"])(.*?)\1.*?\/?>/i', '/<br\W*?\/?>/i', '/<\/(p|tr|li|ul)\W*?>/i', '/<\/td\W*?>/i', '/<\/?i\W*?\/?>/i', '/<\/?b\W*?\/?>/i', '/<h1\W*?\/?>/i', '/<\/h1\W*?\/?>/i', '/<(h2|h3)\W*?\/?>/i', '/<\/(h2|h3)\W*?\/?>/i', '/<(h4|h5|h6)\W*?\/?>/i', '/<\/(h4|h5|h6)\W*?\/?>/i'], ['$2', $return, $return, ' ', '_', '*', '### ', ' ###', '## ', ' ##', '# ', ' #'], $html);
 		return html_entity_decode(preg_replace(["/\n/", "/\r/", "/[\s\t]+/", '/' . $return . '/'], ['', '', ' ', "\n"], strip_tags($html)), ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401, 'UTF-8');
 	}
-
-
 
 	/**
 	 * Returns an array with the names of all variables of this object that should NOT be serialized

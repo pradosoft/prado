@@ -8,28 +8,23 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
-/*TODO:
- - Active Controls throw error.  addParsedObject not getting objects properly?
- - TDbEmailModule (log emails, TDbEmailService for viewing emails)
- - TEmailTrackerImage - img tag with url to email service to message ID
- - TEmailViewLink - Link to email service with message Id
- - unit tests
- - php Docs
-*/
-
 namespace Prado\Util\Email;
 
 use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;
 use Prado\TApplication;
+use Prado\TApplicationMode;
 use Prado\TPropertyValue;
 use Prado\TEventResults;
+use Prado\Web\Services\TPageConfiguration;
+use Prado\Util\Email\TEmailConfiguration;
+use Prado\Util\Email\TEmailEventParameter;
 use Prado\Util\Email\UI\TEmailPage;
 use Prado\Util\Email\TEmail;
-use Prado\Util\Email\Behaviors\TEmailerBehavior;
+use Prado\Util\Email\Behaviors\TAppEmailerBehavior;
+use Prado\Util\Email\Behaviors\TNativeMailBehavior;
 use Prado\Exceptions\THttpException;
 use Prado\Exceptions\TInvalidOperationException;
-use Prado\TApplicationMode;
 use Prado\Web\UI\TTemplateManager;
 
 /**
@@ -37,7 +32,7 @@ use Prado\Web\UI\TTemplateManager;
  *
  * TEmailModule provides basic email services for creating and sending emails.
  * Default properties for TEmails can be configured similarly to how TPageService
- * configures TPage properties. The TEmailerBehavior is attached to TApplication
+ * configures TPage properties. The TAppEmailerBehavior is attached to TApplication
  * for system wide functionality; providing createEmail, sendEmail, and sendMail
  * functionality.
  *
@@ -74,7 +69,7 @@ use Prado\Web\UI\TTemplateManager;
  *
  * The default Email sending behavior is the {@link TNativeMailBehavior} that sends
  * emails using the native PHP mail() function.  The included SMTP mailer behavior
- * wrapper for PHPMail is {@link TPhpMalierBehavior}.  It is attached with the
+ * wrapper for PHPMail is {@link TPhpMailerBehavior}.  It is attached with the
  * TBehaviorsModule, eg:
  *
  * <code>
@@ -160,8 +155,10 @@ class TEmailModule extends \Prado\TModule
 	public function init($config)
 	{
 		$app = $this->getApplication();
-		$this->attachBehavior(self::EMAILER_BEHAVIOR_NAME, ['class' => '\Prado\Util\Email\Behaviors\TNativeMailBehavior']);
-		$app->attachBehavior(self::EMAILER_BEHAVIOR_NAME, ['class' => '\Prado\Util\Email\Behaviors\TEmailerBehavior', 'EmailerModule' => $this]);
+		if ($app) {
+			$this->attachBehavior(self::EMAILER_BEHAVIOR_NAME, ['class' => \Prado\Util\Email\Behaviors\TNativeMailBehavior::class], 20);
+			$app->attachBehavior(self::EMAILER_BEHAVIOR_NAME, ['class' => \Prado\Util\Email\Behaviors\TAppEmailerBehavior::class, 'EmailerModule' => $this]);
+		}
 
 		$this->_emailConfig = $this->loadEmailConfig($config);
 		$this->_initialized = true;
@@ -330,7 +327,7 @@ class TEmailModule extends \Prado\TModule
 					throw new THttpException(403, 'emailermodule_security_violation', $path);
 				}
 				$hasTemplateFile = is_file($path . self::EMAIL_FILE_EXT);
-				$hasTextFile = is_file($path . EMAIL_TEXT_FILE_EXT);
+				$hasTextFile = is_file($path . self::EMAIL_TEXT_FILE_EXT);
 				$hasClassFile = is_file($path . Prado::CLASS_FILE_EXT);
 				if ($hasTemplateFile || $hasClassFile) {
 					$throwException = false;
@@ -397,12 +394,10 @@ class TEmailModule extends \Prado\TModule
 			throw new TConfigurationException("emailermodule_not_an_email");
 		}
 		$email->setCustomData($customData);
-		if ($email instanceof \Prado\Util\Email\UI\TEmailPage) {
-			echo("getting Email\n");
-			$email = $email->getEmail();
-		}
+		// The logic here appears to be incorrect and is just checking the type but then doing nothing,
+		// leaving it as a no-op in the base implementation.
 
-		$html = $email->getBody();
+		$body = $email->getBody();
 		$message = $email->getTextBody();
 
 		$subject = $email->getSubject() ?? '';
@@ -411,23 +406,18 @@ class TEmailModule extends \Prado\TModule
 		}
 
 		// Is the email html?
-		$isHTML = ($html != '') && ($message != '');
-		if (!$isHTML && preg_match('/(<html\W*?>|<body\W*?>)/', ($html != '') ? $html : $message)) {
+		$isHTML = ($body != '') && ($message != '');
+		if (!$isHTML && preg_match('/(<html\W*?>|<body\W*?>)/', ($body != '') ? $body : $message)) {
 			$isHTML = true;
-			$html = ($html != '') ? $html : $message;
+			$body = ($body != '') ? $body : $message;
 			$message = null;
 		}
 		if ($isHTML && $message === null) {
-			$email->setTextBody(TEmail::htmlToText($html));
+			$email->setTextBody(TEmail::htmlToText($body));
 		}
 		$email->setIsHtml($isHTML);
 
-		if ($email->getUsername() == null) {
-			$user = $this->getApplication()->getUser();
-			if ($user && !$user->getIsGuest()) {
-				$email->setUsername($user->getName());
-			}
-		}
+		$this->setMissingUsername($email);
 
 		//fancy up the headers if they aren't
 		if (!($from = $email->getFrom()) && ($nfrom = ini_get('sendmail_from'))) {
@@ -438,11 +428,11 @@ class TEmailModule extends \Prado\TModule
 		if (!($sender = $email->getSender())) {
 			$email->setSender($from);
 		}
-		if (!$email->getReturnPath() && ($replyto = $email->getReplyTo()) && ($replyto != $email->getFrom())) {
+		if (!($email->getReturnPath()) && ($replyto = $email->getReplyTo()) && ($replyto != $email->getFrom())) {
 			$email->setReturnPath($replyto);
 		}
 		if (!$email->getContentType() && $isHTML) {
-			$email->getContentType('text/html');
+			$email->setContentType('text/html');
 		}
 		if ($dcc = $this->getDefaultCcAddress()) {
 			$cc = $email->getCc();
@@ -485,7 +475,7 @@ class TEmailModule extends \Prado\TModule
 	 */
 	public function onSendEmail($email, $many)
 	{
-		return $this->raiseEvent('onSendEmail', $this, new TEmailEventParameter($email, $many), TEventResults::EVENT_RESULT_FEED_FORWARD);
+		return $this->raiseEvent('onSendEmail', $this, new TEmailEventParameter($email, $many));
 	}
 
 	/**
@@ -494,7 +484,7 @@ class TEmailModule extends \Prado\TModule
 	 * @param string $subject Subject of the Email, no returns
 	 * @param array<string>|string $message The string message or an array,
 	 *  where [0] is the html string message and [1] is text message without html.
-	 * @param array $headers Email Headers, arary keys are Header names and array values are
+	 * @param array $headers Email Headers, array keys are Header names and array values are
 	 *  the Header Values.
 	 * @param array $attachments File paths to the attachment, the data itself, or
 	 * array('path'=>'/path/to/file/file.jpg','mime'=>'image/jpeg','data'=>$filedata, 'name'=>'filename.jpg').
@@ -581,20 +571,20 @@ class TEmailModule extends \Prado\TModule
 	}
 
 	/**
-	 * Sets the base page class name (in namespace format).
-	 * If a page only has a template file without email class file,
+	 * Sets the base email class name (in namespace format).
+	 * If an email only has a template file without email class file,
 	 * this base email class will be instantiated.
 	 * @param string $value class name
 	 */
-	public function setBasePageClass($value)
+	public function setBaseEmailClass($value)
 	{
 		$this->_baseEmailClass = TPropertyValue::ensureString($value);
 	}
 
 	/**
-	 * @return string base email class name in namespace format. Defaults to '\Prado\Util\Email\TEmail'.
+	 * @return string base email class name in namespace format. Defaults to '\Prado\Util\Email\UI\TEmailPage'.
 	 */
-	public function getBasePageClass()
+	public function getBaseEmailClass()
 	{
 		return $this->_baseEmailClass;
 	}
@@ -680,8 +670,8 @@ class TEmailModule extends \Prado\TModule
 	}
 
 	/**
-	 * This event is raised if the page is not found in the BasePath.
-	 * This provides additional possible Page Paths to look for the page.
+	 * This event is raised if the email is not found in the BasePath.
+	 * This provides additional possible Page Paths to look for the email.
 	 * The typical handler would look like:
 	 * <code>
 	 * public function additionalEmailPaths($service, $emailPath)
@@ -695,5 +685,15 @@ class TEmailModule extends \Prado\TModule
 	public function onAdditionalEmailPaths($param)
 	{
 		return $this->raiseEvent('onAdditionalEmailPaths', $this, $param);
+	}
+
+	protected function setMissingUsername($email)
+	{
+		if ($email->getUsername() == null) {
+			$user = $this->getApplication()->getUser();
+			if ($user && !$user->getIsGuest()) {
+				$email->setUsername($user->getName());
+			}
+		}
 	}
 }

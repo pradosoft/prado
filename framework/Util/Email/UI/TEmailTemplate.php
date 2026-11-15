@@ -13,7 +13,6 @@ namespace Prado\Util\Email\UI;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Util\Email\UI\TEmailPublishStyle;
 use Prado\Web\UI\TTemplate;
-use Prado\Web\UI\ActiveControls\IActiveControl;
 use Prado\Web\UI\TControl;
 
 /**

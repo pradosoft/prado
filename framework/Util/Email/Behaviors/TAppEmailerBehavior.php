@@ -1,7 +1,7 @@
 <?php
 
 /**
- * TEmailerBehavior class file.
+ * TAppEmailerBehavior class file.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @link https://github.com/pradosoft/prado
@@ -13,9 +13,9 @@ namespace Prado\Util\Email\Behaviors;
 use Prado\Util\Email\TEmailModule;
 
 /**
- * TEmailerBehavior class.
+ * TAppEmailerBehavior class.
  *
- * TEmailerBehavior is used by TEmailModule to extend TApplication
+ * TAppEmailerBehavior is used by TEmailModule to extend TApplication
  * with global email functionality.  It implements createEmail and sendMail.
  *
  * .
@@ -23,7 +23,7 @@ use Prado\Util\Email\TEmailModule;
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.3.3
  */
-class TEmailerBehavior extends \Prado\Util\TBehavior
+class TAppEmailerBehavior extends \Prado\Util\TBehavior
 {
 	/**
 	 * @var TEmailModule The handler for functionality

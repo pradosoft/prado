@@ -2,18 +2,18 @@
 
 namespace Prado\Test\Unit\Util\Email\Behaviors;
 
-class TEmailerBehaviorTest extends \PHPUnit\Framework\TestCase
+class TAppEmailerBehaviorTest extends \PHPUnit\Framework\TestCase
 {
 	public function testGetEmailerModule()
 	{
-		$behavior = new \Prado\Util\Email\Behaviors\TEmailerBehavior();
+		$behavior = new \Prado\Util\Email\Behaviors\TAppEmailerBehavior();
 		$this->assertNull($behavior->getEmailerModule());
 	}
 
 	public function testSetEmailerModule()
 	{
 		$module = $this->createMock(\Prado\Util\Email\TEmailModule::class);
-		$behavior = new \Prado\Util\Email\Behaviors\TEmailerBehavior();
+		$behavior = new \Prado\Util\Email\Behaviors\TAppEmailerBehavior();
 		$behavior->setEmailerModule($module);
 		$this->assertSame($module, $behavior->getEmailerModule());
 	}
@@ -26,7 +26,7 @@ class TEmailerBehaviorTest extends \PHPUnit\Framework\TestCase
 			->with('test.email', 'test@example.com')
 			->willReturn('test returned email');
 		
-		$behavior = new \Prado\Util\Email\Behaviors\TEmailerBehavior();
+		$behavior = new \Prado\Util\Email\Behaviors\TAppEmailerBehavior();
 		$behavior->setEmailerModule($module);
 		
 		$result = $behavior->createEmail('test.email', 'test@example.com');
@@ -41,7 +41,7 @@ class TEmailerBehaviorTest extends \PHPUnit\Framework\TestCase
 			->with('test email', ['test' => 'data'], true)
 			->willReturn(true);
 		
-		$behavior = new \Prado\Util\Email\Behaviors\TEmailerBehavior();
+		$behavior = new \Prado\Util\Email\Behaviors\TAppEmailerBehavior();
 		$behavior->setEmailerModule($module);
 		
 		$result = $behavior->sendEmail('test email', ['test' => 'data'], true);
@@ -56,7 +56,7 @@ class TEmailerBehaviorTest extends \PHPUnit\Framework\TestCase
 			->with('test@example.com', 'Subject', 'Message', [], [], true)
 			->willReturn(true);
 		
-		$behavior = new \Prado\Util\Email\Behaviors\TEmailerBehavior();
+		$behavior = new \Prado\Util\Email\Behaviors\TAppEmailerBehavior();
 		$behavior->setEmailerModule($module);
 		
 		$result = $behavior->sendMail('test@example.com', 'Subject', 'Message', [], [], true);

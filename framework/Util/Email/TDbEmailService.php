@@ -17,8 +17,10 @@ use Prado\Exceptions\THttpException;
 use Prado\Web\Javascripts\TJavaScript;
 
 /**
- * TDbEmailService class provides display of unsecure logged emails
- * and tracking of email viewing.
+ * TDbEmailService class
+ *
+ *
+ *
  *
  * The TDbEmailService works with TEmailTrackerImage to track emails sent versus viewed.
  *

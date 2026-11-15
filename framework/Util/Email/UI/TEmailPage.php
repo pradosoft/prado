@@ -21,8 +21,6 @@ use Prado\Web\UI\TPage;
 use Prado\Web\UI\TForm;
 use Prado\Web\UI\THtmlWriter;
 use Prado\Collections\TMap;
-use Prado\Exceptions\TInvalidOperationException;
-use Prado\Web\UI\ActiveControls\IActiveControl;
 
 /**
  * TEmailPage class

@@ -18,15 +18,16 @@ use Prado\Exceptions\THttpException;
 use Prado\Security\Permissions\IPermissions;
 use Prado\Web\Javascripts\TJavaScript;
 use Prado\Xml\TXmlElement;
-use Prado\Data\TDataSourceConfig;
+use Prado\Data\TTableGateway;
 use Prado\Data\TDbConnection;
-use Prado\Exceptions\TInvalidOperationException;
+use Prado\Data\TDbCommand;
+use Prado\Data\TDbParameterModule;
 use Prado\Security\Permissions\TPermissionEvent;
 use Prado\Security\Permissions\TUserOwnerRule;
-use Prado\TPropertyValue;
 use Prado\Util\Cron\TCronTaskInfo;
+use Prado\TPropertyValue;
+use Prado\Util\Cron\TCronModule;
 use Prado\Util\IDbModule;
-use Prado\Util\Cron\TDbCronManager;
 
 /**
  * TDbEmailModule class.
@@ -38,7 +39,7 @@ use Prado\Util\Cron\TDbCronManager;
  * the viewing of an email.
  *
  * <code>
- *   <module id="dbEmailer" class="">
+ *   <module id="dbEmailer" class="Prado\Util\Email\TDbEmailModule">
  *		<service id="email" />
  *	 </module>
  *
@@ -51,6 +52,9 @@ use Prado\Util\Cron\TDbCronManager;
 class TDbEmailModule extends TEmailModule implements IDbModule, IPermissions
 {
 	public const EMAIL_SERVICE = 'email';
+	public const PERM_EMAIL_SHELL = 'Email.Shell';
+	public const PERM_EMAIL_LOG_READ = 'Email.Log.Read';
+	public const PERM_EMAIL_LOG_DELETE = 'Email.Log.Delete';
 
 	private $_logging = true;
 
@@ -58,15 +62,18 @@ class TDbEmailModule extends TEmailModule implements IDbModule, IPermissions
 
 	private $_serviceID = '';
 
-	// Database function
-	// log
-	// sent field, null is not sent
-	// secure (no reading from the web without credentials)
-	// $many to $options = ['many' => bool, 'secure' => bool]
-	// shell for: sending pending emails, show pending, display email log (w/ name and per user), display specific logged email
-	// resend last email of user from email path.
-	// db email service: view any non-secure email via trackingId, secure emails requires login, Log viewing of email via trackingID on image url.
-	// Prado::log
+	private $_connID = '';
+
+	private $_conn;
+
+	private $_tableName = 'emails';
+
+	private $_autoCreate = true;
+
+	private $_logCronTasks = true;
+
+	private $_dbEmailService;
+
 	/**
 	 * @param array|\Prado\Xml\TXmlElement $config
 	 */
@@ -90,25 +97,25 @@ class TDbEmailModule extends TEmailModule implements IDbModule, IPermissions
 		if ($this->_serviceID) {
 			$properties['EmailerModule'] = $this;
 			$emailServiceConfig = new TApplicationConfiguration();
-			$emailServiceConfig->loadFromPhp(['services' => [$this->_serviceID => ['class' => 'Prado\\Util\\Email\\TDbEmailService', 'properties' => $properties]]]);
+			$emailServiceConfig->loadFromPhp(['services' => [$this->_serviceID => ['class' => 'Prado\Util\Email\TDbEmailService', 'properties' => $properties]]]);
 			$this->getApplication()->applyConfiguration($emailServiceConfig, true);
 		}
 
 		if ($this->dyRegisterShellAction(false) !== true && ($app = $this->getApplication()) instanceof \Prado\Shell\TShellApplication) {
-			$app->addShellActionClass(['class' => 'Prado\\Util\\Email\\Shell\\TShellEmailerAction', 'CronModule' => $this]);
+			$app->addShellActionClass(['class' => 'Prado\Util\Email\Shell\TShellEmailerAction', 'CronModule' => $this]);
 		}
 	}
 
 	/**
 	 * the global event handling requests for cron task info
-	 * @param TDbCronManager $cron
+	 * @param TCronModule $cron
 	 * @param null $param
 	 * @return \Prado\Util\Cron\TCronTask[]
 	 */
 	public function fxGetCronTaskInfos($cron, $param)
 	{
 		return [
-				new TCronTaskInfo('sendmail', 'Prado\\Util\\Email\\Cron\\TDbEmailSenderTask', $this->getId(), Prado::localize('DbCron Clean Log Task'), Prado::localize('Clears the database of cron log items before the specified time period.')),
+				new TCronTaskInfo('sendmail', 'Prado\Util\Email\Cron\TDbEmailSenderTask', $this->getId(), Prado::localize('DbCron Clean Log Task'), Prado::localize('Clears the database of cron log items before the specified time period.')),
 			];
 	}
 
@@ -143,38 +150,71 @@ class TDbEmailModule extends TEmailModule implements IDbModule, IPermissions
 		return $this->raiseEvent('onViewEmail', $this, $email);
 	}
 
-	public function getEmailByTrackerId()
+	/**
+	 * Gets email by tracker ID
+	 * @param string $trackerId
+	 * @return null|array
+	 */
+	public function getEmailByTrackerId($trackerId)
 	{
-
+		return null;
 	}
 
-	public function getEmailByUID()
+	/**
+	 * Gets email by UID
+	 * @param string $uid
+	 * @return null|array
+	 */
+	public function getEmailByUID($uid)
 	{
-
+		return null;
 	}
 
-	public function getUserEmailsCount()
+	/**
+	 * Gets count of emails for a specific user
+	 * @param null|string $userId
+	 * @return int
+	 */
+	public function getUserEmailsCount($userId = null)
 	{
-
+		return 0;
 	}
 
-	public function getUserEmails()
+	/**
+	 * Gets emails for a specific user with pagination
+	 * @param null|string $userId
+	 * @param int $limit
+	 * @param int $offset
+	 * @return array
+	 */
+	public function getUserEmails($userId = null, $limit = 0, $offset = 0)
 	{
-
+		return [];
 	}
 
-	public function getPendingEmails()
+	/**
+	 * Gets pending emails with pagination
+	 * @param int $limit
+	 * @param int $offset
+	 * @return array
+	 */
+	public function getPendingEmails($limit = 0, $offset = 0)
 	{
-
+		return [];
 	}
+
+	/**
+	 * Sends pending emails
+	 * @return int number of emails sent
+	 */
 	public function sendPendingEmails()
 	{
-
+		return 0;
 	}
 
 	/**
 	 * Creates the DB connection. If no ConnectionId is provided, then this
-	 * creates a sqlite database in runtime named 'cron.jobs'.
+	 * creates a sqlite database in runtime named 'emails.db'.
 	 * @throws TConfigurationException if module ID is invalid or empty
 	 * @return \Prado\Data\TDbConnection the created DB connection
 	 */
@@ -182,7 +222,7 @@ class TDbEmailModule extends TEmailModule implements IDbModule, IPermissions
 	{
 		if ($this->_connID !== '') {
 			$config = $this->getApplication()->getModule($this->_connID);
-			if ($config instanceof TDataSourceConfig) {
+			if ($config instanceof \Prado\Data\TDataSourceConfig) {
 				return $config->getDbConnection();
 			} else {
 				throw new TConfigurationException('dbcron_connectionid_invalid', $this->_connID);
@@ -190,7 +230,7 @@ class TDbEmailModule extends TEmailModule implements IDbModule, IPermissions
 		} else {
 			$db = new TDbConnection();
 			// default to SQLite3 database
-			$dbFile = $this->getApplication()->getRuntimePath() . DIRECTORY_SEPARATOR . 'cron.jobs';
+			$dbFile = $this->getApplication()->getRuntimePath() . DIRECTORY_SEPARATOR . 'emails.db';
 			$db->setConnectionString('sqlite:' . $dbFile);
 			return $db;
 		}
@@ -225,7 +265,7 @@ class TDbEmailModule extends TEmailModule implements IDbModule, IPermissions
 	public function setConnectionID($value)
 	{
 		if ($this->_initialized) {
-			throw new TInvalidOperationException('dbcron_property_unchangeable', 'ConnectionID');
+			throw new \Prado\Exceptions\TInvalidOperationException('dbcron_property_unchangeable', 'ConnectionID');
 		}
 		$this->_connID = $value;
 	}
@@ -261,7 +301,7 @@ class TDbEmailModule extends TEmailModule implements IDbModule, IPermissions
 	public function setTableName($table)
 	{
 		if ($this->_initialized) {
-			throw new TInvalidOperationException('dbcron_property_unchangeable', 'TableName');
+			throw new \Prado\Exceptions\TInvalidOperationException('dbcron_property_unchangeable', 'TableName');
 		}
 		$this->_tableName = TPropertyValue::ensureString($table);
 	}
@@ -283,8 +323,56 @@ class TDbEmailModule extends TEmailModule implements IDbModule, IPermissions
 	public function setAutoCreateCronTable($value)
 	{
 		if ($this->_initialized) {
-			throw new TInvalidOperationException('dbcron_property_unchangeable', 'AutoCreateCronTable');
+			throw new \Prado\Exceptions\TInvalidOperationException('dbcron_property_unchangeable', 'AutoCreateCronTable');
 		}
 		$this->_autoCreate = TPropertyValue::ensureBoolean($value);
+	}
+
+	/**
+	 * @return bool whether email logging is enabled. Defaults to true.
+	 */
+	public function getLogging()
+	{
+		return $this->_logging;
+	}
+
+	/**
+	 * @param bool $logging whether email logging is enabled.
+	 */
+	public function setLogging($logging)
+	{
+		$this->_logging = TPropertyValue::ensureBoolean($logging);
+	}
+
+	/**
+	 * @return bool whether emails are sent offline. Defaults to false.
+	 */
+	public function getOfflineEmail()
+	{
+		return $this->_offlineEmail;
+	}
+
+	/**
+	 * @param bool $offline whether emails are sent offline.
+	 */
+	public function setOfflineEmail($offline)
+	{
+		$this->_offlineEmail = TPropertyValue::ensureBoolean($offline);
+	}
+
+	/**
+	 * @return string the service ID used for email service.
+	 */
+	public function getServiceID()
+	{
+		return $this->_serviceID;
+	}
+
+	/**
+	 * @param string $serviceID the service ID used for email service.
+	 */
+	public function setServiceID($serviceID)
+	{
+		$this->_serviceID = TPropertyValue::ensureString($serviceID);
 	}
 }
