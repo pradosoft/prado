@@ -15,7 +15,6 @@ use Prado\Util\Mutex\TMemoryMutex;
 use Prado\Security\Permissions\TPermissionsManager;
 use Prado\Security\TUser;
 use Prado\Security\TUserManager;
-use Prado\Test\Unit\PradoUnit;
 
 /**
  * Throws from its run.
