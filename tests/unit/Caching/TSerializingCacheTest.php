@@ -10,6 +10,7 @@
 
 namespace Prado\Test\Unit\Caching;
 
+use Prado\Caching\TApplicationStateCacheDependency;
 use Prado\Caching\TSerializingCache;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
@@ -221,10 +222,32 @@ class TSerializingCacheTest extends \PHPUnit\Framework\TestCase
 		$cache->setSerializationType(TSerializingCache::SERIALIZATION_JSON);
 		$cache->init(null);
 		$cache->set('k', ['a' => 1, 'b' => ['c' => 2]]);
-		// JSON decodes to arrays; the dependency wrapper is preserved structurally.
+		// JSON decodes to arrays; the [value, dependency] envelope is preserved structurally.
 		$this->assertSame(['a' => 1, 'b' => ['c' => 2]], $cache->get('k'));
 		// The persisted payload is JSON, not PHP-serialized.
 		$this->assertStringStartsWith('[', $cache->onlyStored());
+	}
+
+	/**
+	 * @dataProvider jsonStoreProvider
+	 */
+	public function testJsonRejectsAValueWithADependency(string $method): void
+	{
+		$cache = $this->newCache();
+		$cache->setSerializationType(TSerializingCache::SERIALIZATION_JSON);
+		$cache->init(null);
+		try {
+			$cache->$method('k', 'v', 0, new TApplicationStateCacheDependency());
+			$this->fail('A JSON cache stored a value with a dependency.');
+		} catch (TInvalidDataValueException $e) {
+			$this->assertSame('serializingcache_json_dependency_unsupported', $e->getErrorCode());
+		}
+		$this->assertSame([], $cache->store);
+	}
+
+	public static function jsonStoreProvider(): array
+	{
+		return ['set' => ['set'], 'add' => ['add']];
 	}
 
 	public function testSetSerializationTypeRejectsUnknownValue(): void

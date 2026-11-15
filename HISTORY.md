@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TSerializingCache` with `SerializationType` `JSON` throws `TInvalidDataValueException` for a value stored with a dependency; JSON dropped the dependency, so the entry never invalidated. (belisoful)
 BUG: Issue #1497 - `TDirectoryCacheDependency::getHasChanged()` reports a removed directory as changed; it threw `TPhpErrorException`, and an unreadable directory throws `TIOException`. (belisoful)
 BUG: Issue #1497 - `TDbCache` names its `expire` index after the cache table, so SQLite and PostgreSQL accept a second cache table in one database. (belisoful)
 BUG: Issue #1497 - A `TSerializingCache` entry that does not unserialize is a cache miss; `get()` threw `TPhpErrorException`. (belisoful)
