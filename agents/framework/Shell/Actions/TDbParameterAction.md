@@ -44,6 +44,8 @@ Displays a specific parameter's value.
 ### `param/set <param-key> <param-value>`
 Sets a parameter value in the database.
 
+`get` and `set` take any key but the empty string, `0` included.
+
 ## Options
 
 | Option | Alias | Description |

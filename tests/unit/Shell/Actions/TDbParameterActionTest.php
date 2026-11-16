@@ -112,4 +112,20 @@ class TDbParameterActionTest extends TestCase
 		$this->assertMatchesRegularExpression('/^shellFalse +false$/m', $captured);
 		$this->assertMatchesRegularExpression('/^shellInt +5$/m', $captured);
 	}
+
+	public function testActionGetReadsTheKeyZero(): void
+	{
+		$this->_app->getParameters()['0'] = 'zero';
+
+		$this->assertTrue($this->_action->actionGet(['param/get', '0']));
+
+		$this->assertStringContainsString("Parameter 0: 'zero'", $this->_text->getCaptured());
+	}
+
+	public function testActionSetStoresTheKeyZero(): void
+	{
+		$this->assertTrue($this->_action->actionSet(['param/set', '0', 'zero']));
+
+		$this->assertSame([['0', 'zero', true, false]], $this->_module->sets);
+	}
 }

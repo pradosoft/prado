@@ -122,7 +122,7 @@ class TDbParameterAction extends TShellAction
 	}
 
 	/**
-	 * gets a parameter value
+	 * Displays the value of parameter `<param-key>`.  Any key but the empty string is a key, `0` included.
 	 * @param array $args parameters
 	 * @return bool is the action handled
 	 */
@@ -131,7 +131,7 @@ class TDbParameterAction extends TShellAction
 		$writer = $this->getWriter();
 		$writer->writeLine();
 
-		if (!($key = ($args[1] ?? null))) {
+		if (($key = ($args[1] ?? null)) === null || $key === '') {
 			$writer->writeError('Get Parameter needs a key');
 			return true;
 		}
@@ -146,8 +146,8 @@ class TDbParameterAction extends TShellAction
 	}
 
 	/**
-	 * Sets parameter `<param-key>` to `<param-value>`.  Any string is a value, `0` and
-	 * the empty string included; a missing value is an error.
+	 * Sets parameter `<param-key>` to `<param-value>`.  Any key but the empty string is a key,
+	 * and any string is a value, `0` and the empty string included; a missing value is an error.
 	 * @param array $args parameters
 	 * @return bool is the action handled
 	 */
@@ -156,7 +156,7 @@ class TDbParameterAction extends TShellAction
 		$writer = $this->getWriter();
 		$writer->writeLine();
 
-		if (!($key = ($args[1] ?? null))) {
+		if (($key = ($args[1] ?? null)) === null || $key === '') {
 			$writer->writeError('Set Parameter needs a key');
 			return true;
 		}

@@ -35,6 +35,7 @@ BUG: Issue #1497 - `TWebServerAction` `http/serve` in quiet mode 2 or 3 no longe
 BUG: Issue #1497 - `TWebServerAction::setAddress()` brackets a bare IPv6 address such as `::1`, which it read as address `:` and port 1; a taken address reports its port. (belisoful)
 BUG: Issue #1497 - `TDbParameterAction` `param/index` heads its columns "Parameter Key" and "Value" with a gap between them, and `param/set` stores `0` and the empty string; it reported them missing. (belisoful)
 BUG: Issue #1497 - `TDbParameterAction` `param/index` shows a `null` or boolean parameter value as its string; a `null` value threw a `TPhpErrorException`. (belisoful)
+BUG: Issue #1497 - `TDbParameterAction` `param/get` and `param/set` take the key `0`; they reported it missing. (belisoful)
 BUG: Issue #1497 - `TShellApplication::processActionArguments()` keeps every `=` after the first in an action option's value, as `processArguments()` does; `--option=a=b` set `a`. (belisoful)
 BUG: Issue #1497 - `TShellAction::isValidAction()` matches the action name literally; a name holding a regular expression character, such as `.`, matched other commands. (belisoful)
 BUG: Issue #1497 - `THelpAction` `help <command>` matches the whole command name, so `help cachexyz` no longer shows `cache`, and it returns false without a shell application, where `help` threw an `Error`. (belisoful)
