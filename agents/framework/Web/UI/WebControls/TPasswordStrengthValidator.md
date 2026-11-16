@@ -20,7 +20,7 @@ Validates that a password reaches `MinStrength`, a [TPasswordStrength](./TPasswo
 | `CompromisedThreshold` | `1` | Breach occurrences at which the password fails; at least 1. |
 | `CompromisedApiUrl` | `PWNED_PASSWORDS_URL` | Range API URL; the 5 character hash prefix is appended. A self-hosted mirror can replace it. |
 | `CompromisedTimeout` | `5` | Request timeout in seconds of the default client. |
-| `HttpClient` | `THttpClient::create()` | The transport; not saved in the page state. Tests inject a stub. |
+| `HttpClient` | a `THttpClient` with `CompromisedTimeout` | The PSR-18 client; not saved in the page state. Tests inject a stub. |
 
 ## Strength estimate
 
@@ -45,7 +45,7 @@ The estimate has no dictionary and no keyboard-pattern detection, so `Password1!
 
 - `isCompromised(string): bool` sends `GET {CompromisedApiUrl}{first 5 hex of SHA-1}` with `Add-Padding: true` and a `PRADO/<version>` user agent. The suffix matches case-insensitively; padding entries have count 0.
 - It runs after the strength check passes, so a weak password makes no request.
-- A transport failure (`THttpClientException`, including no available transport) or a non-2xx status logs `Prado::warning` and passes. An outage never blocks the form.
+- A transport failure (any PSR-18 `ClientExceptionInterface`) or a non-2xx status logs `Prado::warning` and passes. An outage never blocks the form.
 - The password and its full hash never leave the server, and the log message carries neither.
 
 ## Client side
@@ -56,7 +56,7 @@ Inherited from TBaseValidator: the message has `role="alert"`, it is linked to t
 
 ## Tests
 
-- `tests/unit/Web/UI/WebControls/TPasswordStrengthValidatorTest.php`: a stub `THttpClient` covers the compromised check.
+- `tests/unit/Web/UI/WebControls/TPasswordStrengthValidatorTest.php`: the recording `TTestHttpClient` harness covers the compromised check.
 - `tests/js/validator/passwordstrengthvalidator.test.js`
 - Both run the cases in `tests/js/validator/password-cases.json`, so client and server estimate the same entropy.
 - `tests/playwright/validators/PasswordStrengthValidatorTestCase.spec.js` with `tests/harness/validators/protected/pages/PasswordStrengthValidator.page`: client checks, server-only checks, and accessibility. The compromised check is not exercised, since the single-threaded test server cannot answer its own request.

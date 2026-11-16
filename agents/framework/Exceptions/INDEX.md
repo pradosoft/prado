@@ -62,7 +62,7 @@ Component exceptions:
 | `TInvalidCallbackException` | `Web\UI\ActiveControls` | `TException` | thrown only by callback handling (3.1) |
 | `TMessageSourceIOException` | `I18N\core` | `TException` | thrown only by the message sources |
 | `TMutexException` | `Util\Mutex` | `TSystemException` | thrown only by the mutexes |
-| `THttpClientException` | `IO\HttpClient` | `TException` | carries a `THttpClientResponse` |
+| `THttpClientException` | `IO\HttpClient` | `TNetworkException` | PSR-18 `ClientExceptionInterface`; base of `THttpNetworkException`, `THttpRequestException`, `THttpResponseException` |
 | `TPsrCacheException`, `TPsrCacheInvalidArgumentException` | `Caching` | `TConfigurationException`, `TInvalidDataValueException` | implement the PSR-6 and PSR-16 exception interfaces |
 | `TInputValidationException` | `Util` | `TInvalidDataValueException` | carries the field errors of `TInputValidator` |
 | `TRestException` | `Web\Services\Rest` | `THttpException` | carries the status, title and problem document |

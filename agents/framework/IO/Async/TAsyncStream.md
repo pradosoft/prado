@@ -32,3 +32,4 @@ $body = $stream->getContents();   // reads to end of stream, yielding meanwhile
 - A cancelled token throws its `TCancelledException` from the wait and leaves no callback on the loop.
 - Readiness is level-triggered; a stream reported readable whose `read()` returns `''` without `eof()` (out-of-band or TLS bookkeeping) waits again.
 - `getContents()` and `__toString()` come from the decorator and read through the async `read()`.
+- `TSocketStream::connect()` blocks the process on the connect. `TSocketStream::connectAsync()` and `enableCryptoAsync()` connect and negotiate TLS on the loop and leave the socket non-blocking for the decorator.

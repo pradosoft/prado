@@ -13,8 +13,11 @@ namespace Prado\Util\Cron;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TIOException;
+use Prado\IO\Http\TRequest;
 use Prado\IO\HttpClient\THttpClient;
+use Prado\IO\HttpClient\THttpClientOption;
 use Prado\TPropertyValue;
+use Psr\Http\Client\ClientInterface;
 
 /**
  * THttpCronTask class.
@@ -29,10 +32,10 @@ use Prado\TPropertyValue;
  *      Body='{"event":"daily"}' />
  * ```
  *
- * The request goes through the {@see getHttpClient HttpClient}, {@see THttpClient::create()} by default.
+ * The request goes through the PSR-18 {@see getHttpClient HttpClient}, a {@see THttpClient} by default.
  * A 2xx status is a success; any other status throws a {@see TIOException}, so the run's result is an
- * error.  The task's {@see getTimeout Timeout}, else the module's TaskTimeout, rounded up to whole
- * seconds, is the client's timeout.  {@see getLogFile LogFile} receives the response body of each run,
+ * error.  The task's {@see getTimeout Timeout}, else the module's TaskTimeout, is the request's
+ * {@see THttpClientOption::TIMEOUT} when the client is a {@see THttpClient}.  {@see getLogFile LogFile} receives the response body of each run,
  * appended.  {@see getStatusCode StatusCode} is the status of the last run in this process.
  *
  * @author Brad Anderson <belisoful@icloud.com>
@@ -55,8 +58,8 @@ class THttpCronTask extends TCronTask
 	/** @var ?string the file the response bodies are appended to, or null */
 	private ?string $_logFile = null;
 
-	/** @var ?THttpClient the client that sends the request */
-	private ?THttpClient $_httpClient = null;
+	/** @var ?ClientInterface the PSR-18 client that sends the request */
+	private ?ClientInterface $_httpClient = null;
 
 	/** @var ?int the status of the last run */
 	private ?int $_statusCode = null;
@@ -66,7 +69,7 @@ class THttpCronTask extends TCronTask
 	 * @param TCronModule $cronModule the module running the task
 	 * @throws TConfigurationException when the task has no Url
 	 * @throws TIOException when the response status is not 2xx
-	 * @throws \Prado\IO\HttpClient\THttpClientException when the request fails
+	 * @throws \Psr\Http\Client\ClientExceptionInterface when the request fails
 	 */
 	public function execute($cronModule)
 	{
@@ -75,17 +78,23 @@ class THttpCronTask extends TCronTask
 			throw new TConfigurationException('httpcrontask_no_url', $this->getName());
 		}
 		$client = $this->getHttpClient();
+		$request = new TRequest($this->getMethod(), $url, $this->getHeaders(), $this->getBody());
 		$timeout = $this->getTimeout() ?? (($cronModule instanceof TCronModule) ? $cronModule->getTaskTimeout() : null);
-		if ($timeout !== null) {
-			$client->setTimeout(max(1, (int) ceil($timeout)));
-		}
 		$this->_statusCode = null;
-		$response = $client->download($this->getMethod(), $url, $this->getHeaders(), $this->getBody());
+		if ($client instanceof THttpClient) {
+			$options = [THttpClientOption::HTTP_ERRORS => false];
+			if ($timeout !== null) {
+				$options[THttpClientOption::TIMEOUT] = (float) $timeout;
+			}
+			$response = $client->send($request, $options);
+		} else {
+			$response = $client->sendRequest($request);
+		}
 		$this->_statusCode = $response->getStatusCode();
 		if (($log = $this->getLogFile()) !== null) {
-			file_put_contents($log, $response->getBody(), FILE_APPEND | LOCK_EX);
+			file_put_contents($log, (string) $response->getBody(), FILE_APPEND | LOCK_EX);
 		}
-		if (!$response->isSuccess()) {
+		if ($this->_statusCode < 200 || $this->_statusCode >= 300) {
 			throw new TIOException('httpcrontask_status', $this->getName(), $this->_statusCode);
 		}
 	}
@@ -200,19 +209,18 @@ class THttpCronTask extends TCronTask
 	}
 
 	/**
-	 * @throws \Prado\IO\HttpClient\THttpClientException when no HTTP transport is available
-	 * @return THttpClient the client that sends the request; defaults to {@see THttpClient::create()}
+	 * @return ClientInterface the PSR-18 client that sends the request; a {@see THttpClient} is created on first use
 	 */
-	public function getHttpClient(): THttpClient
+	public function getHttpClient(): ClientInterface
 	{
-		return $this->_httpClient ??= THttpClient::create();
+		return $this->_httpClient ??= new THttpClient();
 	}
 
 	/**
-	 * @param ?THttpClient $client the client that sends the request; null restores the default
+	 * @param ?ClientInterface $client the PSR-18 client that sends the request; null restores the default
 	 * @return static the current object
 	 */
-	public function setHttpClient(?THttpClient $client): static
+	public function setHttpClient(?ClientInterface $client): static
 	{
 		$this->_httpClient = $client;
 		return $this;

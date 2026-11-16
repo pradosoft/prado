@@ -14,9 +14,8 @@ use Prado\Exceptions\TInvalidOperationException;
 use Prado\IO\Async\TAsync;
 use Prado\IO\Async\TDeferred;
 use Prado\IO\Async\TFiberContext;
-use Prado\IO\HttpClient\THttpClient;
-use Prado\IO\HttpClient\THttpClientException;
-use Prado\IO\HttpClient\THttpClientResponse;
+use Prado\IO\Http\TResponse;
+use Prado\IO\HttpClient\THttpNetworkException;
 use Prado\Prado;
 use Prado\Test\Unit\PradoUnit;
 use Prado\Test\Unit\Harness\Util\Cron\TTestCronModule;
@@ -41,6 +40,9 @@ use Prado\Util\IDynamicMethods;
 use Prado\TModule;
 use Prado\Util\Cron\TTimeScheduler;
 use Prado\Xml\TXmlDocument;
+use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 class MyTempModuleForCron extends TModule 
 {
@@ -163,19 +165,19 @@ class TTestCronStatusTask extends TCronTask
 /**
  * Records the requests a cron module's pings make.
  */
-class TTestCronPingHttpClient extends THttpClient
+class TTestCronPingHttpClient extends TComponent implements ClientInterface
 {
 	public array $requests = [];
 	public int $status = 200;
 	public bool $fail = false;
 
-	public function download(string $method, string $url, array $headers = [], ?string $body = null): THttpClientResponse
+	public function sendRequest(RequestInterface $request): ResponseInterface
 	{
 		if ($this->fail) {
-			throw new THttpClientException('httpclient_transport_error', 0, "Failed to open '{$url}'.");
+			throw new THttpNetworkException($request, 'httpclient_transport_error', 'connection refused');
 		}
-		$this->requests[] = [$method, $url];
-		return new THttpClientResponse($this->status);
+		$this->requests[] = [$request->getMethod(), (string) $request->getUri()];
+		return new TResponse($this->status);
 	}
 }
 

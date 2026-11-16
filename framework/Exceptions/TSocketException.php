@@ -29,14 +29,15 @@ class TSocketException extends TNetworkException
 	/**
 	 * Constructor.
 	 * @param int $errorCode Network error code.
-	 * @param ?string $errorMessage error message.  default null to be filled in by
+	 * @param ?string $errorMessage error message or message key.  default null to be filled in by
 	 *   PHP `socket_strerror($errorCode)`, or `socketexception_error_code` without the
 	 *   sockets extension.
+	 * @param mixed ...$args The message arguments, since 4.4.0; a trailing Throwable is the previous exception.
 	 */
-	public function __construct($errorCode, $errorMessage = null)
+	public function __construct($errorCode, $errorMessage = null, ...$args)
 	{
 		if ($errorMessage !== null) {
-			parent::__construct($errorCode, $errorMessage);
+			parent::__construct($errorCode, $errorMessage, ...$args);
 		} elseif ($this->getSocketsLoaded()) {
 			parent::__construct($errorCode, socket_strerror($errorCode));
 		} else {

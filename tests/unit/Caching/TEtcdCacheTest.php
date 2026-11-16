@@ -12,35 +12,16 @@ namespace Prado\Test\Unit\Caching;
 
 use Prado\Caching\TEtcdCache;
 use Prado\Exceptions\TConfigurationException;
+use Prado\IO\Http\TRequest;
+use Prado\IO\Http\TResponse;
 use Prado\IO\HttpClient\THttpClient;
-use Prado\IO\HttpClient\THttpClientException;
-use Prado\IO\HttpClient\THttpClientResponse;
+use Prado\IO\HttpClient\THttpNetworkException;
 use Prado\Test\Unit\Harness\Caching\TTestEtcdCache;
+use Prado\Test\Unit\Harness\IO\TTestHttpClient;
+use Psr\Http\Message\RequestInterface;
 
 /**
- * Records each etcd request and answers with queued responses.
- */
-class TEtcdCacheTestHttpClient extends THttpClient
-{
-	public array $calls = [];
-
-	/** @var THttpClientResponse[] */
-	public array $responses = [];
-
-	public ?\Throwable $throw = null;
-
-	public function download(string $method, string $url, array $headers = [], ?string $body = null): THttpClientResponse
-	{
-		$this->calls[] = compact('method', 'url', 'headers', 'body');
-		if ($this->throw !== null) {
-			throw $this->throw;
-		}
-		return array_shift($this->responses) ?? new THttpClientResponse(200, [], '{"action":"set"}');
-	}
-}
-
-/**
- * A cache on a PHP with no HTTP transport.
+ * A cache on a PHP with no HTTP handler.
  */
 class TTransportlessEtcdCache extends TTestEtcdCache
 {
@@ -52,7 +33,7 @@ class TTransportlessEtcdCache extends TTestEtcdCache
 
 /**
  * Unit tests for {@see TEtcdCache}, via the {@see TTestEtcdCache} harness. The etcd v2
- * protocol is exercised through a recording {@see THttpClient}; no etcd server is needed.
+ * protocol is exercised through a recording {@see TTestHttpClient}; no etcd server is needed.
  */
 class TEtcdCacheTest extends \PHPUnit\Framework\TestCase
 {
@@ -63,60 +44,60 @@ class TEtcdCacheTest extends \PHPUnit\Framework\TestCase
 		return $cache;
 	}
 
-	private function newClientCache(?TEtcdCacheTestHttpClient &$client): TTestEtcdCache
+	private function newClientCache(?TTestHttpClient &$client): TTestEtcdCache
 	{
-		$client = new TEtcdCacheTestHttpClient();
+		$client = new TTestHttpClient();
 		$cache = $this->newCache();
-		$cache->setDownloader($client);
+		$cache->setHttpClient($client);
 		return $cache;
 	}
 
-	public function testIsAvailableAsksTheHttpClientForATransport(): void
+	public function testIsAvailableAsksTheHttpClientForAHandler(): void
 	{
-		$this->assertSame(THttpClient::getHasAvailableTransport(), TEtcdCache::getIsAvailable());
+		$this->assertSame(THttpClient::getHasAvailableHandler(), TEtcdCache::getIsAvailable());
 	}
 
-	public function testDefaultDownloaderIsLazyAndDoesNotFollowRedirects(): void
+	public function testDefaultHttpClientIsLazyAndDoesNotFollowRedirects(): void
 	{
 		$cache = $this->newCache();
-		$client = $cache->getDownloader();
+		$client = $cache->getHttpClient();
 		$this->assertInstanceOf(THttpClient::class, $client);
 		$this->assertFalse($client->getFollowRedirects());
-		$this->assertSame($client, $cache->getDownloader());
+		$this->assertSame($client, $cache->getHttpClient());
 	}
 
-	public function testDownloaderRoundTrip(): void
+	public function testHttpClientRoundTrip(): void
 	{
 		$cache = $this->newClientCache($client);
-		$this->assertSame($client, $cache->getDownloader());
+		$this->assertSame($client, $cache->getHttpClient());
 	}
 
 	public function testGetSerializedValueHit(): void
 	{
 		$cache = $this->newClientCache($client);
-		$client->responses[] = new THttpClientResponse(200, [], '{"action":"get","node":{"key":"/pradocache/k","value":"abc"}}');
+		$client->responses[] = new TResponse(200, [], '{"action":"get","node":{"key":"/pradocache/k","value":"abc"}}');
 		$this->assertSame('abc', $cache->pubGetSerializedValue('k'));
-		$this->assertSame([[
-			'method' => 'GET',
-			'url' => 'http://localhost:2379/v2/keys/pradocache/k',
-			'headers' => [],
-			'body' => null,
-		]], $client->calls);
+		$this->assertCount(1, $client->calls);
+		$this->assertSame('GET', $client->calls[0]['method']);
+		$this->assertSame('http://localhost:2379/v2/keys/pradocache/k', $client->calls[0]['url']);
+		$this->assertSame(['Host' => 'localhost:2379'], $client->calls[0]['headers']);
+		$this->assertSame('', $client->calls[0]['body']);
+		$this->assertInstanceOf(RequestInterface::class, $client->calls[0]['request']);
 	}
 
 	public function testGetSerializedValueMiss(): void
 	{
 		$cache = $this->newClientCache($client);
-		$client->responses[] = new THttpClientResponse(404, [], '{"errorCode":100,"message":"Key not found"}');
+		$client->responses[] = new TResponse(404, [], '{"errorCode":100,"message":"Key not found"}');
 		$this->assertFalse($cache->pubGetSerializedValue('k'));
 	}
 
 	public function testNonJsonResponseIsAnError(): void
 	{
 		$cache = $this->newClientCache($client);
-		$client->responses[] = new THttpClientResponse(502, [], '<html>Bad Gateway</html>');
+		$client->responses[] = new TResponse(502, [], '<html>Bad Gateway</html>');
 		$this->assertFalse($cache->pubGetSerializedValue('k'));
-		$client->responses[] = new THttpClientResponse(502, [], '');
+		$client->responses[] = new TResponse(502, [], '');
 		$result = $cache->pubRequest('GET', 'pradocache/k');
 		$this->assertSame(502, $result->errorCode);
 	}
@@ -124,7 +105,7 @@ class TEtcdCacheTest extends \PHPUnit\Framework\TestCase
 	public function testNonJsonResponseToAWriteIsAFailure(): void
 	{
 		$cache = $this->newClientCache($client);
-		$client->responses[] = new THttpClientResponse(502, [], '<html>Bad Gateway</html>');
+		$client->responses[] = new TResponse(502, [], '<html>Bad Gateway</html>');
 		$this->assertFalse($cache->pubSetSerializedValue('k', 'v', 0));
 		$this->assertSame('PUT', $client->calls[0]['method']);
 	}
@@ -136,7 +117,7 @@ class TEtcdCacheTest extends \PHPUnit\Framework\TestCase
 		$this->assertTrue($cache->pubSetSerializedValue('k', 'v', 0));
 		$this->assertSame('PUT', $client->calls[0]['method']);
 		$this->assertSame('http://localhost:2379/v2/keys/pradocache/k', $client->calls[0]['url']);
-		$this->assertSame(['Content-Type' => 'application/x-www-form-urlencoded'], $client->calls[0]['headers']);
+		$this->assertSame(['Host' => 'localhost:2379', 'Content-Type' => 'application/x-www-form-urlencoded'], $client->calls[0]['headers']);
 		$this->assertSame('value=v+w&ttl=60', $client->calls[0]['body']);
 		$this->assertSame('value=v', $client->calls[1]['body']);
 	}
@@ -144,7 +125,7 @@ class TEtcdCacheTest extends \PHPUnit\Framework\TestCase
 	public function testSetSerializedValueFailure(): void
 	{
 		$cache = $this->newClientCache($client);
-		$client->responses[] = new THttpClientResponse(500, [], '{"errorCode":300,"message":"Raft Internal Error"}');
+		$client->responses[] = new TResponse(500, [], '{"errorCode":300,"message":"Raft Internal Error"}');
 		$this->assertFalse($cache->pubSetSerializedValue('k', 'v', 0));
 	}
 
@@ -153,7 +134,7 @@ class TEtcdCacheTest extends \PHPUnit\Framework\TestCase
 		$cache = $this->newClientCache($client);
 		$this->assertTrue($cache->pubAddSerializedValue('k', 'v', 30));
 		$this->assertSame('value=v&prevExist=false&ttl=30', $client->calls[0]['body']);
-		$client->responses[] = new THttpClientResponse(412, [], '{"errorCode":105,"message":"Key already exists"}');
+		$client->responses[] = new TResponse(412, [], '{"errorCode":105,"message":"Key already exists"}');
 		$this->assertFalse($cache->pubAddSerializedValue('k', 'v', 0));
 		$this->assertSame('value=v&prevExist=false', $client->calls[1]['body']);
 	}
@@ -161,11 +142,12 @@ class TEtcdCacheTest extends \PHPUnit\Framework\TestCase
 	public function testDeleteValue(): void
 	{
 		$cache = $this->newClientCache($client);
-		$client->responses[] = new THttpClientResponse(404, [], '{"errorCode":100}');
+		$client->responses[] = new TResponse(404, [], '{"errorCode":100}');
 		$this->assertTrue($cache->pubDeleteValue('k'));
 		$this->assertSame('DELETE', $client->calls[0]['method']);
 		$this->assertSame('http://localhost:2379/v2/keys/pradocache/k', $client->calls[0]['url']);
-		$this->assertNull($client->calls[0]['body']);
+		$this->assertSame('', $client->calls[0]['body']);
+		$this->assertArrayNotHasKey('Content-Type', $client->calls[0]['headers']);
 	}
 
 	public function testFlushDeletesDirectoryRecursively(): void
@@ -182,21 +164,25 @@ class TEtcdCacheTest extends \PHPUnit\Framework\TestCase
 	public function testTransportFailurePropagates(): void
 	{
 		$cache = $this->newClientCache($client);
-		$client->throw = new THttpClientException('httpclient_transport_error', 7, 'Connection refused');
-		$this->expectException(THttpClientException::class);
-		$cache->pubGetSerializedValue('k');
+		$client->throw = $failure = new THttpNetworkException(new TRequest('GET', 'http://localhost:2379/v2/keys/pradocache/k'), 'httpclient_transport_error', 7, 'Connection refused');
+		try {
+			$cache->pubGetSerializedValue('k');
+			$this->fail('expected exception');
+		} catch (THttpNetworkException $e) {
+			$this->assertSame($failure, $e);
+		}
 	}
 
 	public function testSetThenGetRoundTripsThroughSerialization(): void
 	{
 		if (!TEtcdCache::getIsAvailable()) {
-			$this->markTestSkipped('An HTTP transport is required to initialize TEtcdCache.');
+			$this->markTestSkipped('An HTTP handler is required to initialize TEtcdCache.');
 		}
 		$cache = $this->newClientCache($client);
 		$cache->init(null);
 		$this->assertTrue($cache->set('key', ['a' => 1]));
 		parse_str($client->calls[0]['body'], $params);
-		$client->responses[] = new THttpClientResponse(200, [], json_encode(['node' => ['value' => $params['value']]]));
+		$client->responses[] = new TResponse(200, [], json_encode(['node' => ['value' => $params['value']]]));
 		$this->assertSame(['a' => 1], $cache->get('key'));
 		$this->assertSame($client->calls[0]['url'], $client->calls[1]['url']);
 	}
@@ -220,7 +206,7 @@ class TEtcdCacheTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame('myapp', $cache->getDir());
 	}
 
-	public function testInitThrowsWithoutATransportOrADownloader(): void
+	public function testInitThrowsWithoutAHandlerOrAnHttpClient(): void
 	{
 		$cache = new TTransportlessEtcdCache();
 		$cache->setPrimaryCache(false);
@@ -229,15 +215,15 @@ class TEtcdCacheTest extends \PHPUnit\Framework\TestCase
 		$cache->init(null);
 	}
 
-	public function testInitAcceptsAConfiguredDownloaderWithoutATransport(): void
+	public function testInitAcceptsAConfiguredHttpClientWithoutAHandler(): void
 	{
 		$cache = new TTransportlessEtcdCache();
 		$cache->setPrimaryCache(false);
-		$cache->setDownloader($client = new TEtcdCacheTestHttpClient());
+		$cache->setHttpClient($client = new TTestHttpClient());
 
 		$cache->init(null);
 
-		$this->assertSame($client, $cache->getDownloader());
+		$this->assertSame($client, $cache->getHttpClient());
 	}
 
 	public function testFakeClockSeam(): void
@@ -253,7 +239,7 @@ class TEtcdCacheTest extends \PHPUnit\Framework\TestCase
 	public function testConfigPropertiesCannotChangeAfterInit(string $setter, mixed $value): void
 	{
 		if (!TEtcdCache::getIsAvailable()) {
-			$this->markTestSkipped('An HTTP transport is required to initialize TEtcdCache.');
+			$this->markTestSkipped('An HTTP handler is required to initialize TEtcdCache.');
 		}
 		$cache = $this->newCache();
 		$cache->init(null);

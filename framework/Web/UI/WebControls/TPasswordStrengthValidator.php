@@ -10,10 +10,12 @@
 
 namespace Prado\Web\UI\WebControls;
 
+use Prado\IO\Http\TRequest;
 use Prado\IO\HttpClient\THttpClient;
-use Prado\IO\HttpClient\THttpClientException;
 use Prado\Prado;
 use Prado\TPropertyValue;
+use Psr\Http\Client\ClientExceptionInterface;
+use Psr\Http\Client\ClientInterface;
 
 /**
  * TPasswordStrengthValidator class
@@ -85,9 +87,9 @@ class TPasswordStrengthValidator extends TBaseValidator
 	public const PWNED_PASSWORDS_URL = 'https://api.pwnedpasswords.com/range/';
 
 	/**
-	 * @var ?THttpClient the HTTP client for the compromised password check.
+	 * @var ?ClientInterface the HTTP client for the compromised password check.
 	 */
-	private ?THttpClient $_httpClient = null;
+	private ?ClientInterface $_httpClient = null;
 
 	/**
 	 * Gets the name of the javascript class responsible for performing validation for this control.
@@ -187,17 +189,14 @@ class TPasswordStrengthValidator extends TBaseValidator
 	}
 
 	/**
-	 * Gets the HTTP client for the compromised password check. It is created
-	 * with {@see THttpClient::create()} and {@see getCompromisedTimeout CompromisedTimeout}
-	 * on first use.
-	 * @throws THttpClientException when no HTTP transport is available.
-	 * @return THttpClient the HTTP client.
+	 * Gets the PSR-18 HTTP client for the compromised password check.  A {@see THttpClient}
+	 * with {@see getCompromisedTimeout CompromisedTimeout} is created on first use.
+	 * @return ClientInterface the HTTP client.
 	 */
-	public function getHttpClient(): THttpClient
+	public function getHttpClient(): ClientInterface
 	{
 		if ($this->_httpClient === null) {
-			$this->_httpClient = THttpClient::create();
-			$this->_httpClient->setTimeout($this->getCompromisedTimeout());
+			$this->_httpClient = (new THttpClient())->setTimeout($this->getCompromisedTimeout());
 		}
 		return $this->_httpClient;
 	}
@@ -205,9 +204,9 @@ class TPasswordStrengthValidator extends TBaseValidator
 	/**
 	 * Sets the HTTP client for the compromised password check. The client is
 	 * not saved in the page state.
-	 * @param ?THttpClient $value the HTTP client; null creates the default client on use.
+	 * @param ?ClientInterface $value the HTTP client; null creates the default client on use.
 	 */
-	public function setHttpClient(?THttpClient $value): void
+	public function setHttpClient(?ClientInterface $value): void
 	{
 		$this->_httpClient = $value;
 	}
@@ -289,19 +288,19 @@ class TPasswordStrengthValidator extends TBaseValidator
 		$hash = strtoupper(sha1($password));
 		$suffix = substr($hash, 5);
 		try {
-			$response = $this->getHttpClient()->download('GET', $this->getCompromisedApiUrl() . substr($hash, 0, 5), [
+			$response = $this->getHttpClient()->sendRequest(new TRequest('GET', $this->getCompromisedApiUrl() . substr($hash, 0, 5), [
 				'Add-Padding' => 'true',
 				'User-Agent' => 'PRADO/' . Prado::getVersion(),
-			]);
-		} catch (THttpClientException $e) {
+			]));
+		} catch (ClientExceptionInterface $e) {
 			Prado::warning('The compromised password check was skipped: ' . $e->getMessage(), static::class);
 			return false;
 		}
-		if (!$response->isSuccess()) {
+		if ($response->getStatusCode() < 200 || $response->getStatusCode() >= 300) {
 			Prado::warning('The compromised password check was skipped: HTTP status ' . $response->getStatusCode(), static::class);
 			return false;
 		}
-		foreach (explode("\n", $response->getBody()) as $line) {
+		foreach (explode("\n", (string) $response->getBody()) as $line) {
 			$parts = explode(':', trim($line));
 			if (count($parts) === 2 && strcasecmp($parts[0], $suffix) === 0) {
 				return (int) $parts[1] >= $this->getCompromisedThreshold();

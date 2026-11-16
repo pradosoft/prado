@@ -28,10 +28,10 @@ Sends an HTTP request on each trigger: a page warm-up, a webhook, or a maintenan
 | `Headers` | `[]` | An array by name, or `Name: value` lines separated by newlines or `|`; a line without a name throws `httpcrontask_header_invalid`. |
 | `Body` | null | The request body. |
 | `LogFile` | null | Each run appends the response body. |
-| `HttpClient` | `THttpClient::create()` | The client; set a `THttpClient` to change the transport. Not serialized. |
+| `HttpClient` | a `THttpClient` | Any PSR-18 `ClientInterface`. Not serialized. |
 | `StatusCode` | null | Read-only: the status of the last run in this process. |
 
-The task's `Timeout`, else the module's `TaskTimeout`, rounded up to whole seconds, is the client's timeout. The request blocks the fiber; give a slow endpoint a Parallel or Process mode.
+The task's `Timeout`, else the module's `TaskTimeout`, is the request's `THttpClientOption::TIMEOUT` when the client is a `THttpClient`; another PSR-18 client keeps its own timeout. The request blocks the fiber; give a slow endpoint a Parallel or Process mode.
 
 ## See Also
 
