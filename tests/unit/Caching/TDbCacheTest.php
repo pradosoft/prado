@@ -786,6 +786,67 @@ class TDbCacheTest extends \PHPUnit\Framework\TestCase
 		return $this->_cache;
 	}
 
+	/**
+	 * Creates an uninitialized cache module on a second SQLite file, with the same table name.
+	 */
+	private function newOtherDatabaseCache(): TDbCacheTestCache
+	{
+		$file = $this->_dbDir . '/test_cache_other.db';
+		$this->_dbFiles[] = $file;
+		$other = new TDbCacheTestCache();
+		$other->setPrimaryCache(false);
+		$other->setConnectionString('sqlite:' . $file);
+		$other->init(null);
+		return $other;
+	}
+
+	public function testATableInAnotherDatabaseIsCreatedForItsOwnCache(): void
+	{
+		$cache = $this->initTestCache();
+		$cache->pubInitializeCache();
+		$other = $this->newOtherDatabaseCache();
+		try {
+			$other->pubInitializeCache();
+			// The first database's "created" state does not stand for the second database.
+			$this->assertEquals(0, $other->getDbConnection()->createCommand('SELECT COUNT(*) FROM pradocache')->queryScalar());
+		} finally {
+			$other->deactivateDbConnection(true);
+		}
+	}
+
+	public function testEachDatabaseFlushesExpiredItemsOnItsOwnSchedule(): void
+	{
+		$cache = $this->initTestCache();
+		$other = $this->newOtherDatabaseCache();
+		try {
+			$other->fakeNow = $cache->fakeNow = 1_000_000;
+			$other->set('expired', 'v', 10);
+			$cache->fakeNow = $other->fakeNow = 1_000_100;
+			$cache->flushCacheExpired();
+			// The first database's flush does not delay the second database's.
+			$other->flushCacheExpired();
+			$this->assertEquals(0, $other->getDbConnection()->createCommand('SELECT COUNT(*) FROM pradocache')->queryScalar());
+		} finally {
+			$other->deactivateDbConnection(true);
+		}
+	}
+
+	public function testTableStateKeyNamesTheConnectionWithoutItsString(): void
+	{
+		$byId = new TDbCacheTestCache();
+		$byId->setConnectionID('db');
+		$byDsn = new TDbCacheTestCache();
+		$byDsn->setConnectionString('mysql:host=localhost;password=secret');
+		$byDefault = new TDbCacheTestCache();
+		$keys = [];
+		foreach ([$byId, $byDsn, $byDefault] as $cache) {
+			$keys[] = $key = PradoUnit::invoke($cache, 'getTableStateKey', 'created');
+			$this->assertMatchesRegularExpression('/^TDbCache:[0-9a-f]{40}:pradocache:created$/', $key);
+		}
+		$this->assertCount(3, array_unique($keys));
+		$this->assertStringNotContainsString('secret', $keys[1]);
+	}
+
 	private function dropCacheTable(): void
 	{
 		$this->_cache->getDbConnection()->createCommand('DROP TABLE ' . $this->_cache->getCacheTableName())->execute();

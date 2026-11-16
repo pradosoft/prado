@@ -10,6 +10,9 @@ for both A and B.
 Upgrading from v4.3.3
 ---------------------
 - PHP 8.2 is now required. Applications running PHP 8.1 stay on Prado 4.3.
+- Issue #1497 - `TMemCache` reads every expiration time as a number of seconds, as `ICache` defines it. In 4.3 a
+  time over 30 days was passed to Memcached as a Unix timestamp, so `set($id, $value, time() + 3600)` expired at that
+  moment, and 31 days in seconds expired at once. Pass the seconds until the value expires.
 - Issue #1497 - A `TTableGateway` dynamic finder (`findBy...`, `findAllBy...`, `deleteBy...`, `deleteAllBy...`) throws
   `dbtablegateway_mismatch_column_name` unless its whole condition is column names joined by `And` or `Or`. In 4.3 the
   text that matched no column was ignored, so `findByFooAndName($a, $b)` searched by `Name` alone, and `deleteBy...`

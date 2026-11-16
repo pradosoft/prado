@@ -267,7 +267,7 @@ abstract class TCache extends TModule implements ICache, \ArrayAccess
 	 */
 	public function set($id, $value, $expire = 0, $dependency = null)
 	{
-		if (empty($value) && $expire === 0) {
+		if ($this->isEmptyValue($value) && $expire === 0) {
 			return $this->delete($id);
 		} else {
 			$data = [$value, $dependency];
@@ -286,11 +286,26 @@ abstract class TCache extends TModule implements ICache, \ArrayAccess
 	 */
 	public function add($id, $value, $expire = 0, $dependency = null)
 	{
-		if (empty($value) && $expire === 0) {
+		if ($this->isEmptyValue($value) && $expire === 0) {
 			return false;
 		}
 		$data = [$value, $dependency];
 		return $this->addValue($this->generateUniqueKey($id), $data, $expire);
+	}
+
+	/**
+	 * Returns whether a value is empty, as {@see set()} and {@see add()} test it before storing.
+	 * NAN is not empty; it is tested without the bool coercion that PHP 8.5 warns about.
+	 * @param mixed $value the value to test.
+	 * @return bool whether the value is empty.
+	 * @since 4.4.0
+	 */
+	protected function isEmptyValue(mixed $value): bool
+	{
+		if (is_float($value) && is_nan($value)) {
+			return false;
+		}
+		return empty($value);
 	}
 
 	/**

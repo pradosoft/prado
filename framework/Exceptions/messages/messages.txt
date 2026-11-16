@@ -172,6 +172,7 @@ apccache_extension_not_enabled			= TAPCCache need apc.enabled = 1 in php.ini in 
 apccache_extension_not_enabled_cli		= TAPCCache need apc.enable_cli = 1 in php.ini in order to work with PHP from the command line.
 
 cachesize_item_exceeds_maximum_size			= Cache item is {0} bytes, which exceeds the configured MaximumSize of {1} bytes.
+cachesize_maximum_size_invalid				= MaximumSize ''{0}'' is not a size. Use a whole number of bytes, optionally followed by K, M, G, T, or P (with or without B).
 
 filecache_directory_required			= TFileCache.Directory is required.
 filecache_directory_create_failed		= TFileCache cannot create cache directory ''{0}''.
