@@ -11,6 +11,7 @@
 namespace Prado\Test\Unit\Shell;
 
 use Prado\Caching\ICache;
+use Prado\IO\ITextWriter;
 use Prado\IO\TMemoryStream;
 use Prado\IO\TStdErrStream;
 use Prado\IO\TStream;
@@ -36,6 +37,25 @@ class ShellTestMemoryErrorApplication extends TTestShellApplication
 	protected function createStdErrStream(): ?TStream
 	{
 		return $this->errors = new TMemoryStream();
+	}
+}
+
+/**
+ * A shell application that captures its output and records its exit code.
+ */
+class ShellTestRunApplication extends TTestShellApplication
+{
+	public ?TTestCapturingTextWriter $text = null;
+	public ?int $exitCode = null;
+
+	protected function createStdOutWriter(): ITextWriter
+	{
+		return $this->text ??= new TTestCapturingTextWriter();
+	}
+
+	protected function exit(int $exitCode): void
+	{
+		$this->exitCode = $exitCode;
 	}
 }
 
@@ -687,5 +707,40 @@ class TShellApplicationTest extends \PHPUnit\Framework\TestCase
 		$this->_app->printHelp(new TShellWriter($text));
 
 		$this->assertStringNotContainsString('example:', $text->getCaptured());
+	}
+
+	// -----------------------------------------------------------------------
+	// run()
+	// -----------------------------------------------------------------------
+
+	/**
+	 * Runs a {@see ShellTestRunApplication} with `$args` in place of the test application.
+	 */
+	private function runApplication(?array $args): ShellTestRunApplication
+	{
+		$this->_app->restoreApplication();
+		$app = new ShellTestRunApplication();
+		try {
+			$app->run($args);
+		} finally {
+			$app->restoreApplication();
+			$this->_app = new TTestShellApplication();
+		}
+		return $app;
+	}
+
+	public function testRunWithoutArgumentsReadsTheCommandLine(): void
+	{
+		$argv = $_SERVER['argv'] ?? null;
+		$_SERVER['argv'] = ['prado-cli', '-q', 'help', 'help'];
+		try {
+			$app = $this->runApplication(null);
+		} finally {
+			$_SERVER['argv'] = $argv;
+		}
+
+		$this->assertSame(1, $app->getQuietMode());
+		$this->assertSame(['help', 'help'], $app->pubGetArguments());
+		$this->assertStringContainsString('usage: prado-cli help/<method>', $app->text->getCaptured());
 	}
 }
