@@ -2,12 +2,25 @@
 
 namespace Prado\Test\Unit\Util\Email\Cron;
 
-class TDbEmailSenderTaskTest extends \PHPUnit\Framework\TestCase
+use PHPUnit\Framework\TestCase;
+use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Util\Email\Cron\TDbEmailSenderTask;
+
+class TDbEmailSenderTaskTest extends TestCase
 {
-	public function testGetTask()
+	public function testLimit()
 	{
-		$task = new \Prado\Util\Email\Cron\TDbEmailSenderTask();
-		// Test that the task returns a valid string representation
-		$this->assertIsString($task->getTask());
+		$task = new TDbEmailSenderTask();
+		$this->assertSame(0, $task->getLimit());
+		$task->setLimit(25);
+		$this->assertSame(25, $task->getLimit());
+	}
+
+	public function testModuleIdMustNameDbEmailModule()
+	{
+		$task = new TDbEmailSenderTask();
+		$task->setModuleId('no-such-module');
+		$this->expectException(TInvalidDataValueException::class);
+		$task->execute(null);
 	}
 }

@@ -2,25 +2,30 @@
 
 namespace Prado\Test\Unit\Util\Email\Cron;
 
-class TDbEmailCleanerTaskTest extends \PHPUnit\Framework\TestCase
+use PHPUnit\Framework\TestCase;
+use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Util\Email\Cron\TDbEmailCleanerTask;
+
+class TDbEmailCleanerTaskTest extends TestCase
 {
-	public function testGetTimePeriod()
+	public function testProperties()
 	{
-		$task = new \Prado\Util\Email\Cron\TDbEmailCleanerTask();
-		$this->assertEquals(2419200, $task->getTimePeriod()); // 28 days by default
+		$task = new TDbEmailCleanerTask();
+		$this->assertSame(7776000, $task->getTimePeriod());
+		$task->setTimePeriod('3600');
+		$this->assertSame(3600, $task->getTimePeriod());
+		$this->assertNull($task->getStatus());
+		$task->setStatus('failed');
+		$this->assertSame('failed', $task->getStatus());
+		$task->setStatus('');
+		$this->assertNull($task->getStatus());
 	}
 
-	public function testSetTimePeriod()
+	public function testModuleIdMustNameDbEmailModule()
 	{
-		$task = new \Prado\Util\Email\Cron\TDbEmailCleanerTask();
-		$task->setTimePeriod(1000);
-		$this->assertEquals(1000, $task->getTimePeriod());
-	}
-
-	public function testGetTask()
-	{
-		$task = new \Prado\Util\Email\Cron\TDbEmailCleanerTask();
-		// Test that the task returns a valid string representation
-		$this->assertIsString($task->getTask());
+		$task = new TDbEmailCleanerTask();
+		$task->setModuleId('no-such-module');
+		$this->expectException(TInvalidDataValueException::class);
+		$task->execute(null);
 	}
 }

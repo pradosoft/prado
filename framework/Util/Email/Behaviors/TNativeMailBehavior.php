@@ -127,12 +127,14 @@ class TNativeMailBehavior extends TBehavior
 			foreach ($attachments ?? [] as $attchmentName => $data) {
 				$content .= $boundaryPre . $crln . $crln;
 				$mime = null;
+				$cid = null;
 				if (is_array($data)) {
 					$path = $data['path'] ?? null;
 					$mime = $data['mime'] ?? null;
+					$cid = $data['cid'] ?? null;
+					$attchmentName = $data['name'] ?? $attchmentName;
 					$data = $data['data'] ?? null;
 					$load = !$data;
-					$attchmentName = $data['name'] ?? $attchmentName;
 				} else {
 					$path = $data;
 					$load = true;
@@ -150,7 +152,12 @@ class TNativeMailBehavior extends TBehavior
 				$content .= "Content-Type: {$mime} name=\"{$attchmentName}\"" . $crln;
 				$content .= "Content-Transfer-Encoding: base64" . $crln;
 				$content .= 'MIME-Version: 1.0' . $crln;
-				$content .= "Content-Disposition: attachment; filename=\"{$attchmentName}\"; size={$dataSize}" . $crln . $crln;
+				if ($cid !== null) {
+					$content .= "Content-ID: <{$cid}>" . $crln;
+					$content .= "Content-Disposition: inline; filename=\"{$attchmentName}\"; size={$dataSize}" . $crln . $crln;
+				} else {
+					$content .= "Content-Disposition: attachment; filename=\"{$attchmentName}\"; size={$dataSize}" . $crln . $crln;
+				}
 				$content .= chunk_split(base64_encode($data)) . $crln . $crln;
 			}
 			$content .= $boundaryPre . "--" . $crln . $crln;

@@ -2,31 +2,34 @@
 
 namespace Prado\Test\Unit\Util\Email\UI;
 
-class TEmailTemplateTest extends \PHPUnit\Framework\TestCase
+use PHPUnit\Framework\TestCase;
+use Prado\Util\Email\UI\TEmailPage;
+use Prado\Util\Email\UI\TEmailPublishStyle;
+use Prado\Util\Email\UI\TEmailTemplate;
+
+class TEmailTemplateTest extends TestCase
 {
-	public function testGetPublishStyle()
+	public function testPagePublishStyles()
 	{
-		$template = new \Prado\Util\Email\UI\TEmailTemplate();
-		$this->assertNull($template->getPublishStyle());
+		$page = new TEmailPage();
+		$page->setPublishStyle(TEmailPublishStyle::Embed);
+		$this->assertStringStartsWith('data:', $page->publishFilePath(__FILE__));
+
+		$page->setPublishStyle(TEmailPublishStyle::Attachment);
+		$url = $page->publishEmailFile(__FILE__);
+		$this->assertMatchesRegularExpression('/^cid:[0-9a-f]{8}\.TEmailTemplateTest\.php$/', $url);
+		$this->assertSame(__FILE__, $page->getAttachments()[substr($url, 4)]['path']);
 	}
 
-	public function testSetPublishStyle()
+	public function testUrlStyleNeedsAbsoluteUrl()
 	{
-		$template = new \Prado\Util\Email\UI\TEmailTemplate();
-		$template->setPublishStyle('URL');
-		$this->assertEquals('URL', $template->getPublishStyle());
+		$page = new TEmailPage();
+		$this->expectException(\Prado\Exceptions\TConfigurationException::class);
+		$page->publishEmailFile(__FILE__);
 	}
 
-	public function testGetAbsoluteUrl()
+	public function testTemplateIsTTemplate()
 	{
-		$template = new \Prado\Util\Email\UI\TEmailTemplate();
-		$this->assertNull($template->getAbsoluteUrl());
-	}
-
-	public function testSetAbsoluteUrl()
-	{
-		$template = new \Prado\Util\Email\UI\TEmailTemplate();
-		$template->setAbsoluteUrl('https://example.com');
-		$this->assertEquals('https://example.com', $template->getAbsoluteUrl());
+		$this->assertTrue(is_subclass_of(TEmailTemplate::class, \Prado\Web\UI\TTemplate::class));
 	}
 }

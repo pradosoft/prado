@@ -22,4 +22,11 @@ jsonservice_provider_unknown			= 请求的JSON提供者“{0}”未知。
 feedservice_feed_unknown				= 请求的Feed“{0}”未知。
 httprequest_body_json_invalid				= THttpRequest 请求体不是有效的 JSON。
 
+emailermodule_page_unknown					= 无法找到邮件“{0}”。
+emailermodule_security_violation			= 邮件路径“{0}”位于应用程序之外。
+dbemailservice_email_unknown				= 无法找到邮件“{0}”。
+dbemailservice_email_forbidden				= 邮件“{0}”只能由其收件人查看。
+dbemailservice_link_unknown					= 无法找到邮件“{0}”的链接。
+dbemailservice_file_unknown					= 无法找到文件“{0}”。
+
 errorhandler_internal_error				= 服务器发生内部错误。

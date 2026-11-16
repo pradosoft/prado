@@ -16,63 +16,30 @@ use Prado\Web\UI\TTemplate;
 use Prado\Web\UI\TControl;
 
 /**
- * TEmailTemplate implements TTemplate but .
+ * TEmailTemplate is the template of a {@see TEmailPage}.  Files published by the
+ * template, such as `<%~ ./logo.png %>`, follow the page's {@see TEmailPublishStyle}:
+ * an absolute URL, an inline attachment, or a data URI.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.3.3
  */
 class TEmailTemplate extends TTemplate
 {
-	/** @var string[] paths of the files to attach to the email. */
-	protected $_filePaths;
-
-	/** @var string style of which to publish email files: URL, Attachment, or Embed */
-	private $_publishStyle;
-
-	/** @var string the absolute URL to the files published on the website */
-	private $_absoluteUrl;
+	/** @var ?TEmailPage the email page being instantiated. */
+	private $_emailPage;
 
 	/**
-	 * Publishes a file or directory and returns its URL.
-	 * @param string $fullPath absolute path of the file or directory to be published
-	 * @param mixed $checkTimestamp
-	 * @return string URL to the published file or directory
+	 * Publishes a file by the publish style of the email page; other template controls publish normally.
+	 * @param string $fullPath absolute path of the file or directory to be published.
+	 * @param bool $checkTimestamp whether a published asset is republished when the file is newer.
+	 * @return string URL to the published file or directory.
 	 */
 	public function publishFilePath($fullPath, $checkTimestamp = false)
 	{
-		if ($this->_publishStyle === TEmailPublishStyle::Embed) {
-			$file = file_get_contents($fullPath);
-			$data = base64_encode($file);
-			return 'data:' . mime_content_type($fullPath) . ';base64,' . $data;
-		} elseif ($this->_publishStyle === TEmailPublishStyle::Attachment) {
-			$name = basename($fullPath);
-			$this->_filePaths[$name] = $fullPath;
-			return "cid:" . $name;
+		if ($this->_emailPage !== null) {
+			return $this->_emailPage->publishEmailFile($fullPath, $checkTimestamp);
 		}
-		if (!$this->_absoluteUrl) {
-			throw new TConfigurationException('emailtemplate_absolute_url_required');
-		}
-		$url = parent::publishFilePath($fullPath, $checkTimestamp);
-		if (!empty($url) && $url[0] === '.' && $url[1] !== '.') {
-			$url = substr($url, 1);
-		}
-		return $this->_absoluteUrl . $url;
-	}
-
-	/**
-	 * Adds the object instantiated on a template to the child control collection.
-	 * This method overrides the parent implementation.
-	 * Only framework developers and control developers should use this method.
-	 * @param \Prado\TComponent|string $object text string or component parsed and instantiated in template
-	 * @see createdOnTemplate
-	 */
-	public function addParsedObject($object)
-	{
-		//ERROR?  not getting the objects in the page?
-		if ($object instanceof \Prado\Web\UI\ActiveControls\IActiveControl) {
-			throw new TConfigurationException('emailtemplate_no_activecontrols');
-		}
-		parent::addParsedObject($object);
+		return parent::publishFilePath($fullPath, $checkTimestamp);
 	}
 
 	/**
@@ -84,16 +51,11 @@ class TEmailTemplate extends TTemplate
 	 */
 	public function instantiateIn($tplControl, $parentControl = null)
 	{
-		$isTEmail = $tplControl instanceof TEmailPage;
-		if ($isTEmail) {
-			$this->_publishStyle = $tplControl->getPublishStyle();
-			$this->_absoluteUrl = $tplControl->getAbsoluteUrl();
-		}
-		parent::instantiateIn($tplControl, $parentControl);
-		if ($isTEmail && $this->_filePaths) {
-			foreach ($this->_filePaths as $name => $file) {
-				$tplControl->addAttachment($name, $file);
-			}
+		$this->_emailPage = $tplControl instanceof TEmailPage ? $tplControl : null;
+		try {
+			parent::instantiateIn($tplControl, $parentControl);
+		} finally {
+			$this->_emailPage = null;
 		}
 	}
 }

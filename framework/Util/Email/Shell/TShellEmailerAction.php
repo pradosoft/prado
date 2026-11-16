@@ -10,90 +10,72 @@
 
 namespace Prado\Util\Email\Shell;
 
-use Prado\Prado;
 use Prado\Shell\TShellAction;
 use Prado\Shell\TShellWriter;
-use Prado\Util\Cron\TCronModule;
-use Prado\TApplicationMode;
-use Prado\Util\Cron\TShellCronLogBehavior;
+use Prado\Util\Email\TDbEmailModule;
 
 /**
- * TShellCronAction class.
+ * TShellEmailerAction class.
  *
- * Runs the TCronModule from the command line.   This will run all pending
- * tasks when the "cron" command is run.  Other sub-commands are "info" and
- * "tasks"; where "info" reports the possible cron tasks registered in the
- * application, and "tasks" reports the installed tasks being managed.
+ * TShellEmailerAction manages a {@see TDbEmailModule} from the command line.
+ *
+ * | Command | Result |
+ * |---|---|
+ * | `email/send` | Sends the pending emails. |
+ * | `email/log [@user] [count]` | Lists logged emails, newest first. |
+ * | `email/show <tracking-id>` | Shows one logged email. |
+ * | `email/flush <days>` | Deletes logged emails older than the days, except pending emails. |
+ * | `email/bounce [file]` | Processes a bounce message from the file, or from standard input. |
+ *
+ * `email/bounce` reads one raw message, so a mail server can pipe bounces to it, e.g.
+ * an alias of `"|php /path/to/prado-cli.php email/bounce"`.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @since 4.3.3
+ * @since 4.4.0
  */
 class TShellEmailerAction extends TShellAction
 {
 	protected $action = 'email';
-	protected $methods = ['status', 'send', 'log', 'show', 'flush', 'flush-all'];
-	protected $parameters = [null, null, null, ['email-tracking-id'], ['email-tracking-id|@user|-filter-'], null];
-	protected $optional = [null, null, null, null, null, null];
-	protected $description = ['Manages DbEmailer services',
-		'Shows the status report of the emailer.',
-		'Sends all the pending unsent emails.',
-		'Displays the log of emails: \'unsent\', \'@user\', -filter-',
-		'Shows a singe email',
-		'Flushes the log of emails: \'@user\', -filter-',
-		'Flushes all sent emails',
+	protected $methods = ['send', 'log', 'show', 'flush', 'bounce'];
+	protected $parameters = [null, null, ['tracking-id'], ['days'], null];
+	protected $optional = [null, ['@user', 'count'], null, null, ['file']];
+	protected $description = [
+		'Manages the database email module.',
+		'Sends the pending emails.',
+		'Lists logged emails, newest first: \'@user\' for one user, and the count (default 20).',
+		'Shows one logged email by tracking ID.',
+		'Deletes logged emails older than the days, except pending emails.',
+		'Processes a bounce message from the file, or from standard input.',
 	];
 
+	/** @var null|false|TDbEmailModule the module; false until resolved. */
 	private $_emailer = false;
 
-	public function __construct()
-	{
-		$app = $this->getApplication();
-		if ($app->getMode() === TApplicationMode::Debug) {
-			$this->methods[] = 'debug';
-			$this->parameters[] = ['from', 'to'];
-			$this->optional[] = null;
-			$this->methods[] = 'debug';
-		}
-		parent::__construct();
-	}
-
 	/**
-	 * @return string the TEmailModule Class to find
-	 */
-	public function getModuleClass()
-	{
-		return 'Prado\\Util\\Email\\TDbEmailModule';
-	}
-
-	/**
-	 * @return null|\Prado\Util\Cron\TCronModule returns the Cron Module of the applications
+	 * Returns the module, set by the module or found by type.
+	 * @return ?TDbEmailModule the module, null when the application has none.
 	 */
 	public function getEmailerModule()
 	{
-		if ($this->_cron === false) {
-			$app = Prado::getApplication();
-			$moduleClass = $this->getModuleClass();
-			$modules = $app->getModulesByType($moduleClass, false);
-			$this->_cron = null;
-			foreach ($modules as $id => $m) {
-				if ($this->_cron = $app->getModule($id)) {
+		if ($this->_emailer === false) {
+			$this->_emailer = null;
+			$app = $this->getApplication();
+			foreach (array_keys($app->getModulesByType(TDbEmailModule::class, false)) as $id) {
+				if (($module = $app->getModule($id)) instanceof TDbEmailModule) {
+					$this->_emailer = $module;
 					break;
 				}
 			}
-			if (!$this->_cron) {
-				$this->_outWriter->writeError("A {$moduleClass} is not found");
-				return null;
-			}
 		}
-		if (!$this->_cron->asa(TCronModule::SHELL_LOG_BEHAVIOR)) {
-			$this->_cron->attachBehavior(TCronModule::SHELL_LOG_BEHAVIOR, new TShellCronLogBehavior($this->getWriter()));
+		if (!$this->_emailer) {
+			$this->getWriter()->writeError('A ' . TDbEmailModule::class . ' is not found');
+			return null;
 		}
 		return $this->_emailer;
 	}
 
 	/**
-	 * @param null|\Prado\Util\Cron\TCronModule $cron sets the Cron Module
-	 * @param mixed $emailer
+	 * @param ?TDbEmailModule $emailer the module.
 	 */
 	public function setEmailerModule($emailer)
 	{
@@ -101,154 +83,136 @@ class TShellEmailerAction extends TShellAction
 	}
 
 	/**
-	 * @param string[] $args the arguments to the command line action
+	 * Sends the pending emails.
+	 * @param string[] $args the command line arguments.
+	 * @return bool true.
 	 */
-	public function actionRun($args)
+	public function actionSend($args)
 	{
-		$module = $this->getCronModule();
-		if (!$module) {
-			return true;
+		if ($module = $this->getEmailerModule()) {
+			$count = $module->sendPendingEmails();
+			$this->getWriter()->writeLine("Sent {$count} pending emails.", TShellWriter::GREEN);
 		}
-		$time = $module->getLastCronTime();
-		$this->_outWriter->writeLine("\n Last cron run time was " . ($time == 0 ? 'never' : date('Y-m-d H:i:s TP', $time)) . '');
-		$module->processPendingTasks();
 		return true;
 	}
 
 	/**
-	 * Shows configured tasks and their run status.  For TDbCronManager, this also shows the
-	 * database tasks as well.
-	 * @param mixed $args
+	 * Lists logged emails, newest first.
+	 * @param string[] $args the command line arguments.
+	 * @return bool true.
 	 */
-	public function actionTasks($args)
+	public function actionLog($args)
 	{
-		$module = $this->getCronModule();
-
-		$time = $module->getLastCronTime();
-		$this->_outWriter->writeLine("\nThe system time is " . date('Y-m-d H:i:s TP'));
-		$this->_outWriter->writeLine(" Last cron run was " . ($time == 0 ? 'never' : date('Y-m-d H:i:s', (int) $time)) . "\n");
-
-		$taskName = null;
+		if (!($module = $this->getEmailerModule())) {
+			return true;
+		}
 		$username = null;
-		$c = count($args) - 1;
-		while ($c--) {
-			if (($arg = $args[$c + 1] ?? false)) {
-				if ($arg[0] == '@') {
-					$username = substr($arg, 1);
-				} else {
-					$taskName = $arg;
-				}
+		$count = 20;
+		foreach (array_slice($args, 1) as $arg) {
+			if (str_starts_with($arg, '@')) {
+				$username = substr($arg, 1);
+			} elseif (is_numeric($arg)) {
+				$count = (int) $arg;
 			}
 		}
-		if ($taskName && $username) {
-			$filter = ", filtered by task name '{$taskName}' and @{$username}";
-		} elseif ($taskName) {
-			$filter = ", filtered by task name '{$taskName}'";
-		} elseif ($username) {
-			$filter = ", filtered by @{$username}";
-		} else {
-			$filter = '';
-		}
-		if ($username) {
-			$tasks = $module->getUserTasks($username, $taskName);
-		} else {
-			$tasks = $module->getTasks($taskName);
-		}
-		$count = count($tasks);
-
-		$this->_outWriter->write("  Application Cron Tasks: {$count} tasks found", [TShellWriter::BOLD]);
-		$this->_outWriter->writeLine($filter . "\n");
-		if (!count($tasks)) {
-			$this->_outWriter->writeLine("     **  There are no configured Cron Tasks.  **\n");
+		$rows = $module->getEmailLog($username, $count);
+		if ($rows === false) {
+			$this->getWriter()->writeError('Reading the email log is not permitted.');
 			return true;
 		}
-		$rows = [];
-		foreach ($tasks as $task) {
-			$schedule = $task->getSchedule();
-			if (strlen($schedule) > 1 && $schedule[0] == '@') {
-				$trigger = substr($schedule, 1);
-				if (is_numeric($trigger)) {
-					if (abs($trigger - time()) > 86400) {
-						$f = 'Y-m-d H:i:s';
-					} else {
-						$f = 'H:i:s';
-					}
-					$schedule = '@(' . date($f, $trigger) . ')';
-				}
-			}
-
-			$lastExecTime = $task->getLastExecTime();
-			$count = $task->getProcessCount();
-			if ($lastExecTime === null) {
-				$lastrun = '-';
-			} else {
-				if (abs(time() - $lastExecTime) > 86400) {
-					$f = 'Y-m-d H:i:s';
-				} else {
-					$f = 'H:i:s';
-				}
-				$lastrun = date($f, $lastExecTime);
-				if (!$count) {
-					$lastrun = '- (' . $lastrun . ')';
-				}
-			}
-
-			$trigger = $task->getNextTriggerTime();
-			if ($trigger === null) {
-				$nextrun = '-';
-			} else {
-				if (abs($trigger - time()) > 86400) {
-					$f = 'Y-m-d H:i:s';
-				} else {
-					$f = 'H:i:s';
-				}
-				$nextrun = date($f, $trigger) . ($task->getIsPending() ? '*' : '');
-			}
-
-			if (($user = $task->getUserName()) == null) {
-				$user = $module->getDefaultUserName();
-			}
-
-			if ($task->getIsPending()) {
-				$nextrun = $this->_outWriter->format($nextrun, [TShellWriter::GREEN, TShellWriter::BOLD]);
-			}
-
-			$rows[] = [$task->getName(), $schedule, $task->getTask(), $lastrun, $nextrun, '@' . $user, $count];
+		$writer = $this->getWriter();
+		$writer->writeLine();
+		foreach ($rows as $row) {
+			$writer->write(date('Y-m-d H:i', (int) $row['created_time']) . '  ');
+			$writer->write(str_pad($row['status'], 8) . '  ', $row['status'] === TDbEmailModule::STATUS_SENT ? TShellWriter::GREEN : TShellWriter::RED);
+			$writer->writeLine($row['tracking_id'] . '  ' . $row['recipients'] . '  "' . $row['subject'] . '"');
 		}
-		$this->_outWriter->write($this->_outWriter->tableWidget(['headers' => ['Name', 'Schedule', 'Task', 'Last Run', 'Next Run', 'User', 'Run #'],
-			'rows' => $rows]));
-		$this->_outWriter->writeLine("\nAny 'next run' with a * means it is Pending\n");
-
+		if (!$rows) {
+			$writer->writeLine('No logged emails.');
+		}
+		$writer->writeLine();
 		return true;
 	}
 
 	/**
-	 * shows the registered tasks from the application for possible configuration
-	 * or addition to TDbCronManager.
-	 * @param mixed $args
+	 * Shows one logged email.
+	 * @param string[] $args the command line arguments.
+	 * @return bool true.
 	 */
-	public function actionIndex($args)
+	public function actionShow($args)
 	{
-		$module = $this->getCronModule();
-
-		$infos = $module->getTaskInfos(true);
-		$this->_outWriter->writeLine();
-		$this->_outWriter->writeLine("  Registered Cron Task Information: ", [TShellWriter::BOLD]);
-		if (!count($infos)) {
-			$this->_outWriter->writeLine("		(** No registered application tasks **)");
+		if (!($module = $this->getEmailerModule())) {
 			return true;
 		}
-		$rows = [];
-		foreach ($infos as $taskinfo) {
-			$rows[] = [
-					$this->_outWriter->format($taskinfo->getName(), [TShellWriter::BLUE, TShellWriter::BOLD]),
-					$taskinfo->getTask(), $taskinfo->getModuleId(), $taskinfo->getTitle(),
-				];
-			$rows[] = ['span' => $this->_outWriter->format('      ' . $taskinfo->getDescription(), TShellWriter::DARK_GRAY)];
+		if (!($row = $module->getEmailByTrackingId($args[1] ?? ''))) {
+			$this->getWriter()->writeError('No email has the tracking ID ' . ($args[1] ?? ''));
+			return true;
 		}
-		$this->_outWriter->write($this->_outWriter->tableWidget(['headers' => ['Task ID', 'Task', 'Module ID', 'Title'],
-			'rows' => $rows]));
-		$this->_outWriter->writeLine();
+		$email = $module->createEmailFromRow($row);
+		$writer = $this->getWriter();
+		$writer->writeLine();
+		foreach (['To' => $row['recipients'], 'Subject' => $row['subject'], 'Status' => $row['status'], 'Opens' => $row['open_count'], 'Clicks' => $row['click_count'], 'Bounce' => $row['bounce_status']] as $name => $value) {
+			$writer->write(str_pad($name . ':', 10), TShellWriter::BOLD);
+			$writer->writeLine((string) $value);
+		}
+		$writer->writeLine();
+		$writer->writeLine((string) ($email->getTextBody() ?: $email->getBody()));
+		$writer->writeLine();
 		return true;
+	}
+
+	/**
+	 * Deletes logged emails older than a number of days.
+	 * @param string[] $args the command line arguments.
+	 * @return bool true.
+	 */
+	public function actionFlush($args)
+	{
+		if (!($module = $this->getEmailerModule())) {
+			return true;
+		}
+		if (!is_numeric($args[1] ?? null)) {
+			$this->getWriter()->writeError('The days must be a number.');
+			return true;
+		}
+		$count = $module->clearEmailLog((int) ($args[1] * 86400));
+		if ($count === false) {
+			$this->getWriter()->writeError('Deleting the email log is not permitted.');
+		} else {
+			$this->getWriter()->writeLine("Deleted {$count} logged emails.", TShellWriter::GREEN);
+		}
+		return true;
+	}
+
+	/**
+	 * Processes one bounce message from a file or standard input.
+	 * @param string[] $args the command line arguments.
+	 * @return bool true.
+	 */
+	public function actionBounce($args)
+	{
+		if (!($module = $this->getEmailerModule())) {
+			return true;
+		}
+		$file = $args[1] ?? null;
+		if ($file !== null && !is_file($file)) {
+			$this->getWriter()->writeError("The file {$file} is not found.");
+			return true;
+		}
+		$message = (string) ($file !== null ? file_get_contents($file) : stream_get_contents($this->getInputStream()));
+		$bounces = $module->processBounceMessage($message);
+		foreach ($bounces as $bounce) {
+			$this->getWriter()->writeLine($bounce->getRecipient() . ' ' . $bounce->getStatus() . ' ' . $bounce->getAction(), $bounce->getIsPermanent() ? TShellWriter::RED : TShellWriter::YELLOW);
+		}
+		$this->getWriter()->writeLine(count($bounces) . ' bounced recipients.');
+		return true;
+	}
+
+	/**
+	 * @return resource the stream a bounce message is read from when no file is given.
+	 */
+	protected function getInputStream()
+	{
+		return STDIN;
 	}
 }

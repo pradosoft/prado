@@ -10,47 +10,57 @@
 
 namespace Prado\Util\Email\Cron;
 
+use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Shell\TShellWriter;
 use Prado\TPropertyValue;
-use Prado\Exceptions\TInvalidDataValueException;
-use Prado\Util\Email\TDbEmailModule;
 use Prado\Util\Cron\TCronModule;
 use Prado\Util\Cron\TCronTask;
-use Prado\Util\Cron\TDbCronManager;
+use Prado\Util\Email\TDbEmailModule;
 
 /**
  * TDbEmailSenderTask class.
  *
- * TDbEmailSenderTask Sends the pending unsent emails via cron.
+ * TDbEmailSenderTask sends the emails queued by a {@see TDbEmailModule} whose
+ * OfflineEmail is true.  ModuleId names the module.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @since 4.3.3
+ * @since 4.4.0
  */
 class TDbEmailSenderTask extends TCronTask
 {
+	/** @var int the maximum number of emails per run; 0 is unlimited. */
+	private $_limit = 0;
+
 	/**
-	 * This clears the log of the TDBCronModule specified by the ModuleId,
-	 * or if none specified, then the cron executing this task.
-	 * @param TDbCronManager $cron
+	 * Sends the pending emails.
+	 * @param TCronModule $cron the cron module running the task.
+	 * @throws TInvalidDataValueException when ModuleId does not name a TDbEmailModule.
 	 */
 	public function execute($cron)
 	{
-		$emailer = null;
-		if ($mid = $this->getModuleId()) {
-			$emailer = $this->getApplication()->getModule($mid);
-			if ($emailer === null) {
-				throw new TInvalidDataValueException('dbemailsender_moduleid_is_null', $mid);
-			}
+		$emailer = $this->getApplication()->getModule((string) $this->getModuleId());
+		if (!($emailer instanceof TDbEmailModule)) {
+			throw new TInvalidDataValueException('dbemailsendertask_moduleid_invalid', $this->getModuleId());
 		}
-		if (is_object($emailer) && $emailer instanceof TDbEmailModule) {
-			$sent = $emailer->sendPendingEmails();
+		$sent = $emailer->sendPendingEmails($this->getLimit());
+		if (is_object($cron) && $cron->asa(TCronModule::SHELL_LOG_BEHAVIOR)) {
+			$cron->getOutputWriter()->writeLine("Sent {$sent} pending emails", TShellWriter::GREEN);
+		}
+	}
 
-			if (($b = $cron->asa(TCronModule::SHELL_LOG_BEHAVIOR)) && $b->getEnabled()) {
-				$cron->getOutputWriter()->write("Send Email From {$this->_email->getFrom()} to {$this->_email->getTo()} subject '{$this->_email->getSubject()}' ");
-				$cron->getOutputWriter()->writeLine($sent ? 'Sucess' : 'Failed', $sent ? TShellWriter::GREEN : TShellWriter::RED);
-			}
-		} elseif (is_object($emailer) && $cron->asa(TCronModule::SHELL_LOG_BEHAVIOR)) {
-			$cron->getOutputWriter()->writeLine("No TDbEmailModule to process pending emails.", TShellWriter::RED);
-		}
+	/**
+	 * @return int the maximum number of emails per run; 0 is unlimited. Defaults to 0.
+	 */
+	public function getLimit()
+	{
+		return $this->_limit;
+	}
+
+	/**
+	 * @param int $value the maximum number of emails per run; 0 is unlimited.
+	 */
+	public function setLimit($value)
+	{
+		$this->_limit = max(0, TPropertyValue::ensureInteger($value));
 	}
 }

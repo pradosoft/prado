@@ -2,39 +2,87 @@
 
 namespace Prado\Test\Unit\Util\Email\Shell;
 
-class TShellEmailerActionTest extends \PHPUnit\Framework\TestCase
+use PHPUnit\Framework\TestCase;
+use Prado\IO\TTextWriter;
+use Prado\Shell\TShellWriter;
+use Prado\Test\Unit\Util\Email\TDbEmailModuleTestModule;
+use Prado\Util\Email\Shell\TShellEmailerAction;
+use Prado\Util\Email\TEmail;
+
+class TShellEmailerActionTestAction extends TShellEmailerAction
 {
-	public function testGetModuleClass()
+	public $input;
+
+	protected function getInputStream()
 	{
-		$action = new \Prado\Util\Email\Shell\TShellEmailerAction();
-		$this->assertEquals('Prado\\Util\\Email\\TDbEmailModule', $action->getModuleClass());
+		return $this->input;
+	}
+}
+
+class TShellEmailerActionTest extends TestCase
+{
+	private TShellEmailerActionTestAction $action;
+	private TDbEmailModuleTestModule $module;
+	private TTextWriter $output;
+
+	protected function setUp(): void
+	{
+		$this->module = new TDbEmailModuleTestModule();
+		$this->output = new TTextWriter();
+		$this->action = new TShellEmailerActionTestAction();
+		$this->action->setWriter(new TShellWriter($this->output));
+		$this->action->setEmailerModule($this->module);
 	}
 
-	public function testGetEmailerModuleWithoutCron()
+	private function email(): TEmail
 	{
-		$action = $this->createPartialMock(\Prado\Util\Email\Shell\TShellEmailerAction::class, ['getApplication', 'getWriter']);
-		
-		$app = $this->createMock(\Prado\TApplication::class);
-		$app->expects($this->once())
-			->method('getModulesByType')
-			->with('Prado\\Util\\Email\\TDbEmailModule', false)
-			->willReturn([]);
-		
-		$action->expects($this->once())
-			->method('getApplication')
-			->willReturn($app);
-			
-		$action->expects($this->never())
-			->method('getWriter');
-		
-		$this->assertNull($action->getEmailerModule());
+		$email = new TEmail();
+		$email->setTo('ann@example.com');
+		$email->setFrom('app@example.com');
+		$email->setSubject('Hello');
+		$email->setTextBody('Text body');
+		return $email;
 	}
 
-	public function testSetEmailerModule()
+	public function testValidActions()
 	{
-		$module = $this->createMock(\Prado\Util\Cron\TCronModule::class);
-		$action = new \Prado\Util\Email\Shell\TShellEmailerAction();
-		$action->setEmailerModule($module);
-		$this->assertSame($module, $action->_emailer);
+		$this->assertSame('send', $this->action->isValidAction(['email/send']));
+		$this->assertSame('bounce', $this->action->isValidAction(['email/bounce']));
+		$this->assertNull($this->action->isValidAction(['email/show']));
+		$this->assertSame('show', $this->action->isValidAction(['email/show', 'abc']));
+	}
+
+	public function testSendPending()
+	{
+		$this->module->setOfflineEmail(true);
+		$this->module->sendEmail($this->email(), null);
+		$this->assertTrue($this->action->actionSend(['email/send']));
+		$this->assertStringContainsString('Sent 1 pending emails.', $this->output->flush());
+	}
+
+	public function testLogShowAndFlush()
+	{
+		$email = $this->email();
+		$this->module->sendEmail($email, null);
+		$this->action->actionLog(['email/log', '5']);
+		$this->assertStringContainsString($email->getTrackingId(), $this->output->flush());
+		$this->action->actionShow(['email/show', $email->getTrackingId()]);
+		$out = $this->output->flush();
+		$this->assertStringContainsString('Hello', $out);
+		$this->assertStringContainsString('Text body', $out);
+		$this->action->actionFlush(['email/flush', '-1']);
+		$this->assertStringContainsString('Deleted 1 logged emails.', $this->output->flush());
+	}
+
+	public function testBounceFromInput()
+	{
+		$stream = fopen('php://memory', 'r+');
+		fwrite($stream, "X-Failed-Recipients: gone@example.org\n\n550 5.1.1 No such user\n");
+		rewind($stream);
+		$this->action->input = $stream;
+		$this->action->actionBounce(['email/bounce']);
+		$out = $this->output->flush();
+		$this->assertStringContainsString('gone@example.org 5.1.1 failed', $out);
+		$this->assertStringContainsString('1 bounced recipients.', $out);
 	}
 }

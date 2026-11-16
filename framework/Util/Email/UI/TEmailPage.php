@@ -46,8 +46,20 @@ use Prado\Collections\TMap;
  *
  * All emails are localized like TPage for globalization.
  *
+ * Methods that TEmailPage does not define pass through to its TEmail without
+ * rendering the body; these are the ones the email controls use.
+ *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.3.3
+ * @method ?\Prado\Util\Email\TEmailModule getEmailerModule()
+ * @method void setEmailerModule(\Prado\Util\Email\TEmailModule $module)
+ * @method string getTrackingId()
+ * @method int addTrackedLink(string $url)
+ * @method void setListUnsubscribe(?string $url, ?string $mailto = null, bool $oneClick = true)
+ * @method void addAttachment(string $filename, array|string $attachment)
+ * @method void addInlineAttachment(string $cid, string $path, ?string $mime = null)
+ * @method void setTextBody(?string $textBody)
+ * @method void setTo(mixed $address)
  */
 class TEmailPage extends TPage
 {
@@ -65,6 +77,9 @@ class TEmailPage extends TPage
 
 	/** @var string absolute base url of the published files */
 	private $_absoluteUrl;
+
+	/** @var bool whether style sheet rules are copied into style attributes */
+	private $_inlineStyles = true;
 
 	/* ** minimum TPage Implementation ** */
 	/** @var TForm form instance */
@@ -152,14 +167,14 @@ class TEmailPage extends TPage
 	 * We want a TEmailPage to look like its TEmail.
 	 * @param string $name name of the variable being set.
 	 * @param null|mixed $value the value being set.
-	 * @return mixed return values
 	 */
 	public function __set($name, $value)
 	{
 		if ($this->_email && method_exists($this->_email, $setter = 'set' . $name)) {
-			return $this->_email->$setter($value);
+			$this->_email->$setter($value);
+			return;
 		}
-		return parent::__set($name, $value);
+		parent::__set($name, $value);
 	}
 
 	/**
@@ -177,7 +192,7 @@ class TEmailPage extends TPage
 
 
 	/**
-	 * @param null|mixed $customData
+	 * Renders the body once, or on every call when CacheBody is false, and inlines its styles.
 	 * @return string the body rendered from the template
 	 */
 	protected function getBody()
@@ -185,9 +200,99 @@ class TEmailPage extends TPage
 		if (!$this->getCacheBody() || !$this->_body) {
 			$writer = new TTextWriter();
 			$this->processNormalRequest(new THtmlWriter($writer));
-			$this->_body = $writer->flush();
+			$body = $writer->flush();
+			if ($this->getInlineStyles()) {
+				$body = (new TEmailCssInliner())->inline($body);
+			}
+			$this->_body = $body;
 		}
 		return $this->_body;
+	}
+
+	/**
+	 * @return bool whether style sheet rules are copied into style attributes. Defaults to true.
+	 * @see TEmailCssInliner
+	 */
+	public function getInlineStyles()
+	{
+		return $this->_inlineStyles;
+	}
+
+	/**
+	 * This can be set in the template directives.
+	 * @param bool $value whether style sheet rules are copied into style attributes.
+	 */
+	public function setInlineStyles($value)
+	{
+		$this->_inlineStyles = TPropertyValue::ensureBoolean($value);
+	}
+
+	/**
+	 * Publishes a file by the {@see getPublishStyle PublishStyle} of the email and returns its URL.
+	 *
+	 * | PublishStyle | URL |
+	 * |---|---|
+	 * | URL | The asset URL, prefixed with {@see getAbsoluteUrl AbsoluteUrl}. |
+	 * | Attachment | "cid:..." of an inline attachment added to the email. |
+	 * | Embed | A base64 data URI. |
+	 *
+	 * @param string $fullPath the absolute path of the file.
+	 * @param bool $checkTimestamp whether a published asset is republished when the file is newer.
+	 * @throws TConfigurationException when the style is URL and AbsoluteUrl is not set.
+	 * @return string the URL of the file in the email.
+	 */
+	public function publishEmailFile($fullPath, $checkTimestamp = false)
+	{
+		$style = $this->getPublishStyle();
+		if ($style === TEmailPublishStyle::Embed) {
+			return 'data:' . (mime_content_type($fullPath) ?: 'application/octet-stream') . ';base64,' . base64_encode(file_get_contents($fullPath));
+		} elseif ($style === TEmailPublishStyle::Attachment) {
+			$cid = substr(md5($fullPath), 0, 8) . '.' . basename($fullPath);
+			$this->_email->addInlineAttachment($cid, $fullPath);
+			return 'cid:' . $cid;
+		}
+		if (!$this->getAbsoluteUrl()) {
+			throw new TConfigurationException('emailtemplate_absolute_url_required');
+		}
+		$url = $this->getApplication()->getAssetManager()->publishFilePath($fullPath, $checkTimestamp);
+		if ($url !== '' && $url[0] === '.' && ($url[1] ?? '') !== '.') {
+			$url = substr($url, 1);
+		}
+		return $this->getAbsoluteUrl() . $url;
+	}
+
+	/**
+	 * Publishes a file by the {@see getPublishStyle PublishStyle} of the email.  Template
+	 * asset expressions, `<%~ ./file %>`, and {@see publishAsset} call this method.
+	 * @param string $fullPath the absolute path of the file.
+	 * @param bool $checkTimestamp whether a published asset is republished when the file is newer.
+	 * @return string the URL of the file in the email.
+	 */
+	public function publishFilePath($fullPath, $checkTimestamp = false)
+	{
+		return $this->publishEmailFile($fullPath, $checkTimestamp);
+	}
+
+	/**
+	 * Checks that no control on the page needs a postback or callback.  An email cannot
+	 * post back to the page that rendered it.
+	 * @param \Prado\Web\UI\TControl $control the control whose descendants are checked.
+	 * @throws TConfigurationException when a postback, callback, or active control is found.
+	 */
+	protected function ensureEmailControls($control)
+	{
+		foreach ($control->getHasControls() ? $control->getControls() : [] as $child) {
+			if (!($child instanceof \Prado\Web\UI\TControl)) {
+				continue;
+			}
+			if ($child instanceof \Prado\Web\UI\ActiveControls\IActiveControl
+				|| $child instanceof \Prado\Web\UI\ActiveControls\ICallbackEventHandler
+				|| $child instanceof \Prado\Web\UI\IPostBackEventHandler
+				|| $child instanceof \Prado\Web\UI\IPostBackDataHandler) {
+				throw new TConfigurationException('emailpage_control_unsupported', $child::class, $child->getUniqueID());
+			}
+			$this->ensureEmailControls($child);
+		}
 	}
 
 	/**
@@ -245,20 +350,6 @@ class TEmailPage extends TPage
 	}
 
 
-	/**
-	 * Adds the object instantiated on a template to the child control collection.
-	 * This method overrides the parent implementation.
-	 * Only framework developers and control developers should use this method.
-	 * @param \Prado\TComponent|string $object text string or component parsed and instantiated in template
-	 * @see createdOnTemplate
-	 */
-	public function addParsedObject($object)
-	{
-		if ($object instanceof \Prado\Web\UI\ActiveControls\IActiveControl) {
-			throw new TConfigurationException('emailtemplate_no_activecontrols');
-		}
-		parent::addParsedObject($object);
-	}
 
 	/** *********************************
 	 * 	  Capture TPage to work without Service, Request, or Response.
@@ -303,7 +394,7 @@ class TEmailPage extends TPage
 	 * Registers a TForm instance to the page.
 	 * Note, a page can contain at most one TForm instance.
 	 * @param TForm $form the form on the page
-	 * @throws TInvalidOperationException if this method is invoked twice or more.
+	 * @throws \Prado\Exceptions\TInvalidOperationException if this method is invoked twice or more.
 	 */
 	public function setForm(TForm $form)
 	{
@@ -323,7 +414,7 @@ class TEmailPage extends TPage
 	/**
 	 * Returns whether user input is valid or not.
 	 * This method must be invoked after {@link validate} is called.
-	 * @throws TInvalidOperationException if {@link validate} is not invoked yet.
+	 * @throws \Prado\Exceptions\TInvalidOperationException if {@link validate} is not invoked yet.
 	 * @return bool whether the user input is valid or not.
 	 */
 	public function getIsValid()
@@ -339,6 +430,7 @@ class TEmailPage extends TPage
 	 */
 	public function onPreRenderComplete($param)
 	{
+		$this->ensureEmailControls($this);
 		$this->raiseEvent('OnPreRenderComplete', $this, $param);
 
 		$theme = $this->getTheme();
@@ -364,8 +456,9 @@ class TEmailPage extends TPage
 				$style .= $data = file_get_contents($path);
 			}
 		}
-		$head = $this->getHead();
-		$head->Controls[] = "<style>\n" . $style . "\n</style>";
+		if ($style !== '' && ($head = $this->getHead()) !== null) {
+			$head->getControls()->add("<style>\n" . $style . "\n</style>");
+		}
 	}
 
 	/**
@@ -417,7 +510,7 @@ class TEmailPage extends TPage
 	}
 
 	/**
-	 * @return \Prado\Web\UI\TControl the control responsible for the current postback event, null if nonexistent
+	 * @return ?\Prado\Web\UI\TControl null; an email has no postback.
 	 */
 	public function getPostBackEventTarget()
 	{
@@ -425,7 +518,7 @@ class TEmailPage extends TPage
 	}
 
 	/**
-	 * @return string postback event parameter
+	 * @return ?string null; an email has no postback.
 	 */
 	public function getPostBackEventParameter()
 	{

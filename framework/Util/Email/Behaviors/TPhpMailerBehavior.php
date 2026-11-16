@@ -128,14 +128,20 @@ class TPhpMailerBehavior extends TBehavior implements ISMTPEmailerBehavior
 		foreach ($email->getAttachments() ?? [] as $name => $data) {
 			if (is_array($data)) {
 				$path = $data['path'] ?? null;
-				$mime = $data['mime'] ?? null;
-				$data = $data['data'] ?? null;
-				$load = !$data;
+				$mime = $data['mime'] ?? '';
+				$cid = $data['cid'] ?? null;
 				$name = $data['name'] ?? $name;
-				if ($data) {
-					$mail->addStringAttachment($data, $name);
+				$data = $data['data'] ?? null;
+				if ($cid !== null) {
+					if ($data) {
+						$mail->addStringEmbeddedImage($data, $cid, $name, PHPMailer::ENCODING_BASE64, $mime);
+					} else {
+						$mail->addEmbeddedImage($path, $cid, $name, PHPMailer::ENCODING_BASE64, $mime);
+					}
+				} elseif ($data) {
+					$mail->addStringAttachment($data, $name, PHPMailer::ENCODING_BASE64, $mime);
 				} else {
-					$mail->addAttachment($path, $name);
+					$mail->addAttachment($path, $name, PHPMailer::ENCODING_BASE64, $mime);
 				}
 			} elseif (is_file($data)) {
 				$mail->addAttachment($data, $name);

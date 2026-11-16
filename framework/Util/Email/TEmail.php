@@ -114,6 +114,15 @@ class TEmail extends TComponent
 	/** @var bool whether the email has been modified since last sent */
 	private $_dirty = true;
 
+	/** @var null|string the public tracking ID of the email */
+	private $_trackingId;
+
+	/** @var string[] the tracked link target URLs, indexed by link number */
+	private $_trackedLinks = [];
+
+	/** @var bool whether viewing the email on the web requires its owner to be logged in */
+	private $_secure = false;
+
 	/**
 	 * Cleans up the email before sending by performing final cleanup tasks.
 	 * Resets the dirty flag after cleanup.
@@ -309,7 +318,7 @@ class TEmail extends TComponent
 	public function getUID()
 	{
 		if ($this->_uid === null) {
-			$this->_uid = sprintf('%08x%08x%08x%08x', mt_rand(), mt_rand(), mt_rand(), mt_rand());
+			$this->_uid = bin2hex(random_bytes(16));
 		}
 		return $this->_uid;
 	}
@@ -324,25 +333,109 @@ class TEmail extends TComponent
 	}
 
 	/**
-	 * If it is not set, this generates a new ID.  This is the external
-	 * public email tracking id.
-	 * @return string unique id of the email
+	 * Returns the public tracking ID of the email and generates one when it is not set.
+	 * The ID is 128 random bits in hex; it is the only credential for viewing a non-secure
+	 * email on the web, so it must not be guessable.
+	 * @return string the public tracking ID of the email.
 	 */
 	public function getTrackingId()
 	{
 		if ($this->_trackingId === null) {
-			$this->_trackingId = sprintf('%08x%08x%08x%08x', mt_rand(), mt_rand(), mt_rand(), mt_rand());
+			$this->_trackingId = bin2hex(random_bytes(16));
 		}
 		return $this->_trackingId;
 	}
 
 	/**
-	 * @param string unique id of the email
-	 * @param mixed $id
+	 * @param ?string $id the public tracking ID of the email; null generates a new one on access.
 	 */
 	public function setTrackingId($id)
 	{
-		$this->_trackingId = $id;
+		$this->_trackingId = $id === null ? null : TPropertyValue::ensureString($id);
+	}
+
+	/**
+	 * Registers a link target for click tracking and returns its link number.  A URL
+	 * registered twice keeps its first number, so re-rendering an email is stable.
+	 * @param string $url the link target URL.
+	 * @return int the link number for the URL.
+	 */
+	public function addTrackedLink($url)
+	{
+		$url = TPropertyValue::ensureString($url);
+		if (($index = array_search($url, $this->_trackedLinks, true)) === false) {
+			$index = count($this->_trackedLinks);
+			$this->_trackedLinks[] = $url;
+			$this->setDirty();
+		}
+		return $index;
+	}
+
+	/**
+	 * @return string[] the tracked link target URLs, indexed by link number.
+	 */
+	public function getTrackedLinks()
+	{
+		return $this->_trackedLinks;
+	}
+
+	/**
+	 * @param ?string[] $links the tracked link target URLs, indexed by link number.
+	 */
+	public function setTrackedLinks($links)
+	{
+		$this->_trackedLinks = array_values(array_map('strval', $links ?? []));
+		$this->setDirty();
+	}
+
+	/**
+	 * @return bool whether viewing the email on the web requires its owner to be logged in. Defaults to false.
+	 */
+	public function getSecure()
+	{
+		return $this->_secure;
+	}
+
+	/**
+	 * @param bool $secure whether viewing the email on the web requires its owner to be logged in.
+	 */
+	public function setSecure($secure)
+	{
+		$this->_secure = TPropertyValue::ensureBoolean($secure);
+	}
+
+	/**
+	 * Sets the List-Unsubscribe header (RFC 2369) and, for one-click unsubscribe, the
+	 * List-Unsubscribe-Post header (RFC 8058).  A one-click URL must be HTTPS and must
+	 * unsubscribe on a POST of "List-Unsubscribe=One-Click" without further interaction.
+	 * @param ?string $url the HTTPS unsubscribe URL; null removes both headers.
+	 * @param ?string $mailto an optional unsubscribe email address.
+	 * @param bool $oneClick whether the URL supports one-click unsubscribe. Defaults to true.
+	 */
+	public function setListUnsubscribe($url, $mailto = null, $oneClick = true)
+	{
+		$targets = [];
+		if ($url !== null && $url !== '') {
+			$targets[] = '<' . $url . '>';
+		}
+		if ($mailto !== null && $mailto !== '') {
+			$targets[] = '<mailto:' . preg_replace('/^mailto:/i', '', $mailto) . '>';
+		}
+		$this->setHeader('List-Unsubscribe', $targets ? implode(', ', $targets) : null);
+		$this->setHeader('List-Unsubscribe-Post', ($targets && $url && $oneClick) ? 'List-Unsubscribe=One-Click' : null);
+		$this->setDirty();
+	}
+
+	/**
+	 * Adds an inline attachment that the HTML body references as "cid:$cid".
+	 * @param string $cid the content ID that the body references.
+	 * @param string $path the path of the file.
+	 * @param ?string $mime the MIME type; null detects it from the file.
+	 */
+	public function addInlineAttachment($cid, $path, $mime = null)
+	{
+		$this->_attachments[$cid] = ['path' => $path, 'name' => basename($path), 'cid' => $cid, 'mime' => $mime];
+		$this->setDirty();
 	}
 
 	/**

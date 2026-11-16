@@ -10,114 +10,77 @@
 
 namespace Prado\Util\Email\Cron;
 
+use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Shell\TShellWriter;
 use Prado\TPropertyValue;
-use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Util\Cron\TCronModule;
 use Prado\Util\Cron\TCronTask;
-use Prado\Util\Cron\TDbCronManager;
+use Prado\Util\Email\TDbEmailModule;
 
 /**
- * TDbCronCleanLogTask class.
+ * TDbEmailCleanerTask class.
  *
- * TDbCronCleanLogTask Cleans the cron log of old entries older than the
- * age of {@link getTimePeriod} seconds.
+ * TDbEmailCleanerTask deletes the emails logged by a {@see TDbEmailModule} that are
+ * older than {@see setTimePeriod TimePeriod}.  Pending emails are kept unless
+ * {@see setStatus Status} is "pending".  ModuleId names the module.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @since 4.3.3
+ * @since 4.4.0
  */
 class TDbEmailCleanerTask extends TCronTask
 {
-	/**
-	 * @var int the time period in seconds of valid log items, default 28 days.
-	 */
-	private $_timeperiod = 2419200; //86400 seconds/day * 28 days
+	/** @var int the age, in seconds, of the emails to delete; default 90 days. */
+	private $_timePeriod = 7776000;
+
+	/** @var ?string the status of the emails to delete; null deletes all except pending. */
+	private $_status;
 
 	/**
-	 * @var null|string the task name of cron logs to delete, _ is wild card, % is wild string.
-	 */
-	private $_taskname;
-
-	/**
-	 * @var null|string the username of cron logs to delete, _ is wild card, % is wild string.
-	 */
-	private $_username;
-
-	/**
-	 * This clears the log of the TDBCronModule specified by the ModuleId,
-	 * or if none specified, then the cron executing this task.
-	 * @param TDbCronManager $cron
+	 * Deletes the old logged emails.
+	 * @param TCronModule $cron the cron module running the task.
+	 * @throws TInvalidDataValueException when ModuleId does not name a TDbEmailModule.
 	 */
 	public function execute($cron)
 	{
-		if ($mid = $this->getModuleId()) {
-			$cron = $this->getApplication()->getModule($mid);
-			if ($cron === null) {
-				throw new TInvalidDataValueException('dbcronclean_moduleid_is_null', $mid);
-			}
+		$emailer = $this->getApplication()->getModule((string) $this->getModuleId());
+		if (!($emailer instanceof TDbEmailModule)) {
+			throw new TInvalidDataValueException('dbemailcleanertask_moduleid_invalid', $this->getModuleId());
 		}
-		if (is_object($cron) && $cron instanceof \Prado\Util\Cron\TDbCronManager) {
-			$count = $cron->clearCronLog($this->getTimePeriod(), $this->getTaskName(), $this->getUsername());
-
-			if ($cron->asa(TCronModule::SHELL_LOG_BEHAVIOR)) {
-				$cron->getOutputWriter()->writeLine("Cleared {$count} Cron Task Logs", TShellWriter::GREEN);
-			}
-		} elseif (is_object($cron) && $cron->asa(TCronModule::SHELL_LOG_BEHAVIOR)) {
-			/** @var TCronModule $cron */
-			$cron->getOutputWriter()->writeLine("No DB Cron Module to clean", TShellWriter::RED);
+		$count = $emailer->clearEmailLog($this->getTimePeriod(), $this->getStatus());
+		if (is_object($cron) && $cron->asa(TCronModule::SHELL_LOG_BEHAVIOR)) {
+			$cron->getOutputWriter()->writeLine("Deleted {$count} logged emails", TShellWriter::GREEN);
 		}
 	}
 
 	/**
-	 * @return int number of seconds, before which cron logs are to be deleted
+	 * @return int the age, in seconds, of the emails to delete. Defaults to 90 days.
 	 */
 	public function getTimePeriod()
 	{
-		return $this->_timeperiod;
+		return $this->_timePeriod;
 	}
 
 	/**
-	 *
-	 * @param int $timeperiod number of seconds, before which cron logs are to be deleted
+	 * @param int $value the age, in seconds, of the emails to delete.
 	 */
-	public function setTimePeriod($timeperiod)
+	public function setTimePeriod($value)
 	{
-		$this->_timeperiod = TPropertyValue::ensureSeconds($timeperiod);
+		$this->_timePeriod = max(0, TPropertyValue::ensureInteger($value));
 	}
 
 	/**
-	 * _ is a wild card and a % is a wild string.
-	 * @return null|string the name of tasks in the log to be cleared.
+	 * @return ?string the status of the emails to delete; null deletes all except pending.
 	 */
-	public function getTaskName()
+	public function getStatus()
 	{
-		return $this->_taskname;
+		return $this->_status;
 	}
 
 	/**
-	 *
-	 * @param null|string $name the name of tasks in the log to be cleared
+	 * @param ?string $value the status of the emails to delete; empty deletes all except pending.
 	 */
-	public function setTaskName($name)
+	public function setStatus($value)
 	{
-		$this->_taskname = !$name ? null : TPropertyValue::ensureString($name);
-	}
-
-	/**
-	 * _ is a wild card and a % is a wild string.
-	 * @return null|string the username of tasks in the log to be cleared.
-	 */
-	public function getUsername()
-	{
-		return $this->_username;
-	}
-
-	/**
-	 *
-	 * @param null|string $username the username of tasks in the log to be cleared
-	 */
-	public function setUsername($username)
-	{
-		$this->_username = !$username ? null : TPropertyValue::ensureString($username);
+		$this->_status = ($value === null || $value === '') ? null : TPropertyValue::ensureString($value);
 	}
 }

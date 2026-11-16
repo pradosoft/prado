@@ -10,162 +10,134 @@
 
 namespace Prado\Util\Email\Cron;
 
+use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Shell\TShellWriter;
 use Prado\TPropertyValue;
-use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Util\Cron\TCronModule;
-use Prado\Exceptions\TConfigurationException;
 use Prado\Util\Cron\TCronTask;
+use Prado\Util\Email\Mailbox\IEmailMailbox;
+use Prado\Util\Email\Mailbox\TImapMailbox;
 use Prado\Util\Email\TEmailModule;
 
 /**
  * TIMAPBouncedTask class.
  *
- * Logs into an IMAP mail server and checks for bounced messages.
- * It will raise the onBounced event in the TEmailModule
+ * TIMAPBouncedTask reads the unseen messages of the mailbox that receives bounces,
+ * passes each to {@see TEmailModule::processBounceMessage}, and marks it seen.  The
+ * email module raises onBounce for each failed recipient; {@see \Prado\Util\Email\TDbEmailModule}
+ * records it on the logged email.
+ *
+ * The mailbox is a {@see TImapMailbox} configured by {@see setDsn Dsn}:
+ * <code>
+ *   <job Name="bounces" Schedule="*\/15 * * * *" Task="Prado\Util\Email\Cron\TIMAPBouncedTask"
+ *       ModuleId="emailer" Dsn="imaps://bounces%40example.com:secret@imap.example.com/INBOX" />
+ * </code>
+ * Without a ModuleId, the first TEmailModule of the application processes the bounces.
+ * Use a mailbox dedicated to bounces: every unseen message is marked seen.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @since 4.3.3
+ * @since 4.4.0
  */
 class TIMAPBouncedTask extends TCronTask
 {
-	/**
-	 * @var string imap connection dns.
-	 */
-	private $_dns;
-	/**
-	 * @var string mailbox name.
-	 */
-	private $_mailbox = 'INBOX';
+	/** @var string the IMAP DSN of the bounce mailbox. */
+	private $_dsn = '';
+
+	/** @var int the maximum number of messages per run; 0 is unlimited. */
+	private $_limit = 100;
 
 	/**
-	 * This clears the log of the TDBCronModule specified by the ModuleId,
-	 * or if none specified, then the cron executing this task.
-	 * @param TEmailModule $emailer
+	 * Processes the unseen messages of the bounce mailbox.
+	 * @param TCronModule $cron the cron module running the task.
+	 * @throws TInvalidDataValueException when ModuleId names no module.
 	 */
-	public function execute($emailer)
+	public function execute($cron)
 	{
-		if ($mid = $this->getModuleId()) {
-			$emailer = $this->getApplication()->getModule($mid);
-			if ($emailer === null) {
-				throw new TInvalidDataValueException('imap_bounce_task_moduleid_is_null', $mid);
+		$emailer = $this->getEmailerModule();
+		$mailbox = $this->createMailbox();
+		$messages = $bounces = 0;
+		try {
+			$mailbox->open();
+			$ids = $mailbox->getUnseenMessageIds();
+			if (($limit = $this->getLimit()) > 0) {
+				$ids = array_slice($ids, 0, $limit);
+			}
+			foreach ($ids as $id) {
+				$bounces += count($emailer->processBounceMessage($mailbox->fetchMessage($id)));
+				$mailbox->markSeen($id);
+				$messages++;
+			}
+		} finally {
+			$mailbox->close();
+		}
+		if (is_object($cron) && $cron->asa(TCronModule::SHELL_LOG_BEHAVIOR)) {
+			$cron->getOutputWriter()->writeLine("Processed {$messages} messages with {$bounces} bounced recipients", TShellWriter::GREEN);
+		}
+	}
+
+	/**
+	 * @throws TInvalidDataValueException when ModuleId names no TEmailModule.
+	 * @throws TConfigurationException when the application has no TEmailModule.
+	 * @return TEmailModule the module that processes the bounces.
+	 */
+	protected function getEmailerModule(): TEmailModule
+	{
+		$app = $this->getApplication();
+		if ($id = $this->getModuleId()) {
+			$module = $app->getModule($id);
+			if (!($module instanceof TEmailModule)) {
+				throw new TInvalidDataValueException('imapbouncedtask_moduleid_invalid', $id);
+			}
+			return $module;
+		}
+		foreach (array_keys($app->getModulesByType(TEmailModule::class, false)) as $id) {
+			if (($module = $app->getModule($id)) instanceof TEmailModule) {
+				return $module;
 			}
 		}
-		if (is_object($emailer) && $emailer instanceof \Prado\Util\Email\TEmailModule) {
-			$count = $this->processBouncedEmails($this->getDNS());
-
-			if ($emailer->asa(TCronModule::SHELL_LOG_BEHAVIOR)) {
-				$emailer->getOutputWriter()->writeLine("Cleared {$count} Cron Task Logs", TShellWriter::GREEN);
-			}
-		} elseif (is_object($emailer) && $emailer->asa(TCronModule::SHELL_LOG_BEHAVIOR)) {
-			$emailer->getOutputWriter()->writeLine("No DB Cron Module to clean", TShellWriter::RED);
-		}
+		throw new TConfigurationException('imapbouncedtask_no_emailmodule');
 	}
 
 	/**
-	 * @return string the connection string for the imap server
+	 * @return IEmailMailbox the bounce mailbox.
 	 */
-	public function getDNS()
+	protected function createMailbox(): IEmailMailbox
 	{
-		return $this->_dns;
+		$mailbox = new TImapMailbox();
+		$mailbox->setDsn($this->getDsn());
+		return $mailbox;
 	}
 
 	/**
-	 * eg imap://username:password@imap.mail.me.com:993/tls/secure:
-	 * @param string $dns the connection string for the imap server
+	 * @return string the IMAP DSN of the bounce mailbox.
 	 */
-	public function setDNS($dns)
+	public function getDsn()
 	{
-		$this->_dns = TPropertyValue::ensureString($dns);
+		return $this->_dsn;
 	}
 
 	/**
-	 * @return string the name of the mailbox
+	 * @param string $dsn the IMAP DSN of the bounce mailbox, e.g. "imaps://user:password@imap.example.com/INBOX".
 	 */
-	public function getMailbox()
+	public function setDsn($dsn)
 	{
-		return $this->_mailbox;
+		$this->_dsn = TPropertyValue::ensureString($dsn);
 	}
 
 	/**
-	 * eg imap://username:password@imap.mail.me.com:993/tls/secure:
-	 * @param string $box the name of the mailbox
+	 * @return int the maximum number of messages per run; 0 is unlimited. Defaults to 100.
 	 */
-	public function setMailbox($box)
+	public function getLimit()
 	{
-		$this->_mailbox = TPropertyValue::ensureString($box);
+		return $this->_limit;
 	}
 
 	/**
-	 *
-	 * @param string $dns IMAP dns connection string
-	 * @throws \Prado\Exceptions\TConfigurationException
+	 * @param int $value the maximum number of messages per run; 0 is unlimited.
 	 */
-	public function processBouncedEmails($dns)
+	public function setLimit($value)
 	{
-		if (!function_exists('imap_open')) {
-			throw new TConfigurationException('imapbounce_no_php_imap');
-		}
-		if (($dns = parse_url($dns)) === false) {
-			throw new TConfigurationException('imapbounce_bad_dns');
-		}
-		/* connect to server */
-		$port = $dns['host'] ?? 993;
-		$hostname = '{' . $dns['host'] . ($port ? ':' . $port : '') . $dns['path'] . '}' . $this->getMailbox();
-
-		/* try to connect */
-		$mbox = imap_open($hostname, $dns['username'], $dns['password']);
-
-		if ($mbox === false) {
-			echo('Cannot connect to mailbox: ' . imap_last_error());
-			return;
-		}
-
-		/* grab emails */
-		$emails = imap_search($mbox, 'UNSEEN'); //
-
-		/* if emails are returned, cycle through each... */
-		if ($emails) {
-			/* for every email... */
-			foreach ($emails as $email_number) {
-				//$message = imap_body($mbox, $email_number, 2);
-				$headers = imap_headerinfo($mbox, $email_number, 2);
-				$uid = imap_uid($mbox, $email_number);
-
-				$s = imap_fetchstructure($mbox, $email_number);
-				$parts = !$s->parts ? [$s] : $s->parts;
-				foreach ($parts as $partno0 => $p) {
-					//getpart($mbox,$mid,$p,$partno0 + 1);
-					/*
-					bounced email from google looks has these fields:
-					Content-Type: multipart/report; boundary="0000000000008a36c805ef9dac1d"; report-type=delivery-status
-					References: <xygw52PsYpxLGQY3AAtBfKXBUaNwLjPlMYSy7U6XGE@localhost>
-					In-Reply-To: <xygw52PsYpxLGQY3AAtBfKXBUaNwLjPlMYSy7U6XGE@localhost>
-					X-Failed-Recipients: thisdoesntexist12345@google.com
-
-					--<boundary, email part>
-					Content-Type: message/delivery-status
-
-					Reporting-MTA: dns; googlemail.com
-					Received-From-MTA: dns; belisoful@icloud.com
-					Arrival-Date: Mon, 12 Dec 2022 00:56:05 -0800 (PST)
-					X-Original-Message-ID: <xygw52PsYpxLGQY3AAtBfKXBUaNwLjPlMYSy7U6XGE@localhost>
-
-					Final-Recipient: rfc822; thisdoesntexist12345@google.com
-					Action: failed
-					Status: 5.0.0
-					Diagnostic-Code: smtp; The email account that you tried to reach does not exist. Please try double-checking the recipient's email address for typos or unnecessary spaces. Learn more at https://support.google.com/mail/answer/6596
-					Last-Attempt-Date: Mon, 12 Dec 2022 00:56:07 -0800 (PST)
-					*/
-				}
-
-				//Content-Type: message/delivery-status
-				// X-Original-Message-ID  Action Status Diagnostic-Code Last-Attempt-Date
-				imap_setflag_full($mbox, $uid, "\\Seen", ST_UID);
-				//imap_delete($mbox, $email_number);
-			}
-			//imap_expunge($mbox);
-		}
-		imap_close($mbox);
+		$this->_limit = max(0, TPropertyValue::ensureInteger($value));
 	}
 }

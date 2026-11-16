@@ -443,7 +443,7 @@ class TEmailModule extends \Prado\TModule
 			$email->setBcc(strlen($bcc) ? $bcc . ', ' . $dbcc : $dbcc);
 		}
 		if (!($mid = $email->getMessageId())) {
-			$email->setMessageId($mid = sha1((string) microtime(true)));
+			$email->setMessageId($mid = bin2hex(random_bytes(16)));
 		}
 
 		$result = $this->onSendEmail($email, $many);
@@ -476,6 +476,32 @@ class TEmailModule extends \Prado\TModule
 	public function onSendEmail($email, $many)
 	{
 		return $this->raiseEvent('onSendEmail', $this, new TEmailEventParameter($email, $many));
+	}
+
+	/**
+	 * Parses a raw delivery status notification and raises {@see onBounce} once per
+	 * failed or delayed recipient.  A message that is not a bounce raises nothing.
+	 * @param string $message the raw RFC 5322 message, headers and body.
+	 * @return TEmailBounce[] the bounces found in the message.
+	 */
+	public function processBounceMessage($message)
+	{
+		$bounces = (new TEmailBounceParser())->parse($message);
+		foreach ($bounces as $bounce) {
+			$this->onBounce($bounce);
+		}
+		return $bounces;
+	}
+
+	/**
+	 * Raises the onBounce event for one bounced recipient.  {@see TDbEmailModule} records
+	 * the bounce on the logged email whose Message-ID matches.
+	 * @param TEmailBounce $bounce the bounce of one recipient.
+	 * @return array results of the event handlers.
+	 */
+	public function onBounce($bounce)
+	{
+		return $this->raiseEvent('onBounce', $this, $bounce);
 	}
 
 	/**
