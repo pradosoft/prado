@@ -11,6 +11,7 @@
 namespace Prado\Test\Unit\Caching;
 
 use Prado\Caching\ICacheSize;
+use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Test\Unit\Harness\Caching\TTestFileCache;
 
 /**
@@ -72,8 +73,35 @@ class TCacheSizeTraitTest extends \PHPUnit\Framework\TestCase
 			'lowercase b'     => ['512b', 512],
 			'lowercase m'     => ['1m', 1_048_576],
 			'whitespace'      => [' 512 K ', 524_288],
-			'invalid → zero'  => ['not-a-size', 0],
 			'negative → zero' => [-5, 0],
+			'negative string' => ['-5', 0],
+			'empty → zero'    => ['', 0],
+			'blank → zero'    => ['  ', 0],
+		];
+	}
+
+	/**
+	 * @dataProvider invalidSizeProvider
+	 */
+	public function testSetMaximumSizeRejectsAValueThatIsNotASize(string $input): void
+	{
+		$cache = $this->newCache();
+		$cache->setMaximumSize(100);
+		try {
+			$cache->setMaximumSize($input);
+			$this->fail("MaximumSize '$input' was accepted.");
+		} catch (TInvalidDataValueException $e) {
+			$this->assertSame('cachesize_maximum_size_invalid', $e->getErrorCode());
+		}
+		$this->assertSame(100, $cache->getMaximumSize());
+	}
+
+	public static function invalidSizeProvider(): array
+	{
+		return [
+			'words'           => ['not-a-size'],
+			'decimal'         => ['1.5G'],
+			'unknown suffix'  => ['10X'],
 		];
 	}
 

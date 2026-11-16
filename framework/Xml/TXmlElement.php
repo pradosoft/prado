@@ -546,8 +546,33 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 	}
 
 	/**
+	 * Adds the ancestors' namespace declarations that this element lacks, for XPath support.
+	 * The nearest ancestor's declaration of a name applies.
+	 * This method is used internally by the xpath() method, which removes the added attributes.
+	 * @return string[] The names of the added `xmlns` and `xmlns:<prefix>` attributes
+	 * @since 4.4.0
+	 */
+	protected function insertInheritedNamespaces(): array
+	{
+		$added = [];
+		for ($node = $this->getParent(); $node !== null; $node = $node->getParent()) {
+			foreach ($node->getAttributes() as $name => $value) {
+				if (($name === 'xmlns' || strncmp($name, 'xmlns:', 6) === 0) && !$this->hasAttribute($name)) {
+					$this->setAttribute($name, $value);
+					$added[] = $name;
+				}
+			}
+		}
+		return $added;
+	}
+
+	/**
 	 * Find elements matching an XPath expression.
 	 * This method allows you to use XPath expressions to query elements within the XML structure.
+	 * The namespace declarations of the ancestors apply, so a prefix declared on an ancestor resolves.
+	 * The query runs on this element and its descendants, with this element as the document element,
+	 * so `/tag`, `.`, and `//*` match this element as well.
+	 * The results are in document order.
 	 * The internal ID attributes are removed when the query throws.
 	 * @param string $xpath XPath expression
 	 * @return TList List of matching elements
@@ -556,6 +581,7 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 	public function xpath(string $xpath): TList
 	{
 		$idAttrName = $this->insertPradoXmlId();
+		$namespaceAttrNames = $this->insertInheritedNamespaces();
 
 		try {
 			$doc = new \DOMDocument();
@@ -569,6 +595,10 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 				if ($node instanceof \DOMElement) {
 					$xmlId = $node->getAttribute($idAttrName);
 
+					if ($xmlId === $this->getAttribute($idAttrName)) {
+						$results->add($this);
+						continue;
+					}
 					// @todo This can be sped up with a private focused search function due to the known ordering of each node $xmlId.
 					$element = $this->getElementByAttribute($idAttrName, $xmlId, self::SEARCH_BREADTH_FIRST);
 					if ($element) {
@@ -578,6 +608,9 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 			}
 		} finally {
 			$this->removePradoXmlId($idAttrName);
+			foreach ($namespaceAttrNames as $name) {
+				$this->removeAttribute($name);
+			}
 		}
 
 		return $results;

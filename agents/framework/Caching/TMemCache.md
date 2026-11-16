@@ -45,6 +45,10 @@ return [
 - `PersistentID` - Memcached persistent connection ID; all instances sharing the same ID share one connection pool
 - `Options` - Memcached options array (see [Memcached constants](https://www.php.net/manual/en/memcached.constants.php)); **must be set after `init()`** — throws `TInvalidOperationException` if called before initialization
 
+## Expiration
+
+`$expire` is seconds, as for every `ICache`. Memcached reads a number over 30 days (`MAX_RELATIVE_EXPIRE`) as a Unix timestamp, so `toMemcachedExpire()` passes a longer time as the timestamp it ends at. In 4.3 such a time was passed as is and expired at once.
+
 ## Persistent Connections
 
 When `PersistentID` is set, the `Memcached` instance persists between requests. If the persistent instance already has servers in its list, `init()` skips re-adding them (logged via trace).

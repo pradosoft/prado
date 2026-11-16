@@ -36,9 +36,10 @@ use Prado\Xml\TXmlElement;
  * - {@see flush} : delete all values from cache
  *
  * Each value is associated with an expiration time. The {@see get} operation
- * ensures that any expired value will not be returned. The expiration time can
- * be specified by the number of seconds (maximum 60*60*24*30)
- * or a UNIX timestamp. A expiration time 0 represents never expire.
+ * ensures that any expired value will not be returned. The expiration time is
+ * a number of seconds, as for every {@see ICache}; 0 means never expire.
+ * Memcached reads a time over 30 days ({@see MAX_RELATIVE_EXPIRE}) as a Unix
+ * timestamp, so TMemCache passes a longer time as the timestamp it ends at.
  *
  * By definition, cache does not ensure the existence of a value
  * even if it never expires. Cache is not meant to be a persistent storage.
@@ -118,6 +119,12 @@ use Prado\Xml\TXmlElement;
 class TMemCache extends TCache
 {
 	use TInitializedTrait;
+
+	/**
+	 * The longest expiration time, in seconds, that Memcached reads as relative: 30 days.
+	 * @since 4.4.0
+	 */
+	public const MAX_RELATIVE_EXPIRE = 2_592_000;
 
 	/**
 	 * @var \Memcached The Memcached instance.
@@ -374,7 +381,7 @@ class TMemCache extends TCache
 	 */
 	protected function setValue($key, $value, $expire)
 	{
-		return $this->getCacheDirect()->set($key, $value, $expire);
+		return $this->getCacheDirect()->set($key, $value, $this->toMemcachedExpire((int) $expire));
 	}
 
 	/**
@@ -385,7 +392,23 @@ class TMemCache extends TCache
 	 */
 	protected function addValue($key, $value, $expire)
 	{
-		return $this->getCacheDirect()->add($key, $value, $expire);
+		return $this->getCacheDirect()->add($key, $value, $this->toMemcachedExpire((int) $expire));
+	}
+
+	/**
+	 * Converts an expiration time in seconds to the form Memcached reads. A time up to
+	 * {@see MAX_RELATIVE_EXPIRE} is passed as is; a longer time becomes the Unix timestamp
+	 * it ends at, since Memcached reads a larger number as a timestamp.
+	 * @param int $expire the number of seconds until the value expires; 0 means never.
+	 * @return int the expiration time for Memcached.
+	 * @since 4.4.0
+	 */
+	protected function toMemcachedExpire(int $expire): int
+	{
+		if ($expire > static::MAX_RELATIVE_EXPIRE) {
+			return $this->getClock()->time() + $expire;
+		}
+		return $expire;
 	}
 
 	/**

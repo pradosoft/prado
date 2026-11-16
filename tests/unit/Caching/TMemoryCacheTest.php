@@ -1460,8 +1460,7 @@ class TMemoryCacheTest extends \PHPUnit\Framework\TestCase
 			'leading/trailing ws' => ['  512M  ', 512 * 1_048_576],
 			// zero with suffix
 			'zero with M suffix'  => ['0M',       0],
-			// unrecognized → clamped to 0 (unlimited)
-			'garbage string'      => ['bad!',     0],
+			// a negative number is clamped to 0 (unlimited); an unreadable size throws (TCacheSizeTraitTest)
 			'negative string'     => ['-1',       0],
 		];
 	}

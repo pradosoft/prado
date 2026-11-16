@@ -232,8 +232,8 @@ class TDbCache extends TSerializingCache implements IDbModule
 		$db = $this->getDbConnection();
 		$cacheTable = $this->getCacheTableName();
 		$autoCreateCacheTable = $this->getAutoCreateCacheTable();
+		$key = $this->getTableStateKey('created');
 		try {
-			$key = 'TDbCache:' . $cacheTable . ':created';
 			if ($force) {
 				$this->_createCheck = false;
 			} else {
@@ -286,6 +286,28 @@ class TDbCache extends TSerializingCache implements IDbModule
 	}
 
 	/**
+	 * Returns the global state key that records an event of the cache table: `created` or `flushed`.
+	 * The key names the connection and the table, so caches with one table name in different
+	 * databases keep their own state. The connection is its {@see getConnectionID ConnectionID},
+	 * its {@see getConnectionString ConnectionString}, or the default SQLite database, in that
+	 * order; it is hashed, so a connection string is not written to the global state.
+	 * @param string $event the event the key records.
+	 * @return string the global state key.
+	 * @since 4.4.0
+	 */
+	protected function getTableStateKey(string $event): string
+	{
+		if (($connection = $this->getConnectionID()) !== '') {
+			$connection = 'id:' . $connection;
+		} elseif (($connection = $this->getConnectionString()) !== '') {
+			$connection = 'dsn:' . $connection;
+		} else {
+			$connection = 'sqlite:' . $this->getSqliteDatabaseName();
+		}
+		return 'TDbCache:' . sha1($connection) . ':' . $this->getCacheTableName() . ':' . $event;
+	}
+
+	/**
 	 * Flush expired values from cache depending on {@see \Prado\Caching\TDbCache::setFlushInterval() FlushInterval}
 	 * @param bool $force override {@see \Prado\Caching\TDbCache::setFlushInterval() FlushInterval} and force deletion of expired items
 	 * @since 3.1.5
@@ -297,7 +319,7 @@ class TDbCache extends TSerializingCache implements IDbModule
 			return;
 		}
 		$cacheTable = $this->getCacheTableName();
-		$key = 'TDbCache:' . $cacheTable . ':flushed';
+		$key = $this->getTableStateKey('flushed');
 		$now = $this->getClock()->time();
 		$next = $interval + (int) $this->getApplication()->getGlobalState($key, 0);
 

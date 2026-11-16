@@ -333,6 +333,29 @@ class TMemCacheSeamTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame(['set', 30], [$cache->fake->calls[1][0], $cache->fake->calls[1][2]]);
 	}
 
+	/**
+	 * @dataProvider expireProvider
+	 */
+	public function testExpiryIsInSecondsBeyondThirtyDays(string $method, int $expire, int $passed): void
+	{
+		$cache = $this->newCache();
+		$cache->fakeNow = 1_000_000_000;
+		$cache->init(null);
+		$this->assertTrue($cache->$method('k', 'v', $expire));
+		$this->assertSame([$method, $passed], [end($cache->fake->calls)[0], end($cache->fake->calls)[2]]);
+	}
+
+	public static function expireProvider(): array
+	{
+		$days31 = 31 * 86_400;
+		return [
+			'never'           => ['set', 0, 0],
+			'thirty days'     => ['set', TMemCache::MAX_RELATIVE_EXPIRE, TMemCache::MAX_RELATIVE_EXPIRE],
+			'31 days, set'    => ['set', $days31, 1_000_000_000 + $days31],
+			'31 days, add'    => ['add', $days31, 1_000_000_000 + $days31],
+		];
+	}
+
 	public function testSetOptionsReachesTheInstanceAfterInit(): void
 	{
 		$cache = $this->newCache();

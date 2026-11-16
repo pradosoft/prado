@@ -105,6 +105,15 @@ class TCacheTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame($this->app->getUniqueID(), $cache->getKeyPrefix());
 	}
 
+	public function testNanIsStoredAsAValue(): void
+	{
+		$cache = $this->newCache();
+		$this->assertTrue($cache->set('set', NAN));
+		$this->assertNan($cache->get('set'));
+		$this->assertTrue($cache->add('add', NAN));
+		$this->assertNan($cache->get('add'));
+	}
+
 	public function testAddStoresAnEmptyValueThatExpires(): void
 	{
 		$cache = $this->newCache();
