@@ -50,8 +50,8 @@ class MessageCacheTest extends TestCase
 	{
 		$dir = $this->makeTempDirectory('prado_msgcache_') . '/missing';
 
-		$this->expectException(\Exception::class);
-		$this->expectExceptionMessage('The cache directory ' . $dir . '/ does not exists.');
+		$this->expectException(\Prado\Exceptions\TConfigurationException::class);
+		$this->expectExceptionMessage("The message cache directory '$dir/' does not exist.");
 		new MessageCache($dir);
 	}
 
@@ -64,8 +64,8 @@ class MessageCacheTest extends TestCase
 			$this->markTestSkipped('The process writes into a directory without write permission.');
 		}
 
-		$this->expectException(\Exception::class);
-		$this->expectExceptionMessage('The cache directory ' . $dir . '/ must be writable by the server.');
+		$this->expectException(\Prado\Exceptions\TConfigurationException::class);
+		$this->expectExceptionMessage("The message cache directory '$dir/' must be writable");
 		new MessageCache($dir);
 	}
 

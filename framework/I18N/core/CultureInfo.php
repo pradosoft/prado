@@ -18,7 +18,8 @@
 
 namespace Prado\I18N\core;
 
-use Exception;
+use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Exceptions\TInvalidOperationException;
 use Prado\I18N\core\CultureInfoUnits;
 use Prado\Prado;
 use IntlException;
@@ -183,7 +184,7 @@ class CultureInfo
 		if (in_array($getProperty, $this->properties)) {
 			return $this->$getProperty();
 		} else {
-			throw new Exception('Property ' . $name . ' does not exists.');
+			throw new TInvalidOperationException('cultureinfo_property_undefined', $name);
 		}
 	}
 
@@ -199,7 +200,7 @@ class CultureInfo
 		if (in_array($setProperty, $this->properties)) {
 			$this->$setProperty($value);
 		} else {
-			throw new Exception('Property ' . $name . ' can not be set.');
+			throw new TInvalidOperationException('cultureinfo_property_readonly', $name);
 		}
 	}
 
@@ -260,7 +261,7 @@ class CultureInfo
 	{
 		if (!empty($culture)) {
 			if (!preg_match('/^[_\\w]+$/', $culture)) {
-				throw new Exception('Invalid culture supplied: ' . $culture);
+				throw new TInvalidDataValueException('cultureinfo_culture_invalid', $culture);
 			}
 		}
 

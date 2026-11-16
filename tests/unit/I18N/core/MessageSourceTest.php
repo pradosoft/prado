@@ -108,16 +108,16 @@ class MessageSourceTest extends TestCase
 
 	public function testFactoryRejectsAnUnknownType()
 	{
-		$this->expectException(Exception::class);
-		$this->expectExceptionMessage('Invalid type "Unknown", valid types are XLIFF, PHP, gettext, Database');
+		$this->expectException(\Prado\Exceptions\TConfigurationException::class);
+		$this->expectExceptionMessage("Invalid message source type 'Unknown'. Valid types are XLIFF, PHP, gettext, Database.");
 		MessageSource::factory('Unknown');
 	}
 
 	public function testFactoryRejectsAMissingClassFile()
 	{
 		$file = $this->makeTempDirectory() . '/MessageSource_Missing.php';
-		$this->expectException(Exception::class);
-		$this->expectExceptionMessage("File $file not found");
+		$this->expectException(\Prado\Exceptions\TConfigurationException::class);
+		$this->expectExceptionMessage("The message source class file '$file' does not exist.");
 		MessageSource::factory('Missing', '.', $file);
 	}
 

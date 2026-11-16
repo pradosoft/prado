@@ -19,6 +19,7 @@ namespace Prado\I18N\core;
 
 use Closure;
 use Exception;
+use Prado\Exceptions\TInvalidDataValueException;
 
 /**
  * ChoiceFormat class.
@@ -119,6 +120,7 @@ class ChoiceFormat
 	 * Determine if the given number belongs to a given set
 	 * @param float $number the number to test.
 	 * @param string $set the set, in set notation.
+	 * @throws TInvalidDataValueException when the set is not in set notation.
 	 * @return bool true if number is in the set, false otherwise.
 	 */
 	public function isValid($number, $set)
@@ -126,7 +128,7 @@ class ChoiceFormat
 		$n = preg_match_all($this->validate, $set, $matches, PREG_SET_ORDER);
 
 		if ($n < 3) {
-			throw new Exception("Invalid set \"{$set}\"");
+			throw new TInvalidDataValueException('choiceformat_set_invalid', $set);
 		}
 
 		if (preg_match('/\{\s*n:([^\}]+)\}/', $set, $def)) {
@@ -197,7 +199,7 @@ class ChoiceFormat
 	/**
 	 * Compile a set notation expression into a closure of the number "n".
 	 * @param string $set the expression after "n:" in the set notation.
-	 * @throws Exception when the expression has a token or form outside the set notation.
+	 * @throws TInvalidDataValueException when the expression has a token or form outside the set notation.
 	 * @return Closure the expression as a function of the number.
 	 * @since 4.4.0
 	 */
@@ -207,7 +209,7 @@ class ChoiceFormat
 		$pos = 0;
 		$expression = $this->parseSetTernary($tokens, $pos);
 		if ($pos !== count($tokens)) {
-			throw new Exception("Invalid set notation \"{$set}\"");
+			throw new TInvalidDataValueException('choiceformat_notation_invalid', $set);
 		}
 		return $expression;
 	}
@@ -215,7 +217,7 @@ class ChoiceFormat
 	/**
 	 * Split a set notation expression into numbers, "n", operators, and brackets.
 	 * @param string $set the expression after "n:" in the set notation.
-	 * @throws Exception when the expression has a token outside the set notation.
+	 * @throws TInvalidDataValueException when the expression has a token outside the set notation.
 	 * @return string[] the tokens.
 	 * @since 4.4.0
 	 */
@@ -226,7 +228,7 @@ class ChoiceFormat
 		$offset = 0;
 		while ($offset < $length) {
 			if (!preg_match('/\s*(\d+(?:\.\d+)?|n|==|!=|<=|>=|&&|\|\||[-+%<>!&|()?:])\s*/A', $set, $match, 0, $offset)) {
-				throw new Exception("Invalid set notation \"{$set}\"");
+				throw new TInvalidDataValueException('choiceformat_notation_invalid', $set);
 			}
 			$tokens[] = $match[1];
 			$offset += strlen($match[0]);
@@ -239,7 +241,7 @@ class ChoiceFormat
 	 * As in PHP 8, an unbracketed conditional is not allowed as the last operand of another.
 	 * @param string[] $tokens the expression tokens.
 	 * @param int $pos the position of the next token, advanced past the parsed tokens.
-	 * @throws Exception when the tokens do not form an expression.
+	 * @throws TInvalidDataValueException when the tokens do not form an expression.
 	 * @return Closure the parsed expression.
 	 * @since 4.4.0
 	 */
@@ -257,7 +259,7 @@ class ChoiceFormat
 		}
 		$then = $this->parseSetTernary($tokens, $pos);
 		if (($tokens[$pos++] ?? null) !== ':') {
-			throw new Exception('Missing ":" in set notation');
+			throw new TInvalidDataValueException('choiceformat_notation_colon_missing');
 		}
 		$else = $this->parseSetBinary($tokens, $pos, 0);
 		return fn ($n) => $condition($n) ? $then($n) : $else($n);
@@ -268,7 +270,7 @@ class ChoiceFormat
 	 * @param string[] $tokens the expression tokens.
 	 * @param int $pos the position of the next token, advanced past the parsed tokens.
 	 * @param int $level the index into {@see SET_OPERATORS}.
-	 * @throws Exception when the tokens do not form an expression.
+	 * @throws TInvalidDataValueException when the tokens do not form an expression.
 	 * @return Closure the parsed expression.
 	 * @since 4.4.0
 	 */
@@ -297,12 +299,12 @@ class ChoiceFormat
 				'%' => function ($n) use ($left, $right) {
 					$divisor = (int) $right($n);
 					if ($divisor === 0) {
-						throw new Exception('Modulo by zero in set notation');
+						throw new TInvalidDataValueException('choiceformat_notation_modulo_zero');
 					}
 					return (int) $left($n) % $divisor;
 				},
 				// The tokenizer passes only the operators above.
-				default => throw new Exception("Unknown set notation operator \"{$operator}\""), // @codeCoverageIgnore
+				default => throw new TInvalidDataValueException('choiceformat_notation_operator_unknown', $operator), // @codeCoverageIgnore
 			};
 		}
 		return $left;
@@ -312,7 +314,7 @@ class ChoiceFormat
 	 * Parse a unary operator, a number, "n", or a bracketed expression.
 	 * @param string[] $tokens the expression tokens.
 	 * @param int $pos the position of the next token, advanced past the parsed tokens.
-	 * @throws Exception when the tokens do not form an expression.
+	 * @throws TInvalidDataValueException when the tokens do not form an expression.
 	 * @return Closure the parsed expression.
 	 * @since 4.4.0
 	 */
@@ -333,7 +335,7 @@ class ChoiceFormat
 		if ($token === '(') {
 			$expression = $this->parseSetTernary($tokens, $pos);
 			if (($tokens[$pos++] ?? null) !== ')') {
-				throw new Exception('Unbalanced brackets in set notation');
+				throw new TInvalidDataValueException('choiceformat_notation_brackets_unbalanced');
 			}
 			return $expression;
 		}
@@ -341,7 +343,7 @@ class ChoiceFormat
 			$value = $token + 0;
 			return fn ($n) => $value;
 		}
-		throw new Exception('Invalid set notation');
+		throw new TInvalidDataValueException('choiceformat_notation_operand_missing');
 	}
 
 	/**

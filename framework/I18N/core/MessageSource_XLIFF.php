@@ -20,8 +20,6 @@ namespace Prado\I18N\core;
 use DOMDocument;
 use DOMXPath;
 use DOMElement;
-use Prado\Exceptions\TException;
-use Prado\Exceptions\TIOException;
 use Prado\Prado;
 
 /**
@@ -273,7 +271,7 @@ class MessageSource_XLIFF extends MessageSource
 		}
 
 		if (!is_writable($filename)) {
-			throw new TIOException("Unable to save to file {$filename}, file must be writable.");
+			throw new TMessageSourceIOException('messagesource_file_unwritable', $filename);
 		}
 
 		//create a new dom, import the existing xml
@@ -316,7 +314,7 @@ class MessageSource_XLIFF extends MessageSource
 
 		$fileNode = $xpath->query('//file')->item(0);
 		if ($fileNode instanceof DOMElement) {
-			$fileNode->setAttribute('date', @date('Y-m-d\TH:i:s\Z'));
+			$fileNode->setAttribute('date', $this->formatNow('Y-m-d\TH:i:s\Z', true));
 		}
 
 		//save it and clear the cache for this variant
@@ -348,7 +346,7 @@ class MessageSource_XLIFF extends MessageSource
 		}
 
 		if (!is_writable($filename)) {
-			throw new TIOException("Unable to update file {$filename}, file must be writable.");
+			throw new TMessageSourceIOException('messagesource_file_unwritable', $filename);
 		}
 
 		//create a new dom, import the existing xml
@@ -411,7 +409,7 @@ class MessageSource_XLIFF extends MessageSource
 
 		$fileNode = $xpath->query('//file')->item(0);
 		if ($fileNode instanceof DOMElement) {
-			$fileNode->setAttribute('date', @date('Y-m-d\TH:i:s\Z'));
+			$fileNode->setAttribute('date', $this->formatNow('Y-m-d\TH:i:s\Z', true));
 		}
 
 		if ($dom->save($filename) > 0) {
@@ -442,7 +440,7 @@ class MessageSource_XLIFF extends MessageSource
 		}
 
 		if (!is_writable($filename)) {
-			throw new TIOException("Unable to modify file {$filename}, file must be writable.");
+			throw new TMessageSourceIOException('messagesource_file_unwritable', $filename);
 		}
 
 		//create a new dom, import the existing xml
@@ -464,7 +462,7 @@ class MessageSource_XLIFF extends MessageSource
 					$unit->parentNode->removeChild($unit);
 					$fileNode = $xpath->query('//file')->item(0);
 					if ($fileNode instanceof DOMElement) {
-						$fileNode->setAttribute('date', @date('Y-m-d\TH:i:s\Z'));
+						$fileNode->setAttribute('date', $this->formatNow('Y-m-d\TH:i:s\Z', true));
 					}
 
 					if (false !== $dom->save($filename)) {
@@ -503,7 +501,7 @@ class MessageSource_XLIFF extends MessageSource
 		}
 
 		if (!is_dir($dir)) {
-			throw new TException("Unable to create directory $dir");
+			throw new TMessageSourceIOException('messagesource_directory_failed', $dir);
 		}
 
 		file_put_contents($file, $this->getTemplate($catalogue));
@@ -514,7 +512,7 @@ class MessageSource_XLIFF extends MessageSource
 
 	protected function getTemplate($catalogue)
 	{
-		$date = @date('c');
+		$date = $this->formatNow('c');
 		$xml =
 <<<EOD
 	<?xml version="1.0" encoding="UTF-8"?>

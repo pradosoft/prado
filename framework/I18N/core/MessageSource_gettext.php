@@ -17,8 +17,6 @@
 
 namespace Prado\I18N\core;
 
-use Prado\Exceptions\TException;
-use Prado\Exceptions\TIOException;
 use Prado\I18N\core\Gettext\TGettext;
 use Prado\Prado;
 
@@ -224,10 +222,10 @@ class MessageSource_gettext extends MessageSource
 		}
 
 		if (!is_writable($MOFile)) {
-			throw new TIOException("Unable to save to file {$MOFile}, file must be writable.");
+			throw new TMessageSourceIOException('messagesource_file_unwritable', $MOFile);
 		}
 		if (!is_writable($POFile)) {
-			throw new TIOException("Unable to save to file {$POFile}, file must be writable.");
+			throw new TMessageSourceIOException('messagesource_file_unwritable', $POFile);
 		}
 
 		//set the strings as untranslated.
@@ -250,7 +248,7 @@ class MessageSource_gettext extends MessageSource
 
 		if ($new > $existing) {
 			//change the date 2004-12-25 12:26
-			$result['meta']['PO-Revision-Date'] = @date('Y-m-d H:i:s');
+			$result['meta']['PO-Revision-Date'] = $this->formatNow('Y-m-d H:iO');
 
 			$po->fromArray($result);
 			$mo = $po->toMO();
@@ -284,10 +282,10 @@ class MessageSource_gettext extends MessageSource
 		}
 
 		if (!is_writable($MOFile)) {
-			throw new TIOException("Unable to modify file {$MOFile}, file must be writable.");
+			throw new TMessageSourceIOException('messagesource_file_unwritable', $MOFile);
 		}
 		if (!is_writable($POFile)) {
-			throw new TIOException("Unable to modify file {$POFile}, file must be writable.");
+			throw new TMessageSourceIOException('messagesource_file_unwritable', $POFile);
 		}
 
 		$po = TGettext::factory('PO', $POFile);
@@ -299,7 +297,7 @@ class MessageSource_gettext extends MessageSource
 		}
 
 		unset($result['strings'][$message]);
-		$result['meta']['PO-Revision-Date'] = @date('Y-m-d H:i:s');
+		$result['meta']['PO-Revision-Date'] = $this->formatNow('Y-m-d H:iO');
 
 		$po->fromArray($result);
 		$mo = $po->toMO();
@@ -332,10 +330,10 @@ class MessageSource_gettext extends MessageSource
 		}
 
 		if (!is_writable($MOFile)) {
-			throw new TIOException("Unable to update file {$MOFile}, file must be writable.");
+			throw new TMessageSourceIOException('messagesource_file_unwritable', $MOFile);
 		}
 		if (!is_writable($POFile)) {
-			throw new TIOException("Unable to update file {$POFile}, file must be writable.");
+			throw new TMessageSourceIOException('messagesource_file_unwritable', $POFile);
 		}
 
 
@@ -348,7 +346,7 @@ class MessageSource_gettext extends MessageSource
 		}
 
 		$result['strings'][$text] = $target;
-		$result['meta']['PO-Revision-Date'] = @date('Y-m-d H:i:s');
+		$result['meta']['PO-Revision-Date'] = $this->formatNow('Y-m-d H:iO');
 
 		$po->fromArray($result);
 		$mo = $po->toMO();
@@ -434,11 +432,11 @@ class MessageSource_gettext extends MessageSource
 			@chmod($dir, Prado::getDefaultDirPermissions());
 		}
 		if (!is_dir($dir)) {
-			throw new TException("Unable to create directory $dir");
+			throw new TMessageSourceIOException('messagesource_directory_failed', $dir);
 		}
 
 		$po = TGettext::factory('PO', $po_file);
-		$result['meta']['PO-Revision-Date'] = @date('Y-m-d H:i:s');
+		$result['meta']['PO-Revision-Date'] = $this->formatNow('Y-m-d H:iO');
 		$result['strings'] = [];
 
 		$po->fromArray($result);
@@ -446,7 +444,7 @@ class MessageSource_gettext extends MessageSource
 		if ($po->save() && $mo->save($mo_file)) {
 			return [$variant, $mo_file, $po_file];
 		} else {
-			throw new TException("Unable to create file $po_file and $mo_file");
+			throw new TMessageSourceIOException('messagesource_template_failed', $po_file, $mo_file);
 		}
 	}
 }

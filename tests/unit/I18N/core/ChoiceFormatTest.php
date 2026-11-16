@@ -149,8 +149,8 @@ class ChoiceFormatTest extends \PHPUnit\Framework\TestCase
 	{
 		$choice = new ChoiceFormat();
 
-		$this->expectException(\Exception::class);
-		$this->expectExceptionMessage('Invalid set "[]"');
+		$this->expectException(\Prado\Exceptions\TInvalidDataValueException::class);
+		$this->expectExceptionMessage("Invalid choice set '[]'.");
 		$choice->isValid(1, '[]');
 	}
 

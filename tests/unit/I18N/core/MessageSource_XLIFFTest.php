@@ -4,10 +4,12 @@ namespace Prado\Test\Unit\I18N\core;
 
 use DOMDocument;
 use PHPUnit\Framework\TestCase;
+use Prado\Util\Clock\TMockClock;
 use Prado\Exceptions\TException;
 use Prado\Exceptions\TIOException;
 use Prado\I18N\core\MessageCache;
 use Prado\I18N\core\MessageSource_XLIFF;
+use Prado\I18N\core\TMessageSourceIOException;
 use Prado\Test\Unit\Harness\Traits\TTempDirectoryTrait;
 use Prado\Test\Unit\PradoUnit;
 
@@ -320,8 +322,8 @@ class MessageSource_XLIFFTest extends TestCase
 		file_put_contents($file, '');
 		$source = $this->createSource('en', $file);
 
-		$this->expectException(TException::class);
-		$this->expectExceptionMessage("Unable to create directory $file/en");
+		$this->expectException(TMessageSourceIOException::class);
+		$this->expectExceptionMessage("Unable to create the message catalogue directory '$file/en'");
 		PradoUnit::invoke($source, 'createMessageTemplate', 'messages');
 	}
 
@@ -331,8 +333,8 @@ class MessageSource_XLIFFTest extends TestCase
 		file_put_contents($file, '');
 		$source = $this->createSource('en', $file);
 
-		$this->expectException(TException::class);
-		$this->expectExceptionMessage("Unable to create directory $file/en");
+		$this->expectException(TMessageSourceIOException::class);
+		$this->expectExceptionMessage("Unable to create the message catalogue directory '$file/en'");
 		PradoUnit::invoke($source, 'createMessageTemplate', null);
 	}
 
@@ -549,5 +551,24 @@ class MessageSource_XLIFFTest extends TestCase
 		$this->assertFalse($source->update('1e1', 'x', ''));
 		$this->assertFalse($source->delete('1e1'));
 		$this->assertSame([['1', '10', 'ten', null]], $this->readUnits('messages.xml'));
+	}
+
+	public function testDatesComeFromTheClock()
+	{
+		$source = $this->createSource('fr');
+		$source->setClock((new TMockClock())->setNow(new \DateTimeImmutable('2024-01-15T10:30:00+02:00')));
+		$source->append('Hello');
+		$this->assertTrue($source->save());
+		$xml = file_get_contents($this->_dir . '/fr/messages.xml');
+		$this->assertStringContainsString('date="2024-01-15T08:30:00Z"', $xml);
+		$this->assertStringNotContainsString('2024-01-15T10:30:00+02:00', $xml);
+		$this->assertStringContainsString('date="2024-01-15T10:30:00+02:00"', PradoUnit::invoke($source, 'getTemplate', 'messages'));
+
+		$source->setClock((new TMockClock())->setNow(new \DateTimeImmutable('2024-02-01T00:00:00Z')));
+		$this->assertTrue($source->update('Hello', 'Bonjour', ''));
+		$this->assertStringContainsString('date="2024-02-01T00:00:00Z"', file_get_contents($this->_dir . '/fr/messages.xml'));
+		$source->setClock((new TMockClock())->setNow(new \DateTimeImmutable('2024-03-01T00:00:00Z')));
+		$this->assertTrue($source->delete('Hello'));
+		$this->assertStringContainsString('date="2024-03-01T00:00:00Z"', file_get_contents($this->_dir . '/fr/messages.xml'));
 	}
 }

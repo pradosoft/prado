@@ -17,7 +17,9 @@
 
 namespace Prado\I18N\core;
 
-use Exception;
+use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Exceptions\TIOException;
+use Prado\Util\Clock\TApplicationClockAwareTrait;
 
 /**
  * Fast, light and safe Cache Class
@@ -45,6 +47,8 @@ use Exception;
  */
 class TCache_Lite
 {
+	use TApplicationClockAwareTrait;
+
 	// --- Private properties ---
 
 	/**
@@ -79,13 +83,6 @@ class TCache_Lite
 	 * @var bool $_fileLocking
 	 */
 	protected $_fileLocking = true;
-
-	/**
-	 * Timestamp of the last valid cache
-	 *
-	 * @var int $_refreshTime
-	 */
-	protected $_refreshTime;
 
 	/**
 	 * File name (with path)
@@ -247,7 +244,6 @@ class TCache_Lite
 				$this->$property = $value;
 			}
 		}
-		$this->_refreshTime = time() - $this->_lifeTime;
 	}
 
 	/**
@@ -287,7 +283,7 @@ class TCache_Lite
 					$data = $this->_read();
 				}
 			} else {
-				if (@filemtime($this->_file) > $this->_refreshTime) {
+				if (@filemtime($this->_file) > $this->getRefreshTime()) {
 					$data = $this->_read();
 				}
 			}
@@ -329,7 +325,7 @@ class TCache_Lite
 			}
 			if ($this->_writeControl) {
 				if (!$this->_writeAndControl($data)) {
-					@touch($this->_file, time() - 2 * abs($this->_lifeTime));
+					@touch($this->_file, $this->getClock()->time() - 2 * abs($this->_lifeTime));
 					return false;
 				} else {
 					return true;
@@ -353,7 +349,7 @@ class TCache_Lite
 	{
 		$this->_setFileName($id, $group);
 		if (!@unlink($this->_file)) {
-			throw new Exception('TCache_Lite: Unable to remove cache');
+			throw new TIOException('cachelite_remove_failed', $this->_file);
 		}
 		return true;
 	}
@@ -388,7 +384,7 @@ class TCache_Lite
 			}
 		}
 		if (!($dh = @opendir($this->_cacheDir))) {
-			throw new Exception('TCache_Lite: Unable to open cache directory');
+			throw new TIOException('cachelite_directory_failed', $this->_cacheDir);
 		}
 		while (($file = readdir($dh)) !== false) {
 			if (($file != '.') && ($file != '..')) {
@@ -397,7 +393,7 @@ class TCache_Lite
 					if (str_contains($file, $motif)) {
 						if (!@unlink($file)) {
 							closedir($dh);
-							throw new Exception('Cache_Lite: Unable to remove cache');
+							throw new TIOException('cachelite_remove_failed', $file);
 						}
 					}
 				}
@@ -416,7 +412,16 @@ class TCache_Lite
 	public function setLifeTime($newLifeTime)
 	{
 		$this->_lifeTime = $newLifeTime;
-		$this->_refreshTime = time() - $newLifeTime;
+	}
+
+	/**
+	 * Returns the time before which a cache file is expired: the time of {@see getClock()} less the life time.
+	 * @return int the refresh time.
+	 * @since 4.4.0
+	 */
+	protected function getRefreshTime(): int
+	{
+		return $this->getClock()->time() - (int) $this->_lifeTime;
 	}
 
 	// --- Private methods ---
@@ -494,13 +499,13 @@ class TCache_Lite
 			if ($this->_readControl) {
 				$hashData = $this->_hash($data, $this->_readControlType);
 				if ($hashData != $hashControl) {
-					@touch($this->_file, time() - 2 * abs($this->_lifeTime));
+					@touch($this->_file, $this->getClock()->time() - 2 * abs($this->_lifeTime));
 					return false;
 				}
 			}
 			return $data;
 		}
-		throw new Exception('Cache_Lite: Unable to read cache');
+		throw new TIOException('cachelite_read_failed', $this->_file);
 	}
 
 	/**
@@ -529,7 +534,7 @@ class TCache_Lite
 			@fclose($fp);
 			return true;
 		}
-		throw new Exception('Cache_Lite: Unable to write cache');
+		throw new TIOException('cachelite_write_failed', $this->_file);
 	}
 
 	/**
@@ -565,7 +570,7 @@ class TCache_Lite
 			case 'strlen':
 				return sprintf('% 32d', strlen($data));
 			default:
-				throw new Exception('Unknown controlType (available values are only \'md5\', \'crc32\', \'strlen\')');
+				throw new TInvalidDataValueException('cachelite_readcontroltype_invalid', $controlType);
 		}
 	}
 }

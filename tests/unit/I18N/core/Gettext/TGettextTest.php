@@ -36,8 +36,8 @@ class TGettextTest extends TestCase
 
 	public function testFactoryThrowsForAnUnknownFormat()
 	{
-		$this->expectException(\Exception::class);
-		$this->expectExceptionMessage('TGettext_XX.php not found');
+		$this->expectException(\Prado\Exceptions\TInvalidDataValueException::class);
+		$this->expectExceptionMessage("Unknown gettext format 'XX'.");
 
 		TGettext::factory('xx');
 	}
@@ -46,8 +46,8 @@ class TGettextTest extends TestCase
 	{
 		$dir = $this->makeTempDirectory();
 
-		$this->expectException(\Exception::class);
-		$this->expectExceptionMessage("File $dir/missing.po doesn't exist.");
+		$this->expectException(\Prado\Exceptions\TIOException::class);
+		$this->expectExceptionMessage("The PO file '$dir/missing.po' does not exist.");
 
 		TGettext::poFile2moFile("$dir/missing.po", "$dir/missing.mo");
 	}

@@ -3,6 +3,7 @@
 namespace Prado\Test\Unit\I18N\core;
 
 use PHPUnit\Framework\TestCase;
+use Prado\Util\Clock\TMockClock;
 use Prado\I18N\core\TCache_Lite;
 use Prado\Test\Unit\Harness\Traits\TTempDirectoryTrait;
 use Prado\Test\Unit\PradoUnit;
@@ -129,8 +130,8 @@ class TCache_LiteTest extends TestCase
 	{
 		$cache = $this->createCache(['readControlType' => 'sha1', 'fileLocking' => false]);
 
-		$this->expectException(\Exception::class);
-		$this->expectExceptionMessage('Unknown controlType');
+		$this->expectException(\Prado\Exceptions\TInvalidDataValueException::class);
+		$this->expectExceptionMessage("Unknown message cache read control type 'sha1'");
 		$cache->save('data', 'id');
 	}
 
@@ -249,8 +250,8 @@ class TCache_LiteTest extends TestCase
 			$this->markTestSkipped('The process reads a file without read permission.');
 		}
 
-		$this->expectException(\Exception::class);
-		$this->expectExceptionMessage('Cache_Lite: Unable to read cache');
+		$this->expectException(\Prado\Exceptions\TIOException::class);
+		$this->expectExceptionMessage('Unable to read the message cache file');
 		$cache->get('id', 'default', true);
 	}
 
@@ -258,8 +259,8 @@ class TCache_LiteTest extends TestCase
 	{
 		$cache = new TCache_Lite(['cacheDir' => $this->makeTempDirectory('prado_cachelite_') . '/missing/']);
 
-		$this->expectException(\Exception::class);
-		$this->expectExceptionMessage('Cache_Lite: Unable to write cache');
+		$this->expectException(\Prado\Exceptions\TIOException::class);
+		$this->expectExceptionMessage('Unable to write the message cache file');
 		$cache->save('data', 'id');
 	}
 
@@ -334,8 +335,8 @@ class TCache_LiteTest extends TestCase
 	{
 		$cache = $this->createCache();
 
-		$this->expectException(\Exception::class);
-		$this->expectExceptionMessage('TCache_Lite: Unable to remove cache');
+		$this->expectException(\Prado\Exceptions\TIOException::class);
+		$this->expectExceptionMessage('Unable to remove the message cache file');
 		$cache->remove('missing');
 	}
 
@@ -421,8 +422,8 @@ class TCache_LiteTest extends TestCase
 			$this->markTestSkipped('The process writes into a directory without write permission.');
 		}
 
-		$this->expectException(\Exception::class);
-		$this->expectExceptionMessage('Cache_Lite: Unable to remove cache');
+		$this->expectException(\Prado\Exceptions\TIOException::class);
+		$this->expectExceptionMessage('Unable to remove the message cache file');
 		$cache->clean();
 	}
 
@@ -454,16 +455,16 @@ class TCache_LiteTest extends TestCase
 			$this->markTestSkipped('The process reads a file without read permission.');
 		}
 
-		$this->expectException(\Exception::class);
-		$this->expectExceptionMessage('Cache_Lite: Unable to read cache');
+		$this->expectException(\Prado\Exceptions\TIOException::class);
+		$this->expectExceptionMessage('Unable to read the message cache file');
 		$cache->get('id', 'default', true);
 	}
 
 	public function testCleanOfAMissingDirectoryThrows()
 	{
 		$cache = new TCache_Lite(['cacheDir' => $this->makeTempDirectory('prado_cachelite_') . '/missing/']);
-		$this->expectException(\Exception::class);
-		$this->expectExceptionMessage('TCache_Lite: Unable to open cache directory');
+		$this->expectException(\Prado\Exceptions\TIOException::class);
+		$this->expectExceptionMessage('Unable to open the message cache directory');
 		$cache->clean();
 	}
 
@@ -496,5 +497,29 @@ class TCache_LiteTest extends TestCase
 		$this->assertSame('a2', $cache->get('a'));
 		$this->assertSame('b', $cache->get('b'));
 		$this->assertSame(2, PradoUnit::getProp($cache, '_memoryCachingCounter'));
+	}
+
+	public function testExpiryFollowsTheClock()
+	{
+		$cache = $this->createCache(['lifeTime' => 100]);
+		$clock = (new TMockClock())->setTime(time());
+		$cache->setClock($clock);
+		$cache->save('data', 'id');
+		$this->assertSame('data', $cache->get('id'));
+		$clock->setTime(time() + 200);
+		$this->assertFalse($cache->get('id'));
+		$clock->setTime(time() - 1000);
+		$this->assertSame('data', $cache->get('id'));
+	}
+
+	public function testACorruptedFileIsExpiredByTheClock()
+	{
+		$cache = $this->createCache(['lifeTime' => 100]);
+		$cache->setClock((new TMockClock())->setTime(1700000000));
+		$cache->save('data', 'id');
+		file_put_contents($cache->getCacheFile(), str_repeat('0', 32) . 'data');
+		$this->assertFalse($cache->get('id', 'default', true));
+		clearstatcache();
+		$this->assertSame(1700000000 - 200, filemtime($cache->getCacheFile()));
 	}
 }

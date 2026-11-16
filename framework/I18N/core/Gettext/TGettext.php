@@ -41,7 +41,8 @@ namespace Prado\I18N\core\Gettext;
 /**
  * Use PHPs builtin error messages
  */
-use Exception;
+use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Exceptions\TIOException;
 
 /**
  * File_Gettext
@@ -102,7 +103,7 @@ class TGettext
 		$class = 'TGettext_' . $format;
 		$filename = __DIR__ . '/' . $class . '.php';
 		if (!is_file($filename)) {
-			throw new Exception("Class file $filename not found");
+			throw new TInvalidDataValueException('gettext_format_invalid', $format);
 		}
 
 		include_once $filename;
@@ -124,7 +125,7 @@ class TGettext
 	public static function poFile2moFile($pofile, $mofile)
 	{
 		if (!is_file($pofile)) {
-			throw new Exception("File $pofile doesn't exist.");
+			throw new TIOException('gettext_pofile_missing', $pofile);
 		}
 
 		$PO = new TGettext_PO($pofile);

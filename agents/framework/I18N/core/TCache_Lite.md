@@ -38,7 +38,7 @@ $cache->remove('myid', 'mygroup');
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `cacheDir` | string | `'/tmp/'` | Cache directory |
-| `lifeTime` | int | `3600` | Cache TTL (seconds) |
+| `lifeTime` | int | `3600` | Cache TTL (seconds); a file older than the clock time less `lifeTime` is expired. `TCache_Lite` uses `TApplicationClockAwareTrait` |
 | `fileLocking` | bool | `true` | Enable file locking |
 | `writeControl` | bool | `true` | Verify writes |
 | `readControl` | bool | `true` | Verify reads |

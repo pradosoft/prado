@@ -196,8 +196,8 @@ class CultureInfoTest extends TestCase
 
 	public function testSetInvalidCultureThrowsException()
 	{
-		$this->expectException(\Exception::class);
-		$this->expectExceptionMessage('Invalid culture supplied');
+		$this->expectException(\Prado\Exceptions\TInvalidDataValueException::class);
+		$this->expectExceptionMessage('Invalid culture');
 
 		new CultureInfo('invalid@culture');
 	}
@@ -220,7 +220,8 @@ class CultureInfoTest extends TestCase
 	{
 		$culture = CultureInfo::getCultureInfo('en');
 
-		$this->expectException(\Exception::class);
+		$this->expectException(\Prado\Exceptions\TInvalidOperationException::class);
+		$this->expectExceptionMessage("CultureInfo has no property 'InvalidProperty'.");
 		$culture->InvalidProperty;
 	}
 
@@ -228,7 +229,8 @@ class CultureInfoTest extends TestCase
 	{
 		$culture = CultureInfo::getCultureInfo('en');
 
-		$this->expectException(\Exception::class);
+		$this->expectException(\Prado\Exceptions\TInvalidOperationException::class);
+		$this->expectExceptionMessage("CultureInfo property 'Name' is read-only.");
 		$culture->Name = 'fr';
 	}
 
