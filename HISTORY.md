@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TFileCache` and `TMemoryCache` throw `TInvalidDataValueException` for a `MaximumSize` that is not a size, such as `1.5G`; it removed the size limit. (belisoful)
 BUG: Issue #1497 - `TDbCache` records that its table was created and when it last flushed per connection as well as table name; a cache with the same table name in another database skipped creating its table and flushing expired items. (belisoful)
 BUG: Issue #1497 - `TCache::set()` and `add()` store a `NAN` value on PHP 8.5; testing it for emptiness raised a warning, which threw `TPhpErrorException`. (belisoful)
 CHG: Issue #1497 - `MessageSource::factory()`, `MessageCache`, `TCache_Lite`, `TGettext`, `ChoiceFormat`, and `CultureInfo` throw `TConfigurationException`, `TIOException`, `TInvalidDataValueException`, or `TInvalidOperationException` with `messages.txt` keys; they threw `\Exception` with untranslated text. (belisoful)
