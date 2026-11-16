@@ -5,7 +5,7 @@
 
 ## Purpose
 
-PRADO's async API. A loop schedules callbacks on deferred work, timers, stream readiness, and signals, and a fiber waits on it through a `Revolt\EventLoop\Suspension`. The `revolt/event-loop` package (required, MIT, no dependencies) runs the default loop; `TSocketReactor` is the dependency-free fallback. On the loop sit the primitives: `TFuture`/`TDeferred`, `TCancellationToken`, `TFiberContext`, and the `TAsync` facade. Async I/O, `TChannel`, cron concurrency (`TCronModule::Concurrency`, a fiber per task), and the async HTTP client [`TCurlMultiHttpClient`](../HttpClient/TCurlMultiHttpClient.md) build on this contract.
+PRADO's async API. A loop schedules callbacks on deferred work, timers, stream readiness, and signals, and a fiber waits on it through a `Revolt\EventLoop\Suspension`. The `revolt/event-loop` package (required, MIT, no dependencies) runs the default loop; `TSocketReactor` is the dependency-free fallback. On the loop sit the primitives: `TFuture`/`TDeferred`, `TCancellationToken`, `TFiberContext`, and the `TAsync` facade. Async I/O, `TChannel`, cron concurrency (`TCronModule::Concurrency`, a fiber per task), and the async HTTP handlers of [`THttpClient`](../HttpClient/INDEX.md) (`TCurlMultiHttpHandler`, `TSocketHttpHandler`) build on this contract.
 
 ## Interfaces
 
@@ -23,6 +23,8 @@ PRADO's async API. A loop schedules callbacks on deferred work, timers, stream r
 - **[`TAsync`](./TAsync.md)** — Static facade: `getLoop()`/`setLoop()`, `run()`, `await()`, `all()`, `any()`, `timeout()`, `sleep()`, `resetLoopForChild()`. Holds the sleep policy table.
 - **[`TAsyncStream`](./TAsyncStream.md)** — A `TStreamDecorator` whose `read()`/`write()` wait for readiness on the loop; `''` only at end of stream, whole-string writes, optional `TCancellationToken`.
 - **[`TChannel`](./TChannel.md)** — An ordered queue between fibers: `send()`/`receive()` suspend on the loop, a `Capacity` of null, 0 (rendezvous), or `n`; `close()` drains and releases waiters; iterable.
+
+`TSocketStream::connectAsync()` and `TSocketStream::enableCryptoAsync()` connect and negotiate TLS on the loop; see [Socket](../Socket/INDEX.md#non-blocking-connect-and-tls).
 
 ## Process waits
 
@@ -65,3 +67,5 @@ The conformance suite `tests/unit/IO/Async/EventLoopConformanceTestCase.php` run
 - No fiber switch inside `__destruct` on the 8.2 floor.
 - Sleep policy: `\usleep()` lives only in `TAsync::sleep()`; `IClock::sleep()` and the framework's other pauses delegate to it (table in [`TAsync`](./TAsync.md)).
 - No `await()` or main-fiber `suspend()` inside `__destruct` on the 8.2 floor; `TAsync::sleep()` probes for it and blocks instead.
+- Host-name resolution inside `stream_socket_client()` blocks the process, `TSocketStream::connectAsync()` included; PHP has no asynchronous resolver. Pass an IP address, resolved by a non-blocking resolver such as `amphp/dns`.
+- PHP's `http://` and `https://` stream wrappers (`fopen()`, `file_get_contents()`) never yield to the loop. A fiber that calls one blocks every other fiber until the transfer ends. Use `THttpClient`, which picks an asynchronous handler inside a fiber, or a socket on the loop.

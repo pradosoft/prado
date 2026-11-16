@@ -4,39 +4,19 @@ namespace Prado\Test\Unit\Web\UI\WebControls;
 
 use PHPUnit\Framework\TestCase;
 use Prado\Exceptions\TInvalidDataValueException;
+use Prado\IO\Http\TRequest;
+use Prado\IO\Http\TResponse;
 use Prado\IO\HttpClient\THttpClient;
-use Prado\IO\HttpClient\THttpClientException;
-use Prado\IO\HttpClient\THttpClientResponse;
+use Prado\IO\HttpClient\THttpNetworkException;
+use Prado\Test\Unit\Harness\IO\TTestHttpClient;
 use Prado\Test\Unit\PradoUnit;
+use Psr\Http\Client\ClientExceptionInterface;
 use Prado\Web\UI\TForm;
 use Prado\Web\UI\TPage;
 use Prado\Web\UI\WebControls\TBaseValidator;
 use Prado\Web\UI\WebControls\TPasswordStrength;
 use Prado\Web\UI\WebControls\TPasswordStrengthValidator;
 use Prado\Web\UI\WebControls\TTextBox;
-
-/**
- * Records the requests of the compromised password check and answers them
- * with a fixed response or a transport failure.
- */
-class TPasswordStrengthValidatorTestHttpClient extends THttpClient
-{
-	public array $requests = [];
-
-	public function __construct(private ?THttpClientResponse $response = null)
-	{
-		parent::__construct();
-	}
-
-	public function download(string $method, string $url, array $headers = [], ?string $body = null): THttpClientResponse
-	{
-		$this->requests[] = [$method, $url, $headers];
-		if ($this->response === null) {
-			throw new THttpClientException('httpclient_transport_error', 7, 'Connection refused');
-		}
-		return $this->response;
-	}
-}
 
 class TPasswordStrengthValidatorTest extends TestCase
 {
@@ -55,6 +35,22 @@ class TPasswordStrengthValidatorTest extends TestCase
 		$this->validator->setControlToValidate('input');
 		$page->getControls()->add($this->input);
 		$page->getControls()->add($this->validator);
+	}
+
+	/**
+	 * Builds a recording client that answers with the response, or fails with a network
+	 * error when the response is null.
+	 * @param ?TResponse $response the answer, or null for a network failure.
+	 */
+	private function client(?TResponse $response): TTestHttpClient
+	{
+		$client = new TTestHttpClient();
+		if ($response === null) {
+			$client->throw = new THttpNetworkException(new TRequest('GET', TPasswordStrengthValidator::PWNED_PASSWORDS_URL), 'httpclient_transport_error', 7, 'Connection refused');
+		} else {
+			$client->responses[] = $response;
+		}
+		return $client;
 	}
 
 	private function valid(string $value): bool
@@ -151,24 +147,25 @@ class TPasswordStrengthValidatorTest extends TestCase
 	public function testCompromisedSendsOnlyTheHashPrefix()
 	{
 		$hash = strtoupper(sha1(self::PASSWORD));
-		$client = new TPasswordStrengthValidatorTestHttpClient(new THttpClientResponse(200, [], "0000000000000000000000000000000000A:0\r\n" . substr($hash, 5) . ":42\r\n"));
+		$client = $this->client(new TResponse(200, [], "0000000000000000000000000000000000A:0\r\n" . substr($hash, 5) . ":42\r\n"));
 		$this->validator->setHttpClient($client);
 		$this->validator->setCheckCompromised(true);
 
 		$this->assertFalse($this->valid(self::PASSWORD));
-		$this->assertCount(1, $client->requests);
-		[$method, $url, $headers] = $client->requests[0];
-		$this->assertSame('GET', $method);
-		$this->assertSame(TPasswordStrengthValidator::PWNED_PASSWORDS_URL . substr($hash, 0, 5), $url);
-		$this->assertSame('true', $headers['Add-Padding']);
-		$this->assertStringStartsWith('PRADO/', $headers['User-Agent']);
-		$this->assertStringNotContainsString(substr($hash, 5), $url);
+		$this->assertCount(1, $client->calls);
+		$call = $client->calls[0];
+		$this->assertSame('GET', $call['method']);
+		$this->assertSame(TPasswordStrengthValidator::PWNED_PASSWORDS_URL . substr($hash, 0, 5), $call['url']);
+		$this->assertSame('true', $call['headers']['Add-Padding']);
+		$this->assertStringStartsWith('PRADO/', $call['headers']['User-Agent']);
+		$this->assertSame('', $call['body']);
+		$this->assertStringNotContainsString(substr($hash, 5), $call['url']);
 	}
 
 	public function testCompromisedThreshold()
 	{
 		$hash = strtoupper(sha1(self::PASSWORD));
-		$this->validator->setHttpClient(new TPasswordStrengthValidatorTestHttpClient(new THttpClientResponse(200, [], strtolower(substr($hash, 5)) . ":3\n")));
+		$this->validator->setHttpClient($this->client(new TResponse(200, [], strtolower(substr($hash, 5)) . ":3\n")));
 		$this->validator->setCheckCompromised(true);
 		$this->assertFalse($this->valid(self::PASSWORD));
 		$this->validator->setCompromisedThreshold(4);
@@ -178,49 +175,60 @@ class TPasswordStrengthValidatorTest extends TestCase
 	public function testPaddingEntryDoesNotFail()
 	{
 		$hash = strtoupper(sha1(self::PASSWORD));
-		$this->validator->setHttpClient(new TPasswordStrengthValidatorTestHttpClient(new THttpClientResponse(200, [], substr($hash, 5) . ":0\n")));
+		$this->validator->setHttpClient($this->client(new TResponse(200, [], substr($hash, 5) . ":0\n")));
 		$this->validator->setCheckCompromised(true);
 		$this->assertTrue($this->valid(self::PASSWORD));
 	}
 
 	public function testNotFoundPasses()
 	{
-		$this->validator->setHttpClient(new TPasswordStrengthValidatorTestHttpClient(new THttpClientResponse(200, [], "0123456789ABCDEF0123456789ABCDEF012:9\n")));
+		$this->validator->setHttpClient($this->client(new TResponse(200, [], "0123456789ABCDEF0123456789ABCDEF012:9\n")));
 		$this->validator->setCheckCompromised(true);
 		$this->assertTrue($this->valid(self::PASSWORD));
 	}
 
 	public function testWeakPasswordSkipsTheRequest()
 	{
-		$client = new TPasswordStrengthValidatorTestHttpClient(new THttpClientResponse(200, [], ''));
+		$client = $this->client(new TResponse(200, [], ''));
 		$this->validator->setHttpClient($client);
 		$this->validator->setCheckCompromised(true);
 		$this->assertFalse($this->valid('password'));
 		$this->assertTrue($this->valid(''));
-		$this->assertSame([], $client->requests);
+		$this->assertSame([], $client->calls);
 	}
 
 	public function testTransportFailurePasses()
 	{
-		$this->validator->setHttpClient(new TPasswordStrengthValidatorTestHttpClient(null));
+		$this->validator->setHttpClient($this->client(null));
 		$this->validator->setCheckCompromised(true);
 		$this->assertTrue($this->valid(self::PASSWORD));
 	}
 
+	public function testAnyClientExceptionPasses()
+	{
+		$client = new TTestHttpClient();
+		$client->throw = new class ('refused') extends \RuntimeException implements ClientExceptionInterface {
+		};
+		$this->validator->setHttpClient($client);
+		$this->validator->setCheckCompromised(true);
+		$this->assertTrue($this->valid(self::PASSWORD));
+		$this->assertCount(1, $client->calls);
+	}
+
 	public function testErrorStatusPasses()
 	{
-		$this->validator->setHttpClient(new TPasswordStrengthValidatorTestHttpClient(new THttpClientResponse(503, [], 'unavailable')));
+		$this->validator->setHttpClient($this->client(new TResponse(503, [], 'unavailable')));
 		$this->validator->setCheckCompromised(true);
 		$this->assertTrue($this->valid(self::PASSWORD));
 	}
 
 	public function testCustomApiUrl()
 	{
-		$client = new TPasswordStrengthValidatorTestHttpClient(new THttpClientResponse(200, [], ''));
+		$client = $this->client(new TResponse(200, [], ''));
 		$this->validator->setHttpClient($client);
 		$this->validator->setCompromisedApiUrl('https://pwned.example/range/');
 		$this->assertFalse($this->validator->isCompromised(self::PASSWORD));
-		$this->assertStringStartsWith('https://pwned.example/range/', $client->requests[0][1]);
+		$this->assertStringStartsWith('https://pwned.example/range/', $client->calls[0]['url']);
 	}
 
 	public function testDefaultHttpClientUsesTimeout()
@@ -228,7 +236,7 @@ class TPasswordStrengthValidatorTest extends TestCase
 		$this->validator->setCompromisedTimeout(2);
 		$client = $this->validator->getHttpClient();
 		$this->assertInstanceOf(THttpClient::class, $client);
-		$this->assertSame(2, $client->getTimeout());
+		$this->assertSame(2.0, $client->getTimeout());
 		$this->assertSame($client, $this->validator->getHttpClient());
 	}
 
