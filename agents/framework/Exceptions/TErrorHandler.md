@@ -141,6 +141,15 @@ handleError($sender, $param)
         └── else           → handleExternalError(500, $exception)
 ```
 
+## Fatal Error Stack (4.4)
+
+A `TPhpFatalErrorException` has no exception trace. `getErrorTrace()` returns the `getFatalErrorTrace()` stack for it, else the exception trace; `hideSecurityRelated()`, `getExactTrace()` and `getExactTraceAsString()` read it.
+
+| Condition | `getFatalErrorTrace()` |
+|---|---|
+| Xdebug loaded, `xdebug.mode` includes `develop` | `xdebug_get_function_stack()`, reversed, without the first `FATAL_ERROR_TRACE_DROP_LINES` frames and the outermost frame |
+| Xdebug absent, or another mode | `null` (`xdebug_get_function_stack()` warns outside develop mode) |
+
 ## Subclassing
 
 Override the PHP-wrapper methods (`errorLog`, `headersSent`, `header`, `restoreErrorHandler`, `restoreExceptionHandler`, `phpSapiName`, `serverGlobal`) to inject test doubles without modifying PHP global state.

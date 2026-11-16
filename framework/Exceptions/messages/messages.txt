@@ -656,6 +656,7 @@ clicompressor_command_missing			= The ''{0}'' compressor requires one of these s
 clicompressor_process_failed			= The ''{0}'' compressor could not start the ''{1}'' command.
 clicompressor_command_failed			= The ''{0}'' compressor command ''{1}'' exited with code {2}: {3}
 
+socketexception_error_code				= Socket error {0}.
 socketservermodule_endpoint_required	= TSocketServerModule requires an Endpoint, or a positive Port to compose one.
 socketservermodule_serverclass_invalid	= TSocketServerModule ServerClass ''{0}'' is invalid. It must be TSocketServer or a subclass.
 socketservermodule_scheme_not_stream	= TSocketServerModule cannot accept on the connectionless scheme ''{0}''. Use a stream scheme such as tcp, tls, ssl, or unix.

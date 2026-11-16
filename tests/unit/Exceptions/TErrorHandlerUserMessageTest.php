@@ -49,6 +49,11 @@ class TUserMessageErrorHandler extends TErrorHandler
 		$this->handleError($sender, $param);
 	}
 
+	public function pubHandleExternalError(int $statusCode, \Throwable $exception): void
+	{
+		$this->handleExternalError($statusCode, $exception);
+	}
+
 	public function pubGetExternalErrorMessage(\Throwable $exception, bool $isDebug): string
 	{
 		return $this->getExternalErrorMessage($exception, $isDebug);
@@ -181,6 +186,43 @@ class TErrorHandlerUserMessageTest extends \PHPUnit\Framework\TestCase
 	{
 		$output = $this->render(new TConfigurationException('component_property_undefined', 'TPage', 'Foo'), TApplicationMode::Debug);
 		$this->assertStringContainsString('TPage.Foo', $output);
+	}
+
+	public function testRenderedDebugHttpErrorPageShowsTheVersionAndTheStatusReason(): void
+	{
+		// The Debug reason phrase is the exception message for a status without a standard reason.
+		$output = $this->render(new THttpException(599, 'pageservice_page_unknown', 'Home'), TApplicationMode::Debug);
+		$response = Prado::getApplication()->getResponse();
+		try {
+			$this->assertStringContainsString("Page &#039;Home&#039; Not Found", $output);
+			$this->assertStringContainsString('<a href="https://github.com/pradosoft/prado">PRADO</a>/' . Prado::getVersion(), $output);
+			$this->assertSame(599, $response->getStatusCode());
+			$this->assertSame("Page 'Home' Not Found", $response->getStatusReason());
+			$this->assertNull($this->_handler->capturedErrorLog);
+		} finally {
+			$response->setStatusCode(200);
+		}
+	}
+
+	public function testDebugExternalErrorPageOfADeveloperExceptionShowsAndLogsItsMessage(): void
+	{
+		// handleError() renders a developer exception in Debug mode with displayException();
+		// a subclass may call handleExternalError() for it.
+		Prado::getApplication()->setMode(TApplicationMode::Debug);
+		$level = ob_get_level();
+		ob_start();
+		try {
+			$this->_handler->pubHandleExternalError(500, new TConfigurationException('component_property_undefined', 'TPage', 'Foo'));
+		} finally {
+			$output = '';
+			while (ob_get_level() > $level) {
+				$output = ob_get_clean() . $output;
+			}
+			Prado::getApplication()->getResponse()->setStatusCode(200);
+		}
+		$this->assertStringContainsString('TPage.Foo', $output);
+		$this->assertStringContainsString('<a href="https://github.com/pradosoft/prado">PRADO</a>/' . Prado::getVersion(), $output);
+		$this->assertStringContainsString('TPage.Foo', $this->_handler->capturedErrorLog);
 	}
 
 	// ── Language and translation ─────────────────────────────────────────────
