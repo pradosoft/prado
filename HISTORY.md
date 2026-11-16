@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TDbCache` records that its table was created and when it last flushed per connection as well as table name; a cache with the same table name in another database skipped creating its table and flushing expired items. (belisoful)
 BUG: Issue #1497 - `TCache::set()` and `add()` store a `NAN` value on PHP 8.5; testing it for emptiness raised a warning, which threw `TPhpErrorException`. (belisoful)
 CHG: Issue #1497 - `MessageSource::factory()`, `MessageCache`, `TCache_Lite`, `TGettext`, `ChoiceFormat`, and `CultureInfo` throw `TConfigurationException`, `TIOException`, `TInvalidDataValueException`, or `TInvalidOperationException` with `messages.txt` keys; they threw `\Exception` with untranslated text. (belisoful)
 CHG: Issue #1497 - The XLIFF, PHP, and gettext message sources throw `TMessageSourceIOException`, which extends `TIOException`, with the `messagesource_file_unwritable`, `messagesource_directory_failed`, and `messagesource_template_failed` keys; they threw `TIOException` and `TException` with untranslated text. (belisoful)
