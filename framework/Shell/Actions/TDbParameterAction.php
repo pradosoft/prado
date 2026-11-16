@@ -182,26 +182,23 @@ class TDbParameterAction extends TShellAction
 	}
 
 	/**
-	 * get the TDBParameterModule from the Application
+	 * Returns the parameter module.  Without one set, the first {@see \Prado\Util\TDbParameterModule}
+	 * of the application is loaded and kept.
 	 * @return null|\Prado\Util\TDbParameterModule
 	 */
 	public function getDbParameterModule()
 	{
 		if ($this->_dbparam === false) {
-			$this->_dbparam = null;
 			$app = Prado::getApplication();
-			foreach ($app->getModulesByType(\Prado\Util\TDbParameterModule::class) as $id => $module) {
-				if ($this->_dbparam = $app->getModule($id)) {
-					break;
-				}
-			}
+			$modules = $app->getModulesByType(\Prado\Util\TDbParameterModule::class);
+			$this->_dbparam = $modules ? $app->getModule(array_key_first($modules)) : null;
 		}
 		return $this->_dbparam;
 	}
 
 	/**
-	 * get the TPermissionsManager from the Application
-	 * @param \Prado\Util\TDbParameterModule $dbparam
+	 * Sets the parameter module the action reads and writes.
+	 * @param ?\Prado\Util\TDbParameterModule $dbparam
 	 */
 	public function setDbParameterModule($dbparam)
 	{

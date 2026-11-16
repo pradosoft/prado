@@ -128,4 +128,17 @@ class TDbParameterActionTest extends TestCase
 
 		$this->assertSame([['0', 'zero', true, false]], $this->_module->sets);
 	}
+
+	public function testGetDbParameterModuleFindsTheApplicationModule(): void
+	{
+		$action = new TDbParameterAction();
+		$this->assertNull($action->getDbParameterModule());
+
+		$module = new TDbParameterActionTestModule();
+		$this->_app->setModule('shellTestDbParam', $module);
+		$this->assertNull($action->getDbParameterModule());
+
+		$action = new TDbParameterAction();
+		$this->assertSame($module, $action->getDbParameterModule());
+	}
 }
