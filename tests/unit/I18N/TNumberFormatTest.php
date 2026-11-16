@@ -947,4 +947,37 @@ class TNumberFormatTest extends TestCase
 		$control->setType('PERCENTAGE');
 		$this->assertSame(\NumberFormatter::PERCENT, $control->getType());
 	}
+
+	// --- Pattern with an empty value and with a currency ---
+
+	public function testPatternFormatsAnEmptyValueWithoutDefaultText()
+	{
+		$control = new TNumberFormat();
+		$control->setCulture('en_US');
+		$control->setPattern('#,##0.00');
+		$control->setValue(0);
+		$this->assertSame('0.00', $this->render($control));
+	}
+
+	public function testPatternFormatsAnEmptyCurrencyValueWithoutDefaultText()
+	{
+		$control = new TNumberFormat();
+		$control->setCulture('en_US');
+		$control->setType('currency');
+		$control->setCurrency('EUR');
+		$control->setPattern('¤#,##0.00');
+		$control->setValue(0);
+		$this->assertSame('€0.00', $this->render($control));
+	}
+
+	public function testPatternFormatsACurrencyValue()
+	{
+		$control = new TNumberFormat();
+		$control->setCulture('en_US');
+		$control->setType('currency');
+		$control->setCurrency('EUR');
+		$control->setPattern('¤#,##0.00');
+		$control->setValue(1234.5);
+		$this->assertSame('€1,234.50', $this->render($control));
+	}
 }

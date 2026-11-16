@@ -35,8 +35,9 @@ use Prado\Util\TUtf8Converter;
 trait TI18NControlTrait
 {
 	/**
-	 * @param null|mixed $culture
-	 * @return \Prado\I18N\core\CultureInfo The Culture Info for the {@see getCulture()}.
+	 * Returns the CultureInfo of a culture, or of {@see getCulture()} when the culture is null.
+	 * @param ?string $culture the culture identifier, null for {@see getCulture()}.
+	 * @return \Prado\I18N\core\CultureInfo the culture information.
 	 */
 	protected function getCultureInfo($culture = null)
 	{
@@ -56,25 +57,25 @@ trait TI18NControlTrait
 	/**
 	 * Gets the charset.
 	 * It is evaluated in the following order:
-	 * 1) application charset in globalization,
-	 * 2) the default charset in globalization
-	 * 3) UTF-8
+	 * 1) the Charset property of this control,
+	 * 2) the application charset in globalization,
+	 * 3) the default charset in globalization,
+	 * 4) the result of the `dyDefaultCharsetValue` filter of 'UTF-8'.
 	 * @return string charset
 	 */
 	public function getCharset()
 	{
-		//instance charset
 		$charset = $this->getViewState('Charset', '');
 
 		if (empty($charset)) {
 			$app = $this->getApplication();
 			if ($app && ($globalize = $app->getGlobalization(false))) {
-				if (!empty($appCharset = $globalize->getCharset())) {
-					$charset = $appCharset;
-				} elseif (!empty($appDefaultCharset = $globalize->getDefaultCharset())) {
-					$charset = $appDefaultCharset;
+				$charset = $globalize->getCharset();
+				if (empty($charset)) {
+					$charset = $globalize->getDefaultCharset();
 				}
-			} else {
+			}
+			if (empty($charset)) {
 				$charset = $this->callBehaviorsFilter('dyDefaultCharsetValue', 'UTF-8');
 			}
 		}
@@ -92,20 +93,23 @@ trait TI18NControlTrait
 	}
 
 	/**
-	 * Get the specific culture for this control.
+	 * Gets the culture.
+	 * It is evaluated in the following order:
+	 * 1) the Culture property of this control,
+	 * 2) the application culture in globalization,
+	 * 3) the result of the `dyDefaultCultureValue` filter of ''.
 	 * @return string culture identifier.
 	 */
 	public function getCulture()
 	{
-		//instance charset
 		$culture = $this->getViewState('Culture', '');
 
-		//fall back to globalization charset
 		if (empty($culture)) {
 			$app = $this->getApplication();
 			if ($app && ($globalize = $app->getGlobalization(false))) {
 				$culture = $globalize->getCulture();
-			} else {
+			}
+			if (empty($culture)) {
 				$culture = $this->callBehaviorsFilter('dyDefaultCultureValue', '');
 			}
 		}
@@ -114,7 +118,7 @@ trait TI18NControlTrait
 	}
 
 	/**
-	 * Get the custom culture identifier.
+	 * Sets the culture for this control.
 	 * @param string $culture culture identifier.
 	 */
 	public function setCulture($culture)

@@ -302,6 +302,7 @@ xmlelementlist_xmlelement_required		= TXmlElementList can only accept TXmlElemen
 
 xmlelement_null_tag						= TXmlElement Tag Name cannot be null.
 xmlelement_empty_tag					= TXmlElement Tag Name cannot be an empty string.
+xmlelement_offset_invalid				= TXmlElement offset must be null, an integer, a string, or a Stringable; {0} given.
 
 authorizationrule_action_invalid		= TAuthorizationRule.Action can only take 'allow' or 'deny' as the value.
 authorizationrule_verb_invalid			= TAuthorizationRule.Verb can only take 'get' or 'post' as the value.
@@ -573,6 +574,9 @@ readonlydatasourceview_datasource_invalid = TReadOnlyDataSourceView requires nul
 tdatepicker_autopostback_unsupported	= ''{0}'' does not support AutoPostBack.
 globalization_cache_path_failed			= Unable to create translation message cache path ''{0}''. Make sure the parent directory exists and is writable by the Web process.
 globalization_source_path_failed		= Unable to create translation message path ''{0}''. Make sure the parent directory exists and is writable by the Web process.
+globalization_source_required			= The translation type ''{0}'' requires a source path.
+globalization_source_invalid			= The translation source ''{0}'' is not a namespace path.
+translateparameter_key_required			= TTranslateParameter.Key is required.
 messagesource_connectionid_invalid      = MessageSource_Database.source ''{0}'' does not point to a valid TDataSourceConfig module.
 messagesource_connectionid_required     = ConnectionID in MessageSource_Database.source is required.
 
@@ -652,6 +656,7 @@ clicompressor_command_missing			= The ''{0}'' compressor requires one of these s
 clicompressor_process_failed			= The ''{0}'' compressor could not start the ''{1}'' command.
 clicompressor_command_failed			= The ''{0}'' compressor command ''{1}'' exited with code {2}: {3}
 
+socketexception_error_code				= Socket error {0}.
 socketservermodule_endpoint_required	= TSocketServerModule requires an Endpoint, or a positive Port to compose one.
 socketservermodule_serverclass_invalid	= TSocketServerModule ServerClass ''{0}'' is invalid. It must be TSocketServer or a subclass.
 socketservermodule_scheme_not_stream	= TSocketServerModule cannot accept on the connectionless scheme ''{0}''. Use a stream scheme such as tcp, tls, ssl, or unix.
