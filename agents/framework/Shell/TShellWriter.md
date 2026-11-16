@@ -10,6 +10,31 @@
 ## Overview
 Terminal output writer with ANSI color formatting, cursor movement, and UI widgets.
 
+## Properties
+
+| Property | Description |
+|----------|-------------|
+| `Writer` | The `ITextWriter` receiving output |
+| `ErrorStream` | `?TStream` receiving `writeError()` blocks; null writes them to `Writer` (4.4.0) |
+| `ColorSupported` | Whether `format()` and attributes emit ANSI codes; detected at construction |
+| `Width` | `?int` screen width for `wrapText()`; null detects it with `getScreenSize()` (4.4.0) |
+
+## Color Detection
+
+`ColorSupported` is detected each time a writer is constructed (4.4.0):
+
+| Condition | Result |
+|-----------|--------|
+| `NO_COLOR` set and not empty | no color |
+| `FORCE_COLOR` set | color, unless it is `0` or `false` |
+| `CLICOLOR_FORCE` set and not `0` | color |
+| Windows | color with VT100 processing on standard output, `ANSICON`, or `ConEmuANSI=ON` |
+| otherwise | color when standard output is a terminal (`isStdOutTerminal()`) and `TERM` is set and not `dumb` |
+
+## Screen Size
+
+`getScreenSize()` caches its result; `$refresh` detects again. `COLUMNS` and `LINES`, when both are positive, come first (4.4.0); then `mode con` on Windows, else `stty -a` and `tput`.
+
 ## Color Constants
 
 **Text Colors:**
@@ -61,7 +86,8 @@ $writer->writeLine($writer->tableWidget([
 ### Output
 - `write($str, $attr)` - Write with optional formatting
 - `writeLine($str, $attr)` - Write with newline
-- `writeError($text)` - Formatted error block
+- `writeError($text)` - Formatted error block; with an `ErrorStream`, flushes `Writer` first and writes the block to the stream
+- `formatError($text)` - The error block as a string (4.4.0)
 - `flush()` - Flush underlying writer
 
 ### Formatting

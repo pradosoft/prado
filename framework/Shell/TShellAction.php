@@ -72,6 +72,19 @@ abstract class TShellAction extends \Prado\TComponent
 	}
 
 	/**
+	 * Returns the command line the general help shows as an example of this action, without
+	 * `prado-cli`.  The default is the action name, with `/<method>` when the default method
+	 * is not `index`.  Override to show another command, or return null to show none.
+	 * @return ?string the example command line.
+	 * @since 4.4.0
+	 */
+	public function getExample(): ?string
+	{
+		$method = $this->methods[$this->defaultMethod] ?? 'index';
+		return $method === 'index' ? $this->action : $this->action . '/' . $method;
+	}
+
+	/**
 	 * Properties for the action set by parameter
 	 * @param string $actionID the action being executed
 	 * @return array properties for the $actionID
@@ -156,8 +169,8 @@ abstract class TShellAction extends \Prado\TComponent
 	public function renderHelpCommand($cmd)
 	{
 		$this->_outWriter->write("\nusage: ");
-		$this->_outWriter->writeLine("php prado-cli.php {$this->action}/<action>", [TShellWriter::BLUE, TShellWriter::BOLD]);
-		$this->_outWriter->writeLine("\nexample: php prado-cli.php {$this->action}/{$this->methods[0]}\n");
+		$this->_outWriter->writeLine("prado-cli {$this->action}/<method>", [TShellWriter::BLUE, TShellWriter::BOLD]);
+		$this->_outWriter->writeLine("\nexample: prado-cli {$this->action}/{$this->methods[0]}\n");
 		$this->_outWriter->writeLine("The following actions are available:");
 		$this->_outWriter->writeLine();
 		foreach ($this->methods as $i => $method) {

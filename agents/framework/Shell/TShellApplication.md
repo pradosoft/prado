@@ -26,7 +26,7 @@ vendor/bin/prado-cli [-d=<folder>] [--quiet[=<level>]] <command>[/<method>] [arg
 
 | Property | Description |
 |----------|-------------|
-| `QuietMode` | `0` = normal output (default); `1`–`3` = progressively quieter; empty string maps to `1` |
+| `QuietMode` | `QUIET_NONE` (`0`, default) to `QUIET_ERRORS` (`3`); empty string maps to `QUIET_INFO` (`1`) |
 | `Writer` | [TShellWriter](./TShellWriter.md) instance for console output |
 
 ### Constants
@@ -34,6 +34,10 @@ vendor/bin/prado-cli [-d=<folder>] [--quiet[=<level>]] <command>[/<method>] [arg
 | Constant | Value | Description |
 |----------|-------|-------------|
 | `SHELL_RUNTIME_PATH` | `'.runtime'` | Hidden runtime directory name used in no-config mode (@since 4.3.3) |
+| `QUIET_NONE` | `0` | All output, with the greeting and the general help (@since 4.4.0) |
+| `QUIET_INFO` | `1` | No greeting and no general help; a bare `--quiet` (@since 4.4.0) |
+| `QUIET_OUTPUT` | `2` | Also no output from child processes an action runs (@since 4.4.0) |
+| `QUIET_ERRORS` | `3` | Also no error messages from actions that check it (@since 4.4.0) |
 
 ---
 
@@ -101,10 +105,13 @@ The writer pipeline is split into overridable factory methods (@since 4.3.3):
 
 ```
 createStdOutWriter()  →  TStdOutWriter   (inner ITextWriter)
-createShellWriter()   →  TShellWriter    (wraps the inner writer)
+createStdErrStream()  →  TStdErrStream   (TShellWriter::ErrorStream, 4.4.0)
+createShellWriter()   →  TShellWriter    (wraps the inner writer, errors to the stream)
 ```
 
-Override `createStdOutWriter()` in a subclass to inject a test double or file writer. Override `createShellWriter()` to substitute a different `TShellWriter` subclass.
+Override `createStdOutWriter()` in a subclass to inject a test double or file writer. Override `createStdErrStream()` to send error blocks elsewhere, or return null to keep them in the output writer, as `TTestShellApplication` does. Override `createShellWriter()` to substitute a different `TShellWriter` subclass.
+
+`printHelp()` shows an example line for each registered action from `TShellAction::getExample()` (4.4.0).
 
 `getWriterDirect()` / `setWriterDirect()` access the raw field without lazy-init side effects; `setWriterDirect(null)` is used by `flushOutput(false)` to release the writer.
 
@@ -154,7 +161,8 @@ It registers the `--user` (`-u`) and `--password` (`-p`) options, prompts for wh
 ## Patterns & Gotchas
 
 - **Return values and exit status** — an `action<Method>()` returns `true` when it handled the command. The process exits with status `0` unless an action throws `TExitException` with another code.
-- **`QuietMode` range** — valid levels are `0`–`3`. An empty string (bare `--quiet` or `-q` flag) maps to `1`. Values are clamped. Check `$this->getApplication()->getQuietMode() === 0` before verbose output.
+- **`QuietMode` range** — valid levels are `QUIET_NONE` (`0`) to `QUIET_ERRORS` (`3`). An empty string (bare `--quiet` or `-q` flag) maps to `QUIET_INFO`. Values are clamped. Check `$this->getApplication()->getQuietMode() === TShellApplication::QUIET_NONE` before verbose output.
+- **Errors go to standard error** — `writeError()` flushes standard output and writes its block to standard error (4.4.0).
 - **Conditional actions** — the `cache` command only appears when a cache module is configured; `http` only in Debug mode or with the dev-webserver param. Do not assume they are always present.
 - **No-config mode** — when running `prado-cli` without an `application.xml`, a hidden `.runtime` directory is created in the base path (or a temp fallback). No manual setup required.
 - **Module availability** — all `application.xml` modules are available, including DB connections, cache, etc. No special setup needed.

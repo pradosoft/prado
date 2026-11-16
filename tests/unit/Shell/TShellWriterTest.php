@@ -2,9 +2,29 @@
 
 namespace Prado\Test\Unit\Shell;
 
+use Prado\IO\TMemoryStream;
 use Prado\IO\TTextWriter;
 use Prado\Shell\TShellWriter;
+use Prado\Test\Unit\Harness\IO\TTestCapturingTextWriter;
+use Prado\Util\Helpers\TProcessHelper;
 
+/**
+ * Reports standard output as the terminal {@see $terminal} says, for color detection tests.
+ */
+class TShellWriterTestTerminal extends TShellWriter
+{
+	public static bool $terminal = false;
+
+	protected function isStdOutTerminal(): bool
+	{
+		return static::$terminal;
+	}
+
+	protected function isWindowsConsoleColor(): bool
+	{
+		return static::$terminal;
+	}
+}
 
 class TShellWriterTest extends \PHPUnit\Framework\TestCase
 {
@@ -23,9 +43,50 @@ class TShellWriterTest extends \PHPUnit\Framework\TestCase
 		$this->obj = new $baseClass($this->writer);
 	}
 
+	/** @var array<string, false|string> environment variables to restore in tearDown */
+	private array $_env = [];
+
 	protected function tearDown(): void
 	{
 		$this->obj = null;
+		$restoreSize = isset($this->_env['COLUMNS']) || isset($this->_env['LINES']);
+		foreach ($this->_env as $name => $value) {
+			putenv($value === false ? $name : "$name=$value");
+		}
+		$this->_env = [];
+		if ($restoreSize) {
+			TShellWriter::getScreenSize(true);
+		}
+	}
+
+	/**
+	 * Sets environment variables, null unsets one, and restores them in tearDown.
+	 * @param array<string, ?string> $vars
+	 */
+	private function setEnv(array $vars): void
+	{
+		foreach ($vars as $name => $value) {
+			if (!array_key_exists($name, $this->_env)) {
+				$this->_env[$name] = getenv($name);
+			}
+			putenv($value === null ? $name : "$name=$value");
+		}
+	}
+
+	/**
+	 * Clears the color environment variables, then sets `$vars`.
+	 * @param array<string, ?string> $vars
+	 */
+	private function setColorEnv(array $vars): void
+	{
+		$this->setEnv($vars + ['NO_COLOR' => null, 'FORCE_COLOR' => null, 'CLICOLOR_FORCE' => null, 'TERM' => null]);
+	}
+
+	private function colorDetected(array $vars, bool $terminal): bool
+	{
+		$this->setColorEnv($vars);
+		TShellWriterTestTerminal::$terminal = $terminal;
+		return (new TShellWriterTestTerminal(new TTextWriter()))->getColorSupported();
 	}
 
 	public function testConstruct()
@@ -79,6 +140,130 @@ class TShellWriterTest extends \PHPUnit\Framework\TestCase
 		$text = $this->obj->flush();
 		self::assertTrue(str_contains($text, "Error"));
 		self::assertTrue(str_contains($text, "my error text"));
+	}
+
+	public function testFormatErrorFramesTheCenteredText()
+	{
+		$this->obj->setColorSupported(false);
+		$frame = '*' . str_repeat('-', 78) . '*';
+		$header = '*' . str_repeat('-', 35) . ' Error ' . str_repeat('-', 36) . '*';
+		$line = '*  ' . str_repeat(' ', 35) . 'boom' . str_repeat(' ', 35) . '  *';
+
+		self::assertSame("\n$header\n$line\n$frame\n\n", $this->obj->formatError('boom'));
+	}
+
+	public function testFormatErrorColorsEachFrameLine()
+	{
+		$this->obj->setColorSupported(true);
+
+		$block = $this->obj->formatError('boom');
+
+		self::assertSame(3, substr_count($block, "\033[41;97;1m"));
+		self::assertSame(3, substr_count($block, "\033[0m\n"));
+	}
+
+	public function testWriteErrorWithoutErrorStreamWritesTheBlockToTheWriter()
+	{
+		self::assertNull($this->obj->getErrorStream());
+
+		$this->obj->write('before');
+		$this->obj->writeError('boom');
+
+		self::assertSame('before' . $this->obj->formatError('boom'), $this->obj->flush());
+	}
+
+	public function testWriteErrorFlushesTheWriterThenWritesTheErrorStream()
+	{
+		$text = new TTestCapturingTextWriter();
+		$writer = new TShellWriter($text);
+		$stream = new TMemoryStream();
+		$writer->setErrorStream($stream);
+		self::assertSame($stream, $writer->getErrorStream());
+
+		$writer->write('before');
+		$writer->writeError('boom');
+
+		self::assertSame('before', $text->getCaptured());
+		self::assertSame('', $text->flush());
+		self::assertSame($writer->formatError('boom'), (string) $stream);
+
+		$writer->setErrorStream(null);
+		self::assertNull($writer->getErrorStream());
+	}
+
+	public function testColorDetectionHonorsNoColor()
+	{
+		self::assertFalse($this->colorDetected(['NO_COLOR' => '1', 'FORCE_COLOR' => '1', 'TERM' => 'xterm'], true));
+		self::assertTrue($this->colorDetected(['NO_COLOR' => '', 'TERM' => 'xterm'], true));
+	}
+
+	public function testColorDetectionHonorsForceColor()
+	{
+		self::assertTrue($this->colorDetected(['FORCE_COLOR' => '1'], false));
+		self::assertTrue($this->colorDetected(['FORCE_COLOR' => ''], false));
+		self::assertFalse($this->colorDetected(['FORCE_COLOR' => '0', 'TERM' => 'xterm'], true));
+		self::assertFalse($this->colorDetected(['FORCE_COLOR' => 'FALSE', 'TERM' => 'xterm'], true));
+	}
+
+	public function testColorDetectionHonorsClicolorForce()
+	{
+		self::assertTrue($this->colorDetected(['CLICOLOR_FORCE' => '1'], false));
+		self::assertFalse($this->colorDetected(['CLICOLOR_FORCE' => '0'], false));
+		self::assertFalse($this->colorDetected(['CLICOLOR_FORCE' => ''], false));
+	}
+
+	public function testColorDetectionNeedsATerminalWithATerm()
+	{
+		if (TProcessHelper::isSystemWindows()) {
+			self::markTestSkipped('Windows decides color from the console, not TERM.');
+		}
+		self::assertTrue($this->colorDetected(['TERM' => 'xterm'], true));
+		self::assertTrue($this->colorDetected(['TERM' => 'xterm-256color'], true));
+		self::assertFalse($this->colorDetected(['TERM' => 'xterm'], false));
+		self::assertFalse($this->colorDetected(['TERM' => 'dumb'], true));
+		self::assertFalse($this->colorDetected(['TERM' => ''], true));
+		self::assertFalse($this->colorDetected([], true));
+	}
+
+	public function testColorDetectionOnWindowsAsksTheConsole()
+	{
+		if (!TProcessHelper::isSystemWindows()) {
+			self::markTestSkipped('Only Windows decides color from the console.');
+		}
+		self::assertTrue($this->colorDetected(['TERM' => 'dumb'], true));
+		self::assertTrue($this->colorDetected([], true));
+		self::assertFalse($this->colorDetected(['TERM' => 'xterm'], false));
+	}
+
+	public function testWidth()
+	{
+		self::assertNull($this->obj->getWidth());
+		$this->obj->setWidth('40');
+		self::assertSame(40, $this->obj->getWidth());
+		$this->obj->setWidth(0);
+		self::assertNull($this->obj->getWidth());
+		$this->obj->setWidth(12);
+		$this->obj->setWidth('');
+		self::assertNull($this->obj->getWidth());
+		$this->obj->setWidth(12);
+		$this->obj->setWidth(null);
+		self::assertNull($this->obj->getWidth());
+	}
+
+	public function testWrapTextUsesTheWidth()
+	{
+		$this->obj->setWidth(16);
+
+		self::assertSame("Lorem ipsum\n    dolor sit\n    amet.", $this->obj->wrapText('Lorem ipsum dolor sit amet.', 4));
+		self::assertSame('Lorem ipsum dolor', $this->obj->wrapText('Lorem ipsum dolor', 16));
+	}
+
+	public function testGetScreenSizeReadsColumnsAndLinesFirst()
+	{
+		$this->setEnv(['COLUMNS' => '123', 'LINES' => '45']);
+
+		self::assertSame([123, 45], TShellWriter::getScreenSize(true));
+		self::assertSame([123, 45], TShellWriter::getScreenSize());
 	}
 	
 	public function testPad()
