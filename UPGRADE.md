@@ -221,6 +221,9 @@ Upgrading from v4.3.3
 - Issue #1497 - `TXmlElement` array access throws `TInvalidDataTypeException` for an offset that is not null, an int,
   a string, or a `Stringable`. In 4.3 a float or bool offset addressed the attribute named by its string, or raised a
   PHP error. Use an int child index or a string attribute name.
+- Issue #1497 - `TXmlElement::xpath()` includes the element it is called on when the expression matches it, as DOM
+  does. In 4.3 only its descendants were returned, so `//*` now returns one more element, first. A query that needs
+  only the descendants starts from the element: `/tag//*` or `./descendant::*`.
 
 Upgrading from v4.3.2
 ---------------------

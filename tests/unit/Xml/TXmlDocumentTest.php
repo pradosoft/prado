@@ -364,4 +364,14 @@ class TXmlDocumentTest extends \PHPUnit\Framework\TestCase
 			}
 		}
 	}
+
+	public function testXPathMatchesTheDocumentElement()
+	{
+		$xmldoc = new TXmlDocument();
+		$xmldoc->loadFromString('<root><item id="1"/></root>');
+
+		self::assertSame([$xmldoc], $xmldoc->xpath('/root')->toArray());
+		self::assertSame([$xmldoc, $xmldoc[0]], $xmldoc->xpath('//*')->toArray());
+		self::assertSame([$xmldoc[0]], $xmldoc->xpath('/root/item')->toArray());
+	}
 }

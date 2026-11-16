@@ -1459,6 +1459,25 @@ class TXmlElementTest extends \PHPUnit\Framework\TestCase
 		unset($element[$index]);
 		self::assertSame(0, $element->getCount());
 	}
+
+	public function testXPathMatchesTheElementItIsCalledOn()
+	{
+		$parent = new TXmlElement('parent');
+		$child = new TXmlElement('child');
+		$grandchild = new TXmlElement('parent');
+		$parent[] = $child;
+		$child[] = $grandchild;
+
+		self::assertSame([$parent], $parent->xpath('/parent')->toArray());
+		self::assertSame([$parent], $parent->xpath('.')->toArray());
+		self::assertSame([$parent, $child, $grandchild], $parent->xpath('//*')->toArray());
+		self::assertSame([$parent, $grandchild], $parent->xpath('//parent')->toArray());
+		self::assertSame([$child], $parent->xpath('/parent/child')->toArray());
+		self::assertSame([$child], $child->xpath('/child')->toArray());
+		self::assertSame([$child, $grandchild], $child->xpath('//*')->toArray());
+		self::assertFalse($parent->getHasAttribute());
+		self::assertFalse($child->getHasAttribute());
+	}
 }
 
 /**

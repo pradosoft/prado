@@ -17,7 +17,7 @@ DOM-compatible XML document and element manipulation for the Prado framework. Us
   - `Attributes` — `TMap` of name→value attribute pairs
   - `Elements` — [TXmlElementList](./TXmlElementList.md) of direct child elements
   - `Parent` — reference to parent [TXmlElement](./TXmlElement.md)
-  - `xpath($expression)` — run XPath query; returns array of [TXmlElement](./TXmlElement.md).
+  - `xpath($expression)` — run XPath query with this element as the document element; returns a `TList` of [TXmlElement](./TXmlElement.md) in document order, this element included when it matches.
   - Implements `ArrayAccess` (null offset: the value; int or numeric-string offset: a child; other string or `Stringable` offset: an attribute; other types throw), `Countable`, `IteratorAggregate`
   - DOM compatibility: `getNodeType()`, node type constants (`XML_DOCUMENT_NODE`, etc.), partial DOM property support
   - Element Search modes: `SEARCH_ELEMENT`, `SEARCH_DEPTH_FIRST`, `SEARCH_BREADTH_FIRST`
