@@ -571,4 +571,28 @@ class MessageSource_XLIFFTest extends TestCase
 		$this->assertTrue($source->delete('Hello'));
 		$this->assertStringContainsString('date="2024-03-01T00:00:00Z"', file_get_contents($this->_dir . '/fr/messages.xml'));
 	}
+
+	public function testDeleteTheFirstUnitOfACompactFile()
+	{
+		foreach ([true, false] as $withFile) {
+			foreach ([true, false] as $withCache) {
+				$body = '<body><trans-unit id="1"><source>A</source><target>a</target></trans-unit></body>';
+				if ($withFile) {
+					$body = '<file source-language="EN" original="messages">' . $body . '</file>';
+				}
+				file_put_contents($this->_dir . '/messages.xml', '<?xml version="1.0" encoding="UTF-8"?><xliff version="1.0">' . $body . '</xliff>');
+				$source = $this->createSource('');
+				$cache = new MessageSource_XLIFFRecordingCache($this->makeTempDirectory());
+				if ($withCache) {
+					$source->setCache($cache);
+				}
+
+				$this->assertTrue($source->delete('A'));
+
+				$this->assertSame([], $this->readUnits('messages.xml'));
+				$this->assertSame($withCache ? [['messages.xml', '']] : [], $cache->cleaned);
+				$this->assertSame($withFile, str_contains(file_get_contents($this->_dir . '/messages.xml'), 'date="'));
+			}
+		}
+	}
 }
