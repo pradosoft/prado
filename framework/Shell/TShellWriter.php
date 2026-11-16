@@ -403,7 +403,8 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 			return true;
 		}
 		if (TProcessHelper::isSystemWindows()) {
-			return $this->isWindowsConsoleColor(); // @codeCoverageIgnore Only Windows runs this branch.
+			// Only Windows runs this branch.
+			return $this->isWindowsConsoleColor(); // @codeCoverageIgnore
 		}
 		$term = getenv('TERM');
 		return $term !== false && $term !== '' && $term !== 'dumb' && $this->isStdOutTerminal();
@@ -654,11 +655,14 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 		}
 
 		if (TProcessHelper::isSystemWindows()) {
+			// Only Windows runs this branch.
+			// @codeCoverageIgnoreStart
 			$output = [];
 			exec('mode con', $output);
 			if (isset($output[1]) && strpos($output[1], 'CON') !== false) {
 				return $size = [(int) preg_replace('~\D~', '', $output[4]), (int) preg_replace('~\D~', '', $output[3])];
 			}
+			// @codeCoverageIgnoreEnd
 		} else {
 			// try stty if available
 			$stty = [];
