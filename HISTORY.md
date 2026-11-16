@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TXmlDocument` keeps the namespace declarations of every element as its `xmlns` attributes, found through DOM without SimpleXML, and `TXmlElement::xpath()` on a sub-element applies its ancestors' declarations; declarations below the root were dropped, without SimpleXML the root's were too, and a sub-element query threw. See UPGRADE.md. (belisoful)
 BUG: Issue #1497 - `TXmlElement::xpath()` returns the element it is called on when the expression matches it, as DOM does; `/tag`, `.`, and `//*` left it out. See UPGRADE.md. (belisoful)
 BUG: Issue #1497 - `TXmlDocument::loadFromString()` resets the document for an empty string, as for malformed XML, and a reset leaves `Value` null, as in a new document; an empty string left the document unchanged. See UPGRADE.md. (belisoful)
 BUG: Issue #1497 - `TXmlElementList::insertAt()` throws `TInvalidOperationException` for the list's owner or one of its ancestors; the insert made a cycle that `toString()` and the searches recursed through forever. (belisoful)

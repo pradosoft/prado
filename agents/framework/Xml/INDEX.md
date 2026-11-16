@@ -54,5 +54,6 @@ DOM-compatible XML document and element manipulation for the Prado framework. Us
 
 - `TXmlDocument` inherits from `TXmlElement` — the root element *is* the document, so `TagName` on a `TXmlDocument` is the root tag.
 - `Value` only returns text node content — CDATA sections and comments are not included.
-- XPath adds (then removes, also when the query throws) `prado-xml-id-*` attributes internally for node tracking; treat these as internal.
+- XPath adds (then removes, also when the query throws) `prado-xml-id-*` attributes, and the ancestors' missing `xmlns` declarations, internally; treat these as internal.
+- Each element's attributes include the namespace declarations it makes (`xmlns`, `xmlns:<prefix>`).
 - libxml errors are suppressed internally (`libxml_use_internal_errors(true)`) during parsing — check the return value of `loadFromString()`/`loadFromFile()` rather than expecting exceptions on malformed XML. A recoverable libxml error, such as an undeclared namespace prefix, does not fail the parse.
