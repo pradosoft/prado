@@ -106,7 +106,8 @@ class TMysqlMetaData extends TDbMetaData
 			$this->processColumn($tableInfo, $col);
 		}
 		if ($index === 0) {
-			throw new TDbException('dbmetadata_invalid_table_view', $table);
+			// SHOW FULL FIELDS fails for a missing table, and every MySQL table has a column.
+			throw new TDbException('dbmetadata_invalid_table_view', $table); // @codeCoverageIgnore
 		}
 		if ($colCase != TDbColumnCaseMode::Preserved) {
 			$this->getDbConnection()->setColumnCase($colCase);
@@ -398,15 +399,10 @@ class TMysqlMetaData extends TDbMetaData
 	/**
 	 * @param string $schemaName database name
 	 * @param string $tableName table name
-	 * @throws TDbException if PHP version is less than 5.1.3
 	 * @return string SQL command to create the table.
 	 */
 	protected function getShowCreateTable($schemaName, $tableName)
 	{
-		if (version_compare(PHP_VERSION, '5.1.3', '<')) {
-			throw new TDbException('dbmetadata_requires_php_version', 'Mysql 4.1.x', '5.1.3');
-		}
-
 		//See http://netevil.org/node.php?nid=795&SC=1
 		$this->getDbConnection()->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);
 		if ($schemaName !== null) {

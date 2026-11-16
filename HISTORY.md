@@ -29,6 +29,8 @@ BUG: Issue #1497 - A `TPermissionsManager` created while another is initialized 
 BUG: Issue #1497 - `TAuthorizationRule` throws `authorizationrule_list_empty` for a users, roles, or IP list of only separators, such as `','`; such a users or roles list matched no one, while such an IP list matched every IP. (belisoful)
 BUG: Issue #1497 - `TPagedDataSource` applies custom paging only while `AllowPaging` is true; with paging off, `Count` followed `VirtualItemCount` and disagreed with iteration. (belisoful)
 BUG: Issue #1497 - `TPermissionsManager::__destruct()` detaches the permissions class behaviors only when its `init()` attached them; destroying a manager that was never initialized removed another manager's behaviors. (belisoful)
+BUG: Issue #1497 - `TTableGateway` dynamic finders without a column, `findBy()`, `findAllBy()`, `deleteBy()`, and `deleteAllBy()`, throw `dbtablegateway_mismatch_column_name`; they raised a PHP warning. (belisoful)
+ENH: Issue #1497 - `TSqlCriteria::setParameters()` throws `TInvalidDataTypeException` with the message key `sqlcriteria_parameters_invalid` for a value that is neither an array nor an `ArrayAccess`. (belisoful)
 BUG: Issue #1497 - `TException` with the error code `'0'` has the message `0`; it was empty. (belisoful)
 BUG: Issue #1497 - `TSocketException` without a message is "Socket error {0}." (`socketexception_error_code`) when the sockets extension is absent; `socket_strerror()` was undefined. (belisoful)
 BUG: Issue #1497 - `TErrorHandler` reads the Xdebug stack of a fatal error only in Xdebug's develop mode, through `getFatalErrorTrace()`; in another mode `xdebug_get_function_stack()` raised a warning and returned no frames. (belisoful)

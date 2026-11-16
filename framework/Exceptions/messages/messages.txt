@@ -620,7 +620,6 @@ dbcommon_invalid_table_name				= Database table ''{0}'' not found. Error message
 dbcommon_invalid_identifier_name        = Invalid database identifier name ''{0}'', see {1} for details.
 dbtableinfo_invalid_column_name			= Invalid column name ''{0}'' for database table ''{1}''.
 dbmetadata_invalid_table_view			= Invalid table/view name ''{0}'', or that table/view ''{0}'' contains no accessible column/field definitions.
-dbmetadata_requires_php_version			= PHP version {1} or later is required for using {0} database.
 
 dbtablegateway_invalid_criteria			= Invalid criteria object, must be a string or an instance of IDataCriteria such as TSqlCriteria.
 dbtablegateway_no_primary_key_found		= Table ''{0}'' does not contain any primary key fields.
@@ -629,6 +628,7 @@ dbtablegateway_pk_value_count_mismatch	= Composite key value count mismatch in f
 dbtablegateway_mismatch_args_exception	= TTableGateway finder method ''{0}'' expects {1} parameters but found only {2} parameters instead.
 dbtablegateway_mismatch_column_name		= In dynamic __call() method ''{0}'', the condition is not column names joined by And or Or; valid columns for table ''{2}'' are ''{1}''.
 dbtablegateway_invalid_table_info		= Table must be a string or an instance of TDbTableInfo.
+sqlcriteria_parameters_invalid			= TSqlCriteria.Parameters must be an array or an ArrayAccess, but ''{0}'' was given.
 
 resource_not_a_resource					= Expected an open PHP resource but got ''{0}''.
 processfork_failed						= Unable to fork the process.

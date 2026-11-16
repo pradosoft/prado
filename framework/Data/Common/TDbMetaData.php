@@ -130,15 +130,9 @@ abstract class TDbMetaData extends \Prado\TComponent implements IDbMetaData
 	public static function getInstance($connection): ?IDataMetaData
 	{
 		$connection->setActive(true); //must be connected before retrieving driver name
+		// For a connection, getMetaDataClass() returns an IDataMetaData class name or throws.
 		$class = TDbDriverCapabilities::getMetaDataClass($connection);
-		if ($class === null) {
-			return null;
-		}
-		$instance = new $class($connection);
-		if (!($instance instanceof IDataMetaData)) {
-			throw new TDbException('dbmetadata_not_meta_data', $class, IDataMetaData::class);
-		}
-		return $instance;
+		return new $class($connection);
 	}
 
 	/**

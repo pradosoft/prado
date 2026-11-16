@@ -257,4 +257,11 @@ class TIbmCommandBuilderTest extends \PHPUnit\Framework\TestCase
 		$this->assertFalse($plain->getAutoIncrement());
 		$this->assertFalse($plain->hasSequence());
 	}
+
+	public function test_last_insert_id_of_a_table_without_columns(): void
+	{
+		$builder = new TIbmCommandBuilder($this->_conn, new TIbmTableInfo(['TableName' => 'EMPTY']));
+
+		$this->assertNull($builder->getLastInsertID());
+	}
 }
