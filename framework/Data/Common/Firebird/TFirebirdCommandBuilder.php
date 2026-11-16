@@ -93,15 +93,12 @@ class TFirebirdCommandBuilder extends TDbCommandBuilder
 	 * applicable) to the correct SQL type string.
 	 *
 	 * @param string $name logical column name (PHP array key from $data).
+	 * @throws \Prado\Exceptions\TDbException if the table has no column named $name.
 	 * @return string SQL type string suitable for use in CAST(:name AS <type>).
 	 */
 	private function getFirebirdCastType(string $name): string
 	{
 		$column = $this->getTableInfo()->getColumn($name);
-		if ($column === null) {
-			return 'VARCHAR(255)';
-		}
-
 		$dbType = strtoupper(trim($column->getDbType()));
 		$size = (int) $column->getColumnSize();
 		$prec = (int) $column->getNumericPrecision();

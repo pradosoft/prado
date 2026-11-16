@@ -39,7 +39,7 @@ Opening creates the PDO through `createPdoInstance()`: `PDO::connect()` on PHP 8
 | `Attributes` | PDO attributes array (e.g., `[PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]`) |
 | `ColumnCase` | [`TDbColumnCaseMode`](./TDbColumnCaseMode.md): `Preserved`, `LowerCase`, `UpperCase` |
 | `NullConversion` | [`TDbNullConversionMode`](./TDbNullConversionMode.md): `Preserved`, `EmptyStringToNull`, `NullToEmptyString` |
-| `TransactionClass` | Class name for transaction objects (default: `TDbTransaction`) |
+| `TransactionClass` | Class name for transaction objects (default: `TDbTransaction`); `beginTransaction()` throws `dbconnection_transaction_class_invalid` when it does not create a `TDbTransaction` |
 
 ### Key Methods
 

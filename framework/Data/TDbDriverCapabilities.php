@@ -301,10 +301,12 @@ class TDbDriverCapabilities
 			}
 		}
 
-		// Try canonical key format (lowercase, no hyphens/underscores/spaces)
+		// Try canonical key format (lowercase, no hyphens/underscores/spaces).
+		// Every charset name in the table keeps its hyphen, so a canonical key that
+		// is set is always a string alias of one.
 		$key = static::canonicalizeCharset($charset);
 		if (isset($aliases[$key])) {
-			$charset = is_string($aliases[$key]) ? $aliases[$key] : $key;
+			$charset = $aliases[$key];
 		}
 
 		return $aliases[$charset][$driver] ?? $charset;

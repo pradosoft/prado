@@ -13,10 +13,27 @@ use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\THttpException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Exceptions\TPhpErrorException;
+use Prado\Exceptions\TPhpFatalErrorException;
+use Prado\Exceptions\TTemplateException;
 use Prado\Prado;
 use Prado\TApplicationMode;
+use Prado\Web\THttpResponse;
 
 require_once __DIR__ . '/TErrorHandlerTestGlobalClass.php';
+
+/**
+ * A THttpResponse that records the headers appended to it.
+ */
+class TErrorHandlerTestResponse extends THttpResponse
+{
+	/** @var string[] the headers passed to appendHeader() */
+	public array $appended = [];
+
+	public function appendHeader($header, bool $replace = true, int $response_code = 0): void
+	{
+		$this->appended[] = $header;
+	}
+}
 
 /**
  * Exposes all protected methods of TErrorHandler for unit testing.
@@ -78,16 +95,48 @@ class TErrorHandlerAccessor extends TErrorHandler
 		return $this->fakePhpSapiName ?? parent::phpSapiName();
 	}
 
+	/** @var array the `$_SERVER` values serverGlobal() returns in place of the superglobal */
+	public array $fakeServer = [];
+
+	protected function serverGlobal(string $key): mixed
+	{
+		return array_key_exists($key, $this->fakeServer) ? $this->fakeServer[$key] : parent::serverGlobal($key);
+	}
+
+	/** @var bool when true, getFatalErrorTrace() returns $fakeFatalErrorTrace */
+	public bool $useFakeFatalErrorTrace = false;
+
+	/** @var ?array the stack getFatalErrorTrace() returns when $useFakeFatalErrorTrace is true */
+	public ?array $fakeFatalErrorTrace = null;
+
+	protected function getFatalErrorTrace(): ?array
+	{
+		return $this->useFakeFatalErrorTrace ? $this->fakeFatalErrorTrace : parent::getFatalErrorTrace();
+	}
+
+	public function pubGetFatalErrorTrace(): ?array
+	{
+		return parent::getFatalErrorTrace();
+	}
+
+	public function pubGetErrorTrace(\Throwable $exception): array
+	{
+		return $this->getErrorTrace($exception);
+	}
+
+	/** @var ?THttpResponse the response getResponse() returns; null by default */
+	public ?THttpResponse $fakeResponse = null;
+
 	/**
-	 * Returns null so that handleRecursiveError() always takes the
+	 * Returns $fakeResponse, null by default, so that handleRecursiveError() takes the
 	 * `$this->header()` branch rather than `$response->appendHeader()`.
 	 * This prevents the live THttpResponse (which opens output buffers
 	 * for compression) from being touched during recursive-error tests,
 	 * and ensures capturedHeaders is populated by the overridden header().
 	 */
-	public function getResponse(): ?\Prado\Web\THttpResponse
+	public function getResponse(): ?THttpResponse
 	{
-		return null;
+		return $this->fakeResponse;
 	}
 
 	// ── Public wrappers for testing the base helper implementations ──────────
@@ -427,12 +476,17 @@ class TErrorHandlerTest extends \PHPUnit\Framework\TestCase
 
 	public function testGetPrivatePathReplacementsContainsDocumentRootEntry(): void
 	{
-		$docRoot = $_SERVER['DOCUMENT_ROOT'] ?? '';
-		if ($docRoot === '') {
-			$this->markTestSkipped('DOCUMENT_ROOT is empty in this environment.');
-		}
+		$this->handler->fakeServer['DOCUMENT_ROOT'] = '/srv/www';
 		$map = $this->handler->pubGetPrivatePathReplacements();
-		$this->assertContains('${DocumentRoot}', $map);
+		$this->assertSame('${DocumentRoot}', $map['/srv/www']);
+	}
+
+	public function testGetPrivatePathReplacementsOmitsADocumentRootOfTheFilesystemRoot(): void
+	{
+		// A document root of "/" would replace every directory separator.
+		$this->handler->fakeServer['DOCUMENT_ROOT'] = DIRECTORY_SEPARATOR;
+		$map = $this->handler->pubGetPrivatePathReplacements();
+		$this->assertSame([PRADO_DIR . DIRECTORY_SEPARATOR => '${PradoFramework}' . DIRECTORY_SEPARATOR], $map);
 	}
 
 	// ── Direct template-path accessors (4.3.3) ────────────────────────────────
@@ -507,6 +561,14 @@ class TErrorHandlerTest extends \PHPUnit\Framework\TestCase
 	{
 		$this->expectException(TConfigurationException::class);
 		$this->handler->setErrorTemplatePath('Prado\NonExistentNamespace\ThatDoesNotExist');
+	}
+
+	public function testSetErrorTemplatePathUnknownAliasThrows(): void
+	{
+		// An undefined alias resolves to no path.
+		$this->assertNull(Prado::getPathOfNamespace('NoSuchPradoAlias\\Templates'));
+		$this->expectException(TConfigurationException::class);
+		$this->handler->setErrorTemplatePath('NoSuchPradoAlias\\Templates');
 	}
 
 	public function testSetErrorTemplatePathToClassNamespaceThrowsBecauseNotADirectory(): void
@@ -807,6 +869,21 @@ class TErrorHandlerTest extends \PHPUnit\Framework\TestCase
 		$this->cleanTempDir($tmpDir);
 	}
 
+	public function testGetExceptionTemplateFallsBackToTheFrameworkTemplatesWithoutAnExceptionTemplate(): void
+	{
+		// An ErrorTemplatePath holding only error templates uses the framework exception template.
+		$tmpDir = $this->makeTempTemplateDir(['error.html' => 'error-only']);
+		$this->handler->setRawTemplatePath($tmpDir);
+		try {
+			$default = $this->handler->pubGetDefaultErrorTemplatePath() . DIRECTORY_SEPARATOR . 'exception';
+			$lang = Prado::getApplicationLanguage();
+			$expected = is_file("$default-$lang.html") ? "$default-$lang.html" : "$default.html";
+			$this->assertSame(file_get_contents($expected), $this->handler->pubGetExceptionTemplate(new \Exception('test')));
+		} finally {
+			$this->cleanTempDir($tmpDir);
+		}
+	}
+
 	// ── hideSecurityRelated ──────────────────────────────────────────────────
 
 	public function testHideSecurityRelatedReplacesPradoDir(): void
@@ -819,14 +896,15 @@ class TErrorHandlerTest extends \PHPUnit\Framework\TestCase
 
 	public function testHideSecurityRelatedReplacesDocumentRoot(): void
 	{
-		$docRoot = $_SERVER['DOCUMENT_ROOT'] ?? '';
-		if ($docRoot === '') {
-			$this->markTestSkipped('DOCUMENT_ROOT is empty in this environment.');
-		}
-		$value  = 'File: ' . $docRoot . '/index.php';
-		$result = $this->handler->pubHideSecurityRelated($value);
-		$this->assertStringNotContainsString($docRoot, $result);
-		$this->assertStringContainsString('${DocumentRoot}', $result);
+		$this->handler->fakeServer['DOCUMENT_ROOT'] = '/srv/www';
+		$this->assertSame('File: ${DocumentRoot}/index.php', $this->handler->pubHideSecurityRelated('File: /srv/www/index.php'));
+	}
+
+	public function testHideSecurityRelatedKeepsSeparatorsForADocumentRootOfTheFilesystemRoot(): void
+	{
+		$this->handler->fakeServer['DOCUMENT_ROOT'] = DIRECTORY_SEPARATOR;
+		$value = DIRECTORY_SEPARATOR . 'srv' . DIRECTORY_SEPARATOR . 'index.php';
+		$this->assertSame($value, $this->handler->pubHideSecurityRelated($value));
 	}
 
 	public function testHideSecurityRelatedReplacesTraceDirs(): void
@@ -872,14 +950,8 @@ class TErrorHandlerTest extends \PHPUnit\Framework\TestCase
 
 	public function testHidePrivatePathPartsReplacesDocumentRoot(): void
 	{
-		$docRoot = $_SERVER['DOCUMENT_ROOT'] ?? '';
-		if ($docRoot === '') {
-			$this->markTestSkipped('DOCUMENT_ROOT is empty in this environment.');
-		}
-		$value  = 'Path: ' . $docRoot . '/index.php';
-		$result = $this->handler->pubHidePrivatePathParts($value);
-		$this->assertStringNotContainsString($docRoot, $result);
-		$this->assertStringContainsString('${DocumentRoot}', $result);
+		$this->handler->fakeServer['DOCUMENT_ROOT'] = '/srv/www';
+		$this->assertSame('Path: ${DocumentRoot}/index.php', $this->handler->pubHidePrivatePathParts('Path: /srv/www/index.php'));
 	}
 
 	public function testHidePrivatePathPartsCacheProducesConsistentResults(): void
@@ -1113,6 +1185,27 @@ class TErrorHandlerTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame($trace[0], $result);
 	}
 
+	public function testGetExactTraceTPhpErrorExceptionSkipsFramesWithoutFile(): void
+	{
+		// A warning raised in an internal callback: the error handler frame and the
+		// hex2bin() frame have no file; the array_map() call is the first frame with one.
+		$line = 0;
+		try {
+			$line = __LINE__ + 1;
+			array_map('hex2bin', ['abc']);
+			$this->fail('hex2bin() of an odd-length string must raise a warning.');
+		} catch (TPhpErrorException $ex) {
+		}
+		$trace = $ex->getTrace();
+		$this->assertArrayNotHasKey('file', $trace[0]);
+		$this->assertArrayNotHasKey('file', $trace[1]);
+
+		$result = $this->handler->pubGetExactTrace($ex);
+		$this->assertSame(__FILE__, $result['file']);
+		$this->assertSame($line, $result['line']);
+		$this->assertSame('array_map', $result['function']);
+	}
+
 	public function testGetExactTraceTPhpErrorExceptionEvalFrameReturnsNull(): void
 	{
 		// When the exception is constructed inside eval(), trace[0]['file'] contains
@@ -1140,7 +1233,155 @@ class TErrorHandlerTest extends \PHPUnit\Framework\TestCase
 		$this->assertNull($result);
 	}
 
+	// ── getFatalErrorTrace / getErrorTrace ────────────────────────────────────
+
+	/**
+	 * Returns whether Xdebug is loaded in its develop mode, which provides the fatal error stack.
+	 */
+	private static function isXdebugDevelopMode(): bool
+	{
+		return function_exists('xdebug_info') && in_array('develop', xdebug_info('mode'), true);
+	}
+
+	/** The file of the fake stack frame with a function, in the platform's separators. */
+	private const FAKE_PAGE_FILE = DIRECTORY_SEPARATOR . 'srv' . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . 'Home.php';
+
+	/** The file of the fake stack frame without a function, in the platform's separators. */
+	private const FAKE_INDEX_FILE = DIRECTORY_SEPARATOR . 'opt' . DIRECTORY_SEPARATOR . 'boot' . DIRECTORY_SEPARATOR . 'index.php';
+
+	/**
+	 * Returns an Xdebug-style stack of two frames: one with a function and one without.
+	 */
+	private static function fakeFatalStack(): array
+	{
+		return [
+			['file' => self::FAKE_PAGE_FILE, 'line' => 12, 'function' => 'render', 'params' => ['$a', '$b']],
+			['file' => self::FAKE_INDEX_FILE, 'line' => 3],
+		];
+	}
+
+	public function testGetFatalErrorTraceIsNullOutsideXdebugDevelopMode(): void
+	{
+		if (self::isXdebugDevelopMode()) {
+			$this->markTestSkipped('Xdebug develop mode provides the fatal error stack.');
+		}
+		$this->assertNull($this->handler->pubGetFatalErrorTrace());
+	}
+
+	public function testGetFatalErrorTraceInXdebugDevelopModeDropsTheHandlerFrames(): void
+	{
+		if (!self::isXdebugDevelopMode()) {
+			$this->markTestSkipped('Xdebug develop mode is off.');
+		}
+		// The stack inside getFatalErrorTrace() has two more frames than this method's:
+		// pubGetFatalErrorTrace() and getFatalErrorTrace(). The outermost frame is dropped.
+		$stack = xdebug_get_function_stack();
+		$trace = $this->handler->pubGetFatalErrorTrace();
+		$this->assertCount(count($stack) + 2 - TErrorHandler::FATAL_ERROR_TRACE_DROP_LINES - 1, $trace);
+	}
+
+	public function testHideSecurityRelatedFatalErrorOutsideXdebugDevelopModeHidesTheTraceDirectories(): void
+	{
+		// With Xdebug loaded outside develop mode, xdebug_get_function_stack() warns and
+		// returns no frames; the exception trace is used instead.
+		if (self::isXdebugDevelopMode()) {
+			$this->markTestSkipped('Xdebug develop mode provides the fatal error stack.');
+		}
+		$ex = new TPhpFatalErrorException(E_ERROR, 'fatal', __FILE__, __LINE__);
+		$callerDir = dirname($ex->getTrace()[0]['file']);
+		$result = $this->handler->pubHideSecurityRelated($callerDir . DIRECTORY_SEPARATOR . 'x.php', $ex);
+		$this->assertStringStartsWith('<hidden>' . DIRECTORY_SEPARATOR, $result);
+		$this->assertStringEndsWith(DIRECTORY_SEPARATOR . 'x.php', $result);
+		$this->assertStringNotContainsString($callerDir, $result);
+	}
+
+	public function testGetErrorTraceOfAFatalErrorIsTheFatalErrorStack(): void
+	{
+		$this->handler->useFakeFatalErrorTrace = true;
+		$this->handler->fakeFatalErrorTrace = self::fakeFatalStack();
+		$ex = new TPhpFatalErrorException(E_ERROR, 'fatal', '/app/index.php', 3);
+		$this->assertSame(self::fakeFatalStack(), $this->handler->pubGetErrorTrace($ex));
+	}
+
+	public function testGetErrorTraceOfAFatalErrorWithoutAStackIsTheExceptionTrace(): void
+	{
+		$this->handler->useFakeFatalErrorTrace = true;
+		$ex = new TPhpFatalErrorException(E_ERROR, 'fatal', '/app/index.php', 3);
+		$this->assertSame($ex->getTrace(), $this->handler->pubGetErrorTrace($ex));
+	}
+
+	public function testGetErrorTraceOfAnotherExceptionIsItsTrace(): void
+	{
+		$this->handler->useFakeFatalErrorTrace = true;
+		$this->handler->fakeFatalErrorTrace = self::fakeFatalStack();
+		$ex = new TPhpErrorException(E_WARNING, 'warning', '/app/index.php', 3);
+		$this->assertSame($ex->getTrace(), $this->handler->pubGetErrorTrace($ex));
+	}
+
+	public function testHideSecurityRelatedFatalErrorHidesTheFatalStackDirectories(): void
+	{
+		$this->handler->useFakeFatalErrorTrace = true;
+		$this->handler->fakeFatalErrorTrace = self::fakeFatalStack();
+		$ex = new TPhpFatalErrorException(E_ERROR, 'fatal', '/app/index.php', 3);
+		$result = $this->handler->pubHideSecurityRelated(self::FAKE_PAGE_FILE, $ex);
+		$this->assertSame('<hidden>' . DIRECTORY_SEPARATOR . 'Home.php', $result);
+	}
+
+	public function testGetExactTraceFatalErrorReturnsTheFirstStackFrameWithAFile(): void
+	{
+		$this->handler->useFakeFatalErrorTrace = true;
+		$this->handler->fakeFatalErrorTrace = self::fakeFatalStack();
+		$ex = new TPhpFatalErrorException(E_ERROR, 'fatal', '/app/index.php', 3);
+		$this->assertSame(self::fakeFatalStack()[0], $this->handler->pubGetExactTrace($ex));
+	}
+
 	// ── getExactTraceAsString ─────────────────────────────────────────────────
+
+	public function testGetExactTraceAsStringFatalErrorFormatsTheFatalStack(): void
+	{
+		$this->handler->useFakeFatalErrorTrace = true;
+		$this->handler->fakeFatalErrorTrace = self::fakeFatalStack();
+		$this->handler->pubSetPrivatePathReplacementsDirect([DIRECTORY_SEPARATOR . 'srv' . DIRECTORY_SEPARATOR => '${Srv}' . DIRECTORY_SEPARATOR]);
+		$ex = new TPhpFatalErrorException(E_ERROR, 'fatal', '/app/index.php', 3);
+		$this->assertSame(
+			'#0 ${Srv}' . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . 'Home.php(12): render($a,$b)' . "\n" . '#1 ' . self::FAKE_INDEX_FILE . '(3): unknown' . "\n",
+			$this->handler->pubGetExactTraceAsString($ex)
+		);
+	}
+
+	public function testGetExactTraceAsStringFatalErrorWithAnEmptyStackIsEmpty(): void
+	{
+		$this->handler->useFakeFatalErrorTrace = true;
+		$this->handler->fakeFatalErrorTrace = [];
+		$ex = new TPhpFatalErrorException(E_ERROR, 'fatal', '/app/index.php', 3);
+		$this->assertSame('', $this->handler->pubGetExactTraceAsString($ex));
+	}
+
+	public function testGetExactTraceAsStringFatalErrorFormatsAFrameWithAFunction(): void
+	{
+		$this->handler->useFakeFatalErrorTrace = true;
+		$this->handler->fakeFatalErrorTrace = [self::fakeFatalStack()[0]];
+		$this->handler->pubSetPrivatePathReplacementsDirect([]);
+		$ex = new TPhpFatalErrorException(E_ERROR, 'fatal', '/app/index.php', 3);
+		$this->assertSame('#0 ' . self::FAKE_PAGE_FILE . '(12): render($a,$b)' . "\n", $this->handler->pubGetExactTraceAsString($ex));
+	}
+
+	public function testGetExactTraceAsStringFatalErrorFormatsAFrameWithoutAFunction(): void
+	{
+		$this->handler->useFakeFatalErrorTrace = true;
+		$this->handler->fakeFatalErrorTrace = [self::fakeFatalStack()[1]];
+		$this->handler->pubSetPrivatePathReplacementsDirect([]);
+		$ex = new TPhpFatalErrorException(E_ERROR, 'fatal', '/app/index.php', 3);
+		$this->assertSame('#0 ' . self::FAKE_INDEX_FILE . '(3): unknown' . "\n", $this->handler->pubGetExactTraceAsString($ex));
+	}
+
+	public function testGetExactTraceAsStringFatalErrorWithoutAStackFormatsTheExceptionTrace(): void
+	{
+		$this->handler->useFakeFatalErrorTrace = true;
+		$this->handler->pubSetPrivatePathReplacementsDirect([]);
+		$ex = new TPhpFatalErrorException(E_ERROR, 'fatal', '/app/index.php', 3);
+		$this->assertSame($ex->getTraceAsString(), $this->handler->pubGetExactTraceAsString($ex));
+	}
 
 	public function testGetExactTraceAsStringReturnsString(): void
 	{
@@ -1251,6 +1492,101 @@ class TErrorHandlerTest extends \PHPUnit\Framework\TestCase
 		// the source-code window rendered by the exception template itself.
 		$tokenStackTrace = '%%' . 'StackTrace' . '%%';
 		$this->assertStringNotContainsString($tokenStackTrace, $output);
+	}
+
+	/**
+	 * Renders an exception through the web branch of displayException() in an application mode.
+	 * @param \Exception $exception the exception to render.
+	 * @param string $mode the application mode.
+	 * @return string the rendered page.
+	 */
+	private function renderException(\Exception $exception, string $mode): string
+	{
+		$app = Prado::getApplication();
+		$originalMode = $app->getMode();
+		$app->setMode($mode);
+		$this->handler->fakePhpSapiName = 'apache2handler';
+		$this->handler->fakeServer['SERVER_SOFTWARE'] = 'TestServer/1.0';
+		ob_start();
+		try {
+			$this->handler->pubDisplayException($exception);
+		} finally {
+			$output = ob_get_clean();
+			$app->setMode($originalMode);
+		}
+		return $output;
+	}
+
+	/**
+	 * Asserts that a rendered exception page shows the version only in Debug mode.
+	 */
+	private function assertVersionShownInDebugOnly(string $output, string $mode): void
+	{
+		$version = 'TestServer/1.0 <a href="https://github.com/pradosoft/prado">PRADO</a>/' . Prado::getVersion();
+		if ($mode === TApplicationMode::Debug) {
+			$this->assertStringContainsString($version, $output);
+		} else {
+			$this->assertStringNotContainsString($version, $output);
+		}
+	}
+
+	public function testDisplayExceptionTemplateFileShowsTheTemplateLine(): void
+	{
+		$file = sys_get_temp_dir() . '/' . uniqid('prado_tpl_', true) . '.tpl';
+		file_put_contents($file, implode("\n", array_map(fn ($i) => "template line $i", range(1, 20))));
+		try {
+			foreach ([TApplicationMode::Debug, TApplicationMode::Normal] as $mode) {
+				$ex = new TTemplateException('template_format_invalid', 'bad tag');
+				$ex->setTemplateFile($file);
+				$ex->setLineNumber(5);
+				$output = $this->renderException($ex, $mode);
+				$this->assertStringContainsString(htmlspecialchars($file) . ' (5)', $output);
+				$this->assertStringContainsString('<div class="error">0005: template line 5' . "\n" . '</div>', $output);
+				$this->assertVersionShownInDebugOnly($output, $mode);
+			}
+		} finally {
+			unlink($file);
+		}
+	}
+
+	public function testDisplayExceptionEmbeddedTemplateShowsTheTemplateSource(): void
+	{
+		foreach ([TApplicationMode::Debug, TApplicationMode::Normal] as $mode) {
+			$ex = new TTemplateException('template_format_invalid', 'bad tag');
+			$ex->setTemplateSource("first\nsecond <b>\nthird");
+			$ex->setLineNumber(2);
+			$output = $this->renderException($ex, $mode);
+			$this->assertStringContainsString('---embedded template--- (2)', $output);
+			$this->assertStringContainsString('<div class="error">0002: second &lt;b&gt;</div>', $output);
+			$this->assertVersionShownInDebugOnly($output, $mode);
+		}
+	}
+
+	public function testDisplayExceptionPhpErrorShowsTheLineThatRaisedIt(): void
+	{
+		$line = __LINE__ + 2;
+		try {
+			array_map('hex2bin', ['abc']);
+			$this->fail('hex2bin() of an odd-length string must raise a warning.');
+		} catch (TPhpErrorException $ex) {
+		}
+		foreach ([TApplicationMode::Debug, TApplicationMode::Normal] as $mode) {
+			$output = $this->renderException($ex, $mode);
+			$this->assertStringContainsString(htmlspecialchars(__FILE__) . ' (' . $line . ')', $output);
+			$this->assertStringContainsString('<div class="error">' . sprintf('%04d', $line) . ':', $output);
+			$this->assertVersionShownInDebugOnly($output, $mode);
+		}
+	}
+
+	public function testDisplayExceptionWithoutAnExactTraceShowsTheExceptionLine(): void
+	{
+		$line = __LINE__ + 1;
+		$ex = new \RuntimeException('runtime');
+		foreach ([TApplicationMode::Debug, TApplicationMode::Normal] as $mode) {
+			$output = $this->renderException($ex, $mode);
+			$this->assertStringContainsString(htmlspecialchars(__FILE__) . ' (' . $line . ')', $output);
+			$this->assertVersionShownInDebugOnly($output, $mode);
+		}
 	}
 
 	// ── handleRecursiveError ──────────────────────────────────────────────────
@@ -1393,6 +1729,25 @@ class TErrorHandlerTest extends \PHPUnit\Framework\TestCase
 		}
 		$this->assertCount(1, $this->handler->capturedHeaders);
 		$this->assertStringContainsString('500', $this->handler->capturedHeaders[0]);
+	}
+
+	public function testHandleRecursiveErrorAppendsTheHeaderToTheResponse(): void
+	{
+		$app = Prado::getApplication();
+		$originalMode = $app->getMode();
+		$app->setMode(TApplicationMode::Normal);
+		$this->handler->fakeHeadersSent = false;
+		$this->handler->fakeResponse = new TErrorHandlerTestResponse();
+		ob_start();
+		try {
+			$this->handler->pubHandleRecursiveError(new \Exception('response header test'));
+		} finally {
+			$output = ob_get_clean();
+			$app->setMode($originalMode);
+		}
+		$this->assertSame('', $output);
+		$this->assertSame(['HTTP/1.0 500 Internal Error'], $this->handler->fakeResponse->appended);
+		$this->assertSame([], $this->handler->capturedHeaders);
 	}
 
 	public function testHandleRecursiveErrorSkipsHeaderWhenHeadersAlreadySent(): void
@@ -1590,6 +1945,17 @@ class TErrorHandlerTest extends \PHPUnit\Framework\TestCase
 		// (it returns true once any output has been flushed). The protected
 		// helper must return exactly the same value as the underlying PHP call.
 		$this->assertSame(headers_sent(), $this->handler->pubHeadersSent());
+	}
+
+	public function testHeaderDelegatesToPhpHeader(): void
+	{
+		// PHP warns when header() is called after output; the CLI ignores a header otherwise.
+		if (headers_sent()) {
+			$this->expectException(TPhpErrorException::class);
+			$this->expectExceptionMessage('Cannot modify header information');
+		}
+		$this->handler->pubHeader('X-Prado-Test: 1');
+		$this->assertFalse(headers_sent());
 	}
 
 	public function testErrorLogDelegatesToPhpErrorLog(): void

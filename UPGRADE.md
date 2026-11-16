@@ -127,6 +127,12 @@ Upgrading from v4.3.3
   `getRecursiveCheck`, `getRecursiveLevel`, `validateFile`, `validateDirectory`, `generateTimestamps`),
   TChainedCacheDependency (`getDependencies`) and TGlobalStateCacheDependency (`__construct`, `getStateName`) are
   typed. A cache module or dependency subclass must add the matching types and implement `getIsAvailable()`.
+- Prado suggests `psy/psysh` instead of requiring it. An application that uses `prado-cli shell` adds
+  `composer require psy/psysh`.
+- `prado-cli` writes `TShellWriter::writeError()` blocks to standard error; in 4.3 they went to standard output. A
+  script that read errors from standard output reads standard error, or a `TShellApplication` subclass returns null
+  from `createStdErrStream()`. `TShellWriter` shows color on any terminal whose `TERM` is not `dumb`, follows
+  `NO_COLOR`, `FORCE_COLOR`, and `CLICOLOR_FORCE`, and `COLUMNS` and `LINES` take precedence over `stty` and `tput`.
 - TShellApplication keeps its writer and option fields private; a subclass reads them through `getWriter()`,
   `getOptions()`, `getOptionAliases()` and `getOptionsData()`. TExitException keeps its exit code private; use
   `getExitCode()`/`setExitCode()`.
@@ -212,6 +218,9 @@ Upgrading from v4.3.3
   `span` or `div` pagers selects `nav`; a pager placed inline in text styles `nav` with `display: inline`. The default
   `TWizard` side bar renders its steps as an `<ol>` instead of a `<table>`; CSS for the side bar table, or
   `list-style: none`, restores the previous look. A custom `SideBarTemplate` is unchanged.
+- Issue #1497 - `TXmlElement` array access throws `TInvalidDataTypeException` for an offset that is not null, an int,
+  a string, or a `Stringable`. In 4.3 a float or bool offset addressed the attribute named by its string, or raised a
+  PHP error. Use an int child index or a string attribute name.
 
 Upgrading from v4.3.2
 ---------------------

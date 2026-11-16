@@ -538,13 +538,13 @@ class TTableGateway extends \Prado\TComponent
 	{
 		$delete = false;
 		if ($findOne = substr(strtolower($method), 0, 6) === 'findby') {
-			$condition = $method[6] === '_' ? substr($method, 7) : substr($method, 6);
+			$condition = substr($method, 6, 1) === '_' ? substr($method, 7) : substr($method, 6);
 		} elseif (substr(strtolower($method), 0, 9) === 'findallby') {
-			$condition = $method[9] === '_' ? substr($method, 10) : substr($method, 9);
+			$condition = substr($method, 9, 1) === '_' ? substr($method, 10) : substr($method, 9);
 		} elseif ($delete = substr(strtolower($method), 0, 8) === 'deleteby') {
-			$condition = $method[8] === '_' ? substr($method, 9) : substr($method, 8);
+			$condition = substr($method, 8, 1) === '_' ? substr($method, 9) : substr($method, 8);
 		} elseif ($delete = substr(strtolower($method), 0, 11) === 'deleteallby') {
-			$condition = $method[11] === '_' ? substr($method, 12) : substr($method, 11);
+			$condition = substr($method, 11, 1) === '_' ? substr($method, 12) : substr($method, 11);
 		} else {
 			return parent::__call($method, $args);
 		}

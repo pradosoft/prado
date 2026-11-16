@@ -13,7 +13,7 @@
 ## Properties
 
 - `Condition` - SQL WHERE clause; null or `''` resets it, and `'0'` is a condition that matches no row
-- `Parameters` - Named parameters for the condition
+- `Parameters` - Named parameters for the condition; an array or an `ArrayAccess`, else `TInvalidDataTypeException` (`sqlcriteria_parameters_invalid`)
 - `OrdersBy` - Ordering specifications
 - `Limit` - Maximum number of rows
 - `Offset` - Number of rows to skip

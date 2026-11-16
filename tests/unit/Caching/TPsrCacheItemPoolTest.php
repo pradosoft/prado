@@ -69,6 +69,11 @@ class TPsrCacheItemPoolTestFailingCache extends TTestArrayCache
 	{
 		return $this->fail ? false : parent::set($id, $value, $expire, $dependency);
 	}
+
+	public function delete($id)
+	{
+		return $this->fail ? false : parent::delete($id);
+	}
 }
 
 /**
@@ -178,6 +183,20 @@ class TPsrCacheItemPoolTest extends \PHPUnit\Framework\TestCase
 		$this->assertTrue($this->pool->deleteItem('a'));
 		$this->assertFalse($this->pool->hasItem('a'));
 		$this->assertTrue($this->pool->deleteItem('a'));
+	}
+
+	public function testDeleteItemsOfNoKeysSucceeds(): void
+	{
+		$this->assertTrue($this->pool->deleteItems([]));
+	}
+
+	public function testDeleteItemsReportsAFailedDelete(): void
+	{
+		$backing = new TPsrCacheItemPoolTestFailingCache();
+		$this->pool->setBackingCache($backing);
+		$this->pool->save($this->pool->getItem('a')->set(1));
+		$backing->fail = true;
+		$this->assertFalse($this->pool->deleteItems(['a']));
 	}
 
 	public function testDeleteItems(): void

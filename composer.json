@@ -60,7 +60,6 @@
 		"bower-asset/clipboard": "^2",
 		"bower-asset/highlightjs-line-numbers.js": "^2",
 		"npm-asset/idiomorph": "0.8.0",
-		"psy/psysh": "^0",
 		"psr/clock": "^1.0",
 		"psr/http-message": "^2.0",
 		"psr/http-factory": "^1.1",
@@ -78,7 +77,8 @@
 		"phpdocumentor/shim": "^3",
 		"pradosoft/prado-phpdoc-template": "*",
 		"friendsofphp/php-cs-fixer": "3.95.30",
-		"phpstan/phpstan": "2.3.5"
+		"phpstan/phpstan": "2.3.5",
+		"psy/psysh": "^0"
 	},
 	"suggest" : {
 		"ext-apcu" : "Enables the use of TAPCCache as a cache handler",
@@ -97,6 +97,7 @@
 		"ext-zlib" : "Enables compression to reduce page size",
 		"pradosoft/prado-dev-errormessages" : "Translations of the developer-facing exception messages; require ^4.4@dev until PRADO 4.4.0 is released, then ^4.4",
 		"pradosoft/prado-demos" : "Demo applications for Prado",
+		"psy/psysh" : "Runs the prado-cli shell command, an interactive PHP shell bound to the application",
 		"pradosoft/prado-sqlmap" : "SqlMap data mapper (Prado\\Data\\SqlMap), formerly part of the framework",
 		"pradosoft/prado-activerecord" : "Active Record ORM, Scaffold controls, and the prado-cli activerecord command, formerly part of the framework",
 		"amphp/http-client" : "Non-blocking HTTP/1.1 and HTTP/2 client that schedules on the same Revolt event loop as Prado\\IO\\Async",

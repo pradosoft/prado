@@ -13,6 +13,7 @@ namespace Prado\Test\Unit\Caching;
 use Prado\Caching\TDirectoryCacheDependency;
 use Prado\Caching\TCacheDependency;
 use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Exceptions\TIOException;
 use Prado\Prado;
 
 /**
@@ -211,6 +212,33 @@ class TDirectoryCacheDependencyTest extends \PHPUnit\Framework\TestCase
 		clearstatcache();
 
 		$this->assertTrue($dep->getHasChanged());
+	}
+
+	public function testGetHasChangedTrueWhenDirectoryRemoved(): void
+	{
+		$dir = $this->makeDir('dir_gone');
+		$dep = new TDirectoryCacheDependency($dir);
+
+		rmdir($dir);
+
+		$this->assertTrue($dep->getHasChanged());
+	}
+
+	public function testGetHasChangedThrowsWhenDirectoryCannotBeOpened(): void
+	{
+		if (!function_exists('posix_getuid') || posix_getuid() === 0) {
+			$this->markTestSkipped('Test requires a non-root POSIX environment.');
+		}
+		$dir = $this->makeDir('dir_unreadable');
+		$dep = new TDirectoryCacheDependency($dir);
+
+		chmod($dir, 0o000);
+		try {
+			$this->expectException(TIOException::class);
+			$dep->getHasChanged();
+		} finally {
+			chmod($dir, 0o777);
+		}
 	}
 
 	// -------------------------------------------------------------------------

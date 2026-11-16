@@ -95,6 +95,86 @@ class TDbConnectionTestNoValueConnection extends TDbConnection
 	}
 }
 
+/**
+ * Command whose scalar query reads a NULL value.
+ */
+class TDbConnectionTestNullValueCommand extends TDbCommand
+{
+	public function queryScalar()
+	{
+		return null;
+	}
+}
+
+/**
+ * SQLite connection whose commands read a NULL scalar value.
+ */
+class TDbConnectionTestNullValueConnection extends TDbConnection
+{
+	public function createCommand($sql)
+	{
+		return new TDbConnectionTestNullValueCommand($this, $sql);
+	}
+}
+
+/**
+ * Connection that can hide its PDO instance while it stays active.
+ */
+class TDbConnectionTestDetachedPdoConnection extends TDbConnection
+{
+	public bool $detached = false;
+
+	public function getPdoInstance()
+	{
+		return $this->detached ? null : parent::getPdoInstance();
+	}
+}
+
+/**
+ * PDO stub that reports a driver name and records the statements it executes.
+ *
+ * The native constructor is skipped, so every method open() calls is overridden.
+ */
+class TDbConnectionTestDriverPdo extends PDO
+{
+	/** @var string[] statements passed to exec() */
+	public array $execCalls = [];
+
+	public function __construct(public string $driver)
+	{
+	}
+
+	public function getAttribute(int $attribute): mixed
+	{
+		return $attribute === PDO::ATTR_DRIVER_NAME ? $this->driver : null;
+	}
+
+	public function setAttribute(int $attribute, mixed $value): bool
+	{
+		return true;
+	}
+
+	public function exec(string $statement): int|false
+	{
+		$this->execCalls[] = $statement;
+		return 0;
+	}
+}
+
+/**
+ * Connection that opens a {@see TDbConnectionTestDriverPdo} for the driver of its DSN.
+ */
+class TDbConnectionTestDriverConnection extends TDbConnection
+{
+	public ?string $openedDsn = null;
+
+	protected function createPdoInstance(string $dsn): PDO
+	{
+		$this->openedDsn = $dsn;
+		return new TDbConnectionTestDriverPdo(substr($dsn, 0, strpos($dsn, ':')));
+	}
+}
+
 class TDbConnectionTest extends \PHPUnit\Framework\TestCase
 {
 	private $_connection1;
@@ -2057,5 +2137,92 @@ class TDbConnectionTest extends \PHPUnit\Framework\TestCase
 		$conn->setAttribute(PDO::ATTR_ORACLE_NULLS, 99);
 		$this->assertSame(TDbColumnCaseMode::Preserved, $conn->getColumnCase());
 		$this->assertSame(TDbNullConversionMode::Preserved, $conn->getNullConversion());
+	}
+
+	public function testBeginTransactionRejectsAClassThatIsNotATransaction(): void
+	{
+		$this->_connection1->setTransactionClass(\stdClass::class);
+		try {
+			$this->_connection1->beginTransaction();
+			$this->fail('Expected TDbException for a TransactionClass that is not an IDataTransaction');
+		} catch (TDbException $e) {
+			$this->assertSame('dbconnection_transaction_class_invalid', $e->getErrorCode());
+			$this->assertStringContainsString('stdClass', $e->getMessage());
+		}
+		$this->assertFalse($this->_connection1->getPdoInstance()->inTransaction());
+	}
+
+	public function testHasAutoCommitWithoutConnectionStringStoresTheAttribute(): void
+	{
+		$conn = new TDbConnection();
+		$this->assertTrue($conn->getHasAutoCommit());
+
+		$conn->setAutoCommit(false);
+
+		$this->assertSame([PDO::ATTR_AUTOCOMMIT => false], PradoUnit::getProp($conn, '_attributes'));
+	}
+
+	public function testSerializedConnectionKeepsItsMetaData(): void
+	{
+		$meta = $this->_connection1->getDbMetaData();
+		$this->assertInstanceOf(IDataMetaData::class, $meta);
+
+		$copy = unserialize(serialize($this->_connection1));
+
+		$this->assertInstanceOf(get_class($meta), PradoUnit::getProp($copy, '_dbMeta'));
+		$this->assertFalse($copy->getActive());
+	}
+
+	public function testDatabaseCharsetOfAnActiveConnectionWithoutPdoIsTheCharset(): void
+	{
+		$conn = new TDbConnectionTestDetachedPdoConnection('sqlite::memory:');
+		$conn->setActive(true);
+		$conn->detached = true;
+		try {
+			$this->assertTrue($conn->getActive());
+			$this->assertSame('UTF-8', $conn->getDatabaseCharset());
+		} finally {
+			$conn->detached = false;
+			$conn->setActive(false);
+		}
+	}
+
+	public function testDatabaseCharsetFallsBackWhenTheQueryReadsNull(): void
+	{
+		$conn = new TDbConnectionTestNullValueConnection('sqlite::memory:', '', '', 'ISO-8859-1');
+		$conn->setActive(true);
+		try {
+			$this->assertSame('UTF-8', $conn->getDatabaseCharset());
+		} finally {
+			$conn->setActive(false);
+		}
+	}
+
+	public function testOpenKeepsACharsetTheSqlSrvDsnAccepts(): void
+	{
+		$conn = new TDbConnectionTestDriverConnection('sqlsrv:Server=localhost;Database=prado', '', '', 'UTF-8');
+		$conn->setActive(true);
+
+		$this->assertSame('UTF-8', $conn->getCharset());
+		$this->assertStringContainsString('CharacterSet=UTF-8', $conn->openedDsn);
+		$this->assertSame([], $conn->getPdoInstance()->execCalls);
+	}
+
+	public function testOpenClearsACharsetTheSqlSrvDsnDoesNotAccept(): void
+	{
+		$conn = new TDbConnectionTestDriverConnection('sqlsrv:Server=localhost;Database=prado', '', '', 'ISO-8859-1');
+		$conn->setActive(true);
+
+		$this->assertSame('', $conn->getCharset());
+		$this->assertStringNotContainsString('CharacterSet', $conn->openedDsn);
+	}
+
+	public function testOpenRunsTheOracleSessionStatements(): void
+	{
+		$conn = new TDbConnectionTestDriverConnection('oci:dbname=//localhost/FREEPDB1');
+		$conn->setActive(true);
+
+		$this->assertSame(TDbDriverCapabilities::getPostConnectSql(TDbDriver::DRIVER_OCI), $conn->getPdoInstance()->execCalls);
+		$this->assertCount(3, $conn->getPdoInstance()->execCalls);
 	}
 }

@@ -3,7 +3,10 @@
 namespace Prado\Test\Unit\IO;
 
 use Prado\Exceptions\TIOException;
+use Prado\IO\TMemoryStream;
 use Prado\IO\TStream;
+use Prado\IO\TTempStream;
+use Prado\Test\Unit\PradoUnit;
 use Psr\Http\Message\StreamInterface;
 use Prado\Test\Unit\Harness\IO\TTestIOEventLog;
 use Prado\Test\Unit\Harness\IO\TTestIOHelper;
@@ -546,6 +549,145 @@ class TStreamTest extends \PHPUnit\Framework\TestCase
 		self::assertTrue($s->isReadable());
 		self::assertTrue($s->isWritable());
 		self::assertTrue($s->isSeekable());
+		$s->close();
+	}
+
+	/**
+	 * Factories for one writable stream of each seekable kind holding 'abc'.
+	 */
+	public static function seekPastEndStreamProvider(): array
+	{
+		return [
+			'memory' => [static fn () => TStream::fromMemory()],
+			'temp' => [static fn () => TStream::fromTemp()],
+			'TMemoryStream' => [static fn () => new TMemoryStream()],
+			'TTempStream' => [static fn () => new TTempStream()],
+			'file' => [static fn () => TStream::fromFile(TTestIOHelper::tempFile(), 'r+b')],
+		];
+	}
+
+	/**
+	 * @dataProvider seekPastEndStreamProvider
+	 */
+	public function testSeekPastEndLeavesTheSizeUntilAWrite(\Closure $factory)
+	{
+		$s = $factory();
+		$s->write('abc');
+		$s->seek(6);
+		self::assertSame(6, $s->tell());
+		self::assertSame(3, $s->getSize());
+		self::assertFalse($s->eof());
+		self::assertSame('', $s->read(4));
+		self::assertTrue($s->eof());
+		self::assertSame('', $s->getContents());
+		self::assertSame(6, $s->tell(), 'A read past the end does not move the position.');
+		self::assertSame(1, $s->write('Z'));
+		self::assertSame(7, $s->tell());
+		self::assertSame(7, $s->getSize());
+		self::assertSame("abc\0\0\0Z", (string) $s);
+		$s->close();
+	}
+
+	/**
+	 * @dataProvider seekPastEndStreamProvider
+	 */
+	public function testSeekPastEndRelativeToTheEndAndCurrentPosition(\Closure $factory)
+	{
+		$s = $factory();
+		$s->write('abc');
+		$s->seek(2, SEEK_END);
+		self::assertSame(5, $s->tell());
+		$s->seek(1, SEEK_CUR);
+		self::assertSame(6, $s->tell());
+		$s->seek(-4, SEEK_CUR);
+		self::assertSame(2, $s->tell(), 'A relative seek resolves against the past-end position.');
+		self::assertSame('c', $s->read(1));
+		$s->seek(5);
+		$s->seek(0, SEEK_END);
+		self::assertSame(3, $s->tell(), 'A seek within the stream clears the past-end position.');
+		$s->write('d');
+		self::assertSame('abcd', (string) $s);
+		$s->close();
+	}
+
+	/**
+	 * @dataProvider seekPastEndStreamProvider
+	 */
+	public function testSeekBeforeTheStartStillThrows(\Closure $factory)
+	{
+		$s = $factory();
+		$s->write('abc');
+		try {
+			$s->seek(-1);
+			self::fail('A negative position must throw.');
+		} catch (\RuntimeException $e) {
+			self::assertSame(3, $s->tell());
+		} finally {
+			$s->close();
+		}
+	}
+
+	public function testSeekPastEndRecordsAMemoryOrTempPosition()
+	{
+		// seekPastEnd() runs after a failed fseek, which only PHP 8.2 produces; invoke it on any version.
+		$s = TStream::fromMemory();
+		$s->write('abc');
+		$resource = $s->getResource();
+		self::assertFalse(PradoUnit::invoke($s, 'seekPastEnd', $resource, 3, SEEK_SET, 3), 'The end itself is within the stream.');
+		self::assertFalse(PradoUnit::invoke($s, 'seekPastEnd', $resource, 1, SEEK_CUR, 3), 'A SEEK_CUR arrives resolved.');
+		self::assertTrue(PradoUnit::invoke($s, 'seekPastEnd', $resource, 2, SEEK_END, 3));
+		self::assertSame(5, $s->tell());
+		self::assertTrue(PradoUnit::invoke($s, 'seekPastEnd', $resource, 6, SEEK_SET, 5));
+		self::assertSame(6, $s->tell());
+		self::assertSame(3, ftell($resource), 'The resource pointer waits at the end.');
+		self::assertSame(3, $s->getSize());
+		$s->write('Z');
+		self::assertSame("abc\0\0\0Z", (string) $s);
+		$s->close();
+	}
+
+	public function testSeekPastEndReturnsAFailedSeekToItsPosition()
+	{
+		$s = TStream::fromMemory();
+		$s->write('abc');
+		$resource = $s->getResource();
+		self::assertFalse(PradoUnit::invoke($s, 'seekPastEnd', $resource, -1, SEEK_SET, 1));
+		self::assertSame(1, $s->tell());
+		PradoUnit::invoke($s, 'seekPastEnd', $resource, 6, SEEK_SET, 1);
+		self::assertFalse(PradoUnit::invoke($s, 'seekPastEnd', $resource, -9, SEEK_END, 6));
+		self::assertSame(6, $s->tell(), 'A failed seek keeps the past-end position.');
+		self::assertSame(3, ftell($resource));
+		$s->close();
+	}
+
+	public function testSeekPastEndIgnoresAFileStream()
+	{
+		$s = TStream::fromFile(TTestIOHelper::tempFile('abc'), 'r+b');
+		self::assertFalse(PradoUnit::invoke($s, 'seekPastEnd', $s->getResource(), 6, SEEK_SET, 0));
+		self::assertSame(0, $s->tell());
+		$s->close();
+	}
+
+	public function testFillPastEndGapKeepsAStreamThatGrewPastThePosition()
+	{
+		$s = TStream::fromMemory();
+		$s->write('abc');
+		$resource = $s->getResource();
+		PradoUnit::invoke($s, 'seekPastEnd', $resource, 5, SEEK_SET, 3);
+		fwrite($resource, 'defghij'); // grows the stream past the recorded position behind the TStream
+		$s->write('Z');
+		self::assertSame('abcdeZghij', (string) $s);
+		$s->close();
+	}
+
+	public function testPastEndPositionResetsOnDetach()
+	{
+		$s = TStream::fromMemory();
+		$s->write('abc');
+		PradoUnit::invoke($s, 'seekPastEnd', $s->getResource(), 6, SEEK_SET, 3);
+		$resource = $s->detach();
+		$s->attachResource($resource);
+		self::assertSame(3, $s->tell());
 		$s->close();
 	}
 }

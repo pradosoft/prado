@@ -121,6 +121,14 @@ class TEtcdCacheTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame(502, $result->errorCode);
 	}
 
+	public function testNonJsonResponseToAWriteIsAFailure(): void
+	{
+		$cache = $this->newClientCache($client);
+		$client->responses[] = new THttpClientResponse(502, [], '<html>Bad Gateway</html>');
+		$this->assertFalse($cache->pubSetSerializedValue('k', 'v', 0));
+		$this->assertSame('PUT', $client->calls[0]['method']);
+	}
+
 	public function testSetSerializedValueSendsFormBody(): void
 	{
 		$cache = $this->newClientCache($client);

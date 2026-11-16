@@ -460,4 +460,22 @@ class MysqlUpsertTest extends \PHPUnit\Framework\TestCase
 		$this->assertStringContainsString(':_upsert_username', $capturedSql);
 		$this->assertStringNotContainsString('`username`=VALUES(`username`)', $capturedSql);
 	}
+
+	public function test_mysql_sql_explicit_value_takes_precedence_over_a_reference_to_the_same_column(): void
+	{
+		$capturedSql = null;
+		$gw = new TTableGateway('upsert_test', self::$conn);
+		$gw->OnCreateCommand[] = function ($sender, $param) use (&$capturedSql): void {
+			$capturedSql = $param->getCommand()->Text;
+		};
+		$gw->insert(['id' => 1, 'username' => 'alice', 'score' => 1]);
+		$gw->upsert(
+			['id' => 1, 'username' => 'alice', 'score' => 77],
+			['score', 'score' => 5],
+			['id']
+		);
+		$this->assertStringContainsString(':_upsert_score', $capturedSql);
+		$this->assertStringNotContainsString('`score`=VALUES(`score`)', $capturedSql);
+		$this->assertSame(5, (int) self::$conn->createCommand("SELECT score FROM upsert_test WHERE username = 'alice'")->queryScalar());
+	}
 }

@@ -19,6 +19,52 @@ use Prado\Util\Cron\TCronTaskInfo;
 use Prado\Test\Unit\Harness\Caching\TTestFileCache;
 use Prado\TApplicationMode;
 
+/**
+ * A TFileCache whose file operations fail on demand.
+ */
+class TFileCacheTestFaultyCache extends TTestFileCache
+{
+	public bool $failTempnam = false;
+	public bool $failPutContents = false;
+	public bool $failGetContents = false;
+	public bool $failRename = false;
+	public bool $failUnlink = false;
+	/** @var bool[] results isFile() returns, in order, before it reads the file system */
+	public array $isFileResults = [];
+	/** @var string[] the paths given to unlink() */
+	public array $unlinked = [];
+
+	protected function tempnam(string $dir, string $prefix): string|false
+	{
+		return $this->failTempnam ? false : parent::tempnam($dir, $prefix);
+	}
+
+	protected function getContents(string $filePath): string|false
+	{
+		return $this->failGetContents ? false : parent::getContents($filePath);
+	}
+
+	protected function putContents(string $filePath, string $data, bool $exclusive = false): int|false
+	{
+		return $this->failPutContents ? false : parent::putContents($filePath, $data, $exclusive);
+	}
+
+	protected function rename(string $srcFilePath, string $destFilePath): bool
+	{
+		return $this->failRename ? false : parent::rename($srcFilePath, $destFilePath);
+	}
+
+	protected function unlink(string $filePath): bool
+	{
+		$this->unlinked[] = $filePath;
+		return $this->failUnlink ? false : parent::unlink($filePath);
+	}
+
+	protected function isFile(string $path): bool
+	{
+		return $this->isFileResults !== [] ? array_shift($this->isFileResults) : parent::isFile($path);
+	}
+}
 
 // ── Test class ─────────────────────────────────────────────────────────────────
 
@@ -1403,5 +1449,275 @@ class TFileCacheTest extends \PHPUnit\Framework\TestCase
 			$this->cache->pubPathFor($this->cache->pubGenerateUniqueKey('forever'))
 		);
 		$this->assertStringStartsWith("0\n", $raw, 'A never-expiring entry stores a 0 expiry header.');
+	}
+	// ── File-operation failures ──────────────────────────────────────────────
+
+	/**
+	 * Runs $test with a {@see TFileCacheTestFaultyCache} in its own directory, then removes it.
+	 */
+	private function withFaultyCache(callable $test, int $maximumSize = 0): void
+	{
+		$dir = self::$cacheDir . DIRECTORY_SEPARATOR . 'faulty_' . uniqid();
+		$cache = new TFileCacheTestFaultyCache($dir);
+		$cache->setPrimaryCache(false);
+		if ($maximumSize > 0) {
+			$cache->setMaximumSize($maximumSize);
+		}
+		$cache->init(null);
+		try {
+			$test($cache, $cache->getDirectory());
+		} finally {
+			foreach (glob($dir . DIRECTORY_SEPARATOR . '*') ?: [] as $f) {
+				@unlink($f);
+			}
+			@rmdir($dir);
+		}
+	}
+
+	/**
+	 * @return string[] the cache and temporary files in $dir.
+	 */
+	private function filesIn(string $dir): array
+	{
+		return glob($dir . DIRECTORY_SEPARATOR . '*') ?: [];
+	}
+
+	public function testSetFailsWhenNoTemporaryFileIsCreated(): void
+	{
+		$this->withFaultyCache(function (TFileCacheTestFaultyCache $cache, string $dir): void {
+			$cache->failTempnam = true;
+			$this->assertFalse($cache->set('k', 'v'));
+			$this->assertSame([], $this->filesIn($dir));
+		});
+	}
+
+	/**
+	 * @dataProvider writeFailureProvider
+	 */
+	public function testSetFailsAndRemovesTheTemporaryFile(string $fault): void
+	{
+		$this->withFaultyCache(function (TFileCacheTestFaultyCache $cache, string $dir) use ($fault): void {
+			$cache->$fault = true;
+			$this->assertFalse($cache->set('k', 'v'));
+			$this->assertSame([], $this->filesIn($dir));
+			// The temporary file was in the cache directory and is gone. Windows tempnam()
+			// keeps only the first three characters of the prefix, so its name is not compared.
+			$this->assertCount(1, $cache->unlinked);
+			$this->assertSame($dir, dirname($cache->unlinked[0]));
+			$this->assertFileDoesNotExist($cache->unlinked[0]);
+		});
+	}
+
+	public static function writeFailureProvider(): array
+	{
+		return ['write' => ['failPutContents'], 'rename' => ['failRename']];
+	}
+
+	public function testAddLosesToAnEntryWrittenWhileItWrites(): void
+	{
+		$this->withFaultyCache(function (TFileCacheTestFaultyCache $cache, string $dir): void {
+			// Absent when add() checks; present when the write is about to be renamed into place.
+			$cache->isFileResults = [false, true];
+			$this->assertFalse($cache->add('k', 'v'));
+			$this->assertSame([], $this->filesIn($dir));
+			$this->assertCount(1, $cache->unlinked);
+		});
+	}
+
+	public function testFlushReportsAFileItCannotDelete(): void
+	{
+		$this->withFaultyCache(function (TFileCacheTestFaultyCache $cache, string $dir): void {
+			$this->assertTrue($cache->set('k', 'v'));
+			$cache->failUnlink = true;
+			$this->assertFalse($cache->flush());
+			$cache->failUnlink = false;
+			$this->assertSame('v', $cache->get('k'));
+		});
+	}
+
+	public function testSweepWithTheDirectoryRemovedDoesNothing(): void
+	{
+		$this->withFaultyCache(function (TFileCacheTestFaultyCache $cache, string $dir): void {
+			rmdir($dir);
+			$cache->flushCacheExpired(true);
+			$this->assertSame([], $cache->unlinked);
+		});
+	}
+
+	public function testSizeAndEvictionWithTheDirectoryRemovedDoNothing(): void
+	{
+		$this->withFaultyCache(function (TFileCacheTestFaultyCache $cache, string $dir): void {
+			rmdir($dir);
+			$this->assertSame(0, $cache->getCurrentSize());
+
+			// Over capacity with nothing to evict: the running total is left as it is.
+			$cache->pubSetCurrentSizeDirect(500);
+			$cache->setMaximumSize(100);
+			$this->assertSame(500, $cache->pubGetCurrentSizeDirect());
+			$this->assertSame([], $cache->unlinked);
+		});
+	}
+
+	public function testSweepWithAMaximumSizeInvalidatesTheSizeFingerprint(): void
+	{
+		$this->withFaultyCache(function (TFileCacheTestFaultyCache $cache, string $dir): void {
+			$cache->fakeNow = 1_000_000;
+			$cache->set('exp', 'v', 10);
+			$this->assertSame(strlen("1000010\n") + strlen(serialize(['v', null])), $cache->getCurrentSize());
+			$this->assertNotSame('', $cache->pubGetSizeFingerprintDirect());
+
+			$cache->fakeNow = 1_000_011;
+			$cache->flushCacheExpired(true);
+			$this->assertSame('', $cache->pubGetSizeFingerprintDirect());
+			$this->assertSame(0, $cache->getCurrentSize());
+		}, 1_000_000);
+	}
+
+	public function testSizeAndEvictionSkipAnEntryThatCannotBeStatted(): void
+	{
+		if (!function_exists('symlink') || DIRECTORY_SEPARATOR !== '/') {
+			$this->markTestSkipped('Test requires POSIX symbolic links.');
+		}
+		$this->withFaultyCache(function (TFileCacheTestFaultyCache $cache, string $dir): void {
+			$cache->set('k', 'v');
+			$size = $cache->pubComputeCurrentSize();
+			symlink($dir . DIRECTORY_SEPARATOR . 'missing-target', $dir . DIRECTORY_SEPARATOR . 'broken.cache');
+			$this->assertSame($size, $cache->pubComputeCurrentSize());
+
+			// Over capacity: eviction removes the entry it can stat and leaves the broken link.
+			$cache->pubSetCurrentSizeDirect($size + 1_000_000);
+			$cache->setMaximumSize($size - 1);
+			$this->assertFalse($cache->get('k'));
+			$this->assertTrue(is_link($dir . DIRECTORY_SEPARATOR . 'broken.cache'));
+		});
+	}
+
+	public function testSetDirectoryResolvesANamespace(): void
+	{
+		$cache = new TTestFileCache();
+		$cache->setDirectory('Application.runtime');
+		$this->assertSame(realpath(__DIR__ . '/mockapp/runtime'), $cache->getDirectory());
+	}
+
+	public function testSetDirectoryThrowsWhenTheDirectoryCannotBeCreated(): void
+	{
+		$file = self::$cacheDir . DIRECTORY_SEPARATOR . 'plainfile_' . uniqid();
+		file_put_contents($file, 'x');
+		try {
+			$this->expectException(TConfigurationException::class);
+			$this->expectExceptionMessage('plainfile_');
+			(new TTestFileCache())->setDirectory($file . DIRECTORY_SEPARATOR . 'sub');
+		} finally {
+			@unlink($file);
+		}
+	}
+
+	public function testIsAvailable(): void
+	{
+		$this->assertTrue(TFileCache::getIsAvailable());
+	}
+
+	public function testAnEntryThatCannotBeReadIsAMiss(): void
+	{
+		$this->withFaultyCache(function (TFileCacheTestFaultyCache $cache, string $dir): void {
+			$cache->set('k', 'v');
+			$cache->failGetContents = true;
+			$this->assertFalse($cache->get('k'));
+			$cache->failGetContents = false;
+			$this->assertSame('v', $cache->get('k'));
+		});
+	}
+
+	public function testSizeOfADirectoryHoldingOnlyAnEntryThatCannotBeStattedIsZero(): void
+	{
+		if (!function_exists('symlink') || DIRECTORY_SEPARATOR !== '/') {
+			$this->markTestSkipped('Test requires POSIX symbolic links.');
+		}
+		$this->withFaultyCache(function (TFileCacheTestFaultyCache $cache, string $dir): void {
+			symlink($dir . DIRECTORY_SEPARATOR . 'missing-target', $dir . DIRECTORY_SEPARATOR . 'broken.cache');
+			$this->assertSame(0, $cache->pubComputeCurrentSize());
+		});
+	}
+
+	public function testWithoutADirectoryTheSizeIsZero(): void
+	{
+		$cache = new TTestFileCache();
+		$this->assertSame('', $cache->getDirectory());
+		$this->assertSame(sha1(''), $cache->pubComputeSizeFingerprint());
+		$this->assertSame(0, $cache->getCurrentSize());
+	}
+
+	/**
+	 * @dataProvider defaultPropertyProvider
+	 */
+	public function testSleepOmitsEachPropertyAtItsDefault(bool $maximumSize, bool $defaultTtl, bool $tempFilePrefix, bool $flushInterval): void
+	{
+		$cache = new TTestFileCache(self::$cacheDir);
+		if ($maximumSize) {
+			$cache->setMaximumSize(1_000_000);
+		}
+		if ($defaultTtl) {
+			$cache->setDefaultTtl(60);
+		}
+		if ($tempFilePrefix) {
+			$cache->setTempFilePrefix('other_');
+		}
+		if ($flushInterval) {
+			$cache->setFlushInterval(5);
+		}
+		$serialized = serialize($cache);
+		$field = fn (string $name): string => "\0" . TFileCache::class . "\0" . $name;
+		$this->assertSame($maximumSize, str_contains($serialized, $field('_maximumSize')));
+		$this->assertSame($defaultTtl, str_contains($serialized, $field('_defaultTtl')));
+		$this->assertSame($tempFilePrefix, str_contains($serialized, $field('_tempFilePrefix')));
+		$this->assertSame($flushInterval, str_contains($serialized, $field('_flushInterval')));
+		$this->assertFalse(str_contains($serialized, $field('_currentSize')));
+	}
+
+	public static function defaultPropertyProvider(): array
+	{
+		$cases = [];
+		for ($bits = 0; $bits < 16; $bits++) {
+			$flags = [(bool) ($bits & 1), (bool) ($bits & 2), (bool) ($bits & 4), (bool) ($bits & 8)];
+			$cases[sprintf('%04b', $bits)] = $flags;
+		}
+		return $cases;
+	}
+
+	/**
+	 * @dataProvider defaultDirectoryFailureProvider
+	 */
+	public function testInitWithTheDefaultDirectoryValidates(string $case): void
+	{
+		$app = new TApplication(__DIR__ . '/mockapp');
+		$app->setMode(TApplicationMode::Debug);
+		$expected = $app->getRuntimePath() . DIRECTORY_SEPARATOR . 'filecache';
+		$cache = new TTestFileCache();
+		$cache->setPrimaryCache(false);
+		if ($case === 'unwritable') {
+			if (!function_exists('posix_getuid') || posix_getuid() === 0) {
+				$this->markTestSkipped('Test requires a non-root POSIX environment.');
+			}
+			mkdir($expected, 0o555);
+		} elseif ($case === 'identity') {
+			$cache->hashTokenCallback = static fn (string $token): string => $token;
+		} else {
+			$cache->hashTokenCallback = static fn (string $token): string => 'sub/' . sha1($token);
+		}
+		try {
+			$cache->init(null);
+			$this->fail('init() accepted the default directory.');
+		} catch (TConfigurationException $e) {
+			$this->assertSame($case === 'unwritable' ? 'filecache_directory_not_writable' : ($case === 'identity' ? 'filecache_hash_token_identity' : 'filecache_hash_token_path_separator'), $e->getErrorCode());
+			$this->assertSame($expected, $cache->getDirectory());
+		} finally {
+			@chmod($expected, 0o755);
+			@rmdir($expected);
+		}
+	}
+
+	public static function defaultDirectoryFailureProvider(): array
+	{
+		return ['unwritable' => ['unwritable'], 'identity' => ['identity'], 'path separator' => ['separator']];
 	}
 }

@@ -18,7 +18,9 @@ use Prado\Shell\Actions\TFlushCachesAction;
 use Prado\Shell\Actions\TPhpShellAction;
 use Prado\Shell\Actions\TWebServerAction;
 use Prado\IO\ITextWriter;
+use Prado\IO\TStdErrStream;
 use Prado\IO\TStdOutWriter;
+use Prado\IO\TStream;
 use Prado\Shell\TShellWriter;
 use Prado\TPropertyValue;
 
@@ -55,8 +57,32 @@ class TShellApplication extends \Prado\TApplication
 	 */
 	public const SHELL_RUNTIME_PATH = '.runtime';
 
-	/** @var int tells the application to be in quiet mode, levels [0..1], default 0, */
-	private $_quietMode = 0;
+	/**
+	 * QuietMode level `0`: all output, with the greeting and the general help.
+	 * @since 4.4.0
+	 */
+	public const QUIET_NONE = 0;
+
+	/**
+	 * QuietMode level `1`, a bare `--quiet`: no greeting and no general help.
+	 * @since 4.4.0
+	 */
+	public const QUIET_INFO = 1;
+
+	/**
+	 * QuietMode level `2`: also no output from child processes an action runs.
+	 * @since 4.4.0
+	 */
+	public const QUIET_OUTPUT = 2;
+
+	/**
+	 * QuietMode level `3`: also no error messages from actions that check it.
+	 * @since 4.4.0
+	 */
+	public const QUIET_ERRORS = 3;
+
+	/** @var int the quiet mode level, {@see QUIET_NONE} to {@see QUIET_ERRORS}, default {@see QUIET_NONE} */
+	private $_quietMode = self::QUIET_NONE;
 
 	/**
 	 * @var array<\Prado\Shell\TShellAction> cli shell Application commands. Modules can add their own command
@@ -350,7 +376,7 @@ class TShellApplication extends \Prado\TApplication
 				break;
 			}
 		}
-		if (!$valid && $this->getQuietMode() === 0) {
+		if (!$valid && $this->getQuietMode() === self::QUIET_NONE) {
 			$this->printHelp($outWriter);
 		}
 	}
@@ -561,7 +587,20 @@ class TShellApplication extends \Prado\TApplication
 	}
 
 	/**
-	 * Creates the {@see TShellWriter} that wraps {@see createStdOutWriter()}.
+	 * Creates the stream that receives {@see TShellWriter::writeError()} blocks, the
+	 * process standard error.  Override in a subclass to return another stream, or null
+	 * to keep error blocks in the output writer.
+	 * @return ?TStream the error stream.
+	 * @since 4.4.0
+	 */
+	protected function createStdErrStream(): ?TStream
+	{
+		return new TStdErrStream();
+	}
+
+	/**
+	 * Creates the {@see TShellWriter} that wraps {@see createStdOutWriter()} and writes
+	 * error blocks to {@see createStdErrStream()}.
 	 * Override in a subclass to substitute a different {@see TShellWriter} subclass or
 	 * to wrap the inner writer differently.
 	 * @return TShellWriter the shell writer.
@@ -569,7 +608,9 @@ class TShellApplication extends \Prado\TApplication
 	 */
 	protected function createShellWriter(): TShellWriter
 	{
-		return new TShellWriter($this->createStdOutWriter());
+		$writer = new TShellWriter($this->createStdOutWriter());
+		$writer->setErrorStream($this->createStdErrStream());
+		return $writer;
 	}
 
 	/**
@@ -597,7 +638,12 @@ class TShellApplication extends \Prado\TApplication
 	}
 
 	/**
-	 * Returns the current quiet mode level (`0`–`3`); `0` means full output (default).
+	 * Returns the current quiet mode level, {@see QUIET_NONE} (`0`, the default) to
+	 * {@see QUIET_ERRORS} (`3`).  Each level adds to the one below it:
+	 * - {@see QUIET_NONE} → all output, with the greeting and the general help.
+	 * - {@see QUIET_INFO} → no greeting and no general help.
+	 * - {@see QUIET_OUTPUT} → no output from child processes an action runs.
+	 * - {@see QUIET_ERRORS} → no error messages from actions that check it.
 	 * @return int the quiet mode level.
 	 * @since 4.2.0
 	 */
@@ -607,14 +653,14 @@ class TShellApplication extends \Prado\TApplication
 	}
 
 	/**
-	 * Sets the quiet mode level. An empty string maps to `1`; otherwise the value is clamped
-	 * to `[0..3]`.
-	 * @param int|string $quietMode desired quiet level, or empty string to default to `1`.
+	 * Sets the quiet mode level. An empty string maps to {@see QUIET_INFO}; otherwise the
+	 * value is clamped to {@see QUIET_NONE}..{@see QUIET_ERRORS}.
+	 * @param int|string $quietMode desired quiet level, or empty string for {@see QUIET_INFO}.
 	 * @since 4.2.0
 	 */
 	public function setQuietMode($quietMode)
 	{
-		$this->_quietMode = ($quietMode === '' ? 1 : min(max((int) $quietMode, 0), 3));
+		$this->_quietMode = ($quietMode === '' ? self::QUIET_INFO : min(max((int) $quietMode, self::QUIET_NONE), self::QUIET_ERRORS));
 	}
 
 
@@ -646,7 +692,7 @@ class TShellApplication extends \Prado\TApplication
 	 */
 	public function printGreeting($outWriter)
 	{
-		if (!$this->isHelpPrinted() && $this->getQuietMode() === 0) {
+		if (!$this->isHelpPrinted() && $this->getQuietMode() === self::QUIET_NONE) {
 			$outWriter->write("  Command line tools for Prado " . Prado::getVersion() . ".", TShellWriter::DARK_GRAY);
 			$outWriter->writeLine();
 			$outWriter->flush();
@@ -657,9 +703,8 @@ class TShellApplication extends \Prado\TApplication
 
 	/**
 	 * Prints the full CLI usage summary: calls {@see printGreeting()}, then lists usage syntax,
-	 * conditional examples (cache/flush-all only when an {@see ICache} module is configured),
-	 * registered options and aliases, and the available commands. Only commands registered via
-	 * {@see installShellActions()} appear in the list.
+	 * an example of each registered action ({@see TShellAction::getExample()}), registered
+	 * options and aliases, and the available commands.
 	 * @param TShellWriter $outWriter
 	 * @since 4.2.0
 	 */
@@ -668,17 +713,16 @@ class TShellApplication extends \Prado\TApplication
 		$this->printGreeting($outWriter);
 
 		$outWriter->write("usage: ");
-		$outWriter->writeLine("php prado-cli.php command[/action] <parameter> [optional]", [TShellWriter::BLUE, TShellWriter::BOLD]);
+		$outWriter->writeLine("prado-cli <command>[/<method>] <parameter> [optional]", [TShellWriter::BLUE, TShellWriter::BOLD]);
 		$outWriter->writeLine();
-		$outWriter->writeLine("example: prado-cli http");
-		if ($this->hasShellActionClass(TFlushCachesAction::class)) {
-			$outWriter->writeLine("example: php prado-cli.php cache/flush-all");
+		foreach ($this->getShellActions() as $action) {
+			if (($example = $action->getExample()) !== null) {
+				$outWriter->writeLine("example: prado-cli " . $example);
+			}
 		}
-		$outWriter->writeLine("example: prado-cli help");
-		$outWriter->writeLine("example: prado-cli cron/tasks");
 		$outWriter->writeLine();
 		$outWriter->writeLine("The following options are available:");
-		$outWriter->writeLine(str_pad("  -d=<folder>", 20) . " Loads the configuration.xml/php from <folder>");
+		$outWriter->writeLine(str_pad("  -d=<folder>", 20) . " Loads the application.xml or application.php from <folder>");
 		$optionsData = $this->getOptionsData();
 		foreach ($this->getOptions() as $option => $callable) {
 			$data = $optionsData[$option];

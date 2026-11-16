@@ -28,7 +28,11 @@ This starts [PsySH](https://psysh.org/), a PHP interactive shell, with the PRADO
 
 ## Requirements
 
-Requires `psy/psysh` package.
+Requires the `psy/psysh` package, which Prado suggests (4.4.0); without it, `shell` writes an error naming `composer require psy/psysh`.
+
+## Testing Seams (4.4.0)
+
+`isShellAvailable()` and `createShell()` are protected; a test subclass replaces the PsySH shell.
 
 ## See Also
 

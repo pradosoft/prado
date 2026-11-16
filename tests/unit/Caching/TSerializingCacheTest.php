@@ -10,13 +10,34 @@
 
 namespace Prado\Test\Unit\Caching;
 
+use Prado\Caching\TApplicationStateCacheDependency;
 use Prado\Caching\TSerializingCache;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Security\TSecurityManager;
+use Prado\Util\IDynamicMethods;
+use Prado\Util\TBehavior;
 use Prado\Test\Unit\Harness\Caching\TTestSerializingCache;
+use Prado\Test\Unit\Harness\TTestApplication;
 use Prado\Test\Unit\Harness\Util\TTestNullDynamicBehavior;
+
+/**
+ * A behavior that handles dySerialize and dyUnserialize with its own format.
+ */
+class TSerializingCacheTestFormatBehavior extends TBehavior implements IDynamicMethods
+{
+	public function __dycall($method, $args)
+	{
+		if ($method === 'dySerialize') {
+			return 'custom:' . base64_encode(serialize($args[0]));
+		}
+		if ($method === 'dyUnserialize') {
+			return unserialize(base64_decode(substr($args[0], 7)));
+		}
+		return null;
+	}
+}
 
 /**
  * Tests for TSerializingCache serialization, encryption, encoding, and security-manager
@@ -119,6 +140,17 @@ class TSerializingCacheTest extends \PHPUnit\Framework\TestCase
 		$this->assertFalse($cache->get('k'));
 	}
 
+	public function testCorruptPhpPayloadIsAMiss(): void
+	{
+		$cache = $this->newCache();
+		$cache->init(null);
+		$cache->set('k', 'v');
+		// Replace the stored payload with data unserialize() rejects → miss, not a PHP notice.
+		$key = array_key_first($cache->store);
+		$cache->store[$key] = 'not-serialized';
+		$this->assertFalse($cache->get('k'));
+	}
+
 	// ── setEncoding validation ─────────────────────────────────────────────────
 
 	public function testSetEncodingRejectsUnknownValue(): void
@@ -180,6 +212,30 @@ class TSerializingCacheTest extends \PHPUnit\Framework\TestCase
 		$cache->setSecurityManager(123);
 	}
 
+	public function testSetSecurityManagerAcceptsAnInstance(): void
+	{
+		$cache = $this->newCache();
+		$manager = new TSecurityManager();
+		$cache->setSecurityManager($manager);
+		$this->assertSame($manager, $cache->getSecurityManager());
+	}
+
+	public function testGetSecurityManagerResolvesAModuleIdOnce(): void
+	{
+		$app = new TTestApplication();
+		try {
+			$manager = new TSecurityManager();
+			$app->setModule('cachesm', $manager);
+			$cache = $this->newCache();
+			$cache->setSecurityManager('cachesm');
+			$this->assertSame($manager, $cache->getSecurityManager());
+			// The resolved module replaces the id, so a second call returns it directly.
+			$this->assertSame($manager, $cache->getSecurityManager());
+		} finally {
+			$app->restoreApplication();
+		}
+	}
+
 	public function testGetSecurityManagerRejectsUnknownModuleId(): void
 	{
 		$cache = $this->newCache();
@@ -210,10 +266,32 @@ class TSerializingCacheTest extends \PHPUnit\Framework\TestCase
 		$cache->setSerializationType(TSerializingCache::SERIALIZATION_JSON);
 		$cache->init(null);
 		$cache->set('k', ['a' => 1, 'b' => ['c' => 2]]);
-		// JSON decodes to arrays; the dependency wrapper is preserved structurally.
+		// JSON decodes to arrays; the [value, dependency] envelope is preserved structurally.
 		$this->assertSame(['a' => 1, 'b' => ['c' => 2]], $cache->get('k'));
 		// The persisted payload is JSON, not PHP-serialized.
 		$this->assertStringStartsWith('[', $cache->onlyStored());
+	}
+
+	/**
+	 * @dataProvider jsonStoreProvider
+	 */
+	public function testJsonRejectsAValueWithADependency(string $method): void
+	{
+		$cache = $this->newCache();
+		$cache->setSerializationType(TSerializingCache::SERIALIZATION_JSON);
+		$cache->init(null);
+		try {
+			$cache->$method('k', 'v', 0, new TApplicationStateCacheDependency());
+			$this->fail('A JSON cache stored a value with a dependency.');
+		} catch (TInvalidDataValueException $e) {
+			$this->assertSame('serializingcache_json_dependency_unsupported', $e->getErrorCode());
+		}
+		$this->assertSame([], $cache->store);
+	}
+
+	public static function jsonStoreProvider(): array
+	{
+		return ['set' => ['set'], 'add' => ['add']];
 	}
 
 	public function testSetSerializationTypeRejectsUnknownValue(): void
@@ -277,5 +355,72 @@ class TSerializingCacheTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame(['a' => 1, 'b' => [2, 3]], $cache->get('key'));
 		$this->assertContains('dySerialize', $behavior->events);
 		$this->assertContains('dyUnserialize', $behavior->events);
+	}
+	public function testOddLengthHexPayloadIsAMiss(): void
+	{
+		$cache = $this->newCache();
+		$cache->setEncoding(TSerializingCache::ENCODING_HEX);
+		$cache->init(null);
+		$this->assertFalse($cache->pubDecode('abc'));
+	}
+
+	public function testJsonEnvelopeThatCannotBeEncodedThrows(): void
+	{
+		$cache = $this->newCache();
+		$cache->setSerializationType(TSerializingCache::SERIALIZATION_JSON);
+		$cache->init(null);
+		// The [value, dependency] envelope holds an invalid-UTF-8 string, which JSON rejects.
+		$this->expectException(TInvalidDataValueException::class);
+		$cache->set('k', "\xB1\x31");
+	}
+
+	public function testJsonSerializesAValueThatIsNotAnEnvelope(): void
+	{
+		$cache = $this->newCache();
+		$cache->setSerializationType(TSerializingCache::SERIALIZATION_JSON);
+		$cache->init(null);
+		$this->assertSame('"plain"', $cache->pubSerializeValue('plain'));
+	}
+
+	/**
+	 * @dataProvider encryptedFormatProvider
+	 */
+	public function testEncryptionWrapsEachFormat(string $format): void
+	{
+		if (!extension_loaded('openssl')) {
+			$this->markTestSkipped('openssl extension required for encryption.');
+		}
+		$cache = $this->newCache();
+		$cache->setEncrypt(true);
+		if ($format === 'behavior') {
+			$cache->attachBehavior('format', new TSerializingCacheTestFormatBehavior());
+		} else {
+			$cache->setSerializationType($format);
+		}
+		$cache->init(null);
+		$this->assertTrue($cache->set('k', ['a' => 1]));
+		$this->assertStringNotContainsString('"a"', $cache->onlyStored());
+		$this->assertStringNotContainsString('custom:', $cache->onlyStored());
+		$this->assertSame(['a' => 1], $cache->get('k'));
+		if ($format === TSerializingCache::SERIALIZATION_JSON) {
+			$plain = $cache->getSecurityManager()->decrypt($cache->pubSerializeValue('plain'));
+			$this->assertSame('"plain"', $plain);
+		}
+	}
+
+	public static function encryptedFormatProvider(): array
+	{
+		return ['JSON' => [TSerializingCache::SERIALIZATION_JSON], 'behavior' => ['behavior']];
+	}
+
+	public function testABehaviorFormatReplacesTheConfiguredSerialization(): void
+	{
+		$cache = $this->newCache();
+		$cache->setSerializationType(TSerializingCache::SERIALIZATION_JSON);
+		$cache->attachBehavior('format', new TSerializingCacheTestFormatBehavior());
+		$cache->init(null);
+		$this->assertTrue($cache->set('key', ['a' => 1]));
+		$this->assertStringStartsWith('custom:', $cache->onlyStored());
+		$this->assertSame(['a' => 1], $cache->get('key'));
 	}
 }

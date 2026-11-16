@@ -296,12 +296,12 @@ class TWebServerAction extends TShellAction
 		}
 
 		$app = Prado::getApplication();
-		$quiet = ($app instanceof TShellApplication) ? $app->getQuietMode() : 0;
+		$quiet = ($app instanceof TShellApplication) ? $app->getQuietMode() : TShellApplication::QUIET_NONE;
 
 		$writer = $this->getWriter();
 
 		if (!is_dir($documentRoot)) {
-			if ($quiet !== 3) {
+			if ($quiet < TShellApplication::QUIET_ERRORS) {
 				$writer->writeError("Document root \"$documentRoot\" does not exist.");
 				$writer->flush();
 			}
@@ -309,7 +309,7 @@ class TWebServerAction extends TShellAction
 		}
 
 		if ($this->isAddressTaken($address, $port)) {
-			if ($quiet !== 3) {
+			if ($quiet < TShellApplication::QUIET_ERRORS) {
 				$writer->writeError("http://$address:$port is taken by another process.");
 				$writer->flush();
 			}
@@ -317,14 +317,14 @@ class TWebServerAction extends TShellAction
 		}
 
 		if ($router !== null && !file_exists($router)) {
-			if ($quiet !== 3) {
+			if ($quiet < TShellApplication::QUIET_ERRORS) {
 				$writer->writeError("Routing file \"$router\" does not exist.");
 				$writer->flush();
 			}
 			return true;
 		}
 
-		if ($quiet >= 2) {
+		if ($quiet >= TShellApplication::QUIET_OUTPUT) {
 			$nullFile = TProcessHelper::isSystemWindows() ? 'NUL' : '/dev/null';
 			$descriptors = [STDIN, ['file', $nullFile, 'w'], ['file', $nullFile, 'w']];
 		} else {

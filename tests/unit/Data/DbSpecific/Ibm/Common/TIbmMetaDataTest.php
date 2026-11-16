@@ -296,4 +296,11 @@ class TIbmMetaDataTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame(['sales.archive'], $this->_meta->findTableNames('Sales'));
 		$this->assertSame([], $this->_meta->findTableNames('NOBODY'));
 	}
+
+	public function test_find_table_names_of_a_default_schema_without_tables(): void
+	{
+		$this->_meta->setDefaultSchema('nobody');
+
+		$this->assertSame([], $this->_meta->findTableNames());
+	}
 }

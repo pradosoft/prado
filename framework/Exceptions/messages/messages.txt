@@ -185,6 +185,7 @@ serializingcache_type_invalid = TSerializingCache.SerializationType ''{0}'' is i
 serializingcache_encoding_invalid = TSerializingCache.Encoding ''{0}'' is invalid. Valid values are 'None', 'Base64' and 'Hex'.
 serializingcache_securitymanager_invalid = TSerializingCache.SecurityManager ''{0}'' is invalid. It must be a TSecurityManager module id or a TSecurityManager instance.
 serializingcache_json_encode_failed = TSerializingCache failed to JSON-encode the value: {0}.
+serializingcache_json_dependency_unsupported = {0} cannot store a value with a cache dependency when SerializationType is 'JSON'. JSON does not encode an ICacheDependency; use SerializationType 'PHP'.
 directorycachedependency_directory_invalid = TDirectoryCacheDependency.Directory {0} does not refer to a valid directory.
 cachedependencylist_cachedependency_required = Only objects implementing ICacheDependency can be added into TCacheDependencyList.
 
@@ -302,6 +303,7 @@ xmlelementlist_xmlelement_required		= TXmlElementList can only accept TXmlElemen
 
 xmlelement_null_tag						= TXmlElement Tag Name cannot be null.
 xmlelement_empty_tag					= TXmlElement Tag Name cannot be an empty string.
+xmlelement_offset_invalid				= TXmlElement offset must be null, an integer, a string, or a Stringable; {0} given.
 
 authorizationrule_action_invalid		= TAuthorizationRule.Action can only take 'allow' or 'deny' as the value.
 authorizationrule_verb_invalid			= TAuthorizationRule.Verb can only take 'get' or 'post' as the value.
@@ -643,7 +645,6 @@ dbcommon_invalid_table_name				= Database table ''{0}'' not found. Error message
 dbcommon_invalid_identifier_name        = Invalid database identifier name ''{0}'', see {1} for details.
 dbtableinfo_invalid_column_name			= Invalid column name ''{0}'' for database table ''{1}''.
 dbmetadata_invalid_table_view			= Invalid table/view name ''{0}'', or that table/view ''{0}'' contains no accessible column/field definitions.
-dbmetadata_requires_php_version			= PHP version {1} or later is required for using {0} database.
 
 dbtablegateway_invalid_criteria			= Invalid criteria object, must be a string or an instance of IDataCriteria such as TSqlCriteria.
 dbtablegateway_no_primary_key_found		= Table ''{0}'' does not contain any primary key fields.
@@ -652,6 +653,7 @@ dbtablegateway_pk_value_count_mismatch	= Composite key value count mismatch in f
 dbtablegateway_mismatch_args_exception	= TTableGateway finder method ''{0}'' expects {1} parameters but found only {2} parameters instead.
 dbtablegateway_mismatch_column_name		= In dynamic __call() method ''{0}'', the condition is not column names joined by And or Or; valid columns for table ''{2}'' are ''{1}''.
 dbtablegateway_invalid_table_info		= Table must be a string or an instance of TDbTableInfo.
+sqlcriteria_parameters_invalid			= TSqlCriteria.Parameters must be an array or an ArrayAccess, but ''{0}'' was given.
 
 resource_not_a_resource					= Expected an open PHP resource but got ''{0}''.
 processfork_failed						= Unable to fork the process.
@@ -679,6 +681,7 @@ clicompressor_command_missing			= The ''{0}'' compressor requires one of these s
 clicompressor_process_failed			= The ''{0}'' compressor could not start the ''{1}'' command.
 clicompressor_command_failed			= The ''{0}'' compressor command ''{1}'' exited with code {2}: {3}
 
+socketexception_error_code				= Socket error {0}.
 socketservermodule_endpoint_required	= TSocketServerModule requires an Endpoint, or a positive Port to compose one.
 socketservermodule_serverclass_invalid	= TSocketServerModule ServerClass ''{0}'' is invalid. It must be TSocketServer or a subclass.
 socketservermodule_scheme_not_stream	= TSocketServerModule cannot accept on the connectionless scheme ''{0}''. Use a stream scheme such as tcp, tls, ssl, or unix.

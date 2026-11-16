@@ -11,7 +11,7 @@
 namespace Prado\Data\DataGateway;
 
 use Prado\Collections\TAttributeCollection;
-use Prado\Exceptions\TException;
+use Prado\Exceptions\TInvalidDataTypeException;
 use Traversable;
 
 /**
@@ -253,11 +253,12 @@ class TSqlCriteria extends \Prado\TComponent implements IDataCriteria
 
 	/**
 	 * @param array|\ArrayAccess $value named parameters.
+	 * @throws TInvalidDataTypeException if the value is neither an array nor an ArrayAccess.
 	 */
 	public function setParameters($value)
 	{
 		if (!(is_array($value) || $value instanceof \ArrayAccess)) {
-			throw new TException('value must be array or \ArrayAccess');
+			throw new TInvalidDataTypeException('sqlcriteria_parameters_invalid', get_debug_type($value));
 		}
 		$this->_parameters->copyFrom($value);
 	}
