@@ -43,7 +43,7 @@ Binary format with header:
 
 ### `load($file = null): bool`
 
-Load `.mo` file from disk. An empty string loads as `''`. A file that cannot be opened or locked, is shorter than its magic number, or has an unknown magic number or revision returns false with the file closed.
+Load `.mo` file from disk. An empty string loads as `''`. A file that cannot be opened or locked, is shorter than its magic number, has an unknown magic number or revision, or has a header, table, or string entry that is truncated or outside the file returns false with the file closed; a failed load adds no strings.
 
 ### `save($file = null): bool`
 

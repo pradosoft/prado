@@ -364,4 +364,100 @@ class TXmlDocumentTest extends \PHPUnit\Framework\TestCase
 			}
 		}
 	}
+
+	public function testLoadFromStringKeepsTheNamespaceDeclarationsOfEachElement()
+	{
+		$xml = '<root xmlns:x="urn:x">'
+			. '<c xmlns:y="urn:y"><y:g x:h="1"/></c>'
+			. '<d xmlns="urn:d"><e xmlns=""/></d>'
+			. '<f xmlns:x="urn:x"/>'
+			. '<k xmlns:x="urn:other"/>'
+			. '</root>';
+		$xmldoc = new TXmlDocument();
+		self::assertTrue($xmldoc->loadFromString($xml));
+
+		self::assertSame(['xmlns:x' => 'urn:x'], $xmldoc->getAttributes()->toArray());
+		[$c, $d, $f, $k] = $xmldoc->getElements()->toArray();
+		self::assertSame(['xmlns:y' => 'urn:y'], $c->getAttributes()->toArray());
+		self::assertSame(['x:h' => '1'], $c[0]->getAttributes()->toArray());
+		self::assertSame(['xmlns' => 'urn:d'], $d->getAttributes()->toArray());
+		self::assertSame(['xmlns' => ''], $d[0]->getAttributes()->toArray());
+		self::assertSame([], $f->getAttributes()->toArray());
+		self::assertSame(['xmlns:x' => 'urn:other'], $k->getAttributes()->toArray());
+
+		$saved = $xmldoc->saveToString();
+		$reloaded = new TXmlDocument();
+		$useInternalErrors = libxml_use_internal_errors(false);
+		try {
+			self::assertTrue($reloaded->loadFromString($saved));
+		} finally {
+			libxml_use_internal_errors($useInternalErrors);
+		}
+		self::assertSame($saved, $reloaded->saveToString());
+		$dom = new \DOMDocument();
+		self::assertTrue($dom->loadXML($saved));
+		self::assertSame(1, $dom->getElementsByTagNameNS('urn:y', 'g')->length);
+		self::assertSame(1, $dom->getElementsByTagNameNS('urn:d', 'd')->length);
+		self::assertSame(1, $dom->getElementsByTagNameNS('', 'e')->length);
+	}
+
+	public function testLoadFromStringKeepsSeveralDeclarationsOnOneElement()
+	{
+		$xmldoc = new TXmlDocument();
+		self::assertTrue($xmldoc->loadFromString('<root xmlns="urn:d" xmlns:a="urn:a" xmlns:b="urn:b" a:id="1"><child xmlns:c="urn:c" xmlns:a="urn:a2"/></root>'));
+
+		self::assertEqualsCanonicalizing(
+			['xmlns' => 'urn:d', 'xmlns:a' => 'urn:a', 'xmlns:b' => 'urn:b', 'a:id' => '1'],
+			$xmldoc->getAttributes()->toArray()
+		);
+		self::assertSame('a:id', array_key_last($xmldoc->getAttributes()->toArray()));
+		self::assertEqualsCanonicalizing(['xmlns:c' => 'urn:c', 'xmlns:a' => 'urn:a2'], $xmldoc[0]->getAttributes()->toArray());
+	}
+
+	public function testXPathOnASubElementResolvesTheAncestorsNamespaces()
+	{
+		$xmldoc = new TXmlDocument();
+		self::assertTrue($xmldoc->loadFromString('<root xmlns:x="urn:x" xmlns:p="urn:root"><c xmlns:p="urn:c"><x:g x:h="1"><p:i/></x:g></c></root>'));
+		$c = $xmldoc[0];
+		$g = $c[0];
+
+		self::assertSame([$g], $c->xpath('//x:g')->toArray());
+		self::assertSame([$g[0]], $c->xpath('//p:i')->toArray());
+		self::assertSame([$g[0]], $g->xpath('//p:i')->toArray());
+		self::assertSame([], $c->xpath('//*[namespace-uri()="urn:root"]')->toArray());
+
+		self::assertSame(['xmlns:p' => 'urn:c'], $c->getAttributes()->toArray());
+		self::assertSame(['x:h' => '1'], $g->getAttributes()->toArray());
+		self::assertFalse($g[0]->getHasAttribute());
+  }
+
+	public function testXPathMatchesTheDocumentElement()
+	{
+		$xmldoc = new TXmlDocument();
+		$xmldoc->loadFromString('<root><item id="1"/></root>');
+
+		self::assertSame([$xmldoc], $xmldoc->xpath('/root')->toArray());
+		self::assertSame([$xmldoc, $xmldoc[0]], $xmldoc->xpath('//*')->toArray());
+		self::assertSame([$xmldoc[0]], $xmldoc->xpath('/root/item')->toArray());
+  }
+
+	public function testEveryFailedLoadResetsTheDocument()
+	{
+		$fresh = new TXmlDocument();
+		foreach (['empty string' => '', 'null' => null, 'zero' => '0', 'malformed' => '<root><child></root>'] as $label => $string) {
+			$xmldoc = new TXmlDocument();
+			self::assertTrue($xmldoc->loadFromString('<?xml version="1.1" encoding="UTF-8"?><root a="1">value<child/></root>'), $label);
+			$child = $xmldoc[0];
+
+			self::assertFalse($xmldoc->loadFromString($string), $label);
+
+			self::assertSame($fresh->getVersion(), $xmldoc->getVersion(), $label);
+			self::assertSame($fresh->getEncoding(), $xmldoc->getEncoding(), $label);
+			self::assertSame($fresh->getTagName(), $xmldoc->getTagName(), $label);
+			self::assertSame($fresh->getValue(), $xmldoc->getValue(), $label);
+			self::assertFalse($xmldoc->getHasAttribute(), $label);
+			self::assertSame(0, $xmldoc->getCount(), $label);
+			self::assertNull($child->getParent(), $label);
+		}
+	}
 }

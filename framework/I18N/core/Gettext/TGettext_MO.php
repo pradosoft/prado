@@ -162,6 +162,20 @@ class TGettext_MO extends TGettext
 	}
 
 	/**
+	 * Reads the string of a hash table entry that lies within the file.
+	 * @param array $entry the `length` and `offset` of the string.
+	 * @param int $size the size of the file.
+	 * @return ?string the string, null when the entry is truncated or outside the file.
+	 */
+	private function readTableString(array $entry, int $size): ?string
+	{
+		if ($entry['length'] < 0 || $entry['offset'] < 0 || $entry['offset'] + $entry['length'] > $size) {
+			return null;
+		}
+		return $this->_readStr($entry);
+	}
+
+	/**
 	 * Releases the lock of the open MO file and closes it.
 	 */
 	private function closeHandle(): void
@@ -229,6 +243,11 @@ class TGettext_MO extends TGettext
 		// offset of hashing table of the msgstrs
 		$offset_translat = $this->_readInt($be);
 
+		if ($count < 0 || $offset_original < 0 || $offset_translat < 0) {
+			$this->closeHandle();
+			return false;
+		}
+
 		// move to msgid hash table
 		fseek($this->_handle, $offset_original);
 		// read lengths and offsets of msgids
@@ -252,13 +271,23 @@ class TGettext_MO extends TGettext
 		}
 
 		// read all
+		$size = fstat($this->_handle)['size'];
+		$strings = [];
 		for ($i = 0; $i < $count; $i++) {
-			$this->strings[$this->_readStr($original[$i])] =
-				$this->_readStr($translat[$i]);
+			$msgid = $this->readTableString($original[$i], $size);
+			$msgstr = $this->readTableString($translat[$i], $size);
+			if ($msgid === null || $msgstr === null) {
+				$this->closeHandle();
+				return false;
+			}
+			$strings[$msgid] = $msgstr;
 		}
 
 		// done
 		$this->closeHandle();
+		foreach ($strings as $msgid => $msgstr) {
+			$this->strings[$msgid] = $msgstr;
+		}
 
 		// check for meta info
 		if (isset($this->strings[''])) {

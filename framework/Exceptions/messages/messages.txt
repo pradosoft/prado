@@ -301,6 +301,7 @@ xmldocument_file_read_failed			= TXmlDocument is unable to read file ''{0}''.
 xmldocument_file_write_failed			= TXmlDocument is unable to write file ''{0}''.
 
 xmlelementlist_xmlelement_required		= TXmlElementList can only accept TXmlElement objects.
+xmlelementlist_circular_insert			= TXmlElementList cannot insert element ''{0}'' into itself or one of its descendants.
 
 xmlelement_null_tag						= TXmlElement Tag Name cannot be null.
 xmlelement_empty_tag					= TXmlElement Tag Name cannot be an empty string.

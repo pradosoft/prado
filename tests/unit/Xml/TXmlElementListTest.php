@@ -12,6 +12,7 @@ NOTE TO AGENTS:
 namespace Prado\Test\Unit\Xml;
 
 use Prado\Exceptions\TInvalidDataTypeException;
+use Prado\Exceptions\TInvalidOperationException;
 use Prado\Xml\TXmlElement;
 use Prado\Xml\TXmlElementList;
 use Prado\Test\Unit\PradoUnit;
@@ -331,5 +332,53 @@ class TXmlElementListTest extends \PHPUnit\Framework\TestCase
 	{
 		$element = new TXmlElement('owner');
 		self::assertSame($element, PradoUnit::invoke($element->getElements(), 'getOwner'));
+	}
+
+	public function testInsertAtRejectsTheOwnerAndItsAncestors()
+	{
+		$root = new TXmlElement('root');
+		$child = new TXmlElement('child');
+		$grandchild = new TXmlElement('grandchild');
+		$root[] = $child;
+		$child[] = $grandchild;
+
+		$attempts = [
+			'the owner' => fn () => $root->getElements()->add($root),
+			'the parent' => fn () => $grandchild->getElements()->add($child),
+			'an ancestor through array access' => function () use ($grandchild, $root) {
+				$grandchild[] = $root;
+			},
+			'an ancestor by index' => fn () => $grandchild->getElements()->insertAt(0, $root),
+		];
+		foreach ($attempts as $label => $attempt) {
+			try {
+				$attempt();
+				self::fail("Inserting $label did not throw.");
+			} catch (TInvalidOperationException $e) {
+			}
+		}
+
+		self::assertNull($root->getParent());
+		self::assertSame($root, $child->getParent());
+		self::assertSame($child, $grandchild->getParent());
+		self::assertSame([$child], $root->getElements()->toArray());
+		self::assertSame([$grandchild], $child->getElements()->toArray());
+		self::assertSame(0, $grandchild->getCount());
+		self::assertSame("<root>\n    <child>\n        <grandchild />\n    </child>\n</root>", $root->toString());
+	}
+
+	public function testInsertAtMovesADescendantUp()
+	{
+		$root = new TXmlElement('root');
+		$child = new TXmlElement('child');
+		$grandchild = new TXmlElement('grandchild');
+		$root[] = $child;
+		$child[] = $grandchild;
+
+		$root[] = $grandchild;
+
+		self::assertSame([$child, $grandchild], $root->getElements()->toArray());
+		self::assertSame($root, $grandchild->getParent());
+		self::assertSame(0, $child->getCount());
 	}
 }
