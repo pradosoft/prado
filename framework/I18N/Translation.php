@@ -48,9 +48,9 @@ class Translation extends \Prado\TComponent
 			$app = Prado::getApplication()->getGlobalization();
 			$config = $app->getTranslationConfiguration();
 			$source = MessageSource::factory(
-				$config['type'],
-				$config['source'],
-				$config['filename']
+				$config['type'] ?? '',
+				$config['source'] ?? '.',
+				$config['filename'] ?? ''
 			);
 
 			$source->setCulture($app->getCulture());
@@ -62,13 +62,13 @@ class Translation extends \Prado\TComponent
 			self::$formatters[$catalogue] = new MessageFormat($source, $app->getCharset());
 
 			//mark untranslated text
-			if ($ps = $config['marker']) {
+			if ($ps = ($config['marker'] ?? null)) {
 				self::$formatters[$catalogue]->setUntranslatedPS([$ps, $ps]);
 			}
 
 			//save the message on end request
 			// Do it only once !
-			if (!$saveEventHandlerAttached && TPropertyValue::ensureBoolean($config['autosave'])) {
+			if (!$saveEventHandlerAttached && TPropertyValue::ensureBoolean($config['autosave'] ?? false)) {
 				Prado::getApplication()->attachEventHandler(
 					'OnEndRequest',
 					['Translation', 'saveMessages']
@@ -100,7 +100,7 @@ class Translation extends \Prado\TComponent
 			foreach (self::$formatters as $catalogue => $formatter) {
 				$app = Prado::getApplication()->getGlobalization();
 				$config = $app->getTranslationConfiguration();
-				if (isset($config['autosave'])) {
+				if (TPropertyValue::ensureBoolean($config['autosave'] ?? false)) {
 					$formatter->getSource()->setCulture($app->getCulture());
 					$formatter->getSource()->save($catalogue);
 				}

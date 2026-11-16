@@ -10,7 +10,7 @@
 
 namespace Prado\I18N;
 
-use Prado\Exceptions\TException;
+use Prado\Exceptions\TConfigurationException;
 use Prado\IO\TTextWriter;
 use Prado\Prado;
 use Prado\TPropertyValue;
@@ -58,12 +58,13 @@ class TTranslateParameter extends TControl
 
 	/**
 	 * Get the parameter substitution key.
+	 * @throws TConfigurationException when the key is empty.
 	 * @return string substitution key.
 	 */
 	public function getKey()
 	{
 		if (empty($this->key)) {
-			throw new TException('The Key property must be specified.');
+			throw new TConfigurationException('translateparameter_key_required');
 		}
 		return $this->key;
 	}
