@@ -10,12 +10,13 @@ use Prado\Test\Unit\Harness\TTestApplication;
 use Prado\Util\TDbParameterModule;
 
 /**
- * Records {@see TDbParameterModule::set()} calls, and reports each key as stored,
- * without a database.
+ * Records {@see TDbParameterModule::set()} calls, and reports the keys in `$stored`
+ * as stored, or every key when `$stored` is null, without a database.
  */
 class TDbParameterActionTestModule extends TDbParameterModule
 {
 	public array $sets = [];
+	public ?array $stored = null;
 
 	public function set($key, $value, $autoLoad = true, $setParameter = true)
 	{
@@ -24,7 +25,7 @@ class TDbParameterActionTestModule extends TDbParameterModule
 
 	public function exists($key)
 	{
-		return true;
+		return $this->stored === null || in_array($key, $this->stored, true);
 	}
 }
 
@@ -44,7 +45,10 @@ class TDbParameterActionTest extends TestCase
 		$this->_text = new TTestCapturingTextWriter();
 		$this->_module = new TDbParameterActionTestModule();
 		$this->_action = new TDbParameterAction();
-		$this->_action->setWriter(new TShellWriter($this->_text));
+		$writer = new TShellWriter($this->_text);
+		$writer->setColorSupported(false);
+		$writer->setWidth(200);
+		$this->_action->setWriter($writer);
 		$this->_action->setDbParameterModule($this->_module);
 	}
 
@@ -93,5 +97,19 @@ class TDbParameterActionTest extends TestCase
 
 		$this->assertSame([], $this->_module->sets);
 		$this->assertStringContainsString('Set Parameter needs a key and Value', $this->_text->getCaptured());
+	}
+
+	public function testActionIndexShowsANullOrBooleanValue(): void
+	{
+		$this->_app->getParameters()['shellNull'] = null;
+		$this->_app->getParameters()['shellFalse'] = false;
+		$this->_app->getParameters()['shellInt'] = 5;
+
+		$this->assertTrue($this->_action->actionIndex(['param/index']));
+
+		$captured = $this->_text->getCaptured();
+		$this->assertMatchesRegularExpression('/^shellNull *$/m', $captured);
+		$this->assertMatchesRegularExpression('/^shellFalse +false$/m', $captured);
+		$this->assertMatchesRegularExpression('/^shellInt +5$/m', $captured);
 	}
 }

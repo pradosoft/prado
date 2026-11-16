@@ -78,7 +78,8 @@ class TDbParameterAction extends TShellAction
 	}
 
 	/**
-	 * display the database parameter key values.
+	 * Displays the parameter keys and values.  An object value shows as `(object)`, an
+	 * array as `(array)`, and any other value as its string.
 	 * @param array $args parameters
 	 * @return ?bool is the action handled
 	 */
@@ -109,9 +110,10 @@ class TDbParameterAction extends TShellAction
 			$writer->write($writer->pad($key, $len + 1));
 			if (is_object($value)) {
 				$value = '(object)';
-			}
-			if (is_array($value)) {
+			} elseif (is_array($value)) {
 				$value = '(array)';
+			} else {
+				$value = TPropertyValue::ensureString($value);
 			}
 			$writer->writeLine($writer->wrapText($value, $len + 1));
 		}
