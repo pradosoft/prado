@@ -221,6 +221,9 @@ Upgrading from v4.3.3
 - Issue #1497 - `TXmlElement` array access throws `TInvalidDataTypeException` for an offset that is not null, an int,
   a string, or a `Stringable`. In 4.3 a float or bool offset addressed the attribute named by its string, or raised a
   PHP error. Use an int child index or a string attribute name.
+- Issue #1497 - `TXmlElement::xpath()` includes the element it is called on when the expression matches it, as DOM
+  does. In 4.3 only its descendants were returned, so `//*` now returns one more element, first. A query that needs
+  only the descendants starts from the element: `/tag//*` or `./descendant::*`.
 - Issue #1497 - `TXmlDocument::loadFromString()` with an empty string, and `loadFromFile()` of an empty file, reset
   the document and return false, as malformed XML does. In 4.3 an empty string left the document unchanged. After a
   failed load, `Value` is null, as in a new document; it was the empty string.
