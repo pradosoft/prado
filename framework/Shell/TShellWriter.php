@@ -431,19 +431,16 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 	 */
 	protected function isStdOutTerminal(): bool
 	{
-		if (!function_exists('posix_isatty')) {
-			return function_exists('stream_isatty') && defined('STDOUT') && @stream_isatty(STDOUT);
+		if (defined('STDOUT')) {
+			return @stream_isatty(STDOUT);
 		}
-		if ($opened = !defined('STDOUT')) {
-			$stdOut = fopen(TStdOutWriter::STDOUT_URI, 'wb');
-		} else {
-			$stdOut = STDOUT;
-		}
-		$isTerminal = @posix_isatty($stdOut);
-		if ($opened) {
-			fclose($stdOut);
-		}
+		// Only a SAPI without the STDOUT constant runs this.
+		// @codeCoverageIgnoreStart
+		$stdOut = fopen(TStdOutWriter::STDOUT_URI, 'wb');
+		$isTerminal = @stream_isatty($stdOut);
+		fclose($stdOut);
 		return $isTerminal;
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
