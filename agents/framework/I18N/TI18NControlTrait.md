@@ -17,8 +17,8 @@ The trait requires the host class to have `getViewState()` / `setViewState()` me
 
 | Event | Default | Description |
 |-------|---------|-------------|
-| `dyDefaultCharsetValue(string $default)` | `'UTF-8'` | Raised when no charset can be resolved from the application; behaviors can override |
-| `dyDefaultCultureValue(string $default)` | `''` | Raised when no culture can be resolved from the application; behaviors can override |
+| `dyDefaultCharsetValue(string $default)` | `'UTF-8'` | Raised through `callBehaviorsFilter()` when neither the control nor the application has a charset; a null behavior result keeps the default |
+| `dyDefaultCultureValue(string $default)` | `''` | Raised through `callBehaviorsFilter()` when neither the control nor the application has a culture; a null behavior result keeps the default |
 
 ## Properties
 
@@ -26,8 +26,8 @@ The trait requires the host class to have `getViewState()` / `setViewState()` me
 
 Resolution order:
 1. View state `'Culture'` (control-level override)
-2. `$app->getGlobalization()->getCulture()` (application culture)
-3. `dyDefaultCultureValue('')` — dynamic event result (behaviors / no-app fallback)
+2. `$app->getGlobalization(false)->getCulture()` — non-empty application culture
+3. `dyDefaultCultureValue('')` — filter result when no globalization exists or its culture is empty
 
 ### `setCulture(string $culture): void`
 
@@ -37,9 +37,9 @@ Stores in view state `'Culture'`.
 
 Resolution order:
 1. View state `'Charset'` (control-level override)
-2. `$app->getGlobalization()->getCharset()` — non-empty application charset
-3. `$app->getGlobalization()->getDefaultCharset()` — non-empty default charset
-4. `dyDefaultCharsetValue('UTF-8')` — dynamic event result (behaviors / no-app fallback)
+2. `$app->getGlobalization(false)->getCharset()` — non-empty application charset
+3. `$app->getGlobalization(false)->getDefaultCharset()` — non-empty default charset
+4. `dyDefaultCharsetValue('UTF-8')` — filter result when no globalization exists or both its charsets are empty
 
 ### `setCharset(string $value): void`
 

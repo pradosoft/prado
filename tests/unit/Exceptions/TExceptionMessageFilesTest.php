@@ -170,9 +170,85 @@ class TExceptionMessageFilesTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame('Broken A {1', (new TException('broken_key', 'A', 'B'))->getMessage());
 	}
 
+	public function testUnparsablePatternWithoutArgumentsIsThePattern(): void
+	{
+		TException::addMessageFile($this->writeMessageFile('broken.txt', "broken_key = Broken {0\n"));
+		$this->assertSame('Broken {0', (new TException('broken_key'))->getMessage());
+	}
+
+	public function testUnparsablePatternWithIntlExceptionsReplacesThePlaceholders(): void
+	{
+		// With intl.use_exceptions, MessageFormatter throws for a pattern it cannot parse.
+		TException::addMessageFile($this->writeMessageFile('broken.txt', "broken_key = Broken {0} {1\n"));
+		$previous = ini_set('intl.use_exceptions', '1');
+		try {
+			$this->assertSame('Broken A {1', (new TException('broken_key', 'A'))->getMessage());
+			$this->assertSame('Broken {0} {1', (new TException('broken_key'))->getMessage());
+		} finally {
+			ini_set('intl.use_exceptions', $previous);
+		}
+	}
+
+	public function testStringableArgumentIsItsString(): void
+	{
+		$arg = new class () implements \Stringable {
+			public function __toString(): string
+			{
+				return 'Stringable';
+			}
+		};
+		$e = new TException('component_property_undefined', $arg, 'B');
+		$this->assertSame(['Stringable', 'B'], $e->getErrorArguments());
+		$this->assertSame("Component property 'Stringable.B' is not defined.", $e->getMessage());
+	}
+
+	/**
+	 * @return array<string, array{string, string}> a one-line message file and the message of `line_key`.
+	 */
+	public static function oneLineFileProvider(): array
+	{
+		return [
+			'empty file' => ['', 'line_key'],
+			'blank line' => ["   \n", 'line_key'],
+			'hash comment' => ["# line_key = commented\n", 'line_key'],
+			'semicolon comment' => ["; line_key = commented\n", 'line_key'],
+			'no separator' => ["line_key commented\n", 'line_key'],
+			'entry' => ["line_key = Defined\n", 'Defined'],
+		];
+	}
+
+	#[DataProvider('oneLineFileProvider')]
+	public function testOneLineMessageFile(string $content, string $message): void
+	{
+		TException::addMessageFile($this->writeMessageFile('line.txt', $content));
+		$this->assertSame($message, (new TException('line_key'))->getMessage());
+	}
+
+	public function testSetErrorMessageReplacesTheMessage(): void
+	{
+		$e = new TException('component_property_undefined', 'A', 'B');
+		PradoUnit::invoke($e, 'setErrorMessage', 'Replaced');
+		$this->assertSame('Replaced', $e->getMessage());
+		$this->assertSame('Replaced', $e->getErrorMessage());
+	}
+
 	public function testUndefinedKeyReplacesThePlaceholders(): void
 	{
 		$this->assertSame("Raw 'A' text", (new TException("Raw '{0}' text", 'A'))->getMessage());
+	}
+
+	public function testZeroErrorCodeIsTheMessage(): void
+	{
+		// Issue #1497: the error code '0' is a message; it rendered as an empty message.
+		$e = new TException('0');
+		$this->assertSame('0', $e->getMessage());
+		$this->assertSame('0', $e->getErrorCode());
+	}
+
+	public function testEmptyErrorCodeIsAnEmptyMessage(): void
+	{
+		$this->assertSame('', (new TException(''))->getMessage());
+		$this->assertSame('', (new TException(5, null))->getMessage());
 	}
 
 	public function testMessageFileLanguage(): void
@@ -260,6 +336,25 @@ class TExceptionMessageFilesTest extends \PHPUnit\Framework\TestCase
 		$file = $this->writeMessageFile('plain.txt', "app_key = English only\n");
 		TException::addMessageFile($file);
 		$this->assertSame('English only', (new TException('app_key'))->getMessage());
+	}
+
+	#[RunInSeparateProcess]
+	#[PreserveGlobalState(false)]
+	public function testAddedFileWithoutAShortExtensionIsUsedAsIs(): void
+	{
+		$_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'fr';
+		$dir = sys_get_temp_dir() . '/' . uniqid('prado_variant_', true);
+		mkdir($dir);
+		file_put_contents($dir . '/app.messages', "app_key = English\n");
+		file_put_contents($dir . '/app-fr.messages', "app_key = Français\n");
+		try {
+			TException::addMessageFile($dir . '/app.messages');
+			$this->assertSame('English', (new TException('app_key'))->getMessage());
+		} finally {
+			unlink($dir . '/app.messages');
+			unlink($dir . '/app-fr.messages');
+			rmdir($dir);
+		}
 	}
 
 	// ── Message file lint ────────────────────────────────────────────────────

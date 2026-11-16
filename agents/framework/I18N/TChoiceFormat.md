@@ -20,7 +20,7 @@ Plural/choice selection control. Maps a numeric value to a localized string base
 
 | Property | Type | Description |
 |----------|------|-------------|
-| `Value` | float | The numeric value used to select the choice string |
+| `Value` | float | The numeric value used to select the choice string; no matching choice renders an empty string |
 
 ## Choice Pattern Syntax
 

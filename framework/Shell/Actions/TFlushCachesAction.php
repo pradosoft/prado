@@ -37,6 +37,16 @@ class TFlushCachesAction extends TShellAction
 	];
 
 	/**
+	 * Returns `cache/flush-all` as the general help's example of this action.
+	 * @return ?string the example command line.
+	 * @since 4.4.0
+	 */
+	public function getExample(): ?string
+	{
+		return $this->action . '/flush-all';
+	}
+
+	/**
 	 * This flushes an array of ICache modules
 	 * @param array $args parameters
 	 * @return bool Action was performed

@@ -3,15 +3,70 @@
 namespace Prado\Test\Unit\I18N;
 
 use PHPUnit\Framework\TestCase;
+use Prado\Collections\TMap;
+use Prado\Exceptions\TConfigurationException;
 use Prado\I18N\TGlobalization;
+use Prado\Prado;
+use Prado\TApplication;
+use Prado\Test\Unit\Harness\Traits\TTempDirectoryTrait;
+use Prado\Test\Unit\Harness\TTestApplication;
+use Prado\Test\Unit\PradoUnit;
+use Prado\Xml\TXmlDocument;
+
+/**
+ * A TGlobalization without an application.
+ */
+class TGlobalizationWithoutApplication extends TGlobalization
+{
+	public function getApplication()
+	{
+		return null;
+	}
+}
 
 class TGlobalizationTest extends TestCase
 {
+	use TTempDirectoryTrait;
+
 	private TGlobalization $glob;
+
+	private array $_appSnapshot;
+
+	private array $_aliasSnapshot;
 
 	protected function setUp(): void
 	{
 		$this->glob = new TGlobalization();
+		$this->_appSnapshot = TTestApplication::snapshotApp(null, ['_globalization', '_configType', '_runtimePath']);
+		$this->_aliasSnapshot = PradoUnit::snapshotStatic(Prado::class, ['_aliases']);
+	}
+
+	protected function tearDown(): void
+	{
+		TTestApplication::restoreApp($this->_appSnapshot);
+		PradoUnit::restoreStatic(Prado::class, $this->_aliasSnapshot);
+		$this->removeTempDirectories();
+	}
+
+	/**
+	 * Calls the protected setTranslationConfiguration().
+	 */
+	private function configure(array|TMap $config): void
+	{
+		PradoUnit::invoke($this->glob, 'setTranslationConfiguration', $config);
+	}
+
+	/**
+	 * Asserts that a callable throws a TConfigurationException with an error code.
+	 */
+	private function assertConfigurationError(string $errorCode, callable $callable): void
+	{
+		try {
+			$callable();
+			$this->fail("Expected TConfigurationException '$errorCode'.");
+		} catch (TConfigurationException $e) {
+			$this->assertSame($errorCode, $e->getErrorCode());
+		}
 	}
 
 	// ── default state ───────────────────────────────────────────────────────
@@ -458,5 +513,160 @@ class TGlobalizationTest extends TestCase
 
 		$this->glob->setIsCultureRTL('0');
 		$this->assertFalse($this->glob->getIsCultureRTL());
+	}
+
+	// ── init ────────────────────────────────────────────────────────────────
+
+	public function testInitWithoutConfigurationSetsTheDefaultsAndRegisters()
+	{
+		$this->glob->setDefaultCulture('fr_FR');
+		$this->glob->setDefaultCharset('ISO-8859-1');
+		$this->glob->init(null);
+		$this->assertSame('fr_FR', $this->glob->getCulture());
+		$this->assertSame('ISO-8859-1', $this->glob->getCharset());
+		$this->assertNull($this->glob->getTranslationConfiguration());
+		$this->assertSame($this->glob, Prado::getApplication()->getGlobalization(false));
+	}
+
+	public function testInitKeepsAnExplicitCultureAndCharset()
+	{
+		$this->glob->setCulture('de');
+		$this->glob->setCharset('Windows-1252');
+		$this->glob->init(null);
+		$this->assertSame('de', $this->glob->getCulture());
+		$this->assertSame('Windows-1252', $this->glob->getCharset());
+	}
+
+	public function testInitAppliesTheXmlTranslationElement()
+	{
+		PradoUnit::setProp(Prado::getApplication(), '_configType', TApplication::CONFIG_TYPE_XML);
+		$xml = new TXmlDocument();
+		$xml->loadFromString('<module id="globalization"><translation type="Database" source="db1" catalogue="app" /></module>');
+		$this->glob->init($xml);
+		$config = $this->glob->getTranslationConfiguration();
+		$this->assertInstanceOf(TMap::class, $config);
+		$this->assertSame('Database', $config['type']);
+		$this->assertSame('db1', $config['source']);
+		$this->assertSame('app', $this->glob->getTranslationCatalogue());
+	}
+
+	public function testInitWithoutAnXmlTranslationElement()
+	{
+		PradoUnit::setProp(Prado::getApplication(), '_configType', TApplication::CONFIG_TYPE_XML);
+		$xml = new TXmlDocument();
+		$xml->loadFromString('<module id="globalization" />');
+		$this->glob->init($xml);
+		$this->assertNull($this->glob->getTranslationConfiguration());
+	}
+
+	public function testInitAppliesThePhpTranslateArray()
+	{
+		PradoUnit::setProp(Prado::getApplication(), '_configType', TApplication::CONFIG_TYPE_PHP);
+		$this->glob->init(['translate' => ['type' => 'Database', 'source' => 'db1']]);
+		$this->assertSame(['type' => 'Database', 'source' => 'db1'], $this->glob->getTranslationConfiguration());
+		$this->assertNull($this->glob->getTranslationCatalogue());
+	}
+
+	public function testInitWithoutAPhpTranslateArray()
+	{
+		PradoUnit::setProp(Prado::getApplication(), '_configType', TApplication::CONFIG_TYPE_PHP);
+		$this->glob->init([]);
+		$this->assertNull($this->glob->getTranslationConfiguration());
+	}
+
+	public function testInitWithoutAnApplicationDoesNotRegister()
+	{
+		$glob = new TGlobalizationWithoutApplication();
+		PradoUnit::invoke($glob, 'setAppGlobalization');
+		$this->assertNotSame($glob, Prado::getApplication()->getGlobalization(false));
+	}
+
+	// ── setTranslationConfiguration ─────────────────────────────────────────
+
+	public function testGetTranslationCatalogueIsNullWithoutConfiguration()
+	{
+		$this->assertNull($this->glob->getTranslationCatalogue());
+	}
+
+	public function testFileSourceResolvesAnExistingNamespacePath()
+	{
+		$dir = $this->makeTempDirectory();
+		mkdir($dir . '/messages');
+		Prado::setPathOfAlias('I18NTestRoot', $dir);
+		$this->configure(['type' => 'XLIFF', 'source' => 'I18NTestRoot.messages']);
+		$this->assertSame($dir . DIRECTORY_SEPARATOR . 'messages', $this->glob->getTranslationConfiguration()['source']);
+	}
+
+	public function testFileSourceCreatesAMissingDirectory()
+	{
+		$dir = $this->makeTempDirectory();
+		Prado::setPathOfAlias('I18NTestRoot', $dir);
+		foreach (['gettext', 'PHP'] as $type) {
+			$this->configure(['type' => $type, 'source' => 'I18NTestRoot.' . $type]);
+			$path = $dir . DIRECTORY_SEPARATOR . $type;
+			$this->assertSame($path, $this->glob->getTranslationConfiguration()['source']);
+			$this->assertDirectoryExists($path);
+			if (PHP_OS_FAMILY !== 'Windows') {
+				$this->assertSame(Prado::getDefaultDirPermissions(), fileperms($path) & 0o777);
+			}
+		}
+	}
+
+	public function testFileSourceThatCannotBeCreatedThrows()
+	{
+		$dir = $this->makeTempDirectory();
+		touch($dir . '/blocker');
+		Prado::setPathOfAlias('I18NTestRoot', $dir);
+		$this->assertConfigurationError('globalization_source_path_failed', fn () => $this->configure(['type' => 'XLIFF', 'source' => 'I18NTestRoot.blocker.messages']));
+	}
+
+	public function testFileSourceIsRequired()
+	{
+		$this->assertConfigurationError('globalization_source_required', fn () => $this->configure(['type' => 'PHP']));
+		$this->assertConfigurationError('globalization_source_required', fn () => $this->configure(new TMap(['type' => 'gettext', 'source' => ''])));
+	}
+
+	public function testFileSourceMustBeANamespacePath()
+	{
+		$this->assertConfigurationError('globalization_source_invalid', fn () => $this->configure(['type' => 'XLIFF', 'source' => 'NoSuchI18NAlias.messages']));
+		$this->assertConfigurationError('globalization_source_invalid', fn () => $this->configure(['type' => 'XLIFF', 'source' => 'messages']));
+	}
+
+	public function testDatabaseAndUntypedSourcesAreKept()
+	{
+		$this->configure(['type' => 'Database', 'source' => 'db1']);
+		$this->assertSame(['type' => 'Database', 'source' => 'db1'], $this->glob->getTranslationConfiguration());
+		$this->configure(['source' => 'anything']);
+		$this->assertSame(['source' => 'anything'], $this->glob->getTranslationConfiguration());
+	}
+
+	public function testCacheCreatesTheRuntimeI18NDirectory()
+	{
+		$runtime = $this->makeTempDirectory();
+		PradoUnit::setProp(Prado::getApplication(), '_runtimePath', $runtime);
+		$path = $runtime . '/i18n';
+		$this->configure(['type' => 'Database', 'source' => 'db1', 'cache' => 'true']);
+		$this->assertSame($path, $this->glob->getTranslationConfiguration()['cache']);
+		$this->assertDirectoryExists($path);
+		if (PHP_OS_FAMILY !== 'Windows') {
+			$this->assertSame(Prado::getDefaultDirPermissions(), fileperms($path) & 0o777);
+		}
+
+		$this->configure(['type' => 'Database', 'source' => 'db1', 'cache' => true]);
+		$this->assertSame($path, $this->glob->getTranslationConfiguration()['cache']);
+	}
+
+	public function testCacheDirectoryThatCannotBeCreatedThrows()
+	{
+		$runtime = $this->makeTempDirectory();
+		touch($runtime . '/blocker');
+		PradoUnit::setProp(Prado::getApplication(), '_runtimePath', $runtime . '/blocker');
+		$this->assertConfigurationError('globalization_cache_path_failed', fn () => $this->configure(['type' => 'Database', 'source' => 'db1', 'cache' => 'true']));
+	}
+
+	public function testCacheOffIsRemoved()
+	{
+		$this->configure(['type' => 'Database', 'source' => 'db1', 'cache' => 'false']);
+		$this->assertSame(['type' => 'Database', 'source' => 'db1'], $this->glob->getTranslationConfiguration());
 	}
 }

@@ -91,10 +91,29 @@ $source = [MessageSource](./core/MessageSource.md)::factory('Database', $connect
 ### Programmatic Translation
 
 ```php
-use Prado\I18N\Translation;
+use Prado\Prado;
 
-$translated = Translation::get('my_message_key', ['{name}' => 'Alice'], 'messages');
+$translated = Prado::localize('Hello {name}', ['name' => 'Alice'], 'messages');
 ```
+
+### Translation Configuration
+
+`setTranslationConfiguration()` reads the `<translation>` attributes (a `TMap`) or the PHP `translate` array:
+
+| Key | Use |
+|---|---|
+| `type` | `XLIFF`, `PHP`, `gettext`, or `Database` |
+| `source` | file types: a namespace path (`Application.messages`), created when missing; `Database`: a connection ID |
+| `catalogue` | default catalogue; `getTranslationCatalogue()` is null without one |
+| `cache` | true → `<runtime>/i18n`, created when missing; false or absent → removed |
+| `autosave`, `marker`, `filename` | optional; read by [Translation](./Translation.md) |
+
+| Condition | `TConfigurationException` |
+|---|---|
+| file type without a `source` | `globalization_source_required` |
+| `source` is not a namespace path | `globalization_source_invalid` |
+| source directory cannot be created | `globalization_source_path_failed` |
+| cache directory cannot be created | `globalization_cache_path_failed` |
 
 ---
 

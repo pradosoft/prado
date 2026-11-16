@@ -319,14 +319,7 @@ class TErrorHandler extends \Prado\TModule
 	{
 		$aRpl = [];
 		if ($exception !== null && $exception instanceof \Exception) {
-			if ($exception instanceof TPhpFatalErrorException &&
-				function_exists('xdebug_get_function_stack')) {
-				$aTrace = array_slice(array_reverse(xdebug_get_function_stack()), static::FATAL_ERROR_TRACE_DROP_LINES, -1);
-			} else {
-				$aTrace = $exception->getTrace();
-			}
-
-			foreach ($aTrace as $item) {
+			foreach ($this->getErrorTrace($exception) as $item) {
 				if (isset($item['file'])) {
 					$aRpl[dirname($item['file']) . DIRECTORY_SEPARATOR] = '<hidden>' . DIRECTORY_SEPARATOR;
 				}
@@ -531,12 +524,14 @@ class TErrorHandler extends \Prado\TModule
 
 		if ($exception instanceof TTemplateException) {
 			$fileName = $exception->getTemplateFile();
-			$lines = empty($fileName) ? explode("\n", $exception->getTemplateSource()) : @file($fileName);
-			$source = $this->getSourceCode($lines, $exception->getLineNumber());
-			if ($fileName === '') {
+			if (empty($fileName)) {
+				$lines = explode("\n", $exception->getTemplateSource());
 				$fileName = '---embedded template---';
+			} else {
+				$lines = @file($fileName);
 			}
 			$errorLine = $exception->getLineNumber();
+			$source = $this->getSourceCode($lines, $errorLine);
 		} else {
 			if (($trace = $this->getExactTrace($exception)) !== null) {
 				$fileName = $trace['file'];
@@ -591,7 +586,8 @@ class TErrorHandler extends \Prado\TModule
 			}
 		}
 		if (($content = @file_get_contents($exceptionFile)) === false) {
-			die("Unable to open exception template file '$exceptionFile'.");
+			// Exits the process: no exception template is readable.
+			die("Unable to open exception template file '$exceptionFile'."); // @codeCoverageIgnore
 		}
 		return $content;
 	}
@@ -626,14 +622,17 @@ class TErrorHandler extends \Prado\TModule
 			$errorFile = "$base.html";
 		}
 		if (($content = @file_get_contents($errorFile)) === false) {
-			die("Unable to open error template file '$errorFile'.");
+			// Exits the process: the error template is missing or unreadable.
+			die("Unable to open error template file '$errorFile'."); // @codeCoverageIgnore
 		}
 		return $content;
 	}
 
 	/**
 	 * Returns the most relevant stack frame from an exception's trace.
-	 * For {@see TPhpErrorException}, returns the frame where the PHP error occurred.
+	 * For {@see TPhpErrorException}, returns the first frame with a file: the code that
+	 * raised the PHP error. The error handler frame, and an internal function called by
+	 * an internal function, have no file.
 	 * For {@see TInvalidOperationException}, returns the frame that called __get or __set.
 	 * Returns null when no actionable frame is found or the frame is inside eval'd code
 	 * (detected by `": eval()'d code"` in the file path on PHP < 8, or `'function' => 'eval'`
@@ -643,20 +642,13 @@ class TErrorHandler extends \Prado\TModule
 	protected function getExactTrace($exception)
 	{
 		$result = null;
-		if ($exception instanceof TPhpFatalErrorException &&
-			function_exists('xdebug_get_function_stack')) {
-			$trace = array_slice(array_reverse(xdebug_get_function_stack()), static::FATAL_ERROR_TRACE_DROP_LINES, -1);
-		} else {
-			$trace = $exception->getTrace();
-		}
-
-		// if PHP exception, we want to show the 2nd stack level context
-		// because the 1st stack level is of little use (it's in error handler)
+		$trace = $this->getErrorTrace($exception);
 		if ($exception instanceof TPhpErrorException) {
-			if (isset($trace[0]['file'])) {
-				$result = $trace[0];
-			} elseif (isset($trace[1])) {
-				$result = $trace[1];
+			foreach ($trace as $frame) {
+				if (isset($frame['file'])) {
+					$result = $frame;
+					break;
+				}
 			}
 		} elseif ($exception instanceof TInvalidOperationException) {
 			// in case of getter or setter error, find out the exact file and row
@@ -676,14 +668,12 @@ class TErrorHandler extends \Prado\TModule
 
 	/**
 	 * Returns the exception stack trace as a string, with private paths sanitized.
-	 * When xdebug is active and the exception is a fatal error, uses the xdebug stack.
+	 * A fatal error uses the stack of {@see getFatalErrorTrace()} when there is one.
 	 * @param \Exception $exception
 	 */
 	protected function getExactTraceAsString($exception)
 	{
-		if ($exception instanceof TPhpFatalErrorException &&
-			function_exists('xdebug_get_function_stack')) {
-			$trace = array_slice(array_reverse(xdebug_get_function_stack()), static::FATAL_ERROR_TRACE_DROP_LINES, -1);
+		if ($exception instanceof TPhpFatalErrorException && ($trace = $this->getFatalErrorTrace()) !== null) {
 			$txt = '';
 			$row = 0;
 
@@ -703,6 +693,38 @@ class TErrorHandler extends \Prado\TModule
 		}
 
 		return $this->hidePrivatePathParts($exception->getTraceAsString());
+	}
+
+	/**
+	 * Returns the stack frames of an exception: the {@see getFatalErrorTrace()} stack for a
+	 * {@see TPhpFatalErrorException} when there is one, else the exception trace.
+	 * @param \Throwable $exception the exception being rendered.
+	 * @return array the stack frames, innermost first.
+	 * @since 4.4.0
+	 */
+	protected function getErrorTrace(\Throwable $exception): array
+	{
+		if ($exception instanceof TPhpFatalErrorException && ($trace = $this->getFatalErrorTrace()) !== null) {
+			return $trace;
+		}
+		return $exception->getTrace();
+	}
+
+	/**
+	 * Returns the Xdebug function stack of a PHP fatal error, without the
+	 * {@see FATAL_ERROR_TRACE_DROP_LINES} frames of the error handling. A fatal error
+	 * has no exception trace. Xdebug provides the stack in its develop mode only.
+	 * @return ?array the stack frames, innermost first, or null when Xdebug is not
+	 *   loaded in develop mode.
+	 * @since 4.4.0
+	 */
+	protected function getFatalErrorTrace(): ?array
+	{
+		if (!function_exists('xdebug_info') || !in_array('develop', xdebug_info('mode'), true)) {
+			return null;
+		}
+		// Xdebug develop mode only; the coverage run uses its coverage mode.
+		return array_slice(array_reverse(xdebug_get_function_stack()), static::FATAL_ERROR_TRACE_DROP_LINES, -1); // @codeCoverageIgnore
 	}
 
 	/**
