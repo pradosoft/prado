@@ -2,9 +2,27 @@
 
 namespace Prado\Test\Unit\I18N\core;
 
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use PHPUnit\Framework\TestCase;
 use Prado\I18N\core\CultureInfo;
 use Prado\I18N\core\CultureInfoUnits;
+use Prado\I18N\TGlobalization;
+use Prado\Prado;
+use Prado\Test\Unit\PradoUnit;
+
+/**
+ * A culture whose resource data is set by the test, keyed by bundle.
+ */
+class CultureInfoDataFixture extends CultureInfo
+{
+	public array $info = [];
+
+	public function findInfo($path = '/', $key = null)
+	{
+		return $this->info[$key] ?? [];
+	}
+}
 
 class CultureInfoTest extends TestCase
 {
@@ -485,5 +503,238 @@ class CultureInfoTest extends TestCase
 
 		$formattedNumber = $culture->formatNumber(1234.25, \NumberFormatter::DECIMAL);
 		$this->assertEquals('1,234.25', $formattedNumber);
+	}
+
+	// ------- getCultureInfo of the application culture -------
+
+	/**
+	 * Runs $fn with an empty culture cache and the given application globalization.
+	 * @param ?TGlobalization $globalization the globalization of the application.
+	 */
+	private function withGlobalization(?TGlobalization $globalization, callable $fn): void
+	{
+		$app = Prado::getApplication();
+		$saved = PradoUnit::getProp($app, '_globalization');
+		$infos = PradoUnit::snapshotStatic(CultureInfo::class, ['cultureInfos']);
+		PradoUnit::setProp($app, '_globalization', $globalization);
+		PradoUnit::setProp(CultureInfo::class, 'cultureInfos', []);
+		try {
+			$fn();
+		} finally {
+			PradoUnit::setProp($app, '_globalization', $saved);
+			PradoUnit::restoreStatic(CultureInfo::class, $infos);
+		}
+	}
+
+	public function testGetCultureInfoOfNullUsesTheGlobalizationCulture()
+	{
+		$globalization = new TGlobalization();
+		$globalization->setCulture('fr_FR');
+		$this->withGlobalization($globalization, function () {
+			$info = CultureInfo::getCultureInfo();
+
+			$this->assertSame('fr_FR', $info->getName());
+			$this->assertSame($info, CultureInfo::getCultureInfo());
+			$this->assertSame($info, CultureInfo::getCultureInfo('fr_FR'));
+		});
+	}
+
+	public function testGetCultureInfoOfNullWithoutAGlobalizationCultureIsTheDefault()
+	{
+		$globalization = new TGlobalization();
+		PradoUnit::setProp($globalization, '_culture', null);
+		$this->withGlobalization($globalization, function () {
+			$info = CultureInfo::getCultureInfo();
+
+			$this->assertSame('en', $info->getName());
+			$this->assertSame($info, CultureInfo::getCultureInfo(''));
+		});
+	}
+
+	public function testGetCultureInfoOfNullWithoutAGlobalizationIsTheDefault()
+	{
+		$this->withGlobalization(null, function () {
+			$info = CultureInfo::getCultureInfo();
+
+			$this->assertSame('en', $info->getName());
+			$this->assertSame($info, CultureInfo::getCultureInfo());
+		});
+	}
+
+	public function testGetCultureInfoOfNullWithoutAnApplicationIsTheDefault()
+	{
+		$this->withGlobalization(null, function () {
+			$app = Prado::getApplication();
+			Prado::setApplication(null);
+			try {
+				$info = CultureInfo::getCultureInfo();
+				$this->assertSame('en', $info->getName());
+				$this->assertSame($info, CultureInfo::getCultureInfo());
+			} finally {
+				Prado::setApplication($app);
+			}
+		});
+	}
+
+	// ------- properties, names, and resources -------
+
+	public function testPropertySetCallsTheProtectedSetter()
+	{
+		$culture = new CultureInfo('en');
+
+		$culture->Culture = 'fr_FR';
+		$this->assertSame('fr_FR', $culture->getName());
+
+		$culture->Culture = '';
+		$this->assertSame('', $culture->getName());
+	}
+
+	public function testGetCulturesOfAnUnknownTypeIsAll()
+	{
+		$this->assertSame(CultureInfo::getCultures(), CultureInfo::getCultures(99));
+	}
+
+	public function testValidCultureOfAnUnknownHyphenatedCulture()
+	{
+		$this->assertFalse(CultureInfo::validCulture('xx-YY'));
+	}
+
+	public function testNativeNameOfANeutralCulture()
+	{
+		$this->assertSame('English', (new CultureInfo('en'))->getNativeName());
+	}
+
+	public function testNamesOfAnUnknownRegion()
+	{
+		$culture = new CultureInfo('en_QQ');
+
+		$this->assertSame('English', $culture->getNativeName());
+		$this->assertSame('English', $culture->getEnglishName());
+	}
+
+	public function testNamesWithARegion()
+	{
+		$this->assertSame('français (France)', (new CultureInfo('fr_FR'))->getNativeName());
+		$this->assertSame('French (France)', (new CultureInfo('fr_FR'))->getEnglishName());
+	}
+
+	public function testGetCalendarReadsTheCoreBundle()
+	{
+		$culture = new CultureInfo('en_US');
+
+		$this->assertSame($culture->findInfo('calendar/default', 'Core'), $culture->getCalendar());
+	}
+
+	public function testFindInfoOfAnUnknownBundleIsEmpty()
+	{
+		$culture = new CultureInfo('en_US');
+
+		$this->assertSame([], $culture->findInfo('Languages', 'Unknown'));
+	}
+
+	public function testLoadCultureDataOfAnUnknownBundleLoadsNothing()
+	{
+		$snapshot = PradoUnit::snapshotStatic(CultureInfo::class, ['bundleNames', 'data']);
+		try {
+			$culture = new CultureInfo('de_DE');
+			PradoUnit::setProp(CultureInfo::class, 'data', []);
+
+			PradoUnit::setProp(CultureInfo::class, 'bundleNames', []);
+			PradoUnit::invoke($culture, 'loadCultureData', 'Core');
+			$this->assertSame([], PradoUnit::getProp(CultureInfo::class, 'data'));
+
+			PradoUnit::setProp(CultureInfo::class, 'bundleNames', ['Other' => null]);
+			PradoUnit::invoke($culture, 'loadCultureData', 'Core');
+			$this->assertSame([], PradoUnit::getProp(CultureInfo::class, 'data'));
+		} finally {
+			PradoUnit::restoreStatic(CultureInfo::class, $snapshot);
+		}
+	}
+
+	public function testSearchResourcesOfAnArrayKeepsTheArray()
+	{
+		$culture = new CultureInfo('en');
+
+		$this->assertSame(['a' => 'x'], PradoUnit::invoke($culture, 'searchResources', ['a' => ['x']], 'a'));
+	}
+
+	public function testSimplify()
+	{
+		$culture = new CultureInfo('en');
+
+		$this->assertSame('x', PradoUnit::invoke($culture, 'simplify', 'x'));
+		$this->assertNull(PradoUnit::invoke($culture, 'simplify', null));
+		$this->assertSame(
+			['k' => 'v', 'm' => ['a', 'b'], 's' => 's'],
+			PradoUnit::invoke($culture, 'simplify', ['k' => ['v'], 'm' => ['a', 'b'], 's' => 's'])
+		);
+		$this->assertSame(['k' => 'v'], PradoUnit::invoke($culture, 'simplify', ['k' => ['v']]));
+	}
+
+	public function testGetTimeZonesIsComputedOnce()
+	{
+		$culture = new CultureInfo('it');
+
+		$this->assertSame($culture->getTimeZones(), (new CultureInfo('fr'))->getTimeZones());
+	}
+
+	/**
+	 * getTimeZones() and getCurrencies() keep their first result in a static variable,
+	 * so the empty and one-entry resources run in a fresh process.
+	 */
+	#[RunInSeparateProcess]
+	#[PreserveGlobalState(false)]
+	public function testTimeZonesAndCurrenciesOfSmallResources()
+	{
+		$culture = new CultureInfoDataFixture('en');
+
+		$this->assertNull($culture->getTimeZones());
+		$culture->info['zoneStrings'] = ['Africa:Abidjan' => []];
+		$this->assertSame(['Africa/Abidjan'], $culture->getTimeZones());
+		$culture->info['zoneStrings'] = ['Europe:Paris' => []];
+		$this->assertSame(['Africa/Abidjan'], $culture->getTimeZones());
+
+		$this->assertSame([], $culture->getCurrencies());
+		$culture->info['Currencies'] = ['USD' => ['$', 'US Dollar']];
+		$this->assertSame([], $culture->getCurrencies());
+	}
+
+	// ------- units and plurals -------
+
+	public function testFormatUnitOfEachPluralAndAMissingUnitOrPattern()
+	{
+		$culture = new CultureInfo('en_US');
+
+		$this->assertSame('1 kilometer', $culture->formatUnit(1, CultureInfoUnits::TYPE_LENGTH_KILOMETER));
+		$this->assertSame('2 kilometers', $culture->formatUnit(2, CultureInfoUnits::TYPE_LENGTH_KILOMETER));
+		$this->assertNull($culture->formatUnit(1, 'length-unknown'));
+		$this->assertNull($culture->formatUnit(2, 'length-unknown'));
+		$this->assertNull($culture->formatUnit(1, 'length'));
+		$this->assertNull($culture->formatUnit(2, 'length'));
+	}
+
+	public function testFormatPerUnitOfAMissingUnitOrPattern()
+	{
+		$culture = new CultureInfo('en_US');
+
+		$this->assertSame('3 per kilometer', $culture->formatPerUnit(3, CultureInfoUnits::TYPE_LENGTH_KILOMETER));
+		$this->assertNull($culture->formatPerUnit(3, 'length-unknown'));
+		$this->assertNull($culture->formatPerUnit(3, 'length'));
+	}
+
+	public function testGetUnitPatternsOfACategoryIsEmpty()
+	{
+		$this->assertSame([], (new CultureInfo('en_US'))->getUnitPatterns('length'));
+	}
+
+	public function testSelectPluralCategoryOfAnUnformattableNumberIsOther()
+	{
+		$this->assertSame('other', (new CultureInfo('en'))->selectPluralCategory(NAN));
+	}
+
+	public function testEnglishNameOfANeutralCulture()
+	{
+		$this->assertSame('English', (new CultureInfo('en'))->getEnglishName());
+		$this->assertSame('French', (new CultureInfo('fr'))->getEnglishName());
 	}
 }

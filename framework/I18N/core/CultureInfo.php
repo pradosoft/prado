@@ -398,8 +398,7 @@ class CultureInfo
 			return $this->culture;
 		}
 
-		$region = $culture->findInfo("Countries/{$reg}");
-		if ($region) {
+		if ($reg !== '' && $region = $culture->findInfo("Countries/{$reg}")) {
 			return $language . ' (' . $region . ')';
 		} else {
 			return $language;
@@ -644,7 +643,8 @@ class CultureInfo
 		}
 
 		// Fallback
-		return number_format($number, 2, '.', ',');
+		// The intl extension is required.
+		return number_format($number, 2, '.', ','); // @codeCoverageIgnore
 	}
 
 	/**

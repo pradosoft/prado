@@ -45,7 +45,8 @@ trait TNumberFormatterTrait
 	protected function getFormatter($culture, $format)
 	{
 		if (!class_exists('NumberFormatter')) {
-			return null;
+			// The intl extension is required.
+			return null; // @codeCoverageIgnore
 		}
 
 		if (!isset(self::$formatters[$culture])) {

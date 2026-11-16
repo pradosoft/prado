@@ -45,18 +45,17 @@ Files can be organized by locale:
 messages/
   messages.php           # default
   messages.de_DE.php     # German (Germany)
-  de/
-    DE/
-      messages.php       # or in subdirectory
+  de_DE/
+    messages.php         # or in a culture directory
 ```
 
 ## Key Methods
 
 Same as `MessageSource`:
 - `load($catalogue)` - Load from PHP file
-- `save($catalogue)` - Save untranslated to file
-- `update($text, $target, $comments, $catalogue)` - Update translation
-- `delete($message, $catalogue)` - Delete translation
+- `save($catalogue)` - Save untranslated to file, then clear the untranslated list
+- `update($text, $target, $comments, $catalogue)` - Update translation; false when no unit's source equals `$text` (strict)
+- `delete($message, $catalogue)` - Delete translation; false when no unit's source equals `$message` (strict)
 
 ## See Also
 

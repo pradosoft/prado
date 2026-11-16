@@ -127,7 +127,7 @@ class MessageSource_gettext extends MessageSource
 	 */
 	protected function getCatalogueList($catalogue)
 	{
-		$variants = explode('_', $this->culture);
+		$variants = explode('_', (string) $this->culture);
 		$source = $catalogue . $this->dataExt;
 
 		$catalogues = [$source];
@@ -156,7 +156,7 @@ class MessageSource_gettext extends MessageSource
 	 */
 	private function getCatalogueByDir($catalogue)
 	{
-		$variants = explode('_', $this->culture);
+		$variants = explode('_', (string) $this->culture);
 		$catalogues = [];
 
 		$variant = null;
@@ -244,7 +244,7 @@ class MessageSource_gettext extends MessageSource
 		$existing = count($result['strings']);
 
 		//add to strings to the existing message list
-		$result['strings'] = array_merge($result['strings'], $strings);
+		$result['strings'] += $strings;
 
 		$new = count($result['strings']);
 
@@ -255,12 +255,14 @@ class MessageSource_gettext extends MessageSource
 			$po->fromArray($result);
 			$mo = $po->toMO();
 			if ($po->save() && $mo->save($MOFile)) {
+				$this->untranslated = [];
 				if (!empty($this->cache)) {
 					$this->cache->clean($variant, $this->culture);
 				}
 				return true;
 			} else {
-				return false;
+				// A write fails after is_writable() only when the file system changes in between.
+				return false; // @codeCoverageIgnore
 			}
 		}
 		return false;
@@ -292,25 +294,24 @@ class MessageSource_gettext extends MessageSource
 		$po->load();
 		$result = $po->toArray();
 
-		foreach ($result['strings'] as $string => $value) {
-			if ($string == $message) {
-				unset($result['strings'][$string]);
-				$result['meta']['PO-Revision-Date'] = @date('Y-m-d H:i:s');
-
-				$po->fromArray($result);
-				$mo = $po->toMO();
-				if ($po->save() && $mo->save($MOFile)) {
-					if (!empty($this->cache)) {
-						$this->cache->clean($variant, $this->culture);
-					}
-					return true;
-				} else {
-					return false;
-				}
-			}
+		if (!array_key_exists((string) $message, $result['strings'])) {
+			return false;
 		}
 
-		return false;
+		unset($result['strings'][$message]);
+		$result['meta']['PO-Revision-Date'] = @date('Y-m-d H:i:s');
+
+		$po->fromArray($result);
+		$mo = $po->toMO();
+		if ($po->save() && $mo->save($MOFile)) {
+			if (!empty($this->cache)) {
+				$this->cache->clean($variant, $this->culture);
+			}
+			return true;
+		}
+
+		// A write fails after is_writable() only when the file system changes in between.
+		return false; // @codeCoverageIgnore
 	}
 
 	/**
@@ -342,26 +343,24 @@ class MessageSource_gettext extends MessageSource
 		$po->load();
 		$result = $po->toArray();
 
-		foreach ($result['strings'] as $string => $value) {
-			if ($string == $text) {
-				$result['strings'][$string] = $target;
-				$result['meta']['PO-Revision-Date'] = @date('Y-m-d H:i:s');
-
-				$po->fromArray($result);
-				$mo = $po->toMO();
-
-				if ($po->save() && $mo->save($MOFile)) {
-					if (!empty($this->cache)) {
-						$this->cache->clean($variant, $this->culture);
-					}
-					return true;
-				} else {
-					return false;
-				}
-			}
+		if (!array_key_exists((string) $text, $result['strings'])) {
+			return false;
 		}
 
-		return false;
+		$result['strings'][$text] = $target;
+		$result['meta']['PO-Revision-Date'] = @date('Y-m-d H:i:s');
+
+		$po->fromArray($result);
+		$mo = $po->toMO();
+		if ($po->save() && $mo->save($MOFile)) {
+			if (!empty($this->cache)) {
+				$this->cache->clean($variant, $this->culture);
+			}
+			return true;
+		}
+
+		// A write fails after is_writable() only when the file system changes in between.
+		return false; // @codeCoverageIgnore
 	}
 
 
@@ -385,7 +384,7 @@ class MessageSource_gettext extends MessageSource
 	protected function getCatalogues($dir = null, $variant = null)
 	{
 		$dir = $dir ? $dir : $this->source;
-		$files = scandir($dir);
+		$files = @scandir($dir) ?: [];
 
 		$catalogue = [];
 
@@ -398,11 +397,8 @@ class MessageSource_gettext extends MessageSource
 				);
 			}
 
-			$pos = strpos($file, $this->dataExt);
-
-			if ($pos > 0
-				&& substr($file, -1 * strlen($this->dataExt)) == $this->dataExt) {
-				$name = substr($file, 0, $pos);
+			if (strlen($file) > strlen($this->dataExt) && str_ends_with($file, $this->dataExt)) {
+				$name = substr($file, 0, -strlen($this->dataExt));
 				$dot = strrpos($name, $this->dataSeparator);
 				$culture = $variant;
 				$cat = $name;

@@ -50,11 +50,11 @@ TGettext::poFile2moFile('/path/messages.po', '/path/messages.mo');
 
 ### `prepare($string, $reverse = false): string`
 
-Escape/unescape special characters for gettext format.
+Escape (`$reverse` true) or unescape the PO string escapes `\\`, `\"`, `\n`, `\t`, and `\r`; a save and load round-trips backslashes.
 
 ### `meta2array($meta): array`
 
-Parse metadata block to array.
+Parse the `Key: Value` lines of a metadata block to an array; a line without `:` is skipped.
 
 ## Instance Methods
 
@@ -64,7 +64,7 @@ Get meta and strings as array.
 
 ### `fromArray($array): bool`
 
-Load from array structure.
+Load from array structure; a keyed array without `meta` sets an empty meta.
 
 ### `toMO(): TGettext_MO`
 

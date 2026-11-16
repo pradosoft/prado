@@ -301,7 +301,8 @@ class ChoiceFormat
 					}
 					return (int) $left($n) % $divisor;
 				},
-				default => throw new Exception("Unknown set notation operator \"{$operator}\""),
+				// The tokenizer passes only the operators above.
+				default => throw new Exception("Unknown set notation operator \"{$operator}\""), // @codeCoverageIgnore
 			};
 		}
 		return $left;

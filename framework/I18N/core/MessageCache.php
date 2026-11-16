@@ -79,6 +79,7 @@ class MessageCache
 	public function setLifeTime($time)
 	{
 		$this->lifetime = (int) $time;
+		$this->cache->setLifeTime($this->lifetime);
 	}
 
 	/**
