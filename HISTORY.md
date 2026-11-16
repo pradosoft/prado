@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TMemCache` reads every expiration time as seconds and passes one over 30 days to Memcached as the timestamp it ends at; Memcached read such a time as a timestamp in 1970, so the value expired at once. See UPGRADE.md. (belisoful)
 BUG: Issue #1497 - `TFileCache` and `TMemoryCache` throw `TInvalidDataValueException` for a `MaximumSize` that is not a size, such as `1.5G`; it removed the size limit. (belisoful)
 BUG: Issue #1497 - `TDbCache` records that its table was created and when it last flushed per connection as well as table name; a cache with the same table name in another database skipped creating its table and flushing expired items. (belisoful)
 BUG: Issue #1497 - `TCache::set()` and `add()` store a `NAN` value on PHP 8.5; testing it for emptiness raised a warning, which threw `TPhpErrorException`. (belisoful)
