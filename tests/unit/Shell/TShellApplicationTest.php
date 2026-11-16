@@ -11,6 +11,9 @@
 namespace Prado\Test\Unit\Shell;
 
 use Prado\Caching\ICache;
+use Prado\IO\TMemoryStream;
+use Prado\IO\TStdErrStream;
+use Prado\IO\TStream;
 use Prado\Prado;
 use Prado\Shell\Actions\TFlushCachesAction;
 use Prado\Shell\Actions\THelpAction;
@@ -20,7 +23,21 @@ use Prado\Shell\TShellApplication;
 use Prado\Shell\TShellWriter;
 use Prado\TApplicationMode;
 use Prado\TModule;
+use Prado\Test\Unit\Harness\IO\TTestCapturingTextWriter;
 use Prado\Test\Unit\Harness\TTestShellApplication;
+
+/**
+ * A shell application whose error stream is a memory stream.
+ */
+class ShellTestMemoryErrorApplication extends TTestShellApplication
+{
+	public ?TMemoryStream $errors = null;
+
+	protected function createStdErrStream(): ?TStream
+	{
+		return $this->errors = new TMemoryStream();
+	}
+}
 
 /**
  * A minimal ICache+TModule stub used to verify that {@see TShellApplication::installShellActions()}
@@ -592,5 +609,83 @@ class TShellApplicationTest extends \PHPUnit\Framework\TestCase
 		// After stripping --verbose, the remaining args must be a contiguous
 		// zero-indexed array (no gaps from unset()).
 		$this->assertSame(array_values($args), $args);
+	}
+
+	// -----------------------------------------------------------------------
+	// Error stream
+	// -----------------------------------------------------------------------
+
+	public function testCreateStdErrStreamIsTheStandardError()
+	{
+		$method = new \ReflectionMethod(TShellApplication::class, 'createStdErrStream');
+
+		$this->assertInstanceOf(TStdErrStream::class, $method->invoke($this->_app));
+	}
+
+	public function testTheWriterSendsErrorBlocksToTheErrorStream()
+	{
+		$this->_app->restoreApplication();
+		$this->_app = $app = new ShellTestMemoryErrorApplication();
+		$text = new TTestCapturingTextWriter();
+
+		$writer = $app->getWriter();
+		$writer->setWriter($text);
+		$writer->write('before');
+		$writer->writeError('boom');
+
+		$this->assertSame($app->errors, $writer->getErrorStream());
+		$this->assertSame('before', $text->getCaptured());
+		$this->assertSame($writer->formatError('boom'), (string) $app->errors);
+	}
+
+	public function testTheHarnessKeepsErrorBlocksInTheOutputWriter()
+	{
+		$this->assertNull($this->_app->getWriter()->getErrorStream());
+	}
+
+	// -----------------------------------------------------------------------
+	// Quiet mode levels
+	// -----------------------------------------------------------------------
+
+	public function testQuietModeLevelConstants()
+	{
+		$this->assertSame(TShellApplication::QUIET_NONE, $this->_app->getQuietMode());
+		$this->_app->setQuietMode('');
+		$this->assertSame(TShellApplication::QUIET_INFO, $this->_app->getQuietMode());
+		$this->_app->setQuietMode(99);
+		$this->assertSame(TShellApplication::QUIET_ERRORS, $this->_app->getQuietMode());
+		$this->_app->setQuietMode(-1);
+		$this->assertSame(TShellApplication::QUIET_NONE, $this->_app->getQuietMode());
+		$this->assertSame([0, 1, 2, 3], [TShellApplication::QUIET_NONE, TShellApplication::QUIET_INFO, TShellApplication::QUIET_OUTPUT, TShellApplication::QUIET_ERRORS]);
+	}
+
+	// -----------------------------------------------------------------------
+	// printHelp
+	// -----------------------------------------------------------------------
+
+	public function testPrintHelpShowsAnExampleOfEachRegisteredAction()
+	{
+		$this->_app->addShellActionClass(THelpAction::class);
+		$this->_app->addShellActionClass(TWebServerAction::class);
+		$this->_app->addShellActionClass(TFlushCachesAction::class);
+		$text = new TTestCapturingTextWriter();
+
+		$this->_app->printHelp(new TShellWriter($text));
+
+		$output = $text->getCaptured();
+		$this->assertStringContainsString("usage: prado-cli <command>[/<method>] <parameter> [optional]\n", $output);
+		$this->assertStringContainsString("example: prado-cli help\nexample: prado-cli http/serve\nexample: prado-cli cache/flush-all\n", $output);
+		$this->assertStringContainsString('Loads the application.xml or application.php from <folder>', $output);
+		$this->assertStringNotContainsString('cron/tasks', $output);
+		$this->assertStringNotContainsString('prado-cli.php', $output);
+	}
+
+	public function testPrintHelpWithoutActionsShowsNoExample()
+	{
+		$text = new TTestCapturingTextWriter();
+
+		$this->_app->printHelp(new TShellWriter($text));
+
+		$this->assertStringNotContainsString('example:', $text->getCaptured());
 	}
 }

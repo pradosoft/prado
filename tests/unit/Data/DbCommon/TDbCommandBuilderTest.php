@@ -802,4 +802,95 @@ class TDbCommandBuilderTest extends \PHPUnit\Framework\TestCase
 		$this->assertStringNotContainsString('WHERE', $builder->createDeleteCommand('')->getText());
 	}
 
+	public static function limitOffsetProvider(): array
+	{
+		return [
+			'null, null' => [null, null, 'SELECT 1'],
+			'null, negative' => [null, -1, 'SELECT 1'],
+			'null, offset' => [null, 2, 'SELECT 1 OFFSET 2'],
+			'negative, null' => [-1, null, 'SELECT 1'],
+			'negative, negative' => [-1, -1, 'SELECT 1'],
+			'negative, offset' => [-1, 2, 'SELECT 1 OFFSET 2'],
+			'limit, null' => [3, null, 'SELECT 1 LIMIT 3'],
+			'limit, negative' => [3, -1, 'SELECT 1 LIMIT 3'],
+			'limit, offset' => [3, 2, 'SELECT 1 LIMIT 3 OFFSET 2'],
+		];
+	}
+
+	/**
+	 * @dataProvider limitOffsetProvider
+	 */
+	public function test_apply_limit_offset_combinations($limit, $offset, string $expected)
+	{
+		$this->assertSame($expected, $this->builder()->applyLimitOffset('SELECT 1', $limit, $offset));
+	}
+
+	public function test_apply_criterias_applies_an_offset_below_a_negative_limit()
+	{
+		$builder = $this->builder();
+
+		$ordered = $builder->applyCriterias('SELECT name FROM items', [], ['id' => 'desc'], -1, 1);
+		$this->assertSame('SELECT name FROM items ORDER BY "id" DESC OFFSET 1', $ordered->getText());
+
+		$unordered = $builder->applyCriterias('SELECT name FROM items', [], [], -1, 1);
+		$this->assertSame('SELECT name FROM items OFFSET 1', $unordered->getText());
+	}
+
+	public function test_bind_array_values_prefixes_a_name_and_binds_an_untyped_value()
+	{
+		$builder = new TDbCommandBuilderTestRecordingBuilder(self::$conn, self::$meta->getTableInfo('items'));
+		$command = $builder->createCommand('SELECT :price');
+
+		$builder->bindArrayValues($command, ['price' => 1.5]);
+
+		$this->assertSame([':price' => [1.5, null]], $command->bound);
+	}
+
+	public function test_bind_column_values_binds_a_null_by_the_column_nullability()
+	{
+		$builder = new TDbCommandBuilderTestRecordingBuilder(self::$conn, self::$meta->getTableInfo('items'));
+		$command = $builder->createCommand('SELECT 1');
+
+		$builder->bindColumnValues($command, []);
+		$this->assertSame([], $command->bound);
+
+		$builder->bindColumnValues($command, ['note' => null]);
+		$this->assertSame([':note' => [null, TDbConnection::PARAM_NULL]], $command->bound);
+
+		$builder->bindColumnValues($command, ['name' => null]);
+		$this->assertSame([null, TDbConnection::PARAM_STR], $command->bound[':name']);
+	}
+
+	public function test_resolve_update_data_of_one_entry()
+	{
+		$builder = $this->builder();
+		$data = ['id' => 1, 'name' => 'n'];
+
+		$this->assertSame(['name' => 'n'], PradoUnit::invoke($builder, 'resolveUpdateData', $data, ['name'], ['id']));
+		$this->assertSame([], PradoUnit::invoke($builder, 'resolveUpdateData', $data, ['note'], ['id']));
+		$this->assertSame(['note' => 'set'], PradoUnit::invoke($builder, 'resolveUpdateData', $data, ['note' => 'set'], ['id']));
+	}
+
+	public function test_bindings_of_no_values_are_empty()
+	{
+		$builder = $this->builder();
+
+		$this->assertSame([], PradoUnit::invoke($builder, 'getColumnBindings', []));
+		$this->assertSame(['', ''], PradoUnit::invoke($builder, 'getInsertFieldBindings', []));
+	}
+
+	public function test_last_insert_id_of_a_table_without_columns_is_null()
+	{
+		$builder = new TDbCommandBuilder(self::$conn, new TDbTableInfo(['TableName' => 'empty']));
+
+		$this->assertNull($builder->getLastInsertID());
+	}
+
+	public function test_quote_tuple_quotes_nested_values()
+	{
+		$builder = $this->builder();
+
+		$this->assertSame('()', PradoUnit::invoke($builder, 'quoteTuple', []));
+		$this->assertSame("(('a', 'b'))", PradoUnit::invoke($builder, 'quoteTuple', [['a', 'b']]));
+	}
 }

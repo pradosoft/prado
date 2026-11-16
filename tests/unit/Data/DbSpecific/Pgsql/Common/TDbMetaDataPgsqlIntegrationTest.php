@@ -329,4 +329,72 @@ class TDbMetaDataPgsqlIntegrationTest extends \PHPUnit\Framework\TestCase
 		);
 		$this->assertNull(PradoUnit::invoke($meta, 'getForeignKeys', 'CHECK (score > 0)'));
 	}
+
+	/**
+	 * Runs $fn with tables created by $ddl and drops them afterwards.
+	 */
+	private function withTables(array $ddl, array $drop, callable $fn): void
+	{
+		foreach ($drop as $table) {
+			$this->_conn->createCommand("DROP TABLE IF EXISTS {$table}")->execute();
+		}
+		try {
+			foreach ($ddl as $sql) {
+				$this->_conn->createCommand($sql)->execute();
+			}
+			$fn(new TPgsqlMetaData($this->_conn));
+		} finally {
+			foreach ($drop as $table) {
+				$this->_conn->createCommand("DROP TABLE IF EXISTS {$table}")->execute();
+			}
+		}
+	}
+
+	public function testPgsqlQuotedMixedCaseTableKeepsItsCase(): void
+	{
+		$this->withTables(['CREATE TABLE "MetaMixed" (id INT)'], ['"MetaMixed"'], function (TPgsqlMetaData $meta) {
+			$info = $meta->getTableInfo('"MetaMixed"');
+			$this->assertSame('MetaMixed', $info->getTableName());
+			$this->assertSame(['"id"'], $info->getColumnNames());
+
+			try {
+				$meta->getTableInfo('"metamixed"');
+				$this->fail('Expected TDbException for a quoted name in another case');
+			} catch (TDbException $e) {
+				$this->assertSame('dbmetadata_invalid_table_view', $e->getErrorCode());
+			}
+		});
+	}
+
+	public function testPgsqlForeignKeyWithoutPrimaryKeyAndUniqueOnlyTables(): void
+	{
+		$this->withTables([
+			'CREATE TABLE meta_parent (id INT PRIMARY KEY)',
+			'CREATE TABLE meta_child (parent_id INT REFERENCES meta_parent (id))',
+			'CREATE TABLE meta_unique (code INT UNIQUE)',
+			'CREATE TABLE meta_plain (a INT)',
+		], ['meta_child', 'meta_parent', 'meta_unique', 'meta_plain'], function (TPgsqlMetaData $meta) {
+			$child = $meta->getTableInfo('meta_child');
+			$this->assertSame([], $child->getPrimaryKeys());
+			$this->assertSame([['table' => 'meta_parent', 'keys' => ['parent_id' => 'id']]], $child->getForeignKeys());
+			$this->assertTrue($child->getColumn('parent_id')->getIsForeignKey());
+
+			$unique = $meta->getTableInfo('meta_unique');
+			$this->assertSame([], $unique->getPrimaryKeys());
+			$this->assertSame([], $unique->getForeignKeys());
+
+			$plain = $meta->getTableInfo('meta_plain');
+			$this->assertSame([], $plain->getPrimaryKeys());
+			$this->assertSame([], $plain->getForeignKeys());
+		});
+	}
+
+	public function testPgsqlTableNamesOfASchemaWithoutTables(): void
+	{
+		$meta = new TPgsqlMetaData($this->_conn);
+		$this->assertSame([], $meta->findTableNames('meta_no_such_schema'));
+
+		$meta->setDefaultSchema('meta_no_such_schema');
+		$this->assertSame([], $meta->findTableNames(''));
+	}
 }

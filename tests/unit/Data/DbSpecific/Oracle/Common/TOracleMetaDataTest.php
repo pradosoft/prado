@@ -268,6 +268,86 @@ class TOracleMetaDataTest extends \PHPUnit\Framework\TestCase
 
 		$this->assertSame(['EMP'], $meta->findTableNames('PRADO'));
 	}
+
+	public static function constraintRowProvider(): array
+	{
+		return [
+			'primary' => [['consrc' => 'ID', 'contype' => 'P'], [['id'], []]],
+			'foreign' => [['consrc' => 'DEPT_ID', 'contype' => 'R'], [[], ['dept_id']]],
+			'check' => [['consrc' => 'NAME', 'contype' => 'C'], [[], []]],
+		];
+	}
+
+	/**
+	 * @dataProvider constraintRowProvider
+	 */
+	public function test_constraint_keys_of_one_constraint(array $row, array $expected)
+	{
+		[$meta] = $this->makeMetaData(['ALL_CONSTRAINTS' => [$row]]);
+
+		$this->assertSame($expected, PradoUnit::invoke($meta, 'getConstraintKeys', 'PRADO', 'EMP'));
+	}
+
+	public function test_foreign_key_column_of_a_table_without_foreign_keys()
+	{
+		[$meta] = $this->makeMetaData([]);
+
+		$this->assertFalse(PradoUnit::invoke($meta, 'isForeignKeyColumn', 'id', new TOracleTableInfo([], ['id'], [])));
+	}
+
+	public function test_find_table_names_without_tables()
+	{
+		[$meta] = $this->makeMetaData([]);
+		$meta->setDefaultSchema('prado');
+
+		$this->assertSame([], $meta->findTableNames());
+		$this->assertSame([], $meta->findTableNames('HR'));
+	}
+
+	public static function searchableTypeProvider(): array
+	{
+		return [
+			'character varying' => ['character varying', true],
+			'varchar2' => ['VARCHAR2', true],
+			'character' => ['character', true],
+			'char' => ['char', true],
+			'text' => ['text', true],
+			'number' => ['NUMBER', false],
+		];
+	}
+
+	/**
+	 * @dataProvider searchableTypeProvider
+	 */
+	public function test_searchable_column_types(string $type, bool $searchable)
+	{
+		[$meta, $conn] = $this->makeMetaData([]);
+		$builder = new TOracleCommandBuilder($conn, new TOracleTableInfo(['TableName' => 'EMP']));
+
+		$this->assertSame($searchable, PradoUnit::invoke($builder, 'isSearchableColumn', new TOracleTableColumn(['DbType' => $type])));
+	}
+
+	public function test_search_expression_without_a_searchable_field_is_empty()
+	{
+		[$meta, $conn] = $this->makeMetaData([]);
+		$info = new TOracleTableInfo(['TableName' => 'EMP']);
+		$info->getColumns()->add('id', new TOracleTableColumn(['ColumnName' => '"ID"', 'ColumnId' => 'id', 'DbType' => 'NUMBER']));
+		$builder = new TOracleCommandBuilder($conn, $info);
+
+		$this->assertSame('', $builder->getSearchExpression([], 'word'));
+		$this->assertSame('', $builder->getSearchExpression(['id'], 'word'));
+	}
+
+	public function test_limit_of_a_select_without_from_wraps_the_whole_statement()
+	{
+		[$meta, $conn] = $this->makeMetaData([]);
+		$builder = new TOracleCommandBuilder($conn, new TOracleTableInfo(['TableName' => 'EMP']));
+
+		$sql = $builder->applyLimitOffset('SELECT 1 AS one', 5);
+
+		$this->assertStringContainsString('ROWNUM', $sql);
+		$this->assertStringContainsString('SELECT 1 AS one', $sql);
+	}
 }
 
 /**

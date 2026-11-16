@@ -1458,7 +1458,50 @@ class TDbDriverCapabilitiesTest extends \PHPUnit\Framework\TestCase
 			);
 		}
 	}
+
+	public function testAliasDriversShareTheirMatchArm(): void
+	{
+		$this->assertSame(TSqliteMetaData::class, TDbDriverCapabilities::getMetaDataClass(TDbDriver::DRIVER_SQLITE2));
+		$this->assertSame(TFirebirdMetaData::class, TDbDriverCapabilities::getMetaDataClass(TDbDriver::DRIVER_INTERBASE));
+		$this->assertSame(TSqlSrvMetaData::class, TDbDriverCapabilities::getMetaDataClass(TDbDriver::DRIVER_DBLIB));
+
+		$this->assertSame(['PRAGMA foreign_keys = ON'], TDbDriverCapabilities::getPostConnectSql(TDbDriver::DRIVER_SQLITE2));
+		$this->assertSame(TDbDriverCapabilities::getListTablesSql(TDbDriver::DRIVER_SQLITE), TDbDriverCapabilities::getListTablesSql(TDbDriver::DRIVER_SQLITE2));
+		$this->assertSame(TDbDriverCapabilities::getListTablesSql(TDbDriver::DRIVER_FIREBIRD), TDbDriverCapabilities::getListTablesSql(TDbDriver::DRIVER_INTERBASE));
+		$this->assertSame(TDbDriverCapabilities::getListTablesSql(TDbDriver::DRIVER_SQLSRV), TDbDriverCapabilities::getListTablesSql(TDbDriver::DRIVER_DBLIB));
+
+		$charsetDrivers = [TDbDriver::DRIVER_MYSQL, TDbDriver::DRIVER_FIREBIRD, TDbDriver::DRIVER_INTERBASE, TDbDriver::DRIVER_OCI, TDbDriver::DRIVER_DBLIB];
+		foreach ($charsetDrivers as $driver) {
+			$this->assertSame('charset', TDbDriverCapabilities::getCharsetDsnParam($driver), $driver);
+			$this->assertSame('/[;?]charset\s*=\s*([^;]+)/i', TDbDriverCapabilities::getCharsetDsnPattern($driver), $driver);
+		}
+
+		foreach ([TDbDriver::DRIVER_SQLITE, TDbDriver::DRIVER_PGSQL, TDbDriver::DRIVER_SQLSRV, TDbDriver::DRIVER_DBLIB] as $driver) {
+			$this->assertFalse(TDbDriverCapabilities::hasAutoCommitAttribute($driver), $driver);
+		}
+	}
+
+	public function testOracleSessionStatementsSetIsoDateFormats(): void
+	{
+		$statements = TDbDriverCapabilities::getPostConnectSql(TDbDriver::DRIVER_OCI);
+
+		$this->assertCount(3, $statements);
+		$this->assertStringContainsString("NLS_DATE_FORMAT = 'YYYY-MM-DD'", $statements[0]);
+	}
+
+	public function testOracleUsesItsOwnCommandClass(): void
+	{
+		$this->assertSame(\Prado\Data\Common\Oracle\TOracleDbCommand::class, TDbDriverCapabilities::getCommandClass(TDbDriver::DRIVER_OCI));
+		$this->assertSame(\Prado\Data\TDbCommand::class, TDbDriverCapabilities::getCommandClass(TDbDriver::DRIVER_SQLITE));
+	}
+
+	public function testCanonicalAliasResolvesThroughItsCharset(): void
+	{
+		$this->assertSame('CL8KOI8R', TDbDriverCapabilities::resolveCharset('koi8r', TDbDriver::DRIVER_OCI));
+		$this->assertSame('CL8KOI8U', TDbDriverCapabilities::resolveCharset('KOI8_U', TDbDriver::DRIVER_OCI));
+	}
 }
+
 
 /**
  * Prado Data plugin connection shape: a TComponent IDataConnection that is not a TDbConnection.

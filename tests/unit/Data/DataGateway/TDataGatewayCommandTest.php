@@ -356,4 +356,49 @@ class TDataGatewayCommandTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame(['a', 'b', 'c'], $this->names());
 	}
 
+	public function testFindAllBySqlAppliesOrderingAndAnOffsetBelowANegativeLimit()
+	{
+		$criteria = new TSqlCriteria('SELECT name FROM items');
+		$criteria->setOrdersBy('id DESC');
+		$criteria->setLimit(-1);
+		$criteria->setOffset(1);
+		$this->assertSame(['b', 'a'], array_column($this->command()->findAllBySql($criteria)->readAll(), 'name'));
+	}
+
+	public function testFindAllBySqlAppliesAnOffsetBelowANegativeLimitWithoutOrdering()
+	{
+		$criteria = new TSqlCriteria('SELECT name FROM items');
+		$criteria->setLimit(-1);
+		$criteria->setOffset(2);
+		$this->assertCount(1, $this->command()->findAllBySql($criteria)->readAll());
+	}
+
+	public function testFindAllBySqlWithoutOrderingLimitOrOffsetReturnsEveryRow()
+	{
+		$criteria = new TSqlCriteria('SELECT name FROM items');
+		$criteria->setLimit(-1);
+		$criteria->setOffset(-1);
+		$names = array_column($this->command()->findAllBySql($criteria)->readAll(), 'name');
+		sort($names);
+		$this->assertSame(['a', 'b', 'c'], $names);
+	}
+
+	public function testCreateCriteriaFromStringRequiresAValuePerFieldInTheArray()
+	{
+		$this->assertDbErrorCode('dbtablegateway_mismatch_args_exception', fn () => $this->command()->createCriteriaFromString('findByNameAndKind', 'NameAndKind', [['a']]));
+		$this->assertDbErrorCode('dbtablegateway_mismatch_args_exception', fn () => $this->command()->createCriteriaFromString('findByNameAndKind', 'NameAndKind', []));
+	}
+
+	public function testDbConnectionIsTheBuilderConnection()
+	{
+		$this->assertSame($this->_conn, $this->command()->getDbConnection());
+	}
+
+	public function testDeprecatedQuoteTupleQuotesNestedValues()
+	{
+		$command = $this->command();
+		$this->assertSame('()', PradoUnit::invoke($command, 'quoteTuple', []));
+		$this->assertSame("('a')", PradoUnit::invoke($command, 'quoteTuple', ['a']));
+		$this->assertSame("(('it''s'))", PradoUnit::invoke($command, 'quoteTuple', [["it's"]]));
+	}
 }

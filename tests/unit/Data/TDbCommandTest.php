@@ -277,4 +277,13 @@ class TDbCommandTest extends \PHPUnit\Framework\TestCase
 	{
 		$this->assertSame([1, 'my name'], $this->_connection->createCommand('SELECT id, name FROM foo ORDER BY id')->queryRow(false));
 	}
+
+	public function testPreparedQueryRowAsNumericArray()
+	{
+		$command = $this->_connection->createCommand('SELECT id, name FROM foo WHERE id = :id');
+		$command->bindValue(':id', 2);
+		$command->prepare();
+
+		$this->assertSame([2, 'my name 2'], $command->queryRow(false));
+	}
 }

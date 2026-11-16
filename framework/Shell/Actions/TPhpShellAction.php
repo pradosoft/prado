@@ -31,19 +31,43 @@ class TPhpShellAction extends TShellAction
 		'Runs a PHP interactive interpreter after Initializing the Prado application.'];
 
 	/**
-	 * This runs the interactive PHP Shell
+	 * Runs the PsySH interactive PHP shell bound to the application.  Without the
+	 * `psy/psysh` package, an error names the package to install.
 	 * @param array $args parameters
 	 * @return bool
 	 */
 	public function actionIndex($args)
 	{
+		if (!$this->isShellAvailable()) {
+			$this->getWriter()->writeError('The shell command needs psy/psysh: run "composer require psy/psysh".');
+			return true;
+		}
 		$this->getWriter()->flush();
-		$app = Prado::getApplication();
 
-		$shell = new \Psy\Shell();
-		$shell->setBoundObject($app);
+		$shell = $this->createShell();
+		$shell->setBoundObject(Prado::getApplication());
 		$shell->run();
 
 		return true;
+	}
+
+	/**
+	 * Returns whether the `psy/psysh` package is installed.
+	 * @return bool whether `\Psy\Shell` exists.
+	 * @since 4.4.0
+	 */
+	protected function isShellAvailable(): bool
+	{
+		return class_exists(\Psy\Shell::class);
+	}
+
+	/**
+	 * Creates the PsySH shell {@see actionIndex()} runs.
+	 * @return \Psy\Shell the interactive shell.
+	 * @since 4.4.0
+	 */
+	protected function createShell(): \Psy\Shell
+	{
+		return new \Psy\Shell();
 	}
 }

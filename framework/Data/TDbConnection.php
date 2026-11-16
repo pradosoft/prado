@@ -148,6 +148,9 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	private $_active = false;
 
 	private $_pdo;
+	/**
+	 * @var ?TDbTransaction
+	 */
 	private $_transaction;
 
 	/**
@@ -264,7 +267,8 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	protected function createPdoInstance(string $dsn): PDO
 	{
 		if (method_exists(PDO::class, 'connect')) {
-			return PDO::connect($dsn, $this->getUsername(), $this->getPassword(), $this->_attributes);
+			// PDO::connect() exists on PHP 8.4 and later.
+			return PDO::connect($dsn, $this->getUsername(), $this->getPassword(), $this->_attributes); // @codeCoverageIgnore
 		}
 		return new PDO($dsn, $this->getUsername(), $this->getPassword(), $this->_attributes);
 	}
@@ -849,12 +853,17 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	/**
 	 * Creates a new {@see IDataTransaction} for this connection.
 	 *
+	 * @throws TDbException if {@see getTransactionClass TransactionClass} does not create an {@see IDataTransaction}.
 	 * @return IDataTransaction A new transaction from this connection.
 	 * @since 4.4.0
 	 */
 	protected function createTransaction(): IDataTransaction
 	{
-		return Prado::createComponent($this->getTransactionClass(), $this);
+		$transaction = Prado::createComponent($this->getTransactionClass(), $this);
+		if (!($transaction instanceof IDataTransaction)) {
+			throw new TDbException('dbconnection_transaction_class_invalid', get_debug_type($transaction), IDataTransaction::class);
+		}
+		return $transaction;
 	}
 
 	/**
@@ -929,7 +938,7 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 		}
 		$committed = $this->_pdo->commit();
 		$this->completeTransaction();
-		if ($committed !== false && $txn instanceof TDataTransaction) {
+		if ($committed !== false) {
 			$txn->onCommit();
 		}
 		return true;
@@ -966,7 +975,7 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 			throw $e;
 		}
 		$this->completeTransaction();
-		if ($rolledBack !== false && $txn instanceof TDataTransaction) {
+		if ($rolledBack !== false) {
 			$txn->onRollback();
 		}
 		return true;
@@ -1133,18 +1142,12 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	 */
 	public function setColumnCase($value)
 	{
-		switch (TPropertyValue::ensureEnum($value, TDbColumnCaseMode::class)) {
-			case TDbColumnCaseMode::Preserved:
-				$value = PDO::CASE_NATURAL;
-				break;
-			case TDbColumnCaseMode::LowerCase:
-				$value = PDO::CASE_LOWER;
-				break;
-			case TDbColumnCaseMode::UpperCase:
-				$value = PDO::CASE_UPPER;
-				break;
-		}
-		$this->setAttribute(PDO::ATTR_CASE, $value);
+		$cases = [
+			TDbColumnCaseMode::Preserved => PDO::CASE_NATURAL,
+			TDbColumnCaseMode::LowerCase => PDO::CASE_LOWER,
+			TDbColumnCaseMode::UpperCase => PDO::CASE_UPPER,
+		];
+		$this->setAttribute(PDO::ATTR_CASE, $cases[TPropertyValue::ensureEnum($value, TDbColumnCaseMode::class)]);
 	}
 
 	/**
@@ -1168,18 +1171,12 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	 */
 	public function setNullConversion($value)
 	{
-		switch (TPropertyValue::ensureEnum($value, TDbNullConversionMode::class)) {
-			case TDbNullConversionMode::Preserved:
-				$value = PDO::NULL_NATURAL;
-				break;
-			case TDbNullConversionMode::EmptyStringToNull:
-				$value = PDO::NULL_EMPTY_STRING;
-				break;
-			case TDbNullConversionMode::NullToEmptyString:
-				$value = PDO::NULL_TO_STRING;
-				break;
-		}
-		$this->setAttribute(PDO::ATTR_ORACLE_NULLS, $value);
+		$modes = [
+			TDbNullConversionMode::Preserved => PDO::NULL_NATURAL,
+			TDbNullConversionMode::EmptyStringToNull => PDO::NULL_EMPTY_STRING,
+			TDbNullConversionMode::NullToEmptyString => PDO::NULL_TO_STRING,
+		];
+		$this->setAttribute(PDO::ATTR_ORACLE_NULLS, $modes[TPropertyValue::ensureEnum($value, TDbNullConversionMode::class)]);
 	}
 
 	/**
@@ -1224,7 +1221,9 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	 * Delegates to {@see TDbDriverCapabilities::hasAutoCommitAttribute}. When
 	 * this returns false, {@see getAutoCommit()} always returns false and
 	 * {@see setAutoCommit()} is a no-op.  Drivers known to expose the attribute
-	 * include mysql, pgsql, oci, sqlsrv, dblib, and ibm.
+	 * include mysql, pgsql, oci, sqlsrv, dblib, and ibm.  An inactive connection
+	 * without a connection string has no driver yet and reports true, so an
+	 * AutoCommit set before the ConnectionString applies when the connection opens.
 	 *
 	 * @return bool true if the driver exposes `PDO::ATTR_AUTOCOMMIT`.
 	 * @since 4.4.0

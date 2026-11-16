@@ -2,6 +2,7 @@
 
 namespace Prado\Test\Unit\Xml;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use Prado\Collections\TMap;
 use Prado\Xml\TXmlElement;
 
@@ -1390,6 +1391,74 @@ class TXmlElementTest extends \PHPUnit\Framework\TestCase
 		self::assertNull($root->getElementByAttribute('id', 'c', TXmlElement::SEARCH_DEPTH_FIRST));
 		self::assertNull($root->getElementByAttribute('id', 'c', TXmlElement::SEARCH_BREADTH_FIRST));
 	}
+
+	public static function invalidOffsetProvider(): array
+	{
+		return [
+			'float' => [1.5],
+			'integral float' => [1.0],
+			'true' => [true],
+			'false' => [false],
+			'object' => [new \stdClass()],
+			'array' => [[]],
+		];
+	}
+
+	#[DataProvider('invalidOffsetProvider')]
+	public function testOffsetOfAnotherTypeThrowsInEveryOffsetMethod(mixed $offset)
+	{
+		$element = new TXmlElement('tag');
+		$element[] = new TXmlElement('child0');
+		$element[] = new TXmlElement('child1');
+		$element->setAttribute('1', 'one');
+		$element->setAttribute('1.5', 'decimal');
+
+		$operations = [
+			'offsetExists' => fn () => isset($element[$offset]),
+			'offsetGet' => fn () => $element[$offset],
+			'offsetSet' => function () use ($element, $offset) {
+				$element[$offset] = 'value';
+			},
+			'offsetUnset' => function () use ($element, $offset) {
+				unset($element[$offset]);
+			},
+		];
+		foreach ($operations as $method => $operation) {
+			try {
+				$operation();
+				self::fail("$method accepted the offset.");
+			} catch (TInvalidDataTypeException $e) {
+				self::assertStringContainsString(get_debug_type($offset), $e->getMessage(), $method);
+			}
+		}
+		self::assertSame(['1' => 'one', '1.5' => 'decimal'], $element->getAttributes()->toArray());
+		self::assertSame(2, $element->getCount());
+	}
+
+	public function testStringableOffsetIsItsString()
+	{
+		$element = new TXmlElement('tag');
+		$name = new TXmlElementTestStringable('name');
+		$index = new TXmlElementTestStringable('0');
+
+		self::assertFalse(isset($element[$name]));
+		$element[$name] = 'value';
+		self::assertTrue(isset($element[$name]));
+		self::assertSame('value', $element[$name]);
+		self::assertSame('value', $element->getAttribute('name'));
+		unset($element[$name]);
+		self::assertFalse($element->hasAttribute('name'));
+
+		$child = new TXmlElement('child');
+		$replacement = new TXmlElement('replacement');
+		$element[] = $child;
+		self::assertTrue(isset($element[$index]));
+		self::assertSame($child, $element[$index]);
+		$element[$index] = $replacement;
+		self::assertSame($replacement, $element[0]);
+		unset($element[$index]);
+		self::assertSame(0, $element->getCount());
+	}
 }
 
 /**
@@ -1400,5 +1469,21 @@ class TXmlElementTestAliasElement extends TXmlElement
 	public function getTagName()
 	{
 		return 'alias';
+	}
+}
+
+
+/**
+ * Converts to a fixed string.
+ */
+class TXmlElementTestStringable implements \Stringable
+{
+	public function __construct(private string $string)
+	{
+	}
+
+	public function __toString(): string
+	{
+		return $this->string;
 	}
 }
