@@ -32,7 +32,8 @@ use Prado\TPropertyValue;
  * to restrict which files or subdirectories are included in the check.
  *
  * Each scan clears PHP's stat cache for every path it reads, so a long-lived
- * process sees a change made by another process.
+ * process sees a change made by another process. A directory removed after it
+ * is set reports changed, as {@see TFileCacheDependency} reports a removed file.
  *
  * The constructor argument is optional. A dependency created without it, as from
  * configuration, is given its directory through {@see setDirectory Directory}
@@ -156,14 +157,18 @@ class TDirectoryCacheDependency extends TCacheDependency
 	}
 
 	/**
-	 * @return bool whether any tracked file's mtime or the file count has changed; false
-	 *   before the directory is set.
+	 * @return bool whether any tracked file's mtime or the file count has changed, or the
+	 *   directory no longer exists; false before the directory is set.
 	 */
 	public function getHasChanged(): bool
 	{
 		$directory = $this->getDirectoryDirect();
 		if ($directory === null) {
 			return false;
+		}
+		clearstatcache(true, $directory);
+		if (!is_dir($directory)) {
+			return true;
 		}
 		return $this->generateTimestamps($directory) !== $this->_timestamps;
 	}
@@ -205,7 +210,7 @@ class TDirectoryCacheDependency extends TCacheDependency
 	 */
 	protected function generateTimestamps(string $directory, int $level = 0): array
 	{
-		if (($dir = opendir($directory)) === false) {
+		if (($dir = @opendir($directory)) === false) {
 			throw new TIOException('directorycachedependency_directory_invalid', $directory);
 		}
 		$recursiveLevel = $this->getRecursiveLevel();

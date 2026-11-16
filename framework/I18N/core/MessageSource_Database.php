@@ -178,7 +178,7 @@ class MessageSource_Database extends MessageSource
 		$command->bindParameter(':variant', $variant, $db::PARAM_STR);
 		$cat_id = $command->queryScalar();
 
-		if ($cat_id === null) {
+		if ($cat_id === false || $cat_id === null) {
 			return false;
 		}
 
@@ -338,7 +338,7 @@ class MessageSource_Database extends MessageSource
 		$result = [];
 
 		foreach ($dataReader as $row) {
-			$details = explode('.', $row[0]);
+			$details = explode('.', $row['name']);
 			if (!isset($details[1])) {
 				$details[1] = null;
 			}

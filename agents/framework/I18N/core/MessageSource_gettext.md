@@ -34,15 +34,15 @@ echo $formatter->format('Hello');
 
 ### `save($catalogue = 'messages'): bool`
 
-Adds untranslated strings to the `.po` file and recompiles to `.mo`.
+Adds untranslated strings to the `.po` file, keeping the existing ids and translations, recompiles to `.mo`, and clears the untranslated list.
 
 ### `update($text, $target, $comments, $catalogue = 'messages'): bool`
 
-Updates the `.po` file and recompiles.
+Updates the msgid that equals `$text` (`array_key_exists`, so `'10'` never matches `'1e1'`) in the `.po` file and recompiles.
 
 ### `delete($message, $catalogue = 'messages'): bool`
 
-Removes from `.po` and recompiles `.mo`.
+Removes the msgid that equals `$message` from `.po` and recompiles `.mo`.
 
 ## See Also
 

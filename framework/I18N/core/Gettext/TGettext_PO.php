@@ -84,8 +84,8 @@ class TGettext_PO extends TGettext
 
 		// match all msgid/msgstr entries
 		$matched = preg_match_all(
-			'/(msgid\s+("([^"]|\\\\")*?"\s*)+)\s+' .
-			'(msgstr\s+("([^"]|\\\\")*?"\s*)+)/',
+			'/(msgid\s+("([^"\\\\]|\\\\.)*"\s*)+)\s+' .
+			'(msgstr\s+("([^"\\\\]|\\\\.)*"\s*)+)/',
 			$contents,
 			$matches
 		);

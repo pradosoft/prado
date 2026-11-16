@@ -57,6 +57,9 @@ use Prado\Exceptions\TInvalidDataValueException;
  *		unset($element[<string>]); // removes the attribute
  * ```
  *
+ * A numeric string offset is a child index, and a \Stringable offset is its string.
+ * Any other offset type throws TInvalidDataTypeException.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Brad Anderson <belisoful@icloud.com> xpath, cloning, DOM-compatibility
  * @since 3.0
@@ -746,67 +749,101 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 	//	From \ArrayAccess
 
 	/**
+	 * Normalizes an \ArrayAccess offset to the value, a child index, or an attribute name.
+	 *
+	 * | Offset | Result |
+	 * |---|---|
+	 * | null | null, the value |
+	 * | int, or a string that validates as an int | int, a child index |
+	 * | any other string | string, an attribute name |
+	 * | \Stringable | its string, normalized as a string |
+	 *
+	 * @param mixed $offset The offset to normalize
+	 * @throws TInvalidDataTypeException if the offset is of any other type
+	 * @return null|int|string The normalized offset
+	 * @since 4.4.0
+	 */
+	protected function normalizeOffset(mixed $offset): int|string|null
+	{
+		if ($offset === null || is_int($offset)) {
+			return $offset;
+		}
+		if ($offset instanceof \Stringable) {
+			$offset = (string) $offset;
+		}
+		if (!is_string($offset)) {
+			throw new TInvalidDataTypeException('xmlelement_offset_invalid', get_debug_type($offset));
+		}
+		if (($index = filter_var($offset, FILTER_VALIDATE_INT)) !== false) {
+			return $index;
+		}
+		return $offset;
+	}
+
+	/**
 	 * This method is required by the \ArrayAccess interface.
 	 * A null offset exists when the value is neither null nor empty, as `toString()` renders it.
 	 * @param mixed $offset The offset to check on
+	 * @throws TInvalidDataTypeException if the offset is not null, an int, a string, or a \Stringable
 	 * @return bool Whether an item exists at the specified offset
 	 * @see https://www.php.net/manual/en/class.arrayaccess.php
 	 * @since 4.3.3
 	 */
 	public function offsetExists($offset): bool
 	{
+		$offset = $this->normalizeOffset($offset);
 		if ($offset === null) {
 			return ($value = $this->getValue()) !== null && $value !== '';
-		} elseif (is_int($offset) || (is_string($offset) && filter_var($offset, FILTER_VALIDATE_INT) !== false)) {
-			$offset = (int) $offset;
-			return 0 <= $offset && $offset < $this->getElements()->getCount();
-		} elseif ($this->getHasAttribute()) {
-			return $this->hasAttribute($offset);
 		}
-		return false;
+		if (is_int($offset)) {
+			return 0 <= $offset && $offset < $this->getCount();
+		}
+		return $this->hasAttribute($offset);
 	}
 
 	/**
 	 * This method is required by the \ArrayAccess interface.
 	 * @param mixed $offset The offset to retrieve item.
-	 * @throws TInvalidDataValueException if the offset is invalid
+	 * @throws TInvalidDataTypeException if the offset is not null, an int, a string, or a \Stringable
+	 * @throws TInvalidDataValueException if the offset is an invalid child index
 	 * @return mixed The item at the offset
 	 * @see https://www.php.net/manual/en/class.arrayaccess.php
 	 * @since 4.3.3
 	 */
 	public function offsetGet($offset): mixed
 	{
+		$offset = $this->normalizeOffset($offset);
 		if ($offset === null) {
 			return $this->getValue();
-		} elseif (is_int($offset) || (is_string($offset) && filter_var($offset, FILTER_VALIDATE_INT) !== false)) {
-			if ($this->getHasElement()) {
-				return $this->getElements()->itemAt((int) $offset);
-			} else {
+		}
+		if (is_int($offset)) {
+			if (!$this->getHasElement()) {
 				throw new TInvalidDataValueException('list_index_invalid', $offset);
 			}
-		} elseif ($this->getHasAttribute()) {
-			return $this->getAttribute($offset);
+			return $this->getElements()->itemAt($offset);
 		}
-		return null;
+		return $this->getAttribute($offset);
 	}
 
 	/**
 	 * This method is required by the \ArrayAccess interface.
 	 * @param mixed $offset The offset to set item
 	 * @param mixed $item The item value
+	 * @throws TInvalidDataTypeException if the offset is not null, an int, a string, or a \Stringable
 	 * @see https://www.php.net/manual/en/class.arrayaccess.php
 	 * @since 4.3.3
 	 */
 	public function offsetSet($offset, $item): void
 	{
+		$offset = $this->normalizeOffset($offset);
 		if ($offset === null) {
 			if ($item instanceof TXmlElement) {
 				$this->getElements()->add($item);
 			} else {
 				$this->setValue($item);
 			}
-		} elseif (is_int($offset) || (is_string($offset) && filter_var($offset, FILTER_VALIDATE_INT) !== false)) {
-			$this->getElements()->offsetSet((int) $offset, $item);
+		} elseif (is_int($offset)) {
+			$this->getElements()->offsetSet($offset, $item);
 		} else {
 			$this->setAttribute($offset, $item);
 		}
@@ -815,15 +852,17 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 	/**
 	 * This method is required by the \ArrayAccess interface.
 	 * @param mixed $offset The offset to unset item
+	 * @throws TInvalidDataTypeException if the offset is not null, an int, a string, or a \Stringable
 	 * @see https://www.php.net/manual/en/class.arrayaccess.php
 	 * @since 4.3.3
 	 */
 	public function offsetUnset($offset): void
 	{
+		$offset = $this->normalizeOffset($offset);
 		if ($offset === null) {
 			$this->setValue(null);
-		} elseif (is_int($offset) || (is_string($offset) && filter_var($offset, FILTER_VALIDATE_INT) !== false)) {
-			$this->getElements()->offsetUnset((int) $offset);
+		} elseif (is_int($offset)) {
+			$this->getElements()->offsetUnset($offset);
 		} else {
 			$this->removeAttribute($offset);
 		}

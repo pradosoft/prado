@@ -14,6 +14,7 @@ use Prado\Caching\ICacheSize;
 use Prado\Caching\TCache;
 use Prado\Caching\TMemoryCache;
 use Prado\Exceptions\TConfigurationException;
+use Prado\Prado;
 use Prado\TApplication;
 use Prado\TApplicationMode;
 use Prado\Test\Unit\Harness\Caching\TTestCache;
@@ -22,6 +23,7 @@ use Prado\Test\Unit\Harness\Caching\TTestMemoryCacheCustomKey;
 use Prado\Test\Unit\Harness\Caching\TTestMemoryCacheCustomMergePolicy;
 use Prado\Test\Unit\Harness\Traits\PradoUnitModuleDependencyTrait;
 use Prado\Test\Unit\Harness\Util\Clock\TTestMonotonicClock;
+use Prado\Test\Unit\PradoUnit;
 
 
 // ── Test class ─────────────────────────────────────────────────────────────────
@@ -483,6 +485,20 @@ class TMemoryCacheTest extends \PHPUnit\Framework\TestCase
 		$cache->setBackingFile($file);
 		$cache->setBackingFile('');
 		$this->assertSame('', $cache->getBackingFile());
+	}
+
+	public function testSetBackingFileResolvesANamespace(): void
+	{
+		$cache = new TTestMemoryCache();
+		$cache->setBackingFile('Application.runtime.memorycache');
+		$this->assertSame(Prado::getPathOfNamespace('Application.runtime.memorycache'), $cache->getBackingFile());
+		$this->assertStringEndsWith(DIRECTORY_SEPARATOR . 'runtime' . DIRECTORY_SEPARATOR . 'memorycache', $cache->getBackingFile());
+	}
+
+	public function testSetBackingFileThrowsWhenANamespaceDirectoryDoesNotExist(): void
+	{
+		$this->expectException(TConfigurationException::class);
+		(new TTestMemoryCache())->setBackingFile('Application.no_such_directory.memorycache');
 	}
 
 	public function testSetBackingFileThrowsWhenDirectoryDoesNotExist(): void
@@ -1783,6 +1799,105 @@ class TMemoryCacheTest extends \PHPUnit\Framework\TestCase
 
 		$cache->set('k', ['a' => 1, 'b' => [2, 3]]);
 		$this->assertSame(['a' => 1, 'b' => [2, 3]], $cache->get('k'));
+	}
+
+	public function testSerializeValuesAddOnlyStoresWhenAbsent(): void
+	{
+		$cache = new TTestMemoryCache();
+		$cache->setPrimaryCache(false);
+		$cache->setSerializeValues(true);
+		$cache->init(null);
+
+		$this->assertTrue($cache->add('k', ['first']));
+		$this->assertFalse($cache->add('k', ['second']));
+		$this->assertSame(['first'], $cache->get('k'));
+	}
+
+	public function testIsAvailable(): void
+	{
+		$this->assertTrue(TMemoryCache::getIsAvailable());
+	}
+
+	public function testSerializeValuesMissIsFalse(): void
+	{
+		$cache = new TTestMemoryCache();
+		$cache->setPrimaryCache(false);
+		$cache->setSerializeValues(true);
+		$cache->init(null);
+		$this->assertFalse($cache->get('absent'));
+	}
+
+	/**
+	 * @dataProvider accessTimeProvider
+	 */
+	public function testCurrentSizeOfSerializedEntriesIsTheirLength(bool $accessed): void
+	{
+		$cache = new TTestMemoryCache();
+		$cache->setPrimaryCache(false);
+		$cache->setSerializeValues(true);
+		$cache->setMaximumSize(1_000_000);
+		$cache->init(null);
+		$cache->set('k', 'v');
+		// The stored payload is the serialized string, under the entry's 'data' field.
+		$payload = $cache->pubGetStoreEntry($cache->pubGenerateUniqueKey('k'))['data'];
+		$this->assertIsString($payload);
+		if (!$accessed) {
+			// An entry restored from the backing store has no recorded access.
+			PradoUnit::setProp($cache, '_accessTimes', []);
+		}
+		$cache->pubSetSizeFingerprintDirect('');
+		$this->assertSame(strlen($payload), $cache->getCurrentSize());
+	}
+
+	public static function accessTimeProvider(): array
+	{
+		return ['accessed' => [true], 'not accessed' => [false]];
+	}
+
+	public function testDeleteBeforeTheSizeIsComputedKeepsItUncomputed(): void
+	{
+		$cache = new TTestMemoryCache();
+		$cache->setPrimaryCache(false);
+		$cache->setMaximumSize(1_000_000);
+		$cache->init(null);
+		// The running size is not serialized, so a restored cache has not computed it.
+		$restored = unserialize(serialize($cache));
+		$this->assertSame(TMemoryCache::SIZE_NOT_COMPUTED, $restored->pubGetCurrentSizeDirect());
+		$this->assertTrue($restored->delete('k'));
+		$this->assertSame(TMemoryCache::SIZE_NOT_COMPUTED, $restored->pubGetCurrentSizeDirect());
+	}
+
+	public function testMergeLoadOfAnEmptyBackingStoreKeepsTheEntries(): void
+	{
+		$file = self::$tempDir . DIRECTORY_SEPARATOR . 'empty_' . uniqid() . '.dat';
+		file_put_contents($file, serialize([]));
+		$cache = new TTestMemoryCache();
+		$cache->setPrimaryCache(false);
+		$cache->setBackingFile($file);
+		$cache->init(null);
+		$cache->set('k', 'v');
+		$this->assertTrue($cache->load());
+		$this->assertSame('v', $cache->get('k'));
+		@unlink($file);
+	}
+
+	public function testLoadFromAnEmptyBackingFileFails(): void
+	{
+		$file = self::$tempDir . DIRECTORY_SEPARATOR . 'zero_' . uniqid() . '.dat';
+		touch($file);
+		$cache = new TTestMemoryCache();
+		$cache->setBackingFile($file);
+		$this->assertNull($cache->pubLoadFromBacking());
+		@unlink($file);
+	}
+
+	public function testLoadFromABackingCacheHoldingAScalarFails(): void
+	{
+		$backing = $this->makeBackingCache();
+		$cache = new TTestMemoryCache();
+		$cache->setBackingCacheId('backingCache');
+		$backing->set($cache->getBackingCacheKey(), 'not-a-store');
+		$this->assertNull($cache->pubLoadFromBacking());
 	}
 
 	public function testNonSerializableValueAllowedWhenNotSerializingAndNoMaxSize(): void

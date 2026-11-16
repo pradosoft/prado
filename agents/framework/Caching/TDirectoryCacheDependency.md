@@ -38,6 +38,7 @@ $dependency->Directory = '/path/to/templates';
 ## Behavior
 
 - `getHasChanged()` scans the directory again and compares the result with the snapshot. A changed modification time, an added file, and a removed file are each a change.
+- A directory removed after `Directory` is set is a change, as a removed file is for `TFileCacheDependency`. A directory that exists but cannot be opened throws `TIOException`.
 - `getHasChanged()` returns `false` before `Directory` is set. `RecursiveCheck` and `RecursiveLevel` may be set before `Directory`.
 - `generateTimestamps()` calls `clearstatcache(true, $path)` for each entry before it reads the entry, and `setDirectory()` does the same for the directory. A long-lived process (a cron daemon, a worker) polling the dependency sees a change made by another process. PHP otherwise answers a repeated read of the same path from its stat cache, which hides a change in a directory holding one file.
 

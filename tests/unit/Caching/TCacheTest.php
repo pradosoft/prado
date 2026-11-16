@@ -14,7 +14,10 @@ use Prado\Caching\ICache;
 use Prado\Caching\ICacheDependency;
 use Prado\Caching\TCache;
 use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\TNotSupportedException;
+use Prado\Prado;
 use Prado\TApplication;
+use Prado\Test\Unit\PradoUnit;
 use Prado\Util\Clock\TMockClock;
 use Prado\Test\Unit\Harness\Caching\TTestCache;
 use Prado\TApplicationMode;
@@ -76,6 +79,69 @@ class TCacheTest extends \PHPUnit\Framework\TestCase
 		};
 		$this->assertInstanceOf(ICache::class, $cache);
 		$this->assertTrue($cache::getIsAvailable());
+
+		// The base flush() is unsupported until a backend overrides it.
+		$this->expectException(TNotSupportedException::class);
+		$cache->flush();
+	}
+
+	public function testDefaultPrefixSeedsTheKeyPrefix(): void
+	{
+		$cache = new class() extends TTestCache {
+			public const DEFAULT_PREFIX = 'pre:';
+		};
+		$this->assertSame('pre:', $cache->getKeyPrefix());
+		$cache->setPrimaryCache(false);
+		$cache->init(null);
+		$this->assertSame('pre:', $cache->getKeyPrefix());
+	}
+
+	public function testWithoutAPrefixInitAppliesTheApplicationUniqueId(): void
+	{
+		$cache = new TTestCache();
+		$this->assertSame('', $cache->getKeyPrefix());
+		$cache->setPrimaryCache(false);
+		$cache->init(null);
+		$this->assertSame($this->app->getUniqueID(), $cache->getKeyPrefix());
+	}
+
+	public function testAddStoresAnEmptyValueThatExpires(): void
+	{
+		$cache = $this->newCache();
+		$this->assertTrue($cache->add('k', '', 10));
+		$this->assertSame('', $cache->get('k'));
+	}
+
+	/**
+	 * @dataProvider prefixProvider
+	 */
+	public function testAPrimaryCacheWithoutAnApplicationStaysUnregistered(?string $prefix): void
+	{
+		$cache = new TTestCache();
+		if ($prefix !== null) {
+			$cache->setKeyPrefix($prefix);
+		}
+		PradoUnit::setStaticProp(Prado::class, '_application', null);
+		try {
+			$cache->init(null);
+		} finally {
+			PradoUnit::setStaticProp(Prado::class, '_application', $this->app);
+		}
+		$this->assertTrue($cache->getPrimaryCache());
+		$this->assertSame($prefix ?? '', $cache->getKeyPrefix());
+		$this->assertNull($this->app->getCache());
+	}
+
+	public static function prefixProvider(): array
+	{
+		return ['no prefix' => [null], 'a prefix' => ['set:']];
+	}
+
+	public function testAnEntryThatIsNotTheValueEnvelopeIsAMiss(): void
+	{
+		$cache = $this->newCache();
+		$cache->store[$cache->pubGenerateUniqueKey('k')] = ['not-an-envelope', 0];
+		$this->assertFalse($cache->get('k'));
 	}
 
 	public function testSetGetRoundTrip(): void

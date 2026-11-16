@@ -51,7 +51,8 @@ trait TIntlDateFormatterTrait
 	protected function getIntlDateFormatter($culture, $datetype, $timetype, $pattern = null)
 	{
 		if (!class_exists('IntlDateFormatter')) {
-			return null;
+			// The intl extension is required.
+			return null; // @codeCoverageIgnore
 		}
 
 		$patternKey = $pattern ?? '';

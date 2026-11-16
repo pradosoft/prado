@@ -18,6 +18,19 @@ class TShellActionTestDottedAction extends TShellAction
 }
 
 /**
+ * A shell action whose default method is not `index`.
+ */
+class TShellActionTestRunAction extends TShellAction
+{
+	protected $action = 'job';
+	protected $defaultMethod = 1;
+	protected $methods = ['index', 'run'];
+	protected $parameters = [null, null];
+	protected $optional = [null, null];
+	protected $description = ['Job action', 'Index', 'Run'];
+}
+
+/**
  * Tests for {@see TShellAction}.
  */
 class TShellActionTest extends TestCase
@@ -30,5 +43,11 @@ class TShellActionTest extends TestCase
 		$this->assertSame('run', $action->isValidAction(['my.cmd/run']));
 		$this->assertNull($action->isValidAction(['myxcmd']));
 		$this->assertNull($action->isValidAction(['myxcmd/run']));
+	}
+
+	public function testGetExampleNamesTheDefaultMethod(): void
+	{
+		$this->assertSame('my.cmd', (new TShellActionTestDottedAction())->getExample());
+		$this->assertSame('job/run', (new TShellActionTestRunAction())->getExample());
 	}
 }

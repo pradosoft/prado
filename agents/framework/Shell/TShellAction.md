@@ -66,6 +66,10 @@ Override to define option aliases (e.g., `['u' => 'user']`).
 
 Returns the method named by `$args[0]` (`<action>` or `<action>/<method>`), or null when the action name differs, the method is unknown, or fewer arguments than the method's `$parameters` follow.
 
+### `getExample(): ?string`
+
+The command line `TShellApplication::printHelp()` shows as an example, without `prado-cli` (4.4.0). The default is the action name, with `/<method>` when the default method is not `index`; `TFlushCachesAction` returns `cache/flush-all`. Return null to show none.
+
 ### `renderHelpCommand($cmd)`
 
 Render help for a specific command.

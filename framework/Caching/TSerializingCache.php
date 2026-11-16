@@ -40,7 +40,9 @@ use Prado\Util\Traits\TInitializedTrait;
  * The fallback serialization format is controlled by
  * {@see setSerializationType SerializationType}:
  * - `'PHP'` — PHP's native {@see serialize()} / {@see unserialize()} (default).
- * - `'JSON'` — {@see json_encode()} / {@see json_decode()}.
+ * - `'JSON'` — {@see json_encode()} / {@see json_decode()}. JSON stores plain data:
+ *   an object is read back as an array, and a value stored with an
+ *   {@see ICacheDependency} throws, since JSON cannot encode the dependency.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0
@@ -127,6 +129,7 @@ abstract class TSerializingCache extends TCache
 
 	/**
 	 * Sets the serialization type used when no behavior handles {@see dySerialize()}.
+	 * `'JSON'` rejects a value stored with an {@see ICacheDependency}.
 	 * @param string $value one of `'PHP'` or `'JSON'`.
 	 * @throws TInvalidDataValueException if the value is not a recognized type.
 	 */
@@ -258,6 +261,8 @@ abstract class TSerializingCache extends TCache
 	 * that differs from the sentinel, that string is used. Otherwise the
 	 * configured {@see getSerializationType SerializationType} is applied.
 	 * @param mixed $value the value to serialize.
+	 * @throws TInvalidDataValueException if JSON is to encode an entry with an {@see ICacheDependency},
+	 *   or JSON encoding fails.
 	 * @return string the serialized string.
 	 */
 	protected function serializeValue(mixed $value): string
@@ -266,6 +271,9 @@ abstract class TSerializingCache extends TCache
 		if ($newValue !== $value) {
 			$data = (string) $newValue;
 		} elseif ($this->getSerializationType() === self::SERIALIZATION_JSON) {
+			if (is_array($value) && ($value[1] ?? null) instanceof ICacheDependency) {
+				throw new TInvalidDataValueException('serializingcache_json_dependency_unsupported', static::class);
+			}
 			$data = json_encode($value);
 			if ($data === false) {
 				throw new TInvalidDataValueException('serializingcache_json_encode_failed', json_last_error_msg());
@@ -284,6 +292,7 @@ abstract class TSerializingCache extends TCache
 	 * {@see dyUnserialize()} is always raised first; if a behavior returns a value
 	 * that differs from the sentinel, that value is used. Otherwise the
 	 * configured {@see getSerializationType SerializationType} is applied.
+	 * PHP data that does not unserialize returns false, so a corrupted entry is a miss.
 	 * @param string $data the serialized string to restore.
 	 * @return mixed the unserialized value.
 	 */
@@ -306,7 +315,7 @@ abstract class TSerializingCache extends TCache
 		}
 		return $this->getSerializationType() === self::SERIALIZATION_JSON
 			? json_decode($data, true)
-			: unserialize($data);
+			: @unserialize($data);
 	}
 
 	/**

@@ -88,6 +88,20 @@ class TChainedCacheDependencyTest extends \PHPUnit\Framework\TestCase
 		$this->assertFalse($chain->getHasChanged());
 	}
 
+	public function testGetHasChangedFalseWhenTheListIsEmpty(): void
+	{
+		$chain = new TChainedCacheDependency();
+		$this->assertCount(0, $chain->getDependencies());
+		$this->assertFalse($chain->getHasChanged());
+	}
+
+	public function testGetHasChangedFalseWhenOneIsUnchanged(): void
+	{
+		$chain = new TChainedCacheDependency();
+		$chain->getDependencies()->add($this->dep(false));
+		$this->assertFalse($chain->getHasChanged());
+	}
+
 	public function testGetHasChangedFalseWhenAllUnchanged(): void
 	{
 		$chain = new TChainedCacheDependency();

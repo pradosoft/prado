@@ -13,25 +13,29 @@ Static helper class for programmatic translation access outside of templates. Pr
 
 ### `Translation::init($catalogue = 'messages')`
 
-Initialize the translation system for a catalogue. Called automatically by [TTranslate](./TTranslate.md).
+Creates the catalogue's `MessageFormat` once, from the [TGlobalization](./TGlobalization.md) translation configuration. Called by [TTranslate](./TTranslate.md) and `Prado::localize()`.
+
+| Configuration key | Effect |
+|---|---|
+| `type`, `source`, `filename` | `MessageSource::factory()` arguments; `filename` is optional |
+| `cache` | a `MessageCache` in that directory |
+| `marker` | surrounds untranslated text, `setUntranslatedPS([$marker, $marker])` |
+| `autosave` | when true, `saveMessages()` is attached to `OnEndRequest` once per process |
 
 ### `Translation::formatter($catalogue = 'messages')`
 
 Get the `MessageFormat` instance for a catalogue.
 
-### `Translation::get($message, $args = [], $catalogue = 'messages')`
-
-Shortcut for translating with substitution.
-
 ```php
 use Prado\I18N\Translation;
 
-$translated = Translation::get('Hello {name}', ['{name}' => 'Alice'], 'messages');
+Translation::init('messages');
+$translated = Translation::formatter('messages')->format('Hello {name}', ['{name}' => 'Alice']);
 ```
 
 ### `Translation::saveMessages()`
 
-Save untranslated messages to the catalogue. Called automatically at end of request if `autosave` is enabled.
+Saves the untranslated messages of every formatter when `autosave` is true. It runs once per process; later calls do nothing.
 
 ## See Also
 

@@ -27,10 +27,15 @@ TSocketException
 ## Constructor
 
 ```php
-public function __construct(int $errorCode, string $errorMessage = null)
+public function __construct(int $errorCode, ?string $errorMessage = null)
 ```
 
-If `$errorMessage` is null, it uses PHP's `socket_strerror()`.
+If `$errorMessage` is null, the message is:
+
+| Condition | Message |
+|---|---|
+| sockets extension loaded (`getSocketsLoaded()`) | `socket_strerror($errorCode)` |
+| sockets extension absent | `socketexception_error_code`, "Socket error {0}." |
 
 ## Usage
 

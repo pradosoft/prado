@@ -6,11 +6,50 @@ use Prado\Caching\TDbCache;
 use Prado\Data\TDbConnection;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Test\Unit\Harness\Caching\TTestDbCache;
 use Prado\Test\Unit\Harness\TTestApplication;
+use Prado\Prado;
 use Prado\Test\Unit\PradoUnit;
 
 if (!defined('TEST_CACHE_DB_DIR')) {
 	define('TEST_CACHE_DB_DIR', __DIR__ . '/../Data/db');
+}
+
+/**
+ * A SQLite connection that reports a driver without an upsert, so TDbCache stores
+ * through its delete-and-insert transaction.
+ */
+class TDbCacheTestOdbcConnection extends TDbConnection
+{
+	public function getDriverName()
+	{
+		return 'odbc';
+	}
+}
+
+/**
+ * A TDbCache whose availability is switchable and whose connection can be an
+ * {@see TDbCacheTestOdbcConnection}.
+ */
+class TDbCacheTestCache extends TTestDbCache
+{
+	public static bool $available = true;
+	public bool $odbc = false;
+
+	public static function getIsAvailable(): bool
+	{
+		return static::$available;
+	}
+
+	protected function getCustomDbConnection(): ?TDbConnection
+	{
+		if (!$this->odbc) {
+			return parent::getCustomDbConnection();
+		}
+		$db = new TDbCacheTestOdbcConnection();
+		$db->setConnectionString($this->getConnectionString());
+		return $db;
+	}
 }
 
 class TDbCacheTest extends \PHPUnit\Framework\TestCase
@@ -39,6 +78,7 @@ class TDbCacheTest extends \PHPUnit\Framework\TestCase
 
 	protected function tearDown(): void
 	{
+		TDbCacheTestCache::$available = true;
 		if ($this->_cache && $this->_cache->getHasDbConnection()) {
 			$this->_cache->flush();
 			$this->_cache->deactivateDbConnection(true);
@@ -481,8 +521,8 @@ class TDbCacheTest extends \PHPUnit\Framework\TestCase
 		$key = 'no_auto_create_key';
 		$value = 'no_auto_create_value';
 
-		$this->expectException(\Prado\Exceptions\TDbException::class);
-		$this->_cache->set($key, $value);
+		// Without the table, set() fails and returns false on every driver.
+		$this->assertFalse($this->_cache->set($key, $value));
 	}
 
 	public function testCustomCacheTableName()
@@ -503,6 +543,32 @@ class TDbCacheTest extends \PHPUnit\Framework\TestCase
 
 		$result = $this->_cache->get($key);
 		$this->assertEquals($value, $result);
+	}
+
+	public function testTwoCacheTablesInOneDatabase()
+	{
+		$this->initCache();
+		$this->assertTrue($this->_cache->set('key', 'first'));
+
+		$second = new TDbCache();
+		$second->setPrimaryCache(false);
+		$second->setConnectionString('sqlite:' . $this->_dbFile);
+		$second->setCacheTableName('pradocache_second');
+		$second->init(null);
+		try {
+			$this->assertTrue($second->set('key', 'second'));
+			$this->assertSame('second', $second->get('key'));
+			$this->assertSame('first', $this->_cache->get('key'));
+			$this->assertSame('IX_pradocache_second_expire', PradoUnit::invoke($second, 'getExpireIndexName'));
+		} finally {
+			$second->deactivateDbConnection(true);
+		}
+	}
+
+	public function testExpireIndexNameReplacesNonWordCharacters()
+	{
+		$this->_cache->setCacheTableName('main."my cache"');
+		$this->assertSame('IX_main_my_cache__expire', PradoUnit::invoke($this->_cache, 'getExpireIndexName'));
 	}
 
 	public function testSqliteDatabaseName()
@@ -705,6 +771,256 @@ class TDbCacheTest extends \PHPUnit\Framework\TestCase
 		$this->_cache->add($key, 'after_delete');
 		$result = $this->_cache->get($key);
 		$this->assertEquals('after_delete', $result);
+	}
+
+	/**
+	 * Replaces the cache under test with an initialized {@see TDbCacheTestCache} on the SQLite file.
+	 */
+	private function initTestCache(bool $autoCreate = true, bool $odbc = false): TDbCacheTestCache
+	{
+		$this->_cache = new TDbCacheTestCache();
+		$this->_cache->setPrimaryCache(false);
+		$this->_cache->odbc = $odbc;
+		$this->_cache->setAutoCreateCacheTable($autoCreate);
+		$this->initCache();
+		return $this->_cache;
+	}
+
+	private function dropCacheTable(): void
+	{
+		$this->_cache->getDbConnection()->createCommand('DROP TABLE ' . $this->_cache->getCacheTableName())->execute();
+	}
+
+	public function testInitThrowsWhenUnavailable(): void
+	{
+		TDbCacheTestCache::$available = false;
+		$cache = new TDbCacheTestCache();
+		$cache->setPrimaryCache(false);
+		try {
+			$cache->init(null);
+			$this->fail('init() did not throw while unavailable.');
+		} catch (TConfigurationException $e) {
+			$this->assertSame('dbcache_unavailable', $e->getErrorCode());
+		}
+		$this->assertTrue(TDbCache::getIsAvailable());
+	}
+
+	public function testInitializeCacheRunsOnceUnlessForced(): void
+	{
+		$cache = $this->initTestCache();
+		$cache->pubInitializeCache();
+		$this->assertTrue($cache->pubGetIsCacheInitialized());
+		$this->dropCacheTable();
+		$count = 'SELECT COUNT(*) FROM pradocache';
+		$cache->pubInitializeCache();
+		// Already initialized: the dropped table is not checked for or created again.
+		try {
+			$cache->getDbConnection()->createCommand($count)->queryScalar();
+			$this->fail('The dropped table was created again.');
+		} catch (\Prado\Exceptions\TDbException $e) {
+		}
+		$cache->pubInitializeCache(true);
+		$this->assertEquals(0, $cache->getDbConnection()->createCommand($count)->queryScalar());
+	}
+
+	public function testInitWithoutAnApplicationAttachesNoHandlers(): void
+	{
+		$cache = new TDbCacheTestCache();
+		$cache->setPrimaryCache(false);
+		$cache->setConnectionString('sqlite:' . $this->_dbFile);
+		PradoUnit::setStaticProp(Prado::class, '_application', null);
+		try {
+			$cache->init(null);
+		} finally {
+			PradoUnit::setStaticProp(Prado::class, '_application', $this->_app);
+		}
+		$this->assertTrue($cache->getIsInitialized());
+		$this->assertFalse($this->_app->getEventHandlers('OnSaveState')->contains([$cache, 'doFlushCacheExpired']));
+	}
+
+	/**
+	 * @dataProvider credentialProvider
+	 */
+	public function testCustomConnectionTakesOnlyTheGivenCredentials(string $username, string $password): void
+	{
+		$cache = new TDbCacheTestCache();
+		$cache->setConnectionString('sqlite:' . $this->_dbFile);
+		$cache->setUsername($username);
+		$cache->setPassword($password);
+		$db = $cache->pubGetCustomDbConnection();
+		$this->assertSame($username, $db->getUsername());
+		$this->assertSame($password, $db->getPassword());
+	}
+
+	public static function credentialProvider(): array
+	{
+		return ['username only' => ['user', ''], 'password only' => ['', 'secret']];
+	}
+
+	public function testAnAddWithAnExpiryInitializesTheCache(): void
+	{
+		$cache = $this->initTestCache();
+		$cache->fakeNow = 1_000_000;
+		$this->assertFalse($cache->pubGetIsCacheInitialized());
+		$this->assertTrue($cache->add('k', 'v', 30));
+		$this->assertTrue($cache->pubGetIsCacheInitialized());
+		$expire = $cache->getDbConnection()->createCommand('SELECT expire FROM pradocache')->queryScalar();
+		$this->assertEquals(1_000_030, $expire);
+	}
+
+	public function testWithoutAConnectionStringThereIsNoCustomConnection(): void
+	{
+		$cache = new TDbCacheTestCache();
+		$this->assertNull($cache->pubGetCustomDbConnection());
+	}
+
+	public function testFlushCacheExpiredInitializesTheCache(): void
+	{
+		$cache = $this->initTestCache();
+		$this->assertFalse($cache->pubGetIsCacheInitialized());
+		$cache->flushCacheExpired(true);
+		$this->assertTrue($cache->pubGetIsCacheInitialized());
+	}
+
+	public function testFlushCacheExpiredWithZeroIntervalSkipsWhenNotForced(): void
+	{
+		$cache = $this->initTestCache();
+		$cache->setFlushInterval(0);
+		$cache->fakeNow = 1_000_000;
+		$cache->set('exp', 'v', 10);
+		$cache->fakeNow = 1_000_011;
+		$cache->flushCacheExpired(false);
+		$count = $cache->getDbConnection()->createCommand('SELECT COUNT(*) FROM pradocache')->queryScalar();
+		$this->assertEquals(1, $count);
+		$cache->flushCacheExpired(true);
+		$count = $cache->getDbConnection()->createCommand('SELECT COUNT(*) FROM pradocache')->queryScalar();
+		$this->assertEquals(0, $count);
+	}
+
+	/**
+	 * @dataProvider droppedTableProvider
+	 */
+	public function testADroppedTableIsCreatedAgain(string $operation, mixed $expected): void
+	{
+		$cache = $this->initTestCache();
+		$this->assertTrue($cache->set('k', 'v'));
+		$this->dropCacheTable();
+		$this->assertSame($expected, match ($operation) {
+			'get' => $cache->get('k'),
+			'set' => $cache->set('k', 'w'),
+			'add' => $cache->add('k', 'w'),
+			'delete' => $cache->delete('k'),
+			'flush' => $cache->flush(),
+		});
+		$this->assertTrue($cache->set('after', 'x'));
+		$this->assertSame('x', $cache->get('after'));
+	}
+
+	public static function droppedTableProvider(): array
+	{
+		return [
+			'get'    => ['get', false],
+			'set'    => ['set', true],
+			'add'    => ['add', true],
+			'delete' => ['delete', true],
+			'flush'  => ['flush', true],
+		];
+	}
+
+	public function testWithoutAutoCreateAddToAMissingTableFails(): void
+	{
+		$this->assertFalse($this->initTestCache(false)->add('k', 'v'));
+	}
+
+	public function testWithoutAutoCreateFlushOfAMissingTableFails(): void
+	{
+		$this->assertFalse($this->initTestCache(false)->flush());
+	}
+
+	public function testADriverWithoutAnUpsertReplacesInATransaction(): void
+	{
+		$cache = $this->initTestCache(true, true);
+		$this->assertSame('odbc', $cache->getDbConnection()->getDriverName());
+		$this->assertTrue($cache->set('k', 'first'));
+		$this->assertTrue($cache->set('k', 'second', 60));
+		$this->assertSame('second', $cache->get('k'));
+		$this->assertNull($cache->getDbConnection()->getCurrentTransaction());
+		$count = $cache->getDbConnection()->createCommand('SELECT COUNT(*) FROM pradocache')->queryScalar();
+		$this->assertEquals(1, $count);
+	}
+
+	public function testADriverWithoutAnUpsertJoinsTheCurrentTransaction(): void
+	{
+		$cache = $this->initTestCache(true, true);
+		$cache->set('k', 'first');
+		$transaction = $cache->getDbConnection()->beginTransaction();
+		$this->assertTrue($cache->set('k', 'second'));
+		$this->assertSame($transaction, $cache->getDbConnection()->getCurrentTransaction());
+		$transaction->rollback();
+		$this->assertSame('first', $cache->get('k'));
+	}
+
+	/**
+	 * Initializes a cache on a database server, in a table named for this process.
+	 * @param string $setup the PradoUnit connection setup method.
+	 * @param string $dsn the connection string of the cache.
+	 * @return ?string the table name; null when the server is unavailable.
+	 */
+	private function initServerCache(string $setup, string $dsn): ?string
+	{
+		$conn = PradoUnit::$setup('prado_unitest');
+		if (is_array($conn)) {
+			PradoUnit::failFirstThenSkip($this, $conn[0], null, $conn[1]);
+			return null;
+		} elseif ($conn instanceof \Exception) {
+			throw $conn;
+		}
+		$conn->setActive(false);
+		$cred = getenv('SCRUTINIZER') ? 'scrutinizer' : 'prado_unitest';
+		$table = 'pradocache_test_' . getmypid();
+		$this->_cache->setConnectionString($dsn);
+		$this->_cache->setUsername($cred);
+		$this->_cache->setPassword($cred);
+		$this->_cache->setCacheTableName($table);
+		$this->_cache->init(null);
+		return $table;
+	}
+
+	/**
+	 * Drops the per-process cache table of a database server test.
+	 */
+	private function dropServerCacheTable(string $table): void
+	{
+		$this->_cache->getDbConnection()->createCommand("DROP TABLE IF EXISTS {$table}")->execute();
+		$this->_cache->deactivateDbConnection(true);
+		$this->_cache = null;
+	}
+
+	public static function serverProvider(): array
+	{
+		return [
+			'mysql' => ['setupMysqlConnection', 'mysql:host=localhost;dbname=prado_unitest'],
+			'pgsql' => ['setupPgsqlConnection', 'pgsql:host=localhost;dbname=prado_unitest'],
+		];
+	}
+
+	/**
+	 * @dataProvider serverProvider
+	 */
+	public function testSetUpsertsOnTheServer(string $setup, string $dsn): void
+	{
+		if (($table = $this->initServerCache($setup, $dsn)) === null) {
+			return;
+		}
+		try {
+			$this->assertTrue($this->_cache->set('upsert', 'first'));
+			$this->assertTrue($this->_cache->set('upsert', 'second', 60));
+			$this->assertSame('second', $this->_cache->get('upsert'));
+			$count = $this->_cache->getDbConnection()->createCommand("SELECT COUNT(*) FROM {$table}")->queryScalar();
+			$this->assertEquals(1, $count);
+		} finally {
+			$this->dropServerCacheTable($table);
+		}
 	}
 
 	/**

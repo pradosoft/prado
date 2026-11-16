@@ -358,6 +358,17 @@ class TPsrSimpleCacheTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame(['g1' => 'one', 'g2' => 'two'], $this->psr->getMultiple(['g1', 'g2']));
 	}
 
+	public function testMultipleOperationsOnNoKeys(): void
+	{
+		$this->assertSame(['absent' => 'd'], $this->psr->getMultiple(['absent'], 'd'));
+		$this->assertTrue($this->psr->setMultiple([]));
+		$this->assertTrue($this->psr->setMultiple((function () {
+			yield from [];
+		})()));
+		$this->assertTrue($this->psr->deleteMultiple([]));
+		$this->assertSame([], $this->backing->store);
+	}
+
 	public function testSetMultipleTtlDeletes(): void
 	{
 		$this->psr->set('a', 1);

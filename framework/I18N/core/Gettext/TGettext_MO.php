@@ -97,18 +97,18 @@ class TGettext_MO extends TGettext
 	}
 
 	/**
-	 * _readInt
-	 *
-	 * @access  private
-	 * @param   bool $bigendian  $bigendian
-	 * @return  int
+	 * Reads a 32-bit unsigned integer from the MO file.
+	 * @param bool $bigendian whether the integer is big-endian.
+	 * @return int the integer, -1 when fewer than 4 bytes remain.
 	 * @phpstan-impure
 	 */
 	public function _readInt($bigendian = false)
 	{
-		//unpack returns a reference????
-		$unpacked = unpack($bigendian ? 'N' : 'V', $this->_read(4));
-		return array_shift($unpacked);
+		$bytes = (string) $this->_read(4);
+		if (strlen($bytes) < 4) {
+			return -1;
+		}
+		return unpack($bigendian ? 'N' : 'V', $bytes)[1];
 	}
 
 	/**
@@ -158,7 +158,17 @@ class TGettext_MO extends TGettext
 	public function _readStr($params)
 	{
 		fseek($this->_handle, $params['offset']);
-		return $this->_read($params['length']);
+		return $params['length'] > 0 ? $this->_read($params['length']) : '';
+	}
+
+	/**
+	 * Releases the lock of the open MO file and closes it.
+	 */
+	private function closeHandle(): void
+	{
+		@flock($this->_handle, LOCK_UN);
+		@fclose($this->_handle);
+		$this->_handle = null;
 	}
 
 	/**
@@ -186,9 +196,12 @@ class TGettext_MO extends TGettext
 
 		// read (part of) magic number from MO file header and define endianess
 
-		//unpack returns a reference????
-		$unpacked = unpack('c', $this->_read(4));
-		switch ($magic = array_shift($unpacked)) {
+		$magic = $this->_read(4);
+		if (strlen($magic) < 4) {
+			$this->closeHandle();
+			return false;
+		}
+		switch (unpack('c', $magic)[1]) {
 			case -34:
 				$be = false;
 				break;
@@ -198,11 +211,13 @@ class TGettext_MO extends TGettext
 				break;
 
 			default:
+				$this->closeHandle();
 				return false;
 		}
 
 		// check file format revision - we currently only support 0
 		if (0 !== ($_rev = $this->_readInt($be))) {
+			$this->closeHandle();
 			return false;
 		}
 
@@ -243,9 +258,7 @@ class TGettext_MO extends TGettext
 		}
 
 		// done
-		@flock($this->_handle, LOCK_UN);
-		@fclose($this->_handle);
-		$this->_handle = null;
+		$this->closeHandle();
 
 		// check for meta info
 		if (isset($this->strings[''])) {

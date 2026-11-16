@@ -427,4 +427,22 @@ class PgsqlUpsertTest extends \PHPUnit\Framework\TestCase
 		// username uses explicit bound param (string-keyed override), not EXCLUDED
 		$this->assertStringNotContainsString('"username" = EXCLUDED."username"', $capturedSql);
 	}
+
+	public function test_pgsql_sql_explicit_value_takes_precedence_over_a_reference_to_the_same_column(): void
+	{
+		$capturedSql = null;
+		$gw = new TTableGateway('upsert_test', self::$conn);
+		$gw->OnCreateCommand[] = function ($sender, $param) use (&$capturedSql): void {
+			$capturedSql = $param->getCommand()->Text;
+		};
+		$gw->insert(['id' => 1, 'username' => 'alice', 'score' => 1]);
+		$gw->upsert(
+			['id' => 1, 'username' => 'alice', 'score' => 77],
+			['score', 'score' => 5],
+			['id']
+		);
+		$this->assertStringContainsString('"score" = :_upsert_score', $capturedSql);
+		$this->assertStringNotContainsString('"score" = EXCLUDED."score"', $capturedSql);
+		$this->assertSame(5, (int) self::$conn->createCommand("SELECT score FROM upsert_test WHERE username = 'alice'")->queryScalar());
+	}
 }

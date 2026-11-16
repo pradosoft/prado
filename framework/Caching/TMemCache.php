@@ -150,19 +150,6 @@ class TMemCache extends TCache
 	}
 
 	/**
-	 * Destructor.
-	 * Disconnect the memcache server.
-	 */
-	public function __destruct()
-	{
-		if ($this->getCacheDirect() !== null) {
-			// Quit() is available only for memcached >= 2
-			// $this->getCacheDirect()->quit();
-		}
-		parent::__destruct();
-	}
-
-	/**
 	 * Initializes this module.
 	 * This method is required by the IModule interface. It makes sure that
 	 * UniquePrefix has been set, creates a Memcache instance and connects

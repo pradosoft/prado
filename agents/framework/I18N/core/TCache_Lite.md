@@ -53,7 +53,7 @@ $cache->remove('myid', 'mygroup');
 | `get($id, $group, $doNotTestCacheValidity)` | Retrieve cached data |
 | `save($data, $id, $group)` | Store data |
 | `remove($id, $group)` | Remove specific entry |
-| `clean($group)` | Remove all in group |
+| `clean($group)` | Remove all in group, from memory and from the cache directory |
 | `setLifeTime($seconds)` | Change TTL |
 
 ## Security
