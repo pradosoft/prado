@@ -302,6 +302,7 @@ xmlelementlist_xmlelement_required		= TXmlElementList can only accept TXmlElemen
 
 xmlelement_null_tag						= TXmlElement Tag Name cannot be null.
 xmlelement_empty_tag					= TXmlElement Tag Name cannot be an empty string.
+xmlelement_offset_invalid				= TXmlElement offset must be null, an integer, a string, or a Stringable; {0} given.
 
 authorizationrule_action_invalid		= TAuthorizationRule.Action can only take 'allow' or 'deny' as the value.
 authorizationrule_verb_invalid			= TAuthorizationRule.Verb can only take 'get' or 'post' as the value.
