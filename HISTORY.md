@@ -1,5 +1,11 @@
 ## Version 4.4.0 - TBA
 BUG: Issue #1497 - `TXmlElement` array access treats a `Stringable` offset as its string and throws `TInvalidDataTypeException` for any other offset that is not null, an int, or a string; a float or bool offset addressed an attribute or raised a PHP error. See UPGRADE.md. (belisoful)
+CHG: Issue #1497 - `TTranslateParameter::getKey()` throws `TConfigurationException` `translateparameter_key_required` for an empty key. (belisoful)
+BUG: Issue #1497 - `TChoiceFormat` renders a chosen string of `0`; it rendered an empty string. (belisoful)
+BUG: Issue #1497 - `TGlobalizationAutoDetect` trims the spaces around each `Accept-Language` and `Accept-Charset` entry; an entry after `, ` without a q-value was dropped. (belisoful)
+BUG: Issue #1497 - `Translation` reads the optional `filename`, `marker`, and `autosave` keys of a PHP `translate` array without a warning, and `saveMessages()` saves only when `autosave` is true. (belisoful)
+BUG: Issue #1497 - `TGlobalization` throws `globalization_source_required` or `globalization_source_invalid` for a file translation source that is missing or not a namespace path, and `getTranslationCatalogue()` is null without a configuration; each raised a PHP warning or deprecation. (belisoful)
+BUG: Issue #1497 - `TI18NControlTrait` falls back to the `dyDefaultCharsetValue` and `dyDefaultCultureValue` filters when the globalization's charsets or culture are empty; it returned an empty charset or a null culture. (belisoful)
 CHG: Issue #1497 - `TTableGateway` dynamic finders throw `dbtablegateway_mismatch_column_name` unless the whole condition is column names joined by `And` or `Or`; text that matched no column was ignored, so `findByFooAndName()` searched by `Name` alone. See UPGRADE.md. (belisoful)
 BUG: Issue #1497 - `TWebServerAction` `http/serve` in quiet mode 2 or 3 no longer throws a `TypeError` when the web server exits. (belisoful)
 BUG: Issue #1497 - `TWebServerAction::setAddress()` brackets a bare IPv6 address such as `::1`, which it read as address `:` and port 1; a taken address reports its port. (belisoful)

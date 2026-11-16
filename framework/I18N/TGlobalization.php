@@ -94,7 +94,7 @@ class TGlobalization extends \Prado\TModule
 
 	/**
 	 * Translation source parameters.
-	 * @var \Prado\Collections\TMap
+	 * @var null|array|\Prado\Collections\TMap
 	 */
 	private $_translation;
 
@@ -240,7 +240,9 @@ class TGlobalization extends \Prado\TModule
 	}
 
 	/**
-	 * @return null|\Prado\Collections\TMap translation source configuration.
+	 * Returns the translation configuration, null when the culture is the default
+	 * culture and {@see getTranslateDefaultCulture TranslateDefaultCulture} is false.
+	 * @return null|array|\Prado\Collections\TMap translation source configuration.
 	 */
 	public function getTranslationConfiguration()
 	{
@@ -260,14 +262,19 @@ class TGlobalization extends \Prado\TModule
 	 * $config['cache'] = 'true'; //cache translated message
 	 * $config['marker'] = '@@'; // surround untranslated text with '@@'
 	 * ```
-	 * Throws exception is source is not found.
+	 * The source of a file type is a namespace path, created when it does not exist.
 	 * @param array|\Prado\Collections\TMap $config configuration options
+	 * @throws TConfigurationException when the source of a file type is missing, is
+	 *   not a namespace path, or cannot be created, or when the cache path cannot be created.
 	 */
 	protected function setTranslationConfiguration($config)
 	{
-		if ($config['type'] == 'XLIFF' || $config['type'] == 'gettext' || $config['type'] == 'PHP') {
-			if ($config['source']) {
-				$config['source'] = Prado::getPathOfNamespace($config['source']);
+		$type = $config['type'] ?? null;
+		if ($type == 'XLIFF' || $type == 'gettext' || $type == 'PHP') {
+			if ($source = ($config['source'] ?? null)) {
+				if (($config['source'] = Prado::getPathOfNamespace($source)) === null) {
+					throw new TConfigurationException('globalization_source_invalid', $source);
+				}
 				if (!is_dir($config['source'])) {
 					if (@mkdir($config['source']) === false) {
 						throw new TConfigurationException(
@@ -278,7 +285,7 @@ class TGlobalization extends \Prado\TModule
 					chmod($config['source'], Prado::getDefaultDirPermissions()); //make it deletable
 				}
 			} else {
-				throw new TConfigurationException("invalid source dir '{$config['source']}'");
+				throw new TConfigurationException('globalization_source_required', $type);
 			}
 		}
 		if (isset($config['cache']) && TPropertyValue::ensureBoolean($config['cache'])) {
@@ -299,11 +306,12 @@ class TGlobalization extends \Prado\TModule
 	}
 
 	/**
-	 * @return string current translation catalogue.
+	 * Returns the catalogue of the translation configuration.
+	 * @return ?string current translation catalogue, null when none is configured.
 	 */
 	public function getTranslationCatalogue()
 	{
-		return $this->_translation['catalogue'];
+		return $this->_translation['catalogue'] ?? null;
 	}
 
 	/**

@@ -41,10 +41,12 @@ return [
 ## Detection Behavior
 
 1. Parses `Accept-Language` header (e.g., `en-US,en;q=0.9,de;q=0.8`)
-2. Normalizes entries to POSIX form (e.g., `en_US`, `de_DE`) — strips q-values, converts BCP 47 hyphens to underscores
+2. Normalizes entries to POSIX form (e.g., `en_US`, `de_DE`) — strips q-values and the spaces around each entry, converts BCP 47 hyphens to underscores; an `i-` entry becomes its subtag
 3. Validates each candidate with `getIsValidLocale()` against `ResourceBundle::getLocales('')`
 4. Filters against `AvailableLanguages` if specified
 5. Sets the first passing match as the current culture via `setCulture()`
+
+`getCharsets()` parses `Accept-Charset` the same way: q-values and spaces are removed, and empty entries are skipped.
 
 ## `getIsValidLocale($locale)` (@since 4.3.3)
 
