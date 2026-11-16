@@ -221,6 +221,9 @@ Upgrading from v4.3.3
 - Issue #1497 - `TXmlElement` array access throws `TInvalidDataTypeException` for an offset that is not null, an int,
   a string, or a `Stringable`. In 4.3 a float or bool offset addressed the attribute named by its string, or raised a
   PHP error. Use an int child index or a string attribute name.
+- Issue #1497 - `TXmlDocument` keeps the namespace declarations made below the document element: each element's
+  attributes include its `xmlns` and `xmlns:<prefix>` declarations, as the document element's always did. Code that
+  maps every attribute of a child element, such as to properties, skips the `xmlns` names. SimpleXML is no longer used.
 
 Upgrading from v4.3.2
 ---------------------

@@ -112,4 +112,5 @@ $element->getElementsByAttribute('class', 'Foo'); // find by attribute value
 - **`Value` is text content only** — CDATA sections and comments are not included in `Value`.
 - **libxml error handling** — malformed XML returns `false` from `loadFromString()`; it does not throw. Always check return value. A recoverable libxml error, such as an undeclared namespace prefix, still loads and returns `true`.
 - **XPath internal attributes** — `prado-xml-id-*` attributes appear transiently during XPath calls; never persist them.
+- **Namespaces** — each element keeps the namespace declarations it makes as `xmlns` and `xmlns:<prefix>` attributes (`getNamespaceDeclarations()`, from the DOM namespace axis). A redundant redeclaration of the parent's binding is dropped. `xpath()` on a sub-element applies its ancestors' declarations; a prefix declared only below the queried element is not registered, as in DOM.
 - **Serialisation** — `TXmlDocument` is serialisable; used by Prado's template/config cache.
