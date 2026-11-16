@@ -15,8 +15,8 @@ use Prado\Caching\TEtcdCache;
 /**
  * TTestEtcdCache is a {@see TEtcdCache} harness exposing the serialized-string contract and
  * the protected {@see request()} HTTP seam. The clock is fakeable via
- * {@see TTestCacheClockTrait}. Tests drive {@see request()} through an injected
- * {@see \Prado\IO\HttpClient\THttpClient}.
+ * {@see TTestCacheClockTrait}. Tests drive {@see request()} through an injected PSR-18
+ * {@see \Prado\Test\Unit\Harness\IO\TTestHttpClient}.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0

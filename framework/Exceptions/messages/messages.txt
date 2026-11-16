@@ -158,7 +158,7 @@ psrcachebacking_key_invalid				= {0} cache key must be a non-empty string withou
 
 dbcache_unavailable						= TDbCache requires the PDO PHP extension.
 
-etcdcache_transport_required			= TEtcdCache requires the cURL PHP extension or allow_url_fopen.
+etcdcache_transport_required			= TEtcdCache requires an HTTP handler: none of the THttpClient handlers can run on this PHP.
 
 memcache_connection_failed				= TMemCache failed to connect to memcache server {0}:{1}.
 memcache_not_initialized				= Options cannot be set on TMemCache before the module is initialized.
@@ -381,10 +381,21 @@ page_csrf_token_invalid					= The page requires a valid CSRF token.
 csmanager_pradoscript_invalid			= Unknown Prado script library name ''{0}''.
 csmanager_pradostyle_invalid			= Unknown Prado style library name ''{0}''.
 
-httpclient_transport_error				= HTTP client transport error (code {0}): {1}
-httpclient_http_error						= HTTP error response with status {0}.
-httpclient_transport_required			= No HTTP transport is available: the cURL extension is not loaded and allow_url_fopen is off.
-httpclient_poll_interval_invalid		= TCurlMultiHttpClient PollInterval must be greater than zero; ''{0}'' given.
+httpclient_transport_error					= HTTP client transport error (code {0}): {1}
+httpclient_http_error						= HTTP error response: {0} {1}.
+httpclient_transport_required				= No HTTP handler is available: none of the THttpClient handlers can run on this PHP.
+httpclient_poll_interval_invalid			= TCurlMultiHttpHandler PollInterval must be greater than zero; ''{0}'' given.
+httpclient_scheme_unsupported				= THttpClient cannot send a request with the scheme ''{0}'': only http and https are supported.
+httpclient_host_missing						= THttpClient cannot send a request to ''{0}'': the URI has no host.
+httpclient_too_many_redirects				= THttpClient stopped after {0} redirects at ''{1}''.
+httpclient_redirect_body_unrewindable		= THttpClient cannot resend the body of the request to ''{0}'' on a {1} redirect: the body stream is not seekable.
+httpclient_timeout							= The HTTP request to ''{0}'' timed out after {1} seconds.
+httpclient_connect_failed					= The HTTP client could not connect to ''{0}'': {1}
+httpclient_invalid_response					= The HTTP response from ''{0}'' is invalid: {1}
+httpclient_response_incomplete				= The HTTP response from ''{0}'' ended before its body was complete.
+httpclient_decode_failed					= The HTTP client could not decode the ''{0}'' content of the response from ''{1}''.
+httpclient_sink_invalid						= The THttpClient sink must be a stream, a stream resource, or a file path; {0} given.
+httpclient_handler_invalid					= The THttpClient handler must be an IHttpHandler; ''{0}'' given.
 
 restclient_invalid_header				= TRestClient header ''{0}'' has an invalid name or a value containing CR/LF.
 restclient_basicauth_username_colon		= TRestClient Basic-auth username must not contain a colon (RFC 7617 credential separator).
@@ -655,6 +666,13 @@ socketservermodule_endpoint_required	= TSocketServerModule requires an Endpoint,
 socketservermodule_serverclass_invalid	= TSocketServerModule ServerClass ''{0}'' is invalid. It must be TSocketServer or a subclass.
 socketservermodule_scheme_not_stream	= TSocketServerModule cannot accept on the connectionless scheme ''{0}''. Use a stream scheme such as tcp, tls, ssl, or unix.
 socketservermodule_eventloopclass_invalid	= TSocketServerModule EventLoopClass ''{0}'' is invalid. It must implement Prado\IO\Async\IEventLoop.
+socketstream_async_tls_scheme			= TSocketStream::connectAsync() cannot connect ''{0}''; PHP cannot finish a TLS handshake after an asynchronous connect. Connect over tcp:// and call enableCryptoAsync().
+socketstream_connect_failed				= TSocketStream could not connect to ''{0}'': {1}
+socketstream_connect_no_peer			= TSocketStream could not connect to ''{0}''; the connection was refused or reset.
+socketstream_connect_timeout			= TSocketStream could not connect to ''{0}'' within {1} seconds.
+socketstream_crypto_failed				= TSocketStream TLS negotiation failed: {0}
+socketstream_crypto_timeout				= TSocketStream TLS negotiation did not complete within {0} seconds.
+socketstream_not_open					= TSocketStream has no open socket.
 
 eventloop_delay_invalid					= Event loop delay ''{0}'' is invalid. It must be zero or more seconds.
 eventloop_callback_invalid				= Event loop callback ''{0}'' is unknown; it was never registered or is already cancelled.

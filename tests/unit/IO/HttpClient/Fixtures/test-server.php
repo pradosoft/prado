@@ -4,7 +4,7 @@
  * PHP built-in server router for HttpClient integration tests.
  *
  * Spawned by HttpServerTestTrait. Routes a small set of endpoints used by
- * TCurlHttpClientTest, TFopenHttpClientTest, and TStreamDownloaderTest.
+ * the IHttpHandler conformance tests and THttpClientTest.
  */
 
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
@@ -32,10 +32,44 @@ if (preg_match('#^/status/(\d{3})$#', $path, $m)) {
 	return true;
 }
 
-// /redirect — 302 → /echo
+// /redirect?status=302&to=/echo — a redirect with the given status (default 302) to the given location (default /echo)
 if ($path === '/redirect') {
-	header('Location: /echo');
+	header('Location: ' . ($_GET['to'] ?? '/echo'));
+	http_response_code((int) ($_GET['status'] ?? 302));
+	return true;
+}
+
+// /redirect-loop — redirects to itself forever
+if ($path === '/redirect-loop') {
+	header('Location: /redirect-loop');
 	http_response_code(302);
+	return true;
+}
+
+// /gzip and /deflate — a body compressed with the named content coding, sent whatever the request accepts
+if ($path === '/gzip' || $path === '/deflate') {
+	$data = $path === '/gzip' ? gzencode('compressed body') : gzcompress('compressed body');
+	header('Content-Type: text/plain');
+	header('Content-Encoding: ' . substr($path, 1));
+	header('Content-Length: ' . strlen($data));
+	echo $data;
+	return true;
+}
+
+// /cookies — two Set-Cookie header lines
+if ($path === '/cookies') {
+	header('Set-Cookie: a=1; Path=/', false);
+	header('Set-Cookie: b=2; Path=/', false);
+	echo 'cookies';
+	return true;
+}
+
+// /unsized — a body without Content-Length, flushed in parts
+if ($path === '/unsized') {
+	header('Content-Type: text/plain');
+	echo 'part1-';
+	flush();
+	echo 'part2';
 	return true;
 }
 

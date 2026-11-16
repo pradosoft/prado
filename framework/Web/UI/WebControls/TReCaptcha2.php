@@ -11,11 +11,13 @@
 namespace Prado\Web\UI\WebControls;
 
 use Prado\IO\HttpClient\THttpClient;
-use Prado\IO\HttpClient\THttpClientException;
+use Prado\IO\Http\TRequest;
 use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Web\Javascripts\TJavaScript;
 use Prado\Exceptions\TConfigurationException;
+use Psr\Http\Client\ClientExceptionInterface;
+use Psr\Http\Client\ClientInterface;
 // FIXME: this controls should be moved to activecontrols
 use Prado\Web\UI\ActiveControls\TActivePanel;
 use Prado\Web\UI\ActiveControls\TActiveControlAdapter;
@@ -44,7 +46,7 @@ use Prado\Web\UI\ActiveControls\TActiveControlAdapter;
  * the client address to Google's siteverify endpoint ({@see VERIFY_URL}) and passes only when Google
  * answers `"success": true`. A transport failure or an unreadable answer fails validation.
  * {@see getVerifyResult()} returns Google's decoded answer, such as `hostname` and `error-codes`.
- * The request goes through {@see getHttpClient HttpClient}, created by {@see THttpClient::create()} by default.
+ * The request goes through {@see getHttpClient HttpClient}, a {@see THttpClient} by default.
  *
  * Google accepts a token once, so calling {@see validate()} in a later request with the same token fails.
  * Repeated calls in one request return the first result. A multi-stage input process validates once,
@@ -70,8 +72,8 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 	/** Google's endpoint that verifies a response token. */
 	public const VERIFY_URL = 'https://www.google.com/recaptcha/api/siteverify';
 	private $_isValid = true;
-	/** @var ?THttpClient the client that posts to siteverify. */
-	private ?THttpClient $_httpClient = null;
+	/** @var ?ClientInterface the client that posts to siteverify. */
+	private ?ClientInterface $_httpClient = null;
 	/** @var ?bool the result of this request's verification. */
 	private ?bool $_verified = null;
 	/** @var ?array Google's decoded answer to this request's verification. */
@@ -354,20 +356,21 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 	}
 
 	/**
-	 * @throws THttpClientException when no HTTP transport is available.
-	 * @return THttpClient the client that posts to siteverify. Defaults to {@see THttpClient::create()}.
+	 * Returns the PSR-18 client that posts to siteverify.
+	 * @return ClientInterface the client. Defaults to a {@see THttpClient}.
 	 * @since 4.4.0
 	 */
-	public function getHttpClient(): THttpClient
+	public function getHttpClient(): ClientInterface
 	{
-		return $this->_httpClient ??= THttpClient::create();
+		return $this->_httpClient ??= new THttpClient();
 	}
 
 	/**
-	 * @param ?THttpClient $value the client that posts to siteverify; null restores the default.
+	 * Sets the PSR-18 client that posts to siteverify.
+	 * @param ?ClientInterface $value the client; null restores the default.
 	 * @since 4.4.0
 	 */
-	public function setHttpClient(?THttpClient $value): void
+	public function setHttpClient(?ClientInterface $value): void
 	{
 		$this->_httpClient = $value;
 	}
@@ -411,12 +414,13 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 			$fields['remoteip'] = $address;
 		}
 		try {
-			$answer = $this->getHttpClient()->download('POST', self::VERIFY_URL, ['Content-Type' => 'application/x-www-form-urlencoded'], http_build_query($fields));
-		} catch (THttpClientException $e) {
+			$answer = $this->getHttpClient()->sendRequest(new TRequest('POST', self::VERIFY_URL, ['Content-Type' => 'application/x-www-form-urlencoded'], http_build_query($fields)));
+		} catch (ClientExceptionInterface $e) {
 			Prado::warning('TReCaptcha2 could not reach siteverify: ' . $e->getMessage(), static::class);
 			return false;
 		}
-		$data = $answer->isSuccess() ? $answer->getJson(true, null) : null;
+		$status = $answer->getStatusCode();
+		$data = $status >= 200 && $status < 300 ? json_decode((string) $answer->getBody(), true) : null;
 		$this->_verifyResult = is_array($data) ? $data : null;
 		return ($data['success'] ?? false) === true;
 	}

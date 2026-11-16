@@ -2,42 +2,17 @@
 
 namespace Prado\Test\Unit\IO\Rest;
 
-use Prado\IO\HttpClient\THttpClientException;
-use Prado\IO\HttpClient\THttpClientResponse;
+use Prado\Exceptions\TInvalidDataValueException;
+use Prado\IO\Http\TRequest;
+use Prado\IO\Http\TResponse;
 use Prado\IO\HttpClient\THttpClient;
+use Prado\IO\HttpClient\THttpClientException;
+use Prado\IO\HttpClient\THttpNetworkException;
+use Prado\IO\HttpClient\THttpResponseException;
 use Prado\IO\Rest\TRestClient;
-
-// ── Mock downloader that records calls and returns canned responses ───────────
-
-class MockHttpClient extends THttpClient
-{
-	public array $calls = [];
-
-	/** @var THttpClientResponse[] */
-	public array $responses = [];
-
-	/** @var null|\Throwable */
-	public ?\Throwable $throwOnNextCall = null;
-
-	public function queue(THttpClientResponse $response): void
-	{
-		$this->responses[] = $response;
-	}
-
-	public function download(string $method, string $url, array $headers = [], ?string $body = null): THttpClientResponse
-	{
-		$this->calls[] = compact('method', 'url', 'headers', 'body');
-		if ($this->throwOnNextCall !== null) {
-			$e = $this->throwOnNextCall;
-			$this->throwOnNextCall = null;
-			throw $e;
-		}
-		if ($this->responses === []) {
-			return new THttpClientResponse(200, [], '{}');
-		}
-		return array_shift($this->responses);
-	}
-}
+use Prado\Test\Unit\Harness\IO\TTestHttpClient;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 // ── Test client subclass exercising the dispatch surface ──────────────────────
 
@@ -91,9 +66,14 @@ class TestApiClient extends TRestClient
 		return [$raw, $headers];
 	}
 
-	public function exposeHandleResponse(THttpClientResponse $response): mixed
+	public function exposeHandleResponse(ResponseInterface $response, ?RequestInterface $request = null): mixed
 	{
-		return $this->handleResponse($response);
+		return $this->handleResponse($response, $request ?? new TRequest('GET', 'https://api.example.test/'));
+	}
+
+	public function exposeCreateRequest(string $method, string $path, array $pathParams = [], array $query = [], mixed $body = null, array $headers = []): RequestInterface
+	{
+		return $this->createRequest($method, $path, $pathParams, $query, $body, $headers);
 	}
 
 	public function exposeMergeHeaders(array $perCall): array
@@ -108,13 +88,19 @@ class TestApiClient extends TRestClient
 class TRestClientTest extends \PHPUnit\Framework\TestCase
 {
 	private TestApiClient $client;
-	private MockHttpClient $downloader;
+	private TTestHttpClient $http;
 
 	protected function setUp(): void
 	{
-		$this->downloader = new MockHttpClient();
+		$this->http = new TTestHttpClient();
 		$this->client = new TestApiClient();
-		$this->client->setDownloader($this->downloader);
+		$this->client->setHttpClient($this->http);
+	}
+
+	/** Queues a response on the recording client. */
+	private function queue(int $status, string $body): void
+	{
+		$this->http->responses[] = new TResponse($status, [], $body);
 	}
 
 	// ── URL building ──────────────────────────────────────────────────────────
@@ -159,25 +145,25 @@ class TRestClientTest extends \PHPUnit\Framework\TestCase
 
 	public function testGetDispatch(): void
 	{
-		$this->downloader->queue(new THttpClientResponse(200, [], '{"id":"42","name":"Alice"}'));
+		$this->queue(200, '{"id":"42","name":"Alice"}');
 		$user = $this->client->fetchUser('42');
 		$this->assertSame(['id' => '42', 'name' => 'Alice'], $user);
-		$this->assertSame('GET', $this->downloader->calls[0]['method']);
-		$this->assertSame('https://api.example.test/users/42', $this->downloader->calls[0]['url']);
+		$this->assertSame('GET', $this->http->calls[0]['method']);
+		$this->assertSame('https://api.example.test/users/42', $this->http->calls[0]['url']);
 	}
 
 	public function testGetWithQueryString(): void
 	{
-		$this->downloader->queue(new THttpClientResponse(200, [], '[]'));
+		$this->queue(200, '[]');
 		$this->client->listUsers(3);
-		$this->assertSame('https://api.example.test/users?page=3', $this->downloader->calls[0]['url']);
+		$this->assertSame('https://api.example.test/users?page=3', $this->http->calls[0]['url']);
 	}
 
 	public function testPostJsonEncodesBodyAndSetsContentType(): void
 	{
-		$this->downloader->queue(new THttpClientResponse(201, [], '{"id":"new"}'));
+		$this->queue(201, '{"id":"new"}');
 		$result = $this->client->createUser(['name' => 'Bob']);
-		$call = $this->downloader->calls[0];
+		$call = $this->http->calls[0];
 		$this->assertSame('POST', $call['method']);
 		$this->assertSame('{"name":"Bob"}', $call['body']);
 		$this->assertSame('application/json', $call['headers']['Content-Type']);
@@ -186,17 +172,17 @@ class TRestClientTest extends \PHPUnit\Framework\TestCase
 
 	public function testPutDispatchesWithPathParams(): void
 	{
-		$this->downloader->queue(new THttpClientResponse(200, [], '{"ok":true}'));
+		$this->queue(200, '{"ok":true}');
 		$this->client->updateUser('7', ['name' => 'C']);
-		$this->assertSame('PUT', $this->downloader->calls[0]['method']);
-		$this->assertSame('https://api.example.test/users/7', $this->downloader->calls[0]['url']);
+		$this->assertSame('PUT', $this->http->calls[0]['method']);
+		$this->assertSame('https://api.example.test/users/7', $this->http->calls[0]['url']);
 	}
 
 	public function testPatchDispatchesWithJsonBody(): void
 	{
-		$this->downloader->queue(new THttpClientResponse(200, [], '{"patched":true}'));
+		$this->queue(200, '{"patched":true}');
 		$result = $this->client->patch('users/{id}', ['id' => '7'], ['name' => 'D']);
-		$call = $this->downloader->calls[0];
+		$call = $this->http->calls[0];
 		$this->assertSame('PATCH', $call['method']);
 		$this->assertSame('https://api.example.test/users/7', $call['url']);
 		$this->assertSame('{"name":"D"}', $call['body']);
@@ -205,9 +191,9 @@ class TRestClientTest extends \PHPUnit\Framework\TestCase
 
 	public function testDeleteDispatch(): void
 	{
-		$this->downloader->queue(new THttpClientResponse(204, [], ''));
+		$this->queue(204, '');
 		$result = $this->client->deleteUser('9');
-		$this->assertSame('DELETE', $this->downloader->calls[0]['method']);
+		$this->assertSame('DELETE', $this->http->calls[0]['method']);
 		$this->assertNull($result); // empty body → null
 	}
 
@@ -217,9 +203,9 @@ class TRestClientTest extends \PHPUnit\Framework\TestCase
 	{
 		$this->client->setDefaultHeader('Authorization', 'Bearer xyz');
 		$this->client->setDefaultHeader('Accept', 'application/json');
-		$this->downloader->queue(new THttpClientResponse(200, [], '{}'));
+		$this->queue(200, '{}');
 		$this->client->fetchUser('1');
-		$headers = $this->downloader->calls[0]['headers'];
+		$headers = $this->http->calls[0]['headers'];
 		$this->assertSame('Bearer xyz', $headers['Authorization']);
 		$this->assertSame('application/json', $headers['Accept']);
 	}
@@ -227,26 +213,26 @@ class TRestClientTest extends \PHPUnit\Framework\TestCase
 	public function testPerCallHeadersOverrideDefaults(): void
 	{
 		$this->client->setDefaultHeader('Accept', 'application/json');
-		$this->downloader->queue(new THttpClientResponse(200, [], '{}'));
+		$this->queue(200, '{}');
 		// Reach the generic request via the get() verb helper with per-call header.
 		$this->client->get('users/{id}', ['id' => '1'], [], ['Accept' => 'text/plain']);
-		$this->assertSame('text/plain', $this->downloader->calls[0]['headers']['Accept']);
+		$this->assertSame('text/plain', $this->http->calls[0]['headers']['Accept']);
 	}
 
 	public function testExplicitContentTypeIsRespected(): void
 	{
-		$this->downloader->queue(new THttpClientResponse(200, [], '{}'));
+		$this->queue(200, '{}');
 		$this->client->post('upload', [], 'raw-string-body', [], ['Content-Type' => 'text/plain']);
-		$this->assertSame('raw-string-body', $this->downloader->calls[0]['body']);
-		$this->assertSame('text/plain', $this->downloader->calls[0]['headers']['Content-Type']);
+		$this->assertSame('raw-string-body', $this->http->calls[0]['body']);
+		$this->assertSame('text/plain', $this->http->calls[0]['headers']['Content-Type']);
 	}
 
 	public function testStringBodyPassesThroughWithoutContentType(): void
 	{
 		// String bodies skip JSON encoding entirely, so no Content-Type is added.
-		$this->downloader->queue(new THttpClientResponse(200, [], '{}'));
+		$this->queue(200, '{}');
 		$this->client->post('upload', [], 'raw-string-body');
-		$call = $this->downloader->calls[0];
+		$call = $this->http->calls[0];
 		$this->assertSame('raw-string-body', $call['body']);
 		$this->assertArrayNotHasKey('Content-Type', $call['headers']);
 	}
@@ -254,9 +240,9 @@ class TRestClientTest extends \PHPUnit\Framework\TestCase
 	public function testContentTypeDetectionIsCaseInsensitive(): void
 	{
 		// A lowercase per-call header must prevent the automatic JSON Content-Type.
-		$this->downloader->queue(new THttpClientResponse(200, [], '{}'));
+		$this->queue(200, '{}');
 		$this->client->post('upload', [], ['a' => 1], [], ['content-type' => 'application/xml']);
-		$headers = $this->downloader->calls[0]['headers'];
+		$headers = $this->http->calls[0]['headers'];
 		$this->assertSame('application/xml', $headers['content-type']);
 		$this->assertArrayNotHasKey('Content-Type', $headers);
 	}
@@ -265,39 +251,62 @@ class TRestClientTest extends \PHPUnit\Framework\TestCase
 
 	public function testThrowsOnHttpError(): void
 	{
-		$this->downloader->queue(new THttpClientResponse(404, [], '{"error":"not found"}'));
+		$this->queue(404, '{"error":"not found"}');
 		try {
 			$this->client->fetchUser('missing');
 			$this->fail('expected exception');
-		} catch (THttpClientException $e) {
+		} catch (THttpResponseException $e) {
 			$this->assertSame(404, $e->getStatusCode());
-			$this->assertNotNull($e->getResponse());
-			$this->assertSame(['error' => 'not found'], $e->getResponse()->getJson());
+			$this->assertSame(404, $e->getCode());
+			$this->assertSame(['error' => 'not found'], json_decode((string) $e->getResponse()->getBody(), true));
 		}
+	}
+
+	public function testHttpErrorCarriesTheRequestAndResponse(): void
+	{
+		$response = new TResponse(503, [], 'down');
+		$this->http->responses[] = $response;
+		try {
+			$this->client->fetchUser('7');
+			$this->fail('expected exception');
+		} catch (THttpResponseException $e) {
+			$this->assertInstanceOf(THttpClientException::class, $e);
+			$this->assertInstanceOf(\Psr\Http\Client\ClientExceptionInterface::class, $e);
+			$this->assertSame($response, $e->getResponse());
+			$this->assertSame($this->http->calls[0]['request'], $e->getRequest());
+			$this->assertSame('https://api.example.test/users/7', (string) $e->getRequest()->getUri());
+		}
+	}
+
+	public function testHandleResponseDecodesTheBodyAfterAnEarlierRead(): void
+	{
+		$response = new TResponse(200, [], '{"a":1}');
+		$response->getBody()->getContents();
+		$this->assertSame(['a' => 1], $this->client->exposeHandleResponse($response));
 	}
 
 	public function testRequestRawReturnsErrorResponseWithoutThrowing(): void
 	{
-		$this->downloader->queue(new THttpClientResponse(500, [], '{"oops":true}'));
+		$this->queue(500, '{"oops":true}');
 		$result = $this->client->requestRaw('GET', 'users/{id}', ['id' => 'boom']);
-		$this->assertInstanceOf(THttpClientResponse::class, $result);
+		$this->assertInstanceOf(ResponseInterface::class, $result);
 		$this->assertSame(500, $result->getStatusCode());
-		$this->assertSame('https://api.example.test/users/boom', $this->downloader->calls[0]['url']);
+		$this->assertSame('https://api.example.test/users/boom', $this->http->calls[0]['url']);
 	}
 
 	public function testRequestRawReturnsSuccessResponseUndecoded(): void
 	{
-		$this->downloader->queue(new THttpClientResponse(200, [], '{"id":"1"}'));
+		$this->queue(200, '{"id":"1"}');
 		$result = $this->client->requestRaw('GET', 'users/{id}', ['id' => '1']);
-		$this->assertInstanceOf(THttpClientResponse::class, $result);
-		$this->assertSame('{"id":"1"}', $result->getBody());
+		$this->assertInstanceOf(ResponseInterface::class, $result);
+		$this->assertSame('{"id":"1"}', (string) $result->getBody());
 	}
 
 	public function testRequestRawEncodesBodyAndQuery(): void
 	{
-		$this->downloader->queue(new THttpClientResponse(200, [], '{}'));
+		$this->queue(200, '{}');
 		$this->client->requestRaw('POST', 'users', [], ['notify' => 1], ['name' => 'E']);
-		$call = $this->downloader->calls[0];
+		$call = $this->http->calls[0];
 		$this->assertSame('https://api.example.test/users?notify=1', $call['url']);
 		$this->assertSame('{"name":"E"}', $call['body']);
 		$this->assertSame('application/json', $call['headers']['Content-Type']);
@@ -305,13 +314,14 @@ class TRestClientTest extends \PHPUnit\Framework\TestCase
 
 	public function testTransportFailurePropagatesAsException(): void
 	{
-		$this->downloader->throwOnNextCall = new THttpClientException('httpclient_transport_error', 0, 'DNS failed');
+		$failure = new THttpNetworkException(new TRequest('GET', 'https://api.example.test/users/x'), 'httpclient_transport_error', 6, 'DNS failed');
+		$this->http->throw = $failure;
 		try {
 			$this->client->fetchUser('x');
 			$this->fail('expected exception');
 		} catch (THttpClientException $e) {
-			$this->assertNull($e->getResponse());
-			$this->assertSame(0, $e->getStatusCode());
+			$this->assertSame($failure, $e);
+			$this->assertNotInstanceOf(THttpResponseException::class, $e);
 		}
 	}
 
@@ -325,15 +335,15 @@ class TRestClientTest extends \PHPUnit\Framework\TestCase
 
 	public function testNonJsonSuccessBodyReturnsRawString(): void
 	{
-		$this->downloader->queue(new THttpClientResponse(200, [], 'pong'));
+		$this->queue(200, 'pong');
 		$this->assertSame('pong', $this->client->get('ping'));
 	}
 
 	public function testDeleteSendsJsonBody(): void
 	{
-		$this->downloader->queue(new THttpClientResponse(200, [], '{"deleted":2}'));
+		$this->queue(200, '{"deleted":2}');
 		$result = $this->client->delete('users', [], ['ids' => [1, 2]]);
-		$call = $this->downloader->calls[0];
+		$call = $this->http->calls[0];
 		$this->assertSame('DELETE', $call['method']);
 		$this->assertSame('{"ids":[1,2]}', $call['body']);
 		$this->assertSame('application/json', $call['headers']['Content-Type']);
@@ -345,19 +355,19 @@ class TRestClientTest extends \PHPUnit\Framework\TestCase
 	public function testSetBearerTokenSendsAuthorizationHeader(): void
 	{
 		$this->client->setBearerToken('tok-123');
-		$this->downloader->queue(new THttpClientResponse(200, [], '{}'));
+		$this->queue(200, '{}');
 		$this->client->fetchUser('1');
-		$this->assertSame('Bearer tok-123', $this->downloader->calls[0]['headers']['Authorization']);
+		$this->assertSame('Bearer tok-123', $this->http->calls[0]['headers']['Authorization']);
 	}
 
 	public function testSetBasicAuthSendsAuthorizationHeader(): void
 	{
 		$this->client->setBasicAuth('alice', 's3cret');
-		$this->downloader->queue(new THttpClientResponse(200, [], '{}'));
+		$this->queue(200, '{}');
 		$this->client->fetchUser('1');
 		$this->assertSame(
 			'Basic ' . base64_encode('alice:s3cret'),
-			$this->downloader->calls[0]['headers']['Authorization']
+			$this->http->calls[0]['headers']['Authorization']
 		);
 	}
 
@@ -377,13 +387,13 @@ class TRestClientTest extends \PHPUnit\Framework\TestCase
 
 	// ── Client accessors ──────────────────────────────────────────────────────
 
-	public function testClientLazilyInstantiatesDefaultDownloader(): void
+	public function testClientLazilyInstantiatesDefaultHttpClient(): void
 	{
 		$c = new TestApiClient();
-		$d = $c->getDownloader();
+		$d = $c->getHttpClient();
 		$this->assertInstanceOf(THttpClient::class, $d);
 		// Subsequent access returns the same instance
-		$this->assertSame($d, $c->getDownloader());
+		$this->assertSame($d, $c->getHttpClient());
 	}
 
 	public function testBaseUrlAccessor(): void
@@ -411,12 +421,12 @@ class TRestClientTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame(['Accept' => 'application/json', 'User-Agent' => 'Test/1.0'], $c->getDefaultHeaders());
 	}
 
-	public function testSetDownloaderInjectsAndGetterReturnsSameInstance(): void
+	public function testSetHttpClientInjectsAndGetterReturnsSameInstance(): void
 	{
 		$c = new TestApiClient();
-		$mock = new MockHttpClient();
-		$c->setDownloader($mock);
-		$this->assertSame($mock, $c->getDownloader());
+		$mock = new TTestHttpClient();
+		$c->setHttpClient($mock);
+		$this->assertSame($mock, $c->getHttpClient());
 	}
 
 	// ── buildQuery edge cases ──────────────────────────────────────────────────
@@ -549,30 +559,54 @@ class TRestClientTest extends \PHPUnit\Framework\TestCase
 	{
 		// A body of the four bytes "null" is valid JSON and must decode to null,
 		// not be mistaken for the raw-string fallback.
-		$this->assertNull($this->client->exposeHandleResponse(new THttpClientResponse(200, [], 'null')));
+		$this->assertNull($this->client->exposeHandleResponse(new TResponse(200, [], 'null')));
 	}
 
 	public function testHandleResponseScalarJsonBodiesDecode(): void
 	{
-		$this->assertFalse($this->client->exposeHandleResponse(new THttpClientResponse(200, [], 'false')));
-		$this->assertSame(0, $this->client->exposeHandleResponse(new THttpClientResponse(200, [], '0')));
-		$this->assertSame(42, $this->client->exposeHandleResponse(new THttpClientResponse(200, [], '42')));
+		$this->assertFalse($this->client->exposeHandleResponse(new TResponse(200, [], 'false')));
+		$this->assertSame(0, $this->client->exposeHandleResponse(new TResponse(200, [], '0')));
+		$this->assertSame(42, $this->client->exposeHandleResponse(new TResponse(200, [], '42')));
 	}
 
 	public function testHandleResponseEmptyBodyReturnsNull(): void
 	{
-		$this->assertNull($this->client->exposeHandleResponse(new THttpClientResponse(204, [], '')));
+		$this->assertNull($this->client->exposeHandleResponse(new TResponse(204, [], '')));
 	}
 
 	public function testHandleResponseSuccessBoundary299Decodes(): void
 	{
-		$this->assertSame(['ok' => true], $this->client->exposeHandleResponse(new THttpClientResponse(299, [], '{"ok":true}')));
+		$this->assertSame(['ok' => true], $this->client->exposeHandleResponse(new TResponse(299, [], '{"ok":true}')));
 	}
 
 	public function testHandleResponse300ThrowsAsError(): void
 	{
-		$this->expectException(THttpClientException::class);
-		$this->client->exposeHandleResponse(new THttpClientResponse(300, [], 'redirect'));
+		$this->expectException(THttpResponseException::class);
+		$this->expectExceptionCode(300);
+		$this->client->exposeHandleResponse(new TResponse(300, [], 'redirect'));
+	}
+
+	// ── createRequest ───────────────────────────────────────────────────────────
+
+	public function testCreateRequestBuildsThePsr7Request(): void
+	{
+		$this->client->setDefaultHeader('Accept', 'application/json');
+		$request = $this->client->exposeCreateRequest('POST', 'users/{id}', ['id' => '3'], ['notify' => 1], ['name' => 'F'], ['X-Trace' => 'abc']);
+		$this->assertSame('POST', $request->getMethod());
+		$this->assertSame('https://api.example.test/users/3?notify=1', (string) $request->getUri());
+		$this->assertSame('api.example.test', $request->getHeaderLine('Host'));
+		$this->assertSame('application/json', $request->getHeaderLine('Accept'));
+		$this->assertSame('abc', $request->getHeaderLine('X-Trace'));
+		$this->assertSame('application/json', $request->getHeaderLine('Content-Type'));
+		$this->assertSame('{"name":"F"}', (string) $request->getBody());
+	}
+
+	public function testRequestSendsTheCreatedRequest(): void
+	{
+		$this->client->fetchUser('1');
+		$this->assertCount(1, $this->http->calls);
+		$this->assertInstanceOf(TRequest::class, $this->http->calls[0]['request']);
+		$this->assertSame('api.example.test', $this->http->calls[0]['headers']['Host']);
 	}
 
 	// ── mergeHeaders ────────────────────────────────────────────────────────────
@@ -590,49 +624,49 @@ class TRestClientTest extends \PHPUnit\Framework\TestCase
 
 	public function testSetDefaultHeaderRejectsCrlfInValue(): void
 	{
-		$this->expectException(\Prado\Exceptions\TInvalidDataValueException::class);
+		$this->expectException(TInvalidDataValueException::class);
 		$this->client->setDefaultHeader('X-Test', "ok\r\nX-Injected: evil");
 	}
 
 	public function testSetDefaultHeaderRejectsInvalidName(): void
 	{
-		$this->expectException(\Prado\Exceptions\TInvalidDataValueException::class);
+		$this->expectException(TInvalidDataValueException::class);
 		$this->client->setDefaultHeader("Bad Name", 'value');
 	}
 
 	public function testPerCallHeaderWithCrlfIsRejected(): void
 	{
-		$this->expectException(\Prado\Exceptions\TInvalidDataValueException::class);
+		$this->expectException(TInvalidDataValueException::class);
 		$this->client->get('users', [], [], ['X-Evil' => "a\r\nHost: evil"]);
 	}
 
 	public function testSetBearerTokenRejectsCrlf(): void
 	{
-		$this->expectException(\Prado\Exceptions\TInvalidDataValueException::class);
+		$this->expectException(TInvalidDataValueException::class);
 		$this->client->setBearerToken("tok\r\nX-Injected: 1");
 	}
 
 	public function testSetBasicAuthRejectsColonInUsername(): void
 	{
-		$this->expectException(\Prado\Exceptions\TInvalidDataValueException::class);
+		$this->expectException(TInvalidDataValueException::class);
 		$this->client->setBasicAuth('al:ice', 'pw');
 	}
 
 	public function testSetBasicAuthEmptyCredentialsEncode(): void
 	{
 		$this->client->setBasicAuth('', '');
-		$this->downloader->queue(new THttpClientResponse(200, [], '{}'));
+		$this->queue(200, '{}');
 		$this->client->fetchUser('1');
-		$this->assertSame('Basic ' . base64_encode(':'), $this->downloader->calls[0]['headers']['Authorization']);
+		$this->assertSame('Basic ' . base64_encode(':'), $this->http->calls[0]['headers']['Authorization']);
 	}
 
 	public function testBearerThenBasicAuthLastOneWins(): void
 	{
 		$this->client->setBearerToken('tok');
 		$this->client->setBasicAuth('u', 'p');
-		$this->downloader->queue(new THttpClientResponse(200, [], '{}'));
+		$this->queue(200, '{}');
 		$this->client->fetchUser('1');
-		$this->assertSame('Basic ' . base64_encode('u:p'), $this->downloader->calls[0]['headers']['Authorization']);
+		$this->assertSame('Basic ' . base64_encode('u:p'), $this->http->calls[0]['headers']['Authorization']);
 	}
 
 	// ── requestRaw default-argument paths ──────────────────────────────────────
@@ -640,11 +674,12 @@ class TRestClientTest extends \PHPUnit\Framework\TestCase
 	public function testRequestRawMinimalArgsMergesDefaultsNoBody(): void
 	{
 		$this->client->setDefaultHeader('Accept', 'application/json');
-		$this->downloader->queue(new THttpClientResponse(200, [], '{}'));
+		$this->queue(200, '{}');
 		$this->client->requestRaw('GET', 'ping');
-		$call = $this->downloader->calls[0];
+		$call = $this->http->calls[0];
 		$this->assertSame('https://api.example.test/ping', $call['url']);
-		$this->assertNull($call['body']);
+		$this->assertSame('', $call['body']);
+		$this->assertSame(0, $call['request']->getBody()->getSize());
 		$this->assertSame('application/json', $call['headers']['Accept']);
 	}
 
@@ -652,9 +687,9 @@ class TRestClientTest extends \PHPUnit\Framework\TestCase
 
 	public function testPutCarriesPathParamsBodyAndQuery(): void
 	{
-		$this->downloader->queue(new THttpClientResponse(200, [], '{}'));
+		$this->queue(200, '{}');
 		$this->client->put('users/{id}', ['id' => '5'], ['name' => 'Z'], ['notify' => 1]);
-		$call = $this->downloader->calls[0];
+		$call = $this->http->calls[0];
 		$this->assertSame('PUT', $call['method']);
 		$this->assertSame('https://api.example.test/users/5?notify=1', $call['url']);
 		$this->assertSame('{"name":"Z"}', $call['body']);

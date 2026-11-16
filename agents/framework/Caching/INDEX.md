@@ -38,7 +38,7 @@ Cache backends and dependency system providing unified `ICache` interface over m
 
 - **[`TDbCache`](TDbCache.md)** — PDO-backed persistent cache. Auto-creates a `pradocache` table if `AutoCreateCacheTable=true`. Supports MySQL, PostgreSQL, SQLite, Oracle, MSSQL, IBM DB2 (each with driver-specific upsert syntax). Properties: `ConnectionID`, `ConnectionString`, `CacheTableName`, `FlushInterval`. Registers a cron task via `fxGetCronTaskInfos()` for periodic expired-entry cleanup.
 
-- **[`TEtcdCache`](TEtcdCache.md)** — etcd distributed cache using the HTTP v2 API via `THttpClient` (cURL or stream wrappers). Properties: `Host`, `Port` (default `2379`), `Dir` (etcd directory, default `'pradocache'`), `Downloader`. Values stored as JSON with optional TTL.
+- **[`TEtcdCache`](TEtcdCache.md)** — etcd distributed cache using the HTTP v2 API through a PSR-18 client (`THttpClient` by default). Properties: `Host`, `Port` (default `2379`), `Dir` (etcd directory, default `'pradocache'`), `HttpClient`. Values stored as JSON with optional TTL.
 
 ## PSR-6 and PSR-16 Adapters (since 4.4.0)
 
