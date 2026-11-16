@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: `TStream::seek()` past the end of a memory or temp stream on PHP 8.2 (PHP bug #52335) behaves as on a file: the size is unchanged until a write fills the gap with NUL bytes; it threw and lost the stream position. (belisoful)
 BUG: Issue #1497 - `TDbCache` on SQLite creates a missing cache table again and retries, as it does on the other drivers; the statement was prepared outside the retry, so a missing table threw `TDbException`. (belisoful)
 BUG: Issue #1497 - `TSerializingCache` with `SerializationType` `JSON` throws `TInvalidDataValueException` for a value stored with a dependency; JSON dropped the dependency, so the entry never invalidated. (belisoful)
 BUG: Issue #1497 - `TDirectoryCacheDependency::getHasChanged()` reports a removed directory as changed; it threw `TPhpErrorException`, and an unreadable directory throws `TIOException`. (belisoful)

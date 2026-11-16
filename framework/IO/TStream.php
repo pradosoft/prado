@@ -27,7 +27,8 @@ use Psr\Http\Message\StreamInterface;
  * resource it wraps. {@see isReadable()}, {@see isWritable()}, and
  * {@see isSeekable()} report these capabilities. {@see read()} on a non-readable
  * stream and {@see write()} on a non-writable stream throw {@see \RuntimeException},
- * per the PSR-7 contract.
+ * per the PSR-7 contract.  A {@see seek()} past the end behaves as on a file for
+ * every seekable stream, memory and temp streams on PHP 8.2 included.
  *
  * Files, memory, temp, and the standard streams are TStream instances over a fixed
  * URI and mode, created through the named constructors {@see fromFile()},
@@ -86,6 +87,9 @@ class TStream extends TResource implements StreamInterface
 	/** @var array<int, TStreamFilterHandle> Attached filter handles, in stack order (front first). */
 	private array $_filters = [];
 
+	/** @var ?int The position past the end of a memory or temp stream, which the resource pointer cannot hold; null when the pointer holds the position. */
+	private ?int $_pastEndPosition = null;
+
 	// =========================================================================
 	// Resource Lifecycle
 	// =========================================================================
@@ -125,6 +129,7 @@ class TStream extends TResource implements StreamInterface
 		$uri = $this->getMetadata('uri');
 		$this->setURIDirect(is_string($uri) ? $uri : null);
 		$this->setSizeDirect(null);
+		$this->setPastEndPositionDirect(null);
 	}
 
 	/**
@@ -161,6 +166,7 @@ class TStream extends TResource implements StreamInterface
 		$this->setSeekableDirect(false);
 		$this->setSizeDirect(null);
 		$this->setURIDirect(null);
+		$this->setPastEndPositionDirect(null);
 	}
 
 	// =========================================================================
@@ -275,6 +281,24 @@ class TStream extends TResource implements StreamInterface
 		$this->_filters = $value;
 	}
 
+	/**
+	 * Returns the raw position past the end of a memory or temp stream.
+	 * @return ?int The raw position, or null when the resource pointer holds the position.
+	 */
+	protected function getPastEndPositionDirect(): ?int
+	{
+		return $this->_pastEndPosition;
+	}
+
+	/**
+	 * Sets the raw position past the end of a memory or temp stream.
+	 * @param ?int $value The raw position, or null when the resource pointer holds the position.
+	 */
+	protected function setPastEndPositionDirect(?int $value): void
+	{
+		$this->_pastEndPosition = $value;
+	}
+
 	// =========================================================================
 	// PSR-7 StreamInterface
 	// =========================================================================
@@ -341,6 +365,10 @@ class TStream extends TResource implements StreamInterface
 		if (!is_resource($resource)) {
 			throw new \RuntimeException('Cannot tell position of a detached stream');
 		}
+		$pastEnd = $this->getPastEndPositionDirect();
+		if ($pastEnd !== null) {
+			return $pastEnd;
+		}
 		$pos = ftell($resource);
 		if ($pos === false) {
 			throw new \RuntimeException('Unable to determine stream position');
@@ -374,7 +402,9 @@ class TStream extends TResource implements StreamInterface
 
 	/**
 	 * Seeks to a position.  A non-seekable (or behavior-vetoed, see {@see isSeekable()})
-	 * or failed seek throws; a successful seek raises {@see onSeek}.
+	 * or failed seek throws; a successful seek raises {@see onSeek}.  A position past the
+	 * end is valid on every seekable stream: the size is unchanged until a {@see write()},
+	 * which fills the gap with NUL bytes (see {@see seekPastEnd()}).
 	 * @param int $offset The stream offset.
 	 * @param int $whence SEEK_SET, SEEK_CUR or SEEK_END.
 	 * @throws \RuntimeException When the stream is not seekable or the seek fails.
@@ -386,10 +416,86 @@ class TStream extends TResource implements StreamInterface
 		if (!$this->isSeekable() || !is_resource($resource)) {
 			throw new \RuntimeException('Cannot seek a non-seekable stream');
 		}
-		if (fseek($resource, $offset, $whence) !== 0) {
+		$from = $this->getPastEndPositionDirect() ?? ftell($resource);
+		$target = $offset;
+		if ($whence === SEEK_CUR && $from !== false) {
+			// resolved here, as PHP resolves it, so it holds from a past-end position
+			$target += $from;
+			$whence = SEEK_SET;
+		}
+		if (fseek($resource, $target, $whence) === 0) {
+			$this->setPastEndPositionDirect(null);
+		} elseif (!$this->seekPastEnd($resource, $target, $whence, $from)) {
 			throw new \RuntimeException('Unable to seek to stream position ' . $offset);
 		}
 		$this->onSeek($offset);
+	}
+
+	/**
+	 * Places the position past the end of a memory or temp stream after its seek failed.
+	 * PHP 8.2 fails that seek on 'php://memory' and 'php://temp' (PHP bug #52335) and
+	 * allows it on a file; PHP 8.3 allows both, so only PHP 8.2 reaches here.  The position
+	 * is recorded and the resource pointer moves to the end, so {@see tell()} reports the
+	 * position, {@see read()} returns '', and {@see write()} fills the gap with NUL bytes.
+	 * A failed PHP 8.2 seek also loses the pointer, so a seek that stays failed returns
+	 * the pointer to $from.
+	 *
+	 * | condition | result |
+	 * |---|---|
+	 * | not a 'MEMORY' or 'TEMP' stream | false |
+	 * | position within the stream, or negative | false, pointer at $from |
+	 * | position past the end | recorded, true |
+	 * @param mixed $resource The open stream resource.
+	 * @param int $offset The stream offset.
+	 * @param int $whence SEEK_SET or SEEK_END; a SEEK_CUR is resolved to SEEK_SET first.
+	 * @param false|int $from The position before the seek, or false when unknown.
+	 * @return bool Whether the position is recorded past the end.
+	 */
+	protected function seekPastEnd(mixed $resource, int $offset, int $whence, int|false $from): bool
+	{
+		if (!in_array($this->getMetadata('stream_type'), ['MEMORY', 'TEMP'], true)) {
+			return false;
+		}
+		$stat = fstat($resource);
+		if ($stat === false) {
+			return false;
+		}
+		$size = $stat['size'];
+		$position = match ($whence) {
+			SEEK_SET => $offset,
+			SEEK_END => $size + $offset,
+			default => -1,
+		};
+		if ($position > $size && fseek($resource, 0, SEEK_END) === 0) {
+			$this->setPastEndPositionDirect($position);
+			return true;
+		}
+		if ($from !== false) {
+			fseek($resource, min($from, $size)); // a past-end $from keeps the pointer at the end
+		}
+		return false;
+	}
+
+	/**
+	 * Extends a memory or temp stream with NUL bytes to its recorded past-end position and
+	 * moves the resource pointer there, so a write lands where a file would put it.  The
+	 * stream is not shortened when it has since grown past that position.
+	 * @param mixed $resource The open stream resource.
+	 * @throws \RuntimeException When the stream cannot be extended or sought.
+	 */
+	protected function fillPastEndGap(mixed $resource): void
+	{
+		$position = $this->getPastEndPositionDirect();
+		if ($position === null) {
+			return;
+		}
+		$this->setPastEndPositionDirect(null);
+		$stat = fstat($resource);
+		$size = $stat === false ? 0 : $stat['size'];
+		if (($size < $position && !ftruncate($resource, $position)) || fseek($resource, $position) !== 0) {
+			$this->onError('write');
+			throw new \RuntimeException('Unable to extend the stream to position ' . $position);
+		}
 	}
 
 	/**
@@ -432,6 +538,7 @@ class TStream extends TResource implements StreamInterface
 			throw new \RuntimeException('Cannot write to a detached stream');
 		}
 		$this->setSizeDirect(null); // size changed; invalidate cache
+		$this->fillPastEndGap($resource);
 		$written = fwrite($resource, $string);
 		if ($written === false) {
 			$this->onError('write');
@@ -892,5 +999,6 @@ class TStream extends TResource implements StreamInterface
 		$exprops[] = "\0" . __CLASS__ . "\0_seekable";
 		$exprops[] = "\0" . __CLASS__ . "\0_size";
 		$exprops[] = "\0" . __CLASS__ . "\0_uri";
+		$exprops[] = "\0" . __CLASS__ . "\0_pastEndPosition";
 	}
 }

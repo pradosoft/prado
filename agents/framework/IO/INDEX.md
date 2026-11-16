@@ -46,3 +46,4 @@ All writers implement [ITextWriter](./ITextWriter.md).
 - `TTextWriter::flush()` **clears** the internal buffer — only call it when you're done accumulating output.
 - `TTarFileExtractor` stores the temp download path in `_temp_tarname`; it is deleted automatically in `__destruct()`.
 - Remote TAR downloads are synchronous and block execution.
+- `TStream::seek()` past the end works on every seekable stream: the size is unchanged until a `write()`, which fills the gap with NUL bytes. PHP 8.2 fails that seek on `php://memory` and `php://temp` (PHP bug #52335, fixed in 8.3), so `TStream` records the position (`seekPastEnd()`) and extends the stream on the next write (`fillPastEndGap()`). An `fseek()` on the raw `getResource()` bypasses this.
