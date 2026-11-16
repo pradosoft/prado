@@ -15,7 +15,7 @@ CLI application support for the Prado framework. The `prado-cli` executable (`bi
 
 - **[`TShellWriter`](TShellWriter.md)** — ANSI console output over an `ITextWriter`. Properties: `ErrorStream`, `ColorSupported` (from `NO_COLOR`, `FORCE_COLOR`, `CLICOLOR_FORCE`, and the terminal), `Width`. Methods: `write($str, $attr)`, `writeLine($str, $attr)`, `writeError($text)`, `format()`, `unformat()`, `pad()`, `tableWidget()`, `wrapText()`, cursor and screen control. Attribute constants are ANSI styles and colors: `BOLD`, `UNDERLINE`, `RED`, `GREEN`, `BLUE`, `DARK_GRAY`, `BG_RED`, and so on.
 
-- **[`TShellLoginBehavior`](TShellLoginBehavior.md)** — Behavior for [`TAuthManager`](../Security/TAuthManager.md) that logs in a user before a shell action runs. It handles `OnAuthenticate`, takes `--user` and `--password` or prompts for them, and calls `TAuthManager::login()`.
+- **[`TShellLoginBehavior`](TShellLoginBehavior.md)** — Behavior for [`TAuthManager`](../Security/TAuthManager.md) that logs in a user before a shell action runs. It handles `OnAuthenticate`, takes `--user` and `--password` or prompts for them, the password with terminal echo off, and calls `TAuthManager::login()`.
 
 ## Subdirectory: [`Actions/`](Actions/INDEX.md)
 
@@ -25,7 +25,7 @@ Built-in shell commands:
 |---|---|---|
 | [`THelpAction`](Actions/THelpAction.md) | `help` | List available commands, or the subcommands of one |
 | [`TDbParameterAction`](Actions/TDbParameterAction.md) | `param` | List, get, and set [`TDbParameterModule`](../Util/TDbParameterModule.md) parameters |
-| [`TPhpShellAction`](Actions/TPhpShellAction.md) | `shell` | Interactive PHP REPL with the application bound |
+| [`TPhpShellAction`](Actions/TPhpShellAction.md) | `shell` | Interactive PHP REPL with the application bound (needs the suggested `psy/psysh`) |
 | [`TWebServerAction`](Actions/TWebServerAction.md) | `http` | `http/serve` starts PHP's built-in dev web server (`--address=host:port`) |
 | [`TFlushCachesAction`](Actions/TFlushCachesAction.md) | `cache` | List, flush one, or flush all `ICache` modules |
 | [`TShellCronAction`](../Util/Cron/TShellCronAction.md), [`TShellDbCronAction`](../Util/Cron/TShellDbCronAction.md) | `cron` | Run and manage cron tasks (see `Util/Cron/`) |

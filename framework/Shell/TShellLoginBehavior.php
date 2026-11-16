@@ -11,6 +11,7 @@
 namespace Prado\Shell;
 
 use Prado\Exceptions\TExitException;
+use Prado\Util\Helpers\TProcessHelper;
 
 /**
  * TShellLoginBehavior class.
@@ -27,6 +28,11 @@ use Prado\Exceptions\TExitException;
  * ```php
  *	 <behavior name="shellLoginAuth" Class="Prado\Shell\TShellLoginBehavior" AttachToClass="Prado\Security\TAuthManager" />
  * ```
+ *
+ * The `--user` (`-u`) and `--password` (`-p`) options give the credentials; a missing one is
+ * prompted for, the password without echo on a terminal.  A `--password` on the command
+ * line is visible to other users in the process list and stays in the shell history, so
+ * the prompt is the safer way to enter it.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.2.0
@@ -62,20 +68,58 @@ class TShellLoginBehavior extends \Prado\Util\TBehavior
 	}
 
 	/**
-	 * utility function to read a password without displaying text while reading.
-	 * @param bool $hide should the texing being read be hidden, default true
+	 * Reads a line from standard input.
+	 * @return string the line without its line ending, or an empty string at the end of input.
+	 * @since 4.4.0
+	 */
+	protected function readLine(): string
+	{
+		return rtrim((string) fgets(STDIN), "\r\n");
+	}
+
+	/**
+	 * Reads a password from standard input with {@see readLine()}.  With `$hide`, terminal echo
+	 * is off while reading when {@see setTerminalEcho()} can turn it off, and a newline is
+	 * printed after the input, which the terminal did not echo.
+	 * @param bool $hide whether the text being read is hidden, default true
 	 * @return string the user entered text
 	 */
 	protected function readPassword($hide = true)
 	{
-		$s = ($hide) ? '-s' : '';
-		$f = popen("read $s; echo \$REPLY", "r");
-		$input = fgets($f, 512);
-		pclose($f);
-		if ($hide) {
-			print "\n";
+		$hidden = $hide && $this->setTerminalEcho(false);
+		try {
+			return $this->readLine();
+		} finally {
+			if ($hidden) {
+				$this->setTerminalEcho(true);
+				print "\n";
+			}
 		}
-		return trim($input, "\n\r");
+	}
+
+	/**
+	 * Turns terminal echo on or off with `stty` when standard input is a terminal outside Windows.
+	 * @param bool $echo whether the terminal echoes input
+	 * @return bool whether `stty` changed the echo.
+	 * @since 4.4.0
+	 */
+	protected function setTerminalEcho(bool $echo): bool
+	{
+		if (TProcessHelper::isSystemWindows() || !$this->isStdInTerminal()) {
+			return false;
+		}
+		exec('stty ' . ($echo ? 'echo' : '-echo') . ' 2>/dev/null', $output, $code);
+		return $code === 0;
+	}
+
+	/**
+	 * Returns whether the process standard input is a terminal.
+	 * @return bool whether standard input is a terminal.
+	 * @since 4.4.0
+	 */
+	protected function isStdInTerminal(): bool
+	{
+		return defined('STDIN') && @stream_isatty(STDIN);
 	}
 
 	/**
@@ -96,7 +140,7 @@ class TShellLoginBehavior extends \Prado\Util\TBehavior
 			$writer->write("Login Username: ");
 			if (!$this->_username) {
 				$writer->flush();
-				$this->_username = $line = trim(fgets(STDIN));
+				$this->_username = trim($this->readLine());
 			} else {
 				$writer->writeLine($this->_username);
 			}
@@ -134,6 +178,8 @@ class TShellLoginBehavior extends \Prado\Util\TBehavior
 	}
 
 	/**
+	 * Sets the password, as the `--password` option does.  A password on the command line is
+	 * visible in the process list and the shell history; omit the option to be prompted.
 	 * @param string $password password of the login from the command line
 	 */
 	public function setPassword(#[\SensitiveParameter] $password)
