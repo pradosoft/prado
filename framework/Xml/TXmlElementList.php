@@ -11,6 +11,7 @@
 namespace Prado\Xml;
 
 use Prado\Exceptions\TInvalidDataTypeException;
+use Prado\Exceptions\TInvalidOperationException;
 
 /**
  * TXmlElementList class.
@@ -59,30 +60,51 @@ class TXmlElementList extends \Prado\Collections\TList
 	 * Inserts an item at the specified position.
 	 * This overrides the parent implementation by performing additional
 	 * operations for each newly added TXmlElement object.
+	 * An element that is already in a list is moved out of it.
 	 * @param int $index The specified position.
 	 * @param mixed $item New item to insert
 	 * @throws TInvalidDataTypeException If the item to be inserted is not a TXmlElement object.
+	 * @throws TInvalidOperationException If the item is the owner of this list or one of its ancestors.
 	 */
 	public function insertAt($index, $item)
 	{
-		if ($item instanceof TXmlElement) {
-
-			$itemParent = $item->getParent();
-			$parentIndex = -1;
-			if ($itemParent !== null) {
-				$parentIndex = $itemParent->getElements()->indexOf($item);
-				if ($itemParent === $this->_o && $parentIndex >= 0 && $index <= $parentIndex) {
-					$parentIndex++;
-				}
-			}
-			parent::insertAt($index, $item);
-			if ($parentIndex >= 0) {
-				$itemParent->getElements()->removeAt($parentIndex);
-			}
-			$item->setParent($this->_o);
-		} else {
+		if (!($item instanceof TXmlElement)) {
 			throw new TInvalidDataTypeException('xmlelementlist_xmlelement_required');
 		}
+		if ($this->isOwnerOrAncestor($item)) {
+			throw new TInvalidOperationException('xmlelementlist_circular_insert', $item->getTagName());
+		}
+
+		$itemParent = $item->getParent();
+		$parentIndex = -1;
+		if ($itemParent !== null) {
+			$parentIndex = $itemParent->getElements()->indexOf($item);
+			if ($itemParent === $this->_o && $parentIndex >= 0 && $index <= $parentIndex) {
+				$parentIndex++;
+			}
+		}
+		parent::insertAt($index, $item);
+		if ($parentIndex >= 0) {
+			$itemParent->getElements()->removeAt($parentIndex);
+		}
+		$item->setParent($this->_o);
+	}
+
+	/**
+	 * Determines whether an element is the owner of this list or one of the owner's ancestors.
+	 * Inserting such an element makes a cycle in the element tree.
+	 * @param TXmlElement $element The element to check
+	 * @return bool Whether the element is the owner or one of its ancestors
+	 * @since 4.4.0
+	 */
+	protected function isOwnerOrAncestor(TXmlElement $element): bool
+	{
+		for ($node = $this->getOwner(); $node !== null; $node = $node->getParent()) {
+			if ($node === $element) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**

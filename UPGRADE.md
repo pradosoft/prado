@@ -221,6 +221,9 @@ Upgrading from v4.3.3
 - Issue #1497 - `TXmlElement` array access throws `TInvalidDataTypeException` for an offset that is not null, an int,
   a string, or a `Stringable`. In 4.3 a float or bool offset addressed the attribute named by its string, or raised a
   PHP error. Use an int child index or a string attribute name.
+- Issue #1497 - `TXmlDocument::loadFromString()` with an empty string, and `loadFromFile()` of an empty file, reset
+  the document and return false, as malformed XML does. In 4.3 an empty string left the document unchanged. After a
+  failed load, `Value` is null, as in a new document; it was the empty string.
 
 Upgrading from v4.3.2
 ---------------------

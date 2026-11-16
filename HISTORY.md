@@ -1,4 +1,6 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TXmlDocument::loadFromString()` resets the document for an empty string, as for malformed XML, and a reset leaves `Value` null, as in a new document; an empty string left the document unchanged. See UPGRADE.md. (belisoful)
+BUG: Issue #1497 - `TXmlElementList::insertAt()` throws `TInvalidOperationException` for the list's owner or one of its ancestors; the insert made a cycle that `toString()` and the searches recursed through forever. (belisoful)
 BUG: Issue #1497 - `TGettext_MO::load()` returns false for a file truncated or corrupt in its header, hash tables, or strings; it read such a file as garbage strings, and a corrupt length made it allocate the length. (belisoful)
 CHG: Issue #1497 - `MessageSource::factory()`, `MessageCache`, `TCache_Lite`, `TGettext`, `ChoiceFormat`, and `CultureInfo` throw `TConfigurationException`, `TIOException`, `TInvalidDataValueException`, or `TInvalidOperationException` with `messages.txt` keys; they threw `\Exception` with untranslated text. (belisoful)
 CHG: Issue #1497 - The XLIFF, PHP, and gettext message sources throw `TMessageSourceIOException`, which extends `TIOException`, with the `messagesource_file_unwritable`, `messagesource_directory_failed`, and `messagesource_template_failed` keys; they threw `TIOException` and `TException` with untranslated text. (belisoful)

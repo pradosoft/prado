@@ -110,6 +110,6 @@ $element->getElementsByAttribute('class', 'Foo'); // find by attribute value
 
 - **Root element = document** — `$doc->TagName` sets the root tag. Elements are added directly to `$doc->Elements`.
 - **`Value` is text content only** — CDATA sections and comments are not included in `Value`.
-- **libxml error handling** — malformed XML returns `false` from `loadFromString()`; it does not throw. Always check return value. A recoverable libxml error, such as an undeclared namespace prefix, still loads and returns `true`.
+- **libxml error handling** — malformed XML returns `false` from `loadFromString()`; it does not throw. Always check return value. A recoverable libxml error, such as an undeclared namespace prefix, still loads and returns `true`. A failed load, including an empty string, resets the document to the state of a new document.
 - **XPath internal attributes** — `prado-xml-id-*` attributes appear transiently during XPath calls; never persist them.
 - **Serialisation** — `TXmlDocument` is serialisable; used by Prado's template/config cache.
