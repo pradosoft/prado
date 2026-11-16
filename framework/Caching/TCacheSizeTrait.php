@@ -286,15 +286,19 @@ trait TCacheSizeTrait
 	 * | `T` / `TB` | 1,099,511,627,776         | `2T`        |
 	 * | `P` / `PB` | 1,125,899,906,842,624     | `1P`        |
 	 *
-	 * Suffixes are case-insensitive. Unrecognized strings are treated as `0`
-	 * (size enforcement disabled).
+	 * Suffixes are case-insensitive and follow a whole number; `1.5G` is not a size.
+	 * An empty string is `0`.
 	 *
 	 * @param int|string $value the maximum total size; 0 means unlimited
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if the value is not a size.
 	 */
 	public function setMaximumSize($value)
 	{
 		$value = is_int($value) ? $value : TPropertyValue::ensureString($value);
-		$this->setMaximumSizeDirect(max(0, static::parseSizeString($value)));
+		if (($size = static::parseSizeString($value)) === null) {
+			throw new \Prado\Exceptions\TInvalidDataValueException('cachesize_maximum_size_invalid', $value);
+		}
+		$this->setMaximumSizeDirect(max(0, $size));
 		$this->enforceMaximumSize();
 	}
 
@@ -304,7 +308,7 @@ trait TCacheSizeTrait
 	 * Accepts a plain integer, a plain numeric string, or a value with an optional
 	 * IEC binary suffix (`K`/`KB`, `M`/`MB`, `G`/`GB`, `T`/`TB`, `P`/`PB`,
 	 * case-insensitive), matching the convention PHP uses for `memory_limit`.
-	 * A plain number with no suffix is interpreted as bytes. Returns `-1` when the
+	 * A plain number with no suffix is interpreted as bytes. Returns null when the
 	 * value does not match any recognized pattern.
 	 *
 	 * The regex-based implementation is used for all PHP versions. Although PHP 8.2
@@ -314,16 +318,19 @@ trait TCacheSizeTrait
 	 * the broader set of suffixes this method advertises.
 	 *
 	 * @param int|string $value the size value to parse
-	 * @return int the size in bytes; `SIZE_NOT_COMPUTED` (-1) on parse failure
+	 * @return ?int the size in bytes; null when the value is not a size.
 	 */
-	protected static function parseSizeString(int|string $value): int
+	protected static function parseSizeString(int|string $value): ?int
 	{
 		if (is_numeric($value)) {
 			return (int) $value;
 		}
 		$value = trim($value);
+		if ($value === '') {
+			return 0;
+		}
 		if (!preg_match('/^(\d+)\s*([KMGTP]?)B?$/i', $value, $m)) {
-			return self::SIZE_NOT_COMPUTED;
+			return null;
 		}
 		$n = (int) $m[1];
 		return match (strtoupper($m[2])) {

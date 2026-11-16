@@ -10,6 +10,9 @@ for both A and B.
 Upgrading from v4.3.3
 ---------------------
 - PHP 8.2 is now required. Applications running PHP 8.1 stay on Prado 4.3.
+- Issue #1497 - `TMemCache` reads every expiration time as a number of seconds, as `ICache` defines it. In 4.3 a
+  time over 30 days was passed to Memcached as a Unix timestamp, so `set($id, $value, time() + 3600)` expired at that
+  moment, and 31 days in seconds expired at once. Pass the seconds until the value expires.
 - Issue #1497 - A `TTableGateway` dynamic finder (`findBy...`, `findAllBy...`, `deleteBy...`, `deleteAllBy...`) throws
   `dbtablegateway_mismatch_column_name` unless its whole condition is column names joined by `And` or `Or`. In 4.3 the
   text that matched no column was ignored, so `findByFooAndName($a, $b)` searched by `Name` alone, and `deleteBy...`
@@ -221,6 +224,15 @@ Upgrading from v4.3.3
 - Issue #1497 - `TXmlElement` array access throws `TInvalidDataTypeException` for an offset that is not null, an int,
   a string, or a `Stringable`. In 4.3 a float or bool offset addressed the attribute named by its string, or raised a
   PHP error. Use an int child index or a string attribute name.
+- Issue #1497 - `TXmlDocument` keeps the namespace declarations made below the document element: each element's
+  attributes include its `xmlns` and `xmlns:<prefix>` declarations, as the document element's always did. Code that
+  maps every attribute of a child element, such as to properties, skips the `xmlns` names. SimpleXML is no longer used.
+- Issue #1497 - `TXmlElement::xpath()` includes the element it is called on when the expression matches it, as DOM
+  does. In 4.3 only its descendants were returned, so `//*` now returns one more element, first. A query that needs
+  only the descendants starts from the element: `/tag//*` or `./descendant::*`.
+- Issue #1497 - `TXmlDocument::loadFromString()` with an empty string, and `loadFromFile()` of an empty file, reset
+  the document and return false, as malformed XML does. In 4.3 an empty string left the document unchanged. After a
+  failed load, `Value` is null, as in a new document; it was the empty string.
 
 Upgrading from v4.3.2
 ---------------------

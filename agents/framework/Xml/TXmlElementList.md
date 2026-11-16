@@ -35,3 +35,4 @@ public function __construct(?[TXmlElement](./TXmlElement.md) $owner)
 - When inserting elements, it properly sets the parent reference
 - When removing elements, it clears the parent reference
 - Handles moving elements between different parent lists properly
+- Rejects the owner or one of its ancestors with `TInvalidOperationException` (`xmlelementlist_circular_insert`), which would make a cycle

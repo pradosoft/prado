@@ -1459,6 +1459,79 @@ class TXmlElementTest extends \PHPUnit\Framework\TestCase
 		unset($element[$index]);
 		self::assertSame(0, $element->getCount());
 	}
+
+	public function testInsertInheritedNamespacesTakesTheNearestAncestorsDeclaration()
+	{
+		$root = new TXmlElement('root');
+		$root->setAttribute('xmlns', 'urn:default');
+		$root->setAttribute('xmlns:a', 'urn:root-a');
+		$root->setAttribute('xmlns:b', 'urn:root-b');
+		$root->setAttribute('xmlnsish', 'not a declaration');
+		$middle = new TXmlElement('middle');
+		$middle->setAttribute('xmlns:a', 'urn:middle-a');
+		$leaf = new TXmlElement('leaf');
+		$leaf->setAttribute('xmlns:b', 'urn:leaf-b');
+		$root[] = $middle;
+		$middle[] = $leaf;
+
+		$added = PradoUnit::invoke($leaf, 'insertInheritedNamespaces');
+
+		self::assertEqualsCanonicalizing(['xmlns:a', 'xmlns'], $added);
+		self::assertSame(
+			['xmlns:b' => 'urn:leaf-b', 'xmlns:a' => 'urn:middle-a', 'xmlns' => 'urn:default'],
+			$leaf->getAttributes()->toArray()
+		);
+		self::assertSame([], PradoUnit::invoke($root, 'insertInheritedNamespaces'));
+	}
+
+	public static function inheritedNamespaceProvider(): array
+	{
+		return [
+			'no attribute' => [[], [], [], []],
+			'default namespace' => [['xmlns' => 'urn:p'], [], ['xmlns'], ['xmlns' => 'urn:p']],
+			'default namespace declared here' => [['xmlns' => 'urn:p'], ['xmlns' => 'urn:c'], [], ['xmlns' => 'urn:c']],
+			'prefixed namespace' => [['xmlns:a' => 'urn:p'], [], ['xmlns:a'], ['xmlns:a' => 'urn:p']],
+			'prefixed namespace declared here' => [['xmlns:a' => 'urn:p'], ['xmlns:a' => 'urn:c'], [], ['xmlns:a' => 'urn:c']],
+			'other attribute' => [['id' => '1'], [], [], []],
+		];
+	}
+
+	#[DataProvider('inheritedNamespaceProvider')]
+	public function testInsertInheritedNamespacesFromOneParentAttribute(array $parentAttributes, array $childAttributes, array $added, array $result)
+	{
+		$parent = new TXmlElement('parent');
+		$parent->getAttributes();
+		foreach ($parentAttributes as $name => $value) {
+			$parent->setAttribute($name, $value);
+		}
+		$child = new TXmlElement('child');
+		foreach ($childAttributes as $name => $value) {
+			$child->setAttribute($name, $value);
+		}
+		$parent[] = $child;
+
+		self::assertSame($added, PradoUnit::invoke($child, 'insertInheritedNamespaces'));
+		self::assertSame($result, $child->getAttributes()->toArray());
+  }
+
+	public function testXPathMatchesTheElementItIsCalledOn()
+	{
+		$parent = new TXmlElement('parent');
+		$child = new TXmlElement('child');
+		$grandchild = new TXmlElement('parent');
+		$parent[] = $child;
+		$child[] = $grandchild;
+
+		self::assertSame([$parent], $parent->xpath('/parent')->toArray());
+		self::assertSame([$parent], $parent->xpath('.')->toArray());
+		self::assertSame([$parent, $child, $grandchild], $parent->xpath('//*')->toArray());
+		self::assertSame([$parent, $grandchild], $parent->xpath('//parent')->toArray());
+		self::assertSame([$child], $parent->xpath('/parent/child')->toArray());
+		self::assertSame([$child], $child->xpath('/child')->toArray());
+		self::assertSame([$child, $grandchild], $child->xpath('//*')->toArray());
+		self::assertFalse($parent->getHasAttribute());
+		self::assertFalse($child->getHasAttribute());
+	}
 }
 
 /**
@@ -1471,7 +1544,6 @@ class TXmlElementTestAliasElement extends TXmlElement
 		return 'alias';
 	}
 }
-
 
 /**
  * Converts to a fixed string.

@@ -159,12 +159,15 @@ class TXmlDocument extends TXmlElement
 	 * Loads and parses an XML string.
 	 * The version and encoding will be determined based on the parsing result.
 	 * A recoverable libxml error, such as an undeclared namespace prefix, does not fail the parse.
+	 * Each element keeps the namespace declarations it makes as `xmlns` and `xmlns:<prefix>` attributes.
+	 * A failed load, including an empty string, resets this document to the state of a new document.
 	 * @param ?string $string The XML string
 	 * @return bool Whether the XML string was parsed successfully
 	 */
 	public function loadFromString($string)
 	{
 		if (empty($string)) {
+			$this->resetDocument();
 			return false;
 		}
 
@@ -174,24 +177,11 @@ class TXmlDocument extends TXmlElement
 		if ($doc->loadXML($string) === false) {
 			libxml_clear_errors();
 			libxml_use_internal_errors($oldUseInternalErrors);
-
-			// Reset
-			$this->_loaded = false;
-
-			$this->setVersion('1.0');
-			$this->setEncoding('');
-			$this->setTagName('');
-			$this->setValue('');
-
-			$elements = $this->getElements();
-			$attributes = $this->getAttributes();
-			$elements->clear();
-			$attributes->clear();
-
-			$this->_loaded = true;
-
+			$this->resetDocument();
 			return false;
 		}
+		libxml_clear_errors();
+		libxml_use_internal_errors($oldUseInternalErrors);
 
 		$this->setEncoding($doc->encoding);
 		$this->setVersion($doc->xmlVersion);
@@ -204,26 +194,9 @@ class TXmlDocument extends TXmlElement
 		$elements->clear();
 		$attributes->clear();
 
-		static $bSimpleXml;
-		if ($bSimpleXml === null) {
-			$bSimpleXml = (bool) function_exists('simplexml_load_string');
+		foreach ($this->getNamespaceDeclarations($element) as $name => $uri) {
+			$attributes->add($name, $uri);
 		}
-
-		if ($bSimpleXml) {
-			$simpleDoc = simplexml_load_string($string);
-			$docNamespaces = $simpleDoc->getDocNamespaces(false);
-			$simpleDoc = null;
-			foreach ($docNamespaces as $prefix => $uri) {
-				if ($prefix === '') {
-					$attributes->add('xmlns', $uri);
-				} else {
-					$attributes->add('xmlns:' . $prefix, $uri);
-				}
-			}
-		}
-		libxml_clear_errors();
-		libxml_use_internal_errors($oldUseInternalErrors);
-
 		foreach ($element->attributes as $name => $attr) {
 			$attributes->add(($attr->prefix === '' ? '' : $attr->prefix . ':') . $name, $attr->value);
 		}
@@ -234,6 +207,23 @@ class TXmlDocument extends TXmlElement
 		}
 
 		return true;
+	}
+
+	/**
+	 * Resets this document to the state of a new document.
+	 * The version is 1.0, and the encoding, tag name, value, attributes, and elements are empty.
+	 * @since 4.4.0
+	 */
+	private function resetDocument(): void
+	{
+		$this->_loaded = false;
+		$this->setVersion('1.0');
+		$this->setEncoding('');
+		$this->setTagName('');
+		$this->setValue(null);
+		$this->getElements()->clear();
+		$this->getAttributes()->clear();
+		$this->_loaded = true;
 	}
 
 	/**
@@ -283,6 +273,51 @@ class TXmlDocument extends TXmlElement
 	}
 
 	/**
+	 * Gets the namespace declarations a DOM element makes, as attribute names and URIs.
+	 * A declaration is an in-scope namespace that the parent element lacks or binds to another URI.
+	 * The default namespace is named `xmlns`, and a prefixed namespace `xmlns:<prefix>`.
+	 * An undeclared default namespace (`xmlns=""`) has an empty URI.
+	 * @param \DOMElement $domElement The DOM element
+	 * @return array<string, string> The declarations, attribute name to namespace URI
+	 * @since 4.4.0
+	 */
+	protected function getNamespaceDeclarations(\DOMElement $domElement): array
+	{
+		$xpath = new \DOMXPath($domElement->ownerDocument);
+		$inherited = [];
+		if ($domElement->parentNode instanceof \DOMElement) {
+			$inherited = $this->getInScopeNamespaces($xpath, $domElement->parentNode);
+		}
+		$declarations = [];
+		foreach ($this->getInScopeNamespaces($xpath, $domElement) as $name => $uri) {
+			if (($inherited[$name] ?? null) !== $uri) {
+				$declarations[$name] = $uri;
+			}
+		}
+		return $declarations;
+	}
+
+	/**
+	 * Gets the namespaces in scope on a DOM element, as attribute names and URIs, without the `xml` namespace.
+	 * libxml lists an element's own namespaces in reverse declaration order, so the list is reversed.
+	 * @param \DOMXPath $xpath The XPath object of the element's document
+	 * @param \DOMElement $domElement The DOM element
+	 * @return array<string, string> The namespaces, attribute name to namespace URI
+	 * @since 4.4.0
+	 */
+	private function getInScopeNamespaces(\DOMXPath $xpath, \DOMElement $domElement): array
+	{
+		$namespaces = [];
+		foreach ($xpath->query('namespace::*', $domElement) as $namespace) {
+			$prefix = $namespace->localName;
+			if ($prefix !== 'xml') {
+				$namespaces[$prefix === 'xmlns' ? 'xmlns' : 'xmlns:' . $prefix] = (string) $namespace->nodeValue;
+			}
+		}
+		return array_reverse($namespaces, true);
+	}
+
+	/**
 	 * Recursively converts DOM XML Element into TXmlElement.
 	 * @param \DOMElement $domElement The DOM element to convert
 	 * @return TXmlElement The converted TXmlElement
@@ -291,6 +326,9 @@ class TXmlDocument extends TXmlElement
 	{
 		$element = new TXmlElement($domElement->tagName);
 		$element->setValue($domElement->nodeValue);
+		foreach ($this->getNamespaceDeclarations($domElement) as $name => $uri) {
+			$element->getAttributes()->add($name, $uri);
+		}
 		foreach ($domElement->attributes as $name => $attr) {
 			$element->getAttributes()->add(($attr->prefix === '' ? '' : $attr->prefix . ':') . $name, $attr->value);
 		}
