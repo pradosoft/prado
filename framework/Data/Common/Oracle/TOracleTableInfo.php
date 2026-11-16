@@ -23,11 +23,15 @@ use Prado\Prado;
 class TOracleTableInfo extends TDbTableInfo implements IDataHasSchema
 {
 	/**
-	 * @return string full name of the table, schema-qualified.
+	 * @return string full name of the table, schema-qualified; the table name alone without a schema.
 	 */
 	public function getTableFullName()
 	{
-		return $this->getSchemaName() . '.' . $this->getTableName();
+		$schema = $this->getSchemaName();
+		if ($schema === null || $schema === '') {
+			return $this->getTableName();
+		}
+		return $schema . '.' . $this->getTableName();
 	}
 
 	/**

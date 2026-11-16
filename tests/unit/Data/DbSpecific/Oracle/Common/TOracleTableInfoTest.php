@@ -21,6 +21,12 @@ class TOracleTableInfoTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame('PRADO.table1', $info->getTableFullName());
 	}
 
+	public function test_full_name_without_a_schema_is_the_table_name()
+	{
+		$this->assertSame('table1', (new TOracleTableInfo(['TableName' => 'table1']))->getTableFullName());
+		$this->assertSame('table1', (new TOracleTableInfo(['SchemaName' => '', 'TableName' => 'table1']))->getTableFullName());
+	}
+
 	public function test_command_builder_is_oracle()
 	{
 		$info = new TOracleTableInfo(['SchemaName' => 'PRADO', 'TableName' => 'table1']);
