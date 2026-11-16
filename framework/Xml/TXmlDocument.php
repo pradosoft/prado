@@ -160,12 +160,14 @@ class TXmlDocument extends TXmlElement
 	 * The version and encoding will be determined based on the parsing result.
 	 * A recoverable libxml error, such as an undeclared namespace prefix, does not fail the parse.
 	 * Each element keeps the namespace declarations it makes as `xmlns` and `xmlns:<prefix>` attributes.
+	 * A failed load, including an empty string, resets this document to the state of a new document.
 	 * @param ?string $string The XML string
 	 * @return bool Whether the XML string was parsed successfully
 	 */
 	public function loadFromString($string)
 	{
 		if (empty($string)) {
+			$this->resetDocument();
 			return false;
 		}
 
@@ -175,22 +177,7 @@ class TXmlDocument extends TXmlElement
 		if ($doc->loadXML($string) === false) {
 			libxml_clear_errors();
 			libxml_use_internal_errors($oldUseInternalErrors);
-
-			// Reset
-			$this->_loaded = false;
-
-			$this->setVersion('1.0');
-			$this->setEncoding('');
-			$this->setTagName('');
-			$this->setValue('');
-
-			$elements = $this->getElements();
-			$attributes = $this->getAttributes();
-			$elements->clear();
-			$attributes->clear();
-
-			$this->_loaded = true;
-
+			$this->resetDocument();
 			return false;
 		}
 		libxml_clear_errors();
@@ -220,6 +207,23 @@ class TXmlDocument extends TXmlElement
 		}
 
 		return true;
+	}
+
+	/**
+	 * Resets this document to the state of a new document.
+	 * The version is 1.0, and the encoding, tag name, value, attributes, and elements are empty.
+	 * @since 4.4.0
+	 */
+	private function resetDocument(): void
+	{
+		$this->_loaded = false;
+		$this->setVersion('1.0');
+		$this->setEncoding('');
+		$this->setTagName('');
+		$this->setValue(null);
+		$this->getElements()->clear();
+		$this->getAttributes()->clear();
+		$this->_loaded = true;
 	}
 
 	/**

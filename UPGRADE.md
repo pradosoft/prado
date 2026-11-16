@@ -224,6 +224,12 @@ Upgrading from v4.3.3
 - Issue #1497 - `TXmlDocument` keeps the namespace declarations made below the document element: each element's
   attributes include its `xmlns` and `xmlns:<prefix>` declarations, as the document element's always did. Code that
   maps every attribute of a child element, such as to properties, skips the `xmlns` names. SimpleXML is no longer used.
+- Issue #1497 - `TXmlElement::xpath()` includes the element it is called on when the expression matches it, as DOM
+  does. In 4.3 only its descendants were returned, so `//*` now returns one more element, first. A query that needs
+  only the descendants starts from the element: `/tag//*` or `./descendant::*`.
+- Issue #1497 - `TXmlDocument::loadFromString()` with an empty string, and `loadFromFile()` of an empty file, reset
+  the document and return false, as malformed XML does. In 4.3 an empty string left the document unchanged. After a
+  failed load, `Value` is null, as in a new document; it was the empty string.
 
 Upgrading from v4.3.2
 ---------------------

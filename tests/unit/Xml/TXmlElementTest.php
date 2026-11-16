@@ -1512,6 +1512,25 @@ class TXmlElementTest extends \PHPUnit\Framework\TestCase
 
 		self::assertSame($added, PradoUnit::invoke($child, 'insertInheritedNamespaces'));
 		self::assertSame($result, $child->getAttributes()->toArray());
+  }
+
+	public function testXPathMatchesTheElementItIsCalledOn()
+	{
+		$parent = new TXmlElement('parent');
+		$child = new TXmlElement('child');
+		$grandchild = new TXmlElement('parent');
+		$parent[] = $child;
+		$child[] = $grandchild;
+
+		self::assertSame([$parent], $parent->xpath('/parent')->toArray());
+		self::assertSame([$parent], $parent->xpath('.')->toArray());
+		self::assertSame([$parent, $child, $grandchild], $parent->xpath('//*')->toArray());
+		self::assertSame([$parent, $grandchild], $parent->xpath('//parent')->toArray());
+		self::assertSame([$child], $parent->xpath('/parent/child')->toArray());
+		self::assertSame([$child], $child->xpath('/child')->toArray());
+		self::assertSame([$child, $grandchild], $child->xpath('//*')->toArray());
+		self::assertFalse($parent->getHasAttribute());
+		self::assertFalse($child->getHasAttribute());
 	}
 }
 
@@ -1525,7 +1544,6 @@ class TXmlElementTestAliasElement extends TXmlElement
 		return 'alias';
 	}
 }
-
 
 /**
  * Converts to a fixed string.

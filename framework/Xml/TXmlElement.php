@@ -570,6 +570,9 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 	 * Find elements matching an XPath expression.
 	 * This method allows you to use XPath expressions to query elements within the XML structure.
 	 * The namespace declarations of the ancestors apply, so a prefix declared on an ancestor resolves.
+	 * The query runs on this element and its descendants, with this element as the document element,
+	 * so `/tag`, `.`, and `//*` match this element as well.
+	 * The results are in document order.
 	 * The internal ID attributes are removed when the query throws.
 	 * @param string $xpath XPath expression
 	 * @return TList List of matching elements
@@ -592,6 +595,10 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 				if ($node instanceof \DOMElement) {
 					$xmlId = $node->getAttribute($idAttrName);
 
+					if ($xmlId === $this->getAttribute($idAttrName)) {
+						$results->add($this);
+						continue;
+					}
 					// @todo This can be sped up with a private focused search function due to the known ordering of each node $xmlId.
 					$element = $this->getElementByAttribute($idAttrName, $xmlId, self::SEARCH_BREADTH_FIRST);
 					if ($element) {
