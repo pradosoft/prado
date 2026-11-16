@@ -301,4 +301,38 @@ class TGettext_MOTest extends TestCase
 			$this->assertNull(PradoUnit::getProp($mo, '_handle'), $name);
 		}
 	}
+
+	public function testLoadRejectsAFileTruncatedOrCorruptAfterTheRevision()
+	{
+		$dir = $this->makeTempDirectory();
+		$header = pack('V*', 0x950412de, 0, 1, 28, 36, 0, 44);
+		$files = [
+			'count' => pack('V*', 0x950412de, 0),
+			'originals' => pack('V*', 0x950412de, 0, 1),
+			'translations' => pack('V*', 0x950412de, 0, 1, 28),
+			'tables' => $header,
+			'offset' => $header . pack('V*', 5),
+			'msgid' => $header . pack('V*', 5, 1000) . pack('V*', 5, 50),
+			'huge' => $header . pack('V*', 0x7fffffff, 44) . pack('V*', 5, 50),
+			'short' => $header . pack('V*', 5, 44) . pack('V*', 5, 50) . "Hello\0Hal",
+		];
+		foreach ($files as $name => $data) {
+			file_put_contents("$dir/$name.mo", $data);
+			$mo = new TGettext_MO("$dir/$name.mo");
+			$this->assertFalse($mo->load(), $name);
+			$this->assertNull(PradoUnit::getProp($mo, '_handle'), $name);
+			$this->assertSame([], $mo->toArray()['strings'], $name);
+		}
+	}
+
+	public function testAFailedLoadKeepsTheLoadedStrings()
+	{
+		$dir = $this->makeTempDirectory();
+		file_put_contents("$dir/good.mo", pack('V*', 0x950412de, 0, 1, 28, 36, 0, 44) . pack('V*', 5, 44) . pack('V*', 5, 50) . "Hello\0Hallo\0");
+		file_put_contents("$dir/bad.mo", pack('V*', 0x950412de, 0, 2, 28, 44, 0, 60) . pack('V*', 3, 60, 5, 1000) . pack('V*', 1, 64, 1, 66) . "Bye\0a\0b\0");
+		$mo = new TGettext_MO();
+		$this->assertTrue($mo->load("$dir/good.mo"));
+		$this->assertFalse($mo->load("$dir/bad.mo"));
+		$this->assertSame(['Hello' => 'Hallo'], $mo->toArray()['strings']);
+	}
 }
