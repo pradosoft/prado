@@ -19,6 +19,10 @@
 - `Offset` - Number of rows to skip
 - `Select` - SELECT clause (default: `*`)
 
+## Clauses in the Condition
+
+A trailing `ORDER BY`, `LIMIT {[offset,] row_count | row_count OFFSET offset}`, or `OFFSET` in `Condition` moves into `OrdersBy`, `Limit`, and `Offset`. Text inside quotes (`'...'`, `"..."`, `` `...` ``) or parentheses stays in the condition, so a string literal or subquery holding these words is unchanged.
+
 ## Usage
 
 ```php

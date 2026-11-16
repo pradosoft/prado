@@ -326,4 +326,37 @@ class TSqlCriteriaTest extends \PHPUnit\Framework\TestCase
 		$c->setOrdersBy(new \ArrayIterator(['name' => 'desc', 'id' => 'asc']));
 		$this->assertSame(['name' => 'desc', 'id' => 'asc'], $c->getOrdersBy()->toArray());
 	}
+
+	public static function nestedClauseProvider(): array
+	{
+		return [
+			'ORDER BY in a string' => ["note = 'see ORDER BY clause'", "note = 'see ORDER BY clause'", [], null, null],
+			'LIMIT in a string' => ["title = 'LIMIT 5'", "title = 'LIMIT 5'", [], null, null],
+			'OFFSET in a double-quoted name' => ['"OFFSET 2" = 1', '"OFFSET 2" = 1', [], null, null],
+			'doubled quote in a string' => ["a = 'it''s LIMIT 3' LIMIT 4", "a = 'it''s LIMIT 3'", [], 4, null],
+			'subquery clauses' => [
+				'id IN (SELECT id FROM t ORDER BY id LIMIT 3) AND a = 1',
+				'id IN (SELECT id FROM t ORDER BY id LIMIT 3) AND a = 1', [], null, null,
+			],
+			'subquery then outer clauses' => [
+				'id IN (SELECT id FROM t ORDER BY id LIMIT 3) ORDER BY name DESC LIMIT 2 OFFSET 4',
+				'id IN (SELECT id FROM t ORDER BY id LIMIT 3)', ['name' => 'DESC'], 2, 4,
+			],
+			'function in ORDER BY' => ['a = 1 ORDER BY LOWER(name) LIMIT 2', 'a = 1', ['LOWER(name)' => 'asc'], 2, null],
+			'word ending in a keyword' => ['nolimit = 5', 'nolimit = 5', [], null, null],
+			'unclosed quote' => ["a = 'x ORDER BY b", "a = 'x ORDER BY b", [], null, null],
+		];
+	}
+
+	/**
+	 * @dataProvider nestedClauseProvider
+	 */
+	public function testClausesInQuotedOrParenthesizedTextStayInTheCondition(string $value, string $condition, array $orders, ?int $limit, ?int $offset)
+	{
+		$c = new TSqlCriteria($value);
+		$this->assertSame($condition, $c->getCondition());
+		$this->assertSame($orders, $c->getOrdersBy()->toArray());
+		$this->assertSame($limit, $c->getLimit());
+		$this->assertSame($offset, $c->getOffset());
+	}
 }
