@@ -161,7 +161,9 @@ class TGettext_POTest extends TestCase
 			file_get_contents("$dir/out.po")
 		);
 		clearstatcache();
-		$this->assertSame(Prado::getDefaultFilePermissions(), fileperms("$dir/out.po") & 0o777);
+		if (PHP_OS_FAMILY !== 'Windows') {
+			$this->assertSame(Prado::getDefaultFilePermissions(), fileperms("$dir/out.po") & 0o777);
+		}
 	}
 
 	public function testSaveWritesOneString()

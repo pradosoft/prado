@@ -218,7 +218,9 @@ class TGettext_MOTest extends TestCase
 			. "\0Hello\0" . $meta . "\0Hallo\0";
 		$this->assertSame($expected, file_get_contents("$dir/le.mo"));
 		clearstatcache();
-		$this->assertSame(Prado::getDefaultFilePermissions(), fileperms("$dir/le.mo") & 0o777);
+		if (PHP_OS_FAMILY !== 'Windows') {
+			$this->assertSame(Prado::getDefaultFilePermissions(), fileperms("$dir/le.mo") & 0o777);
+		}
 	}
 
 	public function testSaveWritesTheBigEndianLayout()

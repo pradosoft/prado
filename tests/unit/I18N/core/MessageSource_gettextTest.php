@@ -276,6 +276,9 @@ class MessageSource_gettextTest extends TestCase
 
 	public function testSaveThrowsWhenTheTemplateDirectoryCannotBeCreated()
 	{
+		if (PHP_OS_FAMILY === 'Windows') {
+			$this->markTestSkipped('Directory permissions do not stop writes on Windows.');
+		}
 		chmod($this->_dir, 0o555);
 		$source = $this->source();
 		$source->append('New');
@@ -288,6 +291,9 @@ class MessageSource_gettextTest extends TestCase
 
 	public function testCreateMessageTemplateUsesTheMessagesCatalogueForANullCatalogue()
 	{
+		if (PHP_OS_FAMILY === 'Windows') {
+			$this->markTestSkipped('Directory permissions do not stop writes on Windows.');
+		}
 		chmod($this->_dir, 0o555);
 
 		$this->expectException(TException::class);
@@ -487,6 +493,9 @@ class MessageSource_gettextTest extends TestCase
 
 	public function testCreateMessageTemplateInAReadOnlyDirectoryThrows()
 	{
+		if (PHP_OS_FAMILY === 'Windows') {
+			$this->markTestSkipped('Directory permissions do not stop writes on Windows.');
+		}
 		mkdir($this->_dir . '/en_AU');
 		chmod($this->_dir . '/en_AU', 0o555);
 		if (is_writable($this->_dir . '/en_AU')) {

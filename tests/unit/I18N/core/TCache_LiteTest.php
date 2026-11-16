@@ -410,6 +410,9 @@ class TCache_LiteTest extends TestCase
 
 	public function testCleanOfAnUnremovableFileThrows()
 	{
+		if (PHP_OS_FAMILY === 'Windows') {
+			$this->markTestSkipped('Directory permissions do not stop writes on Windows.');
+		}
 		$cache = $this->createCache();
 		$cache->save('a', 'a');
 		$dir = PradoUnit::getProp($cache, '_cacheDir');
