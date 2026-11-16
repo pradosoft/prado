@@ -1243,14 +1243,20 @@ class TErrorHandlerTest extends \PHPUnit\Framework\TestCase
 		return function_exists('xdebug_info') && in_array('develop', xdebug_info('mode'), true);
 	}
 
+	/** The file of the fake stack frame with a function, in the platform's separators. */
+	private const FAKE_PAGE_FILE = DIRECTORY_SEPARATOR . 'srv' . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . 'Home.php';
+
+	/** The file of the fake stack frame without a function, in the platform's separators. */
+	private const FAKE_INDEX_FILE = DIRECTORY_SEPARATOR . 'opt' . DIRECTORY_SEPARATOR . 'boot' . DIRECTORY_SEPARATOR . 'index.php';
+
 	/**
 	 * Returns an Xdebug-style stack of two frames: one with a function and one without.
 	 */
 	private static function fakeFatalStack(): array
 	{
 		return [
-			['file' => '/srv/pages/Home.php', 'line' => 12, 'function' => 'render', 'params' => ['$a', '$b']],
-			['file' => '/opt/boot/index.php', 'line' => 3],
+			['file' => self::FAKE_PAGE_FILE, 'line' => 12, 'function' => 'render', 'params' => ['$a', '$b']],
+			['file' => self::FAKE_INDEX_FILE, 'line' => 3],
 		];
 	}
 
@@ -1317,7 +1323,7 @@ class TErrorHandlerTest extends \PHPUnit\Framework\TestCase
 		$this->handler->useFakeFatalErrorTrace = true;
 		$this->handler->fakeFatalErrorTrace = self::fakeFatalStack();
 		$ex = new TPhpFatalErrorException(E_ERROR, 'fatal', '/app/index.php', 3);
-		$result = $this->handler->pubHideSecurityRelated('/srv/pages/Home.php', $ex);
+		$result = $this->handler->pubHideSecurityRelated(self::FAKE_PAGE_FILE, $ex);
 		$this->assertSame('<hidden>' . DIRECTORY_SEPARATOR . 'Home.php', $result);
 	}
 
@@ -1335,10 +1341,10 @@ class TErrorHandlerTest extends \PHPUnit\Framework\TestCase
 	{
 		$this->handler->useFakeFatalErrorTrace = true;
 		$this->handler->fakeFatalErrorTrace = self::fakeFatalStack();
-		$this->handler->pubSetPrivatePathReplacementsDirect(['/srv/' => '${Srv}/']);
+		$this->handler->pubSetPrivatePathReplacementsDirect([DIRECTORY_SEPARATOR . 'srv' . DIRECTORY_SEPARATOR => '${Srv}' . DIRECTORY_SEPARATOR]);
 		$ex = new TPhpFatalErrorException(E_ERROR, 'fatal', '/app/index.php', 3);
 		$this->assertSame(
-			'#0 ${Srv}/pages/Home.php(12): render($a,$b)' . "\n" . '#1 /opt/boot/index.php(3): unknown' . "\n",
+			'#0 ${Srv}' . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . 'Home.php(12): render($a,$b)' . "\n" . '#1 ' . self::FAKE_INDEX_FILE . '(3): unknown' . "\n",
 			$this->handler->pubGetExactTraceAsString($ex)
 		);
 	}
@@ -1357,7 +1363,7 @@ class TErrorHandlerTest extends \PHPUnit\Framework\TestCase
 		$this->handler->fakeFatalErrorTrace = [self::fakeFatalStack()[0]];
 		$this->handler->pubSetPrivatePathReplacementsDirect([]);
 		$ex = new TPhpFatalErrorException(E_ERROR, 'fatal', '/app/index.php', 3);
-		$this->assertSame('#0 /srv/pages/Home.php(12): render($a,$b)' . "\n", $this->handler->pubGetExactTraceAsString($ex));
+		$this->assertSame('#0 ' . self::FAKE_PAGE_FILE . '(12): render($a,$b)' . "\n", $this->handler->pubGetExactTraceAsString($ex));
 	}
 
 	public function testGetExactTraceAsStringFatalErrorFormatsAFrameWithoutAFunction(): void
@@ -1366,7 +1372,7 @@ class TErrorHandlerTest extends \PHPUnit\Framework\TestCase
 		$this->handler->fakeFatalErrorTrace = [self::fakeFatalStack()[1]];
 		$this->handler->pubSetPrivatePathReplacementsDirect([]);
 		$ex = new TPhpFatalErrorException(E_ERROR, 'fatal', '/app/index.php', 3);
-		$this->assertSame('#0 /opt/boot/index.php(3): unknown' . "\n", $this->handler->pubGetExactTraceAsString($ex));
+		$this->assertSame('#0 ' . self::FAKE_INDEX_FILE . '(3): unknown' . "\n", $this->handler->pubGetExactTraceAsString($ex));
 	}
 
 	public function testGetExactTraceAsStringFatalErrorWithoutAStackFormatsTheExceptionTrace(): void
