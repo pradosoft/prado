@@ -606,7 +606,9 @@ class TGlobalizationTest extends TestCase
 			$path = $dir . DIRECTORY_SEPARATOR . $type;
 			$this->assertSame($path, $this->glob->getTranslationConfiguration()['source']);
 			$this->assertDirectoryExists($path);
-			$this->assertSame(Prado::getDefaultDirPermissions(), fileperms($path) & 0o777);
+			if (PHP_OS_FAMILY !== 'Windows') {
+				$this->assertSame(Prado::getDefaultDirPermissions(), fileperms($path) & 0o777);
+			}
 		}
 	}
 
@@ -646,7 +648,9 @@ class TGlobalizationTest extends TestCase
 		$this->configure(['type' => 'Database', 'source' => 'db1', 'cache' => 'true']);
 		$this->assertSame($path, $this->glob->getTranslationConfiguration()['cache']);
 		$this->assertDirectoryExists($path);
-		$this->assertSame(Prado::getDefaultDirPermissions(), fileperms($path) & 0o777);
+		if (PHP_OS_FAMILY !== 'Windows') {
+			$this->assertSame(Prado::getDefaultDirPermissions(), fileperms($path) & 0o777);
+		}
 
 		$this->configure(['type' => 'Database', 'source' => 'db1', 'cache' => true]);
 		$this->assertSame($path, $this->glob->getTranslationConfiguration()['cache']);
