@@ -286,7 +286,8 @@ abstract class MessageSource implements IMessageSource
 	 */
 	protected function &loadData($variant)
 	{
-		return [];
+		$data = [];
+		return $data;
 	}
 
 	/**

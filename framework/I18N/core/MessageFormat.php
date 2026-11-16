@@ -154,6 +154,7 @@ class MessageFormat
 		}
 
 		//force args as UTF-8
+		$args ??= [];
 		foreach ($args as $k => $v) {
 			$args[$k] = TUtf8Converter::toUTF8($v, $charset);
 		}
@@ -184,11 +185,11 @@ class MessageFormat
 			$args = [];
 		}
 
-		foreach ($this->messages[$catalogue] as $variant) {
+		foreach ($this->messages[$catalogue] ?? [] as $variant) {
 			// foreach of the translation units
 			foreach ($variant as $source => $result) {
 				// we found it, so return the target translation
-				if ($source == $string) {
+				if ((string) $source === $string) {
 					//check if it contains only strings.
 					if (is_string($result)) {
 						$target = $result;
@@ -196,7 +197,7 @@ class MessageFormat
 						$target = $result[0];
 					}
 					//found, but untranslated
-					if (empty($target)) {
+					if ($target === null || $target === '') {
 						return 	$this->postscript[0] .
 								strtr($string, $args) .
 								$this->postscript[1];

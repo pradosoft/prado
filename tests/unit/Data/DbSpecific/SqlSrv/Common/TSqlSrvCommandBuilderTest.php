@@ -278,4 +278,19 @@ class TSqlSrvCommandBuilderTest extends \PHPUnit\Framework\TestCase
 		$this->assertFalse($rowVersion->hasSequence());
 		$this->assertTrue($rowVersion->getIsExcluded());
 	}
+
+	public function test_reverse_direction_of_one_column(): void
+	{
+		$builder = new TSqlSrvCommandBuilder();
+
+		$this->assertSame(['id' => 'ASC'], PradoUnit::invoke($builder, 'reverseDirection', ['id' => 'DESC']));
+		$this->assertSame(['id' => 'DESC'], PradoUnit::invoke($builder, 'reverseDirection', ['id' => 'asc']));
+	}
+
+	public function test_last_insert_id_of_a_table_without_columns(): void
+	{
+		$builder = new TSqlSrvCommandBuilder($this->_conn, new TSqlSrvTableInfo(['TableName' => 'empty']));
+
+		$this->assertNull($builder->getLastInsertID());
+	}
 }

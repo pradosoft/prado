@@ -24,7 +24,7 @@ Template control for specifying named parameters inside `TTranslate`. Provides k
 
 | Property | Type | Description |
 |----------|------|-------------|
-| `Key` | string | **Required.** The placeholder key (enclosed in `{}`) |
+| `Key` | string | **Required.** The placeholder key (enclosed in `{}`); `getKey()` throws `TConfigurationException` `translateparameter_key_required` when empty |
 | `Trim` | bool | Trim whitespace from content (default: `true`) |
 | `Value` | string | Direct value for the parameter |
 | `Parameter` | string | Computed value (content or Value property) |

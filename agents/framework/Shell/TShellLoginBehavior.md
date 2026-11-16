@@ -35,8 +35,8 @@ Note: `<behavior>` children are not supported directly within `<module>` configu
 ## Behavior
 
 When attached and running in CLI:
-1. Uses the `--user` option, or prompts for the username
-2. Uses the `--password` option, or prompts for the password with hidden input
+1. Uses the `--user` option, or prompts for the username with `readLine()`
+2. Uses the `--password` option, or prompts for the password with `readPassword()`; on a terminal outside Windows, `setTerminalEcho()` turns echo off with `stty -echo` while it is read (4.4.0)
 3. Calls `TAuthManager::login()` with the credentials and discards the password
 4. On failure, displays an error and throws `TExitException`, which ends the process
 
@@ -46,6 +46,12 @@ When attached and running in CLI:
 |--------|-------|-------------|
 | `--user <name>` | `-u` | Set username |
 | `--password <pass>` | `-p` | Set password |
+
+A `--password` on the command line is visible to other users in the process list and stays in the shell history. Omit it to be prompted.
+
+## Testing Seams (4.4.0)
+
+`readLine()`, `setTerminalEcho()`, and `isStdInTerminal()` are protected; a test subclass scripts the input and the terminal.
 
 ## Events
 

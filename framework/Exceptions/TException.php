@@ -183,15 +183,16 @@ class TException extends \Exception
 	 * definitions override the framework messages and the files registered before it.
 	 * When a "-xx" variant of the file exists for the client language of
 	 * {@see \Prado\Prado::getPreferredLanguage()}, "messages-fr.txt" for "messages.txt",
-	 * the variant is registered in its place.
+	 * the variant is registered in its place. The variant is looked up for a file with an
+	 * extension of 2 to 4 characters; "app-de.txt" has the variant "app-de-fr.txt".
 	 * @param string $file the extra message file
 	 * @since 4.2.0
 	 */
 	public static function addMessageFile($file)
 	{
-		if (preg_match('/^(.*)(?:-(.{2,5}))?\.(.{2,4})$/', $file, $matching)) {
+		if (preg_match('/^(.*)\.(.{2,4})$/', $file, $matching)) {
 			$lang = Prado::getPreferredLanguage();
-			$msgFile = $matching[1] . '-' . $lang . '.' . $matching[3];
+			$msgFile = $matching[1] . '-' . $lang . '.' . $matching[2];
 			if (is_file($msgFile)) {
 				$file = $msgFile;
 			}
@@ -207,7 +208,7 @@ class TException extends \Exception
 	 */
 	protected function translateErrorMessage($key)
 	{
-		if (empty($key)) {
+		if ($key === null || $key === '') {
 			return '';
 		}
 		$file = $this->findErrorMessageFile($key);

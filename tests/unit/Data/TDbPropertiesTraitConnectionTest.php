@@ -58,6 +58,19 @@ class TraitTestSqliteClass extends TComponent
 }
 
 /**
+ * Application component that provides a SQLite database name, so the trait reads its own application.
+ */
+class TraitTestApplicationComponentSqliteClass extends \Prado\TApplicationComponent
+{
+	use TDbPropertiesTrait;
+
+	protected function getSqliteDatabaseName(): ?string
+	{
+		return 'trait_test_component.db';
+	}
+}
+
+/**
  * Class that provides a custom DB connection.
  */
 class TraitTestCustomConnectionClass extends TComponent
@@ -285,5 +298,37 @@ class TDbPropertiesTraitConnectionTest extends \PHPUnit\Framework\TestCase
 		$conn = $obj->getDbConnection();
 		$this->assertInstanceOf(TDbConnection::class, $conn);
 		$this->assertTrue($conn->getActive());
+	}
+
+	public function test_activation_type_true_activates_on_every_get()
+	{
+		$obj = new class extends TraitTestCustomConnectionClass {
+			protected function getDbConnectionActivationType(): ?bool
+			{
+				return true;
+			}
+		};
+		$obj->setCustomConn($this->makeSqliteConnection());
+
+		$conn = $obj->getDbConnection();
+		$this->assertTrue($conn->getActive());
+		$conn->setActive(false);
+
+		$this->assertSame($conn, $obj->getDbConnection());
+		$this->assertTrue($conn->getActive());
+	}
+
+	public function test_sqlite_connection_of_an_application_component()
+	{
+		$obj = new TraitTestApplicationComponentSqliteClass();
+		$conn = $obj->getDbConnection();
+		try {
+			$this->assertTrue($conn->getActive());
+			$this->assertStringContainsString('trait_test_component.db', $conn->getConnectionString());
+			$this->assertStringStartsWith('sqlite:' . $obj->getApplication()->getRuntimePath(), $conn->getConnectionString());
+		} finally {
+			$conn->setActive(false);
+			@unlink(substr($conn->getConnectionString(), strlen('sqlite:')));
+		}
 	}
 }

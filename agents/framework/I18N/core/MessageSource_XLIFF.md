@@ -46,24 +46,25 @@ messages/
   messages.xml           # default
   messages.de_DE.xml     # German
   messages.en_AU.xml     # Australian English
-  de/
-    DE/
-      messages.xml       # or in subdirectory
+  de_DE/
+    messages.xml         # or in a culture directory
 ```
+
+Each `.xml` name is also tried as `.xlf`; `catalogues()` lists both.
 
 ## Key Methods
 
 ### `save($catalogue = 'messages'): bool`
 
-Save untranslated messages as new `<trans-unit>` elements.
+Save untranslated messages as new `<trans-unit>` elements, with CDATA source and target, and clear the untranslated list.
 
 ### `update($text, $target, $comments, $catalogue = 'messages'): bool`
 
-Update the `<target>` element of a trans-unit.
+Set the `<target>` and `<note>` text of the trans-unit whose source text equals `$text` (strict string comparison, text or CDATA). False when no unit matches; the file is unchanged.
 
 ### `delete($message, $catalogue = 'messages'): bool`
 
-Remove a trans-unit from the XLIFF file.
+Remove the trans-unit whose source text equals `$message`.
 
 ## See Also
 

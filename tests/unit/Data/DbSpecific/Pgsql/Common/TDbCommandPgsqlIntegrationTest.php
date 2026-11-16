@@ -353,4 +353,13 @@ class TDbCommandPgsqlIntegrationTest extends \PHPUnit\Framework\TestCase
 	{
 		$this->assertSame('abc', $this->_conn->createCommand("SELECT 'abc'::bytea")->queryScalar());
 	}
+
+	public function testPgsqlPreparedQueryScalarReadsAByteaStream(): void
+	{
+		$command = $this->_conn->createCommand('SELECT CAST(:value AS bytea)');
+		$command->bindValue(':value', 'abc');
+		$command->prepare();
+
+		$this->assertSame('abc', $command->queryScalar());
+	}
 }

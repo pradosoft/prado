@@ -119,4 +119,5 @@ $c->Select = 'id, name, email';  // replaces SELECT *
 - **Always parameterize** — never interpolate user input into `Condition`. Use `:name` style binding.
 - **`findAll()` returns [`TDbDataReader`](TDbDataReader.md)** — iterate it or call `readAll()`. It is a forward-only cursor; you cannot rewind.
 - **`findByPk()` composite PKs** — pass an associative array when the table has a composite primary key.
+- **Dynamic finders** — `findByName($v)`, `findAllByNameAndKind($a, $b)`, `deleteByName($v)`, and `deleteAllBy...()` match column names in the method name. A finder with no column after the prefix (`findBy()`) throws `dbtablegateway_mismatch_column_name`.
 - **`OnCreateCommand` hook** — ideal for query logging, multi-tenancy scoping (appending a tenant WHERE clause), or debugging. Attach before any gateway call.

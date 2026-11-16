@@ -377,7 +377,7 @@ class TCache_Lite
 		}
 		if ($this->_memoryCaching) {
 			foreach ($this->_memoryCachingArray as $key => $v) {
-				if (strpos($key, $motif, 0)) {
+				if (str_contains($key, $motif)) {
 					unset($this->_memoryCachingArray[$key]);
 					$this->_memoryCachingCounter =
 							$this->_memoryCachingCounter - 1;
@@ -387,21 +387,23 @@ class TCache_Lite
 				return true;
 			}
 		}
-		if (!($dh = opendir($this->_cacheDir))) {
+		if (!($dh = @opendir($this->_cacheDir))) {
 			throw new Exception('TCache_Lite: Unable to open cache directory');
 		}
-		while ($file = readdir($dh)) {
+		while (($file = readdir($dh)) !== false) {
 			if (($file != '.') && ($file != '..')) {
 				$file = $this->_cacheDir . $file;
 				if (is_file($file)) {
-					if (strpos($file, $motif, 0)) {
+					if (str_contains($file, $motif)) {
 						if (!@unlink($file)) {
+							closedir($dh);
 							throw new Exception('Cache_Lite: Unable to remove cache');
 						}
 					}
 				}
 			}
 		}
+		closedir($dh);
 		return true;
 	}
 
@@ -427,6 +429,10 @@ class TCache_Lite
 	 */
 	protected function _memoryCacheAdd($id, $data)
 	{
+		if (isset($this->_memoryCachingArray[$this->_file])) {
+			$this->_memoryCachingArray[$this->_file] = $data;
+			return;
+		}
 		$this->_memoryCachingArray[$this->_file] = $data;
 		if ($this->_memoryCachingCounter >= $this->_memoryCachingLimit) {
 			$key = key($this->_memoryCachingArray);
@@ -468,10 +474,10 @@ class TCache_Lite
 	protected function _read()
 	{
 		$fp = @fopen($this->_file, "rb");
-		if ($this->_fileLocking) {
-			@flock($fp, LOCK_SH);
-		}
 		if ($fp) {
+			if ($this->_fileLocking) {
+				@flock($fp, LOCK_SH);
+			}
 			// because the filesize can be cached by PHP itself...
 			clearstatcache();
 			$length = @filesize($this->_file);
@@ -480,7 +486,7 @@ class TCache_Lite
 				$hashControl = @fread($fp, 32);
 				$length = $length - 32;
 			}
-			$data = @fread($fp, $length);
+			$data = $length > 0 ? @fread($fp, $length) : '';
 			if ($this->_fileLocking) {
 				@flock($fp, LOCK_UN);
 			}

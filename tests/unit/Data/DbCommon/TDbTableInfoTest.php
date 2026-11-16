@@ -232,4 +232,12 @@ class TDbTableInfoTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame('t1', (new TPgsqlTableInfo(['TableName' => 't1']))->getTableFullName());
 		$this->assertSame('s1.t1', (new TPgsqlTableInfo(['TableName' => 't1', 'SchemaName' => 's1']))->getTableFullName());
 	}
+
+	public function test_column_names_of_a_table_without_columns_are_empty()
+	{
+		$info = new TDbTableInfo(['TableName' => 'empty']);
+
+		$this->assertSame([], $info->getColumnNames());
+		$this->assertSame([], $info->getLowerCaseColumnNames());
+	}
 }

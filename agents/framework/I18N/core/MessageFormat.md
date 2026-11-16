@@ -33,6 +33,12 @@ public function __construct(IMessageSource $source, string $charset = 'UTF-8')
 
 Translate and substitute placeholders. Placeholders use `{key}` syntax.
 
+| Lookup result | Returns |
+|---|---|
+| a source equals `$string` (strict string comparison) and its target is not `''` | the target, substituted; `'0'` is a translation |
+| the target is `''` | the untranslated postscript around `$string` |
+| no source matches, or the catalogue failed to load | the postscript around `$string`; the source records it through `append()` |
+
 ### `setUntranslatedPS([$prefix, $suffix]): void`
 
 Wrap untranslated messages with prefix/suffix:
