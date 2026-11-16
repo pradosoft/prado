@@ -185,6 +185,7 @@ serializingcache_type_invalid = TSerializingCache.SerializationType ''{0}'' is i
 serializingcache_encoding_invalid = TSerializingCache.Encoding ''{0}'' is invalid. Valid values are 'None', 'Base64' and 'Hex'.
 serializingcache_securitymanager_invalid = TSerializingCache.SecurityManager ''{0}'' is invalid. It must be a TSecurityManager module id or a TSecurityManager instance.
 serializingcache_json_encode_failed = TSerializingCache failed to JSON-encode the value: {0}.
+serializingcache_json_dependency_unsupported = {0} cannot store a value with a cache dependency when SerializationType is 'JSON'. JSON does not encode an ICacheDependency; use SerializationType 'PHP'.
 directorycachedependency_directory_invalid = TDirectoryCacheDependency.Directory {0} does not refer to a valid directory.
 cachedependencylist_cachedependency_required = Only objects implementing ICacheDependency can be added into TCacheDependencyList.
 

@@ -56,10 +56,10 @@ CREATE TABLE pradocache (
     value BLOB,
     expire INTEGER
 );
-CREATE INDEX IX_expire ON pradocache (expire);
+CREATE INDEX IX_pradocache_expire ON pradocache (expire);
 ```
 
-Note: auto-create uses `LONGBLOB` for MySQL, `BYTEA` for PostgreSQL, and `BLOB` for all other drivers. Indices are non-unique.
+Note: auto-create uses `LONGBLOB` for MySQL, `BYTEA` for PostgreSQL, and `BLOB` for all other drivers. The `expire` index is named after the table (`getExpireIndexName()`), since SQLite and PostgreSQL scope index names to the schema. `itemkey` is the primary key, which the upsert of `set()` needs.
 
 ## Expiry Boundary Condition
 

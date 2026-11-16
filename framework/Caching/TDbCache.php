@@ -41,15 +41,15 @@ use Prado\Util\IDbModule;
  * By default, the name of the table is called 'pradocache'. If the table does not
  * exist in the database, it will be automatically created with the following structure:
  * ```sql
- * CREATE TABLE pradocache (itemkey CHAR(128), value BLOB, expire INT)
- * CREATE INDEX IX_itemkey ON pradocache (itemkey)
- * CREATE INDEX IX_expire ON pradocache (expire)
+ * CREATE TABLE pradocache (itemkey CHAR(128) PRIMARY KEY, value BLOB, expire INTEGER)
+ * CREATE INDEX IX_pradocache_expire ON pradocache (expire)
  * ```
  *
  * Note, some DBMS might not support BLOB type. In this case, replace 'BLOB' with a suitable
  * binary data type (e.g. LONGBLOB in MySQL, BYTEA in PostgreSQL.)
  *
- * Important: Make sure that the indices are non-unique!
+ * `itemkey` is the primary key; the upsert of {@see set()} replaces the row with the same key.
+ * The `expire` index is named after the table.
  *
  * If you want to change the cache table name, or if you want to create the table by yourself,
  * you may set {@see \Prado\Caching\TDbCache::setCacheTableName() CacheTableName} and {@see \Prado\Caching\TDbCache::setAutoCreateCacheTable() AutoCreateCacheTable} properties.
@@ -265,13 +265,24 @@ class TDbCache extends TSerializingCache implements IDbModule
 			$sql = 'CREATE TABLE ' . $cacheTable . " (itemkey CHAR(128) PRIMARY KEY, value $blob, expire INTEGER)";
 			$db->createCommand($sql)->execute();
 
-			$sql = 'CREATE INDEX IX_expire ON ' . $cacheTable . ' (expire)';
+			$sql = 'CREATE INDEX ' . $this->getExpireIndexName() . ' ON ' . $cacheTable . ' (expire)';
 			$db->createCommand($sql)->execute();
 
 			$this->_createCheck = true;
 			$this->getApplication()->setGlobalState($key, $this->getClock()->time());
 		}
 		$this->setIsCacheInitialized(true);
+	}
+
+	/**
+	 * Returns the name of the index on the `expire` column, derived from the table name.
+	 * SQLite and PostgreSQL scope index names to the schema, so each cache table has its own.
+	 * @return string `IX_`, the table name with each run of non-word characters as `_`, and `_expire`.
+	 * @since 4.4.0
+	 */
+	protected function getExpireIndexName(): string
+	{
+		return 'IX_' . preg_replace('/\W+/', '_', $this->getCacheTableName()) . '_expire';
 	}
 
 	/**
@@ -444,15 +455,14 @@ class TDbCache extends TSerializingCache implements IDbModule
 	 * and you want to create the DB table manually by yourself,
 	 * you need to make sure the DB table is of the following structure:
 	 * ```sql
-	 * CREATE TABLE pradocache (itemkey CHAR(128), value BLOB, expire INT)
-	 * CREATE INDEX IX_itemkey ON pradocache (itemkey)
-	 * CREATE INDEX IX_expire ON pradocache (expire)
+	 * CREATE TABLE pradocache (itemkey CHAR(128) PRIMARY KEY, value BLOB, expire INTEGER)
+	 * CREATE INDEX IX_pradocache_expire ON pradocache (expire)
 	 * ```
 	 *
 	 * Note, some DBMS might not support BLOB type. In this case, replace 'BLOB' with a suitable
 	 * binary data type (e.g. LONGBLOB in MySQL, BYTEA in PostgreSQL.)
 	 *
-	 * Important: Make sure that the indices are non-unique!
+	 * `itemkey` is the primary key; the upsert of {@see set()} replaces the row with the same key.
 	 *
 	 * @param string $value the name of the DB table to store cache content, an SQL identifier
 	 * @throws \Prado\Exceptions\TInvalidDataValueException if the name is not an SQL identifier
@@ -496,14 +506,7 @@ class TDbCache extends TSerializingCache implements IDbModule
 
 		$sql = 'SELECT value FROM ' . $this->getCacheTableName() . ' WHERE itemkey=:key AND (expire=0 OR expire>=' . $this->getClock()->time() . ') ORDER BY expire DESC';
 		$db = $this->getDbConnection();
-		$command = $db->createCommand($sql);
-		$command->bindValue(':key', $key, $db::PARAM_STR);
-		try {
-			return $command->queryScalar();
-		} catch (\Exception $e) {
-			$this->initializeCache(true);
-			return $command->queryScalar();
-		}
+		return $this->runCacheCommand($sql, [':key' => [$key, $db::PARAM_STR]], 'queryScalar');
 	}
 
 	/**
@@ -526,7 +529,7 @@ class TDbCache extends TSerializingCache implements IDbModule
 			if (in_array($driver, [TDbDriver::DRIVER_MYSQL, TDbDriver::DRIVER_SQLITE])) {
 				$sql = "REPLACE INTO {$cacheTable} (itemkey,value,expire) VALUES (:key,:value,$expire)";
 			} elseif ($driver === TDbDriver::DRIVER_PGSQL) {
-				$sql = "INSERT INTO {$cacheTable} (itemkey, value, expire) VALUES (:key, :value, :expire) " .
+				$sql = "INSERT INTO {$cacheTable} (itemkey, value, expire) VALUES (:key, :value, $expire) " .
 					"ON CONFLICT (itemkey) DO UPDATE SET value = EXCLUDED.value, expire = EXCLUDED.expire";
 			} else {
 				$sql = "MERGE INTO {$cacheTable} AS c " .
@@ -538,21 +541,11 @@ class TDbCache extends TSerializingCache implements IDbModule
 					"INSERT (itemkey, value, expire) " .
 					"VALUES (data.itemkey, data.value, data.expire)";
 			}
-			$command = $db->createCommand($sql);
-			$command->bindValue(':key', $key, $db::PARAM_STR);
-			$command->bindValue(':value', $value, $db::PARAM_LOB);
-
 			try {
-				$command->execute();
+				$this->runCacheCommand($sql, [':key' => [$key, $db::PARAM_STR], ':value' => [$value, $db::PARAM_LOB]]);
 				return true;
 			} catch (\Exception $e) {
-				try {
-					$this->initializeCache(true);
-					$command->execute();
-					return true;
-				} catch (\Exception $e) {
-					return false;
-				}
+				return false;
 			}
 		} else {
 			$isCurrentTransaction = $this->getDbConnection()->getCurrentTransaction();
@@ -584,21 +577,11 @@ class TDbCache extends TSerializingCache implements IDbModule
 		$expire = ($expire <= 0) ? 0 : $this->getClock()->time() + $expire;
 		$sql = "INSERT INTO {$this->getCacheTableName()} (itemkey,value,expire) VALUES(:key,:value,$expire)";
 		$db = $this->getDbConnection();
-		$command = $db->createCommand($sql);
-		$command->bindValue(':key', $key, $db::PARAM_STR);
-		$command->bindValue(':value', $value, $db::PARAM_LOB);
-
 		try {
-			$command->execute();
+			$this->runCacheCommand($sql, [':key' => [$key, $db::PARAM_STR], ':value' => [$value, $db::PARAM_LOB]]);
 			return true;
 		} catch (\Exception $e) {
-			try {
-				$this->initializeCache(true);
-				$command->execute();
-				return true;
-			} catch (\Exception $e) {
-				return false;
-			}
+			return false;
 		}
 	}
 
@@ -613,16 +596,8 @@ class TDbCache extends TSerializingCache implements IDbModule
 		}
 
 		$db = $this->getDbConnection();
-		$command = $db->createCommand("DELETE FROM {$this->getCacheTableName()} WHERE itemkey=:key");
-		$command->bindValue(':key', $key, $db::PARAM_STR);
-		try {
-			$command->execute();
-			return true;
-		} catch (\Exception $e) {
-			$this->initializeCache(true);
-			$command->execute();
-			return true;
-		}
+		$this->runCacheCommand("DELETE FROM {$this->getCacheTableName()} WHERE itemkey=:key", [':key' => [$key, $db::PARAM_STR]]);
+		return true;
 	}
 
 	/**
@@ -633,18 +608,40 @@ class TDbCache extends TSerializingCache implements IDbModule
 		if (!$this->getIsCacheInitialized()) {
 			$this->initializeCache();
 		}
-		$command = $this->getDbConnection()->createCommand("DELETE FROM {$this->getCacheTableName()}");
 		try {
-			$command->execute();
+			$this->runCacheCommand("DELETE FROM {$this->getCacheTableName()}");
 		} catch (\Exception $e) {
-			try {
-				$this->initializeCache(true);
-				$command->execute();
-				return true;
-			} catch (\Exception $e) {
-				return false;
-			}
+			return false;
 		}
 		return true;
+	}
+
+	/**
+	 * Runs a command on the cache table, and runs it once more after initializing the
+	 * table again when it fails. Each attempt creates and binds its own command, since a
+	 * driver that prepares a statement as it is bound, such as SQLite, fails there for a
+	 * missing table.
+	 * @param string $sql the SQL statement.
+	 * @param array<string, array{0: mixed, 1: int}> $params the value and PDO type of each parameter, by name.
+	 * @param string $method the {@see \Prado\Data\TDbCommand} method that runs the command: `execute` or `queryScalar`.
+	 * @throws \Exception if the second attempt fails.
+	 * @return mixed the result of $method.
+	 * @since 4.4.0
+	 */
+	protected function runCacheCommand(string $sql, array $params = [], string $method = 'execute'): mixed
+	{
+		$attempt = function () use ($sql, $params, $method): mixed {
+			$command = $this->getDbConnection()->createCommand($sql);
+			foreach ($params as $name => [$value, $type]) {
+				$command->bindValue($name, $value, $type);
+			}
+			return $command->$method();
+		};
+		try {
+			return $attempt();
+		} catch (\Exception $e) {
+			$this->initializeCache(true);
+			return $attempt();
+		}
 	}
 }
