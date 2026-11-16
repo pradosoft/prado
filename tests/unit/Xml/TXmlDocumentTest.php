@@ -364,4 +364,24 @@ class TXmlDocumentTest extends \PHPUnit\Framework\TestCase
 			}
 		}
 	}
+
+	public function testEveryFailedLoadResetsTheDocument()
+	{
+		$fresh = new TXmlDocument();
+		foreach (['empty string' => '', 'null' => null, 'zero' => '0', 'malformed' => '<root><child></root>'] as $label => $string) {
+			$xmldoc = new TXmlDocument();
+			self::assertTrue($xmldoc->loadFromString('<?xml version="1.1" encoding="UTF-8"?><root a="1">value<child/></root>'), $label);
+			$child = $xmldoc[0];
+
+			self::assertFalse($xmldoc->loadFromString($string), $label);
+
+			self::assertSame($fresh->getVersion(), $xmldoc->getVersion(), $label);
+			self::assertSame($fresh->getEncoding(), $xmldoc->getEncoding(), $label);
+			self::assertSame($fresh->getTagName(), $xmldoc->getTagName(), $label);
+			self::assertSame($fresh->getValue(), $xmldoc->getValue(), $label);
+			self::assertFalse($xmldoc->getHasAttribute(), $label);
+			self::assertSame(0, $xmldoc->getCount(), $label);
+			self::assertNull($child->getParent(), $label);
+		}
+	}
 }
