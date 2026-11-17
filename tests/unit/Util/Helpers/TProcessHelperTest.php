@@ -215,4 +215,58 @@ class TProcessHelperTest extends \PHPUnit\Framework\TestCase
 		self::assertFalse(TProcessHelper::isSurroundedBy('-tex-', '-t'));
 		self::assertFalse(TProcessHelper::isSurroundedBy('-ex-', '-t'));
 	}
+
+	/**
+	 * Starts a PHP child that sleeps, and returns [process, pid].
+	 */
+	private function startSleepingChild(): array
+	{
+		$process = proc_open(TProcessHelper::filterCommand(['@php', '-r', 'sleep(60);']), [], $pipes);
+		$pid = proc_get_status($process)['pid'];
+		$deadline = microtime(true) + 10;
+		while (!TProcessHelper::isRunning($pid) && microtime(true) < $deadline) {
+			usleep(10_000);
+		}
+		return [$process, $pid];
+	}
+
+	/**
+	 * Returns the id of a process that has ended.
+	 */
+	private function endedPid(): int
+	{
+		[$process, $pid] = $this->startSleepingChild();
+		proc_terminate($process, 9);
+		proc_close($process);
+		return $pid;
+	}
+
+	public function testProcessPriorityOfEndedProcess()
+	{
+		if (TProcessHelper::isSystemWindows()) {
+			$this->markTestSkipped('Windows reads the priority through PowerShell.');
+		}
+		$pid = $this->endedPid();
+		self::assertNull(TProcessHelper::getProcessPriority($pid));
+		self::assertFalse(TProcessHelper::setProcessPriority(5, $pid));
+	}
+
+	public function testSetProcessPriorityDenied()
+	{
+		if (TProcessHelper::isSystemWindows()) {
+			$this->markTestSkipped('Windows sets the priority through PowerShell.');
+		}
+		if (function_exists('posix_geteuid') && posix_geteuid() === 0) {
+			$this->markTestSkipped('The superuser may raise a priority.');
+		}
+		[$process, $pid] = $this->startSleepingChild();
+		try {
+			$priority = TProcessHelper::getProcessPriority($pid);
+			self::assertFalse(TProcessHelper::setProcessPriority($priority - 5, $pid));
+			self::assertSame($priority, TProcessHelper::getProcessPriority($pid));
+		} finally {
+			proc_terminate($process, 9);
+			proc_close($process);
+		}
+	}
 }

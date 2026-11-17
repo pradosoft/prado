@@ -288,9 +288,10 @@ class TProcessHelper
 	}
 
 	/**
+	 * Returns the priority of a process.
 	 * @param ?int $pid The process id to get the priority of, default null for current
 	 *   process.
-	 * @return ?int The priority of the process.
+	 * @return ?int The priority of the process, or null when the process does not exist.
 	 */
 	public static function getProcessPriority(?int $pid = null): ?int
 	{
@@ -324,7 +325,8 @@ class TProcessHelper
 			];
 			return $priorityValues[$numericPriority] ?? null;
 		} else {
-			if (strlen($priority = trim(shell_exec('exec ps -o nice= -p ' . $pid)))) {
+			$priority = trim((string) shell_exec('exec ps -o nice= -p ' . $pid . ' 2>/dev/null'));
+			if (strlen($priority)) {
 				return (int) $priority;
 			}
 			return null;
@@ -332,10 +334,12 @@ class TProcessHelper
 	}
 
 	/**
-	 * In linux systems, the priority can only go up (and have less priority).
+	 * Sets the priority of a process.  Without privileges, the priority can only go
+	 * up (and have less priority).
 	 * @param int $priority The priority of the PID.
 	 * @param ?int $pid The PID to change the priority, default null for current process.
-	 * @return bool Was successful.
+	 * @return bool Was successful; false when the process does not exist or the system
+	 *   denies the change.
 	 */
 	public static function setProcessPriority(int $priority, ?int $pid = null): bool
 	{
@@ -370,18 +374,10 @@ class TProcessHelper
 				$priority -= $pp;
 			}
 
-			$result = shell_exec("exec renice -n $priority -p $pid");
-
-			// On MacOS, working properly consists of returning nothing.
-			//	only errors return "renice: 40812: setpriority: Permission denied" (when lowering priority without permission)
-			//		(Lowering the priority is increasing its importance)
-			// On the github linux test system it return "3539 (process ID) old priority 0, new priority 8"
-			//	for an error, it return: "renice: failed to set priority for 3612 (process ID): Permission denied"
-			if (is_string($result) && str_contains($result, 'denied')) {
-				return false;
-			}
-
-			return true;
+			$output = [];
+			$exitCode = -1;
+			exec("exec renice -n $priority -p $pid 2>&1", $output, $exitCode);
+			return $exitCode === 0;
 		}
 	}
 
