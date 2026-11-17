@@ -60,6 +60,7 @@ use Prado\Xml\TXmlElement;
  *     ],
  *     'parameters' => [
  *         'param1' => 'paramValue1',
+ *         'param2' => ['value' => ['a', 'b']],
  *         'param3' => ['class' => 'MyDataObject', 'properties' => ['Property1' => 'Value1']],
  *     ],
  * ];
@@ -115,19 +116,30 @@ class TParameterModule extends \Prado\TModule
 	}
 
 	/**
-	 * Loads parameters into application.
-	 * @param mixed $config XML of PHP representation of the parameters
+	 * Loads parameters into the application parameters. A parameter with a class is
+	 * created as that component with its properties; any other parameter is stored as
+	 * its value.
+	 *
+	 * An array configuration follows the "parameters" of the application configuration:
+	 * - a scalar or object → the value
+	 * - an array with "class" → a component with the "properties" array
+	 * - an array with "value" → the "value" entry, which can be an array
+	 * - any other array → skipped
+	 * @param mixed $config XML or PHP representation of the parameters
 	 * @throws TConfigurationException if the parameter file format is invalid
 	 */
 	protected function loadParameters($config)
 	{
+		// id => [null, value] for a value, or [class, properties, configuration] for a component.
 		$parameters = [];
 		if (is_array($config)) {
 			foreach ($config as $id => $parameter) {
-				if (is_array($parameter) && isset($parameter['class'])) {
+				if (!is_array($parameter)) {
+					$parameters[$id] = [null, $parameter];
+				} elseif (isset($parameter['class'])) {
 					$parameters[$id] = [$parameter['class'], $parameter['properties'] ?? [], $parameter];
-				} else {
-					$parameters[$id] = $parameter;
+				} elseif (array_key_exists('value', $parameter)) {
+					$parameters[$id] = [null, $parameter['value']];
 				}
 			}
 		} elseif ($config instanceof TXmlElement) {
@@ -137,11 +149,7 @@ class TParameterModule extends \Prado\TModule
 					throw new TConfigurationException('parametermodule_parameterid_required');
 				}
 				if (($type = $properties->remove('class')) === null) {
-					if (($value = $properties->remove('value')) === null) {
-						$parameters[$id] = $node;
-					} else {
-						$parameters[$id] = $value;
-					}
+					$parameters[$id] = [null, $properties->remove('value') ?? $node];
 				} else {
 					$parameters[$id] = [$type, $properties->toArray(), $node];
 				}
@@ -150,13 +158,13 @@ class TParameterModule extends \Prado\TModule
 
 		$appParams = $this->getApplication()->getParameters();
 		foreach ($parameters as $id => $parameter) {
-			if (is_array($parameter)) {
+			if ($parameter[0] === null) {
+				$appParams->add($id, $parameter[1]);
+			} else {
 				$component = Prado::createComponent($parameter[0]);
 				$component->setSubProperties($parameter[1]);
 				$component->dyInit($parameter[2]);
 				$appParams->add($id, $component);
-			} else {
-				$appParams->add($id, $parameter);
 			}
 		}
 	}

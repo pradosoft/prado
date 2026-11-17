@@ -37,6 +37,12 @@
 | `getYearPattern(): string\|false` | `string\|false` | Extracts the year token (`yy` or `yyyy`) from `Pattern`. |
 | `getDayMonthYearOrdering(): array` | `array` | Returns the ordered list of `'day'`, `'month'`, `'year'` tokens as they appear in `Pattern`. |
 
+## Parsing and Formatting Notes
+
+- `K`/`KK` (0–11) with `a`: PM adds 12 hours.
+- `D` (day in year) sets the month and day when the pattern has neither; a day past the year's last day fails the parse.
+- `S` to `SSSSS` format the fraction rounded to that many digits and zero-padded; a fraction that rounds up to a whole second stays at the largest value, `999` for `SSS`.
+
 ## See Also
 
 - `TIntlDateFormatterTrait` — provides ICU integration

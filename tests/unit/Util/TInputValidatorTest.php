@@ -659,4 +659,110 @@ class TInputValidatorTest extends TestCase
 		$this->assertSame([], $e->getErrors());
 		$this->assertSame($previous, $e->getPrevious());
 	}
+
+	// ── Single-field paths (#1497) ─────────────────────────────────────────────
+
+	public static function singleFieldProvider(): array
+	{
+		return [
+			'absent, required' => [[], 'required', false, []],
+			'absent, optional' => [[], 'string', true, []],
+			'null, nullable' => [['f' => null], 'nullable|string', true, ['f' => null]],
+			'null, optional' => [['f' => null], 'string', true, []],
+			'valid' => [['f' => 'v'], 'string', true, ['f' => 'v']],
+			'invalid' => [['f' => 1], 'string', false, []],
+			'array rules' => [['f' => 'v'], ['string', ' ', 'max:5'], true, ['f' => 'v']],
+			'callable rule' => [['f' => 'v'], [fn (&$value, $parameter, $field) => null], true, ['f' => 'v']],
+			'callable rule message' => [['f' => 'v'], [fn (&$value, $parameter, $field) => 'bad'], false, []],
+			'empty rule string' => [['f' => 'v'], '', true, ['f' => 'v']],
+			'empty rule array' => [['f' => 'v'], [], true, ['f' => 'v']],
+			'blank rule in an array' => [['f' => 'v'], [' '], true, ['f' => 'v']],
+		];
+	}
+
+	/**
+	 * @dataProvider singleFieldProvider
+	 */
+	public function testSingleField(array $data, array|string $rules, bool $valid, array $validated): void
+	{
+		$validator = $this->validator();
+		$this->assertSame($valid, $validator->isValid($data, ['f' => $rules]));
+		$this->assertSame($validated, $validator->getValidated());
+	}
+
+	public static function ruleValueProvider(): array
+	{
+		return [
+			'required: empty array' => ['required', [], false, null],
+			'integer: int' => ['integer', 5, true, 5],
+			'integer: float' => ['integer', 3.0, true, 3],
+			'integer: fractional float' => ['integer', 3.5, false, null],
+			'integer: numeric string' => ['integer', '7', true, 7],
+			'integer: other string' => ['integer', 'x', false, null],
+			'integer: boolean' => ['integer', true, false, null],
+			'min: string' => ['min:2', 'abc', true, 'abc'],
+			'min: short string' => ['min:4', 'abc', false, null],
+			'min: array' => ['min:1', [1], true, [1]],
+			'min: small array' => ['min:2', [1], false, null],
+			'min: number' => ['min:2', 3, true, 3],
+			'min: small number' => ['min:4', 3, false, null],
+			'min: not a number' => ['min:4', true, true, true],
+			'max: string' => ['max:4', 'abc', true, 'abc'],
+			'max: long string' => ['max:2', 'abc', false, null],
+			'max: array' => ['max:2', [1], true, [1]],
+			'max: large array' => ['max:0', [1], false, null],
+			'max: number' => ['max:4', 3, true, 3],
+			'max: large number' => ['max:2', 3, false, null],
+			'max: not a number' => ['max:0', true, true, true],
+			'in: listed' => ['in:a, b', 'b', true, 'b'],
+			'in: not listed' => ['in:a,b', 'c', false, null],
+			'in: not scalar' => ['in:a,b', ['a'], false, null],
+		];
+	}
+
+	/**
+	 * @dataProvider ruleValueProvider
+	 */
+	public function testRuleValue(string $rule, mixed $value, bool $valid, mixed $validated): void
+	{
+		$validator = $this->validator();
+		$this->assertSame($valid, $validator->isValid(['f' => $value], ['f' => $rule]));
+		if ($valid) {
+			$this->assertSame($validated, $validator->getValidated()['f']);
+		} else {
+			$this->assertArrayHasKey('f', $validator->getErrors());
+		}
+	}
+
+	public static function ruleParameterProvider(): array
+	{
+		return [
+			'min without a parameter' => ['min'],
+			'min with a word' => ['min:x'],
+			'max without a parameter' => ['max'],
+			'in without a parameter' => ['in'],
+			'in with a blank parameter' => ['in: '],
+		];
+	}
+
+	/**
+	 * @dataProvider ruleParameterProvider
+	 */
+	public function testRuleParameterRequired(string $rule): void
+	{
+		try {
+			$this->validator()->isValid(['f' => 'v'], ['f' => $rule]);
+			$this->fail("'$rule' did not throw without a usable parameter.");
+		} catch (TConfigurationException $e) {
+			$this->assertSame('inputvalidator_parameter_required', $e->getErrorCode());
+		}
+	}
+
+	public function testIsValidWithoutRules(): void
+	{
+		$validator = $this->validator();
+		$this->assertTrue($validator->isValid(['f' => 'v'], []));
+		$this->assertSame([], $validator->getValidated());
+		$this->assertSame([], $validator->getErrors());
+	}
 }

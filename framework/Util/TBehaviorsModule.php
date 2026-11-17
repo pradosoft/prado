@@ -76,7 +76,7 @@ use Prado\Xml\TXmlElement;
 class TBehaviorsModule extends \Prado\TModule
 {
 	/**
-	 * @var IBaseBehavior[] loaded named behaviors, the targets of `behavior:<name>`.
+	 * @var array<string, \WeakReference> loaded named behaviors, the targets of `behavior:<name>`.
 	 */
 	private static $_behaviors = [];
 
@@ -118,11 +118,10 @@ class TBehaviorsModule extends \Prado\TModule
 			$this->getApplication()->attachEventHandler('onBeginRequest', [$this, 'attachTPageServiceHandler']);
 		}
 		foreach ($this->_behaviorBehaviors as $target => $behaviors) {
-			if (!isset(self::$_behaviors[$target])) {
+			$owner = isset(self::$_behaviors[$target]) ? self::$_behaviors[$target]->get() : null;
+			if ($owner === null) {
 				throw new TConfigurationException('behaviormodule_behaviorowner_required', 'behavior:' . $target);
 			}
-			$owner = self::$_behaviors[$target];
-			$owner = is_a($owner, '\WeakReference') ? $owner->get() : $owner;
 			foreach ($behaviors as $properties) {
 				$priority = $properties['priority'] ?? null;
 				unset($properties['priority']);

@@ -5,6 +5,7 @@ namespace Prado\Test\Unit\Util;
 use Prado\Util\TBehavior;
 use Prado\TComponent;
 use Prado\Exceptions\TInvalidOperationException;
+use Prado\Test\Unit\PradoUnit;
 
 class TestCloneableBehavior extends TBehavior
 {
@@ -15,6 +16,26 @@ class TestCloneableBehavior extends TBehavior
             'owner' => $cloned->getOwner(),
             'hasOwner' => $cloned->hasOwner(),
         ];
+    }
+}
+
+class TBehaviorTestOwner extends TComponent
+{
+    public function onMyEvent($param)
+    {
+        return $this->raiseEvent('onMyEvent', $this, $param);
+    }
+}
+
+class TBehaviorTestHandlers extends TBehavior
+{
+    public function events()
+    {
+        return ['onMyEvent' => 'myHandler'];
+    }
+
+    public function myHandler($sender, $param)
+    {
     }
 }
 
@@ -104,5 +125,83 @@ class TBehaviorTest extends \PHPUnit\Framework\TestCase
             }
         };
         $this->assertEquals('my_key', $b->getKeyPublic());
+    }
+
+    public function testGetOwnersWithoutOwner()
+    {
+        $b = new TBehavior();
+        $this->assertSame([], $b->getOwners());
+        $this->assertNull($b->getOwner());
+        $this->assertFalse($b->isOwner(new TComponent()));
+    }
+
+    public function testAttachNonComponentThrows()
+    {
+        $b = new TBehavior();
+        try {
+            $b->attach(new \stdClass());
+            $this->fail('attach() did not throw for an object that is not a TComponent.');
+        } catch (TInvalidOperationException $e) {
+            $this->assertSame('behavior_bad_attach_component', $e->getErrorCode());
+        }
+    }
+
+    public function testEnableDisableBehaviorsSyncsHandlers()
+    {
+        $owner = new TBehaviorTestOwner();
+        $b = new TBehaviorTestHandlers();
+        $owner->attachBehavior('b', $b);
+        $this->assertSame(1, $owner->getEventHandlers('onMyEvent')->getCount());
+
+        $owner->disableBehaviors();
+        $this->assertSame(0, $owner->getEventHandlers('onMyEvent')->getCount());
+        $owner->enableBehaviors();
+        $this->assertSame(1, $owner->getEventHandlers('onMyEvent')->getCount());
+
+        $owner->disableBehaviors();
+        $b->dyEnableBehaviors();
+        $this->assertSame(0, $owner->getEventHandlers('onMyEvent')->getCount());
+        $b->setRetainDisabledHandlers(true);
+        $b->dyDisableBehaviors();
+        $this->assertSame(1, $owner->getEventHandlers('onMyEvent')->getCount());
+    }
+
+    public function testHandlersStatusOfAnotherComponent()
+    {
+        $owner = new TBehaviorTestOwner();
+        $other = new TComponent();
+        $b = new TBehaviorTestHandlers();
+        $owner->attachBehavior('b', $b);
+
+        $this->assertTrue(PradoUnit::invoke($b, 'getHandlersStatus'));
+        $this->assertTrue(PradoUnit::invoke($b, 'getHandlersStatus', $owner));
+        $this->assertNull(PradoUnit::invoke($b, 'getHandlersStatus', $other));
+        $this->assertFalse(PradoUnit::invoke($b, 'setHandlersStatus', $other, false));
+        $this->assertFalse(PradoUnit::invoke($b, 'setHandlersStatus', $owner, true));
+    }
+
+    public function testSerializeDropsTheOwner()
+    {
+        $owner = new TComponent();
+        $b = new TBehavior();
+        $owner->attachBehavior('b', $b);
+
+        $copy = unserialize(serialize($b));
+        $this->assertFalse($copy->hasOwner());
+        $this->assertNull($copy->getName());
+        $this->assertFalse(PradoUnit::invoke($copy, 'getHandlersStatus'));
+    }
+
+    public function testDetachNullOwnerThrows()
+    {
+        $owner = new TComponent();
+        $b = new TBehavior();
+        $owner->attachBehavior('b', $b);
+        try {
+            $b->detach(null);
+            $this->fail('detach() did not throw for a null owner.');
+        } catch (TInvalidOperationException $e) {
+            $this->assertSame('behavior_detach_wrong_owner', $e->getErrorCode());
+        }
     }
 }

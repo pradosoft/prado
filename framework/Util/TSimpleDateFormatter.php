@@ -278,8 +278,9 @@ class TSimpleDateFormatter
 				$microseconds = (int) $dt->format('u');
 
 				if ($sCount < 6) {
-					$divisor = pow(10, 6 - $sCount);
-					$value = (string) round($microseconds / $divisor);
+					// Rounded to the digits of the pattern, without carrying into the seconds.
+					$fraction = min((int) round($microseconds / 10 ** (6 - $sCount)), 10 ** $sCount - 1);
+					$value = sprintf('%0' . $sCount . 'd', $fraction);
 				} else {
 					$value = substr(sprintf('%06d', $microseconds), 0, $sCount);
 				}
@@ -515,7 +516,7 @@ class TSimpleDateFormatter
 		$i_val = 0;
 		$i_format = 0;
 		$pattern_length = $this->length($this->pattern);
-		$year = $month = $day = $hour = $minute = $second = null;
+		$year = $month = $day = $dayInYear = $hour = $minute = $second = null;
 		$ampm = null;
 		$hourMode = null;
 		$fraction = 0.0;
@@ -750,6 +751,15 @@ class TSimpleDateFormatter
 		}
 
 		$year = ($year === null) ? (int) date('Y') : (int) $year;
+		if ($dayInYear !== null && $month === null && $day === null) {
+			// The day in the year sets the month and day when the pattern has neither.
+			if ($dayInYear < 1 || $dayInYear > (checkdate(2, 29, $year) ? 366 : 365)) {
+				return null;
+			}
+			$date = (new \DateTime())->setDate($year, 1, (int) $dayInYear);
+			$month = (int) $date->format('n');
+			$day = (int) $date->format('j');
+		}
 		$month = ($month === null) ? ($defaultToCurrentTime ? (int) date('m') : 1) : (int) $month;
 		if ($day === null) {
 			if ($defaultToCurrentTime) {
@@ -771,6 +781,9 @@ class TSimpleDateFormatter
 		if ($hourMode === 'k') {
 			$hour = $hour % 24;
 		} elseif ($hourMode === 'K') {
+			if ($ampm === 'PM') {
+				$hour += 12;
+			}
 		} elseif ($hourMode === 'h' && $ampm !== null) {
 			if ($ampm === 'PM' && $hour < 12) {
 				$hour += 12;
@@ -870,7 +883,8 @@ class TSimpleDateFormatter
 	{
 		$formatter = $this->getIntlDateFormatter($culture, \IntlDateFormatter::FULL, \IntlDateFormatter::FULL);
 		if (!$formatter) {
-			return null;
+			// The intl extension is required.
+			return null; // @codeCoverageIgnore
 		}
 
 		$weekdayNames = [];
@@ -895,7 +909,8 @@ class TSimpleDateFormatter
 	{
 		$formatter = $this->getIntlDateFormatter($culture, \IntlDateFormatter::FULL, \IntlDateFormatter::FULL);
 		if (!$formatter) {
-			return null;
+			// The intl extension is required.
+			return null; // @codeCoverageIgnore
 		}
 
 		$monthNames = [];

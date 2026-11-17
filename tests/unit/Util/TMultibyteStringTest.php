@@ -83,4 +83,13 @@ class TMultibyteStringTest extends TestCase
 		$this->assertSame('i̇', TMultibyteString::lower('İ'));
 		$this->assertSame('abc', TMultibyteString::lower('ABC'));
 	}
+
+	public function testTransliterateUnknownRuleOrInvalidUtf8IsNull()
+	{
+		$this->assertNull(PradoUnit::invoke(TMultibyteString::class, 'transliterate', 'No-Such-Rule', 'abc'));
+		$this->assertNull(PradoUnit::invoke(TMultibyteString::class, 'transliterate', 'Any-Lower', "\xff"));
+		// A rule created on this call, then given invalid UTF-8.
+		$this->assertNull(PradoUnit::invoke(TMultibyteString::class, 'transliterate', 'Any-Title', "\xff"));
+		$this->assertSame('abc', PradoUnit::invoke(TMultibyteString::class, 'transliterate', 'Any-Lower', 'ABC'));
+	}
 }

@@ -40,7 +40,7 @@ class TVarDumper
 	 * but is more robust when handling complex objects such as PRADO controls.
 	 * @param mixed $var variable to be dumped
 	 * @param int $depth maximum depth that the dumper should go into the variable. Defaults to 10.
-	 * @param bool $highlight whether to highlight th resulting string
+	 * @param bool $highlight whether to highlight the resulting string
 	 * @return string the string representation of the variable
 	 */
 	public static function dump($var, $depth = 10, $highlight = false)
@@ -51,7 +51,8 @@ class TVarDumper
 		self::dumpInternal($var, 0);
 		if ($highlight) {
 			$result = highlight_string("<?php\n" . self::$_output, true);
-			return preg_replace('/&lt;\\?php<br \\/>/', '', $result, 1);
+			// PHP 8.2 ends the opening tag with "<br />", PHP 8.3 and later with a newline.
+			return preg_replace('/&lt;\\?php(?:<br \\/>|\r?\n)/', '', $result, 1);
 		} else {
 			return self::$_output;
 		}
@@ -77,9 +78,6 @@ class TVarDumper
 				break;
 			case 'NULL':
 				self::$_output .= "null";
-				break;
-			case 'unknown type':
-				self::$_output .= '{unknown}';
 				break;
 			case 'array':
 				if (self::$_depth <= $level) {
@@ -120,10 +118,14 @@ class TVarDumper
 					foreach ($members as $key => $value) {
 						$keyDisplay = strtr(trim($key), ["\0" => ':']);
 						self::$_output .= "\n" . $spaces . "    [$keyDisplay] => ";
-						self::$_output .= self::dumpInternal($value, $level + 1);
+						self::dumpInternal($value, $level + 1);
 					}
 					self::$_output .= "\n" . $spaces . ')';
 				}
+				break;
+			default:
+				// "resource (closed)", and "unknown type" for a type PHP does not name.
+				self::$_output .= '{' . gettype($var) . '}';
 				break;
 		}
 	}

@@ -73,6 +73,60 @@ class TestAssertOwnerClassBehavior extends TClassBehavior
 	}
 }
 
+class TBaseBehaviorTestOwner extends TComponent
+{
+	public function onMyEvent($param)
+	{
+		return $this->raiseEvent('onMyEvent', $this, $param);
+	}
+}
+
+class TBaseBehaviorTestHandlers extends TBehavior
+{
+	public function events()
+	{
+		return ['onMyEvent' => 'myHandler'];
+	}
+
+	public function myHandler($sender, $param)
+	{
+	}
+
+	public function callAttachEventHandlers(TComponent $component): bool
+	{
+		return $this->attachEventHandlers($component);
+	}
+
+	public function callDetachEventHandlers(TComponent $component): bool
+	{
+		return $this->detachEventHandlers($component);
+	}
+}
+
+class TBaseBehaviorTestNonStrictHandlers extends TBaseBehaviorTestHandlers
+{
+	public function getStrictEvents(): bool
+	{
+		return false;
+	}
+}
+
+class TBaseBehaviorTestConfigurable extends TBehavior
+{
+	public array $eventHandlers = [];
+	public bool $strict = true;
+
+	public function events()
+	{
+		return $this->eventHandlers;
+	}
+
+	public function getStrictEvents(): bool
+	{
+		return $this->strict;
+	}
+}
+
 class TBaseBehaviorTest extends \PHPUnit\Framework\TestCase
 {
 	// === mergeHandlers ===
@@ -462,5 +516,252 @@ class TBaseBehaviorTest extends \PHPUnit\Framework\TestCase
 		$cb->detach($c2);
 		$cb->callAssertWithoutOwner('anyProp');
 		$this->assertTrue(true);
+	}
+
+	// === Name, Enabled, HasOwner, OwnerVisibleMethods ===
+
+	private static function handlerCount(TComponent $owner): int
+	{
+		return $owner->getEventHandlers('onMyEvent')->getCount();
+	}
+
+	public function testOwnerVisibleMethods_null()
+	{
+		$this->assertNull((new TBehavior())->getOwnerVisibleMethods());
+	}
+
+	public function testSetName_withOwner()
+	{
+		$owner = new TComponent();
+		$behavior = new TBehavior();
+		$owner->attachBehavior('MyName', $behavior);
+		$this->assertSame('myname', $behavior->getName());
+
+		$behavior->setName('MYNAME');
+		$behavior->setName(5);
+		$this->assertSame('myname', $behavior->getName());
+
+		try {
+			$behavior->setName('other');
+			$this->fail('setName() did not throw for a new name with an owner.');
+		} catch (TInvalidOperationException $e) {
+			$this->assertSame('basebehavior_cannot_setname_with_owner', $e->getErrorCode());
+		}
+	}
+
+	public function testSetEnabled_syncsHandlers()
+	{
+		$owner = new TBaseBehaviorTestOwner();
+		$behavior = new TBaseBehaviorTestHandlers();
+		$this->assertFalse($behavior->getHasOwner());
+		$owner->attachBehavior('b', $behavior);
+		$this->assertTrue($behavior->getHasOwner());
+		$this->assertSame(1, self::handlerCount($owner));
+
+		$behavior->setEnabled('false');
+		$this->assertFalse($behavior->getEnabled());
+		$this->assertSame(0, self::handlerCount($owner));
+
+		$behavior->setEnabled(false);
+		$this->assertSame(0, self::handlerCount($owner));
+
+		$behavior->setEnabled(true);
+		$this->assertSame(1, self::handlerCount($owner));
+	}
+
+	// === RetainDisabledHandlers ===
+
+	public static function retainValueProvider(): array
+	{
+		return [
+			'0' => [0, null],
+			'null' => [null, null],
+			'"null"' => ['null', null],
+			'"NULL"' => ['NULL', null],
+			'"0"' => ['0', null],
+			'true' => [true, true],
+			'"true"' => ['true', true],
+			'false' => [false, false],
+			'"false"' => ['false', false],
+			'1' => [1, true],
+		];
+	}
+
+	/**
+	 * @dataProvider retainValueProvider
+	 */
+	public function testRetainDisabledHandlers_values($value, $expected)
+	{
+		$behavior = new TBehavior();
+		$this->assertFalse($behavior->getRetainDisabledHandlers());
+		$behavior->setRetainDisabledHandlers($value);
+		$this->assertSame($expected, $behavior->getRetainDisabledHandlers());
+	}
+
+	public function testRetainDisabledHandlers_syncsHandlers()
+	{
+		$owner = new TBaseBehaviorTestOwner();
+		$behavior = new TBaseBehaviorTestHandlers();
+		$owner->attachBehavior('b', $behavior);
+		$behavior->setEnabled(false);
+		$this->assertSame(0, self::handlerCount($owner));
+
+		$behavior->setRetainDisabledHandlers(true);
+		$this->assertSame(1, self::handlerCount($owner));
+		$behavior->setRetainDisabledHandlers(true);
+		$this->assertSame(1, self::handlerCount($owner));
+
+		$behavior->setEnabled(true);
+		$behavior->setRetainDisabledHandlers(null);
+		$this->assertSame(0, self::handlerCount($owner));
+
+		$behavior->setRetainDisabledHandlers(false);
+		$this->assertSame(1, self::handlerCount($owner));
+	}
+
+	// === syncEventHandlers ===
+
+	public function testSyncEventHandlers_withoutOwner()
+	{
+		$behavior = new TBaseBehaviorTestHandlers();
+		$behavior->syncEventHandlers();
+
+		try {
+			$behavior->syncEventHandlers(new TComponent());
+			$this->fail('syncEventHandlers() did not throw for a component without an owner.');
+		} catch (TInvalidOperationException $e) {
+			$this->assertSame('basebehavior_sync_no_owner', $e->getErrorCode());
+		}
+	}
+
+	public function testSyncEventHandlers_notOwner()
+	{
+		$behavior = new TBaseBehaviorTestHandlers();
+		$owner = new TBaseBehaviorTestOwner();
+		$owner->attachBehavior('b', $behavior);
+
+		try {
+			$behavior->syncEventHandlers(new TComponent());
+			$this->fail('syncEventHandlers() did not throw for a component that is not an owner.');
+		} catch (TInvalidOperationException $e) {
+			$this->assertSame('basebehavior_sync_not_owner', $e->getErrorCode());
+		}
+	}
+
+	public function testSyncEventHandlers_attachOverride()
+	{
+		$owner = new TBaseBehaviorTestOwner();
+		$behavior = new TBaseBehaviorTestHandlers();
+		$owner->attachBehavior('b', $behavior);
+
+		$behavior->syncEventHandlers($owner, null);
+		$this->assertNull($behavior->getRetainDisabledHandlers());
+		$this->assertSame(0, self::handlerCount($owner));
+
+		$behavior->syncEventHandlers($owner, true);
+		$this->assertTrue($behavior->getRetainDisabledHandlers());
+		$this->assertSame(1, self::handlerCount($owner));
+
+		$owner->disableBehaviors();
+		$this->assertSame(1, self::handlerCount($owner));
+		$behavior->syncEventHandlers(null, false);
+		$this->assertFalse($behavior->getRetainDisabledHandlers());
+		$this->assertSame(0, self::handlerCount($owner));
+	}
+
+	// === attachEventHandlers / detachEventHandlers ===
+
+	public function testAttachDetachEventHandlers_onlyOnStatusChange()
+	{
+		$owner = new TBaseBehaviorTestOwner();
+		$behavior = new TBaseBehaviorTestHandlers();
+		$owner->attachBehavior('b', $behavior);
+
+		$this->assertFalse($behavior->callAttachEventHandlers($owner));
+		$this->assertSame(1, self::handlerCount($owner));
+		$this->assertTrue($behavior->callDetachEventHandlers($owner));
+		$this->assertFalse($behavior->callDetachEventHandlers($owner));
+		$this->assertSame(0, self::handlerCount($owner));
+	}
+
+	public function testNonStrictEvents_attachToTheOwnersEvents()
+	{
+		$owner = new TBaseBehaviorTestOwner();
+		$behavior = new TBaseBehaviorTestNonStrictHandlers();
+		$owner->attachBehavior('b', $behavior);
+		$this->assertSame(1, self::handlerCount($owner));
+
+		$owner->detachBehavior('b');
+		$this->assertSame(0, self::handlerCount($owner));
+	}
+
+	public function testNonStrictEvents_skipMissingOwnerEvents()
+	{
+		$owner = new TComponent();
+		$behavior = new TBaseBehaviorTestNonStrictHandlers();
+		$owner->attachBehavior('b', $behavior);
+		$this->assertFalse($owner->hasEventHandler('onMyEvent'));
+
+		$owner->detachBehavior('b');
+		$this->assertFalse($behavior->getHasOwner());
+	}
+
+	// === Serialization ===
+
+	public static function serializeProvider(): array
+	{
+		return [
+			'default' => [true, false],
+			'disabled' => [false, false],
+			'retain' => [true, true],
+			'retain null' => [true, null],
+			'disabled, retain null' => [false, null],
+		];
+	}
+
+	/**
+	 * @dataProvider serializeProvider
+	 */
+	public function testSerialize_keepsEnabledAndRetainDisabledHandlers(bool $enabled, ?bool $retain)
+	{
+		$behavior = new TBehavior();
+		$behavior->setEnabled($enabled);
+		$behavior->setRetainDisabledHandlers($retain);
+
+		$copy = unserialize(serialize($behavior));
+		$this->assertSame($enabled, $copy->getEnabled());
+		$this->assertSame($retain, $copy->getRetainDisabledHandlers());
+		$this->assertNull($copy->getName());
+	}
+
+	public static function handlerKindProvider(): array
+	{
+		return [
+			'strict, closure' => [true, 'closure'],
+			'strict, no handlers' => [true, 'none'],
+			'non-strict, closure' => [false, 'closure'],
+			'non-strict, no handlers' => [false, 'none'],
+		];
+	}
+
+	/**
+	 * @dataProvider handlerKindProvider
+	 */
+	public function testAttachDetachEventHandlers_handlerKinds(bool $strict, string $kind)
+	{
+		$owner = new TBaseBehaviorTestOwner();
+		$behavior = new TBaseBehaviorTestConfigurable();
+		$behavior->strict = $strict;
+		$closure = function ($sender, $param) {
+		};
+		$behavior->eventHandlers = ['onMyEvent' => $kind === 'closure' ? $closure : []];
+		$owner->attachBehavior('b', $behavior);
+		$this->assertSame($kind === 'closure' ? 1 : 0, self::handlerCount($owner));
+		if ($kind === 'closure') {
+			$this->assertSame($closure, $owner->getEventHandlers('onMyEvent')->itemAt(0));
+		}
+
+		$owner->detachBehavior('b');
+		$this->assertSame(0, self::handlerCount($owner));
 	}
 }

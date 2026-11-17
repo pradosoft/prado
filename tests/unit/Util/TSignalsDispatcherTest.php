@@ -6,6 +6,7 @@ use Prado\Exceptions\TInvalidOperationException;
 use Prado\Exceptions\TExitException;
 use Prado\TEventSubscription;
 use Prado\Test\Unit\Harness\Util\Clock\TTestMonotonicClock;
+use Prado\Test\Unit\PradoUnit;
 use Prado\Util\TSignalsDispatcher;
 use Prado\Util\TSignalParameter;
 use Prado\Collections\TWeakCallableCollection;
@@ -27,6 +28,14 @@ class TTestSignalInvokable {
 	}
 }
 
+class TTestNoSignalsDispatcher extends TSignalsDispatcher
+{
+	public static function hasSignals(): bool
+	{
+		return false;
+	}
+}
+
 class TSignalsDispatcherTest extends \PHPUnit\Framework\TestCase
 {
 	public $dispatcher = null;
@@ -43,6 +52,17 @@ class TSignalsDispatcherTest extends \PHPUnit\Framework\TestCase
 		TTestSignalsDispatcher::setPriorHandlerPriority(null);
 	}
 	
+	/**
+	 * Asserts an alarm time set for $seconds between the times $before and $after;
+	 * a slow run, as under coverage, can cross second boundaries in between.
+	 */
+	private static function assertAlarmTime(int $before, int $seconds, ?int $alarmTime, int $after): void
+	{
+		self::assertNotNull($alarmTime);
+		self::assertGreaterThanOrEqual($before + $seconds - 1, $alarmTime);
+		self::assertLessThanOrEqual($after + $seconds, $alarmTime);
+	}
+
 	public function testConstruct()
 	{
 		if (TSignalsDispatcher::hasSignals()) {
@@ -368,41 +388,43 @@ class TSignalsDispatcherTest extends \PHPUnit\Framework\TestCase
 		}
 		
 		$originalAlarm = pcntl_signal_get_handler(SIGALRM);
-		
-		// Preset custom handlers, stored on attach, to be restored on detach
-		$ogHandler = new TTestSignalInvokable(3);
-		pcntl_signal(SIGALRM, $ogHandler);
-		pcntl_alarm(3);
-		$now = time();
-		
-		$this->dispatcher = new TTestSignalsDispatcher();
-		
-		$alarmTime = TTestSignalsDispatcher::alarm();
-		self::assertTrue($alarmTime == ($now + 3) || $alarmTime == ($now + 2));
-		
-		self::assertEquals($alarmTime, TTestSignalsDispatcher::disarm($ogHandler, $alarmTime));
-		
-		self::assertNull(TTestSignalsDispatcher::alarm());
-			
-		$alarm1 = null;
-		$now = time();
-		$time1 = TTestSignalsDispatcher::alarm(4, $f1 = function ($sender, $param) use (&$alarm1) {$alarm1 = $param;});
-		self::assertTrue($time1 === $now + 4 || $time1 === $now + 5);
-		self::assertEquals($time1, TTestSignalsDispatcher::alarm());
-		
-		$now = time();
-		$time2 = TTestSignalsDispatcher::alarm(2, $f2 = function ($sender, $param) use (&$alarm1) {$alarm1 = $param;});
-		self::assertTrue($time2 === $now + 2 || $time2 === $now + 3);
-		self::assertEquals($time2, TTestSignalsDispatcher::alarm());
-		
-		self::assertEquals($time2, TTestSignalsDispatcher::disarm($f2));
-		self::assertEquals($time1, TTestSignalsDispatcher::alarm());
-		self::assertEquals($time1, TTestSignalsDispatcher::disarm($f1));
-		
-		$this->dispatcher->detach();
-		
-		// restore
-		pcntl_signal(SIGALRM, $originalAlarm);
+		try {
+			// Preset custom handlers, stored on attach, to be restored on detach
+			$ogHandler = new TTestSignalInvokable(3);
+			pcntl_signal(SIGALRM, $ogHandler);
+			$before = time();
+			pcntl_alarm(3);
+
+			$this->dispatcher = new TTestSignalsDispatcher();
+
+			$alarmTime = TTestSignalsDispatcher::alarm();
+			self::assertAlarmTime($before, 3, $alarmTime, time());
+
+			self::assertEquals($alarmTime, TTestSignalsDispatcher::disarm($ogHandler, $alarmTime));
+
+			self::assertNull(TTestSignalsDispatcher::alarm());
+
+			$alarm1 = null;
+			$before = time();
+			$time1 = TTestSignalsDispatcher::alarm(4, $f1 = function ($sender, $param) use (&$alarm1) {$alarm1 = $param;});
+			self::assertAlarmTime($before, 4, $time1, time());
+			self::assertEquals($time1, TTestSignalsDispatcher::alarm());
+
+			$before = time();
+			$time2 = TTestSignalsDispatcher::alarm(2, $f2 = function ($sender, $param) use (&$alarm1) {$alarm1 = $param;});
+			self::assertAlarmTime($before, 2, $time2, time());
+			self::assertEquals($time2, TTestSignalsDispatcher::alarm());
+
+			self::assertEquals($time2, TTestSignalsDispatcher::disarm($f2));
+			self::assertEquals($time1, TTestSignalsDispatcher::alarm());
+			self::assertEquals($time1, TTestSignalsDispatcher::disarm($f1));
+
+			$this->dispatcher->detach();
+			$this->dispatcher = null;
+		} finally {
+			pcntl_alarm(0);
+			pcntl_signal(SIGALRM, $originalAlarm);
+		}
 	}
 	
 	public function testAlarmDisarm()
@@ -413,48 +435,55 @@ class TSignalsDispatcherTest extends \PHPUnit\Framework\TestCase
 		}
 
 		self::assertEquals(SIG_DFL, pcntl_signal_get_handler(SIGALRM));
-		
-		// Preset custom handlers, stored on attach, to be restored on detach
-		$handler = new TTestSignalInvokable(5);
-		pcntl_signal(SIGALRM, $handler);
+		try {
+			// Preset custom handlers, stored on attach, to be restored on detach
+			$handler = new TTestSignalInvokable(5);
+			pcntl_signal(SIGALRM, $handler);
 
-		$this->dispatcher = new TTestSignalsDispatcher();
+			$this->dispatcher = new TTestSignalsDispatcher();
 
-		// no initial alarm.
-		self::assertNull(TTestSignalsDispatcher::alarm());
-		
-		$alarm1 = null;
-		$alarmTime1 = TTestSignalsDispatcher::alarm(5, $f1 = function($sender, $param) use (&$alarm1) {$alarm1 = $param;} );
-		$now = time();
-		self::assertEquals($alarmTime1, TTestSignalsDispatcher::alarm());
-		self::assertTrue($alarmTime1 === $now + 5 || $alarmTime1 === $now + 4);
-		
-		$alarm2 = null;
-		$alarmTime2 = TTestSignalsDispatcher::alarm(2, $f2 = function($sender, $param) use (&$alarm2) {$alarm2 = $param;} );
-		$now = time();
-		self::assertEquals($alarmTime2, TTestSignalsDispatcher::alarm());
-		self::assertTrue($alarmTime2 === $now + 2 || $alarmTime2 === $now + 1);
-		self::assertGreaterThan($alarmTime2, $alarmTime1);
-		
-		self::assertNull(TTestSignalsDispatcher::disarm(-1, $f1));
-		
-		self::assertEquals($alarmTime2, TTestSignalsDispatcher::disarm($f2));
-		
-		self::assertEquals($alarmTime1, TTestSignalsDispatcher::alarm());
-		
-		self::assertEquals($alarmTime1, TTestSignalsDispatcher::disarm($f1));
-		
-		self::assertNull(TTestSignalsDispatcher::alarm());
-		
-		$now = time();
-		$alarmTime3 = TTestSignalsDispatcher::alarm(2);
-		
-		self::assertTrue($alarmTime3 === $now + 1 || $alarmTime3 === $now + 2);
-		self::assertEquals($alarmTime3, TTestSignalsDispatcher::alarm());
-		
-		self::assertEquals($alarmTime3, TTestSignalsDispatcher::disarm($alarmTime3));
-		
-		self::assertNull(TTestSignalsDispatcher::alarm());
+			// no initial alarm.
+			self::assertNull(TTestSignalsDispatcher::alarm());
+
+			$alarm1 = null;
+			$before = time();
+			$alarmTime1 = TTestSignalsDispatcher::alarm(5, $f1 = function($sender, $param) use (&$alarm1) {$alarm1 = $param;} );
+			self::assertAlarmTime($before, 5, $alarmTime1, time());
+			self::assertEquals($alarmTime1, TTestSignalsDispatcher::alarm());
+
+			$alarm2 = null;
+			$before = time();
+			$alarmTime2 = TTestSignalsDispatcher::alarm(2, $f2 = function($sender, $param) use (&$alarm2) {$alarm2 = $param;} );
+			self::assertAlarmTime($before, 2, $alarmTime2, time());
+			self::assertEquals($alarmTime2, TTestSignalsDispatcher::alarm());
+			self::assertGreaterThan($alarmTime2, $alarmTime1);
+
+			self::assertNull(TTestSignalsDispatcher::disarm(-1, $f1));
+
+			self::assertEquals($alarmTime2, TTestSignalsDispatcher::disarm($f2));
+
+			self::assertEquals($alarmTime1, TTestSignalsDispatcher::alarm());
+
+			self::assertEquals($alarmTime1, TTestSignalsDispatcher::disarm($f1));
+
+			self::assertNull(TTestSignalsDispatcher::alarm());
+
+			$before = time();
+			$alarmTime3 = TTestSignalsDispatcher::alarm(2);
+			self::assertAlarmTime($before, 2, $alarmTime3, time());
+			self::assertEquals($alarmTime3, TTestSignalsDispatcher::alarm());
+
+			self::assertEquals($alarmTime3, TTestSignalsDispatcher::disarm($alarmTime3));
+
+			self::assertNull(TTestSignalsDispatcher::alarm());
+		} finally {
+			pcntl_alarm(0);
+			if ($this->dispatcher) {
+				$this->dispatcher->detach();
+				$this->dispatcher = null;
+			}
+			pcntl_signal(SIGALRM, SIG_DFL);
+		}
 	}
 	
 	public function testRing()
@@ -658,4 +687,283 @@ class TSignalsDispatcherTest extends \PHPUnit\Framework\TestCase
 		self::assertNull(TTestSignalsDispatcher::getPriorHandlerPriority());
 	}
 	
+
+	public function testWithoutSignals()
+	{
+		self::assertNull(TTestNoSignalsDispatcher::singleton());
+		self::assertNull(TTestNoSignalsDispatcher::alarm(5));
+		self::assertNull(TTestNoSignalsDispatcher::disarm());
+		self::assertNull(TTestNoSignalsDispatcher::syncDispatch());
+		self::assertNull(TTestNoSignalsDispatcher::getAsyncSignals());
+		self::assertNull(TTestNoSignalsDispatcher::setAsyncSignals(true));
+
+		$dispatcher = new TTestNoSignalsDispatcher();
+		try {
+			self::assertSame($dispatcher, TTestNoSignalsDispatcher::singleton(false), 'The singleton is set without signals.');
+			self::assertSame([], PradoUnit::getStaticProp(TSignalsDispatcher::class, '_priorHandlers'));
+			self::assertNull($dispatcher->ring($dispatcher, new TSignalParameter(SIGALRM)));
+			$dispatcher->delegateChild($dispatcher, null);
+		} finally {
+			self::assertTrue($dispatcher->detach());
+		}
+		self::assertNull(TTestNoSignalsDispatcher::singleton(false));
+	}
+
+	public function testDisarmWithoutADispatcher()
+	{
+		if (!TSignalsDispatcher::hasSignals()) {
+			$this->markTestSkipped('pcntl signals are not available on this platform.');
+		}
+		self::assertNull(TTestSignalsDispatcher::singleton(false));
+		self::assertNull(TTestSignalsDispatcher::disarm());
+		self::assertNull(TTestSignalsDispatcher::disarm(fn () => null));
+	}
+
+	public function testAttachWhileAnotherIsAttached()
+	{
+		if (!TSignalsDispatcher::hasSignals()) {
+			$this->markTestSkipped('pcntl signals are not available on this platform.');
+		}
+		$this->dispatcher = new TTestSignalsDispatcher();
+		$other = new TTestSignalsDispatcher();
+		self::assertFalse($other->attach());
+		self::assertFalse($other->detach());
+		self::assertSame($this->dispatcher, TTestSignalsDispatcher::singleton(false));
+	}
+
+	public function testAttachSkipsTheSignalsItAlreadyHandles()
+	{
+		if (!TSignalsDispatcher::hasSignals()) {
+			$this->markTestSkipped('pcntl signals are not available on this platform.');
+		}
+		$this->dispatcher = new TTestSignalsDispatcher();
+		$state = PradoUnit::snapshotStatic(TSignalsDispatcher::class);
+		try {
+			// A dispatcher attaching while the signals still route to another records no prior handler.
+			PradoUnit::setStaticProp(TSignalsDispatcher::class, '_singleton', null);
+			$second = new TTestSignalsDispatcher();
+			self::assertSame($second, TTestSignalsDispatcher::singleton(false));
+			self::assertSame($state['_priorHandlers'], PradoUnit::getStaticProp(TSignalsDispatcher::class, '_priorHandlers'));
+			self::assertInstanceOf(TSignalsDispatcher::class, pcntl_signal_get_handler(SIGUSR1));
+		} finally {
+			PradoUnit::restoreStatic(TSignalsDispatcher::class, $state);
+		}
+	}
+
+	public function testPriorHandler()
+	{
+		if (!TSignalsDispatcher::hasSignals()) {
+			$this->markTestSkipped('pcntl signals are not available on this platform.');
+		}
+		$original = pcntl_signal_get_handler(SIGUSR1);
+		$handler = new TTestSignalInvokable(1);
+		pcntl_signal(SIGUSR1, $handler);
+		try {
+			$this->dispatcher = new TTestSignalsDispatcher();
+			self::assertSame($handler, TTestSignalsDispatcher::getPriorHandler(SIGUSR1, true));
+			self::assertInstanceOf(\Closure::class, TTestSignalsDispatcher::getPriorHandler(SIGUSR1));
+			self::assertSame(SIG_DFL, TTestSignalsDispatcher::getPriorHandler(SIGUSR2, true));
+			self::assertNull(TTestSignalsDispatcher::getPriorHandler(SIGUSR2));
+			self::assertNull(TTestSignalsDispatcher::getPriorHandler(-1, true));
+		} finally {
+			if ($this->dispatcher) {
+				$this->dispatcher->detach();
+				$this->dispatcher = null;
+			}
+			pcntl_signal(SIGUSR1, $original);
+		}
+	}
+
+	public function testPidEventNamesMustBeNumeric()
+	{
+		if (!TSignalsDispatcher::hasSignals()) {
+			$this->markTestSkipped('pcntl signals are not available on this platform.');
+		}
+		$this->dispatcher = new TTestSignalsDispatcher();
+		self::assertFalse($this->dispatcher->hasEvent('pid:abc'));
+		self::assertFalse($this->dispatcher->hasEventHandler('pid:abc'));
+		try {
+			$this->dispatcher->getEventHandlers('pid:abc');
+			self::fail('getEventHandlers() did not throw for a pid that is not a number.');
+		} catch (TInvalidOperationException $e) {
+			self::assertSame('signalsdispatcher_bad_pid', $e->getErrorCode());
+		}
+	}
+
+	public function testGetEventHandlersOfAnEndedPidClearsThem()
+	{
+		if (!TSignalsDispatcher::hasSignals()) {
+			$this->markTestSkipped('pcntl signals are not available on this platform.');
+		}
+		$this->dispatcher = new TTestSignalsDispatcher();
+		$pid = 999999;
+		self::assertFalse(TProcessHelper::isRunning($pid));
+		$this->dispatcher->attachPidHandler($pid, fn () => null);
+		self::assertTrue($this->dispatcher->hasEventHandler('pid:' . $pid));
+
+		self::assertNull($this->dispatcher->getEventHandlers('pid:' . $pid));
+		self::assertFalse($this->dispatcher->hasEventHandler('pid:' . $pid));
+	}
+
+	public function testDelegateChildReapsAnEndedChild()
+	{
+		if (!TSignalsDispatcher::hasSignals() || !TProcessHelper::isForkable()) {
+			$this->markTestSkipped('pcntl signals or fork are not available on this platform.');
+		}
+		$this->dispatcher = new TTestSignalsDispatcher();
+		// Synchronous signals hold SIGCHLD, so delegateChild() reaps the child itself.
+		TTestSignalsDispatcher::setAsyncSignals(false);
+		foreach ([[7, 'exit', true], [SIGKILL, 'kill', true], [3, 'exit', false]] as [$expectedStatus, $end, $withParameter]) {
+			$pid = pcntl_fork();
+			if ($pid === 0) {
+				if ($end === 'kill') {
+					posix_kill(posix_getpid(), SIGKILL);
+				}
+				exit($expectedStatus);
+			}
+			self::assertGreaterThan(0, $pid);
+			$received = null;
+			$this->dispatcher->attachPidHandler($pid, function ($sender, $param) use (&$received) {
+				$received = $param->getParameter();
+			});
+
+			$deadline = microtime(true) + 10;
+			while ($received === null && microtime(true) < $deadline) {
+				$this->dispatcher->delegateChild($this->dispatcher, $withParameter ? new TSignalParameter(SIGCHLD) : null);
+				usleep(10000);
+			}
+			self::assertSame($pid, $received['pid'] ?? null);
+			self::assertSame($end === 'exit' ? 1 : 2, $received['code']);
+			self::assertSame($expectedStatus, $received['status']);
+			self::assertFalse($this->dispatcher->hasPidHandler($pid), 'The handlers of an ended child are cleared.');
+		}
+		TTestSignalsDispatcher::setAsyncSignals(true);
+	}
+
+	public function testDelegateChildClearsTheHandlersOfAChildThatDumpedCore()
+	{
+		if (!TSignalsDispatcher::hasSignals()) {
+			$this->markTestSkipped('pcntl signals are not available on this platform.');
+		}
+		$this->dispatcher = new TTestSignalsDispatcher();
+		$this->dispatcher->attachPidHandler($pid = 55, fn () => null);
+		$this->dispatcher->delegateChild($this->dispatcher, new TSignalParameter(SIGCHLD, false, 0, ['pid' => $pid, 'code' => 3]));
+		self::assertFalse($this->dispatcher->hasPidHandler($pid));
+	}
+
+	public function testAlarmWithoutSecondsAndACallbackIsNull()
+	{
+		if (!TSignalsDispatcher::hasSignals()) {
+			$this->markTestSkipped('pcntl signals are not available on this platform.');
+		}
+		$this->dispatcher = new TTestSignalsDispatcher();
+		self::assertNull(TTestSignalsDispatcher::alarm(0, fn () => null));
+		self::assertNull(TTestSignalsDispatcher::disarm(12345));
+		TSignalsDispatcher::nullAlarm(null, null);
+		self::assertIsBool(TTestSignalsDispatcher::syncDispatch());
+		self::assertTrue(TTestSignalsDispatcher::getAsyncSignals());
+	}
+
+	public function testSetAsyncSignalsDispatchesPendingSignals()
+	{
+		if (!TSignalsDispatcher::hasSignals()) {
+			$this->markTestSkipped('pcntl signals are not available on this platform.');
+		}
+		$this->dispatcher = new TTestSignalsDispatcher();
+		self::assertTrue(TTestSignalsDispatcher::setAsyncSignals(false));
+		$received = null;
+		$this->dispatcher->attachEventHandler(TSignalsDispatcher::SIGNAL_MAP[SIGUSR2], function ($sender, $param) use (&$received) {
+			$received = $param->getSignal();
+		});
+		posix_kill(posix_getpid(), SIGUSR2);
+		self::assertNull($received, 'A synchronous signal waits for a dispatch.');
+		self::assertFalse(TTestSignalsDispatcher::setAsyncSignals(true));
+		self::assertSame(SIGUSR2, $received, 'Turning asynchronous signals on dispatches the pending signal.');
+	}
+
+	public function testAlarmNowWithoutADispatcher()
+	{
+		self::assertNull(TTestNoSignalsDispatcher::singleton(false));
+		self::assertEqualsWithDelta(time(), TTestNoSignalsDispatcher::alarmNow(), 1);
+	}
+
+	public function testRaiseEventByEventName()
+	{
+		if (!TSignalsDispatcher::hasSignals()) {
+			$this->markTestSkipped('pcntl signals are not available on this platform.');
+		}
+		$this->dispatcher = new TTestSignalsDispatcher();
+		$received = [];
+		$event = TSignalsDispatcher::SIGNAL_MAP[SIGUSR2];
+		$this->dispatcher->attachEventHandler($event, function ($sender, $param) use (&$received) {
+			$received[] = $param->getSignal();
+		});
+		$this->dispatcher->raiseEvent($event, $this->dispatcher, new TSignalParameter(SIGUSR2));
+		$this->dispatcher->raiseEvent(SIGUSR2, $this->dispatcher, new TSignalParameter(SIGUSR2));
+		self::assertSame([SIGUSR2, SIGUSR2], $received);
+	}
+
+	public function testPidHandlerCollections()
+	{
+		if (!TSignalsDispatcher::hasSignals()) {
+			$this->markTestSkipped('pcntl signals are not available on this platform.');
+		}
+		$this->dispatcher = new TTestSignalsDispatcher();
+		$pid = getmypid();
+		try {
+			self::assertInstanceOf(TWeakCallableCollection::class, $this->dispatcher->getPidHandlers($pid, true));
+			self::assertTrue($this->dispatcher->attachPidHandler($pid, $h1 = fn () => 1, null, true));
+			self::assertTrue($this->dispatcher->attachPidHandler($pid, $h2 = fn () => 2, null, true));
+			self::assertTrue($this->dispatcher->attachPidHandler($pid, $h3 = fn () => 3));
+			self::assertCount(3, $this->dispatcher->getPidHandlers($pid));
+
+			self::assertTrue($this->dispatcher->detachPidHandler($pid, $h1));
+			self::assertTrue($this->dispatcher->hasPidHandler($pid), 'The other handlers remain.');
+			self::assertCount(2, $this->dispatcher->getPidHandlers($pid));
+		} finally {
+			$this->dispatcher->clearPidHandlers($pid);
+		}
+	}
+
+	public function testSetAsyncSignalsRecordsThePriorState()
+	{
+		if (!TSignalsDispatcher::hasSignals()) {
+			$this->markTestSkipped('pcntl signals are not available on this platform.');
+		}
+		$original = pcntl_async_signals();
+		$state = PradoUnit::snapshotStatic(TSignalsDispatcher::class, ['_asyncSignals', '_priorAsync']);
+		try {
+			pcntl_async_signals(true);
+			PradoUnit::setStaticProp(TSignalsDispatcher::class, '_priorAsync', null);
+			self::assertTrue(TTestSignalsDispatcher::setAsyncSignals(true));
+			self::assertTrue(PradoUnit::getStaticProp(TSignalsDispatcher::class, '_priorAsync'));
+
+			PradoUnit::setStaticProp(TSignalsDispatcher::class, '_priorAsync', null);
+			self::assertTrue(TTestSignalsDispatcher::setAsyncSignals(false));
+			self::assertTrue(PradoUnit::getStaticProp(TSignalsDispatcher::class, '_priorAsync'));
+			self::assertFalse(pcntl_async_signals());
+		} finally {
+			PradoUnit::restoreStatic(TSignalsDispatcher::class, $state);
+			pcntl_async_signals($original);
+		}
+	}
+
+	public function testDisarmSearchesTheLaterAlarmTimes()
+	{
+		if (!TSignalsDispatcher::hasSignals()) {
+			$this->markTestSkipped('pcntl signals are not available on this platform.');
+		}
+		$this->dispatcher = new TTestSignalsDispatcher();
+		$this->dispatcher->setMonotonicClock(new TTestMonotonicClock(1_000_000_000_000));
+		try {
+			$near = TTestSignalsDispatcher::alarm(5, $f1 = fn () => null);
+			$far = TTestSignalsDispatcher::alarm(10, $f2 = fn () => null);
+			self::assertNull(TTestSignalsDispatcher::disarm(fn () => null), 'A callback that is not armed disarms nothing.');
+			self::assertSame($far, TTestSignalsDispatcher::disarm($f2));
+			self::assertSame($near, TTestSignalsDispatcher::alarm());
+			self::assertSame($near, TTestSignalsDispatcher::disarm($f1));
+		} finally {
+			pcntl_alarm(0);
+		}
+	}
 }

@@ -40,6 +40,7 @@ Alternatively, use an external parameter file:
 'parameters' => [
     'siteName' => 'My PRADO App',
     'maxItems' => 50,
+    'colors' => ['value' => ['red', 'blue']],   // "value" holds any value, an array included
     'dbConfig' => [
         'class' => 'Prado\Data\TDbConnection',
         'properties' => ['ConnectionString' => 'mysql:...'],
@@ -72,6 +73,7 @@ protected function loadParameters($config): void  // internal; processes config 
 
 - **Object parameters** — when `class` is specified, the object is instantiated once and stored. Properties from the config are set on the instance. Access via `$params['id']` returns the live object.
 - **Simple values are strings** — all simple `value=` parameters are stored as strings. Cast with `TPropertyValue::ensureInteger()` etc. when needed.
+- **PHP arrays** — an array parameter follows the application configuration: `class` makes a component, `value` holds the value, and any other array is skipped.
 - **`[TParameterizeBehavior](Behaviors/TParameterizeBehavior.md)`** — a behavior that reads properties from the parameter store and applies them to a module. Use this to configure modules from parameters rather than hard-coding values in XML.
 - **Ordering** — parameters declared in `application.xml` are processed in declaration order. Modules that depend on parameters should be declared after `TParameterModule`.
 - **`[TDbParameterModule](TDbParameterModule.md)`** extends this with database-backed storage and real-time capture of changes.

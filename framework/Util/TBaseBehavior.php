@@ -370,7 +370,7 @@ abstract class TBaseBehavior extends TApplicationComponent implements IBaseBehav
 			$priority = $this->getPriority();
 			$strict = $this->getStrictEvents();
 			foreach ($this->eventsLog() as $event => $handlers) {
-				if ($strict || $this->hasEvent($event)) {
+				if ($strict || $component->hasEvent($event)) {
 					foreach ($handlers as $handler) {
 						$component->attachEventHandler($event, is_string($handler) ? [$this, $handler] : $handler, $priority);
 					}
@@ -392,7 +392,7 @@ abstract class TBaseBehavior extends TApplicationComponent implements IBaseBehav
 		if ($this->setHandlersStatus($component, false)) {
 			$strict = $this->getStrictEvents();
 			foreach ($this->eventsLog() as $event => $handlers) {
-				if ($strict || $this->hasEvent($event)) {
+				if ($strict || $component->hasEvent($event)) {
 					foreach ($handlers as $handler) {
 						$component->detachEventHandler($event, is_string($handler) ? [$this, $handler] : $handler);
 					}
@@ -512,7 +512,7 @@ abstract class TBaseBehavior extends TApplicationComponent implements IBaseBehav
 		if ($this->_enabled === true) {
 			$exprops[] = "\0" . __CLASS__ . "\0_enabled";
 		}
-		if ($this->_retainDisabledHandlers === null) {
+		if ($this->_retainDisabledHandlers === false) {
 			$exprops[] = "\0" . __CLASS__ . "\0_retainDisabledHandlers";
 		}
 		$exprops[] = "\0" . __CLASS__ . "\0_eventsLog";

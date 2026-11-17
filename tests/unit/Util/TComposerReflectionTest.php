@@ -309,6 +309,21 @@ class TComposerReflectionTest extends \PHPUnit\Framework\TestCase
 		$this->assertNull(TComposerReflection::getPackagePath('ghost/definitely-not-installed-xyz'));
 	}
 
+	public function testGetPackagePath_nullForAPackageWithoutAnInstallPath(): void
+	{
+		// A metapackage is installed without an install path.
+		$snapshot = PradoUnit::snapshotStatic(\Composer\InstalledVersions::class, ['installed', 'installedByVendor', 'installedIsLocalDir']);
+		try {
+			\Composer\InstalledVersions::reload([
+				'root' => ['name' => 'test/root', 'pretty_version' => '1.0.0', 'version' => '1.0.0.0', 'reference' => null, 'type' => 'project', 'install_path' => __DIR__, 'aliases' => [], 'dev' => true],
+				'versions' => ['test/metapackage' => ['pretty_version' => '1.0.0', 'version' => '1.0.0.0', 'reference' => null, 'type' => 'metapackage', 'install_path' => null, 'aliases' => [], 'dev_requirement' => false]],
+			]);
+			$this->assertNull(TComposerReflection::getPackagePath('test/metapackage'));
+		} finally {
+			PradoUnit::restoreStatic(\Composer\InstalledVersions::class, $snapshot);
+		}
+	}
+
 	// =======================================================================
 	// getInstalledManifestsTime — newest installed.json mtime
 	// =======================================================================
@@ -597,5 +612,20 @@ class TComposerReflectionTest extends \PHPUnit\Framework\TestCase
 			$dependency->getDependencies()->getCount(),
 			'Default seam must contribute a file dependency per manifest'
 		);
+	}
+
+	public function testGetInstalledManifestsTime_noLoadersOrNoManifest(): void
+	{
+		$loaders = PradoUnit::getStaticProp(\Composer\Autoload\ClassLoader::class, 'registeredLoaders');
+		try {
+			PradoUnit::setStaticProp(\Composer\Autoload\ClassLoader::class, 'registeredLoaders', []);
+			$this->assertNull(TComposerReflection::getInstalledManifestsTime());
+
+			// A vendor directory without composer/installed.json has no manifest time.
+			PradoUnit::setStaticProp(\Composer\Autoload\ClassLoader::class, 'registeredLoaders', [__DIR__ => reset($loaders)]);
+			$this->assertNull(TComposerReflection::getInstalledManifestsTime());
+		} finally {
+			PradoUnit::setStaticProp(\Composer\Autoload\ClassLoader::class, 'registeredLoaders', $loaders);
+		}
 	}
 }

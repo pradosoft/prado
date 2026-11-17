@@ -78,7 +78,7 @@ $dispatcher->clearPidHandlers(int $pid): bool
 $dispatcher->delegateChild($sender, $param): void  // internal SIGCHLD router
 ```
 
-PID handlers are tracked via `WeakMap`. Handlers are called when the child PID signals.
+PID handlers are tracked via `WeakMap`. Handlers are called when the child PID signals, and cleared when its siginfo `code` is 1 (exited), 2 (killed), or 3 (dumped core). A `delegateChild()` parameter without a pid reaps an ended child with `pcntl_waitpid()` and fills `pid`, `code`, and `status` as the siginfo does.
 
 ## SIGALRM — Alarm / Timer
 
@@ -98,7 +98,7 @@ Alarm times are Unix seconds from `getAlarmNow()`: `getMonotonicClock()` seconds
 
 After a wall-clock step an alarm time differs from `time()` by the size of the step. Compare alarm times (from `alarm()` or `TSignalParameter::getAlarmTime()`) with the static `TSignalsDispatcher::alarmNow()`, the singleton's `getAlarmNow()`: the seconds until an alarm are `$alarmTime - TSignalsDispatcher::alarmNow()`.
 
-`disarm()` keeps the other callbacks of the time it disarms from. When that time was the next alarm, it arms `pcntl_alarm()` for the following time, at least 1 s ahead, so an overdue alarm still rings.
+`disarm()` keeps the other callbacks of the time it disarms from, and returns null without an attached dispatcher. When that time was the next alarm, it arms `pcntl_alarm()` for the following time, at least 1 s ahead, so an overdue alarm still rings.
 
 ## Async vs Synchronous Dispatch
 
