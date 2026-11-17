@@ -36,13 +36,15 @@ php prado-cli.php param/set mykey myvalue
 ## Subcommands
 
 ### `param` (index)
-Lists all parameters from `TDbParameterModule`.
+Lists all parameters from `TDbParameterModule`. An object value shows as `(object)`, an array as `(array)`, and any other value, `null` included, as its string.
 
 ### `param/get <param-key>`
 Displays a specific parameter's value.
 
 ### `param/set <param-key> <param-value>`
 Sets a parameter value in the database.
+
+`get` and `set` take any key but the empty string, `0` included.
 
 ## Options
 

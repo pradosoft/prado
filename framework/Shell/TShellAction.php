@@ -122,7 +122,7 @@ abstract class TShellAction extends \Prado\TComponent
 	/**
 	 * Creates a file and fills it with content
 	 * @param string $filename file name
-	 * @param int $content file contents
+	 * @param string $content file contents
 	 */
 	protected function createFile($filename, $content)
 	{
