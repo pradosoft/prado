@@ -11,6 +11,7 @@
 namespace Prado\Util\Log;
 
 use Prado\Web\Javascripts\TJavaScript;
+use Prado\Web\Services\TPageService;
 use Prado\Web\UI\ActiveControls\TActivePageAdapter;
 
 /**
@@ -50,15 +51,18 @@ use Prado\Web\UI\ActiveControls\TActivePageAdapter;
 class TFirebugLogRoute extends TBrowserLogRoute
 {
 	/**
-	 * Logs via Firebug.
+	 * Logs via Firebug.  Only a {@see TPageService} request with a page receives the logs.
 	 * @param array $logs list of log messages
 	 * @param bool $final is the final flush
 	 * @param array $meta the meta data for the logs.
 	 */
 	protected function processLogs(array $logs, bool $final, array $meta)
 	{
-		$page = $this->getService()->getRequestedPage();
 		if (empty($logs) || $this->getApplication()->getMode() === \Prado\TApplicationMode::Performance) {
+			return;
+		}
+		$service = $this->getService();
+		if (!($service instanceof TPageService) || ($page = $service->getRequestedPage()) === null) {
 			return;
 		}
 		$even = false;
@@ -69,12 +73,7 @@ class TFirebugLogRoute extends TBrowserLogRoute
 			$blocks[] = $this->renderMessageCallback($logs[$i]);
 		}
 
-		try {
-			$blocks = TJavaScript::jsonEncode($blocks);
-		} catch (\Exception $e) {
-			// strip everythin not 7bit ascii
-			$blocks = preg_replace('/[^(\x20-\x7F)]*/', '', serialize($blocks));
-		}
+		$blocks = TJavaScript::jsonEncode($blocks, JSON_INVALID_UTF8_SUBSTITUTE);
 
 		// the response has already been flushed
 		$response = $this->getApplication()->getResponse();
