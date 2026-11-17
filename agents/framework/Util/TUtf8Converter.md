@@ -9,15 +9,22 @@
 **Since:** 4.0.2
 
 ## Overview
-`TUtf8Converter` is a static utility class that wraps PHP's `iconv` extension to convert strings to and from UTF-8. It also parses encoding strings that embed a language tag (e.g. `'ISO-8859-1//TRANSLIT//FR'`), separating the base encoding from the language hint for `iconv`. Conversion failures return the original string rather than raising an exception.
+`TUtf8Converter` is a static utility class that converts strings to and from UTF-8. It calls `iconv()` when the iconv extension is loaded, and the intl extension's `\UConverter::transcode()` otherwise (4.4.0); `composer.json` suggests `iconv` and requires `intl`. An encoding can carry a language after a period, such as `'ISO-8859-1.fr_FR'`; the conversion runs under that `LC_CTYPE` locale, which is restored afterward. A failed conversion returns the original string.
+
+| Case | With iconv | Without iconv |
+|---|---|---|
+| `//TRANSLIT` or `//IGNORE` on the encoding | applied | removed; ICU substitutes what the target encoding cannot hold |
+| unknown encoding | the string unchanged | the string unchanged |
+| input invalid in its encoding | the string unchanged | the converted string with substitutes |
 
 ## Methods
 
 | Method | Returns | Description |
 |--------|---------|-------------|
-| `static toUTF8(string $string, string $from, ?string $lang = null): string` | `string` | Converts `$string` from encoding `$from` to UTF-8 via `iconv`. Returns the original string if `iconv` fails. |
-| `static fromUTF8(string $string, string $to, ?string $lang = null): string` | `string` | Converts a UTF-8 `$string` to encoding `$to` via `iconv`. Returns the original string if `iconv` fails. |
-| `static parseEncodingLanguage(string &$encoding, mixed &$lang): void` | `void` | Parses a compound encoding string, splitting the character-set name from an embedded language tag and writing each back through the reference parameters. |
+| `static hasIconv(): bool` | `bool` | Whether the iconv extension is loaded and `iconv()` converts. @since 4.4.0 |
+| `static toUTF8(string $string, string $from, ?string $lang = null): string` | `string` | Converts `$string` from encoding `$from` to UTF-8. Returns the original string if the conversion fails. |
+| `static fromUTF8(string $string, string $to, ?string $lang = null): string` | `string` | Converts a UTF-8 `$string` to encoding `$to`. Returns the original string if the conversion fails. |
+| `static parseEncodingLanguage(string &$encoding, mixed &$lang): void` | `void` | Splits `'ISO-8859-1.fr_FR'` into the encoding `'ISO-8859-1'` and the language `'fr_FR'`, written back through the reference parameters. |
 
 ## See Also
 

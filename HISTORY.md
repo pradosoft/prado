@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TUtf8Converter` converts with `\UConverter` when the iconv extension is not loaded (`hasIconv()`), returns the string unchanged when a conversion fails, and restores the locale; `TSimpleDateFormatter` measures a non-UTF-8 charset through it. Without iconv both failed, and a failed `iconv()` threw `TPhpErrorException`. (belisoful)
 BUG: Issue #1497 - `TSimpleDateFormatter` parses `K` hours with PM as afternoon hours and `D` as the day in the year when the pattern has no month and day, and formats fractional seconds zero-padded to the digits of the pattern; it ignored PM for `K` and the parsed `D`, and wrote 5 ms with `SSS` as `5`. (belisoful)
 BUG: Issue #1497 - `TSignalsDispatcher::disarm()` without an attached dispatcher returns null; it threw `TPhpErrorException`. (belisoful)
 BUG: Issue #1497 - `TSignalsDispatcher::delegateChild()` gives a child it reaps the "code" and "status" of the SIGCHLD siginfo and clears the handlers of a child that dumped core; it passed the raw wait status, so the handlers of a reaped child were never cleared. (belisoful)

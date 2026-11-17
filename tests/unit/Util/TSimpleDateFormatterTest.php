@@ -6,6 +6,7 @@ use Prado\Util\Clock\TMockClock;
 use Prado\Test\Unit\PradoUnit;
 use Prado\Util\TMultibyteString;
 use Prado\Util\TSimpleDateFormatter;
+use Prado\Util\TUtf8Converter;
 
 class TSimpleDateFormatterTest extends \PHPUnit\Framework\TestCase
 {
@@ -1499,5 +1500,19 @@ class TSimpleDateFormatterTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame(mktime(0, 0, 0, 1, 1, 1971), $this->parseWith('yy', '71'));
 		$this->assertSame(mktime(0, 0, 0, 1, 1, 1985), $this->parseWith('y', '85'));
 		$this->assertSame(mktime(0, 0, 0, 1, 1, 2005), $this->parseWith('y', '05'));
+	}
+
+	public function test_non_utf8_charset_without_iconv(): void
+	{
+		$static = PradoUnit::snapshotStatic(TUtf8Converter::class, ['_iconv']);
+		PradoUnit::setStaticProp(TUtf8Converter::class, '_iconv', false);
+		try {
+			$formatter = new TSimpleDateFormatter("dd 'de' MMMM yyyy", 'ISO-8859-1');
+			$this->assertSame('04 de March 2024', $formatter->format(mktime(0, 0, 0, 3, 4, 2024)));
+			$this->assertSame(mktime(0, 0, 0, 3, 4, 2024), $formatter->parse('04 de March 2024', false));
+			$this->assertNull($formatter->parse("04 d\xe9 March 2024", false));
+		} finally {
+			PradoUnit::restoreStatic(TUtf8Converter::class, $static);
+		}
 	}
 }
