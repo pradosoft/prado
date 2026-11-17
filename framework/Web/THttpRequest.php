@@ -295,7 +295,14 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function stripSlashes(&$data)
 	{
-		return is_array($data) ? array_map([$this, 'stripSlashes'], $data) : stripslashes($data);
+		if (!is_array($data)) {
+			return stripslashes($data);
+		}
+		$result = [];
+		foreach ($data as $key => $value) {
+			$result[$key] = $this->stripSlashes($value);
+		}
+		return $result;
 	}
 
 	/**
@@ -357,7 +364,6 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 				$dependencies = null;
 				if ($this->getApplication()->getMode() !== TApplicationMode::Performance) {
 					if ($manager instanceof TUrlMapping && $fn = $manager->getConfigFile()) {
-						$fn = Prado::getPathOfNamespace($fn, $this->getApplication()->getConfigurationFileExt());
 						$dependencies = new TFileCacheDependency($fn);
 					}
 				}

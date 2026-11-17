@@ -113,7 +113,6 @@ class THttpRequestTest extends \PHPUnit\Framework\TestCase
 		}
 		$request = null;
 
-
 		// Try with valid module id, but not instance of TUrlManager
 		$module = new TAssetManager();
 		$this->app->setModule('badmanager', $module);
@@ -1083,6 +1082,39 @@ class THttpRequestTest extends \PHPUnit\Framework\TestCase
 			self::assertSame('2', $request->itemAt('extra'));
 		} finally {
 			$this->restoreBodyEnvironment($post, $get);
+		}
+	}
+
+	public function testStripSlashesArray()
+	{
+		$request = new THttpRequest();
+		$data = ['a' => 'x\\y', 'b' => ['c\\d', 'e']];
+		self::assertSame(['a' => 'xy', 'b' => ['cd', 'e']], $request->stripSlashes($data));
+	}
+
+	public function testUrlManagerCacheDependsOnTheUrlMappingConfigFile()
+	{
+		$cache = new \Prado\Caching\TMemoryCache();
+		$cache->init(null);
+		$this->app->setCache($cache);
+		$request = new THttpRequest();
+		$request->init(null);
+		$request->setID('request');
+		$request->setEnableCache(true);
+		$configFile = tempnam(sys_get_temp_dir(), 'prado-urlmap');
+		file_put_contents($configFile, '<urls/>');
+		touch($configFile, time() - 100);
+		clearstatcache();
+		try {
+			$mapping = new \Prado\Web\TUrlMapping();
+			PradoUnit::setProp($mapping, '_configFile', $configFile);
+			self::assertTrue(PradoUnit::invoke($request, 'cacheUrlManager', $mapping));
+			self::assertInstanceOf(\Prado\Web\TUrlMapping::class, $cache->get('request'));
+			touch($configFile, time());
+			clearstatcache();
+			self::assertFalse($cache->get('request'));
+		} finally {
+			unlink($configFile);
 		}
 	}
 }

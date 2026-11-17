@@ -1,4 +1,6 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - The `THttpRequest` URL-manager cache depends on the `TUrlMapping` configuration file, so an edited file is read again outside Performance mode; the resolved path was resolved again to null, so no file was tracked. (belisoful)
+BUG: Issue #1497 - The deprecated `THttpRequest::stripSlashes()` strips an array; it threw `TPhpErrorException` for any array. (belisoful)
 BUG: Issue #1497 - `THttpResponse` with `Charset` off, through false or `'false'`, sends `Content-Type` once and then rejects a new content type; a boolean false still sent a charset, and the header was sent again on each `ensureHeadersSent()`. (belisoful)
 BUG: Issue #1497 - `THttpResponse::httpRedirect()` under IIS sends the reason of a status code it does not list, such as `399 Custom`; it sent `Found`. (belisoful)
 CHG: Issue #1497 - `THttpResponse::setContentType()` and `setStatusCode()` throw `TInvalidOperationException` with the `httpresponse_contenttype_unchangeable` and `httpresponse_status_unchangeable` keys after the header is sent; they threw `\Exception` with untranslated text. (belisoful)
