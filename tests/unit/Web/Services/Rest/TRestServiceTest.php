@@ -199,6 +199,82 @@ class FailingResource extends TRestResource
 	}
 }
 
+/**
+ * Handlers whose response or error holds what JSON cannot encode.
+ */
+class EncodingResource extends TRestResource
+{
+	#[TRestRoute('GET', 'latin1')]
+	public function latin1(): array
+	{
+		// a name stored in ISO-8859-1
+		$this->notFound("No user b\xffd.");
+	}
+
+	#[TRestRoute('GET', 'unencodable')]
+	public function unencodable(): array
+	{
+		$this->setStatusCode(201);
+		$this->addResponseHeader('X-Test', 'yes');
+		return ["\xff"];
+	}
+
+	#[TRestRoute('GET', 'infinite')]
+	public function infinite(): array
+	{
+		throw TRestException::unprocessable(['ratio' => INF], 'Out of range.');
+	}
+}
+
+/**
+ * A resource that is not a component, so it takes no configured properties.
+ */
+class PlainResource implements IRestResource
+{
+	public function getRoutes(): array
+	{
+		return ['ping' => new TRestRoute('GET', 'ping')];
+	}
+
+	public function getRoutePrefix(): string
+	{
+		return '';
+	}
+
+	public function setRoute(TRestRoutePattern $route, array $parameters): void
+	{
+	}
+
+	public function getRoute(): ?TRestRoutePattern
+	{
+		return null;
+	}
+
+	public function getPathParameters(): array
+	{
+		return [];
+	}
+
+	public function authorize(TRestRoutePattern $route): void
+	{
+	}
+
+	public function getStatusCode(): int
+	{
+		return 200;
+	}
+
+	public function getResponseHeaders(): array
+	{
+		return [];
+	}
+
+	public function ping(): ?array
+	{
+		return null;
+	}
+}
+
 class BadRoutesResource extends TRestResource
 {
 	public function getRoutes(): array
@@ -898,6 +974,42 @@ class TRestServiceTest extends \PHPUnit\Framework\TestCase
 		$response = $this->runWith('GET', '/api/fail/boom', $config);
 		$this->assertSame(500, $response->status);
 		$this->assertArrayNotHasKey('detail', json_decode($response->body, true));
+	}
+
+	/**
+	 * A detail that is not UTF-8 is written with U+FFFD in place of its invalid bytes.
+	 */
+	public function testRunWritesAProblemDocumentWhoseDetailIsNotUtf8(): void
+	{
+		$response = $this->runWith('GET', '/api/latin1', ['resources' => [['class' => EncodingResource::class]]]);
+		$this->assertSame(404, $response->status);
+		$this->assertSame("No user b\u{FFFD}d.", json_decode($response->body, true)['detail']);
+	}
+
+	/**
+	 * An error value JSON cannot hold is replaced, and the rest of the document is kept.
+	 */
+	public function testRunWritesAProblemDocumentWithAnUnencodableError(): void
+	{
+		$response = $this->runWith('GET', '/api/infinite', ['resources' => [['class' => EncodingResource::class]]]);
+		$this->assertSame(422, $response->status);
+		$document = json_decode($response->body, true);
+		$this->assertSame('Out of range.', $document['detail']);
+		$this->assertSame(['ratio' => 0], $document['errors']);
+	}
+
+	/**
+	 * A body that does not encode is a 500 problem document without the status
+	 * and headers the resource set for its body.
+	 */
+	public function testRunWithAnUnencodableBodySendsNoResourceHeaders(): void
+	{
+		$this->service->setExposeErrors(false);
+		$response = $this->runWith('GET', '/api/unencodable', ['resources' => [['class' => EncodingResource::class]]]);
+		$this->assertSame(500, $response->status);
+		$this->assertSame(TMediaType::PROBLEM_JSON, $response->contentType);
+		$this->assertNull($response->headerLine('X-Test'));
+		$this->assertSame(['status' => 500, 'title' => 'Internal Server Error'], json_decode($response->body, true));
 	}
 
 	public function testRunAuthorizeRefuses(): void
