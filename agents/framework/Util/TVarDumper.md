@@ -13,10 +13,8 @@ Human-readable variable dump for Prado `[TComponent](../TComponent.md)` objects 
 ## Usage
 
 ```php
-// Static methods (preferred):
-$string = TVarDumper::dumpAsString($value);
-TVarDumper::dump($value);          // echoes directly
-$string = TVarDumper::dumpAsString($value, $depth, $highlight);
+$string = TVarDumper::dump($value);
+$string = TVarDumper::dump($value, $depth, $highlight);
 
 // Parameters:
 // $value    — any value
@@ -28,8 +26,8 @@ $string = TVarDumper::dumpAsString($value, $depth, $highlight);
 
 ```php
 $record = PostRecord::finder()->findByPk(1);
-echo TVarDumper::dumpAsString($record);
-// PostRecord
+echo TVarDumper::dump($record);
+// PostRecord#1
 // (
 //     [id] => 1
 //     [title] => Hello World
@@ -41,7 +39,8 @@ echo TVarDumper::dumpAsString($record);
 
 ## Gotchas
 
-- **Circular references** — detected and replaced with `"*RECURSION*"` rather than causing infinite loops.
-- **TComponent properties** — uses `getXxx()` methods rather than raw PHP property access, so it shows the logical property values.
+- **Circular references** — an object already dumped prints as `ClassName#N(...)`, `N` its number in the dump; past `$depth`, an object prints as `ClassName(...)` and an array as `array(...)`.
+- **Object members** — the members of `__debugInfo()` when the class has it, which must return an array, else the object's properties; a protected property shows as `*:name` and a private one as `Class:name`.
 - **Not for logging** — use `[TLogger](TLogger.md)` / `[Prado](../Prado.md)::log()` for structured logging. `TVarDumper` is for interactive debugging only.
-- **HTML output** — pass `$highlight = true` for color-coded HTML output in browser debug panels (e.g., `TBrowserLogRoute`).
+- **HTML output** — pass `$highlight = true` for color-coded HTML output in browser debug panels (e.g., `TBrowserLogRoute`). The output leaves out the `<?php` tag that `highlight_string()` needs.
+- **Resources** — an open resource dumps as `{resource}`, a closed one as `{resource (closed)}`.

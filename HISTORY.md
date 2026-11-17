@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TVarDumper::dump()` prints a closed resource as `{resource (closed)}`, where it printed nothing, and its highlighted output leaves out the opening `<?php` tag on PHP 8.3 and later. (belisoful)
 BUG: Issue #1497 - `TPluginModule` adds its Pages directory to the page paths only when the plugin has one; without one, a page missing from the application threw a 403 security violation instead of a 404. (belisoful)
 BUG: Issue #1497 - `TParameterModule` reads an array parameter as the application configuration does: "class" makes a component and "value" holds the value; an array without "class" threw `TPhpErrorException`. (belisoful)
 BUG: Issue #1497 - `TSqlCriteria::setCondition()` moves only a trailing `ORDER BY`, `LIMIT`, or `OFFSET` outside quoted text and parentheses; it cut them from string literals and subqueries, so `title = 'LIMIT 5'` became `title = ''` with a limit of 5. (belisoful)
