@@ -272,12 +272,13 @@ class TSoapService extends \Prado\TService
 	/**
 	 * Creates the requested SOAP server.
 	 * The SOAP server is initialized with the property values specified
-	 * in the configuration.
+	 * in the configuration. The configuration is copied, so each call reads
+	 * the configured server class.
 	 * @return TSoapServer the SOAP server instance
 	 */
 	protected function createServer()
 	{
-		$properties = $this->_servers[$this->_serverID];
+		$properties = clone $this->_servers[$this->_serverID];
 		$serverClass = $properties->remove('class');
 		if ($serverClass === null) {
 			$serverClass = self::DEFAULT_SOAP_SERVER;

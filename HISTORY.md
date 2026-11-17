@@ -1,4 +1,7 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TSoapService::createServer()` keeps the configured server class for a later call; it removed it, so a second server was a `TSoapServer`. (belisoful)
+BUG: Issue #1497 - `TSoapServer::setID()` refuses an ID ending in `.wsdl`; it checked the previous ID, so such an ID was accepted and the next `setID()` threw. (belisoful)
+BUG: Issue #1497 - `TPageConfiguration` applies a PHP page include without `when` and keeps its `when` for `TPageService` to evaluate, as the XML include does; it skipped an include without `when` and always applied one with it. (belisoful)
 BUG: Issue #1497 - `TSoapServer::setID()` refuses an ID ending in `.wsdl`; it checked the previous ID, so such an ID was accepted and the next `setID()` threw. (belisoful)
 BUG: Issue #1497 - `TPageConfiguration` applies a PHP page include without `when` and keeps its `when` for `TPageService` to evaluate, as the XML include does; it skipped an include without `when` and always applied one with it. (belisoful)
 BUG: Issue #1497 - `TPageConfiguration` applies a PHP page include without `when` and keeps its `when` for `TPageService` to evaluate, as the XML include does; it skipped an include without `when` and always applied one with it. (belisoful)
