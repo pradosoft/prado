@@ -495,7 +495,7 @@ class TJavaScript
 			if ($value instanceof TJavaScriptLiteral) {
 				return $value->toJavaScriptLiteral();
 			} else {
-				return self::encode(get_object_vars($value), $toMap);
+				return self::encode(get_object_vars($value), $toMap, $encodeEmptyStrings);
 			}
 		} elseif ($value === null) {
 			return 'null';

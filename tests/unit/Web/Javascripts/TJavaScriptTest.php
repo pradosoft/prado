@@ -876,6 +876,15 @@ class TJavaScriptTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame("{'b':\"x\"}", $result);
 	}
 
+	public function testEncodeObjectKeepsEncodeEmptyStrings(): void
+	{
+		$obj = new \stdClass();
+		$obj->a = '';
+		$obj->b = 'x';
+		$this->assertSame("{'a':\"\",'b':\"x\"}", TJavaScript::encode($obj, true, true));
+		$this->assertSame("{'b':\"x\"}", TJavaScript::encode($obj));
+	}
+
 	public function testEncodeNanFloat(): void
 	{
 		// JavaScript has no `NAN` identifier; `Number.NaN` matches the INF mappings.
