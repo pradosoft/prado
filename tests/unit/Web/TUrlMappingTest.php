@@ -496,4 +496,26 @@ class TUrlMappingTest extends \PHPUnit\Framework\TestCase
 		$url = $module->constructUrl('page', 'Posts.EditPost', ['id' => '123', 'mode' => 'view'], false, true);
 		$this->assertEquals('/index.php/page,Posts.EditPost/id,123/mode,view', $url);
 	}
+
+	public function testInitWithNullConfigLoadsNoPatterns()
+	{
+		$module = new TUrlMapping();
+		$module->init(null);
+		$this->assertSame([], PradoUnit::getProp($module, '_patterns'));
+	}
+
+	public function testNodeValueReplacingRegularExpressionLogsNotice()
+	{
+		$config = new TXmlDocument('1.0', 'utf8');
+		$config->loadFromString('<config><url ServiceParameter="Posts.ViewPost" RegularExpression="/^old$/">/^new$/</url></config>');
+		$logger = \Prado\Prado::getLogger();
+		$before = count($logger->getLogs(\Prado\Util\Log\TLogger::NOTICE, TUrlMapping::class));
+		$module = new TUrlMapping();
+		$module->init($config);
+		$patterns = PradoUnit::getProp($module, '_patterns');
+		$this->assertSame('/^new$/', $patterns[0]->getRegularExpression());
+		$logs = $logger->getLogs(\Prado\Util\Log\TLogger::NOTICE, TUrlMapping::class);
+		$this->assertCount($before + 1, $logs);
+		$this->assertStringContainsString('"/^old$/" for ServiceID="page" and ServiceParameter="Posts.ViewPost" was replaced by node value "/^new$/"', end($logs)[0]);
+	}
 }
