@@ -56,6 +56,17 @@ class THttpSessionTestGc extends THttpSession
 	}
 }
 
+class THttpSessionTestSaveHandler extends THttpSessionTestCookieParams
+{
+	public ?\SessionHandlerInterface $handler = null;
+
+	protected function sessionSetSaveHandler(\SessionHandlerInterface $handler): bool
+	{
+		$this->handler = $handler;
+		return true;
+	}
+}
+
 class THttpSessionTestCustomGc extends THttpSession
 {
 	public ?int $maxLifetime = null;
@@ -152,6 +163,22 @@ class THttpSessionTest extends \PHPUnit\Framework\TestCase
 		$this->assertTrue($session->getIsStarted());
 		$session->close();
 		$this->assertFalse($session->getIsStarted());
+	}
+
+	public function testOpenSetsCustomStorageHandler()
+	{
+		$session = new THttpSessionTestSaveHandler();
+		$session->open();
+		$this->assertNull($session->handler);
+		$this->assertNotNull($session->setParams);
+
+		$session = new THttpSessionTestSaveHandler();
+		$session->setUseCustomStorage(true);
+		$session->open();
+		$this->assertInstanceOf(\Prado\Web\THttpSessionHandler::class, $session->handler);
+		$this->assertTrue($session->getIsStarted());
+		$session->open();
+		$this->assertTrue($session->getIsStarted());
 	}
 
 	/**

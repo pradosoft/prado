@@ -195,8 +195,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	{
 		if (!$this->_started) {
 			if ($this->_customStorage) {
-				$handler = new THttpSessionHandler($this);
-				session_set_save_handler($handler);
+				$this->sessionSetSaveHandler(new THttpSessionHandler($this));
 			}
 			if (static::getSessionIniConfig('auto_start') !== '1') {
 				$this->sessionSetCookieParams($this->getSessionCookieParams());
@@ -823,6 +822,18 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	protected function sessionSetCookieParams(array $options): bool
 	{
 		return session_set_cookie_params($options);
+	}
+
+	/**
+	 * Internal: Call sessionSetSaveHandler instead of `session_set_save_handler`.
+	 * This keeps `session_set_save_handler` isolated, and subject to children overrides.
+	 * @param \SessionHandlerInterface $handler the session storage handler.
+	 * @return bool Returns true on success or false on failure.
+	 * @since 4.4.0
+	 */
+	protected function sessionSetSaveHandler(\SessionHandlerInterface $handler): bool
+	{
+		return session_set_save_handler($handler);
 	}
 
 	/**
