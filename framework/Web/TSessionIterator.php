@@ -47,6 +47,7 @@ class TSessionIterator implements \Iterator
 	public function rewind(): void
 	{
 		$this->_key = reset($this->_keys);
+		$this->skipRemovedKeys();
 	}
 
 	/**
@@ -77,9 +78,19 @@ class TSessionIterator implements \Iterator
 	 */
 	public function next(): void
 	{
-		do {
+		$this->_key = next($this->_keys);
+		$this->skipRemovedKeys();
+	}
+
+	/**
+	 * Advances past the keys removed from the session since construction.  A key whose
+	 * value is null remains.
+	 */
+	private function skipRemovedKeys(): void
+	{
+		while ($this->_key !== false && !array_key_exists($this->_key, $_SESSION)) {
 			$this->_key = next($this->_keys);
-		} while (!isset($_SESSION[$this->_key]) && $this->_key !== false);
+		}
 	}
 
 	/**
