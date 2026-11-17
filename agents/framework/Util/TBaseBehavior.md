@@ -28,7 +28,7 @@ Uses `TPriorityPropertyTrait` so that priority is tracked when inserted into an 
 | `Name` | `null` | Behavior name as registered in the owner |
 | `Enabled` | `true` | When false, dynamic event handlers are not called |
 | `RetainDisabledHandlers` | `false` | `true` = keep handlers attached when disabled; `null` = force detach; `false` = default logic |
-| `StrictEvents` | `true` | Whether attaching event handlers to non-existent events throws an error |
+| `StrictEvents` | `true` | `true` throws when the owner lacks an event of `events()`; `false` attaches the handlers of the events the owner has and skips the rest |
 
 ## Declaring Event Handlers
 
