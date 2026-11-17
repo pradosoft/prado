@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TEmailLogRoute` sends `DEFAULT_SUBJECT` when no `Subject` is set; it sent an empty subject. (belisoful)
 BUG: Issue #1497 - `TBrowserLogRoute` HTML-encodes the category. (belisoful)
 BUG: Issue #1497 - `TBrowserLogRoute` and `TFirePhpLogRoute` write a non-string message as a dump, as the other routes do; they threw a `TypeError`. (belisoful)
 ENH: Issue #1497 - The log routes reach mail, STDOUT, the syslog, and the header state through protected methods a subclass overrides: `TEmailLogRoute::sendMail()`, `TStdOutLogRoute::createWriter()`, `TSysLogRoute::writeSysLog()`, and `TFirePhpLogRoute::getHeadersSent()`. (belisoful)

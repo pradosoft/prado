@@ -75,9 +75,9 @@ class TEmailLogRoute extends TLogRoute
 	 */
 	private $_emails = [];
 	/**
-	 * @var string email subject
+	 * @var ?string email subject; null for {@see DEFAULT_SUBJECT}
 	 */
-	private $_subject = '';
+	private $_subject;
 	/**
 	 * @var string email sent from address
 	 */
@@ -176,7 +176,7 @@ class TEmailLogRoute extends TLogRoute
 	}
 
 	/**
-	 * @param string $value email subject.
+	 * @param ?string $value email subject; null for {@see DEFAULT_SUBJECT}.
 	 */
 	public function setSubject($value)
 	{
