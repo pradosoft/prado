@@ -197,6 +197,8 @@ class TDbLogRoute extends TLogRoute
 
 	/**
 	 * Computes the where SQL clause based upon level, categories, minimum time and maximum time.
+	 * The times compare `logtime` as a number, so a timestamp of fewer digits orders before a
+	 * timestamp of more digits.
 	 * @param ?int $level  The bit mask of log levels to search for
 	 * @param null|null|array|string $categories The categories to search for.  Strings
 	 *   are exploded with ','.
@@ -248,14 +250,14 @@ class TDbLogRoute extends TLogRoute
 			if ($where) {
 				$where .= ' AND ';
 			}
-			$where .= 'logtime >= :mintime';
+			$where .= 'CAST(logtime AS DECIMAL(20,6)) >= :mintime';
 			$values[':mintime'] = sprintf('%F', $minTime);
 		}
 		if ($maxTime !== null) {
 			if ($where) {
 				$where .= ' AND ';
 			}
-			$where .= 'logtime < :maxtime';
+			$where .= 'CAST(logtime AS DECIMAL(20,6)) < :maxtime';
 			$values[':maxtime'] = sprintf('%F', $maxTime);
 		}
 		if ($where) {

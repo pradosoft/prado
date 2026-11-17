@@ -16,6 +16,8 @@
 
 `log_id` (PK) · `level INTEGER` · `category VARCHAR(128)` · `prefix VARCHAR(128)` · `logtime VARCHAR(20)` · `message VARCHAR(255)`
 
+`logtime` holds the timestamp as `%F` text. The time filters of `getDBLogs()`, `getDBLogCount()`, `deleteDBLog()`, and `pruneLogs()` compare `CAST(logtime AS DECIMAL(20,6))`, so timestamps of different digit counts order as numbers.
+
 ## Properties
 
 | Property | Type | Default | Description |

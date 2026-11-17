@@ -299,6 +299,32 @@ class TDbLogRouteTest extends \PHPUnit\Framework\TestCase
 		}
 	}
 
+	/**
+	 * @dataProvider driverProvider
+	 */
+	public function testTimeFiltersCompareLogTimeAsANumber(string $driver)
+	{
+		$conn = $this->driverConnection($driver);
+		$table = 'pradolog_' . bin2hex(random_bytes(4));
+		$route = new TConnectionDbLogRoute($conn);
+		$route->setLogTableName($table);
+		try {
+			$route->init(null);
+			PradoUnit::invoke($route, 'processLogs', [
+				TLogEntryFactory::entry('nine digits', time: 999999999.5),
+				TLogEntryFactory::entry('ten digits', time: 1000000000.5),
+			], true, []);
+
+			$this->assertSame(['nine digits', 'ten digits'], array_column($route->getDBLogs(null, null, 999999999.0, null, 'log_id')->readAll(), 'message'));
+			$this->assertSame(['nine digits'], array_column($route->getDBLogs(null, null, null, 1000000000.0, 'log_id')->readAll(), 'message'));
+			$this->assertSame(1, (int) $route->deleteDBLog(null, null, null, 1000000000.0));
+			$this->assertSame(['ten digits'], array_column($route->getDBLogs(null, null, null, null, 'log_id')->readAll(), 'message'));
+		} finally {
+			$conn->createCommand('DROP TABLE IF EXISTS ' . $table)->execute();
+			$conn->setActive(false);
+		}
+	}
+
 	public function testInitWithoutTheTableThrowsWithoutAutoCreate()
 	{
 		$route = new TConnectionDbLogRoute($this->driverConnection(TDbDriver::DRIVER_SQLITE));
