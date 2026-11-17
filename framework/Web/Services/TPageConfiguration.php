@@ -255,6 +255,11 @@ class TPageConfiguration extends \Prado\TComponent
 					$properties = $page['properties'];
 					unset($page['properties']);
 				}
+				// PHP stores a numeric key, such as page '404', as an integer
+				$id = (string) $id;
+				if ($id === '') {
+					throw new TConfigurationException('pageserviceconf_page_invalid', $configPath);
+				}
 				$matching = false;
 				$id = ($configPagePath === '') ? $id : $configPagePath . '.' . $id;
 				if (strcasecmp($id, $this->_pagePath) === 0) {

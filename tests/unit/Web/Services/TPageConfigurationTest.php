@@ -182,4 +182,29 @@ class TPageConfigurationTest extends \PHPUnit\Framework\TestCase
 	// PHP page ids
 	// -------------------------------------------------------------------------
 
+	/**
+	 * A numeric PHP page key, which PHP stores as an integer, names its page.
+	 */
+	public function testANumericPhpPageKeyNamesItsPage()
+	{
+		$pages = ['pages' => [
+			404 => ['properties' => ['Title' => 'Missing']],
+			'Home' => ['properties' => ['Title' => 'Welcome']],
+		]];
+		foreach (['404' => 'Missing', 'Home' => 'Welcome'] as $pagePath => $title) {
+			$config = new TPageConfiguration((string) $pagePath);
+			$config->loadPageConfigurationFromPhp($pages, __DIR__, '');
+			$this->assertSame(['Title' => $title], $config->getProperties());
+		}
+	}
+
+	/**
+	 * An empty PHP page key is refused, as an XML page without an id is.
+	 */
+	public function testAnEmptyPhpPageKeyIsRefused()
+	{
+		$config = new TPageConfiguration('Home');
+		$this->expectException(TConfigurationException::class);
+		$config->loadPageConfigurationFromPhp(['pages' => ['' => ['properties' => ['Title' => 'None']]]], __DIR__, '');
+	}
 }
