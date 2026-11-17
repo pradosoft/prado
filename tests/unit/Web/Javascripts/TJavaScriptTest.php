@@ -1270,4 +1270,29 @@ class TJavaScriptTest extends \PHPUnit\Framework\TestCase
 		$this->expectException(TConfigurationException::class);
 		TJavaScript::renderScriptFile('//cdn.example.com/other.js');
 	}
+
+	public function testJsonEncodeTranscodesWithoutIconv(): void
+	{
+		$static = PradoUnit::snapshotStatic(\Prado\Util\TUtf8Converter::class, ['_iconv']);
+		PradoUnit::setStaticProp(\Prado\Util\TUtf8Converter::class, '_iconv', false);
+		try {
+			$this->withGlobalizationCharset('ISO-8859-1', function () {
+				$json = TJavaScript::jsonEncode(['name' => "Caf\xe9"]);
+				$this->assertSame(['name' => 'Café'], json_decode($json, true));
+			});
+			$this->withGlobalizationCharset('fr', function () {
+				$this->assertSame('{"n":1}', TJavaScript::jsonEncode(['n' => 1]));
+			});
+			$this->withGlobalizationCharset('ISO-8859-1', function () {
+				$this->assertSame('[]', TJavaScript::jsonEncode([]));
+				$this->assertSame('{}', TJavaScript::jsonEncode(new \stdClass()));
+				$this->assertSame(['é'], json_decode(TJavaScript::jsonEncode(["\xe9"]), true));
+				$one = new \stdClass();
+				$one->a = "\xe9";
+				$this->assertSame(['a' => 'é'], json_decode(TJavaScript::jsonEncode($one), true));
+			});
+		} finally {
+			PradoUnit::restoreStatic(\Prado\Util\TUtf8Converter::class, $static);
+		}
+	}
 }
