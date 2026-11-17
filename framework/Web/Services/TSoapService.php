@@ -295,7 +295,7 @@ class TSoapService extends \Prado\TService
 			$serverClass = self::DEFAULT_SOAP_SERVER;
 		}
 		$className = Prado::usingClass($serverClass);
-		if (!is_string($className) || ($className !== self::DEFAULT_SOAP_SERVER && !is_subclass_of($className, self::DEFAULT_SOAP_SERVER))) {
+		if (!is_string($className) || !is_a($className, self::DEFAULT_SOAP_SERVER, true)) {
 			throw new TConfigurationException('soapservice_server_invalid', $serverClass);
 		}
 		$server = new $className();

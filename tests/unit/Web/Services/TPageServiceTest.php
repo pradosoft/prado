@@ -131,6 +131,8 @@ class TPageServiceTest extends \PHPUnit\Framework\TestCase
 {
 	private ?TTestApplication $_app = null;
 	private string $_fixtureRoot;
+	/** @var string[] the temporary directories a test made. */
+	private array $_tempDirs = [];
 
 	protected function setUp(): void
 	{
@@ -141,6 +143,16 @@ class TPageServiceTest extends \PHPUnit\Framework\TestCase
 	{
 		$this->_app?->restoreApplication();
 		$this->_app = null;
+		foreach ($this->_tempDirs as $dir) {
+			foreach (scandir($dir) as $entry) {
+				if ($entry !== '.' && $entry !== '..') {
+					$path = $dir . DIRECTORY_SEPARATOR . $entry;
+					is_dir($path) ? rmdir($path) : unlink($path);
+				}
+			}
+			rmdir($dir);
+		}
+		$this->_tempDirs = [];
 	}
 
 	/**
@@ -267,6 +279,42 @@ class TPageServiceTest extends \PHPUnit\Framework\TestCase
 		$service = $this->service();
 		$this->expectException(TConfigurationException::class);
 		$service->setBasePath('No.Such.Namespace');
+	}
+
+	/**
+	 * Builds an application base directory in the temporary directory holding
+	 * the given entries, each a file or a directory.
+	 * @param array<string, bool> $entries name => whether it is a directory.
+	 * @return ?string the directory, null when the filesystem cannot hold the entries.
+	 */
+	private function baseDirectory(array $entries): ?string
+	{
+		$dir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'prado-pageservice-' . bin2hex(random_bytes(6));
+		mkdir($dir);
+		$this->_tempDirs[] = $dir;
+		foreach ($entries as $name => $isDirectory) {
+			$path = $dir . DIRECTORY_SEPARATOR . $name;
+			if (file_exists($path)) {
+				return null;
+			}
+			$isDirectory ? mkdir($path) : touch($path);
+		}
+		return $dir;
+	}
+
+	/**
+	 * Which base path the service takes for an application whose 'Pages' and
+	 * 'pages' entries are files or directories. A case-insensitive filesystem
+	 * reads both names as one entry.
+	 */
+	public static function baseEntriesProvider(): array
+	{
+		return [
+			'a Pages file' => [['Pages' => false], null],
+			'a pages file' => [['pages' => false], null],
+			'a Pages file and a pages directory' => [['Pages' => false, 'pages' => true], 'pages'],
+			'a pages directory' => [['pages' => true], 'pages'],
+		];
 	}
 
 	// -------------------------------------------------------------------------
@@ -574,6 +622,15 @@ class TPageServiceTest extends \PHPUnit\Framework\TestCase
 		PradoUnit::invoke($service, 'applyConfiguration', $config);
 	}
 
+	public static function missingExternalProvider(): array
+	{
+		return [
+			'unresolved, evaluated' => ['No.Such.File', 'true'],
+			'no file, evaluated' => ['PageFixtures.missing', '1 === 1'],
+			'no file, true' => ['PageFixtures.missing', true],
+		];
+	}
+
 	// -------------------------------------------------------------------------
 	// createPage()
 	// -------------------------------------------------------------------------
@@ -620,6 +677,18 @@ class TPageServiceTest extends \PHPUnit\Framework\TestCase
 		$service = $this->service('PageServiceApp', 'NotAPage');
 		$this->expectException(THttpException::class);
 		PradoUnit::invoke($service, 'createPage', 'NotAPage');
+	}
+
+	/**
+	 * A base page class named by its short name builds each page. The first
+	 * resolution of a short name aliases it, and later ones return the alias.
+	 */
+	public function testCreatePageAcceptsTheShortNameOfTheBasePageClass()
+	{
+		$service = $this->service('PageServiceApp', 'Home');
+		$service->setBasePageClass('TPage');
+		$this->assertSame(TPage::class, PradoUnit::invoke($service, 'createPage', 'Home')::class);
+		$this->assertSame(TPage::class, PradoUnit::invoke($service, 'createPage', 'Home')::class);
 	}
 
 	/**

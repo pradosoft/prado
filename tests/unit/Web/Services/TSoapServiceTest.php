@@ -350,6 +350,17 @@ class TSoapServiceTest extends \PHPUnit\Framework\TestCase
 		return $this->buildServer(['soap' => ['quote' => $server]], 'quote');
 	}
 
+	/**
+	 * TSoapServer itself may be named, by its class or its short name.
+	 */
+	public function testCreateServerAcceptsTSoapServerByName()
+	{
+		$this->assertSame(TSoapServer::class, $this->quoteServer(['class' => TSoapServer::class])::class);
+		// the first resolution of a short name aliases it, and later ones return the alias
+		$this->assertSame(TSoapServer::class, $this->quoteServer(['class' => 'TSoapServer'])::class);
+		$this->assertSame(TSoapServer::class, $this->quoteServer(['class' => 'TSoapServer'])::class);
+	}
+
 	// ── run() ───────────────────────────────────────────────────────────────
 
 }

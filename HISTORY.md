@@ -1,4 +1,11 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TSoapService` accepts a server class and `TPageService` a `BasePageClass` named by its short name after the name is aliased; they compared class names as strings, so `TSoapServer` and `TPage` were refused once aliased. (belisoful)
+BUG: Issue #1497 - `TSoapService` reads a PHP `ConfigFile` under PHP configuration, accepts a null XML configuration, and throws `soapservice_configfile_unreadable` for a file that holds no configuration; it ignored the PHP file and a malformed XML file, and a null configuration threw an `Error`. (belisoful)
+BUG: Issue #1497 - `TRestService` writes a problem document whose text is not UTF-8, which threw `JsonException` out of `run()`, and sends a resource's status and headers only after its body encodes. (belisoful)
+BUG: Issue #1497 - `TPageConfiguration` reads a numeric PHP page key, such as `404`, as its page and throws `TConfigurationException` for an empty key; both threw `TPhpErrorException`. (belisoful)
+BUG: Issue #1497 - `TSoapService::createServer()` keeps the configured server class for a later call; it removed it, so a second server was a `TSoapServer`. (belisoful)
+BUG: Issue #1497 - `TSoapServer::setID()` refuses an ID ending in `.wsdl`; it checked the previous ID, so such an ID was accepted and the next `setID()` threw. (belisoful)
+BUG: Issue #1497 - `TPageConfiguration` applies a PHP page include without `when` and keeps its `when` for `TPageService` to evaluate, as the XML include does; it skipped an include without `when` and always applied one with it. (belisoful)
 BUG: Issue #1497 - `TSoapService` reads a PHP `ConfigFile` under PHP configuration, accepts a null XML configuration, and throws `soapservice_configfile_unreadable` for a file that holds no configuration; it ignored the PHP file and a malformed XML file, and a null configuration threw an `Error`. (belisoful)
 BUG: Issue #1497 - `TRestService` writes a problem document whose text is not UTF-8, which threw `JsonException` out of `run()`, and sends a resource's status and headers only after its body encodes. (belisoful)
 BUG: Issue #1497 - `TPageConfiguration` reads a numeric PHP page key, such as `404`, as its page and throws `TConfigurationException` for an empty key; both threw `TPhpErrorException`. (belisoful)
