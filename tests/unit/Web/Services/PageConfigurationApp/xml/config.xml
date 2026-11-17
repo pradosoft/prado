@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+	<parameters>
+		<parameter id="RootParameter" value="root" />
+	</parameters>
+	<authorization>
+		<deny pages="Secret" users="?" />
+		<allow pages="Admin.*" roles="admin" />
+	</authorization>
+	<pages Theme="Basic">
+		<page id="Home" Title="Root home" />
+	</pages>
+</configuration>

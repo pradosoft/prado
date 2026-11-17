@@ -2,37 +2,30 @@
 
 namespace Prado\Test\Unit\Web;
 
-use Prado\Caching\TMemCache;
+use Prado\Caching\TMemoryCache;
 use Prado\Exceptions\TConfigurationException;
+use Prado\TModule;
 use Prado\Web\TCacheHttpSession;
 use Prado\Test\Unit\Harness\TTestApplication;
 use Prado\Test\Unit\Harness\Traits\PradoUnitModuleDependencyTrait;
 
 class TCacheHttpSessionTest extends \PHPUnit\Framework\TestCase
 {
+	use PradoUnitModuleDependencyTrait;
+
 	protected ?TTestApplication $app = null;
-	protected static $cache = null;
-	protected static $session = null;
+	protected ?TMemoryCache $cache = null;
+	protected ?TCacheHttpSession $session = null;
 
 	protected function setUp(): void
 	{
-		if (!extension_loaded('memcached')) {
-			self::markTestSkipped('The memcached extension is not available');
-		} else {
-			$basePath = __DIR__ . '/app';
-			$runtimePath = $basePath . '/runtime';
-			if (!is_writable($runtimePath)) {
-				self::markTestSkipped("'$runtimePath' is not writable");
-			}
-			$this->app = new TTestApplication($basePath);
-			self::$cache = new TMemCache();
-			self::$cache->setKeyPrefix('MyCache');
-			self::$cache->init(null);
-			$this->app->setModule('MyCache', self::$cache);
-			self::$session = new TCacheHttpSession();
-			self::$session->setCacheModuleID('MyCache');
-			self::$session->init(null);
-		}
+		$this->app = new TTestApplication(__DIR__ . '/app');
+		$this->cache = new TMemoryCache();
+		$this->cache->init(null);
+		$this->app->setModule('MyCache', $this->cache);
+		$this->session = new TCacheHttpSession();
+		$this->session->setCacheModuleID('MyCache');
+		$this->session->init(null);
 	}
 
 	protected function tearDown(): void
@@ -41,115 +34,93 @@ class TCacheHttpSessionTest extends \PHPUnit\Framework\TestCase
 			$this->app->restoreApplication();
 			$this->app = null;
 		}
-		self::$cache = null;
-		self::$session = null;
+		$this->cache = null;
+		$this->session = null;
 	}
 
-	public function testInitOne()
+	private function assertInitThrows(TCacheHttpSession $session, string $errorCode): void
 	{
-		$session = new TCacheHttpSession();
-		self::expectException(TConfigurationException::class);
-		$session->init(null);
+		try {
+			$session->init(null);
+			self::fail('TConfigurationException was not thrown');
+		} catch (TConfigurationException $e) {
+			self::assertSame($errorCode, $e->getErrorCode());
+		}
+		self::assertFalse($session->getUseCustomStorage());
 	}
 
-	public function testInitTwo()
+	public function testInitWithoutCacheModuleIDThrows()
 	{
 		$session = new TCacheHttpSession();
-		self::expectException(TConfigurationException::class);
+		$this->assertInitThrows($session, 'cachesession_cachemoduleid_required');
+	}
+
+	public function testInitWithMissingCacheModuleThrows()
+	{
+		$session = new TCacheHttpSession();
 		$session->setCacheModuleID('MaiCache');
-		$session->init(null);
+		$this->assertInitThrows($session, 'cachesession_cachemodule_inexistent');
 	}
 
-	public function testInitThree()
+	public function testInitWithModuleThatIsNotACacheThrows()
 	{
+		$this->app->setModule('NotCache', new class() extends TModule {
+		});
 		$session = new TCacheHttpSession();
-		$session->setCacheModuleID('MyCache');
-		$session->init(null);
-		$this->assertInstanceOf(TCacheHttpSession::class, $session);
+		$session->setCacheModuleID('NotCache');
+		$this->assertInitThrows($session, 'cachesession_cachemodule_invalid');
 	}
 
-	public function testGetCache()
+	public function testInitUsesCustomStorage()
 	{
-		$cache = self::$session->getCache();
-		$this->assertEquals(true, $cache instanceof TMemCache);
+		self::assertTrue($this->session->getUseCustomStorage());
+		self::assertSame($this->cache, $this->session->getCache());
+		self::assertFalse($this->session->getIsStarted());
 	}
 
 	public function testCacheModuleID()
 	{
-		$id = 'value';
-		self::$session->setCacheModuleID($id);
-		self::assertEquals($id, self::$session->getCacheModuleID());
+		self::assertSame('MyCache', $this->session->getCacheModuleID());
+		$this->session->setCacheModuleID('value');
+		self::assertSame('value', $this->session->getCacheModuleID());
 	}
 
 	public function testKeyPrefix()
 	{
-		$id = 'value';
-		self::$session->setKeyPrefix($id);
-		self::assertEquals($id, self::$session->getKeyPrefix());
+		self::assertSame('session', $this->session->getKeyPrefix());
+		$this->session->setKeyPrefix('value');
+		self::assertSame('value', $this->session->getKeyPrefix());
 	}
 
-	public function testSetAndGet()
+	public function testStorageReadsWritesAndDestroysThroughTheCache()
 	{
-		self::$session['key'] = 'value';
-		self::assertEquals('value', self::$session['key']);
+		$this->session->setKeyPrefix('sess');
+		self::assertSame('', $this->session->_read('abc'));
+		self::assertTrue($this->session->_write('abc', 'data'));
+		self::assertSame('data', $this->cache->get('sess:abc'));
+		self::assertSame('data', $this->session->_read('abc'));
+		self::assertTrue($this->session->_destroy('abc'));
+		self::assertFalse($this->cache->get('sess:abc'));
+		self::assertSame('', $this->session->_read('abc'));
 	}
 
-	public function testAdd()
+	public function testCronTaskInfoIsNull()
 	{
-		self::$session->add('anotherkey', 'value');
-		self::assertEquals('value', self::$session['anotherkey']);
+		$this->session->setID('session');
+		self::assertNull($this->session->fxGetCronTaskInfos(null, null));
 	}
-
-	public function testRemove()
-	{
-		self::$session->remove('key');
-		self::assertEquals(false, self::$session['key']);
-	}
-
-	public function testDestroyAndIsStarted()
-	{
-		$this->testSetAndGet();
-		self::$session->destroy();
-		self::assertEquals(false, self::$session->getIsStarted());
-	}
-}
-
-/**
- * IModuleDependency contract for TCacheHttpSession.
- *
- * Kept in a separate class so the memcached-extension skip in
- * TCacheHttpSessionTest::setUp() does not suppress these tests, which exercise
- * only configuration state and do not open a session.
- */
-class TCacheHttpSessionDependencyTest extends \PHPUnit\Framework\TestCase
-{
-	use PradoUnitModuleDependencyTrait;
 
 	public function testImplementsIModuleDependency()
 	{
 		$this->assertInstanceOf(\Prado\IModuleDependency::class, new TCacheHttpSession());
 	}
 
-	public function testGetModuleDependencies_noCacheModuleID_returnsNoDeps()
+	public function testGetModuleDependencies()
 	{
 		$session = new TCacheHttpSession();
 		$this->assertModuleDependency(null, $session->getModuleDependencies(false));
-	}
-
-	public function testGetModuleDependencies_cacheModuleIDSet_returnsIt()
-	{
-		$session = new TCacheHttpSession();
 		$session->setCacheModuleID('my_cache_id');
 		$this->assertModuleDependency('my_cache_id', $session->getModuleDependencies(false));
-	}
-
-	public function testGetModuleDependencies_returnsSameRegardlessOfIsPreInit()
-	{
-		$session = new TCacheHttpSession();
-		$session->setCacheModuleID('my_cache_id');
-		$this->assertModuleDependency(
-			$session->getModuleDependencies(true),
-			$session->getModuleDependencies(false)
-		);
+		$this->assertModuleDependency('my_cache_id', $session->getModuleDependencies(true));
 	}
 }

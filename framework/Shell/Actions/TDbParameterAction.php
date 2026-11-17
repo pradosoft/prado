@@ -78,7 +78,8 @@ class TDbParameterAction extends TShellAction
 	}
 
 	/**
-	 * display the database parameter key values.
+	 * Displays the parameter keys and values.  An object value shows as `(object)`, an
+	 * array as `(array)`, and any other value as its string.
 	 * @param array $args parameters
 	 * @return ?bool is the action handled
 	 */
@@ -109,9 +110,10 @@ class TDbParameterAction extends TShellAction
 			$writer->write($writer->pad($key, $len + 1));
 			if (is_object($value)) {
 				$value = '(object)';
-			}
-			if (is_array($value)) {
+			} elseif (is_array($value)) {
 				$value = '(array)';
+			} else {
+				$value = TPropertyValue::ensureString($value);
 			}
 			$writer->writeLine($writer->wrapText($value, $len + 1));
 		}
@@ -120,7 +122,7 @@ class TDbParameterAction extends TShellAction
 	}
 
 	/**
-	 * gets a parameter value
+	 * Displays the value of parameter `<param-key>`.  Any key but the empty string is a key, `0` included.
 	 * @param array $args parameters
 	 * @return bool is the action handled
 	 */
@@ -129,7 +131,7 @@ class TDbParameterAction extends TShellAction
 		$writer = $this->getWriter();
 		$writer->writeLine();
 
-		if (!($key = ($args[1] ?? null))) {
+		if (($key = ($args[1] ?? null)) === null || $key === '') {
 			$writer->writeError('Get Parameter needs a key');
 			return true;
 		}
@@ -144,8 +146,8 @@ class TDbParameterAction extends TShellAction
 	}
 
 	/**
-	 * Sets parameter `<param-key>` to `<param-value>`.  Any string is a value, `0` and
-	 * the empty string included; a missing value is an error.
+	 * Sets parameter `<param-key>` to `<param-value>`.  Any key but the empty string is a key,
+	 * and any string is a value, `0` and the empty string included; a missing value is an error.
 	 * @param array $args parameters
 	 * @return bool is the action handled
 	 */
@@ -154,7 +156,7 @@ class TDbParameterAction extends TShellAction
 		$writer = $this->getWriter();
 		$writer->writeLine();
 
-		if (!($key = ($args[1] ?? null))) {
+		if (($key = ($args[1] ?? null)) === null || $key === '') {
 			$writer->writeError('Set Parameter needs a key');
 			return true;
 		}
@@ -180,26 +182,23 @@ class TDbParameterAction extends TShellAction
 	}
 
 	/**
-	 * get the TDBParameterModule from the Application
+	 * Returns the parameter module.  Without one set, the first {@see \Prado\Util\TDbParameterModule}
+	 * of the application is loaded and kept.
 	 * @return null|\Prado\Util\TDbParameterModule
 	 */
 	public function getDbParameterModule()
 	{
 		if ($this->_dbparam === false) {
-			$this->_dbparam = null;
 			$app = Prado::getApplication();
-			foreach ($app->getModulesByType(\Prado\Util\TDbParameterModule::class) as $id => $module) {
-				if ($this->_dbparam = $app->getModule($id)) {
-					break;
-				}
-			}
+			$modules = $app->getModulesByType(\Prado\Util\TDbParameterModule::class);
+			$this->_dbparam = $modules ? $app->getModule(array_key_first($modules)) : null;
 		}
 		return $this->_dbparam;
 	}
 
 	/**
-	 * get the TPermissionsManager from the Application
-	 * @param \Prado\Util\TDbParameterModule $dbparam
+	 * Sets the parameter module the action reads and writes.
+	 * @param ?\Prado\Util\TDbParameterModule $dbparam
 	 */
 	public function setDbParameterModule($dbparam)
 	{

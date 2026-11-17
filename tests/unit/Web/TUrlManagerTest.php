@@ -248,4 +248,21 @@ class TUrlManagerTest extends \PHPUnit\Framework\TestCase
 		$result = $urlManager->parseUrl();
 		$this->assertEquals(['page' => 'Home', 'flag' => ''], $result);
 	}
+
+	public function testConstructUrlWithoutEncodingGetItems()
+	{
+		$urlManager = new TUrlManager();
+		$urlManager->init(null);
+
+		$request = new THttpRequest();
+		$request->setUrlFormat(THttpRequestUrlFormat::Get);
+		$request->init(null);
+
+		$items = new \ArrayObject(['a b' => 'c d', 'list' => ['x', 'y z']]);
+		$url = $urlManager->constructUrl('page', 'Home', $items, false, false);
+		$this->assertEquals('/index.php?page=Home&a b=c d&list[]=x&list[]=y z', $url);
+
+		$url = $urlManager->constructUrl('page', 'Home', ['list' => []], true, false);
+		$this->assertEquals('/index.php?page=Home', $url);
+	}
 }

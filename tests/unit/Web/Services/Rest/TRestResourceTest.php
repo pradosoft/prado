@@ -213,6 +213,11 @@ class TRestResourceTest extends \PHPUnit\Framework\TestCase
 		} catch (TInvalidDataValueException $e) {
 			$this->assertStringContainsString('Bad Name', $e->getMessage());
 		}
+		try {
+			$resource->header('', 'v');
+			$this->fail('an empty name accepted');
+		} catch (TInvalidDataValueException $e) {
+		}
 		$this->expectException(TInvalidDataValueException::class);
 		$resource->header('X-Ok', "a\r\nInjected: yes");
 	}

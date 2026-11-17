@@ -12,6 +12,7 @@ use Prado\Web\TAssetManager;
 use Prado\Test\Unit\Harness\IO\TarTestHelper;
 use Prado\TApplicationMode;
 use Prado\Util\Cron\TCronTaskInfo;
+use Prado\Test\Unit\PradoUnit;
 
 class TAssetManagerTest extends \PHPUnit\Framework\TestCase
 {
@@ -3470,5 +3471,410 @@ class TAssetManagerTest extends \PHPUnit\Framework\TestCase
 		if ($hasLink) {
 			self::assertFalse(is_link($broken));
 		}
+	}
+
+	// -----------------------------------------------------------------------
+	// Coverage of the remaining branches and paths
+	// -----------------------------------------------------------------------
+
+	/**
+	 * Whether file permission modes can make a directory read-only for this process.
+	 */
+	protected function permissionModesHonored(): bool
+	{
+		return DIRECTORY_SEPARATOR !== '\\' && !(function_exists('posix_geteuid') && posix_geteuid() === 0);
+	}
+
+	/**
+	 * Makes a new empty directory under the system temp directory, removed in tearDown.
+	 */
+	protected function newTempDir(): string
+	{
+		$dir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'tassetmgr_cov_' . bin2hex(random_bytes(6));
+		mkdir($dir);
+		$this->clearDir = realpath($dir);
+		return $this->clearDir;
+	}
+
+	public function testDirectAccessors()
+	{
+		$manager = $this->newAssetManager();
+		PradoUnit::invoke($manager, 'setBasePathDirect', '/base');
+		self::assertSame('/base', PradoUnit::invoke($manager, 'getBasePathDirect'));
+		self::assertSame('/base', $manager->getBasePath());
+		PradoUnit::invoke($manager, 'setBaseUrlDirect', '/url');
+		self::assertSame('/url', PradoUnit::invoke($manager, 'getBaseUrlDirect'));
+		self::assertSame('/url', $manager->getBaseUrl());
+		PradoUnit::invoke($manager, 'setPublishedDirect', ['a' => '/url/a']);
+		self::assertSame(['a' => '/url/a'], PradoUnit::invoke($manager, 'getPublishedDirect'));
+		self::assertSame(['a' => '/url/a'], $manager->getPublished());
+	}
+
+	public function testCallbacksAcceptOnlyCallables()
+	{
+		$manager = $this->newAssetManager();
+		$callback = fn () => true;
+		foreach (['HashCallback', 'BeforeCopy', 'AfterCopy'] as $property) {
+			$manager->{'set' . $property}($callback);
+			self::assertSame($callback, $manager->{'get' . $property}());
+			$manager->{'set' . $property}('no_such_function_for_tassetmanager');
+			self::assertNull($manager->{'get' . $property}());
+			$manager->{'set' . $property}($callback);
+			$manager->{'set' . $property}(null);
+			self::assertNull($manager->{'get' . $property}());
+		}
+	}
+
+	public function testModesResetToDefaultWithNull()
+	{
+		$manager = $this->newAssetManager();
+		$manager->setFileMode(0644);
+		$manager->setDirMode(0700);
+		self::assertSame(0644, $manager->getFileMode());
+		self::assertSame(0700, $manager->getDirMode());
+		$manager->setFileMode(null);
+		$manager->setDirMode(null);
+		self::assertNull($manager->getFileMode());
+		self::assertSame(Prado::getDefaultDirPermissions(), $manager->getDirMode());
+	}
+
+	public function testCronClearAgeNullAndCronClearWithoutLinkAssets()
+	{
+		[$manager, $base] = $this->newClearFixture();
+		$manager->setCronClearAge(500);
+		$manager->setCronClearAge(null);
+		self::assertNull($manager->getCronClearAge());
+
+		$old = $this->makeAgedDirectory($base . DIRECTORY_SEPARATOR . 'b2', 1000);
+		$manager->setCronClearAge(500);
+		self::assertFalse($manager->getLinkAssets());
+		self::assertSame(1, $manager->cronClearPublished());
+		self::assertDirectoryDoesNotExist($old);
+	}
+
+	public function testClearPublishedWithoutABasePathRemovesNothing()
+	{
+		$manager = $this->newAssetManager();
+		self::assertNull($manager->getBasePath());
+		self::assertSame(0, $manager->clearPublished());
+	}
+
+	public function testRemovePublishedDirectoryOfAMissingDirectoryFails()
+	{
+		$manager = $this->newAssetManager();
+		self::assertFalse(PradoUnit::invoke($manager, 'removePublishedDirectory', self::$assetDir . DIRECTORY_SEPARATOR . 'missing'));
+	}
+
+	public function testRemovePublishedDirectoryLeavesALinkItCannotRemove()
+	{
+		$this->requireSymlinks();
+		if (!$this->permissionModesHonored()) {
+			$this->markTestSkipped('A read-only directory cannot block unlink here.');
+		}
+		$dir = $this->newTempDir();
+		$published = $dir . DIRECTORY_SEPARATOR . 'a1';
+		mkdir($published);
+		symlink($dir . DIRECTORY_SEPARATOR . 'missing.js', $published . DIRECTORY_SEPARATOR . 'link.js');
+		chmod($published, 0555);
+		try {
+			$manager = $this->newAssetManager();
+			self::assertFalse(PradoUnit::invoke($manager, 'removePublishedDirectory', $published));
+			self::assertTrue(is_link($published . DIRECTORY_SEPARATOR . 'link.js'));
+		} finally {
+			chmod($published, 0755);
+		}
+	}
+
+	public function testValidateSymlinksLeavesABrokenLinkItCannotRemove()
+	{
+		$this->requireSymlinks();
+		if (!$this->permissionModesHonored()) {
+			$this->markTestSkipped('A read-only directory cannot block unlink here.');
+		}
+		$dir = $this->newTempDir();
+		$link = $dir . DIRECTORY_SEPARATOR . 'broken.js';
+		symlink($dir . DIRECTORY_SEPARATOR . 'missing.js', $link);
+		chmod($dir, 0555);
+		try {
+			$manager = $this->newAssetManager();
+			self::assertFalse($manager->validateSymlinks($link));
+			self::assertTrue(is_link($link));
+		} finally {
+			chmod($dir, 0755);
+		}
+	}
+
+	public function testWriteAtomicWithAWriterThatWritesNothing()
+	{
+		$manager = $this->newAssetManager();
+		$dst = self::$assetDir . DIRECTORY_SEPARATOR . 'nothing.txt';
+		self::assertSame($dst, PradoUnit::invoke($manager, 'writeAtomic', $dst, function ($tmp) {
+		}));
+		self::assertFileDoesNotExist($dst);
+		self::assertSame([], glob(self::$assetDir . DIRECTORY_SEPARATOR . 'tmp-*'));
+
+		try {
+			PradoUnit::invoke($manager, 'writeAtomic', $dst, function ($tmp) {
+				throw new \RuntimeException('writer failed');
+			});
+			self::fail('RuntimeException was not thrown');
+		} catch (\RuntimeException $e) {
+			self::assertSame('writer failed', $e->getMessage());
+		}
+		self::assertFileDoesNotExist($dst);
+		self::assertSame([], glob(self::$assetDir . DIRECTORY_SEPARATOR . 'tmp-*'));
+	}
+
+	public function testHashOfAFileIsTheHashOfItsDirectory()
+	{
+		$manager = $this->newAssetManager();
+		self::assertSame(PradoUnit::invoke($manager, 'hash', __DIR__), PradoUnit::invoke($manager, 'hash', __FILE__));
+		$unlinked = PradoUnit::invoke($manager, 'hash', __FILE__);
+		$manager->setLinkAssets(true);
+		self::assertSame(PradoUnit::invoke($manager, 'hash', __DIR__), PradoUnit::invoke($manager, 'hash', __FILE__));
+		self::assertNotSame($unlinked, PradoUnit::invoke($manager, 'hash', __FILE__));
+	}
+
+	public function testRelativeSymlinkTargetOfTheLinksOwnDirectory()
+	{
+		$manager = $this->newAssetManager();
+		$sep = DIRECTORY_SEPARATOR;
+		self::assertSame('.', PradoUnit::invoke($manager, 'relativeSymlinkTarget', '.', 'link'));
+		self::assertSame('foo', PradoUnit::invoke($manager, 'relativeSymlinkTarget', '.' . $sep . 'foo', 'link'));
+		self::assertSame('.', PradoUnit::invoke($manager, 'relativeSymlinkTarget', $sep . 'a' . $sep . 'b', $sep . 'a' . $sep . 'b' . $sep . 'c'));
+		self::assertSame('..' . $sep . 'b', PradoUnit::invoke($manager, 'relativeSymlinkTarget', $sep . 'b', $sep . 'a' . $sep . 'c'));
+	}
+
+	public function testMatchesAnyPatternCaseInsensitive()
+	{
+		$manager = $this->newAssetManager();
+		self::assertFalse(PradoUnit::invoke($manager, 'matchesAnyPattern', 'dir/a.CSS', [], false));
+		self::assertFalse(PradoUnit::invoke($manager, 'matchesAnyPattern', 'dir/a.CSS', ['*.js'], false));
+		self::assertTrue(PradoUnit::invoke($manager, 'matchesAnyPattern', 'dir/a.CSS', ['*.css'], false));
+		self::assertFalse(PradoUnit::invoke($manager, 'matchesAnyPattern', 'dir/a.CSS', ['*.css'], true));
+	}
+
+	public function testGetPublishedUrlEmptyThrows()
+	{
+		$manager = $this->newAssetManager();
+		$manager->init(null);
+		$this->expectException(TInvalidDataValueException::class);
+		$manager->getPublishedUrl('');
+	}
+
+	public function testGetPublishedUrlOfAnUnpublishedVirtualFileHasNoTimestamp()
+	{
+		$manager = $this->newAssetManager();
+		$manager->setBaseUrl('/');
+		$manager->setAppendTimestamp(true);
+		$manager->init(null);
+		$virtual = new class () implements \Prado\Web\IPublishable {
+			public function getAssetFilePath()
+			{
+				return '/virtual/unpublished.svg';
+			}
+			public function getAssetModificationDate()
+			{
+				return 0;
+			}
+			public function publish(string $dst): ?bool
+			{
+				return (bool) @file_put_contents($dst, '<svg/>');
+			}
+		};
+		$url = $manager->getPublishedUrl($virtual);
+		self::assertStringEndsWith('/unpublished.svg', $url);
+		self::assertFileDoesNotExist($manager->getPublishedPath($virtual));
+	}
+
+	public function testInitWithTheDefaultBasePathMissing()
+	{
+		$this->removeDirectory(self::$assetDir);
+		$manager = $this->newAssetManager();
+		try {
+			$manager->init(null);
+			self::fail('TConfigurationException was not thrown');
+		} catch (TConfigurationException $e) {
+			self::assertSame('assetmanager_basepath_invalid', $e->getErrorCode());
+		}
+	}
+
+	public function testInitWithTheDefaultBasePathAFile()
+	{
+		$this->removeDirectory(self::$assetDir);
+		file_put_contents(self::$assetDir, 'not a directory');
+		try {
+			$manager = $this->newAssetManager();
+			try {
+				$manager->init(null);
+				self::fail('TConfigurationException was not thrown');
+			} catch (TConfigurationException $e) {
+				self::assertSame('assetmanager_basepath_invalid', $e->getErrorCode());
+			}
+		} finally {
+			unlink(self::$assetDir);
+		}
+	}
+
+	public function testInitWithAnExplicitBasePathThatIsAFile()
+	{
+		$manager = $this->newAssetManager();
+		PradoUnit::invoke($manager, 'setBasePathDirect', __FILE__);
+		try {
+			$manager->init(null);
+			self::fail('TConfigurationException was not thrown');
+		} catch (TConfigurationException $e) {
+			self::assertSame('assetmanager_basepath_invalid', $e->getErrorCode());
+		}
+	}
+
+	public function testInitKeepsAConfiguredBaseUrl()
+	{
+		$manager = $this->newAssetManager();
+		$manager->setBaseUrl('/configured');
+		$manager->init(null);
+		self::assertSame(self::$assetDir, $manager->getBasePath());
+		self::assertSame('/configured', $manager->getBaseUrl());
+
+		$manager = $this->newAssetManager();
+		$manager->setBasePath('AssetAlias');
+		$manager->setBaseUrl('/configured');
+		$manager->init(null);
+		self::assertSame('/configured', $manager->getBaseUrl());
+	}
+
+	public function testSetBasePathRejectsAMissingOrReadOnlyDirectory()
+	{
+		$manager = $this->newAssetManager();
+		try {
+			$manager->setBasePath('AssetAlias.missing');
+			self::fail('TInvalidDataValueException was not thrown');
+		} catch (TInvalidDataValueException $e) {
+			self::assertSame('assetmanager_basepath_invalid', $e->getErrorCode());
+		}
+		if (!$this->permissionModesHonored()) {
+			return;
+		}
+		$dir = $this->newTempDir();
+		chmod($dir, 0555);
+		$alias = 'ReadOnlyAssets' . bin2hex(random_bytes(4));
+		Prado::setPathOfAlias($alias, $dir);
+		try {
+			$manager->setBasePath($alias);
+			self::fail('TInvalidDataValueException was not thrown');
+		} catch (TInvalidDataValueException $e) {
+			self::assertSame('assetmanager_basepath_invalid', $e->getErrorCode());
+		} finally {
+			chmod($dir, 0755);
+		}
+		self::assertNull($manager->getBasePath());
+	}
+
+	public function testDeployTarFileOfADirectoryThrows()
+	{
+		$manager = $this->newAssetManager();
+		try {
+			PradoUnit::invoke($manager, 'deployTarFile', __DIR__, self::$assetDir);
+			self::fail('TIOException was not thrown');
+		} catch (TIOException $e) {
+			self::assertSame('assetmanager_tarfile_invalid', $e->getErrorCode());
+		}
+	}
+
+	public function testDeployTarFileWithStrictOrConflictModeAlone()
+	{
+		[$tarFile] = $this->buildTarFixture();
+		$manager = $this->newAssetManager();
+		$manager->init(null);
+		$strict = self::$assetDir . DIRECTORY_SEPARATOR . 'strict';
+		self::assertTrue(PradoUnit::invoke($manager, 'deployTarFile', $tarFile, $strict, ['strict' => true]));
+		self::assertSame('nested', file_get_contents($strict . '/sub/nested.txt'));
+		$conflict = self::$assetDir . DIRECTORY_SEPARATOR . 'conflict';
+		self::assertTrue(PradoUnit::invoke($manager, 'deployTarFile', $tarFile, $conflict, ['conflictMode' => \Prado\IO\TTarFileExtractor::CONFLICT_OVERWRITE]));
+		self::assertSame('nested', file_get_contents($conflict . '/sub/nested.txt'));
+	}
+
+	public function testPublishVirtualDirectoryWithoutAtomic()
+	{
+		$manager = $this->newAssetManager();
+		$manager->setBaseUrl('/');
+		$manager->setAtomic(false);
+		$manager->init(null);
+		$virtual = new class () implements \Prado\Web\IPublishable {
+			public int $populates = 0;
+			public function getAssetFilePath()
+			{
+				return '/virtual/plain-bundle/';
+			}
+			public function getAssetModificationDate()
+			{
+				return 0;
+			}
+			public function publish(string $dst): ?bool
+			{
+				$this->populates++;
+				return (bool) @file_put_contents($dst . DIRECTORY_SEPARATOR . 'index.txt', 'hi');
+			}
+		};
+		$dir = self::$assetDir . $manager->publishFilePath($virtual);
+		self::assertSame('hi', file_get_contents($dir . DIRECTORY_SEPARATOR . 'index.txt'));
+		self::assertSame([], glob($dir . DIRECTORY_SEPARATOR . TAssetManager::DIRECTORY_COMPLETE_MARKER_PREFIX . '*'));
+		self::assertSame(1, $virtual->populates);
+	}
+
+	public function testCopyDirectoryFileWithoutPatternOptionsUsesTheProperties()
+	{
+		$manager = $this->newAssetManager();
+		$manager->setExcept(['*.skip']);
+		$dst = self::$assetDir . DIRECTORY_SEPARATOR . 'copied.txt';
+		PradoUnit::invoke($manager, 'copyDirectoryFile', __FILE__, $dst, 'copied.txt', []);
+		self::assertFileEquals(__FILE__, $dst);
+		$skipped = self::$assetDir . DIRECTORY_SEPARATOR . 'copied.skip';
+		PradoUnit::invoke($manager, 'copyDirectoryFile', __FILE__, $skipped, 'copied.skip', []);
+		self::assertFileDoesNotExist($skipped);
+	}
+
+	public function testCopyDirectoryWithoutOptionsUsesTheProperties()
+	{
+		$src = $this->newTempDir();
+		file_put_contents($src . DIRECTORY_SEPARATOR . 'keep.js', 'keep');
+		file_put_contents($src . DIRECTORY_SEPARATOR . 'drop.txt', 'drop');
+		$manager = $this->newAssetManager();
+		$manager->setOnly(['*.js']);
+		$dst = self::$assetDir . DIRECTORY_SEPARATOR . 'tree';
+		$manager->copyDirectory($src, $dst);
+		self::assertSame('keep', file_get_contents($dst . DIRECTORY_SEPARATOR . 'keep.js'));
+		self::assertFileDoesNotExist($dst . DIRECTORY_SEPARATOR . 'drop.txt');
+
+		// Pattern options override the properties.
+		$dst = self::$assetDir . DIRECTORY_SEPARATOR . 'options';
+		$manager->copyDirectory($src, $dst, ['only' => null, 'except' => ['*.js']]);
+		self::assertFileDoesNotExist($dst . DIRECTORY_SEPARATOR . 'keep.js');
+		self::assertSame('drop', file_get_contents($dst . DIRECTORY_SEPARATOR . 'drop.txt'));
+	}
+
+	public function testForceCopyReplacesABrokenLink()
+	{
+		$this->requireSymlinks();
+		$src = $this->newTempDir();
+		file_put_contents($src . DIRECTORY_SEPARATOR . 'app.js', 'app');
+		$manager = $this->newAssetManager();
+		$manager->setLinkAssets(true);
+		$manager->setForceCopy(true);
+		$manager->init(null);
+
+		// A single file.
+		$dst = self::$assetDir . DIRECTORY_SEPARATOR . 'single';
+		mkdir($dst);
+		symlink($src . DIRECTORY_SEPARATOR . 'missing.js', $dst . DIRECTORY_SEPARATOR . 'app.js');
+		PradoUnit::invoke($manager, 'copyFile', $src . DIRECTORY_SEPARATOR . 'app.js', $dst);
+		self::assertSame('app', file_get_contents($dst . DIRECTORY_SEPARATOR . 'app.js'));
+
+		// A file of a directory.
+		$tree = self::$assetDir . DIRECTORY_SEPARATOR . 'tree';
+		mkdir($tree);
+		symlink($src . DIRECTORY_SEPARATOR . 'missing.js', $tree . DIRECTORY_SEPARATOR . 'app.js');
+		$manager->copyDirectory($src, $tree);
+		self::assertSame('app', file_get_contents($tree . DIRECTORY_SEPARATOR . 'app.js'));
 	}
 }

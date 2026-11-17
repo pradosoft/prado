@@ -22,11 +22,11 @@ THttpResponse implements the mechanism for sending output to client users, manag
 ## Core Properties
 - `BufferOutput` (bool): Whether to enable output buffering, defaults to true
 - `ContentType` (string): Sets the content type for the response, defaults to 'text/html'
-- `Charset` (string/bool): Character set for output, can be false to disable
+- `Charset` (string/bool): Character set for output; false or `'false'` sends `Content-Type` without a charset
 - `CacheExpire` (int): TTL for cached session pages in minutes, defaults to 180
 - `CacheControl` (string): Cache control method for session pages
 - `StatusCode` (int): HTTP status code, defaults to 200
-- `HttpHeaderSent` (bool, read-only): Whether the HTTP status header is sent; `setStatusCode()` throws after it is sent (@since 4.4.0)
+- `HttpHeaderSent` (bool, read-only): Whether the HTTP status header is sent; `setStatusCode()` throws `TInvalidOperationException` after it is sent (@since 4.4.0)
 - `AcceptRanges` (bool): Whether `writeFile()` serves byte ranges, defaults to true (@since 4.4.0)
 - `StatusReason` (string): Reason phrase for HTTP status code
 - `HtmlWriterType` (string): Type of HTML writer to be used, defaults to [THtmlWriter](UI/THtmlWriter.md)
@@ -72,7 +72,7 @@ return [
 - `getStatusReason()`: Gets the HTTP status reason phrase
 - `sendHttpHeader()`: Sends the HTTP status header with the status code
 - `appendHeader($value, $replace = true)`: Sends a custom header
-- `getHeaders($case = null)`: Returns all current headers
+- `getHeaders($case = null)`: Returns the headers from `responseHeadersList()`, keyed by name; repeated names join with `, `
 - `ensureHeadersSent()`: Ensures HTTP and content-type headers are sent
 
 ### Cookie Handling
@@ -102,6 +102,7 @@ return [
 - `responseSetCookie(string $name, ...$args): bool` — Isolated wrapper for `setcookie()`. Override in subclasses for testing or custom cookie dispatch.
 - `sessionCacheExpire(?int $value = null): int|false` — Wrapper for `session_cache_expire()`.
 - `sessionCacheLimiter(?string $value = null): string|false` — Wrapper for `session_cache_limiter()`.
+- `responseHeadersList(): array` (4.4.0) — Wrapper for `headers_list()`; the CLI SAPI returns none.
 
 ## Notes
 

@@ -23,8 +23,14 @@ class THttpRequestTest extends \PHPUnit\Framework\TestCase
 {
 	protected ?TTestApplication $app = null;
 
+	/**
+	 * @var array the superglobals saved by setUp() and restored by tearDown().
+	 */
+	private array $globals = [];
+
 	protected function setUp(): void
 	{
+		$this->globals = [$_SERVER, $_GET, $_POST, $_COOKIE, $_FILES];
 
 		// Fake environment variables
 		$_SERVER['HTTP_HOST'] = 'localhost';
@@ -58,6 +64,7 @@ class THttpRequestTest extends \PHPUnit\Framework\TestCase
 			$this->app->restoreApplication();
 			$this->app = null;
 		}
+		[$_SERVER, $_GET, $_POST, $_COOKIE, $_FILES] = $this->globals;
 	}
 
 	public function testInit()
@@ -78,6 +85,8 @@ class THttpRequestTest extends \PHPUnit\Framework\TestCase
 		$request = new THttpRequest();
 		$data = 'some\\text\\with\\slashes';
 		self::assertEquals('sometextwithslashes', $request->stripSlashes($data));
+		$data = ['x\\y'];
+		self::assertSame(['xy'], $request->stripSlashes($data));
 	}
 
 	public function testGetUrl()
@@ -112,7 +121,6 @@ class THttpRequestTest extends \PHPUnit\Framework\TestCase
 		} catch (TConfigurationException $e) {
 		}
 		$request = null;
-
 
 		// Try with valid module id, but not instance of TUrlManager
 		$module = new TAssetManager();
@@ -380,6 +388,27 @@ class THttpRequestTest extends \PHPUnit\Framework\TestCase
 		$cookies = $request->getCookies();
 		self::assertInstanceOf(\Prado\Web\THttpCookieCollection::class, $cookies);
 		self::assertEquals('0123456789abcdef', $cookies->itemAt('phpsessid')->getValue());
+	}
+
+	public function testGetCookiesValidationDropsTamperedAndArrayCookies()
+	{
+		$security = new TSecurityManager();
+		$this->app->setModule('security', $security);
+		$_COOKIE['phpsessid'] = $security->hashCookieData('0123456789abcdef');
+		$_COOKIE['tampered'] = 'x' . $security->hashCookieData('value');
+		$_COOKIE['list'] = ['a' => $security->hashCookieData('value')];
+		try {
+			$request = new THttpRequest();
+			$request->init(null);
+			$request->setEnableCookieValidation(true);
+			$cookies = $request->getCookies();
+			self::assertEquals('0123456789abcdef', $cookies->itemAt('phpsessid')->getValue());
+			self::assertNull($cookies->itemAt('tampered'));
+			self::assertNull($cookies->itemAt('list'));
+		} finally {
+			unset($_COOKIE['tampered'], $_COOKIE['list']);
+			$_COOKIE['phpsessid'] = '0123456789abcdef';
+		}
 	}
 
 	/**
@@ -1062,6 +1091,476 @@ class THttpRequestTest extends \PHPUnit\Framework\TestCase
 			self::assertSame('2', $request->itemAt('extra'));
 		} finally {
 			$this->restoreBodyEnvironment($post, $get);
+		}
+	}
+
+	/**
+	 * Builds and initializes a request for the given server variables, unset when null.
+	 * @param array $server server variables to set; a null value unsets the variable.
+	 * @param ?string $urlFormat the URL format set before init.
+	 * @param int $cgiFix the CgiFix set before init.
+	 */
+	private function initRequest(array $server, ?string $urlFormat = null, int $cgiFix = 0): THttpRequest
+	{
+		foreach ($server as $key => $value) {
+			if ($value === null) {
+				unset($_SERVER[$key]);
+			} else {
+				$_SERVER[$key] = $value;
+			}
+		}
+		$request = new THttpRequest();
+		if ($urlFormat !== null) {
+			$request->setUrlFormat($urlFormat);
+		}
+		$request->setCgiFix($cgiFix);
+		$request->init(null);
+		return $request;
+	}
+
+	public function testInitRequestUriFromScriptName()
+	{
+		$request = $this->initRequest(['REQUEST_URI' => null, 'QUERY_STRING' => '']);
+		self::assertSame('/demos/personal/index.php', $request->getRequestUri());
+
+		$request = $this->initRequest(['REQUEST_URI' => null, 'QUERY_STRING' => 'page=Home']);
+		self::assertSame('/demos/personal/index.php?page=Home', $request->getRequestUri());
+	}
+
+	public function testInitPathInfo()
+	{
+		// ORIG_PATH_INFO with the CGI path fix
+		$request = $this->initRequest(['ORIG_PATH_INFO' => '/demos/personal/index.php/a/b'], null, THttpRequest::CGIFIX__PATH_INFO);
+		self::assertSame('/a/b', $request->getPathInfo());
+
+		// the CGI path fix without ORIG_PATH_INFO falls back to PATH_INFO
+		$request = $this->initRequest(['ORIG_PATH_INFO' => null, 'PATH_INFO' => '/c'], null, THttpRequest::CGIFIX__PATH_INFO);
+		self::assertSame('/c', $request->getPathInfo());
+
+		// ORIG_PATH_INFO without the fix is ignored
+		$request = $this->initRequest(['ORIG_PATH_INFO' => '/demos/personal/index.php/a/b', 'PATH_INFO' => '/d']);
+		self::assertSame('/d', $request->getPathInfo());
+
+		// PHP_SELF past the script name
+		$request = $this->initRequest(['ORIG_PATH_INFO' => null, 'PATH_INFO' => null, 'PHP_SELF' => '/demos/personal/index.php/e/f']);
+		self::assertSame('/e/f', $request->getPathInfo());
+
+		// PHP_SELF equal to, or not starting with, the script name: the URL format decides
+		$server = ['PATH_INFO' => null, 'PHP_SELF' => '/demos/personal/index.php', 'REQUEST_URI' => '/demos/personal/index.php/g/h'];
+		self::assertSame('/g/h', $this->initRequest($server, THttpRequestUrlFormat::Path)->getPathInfo());
+		self::assertSame('/index.php/g/h', $this->initRequest($server, THttpRequestUrlFormat::HiddenPath)->getPathInfo());
+		self::assertSame('', $this->initRequest($server, THttpRequestUrlFormat::Get)->getPathInfo());
+		$server['PHP_SELF'] = '/other.php';
+		self::assertSame('/g/h', $this->initRequest($server, THttpRequestUrlFormat::Path)->getPathInfo());
+	}
+
+	public function testGetUrlServerNameAndPort()
+	{
+		$cases = [
+			[null, '80', 'http://localhost/demos/personal/index.php?page=Links'],
+			[null, '8080', 'http://localhost:8080/demos/personal/index.php?page=Links'],
+			['on', '443', 'https://localhost/demos/personal/index.php?page=Links'],
+			['on', '8443', 'https://localhost:8443/demos/personal/index.php?page=Links'],
+		];
+		foreach ($cases as [$https, $port, $expected]) {
+			// init() sets SERVER_PORT under the CLI, so the port is set after it
+			$request = $this->initRequest(['HTTP_HOST' => '', 'HTTPS' => $https]);
+			$_SERVER['SERVER_PORT'] = $port;
+			self::assertSame($expected, $request->getUrl()->getUri());
+			self::assertSame($request->getUrl(), $request->getUrl());
+		}
+	}
+
+	public function testGetIsSecureConnectionHttps()
+	{
+		$request = $this->initRequest(['HTTPS' => 'on']);
+		self::assertTrue($request->getIsSecureConnection());
+		$request = $this->initRequest(['HTTPS' => 'OFF']);
+		self::assertFalse($request->getIsSecureConnection());
+	}
+
+	public function testGetBaseUrlSchemeAndPort()
+	{
+		$request = $this->initRequest(['HTTP_HOST' => 'example.com:8080']);
+		self::assertSame('http://example.com:8080', $request->getBaseUrl());
+		self::assertSame('https://example.com:8080', $request->getBaseUrl(true));
+		self::assertSame('http://example.com:8080', $request->getBaseUrl(false));
+
+		$request = $this->initRequest(['HTTP_HOST' => 'example.com', 'HTTPS' => 'on']);
+		self::assertSame('https://example.com', $request->getBaseUrl());
+		self::assertSame('http://example.com', $request->getBaseUrl(false));
+		self::assertSame('https://example.com/demos/personal/index.php', $request->getAbsoluteApplicationUrl());
+
+		$request = $this->initRequest(['HTTP_HOST' => 'example.com']);
+		self::assertSame('https://example.com', $request->getBaseUrl(true));
+	}
+
+	public function testGetApplicationUrlCgiFix()
+	{
+		$request = $this->initRequest(['ORIG_SCRIPT_NAME' => '/orig/index.php'], null, THttpRequest::CGIFIX__SCRIPT_NAME);
+		self::assertSame(THttpRequest::CGIFIX__SCRIPT_NAME, $request->getCgiFix());
+		self::assertSame('/orig/index.php', $request->getApplicationUrl());
+
+		$request = $this->initRequest(['ORIG_SCRIPT_NAME' => null], null, THttpRequest::CGIFIX__SCRIPT_NAME);
+		self::assertSame('/demos/personal/index.php', $request->getApplicationUrl());
+
+		$request = $this->initRequest(['ORIG_SCRIPT_NAME' => '/orig/index.php']);
+		self::assertSame(0, $request->getCgiFix());
+		self::assertSame('/demos/personal/index.php', $request->getApplicationUrl());
+
+		$request->setCgiFix('3');
+		self::assertSame(3, $request->getCgiFix());
+	}
+
+	public function testServerVariableAccessors()
+	{
+		$request = $this->initRequest(['SERVER_PROTOCOL' => 'HTTP/1.1', 'SERVER_SOFTWARE' => 'Apache']);
+		self::assertSame('HTTP/1.1', $request->getHttpProtocolVersion());
+		self::assertSame('Apache', $request->getServerSoftware());
+
+		$request = $this->initRequest(['SERVER_PROTOCOL' => null, 'SERVER_SOFTWARE' => null]);
+		unset($_SERVER['REQUEST_METHOD']);
+		self::assertNull($request->getHttpProtocolVersion());
+		self::assertNull($request->getServerSoftware());
+		self::assertNull($request->getRequestType());
+		self::assertSame(\Prado\Prado::getUserLanguages(), $request->getUserLanguages());
+	}
+
+	public function testGetContentTypeWithoutParameters()
+	{
+		$request = $this->initRequest(['CONTENT_TYPE' => 'text/html']);
+		self::assertSame('text/html', $request->getContentType());
+		$request = $this->initRequest(['CONTENT_TYPE' => 'text/html; charset=UTF-8']);
+		self::assertSame('text/html; charset=UTF-8', $request->getContentType(false));
+		self::assertSame('text/html', $request->getContentType());
+		$request = $this->initRequest(['CONTENT_TYPE' => null]);
+		self::assertNull($request->getContentType());
+	}
+
+	public function testResolveMethod()
+	{
+		$request = $this->initRequest([]);
+		self::assertSame(\Prado\Web\THttpRequestResolveMethod::ParameterOrder, $request->getResolveMethod());
+		$request->setResolveMethod(\Prado\Web\THttpRequestResolveMethod::ServiceOrder);
+		self::assertSame(\Prado\Web\THttpRequestResolveMethod::ServiceOrder, $request->getResolveMethod());
+
+		// ServiceOrder picks the first service ID of the list that the request has
+		$_GET = ['page' => 'Home', 'json' => 'data'];
+		self::assertSame('json', $request->resolveRequest(['soap', 'json', 'page']));
+		self::assertSame('data', $request->getServiceParameter());
+		$_GET = ['page' => 'Home'];
+		self::assertSame('page', $request->resolveRequest(['page']));
+		self::assertNull($request->resolveRequest(['soap']));
+		self::assertNull($request->resolveRequest([]));
+
+		// ParameterOrder picks the first request parameter that is a service ID
+		$request->setResolveMethod(\Prado\Web\THttpRequestResolveMethod::ParameterOrder);
+		$_GET = ['page' => 'Home', 'json' => 'data'];
+		self::assertSame('page', $request->resolveRequest(['soap', 'json', 'page']));
+		$_GET = ['json' => 'data'];
+		self::assertSame('json', $request->resolveRequest(['json']));
+		self::assertNull($request->resolveRequest(['soap']));
+		$_GET = [];
+		self::assertNull($request->resolveRequest(['soap']));
+	}
+
+	/**
+	 * Registers a memory cache on the application and returns it.
+	 */
+	private function useMemoryCache(): \Prado\Caching\TMemoryCache
+	{
+		$cache = new \Prado\Caching\TMemoryCache();
+		$cache->init(null);
+		$this->app->setCache($cache);
+		return $cache;
+	}
+
+	public function testUrlManagerCacheDisabled()
+	{
+		$request = $this->initRequest([]);
+		self::assertFalse($request->getEnableCache());
+		self::assertFalse(PradoUnit::invoke($request, 'cacheUrlManager', new TUrlManager()));
+		self::assertNull(PradoUnit::invoke($request, 'loadCachedUrlManager'));
+
+		$request->setEnableCache('true');
+		self::assertTrue($request->getEnableCache());
+		self::assertNull($this->app->getCache());
+		self::assertFalse(PradoUnit::invoke($request, 'cacheUrlManager', new TUrlManager()));
+		self::assertNull(PradoUnit::invoke($request, 'loadCachedUrlManager'));
+	}
+
+	public function testUrlManagerCacheStoresAndLoads()
+	{
+		$cache = $this->useMemoryCache();
+		$request = $this->initRequest([]);
+		$request->setID('request');
+		$request->setEnableCache(true);
+		self::assertSame('request', PradoUnit::invoke($request, 'getCacheKey'));
+
+		// nothing cached, or something that is not a URL manager, loads nothing
+		self::assertNull(PradoUnit::invoke($request, 'loadCachedUrlManager'));
+		$cache->set('request', 'not a manager');
+		self::assertNull(PradoUnit::invoke($request, 'loadCachedUrlManager'));
+
+		// the default manager is created and cached
+		$manager = $request->getUrlManagerModule();
+		self::assertInstanceOf(TUrlManager::class, $manager);
+		self::assertInstanceOf(TUrlManager::class, $cache->get('request'));
+
+		// another request loads the cached manager
+		$request2 = $this->initRequest([]);
+		$request2->setID('request');
+		$request2->setEnableCache(true);
+		self::assertInstanceOf(TUrlManager::class, $loaded = $request2->getUrlManagerModule());
+		self::assertSame($loaded, $request2->getUrlManagerModule());
+	}
+
+	public function testUrlManagerCacheUrlMapping()
+	{
+		$cache = $this->useMemoryCache();
+		$request = $this->initRequest([]);
+		$request->setID('request');
+		$request->setEnableCache(true);
+
+		// a URL mapping without a configuration file
+		$mapping = new TUrlMapping();
+		self::assertTrue(PradoUnit::invoke($request, 'cacheUrlManager', $mapping));
+		self::assertInstanceOf(TUrlMapping::class, $cache->get('request'));
+
+		// a URL mapping with a configuration file
+		PradoUnit::setProp($mapping, '_configFile', __DIR__ . '/app/urlmapping.xml');
+		self::assertTrue(PradoUnit::invoke($request, 'cacheUrlManager', $mapping));
+		self::assertInstanceOf(TUrlMapping::class, $cache->get('request'));
+
+		// performance mode caches without a dependency
+		$mode = $this->app->getMode();
+		$this->app->setMode(\Prado\TApplicationMode::Performance);
+		try {
+			self::assertTrue(PradoUnit::invoke($request, 'cacheUrlManager', $mapping));
+			self::assertInstanceOf(TUrlMapping::class, $cache->get('request'));
+		} finally {
+			$this->app->setMode($mode);
+		}
+	}
+
+	public function testGetHeadersFromServerVariables()
+	{
+		$request = new THttpRequest();
+		$_SERVER = [];
+		self::assertSame([], $request->getHeaders());
+
+		$request = new THttpRequest();
+		$_SERVER = ['SERVER_NAME' => 'localhost'];
+		self::assertSame([], $request->getHeaders());
+
+		$request = new THttpRequest();
+		$_SERVER = ['HTTP_X_FORWARDED_FOR' => '10.0.0.1'];
+		self::assertSame(['X-Forwarded-For' => '10.0.0.1'], $request->getHeaders());
+		self::assertSame(['X-FORWARDED-FOR' => '10.0.0.1'], $request->getHeaders(CASE_UPPER));
+		self::assertSame('10.0.0.1', $request->getHeader('x-forwarded-for'));
+		self::assertSame(['X-Forwarded-For' => '10.0.0.1'], $request->getHeaders());
+		self::assertSame('none', $request->getHeader('Accept', 'none'));
+	}
+
+	public function testGetCookiesWithOneOrNoCookie()
+	{
+		$security = new TSecurityManager();
+		$this->app->setModule('security', $security);
+		foreach ([false, true] as $validate) {
+			$_COOKIE = [];
+			$request = new THttpRequest();
+			$request->setEnableCookieValidation($validate);
+			self::assertSame(0, $request->getCookies()->getCount());
+			self::assertSame($request->getCookies(), $request->getCookies());
+
+			$_COOKIE = ['one' => $validate ? $security->hashCookieData('1') : '1'];
+			$request = new THttpRequest();
+			$request->setEnableCookieValidation($validate);
+			self::assertSame('1', $request->getCookies()->itemAt('one')->getValue());
+
+			$_COOKIE = ['list' => ['1']];
+			$request = new THttpRequest();
+			$request->setEnableCookieValidation($validate);
+			self::assertSame($validate ? 0 : 1, $request->getCookies()->getCount());
+		}
+		$_COOKIE = ['bad' => 'tampered'];
+		$request = new THttpRequest();
+		$request->setEnableCookieValidation(true);
+		self::assertSame(0, $request->getCookies()->getCount());
+	}
+
+	public function testCsrfTokenLoadCases()
+	{
+		$security = $this->app->getSecurityManager();
+		$response = new TTestCookieResponse();
+
+		// a cookie whose signed secret is empty is no secret
+		$request = $this->newCsrfRequest($response);
+		$_COOKIE[THttpRequest::CSRF_TOKEN_KEY] = $security->hashCookieData('');
+		self::assertNull(PradoUnit::invoke($request, 'loadCsrfToken'));
+		self::assertFalse($request->validateCsrfToken('token'));
+		self::assertFalse($request->validateCsrfToken(null));
+
+		// the first token of a request with a valid cookie keeps its secret
+		$request = $this->newCsrfRequest($response);
+		$_COOKIE[THttpRequest::CSRF_TOKEN_KEY] = $security->hashCookieData('cookiesecret');
+		$token = $request->getCsrfToken();
+		self::assertSame('cookiesecret', PradoUnit::invoke($request, 'unmaskCsrfToken', $token));
+		self::assertCount(0, $response->setCookies);
+
+		// the cached secret is reused without loading
+		$request = $this->newCsrfRequest($response);
+		PradoUnit::setProp($request, '_csrfToken', 'secret');
+		$token = $request->getCsrfToken();
+		self::assertSame('secret', PradoUnit::invoke($request, 'unmaskCsrfToken', $token));
+		self::assertTrue($request->validateCsrfToken($token));
+		self::assertCount(0, $response->setCookies);
+
+		// a regenerated secret replaces a cached one
+		$token = $request->getCsrfToken(true);
+		self::assertNotSame('secret', PradoUnit::invoke($request, 'unmaskCsrfToken', $token));
+		self::assertCount(1, $response->setCookies);
+		self::assertSame('', PradoUnit::invoke($request, 'unmaskCsrfToken', base64_encode('')));
+
+		// the session holds an empty or non-string secret
+		$session = new TTestMemorySession();
+		$this->app->setSession($session);
+		foreach (['', 12345, null] as $value) {
+			$session->data = $value === null ? [] : [THttpRequest::CSRF_TOKEN_KEY => $value];
+			$request = $this->newCsrfRequest($response);
+			$request->setEnableCsrfCookie(false);
+			self::assertNull(PradoUnit::invoke($request, 'loadCsrfToken'));
+		}
+	}
+
+	public function testCsrfSessionRequired()
+	{
+		// an application whose newSession() returns null has no session
+		$request = new class() extends THttpRequest {
+			public function getSession()
+			{
+				return null;
+			}
+		};
+		$request->setEnableCsrfCookie(false);
+		$this->expectException(TConfigurationException::class);
+		$request->getCsrfToken();
+	}
+
+	public function testRemoveAndClear()
+	{
+		$request = new THttpRequest();
+		$request->clear();
+		self::assertSame(0, $request->getCount());
+
+		$request->add('a', 1);
+		$request->add('n', null);
+		self::assertNull($request->remove('n'));
+		self::assertFalse($request->contains('n'));
+		self::assertNull($request->remove('missing'));
+		self::assertSame(1, $request->remove('a'));
+
+		$request->add('only', 1);
+		$request->clear();
+		self::assertSame([], $request->toArray());
+	}
+
+	/**
+	 * Below PHP 8.4, a session ID passed in URLs (SID) is appended to constructed URLs when
+	 * the session is not cookie-only.
+	 * @runInSeparateProcess
+	 */
+	public function testConstructUrlAppendsSessionId()
+	{
+		// PHP defines a non-empty SID only with use_only_cookies off, which PHP 8.4 deprecates
+		if (PHP_VERSION_ID < 80400) {
+			ini_set('session.use_only_cookies', '0');
+		}
+		ini_set('session.use_cookies', '0');
+		session_start();
+		try {
+			$request = $this->initRequest([]);
+			$url = $request->constructUrl('page', 'Home', ['a' => '1']);
+			$url2 = $request->constructUrl('page', 'Home', ['a' => '1'], false);
+			$request->setUrlFormat(THttpRequestUrlFormat::Path);
+			$url3 = $request->constructUrl('page', 'Home');
+			if (PHP_VERSION_ID < 80400) {
+				$sid = SID;
+				self::assertNotSame('', $sid);
+				self::assertSame('/demos/personal/index.php?page=Home&amp;a=1&amp;' . $sid, $url);
+				self::assertSame('/demos/personal/index.php?page=Home&a=1&' . $sid, $url2);
+				self::assertSame('/demos/personal/index.php/page,Home?' . $sid, $url3);
+			} else {
+				self::assertSame('/demos/personal/index.php?page=Home&amp;a=1', $url);
+				self::assertSame('/demos/personal/index.php?page=Home&a=1', $url2);
+				self::assertSame('/demos/personal/index.php/page,Home', $url3);
+			}
+		} finally {
+			session_write_close();
+		}
+	}
+
+	/**
+	 * A session whose cookie the request carries has an empty SID, which is never appended.
+	 * @runInSeparateProcess
+	 */
+	public function testConstructUrlWithoutSessionId()
+	{
+		ini_set('session.use_cookies', '1');
+		ini_set('session.use_only_cookies', '1');
+		$request = $this->initRequest([]);
+		PradoUnit::setProp($request, '_cookieOnly', false);
+		self::assertSame('/demos/personal/index.php?page=Home', $request->constructUrl('page', 'Home'));
+		$_COOKIE[session_name()] = 'abcdef0123456789';
+		session_start();
+		try {
+			self::assertSame('/demos/personal/index.php?page=Home', $request->constructUrl('page', 'Home'));
+		} finally {
+			session_write_close();
+		}
+	}
+
+	public function testRequestParameterServiceIDs()
+	{
+		$param = new \Prado\Web\THttpRequestParameter(['page'], ['page' => 'Home']);
+		self::assertSame(['page'], $param->getServiceIDs());
+		self::assertSame($param, $param->setServiceIDs(['json']));
+		self::assertSame(['json'], $param->getServiceIDs());
+		self::assertSame(['page' => 'Home'], $param->getParameter());
+	}
+
+	public function testStripSlashesArray()
+	{
+		$request = new THttpRequest();
+		$data = ['a' => 'x\\y', 'b' => ['c\\d', 'e']];
+		self::assertSame(['a' => 'xy', 'b' => ['cd', 'e']], $request->stripSlashes($data));
+		$data = [];
+		self::assertSame([], $request->stripSlashes($data));
+	}
+
+	public function testUrlManagerCacheDependsOnTheUrlMappingConfigFile()
+	{
+		$cache = new \Prado\Caching\TMemoryCache();
+		$cache->init(null);
+		$this->app->setCache($cache);
+		$request = new THttpRequest();
+		$request->init(null);
+		$request->setID('request');
+		$request->setEnableCache(true);
+		$configFile = tempnam(sys_get_temp_dir(), 'prado-urlmap');
+		file_put_contents($configFile, '<urls/>');
+		touch($configFile, time() - 100);
+		clearstatcache();
+		try {
+			$mapping = new \Prado\Web\TUrlMapping();
+			PradoUnit::setProp($mapping, '_configFile', $configFile);
+			self::assertTrue(PradoUnit::invoke($request, 'cacheUrlManager', $mapping));
+			self::assertInstanceOf(\Prado\Web\TUrlMapping::class, $cache->get('request'));
+			touch($configFile, time());
+			clearstatcache();
+			self::assertFalse($cache->get('request'));
+		} finally {
+			unlink($configFile);
 		}
 	}
 }

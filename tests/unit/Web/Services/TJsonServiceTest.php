@@ -192,6 +192,19 @@ class TJsonServiceTest extends \PHPUnit\Framework\TestCase
 	}
 
 	/**
+	 * A service element without `<json>` elements registers no service.
+	 */
+	public function testXmlConfigurationWithoutServicesRegistersNothing()
+	{
+		Prado::getApplication()->setConfigurationType(TApplication::CONFIG_TYPE_XML);
+		$config = new TXmlDocument('1.0', 'utf8');
+		$config->loadFromString('<service/>');
+		$service = new TJsonService();
+		$service->init($config);
+		$this->assertSame([], PradoUnit::getProp($service, '_services'));
+	}
+
+	/**
 	 * A `<json>` element without an id attribute is refused.
 	 */
 	public function testXmlConfigurationWithoutAnIdIsRefused()
@@ -364,5 +377,23 @@ class TJsonServiceTest extends \PHPUnit\Framework\TestCase
 		$response = new TNestedPathJsonResponse();
 		PradoUnit::invoke($service, 'createJsonResponse', $response, [], null);
 		$this->assertNull($response->initConfig);
+	}
+
+	/**
+	 * A response's ID defaults to empty, and its init() accepts any configuration.
+	 */
+	public function testJsonResponseIdAndInit()
+	{
+		$response = new class () extends TJsonResponse {
+			public function getJsonContent()
+			{
+				return null;
+			}
+		};
+		$this->assertSame('', $response->getID());
+		$response->setID('quotes');
+		$this->assertSame('quotes', $response->getID());
+		$response->init(null);
+		$this->assertNull($response->getJsonContent());
 	}
 }

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+	<soap id="filed" class="Prado\Test\Unit\Web\Services\TTestSoapRecordingServer" Encoding="ISO-8859-1" />
+</configuration>

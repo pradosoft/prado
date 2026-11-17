@@ -54,6 +54,8 @@ Activated when the URL contains no special service parameter, or when `ServiceID
 
 URL `?page=Blog.Posts` maps to file `pages/Blog/Posts.php` (class) + `pages/Blog/Posts.page` (template).
 
+A page without a class file is an instance of `BasePageClass`, named by its full or its short name (`TPage`). The class must be `TPage` or a subclass, or the page is `404`.
+
 ### Directory Config
 
 Each page directory can contain a `config.xml`:
@@ -74,6 +76,8 @@ Rules apply to all pages in that directory and subdirectories. `TPageConfigurati
 ### Event
 
 `onPreRunPage` — raised before the page lifecycle starts. Modules can inspect/modify the `TPage` object.
+
+`onAdditionalPagePaths` — raised with the page path when the page is not under `BasePath`; each handler returns a path to look for the page in, tried in order. `isApplicationPath()` resolves each path's `.` and `..` segments and requires it inside the `Application` alias's path, ignoring case; a path outside throws `THttpException` 403 (`pageservice_security_violation`).
 
 ---
 

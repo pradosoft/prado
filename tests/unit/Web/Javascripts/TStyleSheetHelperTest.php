@@ -219,4 +219,19 @@ class TStyleSheetHelperTest extends \PHPUnit\Framework\TestCase
 			TStyleSheetHelper::renderStyleSheetFiles(['a' => '/a.css', 'b' => ['/b.css', 'print']])
 		);
 	}
+
+	public function testRenderStyleSheetFileProtocolRelativeUrlIsRemote(): void
+	{
+		$url = '//cdn.example.com/style.css';
+		TStyleSheetHelper::setStyleIntegrity($url, 'sha384-HASH');
+		$this->assertStringContainsString('integrity="sha384-HASH" crossorigin="anonymous"', TStyleSheetHelper::renderStyleSheetFile($url));
+
+		TStyleSheetHelper::setRequireStyleIntegrity(true);
+		try {
+			TStyleSheetHelper::renderStyleSheetFile('//cdn.example.com/other.css');
+			$this->fail('expected TConfigurationException');
+		} catch (TConfigurationException $e) {
+			$this->assertSame('stylesheet_integrity_required', $e->getErrorCode());
+		}
+	}
 }

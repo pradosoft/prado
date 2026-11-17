@@ -165,7 +165,7 @@ class TUrlMapping extends TUrlManager implements IModuleDependency
 		if ($this->getUrlPrefix() === '') {
 			$request = $this->getRequest();
 			if ($request->getUrlFormat() === THttpRequestUrlFormat::HiddenPath) {
-				$this->_urlPrefix = dirname($request->getApplicationUrl());
+				$this->_urlPrefix = str_replace('\\', '/', dirname($request->getApplicationUrl()));
 			} else {
 				$this->_urlPrefix = $request->getApplicationUrl();
 			}
@@ -297,7 +297,7 @@ class TUrlMapping extends TUrlManager implements IModuleDependency
 
 	/**
 	 * Load and configure each url mapping pattern.
-	 * @param mixed $config configuration node
+	 * @param null|array|TXmlElement $config configuration node; null loads no pattern.
 	 * @throws TConfigurationException if specific pattern class is invalid
 	 */
 	protected function loadUrlMappings($config)
@@ -312,7 +312,7 @@ class TUrlMapping extends TUrlManager implements IModuleDependency
 					$this->buildUrlMapping($class, $properties, $url);
 				}
 			}
-		} else {
+		} elseif ($config !== null) {
 			foreach ($config->getElementsByTagName('url') as $url) {
 				$properties = $url->getAttributes();
 				if (($class = $properties->remove('class')) === null) {
@@ -336,8 +336,8 @@ class TUrlMapping extends TUrlManager implements IModuleDependency
 			if ($text) {
 				$text = preg_replace('/(\s+)/S', '', $text);
 				if (($regExp = $pattern->getRegularExpression()) !== '') {
-					trigger_error(
-						sPrintF(
+					Prado::notice(
+						sprintf(
 							'%s.RegularExpression property value "%s" for ServiceID="%s" and ServiceParameter="%s" was replaced by node value "%s"',
 							$pattern::class,
 							$regExp,
@@ -345,7 +345,7 @@ class TUrlMapping extends TUrlManager implements IModuleDependency
 							$pattern->getServiceParameter(),
 							$text
 						),
-						E_USER_NOTICE
+						static::class
 					);
 				}
 				$pattern->setRegularExpression($text);
