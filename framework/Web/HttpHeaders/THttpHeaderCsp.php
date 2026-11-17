@@ -454,10 +454,6 @@ class THttpHeaderCsp extends TBaseHttpHeader
 		}
 		$policies = [];
 		foreach ($directives as $directive) {
-			$directive = trim($directive);
-			if ($directive === '') {
-				continue;
-			}
 			// Directive name is one or more alphanumeric/hyphen/underscore chars.
 			// Everything after the first whitespace run is the value.
 			if (preg_match('/^([a-zA-Z0-9_-]+)(?:\s+(.+))?$/', $directive, $m)) {
