@@ -209,4 +209,13 @@ class TCallChainTest extends \PHPUnit\Framework\TestCase
 		$this->_order[] = $args;
 		return $callchain->dyMyMethod($param1, $param2, $param3);
 	}
+
+	public function testCallAfterTheHandlersRanReturnsTheFirstArgument()
+	{
+		$chain = new TCallChain('dyTest');
+		$chain->addCall(fn ($value, $chain) => $value . '-handled', ['initial']);
+		$this->assertSame('first-handled', $chain->call('first'));
+		$this->assertSame('second', $chain->call('second'));
+		$this->assertNull($chain->call());
+	}
 }
