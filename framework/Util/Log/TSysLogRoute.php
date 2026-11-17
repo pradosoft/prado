@@ -259,7 +259,7 @@ class TSysLogRoute extends TLogRoute
 			if (isset($_facilitiesMap[$value])) {
 				$value = $_facilitiesMap[$value];
 			} else {
-				throw new TConfigurationException('syslogroute_bad_facility', '0x' . dechex($value));
+				throw new TConfigurationException('syslogroute_bad_facility', $value);
 			}
 		}
 		$this->_facility = $value;

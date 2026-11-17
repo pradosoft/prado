@@ -112,5 +112,18 @@ class TSysLogRouteTest extends \PHPUnit\Framework\TestCase
 		$this->expectException(TConfigurationException::class);
 		$route->setSysLogFlags(~LOG_USER);
 	}
+
+	public function testSetFacilityUnknownNameThrows()
+	{
+		$route = new TTestSysLogRoute();
+		try {
+			$route->setFacility('log_bogus');
+			$this->fail('An unknown facility name throws TConfigurationException.');
+		} catch (TConfigurationException $e) {
+			$this->assertSame('syslogroute_bad_facility', $e->getErrorCode());
+			$this->assertStringContainsString('LOG_BOGUS', $e->getMessage());
+		}
+		$this->assertSame(LOG_USER, $route->getFacility());
+	}
 }
 

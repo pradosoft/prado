@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TSysLogRoute::setFacility()` throws `TConfigurationException` for an unknown facility name; it threw a `TypeError`. (belisoful)
 BUG: Issue #1497 - `TEmailLogRoute` sends `DEFAULT_SUBJECT` when no `Subject` is set; it sent an empty subject. (belisoful)
 BUG: Issue #1497 - `TBrowserLogRoute` HTML-encodes the category. (belisoful)
 BUG: Issue #1497 - `TBrowserLogRoute` and `TFirePhpLogRoute` write a non-string message as a dump, as the other routes do; they threw a `TypeError`. (belisoful)
