@@ -101,4 +101,21 @@ class TSemaphoreMutexTest extends \PHPUnit\Framework\TestCase
 		$this->assertFalse($a->isAcquired('job'));
 		$this->assertFalse($this->newMutex()->acquire('job'));
 	}
+
+	public function testSemaphoreWithoutPermissionIsNotAcquired(): void
+	{
+		if (function_exists('posix_geteuid') && posix_geteuid() === 0) {
+			$this->markTestSkipped('The superuser may use any semaphore.');
+		}
+		$mutex = $this->newMutex();
+		$mutex->setPermissions(0);
+		$key = $mutex->getSemaphoreKey('denied');
+		try {
+			$this->assertFalse($mutex->acquire('denied'), 'The created semaphore denies its use.');
+			$other = $this->newMutex();
+			$this->assertFalse($other->acquire('denied'), 'The semaphore denies its open.');
+		} finally {
+			exec(sprintf('ipcrm -S 0x%x 2>&1', $key));
+		}
+	}
 }

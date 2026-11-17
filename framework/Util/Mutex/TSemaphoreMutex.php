@@ -95,7 +95,8 @@ class TSemaphoreMutex extends TMutex
 	/**
 	 * Takes the semaphore of the name without blocking.
 	 * @param string $name the lock name.
-	 * @return bool whether the lock is acquired.
+	 * @return bool whether the lock is acquired; false when the semaphore is taken
+	 *   or the process may not use it.
 	 */
 	protected function acquireLock(string $name): bool
 	{
@@ -103,7 +104,7 @@ class TSemaphoreMutex extends TMutex
 		if ($semaphore === false) {
 			return false;
 		}
-		if (!sem_acquire($semaphore, true)) {
+		if (!@sem_acquire($semaphore, true)) {
 			return false;
 		}
 		$this->_semaphores[$name] = $semaphore;
