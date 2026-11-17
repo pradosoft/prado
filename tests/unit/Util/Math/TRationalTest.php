@@ -366,4 +366,12 @@ class TRationalTest extends \PHPUnit\Framework\TestCase
 		self::assertEquals([1, $maxValue], $class::float2rational(1.0 / 4294967295.0, null, true));
 		self::assertEquals([1, $maxValue], $class::float2rational(1.49999 / 4294967295.0, null, true));
 	}
+
+	public function testFloat2rationalKeepsTheSignOfTinyValues()
+	{
+		$class = $this->getTestClass();
+		self::assertEquals([-1, 2147483647], $class::float2rational(-1.0 / 2147483647.0));
+		self::assertEquals([-1, 2147483647], $class::float2rational(-1.499 / 2147483647.0));
+		self::assertEquals([0, 1], $class::float2rational(-0.5 / 2147483647.5));
+	}
 }

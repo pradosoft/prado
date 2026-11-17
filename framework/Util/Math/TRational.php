@@ -396,7 +396,7 @@ class TRational implements \ArrayAccess
 			} elseif ($value < TBitHelper::PHP_INT32_MIN) {
 				return [TBitHelper::PHP_INT32_MIN, 1];
 			} elseif (abs($value) < 1.5 / TBitHelper::PHP_INT32_MAX) {
-				return [1, TBitHelper::PHP_INT32_MAX];
+				return [$value < 0 ? -1 : 1, TBitHelper::PHP_INT32_MAX];
 			}
 		}
 		if ($tolerance === null) {
