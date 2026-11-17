@@ -290,11 +290,12 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 
 	/**
 	 * @param string $type content type, default is text/html
+	 * @throws TInvalidOperationException if the Content-Type header is already sent.
 	 */
 	public function setContentType($type)
 	{
 		if ($this->_contentTypeHeaderSent) {
-			throw new \Exception('Unable to alter content-type as it has been already sent');
+			throw new TInvalidOperationException('httpresponse_contenttype_unchangeable');
 		}
 		$this->_contentType = $type;
 	}
@@ -316,11 +317,11 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	}
 
 	/**
-	 * @param bool|string $charset output charset.
+	 * @param bool|string $charset output charset; false or `'false'` sends no charset.
 	 */
 	public function setCharset($charset)
 	{
-		$this->_charset = (strToLower($charset) === 'false') ? false : (string) $charset;
+		$this->_charset = ($charset === false || strtolower((string) $charset) === 'false') ? false : (string) $charset;
 	}
 
 	/**
@@ -386,11 +387,12 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 *
 	 * @param int $status HTTP status code
 	 * @param null|string $reason HTTP status reason, defaults to standard HTTP reasons
+	 * @throws TInvalidOperationException if the HTTP header is already sent.
 	 */
 	public function setStatusCode($status, $reason = null)
 	{
 		if ($this->_httpHeaderSent) {
-			throw new \Exception('Unable to alter response as HTTP header already sent');
+			throw new TInvalidOperationException('httpresponse_status_unchangeable');
 		}
 		$status = TPropertyValue::ensureInteger($status);
 		if (isset(self::$HTTP_STATUS_CODES[$status])) {
@@ -704,11 +706,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 		if ($this->_status >= 300 && $this->_status < 400) {
 			// The status code has been modified to a valid redirection status, send it
 			if ($isIIS) {
-				$this->appendHeader('HTTP/1.1 ' . $this->_status . ' ' . self::$HTTP_STATUS_CODES[
-					array_key_exists($this->_status, self::$HTTP_STATUS_CODES)
-						? $this->_status
-						: 302
-					]);
+				$this->appendHeader('HTTP/1.1 ' . $this->_status . ' ' . $this->_reason);
 			}
 			$this->appendHeader(THttpHeaderName::Location . ': ' . str_replace('&amp;', '&', $url), true, $this->_status);
 		} else {
@@ -832,6 +830,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 		$charset = $this->getCharset();
 		if ($charset === false) {
 			$this->appendHeader(THttpHeaderName::ContentType . ': ' . $contentType);
+			$this->_contentTypeHeaderSent = true;
 			return;
 		}
 
@@ -877,7 +876,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	public function getHeaders($case = null)
 	{
 		$result = [];
-		$headers = headers_list();
+		$headers = $this->responseHeadersList();
 		foreach ($headers as $header) {
 			$tmp = explode(':', $header);
 			$key = trim(array_shift($tmp));
@@ -1086,6 +1085,17 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	protected function sessionCacheLimiter(?string $value = null): string|false
 	{
 		return session_cache_limiter($value);
+	}
+
+	/**
+	 * Internal: Call responseHeadersList instead of `headers_list`.
+	 * This keeps `headers_list` isolated, and subject to children overrides.
+	 * @return array the response headers sent or ready to send, as `Name: value` strings.
+	 * @since 4.4.0
+	 */
+	protected function responseHeadersList(): array
+	{
+		return headers_list();
 	}
 
 	/**

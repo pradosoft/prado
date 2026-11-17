@@ -859,4 +859,75 @@ class THttpResponseTest extends \PHPUnit\Framework\TestCase
 		$this->assertInstanceOf(\Prado\Web\UI\THtmlWriter::class, $writer);
 		ob_end_clean();
 	}
+
+	public function testSetStatusCodeAndContentTypeThrowOperationExceptionAfterSent()
+	{
+		$response = new TTestHttpResponse();
+		$response->ensureHeadersSent();
+		try {
+			$response->setStatusCode(500);
+			$this->fail('setStatusCode() must throw after the HTTP header is sent.');
+		} catch (TInvalidOperationException $e) {
+			$this->assertSame('THttpResponse.StatusCode cannot change after the HTTP header is sent.', $e->getMessage());
+		}
+		$this->expectException(TInvalidOperationException::class);
+		$this->expectExceptionMessage('THttpResponse.ContentType cannot change after the Content-Type header is sent.');
+		$response->setContentType('text/css');
+	}
+
+	public function testContentTypeWithoutCharsetIsSentOnce()
+	{
+		foreach (['false', false] as $charset) {
+			$response = new TTestHttpResponse();
+			$response->setCharset($charset);
+			$this->assertFalse($response->getCharset());
+			$response->ensureHeadersSent();
+			$response->ensureHeadersSent();
+			$this->assertSame(['HTTP/1.1 200 OK', 'Content-Type: text/html'], $response->headers);
+			try {
+				$response->setContentType('text/css');
+				$this->fail('setContentType() must throw after the Content-Type header is sent.');
+			} catch (TInvalidOperationException $e) {
+				$this->assertNull($response->getContentType());
+			}
+		}
+	}
+
+	public function testHttpRedirectUnderIisSendsTheCustomReason()
+	{
+		$software0 = $_SERVER['SERVER_SOFTWARE'] ?? null;
+		$_SERVER['SERVER_SOFTWARE'] = 'Microsoft-IIS/10.0';
+		$response = new TTestHttpResponse();
+		$response->setStatusCode(399, 'Custom Redirect');
+		try {
+			$response->httpRedirect('https://elsewhere.example/');
+			$this->fail('httpRedirect() must end the request.');
+		} catch (TExitException $e) {
+		} finally {
+			if ($software0 === null) {
+				unset($_SERVER['SERVER_SOFTWARE']);
+			} else {
+				$_SERVER['SERVER_SOFTWARE'] = $software0;
+			}
+		}
+		$this->assertSame(['HTTP/1.1 399 Custom Redirect', 'Location: https://elsewhere.example/'], array_slice($response->headers, 2));
+	}
+
+	public function testGetHeadersParsesTheHeadersList()
+	{
+		$response = new class() extends THttpResponse {
+			protected function responseHeadersList(): array
+			{
+				return ['Content-Type: text/html', 'Set-Cookie: a=1', 'Set-Cookie: b=2', 'Link: <https://example.com/>; rel=preload', 'X-Empty:'];
+			}
+		};
+		$this->assertSame([
+			'Content-Type' => 'text/html',
+			'Set-Cookie' => 'a=1, b=2',
+			'Link' => '<https://example.com/>; rel=preload',
+			'X-Empty' => '',
+		], $response->getHeaders());
+		$this->assertSame('a=1, b=2', $response->getHeaders(CASE_UPPER)['SET-COOKIE']);
+		$this->assertArrayHasKey('content-type', $response->getHeaders(CASE_LOWER));
+	}
 }

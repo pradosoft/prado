@@ -1,4 +1,8 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `THttpResponse` with `Charset` off, through false or `'false'`, sends `Content-Type` once and then rejects a new content type; a boolean false still sent a charset, and the header was sent again on each `ensureHeadersSent()`. (belisoful)
+BUG: Issue #1497 - `THttpResponse::httpRedirect()` under IIS sends the reason of a status code it does not list, such as `399 Custom`; it sent `Found`. (belisoful)
+CHG: Issue #1497 - `THttpResponse::setContentType()` and `setStatusCode()` throw `TInvalidOperationException` with the `httpresponse_contenttype_unchangeable` and `httpresponse_status_unchangeable` keys after the header is sent; they threw `\Exception` with untranslated text. (belisoful)
+ENH: Issue #1497 - `THttpResponse::getHeaders()` reads `headers_list()` through `responseHeadersList()`, which a subclass overrides. (belisoful)
 BUG: Issue #1497 - `THttpResponse::writeFile()` without a MIME type reads the type from the extension for content or a missing file, case-insensitively; it read a file that may not exist, which threw, and used the extension only without fileinfo. (belisoful)
 BUG: Issue #1497 - `TRequestConnectionUpgrade` skips empty `Upgrade` entries and logs a missing `Upgrade` header without `REMOTE_ADDR`; an empty entry became a URL parameter, and a missing address threw. (belisoful)
 BUG: Issue #1497 - `THttpRequest::getCookies()` with `EnableCookieValidation` drops an array cookie, such as `a[b]=1`; it threw a `TypeError`. (belisoful)
