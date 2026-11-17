@@ -95,6 +95,54 @@ class TFirePhpLogRouteTest extends \PHPUnit\Framework\TestCase
 		return $output;
 	}
 
+	public function testGroupLabel()
+	{
+		$route = new TFirePhpLogRoute();
+		$this->assertSame(TFirePhpLogRoute::DEFAULT_LABEL, $route->getGroupLabel());
+		$this->assertSame($route, $route->setGroupLabel('My Log'));
+		$this->assertSame('My Log', $route->getGroupLabel());
+	}
+
+	public function testGetHeadersSent()
+	{
+		$this->assertSame(headers_sent(), PradoUnit::invoke(new TFirePhpLogRoute(), 'getHeadersSent'));
+	}
+
+	public function testProcessLogsWritesNothingWithoutLogs()
+	{
+		\FirePHP::setInstance($firePhp = new TRecordingFirePHP());
+		$this->assertSame('', $this->render(new TAppFirePhpLogRoute(), []));
+		$this->assertSame([], $firePhp->calls);
+	}
+
+	public function testProcessLogsWritesNothingInPerformanceMode()
+	{
+		\FirePHP::setInstance($firePhp = new TRecordingFirePHP());
+		$route = new TAppFirePhpLogRoute();
+		$route->app = new class () {
+			public function getMode()
+			{
+				return TApplicationMode::Performance;
+			}
+		};
+		$this->assertSame('', $this->render($route, [TLogEntryFactory::entry()]));
+		$this->assertSame([], $firePhp->calls);
+	}
+
+	public function testProcessLogsFallsBackToTheBrowserWhenHeadersAreSent()
+	{
+		\FirePHP::setInstance($firePhp = new TRecordingFirePHP());
+		$route = new TAppFirePhpLogRoute();
+		$route->headersSent = true;
+		$route->setGroupLabel('Label');
+		$output = $this->render($route, [TLogEntryFactory::entry('fallback', TLogger::WARNING)]);
+
+		$this->assertStringContainsString('TFirePhpLogRoute.GroupLabel "<i>Label</i>"', $output);
+		$this->assertStringContainsString('Routing to FirePHP impossible, because headers already sent!', $output);
+		$this->assertStringContainsString('<td>fallback</td>', $output);
+		$this->assertSame([], $firePhp->calls);
+	}
+
 	public function testProcessLogsSendsToFirePhp()
 	{
 		\FirePHP::setInstance($firePhp = new TRecordingFirePHP());
@@ -114,5 +162,25 @@ class TFirePhpLogRouteTest extends \PHPUnit\Framework\TestCase
 			['log', '2.500000', 'Cumulated Time'],
 			['groupEnd'],
 		], $firePhp->calls);
+	}
+
+	public function testTranslateLogLevel()
+	{
+		$expected = [
+			TLogger::INFO => \FirePHP::INFO,
+			TLogger::PROFILE => \FirePHP::LOG,
+			TLogger::PROFILE_BEGIN => \FirePHP::LOG,
+			TLogger::PROFILE_END => \FirePHP::LOG,
+			TLogger::DEBUG => \FirePHP::LOG,
+			TLogger::NOTICE => \FirePHP::LOG,
+			TLogger::WARNING => \FirePHP::WARN,
+			TLogger::ERROR => \FirePHP::ERROR,
+			TLogger::ALERT => \FirePHP::ERROR,
+			TLogger::FATAL => \FirePHP::ERROR,
+			0x80 => \FirePHP::LOG,
+		];
+		foreach ($expected as $level => $type) {
+			$this->assertSame($type, PradoUnit::invoke(TFirePhpLogRoute::class, 'translateLogLevel', $level), 'level 0x' . dechex($level));
+		}
 	}
 }
