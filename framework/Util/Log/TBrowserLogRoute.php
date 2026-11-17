@@ -207,7 +207,7 @@ class TBrowserLogRoute extends TLogRoute implements IOutputLogRoute
 		if ($this->getCssClass()) {
 			$colorCssClass = $log[TLogger::LOG_LEVEL];
 			$messageCssClass = $log['even'] ? 'even' : 'odd';
-			$category = $log[TLogger::LOG_CATEGORY];
+			$category = THttpUtility::htmlEncode($log[TLogger::LOG_CATEGORY]);
 			$string = <<<EOD
 					<tr class="message level$colorCssClass $messageCssClass">
 						<td class="code">&nbsp;</td>
@@ -237,7 +237,7 @@ class TBrowserLogRoute extends TLogRoute implements IOutputLogRoute
 			}
 
 			$color = $this->getColorLevel($log[TLogger::LOG_LEVEL]);
-			$category = $log[TLogger::LOG_CATEGORY];
+			$category = THttpUtility::htmlEncode($log[TLogger::LOG_CATEGORY]);
 			$string = <<<EOD
 					<tr style="background-color: {$bgcolor}; color:#000">
 						<td style="border:1px solid silver;background-color: {$color}">&nbsp;</td>

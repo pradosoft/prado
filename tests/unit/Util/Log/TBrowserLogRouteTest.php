@@ -35,6 +35,17 @@ class TBrowserLogRouteTest extends \PHPUnit\Framework\TestCase
 		return $output;
 	}
 
+	public function testProcessLogsEncodesTheCategory()
+	{
+		$route = new TBrowserLogRoute();
+		$output = $this->render($route, [TLogEntryFactory::entry('m', TLogger::INFO, '<i>Cat</i>')]);
+		$this->assertStringContainsString('<td>&lt;i&gt;Cat&lt;/i&gt;</td>', $output);
+
+		$route->setCssClass('applog');
+		$output = $this->render($route, [TLogEntryFactory::entry('m', TLogger::INFO, '<i>Cat</i>')]);
+		$this->assertStringContainsString('<td class="category">&lt;i&gt;Cat&lt;/i&gt;</td>', $output);
+	}
+
 	public function testProcessLogsRendersANonStringMessage()
 	{
 		$route = new TBrowserLogRoute();
