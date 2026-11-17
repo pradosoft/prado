@@ -229,7 +229,7 @@ class TProcessHelper
 	{
 		$command = str_replace(static::PHP_COMMAND, PHP_BINARY, $command);
 
-		if (TProcessHelper::isSystemWindows()) {
+		if (static::isSystemWindows()) {
 			if (is_string($command)) {
 				$command = '"' . $command . '"';  //Windows, better command support
 			}

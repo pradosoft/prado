@@ -9,6 +9,17 @@ use Prado\Util\Helpers\TProcessHelper;
 use Prado\Util\TSignalsDispatcher;
 use Prado\Test\Unit\Util\TTestSignalsDispatcher;
 
+/**
+ * A TProcessHelper that reports Windows, to run the Windows branches that start no command.
+ */
+class TProcessHelperTestWindows extends TProcessHelper
+{
+	public static function isSystemWindows(): bool
+	{
+		return true;
+	}
+}
+
 class TProcessHelperTest extends \PHPUnit\Framework\TestCase
 {
 	public $dispatcher = null;
@@ -268,5 +279,11 @@ class TProcessHelperTest extends \PHPUnit\Framework\TestCase
 			proc_terminate($process, 9);
 			proc_close($process);
 		}
+	}
+
+	public function testFilterCommandWindows()
+	{
+		self::assertSame('"' . PHP_BINARY . ' -v"', TProcessHelperTestWindows::filterCommand('@php -v'));
+		self::assertSame([PHP_BINARY, '-v'], TProcessHelperTestWindows::filterCommand(['@php', '-v']));
 	}
 }
