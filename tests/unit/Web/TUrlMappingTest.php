@@ -2,6 +2,10 @@
 
 namespace Prado\Test\Unit\Web;
 
+use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\TPhpErrorException;
+use Prado\Prado;
+use Prado\TApplication;
 use Prado\Web\THttpRequest;
 use Prado\Web\THttpRequestUrlFormat;
 use Prado\Web\TUrlMapping;
@@ -20,6 +24,20 @@ use Prado\Test\Unit\PradoUnit;
 class TNestedPathUrlMappingPattern extends TUrlMappingPattern
 {
 	use TNestedPathTrait;
+}
+
+/**
+ * A mapping pattern that returns the matches it is given, to drive TUrlMapping::parseUrl()
+ * with a match list of one element.
+ */
+class TFixedMatchUrlMappingPattern extends TUrlMappingPattern
+{
+	public array $matches = [];
+
+	public function getPatternMatches($request)
+	{
+		return $this->matches;
+	}
 }
 
 /**
@@ -497,6 +515,259 @@ class TUrlMappingTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals('/index.php/page,Posts.EditPost/id,123/mode,view', $url);
 	}
 
+	/**
+	 * Registers the alias of the URL mapping configuration fixtures.
+	 */
+	private function mappingDataAlias(): string
+	{
+		if (Prado::getPathOfAlias('TUrlMappingTestData') === null) {
+			Prado::setPathOfAlias('TUrlMappingTestData', __DIR__ . '/data/urlmapping');
+		}
+		return 'TUrlMappingTestData';
+	}
+
+	private function assertErrorCode(string $code, callable $test): void
+	{
+		try {
+			$test();
+			$this->fail("Expected the {$code} exception.");
+		} catch (TConfigurationException $e) {
+			$this->assertSame($code, $e->getErrorCode());
+		}
+	}
+
+	private function newPathRequest(string $pathInfo = '', string $format = THttpRequestUrlFormat::Path): THttpRequest
+	{
+		$_SERVER['PATH_INFO'] = $pathInfo;
+		$request = new THttpRequest();
+		$request->setUrlFormat($format);
+		$request->init(null);
+		return $request;
+	}
+
+	private function xmlConfig(string $urls): TXmlDocument
+	{
+		$config = new TXmlDocument('1.0', 'utf8');
+		$config->loadFromString('<config>' . $urls . '</config>');
+		return $config;
+	}
+
+	public function testInitThrowsWhenRequestResolved()
+	{
+		$request = $this->newPathRequest();
+		PradoUnit::setProp($request, '_requestResolved', true);
+		$module = new TUrlMapping();
+		$this->assertErrorCode('urlmapping_global_required', fn () => $module->init([]));
+	}
+
+	public function testInitLoadsXmlConfigFile()
+	{
+		$module = new TUrlMapping();
+		$module->setConfigFile($this->mappingDataAlias() . '.mappings');
+		$this->assertSame(__DIR__ . '/data/urlmapping/mappings.xml', $module->getConfigFile());
+		$module->init([]);
+		$this->newPathRequest('/post/7/');
+		$this->assertEquals(['id' => '7', 'page' => 'Posts.ViewPost'], $module->parseUrl());
+	}
+
+	public function testInitLoadsPhpConfigFile()
+	{
+		$this->app->restoreApplication();
+		$this->app = new TTestApplication(__DIR__ . '/app', false, TApplication::CONFIG_TYPE_PHP);
+		$module = new TUrlMapping();
+		$module->setConfigFile($this->mappingDataAlias() . '.mappings');
+		$this->assertSame(__DIR__ . '/data/urlmapping/mappings.php', $module->getConfigFile());
+		$module->init([]);
+		$this->newPathRequest('/post/8/');
+		$this->assertEquals(['id' => '8', 'page' => 'Posts.ViewPost'], $module->parseUrl());
+	}
+
+	public function testInitThrowsForMissingConfigFile()
+	{
+		$module = new TUrlMapping();
+		$module->setConfigFile($this->mappingDataAlias() . '.missing');
+		$this->assertErrorCode('urlmapping_configfile_inexistent', fn () => $module->init([]));
+	}
+
+	public function testSetConfigFileThrowsForUnknownAlias()
+	{
+		$module = new TUrlMapping();
+		$this->assertErrorCode('urlmapping_configfile_invalid', fn () => $module->setConfigFile('NoSuchUrlMappingAlias.mappings'));
+		$this->assertNull($module->getConfigFile());
+	}
+
+	public function testInitUrlPrefix()
+	{
+		$this->newPathRequest();
+		$module = new TUrlMapping();
+		$module->init([]);
+		$this->assertSame('/index.php', $module->getUrlPrefix());
+
+		$this->newPathRequest('', THttpRequestUrlFormat::HiddenPath);
+		$module = new TUrlMapping();
+		$module->init([]);
+		$this->assertSame('', $module->getUrlPrefix());
+
+		$module = new TUrlMapping();
+		$module->setUrlPrefix('/prefix/');
+		$this->assertSame('/prefix/', $module->getUrlPrefix());
+		$module->init([]);
+		$this->assertSame('/prefix', $module->getUrlPrefix());
+	}
+
+	public function testLoadUrlMappingsFromArray()
+	{
+		$module = new TUrlMapping();
+		$module->setDefaultMappingClass(TNestedPathUrlMappingPattern::class);
+		$this->assertSame(TNestedPathUrlMappingPattern::class, $module->getDefaultMappingClass());
+		$module->init(['urls' => [
+			['properties' => ['ServiceParameter' => 'Posts.ViewPost', 'Pattern' => 'post/{id}/', 'Parameters.id' => '\d+']],
+			['class' => TUrlMappingPattern::class, 'properties' => ['ServiceParameter' => 'Posts.ListPost', 'Pattern' => 'posts/']],
+		]]);
+		$patterns = PradoUnit::getProp($module, '_patterns');
+		$this->assertCount(2, $patterns);
+		$this->assertInstanceOf(TNestedPathUrlMappingPattern::class, $patterns[0]);
+		$this->assertSame(TUrlMappingPattern::class, $patterns[1]::class);
+		$this->assertSame('Posts.ListPost', $patterns[1]->getServiceParameter());
+	}
+
+	public function testLoadUrlMappingsWithoutUrls()
+	{
+		foreach ([[], ['urls' => 'none'], ['urls' => []]] as $config) {
+			$module = new TUrlMapping();
+			$module->init($config);
+			$this->assertSame([], PradoUnit::getProp($module, '_patterns'));
+		}
+		$module = new TUrlMapping();
+		$module->init($this->xmlConfig(''));
+		$this->assertSame([], PradoUnit::getProp($module, '_patterns'));
+	}
+
+	public function testLoadUrlMappingsXmlClassAttribute()
+	{
+		$module = new TUrlMapping();
+		$module->init($this->xmlConfig('<url class="' . TNestedPathUrlMappingPattern::class . '" ServiceParameter="Posts.ViewPost" pattern="post/"/>'));
+		$patterns = PradoUnit::getProp($module, '_patterns');
+		$this->assertInstanceOf(TNestedPathUrlMappingPattern::class, $patterns[0]);
+		$this->assertSame('post/', $patterns[0]->getPattern());
+	}
+
+	public function testBuildUrlMappingRequiresPatternClass()
+	{
+		$module = new TUrlMapping();
+		$this->assertErrorCode('urlmapping_urlmappingpattern_required', fn () => $module->init(['urls' => [['class' => TUrlManager::class]]]));
+	}
+
+	public function testBuildUrlMappingNodeValueIsRegularExpression()
+	{
+		$module = new TUrlMapping();
+		$module->init($this->xmlConfig('<url ServiceParameter="Posts.ViewPost"> /^post\/(?P&lt;id&gt;\d+)$/ </url>'));
+		$patterns = PradoUnit::getProp($module, '_patterns');
+		$this->assertSame('/^post\/(?P<id>\d+)$/', $patterns[0]->getRegularExpression());
+
+		$this->newPathRequest('post/12');
+		$this->assertEquals(['id' => '12', 'page' => 'Posts.ViewPost'], $module->parseUrl());
+	}
+
+	public function testParseUrlSkipsPatternsAndIgnoresNumericGroups()
+	{
+		$module = new TUrlMapping();
+		$module->init($this->xmlConfig(
+			'<url ServiceParameter="Posts.ListPost" pattern="posts/"/>'
+			. '<url ServiceParameter="Posts.ViewPost" pattern="post/{id}/" parameters.id="(\d+)"/>'
+		));
+		$this->newPathRequest('/post/5/');
+		$this->assertEquals(['id' => '5', 'page' => 'Posts.ViewPost'], $module->parseUrl());
+		$this->assertSame('Posts.ViewPost', $module->getMatchingPattern()->getServiceParameter());
+	}
+
+	public function testParseUrlWithoutPatternsFallsBack()
+	{
+		$module = new TUrlMapping();
+		$module->init([]);
+		$this->newPathRequest('/page,Home/');
+		$this->assertEquals(['page' => 'Home'], $module->parseUrl());
+		$this->assertNull($module->getMatchingPattern());
+	}
+
+	public function testConstructUrlDisabledUsesDefaultFormat()
+	{
+		$module = new TUrlMapping();
+		$module->init($this->xmlConfig('<url ServiceParameter="Posts.ViewPost" pattern="post/{id}/" parameters.id="\d+"/>'));
+		$this->newPathRequest();
+		$this->assertSame('/index.php/page,Posts.ViewPost/id,3', $module->constructUrl('page', 'Posts.ViewPost', ['id' => 3], false, true));
+	}
+
+	public function testConstructUrlCustomRules()
+	{
+		$module = new TUrlMapping();
+		$module->setEnableCustomUrl(true);
+		$module->init($this->xmlConfig(
+			'<url ServiceParameter="Posts.ViewPost" pattern="post/{id}/" parameters.id="\d+"/>'
+			. '<url ServiceParameter="Posts.ViewPost" pattern="posts/"/>'
+			. '<url ServiceParameter="Posts.ListPost" pattern="list/" EnableCustomUrl="false"/>'
+			. '<url ServiceParameter="admin.*" pattern="admin/{*}/"/>'
+			. '<url ServiceParameter="*" pattern="any/{*}/"/>'
+		));
+		$this->newPathRequest();
+
+		// a rule without the parameter is skipped for the next one of the key
+		$this->assertSame('/index.php/posts/', $module->constructUrl('page', 'Posts.ViewPost', null, false, true));
+		$this->assertSame('/index.php/post/4/', $module->constructUrl('page', 'Posts.ViewPost', new \ArrayObject(['id' => 4]), false, true));
+
+		// no rule of the key supports the URL
+		$this->assertSame('/index.php/page,Posts.ListPost', $module->constructUrl('page', 'Posts.ListPost', [], false, true));
+
+		// wildcard rules for a parameter with and without a dot
+		$this->assertSame('/index.php/admin/users/', $module->constructUrl('page', 'admin.users', [], false, true));
+		$this->assertSame('/index.php/any/Home/', $module->constructUrl('page', 'Home', [], false, true));
+
+		// no rule for the key or its wildcard key
+		$this->assertSame('/index.php/other,Home', $module->constructUrl('other', 'Home', [], false, true));
+	}
+
+	public function testConstructUrlWildcardRuleNotSupported()
+	{
+		$module = new TUrlMapping();
+		$module->setEnableCustomUrl(true);
+		$module->init($this->xmlConfig('<url ServiceParameter="admin.*" pattern="admin/{*}/{id}/" parameters.id="\d+"/>'));
+		$this->newPathRequest();
+		$this->assertSame('/index.php/page,admin.users', $module->constructUrl('page', 'admin.users', [], false, true));
+		$this->assertSame('/index.php/admin/users/9/', $module->constructUrl('page', 'admin.users', ['id' => 9], false, true));
+	}
+
+	public function testParseUrlSingleMatchElement()
+	{
+		foreach ([
+			// [ServiceParameter, matches, expected]
+			['Posts.ViewPost', ['id' => '1'], ['id' => '1', 'page' => 'Posts.ViewPost']],
+			['Posts.*', ['page' => 'Posts.View'], ['page' => 'Posts.View']],
+			['Posts.*', ['/posts/'], []],
+		] as [$serviceParameter, $matches, $expected]) {
+			$module = new TUrlMapping();
+			$module->init(['urls' => [['class' => TFixedMatchUrlMappingPattern::class, 'properties' => ['ServiceParameter' => $serviceParameter]]]]);
+			PradoUnit::getProp($module, '_patterns')[0]->matches = $matches;
+			$this->assertSame($expected, $module->parseUrl(), $serviceParameter);
+		}
+	}
+
+	public function testInitConfigFileWithUrlPrefix()
+	{
+		$this->newPathRequest('', THttpRequestUrlFormat::HiddenPath);
+		$module = new TUrlMapping();
+		$module->setConfigFile($this->mappingDataAlias() . '.mappings');
+		$module->init([]);
+		$this->assertSame('', $module->getUrlPrefix());
+		$this->assertCount(1, PradoUnit::getProp($module, '_patterns'));
+
+		$module = new TUrlMapping();
+		$module->setConfigFile($this->mappingDataAlias() . '.mappings');
+		$module->setUrlPrefix('/app/');
+		$module->init([]);
+		$this->assertSame('/app', $module->getUrlPrefix());
+		$this->assertCount(1, PradoUnit::getProp($module, '_patterns'));
+	}
+
 	public function testInitWithNullConfigLoadsNoPatterns()
 	{
 		$module = new TUrlMapping();
@@ -517,5 +788,12 @@ class TUrlMappingTest extends \PHPUnit\Framework\TestCase
 		$logs = $logger->getLogs(\Prado\Util\Log\TLogger::NOTICE, TUrlMapping::class);
 		$this->assertCount($before + 1, $logs);
 		$this->assertStringContainsString('"/^old$/" for ServiceID="page" and ServiceParameter="Posts.ViewPost" was replaced by node value "/^new$/"', end($logs)[0]);
+	}
+
+	public function testInitWithXmlConfigWithoutUrlsLoadsNoPatterns()
+	{
+		$module = new TUrlMapping();
+		$module->init($this->xmlConfig('<other/>'));
+		$this->assertSame([], PradoUnit::getProp($module, '_patterns'));
 	}
 }

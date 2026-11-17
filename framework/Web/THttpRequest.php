@@ -588,7 +588,8 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	protected function parseHeaders(): array
 	{
 		if (function_exists('apache_request_headers')) {
-			return apache_request_headers();
+			// apache_request_headers() exists only under the Apache SAPI; unit tests run under the CLI.
+			return apache_request_headers(); // @codeCoverageIgnore
 		}
 		$headers = [];
 		foreach ($_SERVER as $key => $value) {
@@ -864,7 +865,8 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 		if ((string) ini_get('browscap') === '') {
 			throw new TConfigurationException('httprequest_browscap_required');
 		}
-		return get_browser();
+		// browscap is a php.ini-only (PHP_INI_SYSTEM) directive that the test environments leave unset.
+		return get_browser(); // @codeCoverageIgnore
 	}
 
 	/**

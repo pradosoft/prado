@@ -887,8 +887,8 @@ class TUrlMappingPattern extends \Prado\TComponent
 				return $request -> getBaseUrl(true) . $url;
 			case TUrlMappingPatternSecureConnection::Disable:
 				return $request -> getBaseUrl(false) . $url;
-			case TUrlMappingPatternSecureConnection::Automatic:
 			default:
+				// TUrlMappingPatternSecureConnection::Automatic
 				return $url;
 		}
 	}

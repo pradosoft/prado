@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<urlmappings>
+	<url ServiceParameter="Posts.ViewPost" Pattern="post/{id}/" Parameters.id="\d+" />
+</urlmappings>

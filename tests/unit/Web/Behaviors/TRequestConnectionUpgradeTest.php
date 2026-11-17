@@ -171,6 +171,16 @@ class TRequestConnectionUpgradeTest extends \PHPUnit\Framework\TestCase
 		$upgrader = new TRequestConnectionUpgrade();
 		$param = new THttpRequestParameter([], []);
 		self::assertSame(['websocket' => 0, 'h2c' => 1], $upgrader->processHeaders($request, $param));
+
+		$request = new class() {
+			public function getHeaders($case)
+			{
+				return ['connection' => 'Upgrade', 'upgrade' => ['', ' ']];
+			}
+		};
+		$param = new THttpRequestParameter([], []);
+		self::assertNull($upgrader->processHeaders($request, $param));
+		self::assertSame([], $param->getParameter());
 	}
 	
 }

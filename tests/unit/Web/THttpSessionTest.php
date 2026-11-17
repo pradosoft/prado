@@ -67,6 +67,79 @@ class THttpSessionTestSaveHandler extends THttpSessionTestCookieParams
 	}
 }
 
+class THttpSessionTestSeams extends THttpSession
+{
+	public static array $ini = [];
+	public array $calls = [];
+	public array $cookieParams = ['lifetime' => 0, 'path' => '/', 'domain' => '', 'secure' => false, 'httponly' => false, 'samesite' => ''];
+	public ?array $setParams = null;
+	public bool $headersSent = false;
+
+	public static function getSessionIniConfig(string $key): string|false
+	{
+		return static::$ini[$key] ?? false;
+	}
+
+	protected static function setSessionIniConfig(string $key, mixed $value): string|bool
+	{
+		static::$ini[$key] = (string) $value;
+		return true;
+	}
+
+	protected function sessionGetCookieParams(): array
+	{
+		return $this->cookieParams;
+	}
+
+	protected function sessionSetCookieParams(array $options): bool
+	{
+		$this->calls[] = 'setCookieParams';
+		$this->setParams = $options;
+		return true;
+	}
+
+	protected function sessionSetSaveHandler(\SessionHandlerInterface $handler): bool
+	{
+		$this->calls[] = 'setSaveHandler';
+		return true;
+	}
+
+	protected function sessionStart(): bool
+	{
+		$this->calls[] = 'start';
+		return true;
+	}
+
+	protected function sessionWriteClose(): bool
+	{
+		$this->calls[] = 'writeClose';
+		return true;
+	}
+
+	protected function sessionDestroy(): bool
+	{
+		$this->calls[] = 'destroy';
+		return true;
+	}
+
+	protected function sessionGc(): int|false
+	{
+		$this->calls[] = 'gc';
+		return 4;
+	}
+
+	protected function sessionHeadersSent(): bool
+	{
+		return $this->headersSent;
+	}
+
+	protected function sessionRegenerateId(bool $delete_old_session = false): bool
+	{
+		$this->calls[] = 'regenerate:' . ($delete_old_session ? 'delete' : 'keep');
+		return true;
+	}
+}
+
 class THttpSessionTestCustomGc extends THttpSession
 {
 	public ?int $maxLifetime = null;
@@ -380,10 +453,21 @@ class THttpSessionTest extends \PHPUnit\Framework\TestCase
 		$session2->open();
 		$this->expectException(\Prado\Exceptions\TInvalidOperationException::class);
 		$session2->setGCProbability(50);
-		
-		$session3 = new THttpSession();
-		$this->expectException(\Prado\Exceptions\TInvalidDataValueException::class);
-		$session3->setGCProbability(150);
+	}
+
+	public function testSetGCProbabilityOutOfRangeThrows()
+	{
+		THttpSessionTestSeams::$ini = ['gc_probability' => '1'];
+		$session = new THttpSessionTestSeams();
+		foreach ([-1, 101] as $value) {
+			try {
+				$session->setGCProbability($value);
+				$this->fail('TInvalidDataValueException was not thrown');
+			} catch (\Prado\Exceptions\TInvalidDataValueException $e) {
+				$this->assertSame('httpsession_gcprobability_invalid', $e->getErrorCode());
+			}
+		}
+		$this->assertSame(1, $session->getGCProbability());
 	}
 
 	/**
@@ -698,5 +782,308 @@ class THttpSessionTest extends \PHPUnit\Framework\TestCase
 		$cacheSession = new TCacheHttpSession();
 		$cacheSession->setID('session');
 		$this->assertNull($cacheSession->fxGetCronTaskInfos(null, null));
+	}
+
+	// -----------------------------------------------------------------------
+	// Lifecycle through the session_* seams
+	// -----------------------------------------------------------------------
+
+	public function testInitWithAutoStartOpensTheSession()
+	{
+		$app = \Prado\Prado::getApplication();
+		$prior = \Prado\Test\Unit\PradoUnit::getProp($app, '_session');
+		try {
+			$session = new THttpSessionTestSeams();
+			$session->setAutoStart(true);
+			$session->init(null);
+			$this->assertTrue($session->getIsStarted());
+			$this->assertSame(['setCookieParams', 'start'], $session->calls);
+			$this->assertSame($session, $app->getSession());
+			$session->close();
+			$this->assertFalse($session->getIsStarted());
+			$this->assertSame(['setCookieParams', 'start', 'writeClose'], $session->calls);
+		} finally {
+			\Prado\Test\Unit\PradoUnit::setProp($app, '_session', $prior);
+		}
+	}
+
+	public function testOpenWithPhpAutoStartSkipsStarting()
+	{
+		THttpSessionTestSeams::$ini = ['auto_start' => '1'];
+		$session = new THttpSessionTestSeams();
+		$session->open();
+		$this->assertTrue($session->getIsStarted());
+		$this->assertSame([], $session->calls);
+
+		$session = new THttpSessionTestSeams();
+		$session->setUseCustomStorage(true);
+		$session->open();
+		$this->assertTrue($session->getIsStarted());
+		$this->assertSame(['setSaveHandler'], $session->calls);
+		THttpSessionTestSeams::$ini = [];
+	}
+
+	public function testCloseAndDestroyWithoutAStartedSessionDoNothing()
+	{
+		$session = new THttpSessionTestSeams();
+		$session->close();
+		$session->destroy();
+		$this->assertSame([], $session->calls);
+
+		$session->open();
+		$session->destroy();
+		$this->assertFalse($session->getIsStarted());
+		$this->assertSame(['setCookieParams', 'start', 'destroy'], $session->calls);
+	}
+
+	public function testGcStartsCollectsAndDestroysThroughTheSeams()
+	{
+		$session = new THttpSessionTestSeams();
+		$this->assertSame(4, $session->gc());
+		$this->assertSame(['setCookieParams', 'start', 'gc', 'destroy'], $session->calls);
+		$this->assertFalse($session->getIsStarted());
+
+		$session->calls = [];
+		$session->open();
+		$this->assertSame(4, $session->gc());
+		$this->assertTrue($session->getIsStarted());
+		$this->assertSame(['setCookieParams', 'start', 'gc'], $session->calls);
+
+		$session = new THttpSessionTestSeams();
+		$session->headersSent = true;
+		$this->assertFalse($session->gc());
+		$this->assertSame([], $session->calls);
+	}
+
+	public function testGcDestroysTheSessionItStartedWhenCollectionThrows()
+	{
+		$session = new class() extends THttpSessionTestSeams {
+			protected function sessionGc(): int|false
+			{
+				throw new \RuntimeException('gc failed');
+			}
+		};
+		try {
+			$session->gc();
+			$this->fail('RuntimeException was not thrown');
+		} catch (\RuntimeException $e) {
+			$this->assertSame('gc failed', $e->getMessage());
+		}
+		$this->assertSame(['setCookieParams', 'start', 'destroy'], $session->calls);
+		$this->assertFalse($session->getIsStarted());
+
+		$session->calls = [];
+		$session->open();
+		try {
+			$session->gc();
+			$this->fail('RuntimeException was not thrown');
+		} catch (\RuntimeException $e) {
+			$this->assertSame('gc failed', $e->getMessage());
+		}
+		$this->assertTrue($session->getIsStarted());
+		$this->assertSame(['setCookieParams', 'start'], $session->calls);
+	}
+
+	public function testRegenerateReturnsTheOldID()
+	{
+		$session = new THttpSessionTestSeams();
+		$this->assertSame(session_id(), $session->regenerate());
+		$this->assertSame(session_id(), $session->regenerate(true));
+		$this->assertSame(['regenerate:keep', 'regenerate:delete'], $session->calls);
+	}
+
+	/**
+	 * @runInSeparateProcess
+	 */
+	public function testSessionRegenerateIdChangesTheID()
+	{
+		$session = new THttpSession();
+		$session->setSessionID('regenerateoldid');
+		$session->open();
+		$this->assertSame('regenerateoldid', $session->regenerate(true));
+		$this->assertNotSame('regenerateoldid', $session->getSessionID());
+		$session->destroy();
+	}
+
+	public function testGetSessionCookieParamsKeepsPhpIniSecureAndHttpOnly()
+	{
+		$session = new THttpSessionTestSeams();
+		$cookie = $session->getCookie();
+		$this->assertSame($cookie, $session->getCookie());
+		$cookie->setHttpOnly(false);
+		$cookie->setSecure(false);
+		$session->open();
+		$this->assertFalse($session->setParams['secure']);
+		$this->assertFalse($session->setParams['httponly']);
+
+		$session = new THttpSessionTestSeams();
+		$session->cookieParams['secure'] = true;
+		$session->cookieParams['httponly'] = true;
+		$session->getCookie()->setHttpOnly(false);
+		$session->open();
+		$this->assertTrue($session->setParams['secure']);
+		$this->assertTrue($session->setParams['httponly']);
+
+		$session = new THttpSessionTestSeams();
+		$session->getCookie()->setSecure(true);
+		$session->open();
+		$this->assertTrue($session->setParams['secure']);
+		$this->assertTrue($session->setParams['httponly']);
+
+		$session = new THttpSessionTestSeams();
+		$session->getCookie()->setSecure(true);
+		$session->getCookie()->setHttpOnly(false);
+		$session->open();
+		$this->assertTrue($session->setParams['secure']);
+		$this->assertFalse($session->setParams['httponly']);
+	}
+
+	// -----------------------------------------------------------------------
+	// Configuration
+	// -----------------------------------------------------------------------
+
+	public function testSetSessionNameRejectsNonAlphanumeric()
+	{
+		$session = new THttpSession();
+		$name = session_name();
+		try {
+			$session->setSessionName('bad-name');
+			$this->fail('TInvalidDataValueException was not thrown');
+		} catch (\Prado\Exceptions\TInvalidDataValueException $e) {
+			$this->assertSame('httpsession_sessionname_invalid', $e->getErrorCode());
+		}
+		$this->assertSame($name, session_name());
+	}
+
+	public function testSetSavePathAcceptsANamespaceAndRejectsTheRest()
+	{
+		$session = new THttpSession();
+		$session->setSavePath('Prado\\Web');
+		$this->assertSame(realpath(__DIR__ . '/../../../framework/Web'), $session->getSavePath());
+		$session->setSavePath($this->saveDir);
+		$this->assertSame(realpath($this->saveDir), $session->getSavePath());
+		foreach (['Prado\\NoSuchDirectory', 'nosuchalias'] as $value) {
+			try {
+				$session->setSavePath($value);
+				$this->fail('TInvalidDataValueException was not thrown');
+			} catch (\Prado\Exceptions\TInvalidDataValueException $e) {
+				$this->assertSame('httpsession_savepath_invalid', $e->getErrorCode());
+			}
+		}
+		$this->assertSame(realpath($this->saveDir), $session->getSavePath());
+	}
+
+	public function testStartedSessionRejectsConfigurationChanges()
+	{
+		$session = new THttpSessionTestSeams();
+		$session->open();
+		$changes = [
+			'httpsession_sessionid_unchangeable' => fn () => $session->setSessionID('abc'),
+			'httpsession_sessionname_unchangeable' => fn () => $session->setSessionName('abc'),
+			'httpsession_savepath_unchangeable' => fn () => $session->setSavePath($this->saveDir),
+			'httpsession_cookiemode_unchangeable' => fn () => $session->setCookieMode(THttpSessionCookieMode::Only),
+			'httpsession_gcprobability_unchangeable' => fn () => $session->setGCProbability(1),
+			'httpsession_transid_unchangeable' => fn () => $session->setUseTransparentSessionID(false),
+			'httpsession_maxlifetime_unchangeable' => fn () => $session->setTimeout(10),
+		];
+		foreach ($changes as $code => $change) {
+			try {
+				$change();
+				$this->fail("$code was not thrown");
+			} catch (\Prado\Exceptions\TInvalidOperationException $e) {
+				$this->assertSame($code, $e->getErrorCode());
+			}
+		}
+	}
+
+	public function testCookieModeThroughTheIniSeams()
+	{
+		THttpSessionTestSeams::$ini = [];
+		$session = new THttpSessionTestSeams();
+		$session->setCookieMode(THttpSessionCookieMode::None);
+		$this->assertSame(['use_cookies' => '0', 'use_only_cookies' => '0'], THttpSessionTestSeams::$ini);
+		$this->assertSame(THttpSessionCookieMode::None, $session->getCookieMode());
+		$session->setCookieMode(THttpSessionCookieMode::Allow);
+		$this->assertSame(['use_cookies' => '1', 'use_only_cookies' => '0'], THttpSessionTestSeams::$ini);
+		$this->assertSame(THttpSessionCookieMode::Allow, $session->getCookieMode());
+		$session->setCookieMode(THttpSessionCookieMode::Only);
+		$this->assertSame(['use_cookies' => '1', 'use_only_cookies' => '1', 'use_trans_sid' => '0'], THttpSessionTestSeams::$ini);
+		$this->assertSame(THttpSessionCookieMode::Only, $session->getCookieMode());
+		THttpSessionTestSeams::$ini = [];
+	}
+
+	public function testUseTransparentSessionIDThroughTheIniSeams()
+	{
+		THttpSessionTestSeams::$ini = ['use_cookies' => '1', 'use_only_cookies' => '1', 'use_trans_sid' => '0'];
+		$session = new THttpSessionTestSeams();
+		try {
+			$session->setUseTransparentSessionID(true);
+			$this->fail('TInvalidOperationException was not thrown');
+		} catch (\Prado\Exceptions\TInvalidOperationException $e) {
+			$this->assertSame('httpsession_transid_cookieonly', $e->getErrorCode());
+		}
+		$this->assertFalse($session->getUseTransparentSessionID());
+		$session->setUseTransparentSessionID(false);
+		$this->assertSame('0', THttpSessionTestSeams::$ini['use_trans_sid']);
+
+		THttpSessionTestSeams::$ini['use_only_cookies'] = '0';
+		$session->setUseTransparentSessionID(true);
+		$this->assertTrue($session->getUseTransparentSessionID());
+		$session->setUseTransparentSessionID(false);
+		$this->assertFalse($session->getUseTransparentSessionID());
+		THttpSessionTestSeams::$ini = [];
+	}
+
+	public function testSessionIniConfigAddsThePrefixAndRestores()
+	{
+		$default = ini_get('session.cache_expire');
+		try {
+			$this->assertSame($default, \Prado\Test\Unit\PradoUnit::invoke(THttpSession::class, 'setSessionIniConfig', 'cache_expire', '77'));
+			$this->assertSame('77', THttpSession::getSessionIniConfig('cache_expire'));
+			$this->assertSame('77', \Prado\Test\Unit\PradoUnit::invoke(THttpSession::class, 'setSessionIniConfig', 'session.cache_expire', '78'));
+			$this->assertSame('78', THttpSession::getSessionIniConfig('session.cache_expire'));
+			$this->assertTrue(\Prado\Test\Unit\PradoUnit::invoke(THttpSession::class, 'setSessionIniConfig', 'session.cache_expire', null));
+			$this->assertSame(get_cfg_var('session.cache_expire') === false ? '180' : (string) get_cfg_var('session.cache_expire'), ini_get('session.cache_expire'));
+			ini_set('session.cache_expire', '79');
+			$this->assertTrue(\Prado\Test\Unit\PradoUnit::invoke(THttpSession::class, 'setSessionIniConfig', 'cache_expire', null));
+			$this->assertNotSame('79', ini_get('session.cache_expire'));
+		} finally {
+			ini_set('session.cache_expire', $default);
+		}
+	}
+
+	// -----------------------------------------------------------------------
+	// Storage callbacks and $_SESSION access
+	// -----------------------------------------------------------------------
+
+	public function testDefaultStorageCallbacks()
+	{
+		$session = new THttpSession();
+		$this->assertTrue($session->_open('/path', 'name'));
+		$this->assertTrue($session->_close());
+		$this->assertSame('', $session->_read('id'));
+		$this->assertTrue($session->_write('id', 'data'));
+		$this->assertTrue($session->_destroy('id'));
+		$this->assertTrue($session->_gc(10));
+	}
+
+	public function testClearRemovesEverySessionValue()
+	{
+		$hadSession = isset($_SESSION);
+		$prior = $_SESSION ?? null;
+		try {
+			$_SESSION = ['a' => 1, 'b' => 2];
+			$session = new THttpSession();
+			$session->clear();
+			$this->assertSame([], $_SESSION);
+			$session->clear();
+			$this->assertSame([], $_SESSION);
+		} finally {
+			if ($hadSession) {
+				$_SESSION = $prior;
+			} else {
+				unset($_SESSION);
+			}
+		}
 	}
 }

@@ -224,6 +224,12 @@ class TContentDispositionTest extends \PHPUnit\Framework\TestCase
 		$this->assertStringNotContainsString('filename*="', $output);
 	}
 
+	public function testToStringOnlyFilenameStar(): void
+	{
+		$cd = new TContentDisposition("attachment; filename*=UTF-8''r%C3%A9sum%C3%A9.pdf");
+		$this->assertSame("attachment; filename*=UTF-8''r%C3%A9sum%C3%A9.pdf", (string) $cd);
+	}
+
 	public function testToStringFormDataWithName(): void
 	{
 		// 'field1' is a valid token — quotes are stripped on parse and not re-added.

@@ -183,7 +183,7 @@ class THttpCookie extends \Prado\TComponent
 	}
 
 	/**
-	 * @return string|THttpCookieSameSite SameSite policy for this cookie. Defaults to THttpCookieSameSite::None.
+	 * @return string|THttpCookieSameSite SameSite policy for this cookie. Defaults to THttpCookieSameSite::Lax.
 	 */
 	public function getSameSite()
 	{

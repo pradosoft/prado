@@ -11,6 +11,9 @@
 namespace Prado\Test\Unit\Web;
 
 use Prado\Web\THttpUtility;
+use Prado\Test\Unit\PradoUnit;
+use Prado\Test\Unit\Harness\TTestApplication;
+use Prado\Prado;
 
 /**
  * Tests for {@see THttpUtility}.
@@ -640,5 +643,38 @@ class THttpUtilityTest extends \PHPUnit\Framework\TestCase
 			'https://cdn.example.com/',
 			THttpUtility::normalizeIntegrityUrl('https://cdn.example.com')
 		);
+	}
+
+	public function testIsLocalUrlWithoutHostIsRemote(): void
+	{
+		self::assertFalse(THttpUtility::isLocalUrl('http:///path', false, 'mysite.com'));
+		self::assertFalse(THttpUtility::isLocalUrl('file:///etc/hosts', false, 'mysite.com'));
+	}
+
+	public function testIsLocalUrlUsesRequestServerName(): void
+	{
+		$app = new TTestApplication();
+		$serverName = $_SERVER['SERVER_NAME'] ?? null;
+		// THttpRequest::init() sets SERVER_NAME in the CLI, so the request is created first.
+		$app->getRequest();
+		try {
+			$_SERVER['SERVER_NAME'] = 'mysite.com';
+			self::assertTrue(THttpUtility::isLocalUrl('https://mysite.com/app.js'));
+			self::assertFalse(THttpUtility::isLocalUrl('https://othersite.com/app.js'));
+
+			unset($_SERVER['SERVER_NAME']);
+			self::assertFalse(THttpUtility::isLocalUrl('https://mysite.com/app.js'));
+
+			PradoUnit::setStaticProp(Prado::class, '_application', null);
+			self::assertFalse(THttpUtility::isLocalUrl('https://mysite.com/app.js'));
+		} finally {
+			PradoUnit::setStaticProp(Prado::class, '_application', $app);
+			$app->restoreApplication();
+			if ($serverName === null) {
+				unset($_SERVER['SERVER_NAME']);
+			} else {
+				$_SERVER['SERVER_NAME'] = $serverName;
+			}
+		}
 	}
 }

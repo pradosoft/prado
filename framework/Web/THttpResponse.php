@@ -720,7 +720,8 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 			throw new TExitException();
 		}
 
-		exit();
+		// Ends the process after the request completed; a unit test cannot run it.
+		exit(); // @codeCoverageIgnore
 	}
 
 	/**

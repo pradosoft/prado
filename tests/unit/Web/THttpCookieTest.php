@@ -2,7 +2,9 @@
 
 namespace Prado\Test\Unit\Web;
 
+use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Web\THttpCookie;
+use Prado\Web\THttpCookieSameSite;
 
 class THttpCookieTest extends \PHPUnit\Framework\TestCase
 {
@@ -64,5 +66,17 @@ class THttpCookieTest extends \PHPUnit\Framework\TestCase
 		self::assertTrue($cookie->getPhpOptions()['httponly']);
 		$cookie->setHttpOnly(false);
 		self::assertFalse($cookie->getHttpOnly());
+	}
+
+	public function testSameSite()
+	{
+		$cookie = new THttpCookie('name', 'value');
+		self::assertSame(THttpCookieSameSite::Lax, $cookie->getSameSite());
+		$cookie->setSameSite(THttpCookieSameSite::Strict);
+		self::assertSame(THttpCookieSameSite::Strict, $cookie->getSameSite());
+		self::assertSame(THttpCookieSameSite::Strict, $cookie->getPhpOptions('lifetime')['samesite']);
+		self::assertArrayHasKey('lifetime', $cookie->getPhpOptions('lifetime'));
+		$this->expectException(TInvalidDataValueException::class);
+		$cookie->setSameSite('Sometimes');
 	}
 }
