@@ -271,7 +271,7 @@ class TPageConfiguration extends \Prado\TComponent
 		// external configurations
 		if (isset($config['includes']) && is_array($config['includes'])) {
 			foreach ($config['includes'] as $include) {
-				$when = isset($include['when']) ? true : false;
+				$when = $include['when'] ?? true;
 				if (!isset($include['file'])) {
 					throw new TConfigurationException('pageserviceconf_includefile_required');
 				}

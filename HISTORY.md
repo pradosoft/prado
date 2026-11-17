@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TPageConfiguration` applies a PHP page include without `when` and keeps its `when` for `TPageService` to evaluate, as the XML include does; it skipped an include without `when` and always applied one with it. (belisoful)
 BUG: Issue #1497 - `TSqlCriteria::setCondition()` moves only a trailing `ORDER BY`, `LIMIT`, or `OFFSET` outside quoted text and parentheses; it cut them from string literals and subqueries, so `title = 'LIMIT 5'` became `title = ''` with a limit of 5. (belisoful)
 BUG: Issue #1497 - `TMemCache` reads every expiration time as seconds and passes one over 30 days to Memcached as the timestamp it ends at; Memcached read such a time as a timestamp in 1970, so the value expired at once. See UPGRADE.md. (belisoful)
 BUG: Issue #1497 - `TFileCache` and `TMemoryCache` throw `TInvalidDataValueException` for a `MaximumSize` that is not a size, such as `1.5G`; it removed the size limit. (belisoful)
