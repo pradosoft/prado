@@ -157,11 +157,15 @@ class TProcessHelper
 		if ($pid > 0) {
 			Prado::info("Fork child: $pid", static::class);
 		} elseif ($pid === 0) {
+			// Only the forked child runs this branch, and its coverage is not collected.
+			// @codeCoverageIgnoreStart
 			Prado::info("Executing child fork", static::class);
 			TAsync::resetLoopForChild();
 			TSignalsDispatcher::singleton();
+			// @codeCoverageIgnoreEnd
 		} elseif ($pid === -1) {
-			Prado::notice("failed fork", static::class);
+			// Only a failed pcntl_fork() runs this branch.
+			Prado::notice("failed fork", static::class); // @codeCoverageIgnore
 		}
 		return $pid;
 	}
@@ -182,8 +186,11 @@ class TProcessHelper
 	public static function watchChildSignal(IEventLoop $loop, callable $callback): \Closure
 	{
 		if (!TSignalsDispatcher::hasSignals()) {
+			// Only PHP without pcntl runs this branch.
+			// @codeCoverageIgnoreStart
 			return static function (): void {
 			};
+			// @codeCoverageIgnoreEnd
 		}
 		$dispatcher = TSignalsDispatcher::singleton(false);
 		if ($dispatcher !== null) {
@@ -255,8 +262,11 @@ class TProcessHelper
 		if (function_exists("posix_kill")) {
 			return posix_kill($pid, $signal);
 		}
+		// Only PHP without posix runs this fallback.
+		// @codeCoverageIgnoreStart
 		exec("/usr/bin/kill -s $signal $pid 2>&1", $output, $return_code);
 		return !$return_code;
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -267,7 +277,8 @@ class TProcessHelper
 	public static function kill(int $pid): bool
 	{
 		if (static::isSystemWindows()) {
-			return shell_exec("taskkill /F /PID $pid") !== null;
+			// Only Windows runs this branch.
+			return shell_exec("taskkill /F /PID $pid") !== null; // @codeCoverageIgnore
 		}
 		return static::sendSignal(SIGKILL, $pid);
 	}
@@ -279,9 +290,12 @@ class TProcessHelper
 	public static function isRunning(int $pid): bool
 	{
 		if (static::isSystemWindows()) {
+			// Only Windows runs this branch.
+			// @codeCoverageIgnoreStart
 			$out = [];
 			exec("TASKLIST /FO LIST /FI \"PID eq $pid\"", $out);
 			return count($out) > 1;
+			// @codeCoverageIgnoreEnd
 		}
 
 		return static::sendSignal(0, $pid);
@@ -299,6 +313,8 @@ class TProcessHelper
 			$pid = getmypid();
 		}
 		if (static::isSystemWindows()) {
+			// Only Windows runs this branch.
+			// @codeCoverageIgnoreStart
 			// wmic is deprecated and removed on modern Windows (Server 2025 / Win11+); use PowerShell.
 			$psOutput = shell_exec("powershell -NoProfile -Command \"try { (Get-Process -Id $pid).PriorityClass } catch { '' }\" 2>NUL");
 			// PowerShell returns the ProcessPriorityClass enum name, e.g. 'Normal', 'BelowNormal'.
@@ -324,6 +340,7 @@ class TProcessHelper
 				TProcessWindowsPriority::Realtime => static::WINDOWS_REALTIME_PRIORITY,
 			];
 			return $priorityValues[$numericPriority] ?? null;
+			// @codeCoverageIgnoreEnd
 		} else {
 			$priority = trim((string) shell_exec('exec ps -o nice= -p ' . $pid . ' 2>/dev/null'));
 			if (strlen($priority)) {
@@ -347,6 +364,8 @@ class TProcessHelper
 			$pid = getmypid();
 		}
 		if (static::isSystemWindows()) {
+			// Only Windows runs this branch.
+			// @codeCoverageIgnoreStart
 			// wmic is deprecated and removed on modern Windows (Server 2025 / Win11+); use PowerShell.
 			// Map Prado priority thresholds to PowerShell ProcessPriorityClass enum names.
 			$psNames = [
@@ -365,6 +384,7 @@ class TProcessHelper
 			$exitCode = -1;
 			exec("powershell -NoProfile -Command \"try { (Get-Process -Id $pid).PriorityClass = [System.Diagnostics.ProcessPriorityClass]::$psName; exit 0 } catch { exit 1 }\" 2>NUL", $psOut, $exitCode);
 			return $exitCode === 0;
+			// @codeCoverageIgnoreEnd
 		} else {
 			if (static::isSystemMacOS()) {
 				if (($pp = static::getProcessPriority($pid)) === null) {

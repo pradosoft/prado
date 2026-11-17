@@ -58,7 +58,8 @@ class TURational extends TRational
 		if (PHP_INT_SIZE > 4 || $value <= PHP_INT_MAX) {
 			$this->_numerator = (int) $value;
 		} else {
-			$this->_numerator = (float) $value;
+			// Only 32-bit PHP runs this branch.
+			$this->_numerator = (float) $value; // @codeCoverageIgnore
 		}
 		return $this;
 	}
@@ -74,7 +75,8 @@ class TURational extends TRational
 		if (PHP_INT_SIZE > 4 || $value <= PHP_INT_MAX) {
 			$this->_denominator = (int) $value;
 		} else {
-			$this->_denominator = (float) $value;
+			// Only 32-bit PHP runs this branch.
+			$this->_denominator = (float) $value; // @codeCoverageIgnore
 		}
 		return $this;
 	}

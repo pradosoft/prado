@@ -316,10 +316,13 @@ abstract class TMutex extends TModule implements IMutex
 		$this->_shutdownRegistered = true;
 		$ref = \WeakReference::create($this);
 		register_shutdown_function(static function () use ($ref): void {
+			// PHP runs this at shutdown, after coverage collection ends.
+			// @codeCoverageIgnoreStart
 			$mutex = $ref->get();
 			if ($mutex !== null && $mutex->getAutoRelease()) {
 				$mutex->autoReleaseAll();
 			}
+			// @codeCoverageIgnoreEnd
 		});
 	}
 

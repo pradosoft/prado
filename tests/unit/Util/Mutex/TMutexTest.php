@@ -81,6 +81,22 @@ class TMutexTestThrowingMutex extends TMutexTestScriptedMutex
 }
 
 /**
+ * A mutex that keeps the base {@see TMutex::forgetLock()}.
+ */
+class TMutexTestPlainMutex extends TMutex
+{
+	protected function acquireLock(string $name): bool
+	{
+		return true;
+	}
+
+	protected function releaseLock(string $name): bool
+	{
+		return true;
+	}
+}
+
+/**
  * Unit tests for {@see TMutex}: the held names, retries, timeouts, synchronize,
  * auto release, and the forked child.
  */
@@ -317,5 +333,67 @@ class TMutexTest extends \PHPUnit\Framework\TestCase
 		$mutex->fxRestoreAfterFork(null, ['pid' => -1]);
 		$this->assertSame(['a'], $mutex->getAcquiredLocks());
 		$this->assertSame([], $mutex->forgotten);
+	}
+
+	public function testForkedChildWithBaseForgetLock(): void
+	{
+		$mutex = new TMutexTestPlainMutex();
+		$mutex->setAutoRelease(false);
+		$mutex->acquire('a');
+		$mutex->fxRestoreAfterFork(null, ['pid' => 0]);
+		$this->assertSame([], $mutex->getAcquiredLocks());
+	}
+
+	public function testForkedChildForgetsOneLock(): void
+	{
+		$mutex = $this->newMutex();
+		$mutex->acquire('a');
+		$mutex->fxRestoreAfterFork(null, ['pid' => 0]);
+		$this->assertSame(['a'], $mutex->forgotten);
+		$this->assertSame([], $mutex->getAcquiredLocks());
+	}
+
+	public function testForkedChildWithoutLocks(): void
+	{
+		$mutex = $this->newMutex();
+		$mutex->fxRestoreAfterFork(null, ['pid' => 0]);
+		$mutex->fxRestoreAfterFork(null, null);
+		$this->assertSame([], $mutex->forgotten);
+	}
+
+	public function testReleaseAllWithOneOrNoLock(): void
+	{
+		$mutex = $this->newMutex();
+		$mutex->releaseAll();
+		$this->assertSame([], $mutex->releaseCalls);
+		$mutex->acquire('a');
+		$mutex->releaseAll();
+		$this->assertSame(['a'], $mutex->releaseCalls);
+	}
+
+	public function testAutoReleaseWithoutLocks(): void
+	{
+		$mutex = $this->newMutex();
+		$releases = &$mutex->releaseCalls;
+		unset($mutex);
+		$this->assertSame([], $releases);
+	}
+
+	public function testAutoReleaseOfOneThrowingRelease(): void
+	{
+		$mutex = new TMutexTestThrowingMutex();
+		$mutex->acquire('a');
+		$releases = &$mutex->releaseCalls;
+		unset($mutex);
+		$this->assertSame(['a'], $releases);
+	}
+
+	public function testAcquireSecondNameRegistersShutdownOnce(): void
+	{
+		$mutex = $this->newMutex();
+		$this->assertTrue($mutex->acquire('a'));
+		$this->assertTrue($mutex->acquire('b'));
+		$this->assertSame(['a', 'b'], $mutex->getAcquiredLocks());
+		$mutex->releaseAll();
 	}
 }

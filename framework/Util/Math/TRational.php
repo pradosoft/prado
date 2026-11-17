@@ -429,12 +429,15 @@ class TRational implements \ArrayAccess
 		} while ($b !== 0.0 && abs($value - $h / $k) > $tolerance);
 		if (PHP_INT_SIZE > 4 || $h <= PHP_INT_MAX + $offset && $k <= PHP_INT_MAX) {
 			return [$sign * ((int) $h), ((int) $k)];
-		} elseif ($h <= PHP_INT_MAX + $offset) {
+		}
+		// Only 32-bit PHP runs past here, with a part above PHP_INT_MAX kept as a float.
+		// @codeCoverageIgnoreStart
+		if ($h <= PHP_INT_MAX + $offset) {
 			return [$sign * ((int) $h), $k];
 		} elseif ($k <= PHP_INT_MAX) {
 			return [$sign * $h, ((int) $k)];
-		} else {
-			return [$sign * $h, $k];
 		}
+		return [$sign * $h, $k];
+		// @codeCoverageIgnoreEnd
 	}
 }

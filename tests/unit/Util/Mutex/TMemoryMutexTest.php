@@ -11,6 +11,7 @@
 namespace Prado\Test\Unit\Util\Mutex;
 
 use Prado\IO\Async\TAsync;
+use Prado\Test\Unit\PradoUnit;
 use Prado\Util\Mutex\TMemoryMutex;
 
 /**
@@ -118,5 +119,10 @@ class TMemoryMutexTest extends \PHPUnit\Framework\TestCase
 			$this->assertStringEndsWith('+', $log[$i]);
 			$this->assertStringEndsWith('-', $log[$i + 1]);
 		}
+	}
+
+	public function testBackendReleaseOfUnheldName(): void
+	{
+		$this->assertFalse(PradoUnit::invoke($this->newMutex(), 'releaseLock', 'never-held'));
 	}
 }

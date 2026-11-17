@@ -10,6 +10,8 @@
 
 namespace Prado\Test\Unit\Util\Mutex;
 
+use Prado\Test\Unit\PradoUnit;
+use Prado\Prado;
 use Prado\Data\TDbConnection;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
@@ -222,5 +224,68 @@ class TDbMutexTest extends \PHPUnit\Framework\TestCase
 		$this->assertTrue($a->release('job'));
 		$this->assertTrue($b->acquire('job'));
 		$b->releaseAll();
+	}
+
+	public function testInactiveConnectionIsActivated(): void
+	{
+		$connection = new TTestLockConnection('mysql');
+		$connection->setActive(false);
+		$mutex = (new TDbMutex())->setDbConnection($connection);
+		$this->assertSame($connection, $mutex->getDbConnection());
+		$this->assertTrue($connection->getActive());
+	}
+
+	public function testDefaultConnectionIsRuntimeSqlite(): void
+	{
+		$mutex = new TDbMutex();
+		$connection = $mutex->getDbConnection();
+		$this->assertTrue($connection->getActive());
+		$this->assertSame('sqlite:' . Prado::getApplication()->getRuntimePath() . DIRECTORY_SEPARATOR . 'sqlite3.mutex', $connection->getConnectionString());
+		$connection->setActive(false);
+	}
+
+	public function testConnectionIDChoosesAgain(): void
+	{
+		$mutex = (new TDbMutex())->setDbConnection(new TTestLockConnection('mysql'));
+		$mutex->getDriverMutex();
+		$mutex->setConnectionID('db');
+		$this->assertSame('db', $mutex->getConnectionID());
+		$this->assertNull(PradoUnit::getProp($mutex, '_driverMutex'));
+	}
+
+	public function testEmptyTablePropertiesAreUnset(): void
+	{
+		$mutex = new TDbMutex();
+		$mutex->setExpire(5)->setMutexTableName('locks')->setAutoCreateMutexTable(false);
+		$mutex->setExpire('')->setMutexTableName('')->setAutoCreateMutexTable('');
+		$this->assertNull($mutex->getExpire());
+		$this->assertNull($mutex->getMutexTableName());
+		$this->assertNull($mutex->getAutoCreateMutexTable());
+		$mutex->setExpire(5)->setMutexTableName('locks')->setAutoCreateMutexTable(false);
+		$mutex->setExpire(null)->setMutexTableName(null)->setAutoCreateMutexTable(null);
+		$this->assertNull($mutex->getExpire());
+		$this->assertNull($mutex->getMutexTableName());
+		$this->assertNull($mutex->getAutoCreateMutexTable());
+	}
+
+	public function testEachTablePropertyPassesToFallback(): void
+	{
+		foreach (range(0, 7) as $set) {
+			$mutex = (new TDbMutex())->setDbConnection(new TTestLockConnection('sqlite'));
+			if ($set & 1) {
+				$mutex->setExpire(7);
+			}
+			if ($set & 2) {
+				$mutex->setMutexTableName('locks');
+			}
+			if ($set & 4) {
+				$mutex->setAutoCreateMutexTable(false);
+			}
+			$table = $mutex->getDriverMutex();
+			$this->assertInstanceOf(TDbTableMutex::class, $table);
+			$this->assertSame($set & 1 ? 7 : TDbTableMutex::DEFAULT_EXPIRE, $table->getExpire());
+			$this->assertSame($set & 2 ? 'locks' : 'pradomutex', $table->getMutexTableName());
+			$this->assertSame(!($set & 4), $table->getAutoCreateMutexTable());
+		}
 	}
 }

@@ -31,7 +31,7 @@ class TArrayHelper
 	 */
 	public static function array_is_list(array|Traversable $array): bool
 	{
-		if (function_exists('array_is_list') && !($array instanceof Traversable)) {
+		if (!($array instanceof Traversable)) {
 			return array_is_list($array);
 		}
 		$i = -1;

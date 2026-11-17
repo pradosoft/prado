@@ -10,6 +10,7 @@
 
 namespace Prado\Test\Unit\Util\Mutex;
 
+use Prado\Test\Unit\PradoUnit;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Util\Mutex\TSemaphoreMutex;
 
@@ -17,6 +18,17 @@ use Prado\Util\Mutex\TSemaphoreMutex;
  * Unit tests for {@see TSemaphoreMutex}.  Exclusion is exercised only when the
  * `sysvsem` extension is loaded (otherwise skipped).
  */
+/**
+ * A TSemaphoreMutex without the sysvsem extension.
+ */
+class TSemaphoreMutexTestUnavailable extends TSemaphoreMutex
+{
+	public static function getIsAvailable(): bool
+	{
+		return false;
+	}
+}
+
 class TSemaphoreMutexTest extends \PHPUnit\Framework\TestCase
 {
 	private array $mutexes = [];
@@ -25,6 +37,15 @@ class TSemaphoreMutexTest extends \PHPUnit\Framework\TestCase
 	{
 		foreach ($this->mutexes as $mutex) {
 			$mutex->releaseAll();
+		}
+		if ($this->mutexes !== []) {
+			// The mutex leaves its semaphores in the system; the test removes the ones it made.
+			foreach (['job', 'other'] as $name) {
+				$semaphore = @sem_get($this->mutexes[0]->getSemaphoreKey($name), 1, 0600, false);
+				if ($semaphore !== false) {
+					sem_remove($semaphore);
+				}
+			}
 		}
 		$this->mutexes = [];
 	}
@@ -48,11 +69,8 @@ class TSemaphoreMutexTest extends \PHPUnit\Framework\TestCase
 
 	public function testInitThrowsWhenExtensionUnavailable(): void
 	{
-		if (TSemaphoreMutex::getIsAvailable()) {
-			$this->markTestSkipped('sysvsem extension present; cannot exercise the unavailable path.');
-		}
 		$this->expectException(TConfigurationException::class);
-		(new TSemaphoreMutex())->init(null);
+		(new TSemaphoreMutexTestUnavailable())->init(null);
 	}
 
 	public function testPermissions(): void
@@ -117,5 +135,10 @@ class TSemaphoreMutexTest extends \PHPUnit\Framework\TestCase
 		} finally {
 			exec(sprintf('ipcrm -S 0x%x 2>&1', $key));
 		}
+	}
+
+	public function testBackendReleaseOfUnheldName(): void
+	{
+		$this->assertFalse(PradoUnit::invoke($this->newMutex(), 'releaseLock', 'never-held'));
 	}
 }

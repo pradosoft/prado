@@ -262,4 +262,12 @@ class TMockClockTest extends \PHPUnit\Framework\TestCase
 		$clock->sleep(0.01); // not pinned, so a real pause
 		self::assertGreaterThanOrEqual(0.005, \microtime(true) - $start);
 	}
+
+	public function testSetTimezoneObjectReExpressesAPinnedInstant()
+	{
+		$clock = (new TMockClock())->setTime(1704067200);
+		$clock->setTimezone(new \DateTimeZone('Asia/Tokyo'));
+		self::assertSame(1704067200, $clock->now()->getTimestamp());
+		self::assertSame('Asia/Tokyo', $clock->now()->getTimezone()->getName());
+	}
 }

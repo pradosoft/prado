@@ -220,7 +220,8 @@ class TBitHelper
 					}
 					$value = unpack('N', $hash)[1];
 					if (PHP_INT_SIZE === 4 && $value > self::PHP_INT32_MAX) {
-						$value = (int) ($value - self::PHP_INT32_UMAX - 1);
+						// Only 32-bit PHP runs this branch.
+						$value = (int) ($value - self::PHP_INT32_UMAX - 1); // @codeCoverageIgnore
 					}
 					return $value;
 				}

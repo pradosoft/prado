@@ -534,6 +534,56 @@ class TBitHelperTest extends \PHPUnit\Framework\TestCase
 	
 	
 
+	public function testIsSystemBigEndian()
+	{
+		$expected = pack('S', 1) === "\x00\x01";
+		self::assertSame($expected, TBitHelper::isSystemBigEndian());
+		self::assertSame($expected, TBitHelper::isSystemBigEndian());
+	}
+
+	public function testCrc32FileUrl()
+	{
+		$filename = realpath(__DIR__ . '/../../Web/data/pradoheader.gif');
+		$fileContents = file_get_contents($filename);
+		$url = 'file://' . str_replace('\\', '/', $filename);
+		self::assertSame(crc32($fileContents), TBitHelper::crc32($url, true));
+		self::assertSame(crc32(substr($fileContents, 0, 10)), TBitHelper::crc32([$url, 10], true));
+	}
+
+	public function testCrc32UnreadableFile()
+	{
+		self::assertFalse(TBitHelper::crc32('nowrapper://data', true));
+		self::assertFalse(TBitHelper::crc32(['nowrapper://data', 10], true));
+		self::assertFalse(TBitHelper::crc32('no such file', true));
+	}
+
+	public function testCrc32NonSeekableStreamOffset()
+	{
+		$process = proc_open([PHP_BINARY, '-r', 'echo "0123456789";'], [1 => ['pipe', 'w']], $pipes);
+		try {
+			self::assertFalse(stream_get_meta_data($pipes[1])['seekable']);
+			self::assertSame(crc32('345'), TBitHelper::crc32([$pipes[1], 3, 3]));
+		} finally {
+			fclose($pipes[1]);
+			proc_close($process);
+		}
+	}
+
+	public function testCrc32StreamShorterThanSize()
+	{
+		$handle = fopen('php://memory', 'w+b');
+		fwrite($handle, 'abc');
+		rewind($handle);
+		self::assertFalse(TBitHelper::crc32([$handle, 10]));
+		fclose($handle);
+	}
+
+	public function testCrc32NoSource()
+	{
+		self::assertFalse(TBitHelper::crc32(42));
+		self::assertFalse(TBitHelper::crc32([null, 3]));
+	}
+
 	public function testFloatToFpXXBadFormat()
 	{
 		foreach ([[-1, 10, null], [0, 10, null], [5, 0, null], [5, -1, null], [32, 32, null], [5, 10, -1], [5, 10, 32]] as [$exponentBits, $mantissaBits, $bias]) {
@@ -554,10 +604,27 @@ class TBitHelperTest extends \PHPUnit\Framework\TestCase
 		self::assertSame(1.0, TBitHelper::fpXXToFloat(0x3C00));
 	}
 
-	public function testCrc32UnreadableFile()
+	public function testMirrorBitsTooMany()
 	{
-		self::assertFalse(TBitHelper::crc32('nowrapper://data', true));
-		self::assertFalse(TBitHelper::crc32(['nowrapper://data', 10], true));
-		self::assertFalse(TBitHelper::crc32('no such file', true));
+		self::expectException(TInvalidDataValueException::class);
+		TBitHelper::mirrorBits(1, PHP_INT_SIZE * 8 + 1);
+	}
+
+	public function testColorBitShiftSameBits()
+	{
+		self::assertSame(0xA5, TBitHelper::colorBitShift(0xA5, 8, 8));
+	}
+
+	public function testColorBitShiftBadOutBits()
+	{
+		foreach ([0, PHP_INT_SIZE * 8 + 1] as $outBits) {
+			try {
+				TBitHelper::colorBitShift(1, 8, $outBits);
+				self::fail("colorBitShift accepts $outBits out bits.");
+			} catch (TInvalidDataValueException $e) {
+			}
+		}
+		self::expectException(TInvalidDataValueException::class);
+		TBitHelper::colorBitShift(1, PHP_INT_SIZE * 8 + 1, 8);
 	}
 }
