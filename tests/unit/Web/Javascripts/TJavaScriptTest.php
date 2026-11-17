@@ -885,6 +885,21 @@ class TJavaScriptTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame("{'b':\"x\"}", TJavaScript::encode($obj));
 	}
 
+	public function testEncodeFloatUsesDotUnderACommaLocale(): void
+	{
+		$original = setlocale(LC_NUMERIC, '0');
+		$locale = setlocale(LC_NUMERIC, 'de_DE.UTF-8', 'de_DE', 'fr_FR.UTF-8', 'fr_FR');
+		try {
+			if ($locale === false) {
+				$this->markTestSkipped('No locale with a comma decimal separator is installed.');
+			}
+			$this->assertSame(',', localeconv()['decimal_point']);
+			$this->assertSame('1.5', TJavaScript::encode(1.5));
+		} finally {
+			setlocale(LC_NUMERIC, $original);
+		}
+	}
+
 	public function testEncodeNanFloat(): void
 	{
 		// JavaScript has no `NAN` identifier; `Number.NaN` matches the INF mappings.

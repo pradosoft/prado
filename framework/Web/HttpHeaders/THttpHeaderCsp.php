@@ -448,7 +448,7 @@ class THttpHeaderCsp extends TBaseHttpHeader
 	{
 		$value = TPropertyValue::ensureString($value);
 		$directives = preg_split('/\s*;\s*/', trim($value), -1, PREG_SPLIT_NO_EMPTY);
-		if ($directives === false || empty($directives)) {
+		if (empty($directives)) {
 			$this->setPoliciesDirect($value);
 			return;
 		}

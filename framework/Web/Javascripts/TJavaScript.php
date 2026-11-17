@@ -328,7 +328,7 @@ class TJavaScript
 			'integrity' => $integrity,
 			'crossorigin' => $integrity !== null ? 'anonymous' : null,
 		]);
-		return '<script' . ($attrs !== '' ? ' ' . $attrs : '') . "></script>\n";
+		return '<script ' . $attrs . "></script>\n";
 	}
 
 	/**
@@ -420,7 +420,7 @@ class TJavaScript
 	 * - `int` → decimal string
 	 * - `float` → decimal string; `NAN`, `INF`, and `-INF` map to `Number.NaN`,
 	 *   `Number.POSITIVE_INFINITY`, and `Number.NEGATIVE_INFINITY`; the decimal
-	 *   separator is normalized to `.` when the current locale uses another character
+	 *   separator is `.` in every locale
 	 * - `null` → `'null'`
 	 * - Sequential array (`0…n-1` keys) → `[…]`
 	 * - Associative array → `{'key':value,…}`
@@ -484,12 +484,7 @@ class TJavaScript
 				case INF:
 					return 'Number.POSITIVE_INFINITY';
 				default:
-					$locale = localeConv();
-					if ($locale['decimal_point'] == '.') {
-						return "$value";
-					} else {
-						return str_replace($locale['decimal_point'], '.', "$value");
-					}
+					return "$value";
 			}
 		} elseif (is_object($value)) {
 			if ($value instanceof TJavaScriptLiteral) {
