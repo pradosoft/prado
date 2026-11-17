@@ -9,6 +9,7 @@
 
 ## Overview
 `TOracleTableInfo` provides Oracle-specific table metadata.
+`getTableFullName()` is `SCHEMA.table`, or the table name alone when there is no schema.
 
 ## See Also
 
