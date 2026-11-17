@@ -593,8 +593,8 @@ class TUrlMappingPattern extends \Prado\TComponent
 		if (isset($matches['urlparams'])) {
 			$params = explode('/', $matches['urlparams']);
 			if ($this->_separator === '/') {
-				while ($key = array_shift($params)) {
-					$matches[$key] = ($value = array_shift($params)) ? $value : '';
+				while (($key = array_shift($params)) !== null && $key !== '') {
+					$matches[$key] = array_shift($params) ?? '';
 				}
 			} else {
 				array_pop($params);
@@ -869,15 +869,8 @@ class TUrlMappingPattern extends \Prado\TComponent
 	 */
 	protected function applySecureConnectionPrefix($url)
 	{
-		static $request;
-		if ($request === null) {
-			$request = Prado::getApplication() -> getRequest();
-		}
-
-		static $isSecureConnection;
-		if ($isSecureConnection === null) {
-			$isSecureConnection = $request -> getIsSecureConnection();
-		}
+		$request = Prado::getApplication()->getRequest();
+		$isSecureConnection = $request->getIsSecureConnection();
 
 		switch ($this -> getSecureConnection()) {
 			case TUrlMappingPatternSecureConnection::EnableIfNotSecure:

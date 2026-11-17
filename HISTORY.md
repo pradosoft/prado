@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TUrlMappingPattern` keeps a `0` key or value of Path-format URL parameters, and its `SecureConnection` reads the current request on each URL; a `0` was dropped or ended the parameters, and the first request and its HTTPS state were kept for the process. (belisoful)
 BUG: Issue #1497 - `TUrlMapping::init(null)` loads no patterns, and a `<url>` node value that replaces a `RegularExpression` is logged as a notice; null threw an `Error`, and the notice was raised as a PHP error, which aborted `init()`. (belisoful)
 BUG: Issue #1497 - The `THttpRequest` URL-manager cache depends on the `TUrlMapping` configuration file, so an edited file is read again outside Performance mode; the resolved path was resolved again to null, so no file was tracked. (belisoful)
 BUG: Issue #1497 - The deprecated `THttpRequest::stripSlashes()` strips an array; it threw `TPhpErrorException` for any array. (belisoful)

@@ -866,4 +866,47 @@ class TUrlMappingPatternTest extends \PHPUnit\Framework\TestCase
 		$this->assertNotEquals([], $pattern->getPatternMatches($this->createRequest('/test', 'GET')));
 		$this->assertEquals([], $pattern->getPatternMatches($this->createRequest('/test', 'DELETE')));
 	}
+
+	public function testGetPatternMatchesPathKeepsZeroKeysAndValues()
+	{
+		$pattern = new TUrlMappingPattern($this->urlManager);
+		$pattern->setServiceParameter('Test.Page');
+		$pattern->setPattern('test');
+		$pattern->setUrlFormat(THttpRequestUrlFormat::Path);
+		$result = $pattern->getPatternMatches($this->createRequest('/test/page/0/0/x/last'));
+		$this->assertSame('0', $result['page']);
+		$this->assertSame('x', $result['0']);
+		$this->assertSame('', $result['last']);
+	}
+
+	public function testSecureConnectionFollowsTheCurrentRequest()
+	{
+		$https0 = $_SERVER['HTTPS'] ?? null;
+		try {
+			foreach ([false, true, false] as $secure) {
+				if ($secure) {
+					$_SERVER['HTTPS'] = 'on';
+				} else {
+					unset($_SERVER['HTTPS']);
+				}
+				$request = $this->app->getRequest();
+				$manager = new \Prado\Web\TUrlMapping();
+				$manager->setUrlPrefix('/index.php');
+				foreach ([TUrlMappingPatternSecureConnection::EnableIfNotSecure => [$request->getBaseUrl(true) . '/index.php/posts', '/index.php/posts'], TUrlMappingPatternSecureConnection::DisableIfSecure => ['/index.php/posts', $request->getBaseUrl(false) . '/index.php/posts']] as $mode => $urls) {
+					$p = new TUrlMappingPattern($manager);
+					$p->setServiceParameter('Posts.ListPost');
+					$p->setPattern('posts');
+					$p->init(null);
+					$p->setSecureConnection($mode);
+					$this->assertSame($urls[$secure ? 1 : 0], $p->constructUrl([], false, false), $mode);
+				}
+			}
+		} finally {
+			if ($https0 === null) {
+				unset($_SERVER['HTTPS']);
+			} else {
+				$_SERVER['HTTPS'] = $https0;
+			}
+		}
+	}
 }
