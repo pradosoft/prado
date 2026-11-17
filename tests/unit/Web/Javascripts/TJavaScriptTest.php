@@ -878,10 +878,9 @@ class TJavaScriptTest extends \PHPUnit\Framework\TestCase
 
 	public function testEncodeNanFloat(): void
 	{
-		// NaN is a float that is neither INF nor -INF, so it falls through to the
-		// default: branch and produces "NAN" via string interpolation. This documents
-		// the silent fallback — callers should validate inputs before encoding.
-		$this->assertSame('NAN', TJavaScript::encode(NAN));
+		// JavaScript has no `NAN` identifier; `Number.NaN` matches the INF mappings.
+		$this->assertSame('Number.NaN', TJavaScript::encode(NAN));
+		$this->assertSame('[Number.NaN]', TJavaScript::encode([NAN]));
 	}
 
 	public function testEncodeUnrecognizedTypeReturnsEmptyString(): void

@@ -418,8 +418,8 @@ class TJavaScript
 	 * - `string` → JSON-encoded with HTML-safe hex escaping (via {@see quoteString()})
 	 * - `bool` → `'true'` or `'false'`
 	 * - `int` → decimal string
-	 * - `float` → decimal string; `INF` / `-INF` map to
-	 *   `Number.POSITIVE_INFINITY` / `Number.NEGATIVE_INFINITY`; the decimal
+	 * - `float` → decimal string; `NAN`, `INF`, and `-INF` map to `Number.NaN`,
+	 *   `Number.POSITIVE_INFINITY`, and `Number.NEGATIVE_INFINITY`; the decimal
 	 *   separator is normalized to `.` when the current locale uses another character
 	 * - `null` → `'null'`
 	 * - Sequential array (`0…n-1` keys) → `[…]`
@@ -476,7 +476,7 @@ class TJavaScript
 			return "$value";
 		} elseif (is_float($value)) {
 			if (is_nan($value)) {
-				return 'NAN';
+				return 'Number.NaN';
 			}
 			switch ($value) {
 				case -INF:
