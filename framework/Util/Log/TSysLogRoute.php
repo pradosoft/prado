@@ -83,9 +83,24 @@ class TSysLogRoute extends TLogRoute
 	 */
 	protected function processLogs(array $logs, bool $final, array $meta)
 	{
-		openlog($this->getSysLogPrefix(), $this->getSysLogFlags(), $this->getFacility());
+		$entries = [];
 		foreach ($logs as $log) {
-			syslog($this->translateLogLevel($log[TLogger::LOG_LEVEL]), $this->formatLogMessage($log));
+			$entries[] = [$this->translateLogLevel($log[TLogger::LOG_LEVEL]), $this->formatLogMessage($log)];
+		}
+		$this->writeSysLog($entries);
+	}
+
+	/**
+	 * Opens the system log, writes each entry, and closes it.
+	 * @param array $entries the `[priority, message]` pairs to write.
+	 * @since 4.4.0
+	 */
+	protected function writeSysLog(array $entries): void
+	{
+		openlog($this->getSysLogPrefix(), $this->getSysLogFlags(), $this->getFacility());
+		foreach ($entries as [$priority, $message]) {
+			// Writes to the system log of the host.
+			syslog($priority, $message); // @codeCoverageIgnore
 		}
 		closelog();
 	}

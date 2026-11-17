@@ -116,10 +116,25 @@ class TEmailLogRoute extends TLogRoute
 		$message = wordwrap($message, 70);
 		$returnPath = ini_get('sendmail_path') ? "Return-Path:{$this->_from}\r\n" : '';
 		foreach ($this->_emails as $email) {
-			if (!mail($email, $this->getSubject(), $message, "From:{$this->_from}\r\n{$returnPath}")) {
+			if (!$this->sendMail($email, $this->getSubject(), $message, "From:{$this->_from}\r\n{$returnPath}")) {
 				throw new TLogException('emaillogroute_mail_failed', $email);
 			}
 		}
+	}
+
+	/**
+	 * Sends one email with PHP's `mail()`.
+	 * @param string $email the recipient address.
+	 * @param string $subject the email subject.
+	 * @param string $message the email body.
+	 * @param string $headers the additional headers.
+	 * @return bool whether the mail was accepted for delivery.
+	 * @since 4.4.0
+	 * @codeCoverageIgnore Sends real mail.
+	 */
+	protected function sendMail(string $email, string $subject, string $message, string $headers): bool
+	{
+		return mail($email, $subject, $message, $headers);
 	}
 
 	/**

@@ -73,7 +73,7 @@ class TFirePhpLogRoute extends TLogRoute implements IOutputLogRoute
 			return;
 		}
 
-		if (headers_sent()) {
+		if ($this->getHeadersSent()) {
 			echo '
 				<div style="width:100%; background-color:darkred; color:#FFF; padding:2px">
 					TFirePhpLogRoute.GroupLabel "<i>' . $this -> getGroupLabel() . '</i>" -
@@ -103,6 +103,16 @@ class TFirePhpLogRoute extends TLogRoute implements IOutputLogRoute
 		}
 		$firephp->log(sPrintF('%0.6f', $meta['total']), 'Cumulated Time');
 		$firephp->groupEnd();
+	}
+
+	/**
+	 * Returns whether PHP has sent the HTTP headers; FirePHP writes its log into headers.
+	 * @return bool whether the headers are sent.
+	 * @since 4.4.0
+	 */
+	protected function getHeadersSent(): bool
+	{
+		return headers_sent();
 	}
 
 	/**
