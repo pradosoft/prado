@@ -2,6 +2,7 @@
 
 namespace Prado\Test\Unit\Util\Log;
 
+use Prado\Util\Helpers\TProcessHelper;
 use Prado\Util\Log\TLogger;
 use Prado\Util\Log\TSysLogRoute;
 use Prado\Util\Log\TFileLogRoute;
@@ -96,6 +97,9 @@ class TFileLogRouteTest extends \PHPUnit\Framework\TestCase
 	{
 		if (function_exists('posix_geteuid') && posix_geteuid() === 0) {
 			$this->markTestSkipped('The root user writes into a read-only directory.');
+		}
+		if (TProcessHelper::isSystemWindows()) {
+			$this->markTestSkipped('Windows ignores the permission bits of a directory.');
 		}
 		$dir = $this->makeTempDirectory('prado_filelog_');
 		mkdir($dir . DIRECTORY_SEPARATOR . 'readonly', 0o500);
