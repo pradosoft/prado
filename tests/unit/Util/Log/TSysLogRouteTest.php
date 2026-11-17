@@ -140,8 +140,8 @@ class TSysLogRouteTest extends \PHPUnit\Framework\TestCase
 	public function testSetFacilityInteger()
 	{
 		$route = new TTestSysLogRoute();
-		$route->setFacility(LOG_LOCAL3);
-		$this->assertSame(LOG_LOCAL3, $route->getFacility());
+		$route->setFacility(LOG_MAIL);
+		$this->assertSame(LOG_MAIL, $route->getFacility());
 
 		$route->setFacility(LOG_AUTH);
 		$this->assertSame(defined('LOG_AUTHPRIV') ? LOG_AUTHPRIV : LOG_AUTH, $route->getFacility());

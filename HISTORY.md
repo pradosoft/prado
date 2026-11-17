@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TSysLogRoute::setFacility()` works on Windows, which does not define `LOG_LOCAL0` to `LOG_LOCAL7`; it threw an `Error` for an undefined constant. (belisoful)
 BUG: Issue #1497 - `TFirebugLogRoute` writes the logs only for a `TPageService` page and encodes invalid UTF-8 as U+FFFD; it threw outside a page service and wrote a serialized PHP array as its script. (belisoful)
 BUG: Issue #1497 - `TSysLogRoute::setFacility()` throws `TConfigurationException` for an unknown facility name; it threw a `TypeError`. (belisoful)
 BUG: Issue #1497 - `TEmailLogRoute` sends `DEFAULT_SUBJECT` when no `Subject` is set; it sent an empty subject. (belisoful)
