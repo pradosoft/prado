@@ -165,12 +165,13 @@ class TSysLogRoute extends TLogRoute
 
 	/**
 	 * This sets the `openlog` flags.  It can be an integer, a string or an array of strings.
-	 * As a string, the delimiters are ',' and '|' acting identically.
+	 * As a string, the delimiters are ',' and '|' acting identically.  Flag names are
+	 * case-insensitive, and empty names are skipped.
 	 *
 	 * By setting to null, this will default to `LOG_ODELAY | LOG_PID`.
 	 * @param null|int|string|string[] $value the options for syslog
+	 * @throws TConfigurationException When a flag bit or flag name is not valid.
 	 * @return static The current object.
-	 * @throw TConfigurationException When the Flags are not valid.
 	 */
 	public function setSysLogFlags($value): static
 	{
@@ -196,14 +197,17 @@ class TSysLogRoute extends TLogRoute
 			} else {
 				$value = array_map('strtoupper', $value);
 			}
-			$options = array_map('trim', $value);
-			$this->_sysLogFlags = 0;
-			while (count($options)) {
-				$option = array_pop($options);
-				if (isset($_flagsMap[$option])) {
-					$this->_sysLogFlags |= $_flagsMap[$option];
+			$flags = 0;
+			foreach (array_map('trim', $value) as $option) {
+				if ($option === '') {
+					continue;
 				}
+				if (!isset($_flagsMap[$option])) {
+					throw new TConfigurationException('syslogroute_bad_flags', $option);
+				}
+				$flags |= $_flagsMap[$option];
 			}
+			$this->_sysLogFlags = $flags;
 		}
 		return $this;
 	}
