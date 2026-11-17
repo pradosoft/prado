@@ -90,10 +90,8 @@ class TFirePhpLogRoute extends TLogRoute implements IOutputLogRoute
 		$firephp->group($this->getGroupLabel(), ['Collapsed' => true]);
 		$firephp->log('Time,  Message');
 
-		$startTime = $_SERVER["REQUEST_TIME_FLOAT"];
-		$c = count($logs);
-		for ($i = 0, $n = $c; $i < $n; ++$i) {
-			$message = $logs[$i][TLogger::LOG_MESSAGE];
+		for ($i = 0, $n = count($logs); $i < $n; ++$i) {
+			$message = $this->messageToString($logs[$i][TLogger::LOG_MESSAGE]);
 			$level = $logs[$i][TLogger::LOG_LEVEL];
 			$category = $logs[$i][TLogger::LOG_CATEGORY];
 			$delta = $logs[$i]['delta'];

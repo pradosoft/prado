@@ -199,7 +199,7 @@ class TBrowserLogRoute extends TLogRoute implements IOutputLogRoute
 		if ($this->_addPrefix) {
 			$msg = $this->formatLogMessage($log);
 		} else {
-			$msg = $log[0];
+			$msg = $this->messageToString($log[TLogger::LOG_MESSAGE]);
 		}
 		$msg = preg_replace('/\(line[^\)]+\)$/', '', $msg); //remove line number info
 

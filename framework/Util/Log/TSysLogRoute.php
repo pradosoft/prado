@@ -272,13 +272,7 @@ class TSysLogRoute extends TLogRoute
 	 */
 	public function formatLogMessage(array $log): string
 	{
-		if (!is_string($log[TLogger::LOG_MESSAGE])) {
-			if ($log[TLogger::LOG_MESSAGE] instanceof \Exception || $log[TLogger::LOG_MESSAGE] instanceof \Throwable) {
-				$log[TLogger::LOG_MESSAGE] = (string) $log[TLogger::LOG_MESSAGE];
-			} else {
-				$log[TLogger::LOG_MESSAGE] = \Prado\Util\TVarDumper::dump($log[TLogger::LOG_MESSAGE]);
-			}
-		}
+		$log[TLogger::LOG_MESSAGE] = $this->messageToString($log[TLogger::LOG_MESSAGE]);
 
 		$prefix = $this->getLogPrefix($log);
 
