@@ -418,13 +418,27 @@ class THttpUtilityTest extends \PHPUnit\Framework\TestCase
 		self::assertTrue(THttpUtility::isLocalUrl('', false, 'mysite.com'));
 	}
 
-	public function testIsLocalUrlProtocolRelativeUrlTreatedAsRelative(): void
+	public function testIsLocalUrlProtocolRelativeUrlComparesItsHost(): void
 	{
-		// Protocol-relative URLs (//host/path) contain no "://" so isLocalUrl treats
-		// them as relative (local). Callers that need strict host matching should
-		// expand //host/path to https://host/path first.
-		self::assertTrue(THttpUtility::isLocalUrl('//evil.com/attack.js', false, 'mysite.com'));
-		self::assertTrue(THttpUtility::isLocalUrl('//evil.com/attack.js', true, 'mysite.com'));
+		self::assertFalse(THttpUtility::isLocalUrl('//evil.com/attack.js', false, 'mysite.com'));
+		self::assertFalse(THttpUtility::isLocalUrl('//evil.com/attack.js', true, 'mysite.com'));
+		self::assertTrue(THttpUtility::isLocalUrl('//MySite.com/app.js', false, 'mysite.com'));
+		self::assertFalse(THttpUtility::isLocalUrl('//assets.mysite.com/app.js', false, 'mysite.com'));
+		self::assertTrue(THttpUtility::isLocalUrl('//assets.mysite.com/app.js', true, 'mysite.com'));
+	}
+
+	public function testIsLocalUrlBackslashProtocolRelativeUrlComparesItsHost(): void
+	{
+		foreach (['/\\evil.com/x.js', '\\/evil.com/x.js', '\\\\evil.com/x.js'] as $url) {
+			self::assertFalse(THttpUtility::isLocalUrl($url, false, 'mysite.com'), $url);
+		}
+		self::assertTrue(THttpUtility::isLocalUrl('/\\mysite.com/x.js', false, 'mysite.com'));
+	}
+
+	public function testIsLocalUrlProtocolRelativeWithoutHostIsRemote(): void
+	{
+		self::assertFalse(THttpUtility::isLocalUrl('///x.js', false, 'mysite.com'));
+		self::assertFalse(THttpUtility::isLocalUrl('//', false, 'mysite.com'));
 	}
 
 	public function testIsLocalUrlExactHostMatchIsLocal(): void

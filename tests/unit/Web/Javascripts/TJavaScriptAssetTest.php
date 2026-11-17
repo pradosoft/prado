@@ -574,4 +574,15 @@ class TJavaScriptAssetTest extends \PHPUnit\Framework\TestCase
 		$asset = new TJavaScriptAsset(self::REMOTE); // https://cdn.example.com/script.js
 		$this->assertSame('sha384-NORMHASH', $asset->getIntegrity());
 	}
+
+	public function testToStringProtocolRelativeUrlIsRemote(): void
+	{
+		$asset = new TJavaScriptAsset('//cdn.example.com/script.js');
+		$asset->setIntegrity('sha384-MYFINGERPRINT');
+		$this->assertStringContainsString('integrity="sha384-MYFINGERPRINT" crossorigin="anonymous"', (string) $asset);
+
+		TJavaScript::setRequireScriptIntegrity(true);
+		$this->expectException(TConfigurationException::class);
+		(new TJavaScriptAsset('//cdn.example.com/other.js'))->__toString();
+	}
 }

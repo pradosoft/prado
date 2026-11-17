@@ -121,16 +121,14 @@ class THttpUtility
 	/**
 	 * Returns `true` when `$url` resolves to the current server (local); `false` otherwise.
 	 *
-	 * A URL is local when it is relative (no `://`), its host exactly matches the
-	 * server name, or — when `$matchSubdomains` is `true` — its host is a subdomain
-	 * of the server name (e.g. `assets.mysite.com` when serving `mysite.com`).
+	 * A URL is local when it is relative (no `://` and no leading `//`), its host exactly
+	 * matches the server name, or, when `$matchSubdomains` is `true`, its host is a
+	 * subdomain of the server name (e.g. `assets.mysite.com` when serving `mysite.com`).
+	 * A protocol-relative URL (`//host/path`) has a host and is compared as an absolute
+	 * URL is.  A leading `/\`, `\/`, or `\\` is read as `//`, as browsers read it.
 	 * The server name defaults to {@see \Prado\Web\THttpRequest::getServerName()};
 	 * pass `$serverName` to override it in tests or CLI contexts.
-	 * Returns `false` when the URL is absolute and no server name is available.
-	 *
-	 * **Note:** protocol-relative URLs (`//host/path`) contain no `://` and are
-	 * therefore treated as relative — i.e. local. If protocol-relative URLs must be
-	 * tested against the server name, expand them to `https://host/path` first.
+	 * Returns `false` when the URL has a host and no server name is available.
 	 *
 	 * @param string      $url            URL to test.
 	 * @param bool        $matchSubdomains Also treat subdomains as local. Default: `false`.
@@ -141,12 +139,12 @@ class THttpUtility
 	 */
 	public static function isLocalUrl(string $url, bool $matchSubdomains = false, ?string $serverName = null): bool
 	{
-		// Relative URLs have no host component — always local.
-		if (!str_contains($url, '://')) {
+		$protocolRelative = strtr(substr($url, 0, 2), '\\', '/') === '//';
+		if (!$protocolRelative && !str_contains($url, '://')) {
 			return true;
 		}
 
-		$urlHost = parse_url($url, PHP_URL_HOST);
+		$urlHost = parse_url($protocolRelative ? '//' . substr($url, 2) : $url, PHP_URL_HOST);
 		if ($urlHost === null || $urlHost === false) {
 			return false;
 		}
