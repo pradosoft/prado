@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TCorsModule::isOriginAllowed()` ignores a blank entry in `AllowOrigin`; it allowed an empty origin. (belisoful)
 BUG: Issue #1497 - `THeaderParametersTrait::setParameters()` keeps a semicolon inside a quoted value, removes backslash escapes from a double-quoted value, and stores no empty value; `TContentDisposition` and `TMediaType` read such a header back unchanged. (belisoful)
 BUG: Issue #1497 - `TJavaScript::encode()` passes `$encodeEmptyStrings` on when it encodes an object. (belisoful)
 BUG: Issue #1497 - `TJavaScript::encode()` writes NaN as `Number.NaN`; it wrote `NAN`, which is undefined in JavaScript. (belisoful)
