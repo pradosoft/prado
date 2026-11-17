@@ -460,4 +460,53 @@ class TXmlDocumentTest extends \PHPUnit\Framework\TestCase
 			self::assertNull($child->getParent(), $label);
 		}
 	}
+
+	public function testXPathResolvesAPrefixDeclaredOnADescendant()
+	{
+		$xmldoc = new TXmlDocument();
+		self::assertTrue($xmldoc->loadFromString('<root><a xmlns:q="urn:q"><q:i/></a><b><q:j xmlns:q="urn:q"/></b></root>'));
+		$i = $xmldoc[0][0];
+		$j = $xmldoc[1][0];
+
+		self::assertSame([$i, $j], $xmldoc->xpath('//q:*')->toArray());
+		self::assertSame([$j], $xmldoc[1]->xpath('//q:j')->toArray());
+		self::assertFalse($xmldoc->getHasAttribute());
+	}
+
+	public function testXPathBindsAPrefixToItsFirstDeclaration()
+	{
+		$xmldoc = new TXmlDocument();
+		self::assertTrue($xmldoc->loadFromString('<root xmlns:p="urn:root"><p:x/><c xmlns:p="urn:c"><p:y/></c></root>'));
+		self::assertSame([$xmldoc[0]], $xmldoc->xpath('//p:*')->toArray());
+		self::assertSame([$xmldoc[1][0]], $xmldoc[1]->xpath('//p:*')->toArray());
+
+		$siblings = new TXmlDocument();
+		self::assertTrue($siblings->loadFromString('<root><a xmlns:p="urn:a"><p:i/></a><b xmlns:p="urn:b"><p:j/></b></root>'));
+		self::assertSame([$siblings[0][0]], $siblings->xpath('//p:*')->toArray());
+		self::assertSame([$siblings[1][0]], $siblings->xpath('//*[namespace-uri()="urn:b"]')->toArray());
+	}
+
+	public function testXPathMatchesASubElementByAnInheritedPrefix()
+	{
+		$xmldoc = new TXmlDocument();
+		self::assertTrue($xmldoc->loadFromString('<root xmlns:x="urn:x"><x:g><x:h/></x:g></root>'));
+		$g = $xmldoc[0];
+
+		self::assertSame([$g], $g->xpath('/x:g')->toArray());
+		self::assertSame([$g, $g[0]], $g->xpath('//x:*')->toArray());
+		self::assertFalse($g->getHasAttribute());
+	}
+
+	public function testXPathDoesNotRegisterTheDefaultNamespaceOrAnUndeclaredPrefix()
+	{
+		$xmldoc = new TXmlDocument();
+		self::assertTrue($xmldoc->loadFromString('<root><d xmlns="urn:d"><e/></d></root>'));
+		$e = $xmldoc[0][0];
+
+		self::assertSame([], $xmldoc->xpath('//e')->toArray());
+		self::assertSame([$e], $xmldoc->xpath('//*[local-name()="e"]')->toArray());
+
+		$this->expectException(\Prado\Exceptions\TPhpErrorException::class);
+		$xmldoc->xpath('//z:e');
+	}
 }

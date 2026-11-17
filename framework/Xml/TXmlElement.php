@@ -567,9 +567,31 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 	}
 
 	/**
+	 * Registers the namespace prefixes in scope anywhere in the queried document with its XPath object.
+	 * A prefix binds to its first declaration in document order, so this element's binding applies
+	 * before a descendant's redeclaration of the prefix.
+	 * The default namespace has no prefix in XPath 1.0 and is not registered.
+	 * This method is used internally by the xpath() method.
+	 * @param \DOMXPath $xpath The XPath object of the serialized element
+	 * @since 4.4.0
+	 */
+	protected function registerXPathNamespaces(\DOMXPath $xpath): void
+	{
+		$registered = [];
+		foreach ($xpath->query('//namespace::*') as $namespace) {
+			$prefix = $namespace->localName;
+			if ($prefix !== 'xml' && $prefix !== 'xmlns' && !isset($registered[$prefix])) {
+				$xpath->registerNamespace($prefix, $namespace->nodeValue);
+				$registered[$prefix] = true;
+			}
+		}
+	}
+
+	/**
 	 * Find elements matching an XPath expression.
 	 * This method allows you to use XPath expressions to query elements within the XML structure.
 	 * The namespace declarations of the ancestors apply, so a prefix declared on an ancestor resolves.
+	 * A prefix declared on a descendant resolves too; see {@see registerXPathNamespaces()}.
 	 * The query runs on this element and its descendants, with this element as the document element,
 	 * so `/tag`, `.`, and `//*` match this element as well.
 	 * The results are in document order.
@@ -588,6 +610,7 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 			$doc->loadXML($this->toString(0, false));
 
 			$xpathObj = new \DOMXPath($doc);
+			$this->registerXPathNamespaces($xpathObj);
 			$nodes = $xpathObj->query($xpath);
 
 			$results = new TList();

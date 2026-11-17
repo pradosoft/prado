@@ -12,7 +12,7 @@ TSoapServer wraps PHP's SoapServer class to provide SOAP/WSDL web services. It a
 
 ## Key Properties/Methods
 
-- **`getID()` / `setID($id)`** - Gets/sets the SOAP server ID.
+- **`getID()` / `setID($id)`** - Gets/sets the SOAP server ID. An ID ending in `.wsdl` names a WSDL request and throws `soapserver_id_invalid`.
 - **`getProvider()` / `setProvider($provider)`** - Gets/sets the SOAP provider class (fully namespaced).
 - **`getUri()` / `setUri($uri)`** - Gets/sets the SOAP service URI.
 - **`getWsdlUri()` / `setWsdlUri($value)`** - Gets/sets the WSDL URI or auto-generates from provider.
@@ -23,7 +23,7 @@ TSoapServer wraps PHP's SoapServer class to provide SOAP/WSDL web services. It a
 - **`getSessionPersistent()` / `setSessionPersistent($value)`** - Gets/sets session persistence (SOAP_PERSISTENCE_SESSION).
 - **`getClassMaps()` / `setClassMaps($classes)`** - Gets/sets complex type class mappings.
 - **`run()`** - Handles the SOAP request.
-- **`fault($title, $details, $code, $actor, $name)`** - Generates a SOAP fault message.
+- **`fault($title, $details, $code, $actor, $name)`** - Sends a SOAP fault through `SoapServer::fault()`, which ends the script.
 - **`faultException($exception)`** - Protected. Sends the fault for an exception the provider throws: in Debug mode its message with the exception as detail; otherwise the message of an `IUserException`, or the `errorhandler_internal_error` sentence with the exception logged. A provider's `SoapFault` is sent by `SoapServer` itself and does not reach it (4.4.0).
 - **`getRequestedMethod()`** - Returns the SOAP method requested from the message.
 

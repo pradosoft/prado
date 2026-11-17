@@ -71,6 +71,7 @@ class TShellLoginBehavior extends \Prado\Util\TBehavior
 	 * Reads a line from standard input.
 	 * @return string the line without its line ending, or an empty string at the end of input.
 	 * @since 4.4.0
+	 * @codeCoverageIgnore Reads the process standard input.
 	 */
 	protected function readLine(): string
 	{

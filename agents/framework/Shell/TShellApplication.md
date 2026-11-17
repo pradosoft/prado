@@ -45,7 +45,7 @@ vendor/bin/prado-cli [-d=<folder>] [--quiet[=<level>]] <command>[/<method>] [arg
 
 `run()` is the main entry point. It:
 
-1. Strips `$argv[0]` (script name) and stores the rest via `setArguments()`.
+1. Strips the script name, `$args[0]`, and stores the rest via `setArguments()`. A null `$args` reads `$_SERVER['argv']`.
 2. Maps `$_SERVER['LANG']` to HTTP language/charset headers (`detectShellLanguageCharset()`).
 3. Creates the shell writer (`createShellWriter()` → `createStdOutWriter()`).
 4. Registers the `--quiet` / `-q` application option.

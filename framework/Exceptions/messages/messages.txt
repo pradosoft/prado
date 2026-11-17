@@ -710,6 +710,7 @@ bitwriter_64bit_php_required			= Writing {0} bits requires a 64-bit PHP build.
 bitwriter_invalid_float_bits			= Cannot write a {0}-bit float; only 8, 16, 32, or 64 bits are supported.
 
 soapservice_configfile_invalid			= TSoapService.ConfigFile ''{0}'' does not exist. Note, it has to be specified in a namespace format and the file extension must be '.xml' or '.php'.
+soapservice_configfile_unreadable		= TSoapService.ConfigFile ''{0}'' holds no configuration. An XML file must hold an XML document, and a PHP file must return an array.
 soapservice_request_invalid				= SOAP server ''{0}'' not found.
 soapservice_server_invalid				= TSoapService SOAP server class ''{0}'' is invalid. It must be TSoapServer or a subclass.
 soapservice_serverid_required			= <soap> element must have 'id' attribute.

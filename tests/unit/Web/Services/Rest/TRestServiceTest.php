@@ -199,6 +199,82 @@ class FailingResource extends TRestResource
 	}
 }
 
+/**
+ * Handlers whose response or error holds what JSON cannot encode.
+ */
+class EncodingResource extends TRestResource
+{
+	#[TRestRoute('GET', 'latin1')]
+	public function latin1(): array
+	{
+		// a name stored in ISO-8859-1
+		$this->notFound("No user b\xffd.");
+	}
+
+	#[TRestRoute('GET', 'unencodable')]
+	public function unencodable(): array
+	{
+		$this->setStatusCode(201);
+		$this->addResponseHeader('X-Test', 'yes');
+		return ["\xff"];
+	}
+
+	#[TRestRoute('GET', 'infinite')]
+	public function infinite(): array
+	{
+		throw TRestException::unprocessable(['ratio' => INF], 'Out of range.');
+	}
+}
+
+/**
+ * A resource that is not a component, so it takes no configured properties.
+ */
+class PlainResource implements IRestResource
+{
+	public function getRoutes(): array
+	{
+		return ['ping' => new TRestRoute('GET', 'ping')];
+	}
+
+	public function getRoutePrefix(): string
+	{
+		return '';
+	}
+
+	public function setRoute(TRestRoutePattern $route, array $parameters): void
+	{
+	}
+
+	public function getRoute(): ?TRestRoutePattern
+	{
+		return null;
+	}
+
+	public function getPathParameters(): array
+	{
+		return [];
+	}
+
+	public function authorize(TRestRoutePattern $route): void
+	{
+	}
+
+	public function getStatusCode(): int
+	{
+		return 200;
+	}
+
+	public function getResponseHeaders(): array
+	{
+		return [];
+	}
+
+	public function ping(): ?array
+	{
+		return null;
+	}
+}
+
 class BadRoutesResource extends TRestResource
 {
 	public function getRoutes(): array
@@ -324,6 +400,14 @@ class TRestServiceTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame(['class' => 'B'], $config['resources'][1]);
 		$this->assertSame(['verbs' => 'GET', 'pattern' => 'x/{id}', 'class' => 'A', 'method' => 'm', 'parameters' => ['id' => '\d+'], 'query' => ['mode' => 'edit']], $config['routes'][0]);
 		$this->assertSame(['prefix' => 'g', 'include' => ['F']], $config['groups'][0]);
+	}
+
+	/**
+	 * A child element the service does not configure from is ignored.
+	 */
+	public function testXmlToArrayIgnoresAnUnknownElement(): void
+	{
+		$this->assertSame(['BasePath' => 'api'], $this->service->xmlToArray($this->xml('<service BasePath="api"><description /></service>')));
 	}
 
 	public function testResourceRoutesComeFromAttributes(): void
@@ -495,6 +579,12 @@ class TRestServiceTest extends \PHPUnit\Framework\TestCase
 	{
 		$this->expectException(TConfigurationException::class);
 		$this->load(['include' => 'RestFixtures.missing']);
+	}
+
+	public function testIncludeOfAnUnknownNamespaceThrows(): void
+	{
+		$this->expectException(TConfigurationException::class);
+		$this->load(['include' => 'TRestNoSuchAlias.routes']);
 	}
 
 	public function testAuthorizationRulesFollowTheHierarchy(): void
@@ -701,6 +791,23 @@ class TRestServiceTest extends \PHPUnit\Framework\TestCase
 		$this->service->constructUrl('nope');
 	}
 
+	public function testGetRouteByNameOfAnotherRouteIsNull(): void
+	{
+		$this->load(['resources' => [['class' => SingleRouteResource::class]]]);
+		$this->assertNull($this->service->getRouteByName('nope'));
+		$this->assertSame('SingleRouteResource.ping', $this->service->getRouteByName('SingleRouteResource.ping')?->getName());
+	}
+
+	/**
+	 * A service without an ID takes the whole path info as the route path.
+	 */
+	public function testRoutePathOfAServiceWithoutAnId(): void
+	{
+		$this->service->setID('');
+		$this->setPath('/rest/users');
+		$this->assertSame('rest/users', $this->service->getRoutePath());
+	}
+
 	// ── Dispatch ──────────────────────────────────────────────────────────────
 
 	public function testDispatchCastsScalarsAndUsesDefaults(): void
@@ -900,6 +1007,63 @@ class TRestServiceTest extends \PHPUnit\Framework\TestCase
 		$this->assertArrayNotHasKey('detail', json_decode($response->body, true));
 	}
 
+	/**
+	 * A detail that is not UTF-8 is written with U+FFFD in place of its invalid bytes.
+	 */
+	public function testRunWritesAProblemDocumentWhoseDetailIsNotUtf8(): void
+	{
+		$response = $this->runWith('GET', '/api/latin1', ['resources' => [['class' => EncodingResource::class]]]);
+		$this->assertSame(404, $response->status);
+		$this->assertSame("No user b\u{FFFD}d.", json_decode($response->body, true)['detail']);
+	}
+
+	/**
+	 * An error value JSON cannot hold is replaced, and the rest of the document is kept.
+	 */
+	public function testRunWritesAProblemDocumentWithAnUnencodableError(): void
+	{
+		$response = $this->runWith('GET', '/api/infinite', ['resources' => [['class' => EncodingResource::class]]]);
+		$this->assertSame(422, $response->status);
+		$document = json_decode($response->body, true);
+		$this->assertSame('Out of range.', $document['detail']);
+		$this->assertSame(['ratio' => 0], $document['errors']);
+	}
+
+	/**
+	 * A body that does not encode is a 500 problem document without the status
+	 * and headers the resource set for its body.
+	 */
+	public function testRunWithAnUnencodableBodySendsNoResourceHeaders(): void
+	{
+		$this->service->setExposeErrors(false);
+		$response = $this->runWith('GET', '/api/unencodable', ['resources' => [['class' => EncodingResource::class]]]);
+		$this->assertSame(500, $response->status);
+		$this->assertSame(TMediaType::PROBLEM_JSON, $response->contentType);
+		$this->assertNull($response->headerLine('X-Test'));
+		$this->assertSame(['status' => 500, 'title' => 'Internal Server Error'], json_decode($response->body, true));
+	}
+
+	/**
+	 * A handler returning null sends its status without a body.
+	 */
+	public function testRunWithANullResultSendsNoBody(): void
+	{
+		$response = $this->runWith('GET', '/api/ping', ['resources' => [['class' => PlainResource::class]]]);
+		$this->assertSame(200, $response->status);
+		$this->assertSame('', $response->contentType);
+		$this->assertSame('', $response->body);
+	}
+
+	/**
+	 * Configured properties are not applied to a resource that is not a component.
+	 */
+	public function testApplyResourcePropertiesSkipsAResourceThatIsNotAComponent(): void
+	{
+		$resource = new PlainResource();
+		$this->service->applyResourceProperties($resource, ['Missing' => 'value']);
+		$this->assertSame([], get_object_vars($resource));
+	}
+
 	public function testRunAuthorizeRefuses(): void
 	{
 		$response = $this->runWith('GET', '/api/fail/auth', ['resources' => [['class' => FailingResource::class]]]);
@@ -928,6 +1092,8 @@ class TRestServiceTest extends \PHPUnit\Framework\TestCase
 		$this->service->handleUnauthorized($application, null);
 		$this->assertSame('', $response->body);
 		PradoUnit::setProp($application, '_requestCompleted', true);
+		$this->service->handleUnauthorized($application, null);
+		$this->assertSame('', $response->body);
 		$response->status = 401;
 		$this->service->handleUnauthorized($application, null);
 		$this->assertSame(401, $response->status);
