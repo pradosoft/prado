@@ -11,6 +11,7 @@ use Prado\TApplicationComponent;
 use Prado\TModule;
 use Prado\Test\Unit\Harness\TTestApplication;
 use Prado\Test\Unit\PradoUnit;
+use Prado\Util\Helpers\TProcessHelper;
 
 /**
  * An {@see ICache} module that counts its flushes.
@@ -160,6 +161,9 @@ class TFlushCachesActionTest extends TestCase
 
 	public function testFlushAllKeepsAnUndeletableFxEventCache(): void
 	{
+		if (TProcessHelper::isSystemWindows()) {
+			$this->markTestSkipped('A read-only Windows directory still allows deleting a file inside it.');
+		}
 		file_put_contents($this->cacheFile(), serialize([]));
 		chmod($runtime = $this->_app->getRuntimePath(), 0o555);
 		try {

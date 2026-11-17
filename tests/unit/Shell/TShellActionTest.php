@@ -9,6 +9,7 @@ use Prado\Shell\TShellWriter;
 use Prado\Test\Unit\Harness\IO\TTestCapturingTextWriter;
 use Prado\Test\Unit\Harness\TTestApplication;
 use Prado\Test\Unit\Harness\TTestShellApplication;
+use Prado\Util\Helpers\TProcessHelper;
 
 /**
  * A shell action whose name holds a regular expression metacharacter.
@@ -217,6 +218,18 @@ class TShellActionTest extends TestCase
 		);
 	}
 
+	/**
+	 * Asserts the permission bits of `$dir`; Windows has no POSIX directory modes.
+	 */
+	private function assertDirectoryMode(int $mode, string $dir): void
+	{
+		if (TProcessHelper::isSystemWindows()) {
+			return;
+		}
+		clearstatcache();
+		$this->assertSame($mode, fileperms($dir) & 0o777);
+	}
+
 	public function testCreateDirectoryCreatesItOnceAndSetsItsMode(): void
 	{
 		$action = new TShellActionTestParamAction();
@@ -227,14 +240,12 @@ class TShellActionTest extends TestCase
 
 			$this->assertDirectoryExists($dir);
 			$this->assertSame("creating $dir\n", $text->getCaptured());
-			clearstatcache();
-			$this->assertSame(0o700, fileperms($dir) & 0o777);
+			$this->assertDirectoryMode(0o700, $dir);
 
 			$action->callCreateDirectory($dir, 0o750);
 
 			$this->assertSame("creating $dir\n", $text->getCaptured());
-			clearstatcache();
-			$this->assertSame(0o750, fileperms($dir) & 0o777);
+			$this->assertDirectoryMode(0o750, $dir);
 		} finally {
 			@rmdir($dir);
 		}

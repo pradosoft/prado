@@ -28,6 +28,7 @@ use Prado\TModule;
 use Prado\Test\Unit\Harness\IO\TTestCapturingTextWriter;
 use Prado\Test\Unit\Harness\TTestShellApplication;
 use Prado\Test\Unit\PradoUnit;
+use Prado\Util\Helpers\TProcessHelper;
 
 /**
  * A shell application whose error stream is a memory stream.
@@ -1000,6 +1001,9 @@ class TShellApplicationTest extends \PHPUnit\Framework\TestCase
 
 	public function testResolveRuntimePathUsesTheTempDirectoryForAReadOnlyBasePath(): void
 	{
+		if (TProcessHelper::isSystemWindows()) {
+			$this->markTestSkipped('A read-only Windows directory still allows creating a directory inside it.');
+		}
 		[$basePath, $runtimePath] = $this->resolveRuntimePath(function ($basePath) {
 			chmod($basePath, 0o555);
 		});
@@ -1009,6 +1013,9 @@ class TShellApplicationTest extends \PHPUnit\Framework\TestCase
 
 	public function testResolveRuntimePathKeepsAnExistingTempRuntime(): void
 	{
+		if (TProcessHelper::isSystemWindows()) {
+			$this->markTestSkipped('A read-only Windows directory still allows creating a directory inside it.');
+		}
 		[$basePath, $runtimePath] = $this->resolveRuntimePath(function ($basePath) {
 			chmod($basePath, 0o555);
 			mkdir($this->tempRuntimePath($basePath), 0o777, true);
@@ -1019,6 +1026,9 @@ class TShellApplicationTest extends \PHPUnit\Framework\TestCase
 
 	public function testResolveRuntimePathThrowsWithoutAWritableDirectory(): void
 	{
+		if (TProcessHelper::isSystemWindows()) {
+			$this->markTestSkipped('A read-only Windows directory still allows creating a directory inside it.');
+		}
 		$this->expectException(TConfigurationException::class);
 
 		$this->resolveRuntimePath(function ($basePath) {
