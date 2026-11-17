@@ -402,6 +402,14 @@ class TRestServiceTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame(['prefix' => 'g', 'include' => ['F']], $config['groups'][0]);
 	}
 
+	/**
+	 * A child element the service does not configure from is ignored.
+	 */
+	public function testXmlToArrayIgnoresAnUnknownElement(): void
+	{
+		$this->assertSame(['BasePath' => 'api'], $this->service->xmlToArray($this->xml('<service BasePath="api"><description /></service>')));
+	}
+
 	public function testResourceRoutesComeFromAttributes(): void
 	{
 		$this->load('<service><resource class="Prado\Test\Unit\Web\Services\Rest\UsersFixtureResource" /></service>');
@@ -571,6 +579,12 @@ class TRestServiceTest extends \PHPUnit\Framework\TestCase
 	{
 		$this->expectException(TConfigurationException::class);
 		$this->load(['include' => 'RestFixtures.missing']);
+	}
+
+	public function testIncludeOfAnUnknownNamespaceThrows(): void
+	{
+		$this->expectException(TConfigurationException::class);
+		$this->load(['include' => 'TRestNoSuchAlias.routes']);
 	}
 
 	public function testAuthorizationRulesFollowTheHierarchy(): void
@@ -775,6 +789,23 @@ class TRestServiceTest extends \PHPUnit\Framework\TestCase
 	{
 		$this->expectException(TInvalidDataValueException::class);
 		$this->service->constructUrl('nope');
+	}
+
+	public function testGetRouteByNameOfAnotherRouteIsNull(): void
+	{
+		$this->load(['resources' => [['class' => SingleRouteResource::class]]]);
+		$this->assertNull($this->service->getRouteByName('nope'));
+		$this->assertSame('SingleRouteResource.ping', $this->service->getRouteByName('SingleRouteResource.ping')?->getName());
+	}
+
+	/**
+	 * A service without an ID takes the whole path info as the route path.
+	 */
+	public function testRoutePathOfAServiceWithoutAnId(): void
+	{
+		$this->service->setID('');
+		$this->setPath('/rest/users');
+		$this->assertSame('rest/users', $this->service->getRoutePath());
 	}
 
 	// ── Dispatch ──────────────────────────────────────────────────────────────
@@ -1012,6 +1043,27 @@ class TRestServiceTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame(['status' => 500, 'title' => 'Internal Server Error'], json_decode($response->body, true));
 	}
 
+	/**
+	 * A handler returning null sends its status without a body.
+	 */
+	public function testRunWithANullResultSendsNoBody(): void
+	{
+		$response = $this->runWith('GET', '/api/ping', ['resources' => [['class' => PlainResource::class]]]);
+		$this->assertSame(200, $response->status);
+		$this->assertSame('', $response->contentType);
+		$this->assertSame('', $response->body);
+	}
+
+	/**
+	 * Configured properties are not applied to a resource that is not a component.
+	 */
+	public function testApplyResourcePropertiesSkipsAResourceThatIsNotAComponent(): void
+	{
+		$resource = new PlainResource();
+		$this->service->applyResourceProperties($resource, ['Missing' => 'value']);
+		$this->assertSame([], get_object_vars($resource));
+	}
+
 	public function testRunAuthorizeRefuses(): void
 	{
 		$response = $this->runWith('GET', '/api/fail/auth', ['resources' => [['class' => FailingResource::class]]]);
@@ -1040,6 +1092,8 @@ class TRestServiceTest extends \PHPUnit\Framework\TestCase
 		$this->service->handleUnauthorized($application, null);
 		$this->assertSame('', $response->body);
 		PradoUnit::setProp($application, '_requestCompleted', true);
+		$this->service->handleUnauthorized($application, null);
+		$this->assertSame('', $response->body);
 		$response->status = 401;
 		$this->service->handleUnauthorized($application, null);
 		$this->assertSame(401, $response->status);

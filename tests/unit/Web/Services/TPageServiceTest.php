@@ -282,6 +282,17 @@ class TPageServiceTest extends \PHPUnit\Framework\TestCase
 	}
 
 	/**
+	 * setBasePath() refuses a namespace that names a file.
+	 */
+	public function testSetBasePathRefusesANamespaceThatIsNotADirectory()
+	{
+		$service = $this->service();
+		Prado::setPathOfAlias('PageFixtures', $this->fixturePath('PageServiceApp'));
+		$this->expectException(TConfigurationException::class);
+		$service->setBasePath('PageFixtures.external');
+	}
+
+	/**
 	 * Builds an application base directory in the temporary directory holding
 	 * the given entries, each a file or a directory.
 	 * @param array<string, bool> $entries name => whether it is a directory.
@@ -315,6 +326,28 @@ class TPageServiceTest extends \PHPUnit\Framework\TestCase
 			'a Pages file and a pages directory' => [['Pages' => false, 'pages' => true], 'pages'],
 			'a pages directory' => [['pages' => true], 'pages'],
 		];
+	}
+
+	/**
+	 * The base path falls back to 'pages' when 'Pages' is not a directory, and
+	 * is refused when neither is.
+	 * @dataProvider baseEntriesProvider
+	 * @param array<string, bool> $entries name => whether it is a directory.
+	 * @param ?string $expected the directory taken, null for none.
+	 */
+	public function testBasePathMustBeADirectory(array $entries, ?string $expected)
+	{
+		if (($dir = $this->baseDirectory($entries)) === null) {
+			$this->markTestSkipped('the filesystem is case-insensitive');
+		}
+		$this->_app?->restoreApplication();
+		$this->_app = new TTestApplication($dir);
+		$service = new TPageService();
+		if ($expected === null) {
+			$this->expectException(TConfigurationException::class);
+		}
+		// a case-insensitive filesystem may name the directory 'Pages'
+		$this->assertEqualsIgnoringCase(realpath($dir . DIRECTORY_SEPARATOR . $expected), $service->getBasePath());
 	}
 
 	// -------------------------------------------------------------------------
@@ -585,6 +618,27 @@ class TPageServiceTest extends \PHPUnit\Framework\TestCase
 	}
 
 	/**
+	 * The cache records the application configuration file's time and rebuilds
+	 * the configuration once the file is newer or gone.
+	 */
+	public function testLoadPageConfigFollowsTheApplicationConfigurationFile()
+	{
+		$service = $this->service('PageServiceApp', 'Home');
+		$this->_app->setCache($cache = new TPageServiceArrayCache());
+		$appConfig = $this->fixturePath('PageServiceApp', 'external.xml');
+		$this->_app->setConfigurationFile($appConfig);
+		$key = TPageService::CONFIG_CACHE_PREFIX . $service->getID() . 'Home';
+
+		$first = PradoUnit::invoke($service, 'loadPageConfig', null);
+		$this->assertSame(filemtime($appConfig), $cache->get($key)[1][0]);
+		$this->assertEquals($first, PradoUnit::invoke($service, 'loadPageConfig', null));
+
+		$this->_app->setConfigurationFile($this->fixturePath('PageServiceApp', 'missing.xml'));
+		PradoUnit::invoke($service, 'loadPageConfig', null);
+		$this->assertFalse($cache->get($key)[1][0]);
+	}
+
+	/**
 	 * In Performance mode the cached configuration is taken as current, so the
 	 * timestamps are never consulted.
 	 */
@@ -618,6 +672,23 @@ class TPageServiceTest extends \PHPUnit\Framework\TestCase
 		$service = $this->service('PageServiceApp', 'Home');
 		$config = new TPageServiceStubConfiguration();
 		$config->externals = ['No.Such.File' => ['', true]];
+		$this->expectException(TConfigurationException::class);
+		PradoUnit::invoke($service, 'applyConfiguration', $config);
+	}
+
+	/**
+	 * An external configuration is refused when its namespace does not resolve
+	 * or names no file, whether its condition is true or evaluates to true.
+	 * @dataProvider missingExternalProvider
+	 * @param string $file the namespace of the external configuration.
+	 * @param bool|string $condition its condition.
+	 */
+	public function testApplyConfigurationRefusesAnExternalFileThatIsNotThere(string $file, bool|string $condition)
+	{
+		$service = $this->service('PageServiceApp', 'Home');
+		Prado::setPathOfAlias('PageFixtures', $this->fixturePath('PageServiceApp'));
+		$config = new TPageServiceStubConfiguration();
+		$config->externals = [$file => ['', $condition]];
 		$this->expectException(TConfigurationException::class);
 		PradoUnit::invoke($service, 'applyConfiguration', $config);
 	}
@@ -724,6 +795,37 @@ class TPageServiceTest extends \PHPUnit\Framework\TestCase
 		});
 		$this->expectException(THttpException::class);
 		PradoUnit::invoke($service, 'createPage', 'Missing');
+	}
+
+	/**
+	 * The first additional page path that holds a page is taken.
+	 */
+	public function testCreatePageTakesTheFirstAdditionalPathWithAPage()
+	{
+		$service = $this->service('PageServiceApp', 'Elsewhere');
+		Prado::setPathOfAlias('Application', $this->fixturePath('PageServiceApp'));
+		$pages = realpath($this->fixturePath('PageServiceApp', 'Pages'));
+		$service->attachEventHandler('OnAdditionalPagePaths', fn ($sender, $param) => $pages . DIRECTORY_SEPARATOR . 'Missing');
+		$service->attachEventHandler('OnAdditionalPagePaths', fn ($sender, $param) => $pages . DIRECTORY_SEPARATOR . 'Home');
+		$page = PradoUnit::invoke($service, 'createPage', 'Elsewhere');
+		$this->assertSame(TPage::class, $page::class);
+	}
+
+	/**
+	 * Additional page paths that hold no page leave the page unknown.
+	 */
+	public function testCreatePageWithAdditionalPathsWithoutAPageIsNotFound()
+	{
+		$service = $this->service('PageServiceApp', 'Elsewhere');
+		Prado::setPathOfAlias('Application', $this->fixturePath('PageServiceApp'));
+		$pages = realpath($this->fixturePath('PageServiceApp', 'Pages'));
+		$service->attachEventHandler('OnAdditionalPagePaths', fn ($sender, $param) => $pages . DIRECTORY_SEPARATOR . 'Missing');
+		try {
+			PradoUnit::invoke($service, 'createPage', 'Elsewhere');
+			$this->fail('a page was built from a path without one');
+		} catch (THttpException $e) {
+			$this->assertSame(404, $e->getStatusCode());
+		}
 	}
 
 	/**
