@@ -261,6 +261,16 @@ class TIntegrityManagerTest extends \PHPUnit\Framework\TestCase
 		self::assertTrue(TJavaScript::getRequireScriptIntegrity());
 	}
 
+	public function testLoadIntegrityDataIgnoresEmptyAndNonArrayLists()
+	{
+		$manager = new TIntegrityManager();
+		PradoUnit::invoke($manager, 'loadIntegrityData', ['integrities' => []]);
+		PradoUnit::invoke($manager, 'loadIntegrityData', ['integrities' => self::REMOTE]);
+		self::assertSame([], $manager->getIntegrities());
+		PradoUnit::invoke($manager, 'loadIntegrityData', ['integrities' => [['url' => self::REMOTE, 'hash' => self::HASH]]]);
+		self::assertSame([self::REMOTE => self::HASH], $manager->getIntegrities());
+	}
+
 	public function testNonArrayConfigLoadsNothing()
 	{
 		$manager = new TIntegrityManager();
@@ -329,6 +339,36 @@ class TIntegrityManagerTest extends \PHPUnit\Framework\TestCase
 	{
 		self::expectException(TConfigurationException::class);
 		TIntegrityManager::calculateIntegrityForFile(__DIR__ . '/does_not_exist.js');
+	}
+
+	public function testCalculateIntegrityForFileUnreadableThrows()
+	{
+		if (DIRECTORY_SEPARATOR === '\\' || (function_exists('posix_geteuid') && posix_geteuid() === 0)) {
+			self::markTestSkipped('File permission modes do not make a file unreadable here.');
+		}
+		$file = tempnam(sys_get_temp_dir(), 'prado-sri');
+		file_put_contents($file, 'alert(1)');
+		chmod($file, 0);
+		try {
+			TIntegrityManager::calculateIntegrityForFile($file);
+			self::fail('TConfigurationException was not thrown');
+		} catch (TConfigurationException $e) {
+			self::assertSame('integritymanager_file_unreadable', $e->getErrorCode());
+		} finally {
+			chmod($file, 0600);
+			unlink($file);
+		}
+	}
+
+	public function testIntegrityFileWithUnknownAliasThrows()
+	{
+		$manager = new TIntegrityManager();
+		try {
+			$manager->setIntegrityFile('nosuchalias');
+			self::fail('TConfigurationException was not thrown');
+		} catch (TConfigurationException $e) {
+			self::assertSame('integritymanager_integrityfile_invalid', $e->getErrorCode());
+		}
 	}
 
 	public function testIntegrityFileInvalidThrows()

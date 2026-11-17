@@ -1211,4 +1211,21 @@ class TJavaScriptTest extends \PHPUnit\Framework\TestCase
 		$str = new TJavaScriptString('hello');
 		$this->assertSame($str->toJavaScriptLiteral(), TJavaScript::encode($str));
 	}
+
+	/**
+	 * A protocol-relative URL loads from its host, so it is remote: its registered
+	 * integrity renders, and enforcement applies to it.
+	 */
+	public function testRenderScriptFileProtocolRelativeUrlIsRemote(): void
+	{
+		$url = '//cdn.example.com/script.js';
+		TJavaScript::setScriptIntegrity($url, 'sha384-HASH');
+		$output = TJavaScript::renderScriptFile($url);
+		$this->assertStringContainsString('integrity="sha384-HASH"', $output);
+		$this->assertStringContainsString('crossorigin="anonymous"', $output);
+
+		TJavaScript::setRequireScriptIntegrity(true);
+		$this->expectException(TConfigurationException::class);
+		TJavaScript::renderScriptFile('//cdn.example.com/other.js');
+	}
 }

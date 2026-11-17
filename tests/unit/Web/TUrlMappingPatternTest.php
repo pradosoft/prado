@@ -5,6 +5,8 @@ namespace Prado\Test\Unit\Web;
 use Prado\Web\THttpRequest;
 use Prado\Web\THttpRequestUrlFormat;
 use Prado\Web\TUrlManager;
+use Prado\Web\TUrlMapping;
+use Prado\Test\Unit\PradoUnit;
 use Prado\Web\TUrlMappingPattern;
 use Prado\Web\TUrlMappingPatternSecureConnection;
 use Prado\Web\TUrlMappingPatternUrlMatchMode;
@@ -865,5 +867,258 @@ class TUrlMappingPatternTest extends \PHPUnit\Framework\TestCase
 
 		$this->assertNotEquals([], $pattern->getPatternMatches($this->createRequest('/test', 'GET')));
 		$this->assertEquals([], $pattern->getPatternMatches($this->createRequest('/test', 'DELETE')));
+	}
+
+	// ===== coverage of the remaining paths =====
+
+	private function newPattern(string $serviceParameter = 'Test.Page', string $pattern = 'test'): TUrlMappingPattern
+	{
+		$p = new TUrlMappingPattern($this->urlManager);
+		$p->setServiceParameter($serviceParameter);
+		$p->setPattern($pattern);
+		$p->init(null);
+		return $p;
+	}
+
+	private function newMappingPattern(string $serviceParameter, string $pattern): TUrlMappingPattern
+	{
+		$manager = new TUrlMapping();
+		$manager->setUrlPrefix('/index.php');
+		$p = new TUrlMappingPattern($manager);
+		$p->setServiceParameter($serviceParameter);
+		$p->setPattern($pattern);
+		$p->init(null);
+		return $p;
+	}
+
+	public function testSetParametersAndCollectionsAreCreatedOnce()
+	{
+		$pattern = $this->newPattern();
+		$parameters = new TAttributeCollection(['id' => '\d+']);
+		$pattern->setParameters($parameters);
+		$this->assertSame($parameters, $pattern->getParameters());
+
+		$constants = $pattern->getConstants();
+		$this->assertTrue($constants->getCaseSensitive());
+		$this->assertSame($constants, $pattern->getConstants());
+	}
+
+	public function testGetParameterizedPatternPaths()
+	{
+		$cases = [
+			// [UrlFormat, UrlMatchMode, pattern, CaseSensitive, expected]
+			[THttpRequestUrlFormat::Get, TUrlMappingPatternUrlMatchMode::PathInfo, 'post/{id}', true, '/^post\/(?P<id>\d+)\/$/u'],
+			[THttpRequestUrlFormat::Get, TUrlMappingPatternUrlMatchMode::PathInfo, 'post/{id}', false, '/^post\/(?P<id>\d+)\/$/ui'],
+			[THttpRequestUrlFormat::Get, TUrlMappingPatternUrlMatchMode::Full, 'post/{id}', true, '/^post\/(?P<id>\d+)\/$/u'],
+			[THttpRequestUrlFormat::Get, TUrlMappingPatternUrlMatchMode::Full, 'post/{id}', false, '/^post\/(?P<id>\d+)\/$/ui'],
+			[THttpRequestUrlFormat::Get, TUrlMappingPatternUrlMatchMode::Full, 'post/{id}?m=e', true, '/^post\/(?P<id>\d+)\/\?m=e$/u'],
+			[THttpRequestUrlFormat::Get, TUrlMappingPatternUrlMatchMode::Full, 'post/{id}?m=e', false, '/^post\/(?P<id>\d+)\/\?m=e$/ui'],
+			[THttpRequestUrlFormat::Path, TUrlMappingPatternUrlMatchMode::PathInfo, 'post/{id}', true, '/^post\/(?P<id>\d+)\/(?P<urlparams>.*)$/u'],
+			[THttpRequestUrlFormat::Path, TUrlMappingPatternUrlMatchMode::PathInfo, 'post/{id}', false, '/^post\/(?P<id>\d+)\/(?P<urlparams>.*)$/ui'],
+			[THttpRequestUrlFormat::Path, TUrlMappingPatternUrlMatchMode::Full, 'post/{id}', true, '/^post\/(?P<id>\d+)\/(?P<urlparams>[^?]*)$/u'],
+			[THttpRequestUrlFormat::Path, TUrlMappingPatternUrlMatchMode::Full, 'post/{id}', false, '/^post\/(?P<id>\d+)\/(?P<urlparams>[^?]*)$/ui'],
+			[THttpRequestUrlFormat::Path, TUrlMappingPatternUrlMatchMode::Full, 'post/{id}?m=e', true, '/^post\/(?P<id>\d+)\/(?P<urlparams>[^?]*)\?m=e$/u'],
+			[THttpRequestUrlFormat::Path, TUrlMappingPatternUrlMatchMode::Full, 'post/{id}?m=e', false, '/^post\/(?P<id>\d+)\/(?P<urlparams>[^?]*)\?m=e$/ui'],
+		];
+		foreach ($cases as $i => [$format, $mode, $text, $caseSensitive, $expected]) {
+			$pattern = $this->newPattern('Test.Page', $text);
+			$pattern->getParameters()->add('id', '\d+');
+			$pattern->setUrlFormat($format);
+			$pattern->setUrlMatchMode($mode);
+			$pattern->setCaseSensitive($caseSensitive);
+			$this->assertSame($expected, PradoUnit::invoke($pattern, 'getParameterizedPattern'), "case {$i}");
+		}
+	}
+
+	public function testSubstituteParametersPaths()
+	{
+		// no parameters collection, without and with a wildcard
+		$this->assertSame('a\/b', PradoUnit::invoke($this->newPattern(), 'substituteParameters', 'a/b'));
+		$this->assertSame('a\/(?P<page>[^=\/]+)', PradoUnit::invoke($this->newPattern('Test.*'), 'substituteParameters', 'a/{*}'));
+
+		// an empty parameters collection
+		$pattern = $this->newPattern();
+		$pattern->getParameters();
+		$this->assertSame('a\/{id}', PradoUnit::invoke($pattern, 'substituteParameters', 'a/{id}'));
+		$pattern = $this->newPattern('Test.*');
+		$pattern->getParameters();
+		$this->assertSame('(?P<page>[^=\/]+)', PradoUnit::invoke($pattern, 'substituteParameters', '{*}'));
+
+		// one parameter, without and with a wildcard
+		$pattern = $this->newPattern();
+		$pattern->getParameters()->add('id', '\d+');
+		$this->assertSame('(?P<id>\d+)', PradoUnit::invoke($pattern, 'substituteParameters', '{id}'));
+		$pattern = $this->newPattern('Test.*');
+		$pattern->getParameters()->add('id', '\d+');
+		$this->assertSame('(?P<page>[^=\/]+)\/(?P<id>\d+)', PradoUnit::invoke($pattern, 'substituteParameters', '{*}/{id}'));
+	}
+
+	public function testMatchesQueryPaths()
+	{
+		$pattern = $this->newPattern();
+		$pattern->getQuery();
+		$this->assertTrue(PradoUnit::invoke($pattern, 'matchesQuery', ['x' => 'y']));
+
+		$pattern->getQuery()->add('mode', 'edit|view');
+		$this->assertFalse(PradoUnit::invoke($pattern, 'matchesQuery', []));
+		$this->assertFalse(PradoUnit::invoke($pattern, 'matchesQuery', ['mode' => ['edit']]));
+		$this->assertFalse(PradoUnit::invoke($pattern, 'matchesQuery', ['mode' => 'delete']));
+		$this->assertTrue(PradoUnit::invoke($pattern, 'matchesQuery', ['mode' => 'view']));
+		$this->assertTrue(PradoUnit::invoke($pattern, 'matchesQuery', new \ArrayObject(['mode' => 'edit'])));
+	}
+
+	public function testSetVerbsTraversable()
+	{
+		$pattern = $this->newPattern();
+		$pattern->setVerbs(new \ArrayObject(['POST']));
+		$this->assertSame([], $pattern->getPatternMatches($this->createRequest('/test', 'GET')));
+		$this->assertNotSame([], $pattern->getPatternMatches($this->createRequest('/test', 'POST')));
+	}
+
+	public function testSupportCustomUrlConstantMissing()
+	{
+		$pattern = $this->newPattern();
+		$pattern->getConstants()->add('type', 'detailed');
+		$this->assertFalse($pattern->supportCustomUrl([]));
+		$this->assertFalse($pattern->supportCustomUrl(['type' => 'brief']));
+		$this->assertTrue($pattern->supportCustomUrl(['type' => 'detailed']));
+	}
+
+	public function testGetPatternMatchesUrlParamWithoutValue()
+	{
+		$pattern = $this->newPattern();
+		$pattern->setUrlFormat(THttpRequestUrlFormat::Path);
+		$result = $pattern->getPatternMatches($this->createRequest('/test/a/1/b'));
+		$this->assertSame('1', $result['a']);
+		$this->assertSame('', $result['b']);
+	}
+
+	public function testConstructUrlRemovesConstantsAndFillsParameters()
+	{
+		$pattern = $this->newMappingPattern('Posts.ViewPost', 'post/{id}/');
+		$pattern->getParameters()->add('id', '\d+');
+		$pattern->getConstants()->add('type', 'full');
+		$this->assertSame('/index.php/post/a%20b/', $pattern->constructUrl(['id' => 'a b', 'type' => 'full'], false, true));
+		$this->assertSame('/index.php/post/a b/', $pattern->constructUrl(['id' => 'a b'], false, false));
+	}
+
+	public function testConstructUrlWildcardKey()
+	{
+		$pattern = $this->newMappingPattern('admin.*', 'admin/{*}/');
+		$this->assertSame('/index.php/admin/users/', $pattern->constructUrl(['*' => 'users'], false, true));
+
+		// '*' is a GET variable of a pattern that is not a wildcard
+		$pattern = $this->newMappingPattern('Posts.ListPost', 'posts/');
+		$this->assertSame('/index.php/posts/?%2A=x', $pattern->constructUrl(['*' => 'x'], false, true));
+	}
+
+	public function testConstructUrlPathFormatWildcardExtras()
+	{
+		$pattern = $this->newMappingPattern('admin.*', 'admin/{*}');
+		$pattern->setUrlFormat(THttpRequestUrlFormat::Path);
+		$this->assertSame('/index.php/admin/users/q/a%20b', $pattern->constructUrl(['*' => 'users', 'q' => 'a b'], true, true));
+		$pattern->setUrlParamSeparator(',');
+		$this->assertSame('/index.php/admin/users/q,a b', $pattern->constructUrl(['*' => 'users', 'q' => 'a b'], true, false));
+
+		// a Path pattern that is not a wildcard puts the extras in the query string
+		$pattern = $this->newMappingPattern('Posts.ListPost', 'posts');
+		$pattern->setUrlFormat(THttpRequestUrlFormat::Path);
+		$this->assertSame('/index.php/posts?q=1', $pattern->constructUrl(['q' => '1'], true, true));
+	}
+
+	public function testConstructUrlQueryStringExtras()
+	{
+		$pattern = $this->newMappingPattern('Posts.ListPost', 'posts');
+		$items = ['a b' => 'c d', 'list' => ['x y', 'z']];
+		$this->assertSame('/index.php/posts?a%20b=c%20d&amp;list%5B%5D=x%20y&amp;list%5B%5D=z', $pattern->constructUrl($items, true, true));
+		$this->assertSame('/index.php/posts?a b=c d&list[]=x y&list[]=z', $pattern->constructUrl($items, false, false));
+
+		// a pattern that has a query string joins the extras with an ampersand
+		$pattern = $this->newMappingPattern('Posts.ListPost', 'posts?sort=date');
+		$this->assertSame('/index.php/posts?sort=date&amp;page=2', $pattern->constructUrl(['page' => '2'], true, false));
+	}
+
+	/**
+	 * Constructs a URL with each SecureConnection mode over HTTP and over HTTPS.
+	 */
+	public function testConstructUrlSecureConnection()
+	{
+		$https0 = $_SERVER['HTTPS'] ?? null;
+		try {
+			unset($_SERVER['HTTPS']);
+			$this->assertSecureConnectionUrls(false);
+			$_SERVER['HTTPS'] = 'on';
+			$this->assertSecureConnectionUrls(true);
+		} finally {
+			if ($https0 === null) {
+				unset($_SERVER['HTTPS']);
+			} else {
+				$_SERVER['HTTPS'] = $https0;
+			}
+		}
+	}
+
+	private function assertSecureConnectionUrls(bool $secure): void
+	{
+		$request = $this->app->getRequest();
+		$this->assertSame($secure, $request->getIsSecureConnection());
+		$path = '/index.php/posts';
+		$https = $request->getBaseUrl(true) . $path;
+		$http = $request->getBaseUrl(false) . $path;
+		$expected = [
+			TUrlMappingPatternSecureConnection::Automatic => $path,
+			TUrlMappingPatternSecureConnection::Enable => $https,
+			TUrlMappingPatternSecureConnection::Disable => $http,
+			TUrlMappingPatternSecureConnection::EnableIfNotSecure => $secure ? $path : $https,
+			TUrlMappingPatternSecureConnection::DisableIfSecure => $secure ? $http : $path,
+		];
+		foreach ($expected as $mode => $url) {
+			$pattern = $this->newMappingPattern('Posts.ListPost', 'posts');
+			$pattern->setSecureConnection($mode);
+			$this->assertSame($url, $pattern->constructUrl([], false, false), $mode);
+		}
+	}
+
+	public function testGetPatternMatchesPathKeepsZeroKeysAndValues()
+	{
+		$pattern = new TUrlMappingPattern($this->urlManager);
+		$pattern->setServiceParameter('Test.Page');
+		$pattern->setPattern('test');
+		$pattern->setUrlFormat(THttpRequestUrlFormat::Path);
+		$result = $pattern->getPatternMatches($this->createRequest('/test/page/0/0/x/last'));
+		$this->assertSame('0', $result['page']);
+		$this->assertSame('x', $result['0']);
+		$this->assertSame('', $result['last']);
+	}
+
+	public function testSecureConnectionFollowsTheCurrentRequest()
+	{
+		$https0 = $_SERVER['HTTPS'] ?? null;
+		try {
+			foreach ([false, true, false] as $secure) {
+				if ($secure) {
+					$_SERVER['HTTPS'] = 'on';
+				} else {
+					unset($_SERVER['HTTPS']);
+				}
+				$request = $this->app->getRequest();
+				$manager = new \Prado\Web\TUrlMapping();
+				$manager->setUrlPrefix('/index.php');
+				foreach ([TUrlMappingPatternSecureConnection::EnableIfNotSecure => [$request->getBaseUrl(true) . '/index.php/posts', '/index.php/posts'], TUrlMappingPatternSecureConnection::DisableIfSecure => ['/index.php/posts', $request->getBaseUrl(false) . '/index.php/posts']] as $mode => $urls) {
+					$p = new TUrlMappingPattern($manager);
+					$p->setServiceParameter('Posts.ListPost');
+					$p->setPattern('posts');
+					$p->init(null);
+					$p->setSecureConnection($mode);
+					$this->assertSame($urls[$secure ? 1 : 0], $p->constructUrl([], false, false), $mode);
+				}
+			}
+		} finally {
+			if ($https0 === null) {
+				unset($_SERVER['HTTPS']);
+			} else {
+				$_SERVER['HTTPS'] = $https0;
+			}
+		}
 	}
 }
