@@ -196,6 +196,12 @@ class TSqlCriteria extends \Prado\TComponent implements IDataCriteria
 	/**
 	 * Sets the search conditions to be placed after the WHERE clause in the SQL.
 	 * A null or empty string resets the condition; `'0'` and other numeric values are conditions.
+	 *
+	 * A trailing `ORDER BY`, `LIMIT {[offset,] row_count | row_count OFFSET offset}`, and
+	 * `OFFSET` move into {@see setOrdersBy OrdersBy}, {@see setLimit Limit}, and
+	 * {@see setOffset Offset}. Only clauses outside quoted text (`'...'`, `"..."`, and
+	 * `` `...` ``, a doubled quote escaping itself) and outside parentheses move, so a
+	 * string literal or a subquery that holds these words is kept in the condition.
 	 * @param string $value search conditions.
 	 */
 	public function setCondition($value)
@@ -211,36 +217,99 @@ class TSqlCriteria extends \Prado\TComponent implements IDataCriteria
 		//      [ASC | DESC], ...]
 		//    [LIMIT {[offset,] row_count | row_count OFFSET offset}]
 		// See: http://dev.mysql.com/doc/refman/5.0/en/select.html
+		// The clauses are found in a mask of the condition that hides quoted and
+		// parenthesized text, and are cut from the condition at the same offsets.
+		$value = (string) $value;
+		$mask = $this->maskNestedText($value);
 
-		if (preg_match('/ORDER\s+BY\s+(.*?)(?=\s+(?:LIMIT|OFFSET))|ORDER\s+BY\s+(.*?)$/i', $value, $matches) > 0) {
+		if (preg_match('/\bORDER\s+BY\s+(.*?)(?=\s+(?:LIMIT|OFFSET)\b)|\bORDER\s+BY\s+(.*?)$/is', $mask, $matches, PREG_OFFSET_CAPTURE) > 0) {
 			// condition contains ORDER BY
-			$value = str_replace($matches[0], '', $value);
-			if (strlen($matches[1]) > 0) {
-				$this->setOrdersBy($matches[1]);
-			} elseif (strlen($matches[2]) > 0) {
-				$this->setOrdersBy($matches[2]);
+			$group = $matches[1][1] >= 0 ? $matches[1] : $matches[2];
+			$orderBy = substr($value, $group[1], strlen($group[0]));
+			[$value, $mask] = $this->cutClause($value, $mask, $matches[0]);
+			if (trim($orderBy) !== '') {
+				$this->setOrdersBy($orderBy);
 			}
 		}
 
-		if (preg_match('/LIMIT\s+([\d\s,]+)/i', $value, $matches) > 0) {
+		if (preg_match('/\bLIMIT\s+([\d\s,]+)/i', $mask, $matches, PREG_OFFSET_CAPTURE) > 0) {
 			// condition contains limit
-			$value = str_replace($matches[0], '', $value); // remove limit from query
-			if (strpos($matches[1], ',')) { // both offset and limit given
-				[$offset, $limit] = explode(',', $matches[1]);
+			$limitText = $matches[1][0];
+			[$value, $mask] = $this->cutClause($value, $mask, $matches[0]);
+			if (strpos($limitText, ',')) { // both offset and limit given
+				[$offset, $limit] = explode(',', $limitText);
 				$this->_limit = (int) $limit;
 				$this->_offset = (int) $offset;
 			} else { // only limit given
-				$this->_limit = (int) $matches[1];
+				$this->_limit = (int) $limitText;
 			}
 		}
 
-		if (preg_match('/OFFSET\s+(\d+)/i', $value, $matches) > 0) {
+		if (preg_match('/\bOFFSET\s+(\d+)/i', $mask, $matches, PREG_OFFSET_CAPTURE) > 0) {
 			// condition contains offset
-			$value = str_replace($matches[0], '', $value); // remove offset from query
-			$this->_offset = (int) $matches[1]; // set offset in criteria
+			$this->_offset = (int) $matches[1][0];
+			[$value] = $this->cutClause($value, $mask, $matches[0]);
 		}
 
 		$this->_condition = trim($value);
+	}
+
+	/**
+	 * Returns a copy of the SQL text with quoted and parenthesized text masked.
+	 *
+	 * Each byte inside `'...'`, `"..."`, or `` `...` `` (a doubled quote escapes
+	 * itself), each parenthesis, and each byte between parentheses becomes `#`, so
+	 * the copy has the offsets of the original, no keyword is found inside nested
+	 * text, and an expression such as `LOWER(name)` stays one token. An unclosed
+	 * quote or parenthesis masks the rest of the text.
+	 * @param string $sql SQL text.
+	 * @return string the masked copy, the same length as $sql.
+	 * @since 4.4.0
+	 */
+	protected function maskNestedText(string $sql): string
+	{
+		$mask = $sql;
+		$length = strlen($sql);
+		$depth = 0;
+		$quote = null;
+		for ($i = 0; $i < $length; $i++) {
+			$char = $sql[$i];
+			if ($quote !== null) {
+				$mask[$i] = '#';
+				if ($char === $quote) {
+					if ($i + 1 < $length && $sql[$i + 1] === $quote) {
+						$mask[++$i] = '#';
+					} else {
+						$quote = null;
+					}
+				}
+			} elseif ($char === "'" || $char === '"' || $char === '`') {
+				$quote = $char;
+				$mask[$i] = '#';
+			} elseif ($char === '(') {
+				$depth++;
+				$mask[$i] = '#';
+			} elseif ($char === ')' && $depth > 0) {
+				$depth--;
+				$mask[$i] = '#';
+			} elseif ($depth > 0) {
+				$mask[$i] = '#';
+			}
+		}
+		return $mask;
+	}
+
+	/**
+	 * Cuts a matched clause from the condition and from its mask.
+	 * @param string $value condition text.
+	 * @param string $mask masked copy of the condition.
+	 * @param array $match `[text, offset]` of the clause in the mask.
+	 * @return array `[$value, $mask]` without the clause.
+	 */
+	private function cutClause(string $value, string $mask, array $match): array
+	{
+		$length = strlen($match[0]);
+		return [substr_replace($value, '', $match[1], $length), substr_replace($mask, '', $match[1], $length)];
 	}
 
 	/**
