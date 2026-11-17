@@ -1041,6 +1041,25 @@ class TJavaScriptTest extends \PHPUnit\Framework\TestCase
 		});
 	}
 
+	public function testJsonEncodeWithoutApplication(): void
+	{
+		$app = \Prado\Prado::getApplication();
+		PradoUnit::setStaticProp(\Prado\Prado::class, '_application', null);
+		try {
+			$this->assertSame('{"x":1}', TJavaScript::jsonEncode(['x' => 1]));
+		} finally {
+			PradoUnit::setStaticProp(\Prado\Prado::class, '_application', $app);
+		}
+	}
+
+	public function testJsonEncodeTranscodesEmptyContainers(): void
+	{
+		$this->withGlobalizationCharset('ISO-8859-1', function () {
+			$this->assertSame('[]', TJavaScript::jsonEncode([]));
+			$this->assertSame('{}', TJavaScript::jsonEncode(new \stdClass()));
+		});
+	}
+
 	public function testJsonEncodeTranscodesNestedArrayStrings(): void
 	{
 		$latin1 = chr(0xE9); // é in Latin-1

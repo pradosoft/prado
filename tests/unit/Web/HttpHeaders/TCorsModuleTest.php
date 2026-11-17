@@ -408,4 +408,11 @@ class TCorsModuleTest extends TestCase
 		$this->beginRequest(['PathPrefix' => 'api']);
 		$this->assertNoCorsHeaders();
 	}
+
+	public function testIsOriginAllowedWithOnlyABlankEntry(): void
+	{
+		$module = new TCorsModule();
+		$module->setAllowOrigin(' ');
+		self::assertFalse($module->isOriginAllowed('https://a.example.com'));
+	}
 }

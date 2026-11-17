@@ -86,4 +86,37 @@ class THeaderParametersTraitTest extends \PHPUnit\Framework\TestCase
 		$this->obj->setParameters([' A ' => 'x', 'b' => '', 'c' => null, 'd' => 0]);
 		$this->assertSame(['a' => 'x', 'd' => '0'], $this->obj->getParameters());
 	}
+
+	// -----------------------------------------------------------------------
+	// Single parameters, clear, and ArrayAccess
+	// -----------------------------------------------------------------------
+
+	public function testSetGetHasAndRemoveParameter(): void
+	{
+		$this->obj->setParameter(' Charset ', 'UTF-8');
+		$this->assertTrue($this->obj->hasParameter('CHARSET'));
+		$this->assertSame('UTF-8', $this->obj->getParameter('charset'));
+		$this->obj->setParameter('charset', '');
+		$this->assertFalse($this->obj->hasParameter('charset'));
+		$this->obj->setParameter('a', '1');
+		$this->obj->removeParameter('A');
+		$this->assertNull($this->obj->getParameter('a'));
+	}
+
+	public function testClearParameters(): void
+	{
+		$this->obj->setParameters(['a' => '1', 'b' => '2']);
+		$this->obj->clearParameters();
+		$this->assertSame([], $this->obj->getParameters());
+	}
+
+	public function testArrayAccess(): void
+	{
+		$this->obj['Charset'] = 'UTF-8';
+		$this->assertTrue(isset($this->obj['charset']));
+		$this->assertSame('UTF-8', $this->obj['CHARSET']);
+		$this->assertNull($this->obj['missing']);
+		unset($this->obj['charset']);
+		$this->assertFalse(isset($this->obj['charset']));
+	}
 }
