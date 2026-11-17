@@ -25,6 +25,7 @@ use Prado\Test\Unit\PradoUnit;
 use Prado\Util\Log\TLogger;
 use Prado\Web\Services\TSoapServer;
 use Prado\Web\Services\TSoapService;
+use Prado\Web\THttpRequest;
 
 /**
  * Provider reflected on by the generation tests.
@@ -616,17 +617,28 @@ class TSoapServerTest extends \PHPUnit\Framework\TestCase
 
 	/**
 	 * The URI and WSDL URI default to the running service's URLs for the server.
+	 * The request is built from web server variables: the command line script name
+	 * is a file path, which is not a URL path on Windows.
 	 */
 	public function testUrisDefaultToTheServiceUrls()
 	{
 		$app = Prado::getApplication();
 		$running = $app->getService();
+		$runningRequest = $app->getRequest();
+		$savedServer = $_SERVER;
+		$_SERVER['HTTP_HOST'] = 'soap.example.test';
+		$_SERVER['SCRIPT_NAME'] = '/index.php';
+		$_SERVER['PHP_SELF'] = '/index.php';
+		$_SERVER['REQUEST_URI'] = '/index.php?soap=quote';
+		unset($_SERVER['HTTPS'], $_SERVER['PATH_INFO'], $_SERVER['ORIG_PATH_INFO'], $_SERVER['ORIG_SCRIPT_NAME']);
 		$service = new TSoapService();
 		$app->setService($service);
 		try {
+			(new THttpRequest())->init(null);
 			$server = new TSoapServer();
 			$server->setID('quote');
 			$base = $app->getRequest()->getBaseUrl();
+			$this->assertSame('http://soap.example.test', $base);
 			$this->assertSame($base . $service->constructUrl('quote', false), $server->getUri());
 			$this->assertSame($base . $service->constructUrl('quote.wsdl', false), $server->getWsdlUri());
 
@@ -635,6 +647,8 @@ class TSoapServerTest extends \PHPUnit\Framework\TestCase
 			$this->assertSame('urn:quote', $server->getUri());
 			$this->assertSame('/quote.wsdl', $server->getWsdlUri());
 		} finally {
+			$_SERVER = $savedServer;
+			$app->setRequest($runningRequest);
 			$app->setService($running);
 		}
 	}
