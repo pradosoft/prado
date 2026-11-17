@@ -98,6 +98,94 @@ class TTestSoapFaultServer extends TSoapServer
 	}
 }
 
+/**
+ * Stands in for the \SoapServer engine, whose fault() ends the script, and
+ * records each call made to it.
+ */
+class TTestSoapEngine
+{
+	/** @var array[] the calls, each [method, ...arguments]. */
+	public array $calls = [];
+
+	/** @var ?\Exception the exception handle() throws. */
+	public ?\Exception $throw = null;
+
+	public function setClass(...$arguments)
+	{
+		$this->calls[] = ['setClass', ...$arguments];
+	}
+
+	public function setPersistence($mode)
+	{
+		$this->calls[] = ['setPersistence', $mode];
+	}
+
+	public function handle()
+	{
+		$this->calls[] = ['handle'];
+		if ($this->throw !== null) {
+			throw $this->throw;
+		}
+	}
+
+	public function fault(...$arguments)
+	{
+		$this->calls[] = ['fault', ...$arguments];
+	}
+}
+
+/**
+ * Exposes the server's protected methods.
+ */
+class TTestSoapOptionsServer extends TSoapServer
+{
+	public function options(): array
+	{
+		return $this->getOptions();
+	}
+
+	public function engine()
+	{
+		return $this->createServer();
+	}
+}
+
+/**
+ * A cache held in memory.
+ */
+class TTestSoapCache implements \Prado\Caching\ICache
+{
+	public array $items = [];
+
+	public function get($id)
+	{
+		return $this->items[$id] ?? false;
+	}
+	public function set($id, $value, $expire = 0, $dependency = null)
+	{
+		$this->items[$id] = $value;
+		return true;
+	}
+	public function add($id, $value, $expire = 0, $dependency = null)
+	{
+		return $this->set($id, $value);
+	}
+	public function delete($id)
+	{
+		unset($this->items[$id]);
+		return true;
+	}
+	public function flush()
+	{
+		$this->items = [];
+		return true;
+	}
+	public static function getIsAvailable(): bool
+	{
+		return true;
+	}
+}
+
 class TSoapServerTest extends \PHPUnit\Framework\TestCase
 {
 	/** Global alias of {@see TTestSoapQuoteProvider}; its name is valid in a namespace URI. */
@@ -218,6 +306,17 @@ class TSoapServerTest extends \PHPUnit\Framework\TestCase
 		}
 	}
 
+	// ── ID ──────────────────────────────────────────────────────────────────
+
+	/**
+	 * An ID ending in '.wsdl' names the WSDL request of a server, so it is refused.
+	 */
+	public function testSetIdRefusesAnIdEndingInWsdl()
+	{
+		$this->expectException(TInvalidDataValueException::class);
+		(new TSoapServer())->setID('quote.wsdl');
+	}
+
 	// ── faultException() ────────────────────────────────────────────────────
 
 	/**
@@ -303,4 +402,40 @@ class TSoapServerTest extends \PHPUnit\Framework\TestCase
 			PradoUnit::setProp($request, '_rawBody', $saved);
 		}
 	}
+
+	// ── run() and fault() ───────────────────────────────────────────────────
+
+	/**
+	 * Returns a server that runs on a recording engine.
+	 * @param ?string $provider the provider, null for none.
+	 */
+	private function engineServer(?string $provider): array
+	{
+		$server = new TTestSoapFaultServer();
+		$server->setProvider($provider);
+		$engine = new TTestSoapEngine();
+		PradoUnit::setProp($server, '_server', $engine);
+		return [$server, $engine];
+	}
+
+	// ── createServer() and getOptions() ─────────────────────────────────────
+
+	public static function modeCacheProvider(): array
+	{
+		return [
+			'debug' => [TApplicationMode::Debug, true],
+			'normal' => [TApplicationMode::Normal, false],
+		];
+	}
+
+	// ── getWsdl() ───────────────────────────────────────────────────────────
+
+	// ── URIs ────────────────────────────────────────────────────────────────
+
+	// ── Properties ──────────────────────────────────────────────────────────
+
+	// ── WSDL cache setting ──────────────────────────────────────────────────
+
+	// ── guessMethodCallRequested() ──────────────────────────────────────────
+
 }

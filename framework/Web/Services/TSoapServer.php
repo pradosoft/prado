@@ -117,7 +117,7 @@ class TSoapServer extends \Prado\TApplicationComponent
 	 */
 	public function setID($id)
 	{
-		if ($this->_id !== null && (strrpos($this->_id, '.wsdl') === strlen($this->_id) - 5)) {
+		if ($id !== null && str_ends_with((string) $id, '.wsdl')) {
 			throw new TInvalidDataValueException('soapserver_id_invalid', $id);
 		}
 		$this->_id = $id;

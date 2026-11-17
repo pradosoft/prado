@@ -12,7 +12,7 @@ TSoapServer wraps PHP's SoapServer class to provide SOAP/WSDL web services. It a
 
 ## Key Properties/Methods
 
-- **`getID()` / `setID($id)`** - Gets/sets the SOAP server ID.
+- **`getID()` / `setID($id)`** - Gets/sets the SOAP server ID. An ID ending in `.wsdl` names a WSDL request and throws `soapserver_id_invalid`.
 - **`getProvider()` / `setProvider($provider)`** - Gets/sets the SOAP provider class (fully namespaced).
 - **`getUri()` / `setUri($uri)`** - Gets/sets the SOAP service URI.
 - **`getWsdlUri()` / `setWsdlUri($value)`** - Gets/sets the WSDL URI or auto-generates from provider.
