@@ -537,7 +537,7 @@ class TPageService extends \Prado\TService
 			}
 		}
 
-		if ($className !== TPage::class && !is_subclass_of($className, TPage::class)) {
+		if (!is_a($className, TPage::class, true)) {
 			throw new THttpException(404, 'pageservice_page_unknown', $pagePath);
 		}
 

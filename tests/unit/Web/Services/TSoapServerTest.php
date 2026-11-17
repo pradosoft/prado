@@ -98,6 +98,94 @@ class TTestSoapFaultServer extends TSoapServer
 	}
 }
 
+/**
+ * Stands in for the \SoapServer engine, whose fault() ends the script, and
+ * records each call made to it.
+ */
+class TTestSoapEngine
+{
+	/** @var array[] the calls, each [method, ...arguments]. */
+	public array $calls = [];
+
+	/** @var ?\Exception the exception handle() throws. */
+	public ?\Exception $throw = null;
+
+	public function setClass(...$arguments)
+	{
+		$this->calls[] = ['setClass', ...$arguments];
+	}
+
+	public function setPersistence($mode)
+	{
+		$this->calls[] = ['setPersistence', $mode];
+	}
+
+	public function handle()
+	{
+		$this->calls[] = ['handle'];
+		if ($this->throw !== null) {
+			throw $this->throw;
+		}
+	}
+
+	public function fault(...$arguments)
+	{
+		$this->calls[] = ['fault', ...$arguments];
+	}
+}
+
+/**
+ * Exposes the server's protected methods.
+ */
+class TTestSoapOptionsServer extends TSoapServer
+{
+	public function options(): array
+	{
+		return $this->getOptions();
+	}
+
+	public function engine()
+	{
+		return $this->createServer();
+	}
+}
+
+/**
+ * A cache held in memory.
+ */
+class TTestSoapCache implements \Prado\Caching\ICache
+{
+	public array $items = [];
+
+	public function get($id)
+	{
+		return $this->items[$id] ?? false;
+	}
+	public function set($id, $value, $expire = 0, $dependency = null)
+	{
+		$this->items[$id] = $value;
+		return true;
+	}
+	public function add($id, $value, $expire = 0, $dependency = null)
+	{
+		return $this->set($id, $value);
+	}
+	public function delete($id)
+	{
+		unset($this->items[$id]);
+		return true;
+	}
+	public function flush()
+	{
+		$this->items = [];
+		return true;
+	}
+	public static function getIsAvailable(): bool
+	{
+		return true;
+	}
+}
+
 class TSoapServerTest extends \PHPUnit\Framework\TestCase
 {
 	/** Global alias of {@see TTestSoapQuoteProvider}; its name is valid in a namespace URI. */
@@ -218,6 +306,31 @@ class TSoapServerTest extends \PHPUnit\Framework\TestCase
 		}
 	}
 
+	// ── ID ──────────────────────────────────────────────────────────────────
+
+	/**
+	 * An ID ending in '.wsdl' names the WSDL request of a server, so it is refused.
+	 */
+	public function testSetIdRefusesAnIdEndingInWsdl()
+	{
+		$this->expectException(TInvalidDataValueException::class);
+		(new TSoapServer())->setID('quote.wsdl');
+	}
+
+	/**
+	 * A server's ID changes from one valid ID to another.
+	 */
+	public function testSetIdReplacesAValidId()
+	{
+		$server = new TSoapServer();
+		$this->assertNull($server->getID());
+		$server->setID('quote');
+		$server->setID('wsdl');
+		$this->assertSame('wsdl', $server->getID());
+		$server->setID(null);
+		$this->assertNull($server->getID());
+	}
+
 	// ── faultException() ────────────────────────────────────────────────────
 
 	/**
@@ -296,6 +409,306 @@ class TSoapServerTest extends \PHPUnit\Framework\TestCase
 			PradoUnit::invoke($server, 'guessMethodCallRequested', self::PROVIDER);
 			$this->assertSame('getQuote', $server->getRequestedMethod());
 			PradoUnit::setProp($request, '_rawBody', '<soap:Envelope><soap:Body><other:call /></soap:Body></soap:Envelope>');
+			$server = new TTestSoapFaultServer();
+			PradoUnit::invoke($server, 'guessMethodCallRequested', self::PROVIDER);
+			$this->assertNull($server->getRequestedMethod());
+		} finally {
+			PradoUnit::setProp($request, '_rawBody', $saved);
+		}
+	}
+
+	// ── run() and fault() ───────────────────────────────────────────────────
+
+	/**
+	 * Returns a server that runs on a recording engine.
+	 * @param ?string $provider the provider, null for none.
+	 */
+	private function engineServer(?string $provider): array
+	{
+		$server = new TTestSoapFaultServer();
+		$server->setProvider($provider);
+		$engine = new TTestSoapEngine();
+		PradoUnit::setProp($server, '_server', $engine);
+		return [$server, $engine];
+	}
+
+	public function testRunServesTheProviderClass()
+	{
+		[$server, $engine] = $this->engineServer(self::PROVIDER);
+		$server->run();
+		$this->assertSame([['setClass', self::PROVIDER, $server], ['handle']], $engine->calls);
+		$this->assertNull($server->getRequestedMethod());
+	}
+
+	/**
+	 * @requires extension soap
+	 */
+	public function testRunKeepsTheProviderInTheSession()
+	{
+		[$server, $engine] = $this->engineServer(self::PROVIDER);
+		$server->setSessionPersistent(true);
+		$server->run();
+		$this->assertSame([['setClass', self::PROVIDER, $server], ['setPersistence', SOAP_PERSISTENCE_SESSION], ['handle']], $engine->calls);
+	}
+
+	public function testRunWithoutAProviderHandlesTheRequest()
+	{
+		[$server, $engine] = $this->engineServer(null);
+		$server->run();
+		$this->assertSame([['handle']], $engine->calls);
+	}
+
+	public function testRunRefusesAnUnknownProvider()
+	{
+		[$server] = $this->engineServer('TTestSoapNoSuchProvider');
+		$this->expectException(TConfigurationException::class);
+		$server->run();
+	}
+
+	public function testRunFaultsAnExceptionOfTheProvider()
+	{
+		[$server, $engine] = $this->engineServer(null);
+		$engine->throw = new TUserException('The quote service is closed.');
+		$app = Prado::getApplication();
+		$mode = $app->getMode();
+		$app->setMode(TApplicationMode::Normal);
+		try {
+			$server->run();
+		} finally {
+			$app->setMode($mode);
+		}
+		$this->assertSame([[$engine->throw->getMessage(), '']], $server->faults);
+	}
+
+	public function testFaultSendsTheFaultThroughTheEngine()
+	{
+		$server = new TSoapServer();
+		$engine = new TTestSoapEngine();
+		PradoUnit::setProp($server, '_server', $engine);
+		$server->fault('Closed', 'details', 'CLIENT', 'actor', 'name');
+		$server->fault('Closed');
+		$this->assertSame([
+			['fault', 'CLIENT', 'Closed', 'actor', 'details', 'name'],
+			['fault', 'SERVER', 'Closed', '', '', ''],
+		], $engine->calls);
+	}
+
+	// ── createServer() and getOptions() ─────────────────────────────────────
+
+	/**
+	 * The engine serves a WSDL file and is created once. In Debug mode the WSDL
+	 * cache is off, so a changed provider is described again.
+	 * @dataProvider modeCacheProvider
+	 * @param string $mode the application mode.
+	 * @param bool $cacheOff whether the WSDL cache is off after.
+	 * @requires extension soap
+	 */
+	public function testCreateServerServesTheWsdlOnce(string $mode, bool $cacheOff)
+	{
+		$wsdl = tempnam(sys_get_temp_dir(), 'wsdl');
+		file_put_contents($wsdl, $this->newServer()->getWsdl());
+		$app = Prado::getApplication();
+		$originalMode = $app->getMode();
+		$cache = ini_get('soap.wsdl_cache_enabled');
+		ini_set('soap.wsdl_cache_enabled', '1');
+		$app->setMode($mode);
+		try {
+			$server = new TTestSoapOptionsServer();
+			$server->setWsdlUri($wsdl);
+			$engine = $server->engine();
+			$this->assertInstanceOf(\SoapServer::class, $engine);
+			$this->assertSame($engine, $server->engine());
+			$this->assertSame($cacheOff ? '0' : '1', ini_get('soap.wsdl_cache_enabled'));
+		} finally {
+			$app->setMode($originalMode);
+			ini_set('soap.wsdl_cache_enabled', $cache);
+			unlink($wsdl);
+		}
+	}
+
+	public static function modeCacheProvider(): array
+	{
+		return [
+			'debug' => [TApplicationMode::Debug, true],
+			'normal' => [TApplicationMode::Normal, false],
+		];
+	}
+
+	/**
+	 * @requires extension soap
+	 */
+	public function testOptionsCarryTheConfiguredSettings()
+	{
+		$server = new TTestSoapOptionsServer();
+		$this->assertSame([], $server->options());
+
+		$server->setVersion('1.1');
+		$server->setActor('urn:actor');
+		$server->setEncoding('UTF-8');
+		$server->setUri('urn:quote');
+		$server->setClassMaps('Quote , Price');
+		$this->assertSame([
+			'soap_version' => SOAP_1_1,
+			'actor' => 'urn:actor',
+			'encoding' => 'UTF-8',
+			'uri' => 'urn:quote',
+			'classmap' => ['Quote' => 'Quote', 'Price' => 'Price'],
+		], $server->options());
+
+		$server->setVersion('1.2');
+		$this->assertSame(SOAP_1_2, $server->options()['soap_version']);
+	}
+
+	// ── getWsdl() ───────────────────────────────────────────────────────────
+
+	public function testGetWsdlRefusesAnUnknownProvider()
+	{
+		$server = new TTestSoapServer();
+		$server->setProvider('TTestSoapNoSuchProvider');
+		$this->expectException(TConfigurationException::class);
+		$server->getWsdl();
+	}
+
+	/**
+	 * In Performance mode the WSDL is generated once per style and provider and
+	 * then read from the cache.
+	 */
+	public function testGetWsdlIsCachedInPerformanceMode()
+	{
+		$app = Prado::getApplication();
+		$mode = $app->getMode();
+		$cache = $app->getCache();
+		$memory = new TTestSoapCache();
+		$app->setMode(TApplicationMode::Performance);
+		$app->setCache($memory);
+		try {
+			$wsdl = $this->newServer()->getWsdl();
+			$key = TSoapServer::WSDL_CACHE_PREFIX . 'rpc.' . self::PROVIDER;
+			$this->assertSame([$key => $wsdl], $memory->items);
+
+			$memory->items[$key] = '<cached/>';
+			$this->assertSame('<cached/>', $this->newServer()->getWsdl());
+		} finally {
+			$app->setMode($mode);
+			PradoUnit::setProp($app, '_cache', $cache);
+		}
+	}
+
+	/**
+	 * In Performance mode without a cache the WSDL is generated each time.
+	 */
+	public function testGetWsdlWithoutACacheInPerformanceMode()
+	{
+		$app = Prado::getApplication();
+		$mode = $app->getMode();
+		$cache = $app->getCache();
+		$app->setMode(TApplicationMode::Performance);
+		PradoUnit::setProp($app, '_cache', null);
+		try {
+			$this->assertStringContainsString('style="rpc"', $this->newServer()->getWsdl());
+		} finally {
+			$app->setMode($mode);
+			PradoUnit::setProp($app, '_cache', $cache);
+		}
+	}
+
+	// ── URIs ────────────────────────────────────────────────────────────────
+
+	/**
+	 * The URI and WSDL URI default to the running service's URLs for the server.
+	 */
+	public function testUrisDefaultToTheServiceUrls()
+	{
+		$app = Prado::getApplication();
+		$running = $app->getService();
+		$service = new TSoapService();
+		$app->setService($service);
+		try {
+			$server = new TSoapServer();
+			$server->setID('quote');
+			$base = $app->getRequest()->getBaseUrl();
+			$this->assertSame($base . $service->constructUrl('quote', false), $server->getUri());
+			$this->assertSame($base . $service->constructUrl('quote.wsdl', false), $server->getWsdlUri());
+
+			$server->setUri('urn:quote');
+			$server->setWsdlUri('/quote.wsdl');
+			$this->assertSame('urn:quote', $server->getUri());
+			$this->assertSame('/quote.wsdl', $server->getWsdlUri());
+		} finally {
+			$app->setService($running);
+		}
+	}
+
+	// ── Properties ──────────────────────────────────────────────────────────
+
+	public function testProperties()
+	{
+		$server = new TSoapServer();
+		$this->assertSame('', $server->getVersion());
+		$this->assertSame('', $server->getActor());
+		$this->assertSame('', $server->getEncoding());
+		$this->assertFalse($server->getSessionPersistent());
+		$this->assertNull($server->getClassMaps());
+		$this->assertNull($server->getProvider());
+
+		$server->setVersion('1.2');
+		$this->assertSame('1.2', $server->getVersion());
+		$server->setVersion('');
+		$this->assertSame('', $server->getVersion());
+		$server->setActor('urn:actor');
+		$this->assertSame('urn:actor', $server->getActor());
+		$server->setEncoding('UTF-8');
+		$this->assertSame('UTF-8', $server->getEncoding());
+		$server->setSessionPersistent('true');
+		$this->assertTrue($server->getSessionPersistent());
+		$server->setClassMaps('Quote');
+		$this->assertSame('Quote', $server->getClassMaps());
+	}
+
+	public function testVersionRefusesAnUnknownVersion()
+	{
+		$this->expectException(TInvalidDataValueException::class);
+		(new TSoapServer())->setVersion('2.0');
+	}
+
+	// ── WSDL cache setting ──────────────────────────────────────────────────
+
+	/**
+	 * The WSDL cache setting is read as on unless it is '0', and is set, cleared,
+	 * and restored to its php.ini value.
+	 * @requires extension soap
+	 */
+	public function testTheWsdlCacheSetting()
+	{
+		$original = ini_get('soap.wsdl_cache_enabled');
+		try {
+			ini_set('soap.wsdl_cache_enabled', '1');
+			$this->assertTrue(TSoapServer::getIniWsdlCache());
+			$this->assertSame('1', TSoapServer::setIniWsdlCache(false));
+			$this->assertFalse(TSoapServer::getIniWsdlCache());
+			$this->assertSame('0', TSoapServer::setIniWsdlCache(true));
+			$this->assertTrue(TSoapServer::getIniWsdlCache());
+			ini_set('soap.wsdl_cache_enabled', '');
+			$this->assertTrue(TSoapServer::getIniWsdlCache());
+
+			$this->assertTrue(TSoapServer::setIniWsdlCache(null));
+			$this->assertSame(get_cfg_var('soap.wsdl_cache_enabled') === false ? '1' : (string) get_cfg_var('soap.wsdl_cache_enabled'), ini_get('soap.wsdl_cache_enabled'));
+		} finally {
+			ini_set('soap.wsdl_cache_enabled', $original);
+		}
+	}
+
+	// ── guessMethodCallRequested() ──────────────────────────────────────────
+
+	/**
+	 * A body in the provider's namespace without a call in it names no method.
+	 */
+	public function testGuessMethodCallRequestedWithoutACall()
+	{
+		$request = Prado::getApplication()->getRequest();
+		$saved = PradoUnit::getProp($request, '_rawBody');
+		PradoUnit::setProp($request, '_rawBody', '<soap:Envelope xmlns:ns1="urn:' . self::PROVIDER . 'wsdl"><soap:Body /></soap:Envelope>');
+		try {
 			$server = new TTestSoapFaultServer();
 			PradoUnit::invoke($server, 'guessMethodCallRequested', self::PROVIDER);
 			$this->assertNull($server->getRequestedMethod());
