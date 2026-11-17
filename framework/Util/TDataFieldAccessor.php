@@ -10,7 +10,6 @@
 
 namespace Prado\Util;
 
-use Exception;
 use Prado\Exceptions\TInvalidDataValueException;
 
 /**
@@ -79,7 +78,7 @@ class TDataFieldAccessor
 					return $object;
 				}
 			}
-		} catch (Exception $e) {
+		} catch (\Throwable $e) {
 			throw new TInvalidDataValueException('datafieldaccessor_datafield_invalid', $field, $e->getMessage());
 		}
 		throw new TInvalidDataValueException('datafieldaccessor_data_invalid', $field);
