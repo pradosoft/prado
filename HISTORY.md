@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `THttpRequest::getCookies()` with `EnableCookieValidation` drops an array cookie, such as `a[b]=1`; it threw a `TypeError`. (belisoful)
 ENH: Issue #1497 - `THttpSession::open()` sets a custom storage handler through `sessionSetSaveHandler()`, which a subclass overrides, as for the other `session_*` calls. (belisoful)
 BUG: Issue #1497 - `TSqlCriteria::setCondition()` moves only a trailing `ORDER BY`, `LIMIT`, or `OFFSET` outside quoted text and parentheses; it cut them from string literals and subqueries, so `title = 'LIMIT 5'` became `title = ''` with a limit of 5. (belisoful)
 BUG: Issue #1497 - `TMemCache` reads every expiration time as seconds and passes one over 30 days to Memcached as the timestamp it ends at; Memcached read such a time as a timestamp in 1970, so the value expired at once. See UPGRADE.md. (belisoful)

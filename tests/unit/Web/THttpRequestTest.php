@@ -382,6 +382,27 @@ class THttpRequestTest extends \PHPUnit\Framework\TestCase
 		self::assertEquals('0123456789abcdef', $cookies->itemAt('phpsessid')->getValue());
 	}
 
+	public function testGetCookiesValidationDropsTamperedAndArrayCookies()
+	{
+		$security = new TSecurityManager();
+		$this->app->setModule('security', $security);
+		$_COOKIE['phpsessid'] = $security->hashCookieData('0123456789abcdef');
+		$_COOKIE['tampered'] = 'x' . $security->hashCookieData('value');
+		$_COOKIE['list'] = ['a' => $security->hashCookieData('value')];
+		try {
+			$request = new THttpRequest();
+			$request->init(null);
+			$request->setEnableCookieValidation(true);
+			$cookies = $request->getCookies();
+			self::assertEquals('0123456789abcdef', $cookies->itemAt('phpsessid')->getValue());
+			self::assertNull($cookies->itemAt('tampered'));
+			self::assertNull($cookies->itemAt('list'));
+		} finally {
+			unset($_COOKIE['tampered'], $_COOKIE['list']);
+			$_COOKIE['phpsessid'] = '0123456789abcdef';
+		}
+	}
+
 	/**
 	 * Builds a request on a response that records its cookies, without a CSRF cookie or field.
 	 */

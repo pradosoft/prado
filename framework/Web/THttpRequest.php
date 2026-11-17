@@ -1134,7 +1134,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 			if ($this->getEnableCookieValidation()) {
 				$sm = $this->getApplication()->getSecurityManager();
 				foreach ($_COOKIE as $key => $value) {
-					if (($value = $sm->validateCookieData($value)) !== false) {
+					if (is_string($value) && ($value = $sm->validateCookieData($value)) !== false) {
 						$this->_cookies->add(new THttpCookie($key, $value));
 					}
 				}
