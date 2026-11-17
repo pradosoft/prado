@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TOracleTableInfo::getTableFullName()` is the table name alone when there is no schema; it was `.table`. (belisoful)
 BUG: Issue #1497 - `THttpUtility::isLocalUrl()` compares the host of a protocol-relative URL (`//host/path`, and `/\host` or `\\host` as browsers read them) with the server name; it called every such URL local, so the SRI helpers emitted no `integrity` for a `//cdn` script or stylesheet and `RequireScriptIntegrity` and `RequireStyleIntegrity` did not apply to it. (belisoful)
 BUG: Issue #1497 - `TUrlMapping` with the `HiddenPath` URL format and an application at the web root has an empty `UrlPrefix` on Windows; `dirname()` returned `\`, which prefixed every URL. (belisoful)
 BUG: Issue #1497 - `TSessionIterator` keeps session keys whose value is null and skips a removed first key; `next()` skipped null values and `rewind()` did not skip removed keys. (belisoful)
