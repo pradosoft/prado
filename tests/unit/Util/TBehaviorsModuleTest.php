@@ -2,7 +2,11 @@
 
 namespace Prado\Test\Unit\Util;
 
+use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataTypeException;
+use Prado\Prado;
+use Prado\Test\Unit\PradoUnit;
+use Prado\Web\Services\TPageService;
 use Prado\Util\TBehaviorsModule;
 use Prado\Util\TBehavior;
 use Prado\Web\UI\TPage;
@@ -63,9 +67,14 @@ class TBehaviorsModuleTest extends \PHPUnit\Framework\TestCase
 	
 	protected $obj;
 
+	private array $_staticSnapshot;
+	private array $_appSnapshot;
+
 	protected function setUp(): void
 	{
 		$this->obj = new TBehaviorsModule();
+		$this->_staticSnapshot = PradoUnit::snapshotStatic(TBehaviorsModule::class, ['_behaviors']);
+		$this->_appSnapshot = PradoUnit::snapshot(Prado::getApplication(), ['_service']);
 	}
 
 	protected function tearDown(): void
@@ -76,6 +85,18 @@ class TBehaviorsModuleTest extends \PHPUnit\Framework\TestCase
 		}
 		$this->tearDownScripts = [];
 		\Prado::getApplication()->onBeginRequest->clear();
+		PradoUnit::restoreStatic(TBehaviorsModule::class, $this->_staticSnapshot);
+		PradoUnit::restore(Prado::getApplication(), $this->_appSnapshot);
+	}
+
+	private function assertInitErrorCode(string $code, array $behaviors): void
+	{
+		try {
+			$this->obj->init(['behaviors' => $behaviors]);
+			self::fail("init() did not throw '$code'.");
+		} catch (TConfigurationException $e) {
+			self::assertSame($code, $e->getErrorCode());
+		}
 	}
 
 	public function testConstruct()
@@ -264,5 +285,81 @@ class TBehaviorsModuleTest extends \PHPUnit\Framework\TestCase
 		$this->obj->setAdditionalBehaviors('<module id="bmod"><behavior name="testBehavior" class="Prado\Test\Unit\Util\TestModuleBehavior1" attachto="Application" Priority="12" PropertyA="value2"/></module>');
 		$this->assertInstanceOf(\Prado\Xml\TXmlDocument::class, $this->obj->getAdditionalBehaviors());
 		
+	}
+
+	public function testInitBehaviorNotAnArrayThrows()
+	{
+		$this->assertInitErrorCode('behaviormodule_behavior_as_array_required', ['not an array']);
+	}
+
+	public function testInitWithoutAttachToThrows()
+	{
+		$this->assertInitErrorCode('behaviormodule_attachto_class_required', [['class' => TestModuleBehavior1::class]]);
+	}
+
+	public function testInitWithAttachToAndAttachToClassThrows()
+	{
+		$this->assertInitErrorCode('behaviormodule_attachto_and_class_only_one', [
+			['class' => TestModuleBehavior1::class, 'attachto' => 'Application', 'attachtoclass' => TestModuleBM2::class],
+		]);
+	}
+
+	public function testInitMissingModuleOwnerThrows()
+	{
+		$this->assertInitErrorCode('behaviormodule_behaviorowner_required', [
+			['class' => TestModuleBehavior1::class, 'attachto' => 'module:noSuchModule'],
+		]);
+	}
+
+	public function testInitMissingBehaviorOwnerThrows()
+	{
+		$this->assertInitErrorCode('behaviormodule_behaviorowner_required', [
+			['name' => 'second', 'class' => TestModuleBehavior1::class, 'attachto' => 'behavior:noSuchBehavior'],
+		]);
+	}
+
+	public function testInitCollectedBehaviorOwnerThrows()
+	{
+		PradoUnit::setStaticProp(TBehaviorsModule::class, '_behaviors', ['first' => \WeakReference::create(new TestModuleBehavior1())]);
+		$this->assertInitErrorCode('behaviormodule_behaviorowner_required', [
+			['name' => 'second', 'class' => TestModuleBehavior1::class, 'attachto' => 'behavior:first'],
+		]);
+	}
+
+	public function testInitAnonymousPageBehavior()
+	{
+		$this->obj->init(['behaviors' => [['class' => TestModuleBehavior1::class, 'attachto' => 'Page', 'propertya' => 'anonymous']]]);
+		$page = new TPage();
+		$this->obj->attachTPageBehaviors(null, $page);
+
+		$behaviors = $page->getBehaviors();
+		self::assertCount(1, $behaviors);
+		$behavior = reset($behaviors);
+		self::assertInstanceOf(TestModuleBehavior1::class, $behavior);
+		self::assertSame('anonymous', $behavior->getPropertyA());
+	}
+
+	public function testAttachTPageServiceHandler()
+	{
+		$app = Prado::getApplication();
+		$this->obj->init(['behaviors' => [['name' => 'pageB', 'class' => TestModuleBehavior1::class, 'attachto' => 'Page']]]);
+		self::assertTrue($app->onBeginRequest->contains([$this->obj, 'attachTPageServiceHandler']));
+
+		PradoUnit::setProp($app, '_service', null);
+		$this->obj->attachTPageServiceHandler($app, null);
+
+		$service = new TPageService();
+		PradoUnit::setProp($app, '_service', $service);
+		self::assertFalse($service->hasEventHandler('onPreRunPage'));
+		$this->obj->attachTPageServiceHandler($app, null);
+		self::assertTrue($service->getEventHandlers('onPreRunPage')->contains([$this->obj, 'attachTPageBehaviors']));
+	}
+
+	public function testAttachTPageBehaviorsWithoutPageBehaviors()
+	{
+		$this->obj->init(null);
+		$page = new TPage();
+		$this->obj->attachTPageBehaviors(null, $page);
+		self::assertSame([], $page->getBehaviors());
 	}
 }

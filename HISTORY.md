@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TBehaviorsModule` throws `TConfigurationException` for an `attachto="behavior:name"` whose behavior no longer exists; it threw an `Error`. (belisoful)
 BUG: Issue #1497 - A behavior with `StrictEvents` false attaches its handlers to the events its owner has; it checked its own events, so it attached none of the owner's `on` events. (belisoful)
 BUG: Issue #1497 - A behavior keeps a `RetainDisabledHandlers` of null through serialization; it came back false. (belisoful)
 BUG: Issue #1497 - `TDataFieldAccessor::getDataFieldValue()` throws `TInvalidDataValueException` for a field it cannot read because of a PHP `Error`, such as a private property or an object indexed as an array; the `Error` escaped. (belisoful)
