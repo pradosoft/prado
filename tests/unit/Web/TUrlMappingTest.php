@@ -564,7 +564,7 @@ class TUrlMappingTest extends \PHPUnit\Framework\TestCase
 	{
 		$module = new TUrlMapping();
 		$module->setConfigFile($this->mappingDataAlias() . '.mappings');
-		$this->assertSame(__DIR__ . '/data/urlmapping/mappings.xml', $module->getConfigFile());
+		$this->assertSame(implode(DIRECTORY_SEPARATOR, [__DIR__, 'data', 'urlmapping', 'mappings.xml']), $module->getConfigFile());
 		$module->init([]);
 		$this->newPathRequest('/post/7/');
 		$this->assertEquals(['id' => '7', 'page' => 'Posts.ViewPost'], $module->parseUrl());
@@ -576,7 +576,7 @@ class TUrlMappingTest extends \PHPUnit\Framework\TestCase
 		$this->app = new TTestApplication(__DIR__ . '/app', false, TApplication::CONFIG_TYPE_PHP);
 		$module = new TUrlMapping();
 		$module->setConfigFile($this->mappingDataAlias() . '.mappings');
-		$this->assertSame(__DIR__ . '/data/urlmapping/mappings.php', $module->getConfigFile());
+		$this->assertSame(implode(DIRECTORY_SEPARATOR, [__DIR__, 'data', 'urlmapping', 'mappings.php']), $module->getConfigFile());
 		$module->init([]);
 		$this->newPathRequest('/post/8/');
 		$this->assertEquals(['id' => '8', 'page' => 'Posts.ViewPost'], $module->parseUrl());

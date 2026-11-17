@@ -385,7 +385,8 @@ class THttpResponseTest extends \PHPUnit\Framework\TestCase
 		try {
 			$response = new TTestHttpResponse();
 			$this->assertSame(self::RANGE_BODY, $this->captureWriteFile($response, $file));
-			$this->assertContains('Content-Type: ' . mime_content_type($file), $response->headers);
+			// Without fileinfo, a file with no known extension is text/plain.
+			$this->assertContains('Content-Type: ' . (function_exists('mime_content_type') ? mime_content_type($file) : TMediaType::PLAIN), $response->headers);
 		} finally {
 			unlink($file);
 		}
