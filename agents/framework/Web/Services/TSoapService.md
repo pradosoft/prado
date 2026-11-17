@@ -53,8 +53,8 @@ return [
 - `getServerID()` - Returns the SOAP server ID
 
 ### Configuration
-- `getConfigFile()` / `setConfigFile()` - Gets/sets external configuration file
-- `loadConfig()` - Loads configuration from XML element
+- `getConfigFile()` / `setConfigFile()` - Gets/sets the external configuration file, a namespace resolved with the application's configuration file extension. `init()` loads its servers before those of the service element: an XML document under XML configuration, and a PHP file returning an array (`['soap' => [id => ['class' => ..., 'properties' => [...]]]]`) under PHP configuration. A file that does not exist throws `soapservice_configfile_invalid`; one that holds no configuration throws `soapservice_configfile_unreadable`.
+- `loadConfig()` - Loads servers from a PHP array or an XML element; a null configuration adds none.
 
 ## SOAP Provider Requirements
 - Provider class must be specified with `@soapmethod` comment tags

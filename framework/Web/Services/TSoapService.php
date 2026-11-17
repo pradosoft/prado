@@ -18,6 +18,7 @@ use Prado\Prado;
 use Prado\TApplication;
 use Prado\Web\TMediaType;
 use Prado\Xml\TXmlDocument;
+use Prado\Xml\TXmlElement;
 
 /**
  * TSoapService class
@@ -139,19 +140,29 @@ class TSoapService extends \Prado\TService
 	/**
 	 * Initializes this module.
 	 * This method is required by the IModule interface.
+	 * The servers of {@see getConfigFile ConfigFile} load first: an XML document,
+	 * or a PHP file returning an array, by the application's configuration type.
 	 * @param null|array|\Prado\Xml\TXmlElement $config configuration for this module, can be null
-	 * @throws TConfigurationException if {@see getConfigFile ConfigFile} is invalid.
+	 * @throws TConfigurationException if {@see getConfigFile ConfigFile} does not
+	 *   exist or holds no configuration.
 	 */
 	public function init($config)
 	{
 		if ($this->_configFile !== null) {
-			if (is_file($this->_configFile)) {
-				$dom = new TXmlDocument();
-				$dom->loadFromFile($this->_configFile);
-				$this->loadConfig($dom);
-			} else {
+			if (!is_file($this->_configFile)) {
 				throw new TConfigurationException('soapservice_configfile_invalid', $this->_configFile);
 			}
+			if ($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP) {
+				$fileConfig = include $this->_configFile;
+				$loaded = is_array($fileConfig);
+			} else {
+				$fileConfig = new TXmlDocument();
+				$loaded = $fileConfig->loadFromFile($this->_configFile);
+			}
+			if (!$loaded) {
+				throw new TConfigurationException('soapservice_configfile_unreadable', $this->_configFile);
+			}
+			$this->loadConfig($fileConfig);
 		}
 		$this->loadConfig($config);
 
@@ -204,7 +215,7 @@ class TSoapService extends \Prado\TService
 					$this->_servers[$id] = $properties;
 				}
 			}
-		} else {
+		} elseif ($config instanceof TXmlElement) {
 			foreach ($config->getElementsByTagName('soap') as $serverXML) {
 				$properties = $serverXML->getAttributes();
 				if (($id = $properties->remove('id')) === null) {

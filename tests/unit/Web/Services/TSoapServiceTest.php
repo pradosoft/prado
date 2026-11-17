@@ -287,6 +287,50 @@ class TSoapServiceTest extends \PHPUnit\Framework\TestCase
 
 	// ── init() and the request ──────────────────────────────────────────────
 
+	/**
+	 * A PHP application reads the servers of a PHP configuration file.
+	 */
+	public function testInitReadsAPhpConfigurationFile()
+	{
+		Prado::getApplication()->getRequest()->setServiceParameter('filed');
+		$service = new TTestSoapRecordingService();
+		$service->setConfigFile('SoapFixtures.soap');
+		$service->init(null);
+		$this->assertStringEndsWith('soap.php', $service->getConfigFile());
+		$server = PradoUnit::invoke($service, 'createServer');
+		$this->assertInstanceOf(TTestSoapRecordingServer::class, $server);
+		$this->assertSame('ISO-8859-1', $server->getEncoding());
+	}
+
+	/**
+	 * An XML application without a service element reads its configuration file.
+	 */
+	public function testInitWithoutAnXmlElementReadsTheConfigurationFile()
+	{
+		$this->configurationType(TApplication::CONFIG_TYPE_XML);
+		Prado::getApplication()->getRequest()->setServiceParameter('filed');
+		$service = new TTestSoapRecordingService();
+		$service->setConfigFile('SoapFixtures.soap');
+		$service->init(null);
+		$this->assertSame('filed', $service->getServerID());
+	}
+
+	/**
+	 * A configuration file that holds no configuration is refused.
+	 * @dataProvider unreadableConfigFileProvider
+	 * @param string $type the application configuration type.
+	 * @param string $file the configuration file's namespace.
+	 */
+	public function testInitRefusesAConfigurationFileWithoutAConfiguration(string $type, string $file)
+	{
+		$this->configurationType($type);
+		Prado::getApplication()->getRequest()->setServiceParameter('filed');
+		$service = new TTestSoapRecordingService();
+		$service->setConfigFile($file);
+		$this->expectException(TConfigurationException::class);
+		$service->init(null);
+	}
+
 	public static function unreadableConfigFileProvider(): array
 	{
 		return [
