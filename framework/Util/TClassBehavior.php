@@ -52,8 +52,8 @@ class TClassBehavior extends TBaseBehavior implements IClassBehavior
 	 */
 	private ?TWeakList $_owners = null;
 
-	/** @var null|array|\WeakMap This tracks whether an owner has event handlers attached. */
-	private $_handlersInstalled;
+	/** @var ?\WeakMap This tracks whether an owner has event handlers attached. */
+	private ?\WeakMap $_handlersInstalled = null;
 
 	/**
 	 * Cloning a new instance clears both the owners and handler attachment tracking
@@ -66,16 +66,11 @@ class TClassBehavior extends TBaseBehavior implements IClassBehavior
 	}
 
 	/**
-	 * Initializes the WeakMap to manager the attachment status of owners.
-	 * Prior to PHP 8, this will use an array rather than a WeakMap.
+	 * Initializes the WeakMap that tracks the owners with attached event handlers.
 	 */
 	protected function initMap()
 	{
-		if (class_exists('\WeakMap')) {
-			$this->_handlersInstalled = new \WeakMap();
-		} else {
-			$this->_handlersInstalled = [];
-		}
+		$this->_handlersInstalled = new \WeakMap();
 	}
 
 	/**
@@ -213,8 +208,7 @@ class TClassBehavior extends TBaseBehavior implements IClassBehavior
 		if (!$component) {
 			return null;
 		}
-		$ref = is_array($this->_handlersInstalled) ? spl_object_id($component) : $component;
-		return isset($this->_handlersInstalled[$ref]);
+		return isset($this->_handlersInstalled[$component]);
 	}
 
 	/**
@@ -228,14 +222,13 @@ class TClassBehavior extends TBaseBehavior implements IClassBehavior
 	 */
 	protected function setHandlersStatus(TComponent $component, bool $attach): bool
 	{
-		$ref = is_array($this->_handlersInstalled) ? spl_object_id($component) : $component;
 		if ($attach) {
-			if ($this->_owners && $this->_owners->contains($component) && !isset($this->_handlersInstalled[$ref])) {
-				$this->_handlersInstalled[$ref] = true;
+			if ($this->_owners && $this->_owners->contains($component) && !isset($this->_handlersInstalled[$component])) {
+				$this->_handlersInstalled[$component] = true;
 				return true;
 			}
-		} elseif (isset($this->_handlersInstalled[$ref])) {
-			unset($this->_handlersInstalled[$ref]);
+		} elseif (isset($this->_handlersInstalled[$component])) {
+			unset($this->_handlersInstalled[$component]);
 			return true;
 		}
 		return false;
