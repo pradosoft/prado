@@ -526,7 +526,9 @@ class TSignalsDispatcher extends TComponent implements \Prado\ISingleton
 	/**
 	 * The common SIGCHLD callback to delegate per PID.  If there are specific PID
 	 * handlers for a child, those PID callbacks are called.  On an exit event, the PID
-	 * handlers are cleared.
+	 * handlers are cleared.  A signal parameter without a pid reaps an exited child
+	 * with `pcntl_waitpid()` and fills "pid", "code", and "status" as the SIGCHLD
+	 * siginfo does.
 	 * @param TSignalsDispatcher $sender The object raising the event.
 	 * @param TSignalParameter $param The signal parameters.
 	 */
@@ -543,9 +545,16 @@ class TSignalsDispatcher extends TComponent implements \Prado\ISingleton
 			if (!$param) {
 				$param = new TSignalParameter(SIGCHLD);
 			}
+			// As the SIGCHLD siginfo: code 1 (CLD_EXITED) with the exit status, or 2 (CLD_KILLED) with the signal.
 			$sigInfo = $param->getParameter() ?? [];
 			$sigInfo['pid'] = $pid;
-			$sigInfo['status'] = $status;
+			if (pcntl_wifexited($status)) {
+				$sigInfo['code'] = 1;
+				$sigInfo['status'] = pcntl_wexitstatus($status);
+			} else {
+				$sigInfo['code'] = 2;
+				$sigInfo['status'] = pcntl_wtermsig($status);
+			}
 			$param->setParameter($sigInfo);
 		}
 		if (!isset(self::$_pidHandlers[$pid])) {
@@ -554,7 +563,7 @@ class TSignalsDispatcher extends TComponent implements \Prado\ISingleton
 
 		array_map(fn ($child) => $child($sender, $param), self::$_pidHandlers[$pid]->toArray());
 
-		if (in_array($param->getParameterCode(), [1, 2])) { // 1 = normal exit, 2 = kill
+		if (in_array($param->getParameterCode(), [1, 2, 3])) { // 1 = normal exit, 2 = killed, 3 = killed and dumped core
 			unset(self::$_pidHandlers[$pid]);
 		}
 	}
@@ -715,12 +724,12 @@ class TSignalsDispatcher extends TComponent implements \Prado\ISingleton
 			ksort(static::$_alarms, SORT_NUMERIC);
 			static::$_alarmsOrdered = true;
 		}
-		if ($callback === self::$_priorHandlers[SIGALRM][0]) {
+		if (isset(self::$_priorHandlers[SIGALRM][1]) && $callback === self::$_priorHandlers[SIGALRM][0]) {
 			$callback = self::$_priorHandlers[SIGALRM][1];
 		}
 
 		foreach ($alarmTime !== null ? [$alarmTime] : array_keys(static::$_alarms) as $time) {
-			if (($key = array_search($callback, static::$_alarms[$time] ?? [], true)) !== false) {
+			if (($key = array_search($callback, static::$_alarms[$time], true)) !== false) {
 				unset(static::$_alarms[$time][$key]);
 				if (empty(static::$_alarms[$time])) {
 					unset(static::$_alarms[$time]);

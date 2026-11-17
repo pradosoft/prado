@@ -1,4 +1,6 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TSignalsDispatcher::disarm()` without an attached dispatcher returns null; it threw `TPhpErrorException`. (belisoful)
+BUG: Issue #1497 - `TSignalsDispatcher::delegateChild()` gives a child it reaps the "code" and "status" of the SIGCHLD siginfo and clears the handlers of a child that dumped core; it passed the raw wait status, so the handlers of a reaped child were never cleared. (belisoful)
 BUG: Issue #1497 - `TDbParameterModule` works on PostgreSQL and names its indexes after its table; it could not create its table or read its rows on PostgreSQL, and a second parameter table in one SQLite or PostgreSQL database failed. (belisoful)
 BUG: Issue #1497 - `TBehaviorsModule` throws `TConfigurationException` for an `attachto="behavior:name"` whose behavior no longer exists; it threw an `Error`. (belisoful)
 BUG: Issue #1497 - A behavior with `StrictEvents` false attaches its handlers to the events its owner has; it checked its own events, so it attached none of the owner's `on` events. (belisoful)
