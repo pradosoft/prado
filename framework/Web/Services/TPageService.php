@@ -503,7 +503,7 @@ class TPageService extends \Prado\TService
 			$applicationPath = Prado::getPathOfAlias('Application') ?? '';
 			$throwException = true;
 			foreach ($paths as $path) {
-				if (stripos($path, $applicationPath) !== 0) {
+				if (!$this->isApplicationPath($path, $applicationPath)) {
 					throw new THttpException(403, 'pageservice_security_violation', $path);
 				}
 				$hasTemplateFile = is_file($path . self::PAGE_FILE_EXT);
@@ -564,6 +564,38 @@ class TPageService extends \Prado\TService
 	}
 
 	/**
+	 * Whether a path is the application path or lies below it. The `.` and `..`
+	 * segments of the path are resolved first, and the comparison ignores case
+	 * and treats `/` and `\` alike. Without an application path every path is
+	 * accepted.
+	 * @param string $path the path an {@see onAdditionalPagePaths} handler offers.
+	 * @param string $applicationPath the path of the `Application` alias.
+	 * @return bool whether the path is inside the application path.
+	 * @since 4.4.0
+	 */
+	protected function isApplicationPath(string $path, string $applicationPath): bool
+	{
+		if ($applicationPath === '') {
+			return true;
+		}
+		$segments = [];
+		foreach (explode('/', strtr($path, '\\', '/')) as $index => $segment) {
+			if ($segment === '..') {
+				if (count($segments) < 2) {
+					return false;
+				}
+				array_pop($segments);
+			} elseif ($segment !== '.' && ($segment !== '' || $index === 0)) {
+				$segments[] = $segment;
+			}
+		}
+		$path = implode('/', $segments);
+		$applicationPath = rtrim(strtr($applicationPath, '\\', '/'), '/');
+		return strcasecmp($path, $applicationPath) === 0
+			|| strncasecmp($path, $applicationPath . '/', strlen($applicationPath) + 1) === 0;
+	}
+
+	/**
 	 * This event is raised if the page is not found in the BasePath.
 	 * This provides additional possible Page Paths to look for the page.
 	 * The typical handler would look like:
@@ -573,6 +605,8 @@ class TPageService extends \Prado\TService
 	 *	 return $this->getPluginPagesPath() . DIRECTORY_SEPARATOR . strtr($pagePath, '.', DIRECTORY_SEPARATOR);
 	 * }
 	 * ```
+	 * A path outside the `Application` alias's path, once its `..` segments are
+	 * resolved, is refused with a 403 {@see THttpException}.
 	 * @param mixed $param what is passed as the parameter to the event
 	 * @since 4.2.0
 	 */

@@ -77,6 +77,8 @@ Rules apply to all pages in that directory and subdirectories. `TPageConfigurati
 
 `onPreRunPage` — raised before the page lifecycle starts. Modules can inspect/modify the `TPage` object.
 
+`onAdditionalPagePaths` — raised with the page path when the page is not under `BasePath`; each handler returns a path to look for the page in, tried in order. `isApplicationPath()` resolves each path's `.` and `..` segments and requires it inside the `Application` alias's path, ignoring case; a path outside throws `THttpException` 403 (`pageservice_security_violation`).
+
 ---
 
 ## TJsonService

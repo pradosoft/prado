@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TPageService` accepts a page path from `onAdditionalPagePaths` only inside the application path once its `..` segments are resolved (`isApplicationPath()`); it took any path beginning with the application path, so `../` and a sibling directory with the same prefix reached pages outside the application. See UPGRADE.md. (belisoful)
 BUG: Issue #1497 - `TSoapService` accepts a server class and `TPageService` a `BasePageClass` named by its short name after the name is aliased; they compared class names as strings, so `TSoapServer` and `TPage` were refused once aliased. (belisoful)
 BUG: Issue #1497 - `TSoapService` reads a PHP `ConfigFile` under PHP configuration, accepts a null XML configuration, and throws `soapservice_configfile_unreadable` for a file that holds no configuration; it ignored the PHP file and a malformed XML file, and a null configuration threw an `Error`. (belisoful)
 BUG: Issue #1497 - `TRestService` writes a problem document whose text is not UTF-8, which threw `JsonException` out of `run()`, and sends a resource's status and headers only after its body encodes. (belisoful)
