@@ -13,70 +13,73 @@ namespace Prado\Util;
 /**
  * TUtf8Converter class.
  *
- * TUtf8Converter is a simple wrapper around iconv functions to convert
- * strings from and to UTF-8.
+ * TUtf8Converter converts strings from and to UTF-8. It calls `iconv()` when the
+ * iconv extension is loaded, and the intl extension's `\UConverter::transcode()`
+ * otherwise. `composer.json` suggests `iconv` and requires `intl`.
+ *
+ * | Case | With iconv | Without iconv |
+ * |---|---|---|
+ * | conversion | `iconv()` | `\UConverter::transcode()` |
+ * | `//TRANSLIT` or `//IGNORE` on the encoding | applied | removed; ICU substitutes what the target encoding cannot hold |
+ * | unknown encoding | the string unchanged | the string unchanged |
+ * | input invalid in its encoding | the string unchanged | the converted string with substitutes |
  *
  * @author Fabio Bas <fbio.bas@gmail.com>
  * @since 4.0.2
  */
 class TUtf8Converter
 {
+	/** @var ?bool whether the iconv extension is loaded, resolved on first use */
+	private static ?bool $_iconv = null;
+
 	/**
-	 * Convert strings to UTF-8 via iconv. NB, the result may not by UTF-8
-	 * if the conversion failed.
+	 * Tells whether `iconv()` converts the strings.
+	 * @return bool whether the iconv extension is loaded.
+	 * @since 4.4.0
+	 */
+	public static function hasIconv(): bool
+	{
+		return self::$_iconv ??= extension_loaded('iconv');
+	}
+
+	/**
+	 * Converts a string to UTF-8. NB, the result may not be UTF-8 if the conversion
+	 * failed.
 	 * @param string $string string to convert to UTF-8
 	 * @param string $from source encoding
 	 * @param ?string $lang Language of the encoding as accepted by PHP setLocale
-	 * @return string UTF-8 encoded string, original string if iconv failed.
+	 * @return string UTF-8 encoded string, original string if the conversion failed.
 	 * @see https://www.php.net/manual/en/function.setlocale.php
 	 *   The $lang locale information is maintained per process, not per thread.
 	 */
 	public static function toUTF8($string, $from, $lang = null)
 	{
 		if ($from != 'UTF-8') {
-			$locale = null;
 			if ($lang === null) {
 				self::parseEncodingLanguage($from, $lang);
 			}
-			if ($lang !== null) {
-				$locale = setLocale(LC_CTYPE, '0');
-				setLocale(LC_CTYPE, $lang);
-			}
-			$s = iconv($from, 'UTF-8', $string); //to UTF-8
-			if ($lang !== null) {
-				setLocale(LC_CTYPE, $locale);
-			}
-			return $s !== false ? $s : $string; //it could return false
+			return self::convert((string) $string, $from, 'UTF-8', $lang);
 		}
 		return $string;
 	}
 
 	/**
-	 * Convert UTF-8 strings to a different encoding. NB. The result
-	 * may not have been encoded if iconv fails.
+	 * Converts a UTF-8 string to a different encoding. NB. The result may not have
+	 * been encoded if the conversion failed.
 	 * @param string $string the UTF-8 string for conversion
 	 * @param string $to destination encoding
 	 * @param ?string $lang Language of the encoding as accepted by PHP setLocale
-	 * @return string encoded string.
+	 * @return string encoded string, original string if the conversion failed.
 	 * @see https://www.php.net/manual/en/function.setlocale.php
 	 *   The $lang locale information is maintained per process, not per thread.
 	 */
 	public static function fromUTF8($string, $to, $lang = null)
 	{
 		if ($to != 'UTF-8') {
-			$locale = null;
 			if ($lang === null) {
 				self::parseEncodingLanguage($to, $lang);
 			}
-			if ($lang !== null) {
-				$locale = setLocale(LC_CTYPE, '0');
-				setLocale(LC_CTYPE, $lang);
-			}
-			$s = iconv('UTF-8', $to, $string);
-			if ($lang !== null) {
-				setLocale(LC_CTYPE, $locale);
-			}
-			return $s !== false ? $s : $string;
+			return self::convert((string) $string, 'UTF-8', $to, $lang);
 		}
 		return $string;
 	}
@@ -97,5 +100,37 @@ class TUtf8Converter
 			$encoding = $parts[0];
 			$lang = $parts[1];
 		}
+	}
+
+	/**
+	 * Converts a string between encodings under the LC_CTYPE locale $lang, which is
+	 * restored afterward.
+	 * @param string $string the string to convert.
+	 * @param string $from the source encoding.
+	 * @param string $to the destination encoding.
+	 * @param ?string $lang the LC_CTYPE locale of the conversion, null for the current one.
+	 * @return string the converted string, or $string when the conversion failed.
+	 */
+	private static function convert(string $string, string $from, string $to, ?string $lang): string
+	{
+		$locale = null;
+		if ($lang !== null) {
+			$locale = setlocale(LC_CTYPE, '0');
+			setlocale(LC_CTYPE, $lang);
+		}
+		try {
+			if (self::hasIconv()) {
+				// iconv warns for an unknown encoding or invalid input and returns false.
+				$result = @iconv($from, $to, $string);
+			} else {
+				// ICU warns for an unknown encoding and returns false.
+				$result = @\UConverter::transcode($string, explode('//', $to, 2)[0], explode('//', $from, 2)[0]);
+			}
+		} finally {
+			if ($lang !== null) {
+				setlocale(LC_CTYPE, $locale);
+			}
+		}
+		return $result !== false ? $result : $string;
 	}
 }

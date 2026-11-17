@@ -808,7 +808,8 @@ class TSimpleDateFormatter
 
 	/**
 	 * Tells whether {@see getCharset() Charset} is UTF-8, which
-	 * {@see TMultibyteString} measures; any other charset goes through iconv.
+	 * {@see TMultibyteString} measures; any other charset is converted to UTF-8
+	 * through {@see TUtf8Converter} first.
 	 * @return bool whether the charset is UTF-8.
 	 */
 	private function isUtf8(): bool
@@ -823,7 +824,10 @@ class TSimpleDateFormatter
 	 */
 	private function length($string)
 	{
-		return $this->isUtf8() ? TMultibyteString::length((string) $string) : iconv_strlen($string, $this->getCharset());
+		if ($this->isUtf8()) {
+			return TMultibyteString::length((string) $string);
+		}
+		return TMultibyteString::length(TUtf8Converter::toUTF8((string) $string, $this->getCharset()));
 	}
 
 	/**
@@ -846,7 +850,12 @@ class TSimpleDateFormatter
 	 */
 	private function substring($string, $start, $length)
 	{
-		return $this->isUtf8() ? TMultibyteString::substr((string) $string, (int) $start, (int) $length) : iconv_substr($string, $start, $length, $this->getCharset());
+		if ($this->isUtf8()) {
+			return TMultibyteString::substr((string) $string, (int) $start, (int) $length);
+		}
+		$charset = $this->getCharset();
+		$substring = TMultibyteString::substr(TUtf8Converter::toUTF8((string) $string, $charset), (int) $start, (int) $length);
+		return TUtf8Converter::fromUTF8($substring, $charset);
 	}
 
 	/**
