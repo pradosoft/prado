@@ -81,13 +81,14 @@ class TPluginModule extends \Prado\TModule implements IPluginModule
 	private $_relativePagesPath = self::PAGES_DIRECTORY;
 
 	/**
-	 * initializes the plugin module, looks for a Pages directory and adds a new {@see \Prado\Util\TBehavior}
-	 * to help TPageService find any plugin module pages
+	 * Initializes the plugin module. When the plugin has a Pages directory, the module
+	 * handles onBeginRequest to add the directory to the page paths of TPageService.
+	 * The plugin's error message file, when present, is registered with TException.
 	 * @param null|array|\Prado\Xml\TXmlElement $config this is the manifest for the plugin module
 	 */
 	public function init($config)
 	{
-		if ($this->getPluginPagesPath() !== null) {
+		if ($this->getPluginPagesPath()) {
 			$this->getApplication()->attachEventHandler('onBeginRequest', [$this, 'attachPageServiceBehavior']);
 		}
 
@@ -153,7 +154,7 @@ class TPluginModule extends \Prado\TModule implements IPluginModule
 	}
 
 	/**
-	 * @return string the path of the Pages director for the plugin, if available
+	 * @return false|string the Pages directory of the plugin, false when it has none
 	 */
 	public function getPluginPagesPath()
 	{
