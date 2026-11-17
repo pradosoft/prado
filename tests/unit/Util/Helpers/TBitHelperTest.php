@@ -533,4 +533,24 @@ class TBitHelperTest extends \PHPUnit\Framework\TestCase
 	}
 	
 	
+
+	public function testFloatToFpXXBadFormat()
+	{
+		foreach ([[-1, 10, null], [0, 10, null], [5, 0, null], [5, -1, null], [32, 32, null], [5, 10, -1], [5, 10, 32]] as [$exponentBits, $mantissaBits, $bias]) {
+			try {
+				TBitHelper::floatToFpXX(1.0, $exponentBits, $mantissaBits, $bias);
+				self::fail("floatToFpXX accepts $exponentBits exponent bits, $mantissaBits mantissa bits, and bias $bias.");
+			} catch (TInvalidDataValueException $e) {
+			}
+			try {
+				TBitHelper::fpXXToFloat(1, $exponentBits, $mantissaBits, $bias);
+				self::fail("fpXXToFloat accepts $exponentBits exponent bits, $mantissaBits mantissa bits, and bias $bias.");
+			} catch (TInvalidDataValueException $e) {
+			}
+		}
+		self::assertSame(0x3C00, TBitHelper::floatToFpXX(1.0, 5, 10, 15));
+		self::assertSame(1.0, TBitHelper::fpXXToFloat(0x3C00, 5, 10, 15));
+		self::assertSame(0x3C00, TBitHelper::floatToFpXX(1.0));
+		self::assertSame(1.0, TBitHelper::fpXXToFloat(0x3C00));
+	}
 }
