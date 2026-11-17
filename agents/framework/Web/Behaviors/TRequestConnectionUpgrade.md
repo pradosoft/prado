@@ -13,7 +13,7 @@ A behavior for `THttpRequest` that injects HTTP "Connection: Upgrade" and "Upgra
 ## Key Properties/Methods
 
 - **`events()`** - Returns `['onResolveRequest' => 'processHeaders']` to attach the handler
-- **`processHeaders($request, $param)`** - Parses the Upgrade header, extracts requested services, and merges them into URL parameters as keys. Logs a NOTICE if "Connection: Upgrade" exists without an "Upgrade" header.
+- **`processHeaders($request, $param)`** - Parses the Upgrade header, extracts requested services, and merges them into URL parameters as keys; empty entries are skipped. Returns null when the URL parameters are not an array, the Connection header has no `upgrade`, or the Upgrade header is missing or names no protocol. Logs a NOTICE with `THttpRequest::getUserHostAddress()` if "Connection: Upgrade" exists without an "Upgrade" header.
 
 ## See Also
 
