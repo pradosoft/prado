@@ -62,12 +62,21 @@ class THttpHeadersManagerTest extends \PHPUnit\Framework\TestCase
 {
 	public static ?TApplication $app = null;
 
+	/** @var array the application's services before the test; a finalize may register one. */
+	private array $_servicesBefore = [];
+
 	protected function setUp(): void
 	{
 		if (self::$app === null) {
 			self::$app = new TApplication(__DIR__ . '/../../Security/app');
 			self::$app->setMode(TApplicationMode::Debug);
 		}
+		$this->_servicesBefore = PradoUnit::getProp(Prado::getApplication(), '_services');
+	}
+
+	protected function tearDown(): void
+	{
+		PradoUnit::setProp(Prado::getApplication(), '_services', $this->_servicesBefore);
 	}
 
 	// -----------------------------------------------------------------------
