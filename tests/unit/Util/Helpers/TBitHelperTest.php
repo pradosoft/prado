@@ -553,4 +553,11 @@ class TBitHelperTest extends \PHPUnit\Framework\TestCase
 		self::assertSame(0x3C00, TBitHelper::floatToFpXX(1.0));
 		self::assertSame(1.0, TBitHelper::fpXXToFloat(0x3C00));
 	}
+
+	public function testCrc32UnreadableFile()
+	{
+		self::assertFalse(TBitHelper::crc32('nowrapper://data', true));
+		self::assertFalse(TBitHelper::crc32(['nowrapper://data', 10], true));
+		self::assertFalse(TBitHelper::crc32('no such file', true));
+	}
 }
