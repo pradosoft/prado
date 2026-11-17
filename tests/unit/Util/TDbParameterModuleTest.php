@@ -7,6 +7,10 @@ use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Test\Unit\PradoUnit;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Util\TDbParameterModule;
+use Prado\Data\TDbDriver;
+use Prado\Web\Services\TPageService;
+use Prado\Security\Permissions\TPermissionEvent;
+use Prado\Exceptions\TConfigurationException;
 use Prado\Test\Unit\Harness\Traits\PradoUnitModuleDependencyTrait;
 use Prado\Data\TDbConnection;
 use Prado\Util\Behaviors\TMapLazyLoadBehavior;
@@ -567,5 +571,357 @@ class TDbParameterModuleTest extends \PHPUnit\Framework\TestCase
 			self::assertNull($params['testparam']);
 			self::assertFalse($params->contains('testparam'));
 		});
+	}
+
+	// === Driver tables ===
+
+	/** @var array<int, array{0: TDbConnection, 1: string}> tables to drop after the test. */
+	private array $_driverTables = [];
+
+	/** @var TDbParameterModule[] modules kept alive so their connections stay open. */
+	private array $_driverModules = [];
+
+	public static function driverProvider(): array
+	{
+		return [
+			'sqlite' => [TDbDriver::DRIVER_SQLITE],
+			'mysql' => [TDbDriver::DRIVER_MYSQL],
+			'pgsql' => [TDbDriver::DRIVER_PGSQL],
+		];
+	}
+
+	private function driverConnection(string $driver): TDbConnection
+	{
+		$conn = match ($driver) {
+			TDbDriver::DRIVER_SQLITE => new TDbConnection('sqlite::memory:'),
+			TDbDriver::DRIVER_MYSQL => PradoUnit::setupMysqlConnection('prado_unitest'),
+			TDbDriver::DRIVER_PGSQL => PradoUnit::setupPgsqlConnection('prado_unitest'),
+		};
+		if (is_array($conn)) {
+			PradoUnit::failFirstThenSkip($this, $conn[0], null, $conn[1]);
+		} elseif ($conn instanceof \Exception) {
+			throw $conn;
+		}
+		$conn->setActive(true);
+		return $conn;
+	}
+
+	private function driverModule(TDbConnection $conn, string $table, string $autoLoadField = 'autoload'): TDbParameterModule
+	{
+		$conn->createCommand('DROP TABLE IF EXISTS ' . $table)->execute();
+		$this->_driverTables[] = [$conn, $table];
+		$module = $this->_driverModules[] = new TDbParameterModule();
+		PradoUnit::setProp($module, '_conn', $conn);
+		$module->setTableName($table);
+		$module->setAutoLoadField($autoLoadField);
+		return $module;
+	}
+
+	private function detachShellHandler(?TDbParameterModule $module): void
+	{
+		$app = \Prado::getApplication();
+		if ($module && $app->onAuthenticationComplete->contains([$module, 'registerShellAction'])) {
+			$app->onAuthenticationComplete->remove([$module, 'registerShellAction']);
+		}
+	}
+
+	private function dropDriverTables(): void
+	{
+		foreach ($this->_driverTables as [$conn, $table]) {
+			$conn->setActive(true);
+			$conn->createCommand('DROP TABLE IF EXISTS ' . $table)->execute();
+		}
+		$this->_driverTables = [];
+		$this->_driverModules = [];
+	}
+
+	/**
+	 * @dataProvider driverProvider
+	 */
+	public function testCreateDbTable_twoTablesInOneDatabase(string $driver)
+	{
+		$conn = $this->driverConnection($driver);
+		try {
+			$first = $this->driverModule($conn, 'dbparam_test_first');
+			$second = $this->driverModule($conn, 'dbparam_test_second');
+
+			$first->set('pkey', ['a' => 1], true, false);
+			$second->set('pkey', 'second', false, false);
+			self::assertSame(['a' => 1], $first->get('pkey', false, false));
+			self::assertSame('second', $second->get('pkey', false, false));
+			self::assertTrue($second->exists('pkey'));
+
+			$first->set('pkey', 'replaced', true, false);
+			self::assertSame('replaced', $first->get('pkey', false, false));
+			self::assertSame('replaced', $first->remove('pkey'));
+			self::assertFalse($first->exists('pkey'));
+		} finally {
+			$this->dropDriverTables();
+		}
+	}
+
+	/**
+	 * @dataProvider driverProvider
+	 */
+	public function testCreateDbTable_keyIsUnique(string $driver)
+	{
+		$conn = $this->driverConnection($driver);
+		try {
+			$module = $this->driverModule($conn, 'dbparam_test_unique', '');
+			$module->set('pkey', 'value', true, false);
+			$this->expectException(\Prado\Exceptions\TDbException::class);
+			$conn->createCommand("INSERT INTO dbparam_test_unique (param_key, param_value) VALUES ('pkey', 'other')")->execute();
+		} finally {
+			$this->dropDriverTables();
+		}
+	}
+
+	/**
+	 * @dataProvider driverProvider
+	 */
+	public function testInit_loadsAutoLoadParameters(string $driver)
+	{
+		$conn = $this->driverConnection($driver);
+		$params = \Prado::getApplication()->getParameters();
+		$app = \Prado::getApplication();
+		try {
+			$module = $this->driverModule($conn, 'dbparam_test_autoload');
+			$module->set('dbpAuto', 'auto', true, false);
+			$module->set('dbpLazy', 'lazy', false, false);
+			$module->setCaptureParameterChanges(false);
+			$module->init(null);
+
+			self::assertSame('auto', $params->itemAt('dbpAuto'));
+			self::assertFalse($params->contains('dbpLazy'));
+			self::assertFalse($app->onBeginRequest->contains([$module, 'attachTPageServiceHandler']));
+		} finally {
+			$this->detachShellHandler($module ?? null);
+			$params->remove('dbpAuto');
+			$params->remove('dbpLazy');
+			$this->dropDriverTables();
+		}
+	}
+
+	public function testInit_withoutAutoLoadFieldLoadsEveryParameter()
+	{
+		$conn = $this->driverConnection(TDbDriver::DRIVER_SQLITE);
+		$params = \Prado::getApplication()->getParameters();
+		$app = \Prado::getApplication();
+		try {
+			$module = $this->driverModule($conn, 'dbparam_test_all', '');
+			$module->set('dbpAuto', 'auto', true, false);
+			$module->set('dbpLazy', 'lazy', false, false);
+			$module->setCaptureParameterChanges(false);
+			$module->init(null);
+
+			self::assertSame('auto', $params->itemAt('dbpAuto'));
+			self::assertSame('lazy', $params->itemAt('dbpLazy'));
+			self::assertNull($params->asa(TDbParameterModule::APP_PARAMETER_LAZY_BEHAVIOR));
+			$indexes = $conn->createCommand("SELECT name FROM sqlite_master WHERE type='index' AND tbl_name='dbparam_test_all'")->queryColumn();
+			self::assertSame(['dbparam_test_all_tkey'], $indexes);
+		} finally {
+			$this->detachShellHandler($module ?? null);
+			$params->remove('dbpAuto');
+			$params->remove('dbpLazy');
+			$this->dropDriverTables();
+		}
+	}
+
+	public static function loadSerializerProvider(): array
+	{
+		return [
+			'php' => [TDbParameterModule::SERIALIZE_PHP, serialize(['a' => 1]), ['a' => 1]],
+			'php, not serialized' => [TDbParameterModule::SERIALIZE_PHP, 'plain', 'plain'],
+			'json' => [TDbParameterModule::SERIALIZE_JSON, '{"a":1}', ['a' => 1]],
+			'json, not json' => [TDbParameterModule::SERIALIZE_JSON, '{plain', '{plain'],
+			'callable' => [__NAMESPACE__ . '\dbParamTestFunction', serialize(['a' => 1]), ['a' => 1]],
+			'callable, null' => [fn ($value, $encode) => null, 'plain', 'plain'],
+			'none' => [null, 'plain', 'plain'],
+		];
+	}
+
+	/**
+	 * @dataProvider loadSerializerProvider
+	 */
+	public function testInit_unserializesLoadedValues($serializer, string $stored, $expected)
+	{
+		$conn = $this->driverConnection(TDbDriver::DRIVER_SQLITE);
+		$params = \Prado::getApplication()->getParameters();
+		$app = \Prado::getApplication();
+		try {
+			$module = $this->driverModule($conn, 'dbparam_test_load', '');
+			if ($serializer !== null) {
+				$module->setSerializer($serializer);
+			} else {
+				PradoUnit::setProp($module, '_serializer', null);
+			}
+			$module->set('dbpLoad', 'x', true, false);
+			$cmd = $conn->createCommand('UPDATE dbparam_test_load SET param_value=:value');
+			$cmd->bindValue(':value', $stored);
+			$cmd->execute();
+			$module->init(null);
+
+			self::assertSame($expected, $params->itemAt('dbpLoad'));
+			self::assertSame($expected, $module->get('dbpLoad', false, false));
+		} finally {
+			$this->detachShellHandler($module ?? null);
+			$params->remove('dbpLoad');
+			$this->dropDriverTables();
+		}
+	}
+
+	public function testSet_callableSerializer()
+	{
+		$conn = $this->driverConnection(TDbDriver::DRIVER_SQLITE);
+		try {
+			$module = $this->driverModule($conn, 'dbparam_test_callable', '');
+			$module->setSerializer(fn ($value, $encode) => $encode ? 'encoded:' . json_encode($value) : json_decode(substr($value, 8), true));
+			$module->set('pkey', ['a' => 1], true, false);
+			self::assertSame('encoded:{"a":1}', $conn->createCommand('SELECT param_value FROM dbparam_test_callable')->queryScalar());
+			self::assertSame(['a' => 1], $module->get('pkey', false, false));
+		} finally {
+			$this->dropDriverTables();
+		}
+	}
+
+	public function testEnsureTable_missingTableWithoutAutoCreateThrows()
+	{
+		$conn = $this->driverConnection(TDbDriver::DRIVER_SQLITE);
+		try {
+			$module = $this->driverModule($conn, 'dbparam_test_missing');
+			$module->setAutoCreateParamTable(false);
+			$module->exists('pkey');
+			self::fail('exists() did not throw for a missing table without AutoCreateParamTable.');
+		} catch (TConfigurationException $e) {
+			self::assertSame('dbparametermodule_table_nonexistent', $e->getErrorCode());
+		} finally {
+			$this->dropDriverTables();
+		}
+	}
+
+	public function testBlankKeysThrow()
+	{
+		try {
+			$this->obj->get('');
+			self::fail('get() did not throw for a blank key.');
+		} catch (TInvalidOperationException $e) {
+			self::assertSame('dbparametermodule_get_no_blank_key', $e->getErrorCode());
+		}
+		try {
+			$this->obj->set('', 'value');
+			self::fail('set() did not throw for a blank key.');
+		} catch (TInvalidOperationException $e) {
+			self::assertSame('dbparametermodule_set_no_blank_key', $e->getErrorCode());
+		}
+	}
+
+	public function testInvalidConnectionIdThrows()
+	{
+		$module = new TDbParameterModule();
+		$module->setConnectionID('noSuchModule');
+		try {
+			$module->getDbConnection();
+			self::fail('getDbConnection() did not throw for a ConnectionID without a module.');
+		} catch (TConfigurationException $e) {
+			self::assertSame('dbparametermodule_connectionid_invalid', $e->getErrorCode());
+		}
+	}
+
+	public function testGetPermissions()
+	{
+		$permissions = $this->obj->getPermissions(null);
+		self::assertCount(1, $permissions);
+		self::assertInstanceOf(TPermissionEvent::class, $permissions[0]);
+		self::assertSame(TDbParameterModule::PERM_PARAM_SHELL, $permissions[0]->getName());
+	}
+
+	public function testAttachTPageServiceHandler()
+	{
+		$app = \Prado::getApplication();
+		$snapshot = PradoUnit::snapshot($app, ['_service']);
+		try {
+			PradoUnit::setProp($app, '_service', null);
+			$this->obj->attachTPageServiceHandler($app, null);
+
+			$component = new \Prado\TComponent();
+			PradoUnit::setProp($app, '_service', $component);
+			$this->obj->attachTPageServiceHandler($app, null);
+			self::assertFalse($component->hasEvent('onPreRunPage'));
+
+			$service = new TPageService();
+			PradoUnit::setProp($app, '_service', $service);
+			$this->obj->attachTPageServiceHandler($app, null);
+			self::assertTrue($service->getEventHandlers('onPreRunPage')->contains([$this->obj, 'attachParameterStorage']));
+		} finally {
+			PradoUnit::restore($app, $snapshot);
+		}
+	}
+
+	public function testRegisterShellActionInAShellApplication()
+	{
+		$shell = new \Prado\Test\Unit\Harness\TTestShellApplication();
+		try {
+			$this->obj->registerShellAction(null, null);
+			$actions = $shell->getShellActions();
+			self::assertArrayHasKey(\Prado\Shell\Actions\TDbParameterAction::class, $actions);
+			self::assertSame($this->obj, $actions[\Prado\Shell\Actions\TDbParameterAction::class]->getDbParameterModule());
+		} finally {
+			$shell->restoreApplication();
+		}
+	}
+
+	public function testRegisterShellActionOutsideAShellOrWhenRefused()
+	{
+		$this->obj->registerShellAction(null, null);
+		self::assertNotInstanceOf(\Prado\Shell\TShellApplication::class, \Prado::getApplication());
+
+		$shell = new \Prado\Test\Unit\Harness\TTestShellApplication();
+		try {
+			$this->obj->attachBehavior('refuse', new \Prado\Test\Unit\Security\Permissions\TTestRefusePermissionChangesBehavior());
+			$this->obj->registerShellAction(null, null);
+			self::assertArrayNotHasKey(\Prado\Shell\Actions\TDbParameterAction::class, $shell->getShellActions());
+		} finally {
+			$this->obj->detachBehavior('refuse');
+			$shell->restoreApplication();
+		}
+	}
+
+	public function testIsFinalParameterWithPlainParameters()
+	{
+		$app = \Prado::getApplication();
+		$saved = $app->getParameters();
+		PradoUnit::setProp($app, '_parameters', new \Prado\Collections\TMap(['testparam' => 'v']));
+		try {
+			self::assertFalse(PradoUnit::invoke($this->obj, 'isFinalParameter', 'testparam'));
+		} finally {
+			PradoUnit::setProp($app, '_parameters', $saved);
+		}
+	}
+
+	public static function bindValueProvider(): array
+	{
+		$cases = [];
+		foreach ([true, false] as $autoLoad) {
+			$side = $autoLoad ? 'true' : 'false';
+			$cases["$side, short"] = [$autoLoad, 'y', 'y'];
+			$cases["$side, unquoted"] = [$autoLoad, 'yes', 'yes'];
+			$cases["$side, open quote"] = [$autoLoad, "'yes", "'yes"];
+			$cases["$side, quoted"] = [$autoLoad, "'y''s'", "y's"];
+		}
+		return $cases;
+	}
+
+	/**
+	 * @dataProvider bindValueProvider
+	 */
+	public function testAutoLoadBindValue(bool $autoLoad, string $value, string $expected)
+	{
+		$module = new TDbParameterModule();
+		if ($autoLoad) {
+			$module->setAutoLoadValue($value);
+		} else {
+			$module->setAutoLoadValueFalse($value);
+		}
+		self::assertSame($expected, PradoUnit::invoke($module, 'getAutoLoadBindValue', $autoLoad));
 	}
 }

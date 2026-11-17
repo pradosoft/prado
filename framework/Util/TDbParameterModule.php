@@ -195,15 +195,14 @@ class TDbParameterModule extends TDbModule implements IPermissions, IModuleDepen
 	{
 		$this->loadDbParameters();
 
-		if ($app = $this->getApplication()) {
-			if ($this->getAutoLoadField()) {
-				$app->getParameters()->attachBehavior(self::APP_PARAMETER_LAZY_BEHAVIOR, new TMapLazyLoadBehavior([$this, 'getFromBehavior']));
-			}
-			if ($this->getCaptureParameterChanges()) {
-				$app->attachEventHandler('onBeginRequest', [$this, 'attachTPageServiceHandler']);
-			}
-			$app->attachEventHandler('onAuthenticationComplete', [$this, 'registerShellAction']);
+		$app = $this->getApplication();
+		if ($this->getAutoLoadField()) {
+			$app->getParameters()->attachBehavior(self::APP_PARAMETER_LAZY_BEHAVIOR, new TMapLazyLoadBehavior([$this, 'getFromBehavior']));
 		}
+		if ($this->getCaptureParameterChanges()) {
+			$app->attachEventHandler('onBeginRequest', [$this, 'attachTPageServiceHandler']);
+		}
+		$app->attachEventHandler('onAuthenticationComplete', [$this, 'registerShellAction']);
 		parent::init($config);
 		$this->markInitialized();
 	}
@@ -247,7 +246,7 @@ class TDbParameterModule extends TDbModule implements IPermissions, IModuleDepen
 		$autoLoadField = $this->getAutoLoadField();
 		$where = ($autoLoadField ? " WHERE {$autoLoadField}=:auto" : '');
 		$cmd = $db->createCommand(
-			"SELECT {$this->getKeyField()} as keyField, {$this->getValueField()}  as valueField FROM {$this->getTableName()}{$where}"
+			"SELECT {$this->getKeyField()} as keyfield, {$this->getValueField()} as valuefield FROM {$this->getTableName()}{$where}"
 		);
 		if ($autoLoadField) {
 			$cmd->bindValue(':auto', $this->getAutoLoadBindValue(true), $db::PARAM_STR);
@@ -257,7 +256,7 @@ class TDbParameterModule extends TDbModule implements IPermissions, IModuleDepen
 		$appParameters = $this->getApplication()->getParameters();
 		$serializer = $this->getSerializer();
 		foreach ($results->readAll() as $row) {
-			$value = $row['valueField'];
+			$value = $row['valuefield'];
 			if ($serializer == self::SERIALIZE_PHP) {
 				if (($avalue = @unserialize($value)) !== false) {
 					$value = $avalue;
@@ -271,11 +270,11 @@ class TDbParameterModule extends TDbModule implements IPermissions, IModuleDepen
 					$value = $avalue;
 				}
 			}
-			if ($this->isFinalParameter($row['keyField'])) {
-				Prado::warning("Database parameter '{$row['keyField']}' is not loaded; the application parameter is final.", static::class);
+			if ($this->isFinalParameter($row['keyfield'])) {
+				Prado::warning("Database parameter '{$row['keyfield']}' is not loaded; the application parameter is final.", static::class);
 				continue;
 			}
-			$appParameters[$row['keyField']] = $value;
+			$appParameters[$row['keyfield']] = $value;
 		}
 	}
 
@@ -330,38 +329,57 @@ class TDbParameterModule extends TDbModule implements IPermissions, IModuleDepen
 	}
 
 	/**
-	 * Creates the DB table for storing log messages.
-	 * @todo create sequence for PostgreSQL, and other db
+	 * Creates the parameter table with a unique index on the key field and, when
+	 * {@see getAutoLoadField AutoLoadField} is set, an index on the auto load field.
+	 * The value column is `MEDIUMTEXT`, `TEXT` on PostgreSQL. Each statement runs on
+	 * its own; PostgreSQL does not prepare several statements as one.
 	 */
 	protected function createDbTable()
 	{
 		$db = $this->getDbConnection();
 		$driver = TDbDriverCapabilities::normalizeDriver($db->getDriverName());
+		$tableName = $this->getTableName();
 		$autoLoadField = $this->getAutoLoadField();
-		$autoidAttributes = '';
-		$autotype = 'INTEGER';
-		$postIndices = '; CREATE UNIQUE INDEX tkey ON ' . $this->getTableName() . '(' . $this->getKeyField() . ');' .
-		($autoLoadField ? ' CREATE INDEX tauto ON ' . $this->getTableName() . '(' . $autoLoadField . ');' : '');
+		$autoLoadDefault = '1';
+		$valueType = 'MEDIUMTEXT';
 
 		switch ($driver) {
 			case TDbDriver::DRIVER_SQLITE:
-				$autoidAttributes = ' AUTOINCREMENT';
+				$idColumn = 'INTEGER PRIMARY KEY AUTOINCREMENT';
 				break;
 			case TDbDriver::DRIVER_PGSQL:
-				$autotype = 'SERIAL';
+				$idColumn = 'SERIAL PRIMARY KEY';
+				$valueType = 'TEXT';
+				$autoLoadDefault = 'TRUE';
 				break;
 			default:	// mysql
-				$autoidAttributes = ' AUTO_INCREMENT';
+				$idColumn = 'INTEGER PRIMARY KEY AUTO_INCREMENT';
 				break;
 		}
 
-		$sql = 'CREATE TABLE ' . $this->getTableName() . ' (
-			param_id ' . $autotype . ' PRIMARY KEY ' . $autoidAttributes . ', ' .
-			$this->getKeyField() . ' VARCHAR(128) NOT NULL,' .
-			$this->getValueField() . ' MEDIUMTEXT' .
-			($autoLoadField ? ', ' . $autoLoadField . ' BOOLEAN NOT NULL DEFAULT 1' : '') .
-			')' . $postIndices;
-		$db->createCommand($sql)->execute();
+		$db->createCommand(
+			'CREATE TABLE ' . $tableName . ' (param_id ' . $idColumn . ', ' .
+			$this->getKeyField() . ' VARCHAR(128) NOT NULL, ' .
+			$this->getValueField() . ' ' . $valueType .
+			($autoLoadField ? ', ' . $autoLoadField . ' BOOLEAN NOT NULL DEFAULT ' . $autoLoadDefault : '') . ')'
+		)->execute();
+		$db->createCommand('CREATE UNIQUE INDEX ' . $this->getIndexName('tkey') . ' ON ' . $tableName . ' (' . $this->getKeyField() . ')')->execute();
+		if ($autoLoadField) {
+			$db->createCommand('CREATE INDEX ' . $this->getIndexName('tauto') . ' ON ' . $tableName . ' (' . $autoLoadField . ')')->execute();
+		}
+	}
+
+	/**
+	 * Names an index of the parameter table after the table. SQLite and PostgreSQL scope
+	 * index names to the schema, so two parameter tables in one database need distinct
+	 * index names.
+	 * @param string $suffix the index suffix: `tkey` or `tauto`.
+	 * @return string the table name with each run of non-word characters as `_`, `_`, and the suffix.
+	 * @since 4.4.0
+	 */
+	protected function getIndexName(string $suffix): string
+	{
+		return preg_replace('/\W+/', '_', $this->getTableName()) . '_' . $suffix;
 	}
 
 	/**
@@ -415,12 +433,12 @@ class TDbParameterModule extends TDbModule implements IPermissions, IModuleDepen
 
 		$db = $this->getDbConnection();
 		$cmd = $db->createCommand(
-			"SELECT {$this->getValueField()} as valueField FROM {$this->getTableName()} WHERE {$this->getKeyField()}=:key LIMIT 1"
+			"SELECT {$this->getValueField()} as valuefield FROM {$this->getTableName()} WHERE {$this->getKeyField()}=:key LIMIT 1"
 		);
 		$cmd->bindParameter(":key", $key, $db::PARAM_STR);
 		$results = $cmd->queryRow();
 		$serializer = $this->getSerializer();
-		if (is_array($results) && ($value = $results['valueField']) !== null) {
+		if (is_array($results) && ($value = $results['valuefield']) !== null) {
 			if ($serializer == self::SERIALIZE_PHP) {
 				if (($avalue = @unserialize($value)) !== false) {
 					$value = $avalue;

@@ -59,13 +59,13 @@ Default SQLite database is used if `ConnectionID` is not specified.
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
 | `ConnectionID` | string | null | `[TDbConnection](../Data/TDbConnection.md)` module ID (defaults to SQLite) |
-| `TableName` | string | `prado_params` | Database table name |
+| `TableName` | string | `parameters` | Database table name |
 | `KeyField` | string | `param_key` | Column name for parameter key |
 | `ValueField` | string | `param_value` | Column name for parameter value |
 | `AutoLoadField` | string | `auto_load` | Column name for auto-load flag |
 | `AutoLoadValue` | string | `1` | Value in `AutoLoadField` that means "load on init". Bound as a parameter; a quoted SQL literal such as `'yes'` is bound without its quotes (4.4.0) |
 | `AutoLoadValueFalse` | string | `0` | Value meaning "do not auto-load" |
-| `AutoCreateParamTable` | bool | true | Create table if it doesn't exist |
+| `AutoCreateParamTable` | bool | true | Create the table if it doesn't exist, on MySQL, SQLite, or PostgreSQL. Its indexes are `<TableName>_tkey` and `<TableName>_tauto`, so one database holds several parameter tables (4.4.0) |
 | `CaptureParameterChanges` | bool | false | Auto-write changes to `$app->getParameters()` back to DB |
 | `Serializer` | string\|callable | `'php'` | Serialization: `'php'`, `'json'`, or `callable($data, $encode)` |
 
