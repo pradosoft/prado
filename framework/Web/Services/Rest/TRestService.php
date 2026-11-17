@@ -855,16 +855,19 @@ class TRestService extends \Prado\TService
 	 * @param mixed $data the response body; `null` sends none.
 	 * @param int $statusCode the status code.
 	 * @param array $headers response headers as name => value pairs.
+	 * The body is encoded before the status and headers are sent, so a body that
+	 * fails to encode leaves them unsent for the error response.
 	 * @throws \JsonException when the body cannot be encoded.
 	 */
 	protected function sendJsonResponse(mixed $data, int $statusCode = 200, array $headers = []): void
 	{
+		$body = ($data === null) ? null : json_encode($data, JSON_THROW_ON_ERROR);
 		$this->sendHeaders($statusCode, $headers);
-		if ($data !== null) {
+		if ($body !== null) {
 			$response = $this->getResponse();
 			$response->setContentType(TMediaType::JSON);
 			$response->setCharset('UTF-8');
-			$response->write(json_encode($data, JSON_THROW_ON_ERROR));
+			$response->write($body);
 		}
 	}
 
@@ -884,8 +887,10 @@ class TRestService extends \Prado\TService
 
 	/**
 	 * Writes an error as an `application/problem+json` document.
+	 * Text that is not UTF-8 is written with U+FFFD in place of its invalid bytes,
+	 * and a value JSON cannot hold is replaced as `JSON_PARTIAL_OUTPUT_ON_ERROR`
+	 * replaces it (`INF` as `0`), so the document is always sent.
 	 * @param TRestException $e the error.
-	 * @throws \JsonException when the document cannot be encoded.
 	 */
 	protected function sendErrorResponse(TRestException $e): void
 	{
@@ -893,7 +898,7 @@ class TRestService extends \Prado\TService
 		$response->setStatusCode($e->getStatusCode());
 		$response->setContentType(TMediaType::PROBLEM_JSON);
 		$response->setCharset('UTF-8');
-		$response->write(json_encode($e->toArray(), JSON_THROW_ON_ERROR));
+		$response->write((string) json_encode($e->toArray(), JSON_INVALID_UTF8_SUBSTITUTE | JSON_PARTIAL_OUTPUT_ON_ERROR));
 	}
 
 	// ── Direct Accessors (UAP-SE) ─────────────────────────────────────────────

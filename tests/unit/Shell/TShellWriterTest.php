@@ -26,6 +26,17 @@ class TShellWriterTestTerminal extends TShellWriter
 	}
 }
 
+/**
+ * Exposes {@see TShellWriter::isStdOutTerminal()}.
+ */
+class TShellWriterTestProbe extends TShellWriter
+{
+	public function callIsStdOutTerminal(): bool
+	{
+		return $this->isStdOutTerminal();
+	}
+}
+
 class TShellWriterTest extends \PHPUnit\Framework\TestCase
 {
 	protected $writer;
@@ -49,7 +60,7 @@ class TShellWriterTest extends \PHPUnit\Framework\TestCase
 	protected function tearDown(): void
 	{
 		$this->obj = null;
-		$restoreSize = isset($this->_env['COLUMNS']) || isset($this->_env['LINES']);
+		$restoreSize = array_key_exists('COLUMNS', $this->_env) || array_key_exists('LINES', $this->_env) || array_key_exists('PATH', $this->_env);
 		foreach ($this->_env as $name => $value) {
 			putenv($value === false ? $name : "$name=$value");
 		}
@@ -57,6 +68,33 @@ class TShellWriterTest extends \PHPUnit\Framework\TestCase
 		if ($restoreSize) {
 			TShellWriter::getScreenSize(true);
 		}
+		if ($this->_binDir !== null) {
+			foreach (glob($this->_binDir . DIRECTORY_SEPARATOR . '*') as $file) {
+				unlink($file);
+			}
+			rmdir($this->_binDir);
+			$this->_binDir = null;
+		}
+	}
+
+	/** @var ?string directory of the fake `stty` and `tput` commands */
+	private ?string $_binDir = null;
+
+	/**
+	 * Puts fake `stty` and `tput` commands alone on `PATH`, without `COLUMNS` and `LINES`.
+	 * `stty -a` prints `$stty`; `tput cols` and `tput lines` print `$cols` and `$lines`.
+	 */
+	private function fakeTerminal(string $stty, string $cols, string $lines): void
+	{
+		$this->_binDir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'shell_writer_bin_' . uniqid();
+		mkdir($this->_binDir);
+		$sttyFile = $this->_binDir . DIRECTORY_SEPARATOR . 'stty';
+		file_put_contents($sttyFile, "#!/bin/sh\nprintf '%s' " . escapeshellarg($stty) . "\n");
+		$tputFile = $this->_binDir . DIRECTORY_SEPARATOR . 'tput';
+		file_put_contents($tputFile, "#!/bin/sh\nif [ \"$1\" = cols ]; then echo " . escapeshellarg($cols) . "; else echo " . escapeshellarg($lines) . "; fi\n");
+		chmod($sttyFile, 0o755);
+		chmod($tputFile, 0o755);
+		$this->setEnv(['COLUMNS' => null, 'LINES' => null, 'PATH' => $this->_binDir]);
 	}
 
 	/**
@@ -447,6 +485,141 @@ class TShellWriterTest extends \PHPUnit\Framework\TestCase
 		$this->obj->clearLineAfterCursor();
 		self::assertEquals("\033[0K", $this->obj->flush());
 	}
-	
-	
+
+	public function testWriteWithColor()
+	{
+		$this->obj->setColorSupported(true);
+
+		$this->obj->write('a', TShellWriter::RED);
+		$this->obj->write('b', [TShellWriter::BOLD, TShellWriter::BLUE]);
+		$this->obj->write('c');
+		self::assertSame("\033[31ma\033[0m\033[1;34mb\033[0mc", $this->obj->flush());
+
+		$this->obj->writeLine('a', TShellWriter::RED);
+		$this->obj->writeLine('b', [TShellWriter::BOLD, TShellWriter::BLUE]);
+		$this->obj->writeLine('c');
+		self::assertSame("\033[31ma\033[0m\n\033[1;34mb\033[0m\nc\n", $this->obj->flush());
+	}
+
+	public function testPadByOneAndByNone()
+	{
+		self::assertSame('text ', $this->obj->pad('text', 5, ' ', STR_PAD_RIGHT));
+		self::assertSame(' text', $this->obj->pad('text', 5, ' ', STR_PAD_LEFT));
+		self::assertSame(' text', $this->obj->pad('text', 5, ' ', STR_PAD_BOTH));
+		self::assertSame('text', $this->obj->pad('text', 4, ' ', STR_PAD_RIGHT));
+		self::assertSame('text', $this->obj->pad('text', 3, ' ', STR_PAD_LEFT));
+		self::assertSame('text', $this->obj->pad('text', 4, ' ', STR_PAD_BOTH));
+		self::assertSame('text', $this->obj->pad('text', 8, ' ', 99));
+	}
+
+	public function testPadCountsTheVisibleText()
+	{
+		$this->obj->setColorSupported(true);
+
+		self::assertSame("\033[31mtext\033[0m-", $this->obj->pad($this->obj->format('text', TShellWriter::RED), 5, '-'));
+	}
+
+	public function testTableWidgetWithoutHeadersWidensToTheData()
+	{
+		$this->obj->setWidth(200);
+
+		$str = $this->obj->tableWidget(['rows' => [['a', 'b', 'c'], ['span' => 'spanning text'], ['longer', 'bb', 'last']]]);
+
+		self::assertSame('a      b  c' . PHP_EOL . 'spanning text' . PHP_EOL . 'longer bb last' . PHP_EOL, $str);
+	}
+
+	public function testTableWidgetWithHeaders()
+	{
+		$this->obj->setWidth(200);
+
+		$str = $this->obj->tableWidget(['headers' => ['key', 'value'], 'rows' => [['a', 'b'], ['longkey', 'c']]]);
+
+		self::assertSame('key     value ' . PHP_EOL . 'a       b' . PHP_EOL . 'longkey c' . PHP_EOL, $str);
+	}
+
+	public function testFormatErrorWrapsALongMessage()
+	{
+		$text = trim(str_repeat('word ', 20));
+
+		$lines = explode("\n", $this->obj->formatError($text));
+
+		self::assertCount(7, $lines);
+		self::assertSame('*  ' . trim(str_repeat('word ', 15)) . '  *', $lines[2]);
+		self::assertSame('*  ' . str_pad(trim(str_repeat('word ', 5)), 74, ' ', STR_PAD_BOTH) . '  *', $lines[3]);
+	}
+
+	public function testSetWidthOfNoneOrBelowOne()
+	{
+		$this->obj->setWidth(-5);
+		self::assertNull($this->obj->getWidth());
+		$this->obj->setWidth(1);
+		self::assertSame(1, $this->obj->getWidth());
+	}
+
+	public function testWrapTextWithoutAWidthUsesTheScreenSize()
+	{
+		$this->setEnv(['COLUMNS' => '16', 'LINES' => '24']);
+		TShellWriter::getScreenSize(true);
+
+		self::assertSame("Lorem ipsum\n    dolor sit\n    amet.", $this->obj->wrapText('Lorem ipsum dolor sit amet.', 4));
+		self::assertSame('Lorem', $this->obj->wrapText('Lorem', 4));
+		self::assertSame('Lorem ipsum dolor sit amet.', $this->obj->wrapText('Lorem ipsum dolor sit amet.', 16));
+	}
+
+	public function testWrapTextWithoutAScreenSizeKeepsTheText()
+	{
+		if (TProcessHelper::isSystemWindows()) {
+			self::markTestSkipped('Windows reads the screen size from mode con.');
+		}
+		$this->fakeTerminal('', '', '');
+
+		self::assertSame('Lorem ipsum dolor sit amet.', $this->obj->wrapText('Lorem ipsum dolor sit amet.', 4, true));
+	}
+
+	public function testGetScreenSizeReadsLinuxStty()
+	{
+		if (TProcessHelper::isSystemWindows()) {
+			self::markTestSkipped('Windows reads the screen size from mode con.');
+		}
+		$this->fakeTerminal('speed 38400 baud; rows 40; columns 132; line = 0;', '', '');
+
+		self::assertSame([132, 40], TShellWriter::getScreenSize(true));
+	}
+
+	public function testGetScreenSizeReadsMacOsStty()
+	{
+		if (TProcessHelper::isSystemWindows()) {
+			self::markTestSkipped('Windows reads the screen size from mode con.');
+		}
+		$this->fakeTerminal('speed 9600 baud; 50 rows; 160 columns;', '', '');
+
+		self::assertSame([160, 50], TShellWriter::getScreenSize(true));
+	}
+
+	public function testGetScreenSizeFallsBackToTput()
+	{
+		if (TProcessHelper::isSystemWindows()) {
+			self::markTestSkipped('Windows reads the screen size from mode con.');
+		}
+		$this->fakeTerminal('stty: stdin is not a terminal', '100', '30');
+
+		self::assertSame([100, 30], TShellWriter::getScreenSize(true));
+	}
+
+	public function testGetScreenSizeWithoutAnyHeightIsFalse()
+	{
+		if (TProcessHelper::isSystemWindows()) {
+			self::markTestSkipped('Windows reads the screen size from mode con.');
+		}
+		$this->fakeTerminal('', '100', '0');
+		$this->setEnv(['COLUMNS' => '80']);
+
+		self::assertFalse(TShellWriter::getScreenSize(true));
+		self::assertFalse(TShellWriter::getScreenSize());
+	}
+
+	public function testIsStdOutTerminalReadsStandardOutput()
+	{
+		self::assertSame(stream_isatty(STDOUT), (new TShellWriterTestProbe(new TTextWriter()))->callIsStdOutTerminal());
+	}
 }

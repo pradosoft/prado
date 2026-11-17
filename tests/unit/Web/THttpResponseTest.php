@@ -5,9 +5,11 @@ namespace Prado\Test\Unit\Web;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Exceptions\TExitException;
+use Prado\I18N\TGlobalization;
 use Prado\Util\TBehavior;
 use Prado\Web\THttpCookie;
 use Prado\Web\THttpResponse;
+use Prado\Web\TMediaType;
 use Prado\Web\THttpResponseAdapter;
 use Prado\Test\Unit\Harness\TTestApplication;
 use Prado\Test\Unit\Harness\Util\TTestNullDynamicBehavior;
@@ -48,10 +50,33 @@ class TTestHttpResponse extends THttpResponse {
 
 class TTestRecordingResponseAdapter extends THttpResponseAdapter {
 	public $redirects = [];
+	public $flushes = [];
+	public $writers = [];
 
 	public function httpRedirect($url)
 	{
 		$this->redirects[] = $url;
+	}
+
+	public function flushContent($continueBuffering = true)
+	{
+		$this->flushes[] = $continueBuffering;
+	}
+
+	public function createNewHtmlWriter($type, $writer)
+	{
+		$this->writers[] = $type;
+		return parent::createNewHtmlWriter($type, $writer);
+	}
+}
+
+class TTestFlushRecordingBehavior extends TBehavior {
+	public $calls = [];
+
+	public function dyFlushContent($continueBuffering, $chain)
+	{
+		$this->calls[] = $continueBuffering;
+		return $chain->dyFlushContent($continueBuffering);
 	}
 }
 
@@ -96,7 +121,6 @@ class TTestCookiePolicyBehavior extends TBehavior {
 		return $chain->dySetCookie($cookie, $remove);
 	}
 }
-
 
 class THttpResponseTest extends \PHPUnit\Framework\TestCase
 {
@@ -219,7 +243,8 @@ class THttpResponseTest extends \PHPUnit\Framework\TestCase
 		$response->init(null);
 		$response->ensureHeadersSent();
 		try {
-			$this->expectException(\Exception::class);
+			$this->expectException(TInvalidOperationException::class);
+			$this->expectExceptionMessage('THttpResponse.StatusCode cannot change after the HTTP header is sent.');
 			$response->setStatusCode(500);
 		} finally {
 			ob_end_clean();
@@ -280,16 +305,28 @@ class THttpResponseTest extends \PHPUnit\Framework\TestCase
 	public function testWriteFile()
 	{
 		$response = new TTestHttpResponse();
-		$response->init(null);
-		
-		$contents = 'test file content';
-		$testFile = __DIR__ . '/data/testfile.txt';
-		file_put_contents($testFile, 'test content');
-		
-		$response->writeFile($testFile, null, 'text/plain');
-		unlink($testFile);
-		$output = ob_end_clean();
-		$this->assertEquals($contents, $output);
+		$file = $this->rangeFile('test file content');
+		try {
+			$this->assertSame('test file content', $this->captureWriteFile($response, $file, null, 'text/plain'));
+		} finally {
+			unlink($file);
+		}
+		$this->assertContains('Content-Type: text/plain', $response->headers);
+		$this->assertContains('Content-Length: 17', $response->headers);
+		$this->assertContains('Content-Disposition: attachment; filename="' . basename($file) . '"', $response->headers);
+		$this->assertContains('Pragma: public', $response->headers);
+	}
+
+	public function testWriteFileInlineWithHeaders()
+	{
+		$response = new TTestHttpResponse();
+		$output = $this->captureWriteFile($response, '/path/to/report.txt', 'abc', 'text/plain', ['X-Custom: 1'], false, '/other/name.txt', -1);
+
+		$this->assertSame('abc', $output);
+		$this->assertContains('X-Custom: 1', $response->headers);
+		$this->assertNotContains('Pragma: public', $response->headers);
+		$this->assertContains('Content-Length: 3', $response->headers);
+		$this->assertContains('Content-Disposition: inline; filename="name.txt"', $response->headers);
 	}
 
 	public function testWriteFileHandledByBehaviorSendsNothing()
@@ -328,6 +365,36 @@ class THttpResponseTest extends \PHPUnit\Framework\TestCase
 		$this->assertContains('Content-Length: 3', $response->headers);
 		$this->assertContains('Content-Disposition: attachment; filename="report.txt"', $response->headers);
 		$this->assertSame([false], $observer->flags);
+	}
+
+	public function testWriteFileDetectsMimeType()
+	{
+		$response = new TTestHttpResponse();
+		$this->captureWriteFile($response, '/path/to/report.PDF', 'abc');
+		$this->assertContains('Content-Type: application/pdf', $response->headers);
+
+		$response = new TTestHttpResponse();
+		$this->captureWriteFile($response, '/path/to/report.unknown', 'abc');
+		$this->assertContains('Content-Type: text/plain', $response->headers);
+
+		$response = new TTestHttpResponse();
+		$this->captureWriteFile($response, '/path/to/report', 'abc');
+		$this->assertContains('Content-Type: text/plain', $response->headers);
+
+		$file = $this->rangeFile();
+		try {
+			$response = new TTestHttpResponse();
+			$this->assertSame(self::RANGE_BODY, $this->captureWriteFile($response, $file));
+			// Without fileinfo, a file with no known extension is text/plain.
+			$this->assertContains('Content-Type: ' . (function_exists('mime_content_type') ? mime_content_type($file) : TMediaType::PLAIN), $response->headers);
+		} finally {
+			unlink($file);
+		}
+
+		$response = new TTestHttpResponse();
+		$response->attachBehavior('sender', $sender = new TTestSendFileBehavior());
+		$this->captureWriteFile($response, '/missing/report.css', null, null, null, true, null, 10);
+		$this->assertSame(TMediaType::CSS, $sender->calls[0][3]);
 	}
 
 	// -----------------------------------------------------------------------
@@ -574,6 +641,9 @@ class THttpResponseTest extends \PHPUnit\Framework\TestCase
 			'weak etag' => ['"v1"', 'ETag: W/"v1"', 200],
 			'no etag' => ['"v1"', 'X-Other: 1', 200],
 			'date without validator' => ['Tue, 15 Sep 2026 00:00:00 GMT', 'ETag: "v1"', 200],
+			'weak request without etag' => ['W/"v1"', 'X-Other: 1', 200],
+			'invalid date' => ['not a date', 'Last-Modified: Tue, 15 Sep 2026 00:00:00 GMT', 200],
+			'date match' => ['Tue, 15 Sep 2026 00:00:00 GMT', 'Last-Modified: Tue, 15 Sep 2026 00:00:00 GMT', 206],
 		];
 	}
 
@@ -739,14 +809,370 @@ class THttpResponseTest extends \PHPUnit\Framework\TestCase
 		ob_end_clean();
 	}
 
-	public function testFlush()
+	public function testFlushUsesTheAdapter()
 	{
-		$this->markTestSkipped('Test requires runInSeparateProcess for proper flush behavior');
+		$response = new TTestHttpResponse();
+		$response->setAdapter($adapter = new TTestRecordingResponseAdapter($response));
+		$response->flush();
+		$response->flush(false);
+		$this->assertSame([true, false], $adapter->flushes);
+		$this->assertSame([], $response->headers);
+	}
+
+	public function testFlushWithoutAdapterFlushesTheBuffer()
+	{
+		$response = new TTestHttpResponse();
+		$response->init(null);
+		$response->attachBehavior('flushes', $behavior = new TTestFlushRecordingBehavior());
+		$level = ob_get_level();
+		try {
+			$response->write('abc');
+			$this->expectOutputString('abc');
+			$response->flush();
+			$this->assertSame('', $response->getContents());
+			$this->assertTrue($response->getBufferOutput());
+			$this->assertSame([true], $behavior->calls);
+			$this->assertSame('HTTP/1.1 200 OK', $response->headers[0]);
+		} finally {
+			while (ob_get_level() >= $level) {
+				ob_end_clean();
+			}
+		}
+	}
+
+	public function testFlushContentEndsBuffering()
+	{
+		$response = new TTestHttpResponse();
+		$response->init(null);
+		$level = ob_get_level();
+		$response->write('abc');
+		$this->expectOutputString('abc');
+		$response->flushContent(false);
+		$this->assertSame($level - 1, ob_get_level());
+		$this->assertFalse($response->getBufferOutput());
+		$this->assertSame('', $response->getContents());
+	}
+
+	public function testFlushContentWithEmptyBufferKeepsBuffering()
+	{
+		$response = new TTestHttpResponse();
+		$response->init(null);
+		$level = ob_get_level();
+		try {
+			$response->flushContent(false);
+			$this->assertSame($level, ob_get_level());
+			$this->assertTrue($response->getBufferOutput());
+			$this->assertTrue($response->getHttpHeaderSent());
+		} finally {
+			ob_end_clean();
+		}
+	}
+
+	public function testFlushContentWithoutBuffer()
+	{
+		$response = new TTestHttpResponse();
+		$response->setBufferOutput(false);
+		$level = ob_get_level();
+		$response->init(null);
+		$this->assertSame($level, ob_get_level());
+		$response->flushContent();
+		$this->assertSame($level, ob_get_level());
+		$this->assertTrue($response->getHttpHeaderSent());
+	}
+
+	public function testSendHttpHeaderUsesTheRequestProtocol()
+	{
+		$protocol = $_SERVER['SERVER_PROTOCOL'] ?? null;
+		$_SERVER['SERVER_PROTOCOL'] = 'HTTP/2.0';
+		try {
+			$response = new TTestHttpResponse();
+			$response->setStatusCode(404);
+			$response->ensureHeadersSent();
+			$response->ensureHeadersSent();
+		} finally {
+			if ($protocol === null) {
+				unset($_SERVER['SERVER_PROTOCOL']);
+			} else {
+				$_SERVER['SERVER_PROTOCOL'] = $protocol;
+			}
+		}
+		$this->assertSame(['HTTP/2.0 404 Not Found', 'Content-Type: text/html;charset=UTF-8'], $response->headers);
 	}
 
 	public function testSendContentTypeHeader()
 	{
-		$this->markTestSkipped('Test requires runInSeparateProcess for header handling');
+		$response = new TTestHttpResponse();
+		$response->setContentType('text/plain');
+		$response->setCharset('ISO-8859-1');
+		$response->ensureHeadersSent();
+		$this->assertSame('Content-Type: text/plain;charset=ISO-8859-1', $response->headers[1]);
+		try {
+			$response->setContentType('text/css');
+			$this->fail('setContentType() must throw after the Content-Type header is sent.');
+		} catch (TInvalidOperationException $e) {
+			$this->assertSame('THttpResponse.ContentType cannot change after the Content-Type header is sent.', $e->getMessage());
+			$this->assertSame('text/plain', $response->getContentType());
+		}
+	}
+
+	public function testSendContentTypeHeaderWithoutCharset()
+	{
+		$response = new TTestHttpResponse();
+		$response->setCharset('FALSE');
+		$this->assertFalse($response->getCharset());
+		$response->ensureHeadersSent();
+		$this->assertSame(['HTTP/1.1 200 OK', 'Content-Type: text/html'], $response->headers);
+	}
+
+	public function testSendContentTypeHeaderUsesTheGlobalizationCharset()
+	{
+		$globalization = new TGlobalization();
+		$globalization->setCharset('ISO-8859-2');
+		$this->app->setGlobalization($globalization);
+		$response = new TTestHttpResponse();
+		$response->ensureHeadersSent();
+		$this->assertSame('Content-Type: text/html;charset=ISO-8859-2', $response->headers[1]);
+
+		$globalization->setCharset('');
+		$response = new TTestHttpResponse();
+		$response->ensureHeadersSent();
+		$this->assertSame('Content-Type: text/html;charset=UTF-8', $response->headers[1]);
+	}
+
+	public function testAdapterAccessors()
+	{
+		$response = new TTestHttpResponse();
+		$this->assertNull($response->getAdapter());
+		$this->assertFalse($response->getHasAdapter());
+		$response->setAdapter($adapter = new TTestRecordingResponseAdapter($response));
+		$this->assertSame($adapter, $response->getAdapter());
+		$this->assertTrue($response->getHasAdapter());
+	}
+
+	public function testSessionCacheWrappersReadThePhpSettings()
+	{
+		$response = new THttpResponse();
+		$this->assertSame(session_cache_expire(), $response->getCacheExpire());
+		$this->assertSame(session_cache_limiter(), $response->getCacheControl());
+	}
+
+	/**
+	 * @runInSeparateProcess
+	 */
+	public function testResponseSetCookieSendsTheCookie()
+	{
+		$response = new THttpResponse();
+		$this->assertTrue(PradoUnit::invoke($response, 'responseSetCookie', 'name', 'value', ['path' => '/']));
+	}
+
+	public function testSetStatusCodeReason()
+	{
+		$response = new TTestHttpResponse();
+		$this->assertSame('OK', $response->getStatusReason());
+		$response->setStatusCode('404');
+		$this->assertSame(404, $response->getStatusCode());
+		$this->assertSame('Not Found', $response->getStatusReason());
+		$response->setStatusCode(299, 'Custom Reason');
+		$this->assertSame(299, $response->getStatusCode());
+		$this->assertSame('Custom Reason', $response->getStatusReason());
+		foreach ([null, ''] as $reason) {
+			try {
+				$response->setStatusCode(298, $reason);
+				$this->fail('An unknown status code needs a reason.');
+			} catch (TInvalidDataValueException $e) {
+				$this->assertStringContainsString('response_status_reason_missing', $e->getErrorCode());
+			}
+		}
+		foreach (["Bad\rReason", "Bad\nReason"] as $reason) {
+			try {
+				$response->setStatusCode(298, $reason);
+				$this->fail('A reason with a line break must throw.');
+			} catch (TInvalidDataValueException $e) {
+				$this->assertStringContainsString('response_status_reason_barchars', $e->getErrorCode());
+			}
+		}
+		$this->assertSame(299, $response->getStatusCode());
+		$this->assertSame('Custom Reason', $response->getStatusReason());
+	}
+
+	public function testWriteWithoutBufferSendsHeadersOnce()
+	{
+		$response = new TTestHttpResponse();
+		$response->setBufferOutput(false);
+		$this->expectOutputString('ab');
+		$response->write('a');
+		$this->assertTrue($response->getHttpHeaderSent());
+		$this->assertCount(2, $response->headers);
+		$response->write('b');
+		$this->assertCount(2, $response->headers);
+		$this->assertSame('', $response->getContents());
+	}
+
+	public function testClearWithoutBufferOrContent()
+	{
+		$response = new TTestHttpResponse();
+		$response->setBufferOutput(false);
+		$this->expectOutputString('a');
+		echo 'a';
+		$response->clear();
+
+		$response = new TTestHttpResponse();
+		$response->init(null);
+		try {
+			$response->clear();
+			$this->assertSame('', $response->getContents());
+		} finally {
+			ob_end_clean();
+		}
+	}
+
+	public function testGetHeadersIsEmptyUnderCli()
+	{
+		// The CLI SAPI keeps no response headers, so headers_list() is empty.
+		$response = new THttpResponse();
+		$this->assertSame([], $response->getHeaders());
+		$this->assertSame([], $response->getHeaders(CASE_LOWER));
+	}
+
+	public function testAppendLogWritesToTheDestination()
+	{
+		$file = tempnam(sys_get_temp_dir(), 'prado-log');
+		try {
+			(new TTestHttpResponse())->appendLog('logged message', 3, $file);
+			$this->assertSame('logged message', file_get_contents($file));
+		} finally {
+			unlink($file);
+		}
+	}
+
+	public function testAddCookieHashesTheValueWithCookieValidation()
+	{
+		$request = $this->app->getRequest();
+		$validation = $request->getEnableCookieValidation();
+		$request->setEnableCookieValidation(true);
+		try {
+			$response = new TTestHttpResponse();
+			$response->addCookie(new THttpCookie('name', 'value'));
+			$this->assertSame($this->app->getSecurityManager()->hashCookieData('value'), $response->cookies[0][1]);
+
+			$request->setEnableCookieValidation(false);
+			$response->addCookie(new THttpCookie('name', 'value'));
+			$this->assertSame('value', $response->cookies[1][1]);
+		} finally {
+			$request->setEnableCookieValidation($validation);
+		}
+	}
+
+	public function testCreateHtmlWriterThroughTheAdapter()
+	{
+		$response = new TTestHttpResponse();
+		$response->setAdapter($adapter = new TTestRecordingResponseAdapter($response));
+		$this->assertInstanceOf(\Prado\Web\UI\THtmlWriter::class, $response->createHtmlWriter());
+		$this->assertInstanceOf(\Prado\Web\UI\THtmlWriter::class, $response->createHtmlWriter(\Prado\Web\UI\THtmlWriter::class));
+		$this->assertSame(['\Prado\Web\UI\THtmlWriter', \Prado\Web\UI\THtmlWriter::class], $adapter->writers);
+
+		$response = new TTestHttpResponse();
+		$writer = $response->createHtmlWriter(\Prado\Web\UI\THtmlWriter::class);
+		$this->assertInstanceOf(\Prado\Web\UI\THtmlWriter::class, $writer);
+	}
+
+	public function testGetFileLastModifiedOfAMissingFile()
+	{
+		$this->assertNull(PradoUnit::invoke(new TTestHttpResponse(), 'getFileLastModified', '/missing/prado-file'));
+	}
+
+	public static function findHeaderValueProvider(): array
+	{
+		return [
+			'null list' => [null, null],
+			'empty list' => [[], null],
+			'no colon' => [['ETag'], null],
+			'other name' => [['X-Other: 1'], null],
+			'match' => [[' etag : "a" '], '"a"'],
+			'first match' => [['X-Other: 1', 'ETag: "a"', 'ETag: "b"'], '"a"'],
+		];
+	}
+
+	/**
+	 * @dataProvider findHeaderValueProvider
+	 */
+	public function testFindHeaderValue(?array $headers, ?string $expected)
+	{
+		$this->assertSame($expected, PradoUnit::invoke(THttpResponse::class, 'findHeaderValue', $headers, 'ETag'));
+	}
+
+	// -----------------------------------------------------------------------
+	// httpRedirect()
+	// -----------------------------------------------------------------------
+
+	/**
+	 * Runs httpRedirect() with a server software name and returns the headers it sent.
+	 */
+	private function redirectHeaders(TTestHttpResponse $response, string $url, ?string $software): array
+	{
+		$software0 = $_SERVER['SERVER_SOFTWARE'] ?? null;
+		if ($software === null) {
+			unset($_SERVER['SERVER_SOFTWARE']);
+		} else {
+			$_SERVER['SERVER_SOFTWARE'] = $software;
+		}
+		try {
+			$response->httpRedirect($url);
+			$this->fail('httpRedirect() must end the request.');
+		} catch (TExitException $e) {
+		} finally {
+			if ($software0 === null) {
+				unset($_SERVER['SERVER_SOFTWARE']);
+			} else {
+				$_SERVER['SERVER_SOFTWARE'] = $software0;
+			}
+		}
+		return array_slice($response->headers, 2);
+	}
+
+	public function testHttpRedirectWithRedirectStatus()
+	{
+		$response = new TTestHttpResponse();
+		$response->setStatusCode(301);
+		$this->assertSame(['Location: https://elsewhere.example/?a=1&b=2'], $this->redirectHeaders($response, 'https://elsewhere.example/?a=1&amp;b=2', 'Apache'));
+	}
+
+	public function testHttpRedirectUnderIis()
+	{
+		$base = $this->app->getRequest()->getBaseUrl();
+
+		$response = new TTestHttpResponse();
+		$response->setStatusCode(307);
+		$this->assertSame(['HTTP/1.1 307 Temporary Redirect', 'Location: ' . $base . '/page'], $this->redirectHeaders($response, '/page', 'Microsoft-IIS/10.0'));
+
+		$response = new TTestHttpResponse();
+		$response->setStatusCode(399, 'Custom Redirect');
+		$this->assertSame(['HTTP/1.1 399 Custom Redirect', 'Location: ' . $base . '/page'], $this->redirectHeaders($response, '/page', 'Microsoft-IIS/10.0'));
+
+		$response = new TTestHttpResponse();
+		$this->assertSame(['HTTP/1.1 302 Found', 'Location: https://elsewhere.example/'], $this->redirectHeaders($response, 'https://elsewhere.example/', 'microsoft-iis/8.5'));
+	}
+
+	public function testRedirectWithoutAdapterCallsHttpRedirect()
+	{
+		$response = new class () extends TTestHttpResponse {
+			public array $redirects = [];
+
+			public function httpRedirect($url)
+			{
+				$this->redirects[] = $url;
+			}
+		};
+		$response->redirect('/page');
+		$this->assertSame(['/page'], $response->redirects);
+	}
+
+	public function testReloadRedirectsToTheRequestUri()
+	{
+		$response = new TTestHttpResponse();
+		$response->setAdapter($adapter = new TTestRecordingResponseAdapter($response));
+		$response->reload();
+		$this->assertSame([$this->app->getRequest()->getRequestUri()], $adapter->redirects);
 	}
 
 	public function testClear()
@@ -828,5 +1254,109 @@ class THttpResponseTest extends \PHPUnit\Framework\TestCase
 		$writer = $response->createHtmlWriter();
 		$this->assertInstanceOf(\Prado\Web\UI\THtmlWriter::class, $writer);
 		ob_end_clean();
+	}
+
+	public function testSetStatusCodeAndContentTypeThrowOperationExceptionAfterSent()
+	{
+		$response = new TTestHttpResponse();
+		$response->ensureHeadersSent();
+		try {
+			$response->setStatusCode(500);
+			$this->fail('setStatusCode() must throw after the HTTP header is sent.');
+		} catch (TInvalidOperationException $e) {
+			$this->assertSame('THttpResponse.StatusCode cannot change after the HTTP header is sent.', $e->getMessage());
+		}
+		$this->expectException(TInvalidOperationException::class);
+		$this->expectExceptionMessage('THttpResponse.ContentType cannot change after the Content-Type header is sent.');
+		$response->setContentType('text/css');
+	}
+
+	public function testContentTypeWithoutCharsetIsSentOnce()
+	{
+		foreach (['false', false] as $charset) {
+			$response = new TTestHttpResponse();
+			$response->setCharset($charset);
+			$this->assertFalse($response->getCharset());
+			$response->ensureHeadersSent();
+			$response->ensureHeadersSent();
+			$this->assertSame(['HTTP/1.1 200 OK', 'Content-Type: text/html'], $response->headers);
+			try {
+				$response->setContentType('text/css');
+				$this->fail('setContentType() must throw after the Content-Type header is sent.');
+			} catch (TInvalidOperationException $e) {
+				$this->assertNull($response->getContentType());
+			}
+		}
+	}
+
+	public function testHttpRedirectUnderIisSendsTheCustomReason()
+	{
+		$software0 = $_SERVER['SERVER_SOFTWARE'] ?? null;
+		$_SERVER['SERVER_SOFTWARE'] = 'Microsoft-IIS/10.0';
+		$response = new TTestHttpResponse();
+		$response->setStatusCode(399, 'Custom Redirect');
+		try {
+			$response->httpRedirect('https://elsewhere.example/');
+			$this->fail('httpRedirect() must end the request.');
+		} catch (TExitException $e) {
+		} finally {
+			if ($software0 === null) {
+				unset($_SERVER['SERVER_SOFTWARE']);
+			} else {
+				$_SERVER['SERVER_SOFTWARE'] = $software0;
+			}
+		}
+		$this->assertSame(['HTTP/1.1 399 Custom Redirect', 'Location: https://elsewhere.example/'], array_slice($response->headers, 2));
+	}
+
+	public function testGetHeadersParsesTheHeadersList()
+	{
+		$response = new class() extends THttpResponse {
+			protected function responseHeadersList(): array
+			{
+				return ['Content-Type: text/html', 'Set-Cookie: a=1', 'Set-Cookie: b=2', 'Link: <https://example.com/>; rel=preload', 'X-Empty:'];
+			}
+		};
+		$this->assertSame([
+			'Content-Type' => 'text/html',
+			'Set-Cookie' => 'a=1, b=2',
+			'Link' => '<https://example.com/>; rel=preload',
+			'X-Empty' => '',
+		], $response->getHeaders());
+		$this->assertSame('a=1, b=2', $response->getHeaders(CASE_UPPER)['SET-COOKIE']);
+		$this->assertArrayHasKey('content-type', $response->getHeaders(CASE_LOWER));
+	}
+
+	public function testGetHeadersParsesOneHeader()
+	{
+		$response = new class() extends THttpResponse {
+			protected function responseHeadersList(): array
+			{
+				return ['X-One: 1'];
+			}
+		};
+		$this->assertSame(['X-One' => '1'], $response->getHeaders());
+		$this->assertSame(['x-one' => '1'], $response->getHeaders(CASE_LOWER));
+	}
+
+	/**
+	 * Redirects with each URL kind, status class, and server, and checks the status and Location headers.
+	 */
+	public function testHttpRedirectStatusAndServerCombinations()
+	{
+		$base = $this->app->getRequest()->getBaseUrl();
+		foreach (['/page' => $base . '/page', 'https://elsewhere.example/' => 'https://elsewhere.example/'] as $url => $location) {
+			foreach ([200 => 302, 404 => 302, 307 => 307] as $status => $sent) {
+				foreach (['Apache', 'Microsoft-IIS/10.0'] as $software) {
+					$response = new TTestHttpResponse();
+					$response->setStatusCode($status);
+					$expected = ['Location: ' . $location];
+					if ($software !== 'Apache') {
+						array_unshift($expected, 'HTTP/1.1 ' . $sent . ' ' . ($sent === 302 ? 'Found' : 'Temporary Redirect'));
+					}
+					$this->assertSame($expected, $this->redirectHeaders($response, $url, $software), "$url $status $software");
+				}
+			}
+		}
 	}
 }

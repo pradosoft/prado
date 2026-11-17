@@ -13,9 +13,18 @@
 
 namespace Prado\Test\Unit\Web\Services;
 
+use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\THttpException;
+use Prado\Prado;
+use Prado\TApplication;
+use Prado\TComponent;
 use Prado\Web\Services\TSoapServer;
 use Prado\Web\Services\TSoapService;
+use Prado\Web\THttpResponse;
+use Prado\Web\TMediaType;
+use Prado\Xml\TXmlDocument;
 use Prado\Test\Unit\Harness\Traits\TNestedPathTrait;
+use Prado\Test\Unit\PradoUnit;
 
 /**
  * Provider named by the configurations under test.
@@ -50,20 +59,126 @@ class TNestedPathSoapServer extends TSoapServer
 	use TNestedPathTrait;
 }
 
+/**
+ * A server that records that it ran and serves a fixed WSDL.
+ */
+class TTestSoapRecordingServer extends TSoapServer
+{
+	public static int $runs = 0;
+
+	public function run()
+	{
+		self::$runs++;
+	}
+
+	public function getWsdl()
+	{
+		return '<definitions/>';
+	}
+}
+
+/**
+ * Records the content type, charset, and body written to it.
+ */
+class TTestSoapResponse extends THttpResponse
+{
+	public string $contentType = '';
+	public string $charset = '';
+	public string $body = '';
+	public int $clears = 0;
+
+	public function setContentType($value): void
+	{
+		$this->contentType = $value;
+	}
+
+	public function setCharset($charset): void
+	{
+		$this->charset = $charset;
+	}
+
+	public function write($str): void
+	{
+		$this->body .= $str;
+	}
+
+	public function clear(): void
+	{
+		$this->clears++;
+		$this->body = '';
+	}
+}
+
+/**
+ * A service that writes to a recording response.
+ */
+class TTestSoapRecordingService extends TSoapService
+{
+	public TTestSoapResponse $response;
+
+	public function __construct()
+	{
+		$this->response = new TTestSoapResponse();
+		parent::__construct();
+	}
+
+	public function getResponse()
+	{
+		return $this->response;
+	}
+}
+
 class TSoapServiceTest extends \PHPUnit\Framework\TestCase
 {
-	private string $configurationType;
+	private array $applicationSnapshot = [];
+	private array $requestSnapshot = [];
 
 	protected function setUp(): void
 	{
 		$application = \Prado\Prado::getApplication();
-		$this->configurationType = $application->getConfigurationType();
-		$application->setConfigurationType(\Prado\TApplication::CONFIG_TYPE_PHP);
+		$this->applicationSnapshot = PradoUnit::snapshot($application, ['_configType', '_configFileExt']);
+		$this->requestSnapshot = PradoUnit::snapshot($application->getRequest(), ['_serviceParam']);
+		$this->configurationType(TApplication::CONFIG_TYPE_PHP);
+		Prado::setPathOfAlias('SoapFixtures', __DIR__ . DIRECTORY_SEPARATOR . 'SoapServiceApp');
+		TTestSoapRecordingServer::$runs = 0;
 	}
 
 	protected function tearDown(): void
 	{
-		\Prado\Prado::getApplication()->setConfigurationType($this->configurationType);
+		$application = \Prado\Prado::getApplication();
+		PradoUnit::restore($application, $this->applicationSnapshot);
+		PradoUnit::restore($application->getRequest(), $this->requestSnapshot);
+	}
+
+	/**
+	 * Sets the application's configuration type and the file extension it implies.
+	 * @param string $type the configuration type.
+	 */
+	private function configurationType(string $type): void
+	{
+		$application = Prado::getApplication();
+		$application->setConfigurationType($type);
+		PradoUnit::setProp($application, '_configFileExt', null);
+	}
+
+	/**
+	 * Initializes a service from an XML configuration for a request.
+	 * @param string $xml the service configuration.
+	 * @param string $serviceParameter the requested server.
+	 * @param ?string $configFile the namespace of the service's configuration file.
+	 */
+	private function initXml(string $xml, string $serviceParameter, ?string $configFile = null): TTestSoapRecordingService
+	{
+		$this->configurationType(TApplication::CONFIG_TYPE_XML);
+		Prado::getApplication()->getRequest()->setServiceParameter($serviceParameter);
+		$dom = new TXmlDocument();
+		$dom->loadFromString($xml);
+		$service = new TTestSoapRecordingService();
+		if ($configFile !== null) {
+			$service->setConfigFile($configFile);
+		}
+		$service->init($dom);
+		return $service;
 	}
 
 	/**
@@ -152,5 +267,259 @@ class TSoapServiceTest extends \PHPUnit\Framework\TestCase
 		$config = ['soap' => ['quote' => ['properties' => []]]];
 		$load->invoke($service, $config);
 		$load->invoke($service, $config);
+	}
+
+	/**
+	 * Each server built for a configuration is of the configured class.
+	 */
+	public function testCreateServerKeepsTheConfiguredClass()
+	{
+		$service = new TSoapService();
+		PradoUnit::invoke($service, 'loadConfig', ['soap' => ['quote' => [
+			'class' => TTestSoapServiceServer::class,
+			'properties' => ['provider' => TTestSoapServiceProvider::class],
+		]]]);
+		PradoUnit::setProp($service, '_serverID', 'quote');
+
+		$this->assertInstanceOf(TTestSoapServiceServer::class, PradoUnit::invoke($service, 'createServer'));
+		$this->assertInstanceOf(TTestSoapServiceServer::class, PradoUnit::invoke($service, 'createServer'));
+	}
+
+	// ── init() and the request ──────────────────────────────────────────────
+
+	public function testTheServiceIdIsSoap()
+	{
+		$this->assertSame('soap', (new TSoapService())->getID());
+	}
+
+	/**
+	 * A request for a server resolves it; a '.wsdl' suffix requests its WSDL.
+	 */
+	public function testInitResolvesTheRequestedServer()
+	{
+		$xml = '<service><soap id="quote" provider="Quotes" /></service>';
+		$service = $this->initXml($xml, 'quote');
+		$this->assertSame('quote', $service->getServerID());
+		$this->assertFalse($service->getIsWsdlRequest());
+
+		$service = $this->initXml($xml, 'quote.wsdl');
+		$this->assertSame('quote', $service->getServerID());
+		$this->assertTrue($service->getIsWsdlRequest());
+	}
+
+	/**
+	 * A request for an unknown server, or for its WSDL, is a bad request.
+	 */
+	public function testInitRefusesAnUnknownServer()
+	{
+		foreach (['other', 'other.wsdl'] as $request) {
+			try {
+				$this->initXml('<service><soap id="quote" /></service>', $request);
+				$this->fail('an unknown server was accepted: ' . $request);
+			} catch (THttpException $e) {
+				$this->assertSame(400, $e->getStatusCode());
+			}
+		}
+	}
+
+	/**
+	 * A service element without servers adds none.
+	 */
+	public function testAnXmlElementWithoutServersAddsNone()
+	{
+		$this->expectException(THttpException::class);
+		$this->initXml('<service />', 'quote');
+	}
+
+	/**
+	 * A server of the service element may not repeat one of the configuration file.
+	 */
+	public function testAnXmlServerMayNotRepeatAServerOfTheConfigurationFile()
+	{
+		$this->expectException(TConfigurationException::class);
+		$this->initXml('<service><soap id="filed" /></service>', 'filed', 'SoapFixtures.soap');
+	}
+
+	/**
+	 * A PHP configuration that is not an array adds no servers.
+	 */
+	public function testAPhpConfigurationThatIsNotAnArrayAddsNone()
+	{
+		$service = new TSoapService();
+		PradoUnit::invoke($service, 'loadConfig', null);
+		$this->assertSame([], PradoUnit::getProp($service, '_servers'));
+	}
+
+	public function testAnXmlServerWithoutAnIdIsRefused()
+	{
+		$this->expectException(TConfigurationException::class);
+		$this->initXml('<service><soap provider="Quotes" /></service>', 'quote');
+	}
+
+	public function testADuplicatedXmlServerIdIsRefused()
+	{
+		$this->expectException(TConfigurationException::class);
+		$this->initXml('<service><soap id="quote" /><soap id="quote" /></service>', 'quote');
+	}
+
+	/**
+	 * The servers of the configuration file join those of the service element.
+	 */
+	public function testInitReadsTheConfigurationFile()
+	{
+		$service = $this->initXml('<service><soap id="quote" /></service>', 'filed', 'SoapFixtures.soap');
+		$this->assertSame(__DIR__ . DIRECTORY_SEPARATOR . 'SoapServiceApp' . DIRECTORY_SEPARATOR . 'soap.xml', $service->getConfigFile());
+		$this->assertSame('filed', $service->getServerID());
+		$this->assertInstanceOf(TTestSoapRecordingServer::class, PradoUnit::invoke($service, 'createServer'));
+	}
+
+	/**
+	 * A PHP application reads the servers of a PHP configuration file.
+	 */
+	public function testInitReadsAPhpConfigurationFile()
+	{
+		Prado::getApplication()->getRequest()->setServiceParameter('filed');
+		$service = new TTestSoapRecordingService();
+		$service->setConfigFile('SoapFixtures.soap');
+		$service->init(null);
+		$this->assertStringEndsWith('soap.php', $service->getConfigFile());
+		$server = PradoUnit::invoke($service, 'createServer');
+		$this->assertInstanceOf(TTestSoapRecordingServer::class, $server);
+		$this->assertSame('ISO-8859-1', $server->getEncoding());
+	}
+
+	/**
+	 * An XML application without a service element reads its configuration file.
+	 */
+	public function testInitWithoutAnXmlElementReadsTheConfigurationFile()
+	{
+		$this->configurationType(TApplication::CONFIG_TYPE_XML);
+		Prado::getApplication()->getRequest()->setServiceParameter('filed');
+		$service = new TTestSoapRecordingService();
+		$service->setConfigFile('SoapFixtures.soap');
+		$service->init(null);
+		$this->assertSame('filed', $service->getServerID());
+	}
+
+	/**
+	 * A configuration file that holds no configuration is refused.
+	 * @dataProvider unreadableConfigFileProvider
+	 * @param string $type the application configuration type.
+	 * @param string $file the configuration file's namespace.
+	 */
+	public function testInitRefusesAConfigurationFileWithoutAConfiguration(string $type, string $file)
+	{
+		$this->configurationType($type);
+		Prado::getApplication()->getRequest()->setServiceParameter('filed');
+		$service = new TTestSoapRecordingService();
+		$service->setConfigFile($file);
+		$this->expectException(TConfigurationException::class);
+		$service->init(null);
+	}
+
+	public static function unreadableConfigFileProvider(): array
+	{
+		return [
+			'malformed xml' => [TApplication::CONFIG_TYPE_XML, 'SoapFixtures.broken'],
+			'php without an array' => [TApplication::CONFIG_TYPE_PHP, 'SoapFixtures.scalar'],
+		];
+	}
+
+	public function testInitRefusesAMissingConfigurationFile()
+	{
+		$this->expectException(TConfigurationException::class);
+		$this->initXml('<service><soap id="quote" /></service>', 'quote', 'SoapFixtures.missing');
+	}
+
+	public function testSetConfigFileRefusesAnUnknownNamespace()
+	{
+		$service = new TSoapService();
+		$this->assertNull($service->getConfigFile());
+		$this->expectException(TConfigurationException::class);
+		$service->setConfigFile('TTestSoapNoSuchAlias.soap');
+	}
+
+	// ── createServer() ──────────────────────────────────────────────────────
+
+	/**
+	 * Builds the server of a PHP configuration for the server 'quote'.
+	 * @param array $server the server's configuration.
+	 */
+	private function quoteServer(array $server): TSoapServer
+	{
+		return $this->buildServer(['soap' => ['quote' => $server]], 'quote');
+	}
+
+	public function testCreateServerDefaultsToTSoapServer()
+	{
+		$server = $this->quoteServer([]);
+		$this->assertSame(TSoapServer::class, $server::class);
+		$this->assertSame('quote', $server->getID());
+	}
+
+	/**
+	 * TSoapServer itself may be named, by its class or its short name.
+	 */
+	public function testCreateServerAcceptsTSoapServerByName()
+	{
+		$this->assertSame(TSoapServer::class, $this->quoteServer(['class' => TSoapServer::class])::class);
+		// the first resolution of a short name aliases it, and later ones return the alias
+		$this->assertSame(TSoapServer::class, $this->quoteServer(['class' => 'TSoapServer'])::class);
+		$this->assertSame(TSoapServer::class, $this->quoteServer(['class' => 'TSoapServer'])::class);
+	}
+
+	public function testCreateServerRefusesAnUnknownClass()
+	{
+		$this->expectException(TConfigurationException::class);
+		$this->quoteServer(['class' => 'TTestSoapNoSuchServer']);
+	}
+
+	public function testCreateServerRefusesAClassThatIsNotAServer()
+	{
+		$this->expectException(TConfigurationException::class);
+		$this->quoteServer(['class' => TComponent::class]);
+	}
+
+	// ── run() ───────────────────────────────────────────────────────────────
+
+	/**
+	 * A WSDL request writes the server's WSDL as XML in the server's encoding.
+	 */
+	public function testRunWritesTheWsdl()
+	{
+		$service = $this->initXml('<service><soap id="quote" class="' . TTestSoapRecordingServer::class . '" Encoding="UTF-8" /></service>', 'quote.wsdl');
+		$service->response->body = 'earlier output';
+		$service->run();
+
+		$this->assertSame(TMediaType::XML_TEXT, $service->response->contentType);
+		$this->assertSame('UTF-8', $service->response->charset);
+		$this->assertSame(1, $service->response->clears);
+		$this->assertSame('<definitions/>', $service->response->body);
+		$this->assertSame(0, TTestSoapRecordingServer::$runs);
+	}
+
+	/**
+	 * A call request runs the server.
+	 */
+	public function testRunRunsTheServer()
+	{
+		$service = $this->initXml('<service><soap id="quote" class="' . TTestSoapRecordingServer::class . '" /></service>', 'quote');
+		$service->run();
+
+		$this->assertSame(TMediaType::XML_TEXT, $service->response->contentType);
+		$this->assertSame('', $service->response->body);
+		$this->assertSame(1, TTestSoapRecordingServer::$runs);
+	}
+
+	/**
+	 * constructUrl() builds the URL of a server through the request.
+	 */
+	public function testConstructUrlNamesTheServer()
+	{
+		$service = new TSoapService();
+		$this->assertSame(
+			Prado::getApplication()->getRequest()->constructUrl('soap', 'quote.wsdl', ['a' => 'b'], false, false),
+			$service->constructUrl('quote.wsdl', ['a' => 'b'], false, false)
+		);
 	}
 }

@@ -68,4 +68,34 @@ class THelpActionTest extends TestCase
 			$app->restoreApplication();
 		}
 	}
+
+	public function testActionIndexWithoutACommandPrintsTheGeneralHelp(): void
+	{
+		$this->assertTrue($this->runInShellApplication(['help']));
+
+		$captured = $this->_text->getCaptured();
+		$this->assertStringContainsString('The following commands are available:', $captured);
+		$this->assertStringContainsString('prado-cli help <command-name>', $captured);
+	}
+
+	public function testActionIndexWithoutActionsReturnsFalse(): void
+	{
+		$app = new TTestShellApplication();
+		try {
+			$this->assertFalse($this->_action->actionIndex(['help', 'cache']));
+		} finally {
+			$app->restoreApplication();
+		}
+	}
+
+	public function testActionIndexWithOneOtherActionReturnsFalse(): void
+	{
+		$app = new TTestShellApplication();
+		try {
+			$app->addShellActionClass(THelpAction::class);
+			$this->assertFalse($this->_action->actionIndex(['help', 'cache']));
+		} finally {
+			$app->restoreApplication();
+		}
+	}
 }

@@ -40,9 +40,12 @@ class TRequestConnectionUpgrade extends \Prado\Util\TBehavior
 	/**
 	 * Move the contents of the Upgrade header to the urlParams.
 	 * The Service can select on the "Upgrade" HTTP header like "websocket".
+	 * Each comma-separated protocol of the Upgrade header becomes a URL parameter key; empty
+	 * entries are skipped.
 	 * @param \Prado\Web\THttpRequest $request
 	 * @param \Prado\Web\THttpRequestParameter $param
-	 * @return ?array the new url Parameters
+	 * @return ?array the new url Parameters; null when the URL parameters are not an array,
+	 *   the Connection header has no `upgrade`, or the Upgrade header is missing or names no protocol.
 	 */
 	public function processHeaders($request, $param)
 	{
@@ -59,14 +62,14 @@ class TRequestConnectionUpgrade extends \Prado\Util\TBehavior
 			return null;
 		}
 		if (!isset($headers['upgrade'])) {
-			Prado::log("'Connection: Upgrade' without 'Upgrade' Header from " . $_SERVER['REMOTE_ADDR'], \Prado\Util\Log\TLogger::NOTICE, static::class);
+			Prado::log("'Connection: Upgrade' without 'Upgrade' Header from " . $request->getUserHostAddress(), \Prado\Util\Log\TLogger::NOTICE, static::class);
 			return null;
 		}
 		$upgrade = $headers['upgrade'];
 		if (is_array($upgrade)) {
 			$upgrade = implode(',', $upgrade);
 		}
-		$requestedUpgrade = array_map('trim', explode(',', $upgrade));
+		$requestedUpgrade = array_filter(array_map('trim', explode(',', $upgrade)), fn ($protocol) => $protocol !== '');
 
 		if ($requestedUpgrade) {
 			$urlParams = array_merge(array_flip($requestedUpgrade), $urlParams);

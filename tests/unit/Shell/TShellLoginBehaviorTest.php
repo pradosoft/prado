@@ -8,7 +8,9 @@ use Prado\Security\TAuthManager;
 use Prado\Shell\TShellLoginBehavior;
 use Prado\Shell\TShellWriter;
 use Prado\Test\Unit\Harness\IO\TTestCapturingTextWriter;
+use Prado\Test\Unit\Harness\TTestApplication;
 use Prado\Test\Unit\Harness\TTestShellApplication;
+use Prado\Util\Helpers\TProcessHelper;
 
 /**
  * Records login() calls and accepts the password `secret`.
@@ -53,6 +55,11 @@ class TShellLoginBehaviorTestBehavior extends TShellLoginBehavior
 	public function callSetTerminalEcho(bool $echo): bool
 	{
 		return parent::setTerminalEcho($echo);
+	}
+
+	public function callIsStdInTerminal(): bool
+	{
+		return parent::isStdInTerminal();
 	}
 
 	protected function isStdInTerminal(): bool
@@ -202,5 +209,64 @@ class TShellLoginBehaviorTest extends TestCase
 		$this->_behavior->terminal = false;
 
 		$this->assertFalse($this->_behavior->callSetTerminalEcho(false));
+	}
+
+	public function testSetTerminalEchoOnATerminalRunsStty(): void
+	{
+		if (TProcessHelper::isSystemWindows()) {
+			$this->markTestSkipped('Windows has no stty.');
+		}
+		$this->_behavior->terminal = true;
+		exec('stty echo 2>/dev/null', $output, $code);
+
+		try {
+			$this->assertSame($code === 0, $this->_behavior->callSetTerminalEcho(false));
+		} finally {
+			$this->assertSame($code === 0, $this->_behavior->callSetTerminalEcho(true));
+		}
+	}
+
+	public function testIsStdInTerminalReadsStandardInput(): void
+	{
+		$this->assertSame(stream_isatty(STDIN), $this->_behavior->callIsStdInTerminal());
+	}
+
+	public function testLoginWithThePasswordOptionPromptsForTheUser(): void
+	{
+		$this->_behavior->setPassword('secret');
+		$this->_behavior->lines = ['alice'];
+
+		$this->_behavior->shellApplicationLogin($this->_auth, null);
+
+		$this->assertSame([['alice', 'secret']], $this->_auth->logins);
+		$this->assertSame([], $this->_behavior->echoes);
+		$this->assertStringContainsString("Password: **********\n", $this->_text->getCaptured());
+	}
+
+	public function testDisabledBehaviorDoesNotLogin(): void
+	{
+		$this->_behavior->setEnabled(false);
+
+		$this->_behavior->shellApplicationLogin($this->_auth, null);
+
+		$this->assertSame([], $this->_auth->logins);
+		$this->assertSame('', $this->_text->getCaptured());
+	}
+
+	public function testOutsideAShellApplicationNeitherRegistersOptionsNorLogsIn(): void
+	{
+		$this->_app->restoreApplication();
+		$app = new TTestApplication();
+		try {
+			$auth = new TShellLoginBehaviorTestAuthManager();
+			$auth->attachBehavior('shellLogin', $behavior = new TShellLoginBehaviorTestBehavior());
+
+			$behavior->shellApplicationLogin($auth, null);
+
+			$this->assertSame([], $auth->logins);
+		} finally {
+			$app->restoreApplication();
+			$this->_app = new TTestShellApplication();
+		}
 	}
 }

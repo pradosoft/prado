@@ -84,7 +84,12 @@ class TRequestConnectionUpgradeTest extends \PHPUnit\Framework\TestCase
 				}
 				
 				return $result;
-			}	
+			}
+
+			public function getUserHostAddress()
+			{
+				return $_SERVER['REMOTE_ADDR'] ?? null;
+			}
 		};
 		
 		$upgrader = new TRequestConnectionUpgrade();
@@ -112,7 +117,70 @@ class TRequestConnectionUpgradeTest extends \PHPUnit\Framework\TestCase
 		$_SERVER['HTTP_CONNECTION'] = 'Upgrade';
 		unset($_SERVER['HTTP_UPGRADE']);
 		self::assertNull($upgrader->processHeaders($request, $param));
-			
+
+		$param = new THttpRequestParameter([], []);
+		$param->setParameter('websocket');
+		$_SERVER['HTTP_UPGRADE'] = 'websocket';
+		self::assertNull($upgrader->processHeaders($request, $param));
+
+		$param = new THttpRequestParameter([], []);
+		$_SERVER['HTTP_CONNECTION'] = 'keep-alive, Upgrade';
+		$_SERVER['HTTP_UPGRADE'] = ' , ';
+		self::assertNull($upgrader->processHeaders($request, $param));
+		self::assertSame([], $param->getParameter());
+
+		$param = new THttpRequestParameter([], ['page' => 'Home']);
+		$_SERVER['HTTP_UPGRADE'] = 'h2c, , websocket';
+		$urlParams = $upgrader->processHeaders($request, $param);
+		self::assertSame(['h2c', 'websocket', 'page'], array_keys($urlParams));
+		self::assertSame('Home', $urlParams['page']);
+		self::assertSame($urlParams, $param->getParameter());
+	}
+
+	public function testProcessHeadersMissingUpgradeWithoutRemoteAddress()
+	{
+		$request = new class() {
+			public function getHeaders($case)
+			{
+				return ['connection' => 'upgrade'];
+			}
+
+			public function getUserHostAddress()
+			{
+				return null;
+			}
+		};
+		$remote = $_SERVER['REMOTE_ADDR'];
+		unset($_SERVER['REMOTE_ADDR']);
+		try {
+			$upgrader = new TRequestConnectionUpgrade();
+			self::assertNull($upgrader->processHeaders($request, new THttpRequestParameter([], [])));
+		} finally {
+			$_SERVER['REMOTE_ADDR'] = $remote;
+		}
+	}
+
+	public function testProcessHeadersArrayUpgrade()
+	{
+		$request = new class() {
+			public function getHeaders($case)
+			{
+				return ['connection' => 'Upgrade', 'upgrade' => ['websocket', 'h2c']];
+			}
+		};
+		$upgrader = new TRequestConnectionUpgrade();
+		$param = new THttpRequestParameter([], []);
+		self::assertSame(['websocket' => 0, 'h2c' => 1], $upgrader->processHeaders($request, $param));
+
+		$request = new class() {
+			public function getHeaders($case)
+			{
+				return ['connection' => 'Upgrade', 'upgrade' => ['', ' ']];
+			}
+		};
+		$param = new THttpRequestParameter([], []);
+		self::assertNull($upgrader->processHeaders($request, $param));
+		self::assertSame([], $param->getParameter());
 	}
 	
 }

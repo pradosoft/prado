@@ -295,7 +295,14 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function stripSlashes(&$data)
 	{
-		return is_array($data) ? array_map([$this, 'stripSlashes'], $data) : stripslashes($data);
+		if (!is_array($data)) {
+			return stripslashes($data);
+		}
+		$result = [];
+		foreach ($data as $key => $value) {
+			$result[$key] = $this->stripSlashes($value);
+		}
+		return $result;
 	}
 
 	/**
@@ -357,7 +364,6 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 				$dependencies = null;
 				if ($this->getApplication()->getMode() !== TApplicationMode::Performance) {
 					if ($manager instanceof TUrlMapping && $fn = $manager->getConfigFile()) {
-						$fn = Prado::getPathOfNamespace($fn, $this->getApplication()->getConfigurationFileExt());
 						$dependencies = new TFileCacheDependency($fn);
 					}
 				}
@@ -582,7 +588,8 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	protected function parseHeaders(): array
 	{
 		if (function_exists('apache_request_headers')) {
-			return apache_request_headers();
+			// apache_request_headers() exists only under the Apache SAPI; unit tests run under the CLI.
+			return apache_request_headers(); // @codeCoverageIgnore
 		}
 		$headers = [];
 		foreach ($_SERVER as $key => $value) {
@@ -858,7 +865,8 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 		if ((string) ini_get('browscap') === '') {
 			throw new TConfigurationException('httprequest_browscap_required');
 		}
-		return get_browser();
+		// browscap is a php.ini-only (PHP_INI_SYSTEM) directive that the test environments leave unset.
+		return get_browser(); // @codeCoverageIgnore
 	}
 
 	/**
@@ -1134,7 +1142,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 			if ($this->getEnableCookieValidation()) {
 				$sm = $this->getApplication()->getSecurityManager();
 				foreach ($_COOKIE as $key => $value) {
-					if (($value = $sm->validateCookieData($value)) !== false) {
+					if (is_string($value) && ($value = $sm->validateCookieData($value)) !== false) {
 						$this->_cookies->add(new THttpCookie($key, $value));
 					}
 				}

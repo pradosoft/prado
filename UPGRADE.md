@@ -10,6 +10,9 @@ for both A and B.
 Upgrading from v4.3.3
 ---------------------
 - PHP 8.2 is now required. Applications running PHP 8.1 stay on Prado 4.3.
+- Issue #1497 - A page path an `onAdditionalPagePaths` handler offers must lie inside the `Application` path after its
+  `..` segments are resolved; others throw `THttpException` 403. In 4.3 any path beginning with the application path
+  was taken, including `protected/../other` and a sibling `protected2`. Return pages from inside the application.
 - Issue #1497 - `TMemCache` reads every expiration time as a number of seconds, as `ICache` defines it. In 4.3 a
   time over 30 days was passed to Memcached as a Unix timestamp, so `set($id, $value, time() + 3600)` expired at that
   moment, and 31 days in seconds expired at once. Pass the seconds until the value expires.

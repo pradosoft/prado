@@ -65,7 +65,7 @@ return [
 ## Core Methods
 
 ### Session Management
-- `open()`: Starts the session if not already started; sets the session cookie parameters from `getSessionCookieParams()` (protected, @since 4.4.0) through the `sessionSetCookieParams()`/`sessionGetCookieParams()` wrappers
+- `open()`: Starts the session if not already started; sets the session cookie parameters from `getSessionCookieParams()` (protected, @since 4.4.0) through the `sessionSetCookieParams()`/`sessionGetCookieParams()` wrappers; with custom storage it registers a `THttpSessionHandler` through the `sessionSetSaveHandler()` wrapper (4.4.0)
 - `close()`: Ends session and stores data
 - `destroy()`: Destroys all data registered to session
 - `regenerate($deleteOld = false)`: Update session ID with new one
