@@ -1331,4 +1331,173 @@ class TSimpleDateFormatterTest extends \PHPUnit\Framework\TestCase
 		$this->assertThat($result, $this->greaterThanOrEqual($before));
 		$this->assertThat($result, $this->lessThanOrEqual($after + 1));
 	}
+
+	// === Coverage of #1497 ===
+
+	private function parseWith(string $pattern, string $value, string $charset = 'UTF-8'): ?int
+	{
+		return (new TSimpleDateFormatter($pattern, $charset))->parse($value, false);
+	}
+
+	public function test_parse_K_PM_adds_twelve_hours(): void
+	{
+		$formatter = new TSimpleDateFormatter('yyyy-MM-dd KK:mm a');
+		$time = mktime(13, 5, 0, 3, 4, 2024);
+		$this->assertSame('2024-03-04 01:05 PM', $formatter->format($time));
+		$this->assertSame($time, $formatter->parse('2024-03-04 01:05 PM', false));
+		$this->assertSame(mktime(1, 5, 0, 3, 4, 2024), $formatter->parse('2024-03-04 01:05 AM', false));
+		$this->assertSame(mktime(1, 5, 0, 3, 4, 2024), $this->parseWith('yyyy-MM-dd KK:mm', '2024-03-04 01:05'));
+	}
+
+	public function test_parse_D_sets_the_month_and_day(): void
+	{
+		$this->assertSame(mktime(0, 0, 0, 4, 9, 2024), $this->parseWith('yyyy D', '2024 100'));
+		$this->assertSame(mktime(0, 0, 0, 12, 31, 2024), $this->parseWith('yyyy D', '2024 366'));
+		$this->assertSame(mktime(0, 0, 0, 12, 31, 2023), $this->parseWith('yyyy D', '2023 365'));
+		$this->assertNull($this->parseWith('yyyy D', '2023 366'));
+		$this->assertNull($this->parseWith('yyyy D', '2024 0'));
+		$this->assertNull($this->parseWith('yyyy D', '2024 x'));
+
+		$formatter = new TSimpleDateFormatter('yyyy D');
+		$time = mktime(0, 0, 0, 7, 15, 2025);
+		$this->assertSame($time, $formatter->parse($formatter->format($time), false));
+	}
+
+	public function test_parse_D_with_a_month_or_day_keeps_them(): void
+	{
+		$this->assertSame(mktime(0, 0, 0, 2, 3, 2024), $this->parseWith('yyyy-MM-dd D', '2024-02-03 100'));
+	}
+
+	public function test_format_fraction_is_zero_padded_and_does_not_carry(): void
+	{
+		$formatter = new TSimpleDateFormatter('ss.SSS');
+		$this->assertSame('05.005', $formatter->format(new \DateTime('2024-01-01 00:00:05.005')));
+		$this->assertSame('05.999', $formatter->format(new \DateTime('2024-01-01 00:00:05.9996')));
+		$this->assertSame('05.05', (new TSimpleDateFormatter('ss.SS'))->format(new \DateTime('2024-01-01 00:00:05.05')));
+		$this->assertNotNull($formatter->parseExact('05.005', false));
+	}
+
+	public static function partPatternProvider(): array
+	{
+		return [
+			'MMMM' => ['dd MMMM yyyy', 'MMMM', 'dd', 'yyyy', ['day', 'month', 'year']],
+			'MMM' => ['MMM d, yy', 'MMM', 'd', 'yy', ['month', 'day', 'year']],
+			'MM' => ['yyyy-MM-dd', 'MM', 'dd', 'yyyy', ['year', 'month', 'day']],
+			'M' => ['M/d', 'M', 'd', false, ['month', 'day']],
+			'none' => ['HH:mm', false, false, false, []],
+			'year only' => ['yy', false, false, 'yy', ['year']],
+			'day and year' => ['dd yyyy', false, 'dd', 'yyyy', ['day', 'year']],
+			'day only' => ['dd', false, 'dd', false, ['day']],
+			'month and year' => ['MM yyyy', 'MM', false, 'yyyy', ['month', 'year']],
+			'month only' => ['MM', 'MM', false, false, ['month']],
+		];
+	}
+
+	/**
+	 * @dataProvider partPatternProvider
+	 */
+	public function test_part_patterns_and_ordering(string $pattern, $month, $day, $year, array $ordering): void
+	{
+		$formatter = new TSimpleDateFormatter($pattern);
+		$this->assertSame($month, $formatter->getMonthPattern());
+		$this->assertSame($day, $formatter->getDayPattern());
+		$this->assertSame($year, $formatter->getYearPattern());
+		$this->assertSame($ordering, $formatter->getDayMonthYearOrdering());
+	}
+
+	public static function parseFailureProvider(): array
+	{
+		return [
+			'yy too short' => ['yy-MM', '4-03'],
+			'y not a number' => ['y-MM', 'ab-03'],
+			'S not a number' => ['ss.S', '05.x'],
+			'SS not a number' => ['ss.SS', '05.xx'],
+			'SSS not a number' => ['ss.SSS', '05.xxx'],
+			'SSSS not a number' => ['ss.SSSS', '05.xxxx'],
+			'SSSSS not a number' => ['ss.SSSSS', '05.xxxxx'],
+			'SSSSSS not a number' => ['ss.SSSSSS', '05.xxxxxx'],
+			'a not AM or PM' => ['hh a', '01 XM'],
+			'quoted literal mismatch' => ["yyyy 'at' HH", '2024 on 05'],
+			'unquoted literal mismatch' => ['yyyy/MM', '2024-03'],
+			'E at the end of the value' => ['yyyy E', '2024 '],
+			'value too long' => ['yyyy', '20245'],
+			'value shorter than yyyy' => ['yyyy', '202'],
+			'hh 13' => ['hh', '13'],
+			'hh 00' => ['hh', '00'],
+		];
+	}
+
+	/**
+	 * @dataProvider parseFailureProvider
+	 */
+	public function test_parse_failures_return_null(string $pattern, string $value): void
+	{
+		$this->assertNull((new TSimpleDateFormatter($pattern))->parseExact($value, false));
+	}
+
+	public static function fractionProvider(): array
+	{
+		return [
+			'S' => ['ss.S', '05.5', 0.5],
+			'SS' => ['ss.SS', '05.25', 0.25],
+			'SSSS' => ['ss.SSSS', '05.1250', 0.125],
+			'SSSSS' => ['ss.SSSSS', '05.12500', 0.125],
+			'SSSSSS' => ['ss.SSSSSS', '05.125000', 0.125],
+		];
+	}
+
+	/**
+	 * @dataProvider fractionProvider
+	 */
+	public function test_parse_fractions(string $pattern, string $value, float $fraction): void
+	{
+		$base = (new TSimpleDateFormatter('ss'))->parseExact('05', false);
+		$this->assertEqualsWithDelta($base + $fraction, (new TSimpleDateFormatter($pattern))->parseExact($value, false), 0.000001);
+	}
+
+	public function test_parse_quoted_literal(): void
+	{
+		$this->assertSame(mktime(5, 0, 0, 1, 1, 2024), $this->parseWith("yyyy 'at' HH", '2024 at 05'));
+		$this->assertSame(mktime(0, 0, 0, 1, 1, 2024), $this->parseWith("yyyy 'open", '2024 open'));
+	}
+
+	public function test_parse_a_without_an_hour_pattern(): void
+	{
+		$this->assertSame(mktime(13, 0, 0, 1, 1, 2024), $this->parseWith('yyyy HH a', '2024 01 PM'));
+		$this->assertSame(mktime(0, 0, 0, 1, 1, 2024), $this->parseWith('yyyy HH a', '2024 12 AM'));
+	}
+
+	public function test_parse_E_without_a_localized_weekday(): void
+	{
+		$formatter = new TSimpleDateFormatter('E yyyy');
+		$this->assertSame(mktime(0, 0, 0, 1, 1, 2024), $formatter->parse('X 2024', false));
+	}
+
+	public function test_parse_localized_month_name_missing(): void
+	{
+		$this->assertNull($this->parseWith('MMM yyyy', 'Foo 2024'));
+		$this->assertSame(mktime(0, 0, 0, 3, 1, 2024), $this->parseWith('MMM yyyy', '3 2024'));
+	}
+
+	public function test_format_numeric_and_string_dates(): void
+	{
+		$formatter = new TSimpleDateFormatter('yyyy-MM-dd');
+		$this->assertSame('2024-03-04', $formatter->format(mktime(12, 0, 0, 3, 4, 2024)));
+		$this->assertSame('2024-03-04', $formatter->format('2024-03-04 12:00:00'));
+	}
+
+	public function test_non_utf8_charset(): void
+	{
+		$formatter = new TSimpleDateFormatter('yyyy-MM-dd', 'ISO-8859-1');
+		$this->assertSame('2024-03-04', $formatter->format(mktime(0, 0, 0, 3, 4, 2024)));
+		$this->assertSame(mktime(0, 0, 0, 3, 4, 2024), $formatter->parse('2024-03-04', false));
+		$this->assertNull($formatter->parse('2024-03', false));
+	}
+
+	public function test_parse_two_digit_years_above_70_are_1900s(): void
+	{
+		$this->assertSame(mktime(0, 0, 0, 1, 1, 1971), $this->parseWith('yy', '71'));
+		$this->assertSame(mktime(0, 0, 0, 1, 1, 1985), $this->parseWith('y', '85'));
+		$this->assertSame(mktime(0, 0, 0, 1, 1, 2005), $this->parseWith('y', '05'));
+	}
 }

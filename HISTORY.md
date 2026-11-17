@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TSimpleDateFormatter` parses `K` hours with PM as afternoon hours and `D` as the day in the year when the pattern has no month and day, and formats fractional seconds zero-padded to the digits of the pattern; it ignored PM for `K` and the parsed `D`, and wrote 5 ms with `SSS` as `5`. (belisoful)
 BUG: Issue #1497 - `TSignalsDispatcher::disarm()` without an attached dispatcher returns null; it threw `TPhpErrorException`. (belisoful)
 BUG: Issue #1497 - `TSignalsDispatcher::delegateChild()` gives a child it reaps the "code" and "status" of the SIGCHLD siginfo and clears the handlers of a child that dumped core; it passed the raw wait status, so the handlers of a reaped child were never cleared. (belisoful)
 BUG: Issue #1497 - `TDbParameterModule` works on PostgreSQL and names its indexes after its table; it could not create its table or read its rows on PostgreSQL, and a second parameter table in one SQLite or PostgreSQL database failed. (belisoful)
