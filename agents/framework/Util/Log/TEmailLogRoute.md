@@ -21,7 +21,7 @@
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `Emails` | `array` | `[]` | Destination addresses; accepts a comma-separated string or array. |
+| `Emails` | `array` | `[]` | Destination addresses; accepts a comma-separated string or array. An address that does not match `EMAIL_PATTERN` is dropped. |
 | `Subject` | `?string` | `DEFAULT_SUBJECT` | Email subject line; null restores `DEFAULT_SUBJECT`. |
 | `SentFrom` | `string` | `''` | Sender address; falls back to `sendmail_from` INI setting if empty. |
 
