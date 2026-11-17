@@ -459,12 +459,13 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 * `Last-Modified` in `$headers` is the validator an `If-Range` request header matches.
 	 * @param string $fileName file name
 	 * @param null|string $content content to be set. If null, the content will be read from the server file pointed to by $fileName.
-	 * @param null|string $mimeType mime type of the content.
+	 * @param null|string $mimeType mime type of the content.  Null detects it: `mime_content_type()`
+	 *   reads a server file when fileinfo is loaded; otherwise the extension of $fileName selects it,
+	 *   with `text/plain` for an unknown extension.
 	 * @param null|array $headers list of headers to be sent. Each array element represents a header string (e.g. 'Content-Type: text/plain').
 	 * @param null|bool $forceDownload force download of file, even if browser able to display inline. Defaults to 'true'.
 	 * @param null|string $clientFileName force a specific file name on client side. Defaults to 'null' means auto-detect.
 	 * @param null|int $fileSize size of file or content in bytes if already known. Defaults to 'null' means auto-detect.
-	 * @throws TInvalidDataValueException if the file cannot be found
 	 */
 	public function writeFile($fileName, $content = null, $mimeType = null, $headers = null, $forceDownload = true, $clientFileName = null, $fileSize = null)
 	{
@@ -482,14 +483,12 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 		];
 
 		if ($mimeType === null) {
-			$mimeType = TMediaType::PLAIN;
-			if (function_exists('mime_content_type')) {
+			$mimeType = false;
+			if ($content === null && function_exists('mime_content_type') && is_file($fileName)) {
 				$mimeType = mime_content_type($fileName);
-			} elseif (($ext = strrchr($fileName, '.')) !== false) {
-				$ext = substr($ext, 1);
-				if (isset($defaultMimeTypes[$ext])) {
-					$mimeType = $defaultMimeTypes[$ext];
-				}
+			}
+			if ($mimeType === false) {
+				$mimeType = $defaultMimeTypes[strtolower(pathinfo($fileName, PATHINFO_EXTENSION))] ?? TMediaType::PLAIN;
 			}
 		}
 

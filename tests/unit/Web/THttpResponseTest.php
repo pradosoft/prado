@@ -8,6 +8,7 @@ use Prado\Exceptions\TExitException;
 use Prado\Util\TBehavior;
 use Prado\Web\THttpCookie;
 use Prado\Web\THttpResponse;
+use Prado\Web\TMediaType;
 use Prado\Web\THttpResponseAdapter;
 use Prado\Test\Unit\Harness\TTestApplication;
 use Prado\Test\Unit\Harness\Util\TTestNullDynamicBehavior;
@@ -328,6 +329,35 @@ class THttpResponseTest extends \PHPUnit\Framework\TestCase
 		$this->assertContains('Content-Length: 3', $response->headers);
 		$this->assertContains('Content-Disposition: attachment; filename="report.txt"', $response->headers);
 		$this->assertSame([false], $observer->flags);
+	}
+
+	public function testWriteFileDetectsMimeType()
+	{
+		$response = new TTestHttpResponse();
+		$this->captureWriteFile($response, '/path/to/report.PDF', 'abc');
+		$this->assertContains('Content-Type: application/pdf', $response->headers);
+
+		$response = new TTestHttpResponse();
+		$this->captureWriteFile($response, '/path/to/report.unknown', 'abc');
+		$this->assertContains('Content-Type: text/plain', $response->headers);
+
+		$response = new TTestHttpResponse();
+		$this->captureWriteFile($response, '/path/to/report', 'abc');
+		$this->assertContains('Content-Type: text/plain', $response->headers);
+
+		$file = $this->rangeFile();
+		try {
+			$response = new TTestHttpResponse();
+			$this->assertSame(self::RANGE_BODY, $this->captureWriteFile($response, $file));
+			$this->assertContains('Content-Type: ' . mime_content_type($file), $response->headers);
+		} finally {
+			unlink($file);
+		}
+
+		$response = new TTestHttpResponse();
+		$response->attachBehavior('sender', $sender = new TTestSendFileBehavior());
+		$this->captureWriteFile($response, '/missing/report.css', null, null, null, true, null, 10);
+		$this->assertSame(TMediaType::CSS, $sender->calls[0][3]);
 	}
 
 	// -----------------------------------------------------------------------
