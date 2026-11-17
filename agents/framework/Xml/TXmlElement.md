@@ -45,7 +45,7 @@ public function __construct(string $tagName)
 - `getElementsByTagName()` - Gets all child elements with specified tag name
 - `getElementByAttribute()` - Gets first child element with specified attribute
 - `getElementsByAttribute()` - Gets all child elements with specified attribute
-- `xpath()` - Find elements matching XPath expression; this element is the document element, so `/tag`, `.`, and `//*` match it too
+- `xpath()` - Find elements matching XPath expression; this element is the document element, so `/tag`, `.`, and `//*` match it too; a namespace prefix declared on an ancestor or a descendant resolves, bound to its first declaration in document order
 
 ## Utility Methods
 - `toString()` - Creates string representation of element
