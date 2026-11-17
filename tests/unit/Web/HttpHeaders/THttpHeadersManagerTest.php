@@ -2781,6 +2781,15 @@ class THttpHeadersManagerTest extends \PHPUnit\Framework\TestCase
 		self::assertCount(2, $m->stub->capturedCalls, 'Headers are sent once.');
 	}
 
+	public function testEnsureHeadersSentWithoutHeadersSendsNothing(): void
+	{
+		$m = new TRecordingResponseHttpHeadersManager();
+		$m->setReportingServiceMode(false);
+		$m->ensureHeadersSent();
+		self::assertTrue($m->getHeadersSent());
+		self::assertSame([], $m->stub->capturedCalls);
+	}
+
 	public function testBuildReporterUrlConstructsTheServiceUrl(): void
 	{
 		$m = new THttpHeadersManager();
