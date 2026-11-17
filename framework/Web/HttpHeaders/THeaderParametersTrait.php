@@ -118,7 +118,9 @@ trait THeaderParametersTrait
 	 * $obj->setParameters('; charset=UTF-8');   // leading semicolon is silently ignored
 	 * ```
 	 * Parameter names are normalized to lowercase; surrounding `"` or `'` are
-	 * stripped from values (they serve as delimiters, not as stored content).
+	 * stripped from values (they serve as delimiters, not as stored content),
+	 * and {@see parseParameters()} reads quoted values. A parameter with an
+	 * empty value is not stored, as with {@see setParameter()}.
 	 *
 	 * Any previously stored parameters are always replaced entirely.
 	 *
@@ -127,20 +129,44 @@ trait THeaderParametersTrait
 	 */
 	public function setParameters(array|string $parameters): void
 	{
-		$normalized = [];
 		if (is_string($parameters)) {
-			$parts = preg_split('/\s*;\s*/', trim($parameters), -1, PREG_SPLIT_NO_EMPTY);
-			foreach ($parts ?: [] as $part) {
-				if (preg_match('/^([a-zA-Z0-9_\-\*]+)\s*=\s*(.+)$/', trim($part), $m)) {
-					$normalized[strtolower($m[1])] = trim($m[2], '"\'');
-				}
-			}
-		} else {
-			foreach ($parameters as $name => $value) {
-				$normalized[strtolower(trim((string) $name))] = (string) $value;
+			$parameters = $this->parseParameters($parameters);
+		}
+		$normalized = [];
+		foreach ($parameters as $name => $value) {
+			$value = (string) $value;
+			if ($value !== '') {
+				$normalized[strtolower(trim((string) $name))] = $value;
 			}
 		}
 		$this->setParametersDirect($normalized);
+	}
+
+	/**
+	 * Parses a semicolon-delimited parameter string into a name → value map.
+	 * A semicolon inside a quoted value does not end the parameter. A value in
+	 * double quotes has its backslash escapes removed; a value in single quotes
+	 * is taken as written. A part that is not `name=value` is skipped.
+	 * @param string $parameters e.g. `charset=UTF-8; filename="a;b.pdf"`
+	 * @return array<string,string> the parsed parameters, names as written.
+	 */
+	protected function parseParameters(string $parameters): array
+	{
+		$result = [];
+		preg_match_all('/(?:"(?:[^"\\\\]|\\\\.)*"|\'[^\']*\'|[^;])+/s', $parameters, $parts);
+		foreach ($parts[0] as $part) {
+			if (!preg_match('/^\s*([a-zA-Z0-9_\-\*]+)\s*=\s*(.*?)\s*$/s', $part, $m)) {
+				continue;
+			}
+			$value = $m[2];
+			if (preg_match('/^"((?:[^"\\\\]|\\\\.)*)"$/s', $value, $q)) {
+				$value = preg_replace('/\\\\(.)/s', '$1', $q[1]);
+			} else {
+				$value = trim($value, '"\'');
+			}
+			$result[$m[1]] = $value;
+		}
+		return $result;
 	}
 
 	/**
