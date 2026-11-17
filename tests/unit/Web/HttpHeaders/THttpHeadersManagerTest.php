@@ -2943,7 +2943,7 @@ class THttpHeadersManagerTest extends \PHPUnit\Framework\TestCase
 			$m->publicLoadHeaders(['headers' => [['properties' => ['HeaderName' => 'X-Custom']]]]);
 			self::fail('Expected TConfigurationException');
 		} catch (TConfigurationException $e) {
-			self::assertSame('httpheadersmanager_header_required', $e->getErrorCode());
+			self::assertSame('httpheadersmanager_header_required', $e->getErrorCode());	self::assertStringContainsString('TBaseHttpHeader', $e->getMessage());
 		}
 	}
 
