@@ -24,7 +24,7 @@
 |----------|------|---------|-------------|
 | `LogTableName` | `string` | `'pradolog'` | Database table that receives log rows. Must be an SQL identifier (4.4.0). |
 | `AutoCreateLogTable` | `bool` | `true` | Creates the table automatically on `init()` if it does not exist. |
-| `RetainPeriod` | `?float` | `null` | Seconds to retain; older rows are purged on each flush. Accepts ISO 8601 duration strings (e.g. `'PT1H'`). |
+| `RetainPeriod` | `?float` | `null` | Seconds to retain; older rows are purged on each flush. Accepts ISO 8601 duration strings (e.g. `'PT1H'`), measured from the application clock's current time. A period of zero seconds is null. |
 | `PruneOnFlush` | `bool` | `true` | Whether each flush deletes the rows older than `RetainPeriod`; false leaves it to the cron task (4.4.0). |
 | `ConnectionID` | `string` | — | ID of a `TDataSourceConfig` module; defaults to an in-app SQLite3 `sqlite3.log` file. |
 
@@ -36,7 +36,7 @@
 | `getDBLogs(...): TDbDataReader` | Returns a result set of log rows matching criteria. `$order` lists columns with optional ASC/DESC; `$limit` is `count`, `count OFFSET offset`, or `offset, count`; other values throw `TInvalidDataValueException` (4.4.0). |
 | `deleteDBLog(...): int` | Deletes matching log rows and returns the removed count. |
 | `pruneLogs(?float $retainPeriod = null): int` | Deletes the rows older than the period, default `RetainPeriod`; 0 without a positive period (4.4.0). |
-| `static timespanToSeconds(string $timespan): ?int` | Converts an ISO 8601 duration string to seconds. |
+| `static timespanToSeconds(string $timespan, ?\DateTimeInterface $from = null): ?int` | Converts an ISO 8601 duration string to seconds, starting at `$from` (default now); null for an invalid duration. |
 
 ## Configuration
 

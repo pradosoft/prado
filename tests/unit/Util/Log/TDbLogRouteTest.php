@@ -12,6 +12,7 @@ use Prado\Data\IDataConnection;
 use Prado\Data\TDbConnection;
 use Prado\Data\TDbDriver;
 use Prado\Test\Unit\PradoUnit;
+use Prado\Util\Clock\TMockClock;
 
 class TTestDbLogRoute extends TDbLogRoute {
 }
@@ -75,6 +76,33 @@ class TDbLogRouteTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals(45, $route->getRetainPeriod());
 	}
 	
+	public function testRetainPeriodOfZeroSecondsIsNull()
+	{
+		$route = new TTestDbLogRoute();
+		$route->setRetainPeriod('PT0S');
+		$this->assertNull($route->getRetainPeriod());
+	}
+
+	public function testRetainPeriodIsMeasuredFromTheClock()
+	{
+		$route = new TTestDbLogRoute();
+		$route->setClock($clock = new TMockClock());
+		$clock->setNow('2026-02-01 00:00:00 UTC');
+		$route->setRetainPeriod('P1M');
+		$this->assertEquals(28 * 86400, $route->getRetainPeriod());
+
+		$clock->setNow('2026-03-01 00:00:00 UTC');
+		$route->setRetainPeriod('P1M');
+		$this->assertEquals(31 * 86400, $route->getRetainPeriod());
+	}
+
+	public function testTimespanToSecondsFromATime()
+	{
+		$this->assertSame(29 * 86400, TDbLogRoute::timespanToSeconds('P1M', new \DateTimeImmutable('2028-02-01 00:00:00 UTC')));
+		$this->assertSame(23 * 3600, TDbLogRoute::timespanToSeconds('P1D', new \DateTime('2026-03-08 00:00:00', new \DateTimeZone('America/New_York'))));
+		$this->assertSame(90, TDbLogRoute::timespanToSeconds('PT1M30S'));
+	}
+
 	public function testCollect()
 	{
 		$logger = new TLogger();

@@ -462,6 +462,8 @@ class TDbLogRoute extends TLogRoute
 	}
 
 	/**
+	 * Sets the seconds of the log to retain.  An ISO 8601 duration is measured from the
+	 * application clock's current time.  A period of zero seconds is null.
 	 * @param null|int|string $value Number of seconds or "PT" period time.
 	 * @throws TConfigurationException when the time span is not a valid "PT" string.
 	 * @return static The current object.
@@ -481,11 +483,11 @@ class TDbLogRoute extends TLogRoute
 			$value = null;
 		}
 		$seconds = null;
-		if ($value && ($seconds = static::timespanToSeconds($value)) === null) {
+		if ($value && ($seconds = static::timespanToSeconds($value, $this->getClock()->now())) === null) {
 			throw new TConfigurationException('dblogroute_bad_retain_period', $value);
 		}
 
-		$this->_retainPeriod = ($seconds !== null) ? $seconds : $value;
+		$this->_retainPeriod = $seconds ?: null;
 
 		return $this;
 	}
@@ -513,11 +515,14 @@ class TDbLogRoute extends TLogRoute
 	}
 
 	/**
+	 * Computes the seconds of an ISO 8601 duration starting at a time.  The length of a
+	 * duration in months or days depends on its start time and time zone.
 	 * @param string $timespan The time span to compute the number of seconds.
+	 * @param ?\DateTimeInterface $from the start of the time span; null for now.
 	 * @return ?int the number of seconds of the time span; null for an invalid time span.
 	 * @since 4.3.0
 	 */
-	public static function timespanToSeconds(string $timespan): ?int
+	public static function timespanToSeconds(string $timespan, ?\DateTimeInterface $from = null): ?int
 	{
 		try {
 			$interval = new \DateInterval($timespan);
@@ -525,11 +530,8 @@ class TDbLogRoute extends TLogRoute
 			return null;
 		}
 
-		$datetime1 = new \DateTime();
-		$datetime2 = clone $datetime1;
-		$datetime2->add($interval);
-		$diff = $datetime2->getTimestamp() - $datetime1->getTimestamp();
-		return $diff;
+		$start = $from === null ? new \DateTimeImmutable() : \DateTimeImmutable::createFromInterface($from);
+		return $start->add($interval)->getTimestamp() - $start->getTimestamp();
 	}
 
 }
