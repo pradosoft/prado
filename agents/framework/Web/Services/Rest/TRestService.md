@@ -67,7 +67,9 @@ The PHP form uses the plural keys `resources`, `routes`, `groups`, and `include`
 - `onError($exception)` — before the problem document is written; the `TRestException`, or the exception behind a `500`.
 
 ## Dispatch
-The handler is resolved with `TComponentReflection::getReflectionMethodByType()`, so a behavior-added method serves too; a static or non-public method is `405`. Path parameters are passed by name and cast to the declared type: `int`, `float`, `bool`, or a backed enum through `tryFrom()`; a value that does not fit is `404`. A parameter typed `THttpRequest` or `TRestRoutePattern` is injected. A missing parameter uses its default, otherwise `TConfigurationException('restservice_parameter_unbound')` (a `500`). A handler returning `null`, or status `204`, or a `HEAD` request, sends no body. A `JsonSerializable` return value encodes as any array. A `500` logs the exception class and message under the `TRestService` category.
+The handler is resolved with `TComponentReflection::getReflectionMethodByType()`, so a behavior-added method serves too; a static or non-public method is `405`. Path parameters are passed by name and cast to the declared type: `int`, `float`, `bool`, or a backed enum through `tryFrom()`; a value that does not fit is `404`. A parameter typed `THttpRequest` or `TRestRoutePattern` is injected. A missing parameter uses its default, otherwise `TConfigurationException('restservice_parameter_unbound')` (a `500`). A handler returning `null`, or status `204`, or a `HEAD` request, sends no body. A `JsonSerializable` return value encodes as any array. The body is encoded before the status and headers are sent, so a body that fails to encode is a `500` without the resource's headers. A `500` logs the exception class and message under the `TRestService` category.
+
+A problem document is always written: text that is not UTF-8 carries U+FFFD in place of its invalid bytes, and a value JSON cannot hold is replaced as `JSON_PARTIAL_OUTPUT_ON_ERROR` replaces it (`INF` as `0`).
 
 ## Patterns & Gotchas
 - `init()` matches the request before `run()`, so a module may read `getRoute()` from `onInitComplete` on.

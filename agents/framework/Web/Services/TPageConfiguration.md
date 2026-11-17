@@ -24,6 +24,13 @@ TPageConfiguration represents the merged configuration for a page, loaded from p
 - **`loadPageConfigurationFromPhp()`** - Loads page-specific properties, authorization rules, and includes from PHP config.
 - **`loadPageConfigurationFromXml()`** - Loads page-specific properties, authorization rules, and includes from XML config.
 
+## Matching and Includes
+
+- A rule's `pages` and a page's `id` are relative to the directory of the configuration file (`Users` in `Admin/config.xml` is `Admin.Users`), match case-insensitively, and end in `*` to match a prefix. A rule without `pages`, or with `*`, applies to every page.
+- Rules of a deeper directory come before those of its parents.
+- A PHP page key is read as a string, so a numeric key such as `404` names its page; an empty key, like an XML `<page>` without an `id`, throws `pageserviceconf_page_invalid`.
+- An include without `when` always applies; with `when`, `TPageService` evaluates the expression. A file included twice applies when either condition holds. PHP and XML read `when` the same way.
+
 ## See Also
 
 - [TPageService](TPageService.md) - Uses TPageConfiguration for page setup

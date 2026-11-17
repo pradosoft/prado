@@ -18,6 +18,7 @@ use Prado\Prado;
 use Prado\TApplication;
 use Prado\Web\TMediaType;
 use Prado\Xml\TXmlDocument;
+use Prado\Xml\TXmlElement;
 
 /**
  * TSoapService class
@@ -139,19 +140,29 @@ class TSoapService extends \Prado\TService
 	/**
 	 * Initializes this module.
 	 * This method is required by the IModule interface.
+	 * The servers of {@see getConfigFile ConfigFile} load first: an XML document,
+	 * or a PHP file returning an array, by the application's configuration type.
 	 * @param null|array|\Prado\Xml\TXmlElement $config configuration for this module, can be null
-	 * @throws TConfigurationException if {@see getConfigFile ConfigFile} is invalid.
+	 * @throws TConfigurationException if {@see getConfigFile ConfigFile} does not
+	 *   exist or holds no configuration.
 	 */
 	public function init($config)
 	{
 		if ($this->_configFile !== null) {
-			if (is_file($this->_configFile)) {
-				$dom = new TXmlDocument();
-				$dom->loadFromFile($this->_configFile);
-				$this->loadConfig($dom);
-			} else {
+			if (!is_file($this->_configFile)) {
 				throw new TConfigurationException('soapservice_configfile_invalid', $this->_configFile);
 			}
+			if ($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP) {
+				$fileConfig = include $this->_configFile;
+				$loaded = is_array($fileConfig);
+			} else {
+				$fileConfig = new TXmlDocument();
+				$loaded = $fileConfig->loadFromFile($this->_configFile);
+			}
+			if (!$loaded) {
+				throw new TConfigurationException('soapservice_configfile_unreadable', $this->_configFile);
+			}
+			$this->loadConfig($fileConfig);
 		}
 		$this->loadConfig($config);
 
@@ -204,7 +215,7 @@ class TSoapService extends \Prado\TService
 					$this->_servers[$id] = $properties;
 				}
 			}
-		} else {
+		} elseif ($config instanceof TXmlElement) {
 			foreach ($config->getElementsByTagName('soap') as $serverXML) {
 				$properties = $serverXML->getAttributes();
 				if (($id = $properties->remove('id')) === null) {
@@ -272,18 +283,19 @@ class TSoapService extends \Prado\TService
 	/**
 	 * Creates the requested SOAP server.
 	 * The SOAP server is initialized with the property values specified
-	 * in the configuration.
+	 * in the configuration. The configuration is copied, so each call reads
+	 * the configured server class.
 	 * @return TSoapServer the SOAP server instance
 	 */
 	protected function createServer()
 	{
-		$properties = $this->_servers[$this->_serverID];
+		$properties = clone $this->_servers[$this->_serverID];
 		$serverClass = $properties->remove('class');
 		if ($serverClass === null) {
 			$serverClass = self::DEFAULT_SOAP_SERVER;
 		}
 		$className = Prado::usingClass($serverClass);
-		if (!is_string($className) || ($className !== self::DEFAULT_SOAP_SERVER && !is_subclass_of($className, self::DEFAULT_SOAP_SERVER))) {
+		if (!is_string($className) || !is_a($className, self::DEFAULT_SOAP_SERVER, true)) {
 			throw new TConfigurationException('soapservice_server_invalid', $serverClass);
 		}
 		$server = new $className();

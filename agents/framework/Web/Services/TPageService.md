@@ -54,6 +54,8 @@ Activated when the URL contains no special service parameter, or when `ServiceID
 
 URL `?page=Blog.Posts` maps to file `pages/Blog/Posts.php` (class) + `pages/Blog/Posts.page` (template).
 
+A page without a class file is an instance of `BasePageClass`, named by its full or its short name (`TPage`). The class must be `TPage` or a subclass, or the page is `404`.
+
 ### Directory Config
 
 Each page directory can contain a `config.xml`:

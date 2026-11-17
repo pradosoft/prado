@@ -403,7 +403,8 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 			return true;
 		}
 		if (TProcessHelper::isSystemWindows()) {
-			return $this->isWindowsConsoleColor(); // @codeCoverageIgnore Only Windows runs this branch.
+			// Only Windows runs this branch.
+			return $this->isWindowsConsoleColor(); // @codeCoverageIgnore
 		}
 		$term = getenv('TERM');
 		return $term !== false && $term !== '' && $term !== 'dumb' && $this->isStdOutTerminal();
@@ -431,19 +432,16 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 	 */
 	protected function isStdOutTerminal(): bool
 	{
-		if (!function_exists('posix_isatty')) {
-			return function_exists('stream_isatty') && defined('STDOUT') && @stream_isatty(STDOUT);
+		if (defined('STDOUT')) {
+			return @stream_isatty(STDOUT);
 		}
-		if ($opened = !defined('STDOUT')) {
-			$stdOut = fopen(TStdOutWriter::STDOUT_URI, 'wb');
-		} else {
-			$stdOut = STDOUT;
-		}
-		$isTerminal = @posix_isatty($stdOut);
-		if ($opened) {
-			fclose($stdOut);
-		}
+		// Only a SAPI without the STDOUT constant runs this.
+		// @codeCoverageIgnoreStart
+		$stdOut = fopen(TStdOutWriter::STDOUT_URI, 'wb');
+		$isTerminal = @stream_isatty($stdOut);
+		fclose($stdOut);
 		return $isTerminal;
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -657,11 +655,14 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 		}
 
 		if (TProcessHelper::isSystemWindows()) {
+			// Only Windows runs this branch.
+			// @codeCoverageIgnoreStart
 			$output = [];
 			exec('mode con', $output);
 			if (isset($output[1]) && strpos($output[1], 'CON') !== false) {
 				return $size = [(int) preg_replace('~\D~', '', $output[4]), (int) preg_replace('~\D~', '', $output[3])];
 			}
+			// @codeCoverageIgnoreEnd
 		} else {
 			// try stty if available
 			$stty = [];

@@ -34,7 +34,7 @@ use Prado\TPropertyValue;
  * ```php
  * require 'path/to/vendor/autoload.php';
  * $application=new TShellApplication('path/to/application.xml');
- * $application->run($_SERVER);
+ * $application->run($_SERVER['argv']);
  * // perform command-line tasks here
  * ```
  *
@@ -123,10 +123,12 @@ class TShellApplication extends \Prado\TApplication
 	 * Runs the application. Registers {@see processArguments} on
 	 * {@see onConfiguration} at priority 20 before delegating to the
 	 * parent {@see run()}.
-	 * @param ?array<string> $args
+	 * @param ?array<string> $args the command line, whose first element, the script, is
+	 *   dropped; null reads `$_SERVER['argv']`.
 	 */
 	public function run($args = null)
 	{
+		$args ??= $_SERVER['argv'] ?? [];
 		array_shift($args);
 		$this->setArguments($args);
 		$this->detectShellLanguageCharset();

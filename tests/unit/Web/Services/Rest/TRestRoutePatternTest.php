@@ -114,6 +114,22 @@ class TRestRoutePatternTest extends \PHPUnit\Framework\TestCase
 		$this->route('a/{bad-name}');
 	}
 
+	/**
+	 * A malformed placeholder beside a valid one is refused, whichever way the
+	 * valid one takes its constraint.
+	 */
+	public function testMalformedPlaceholderBesideAValidOneThrows(): void
+	{
+		foreach ([['{id:\d+}/{bad-name}', []], ['{id}/{bad-name}', ['id' => '\d+']], ['{id}/{bad-name}', []]] as [$pattern, $parameters]) {
+			try {
+				$this->route($pattern, $parameters);
+				$this->fail('a malformed placeholder was accepted: ' . $pattern);
+			} catch (TConfigurationException $e) {
+				$this->assertStringContainsString('{bad-name}', $e->getMessage());
+			}
+		}
+	}
+
 	public function testServiceParameterDefaultsToName(): void
 	{
 		$route = new TRestRoutePattern();
@@ -122,6 +138,27 @@ class TRestRoutePatternTest extends \PHPUnit\Framework\TestCase
 		$route->init([]);
 		$this->assertSame('users.index', $route->getServiceParameter());
 		$this->assertSame('users.index', $route->getName());
+	}
+
+	public function testServiceParameterIsKeptWhenSet(): void
+	{
+		$route = new TRestRoutePattern();
+		$route->setPattern('users');
+		$route->setName('users.index');
+		$route->setServiceParameter('users.list');
+		$route->init([]);
+		$this->assertSame('users.list', $route->getServiceParameter());
+	}
+
+	/**
+	 * A pattern of one placeholder takes its constraint inline, from the
+	 * parameters, or by default.
+	 */
+	public function testOnePlaceholderTakesItsConstraint(): void
+	{
+		$this->assertSame('\d+', $this->route('{id:\d+}')->getParameters()->itemAt('id'));
+		$this->assertSame('[a-z]+', $this->route('{id}', ['id' => '[a-z]+'])->getParameters()->itemAt('id'));
+		$this->assertSame(TRestRoutePattern::DEFAULT_CONSTRAINT, $this->route('{id}')->getParameters()->itemAt('id'));
 	}
 
 	public function testNameDefaultsToPattern(): void
@@ -225,6 +262,8 @@ class TRestRoutePatternTest extends \PHPUnit\Framework\TestCase
 	public function testConstructPathWithoutPlaceholders(): void
 	{
 		$this->assertSame('api/users', $this->route('/api/users/')->constructPath());
+		$this->assertSame('api/users?page=2&q=1', $this->route('api/users')->constructPath([], ['page' => 2, 'q' => 1]));
+		$this->assertSame('api/users?page=2&amp;q=1', $this->route('api/users')->constructPath([], ['page' => 2, 'q' => 1], true));
 	}
 
 	public function testConstructPathMissingParameterThrows(): void

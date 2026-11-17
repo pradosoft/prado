@@ -200,6 +200,16 @@ class TFeedServiceTest extends \PHPUnit\Framework\TestCase
 	}
 
 	/**
+	 * A single `feeds` entry registers alone: a string is the feed class, and a
+	 * value that is neither an array nor a string is skipped.
+	 */
+	public function testPhpConfigurationWithOneFeed()
+	{
+		$this->assertSame(['a' => ['class' => TNestedPathFeedProvider::class]], $this->phpFeeds(['feeds' => ['a' => TNestedPathFeedProvider::class]]));
+		$this->assertSame([], $this->phpFeeds(['feeds' => ['b' => null]]));
+	}
+
+	/**
 	 * Entries of `feeds` register without checking their class; run() validates it.
 	 */
 	public function testPhpConfigurationFeedsAreNotFiltered()
@@ -308,6 +318,19 @@ class TFeedServiceTest extends \PHPUnit\Framework\TestCase
 		$service = new TFeedService();
 		$service->init($config);
 		$this->assertArrayHasKey('a', PradoUnit::getProp($service, '_feeds'));
+	}
+
+	/**
+	 * A service element without `<feed>` elements registers no feed.
+	 */
+	public function testXmlConfigurationWithoutFeedsRegistersNothing()
+	{
+		Prado::getApplication()->setConfigurationType(TApplication::CONFIG_TYPE_XML);
+		$config = new TXmlDocument('1.0', 'utf8');
+		$config->loadFromString('<service/>');
+		$service = new TFeedService();
+		$service->init($config);
+		$this->assertSame([], PradoUnit::getProp($service, '_feeds'));
 	}
 
 	/**
