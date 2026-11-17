@@ -13,6 +13,7 @@ namespace Prado\Web\Javascripts;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Web\THttpUtility;
 use Prado\Prado;
+use Prado\Util\TUtf8Converter;
 
 /**
  * TJavaScript class
@@ -508,8 +509,8 @@ class TJavaScript
 	 * Encodes a PHP value as a JSON string via `json_encode`.
 	 *
 	 * When the active globalization module reports a non-UTF-8 charset, string
-	 * values inside `$value` are transcoded to UTF-8 first — but only when the
-	 * charset names an encoding `iconv` actually recognises. A misconfigured
+	 * values inside `$value` are transcoded to UTF-8 first — but only when
+	 * {@see TUtf8Converter::isEncoding()} knows the charset. A misconfigured
 	 * charset (for example a locale code such as `'fr'`) is silently skipped
 	 * so the call still returns JSON instead of escalating to a runtime error.
 	 * Without a running application (e.g. in library or test contexts) the
@@ -526,7 +527,7 @@ class TJavaScript
 		$app = Prado::getApplication();
 		if ($app !== null && ($g = $app->getGlobalization(false)) !== null) {
 			$enc = (string) $g->getCharset();
-			if ($enc !== '' && strtoupper($enc) !== 'UTF-8' && self::isKnownEncoding($enc)) {
+			if ($enc !== '' && strtoupper($enc) !== 'UTF-8' && TUtf8Converter::isEncoding($enc)) {
 				self::convertToUtf8($value, $enc);
 			}
 		}
@@ -538,23 +539,19 @@ class TJavaScript
 	 * Recursively converts string values in `$value` from `$sourceEncoding` to
 	 * UTF-8 in place.
 	 *
-	 * Strings are transcoded directly; arrays and `stdClass`-shaped objects
-	 * are walked element by element. Other scalars and objects of other
-	 * classes pass through unchanged. Strings that cannot be transcoded
-	 * (`iconv` returns `false`) are left as-is so the original bytes still
-	 * reach `json_encode`, which handles UTF-8 validation itself.
+	 * Strings are transcoded by {@see TUtf8Converter::toUTF8()}; arrays and
+	 * `stdClass`-shaped objects are walked element by element. Other scalars and
+	 * objects of other classes pass through unchanged. A string that cannot be
+	 * transcoded is left as-is so the original bytes still reach `json_encode`,
+	 * which handles UTF-8 validation itself.
 	 *
 	 * @param mixed &$value value to convert; modified in place
-	 * @param string $sourceEncoding source encoding name accepted by `iconv`,
-	 *   e.g. `'ISO-8859-1'`
+	 * @param string $sourceEncoding source encoding name, e.g. `'ISO-8859-1'`
 	 */
 	private static function convertToUtf8(mixed &$value, string $sourceEncoding): void
 	{
 		if (is_string($value)) {
-			$converted = @iconv($sourceEncoding, 'UTF-8', $value);
-			if ($converted !== false) {
-				$value = $converted;
-			}
+			$value = TUtf8Converter::toUTF8($value, $sourceEncoding);
 		} elseif (is_array($value)) {
 			foreach ($value as &$element) {
 				self::convertToUtf8($element, $sourceEncoding);
@@ -566,26 +563,6 @@ class TJavaScript
 				$value->$key = $element;
 			}
 		}
-	}
-
-	/**
-	 * Checks whether `iconv` recognises an encoding name.
-	 *
-	 * The probe result is cached per process so repeated `jsonEncode()` calls
-	 * under the same globalization charset do not pay the probe cost more
-	 * than once.
-	 *
-	 * @param string $encoding encoding name to test
-	 * @return bool whether `iconv` accepts the name
-	 */
-	private static function isKnownEncoding(string $encoding): bool
-	{
-		static $cache = [];
-		$key = strtoupper($encoding);
-		if (!isset($cache[$key])) {
-			$cache[$key] = @iconv($encoding, 'UTF-8', '') !== false;
-		}
-		return $cache[$key];
 	}
 
 	/**
