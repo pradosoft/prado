@@ -15,6 +15,10 @@
 
 | Method | Returns | Description |
 |--------|---------|-------------|
+| `static getScriptNonce(): ?string` / `setScriptNonce(?string)` | | The CSP nonce added to every rendered `<script>`. |
+| `static getScriptIntegrity(string $url): ?string` / `setScriptIntegrity(string $url, ?string $hash, string $hashMethod = 'sha384')` / `hasScriptIntegrity(string $url)` | | The SRI registry for remote scripts. |
+| `static getRequireScriptIntegrity(): bool` / `setRequireScriptIntegrity(bool)` | | When on, a remote script without integrity throws `TConfigurationException`. |
+| `static renderScriptHeader(array $attributes = []): string` / `renderScriptFooter(): string` | `string` | The opening and closing tags of an inline script block. |
 | `static renderScriptFiles(array $files): string` | `string` | Renders a list of `<script src="…">` tags for the given URLs. |
 | `static renderScriptFile(TJavaScriptAsset\|string $asset): string` | `string` | Renders a single `<script src="…">` tag for a URL or `TJavaScriptAsset`. |
 | `static renderScriptBlocks(array $scripts): string` | `string` | Wraps an array of JavaScript blocks in a single `<script>` tag. |
@@ -23,7 +27,7 @@
 | `static quoteString(string $js): string` | `string` | Escapes and wraps `$js` in double quotes so it is safe as a JavaScript string literal. |
 | `static quoteJsLiteral(mixed $js): TJavaScriptLiteral` | `TJavaScriptLiteral` | Marks `$js` as a raw JavaScript expression, preventing further encoding by `encode()`. |
 | `static isJsLiteral(mixed $js): bool` | `bool` | Returns `true` when `$js` has been marked as a JavaScript literal. |
-| `static encode(mixed $value, bool $toMap = true, bool $encodeEmptyStrings = false): string` | `string` | Encodes a PHP variable into its JavaScript representation. @since 3.1.5 |
+| `static encode(mixed $value, bool $toMap = true, bool $encodeEmptyStrings = false): string` | `string` | Encodes a PHP variable into its JavaScript representation; `NAN`, `INF`, and `-INF` become `Number.NaN`, `Number.POSITIVE_INFINITY`, and `Number.NEGATIVE_INFINITY`. @since 3.1.5 |
 | `static jsonEncode(mixed $value, mixed $options = 0): string` | `string` | Encodes `$value` via `json_encode()` and returns the JSON string. |
 | `static jsonDecode(string $value, bool $assoc = false, int $depth = 512): mixed` | `mixed` | Decodes a JSON string via `json_decode()` and returns the PHP variable. |
 | `static JSMin(string $code): string` | `string` | Minimises JavaScript source using a Douglas Crockford JSMin implementation. |
