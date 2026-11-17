@@ -165,7 +165,7 @@ class TUrlMapping extends TUrlManager implements IModuleDependency
 		if ($this->getUrlPrefix() === '') {
 			$request = $this->getRequest();
 			if ($request->getUrlFormat() === THttpRequestUrlFormat::HiddenPath) {
-				$this->_urlPrefix = dirname($request->getApplicationUrl());
+				$this->_urlPrefix = str_replace('\\', '/', dirname($request->getApplicationUrl()));
 			} else {
 				$this->_urlPrefix = $request->getApplicationUrl();
 			}
