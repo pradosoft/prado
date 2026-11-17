@@ -239,10 +239,10 @@ class TOracleDbCommand extends TDbCommand
 			try {
 				$stmt = $this->getConnection()->getPdoInstance()->query($ociSql);
 				$result = $stmt->fetchColumn();
-				$stmt->closeCursor();
 				if (is_resource($result) && get_resource_type($result) === 'stream') {
-					return stream_get_contents($result);
+					$result = stream_get_contents($result);
 				}
+				$stmt->closeCursor();
 				return $result;
 			} catch (Exception $e) {
 				throw new TDbException('dbcommand_query_failed', $e->getMessage(), $this->getDebugStatementText());
