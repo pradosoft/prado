@@ -672,6 +672,79 @@ class TPageServiceTest extends \PHPUnit\Framework\TestCase
 		$this->assertInstanceOf(TPage::class, $page);
 	}
 
+	/**
+	 * An additional page path that leaves the application path through '..'
+	 * is refused, though the page it reaches exists.
+	 */
+	public function testCreatePageRefusesAnAdditionalPathThatClimbsOutOfTheApplication()
+	{
+		$service = $this->service('PageServiceApp', 'Elsewhere');
+		Prado::setPathOfAlias('Application', $this->fixturePath('PageServiceApp'));
+		$outside = $this->fixturePath('PageServiceApp', '..', 'PageServiceFallbackApp', 'pages', 'Home');
+		$this->assertFileExists($outside . '.page');
+		$service->attachEventHandler('OnAdditionalPagePaths', fn ($sender, $param) => $outside);
+		try {
+			PradoUnit::invoke($service, 'createPage', 'Elsewhere');
+			$this->fail('a page outside the application was built');
+		} catch (THttpException $e) {
+			$this->assertSame(403, $e->getStatusCode());
+		}
+	}
+
+	/**
+	 * An additional page path in a sibling directory whose name begins with the
+	 * application directory's name is refused.
+	 */
+	public function testCreatePageRefusesAnAdditionalPathInASiblingDirectory()
+	{
+		$service = $this->service('PageServiceApp', 'Elsewhere');
+		Prado::setPathOfAlias('Application', $this->fixturePath('PageServiceApp'));
+		$service->attachEventHandler('OnAdditionalPagePaths', fn ($sender, $param) => $this->fixturePath('PageServiceAppSibling', 'Home'));
+		try {
+			PradoUnit::invoke($service, 'createPage', 'Elsewhere');
+			$this->fail('a path beside the application was accepted');
+		} catch (THttpException $e) {
+			$this->assertSame(403, $e->getStatusCode());
+		}
+	}
+
+	/**
+	 * Which paths lie inside an application path.
+	 */
+	public static function applicationPathProvider(): array
+	{
+		return [
+			'the application path' => ['/app/protected', '/app/protected', true],
+			'below it' => ['/app/protected/Pages/Home', '/app/protected', true],
+			'below it in another case' => ['/APP/Protected/Pages/Home', '/app/protected', true],
+			'below it with a trailing slash' => ['/app/protected/Pages', '/app/protected/', true],
+			'a sibling with the same prefix' => ['/app/protected2/Pages/Home', '/app/protected', false],
+			'out through ..' => ['/app/protected/../secret/Home', '/app/protected', false],
+			'out of the root' => ['/../app/protected/Home', '/app/protected', false],
+			'.. that stays inside' => ['/app/protected/Pages/../Home', '/app/protected', true],
+			'.. that comes back' => ['/app/../app/protected/Home', '/app/protected', true],
+			'. and empty segments' => ['/app/protected/./Pages//Home', '/app/protected', true],
+			'backslashes' => ['\\app\\protected\\Pages\\Home', '/app/protected', true],
+			'a drive' => ['C:\\app\\protected\\Pages', 'C:\\app\\protected', true],
+			'out of a drive' => ['C:\\app\\..\\..\\secret', 'C:\\app\\protected', false],
+			'a relative path' => ['app/protected/Home', '/app/protected', false],
+			'no application path' => ['/anywhere/Home', '', true],
+		];
+	}
+
+	/**
+	 * isApplicationPath() accepts the application path and the paths below it.
+	 * @dataProvider applicationPathProvider
+	 * @param string $path the path offered.
+	 * @param string $applicationPath the application path.
+	 * @param bool $inside whether the path is inside.
+	 */
+	public function testIsApplicationPath(string $path, string $applicationPath, bool $inside)
+	{
+		$service = $this->service();
+		$this->assertSame($inside, PradoUnit::invoke($service, 'isApplicationPath', $path, $applicationPath));
+	}
+
 	// -------------------------------------------------------------------------
 	// Events
 	// -------------------------------------------------------------------------

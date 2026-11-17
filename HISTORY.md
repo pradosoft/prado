@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TPageService` accepts a page path from `onAdditionalPagePaths` only inside the application path once its `..` segments are resolved (`isApplicationPath()`); it took any path beginning with the application path, so `../` and a sibling directory with the same prefix reached pages outside the application. See UPGRADE.md. (belisoful)
 BUG: Issue #1497 - `TSqlCriteria::setCondition()` moves only a trailing `ORDER BY`, `LIMIT`, or `OFFSET` outside quoted text and parentheses; it cut them from string literals and subqueries, so `title = 'LIMIT 5'` became `title = ''` with a limit of 5. (belisoful)
 BUG: Issue #1497 - `TMemCache` reads every expiration time as seconds and passes one over 30 days to Memcached as the timestamp it ends at; Memcached read such a time as a timestamp in 1970, so the value expired at once. See UPGRADE.md. (belisoful)
 BUG: Issue #1497 - `TFileCache` and `TMemoryCache` throw `TInvalidDataValueException` for a `MaximumSize` that is not a size, such as `1.5G`; it removed the size limit. (belisoful)
