@@ -32,12 +32,11 @@ abstract class TClientSideOptions extends \Prado\TComponent
 	private $_options;
 
 	/**
-	 * Adds on client-side event handler by wrapping the code within a
-	 * javascript function block. If the code begins with "javascript:", the
-	 * code is assumed to be a javascript function block rather than arbiturary
-	 * javascript statements.
+	 * Adds a client-side event handler by wrapping the code within a
+	 * javascript function block. A {@see \Prado\Web\Javascripts\TJavaScriptLiteral}
+	 * is used as the handler unchanged.
 	 * @param string $name option name
-	 * @param string $code javascript statements.
+	 * @param \Prado\Web\Javascripts\TJavaScriptLiteral|string $code javascript statements, or the handler as a literal.
 	 */
 	protected function setFunction($name, $code)
 	{
