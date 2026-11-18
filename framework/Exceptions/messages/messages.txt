@@ -122,7 +122,7 @@ httpresponse_headersmanager_invalid		= THttpResponse.HeadersManager ''{0}'' must
 httpresponse_contenttype_unchangeable	= THttpResponse.ContentType cannot change after the Content-Type header is sent.
 httpresponse_status_unchangeable		= THttpResponse.StatusCode cannot change after the HTTP header is sent.
 
-httpheadersmanager_header_required		= THttpHeadersManager can only contain THttpHeader or its child classes.
+httpheadersmanager_header_required		= THttpHeadersManager can only contain TBaseHttpHeader or its child classes.
 httpheadersmanager_headerclass_missing	= THttpHeadersManager <headerclass> entry is missing a required 'name' or 'class' attribute.
 httpheadersmanager_header_wrong_manager		= The header belongs to another THttpHeadersManager and cannot be added to this manager.
 
@@ -469,7 +469,7 @@ filelogroute_maxfilesize_invalid		= TFileLogRoute.MaxFileSize must be greater th
 filelogroute_maxlogfiles_invalid		= TFileLogRoute.MaxLogFiles must be greater than 0.
 
 emaillogroute_sentfrom_required			= TEmailLogRoute.SentFrom cannot be empty.
-emaillogroute_mail_failed				= TEmailLogRoute failed to log to send to ''{0}''.
+emaillogroute_mail_failed				= TEmailLogRoute failed to send the log to ''{0}''.
 
 syslogroute_bad_flags					= TSysLogRoute.SysLogFlags are not valid, ''{0}''.
 syslogroute_bad_facility				= TSysLogRoute.Facility is not valid, ''{0}''.

@@ -10,14 +10,15 @@ Client-side JavaScript/CSS package registry and asset utilities for the Prado we
 ## PHP Classes
 
 - **[TJavaScript](TJavaScript.md)** — Static utility class. Methods:
-  - `renderScriptFile($url)` — renders a `<script src="...">` tag.
+  - `renderScriptFile($url)` — renders a `<script src="...">` tag with the CSP nonce and, for a remote URL, its registered integrity.
   - `renderScriptBlock($code)` — renders an inline `<script>` block.
-  - `quoteJsLiteral($value)` — safely JSON-encodes a PHP value for embedding in JavaScript.
-  - `jsonEncode($value)` — wrapper around `json_encode` with Prado-standard flags.
+  - `encode($value)` — renders a PHP value as a JavaScript literal; a `TJavaScriptLiteral` passes through unchanged.
+  - `quoteJsLiteral($value)` — marks a value as raw JavaScript (`TJavaScriptLiteral`) so `encode()` does not quote it.
+  - `jsonEncode($value, $options)` — `json_encode()` with `JSON_THROW_ON_ERROR`; strings in a non-UTF-8 application charset are transcoded to UTF-8 first.
 
 - **[TStyleSheetHelper](TStyleSheetHelper.md)** — Static utility for `<style>` blocks and `<link rel="stylesheet">` tags: the CSP nonce (the script nonce), a stylesheet SRI registry, and `RequireStyleIntegrity`. The stylesheet counterpart of `TJavaScript`. @since 4.4.0
 
-- **[TJavaScriptAsset](TJavaScriptAsset.md)** — Represents a published JS asset. Properties: `BaseUrl`, `Version`. Used by [TAssetManager](../TAssetManager.md) to generate cache-busted URLs.
+- **[TJavaScriptAsset](TJavaScriptAsset.md)** — A script URL with `Async` and `Integrity`; renders its own `<script>` tag. [TClientScriptManager](../UI/TClientScriptManager.md) passes these to `TJavaScript::renderScriptFile()`.
 
 - **[TJavaScriptLiteral](TJavaScriptLiteral.md)** — Wraps a raw JavaScript expression that should **not** be quoted when embedded in a JS context (e.g., a callback function reference). Distinguishes literal code from string values in `quoteJsLiteral()`.
 
@@ -71,5 +72,5 @@ External packages (jQuery, jQuery UI, TinyMCE, HighlightJS, Clipboard) are sourc
 
 - **Callback document events** — `Prado.CallbackRequest` dispatches `prado:callbackRedirect` (`detail.url`) on `document` before a server redirect, and `prado:callbackUpdated` (`detail.request`) after the response actions run. [TUnsavedChangesGuard](../UI/WebControls/TUnsavedChangesGuard.md) uses both (@since 4.4.0).
 - **Never reference JS files directly** — always use the package name via [TClientScriptManager::registerPackage()](../UI/TClientScriptManager.md). The manager resolves dependencies, deduplicates, and handles publishing.
-- **TJavaScriptLiteral** must be used for any PHP value that is already valid JavaScript (function references, pre-encoded JSON). Passing raw strings through `quoteJsLiteral()` will double-encode them.
-- **Asset versioning** — [TJavaScriptAsset::getVersion()](TJavaScriptAsset.md) appends a version query parameter to bust browser caches on upgrade. Update it when making breaking JS changes.
+- **TJavaScriptLiteral** must be used for any PHP value that is already valid JavaScript (function references, pre-encoded JSON). `quoteJsLiteral()` wraps a value in one; `encode()` otherwise quotes every string.
+- **Package manifests** — every file a package lists must exist under its folder, and every dependency must name a package; `TJavaScriptPackagesTest` checks both manifests.

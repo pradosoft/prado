@@ -231,7 +231,8 @@ class THttpHeadersManager extends TModule
 	 *                       under {@see TCspReportingService::SERVICE_ID} and adopt that ID.
 	 *   Any other string — treat the value as an explicit module-registry key. The service
 	 *                       registered under that key is used for URL construction; if the key
-	 *                       is absent the service is auto-registered under it.
+	 *                       is absent, the service is auto-registered under it when the
+	 *                       reporter is wired.
 	 */
 	private string $_reportingServiceId;
 
@@ -1165,7 +1166,9 @@ class THttpHeadersManager extends TModule
 	 *
 	 * {@see ensureReportingServiceRegistered()} will have resolved
 	 * {@see getReportingServiceId() ReportingServiceId} from `'Auto'` to a concrete ID
-	 * before this runs; the `'Auto'` path below is a safety net for bypassed environments.
+	 * before this runs. When no service is registered under the ID, the `'Auto'` mode
+	 * wires the reporter only when {@see isReportingInUse()}; the service is then
+	 * registered under the ID, or under {@see TCspReportingService::SERVICE_ID} for `'Auto'`.
 	 *
 	 * When mode is not `false`, has constructed the reporter URL via the URL manager
 	 * (honoring any {@see \Prado\Web\TUrlMappingPattern}), ensured a
@@ -1210,46 +1213,24 @@ class THttpHeadersManager extends TModule
 			return;
 		}
 
-		// ensureReportingServiceRegistered() resolves 'Auto' to a concrete ID before
-		// headers are sent, so this is normally a direct read. The 'Auto' fallback
-		// below is a safety net for environments where that hook was bypassed.
+		// ensureReportingServiceRegistered() resolves 'Auto' to a concrete ID and registers
+		// a forced service before headers are sent. An ID without a registered service
+		// remains when the 'Auto' mode waits for a CSP header that reports (condition 3),
+		// or when that hook was bypassed.
 		$endpointName = $this->getReportingEndpointName();
 		$serviceId = $this->getReportingServiceId();
-		if ($serviceId === 'Auto') {
-			if ($serviceMode === 'Auto') {
-				// Mirror ensureReportingServiceRegistered()'s trigger logic: proceed when
-				// report-only is active, OR (condition 3) when any CSP already references
-				// this manager's own endpoint name. A report-to pointing at a different
-				// endpoint — or a misplaced URL — must not trigger wiring.
-				$inUse = $this->resolveReportOnly();
-				if (!$inUse) {
-					foreach ($this->getHeadersByClass(THttpHeaderCsp::class) as $csp) {
-						if (in_array($endpointName, $csp->getReportToNames(), true)
-							|| $csp->hasReportUriPlaceholder()) {
-							$inUse = true;
-							break;
-						}
-					}
-				}
-				if (!$inUse) {
-					foreach ($this->getHeadersByClass(THttpHeaderReportingEndpoints::class) as $re) {
-						if ($re->hasReportUriPlaceholder()) {
-							$inUse = true;
-							break;
-						}
-					}
-				}
-				if (!$inUse) {
-					return; // No condition met — skip wiring entirely.
-				}
+		if ($serviceId === 'Auto' || !$app->hasRegisteredService($serviceId)) {
+			if ($serviceMode === 'Auto' && !$this->isReportingInUse($endpointName)) {
+				return;
 			}
-			// Safety net (mode=true but hook bypassed) or condition 3/reportOnly met: resolve now.
-			$serviceId = $app->getRegisteredServiceByClass(TCspReportingService::class)
-				?? TCspReportingService::SERVICE_ID;
+			if ($serviceId === 'Auto') {
+				$serviceId = $app->getRegisteredServiceByClass(TCspReportingService::class)
+					?? TCspReportingService::SERVICE_ID;
+				$this->setReportingServiceId($serviceId);
+			}
 			if (!$app->hasRegisteredService($serviceId)) {
 				$app->registerService($serviceId, TCspReportingService::class, ['AutoRegistered' => true]);
 			}
-			$this->setReportingServiceId($serviceId);
 		}
 
 		// Construct the reporter URL via the URL manager so any TUrlMappingPattern
@@ -1319,6 +1300,33 @@ class THttpHeadersManager extends TModule
 				}
 			}
 		}
+	}
+
+	/**
+	 * Tells whether the headers call for the reporter in the `'Auto'` mode:
+	 * {@see getReportOnly() ReportOnly} resolves `true`, a {@see THttpHeaderCsp}
+	 * reports to `$endpointName` or holds the {@see TBaseHttpHeader::REPORT_URI}
+	 * placeholder, or a {@see THttpHeaderReportingEndpoints} holds that placeholder.
+	 * A `report-to` naming another endpoint does not count.
+	 * @param string $endpointName this manager's reporting endpoint name.
+	 * @return bool whether the reporter is in use.
+	 */
+	protected function isReportingInUse(string $endpointName): bool
+	{
+		if ($this->resolveReportOnly()) {
+			return true;
+		}
+		foreach ($this->getHeadersByClass(THttpHeaderCsp::class) as $csp) {
+			if (in_array($endpointName, $csp->getReportToNames(), true) || $csp->hasReportUriPlaceholder()) {
+				return true;
+			}
+		}
+		foreach ($this->getHeadersByClass(THttpHeaderReportingEndpoints::class) as $re) {
+			if ($re->hasReportUriPlaceholder()) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
