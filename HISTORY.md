@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `THttpHeadersManager` in the `Auto` `ReportingServiceMode` wires a literal `ReportingServiceId` that has no registered service only when a CSP header reports to its endpoint, holds a report-uri placeholder, or report-only is on, as documented, and then registers the service under that ID; it pointed `report-to` at the unregistered service. (belisoful)
 BUG: Issue #1497 - The `httpheadersmanager_header_required` message names `TBaseHttpHeader`, the class `THttpHeadersManager` requires. (belisoful)
 BUG: Issue #1497 - The `jquery.ui.*` style packages in `css-packages.php` link the jQuery UI theme files by their current names, such as `dialog.css`; they linked `jquery.ui.dialog.css`, which jQuery UI no longer ships. (belisoful)
 BUG: Issue #1497 - `TCorsModule::isOriginAllowed()` ignores a blank entry in `AllowOrigin`; it allowed an empty origin. (belisoful)
