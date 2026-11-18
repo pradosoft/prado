@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TJavaScript::encode()` escapes an array key inside its single quotes, so a key with `'`, `\`, `</script>`, or a line break no longer breaks or injects into the script; a plain key renders as before. (belisoful)
 BUG: Issue #1497 - `THttpRequest` without `REQUEST_URI`, as under the command line, reads a `SCRIPT_NAME` file path as a URL path (`getScriptUrl()`), so `D:\app\index.php` is `/D:/app/index.php`; `getUrl()` threw `TInvalidDataValueException` on Windows, and a relative script name ran into the host name. (belisoful)
 BUG: Issue #1497 - `TTheme` joins its style sheet and JavaScript URLs and trims its `BaseUrl` with `/`; on Windows it used `\`. (belisoful)
 BUG: Issue #1497 - `TTemplate` validates `<com:TControl>` and `<com:TComponent>` after their short names are aliased, takes template properties from a class behavior attached to the component's own class, skips a class behavior keyed by an unknown class, and reports a missing `<%include %>` after another include as a template error; they were rejected, or threw `ReflectionException` or `TPhpErrorException`. (belisoful)

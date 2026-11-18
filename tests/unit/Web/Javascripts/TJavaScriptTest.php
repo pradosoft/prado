@@ -876,6 +876,38 @@ class TJavaScriptTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame("{'b':\"x\"}", $result);
 	}
 
+	public function testEncodeKeepsAPlainKey(): void
+	{
+		$this->assertSame("{'onClick':1,'data-id':2,'7':3}", TJavaScript::encode(['onClick' => 1, 'data-id' => 2, 7 => 3]));
+	}
+
+	public function testEncodeEscapesAKeyThatWouldEndTheString(): void
+	{
+		$this->assertSame("{'a\\x27b':1}", TJavaScript::encode(["a'b" => 1]));
+		$this->assertSame("{'a\\x5C':1}", TJavaScript::encode(['a\\' => 1]));
+	}
+
+	public function testEncodeEscapesAKeyThatWouldEndTheScript(): void
+	{
+		$this->assertSame(
+			"{'\\x3C/script\\x3E\\x3Cb\\x3E\\x26':1}",
+			TJavaScript::encode(['</script><b>&' => 1])
+		);
+	}
+
+	public function testEncodeEscapesLineTerminatorsInAKey(): void
+	{
+		$this->assertSame(
+			"{'a\\x0Ab\\x0Dc\\x00d\\u2028e\\u2029':1}",
+			TJavaScript::encode(["a\nb\rc\0d\u{2028}e\u{2029}" => 1])
+		);
+	}
+
+	public function testEncodeEscapesNestedKeys(): void
+	{
+		$this->assertSame("{'o':{'x\\x27':1}}", TJavaScript::encode(['o' => ["x'" => 1]]));
+  }
+
 	public function testEncodeObjectKeepsEncodeEmptyStrings(): void
 	{
 		$obj = new \stdClass();
