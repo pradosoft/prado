@@ -22,6 +22,7 @@ namespace Prado\Web\UI;
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.3.0
+ * @deprecated since 4.3.3. Use {@see TWebColor}. Prado 4.4 removes this class.
  * @see TWebColor
  * @todo v4.4 remove this class because TWebColor replaces it
  */

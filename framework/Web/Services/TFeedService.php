@@ -37,16 +37,26 @@ use Prado\Xml\TXmlElement;
  *
  * PHP configuration style:
  * ```php
- * array(
- *   'feed' => array(
- *	   'ch1' => array(
- *       'class' => 'Path\To\FeedClass1',
- *       'properties' => array(
- *          ...
- *        ),
- *   ),
- * )
+ * return [
+ *     'services' => [
+ *         'feed' => [
+ *             'class' => 'Prado\Web\Services\TFeedService',
+ *             'feeds' => [
+ *                 'ch1' => [
+ *                     'class' => 'Path\To\FeedClass1',
+ *                     'properties' => [...],
+ *                 ],
+ *                 'ch2' => ['class' => 'Path\To\FeedClass2'],
+ *                 'ch3' => 'Path\To\FeedClass3',
+ *             ],
+ *         ],
+ *     ],
+ * ];
  * ```
+ * where each entry of `feeds` is a feed indexed by its ID, the form Prado 4.4 reads.
+ * A string feed entry is the feed class, as "ch3" shows. A feed array beside the
+ * `class` key, the 4.3 form, still loads and is deprecated; Prado 4.4 loads it only
+ * when its class implements {@see IFeedContentProvider}.
  *
  * The class attribute indicates which PHP class will provide the actual feed
  * content. Note, the class must implement {@see \Prado\Web\Services\IFeedContentProvider} interface.
@@ -70,15 +80,30 @@ class TFeedService extends \Prado\TService
 	/**
 	 * Initializes this module.
 	 * This method is required by the IModule interface.
-	 * A PHP configuration skips the service `class` key and entries that are not arrays.
+	 * A PHP configuration registers each entry of `feeds`, an array entry as the feed and a
+	 * string entry as the feed class. It then registers each array entry beside the service
+	 * `class` key, the deprecated 4.3 form; a feed under `feeds` takes precedence.
+	 * A `feeds` array with a string `class` is a 4.3 feed whose ID is "feeds".
 	 * @param mixed $config configuration for this module, can be null
 	 */
 	public function init($config)
 	{
 		if ($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP) {
 			if (is_array($config)) {
+				$feeds = $config['feeds'] ?? null;
+				$isFeedList = is_array($feeds) && !is_string($feeds['class'] ?? null);
+				if ($isFeedList) {
+					foreach ($feeds as $id => $feed) {
+						if (is_string($feed)) {
+							$feed = ['class' => $feed];
+						}
+						if (is_array($feed)) {
+							$this->_feeds[$id] = $feed;
+						}
+					}
+				}
 				foreach ($config as $id => $feed) {
-					if ($id === 'class' || !is_array($feed)) {
+					if ($id === 'class' || ($id === 'feeds' && $isFeedList) || !is_array($feed) || isset($this->_feeds[$id])) {
 						continue;
 					}
 					$this->_feeds[$id] = $feed;

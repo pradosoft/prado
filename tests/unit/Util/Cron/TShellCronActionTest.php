@@ -8,7 +8,7 @@ use Prado\Prado;
 use Prado\TComponent;
 use Prado\Util\Cron\TShellCronAction;
 use Prado\Util\Cron\TCronModule;
-use Prado\Util\Cron\TDbCronModule;
+use Prado\Util\Cron\TDbCronManager;
 
 class TShellCronActionTest extends \PHPUnit\Framework\TestCase
 {

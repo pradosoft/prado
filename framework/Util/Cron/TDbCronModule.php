@@ -10,6 +10,9 @@
 
 namespace Prado\Util\Cron;
 
+use Prado\Prado;
+use Prado\TApplicationMode;
+
 /**
  * TDbCronModule class.
  *
@@ -46,6 +49,16 @@ namespace Prado\Util\Cron;
  */
 class TDbCronModule extends TDbCronManager
 {
-	// This class is the deprecated placeholder stub.
-	// It will be removed in PRADO v4.4.0
+	/**
+	 * Initializes the module and, in Debug mode, logs a notice that Prado 4.4 removes
+	 * this class.
+	 * @param mixed $config the module configuration
+	 */
+	public function init($config)
+	{
+		if ($this->getApplication()?->getMode() === TApplicationMode::Debug) {
+			Prado::notice('TDbCronModule is deprecated and removed in Prado 4.4; use TDbCronManager.', static::class);
+		}
+		parent::init($config);
+	}
 }
