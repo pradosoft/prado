@@ -23,6 +23,7 @@ The default `IEventLoop`: a thin adapter over the process-wide `Revolt\EventLoop
 | Errors | `InvalidCallbackError` → `TInvalidDataValueException('eventloop_callback_invalid')`; `UnsupportedFeatureException` on `onSignal()` → `TNotSupportedException('eventloop_signals_unsupported')`; a negative delay → `TInvalidDataValueException('eventloop_delay_invalid')`. |
 | `run()` | `EventLoop::run()`; an `UncaughtThrowable` is unwrapped and the original exception rethrown. Throws `\Error` from a worker fiber. |
 | `isRunning()` | True while a `run()` of this class is in progress or the driver's loop fiber executes (every callback and every resume of a suspended fiber runs there). The driver's own `isRunning()` stays true while its loop fiber is suspended after an interrupt, so `isDriverExecuting()` reads the loop fiber's state from `Revolt\EventLoop\Internal\AbstractDriver`; another driver class falls back to the driver's `isRunning()`. |
+| `cancel()` / `disable()` of a signal callback | `dropOrphanSignals()` then removes the signals queued on a `StreamSelectDriver` that have no callback left. The driver's pcntl handler queues a caught signal for its next dispatch, which reads `signalCallbacks[$signal]` unguarded (revolt 1.0.9). A signal caught by a `pcntl_signal_dispatch()` outside the loop (`TSignalsDispatcher`, `TCronWakeSignal`, `TSocketReactor`) or delivered asynchronously waits in that queue; if its last callback goes first, the read raises "Undefined array key" and the `TPhpErrorException` stops the loop. The queue is read from the driver's private state, like `isDriverExecuting()`; another driver class is left alone. `installFreshDriver()` drops them too. |
 | `stop()` | The driver's `stop()` only while `isRunning()`. The driver keeps a stop until its loop fiber next runs, so a stop outside a run, from the main fiber or a worker fiber, would end the next wait. |
 | `suspension()` | `EventLoop::getSuspension()`. |
 | `ErrorHandler` | `EventLoop::setErrorHandler()` / `getErrorHandler()`. |
@@ -31,7 +32,7 @@ The default `IEventLoop`: a thin adapter over the process-wide `Revolt\EventLoop
 
 | Method | Description |
 |---|---|
-| `installFreshDriver(): void` | For a forked child. Cancels the inherited driver's callbacks and unsets its error handler; outside a fiber it then runs the driver once to unwind its loop fiber and installs a new `DriverFactory` driver. Inside a fiber `setDriver()` is refused, so the emptied inherited driver stays. |
+| `installFreshDriver(): void` | For a forked child. Cancels the inherited driver's callbacks, drops its queued signals, and unsets its error handler; outside a fiber it then runs the driver once to unwind its loop fiber and installs a new `DriverFactory` driver. Inside a fiber `setDriver()` is refused, so the emptied inherited driver stays. |
 
 ## Gotchas
 - Timers read Revolt's `hrtime()` clock, which a test cannot move. Use `TSocketReactor` and its `setMonotonicClock()` for tests that drive time.
