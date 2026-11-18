@@ -117,14 +117,17 @@ class TTemplateControl extends TCompositeControl
 	}
 
 	/**
-	 * Loads the template associated with this control class.
+	 * Loads the template associated with this control class.  The template manager is
+	 * that of the current service, or of the application when the service has none,
+	 * so a template control loads outside a page service.
 	 * @return \Prado\Web\UI\ITemplate the parsed template structure
 	 */
 	protected function loadTemplate()
 	{
 		Prado::trace("Loading template " . $this::class, TTemplateControl::class);
-		$template = $this->getService()->getTemplateManager()->getTemplateByClassName($this::class);
-		return $template;
+		$service = $this->getService();
+		$manager = ($service !== null && method_exists($service, 'getTemplateManager')) ? $service->getTemplateManager() : $this->getApplication()->getTemplateManager();
+		return $manager->getTemplateByClassName($this::class);
 	}
 
 	/**
