@@ -4,7 +4,11 @@ namespace Prado\Test\Unit\Web\UI;
 
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TTemplateException;
+use Prado\Prado;
 use Prado\TComponent;
+use Prado\Test\Unit\Harness\Traits\TTempDirectoryTrait;
+use Prado\Util\TBehavior;
+use Prado\Util\TClassBehavior;
 use Prado\IO\TTextWriter;
 use Prado\Web\UI\TCompositeLiteral;
 use Prado\Web\UI\TControl;
@@ -24,8 +28,55 @@ class TTemplateTestReadonlyComponent extends TComponent
 	}
 }
 
+/**
+ * TTemplate whose packTemplate() rejects every item, for a parse error raised before any tag.
+ */
+class TTemplateTestRejectingTemplate extends TTemplate
+{
+	protected function packTemplate(int $parentIndex, string|array|TTemplate $type, ?array $attributes = null)
+	{
+		throw new TConfigurationException('template_format_invalid', 'rejected');
+	}
+}
+
+/**
+ * TControl without the property that a class behavior adds.
+ */
+class TTemplateTestBehaviorControl extends TControl
+{
+}
+
+/**
+ * Subclass of {@see TTemplateTestBehaviorControl}.
+ */
+class TTemplateTestBehaviorChildControl extends TTemplateTestBehaviorControl
+{
+}
+
+/**
+ * Class behavior adding the `Foo` property.
+ */
+class TTemplateTestFooClassBehavior extends TClassBehavior
+{
+	public function setFoo($owner, $value)
+	{
+	}
+}
+
+/**
+ * Per-instance behavior adding the `Bar` property.
+ */
+class TTemplateTestBarBehavior extends TBehavior
+{
+	public function setBar($value)
+	{
+	}
+}
+
 class TTemplateTest extends \PHPUnit\Framework\TestCase
 {
+	use TTempDirectoryTrait;
+
 	private $_contextPath;
 	protected $obj;
 
@@ -45,6 +96,7 @@ class TTemplateTest extends \PHPUnit\Framework\TestCase
 	{
 		$this->_contextPath = null;
 		$this->obj = null;
+		$this->removeTempDirectories();
 	}
 
 	private function newTemplate($template, $contextPath = null, $tplFile = null, $startingLine = 0, $sourceTemplate = true)
@@ -1934,5 +1986,431 @@ $this->assertArrayHasKey(TTemplate::TPL_PROPS, $item);
 		$tplProp = $component[TTemplate::TPL_PROPS]['falsetemplate'];
 		$this->assertEquals(TTemplate::CONFIG_TEMPLATE, $tplProp[TTemplate::PROP_TYPE]);
 		$this->assertInstanceOf(TTemplate::class, $tplProp[TTemplate::PROP_VALUE]);
+	}
+
+	// -----------------------------------------------------------------------
+	// parse() — tags inside a property value, errors, and line numbers
+	// -----------------------------------------------------------------------
+
+	public function testParseKeepsTagsInsideAPropertyValueAsText()
+	{
+		$value = 'a<com:TLabel Text="b" /><%@ X="1" %><prop:Font Size="1" />c';
+		$tpl = $this->newTemplate('<com:TLabel><prop:Text>' . $value . '</prop:Text></com:TLabel>');
+		$component = $this->findComponent($tpl->getItems());
+		$this->assertSame($value, $component[TTemplate::TPL_PROPS]['text'][TTemplate::PROP_VALUE]);
+	}
+
+	public function testParseKeepsTextBeforeASubPropertyTag()
+	{
+		$tpl = $this->newTemplate('<com:TLabel>x<prop:Font Size="12" /></com:TLabel>');
+		$items = $tpl->getItems();
+		$component = $this->findComponent($items);
+		$this->assertSame('12', $component[TTemplate::TPL_PROPS]['font.size'][TTemplate::PROP_VALUE]);
+		$this->assertContains('x', array_column($items, TTemplate::TPL_TYPE));
+	}
+
+	public function testParseKeepsTextBeforeAPropertyTag()
+	{
+		$tpl = $this->newTemplate('<com:TLabel>x<prop:Text>v</prop:Text></com:TLabel>');
+		$items = $tpl->getItems();
+		$component = $this->findComponent($items);
+		$this->assertSame('v', $component[TTemplate::TPL_PROPS]['text'][TTemplate::PROP_VALUE]);
+		$this->assertContains('x', array_column($items, TTemplate::TPL_TYPE));
+	}
+
+	public function testParseTemplateAttributeWithAnUnquotedExpression()
+	{
+		$tpl = $this->newTemplate('<com:Prado\Web\UI\WebControls\TRepeater ItemTemplate=<%# 7 %> />');
+		$component = $this->findComponent($tpl->getItems());
+		$property = $component[TTemplate::TPL_PROPS]['itemtemplate'];
+		$this->assertSame(TTemplate::CONFIG_TEMPLATE, $property[TTemplate::PROP_TYPE]);
+		$this->assertInstanceOf(TTemplate::class, $property[TTemplate::PROP_VALUE]);
+		$this->assertFalse($property[TTemplate::PROP_VALUE]->getIsSourceTemplate());
+	}
+
+	public function testParseRethrowsTheTemplateExceptionOfANestedTemplate()
+	{
+		try {
+			$this->newTemplate("<com:Prado\\Web\\UI\\WebControls\\TRepeater>\n<prop:ItemTemplate>\n\n<com:TNoSuchTemplateClass />\n</prop:ItemTemplate></com:Prado\\Web\\UI\\WebControls\\TRepeater>");
+			$this->fail('TTemplateException expected');
+		} catch (TTemplateException $e) {
+			$this->assertStringContainsString('TNoSuchTemplateClass', $e->getMessage());
+			$this->assertSame(4, $e->getLineNumber());
+		}
+	}
+
+	public function testParseErrorBeforeAnyTagIsOnTheStartingLine()
+	{
+		try {
+			new TTemplateTestRejectingTemplate("text\nmore", $this->_contextPath, null, 5);
+			$this->fail('TTemplateException expected');
+		} catch (TTemplateException $e) {
+			$this->assertSame(6, $e->getLineNumber());
+			$this->assertSame("text\nmore", $e->getTemplateSource());
+		}
+	}
+
+	// -----------------------------------------------------------------------
+	// validateAttributes()
+	// -----------------------------------------------------------------------
+
+	public function testValidateAttributesRejectsAnEventHandlerExpression()
+	{
+		$this->expectException(TTemplateException::class);
+		$this->expectExceptionMessageMatches('/onclick can only accept a static string/');
+		$this->newTemplate('<com:TButton OnClick=<%= "handler" %> />');
+	}
+
+	public function testValidateAttributesRejectsAReadOnlyControlProperty()
+	{
+		$this->expectException(TTemplateException::class);
+		$this->expectExceptionMessageMatches('/read-only property \'clientid\'/');
+		$this->newTemplate('<com:TControl ClientID="x" />');
+	}
+
+	public function testValidateAttributesRejectsAnUnknownControlProperty()
+	{
+		$this->expectException(TTemplateException::class);
+		$this->expectExceptionMessageMatches('/no property called \'nosuchprop\'/');
+		$this->newTemplate('<com:TControl NoSuchProp="x" />');
+	}
+
+	public function testValidateAttributesOfTheAliasedShortNameOfTControl()
+	{
+		Prado::using('TControl');
+		$this->assertSame('TControl', Prado::usingClass('TControl'));
+		$tpl = $this->newTemplate('<com:TControl ID="c" OnInit="handler" />');
+		$this->assertSame(TControl::class, $this->findComponent($tpl->getItems())[TTemplate::TPL_TYPE]);
+	}
+
+	public function testValidateAttributesOfTheAliasedShortNameOfTComponent()
+	{
+		Prado::using('TComponent');
+		$this->assertSame('TComponent', Prado::usingClass('TComponent'));
+		$tpl = $this->newTemplate('<com:TComponent ID="c" />');
+		$this->assertSame(TComponent::class, $this->findComponent($tpl->getItems())[TTemplate::TPL_TYPE]);
+	}
+
+	public function testValidateAttributesRejectsAnUnknownComponentSubProperty()
+	{
+		$this->expectException(TTemplateException::class);
+		$this->expectExceptionMessageMatches('/nosuch/i');
+		$this->newTemplate('<com:Prado\Test\Unit\Web\UI\TTemplateTestReadonlyComponent NoSuch.Sub="x" />');
+	}
+
+	public function testValidateAttributesAcceptsAReadableComponentSubProperty()
+	{
+		$tpl = $this->newTemplate('<com:Prado\Test\Unit\Web\UI\TTemplateTestReadonlyComponent ReadonlyProp.Sub="x" />');
+		$component = $this->findComponent($tpl->getItems());
+		$this->assertSame('x', $component[TTemplate::TPL_PROPS]['readonlyprop.sub'][TTemplate::PROP_VALUE]);
+	}
+
+	// -----------------------------------------------------------------------
+	// isClassBehaviorMethod()
+	// -----------------------------------------------------------------------
+
+	private function withClassBehaviors(callable $test): void
+	{
+		$snapshot = PradoUnit::snapshotStatic(TComponent::class, ['_um']);
+		try {
+			$test();
+		} finally {
+			PradoUnit::restoreStatic(TComponent::class, $snapshot);
+		}
+	}
+
+	public function testClassBehaviorOnAParentClassAddsATemplateProperty()
+	{
+		$this->withClassBehaviors(function () {
+			TComponent::attachClassBehavior('tplTestFoo', new TTemplateTestFooClassBehavior(), TTemplateTestBehaviorControl::class);
+			$tpl = $this->newTemplate('<com:Prado\Test\Unit\Web\UI\TTemplateTestBehaviorChildControl Foo="1" />');
+			$this->assertNotNull($this->findComponent($tpl->getItems()));
+		});
+	}
+
+	public function testClassBehaviorGivenAsAnArrayAddsATemplateProperty()
+	{
+		$this->withClassBehaviors(function () {
+			TComponent::attachClassBehavior('tplTestBar', ['class' => TTemplateTestBarBehavior::class], TTemplateTestBehaviorControl::class);
+			$tpl = $this->newTemplate('<com:Prado\Test\Unit\Web\UI\TTemplateTestBehaviorChildControl Bar="1" />');
+			$this->assertNotNull($this->findComponent($tpl->getItems()));
+		});
+	}
+
+	public function testClassBehaviorGivenAsAClassNameAddsATemplateProperty()
+	{
+		$this->withClassBehaviors(function () {
+			TComponent::attachClassBehavior('tplTestBar', TTemplateTestBarBehavior::class, TTemplateTestBehaviorControl::class);
+			$tpl = $this->newTemplate('<com:Prado\Test\Unit\Web\UI\TTemplateTestBehaviorChildControl Bar="1" />');
+			$this->assertNotNull($this->findComponent($tpl->getItems()));
+		});
+	}
+
+	public function testClassBehaviorWithoutTheSetterOrOnAnotherClassAddsNoProperty()
+	{
+		$this->withClassBehaviors(function () {
+			TComponent::attachClassBehavior('tplTestFoo', new TTemplateTestFooClassBehavior(), TTemplateTestBehaviorControl::class);
+			TComponent::attachClassBehavior('tplTestBar', ['class' => TTemplateTestBarBehavior::class], TTemplateTestBehaviorControl::class);
+			TComponent::attachClassBehavior('tplTestBarName', TTemplateTestBarBehavior::class, TTemplateTestBehaviorControl::class);
+			TComponent::attachClassBehavior('tplTestOther', new TTemplateTestFooClassBehavior(), TTemplateTestReadonlyComponent::class);
+			$this->expectException(TTemplateException::class);
+			$this->expectExceptionMessageMatches('/baz/i');
+			$this->newTemplate('<com:Prado\Test\Unit\Web\UI\TTemplateTestBehaviorChildControl Baz="1" />');
+		});
+	}
+
+	public function testClassBehaviorOnTheControlClassItselfAddsATemplateProperty()
+	{
+		$this->withClassBehaviors(function () {
+			TTemplateTestBehaviorControl::attachClassBehavior('tplTestFoo', new TTemplateTestFooClassBehavior());
+			$tpl = $this->newTemplate('<com:Prado\Test\Unit\Web\UI\TTemplateTestBehaviorControl Foo="1" />');
+			$this->assertNotNull($this->findComponent($tpl->getItems()));
+		});
+	}
+
+	public function testClassBehaviorOnAComponentClassAddsATemplateProperty()
+	{
+		$this->withClassBehaviors(function () {
+			TComponent::attachClassBehavior('tplTestFoo', new TTemplateTestFooClassBehavior(), TTemplateTestReadonlyComponent::class);
+			$tpl = $this->newTemplate('<com:Prado\Test\Unit\Web\UI\TTemplateTestReadonlyComponent Foo="1" />');
+			$this->assertNotNull($this->findComponent($tpl->getItems()));
+		});
+	}
+
+	public function testClassBehaviorOnAnUnknownClassDoesNotBreakValidation()
+	{
+		$this->withClassBehaviors(function () {
+			TComponent::attachClassBehavior('tplTestFoo', new TTemplateTestFooClassBehavior(), 'Prado\Test\Unit\Web\UI\TTemplateTestNoSuchClass');
+			TComponent::attachClassBehavior('tplTestFoo', new TTemplateTestFooClassBehavior(), TTemplateTestBehaviorControl::class);
+			$tpl = $this->newTemplate('<com:Prado\Test\Unit\Web\UI\TTemplateTestBehaviorControl Foo="1" />');
+			$this->assertNotNull($this->findComponent($tpl->getItems()));
+		});
+	}
+
+	public function testPropertyExpressionCharToTypeOfAnInitExpression()
+	{
+		$this->assertSame(TTemplate::CONFIG_INIT_EXPRESSION, PradoUnit::invoke($this->obj, 'propertyExpressionCharToType', '<%! 1 %>', 'Text'));
+	}
+
+	// -----------------------------------------------------------------------
+	// preprocess() and handleException() — <%include %>
+	// -----------------------------------------------------------------------
+
+	/**
+	 * Creates an include directory under the alias `TplTestInc` and runs the test.
+	 * @param array<string, string> $files template file contents keyed by name without extension
+	 */
+	private function withIncludes(array $files, callable $test): void
+	{
+		$dir = $this->makeTempDirectory('prado_tpl_inc_');
+		foreach ($files as $name => $content) {
+			file_put_contents($dir . DIRECTORY_SEPARATOR . $name . '.tpl', $content);
+		}
+		$aliases = PradoUnit::snapshotStatic(Prado::class, ['_aliases']);
+		try {
+			Prado::setPathOfAlias('TplTestInc', $dir);
+			$test($dir);
+		} finally {
+			PradoUnit::restoreStatic(Prado::class, $aliases);
+		}
+	}
+
+	public function testIncludeExpandsTheIncludedTemplates()
+	{
+		$this->withIncludes(['A' => "one\n<com:TLabel ID=\"a\" />", 'B' => 'two'], function ($dir) {
+			$tpl = $this->newTemplate("x<%include TplTestInc.A %>y<%include TplTestInc.B %>z");
+			$this->assertSame([$dir . DIRECTORY_SEPARATOR . 'A.tpl', $dir . DIRECTORY_SEPARATOR . 'B.tpl'], $tpl->getIncludedFiles());
+			$items = $tpl->getItems();
+			$this->assertSame('a', $this->findComponent($items)[TTemplate::TPL_PROPS]['id'][TTemplate::PROP_VALUE]);
+			$text = '';
+			foreach ($items as $item) {
+				if (!isset($item[TTemplate::TPL_PROPS])) {
+					$text .= $item[TTemplate::TPL_TYPE];
+				}
+			}
+			$this->assertSame("xone\nytwoz", $text);
+		});
+	}
+
+	public function testIncludeOfAMissingTemplateThrows()
+	{
+		try {
+			$this->newTemplate("a\nb\n<%include TplTestInc.NoSuchFile %>");
+			$this->fail('TTemplateException expected');
+		} catch (TTemplateException $e) {
+			$this->assertStringContainsString('TplTestInc.NoSuchFile', $e->getMessage());
+			$this->assertSame(3, $e->getLineNumber());
+		}
+	}
+
+	public function testIncludeOfAMissingTemplateAfterAnIncludedOneThrowsATemplateException()
+	{
+		$this->withIncludes(['A' => "one\ntwo"], function () {
+			try {
+				$this->newTemplate("a\n<%include TplTestInc.A %>\nb\n<%include TplTestInc.NoSuchFile %>");
+				$this->fail('TTemplateException expected');
+			} catch (TTemplateException $e) {
+				$this->assertStringContainsString('TplTestInc.NoSuchFile', $e->getMessage());
+				$this->assertSame(4, $e->getLineNumber());
+			}
+		});
+	}
+
+	public function testErrorInsideAnIncludedTemplateNamesTheIncludedFile()
+	{
+		$this->withIncludes(['A' => "one\n</com:TLabel>\nthree", 'B' => 'two'], function ($dir) {
+			try {
+				$this->newTemplate("a\n<%include TplTestInc.A %>\nb\n<%include TplTestInc.B %>", null, '/main.tpl');
+				$this->fail('TTemplateException expected');
+			} catch (TTemplateException $e) {
+				$this->assertSame(2, $e->getLineNumber());
+				$this->assertSame($dir . DIRECTORY_SEPARATOR . 'A.tpl', $e->getTemplateFile());
+			}
+		});
+	}
+
+	public function testErrorAfterAnIncludedTemplateHasTheLineOfTheTemplate()
+	{
+		$this->withIncludes(['A' => "one\ntwo\nthree"], function () {
+			try {
+				$this->newTemplate("a\n<%include TplTestInc.A %>\nb\n</com:TLabel>", null, '/main.tpl');
+				$this->fail('TTemplateException expected');
+			} catch (TTemplateException $e) {
+				$this->assertSame(4, $e->getLineNumber());
+				$this->assertSame('/main.tpl', $e->getTemplateFile());
+			}
+		});
+	}
+
+	public function testErrorBeforeAnIncludedTemplateHasTheLineOfTheTemplate()
+	{
+		$this->withIncludes(['A' => "one\ntwo"], function () {
+			try {
+				$this->newTemplate("a\n</com:TLabel>\n<%include TplTestInc.A %>");
+				$this->fail('TTemplateException expected');
+			} catch (TTemplateException $e) {
+				$this->assertSame(2, $e->getLineNumber());
+				$this->assertSame("a\n</com:TLabel>\none\ntwo", $e->getTemplateSource());
+			}
+		});
+	}
+
+	public function testErrorInsideTheOnlyIncludedTemplateNamesTheIncludedFile()
+	{
+		$this->withIncludes(['A' => "one\n</com:TLabel>"], function ($dir) {
+			try {
+				$this->newTemplate("a\n<%include TplTestInc.A %>\nb");
+				$this->fail('TTemplateException expected');
+			} catch (TTemplateException $e) {
+				$this->assertSame(2, $e->getLineNumber());
+				$this->assertSame($dir . DIRECTORY_SEPARATOR . 'A.tpl', $e->getTemplateFile());
+			}
+		});
+	}
+
+	public function testErrorAfterTheOnlyIncludedTemplateOfASourceString()
+	{
+		$this->withIncludes(['A' => "one\ntwo"], function () {
+			try {
+				$this->newTemplate("<%include TplTestInc.A %>\n</com:TLabel>");
+				$this->fail('TTemplateException expected');
+			} catch (TTemplateException $e) {
+				$this->assertSame(2, $e->getLineNumber());
+				$this->assertSame("one\ntwo\n</com:TLabel>", $e->getTemplateSource());
+			}
+		});
+	}
+
+	public function testErrorBeforeTheOnlyIncludedTemplateOfATemplateFile()
+	{
+		$this->withIncludes(['A' => "one\ntwo"], function () {
+			try {
+				$this->newTemplate("</com:TLabel>\n<%include TplTestInc.A %>", null, '/main.tpl');
+				$this->fail('TTemplateException expected');
+			} catch (TTemplateException $e) {
+				$this->assertSame(1, $e->getLineNumber());
+				$this->assertSame('/main.tpl', $e->getTemplateFile());
+			}
+		});
+	}
+
+	public function testErrorInATemplateFileWithoutIncludes()
+	{
+		try {
+			$this->newTemplate("a\n</com:TLabel>", null, '/main.tpl');
+			$this->fail('TTemplateException expected');
+		} catch (TTemplateException $e) {
+			$this->assertSame(2, $e->getLineNumber());
+			$this->assertSame('/main.tpl', $e->getTemplateFile());
+		}
+	}
+
+	/**
+	 * Runs the test with only the class behaviors it attaches.
+	 */
+	private function withOnlyClassBehaviors(callable $test): void
+	{
+		$this->withClassBehaviors(function () use ($test) {
+			PradoUnit::setStaticProp(TComponent::class, '_um', []);
+			$test();
+		});
+	}
+
+	public function testOnlyClassBehaviorOnAnotherClassAddsNoProperty()
+	{
+		$this->withOnlyClassBehaviors(function () {
+			TComponent::attachClassBehavior('tplTestOther', new TTemplateTestFooClassBehavior(), TTemplateTestReadonlyComponent::class);
+			$this->expectException(TTemplateException::class);
+			$this->expectExceptionMessageMatches('/no property called \'foo\'/');
+			$this->newTemplate('<com:Prado\Test\Unit\Web\UI\TTemplateTestBehaviorControl Foo="1" />');
+		});
+	}
+
+	public function testOnlyClassBehaviorGivenAsAnArrayWithoutTheSetterAddsNoProperty()
+	{
+		$this->withOnlyClassBehaviors(function () {
+			TComponent::attachClassBehavior('tplTestBar', ['class' => TTemplateTestBarBehavior::class], TTemplateTestBehaviorControl::class);
+			$this->expectException(TTemplateException::class);
+			$this->expectExceptionMessageMatches('/no property called \'foo\'/');
+			$this->newTemplate('<com:Prado\Test\Unit\Web\UI\TTemplateTestBehaviorControl Foo="1" />');
+		});
+	}
+
+	public function testOnlyClassBehaviorObjectWithoutTheSetterAddsNoProperty()
+	{
+		$this->withOnlyClassBehaviors(function () {
+			TComponent::attachClassBehavior('tplTestFoo', new TTemplateTestFooClassBehavior(), TTemplateTestBehaviorControl::class);
+			$this->expectException(TTemplateException::class);
+			$this->expectExceptionMessageMatches('/no property called \'bar\'/');
+			$this->newTemplate('<com:Prado\Test\Unit\Web\UI\TTemplateTestBehaviorControl Bar="1" />');
+		});
+	}
+
+	public function testValidateAttributesRejectsAnUnknownComponentProperty()
+	{
+		$this->expectException(TTemplateException::class);
+		$this->expectExceptionMessageMatches('/no property called \'nosuchprop\'/');
+		$this->newTemplate('<com:Prado\Test\Unit\Web\UI\TTemplateTestReadonlyComponent NoSuchProp="x" />');
+	}
+
+	public function testParseClosingComponentTagOfAnotherComponent()
+	{
+		$this->expectException(TTemplateException::class);
+		$this->expectExceptionMessage("Closing tag '</com:TLabel>' is expected, found '</com:TPanel>'.");
+		$this->newTemplate('<com:TLabel></com:TPanel>');
+	}
+
+	public function testParseClosingPropertyTagOfAnotherProperty()
+	{
+		$this->expectException(TTemplateException::class);
+		$this->expectExceptionMessage("Closing tag '</prop:Text>' is expected, found '</prop:ToolTip>'.");
+		$this->newTemplate('<com:TLabel><prop:Text>x</prop:ToolTip></com:TLabel>');
+	}
+
+	public function testParseClosingPropertyTagInsideAComponent()
+	{
+		$this->expectException(TTemplateException::class);
+		$this->expectExceptionMessage("Closing tag '</com:TLabel>' is expected, found '</prop:Text>'.");
+		$this->newTemplate('<com:TLabel></prop:Text>');
 	}
 }

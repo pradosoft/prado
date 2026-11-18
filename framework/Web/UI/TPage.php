@@ -28,6 +28,7 @@ use Prado\Web\UI\ActiveControls\TActivePageAdapter;
 use Prado\Web\UI\ActiveControls\TActiveUpdateMode;
 use Prado\Web\UI\ActiveControls\TCallbackClientScript;
 use Prado\Web\UI\WebControls\THead;
+use Prado\Util\TUtf8Converter;
 
 /**
  * TPage class
@@ -394,7 +395,7 @@ class TPage extends TTemplateControl
 			}
 			return $data;
 		} elseif (is_string($data)) {
-			return iconv('UTF-8', $enc . '//IGNORE', $data);
+			return TUtf8Converter::fromUTF8($data, $enc . '//IGNORE');
 		} else {
 			return $data;
 		}
@@ -694,9 +695,9 @@ class TPage extends TTemplateControl
 	public function getClientScript()
 	{
 		if (!$this->_clientScript) {
-			$className = $classPath = $this->getService()->getClientScriptManagerClass();
+			$className = $this->getService()->getClientScriptManagerClass();
 
-			if ($className !== TClientScriptManager::class && !is_subclass_of($className, TClientScriptManager::class)) {
+			if (!is_a($className, TClientScriptManager::class, true)) {
 				throw new TConfigurationException('page_csmanagerclass_invalid', $className);
 			}
 
@@ -1069,7 +1070,7 @@ class TPage extends TTemplateControl
 	public function ensureRenderInForm($control)
 	{
 		if (!$this->getIsCallback() && !$this->_inFormRender) {
-			throw new TConfigurationException('page_control_outofform', $control::class, $control ? $control->getUniqueID() : null);
+			throw new TConfigurationException('page_control_outofform', $control::class, $control->getUniqueID());
 		}
 	}
 

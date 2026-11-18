@@ -33,6 +33,7 @@ use Prado\Web\HttpHeaders\THttpHeaderReportingEndpoints;
 use Prado\Web\HttpHeaders\THttpHeadersManager;
 use Prado\Web\Services\TCspReportingService;
 use Prado\Web\THttpHeaderName;
+use Prado\Test\Unit\Harness\Web\HttpHeaders\TResponseStub;
 use Prado\Test\Unit\Harness\Web\HttpHeaders\TStubHeader;
 use Prado\Test\Unit\Harness\Web\HttpHeaders\TTestHttpHeadersManager;
 use Prado\Test\Unit\PradoUnit;
@@ -58,9 +59,31 @@ class TNestedPathHeader extends THttpHeader
 	use TNestedPathTrait;
 }
 
+/**
+ * A manager that keeps its own sending and sends to a recording response.
+ */
+class TRecordingResponseHttpHeadersManager extends THttpHeadersManager
+{
+	public TResponseStub $stub;
+
+	public function __construct()
+	{
+		$this->stub = new TResponseStub();
+		parent::__construct();
+	}
+
+	public function getResponse()
+	{
+		return $this->stub;
+	}
+}
+
 class THttpHeadersManagerTest extends \PHPUnit\Framework\TestCase
 {
 	public static ?TApplication $app = null;
+
+	/** @var array the application's services before the test; a finalize may register one. */
+	private array $_servicesBefore = [];
 
 	protected function setUp(): void
 	{
@@ -68,6 +91,12 @@ class THttpHeadersManagerTest extends \PHPUnit\Framework\TestCase
 			self::$app = new TApplication(__DIR__ . '/../../Security/app');
 			self::$app->setMode(TApplicationMode::Debug);
 		}
+		$this->_servicesBefore = PradoUnit::getProp(Prado::getApplication(), '_services');
+	}
+
+	protected function tearDown(): void
+	{
+		PradoUnit::setProp(Prado::getApplication(), '_services', $this->_servicesBefore);
 	}
 
 	// -----------------------------------------------------------------------
@@ -2693,5 +2722,278 @@ class THttpHeadersManagerTest extends \PHPUnit\Framework\TestCase
 		self::assertCount(1, $reHeaders);
 		self::assertStringContainsString('explicit-reporter', $reHeaders[0]->getHeaderValue(),
 			'Literal service ID must flow through buildReporterUrl into the endpoint URL');
+	}
+
+	// -----------------------------------------------------------------------
+	// Sending through the response, without an application, and edge paths
+	// -----------------------------------------------------------------------
+
+	/**
+	 * Runs a callback with no Prado application.
+	 * @param callable $fn
+	 */
+	private function withoutApplication(callable $fn): void
+	{
+		$app = Prado::getApplication();
+		PradoUnit::setStaticProp(Prado::class, '_application', null);
+		try {
+			$fn();
+		} finally {
+			PradoUnit::setStaticProp(Prado::class, '_application', $app);
+		}
+	}
+
+	/**
+	 * Runs a callback with extra services registered on the application.
+	 * @param array<string, array> $services service ID → registry entry; null removes the ID.
+	 * @param callable $fn
+	 */
+	private function withServices(array $services, callable $fn): void
+	{
+		$app = Prado::getApplication();
+		$before = PradoUnit::getProp($app, '_services');
+		$changed = $before;
+		foreach ($services as $id => $entry) {
+			if ($entry === null) {
+				unset($changed[$id]);
+			} else {
+				$changed[$id] = $entry;
+			}
+		}
+		PradoUnit::setProp($app, '_services', $changed);
+		try {
+			$fn($app);
+		} finally {
+			PradoUnit::setProp($app, '_services', $before);
+		}
+	}
+
+	public function testEnsureHeadersSentSendsEveryHeaderThroughTheResponse(): void
+	{
+		$m = new TRecordingResponseHttpHeadersManager();
+		$m->setReportingServiceMode(false);
+		$hsts = new THttpHeaderHsts();
+		$m->addHeader($hsts);
+		$csp = new THttpHeaderCsp();
+		$m->addHeader($csp);
+		$csp->addPolicy(TCspDirective::DefaultSrc, "'self'");
+
+		$m->ensureHeadersSent();
+
+		self::assertTrue($m->getHeadersSent());
+		self::assertSame([
+			['header' => 'Strict-Transport-Security: max-age=31536000', 'replace' => true],
+			['header' => "Content-Security-Policy: default-src 'self'", 'replace' => false],
+		], $m->stub->capturedCalls);
+
+		$m->ensureHeadersSent();
+		self::assertCount(2, $m->stub->capturedCalls, 'Headers are sent once.');
+	}
+
+	public function testEnsureHeadersSentWithoutHeadersSendsNothing(): void
+	{
+		$m = new TRecordingResponseHttpHeadersManager();
+		$m->setReportingServiceMode(false);
+		$m->ensureHeadersSent();
+		self::assertTrue($m->getHeadersSent());
+		self::assertSame([], $m->stub->capturedCalls);
+	}
+
+	public function testBuildReporterUrlConstructsTheServiceUrl(): void
+	{
+		$m = new THttpHeadersManager();
+		$app = Prado::getApplication();
+		self::assertSame(
+			$app->getRequest()->constructUrl('csp-reports', '', [], false),
+			PradoUnit::invoke($m, 'buildReporterUrl', $app, 'csp-reports')
+		);
+	}
+
+	public function testEnsureReportingServiceRegisteredWithoutApplicationRegistersNothing(): void
+	{
+		$m = new TTestHttpHeadersManager();
+		$m->setReportingServiceMode(true);
+		$this->withoutApplication(function () use ($m) {
+			$m->ensureReportingServiceRegistered();
+		});
+		self::assertSame('Auto', $m->getReportingServiceId());
+	}
+
+	public function testFinalizeReporterServiceWithoutApplicationChangesNothing(): void
+	{
+		$m = new TTestHttpHeadersManager();
+		$m->setReportingServiceMode(true);
+		$csp = new THttpHeaderCsp();
+		$m->addHeader($csp);
+		$this->withoutApplication(function () use ($m) {
+			$m->publicFinalizeReporterService();
+		});
+		self::assertFalse($csp->hasPolicy(TCspDirective::ReportTo));
+		self::assertSame([], $m->getHeadersByClass(THttpHeaderReportingEndpoints::class));
+	}
+
+	public function testEnsureReportingServiceRegisteredAutoModeLiteralIdWithWrongClassLogs(): void
+	{
+		$m = new TTestHttpHeadersManager();
+		$m->setReportOnly(false);
+		$m->setReportingServiceId('wrong-class-service');
+		$logger = Prado::getLogger();
+		$logger->deleteLogs();
+		$this->withServices(['wrong-class-service' => [THttpHeadersManager::class, [], null]], function () use ($m, $logger) {
+			$m->ensureReportingServiceRegistered();
+			$messages = array_column($logger->getLogs(TLogger::WARNING), 0);
+			self::assertNotEmpty(array_filter($messages, fn ($msg) => str_contains((string) $msg, 'wrong-class-service')));
+		});
+	}
+
+	public function testEnsureReportingServiceRegisteredAutoModeLiteralIdAlreadyRegistered(): void
+	{
+		$m = new TTestHttpHeadersManager();
+		$m->setReportOnly(false);
+		$m->setReportingServiceId('my-csp-service');
+		$logger = Prado::getLogger();
+		$logger->deleteLogs();
+		$this->withServices(['my-csp-service' => [TCspReportingService::class, [], null]], function ($app) use ($m, $logger) {
+			$m->ensureReportingServiceRegistered();
+			self::assertSame([TCspReportingService::class, [], null], $app->getRegisteredService('my-csp-service'));
+			self::assertSame([], $logger->getLogs(TLogger::WARNING, static::class));
+		});
+	}
+
+	public function testEnsureReportingServiceRegisteredAutoModeLiteralIdRegistersInReportOnly(): void
+	{
+		$m = new TTestHttpHeadersManager();
+		$m->setReportOnly(true);
+		$m->setReportingServiceId('my-csp-service');
+		$this->withServices(['my-csp-service' => null], function ($app) use ($m) {
+			$m->ensureReportingServiceRegistered();
+			self::assertSame(TCspReportingService::class, $app->getRegisteredService('my-csp-service')[0]);
+		});
+	}
+
+	public function testEnsureReportingServiceRegisteredAutoModeLiteralIdWaitsWithoutReportOnly(): void
+	{
+		$m = new TTestHttpHeadersManager();
+		$m->setReportOnly(false);
+		$m->setReportingServiceId('my-csp-service');
+		$this->withServices(['my-csp-service' => null], function ($app) use ($m) {
+			$m->ensureReportingServiceRegistered();
+			self::assertFalse($app->hasRegisteredService('my-csp-service'));
+		});
+	}
+
+	public function testFinalizeReporterServiceAutoSkipsHeadersThatDoNotReport(): void
+	{
+		$m = new TTestHttpHeadersManager();
+		$m->setReportOnly(false);
+		$csp = new THttpHeaderCsp();
+		$m->addHeader($csp);
+		$csp->addPolicy(TCspDirective::DefaultSrc, "'self'");
+		$re = new THttpHeaderReportingEndpoints();
+		$m->addHeader($re);
+		$re->addEndpoint('other', 'https://example.com/other');
+		$this->withServices([TCspReportingService::SERVICE_ID => null], function () use ($m, $csp, $re) {
+			$m->publicFinalizeReporterService();
+		});
+		self::assertSame('Auto', $m->getReportingServiceId());
+		self::assertFalse($csp->hasPolicy(TCspDirective::ReportTo));
+		self::assertSame(['other'], $re->getEndpointNames());
+	}
+
+	public function testInitCompleteWithoutHeaders(): void
+	{
+		$m = new TTestHttpHeadersManager();
+		$m->publicInitComplete();
+		self::assertSame([], $m->getHeaders());
+	}
+
+	public function testGetHeaderByNameMissesTheOnlyHeader(): void
+	{
+		$m = new TTestHttpHeadersManager();
+		$m->addHeader(new THttpHeaderHsts());
+		self::assertNull($m->getHeaderByName('X-Frame-Options'));
+	}
+
+	public function testRemoveHeaderMissesTheOnlyHeader(): void
+	{
+		$m = new TTestHttpHeadersManager();
+		$hsts = new THttpHeaderHsts();
+		$m->addHeader($hsts);
+		self::assertFalse($m->removeHeader(new THttpHeaderHsts()));
+		self::assertFalse($m->removeHeader('X-Frame-Options'));
+		self::assertSame([$hsts], $m->getHeaders());
+	}
+
+	public function testAddHeaderTwiceAfterItsManagerWasCleared(): void
+	{
+		$m = new TTestHttpHeadersManager();
+		$hsts = new THttpHeaderHsts();
+		$m->addHeader($hsts);
+		$hsts->setManager(null);
+		$m->addHeader($hsts);
+		self::assertSame([$hsts], $m->getHeaders());
+		self::assertNull($hsts->getManager());
+	}
+
+	public function testHasHeaderMatchesTheOnlyHeaderByClassOrName(): void
+	{
+		$m = new TTestHttpHeadersManager();
+		$m->addHeader(new THttpHeaderHsts());
+		self::assertTrue($m->hasHeader(THttpHeaderHsts::class));
+		self::assertTrue($m->hasHeader('strict-transport-security'));
+		self::assertFalse($m->hasHeader('X-Frame-Options'));
+	}
+
+	public function testBuildHeaderRejectsAPromotedClassThatIsNotAHeader(): void
+	{
+		$m = new TTestHttpHeadersManager();
+		$m->registerHeaderClass('X-Custom', \Prado\TComponent::class);
+		try {
+			$m->publicLoadHeaders(['headers' => [['properties' => ['HeaderName' => 'X-Custom']]]]);
+			self::fail('Expected TConfigurationException');
+		} catch (TConfigurationException $e) {
+			self::assertSame('httpheadersmanager_header_required', $e->getErrorCode());	self::assertStringContainsString('TBaseHttpHeader', $e->getMessage());
+		}
+	}
+
+	public function testBuildHeaderRejectsADefaultClassThatIsNotAHeader(): void
+	{
+		$m = new TTestHttpHeadersManager();
+		$m->setDefaultHeaderClass(\Prado\TComponent::class);
+		try {
+			$m->publicLoadHeaders(['headers' => [['properties' => ['HeaderName' => 'X-Unmapped']]]]);
+			self::fail('Expected TConfigurationException');
+		} catch (TConfigurationException $e) {
+			self::assertSame('httpheadersmanager_header_required', $e->getErrorCode());
+		}
+		try {
+			$m->publicLoadHeaders(['headers' => [['properties' => []]]]);
+			self::fail('Expected TConfigurationException');
+		} catch (TConfigurationException $e) {
+			self::assertSame('httpheadersmanager_header_required', $e->getErrorCode());
+		}
+	}
+
+	public function testBuildHeaderWithoutHeaderName(): void
+	{
+		$m = new TTestHttpHeadersManager();
+		$m->publicLoadHeaders(['headers' => [['properties' => ['HeaderValue' => 'x']]]]);
+		$headers = $m->getHeaders();
+		self::assertCount(1, $headers);
+		self::assertInstanceOf(THttpHeader::class, $headers[0]);
+		self::assertSame('', $headers[0]->getHeaderName());
+		self::assertSame('x', $headers[0]->getHeaderValue());
+	}
+
+	public function testBuildHeaderPromotesWithTraversableProperties(): void
+	{
+		$m = new TTestHttpHeadersManager();
+		$m->publicLoadHeaders(['headers' => [[
+			'properties' => new \Prado\Collections\TMap(['HeaderName' => 'Strict-Transport-Security', 'MaxAge' => '60']),
+		]]]);
+		$headers = $m->getHeaders();
+		self::assertCount(1, $headers);
+		self::assertInstanceOf(THttpHeaderHsts::class, $headers[0]);
+		self::assertSame(60, $headers[0]->getMaxAge());
 	}
 }

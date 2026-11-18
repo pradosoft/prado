@@ -11,6 +11,7 @@
 namespace Prado\Util\Cron;
 
 use Prado\Exceptions\TExitException;
+use Prado\IO\Async\TAsync;
 use Prado\Prado;
 use Prado\Security\Permissions\TPermissionsManager;
 use Prado\Shell\TShellAction;
@@ -639,13 +640,14 @@ class TShellCronAction extends TShellAction
 	}
 
 	/**
-	 * Waits between the views of {@see actionTop}.
+	 * Waits between the views of {@see actionTop} through {@see \Prado\IO\Async\TAsync::sleep()},
+	 * so a fiber yields to the event loop while it waits.
 	 * @param float $seconds the seconds to wait
 	 * @since 4.4.0
 	 */
 	protected function sleep(float $seconds): void
 	{
-		usleep((int) ($seconds * 1_000_000));
+		TAsync::sleep($seconds);
 	}
 
 	/**

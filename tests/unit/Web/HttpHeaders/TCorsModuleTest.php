@@ -193,6 +193,15 @@ class TCorsModuleTest extends TestCase
 		self::assertFalse($module->isOriginAllowed(''));
 	}
 
+	public function testIsOriginAllowedIgnoresBlankListEntries(): void
+	{
+		$module = new TCorsModule();
+		$module->setAllowOrigin('https://a.example.com, ,');
+		self::assertFalse($module->isOriginAllowed(''));
+		self::assertFalse($module->isOriginAllowed(' '));
+		self::assertTrue($module->isOriginAllowed(' https://a.example.com '));
+	}
+
 	public function testAppliesToPath(): void
 	{
 		$module = new TCorsModule();
@@ -398,5 +407,12 @@ class TCorsModuleTest extends TestCase
 		$_SERVER['PATH_INFO'] = '/apidocs/index';
 		$this->beginRequest(['PathPrefix' => 'api']);
 		$this->assertNoCorsHeaders();
+	}
+
+	public function testIsOriginAllowedWithOnlyABlankEntry(): void
+	{
+		$module = new TCorsModule();
+		$module->setAllowOrigin(' ');
+		self::assertFalse($module->isOriginAllowed('https://a.example.com'));
 	}
 }

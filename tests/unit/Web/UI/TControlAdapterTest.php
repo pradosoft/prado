@@ -137,4 +137,9 @@ class TControlAdapterTest extends \PHPUnit\Framework\TestCase
 		$output = $writer->getWriter()->flush();
 		$this->assertStringContainsString('Child Render Test', $output);
 	}
+
+	public function testGetPageWithoutAControlIsNull()
+	{
+		$this->assertNull((new TControlAdapter(null))->getPage());
+	}
 }

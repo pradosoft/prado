@@ -638,4 +638,16 @@ class TPageStateFormatterTest extends \PHPUnit\Framework\TestCase
 
 		$this->assertNull(TPageStateFormatter::unserialize($page, base64_encode($raw)));
 	}
+	public function testValidatedAndEncryptedStateWithoutIGBinaryRoundTrips()
+	{
+		$page = $this->newPage();
+		$page->setEnableStateValidation(true);
+		$page->setEnableStateEncryption(true);
+		$data = ['a' => 1, 'b' => [true, 'x']];
+
+		$str = TPageStateFormatter::serialize($page, $data);
+
+		$this->assertStringNotContainsString(base64_encode(serialize($data)), $str);
+		$this->assertSame($data, TPageStateFormatter::unserialize($page, $str));
+	}
 }

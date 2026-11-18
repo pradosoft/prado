@@ -69,7 +69,7 @@ return [
 - `close()`: Ends session and stores data
 - `destroy()`: Destroys all data registered to session
 - `regenerate($deleteOld = false)`: Update session ID with new one
-- `gc(): int|false` (4.4.0): Deletes the sessions older than `Timeout` through `session_gc()` (the `sessionGc()` wrapper), which calls `_gc()` with custom storage. Without a started session it starts one, collects, and destroys it; it returns false when headers are sent (`sessionHeadersSent()`), since no session can start then
+- `gc(): int|false` (4.4.0): Deletes the sessions older than `Timeout` through `session_gc()` (the `sessionGc()` wrapper), which calls `_gc()` with custom storage. Without a started session it starts one with `session.gc_probability` at 0, so that start runs no automatic collection and the count includes every expired session, collects, destroys it, and restores the probability; it returns false when headers are sent (`sessionHeadersSent()`), since no session can start then
 - `getSessionID()`: Gets current session ID
 - `setSessionID($value)`: Sets session ID for current session
 
