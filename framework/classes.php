@@ -150,6 +150,7 @@ return [
 'TEmailHtmlToText' => 'Prado\Email\TEmailHtmlToText',
 'TEmailSendMode' => 'Prado\Email\TEmailSendMode',
 'TEmailStatus' => 'Prado\Email\TEmailStatus',
+'TEmailMimeBuilder' => 'Prado\Email\Mime\TEmailMimeBuilder',
 'TApplicationException' => 'Prado\Exceptions\TApplicationException',
 'TCancelledException' => 'Prado\Exceptions\TCancelledException',
 'TConfigurationException' => 'Prado\Exceptions\TConfigurationException',
