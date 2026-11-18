@@ -22,12 +22,6 @@ jsonservice_provider_unknown			= Penyedia JSON ''{0}'' yang diminta tidak dikena
 feedservice_feed_unknown				= Feed ''{0}'' yang diminta tidak dikenal.
 httprequest_body_json_invalid				= Isi permintaan THttpRequest bukan JSON yang valid.
 
-emailermodule_page_unknown					= Email ''{0}'' tidak ditemukan.
-emailermodule_security_violation			= Jalur email ''{0}'' berada di luar aplikasi.
-dbemailservice_email_unknown				= Email ''{0}'' tidak ditemukan.
-dbemailservice_email_forbidden				= Email ''{0}'' hanya dapat dilihat oleh penerimanya.
-dbemailservice_link_unknown					= Tautan email ''{0}'' tidak ditemukan.
-dbemailservice_file_unknown					= Berkas ''{0}'' tidak ditemukan.
 emailservice_email_forbidden				= Email hanya dapat dilihat oleh penerimanya.
 emailservice_email_unknown					= Email tidak ditemukan.
 emailservice_link_unknown					= Tautan email tidak ditemukan.

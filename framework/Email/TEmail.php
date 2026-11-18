@@ -48,6 +48,10 @@ use Prado\TPropertyValue;
  * A key without a value stays in the text.  `{{email:tracking-id}}` is the
  * {@see getTrackingId TrackingId} and `{{email:to}}` the first To address.
  *
+ * A value is inserted once and is not searched for placeholders.  Text that
+ * users wrote goes into an email as a Data value; written straight into the Html
+ * or Text, a "{{KEY}}" in it would be replaced like one of the template.
+ *
  * {@see render} runs the Body once and {@see finalize} replaces the placeholders
  * once.  A clone made between the two shares the rendered content and gets its own
  * TrackingId and MessageId, which is how one template is sent to many recipients.
