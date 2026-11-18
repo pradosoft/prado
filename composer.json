@@ -63,7 +63,10 @@
 		"phpdocumentor/shim": "^3",
 		"pradosoft/prado-phpdoc-template": "*",
 		"friendsofphp/php-cs-fixer": "3.95.27",
-		"phpstan/phpstan": "2.3.5"
+		"phpstan/phpstan": "2.3.5",
+		"psr/log": "^3.0",
+		"psr/cache": "^3.0",
+		"psr/simple-cache": "^3.0"
 	},
 	"suggest" : {
 		"ext-apcu" : "Enables the use of TAPCCache as a cache handler",
@@ -78,7 +81,10 @@
 		"ext-xdebug": "Useful to get stack traces on Php fatal errors",
 		"ext-xsl" : "Used by the TXmlTransform component",
 		"ext-zlib" : "Enables compression to reduce page size",
-		"pradosoft/prado-demos" : "Demo applications for Prado"
+		"pradosoft/prado-demos" : "Demo applications for Prado",
+		"psr/log" : "Required (^2.0 or ^3.0) by TPsrLogger and TPsrLogRoute, the PSR-3 logging adapters",
+		"psr/cache" : "Required (^2.0 or ^3.0), with psr/simple-cache, by the TPsrSimpleCache and TPsrCacheItemPool cache adapters, and by TPsrCache over a PSR-6 pool",
+		"psr/simple-cache" : "Required (^2.0 or ^3.0), with psr/cache, by the TPsrSimpleCache and TPsrCacheItemPool cache adapters, and by TPsrCache over a PSR-16 cache"
 	},
 	"extra": {
 		"branch-alias": {

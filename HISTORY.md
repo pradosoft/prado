@@ -1,4 +1,5 @@
 ## Version 4.3.3 - TBA
+ENH: PSR adapters from 4.4 under their 4.4 class names: `TPsrSimpleCache` (PSR-16), `TPsrCacheItemPool` and `TPsrCacheItem` (PSR-6), and `TPsrCache` over a PSR cache; `TPsrLogger` (PSR-3) and `TPsrLogRoute` in `Prado\Util\Log`. `psr/cache`, `psr/simple-cache`, and `psr/log` are suggested. (belisoful)
 BUG: Issue #1368 - `TPage::endFormRender()` no longer registers focus from the posted `PRADO_LASTFOCUS` field, which it wrote unencoded into page JavaScript; `TPage::FIELD_LASTFOCUS` is deprecated. (belisoful)
 ENH: `TDatePicker.DateInputMode`, the 4.4 name, replaces `InputMode`, which is deprecated (#1193). (belisoful)
 ENH: A PHP-configured `TFeedService` reads its feeds from a `feeds` key, the 4.4 form; the 4.3 form is deprecated (#1308). (belisoful)
