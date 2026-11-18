@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: `TRevoltEventLoop::cancel()` and `disable()` drop a signal queued on Revolt's `stream_select()` driver once the signal has no callback left; its next dispatch raised "Undefined array key" and stopped the loop, as with `SIGCHLD` after `TProcess::wait()`. (belisoful)
 BUG: Issue #1497 - `THttpSession::gc()` starts its session without PHP's probabilistic collection, so it counts every expired session it deletes; when that collection ran at the start, `gc()` returned 0. (belisoful)
 BUG: Cron (#833): `TShellCronAction::sleep()` of `cron/top` and the `TCronWakeSocket` key-file retry pause through `TAsync::sleep()`, so a fiber yields to the event loop; they blocked the process with `usleep()`. (belisoful)
 BUG: Issue #1497 - `TMockClock` and `TOffsetClock` keep fractional instants before the Unix epoch, and throw `TInvalidDataValueException` for a NAN, infinite, or out-of-range timestamp or offset; `setMicrotime(-0.5)` read back `0.5`, and NAN pinned the epoch. `TOffsetClock::shift()` moves an instant by a number of seconds. (belisoful)
