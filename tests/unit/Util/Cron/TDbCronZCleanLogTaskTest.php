@@ -8,7 +8,7 @@ use Prado\Util\Cron\TShellCronLogBehavior;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Util\Cron\TCronModule;
 use Prado\Util\Cron\TCronTask;
-use Prado\Util\Cron\TDbCronModule;
+use Prado\Util\Cron\TDbCronManager;
 use Prado\Util\Cron\TDbCronCleanLogTask;
 
 class TDbCronZCleanLogTaskTest extends TCronTaskTest
@@ -30,7 +30,7 @@ class TDbCronZCleanLogTaskTest extends TCronTaskTest
 
 	public function testExecute()
 	{
-		$dbcron = new TDbCronModule();
+		$dbcron = new TDbCronManager();
 		$cron = new TCronModule();
 		$dbcron->attachBehavior('shellLog', new TShellCronLogBehavior(new TShellWriter(new TTextWriter())));
 		$cron->attachBehavior('shellLog', new TShellCronLogBehavior(new TShellWriter(new TTextWriter())));

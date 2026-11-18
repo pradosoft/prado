@@ -55,6 +55,47 @@ class TFeedServiceTest extends \PHPUnit\Framework\TestCase
 	}
 
 	/**
+	 * A PHP configuration registers the entries of `feeds`, a string entry as the feed class.
+	 */
+	public function testPhpConfigurationReadsTheFeedsKey()
+	{
+		Prado::getApplication()->setConfigurationType(TApplication::CONFIG_TYPE_PHP);
+		$service = new TFeedService();
+		$service->init([
+			'class' => TFeedService::class,
+			'feeds' => ['a' => ['class' => 'A'], 'b' => 'B', 'c' => 5],
+		]);
+		$this->assertSame(['a' => ['class' => 'A'], 'b' => ['class' => 'B']], PradoUnit::getProp($service, '_feeds'));
+	}
+
+	/**
+	 * The 4.3 form loads beside `feeds`, and a feed under `feeds` takes precedence.
+	 */
+	public function testPhpConfigurationFeedsKeyTakesPrecedence()
+	{
+		Prado::getApplication()->setConfigurationType(TApplication::CONFIG_TYPE_PHP);
+		$service = new TFeedService();
+		$service->init([
+			'class' => TFeedService::class,
+			'feeds' => ['a' => 'New'],
+			'a' => ['class' => 'Old'],
+			'b' => ['class' => 'Legacy'],
+		]);
+		$this->assertSame(['a' => ['class' => 'New'], 'b' => ['class' => 'Legacy']], PradoUnit::getProp($service, '_feeds'));
+	}
+
+	/**
+	 * A `feeds` entry with a string `class` is a 4.3 feed whose ID is "feeds".
+	 */
+	public function testPhpConfigurationLegacyFeedNamedFeeds()
+	{
+		Prado::getApplication()->setConfigurationType(TApplication::CONFIG_TYPE_PHP);
+		$service = new TFeedService();
+		$service->init(['class' => TFeedService::class, 'feeds' => ['class' => 'A', 'properties' => []]]);
+		$this->assertSame(['feeds' => ['class' => 'A', 'properties' => []]], PradoUnit::getProp($service, '_feeds'));
+	}
+
+	/**
 	 * An XML configuration of null registers no feeds.
 	 */
 	public function testXmlConfigurationNullRegistersNothing()

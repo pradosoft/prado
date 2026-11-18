@@ -20,6 +20,8 @@ Cross-cutting utilities: behavior/mixin system, logging, scheduled tasks, RPC cl
 
 - **`TLogRoute`** — Abstract base for log outputs; subclass and implement `processLogs()`.
 
+- **`TPsrLogger`**, **`TPsrLogRoute`** — PSR-3 adapters in `Log/` (`Prado\Util\Log`); require `psr/log`.
+
 - **`TParameterModule`** — Stores named configuration parameters.
 
 - **`TDbParameterModule`** — DB-backed parameter store; supports auto-capture of parameter changes.

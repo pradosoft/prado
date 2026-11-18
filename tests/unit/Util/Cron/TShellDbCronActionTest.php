@@ -8,7 +8,7 @@ use Prado\Shell\TShellWriter;
 use Prado\Prado;
 use Prado\Util\Cron\TShellCronAction;
 use Prado\Util\Cron\TCronModule;
-use Prado\Util\Cron\TDbCronModule;
+use Prado\Util\Cron\TDbCronManager;
 
 class TShellDbCronActionTest extends \PHPUnit\Framework\TestCase
 {
@@ -22,7 +22,7 @@ class TShellDbCronActionTest extends \PHPUnit\Framework\TestCase
 	
 	protected function getTestCronClass()
 	{
-		return TDbCronModule::class;
+		return TDbCronManager::class;
 	}
 
 	protected function setUp(): void

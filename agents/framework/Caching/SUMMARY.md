@@ -20,6 +20,10 @@ Cache backends and dependency system providing unified `ICache` interface over m
 
 - **`TEtcdCache`** — etcd distributed cache using HTTP v2 API via cURL.
 
+- **`TPsrSimpleCache`**, **`TPsrCacheItemPool`** — PSR-16 and PSR-6 adapter modules over a Prado `ICache`; require `psr/cache` and `psr/simple-cache`.
+
+- **`TPsrCache`** — `TCache` stored in a PSR-16 or PSR-6 cache.
+
 - **`TFileCacheDependency`** — Invalidates when a file's `mtime` changes.
 
 - **`TDirectoryCacheDependency`** — Invalidates when any file in a directory changes; properties: `RecursiveCheck`, `RecursiveLevel`.

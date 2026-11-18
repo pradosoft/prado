@@ -38,6 +38,16 @@ Cache backends and dependency system providing unified `ICache` interface over m
 
 - **[`TEtcdCache`](TEtcdCache.md)** — etcd distributed cache using the HTTP v2 API via cURL. Properties: `Host`, `Port` (default `2379`), `Dir` (etcd directory, default `'pradocache'`). Values stored as JSON with optional TTL.
 
+## PSR Adapters
+
+On Prado 4.3 these classes require the `psr/cache` and `psr/simple-cache` packages, version 2 or 3, which composer suggests. **Since 4.3.3.**
+
+- **[`TPsrSimpleCache`](TPsrSimpleCache.md)** — PSR-16 `CacheInterface` module over a Prado [`ICache`](ICache.md). Properties: `BackingCacheId`, `BackingCache`, `KeyPrefix`, `DefaultExpire`.
+- **[`TPsrCacheItemPool`](TPsrCacheItemPool.md)** — PSR-6 `CacheItemPoolInterface` module over a Prado `ICache`, with [`TPsrCacheItem`](TPsrCacheItem.md) items and deferred saves.
+- **[`TPsrCacheBackingTrait`](TPsrCacheBackingTrait.md)** — Backing resolution, key validation, the value envelope, and TTL rules shared by the two adapters.
+- **[`TPsrCache`](TPsrCache.md)** — The reverse adapter: a [`TCache`](TCache.md) stored in a PSR-16 or PSR-6 cache. Needs only the package of its backing's interface.
+- **[`TPsrCacheException`](TPsrCacheException.md)** / **[`TPsrCacheInvalidArgumentException`](TPsrCacheInvalidArgumentException.md)** — Missing backing and illegal key; each implements the PSR-6 and PSR-16 exception interfaces.
+
 ## Cache Dependencies
 
 - **[`TFileCacheDependency`](TFileCacheDependency.md)** — Invalidates when a file's `mtime` changes.

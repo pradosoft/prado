@@ -10,6 +10,7 @@ This file provides guidance to Agents when working with code in this repository.
 | [Behaviors/](Behaviors/INDEX.md) | Pre-built installable behaviors (lazy loading, page behaviors, signals, etc.) |
 | [Cron/](Cron/INDEX.md) | Scheduled task engine: [`TCronModule`](Cron/TCronModule.md), [`TDbCronManager`](Cron/TDbCronManager.md), [`TTimeScheduler`](Cron/TTimeScheduler.md) |
 | [Helpers/](Helpers/INDEX.md) | Static utility classes: [`TArrayHelper`](Helpers/TArrayHelper.md), [`TBitHelper`](Helpers/TBitHelper.md), [`TProcessHelper`](Helpers/TProcessHelper.md) |
+| [Log/](Log/INDEX.md) | PSR-3 adapters: [`TPsrLogger`](Log/TPsrLogger.md), [`TPsrLogRoute`](Log/TPsrLogRoute.md) |
 | [Math/](Math/INDEX.md) | [`TRational`](Math/TRational.md), [`TURational`](Math/TURational.md) — rational number arithmetic |
 | [Traits/](Traits/INDEX.md) | Reusable PHP traits: [`TConstantReflectionTrait`](Traits/TConstantReflectionTrait.md), [`TInitializedTrait`](Traits/TInitializedTrait.md) |
 
@@ -49,6 +50,9 @@ When a behavior registers event handlers in `attach()`, it **must** unregister t
   - **[`TFirePhpLogRoute`](TFirePhpLogRoute.md)** — Sends log entries over HTTP headers for FirePHP. Implements `IOutputLogRoute`. Property: `GroupLabel`.
   - **[`TStdOutLogRoute`](TStdOutLogRoute.md)** — Writes log entries to stdout. Property: `OnlyDevServer`. @since 4.3.0
   - **[`TSysLogRoute`](TSysLogRoute.md)** — Routes log entries to the OS syslog. Properties: `SysLogPrefix`, `SysLogFlags`, `Facility`. @since 4.3.0
+  - **[`TPsrLogRoute`](Log/TPsrLogRoute.md)** — Forwards entries to an external PSR-3 logger. Property: `Logger`. In `Prado\Util\Log`; requires `psr/log`. @since 4.3.3
+
+- **[`TPsrLogger`](Log/TPsrLogger.md)** — Adapts [`TLogger`](TLogger.md) to the PSR-3 `LoggerInterface`, so a PSR-3 library writes into the application log. In `Prado\Util\Log`; requires `psr/log`. @since 4.3.3
 
 ## Database Modules
 

@@ -211,12 +211,6 @@ parameters:
 			path: framework/Util/Cron/TTimeScheduler.php
 
 		-
-			message: '#^Strict comparison using \=\=\= between float and 0 will always evaluate to false\.$#'
-			identifier: identical.alwaysFalse
-			count: 1
-			path: framework/Util/Math/TRational.php
-
-		-
 			message: '#^Unreachable statement \- code above always terminates\.$#'
 			identifier: deadCode.unreachable
 			count: 1

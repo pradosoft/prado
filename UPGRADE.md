@@ -7,8 +7,46 @@ if you want to upgrade from version A to version C and there is
 version B between A and C, you need to following the instructions
 for both A and B.
 
+Preparing for v4.4
+------------------
+4.3.3 runs code written for 4.4 where the two overlap, so an application makes these changes on 4.3.3
+and upgrades without them. The 4.4 UPGRADE.md lists every change.
+- 4.4 requires PHP 8.2. Run the application on PHP 8.2 or later under 4.3.3 first.
+- 4.4 changes these defaults. Set each one explicitly on 4.3.3 to the value the application keeps, and
+  the upgrade changes nothing:
+  - `TApplication.Mode`: 4.4 defaults to `Normal`; 4.3 defaults to `Debug`.
+  - `TSecurityManager.EncryptionKeyAlgorithm`: 4.4 defaults to `sha256`; 4.3 to `md5`. Data encrypted under
+    one value, such as auto-login cookies and encrypted page state, does not decrypt under the other.
+  - `TSecurityManager.UseEncryptionHmac`: 4.4 defaults to `true`; 4.3 to `false`. With `true`, data
+    encrypted without an HMAC does not decrypt.
+  - `TUserManager.PasswordMode`: 4.4 defaults to `SHA1`; 4.3 to `MD5`.
+  - `THttpCookie.HttpOnly`: 4.4 defaults to `true`. A cookie that JavaScript reads sets `HttpOnly="false"`.
+- 4.4 refuses a postback or callback without the page's CSRF token. A form or script outside Prado that
+  posts to a page adds the token when it moves to 4.4.
+- ActiveRecord, SqlMap, and RPC leave the framework in 4.4. An application that uses them requires
+  `pradosoft/prado-activerecord`, `pradosoft/prado-sqlmap`, or `pradosoft/prado-rpc` when it moves to 4.4.
+  Namespaces and class names are unchanged.
+- 4.4 moves the logging classes from `Prado\Util` to `Prado\Util\Log` without aliases. Short class names in
+  configuration (`class="TLogRouter"`) resolve on both versions; `use` statements change at the upgrade.
+- Use the 4.4 names, which 4.3.3 provides: `TDatePicker.DateInputMode` for `InputMode`,
+  `TReCaptcha2::getCaptchaResponse()` for `getResponse()`, `TDbCronManager` for `TDbCronModule`, `TWebColor`
+  for `TWebColors`, `TTextBoxMode::DatetimeLocal` for `Datetime`, and TReCaptcha2 for TReCaptcha.
+- A PHP-configured `TFeedService` lists its feeds under a `feeds` key.
+- `TPsrSimpleCache`, `TPsrCacheItemPool`, and `TPsrCache` (with `psr/cache` and `psr/simple-cache`), and
+  `TPsrLogger` and `TPsrLogRoute` (with `psr/log`), have the same class names on 4.3.3 and 4.4. All caching in
+  Prado 5 is PSR compliant, so cache access through `TPsrSimpleCache` or `TPsrCacheItemPool` carries over
+  to 4.4 and 5 unchanged.
+
 Upgrading from v4.3.2
 ---------------------
+- TDatePicker::InputMode is deprecated; use DateInputMode. Prado 4.4 removes InputMode.
+- A PHP-configured TFeedService reads its feeds from a `feeds` key. Feeds beside the service `class` key still
+  load; that form is deprecated.
+- TPage no longer restores focus from the posted `PRADO_LASTFOCUS` field, which it wrote into page JavaScript
+  without encoding. No client script has posted the field since 2006, and `TPage::setFocus()` is unchanged.
+  `TPage::FIELD_LASTFOCUS` is deprecated.
+- `TTextBoxMode::Datetime` is deprecated; HTML removed `type="datetime"`. Use `DatetimeLocal`.
+- TWebColors is deprecated; use TWebColor. TDbCronModule logs a deprecation notice in Debug mode; use TDbCronManager.
 - Prado\TEventParameter adds a second constructor $readOnly
 - TReCaptcha and TReCaptchaValidator are deprecated. Google retired reCAPTCHA v1, so they
   cannot validate. Replace them with TReCaptcha2 and TReCaptcha2Validator, using reCAPTCHA v2 keys:
