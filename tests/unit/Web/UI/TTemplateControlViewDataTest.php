@@ -2,7 +2,9 @@
 
 namespace Prado\Test\Unit\Web\UI;
 
+use Prado\Web\UI\IPostBackDataHandler;
 use Prado\Web\UI\IViewDataModel;
+use Prado\Web\UI\TControl;
 use Prado\Web\UI\TTemplateControl;
 use Prado\Web\UI\WebControls\TCheckBox;
 use Prado\Web\UI\WebControls\TDatePicker;
@@ -56,6 +58,42 @@ class ViewDataPlainModel
 	public $born = '2001-02-03';
 	public $ID = 'not a control';
 	protected $hidden = 'hidden';
+}
+
+/**
+ * A model that rejects the values it receives.
+ */
+class ViewDataRejectingModel implements IViewDataModel
+{
+	public function getViewData(): array
+	{
+		return [];
+	}
+
+	public function setViewData(array $data): void
+	{
+		throw new \RuntimeException('model rejected');
+	}
+}
+
+/**
+ * An input control that gives no data value.
+ */
+class ViewDataPostBackOnlyControl extends TControl implements IPostBackDataHandler
+{
+	public function loadPostData($key, $values)
+	{
+		return false;
+	}
+
+	public function raisePostDataChangedEvent()
+	{
+	}
+
+	public function getDataChanged()
+	{
+		return false;
+	}
 }
 
 class ViewDataThrowingTextBox extends TTextBox
@@ -276,5 +314,75 @@ class TTemplateControlViewDataTest extends \PHPUnit\Framework\TestCase
 
 		$this->assertSame('Ada', $model->received['name']);
 		$this->assertTrue($model->received['active']);
+	}
+
+	public function testTryToUpdateModelSwallowsAModelExceptionByDefault(): void
+	{
+		$this->view->tryToUpdateModel(new ViewDataRejectingModel());
+		$this->assertTrue(true);
+	}
+
+	public function testTryToUpdateModelRethrowsAModelExceptionWhenAsked(): void
+	{
+		$this->expectException(\RuntimeException::class);
+		$this->expectExceptionMessage('model rejected');
+		$this->view->tryToUpdateModel(new ViewDataRejectingModel(), true);
+	}
+
+	public function testTryToUpdateModelWithoutRegisteredObjects(): void
+	{
+		$model = new ViewDataModelStub();
+		(new TTemplateControl())->tryToUpdateModel($model);
+		$this->assertSame([], $model->received);
+	}
+
+	public function testTryToUpdateModelWithOneRegisteredObjectOfEachKind(): void
+	{
+		$this->name->setText('Ada');
+		$this->born->setDate('2001-02-03');
+		foreach (['name' => 'Ada', 'born' => '2001-02-03', 'caption' => null, 'broken' => null] as $id => $expected) {
+			$view = new TTemplateControl();
+			$view->registerObject($id, $id === 'broken' ? new ViewDataThrowingTextBox() : $this->{$id});
+			$model = new ViewDataModelStub();
+			$view->tryToUpdateModel($model);
+			$this->assertSame($expected === null ? [] : [$id => $expected], $model->received);
+		}
+	}
+
+	public function testTryToUpdateModelReadsTheControlAfterASwallowedException(): void
+	{
+		$this->name->setText('Ada');
+		$this->born->setDate('2001-02-03');
+		$cases = [
+			'name' => ['name' => 'Ada'],
+			'born' => ['born' => '2001-02-03'],
+			'caption' => [],
+			'input' => [],
+		];
+		foreach ($cases as $id => $expected) {
+			$view = new TTemplateControl();
+			$view->registerObject('broken', new ViewDataThrowingTextBox());
+			$view->registerObject($id, $id === 'input' ? new ViewDataPostBackOnlyControl() : $this->{$id});
+			$model = new ViewDataModelStub();
+			$view->tryToUpdateModel($model);
+			$this->assertSame($expected, $model->received, $id);
+		}
+	}
+
+	public function testTryToUpdateModelSkipsAnInputControlWithoutData(): void
+	{
+		$view = new TTemplateControl();
+		$view->registerObject('input', new ViewDataPostBackOnlyControl());
+		$model = new ViewDataModelStub();
+		$view->tryToUpdateModel($model);
+		$this->assertSame([], $model->received);
+	}
+
+	public function testTryToUpdateModelLeavesAPlainObjectWithoutMatchingProperties(): void
+	{
+		$this->name->setText('Ada');
+		$model = new \stdClass();
+		$this->view->tryToUpdateModel($model);
+		$this->assertSame([], get_object_vars($model));
 	}
 }

@@ -2,13 +2,55 @@
 
 namespace Prado\Test\Unit\Web\UI;
 
+use Prado\Web\UI\TControl;
 use Prado\Web\UI\TTemplateControl;
 use Prado\Web\UI\TTemplate;
 use Prado\Web\UI\ITemplate;
 use Prado\Web\UI\WebControls\TContent;
 use Prado\Web\UI\WebControls\TContentPlaceHolder;
 use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Prado;
 use Prado\Test\Unit\PradoUnit;
+use Prado\Web\Services\TPageService;
+use Prado\Web\UI\TTemplateManager;
+
+/**
+ * Template control without a template file of its own.
+ */
+class TTemplateControlTestNoTemplate extends TTemplateControl
+{
+}
+
+/**
+ * Master control holding the placeholder `Main` between two texts.
+ */
+class TTemplateControlTestMaster extends TTemplateControl
+{
+	public function __construct()
+	{
+		parent::__construct();
+		$this->setTemplate(new TTemplate('head<com:TContentPlaceHolder ID="Main" />foot', sys_get_temp_dir()));
+	}
+}
+
+/**
+ * Template manager returning the templates a test assigns to class names.
+ */
+class TTemplateControlTestTemplateManager extends TTemplateManager
+{
+	/** @var array<string, ?ITemplate> templates keyed by class name */
+	public array $templates = [];
+
+	/** @var string[] the class names asked for */
+	public array $requested = [];
+
+	public function getTemplateByClassName($className)
+	{
+		$this->requested[] = $className;
+		return $this->templates[$className] ?? null;
+	}
+}
 
 class TTemplateControlTest extends \PHPUnit\Framework\TestCase
 {
@@ -309,5 +351,117 @@ class TTemplateControlTest extends \PHPUnit\Framework\TestCase
 		$contents = $this->getContents($control);
 		$this->assertArrayHasKey('somePlaceholder', $contents);
 		$this->assertSame($content, $contents['somePlaceholder']);
+	}
+
+	public function testInjectContentReplacesTheRegisteredPlaceholder(): void
+	{
+		$control = new TTemplateControl();
+		$parent = new TControl();
+		$before = new TControl();
+		$placeholder = new TContentPlaceHolder();
+		$parent->getControls()->add($before);
+		$parent->getControls()->add($placeholder);
+		$control->registerContentPlaceHolder('Main', $placeholder);
+		$content = new TContent();
+		$control->injectContent('Main', $content);
+		$this->assertSame([$before, $content], $parent->getControls()->toArray());
+	}
+
+	// -----------------------------------------------------------------------
+	// getTemplate() loaded through the page service, and initRecursive() with a master
+	// -----------------------------------------------------------------------
+
+	/**
+	 * Runs the test with a page service and a template manager in the application.
+	 */
+	private function withTemplateManager(callable $test): void
+	{
+		$app = Prado::getApplication();
+		$snapshot = PradoUnit::snapshot($app, ['_service', '_templateManager']);
+		$templates = PradoUnit::snapshotStatic(TTemplateControl::class, ['_template']);
+		try {
+			$app->setService(new TPageService());
+			$app->setTemplateManager($manager = new TTemplateControlTestTemplateManager());
+			$test($manager);
+		} finally {
+			PradoUnit::restoreStatic(TTemplateControl::class, $templates);
+			PradoUnit::restore($app, $snapshot);
+		}
+	}
+
+	public function testGetTemplateLoadsTheClassTemplateOnce(): void
+	{
+		$this->withTemplateManager(function ($manager) {
+			$template = new TTemplate('text', sys_get_temp_dir());
+			$manager->templates[TTemplateControlTestNoTemplate::class] = $template;
+			$this->assertSame($template, (new TTemplateControlTestNoTemplate())->getTemplate());
+			$this->assertSame($template, (new TTemplateControlTestNoTemplate())->getTemplate());
+			$this->assertSame([TTemplateControlTestNoTemplate::class], $manager->requested);
+		});
+	}
+
+	public function testGetIsSourceTemplateControlWithoutATemplateIsFalse(): void
+	{
+		$this->withTemplateManager(function () {
+			$this->assertFalse((new TTemplateControlTestNoTemplate())->getIsSourceTemplateControl());
+		});
+	}
+
+	/**
+	 * Creates a template control whose template uses the master class and has the content `Main`.
+	 */
+	private function createContentControl(string $masterClass, string $contentId = 'Main'): TTemplateControl
+	{
+		$control = new TTemplateControl();
+		$control->setTemplate(new TTemplate('<%@ MasterClass="' . $masterClass . '" %><com:TContent ID="' . $contentId . '">body</com:TContent>', sys_get_temp_dir()));
+		return $control;
+	}
+
+	public function testInitRecursiveInjectsTheContentsIntoTheMaster(): void
+	{
+		$control = $this->createContentControl(TTemplateControlTestMaster::class);
+		PradoUnit::invoke($control, 'initRecursive');
+		$master = $control->getMaster();
+		$this->assertInstanceOf(TTemplateControlTestMaster::class, $master);
+		$this->assertSame([$master], $control->getControls()->toArray());
+		$controls = $master->getControls();
+		$this->assertCount(3, $controls);
+		$this->assertInstanceOf(TContent::class, $controls[1]);
+		$this->assertSame('Main', $controls[1]->getID());
+	}
+
+	public function testInitRecursiveWithAMasterThatIsNotATemplateControlThrows(): void
+	{
+		$control = $this->createContentControl(TControl::class);
+		$this->expectException(TInvalidDataValueException::class);
+		PradoUnit::invoke($control, 'initRecursive');
+	}
+
+	public function testInitRecursiveWithContentsAndNoMasterThrows(): void
+	{
+		$control = new TTemplateControl();
+		$control->setTemplate(new TTemplate('<com:TContent ID="Main">body</com:TContent>', sys_get_temp_dir()));
+		$this->expectException(TConfigurationException::class);
+		$this->expectExceptionMessageMatches('/master/i');
+		PradoUnit::invoke($control, 'initRecursive');
+	}
+
+	public function testInitRecursiveWithoutMasterOrContentsInitializesTheChildren(): void
+	{
+		$control = new TTemplateControl();
+		$control->setTemplate(new TTemplate('<com:TLabel ID="lbl" />', sys_get_temp_dir()));
+		PradoUnit::invoke($control, 'initRecursive');
+		$this->assertNull($control->getMaster());
+		$this->assertSame(TControl::CS_INITIALIZED, PradoUnit::invoke($control->getRegisteredObject('lbl'), 'getControlStage'));
+	}
+
+	public function testInitRecursiveWithAMasterAndNoContentsKeepsThePlaceholder(): void
+	{
+		$control = new TTemplateControl();
+		$control->setTemplate(new TTemplate('<%@ MasterClass="' . TTemplateControlTestMaster::class . '" %>', sys_get_temp_dir()));
+		PradoUnit::invoke($control, 'initRecursive');
+		$controls = $control->getMaster()->getControls();
+		$this->assertCount(3, $controls);
+		$this->assertInstanceOf(TContentPlaceHolder::class, $controls[1]);
 	}
 }

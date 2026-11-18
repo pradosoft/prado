@@ -424,7 +424,7 @@ class TJavaScript
 	 *   separator is `.` in every locale
 	 * - `null` → `'null'`
 	 * - Sequential array (`0…n-1` keys) → `[…]`
-	 * - Associative array → `{'key':value,…}`
+	 * - Associative array → `{'key':value,…}`; {@see quoteKey()} escapes each key
 	 * - {@see TJavaScriptLiteral} → raw literal string (not re-encoded)
 	 * - Other object → encoded as its public properties via `get_object_vars()`
 	 * - Empty-string elements in arrays are silently skipped unless
@@ -458,7 +458,7 @@ class TJavaScript
 						if ($results !== '') {
 							$results .= ',';
 						}
-						$results .= "'$k':" . self::encode($v, $toMap, $encodeEmptyStrings);
+						$results .= self::quoteKey($k) . ':' . self::encode($v, $toMap, $encodeEmptyStrings);
 					}
 				}
 				return '{' . $results . '}';
@@ -498,6 +498,24 @@ class TJavaScript
 		} else {
 			return '';
 		}
+	}
+
+	/**
+	 * Quotes an object key for {@see encode()} in single quotes. Control characters,
+	 * `'`, `\`, `<`, `>`, and `&` become `\xNN` escapes, and U+2028 and U+2029
+	 * become `\uNNNN`, so a key cannot end the string or the surrounding `<script>`.
+	 * A key without those characters is written as is.
+	 * @param int|string $key the array key
+	 * @return string the quoted key, e.g. `'onClick'`
+	 */
+	protected static function quoteKey(int|string $key): string
+	{
+		$escaped = preg_replace_callback(
+			'/[\\x00-\\x1F\'\\\\<>&]|\\xE2\\x80[\\xA8\\xA9]/',
+			fn ($m) => strlen($m[0]) === 1 ? sprintf('\\x%02X', ord($m[0])) : ($m[0] === "\u{2028}" ? '\\u2028' : '\\u2029'),
+			(string) $key
+		);
+		return "'" . $escaped . "'";
 	}
 
 	/**

@@ -23,6 +23,7 @@ $control->getParent();             // TControl or null
 $control->getPage();               // TPage (root)
 $control->getNamingContainer();    // nearest INamingContainer ancestor
 $control->findControl($id);        // find descendant by ID
+$control->ensureChildControls();   // createChildControls() once; a throw still marks the children created
 ```
 
 ### IDs

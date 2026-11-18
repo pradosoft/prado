@@ -15,6 +15,7 @@ use Prado\Exceptions\TNotSupportedException;
 use Prado\IO\IResource;
 use Prado\TComponent;
 use Revolt\EventLoop;
+use Revolt\EventLoop\Driver\StreamSelectDriver;
 use Revolt\EventLoop\Internal\AbstractDriver;
 use Revolt\EventLoop\InvalidCallbackError;
 use Revolt\EventLoop\Suspension;
@@ -41,6 +42,10 @@ use Revolt\EventLoop\UnsupportedFeatureException;
  * return value is discarded, where the driver rejects a non-null return.  An exception a callback
  * throws without an {@see setErrorHandler() ErrorHandler} leaves {@see run()} as the original
  * exception, unwrapped from Revolt's {@see UncaughtThrowable}.
+ *
+ * Revolt's `stream_select()` driver dispatches a queued signal without checking that it has a
+ * callback, so {@see cancel()} and {@see disable()} of a signal callback drop the queued signals
+ * left without one ({@see dropOrphanSignals()}).
  *
  * {@see isRunning()} is true while a {@see run()} of this class is in progress or while the
  * driver's loop fiber executes, which runs every callback and every resume of a suspended fiber.
@@ -70,6 +75,9 @@ class TRevoltEventLoop extends TComponent implements IEventLoop
 	/** @var ?\Closure The reader of a driver's loop fiber, bound to the driver's scope. */
 	private static ?\Closure $_loopFiberReader = null;
 
+	/** @var ?\Closure The remover of a `stream_select()` driver's orphan queued signals, bound to the driver's scope. */
+	private static ?\Closure $_orphanSignalDropper = null;
+
 	/**
 	 * Gives a forked child a driver with no callbacks.  The inherited driver's callbacks are
 	 * cancelled and its error handler unset.  Outside a fiber the inherited driver is then run to
@@ -84,6 +92,7 @@ class TRevoltEventLoop extends TComponent implements IEventLoop
 			foreach ($driver->getIdentifiers() as $id) {
 				$driver->cancel($id);
 			}
+			static::dropOrphanSignals();
 			$driver->setErrorHandler(null);
 			if (\Fiber::getCurrent() !== null) {
 				return;
@@ -231,10 +240,14 @@ class TRevoltEventLoop extends TComponent implements IEventLoop
 	public function disable(string $callbackId): string
 	{
 		try {
-			return EventLoop::disable($callbackId);
+			$id = EventLoop::disable($callbackId);
 		} catch (InvalidCallbackError $e) {
 			throw new TInvalidDataValueException('eventloop_callback_invalid', $callbackId);
 		}
+		if ($this->isSignalCallback($callbackId)) {
+			static::dropOrphanSignals();
+		}
+		return $id;
 	}
 
 	/**
@@ -244,7 +257,25 @@ class TRevoltEventLoop extends TComponent implements IEventLoop
 	public function cancel(string $callbackId): void
 	{
 		EventLoop::cancel($callbackId);
-		$this->forgetSignalCallback($callbackId);
+		if ($this->isSignalCallback($callbackId)) {
+			$this->forgetSignalCallback($callbackId);
+			static::dropOrphanSignals();
+		}
+	}
+
+	/**
+	 * Indicates whether a callback is a signal callback registered through this class.
+	 * @param string $callbackId The callback identifier.
+	 * @return bool Whether the callback is a signal callback.
+	 */
+	private function isSignalCallback(string $callbackId): bool
+	{
+		foreach (self::$_signalIds as $ids) {
+			if (isset($ids[$callbackId])) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -341,6 +372,32 @@ class TRevoltEventLoop extends TComponent implements IEventLoop
 		}
 		self::$_loopFiberReader ??= \Closure::bind(static fn (AbstractDriver $driver): \Fiber => $driver->fiber, null, AbstractDriver::class);
 		return (self::$_loopFiberReader)($driver)->isRunning();
+	}
+
+	/**
+	 * Drops the queued signals of a `stream_select()` driver that have no callback left.  The
+	 * driver's pcntl handler queues a caught signal, and its next dispatch reads the callbacks of
+	 * each queued signal.  A signal caught by a `pcntl_signal_dispatch()` outside the loop, or
+	 * delivered asynchronously, waits in the queue; when its last callback is then cancelled or
+	 * disabled, the dispatch reads a missing key and the warning stops the loop.  Revolt does not
+	 * guard that read, so the queue is read from the driver.  A driver of another class is left alone.
+	 */
+	protected static function dropOrphanSignals(): void
+	{
+		$driver = EventLoop::getDriver();
+		if (!($driver instanceof StreamSelectDriver) || !property_exists(StreamSelectDriver::class, 'signalQueue') || !property_exists(StreamSelectDriver::class, 'signalCallbacks')) {
+			return;
+		}
+		self::$_orphanSignalDropper ??= \Closure::bind(static function (StreamSelectDriver $driver): void {
+			$queue = $driver->signalQueue;
+			for ($count = $queue->count(); $count > 0; $count--) {
+				$signal = $queue->dequeue();
+				if (isset($driver->signalCallbacks[$signal])) {
+					$queue->enqueue($signal);
+				}
+			}
+		}, null, StreamSelectDriver::class);
+		(self::$_orphanSignalDropper)($driver);
 	}
 
 	/**

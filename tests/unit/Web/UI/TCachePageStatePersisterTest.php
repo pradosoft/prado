@@ -2,15 +2,35 @@
 
 namespace Prado\Test\Unit\Web\UI;
 
+use Prado\Caching\TMemoryCache;
+use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\THttpException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Prado;
+use Prado\TModule;
 use Prado\Util\Log\TLogger;
 use Prado\Security\IUser;
 use Prado\Security\TAuthManager;
 use Prado\Test\Unit\Harness\TTestApplication;
+use Prado\Test\Unit\Harness\Web\TTestMemorySession;
+use Prado\Test\Unit\PradoUnit;
 use Prado\Web\THttpSession;
 use Prado\Web\UI\TCachePageStatePersister;
 use Prado\Web\UI\TCachePageStatePersisterTimeoutMode;
+use Prado\Web\UI\TPage;
+
+/**
+ * A page whose posted client state a test sets, without a request.
+ */
+class TCachePersisterTestPage extends TPage
+{
+	public ?string $requestClientState = null;
+
+	public function getRequestClientState()
+	{
+		return $this->requestClientState;
+	}
+}
 
 /**
  * Reports fixed login and session lifetimes, so a test drives the resolution chain
@@ -239,5 +259,186 @@ class TCachePageStatePersisterTest extends \PHPUnit\Framework\TestCase
 		$persister = new TCachePageStatePersister();
 		$persister->setCacheTimeoutMode('Auth');
 		self::assertEquals(1800, $persister->getEffectiveCacheTimeout(), 'AuthExpire 0 must not make the cached state permanent');
+	}
+	// ---- Page, module ID, key prefix, and timeout properties ----
+
+	public function testPageProperty()
+	{
+		$persister = new TCachePageStatePersister();
+		self::assertNull($persister->getPage());
+		$page = new TPage();
+		$persister->setPage($page);
+		self::assertSame($page, $persister->getPage());
+	}
+
+	public function testCacheModuleIDProperty()
+	{
+		$persister = new TCachePageStatePersister();
+		self::assertSame('', $persister->getCacheModuleID());
+		$persister->setCacheModuleID('pagecache');
+		self::assertSame('pagecache', $persister->getCacheModuleID());
+	}
+
+	public function testKeyPrefixProperty()
+	{
+		$persister = new TCachePageStatePersister();
+		self::assertSame('statepersister', $persister->getKeyPrefix());
+		$persister->setKeyPrefix('state');
+		self::assertSame('state', $persister->getKeyPrefix());
+	}
+
+	public function testSetCacheTimeoutAcceptsZeroAndRejectsANegativeValue()
+	{
+		$persister = new TCachePageStatePersister();
+		$persister->setCacheTimeout('0');
+		self::assertSame(0, $persister->getCacheTimeout());
+		$this->expectException(TInvalidDataValueException::class);
+		$persister->setCacheTimeout(-1);
+	}
+
+	// ---- The cache ----
+
+	public function testGetCacheUsesTheApplicationCacheOnce()
+	{
+		$cache = new TMemoryCache();
+		$this->app->setCache($cache);
+		$persister = new TCachePageStatePersister();
+		self::assertSame($cache, $persister->getCache());
+		$this->app->setCache(new TMemoryCache());
+		self::assertSame($cache, $persister->getCache(), 'the first cache found is kept');
+	}
+
+	public function testGetCacheWithoutAnApplicationCacheThrows()
+	{
+		$this->expectException(TConfigurationException::class);
+		$this->expectExceptionMessage('requires a cache module');
+		(new TCachePageStatePersister())->getCache();
+	}
+
+	public function testGetCacheUsesTheCacheModuleID()
+	{
+		$cache = new TMemoryCache();
+		$this->app->setModule('pagecache', $cache);
+		$persister = new TCachePageStatePersister();
+		$persister->setCacheModuleID('pagecache');
+		self::assertSame($cache, $persister->getCache());
+	}
+
+	public function testGetCacheWithAMissingCacheModuleIDThrows()
+	{
+		$persister = new TCachePageStatePersister();
+		$persister->setCacheModuleID('nosuchcache');
+		$this->expectException(TConfigurationException::class);
+		$this->expectExceptionMessage('does not point to a valid cache module');
+		$persister->getCache();
+	}
+
+	public function testGetCacheWithACacheModuleIDOfAModuleThatIsNoCacheThrows()
+	{
+		$this->app->setModule('notacache', new class () extends TModule {
+		});
+		$persister = new TCachePageStatePersister();
+		$persister->setCacheModuleID('notacache');
+		$this->expectException(TConfigurationException::class);
+		$this->expectExceptionMessage('does not point to a valid cache module');
+		$persister->getCache();
+	}
+
+	// ---- The sources, without an application or a module ----
+
+	public function testSessionTimeoutIsZeroWithoutASessionModule()
+	{
+		$persister = new TCachePageStatePersister();
+		$persister->setCacheTimeoutMode('Session');
+		self::assertEquals(1800, $persister->getEffectiveCacheTimeout());
+	}
+
+	public function testSessionTimeoutLoadsALazySessionModule()
+	{
+		self::assertTrue(class_exists(TTestMemorySession::class), 'the class map resolves only a loaded test class');
+		PradoUnit::invoke($this->app, 'setLazyModule', 'lazysession', [TTestMemorySession::class, [], null]);
+		$this->app->setModule('lazysession', null);
+		ini_set('session.gc_maxlifetime', '2700');
+
+		$persister = new TCachePageStatePersister();
+		$persister->setCacheTimeoutMode('Session');
+		self::assertEquals(2700, $persister->getEffectiveCacheTimeout());
+		self::assertInstanceOf(TTestMemorySession::class, $this->app->getModule('lazysession'));
+	}
+
+	public function testTheSourcesAreZeroWithoutAnApplication()
+	{
+		$saved = PradoUnit::getStaticProp(Prado::class, '_application');
+		PradoUnit::setStaticProp(Prado::class, '_application', null);
+		try {
+			$persister = new TCachePageStatePersister();
+			self::assertSame(0, PradoUnit::invoke($persister, 'getAuthTimeout'));
+			self::assertSame(0, PradoUnit::invoke($persister, 'getSessionTimeout'));
+			self::assertNull(PradoUnit::invoke($persister, 'findModule', THttpSession::class));
+		} finally {
+			PradoUnit::setStaticProp(Prado::class, '_application', $saved);
+		}
+	}
+
+	// ---- Saving and loading ----
+
+	/**
+	 * @return array{TCachePageStatePersister, TCachePersisterTestPage, TMemoryCache} a persister of a page and its cache.
+	 */
+	protected function newSavingPersister(): array
+	{
+		$cache = new TMemoryCache();
+		$this->app->setCache($cache);
+		$page = new TCachePersisterTestPage();
+		$page->setEnableStateValidation(false);
+		$page->setEnableStateEncryption(false);
+		$page->setEnableStateCompression(false);
+		$page->setPagePath('Home');
+		$persister = new TCachePageStatePersister();
+		$persister->setPage($page);
+		$persister->setCacheTimeout(600);
+		return [$persister, $page, $cache];
+	}
+
+	public function testSaveCachesTheStateAndLoadReadsItBack()
+	{
+		[$persister, $page, $cache] = $this->newSavingPersister();
+		$state = ['a' => 1, 'b' => [2, 3]];
+
+		$persister->save($state);
+
+		$clientState = $page->getClientState();
+		self::assertNotEmpty($clientState);
+		$page->requestClientState = $clientState;
+		self::assertSame($state, $persister->load());
+	}
+
+	public function testTheKeyHoldsThePrefixThePagePathAndTheTimestamp()
+	{
+		[$persister, $page] = $this->newSavingPersister();
+		$persister->setKeyPrefix('pfx');
+		$key = PradoUnit::invoke($persister, 'calculateKey', '12.5');
+		self::assertStringStartsWith('pfx:', $key);
+		self::assertStringEndsWith('Home12.5', $key);
+	}
+
+	public function testLoadWithoutClientStateThrows()
+	{
+		[$persister] = $this->newSavingPersister();
+		$this->expectException(THttpException::class);
+		$this->expectExceptionMessage('Page state is corrupted');
+		$persister->load();
+	}
+
+	public function testLoadOfAnExpiredStateThrows()
+	{
+		[$persister, $page, $cache] = $this->newSavingPersister();
+		$persister->save(['a' => 1]);
+		$page->requestClientState = $page->getClientState();
+		$cache->flush();
+
+		$this->expectException(THttpException::class);
+		$this->expectExceptionMessage('Page state is corrupted');
+		$persister->load();
 	}
 }

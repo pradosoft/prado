@@ -972,6 +972,8 @@ class TRenderFilterParameter extends TEventParameter implements IEventCycleParam
 		libxml_use_internal_errors($saved);
 		$this->storeErrors($errors);
 		if ($result === false) {
+			// libxml's HTML parser recovers from any input; loadHTML() returns false only when libxml cannot create the parser or the document.
+			// @codeCoverageIgnoreStart
 			$details = implode('; ', array_values(array_filter(
 				array_map(fn ($e) => trim($e->message), $errors)
 			)));
@@ -980,6 +982,7 @@ class TRenderFilterParameter extends TEventParameter implements IEventCycleParam
 				static::class
 			);
 			return false;
+			// @codeCoverageIgnoreEnd
 		}
 		$prefix = $dom->firstChild;
 		// libxml can place the doctype before the injected encoding prefix.

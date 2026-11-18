@@ -56,6 +56,17 @@ class THttpSessionTestGc extends THttpSession
 	}
 }
 
+class THttpSessionTestGcProbability extends THttpSessionTestGc
+{
+	public ?string $probabilityAtStart = null;
+
+	protected function sessionStart(): bool
+	{
+		$this->probabilityAtStart = ini_get('session.gc_probability');
+		return true;
+	}
+}
+
 class THttpSessionTestSaveHandler extends THttpSessionTestCookieParams
 {
 	public ?\SessionHandlerInterface $handler = null;
@@ -726,6 +737,45 @@ class THttpSessionTest extends \PHPUnit\Framework\TestCase
 		$this->assertFalse($session->gc());
 		$this->assertSame(0, $session->gcCalls);
 		$this->assertFalse($session->getIsStarted());
+	}
+
+	public function testGcStartsItsSessionWithoutAutomaticCollection()
+	{
+		$probability = ini_get('session.gc_probability');
+		ini_set('session.gc_probability', '7');
+		try {
+			$session = new THttpSessionTestGcProbability();
+			$this->assertSame(2, $session->gc());
+			$this->assertSame('0', $session->probabilityAtStart);
+			$this->assertSame('7', ini_get('session.gc_probability'));
+		} finally {
+			ini_set('session.gc_probability', $probability);
+		}
+	}
+
+	/**
+	 * @runInSeparateProcess
+	 */
+	public function testGcCountsWhenAutomaticCollectionWouldRun()
+	{
+		$dir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'prado-sessiongc-' . bin2hex(random_bytes(6));
+		mkdir($dir);
+		try {
+			ini_set('session.gc_probability', '1');
+			ini_set('session.gc_divisor', '1');
+			$old = $dir . DIRECTORY_SEPARATOR . 'sess_oldsession0000000000';
+			file_put_contents($old, '');
+			touch($old, time() - 1000);
+			$session = new THttpSession();
+			$session->setSavePath($dir);
+			$session->setTimeout(100);
+			$this->assertSame(1, $session->gc());
+			$this->assertFileDoesNotExist($old);
+			$this->assertSame('1', ini_get('session.gc_probability'));
+		} finally {
+			array_map('unlink', glob($dir . DIRECTORY_SEPARATOR . '*'));
+			rmdir($dir);
+		}
 	}
 
 	/**

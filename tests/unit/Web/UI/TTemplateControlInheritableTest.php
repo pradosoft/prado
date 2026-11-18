@@ -2,7 +2,12 @@
 
 namespace Prado\Test\Unit\Web\UI;
 
+use Prado\Prado;
+use Prado\Test\Unit\PradoUnit;
 use Prado\Util\TBehavior;
+use Prado\Web\Services\TPageService;
+use Prado\Web\UI\TTemplateControl;
+use Prado\Web\UI\TTemplateManager;
 use Prado\Web\UI\ITemplate;
 use Prado\Web\UI\TTemplate;
 use Prado\Web\UI\TTemplateControlInheritable;
@@ -20,6 +25,40 @@ class TTemplateControlInheritableCreateChildBehavior extends TBehavior
 	{
 		$this->callCount++;
 		return $callchain->dyCreateChildControls();
+	}
+}
+
+/**
+ * Template control base class with a `Title` property.
+ */
+class TTemplateControlInheritableTestBase extends TTemplateControlInheritable
+{
+	public string $title = '';
+
+	public function setTitle($value)
+	{
+		$this->title = $value;
+	}
+}
+
+/**
+ * Subclass of {@see TTemplateControlInheritableTestBase}.
+ */
+class TTemplateControlInheritableTestChild extends TTemplateControlInheritableTestBase
+{
+}
+
+/**
+ * Template manager returning the templates a test assigns to class names.
+ */
+class TTemplateControlInheritableTestTemplateManager extends TTemplateManager
+{
+	/** @var array<string, ?ITemplate> templates keyed by class name */
+	public array $templates = [];
+
+	public function getTemplateByClassName($className)
+	{
+		return $this->templates[$className] ?? null;
 	}
 }
 
@@ -252,14 +291,69 @@ class TTemplateControlInheritableTest extends \PHPUnit\Framework\TestCase
 		$this->assertFalse($ctrl->getIsSourceTemplateControl());
 	}
 
+	/**
+	 * Runs the test with a page service and a template manager in the application.
+	 */
+	private function withTemplateManager(callable $test): void
+	{
+		$app = Prado::getApplication();
+		$snapshot = PradoUnit::snapshot($app, ['_service', '_templateManager']);
+		$templates = PradoUnit::snapshotStatic(TTemplateControl::class, ['_template']);
+		try {
+			$app->setService(new TPageService());
+			$app->setTemplateManager($manager = new TTemplateControlInheritableTestTemplateManager());
+			$test($manager);
+		} finally {
+			PradoUnit::restoreStatic(TTemplateControl::class, $templates);
+			PradoUnit::restore($app, $snapshot);
+		}
+	}
+
 	public function testGetIsSourceTemplateControlFalseWhenNoOwnTemplateAndNoParentTemplate(): void
 	{
-		// No template from getTemplate(), and doCreateChildControlsFor path can't
-		// reach the service, so test the no-template branch directly via the
-		// getIsSourceTemplateControl() fallback which calls getService() — we can
-		// only exercise the own-template path safely in unit tests.
-		// Covered by the two tests above; this entry documents the coverage gap.
-		$this->assertTrue(true);
+		$this->withTemplateManager(function () {
+			$this->assertFalse((new TTemplateControlInheritableTestChild())->getIsSourceTemplateControl());
+		});
+	}
+
+	public function testGetIsSourceTemplateControlFollowsTheParentClassTemplate(): void
+	{
+		$this->withTemplateManager(function ($manager) {
+			$manager->templates[TTemplateControlInheritableTestBase::class] = new TTemplate('base', sys_get_temp_dir(), null, 0, true);
+			$this->assertTrue((new TTemplateControlInheritableTestChild())->getIsSourceTemplateControl());
+			$manager->templates[TTemplateControlInheritableTestBase::class] = new TTemplate('base', sys_get_temp_dir(), null, 0, false);
+			$this->assertFalse((new TTemplateControlInheritableTestChild())->getIsSourceTemplateControl());
+		});
+	}
+
+	public function testCreateChildControlsInstantiatesTheTemplatesOfTheParentClasses(): void
+	{
+		$this->withTemplateManager(function ($manager) {
+			$manager->templates[TTemplateControlInheritableTestBase::class] = new TTemplate('<%@ Title="base" %><com:TLabel ID="baseLabel" />', sys_get_temp_dir());
+			$control = new TTemplateControlInheritableTestChild();
+			$control->createChildControls();
+			$this->assertSame('base', $control->title);
+			$this->assertTrue($control->isObjectRegistered('baseLabel'));
+		});
+	}
+
+	public function testDoTemplateForClassThrowsOnNonStringDirectiveValue(): void
+	{
+		$this->withTemplateManager(function ($manager) {
+			$manager->templates[TTemplateControlInheritableTestBase::class] = $this->mockTemplate(['Title' => ['not', 'a', 'string']]);
+			$this->expectException(TConfigurationException::class);
+			(new TTemplateControlInheritableTestChild())->doTemplateForClass(TTemplateControlInheritableTestBase::class);
+		});
+	}
+
+	public function testDoCreateChildControlsForAClassWithoutParent(): void
+	{
+		$this->withTemplateManager(function ($manager) {
+			$manager->templates[\Prado\TComponent::class] = new TTemplate('<com:TLabel ID="rootLabel" />', sys_get_temp_dir());
+			$control = new TTemplateControlInheritableTestChild();
+			$control->doCreateChildControlsFor(\Prado\TComponent::class);
+			$this->assertTrue($control->isObjectRegistered('rootLabel'));
+		});
 	}
 
 	// -----------------------------------------------------------------------

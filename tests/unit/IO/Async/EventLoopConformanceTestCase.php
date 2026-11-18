@@ -10,6 +10,7 @@
 
 namespace Prado\Test\Unit\IO\Async;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\IO\Async\IEventLoop;
 use Prado\IO\Process\TProcessFork;
@@ -423,6 +424,46 @@ abstract class EventLoopConformanceTestCase extends \PHPUnit\Framework\TestCase
 			self::assertSame(SIGUSR2, $got, 'The signal callback runs with the signal number.');
 		} finally {
 			pcntl_signal(SIGUSR2, $prior);
+		}
+	}
+
+	public static function provideSignalRemovals(): array
+	{
+		return [
+			'cancel' => ['cancel'],
+			'disable' => ['disable'],
+		];
+	}
+
+	#[DataProvider('provideSignalRemovals')]
+	public function testASignalQueuedBeforeItsLastCallbackIsRemovedIsDropped(string $removal): void
+	{
+		if (!function_exists('pcntl_signal') || !function_exists('posix_kill')) {
+			self::markTestSkipped('pcntl and posix are required to raise a signal.');
+		}
+		$original = pcntl_signal_get_handler(SIGUSR1);
+		pcntl_signal(SIGUSR1, static function (int $signal): void {
+		});
+		try {
+			$ran = 0;
+			$id = $this->loop->onSignal(SIGUSR1, function () use (&$ran): void {
+				$ran++;
+			});
+			$this->loop->delay(0, fn () => $this->loop->stop());
+			$this->loop->run();   // the loop installs its handler by the time it runs
+			posix_kill(posix_getpid(), SIGUSR1);
+			pcntl_signal_dispatch();   // a dispatch outside the loop, as by TSignalsDispatcher, catches the signal for the loop
+			$this->loop->$removal($id);
+			$next = false;
+			$this->loop->delay(0, function () use (&$next): void {
+				$next = true;
+			});
+			$this->loop->run();
+			self::assertTrue($next, 'The loop runs on after the queued signal of a removed callback.');
+			self::assertSame(0, $ran, 'The removed callback does not run.');
+		} finally {
+			$this->loop->cancel($id);
+			pcntl_signal(SIGUSR1, $original);
 		}
 	}
 
