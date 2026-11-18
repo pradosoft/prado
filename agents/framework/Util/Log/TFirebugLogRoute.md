@@ -10,7 +10,7 @@
 **Implements:** `IOutputLogRoute`
 
 ## Overview
-`TFirebugLogRoute` outputs log messages to the Firebug browser console. For normal page requests it emits a `<script>` block that calls `console.info`, `console.warn`, or `console.error`. For callback (AJAX) requests it writes a structured JSON block using the callback debug header boundary, which the client-side PRADO runtime relays to Firebug.
+`TFirebugLogRoute` outputs log messages to the Firebug browser console. For normal page requests it emits a `<script>` block that calls `console.info`, `console.warn`, or `console.error`. For callback (AJAX) requests it writes a structured JSON block using the callback debug header boundary, which the client-side PRADO runtime relays to Firebug. Only a `TPageService` request with a page receives the logs. Invalid UTF-8 in a message is encoded as U+FFFD.
 
 ## Configuration
 

@@ -1,4 +1,11 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TSysLogRoute::setFacility()` works on Windows, which does not define `LOG_LOCAL0` to `LOG_LOCAL7`; it threw an `Error` for an undefined constant. (belisoful)
+BUG: Issue #1497 - `TFirebugLogRoute` writes the logs only for a `TPageService` page and encodes invalid UTF-8 as U+FFFD; it threw outside a page service and wrote a serialized PHP array as its script. (belisoful)
+BUG: Issue #1497 - `TSysLogRoute::setFacility()` throws `TConfigurationException` for an unknown facility name; it threw a `TypeError`. (belisoful)
+BUG: Issue #1497 - `TEmailLogRoute` sends `DEFAULT_SUBJECT` when no `Subject` is set; it sent an empty subject. (belisoful)
+BUG: Issue #1497 - `TBrowserLogRoute` HTML-encodes the category. (belisoful)
+BUG: Issue #1497 - `TBrowserLogRoute` and `TFirePhpLogRoute` write a non-string message as a dump, as the other routes do; they threw a `TypeError`. (belisoful)
+ENH: Issue #1497 - The log routes reach mail, STDOUT, the syslog, and the header state through protected methods a subclass overrides: `TEmailLogRoute::sendMail()`, `TStdOutLogRoute::createWriter()`, `TSysLogRoute::writeSysLog()`, and `TFirePhpLogRoute::getHeadersSent()`. (belisoful)
 BUG: Issue #1497 - `TOracleDbCommand` substitutes bound values after a quoted literal of any length; a literal of about 16,000 characters exhausted the PCRE JIT stack, and the command ran the SQL with its placeholders unbound. It throws `TDbException` when the substitution fails. (belisoful)
 BUG: Issue #1497 - `TDbCache` works on SQL Server, Oracle, and IBM DB2: it creates its table with column types for each driver and stores with its own `MERGE`. SQL Server and DB2 could not create the table, and every `set()` failed on Oracle. pdo_ibm fetches a value of about 64 KiB or more as `NULL`, which reads as a miss. `TDbCommand::queryScalar()` reads a LOB before it closes the cursor. (belisoful)
 BUG: Issue #1497 - `TUtf8Converter` converts with `\UConverter` when the iconv extension is not loaded (`hasIconv()`), returns the string unchanged when a conversion fails, and restores the locale; `TSimpleDateFormatter` measures a non-UTF-8 charset through it. Without iconv both failed, and a failed `iconv()` threw `TPhpErrorException`. (belisoful)
