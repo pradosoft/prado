@@ -32,6 +32,7 @@ use Prado\TComponent;
 use Prado\TPropertyValue;
 use Prado\Util\Clock\TApplicationClockAwareTrait;
 use Prado\Util\Cron\TCronTaskInfo;
+use Prado\Web\THttpRequest;
 use Prado\Xml\TXmlElement;
 
 /**
@@ -85,6 +86,19 @@ use Prado\Xml\TXmlElement;
  * A {@see setStoreID store} logs every email and is required for Queued.
  * {@see sendEach} sends one template to many recipients, each as its own email.
  *
+ * A nested `<service>` element registers the {@see TEmailService} that shows an
+ * email on the web and records opens, clicks, and unsubscribes.  With it and a
+ * store the module {@see getHasTracking has tracking}, and the email controls
+ * build their links with {@see getTrackingUrl}.  {@see setServiceUrl ServiceUrl}
+ * is the address of the application entry script; it must be set to render emails
+ * outside a web request.
+ * <code>
+ * <module id="email" class="Prado\Email\TEmailModule" StoreID="emailstore"
+ *     ServiceUrl="https://www.example.com/index.php">
+ *   <service id="email" />
+ * </module>
+ * </code>
+ *
  * The module offers its cron tasks to the cron module: {@see TEmailQueueTask},
  * {@see TEmailCleanupTask}, and {@see TEmailBounceTask}.  {@see processBounceMessage}
  * takes a bounce message, records it in the store, and raises onBounce.  In the
@@ -115,6 +129,9 @@ class TEmailModule extends \Prado\TModule implements IEmailMailer, IPermissions
 
 	/** The permission to use the email shell action. */
 	public const PERM_EMAIL_SHELL = 'email_shell';
+
+	/** The default ID of the tracking service. */
+	public const DEFAULT_SERVICE_ID = 'email';
 
 	/** @var ?string the directory of the emails. */
 	private ?string $_basePath = null;
@@ -152,6 +169,15 @@ class TEmailModule extends \Prado\TModule implements IEmailMailer, IPermissions
 	/** @var string the domain of the Message-IDs. */
 	private string $_messageIdDomain = '';
 
+	/** @var ?string the ID of the tracking service. */
+	private ?string $_serviceID = null;
+
+	/** @var ?string the URL of the application entry script. */
+	private ?string $_serviceUrl = null;
+
+	/** @var ?array the properties of the `<service>` element. */
+	private ?array $_serviceProperties = null;
+
 	/** @var TEmail[] the emails waiting for the end of the request. */
 	private array $_deferred = [];
 
@@ -159,8 +185,9 @@ class TEmailModule extends \Prado\TModule implements IEmailMailer, IPermissions
 	private bool $_initialized = false;
 
 	/**
-	 * Initializes the module: loads the `<transport>` and `<emails>` elements and
-	 * attaches {@see TEmailApplicationBehavior} to the application.
+	 * Initializes the module: loads the `<transport>`, `<emails>`, and `<service>`
+	 * elements, attaches {@see TEmailApplicationBehavior} to the application, and
+	 * registers the tracking service.
 	 * @param null|array|TXmlElement $config the module configuration.
 	 * @throws TConfigurationException when the transport configuration is invalid.
 	 */
@@ -174,6 +201,9 @@ class TEmailModule extends \Prado\TModule implements IEmailMailer, IPermissions
 				$app->attachBehavior(self::BEHAVIOR_NAME, $behavior);
 			}
 			$app->attachEventHandler('onEndRequest', [$this, 'endRequest']);
+			if ($this->_serviceProperties !== null) {
+				$app->registerService($this->getServiceID(), TEmailService::class, $this->_serviceProperties + ['EmailModule' => $this]);
+			}
 			if ($app instanceof TShellApplication && $this->dyRegisterShellAction(false) !== true) {
 				$app->addShellActionClass(['class' => TShellEmailAction::class, 'EmailModule' => $this]);
 			}
@@ -218,7 +248,7 @@ class TEmailModule extends \Prado\TModule implements IEmailMailer, IPermissions
 	}
 
 	/**
-	 * Loads the transport and the email property rules from the module configuration.
+	 * Loads the transport, the email property rules, and the service properties from the module configuration.
 	 * @param null|array|TXmlElement $config the module configuration.
 	 * @throws TConfigurationException when there is more than one transport, or the transport has no class or is not an IEmailTransport component.
 	 */
@@ -232,11 +262,21 @@ class TEmailModule extends \Prado\TModule implements IEmailMailer, IPermissions
 				$transports[] = [$properties['class'] ?? null, array_diff_key($properties, ['class' => true]), $element];
 			}
 			$emails = $config->getElementByTagName('emails');
+			if (($service = $config->getElementByTagName('service')) !== null) {
+				$this->_serviceProperties = $service->getAttributes()->toArray();
+			}
 		} elseif (is_array($config)) {
 			if (isset($config['transport'])) {
 				$transports[] = [$config['transport']['class'] ?? null, $config['transport']['properties'] ?? [], $config['transport']];
 			}
 			$emails = $config['emails'] ?? null;
+			if (isset($config['service'])) {
+				$this->_serviceProperties = (array) $config['service'];
+			}
+		}
+		if ($this->_serviceProperties !== null) {
+			$this->setServiceID($this->_serviceProperties['id'] ?? self::DEFAULT_SERVICE_ID);
+			unset($this->_serviceProperties['id']);
 		}
 		if (count($transports) > 1) {
 			throw new TConfigurationException('emailmodule_transport_single');
@@ -631,6 +671,157 @@ class TEmailModule extends \Prado\TModule implements IEmailMailer, IPermissions
 	public function onBounce($param)
 	{
 		$this->raiseEvent('onBounce', $this, $param);
+	}
+
+	/**
+	 * Counts an open of a stored email and raises onOpenEmail.
+	 * @param string $trackingId the tracking ID.
+	 * @return bool whether the email is known.
+	 */
+	public function recordOpen(string $trackingId): bool
+	{
+		if (($store = $this->getStore()) === null || !$store->recordOpen($trackingId)) {
+			return false;
+		}
+		if ($this->hasEventHandler('onOpenEmail')) {
+			$this->onOpenEmail(new TEmailTrackingEventParameter($trackingId, $store->getEmailInfo($trackingId)));
+		}
+		return true;
+	}
+
+	/**
+	 * Counts a click of a tracked link of a stored email and raises onClickEmail.
+	 * @param string $trackingId the tracking ID.
+	 * @param int $link the link number.
+	 * @return ?string the target URL of the link, null when the email or the link is unknown.
+	 */
+	public function recordClick(string $trackingId, int $link): ?string
+	{
+		if (($store = $this->getStore()) === null || ($url = $store->recordClick($trackingId, $link)) === null) {
+			return null;
+		}
+		if ($this->hasEventHandler('onClickEmail')) {
+			$this->onClickEmail(new TEmailTrackingEventParameter($trackingId, $store->getEmailInfo($trackingId), $url));
+		}
+		return $url;
+	}
+
+	/**
+	 * Records an unsubscribe of a stored email and raises onUnsubscribe.  The store
+	 * suppresses the recipient for the list of the email.
+	 * @param string $trackingId the tracking ID.
+	 * @return ?array the info of the email with "suppressed", null when the email is unknown.
+	 */
+	public function recordUnsubscribe(string $trackingId): ?array
+	{
+		if (($store = $this->getStore()) === null || ($info = $store->recordUnsubscribe($trackingId)) === null) {
+			return null;
+		}
+		$this->onUnsubscribe(new TEmailTrackingEventParameter($trackingId, $info));
+		return $info;
+	}
+
+	/**
+	 * Raised when the tracker image of an email loads.  Mail clients that load images
+	 * through a proxy or ahead of the reader raise it without the reader opening the email.
+	 * @param TEmailTrackingEventParameter $param the parameter with the email info.
+	 */
+	public function onOpenEmail($param)
+	{
+		$this->raiseEvent('onOpenEmail', $this, $param);
+	}
+
+	/**
+	 * Raised when a tracked link of an email is followed.
+	 * @param TEmailTrackingEventParameter $param the parameter with the email info and the URL.
+	 */
+	public function onClickEmail($param)
+	{
+		$this->raiseEvent('onClickEmail', $this, $param);
+	}
+
+	/**
+	 * Raised when a recipient unsubscribes through an email.  An application that
+	 * keeps its own mailing lists removes the recipient here.
+	 * @param TEmailTrackingEventParameter $param the parameter with the email info and the suppressed address.
+	 */
+	public function onUnsubscribe($param)
+	{
+		$this->raiseEvent('onUnsubscribe', $this, $param);
+	}
+
+	/**
+	 * @return bool whether emails can link to the tracking service: the module has a service and a store.
+	 */
+	public function getHasTracking(): bool
+	{
+		return $this->_serviceID !== null && $this->_store !== null;
+	}
+
+	/**
+	 * Builds a URL of the tracking service.
+	 * @param ?string $trackingId the tracking ID of the email; null writes the placeholder that {@see TEmail::finalize} replaces with it.
+	 * @param array $parameters the query parameters, e.g. ['click' => 2].
+	 * @throws TConfigurationException when the module has no service, or no ServiceUrl outside a web request.
+	 * @return string the absolute URL.
+	 */
+	public function getTrackingUrl(?string $trackingId = null, array $parameters = []): string
+	{
+		if ($this->_serviceID === null) {
+			throw new TConfigurationException('emailmodule_service_required');
+		}
+		$url = $this->getServiceUrl();
+		$query = http_build_query($parameters, '', '&', PHP_QUERY_RFC3986);
+		return $url . (str_contains($url, '?') ? '&' : '?') . rawurlencode($this->_serviceID) . '='
+			. ($trackingId ?? '{{' . TEmail::TRACKING_ID_KEY . '}}') . ($query === '' ? '' : '&' . $query);
+	}
+
+	/**
+	 * @return ?string the ID of the tracking service, null when the module has none.
+	 */
+	public function getServiceID(): ?string
+	{
+		return $this->_serviceID;
+	}
+
+	/**
+	 * @param ?string $value the ID of the tracking service; the `<service>` element sets it.
+	 */
+	public function setServiceID($value)
+	{
+		$this->_serviceID = ($value === null || $value === '') ? null : TPropertyValue::ensureString($value);
+	}
+
+	/**
+	 * @throws TConfigurationException when it is not set and there is no web request.
+	 * @return string the absolute URL of the application entry script. Defaults to that of the current web request.
+	 */
+	public function getServiceUrl(): string
+	{
+		if ($this->_serviceUrl !== null) {
+			return $this->_serviceUrl;
+		}
+		if (($url = $this->getRequestEntryUrl()) === null) {
+			throw new TConfigurationException('emailmodule_serviceurl_required');
+		}
+		return $url;
+	}
+
+	/**
+	 * @return ?string the absolute URL of the entry script of the current web request, null on the command line.
+	 */
+	protected function getRequestEntryUrl(): ?string
+	{
+		$request = PHP_SAPI === 'cli' ? null : $this->getApplication()?->getRequest();
+		return $request instanceof THttpRequest ? $request->getBaseUrl() . $request->getApplicationUrl() : null;
+	}
+
+	/**
+	 * @param ?string $value the absolute URL of the application entry script, e.g. "https://www.example.com/index.php".
+	 */
+	public function setServiceUrl($value)
+	{
+		$this->_serviceUrl = ($value === null || $value === '') ? null : TPropertyValue::ensureString($value);
 	}
 
 	/**

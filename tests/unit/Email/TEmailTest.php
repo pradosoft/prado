@@ -393,6 +393,17 @@ class TEmailTest extends TestCase
 		$this->assertSame(['https://example.com/u?name=A%20b%26c&next=a=1&b=2'], $email->getTrackedLinks());
 	}
 
+	public function testFinalizeReplacesPlaceholdersInHeaders()
+	{
+		$email = new TEmail();
+		$email->setListUnsubscribe('https://example.com/t?email={{email:tracking-id}}&unsubscribe=1');
+		$email->setHeader('X-Customer', '{{NAME}}');
+		$email->setData(['NAME' => "Ann\r\nBcc: eve@example.com"]);
+		$email->finalize();
+		$this->assertSame('<https://example.com/t?email=' . $email->getTrackingId() . '&unsubscribe=1>', $email->getHeader('List-Unsubscribe'));
+		$this->assertSame('Ann Bcc: eve@example.com', $email->getHeader('X-Customer'));
+	}
+
 	public function testFinalizeActsOnce()
 	{
 		$email = new TEmail();

@@ -1,0 +1,10 @@
+<%@ Email.Subject="News for {{NAME}}" Email.List="news" %>
+<html><body>
+<com:Prado\Email\UI\WebControls\TEmailPreheader Text="This month" />
+<p>Hello {{NAME}}</p>
+<com:Prado\Email\UI\WebControls\TEmailTrackedLink NavigateUrl="https://www.example.com/sale?u={{ID}}" Text="See the sale" />
+<com:Prado\Email\UI\WebControls\TEmailButton NavigateUrl="https://www.example.com/shop" Text="Shop" />
+<com:Prado\Email\UI\WebControls\TEmailViewLink />
+<com:Prado\Email\UI\WebControls\TEmailUnsubscribeLink />
+<com:Prado\Email\UI\WebControls\TEmailTrackerImage />
+</body></html>

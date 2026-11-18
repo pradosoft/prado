@@ -28,5 +28,8 @@ dbemailservice_email_unknown				= 无法找到邮件“{0}”。
 dbemailservice_email_forbidden				= 邮件“{0}”只能由其收件人查看。
 dbemailservice_link_unknown					= 无法找到邮件“{0}”的链接。
 dbemailservice_file_unknown					= 无法找到文件“{0}”。
+emailservice_email_forbidden				= 邮件只能由其收件人查看。
+emailservice_email_unknown					= 无法找到邮件。
+emailservice_link_unknown					= 无法找到邮件的链接。
 
 errorhandler_internal_error				= 服务器发生内部错误。

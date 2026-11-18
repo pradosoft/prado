@@ -37,10 +37,10 @@ use Prado\TPropertyValue;
  * ".email" template.  An email with Html and no Text gets its Text from
  * {@see TEmailHtmlToText}.
  *
- * Placeholders in the Subject, Html, Text, and tracked links are replaced by the
- * values of {@see setData Data} when the email is finalized:
+ * Placeholders in the Subject, Html, Text, additional headers, and tracked links
+ * are replaced by the values of {@see setData Data} when the email is finalized:
  *
- * | Placeholder | Html | Text, Subject | Tracked link |
+ * | Placeholder | Html | Text, Subject, headers | Tracked link |
  * |---|---|---|---|
  * | `{{KEY}}` | HTML encoded | as is | URL encoded |
  * | `{{{KEY}}}` | as is | as is | as is |
@@ -203,7 +203,7 @@ class TEmail extends \Prado\TComponent
 
 	/**
 	 * Makes the content final: renders the Body, derives a missing Text from the Html,
-	 * and replaces the placeholders in the Subject, Html, Text, and tracked links.
+	 * and replaces the placeholders in the Subject, Html, Text, headers, and tracked links.
 	 * It acts once; later changes to Data have no effect.
 	 */
 	public function finalize(): void
@@ -222,6 +222,9 @@ class TEmail extends \Prado\TComponent
 		}
 		if ($this->_text !== null) {
 			$this->_text = static::replacePlaceholders($this->_text, $data, null);
+		}
+		foreach ($this->_headers as $key => [, $value]) {
+			$this->_headers[$key][1] = preg_replace('/[\r\n\x00]+/', ' ', static::replacePlaceholders($value, $data, null));
 		}
 		foreach ($this->_trackedLinks as $index => $url) {
 			$this->_trackedLinks[$index] = static::replacePlaceholders($url, $data, 'rawurlencode');

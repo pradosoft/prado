@@ -28,5 +28,8 @@ dbemailservice_email_unknown				= Email ''{0}'' tidak ditemukan.
 dbemailservice_email_forbidden				= Email ''{0}'' hanya dapat dilihat oleh penerimanya.
 dbemailservice_link_unknown					= Tautan email ''{0}'' tidak ditemukan.
 dbemailservice_file_unknown					= Berkas ''{0}'' tidak ditemukan.
+emailservice_email_forbidden				= Email hanya dapat dilihat oleh penerimanya.
+emailservice_email_unknown					= Email tidak ditemukan.
+emailservice_link_unknown					= Tautan email tidak ditemukan.
 
 errorhandler_internal_error				= Terjadi kesalahan internal pada server.
