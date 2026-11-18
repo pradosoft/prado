@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TClientScriptManager` renders each value of an array hidden field, and `getPradoScriptAssetUrl()` and `getPradoScriptAssetPath()` throw `TInvalidOperationException` for a key that names no script folder; an array threw a `TypeError`, and such a key a `TPhpErrorException`. (belisoful)
 BUG: Issue #1497 - `TPage::getClientScript()` accepts an aliased short `ClientScriptManagerClass`, such as `TClientScriptManager`; it threw `TConfigurationException`. (belisoful)
 BUG: Issue #1497 - `TControl::ensureChildControls()` marks the child controls created when `createChildControls()` throws a PHP `Error`; the control stayed in creation, so a later call never created them. (belisoful)
 BUG: Issue #1497 - `TUtf8Converter` converts with `\UConverter` when the iconv extension is not loaded (`hasIconv()`), returns the string unchanged when a conversion fails, and restores the locale; `TSimpleDateFormatter` measures a non-UTF-8 charset through it. Without iconv both failed, and a failed `iconv()` threw `TPhpErrorException`. (belisoful)

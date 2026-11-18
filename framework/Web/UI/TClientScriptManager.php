@@ -386,12 +386,12 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	/**
 	 * Returns the published asset URL for a PRADO JavaScript library.
 	 *
-	 * This method ensures the JavaScript packages are loaded, registers the script
-	 * if not already registered, and returns the published asset URL through the
-	 * application's asset manager.
+	 * This method ensures the JavaScript packages are loaded and returns the published
+	 * asset URL of the library folder through the application's asset manager.
 	 *
-	 * @param string $script The script package key (e.g., 'prado', 'jquery', 'ajax').
+	 * @param string $script The script library folder key (e.g., 'prado', 'jquery', 'jquery-ui').
 	 *                       Defaults to 'prado'.
+	 * @throws TInvalidOperationException if the key names no script library folder.
 	 * @return string The published asset URL for the script library.
 	 */
 	public function getPradoScriptAssetUrl($script = 'prado')
@@ -399,7 +399,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 		static::ensurePradoJavascript();
 
 		if (!isset(self::$_scriptsFolders[$script])) {
-			$this->registerPradoScriptInternal($script);
+			throw new TInvalidOperationException('csmanager_pradoscript_invalid', $script);
 		}
 
 		$base = Prado::getPathOfNameSpace(self::$_scriptsFolders[$script]);
@@ -410,12 +410,12 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	/**
 	 * Returns the local filesystem path for a PRADO JavaScript library asset.
 	 *
-	 * This method ensures the JavaScript packages are loaded, registers the script
-	 * if not already registered, and returns the published filesystem path through
-	 * the application's asset manager.
+	 * This method ensures the JavaScript packages are loaded and returns the published
+	 * filesystem path of the library folder through the application's asset manager.
 	 *
-	 * @param string $script The script package key (e.g., 'prado', 'jquery', 'ajax').
+	 * @param string $script The script library folder key (e.g., 'prado', 'jquery', 'tinymce').
 	 *                       Defaults to 'prado'.
+	 * @throws TInvalidOperationException if the key names no script library folder.
 	 * @return string The published filesystem path for the script library.
 	 */
 	public function getPradoScriptAssetPath($script = 'prado')
@@ -423,7 +423,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 		static::ensurePradoJavascript();
 
 		if (!isset(self::$_scriptsFolders[$script])) {
-			$this->registerPradoScriptInternal($script);
+			throw new TInvalidOperationException('csmanager_pradoscript_invalid', $script);
 		}
 
 		$base = Prado::getPathOfNameSpace(self::$_scriptsFolders[$script]);
@@ -1075,7 +1075,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	 */
 	public function markScriptFileAsRendered($url)
 	{
-		$url = (is_object($url) && ($url instanceof TJavaScriptAsset)) ? $url->getUrl() : $url;
+		$url = ($url instanceof TJavaScriptAsset) ? $url->getUrl() : $url;
 		$this->_renderedScriptFiles[$url] = $url;
 		$params = func_get_args();
 		$this->_page->registerCachingAction('Page.ClientScript', 'markScriptFileAsRendered', $params);
@@ -1223,7 +1223,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 			$id = strtr($name, ':', '_');
 			if (is_array($value)) {
 				foreach ($value as $v) {
-					$str .= '<input type="text" style="display:none" autocomplete="off" name="' . $name . '[]" id="' . $id . '" value="' . THttpUtility::htmlEncode($value) . "\" />\n";
+					$str .= '<input type="text" style="display:none" autocomplete="off" name="' . $name . '[]" id="' . $id . '" value="' . THttpUtility::htmlEncode($v) . "\" />\n";
 				}
 			} else {
 				$str .= '<input type="text" style="display:none" autocomplete="off" name="' . $name . '" id="' . $id . '" value="' . THttpUtility::htmlEncode($value) . "\" />\n";

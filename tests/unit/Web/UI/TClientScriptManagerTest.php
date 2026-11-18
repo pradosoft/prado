@@ -980,6 +980,19 @@ class TClientScriptManagerTest extends \PHPUnit\Framework\TestCase
 		$this->assertStringNotContainsString('value="value1"', $output2);
 	}
 
+	public function testRenderHiddenFieldsRendersEachValueOfAnArrayField()
+	{
+		$this->_cs->registerHiddenField('list', ['a', 'b<c']);
+
+		$writer = $this->createWriter();
+		$this->_cs->renderHiddenFieldsBegin($writer);
+		$output = $writer->flush();
+
+		$this->assertSame(2, substr_count($output, 'name="list[]"'));
+		$this->assertStringContainsString('value="a"', $output);
+		$this->assertStringContainsString('value="b&lt;c"', $output);
+	}
+
 	public function testGetHiddenFields()
 	{
 		$this->_cs->registerHiddenField('field1', 'value1');
@@ -1374,6 +1387,152 @@ class TClientScriptManagerTest extends \PHPUnit\Framework\TestCase
 		} finally {
 			Prado::getApplication()->detachEventHandler('fxLoadPradoJavascript', [$behavior, 'fxLoadPradoJavascript']);
 			TClientScriptManagerTestable::resetJavascriptCache();
+		}
+	}
+
+	public function testRegisterPradoScriptMinifiesOutsideDebugMode()
+	{
+		self::$app->setMode(TApplicationMode::Normal);
+		try {
+			$this->_cs->registerPradoScript('logger');
+			$urls = $this->_cs->getScriptUrls();
+			$this->assertNotEmpty($urls);
+			foreach ($urls as $url) {
+				$this->assertStringEndsWith('.min.js', $url);
+			}
+			$loggerUrl = preg_grep('#/logger/logger\.min\.js$#', $urls);
+			$this->assertCount(1, $loggerUrl);
+			$path = $this->_cs->getPradoScriptAssetPath('prado') . DIRECTORY_SEPARATOR . 'logger' . DIRECTORY_SEPARATOR . 'logger.min.js';
+			$this->assertFileExists($path);
+			$minified = file_get_contents($path);
+			$this->assertNotSame('', $minified);
+			$this->assertStringNotContainsString("\n\n", $minified);
+
+			// another page finds the minified files and keeps them
+			file_put_contents($path, '/* kept */');
+			$other = new TClientScriptManager(new TPage());
+			$other->registerPradoScript('logger');
+			$this->assertSame($urls, $other->getScriptUrls());
+			$this->assertSame('/* kept */', file_get_contents($path));
+		} finally {
+			self::$app->setMode(TApplicationMode::Debug);
+		}
+	}
+
+	public function testPradoScriptAssetUrlAndPathRejectANameThatIsNoFolder()
+	{
+		foreach (['getPradoScriptAssetUrl', 'getPradoScriptAssetPath'] as $method) {
+			foreach (['logger', 'no-such-script'] as $script) {
+				try {
+					$this->_cs->$method($script);
+					$this->fail($method . '(' . $script . ') returned');
+				} catch (\Prado\Exceptions\TInvalidOperationException $e) {
+					$this->assertSame('csmanager_pradoscript_invalid', $e->getErrorCode());
+				}
+			}
+		}
+		$this->assertSame([], $this->_cs->getScriptUrls());
+	}
+
+	public function testGetPackagePathUrlOfAPublishedUrl()
+	{
+		$assets = self::$app->getAssetManager();
+		$url = $assets->getBaseUrl() . '/abc/def';
+		$this->assertSame(
+			[$assets->getBasePath() . '/abc/def', $url],
+			$this->invokePrivateMethod($this->_cs, 'getPackagePathUrl', [$url])
+		);
+	}
+
+	public function testGetStyleSheetUrlsIncludesThePublishedStyleSheets()
+	{
+		$assets = self::$app->getAssetManager();
+		$css = $assets->publishFilePath(Prado::getFrameworkPath() . '/Web/UI/WebControls/assets/dialog.css');
+		$js = $assets->publishFilePath(Prado::getFrameworkPath() . '/Web/Javascripts/source/prado/logger/logger.js');
+		$this->_cs->registerStyleSheetFile('own', '/own.css');
+		$urls = $this->_cs->getStyleSheetUrls();
+		$this->assertContains('/own.css', $urls);
+		$this->assertContains($css, $urls);
+		$this->assertNotContains($js, $urls);
+	}
+
+	public function testFlushScriptFilesRendersThePendingFilesOutsideACallback()
+	{
+		$this->_cs->registerScriptFile('a', '/a.js');
+		PradoUnit::setProp($this->_page, '_inFormRender', true);
+		$writer = $this->createWriter();
+		$this->_cs->flushScriptFiles($writer, new TControl());
+		$this->assertStringContainsString('/a.js', $writer->flush());
+
+		$page = new \Prado\Test\Unit\Harness\Web\UI\TTestCallbackPage();
+		$cs = new TClientScriptManager($page);
+		$cs->registerScriptFile('b', '/b.js');
+		$writer = $this->createWriter();
+		$cs->flushScriptFiles($writer);
+		$this->assertSame('', $writer->flush());
+	}
+
+	public function testRegisterPostBackControlKeepsAFormID()
+	{
+		$this->_page->getControls()->add($form = new \Prado\Web\UI\TForm());
+		$form->setID('Main');
+		$this->_page->setForm($form);
+		$this->_cs->registerPostBackControl('Prado.WebUI.PostBackControl', ['FormID' => 'Other']);
+		$this->_cs->registerPostBackControl('Prado.WebUI.PostBackControl', ['ID' => 'x']);
+		$scripts = implode('', $this->getPrivateProperty($this->_cs, '_endScripts'));
+		$this->assertStringContainsString('\'FormID\':"Other"', $scripts);
+		$this->assertStringContainsString('\'FormID\':"Main"', $scripts);
+	}
+
+	public function testRegisterDefaultButtonOfMixedIdsAndControls()
+	{
+		$button = new MockButtonControl();
+		$button->setID('button1');
+		$button->setPage($this->_page);
+		$this->_cs->registerDefaultButton('panel1', $button);
+		$this->assertTrue($this->_cs->isEndScriptRegistered('prado:panel1'));
+
+		$panel = new MockButtonControl();
+		$panel->setID('panel2');
+		$panel->setPage($this->_page);
+		$this->_cs->registerDefaultButton($panel, 'button2');
+		$this->assertTrue($this->_cs->isEndScriptRegistered('prado:panel2'));
+
+		$panel = new MockButtonControl();
+		$panel->setID('panel3');
+		$panel->setPage($this->_page);
+		$this->_cs->registerDefaultButton($panel, new \stdClass());
+		$this->assertFalse($this->_cs->isEndScriptRegistered('prado:panel3'));
+	}
+
+	public function testGetStyleSheetUrlsOfOnePublishedFile()
+	{
+		$assets = self::$app->getAssetManager();
+		$css = $assets->publishFilePath(Prado::getFrameworkPath() . '/Web/UI/WebControls/assets/dialog.css');
+		$this->assertSame([$css], array_values($this->_cs->getStyleSheetUrls()));
+	}
+
+	public function testGetStyleSheetUrlsSkipsOnePublishedScript()
+	{
+		$assets = self::$app->getAssetManager();
+		$assets->publishFilePath(Prado::getFrameworkPath() . '/Web/Javascripts/source/prado/logger/logger.js');
+		$this->assertSame([], array_values($this->_cs->getStyleSheetUrls()));
+	}
+
+	public function testPackageFolderOfAnUnresolvedNamespaceIsTheNamespace()
+	{
+		TClientScriptManager::ensurePradoJavascript();
+		$this->invokePrivateMethod($this->_cs, 'registerPradoStyleInternal', ['jquery-ui']);
+		$scripts = PradoUnit::getStaticProp(TClientScriptManager::class, '_scriptsFolders');
+		$styles = PradoUnit::getStaticProp(TClientScriptManager::class, '_stylesFolders');
+		try {
+			PradoUnit::setStaticProp(TClientScriptManager::class, '_scriptsFolders', $scripts + ['nowhere' => 'No\\Such\\Scripts']);
+			PradoUnit::setStaticProp(TClientScriptManager::class, '_stylesFolders', $styles + ['nowhere' => 'No\\Such\\Styles']);
+			$this->assertSame(['No\\Such\\Scripts', 'a/b.js'], $this->invokePrivateMethod($this->_cs, 'getScriptPackageFolder', ['nowhere/a/b.js']));
+			$this->assertSame(['No\\Such\\Styles', 'c.css'], $this->invokePrivateMethod($this->_cs, 'getStylePackageFolder', ['nowhere/c.css']));
+		} finally {
+			PradoUnit::setStaticProp(TClientScriptManager::class, '_scriptsFolders', $scripts);
+			PradoUnit::setStaticProp(TClientScriptManager::class, '_stylesFolders', $styles);
 		}
 	}
 
