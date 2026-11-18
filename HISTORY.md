@@ -1,4 +1,5 @@
 ## Version 4.3.3 - TBA
+BUG: `TRational::setValue()` with an out-of-range numerator over a zero denominator is NAN; the float denominator was compared with the integer 0, and the division threw. (belisoful)
 ENH: PSR adapters from 4.4 under their 4.4 class names: `TPsrSimpleCache` (PSR-16), `TPsrCacheItemPool` and `TPsrCacheItem` (PSR-6), and `TPsrCache` over a PSR cache; `TPsrLogger` (PSR-3) and `TPsrLogRoute` in `Prado\Util\Log`. `psr/cache`, `psr/simple-cache`, and `psr/log` are suggested. (belisoful)
 BUG: Issue #1368 - `TPage::endFormRender()` no longer registers focus from the posted `PRADO_LASTFOCUS` field, which it wrote unencoded into page JavaScript; `TPage::FIELD_LASTFOCUS` is deprecated. (belisoful)
 ENH: `TDatePicker.DateInputMode`, the 4.4 name, replaces `InputMode`, which is deprecated (#1193). (belisoful)

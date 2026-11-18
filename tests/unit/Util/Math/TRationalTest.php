@@ -207,6 +207,12 @@ class TRationalTest extends \PHPUnit\Framework\TestCase
 		self::assertEquals(0, $this->obj->getDenominator());
 		self::asserttrue(is_nan($this->obj->getValue()));
 	}
+
+	public function testOutOfRangeNumeratorOverZeroDenominatorIsNan()
+	{
+		$this->obj->setValue([2 ** 40, 0]);
+		self::assertTrue(is_nan($this->obj->getValue()));
+	}
 	
 	public function testValueSpecific()
 	{
