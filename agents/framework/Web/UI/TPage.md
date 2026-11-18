@@ -95,7 +95,7 @@ TPage is the base class for all web pages in PRADO framework. It extends [TTempl
 - `applyControlSkin($control)` / `applyControlStyleSheet($control)`: Applies a skin to a control
 
 ### Client Script and Caching
-- `getClientScript()`: Gets the client script manager, which registers scripts, stylesheets and hidden fields
+- `getClientScript()`: Gets the client script manager, which registers scripts, stylesheets and hidden fields. Its class is the page service's `ClientScriptManagerClass`, a `TClientScriptManager` or subclass named in full or by an aliased short name
 - `getCachingStack()`: Stack of the active [TOutputCache](./WebControls/TOutputCache.md) controls
 - `registerCachingAction($context, $funcName, $funcParams)`: Records an action to replay when cached content is served
 

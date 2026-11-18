@@ -139,6 +139,16 @@ class TPageTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals('Before Head', $page->getTitle());
 	}
 
+	public function testSetTitleWithAHeadSetsTheHeadTitle(): void
+	{
+		$page = new TPage();
+		$head = new THead();
+		$page->setHead($head);
+		$page->setTitle('Headed');
+		$this->assertSame('Headed', $head->getTitle());
+		$this->assertSame('Headed', $page->getTitle());
+	}
+
 	// -----------------------------------------------------------------------
 	// Validators
 	// -----------------------------------------------------------------------
@@ -189,6 +199,62 @@ class TPageTest extends \PHPUnit\Framework\TestCase
 		$page = new TPage();
 		$this->expectException(TInvalidOperationException::class);
 		$page->getIsValid();
+	}
+
+	/**
+	 * @return array{TPage, TPageTestValidator, TPageTestValidator} a page with a valid validator in no group and an invalid one in group "g"
+	 */
+	private function pageWithValidators(): array
+	{
+		$page = new TPage();
+		$page->getValidators()->add($plain = new TPageTestValidator(''));
+		$page->getValidators()->add($grouped = new TPageTestValidator('g', false));
+		return [$page, $plain, $grouped];
+	}
+
+	public function testGetValidatorsOfAGroup(): void
+	{
+		[$page, $plain, $grouped] = $this->pageWithValidators();
+		$this->assertSame([$grouped], $page->getValidators('g')->toArray());
+		$this->assertSame([$plain, $grouped], $page->getValidators()->toArray());
+	}
+
+	public function testValidateRunsTheValidatorsOfTheGroup(): void
+	{
+		[$page, $plain, $grouped] = $this->pageWithValidators();
+		$page->validate('g');
+		$this->assertSame(0, $plain->validated);
+		$this->assertSame(1, $grouped->validated);
+		$page->validate();
+		$this->assertSame(1, $plain->validated);
+		$this->assertSame(2, $grouped->validated);
+	}
+
+	public function testGetIsValidIsFalseWhenAValidatorFails(): void
+	{
+		[$page, $plain, $grouped] = $this->pageWithValidators();
+		$page->validate();
+		$this->assertFalse($page->getIsValid());
+		$grouped->setIsValid(true);
+		$this->assertTrue($page->getIsValid());
+	}
+
+	public function testValidatorsOfAnEmptyOrOneValidatorList(): void
+	{
+		$page = new TPage();
+		$page->getValidators();
+		$this->assertSame([], $page->getValidators('g')->toArray());
+		$page->validate();
+		$this->assertTrue($page->getIsValid());
+
+		foreach (['g' => 1, 'h' => 0] as $group => $runs) {
+			$page = new TPage();
+			$page->getValidators()->add($validator = new TPageTestValidator($group, false));
+			$this->assertSame($runs ? [$validator] : [], $page->getValidators('g')->toArray());
+			$page->validate('g');
+			$this->assertSame($runs, $validator->validated);
+			$this->assertFalse($page->getIsValid());
+		}
 	}
 
 	// -----------------------------------------------------------------------
@@ -419,6 +485,31 @@ public function testSetThemeToNonEmptyStringStoresString(): void
 		$page->ensureRenderInForm($control);
 	}
 
+	public function testEnsureRenderInFormPassesInAFormOrACallback(): void
+	{
+		$control = new \Prado\Web\UI\TControl();
+		$page = new TPage();
+		PradoUnit::setProp($page, '_inFormRender', true);
+		$page->ensureRenderInForm($control);
+		$callback = new \Prado\Test\Unit\Harness\Web\UI\TTestCallbackPage();
+		$callback->ensureRenderInForm($control);
+		$this->assertFalse($callback->getInFormRender());
+	}
+
+	public function testBeginFormRenderRejectsASecondForm(): void
+	{
+		$page = $this->createPageWithClientScript();
+		$page->setEnableCsrfValidation(false);
+		$page->beginFormRender(null);
+		$this->assertTrue($page->getInFormRender());
+		try {
+			$page->beginFormRender(null);
+			$this->fail('a second form rendered');
+		} catch (TConfigurationException $e) {
+			$this->assertSame('page_form_duplicated', $e->getErrorCode());
+		}
+	}
+
 	// -----------------------------------------------------------------------
 	// Client state
 	// -----------------------------------------------------------------------
@@ -487,6 +578,46 @@ public function testSetThemeToNonEmptyStringStoresString(): void
 		$page = new TPage();
 		$persister = $page->getStatePersister();
 		$this->assertSame($page, $persister->getPage());
+	}
+
+	public function testGetStatePersisterRejectsAClassThatIsNoPersister(): void
+	{
+		$page = new TPage();
+		$page->setStatePersisterClass(TList::class);
+		$this->expectException(\Prado\Exceptions\TInvalidDataTypeException::class);
+		$page->getStatePersister();
+	}
+
+	public function testSetStatePersisterClassCarriesTheCompressionToTheNextPersister(): void
+	{
+		$page = new TPage();
+		$page->setStatePersisterClass(TPageStatePersister::class);
+		$compression = $page->getStateCompression();
+		$compression->setMethod('gzip');
+		$page->setStatePersisterClass(TPageStatePersister::class);
+		$this->assertSame($compression, $page->getStateCompression());
+
+		$page->setStatePersisterClass(TSessionPageStatePersister::class);
+		$this->assertSame($compression, PradoUnit::getProp($page, '_stateCompression'));
+		$persister = $page->getStatePersister();
+		$this->assertInstanceOf(TSessionPageStatePersister::class, $persister);
+		$this->assertSame($compression, $persister->getCompression());
+		$this->assertNull(PradoUnit::getProp($page, '_stateCompression'));
+		$this->assertSame('gzip', $page->getStateCompression()->getMethod());
+	}
+
+	public function testCallbackUpdateModeAndViewTransition(): void
+	{
+		$page = new TPage();
+		$this->assertSame(\Prado\Web\UI\ActiveControls\TActiveUpdateMode::Replace, $page->getCallbackUpdateMode());
+		$page->setCallbackUpdateMode('Morph');
+		$this->assertSame(\Prado\Web\UI\ActiveControls\TActiveUpdateMode::Morph, $page->getCallbackUpdateMode());
+		$page->setCallbackUpdateMode(\Prado\Web\UI\ActiveControls\TActiveUpdateMode::Default);
+		$this->assertSame(\Prado\Web\UI\ActiveControls\TActiveUpdateMode::Replace, $page->getCallbackUpdateMode());
+
+		$this->assertFalse($page->getCallbackViewTransition());
+		$page->setCallbackViewTransition('true');
+		$this->assertTrue($page->getCallbackViewTransition());
 	}
 
 	// -----------------------------------------------------------------------
@@ -630,6 +761,54 @@ public function testSetThemeToNonEmptyStringStoresString(): void
 		$page->setFocus('myElementId');
 
 		$this->assertEquals('myElementId', PradoUnit::getProp($page, '_focus'));
+	}
+
+	// -----------------------------------------------------------------------
+	// getClientScript — ClientScriptManagerClass
+	// -----------------------------------------------------------------------
+
+	/**
+	 * Returns the client script manager of a new page whose service names the given class.
+	 * @param string $class the ClientScriptManagerClass of the page service
+	 */
+	private function clientScriptOfClass(string $class): TClientScriptManager
+	{
+		$app = Prado::getApplication();
+		$savedService = $app->getService();
+		$service = new TPageService();
+		$service->setClientScriptManagerClass($class);
+		$app->setService($service);
+		try {
+			$page = new TPage();
+			$manager = $page->getClientScript();
+			$this->assertSame($manager, $page->getClientScript());
+			return $manager;
+		} finally {
+			$app->setService($savedService);
+		}
+	}
+
+	public function testGetClientScriptAcceptsTheClassAndASubclass(): void
+	{
+		$this->assertSame(TClientScriptManager::class, $this->clientScriptOfClass(TClientScriptManager::class)::class);
+		$this->assertInstanceOf(TPageFocusClientScriptManager::class, $this->clientScriptOfClass(TPageFocusClientScriptManager::class));
+	}
+
+	public function testGetClientScriptAcceptsAnAliasedShortClassName(): void
+	{
+		$this->assertInstanceOf(TClientScriptManager::class, $this->clientScriptOfClass('TClientScriptManager'));
+	}
+
+	public function testGetClientScriptRejectsAnotherOrUnknownClass(): void
+	{
+		foreach ([TPage::class, 'NoSuchClientScriptManager'] as $class) {
+			try {
+				$this->clientScriptOfClass($class);
+				$this->fail($class . ' was accepted');
+			} catch (TConfigurationException $e) {
+				$this->assertSame('page_csmanagerclass_invalid', $e->getErrorCode());
+			}
+		}
 	}
 
 	// -----------------------------------------------------------------------
@@ -849,5 +1028,50 @@ class TPageFocusClientScriptManager extends TClientScriptManager
 	public function registerFocusControl($target)
 	{
 		$this->focusTargets[] = $target;
+	}
+}
+
+/**
+ * A validator in a group whose result a test sets.
+ */
+class TPageTestValidator extends \Prado\TComponent implements \Prado\Web\UI\IValidator
+{
+	public int $validated = 0;
+	private string $_errorMessage = '';
+
+	public function __construct(private string $group, private bool $valid = true)
+	{
+		parent::__construct();
+	}
+
+	public function validate()
+	{
+		$this->validated++;
+		return $this->valid;
+	}
+
+	public function getIsValid()
+	{
+		return $this->valid;
+	}
+
+	public function setIsValid($value)
+	{
+		$this->valid = $value;
+	}
+
+	public function getErrorMessage()
+	{
+		return $this->_errorMessage;
+	}
+
+	public function setErrorMessage($value)
+	{
+		$this->_errorMessage = $value;
+	}
+
+	public function getValidationGroup()
+	{
+		return $this->group;
 	}
 }
