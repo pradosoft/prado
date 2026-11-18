@@ -17,6 +17,8 @@ use Prado\Web\UI\WebControls\TOutputCache;
 use Prado\Web\UI\WebControls\TPanel;
 use Prado\Test\Unit\Harness\Web\UI\TNestedPathControl;
 use Prado\Test\Unit\PradoUnit;
+use Prado\Web\Services\TPageService;
+use Prado\Web\TAssetManager;
 
 class TTemplateMagicComponent extends TComponent
 {
@@ -1851,5 +1853,88 @@ class TTemplateInstantiateInTest extends \PHPUnit\Framework\TestCase
 		$this->assertCount(2, $component[TTemplate::TPL_PROPS]);
 		$this->assertEquals(TTemplate::CONFIG_PARAMETER, $component[TTemplate::TPL_PROPS]['id'][TTemplate::PROP_TYPE]);
 		$this->assertEquals('LabelIdParam', $component[TTemplate::TPL_PROPS]['id'][TTemplate::PROP_VALUE]);
+	}
+
+	// -----------------------------------------------------------------------
+	// Page from the page service, expression IDs and SkinIDs, assets
+	// -----------------------------------------------------------------------
+
+	public function testInstantiateInWithoutAPageUsesTheRequestedPageOfThePageService()
+	{
+		$app = Prado::getApplication();
+		$snapshot = PradoUnit::snapshot($app, ['_service']);
+		try {
+			$page = $this->createPage();
+			$service = $this->getMockBuilder(TPageService::class)->onlyMethods(['getRequestedPage'])->getMock();
+			$service->expects($this->once())->method('getRequestedPage')->willReturn($page);
+			$app->setService($service);
+			$tpl = $this->newTemplate('<com:TLabel ID="lbl1" Text="Hello" />');
+			$parent = new TControl();
+			$tpl->instantiateIn($parent);
+			$this->assertSame('Hello', $parent->getControls()[0]->getText());
+		} finally {
+			PradoUnit::restore($app, $snapshot);
+		}
+	}
+
+	public function testInstantiateInWithoutAPageOrPageServiceAppliesNoPage()
+	{
+		$app = Prado::getApplication();
+		$snapshot = PradoUnit::snapshot($app, ['_service']);
+		try {
+			$app->setService(new TComponent());
+			$tpl = $this->newTemplate('<com:TLabel ID="lbl1" Text="Hello" />');
+			$parent = new TControl();
+			$tpl->instantiateIn($parent);
+			$this->assertSame('Hello', $parent->getControls()[0]->getText());
+		} finally {
+			PradoUnit::restore($app, $snapshot);
+		}
+	}
+
+	public function testInstantiateInEvaluatesASkinIdExpression()
+	{
+		$tpl = $this->newTemplate('<com:TLabel ID="lbl1" SkinID=<%= \'sk\' . \'in\' %> />');
+		$parent = $this->createControlWithPage();
+		$tpl->instantiateIn($parent);
+		$this->assertSame('skin', $parent->getControls()[0]->getSkinID());
+	}
+
+	public function testInstantiateInSetsAComponentIdFromAParameterAndAnExpression()
+	{
+		$params = Prado::getApplication()->getParameters();
+		$params->add('TTemplateInstantiateInTestComponentId', 'fromParam');
+		try {
+			$tpl = $this->newTemplateUnvalidated('<com:Prado\Test\Unit\Web\UI\TTemplateDashComponent ID=<%$ TTemplateInstantiateInTestComponentId %> />'
+				. '<com:Prado\Test\Unit\Web\UI\TTemplateDashComponent ID=<%= \'from\' . \'Expr\' %> />');
+			$tplControl = $this->createAcceptingControlWithPage();
+			$tpl->instantiateIn($tplControl);
+			$this->assertSame('fromParam', $tplControl->parsedObjects[0]->getID());
+			$this->assertSame('fromExpr', $tplControl->parsedObjects[1]->getID());
+			$this->assertSame($tplControl->parsedObjects[0], $tplControl->getRegisteredObject('fromParam'));
+			$this->assertSame($tplControl->parsedObjects[1], $tplControl->getRegisteredObject('fromExpr'));
+		} finally {
+			$params->remove('TTemplateInstantiateInTestComponentId');
+		}
+	}
+
+	public function testInstantiateInPublishesAnAssetProperty()
+	{
+		$app = Prado::getApplication();
+		$snapshot = PradoUnit::snapshot($app, ['_assetManager']);
+		try {
+			$app->setAssetManager(new class () extends TAssetManager {
+				public function publishFilePath($path, $checkTimestamp = false)
+				{
+					return 'published:' . $path;
+				}
+			});
+			$tpl = $this->newTemplate('<com:TImage ImageUrl=<%~ logo.png %> />', '/ctx');
+			$parent = $this->createControlWithPage();
+			$tpl->instantiateIn($parent);
+			$this->assertSame('published:/ctx' . DIRECTORY_SEPARATOR . 'logo.png', $parent->getControls()[0]->getImageUrl());
+		} finally {
+			PradoUnit::restore($app, $snapshot);
+		}
 	}
 }

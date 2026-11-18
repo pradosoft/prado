@@ -701,4 +701,20 @@ class TModuleViewTest extends TestCase
 		$this->assertEquals(0, $moduleView->getControls()->count());
 		$this->assertNotNull($page->findControl('OuterLabel'));
 	}
+
+	public function testConditionEvaluationWithoutATemplateControlIsFalse()
+	{
+		$view = new TModuleView();
+		$this->assertFalse(PradoUnit::invoke($view, 'getConditionEvaluation'));
+	}
+
+	public function testConditionEvaluationWrapsAFailedExpression()
+	{
+		$view = new TModuleView();
+		$view->setTemplateControl(new TPage());
+		$view->setCondition('$this->noSuchMethod()');
+		$this->expectException(\Prado\Exceptions\TInvalidDataValueException::class);
+		$this->expectExceptionMessage('noSuchMethod');
+		PradoUnit::invoke($view, 'getConditionEvaluation');
+	}
 }

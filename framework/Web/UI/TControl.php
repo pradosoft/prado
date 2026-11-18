@@ -10,7 +10,6 @@
 
 namespace Prado\Web\UI;
 
-use Exception;
 use Prado\Collections\TAttributeCollection;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
@@ -1180,7 +1179,8 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	/**
 	 * Ensures child controls are created.
 	 * If child controls are not created yet, this method will invoke
-	 * {@see createChildControls} to create them.
+	 * {@see createChildControls} to create them. When creation throws, the
+	 * controls count as created and the exception or error passes on.
 	 */
 	public function ensureChildControls()
 	{
@@ -1190,7 +1190,7 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 				$this->getAdapterControl()->createChildControls();
 				$this->_flags &= ~self::IS_CREATING_CHILD;
 				$this->_flags |= self::IS_CHILD_CREATED;
-			} catch (Exception $e) {
+			} catch (\Throwable $e) {
 				$this->_flags &= ~self::IS_CREATING_CHILD;
 				$this->_flags |= self::IS_CHILD_CREATED;
 				throw $e;

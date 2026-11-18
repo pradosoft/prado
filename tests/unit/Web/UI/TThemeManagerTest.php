@@ -218,6 +218,21 @@ class TThemeManagerTest extends \PHPUnit\Framework\TestCase
 		$this->assertContains('ThemeBeta', $themes);
 	}
 
+	public function testGetAvailableThemesListsAThemeNamedZero(): void
+	{
+		$manager = new TThemeManager();
+		$basePath = $this->createTmpDir('prado_themes_zero_');
+		foreach (['0', 'Other'] as $name) {
+			mkdir($basePath . DIRECTORY_SEPARATOR . $name);
+			$this->_tmpDirs[] = $basePath . DIRECTORY_SEPARATOR . $name;
+		}
+		$this->setBasePath($manager, $basePath);
+
+		$themes = $manager->getAvailableThemes();
+		sort($themes);
+		$this->assertSame(['0', 'Other'], $themes);
+	}
+
 	public function testGetAvailableThemesReturnsEmptyArrayForEmptyDirectory(): void
 	{
 		$manager = new TThemeManager();
@@ -327,5 +342,87 @@ class TThemeManagerTest extends \PHPUnit\Framework\TestCase
 			}
 		}
 		$this->assertSame(count($names), $rejected);
+	}
+	// -----------------------------------------------------------------------
+	// Default BasePath and BaseUrl, from the request's entry script
+	// -----------------------------------------------------------------------
+
+	/**
+	 * Runs a callable while the request reports an entry script in a new directory.
+	 * @param bool $withThemes whether the directory holds a themes directory, a themes file, or nothing (null).
+	 * @param callable $test receives the manager and the application directory.
+	 */
+	private function withEntryScript(?bool $withThemes, callable $test): void
+	{
+		$appDir = realpath($this->createTmpDir('prado_themes_app_'));
+		$script = $appDir . DIRECTORY_SEPARATOR . 'index.php';
+		file_put_contents($script, '<?php');
+		$this->_tmpFiles[] = $script;
+		$themes = $appDir . DIRECTORY_SEPARATOR . TThemeManager::DEFAULT_BASEPATH;
+		if ($withThemes === true) {
+			mkdir($themes);
+			$this->_tmpDirs[] = $themes;
+		} elseif ($withThemes === false) {
+			file_put_contents($themes, '');
+			$this->_tmpFiles[] = $themes;
+		}
+		$server = $_SERVER;
+		$_SERVER['SCRIPT_FILENAME'] = $script;
+		$_SERVER['SCRIPT_NAME'] = '/shop/index.php';
+		try {
+			$test(new TThemeManager(), $appDir);
+		} finally {
+			$_SERVER = $server;
+		}
+	}
+
+	public function testGetBasePathDefaultsToTheThemesDirectoryBesideTheEntryScript(): void
+	{
+		$this->withEntryScript(true, function (TThemeManager $manager, string $appDir) {
+			$this->assertSame($appDir . DIRECTORY_SEPARATOR . 'themes', $manager->getBasePath());
+			$this->assertSame($appDir . DIRECTORY_SEPARATOR . 'themes', $manager->getBasePath(), 'the path is resolved once');
+		});
+	}
+
+	public function testGetBasePathWithoutAThemesDirectoryThrows(): void
+	{
+		$this->withEntryScript(null, function (TThemeManager $manager) {
+			$this->expectException(TConfigurationException::class);
+			$manager->getBasePath();
+		});
+	}
+
+	public function testGetBasePathWithAThemesFileThrows(): void
+	{
+		$this->withEntryScript(false, function (TThemeManager $manager) {
+			$this->expectException(TConfigurationException::class);
+			$manager->getBasePath();
+		});
+	}
+
+	public function testGetBaseUrlDefaultsToTheThemesUrlBesideTheEntryScript(): void
+	{
+		$this->withEntryScript(true, function (TThemeManager $manager, string $appDir) {
+			mkdir($blue = $appDir . DIRECTORY_SEPARATOR . 'themes' . DIRECTORY_SEPARATOR . 'Blue');
+			$this->_tmpDirs[] = $blue;
+			$this->assertSame('/shop/themes', $manager->getBaseUrl());
+			$this->assertSame('/shop/themes/Blue', $manager->getTheme('Blue')->getBaseUrl());
+		});
+	}
+
+	public function testGetBaseUrlOfABasePathOutsideTheApplicationThrows(): void
+	{
+		$this->withEntryScript(true, function (TThemeManager $manager) {
+			$this->setBasePath($manager, realpath($this->createTmpDir('prado_themes_elsewhere_')));
+			$this->expectException(TConfigurationException::class);
+			$manager->getBaseUrl();
+		});
+	}
+
+	public function testSetBasePathOfANamespaceNamingAFileThrows(): void
+	{
+		$manager = new TThemeManager();
+		$this->expectException(TInvalidDataValueException::class);
+		$manager->setBasePath('Prado.Web.UI.TPage');
 	}
 }

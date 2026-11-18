@@ -53,4 +53,10 @@ class TEventContentTest extends \PHPUnit\Framework\TestCase
 		
 		Prado::getApplication()->detachEventHandler('fxTestContentEvent', [$this, 'callHandler']);
 	}
+
+	public function testCreateChildControlsWithoutABroadcastEvent()
+	{
+		$this->obj->createChildControls();
+		$this->assertSame(0, $this->obj->getControls()->getCount());
+	}
 }

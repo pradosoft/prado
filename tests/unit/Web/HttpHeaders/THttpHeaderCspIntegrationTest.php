@@ -42,6 +42,9 @@ class THttpHeaderCspIntegrationTest extends \PHPUnit\Framework\TestCase
 {
 	public static ?TApplication $app = null;
 
+	/** @var array the application's services before the test; a finalize may register one. */
+	private array $_servicesBefore = [];
+
 	protected function setUp(): void
 	{
 		if (self::$app === null) {
@@ -49,11 +52,13 @@ class THttpHeaderCspIntegrationTest extends \PHPUnit\Framework\TestCase
 			self::$app->setMode(TApplicationMode::Debug);
 		}
 		TJavaScript::setScriptNonce(null);
+		$this->_servicesBefore = PradoUnit::getProp(\Prado\Prado::getApplication(), '_services');
 	}
 
 	protected function tearDown(): void
 	{
 		TJavaScript::setScriptNonce(null);
+		PradoUnit::setProp(\Prado\Prado::getApplication(), '_services', $this->_servicesBefore);
 	}
 
 	// -----------------------------------------------------------------------
@@ -1153,5 +1158,114 @@ class THttpHeaderCspIntegrationTest extends \PHPUnit\Framework\TestCase
 				};
 			}
 		};
+	}
+
+	// -----------------------------------------------------------------------
+	// 'Auto' mode with a literal ReportingServiceId
+	// -----------------------------------------------------------------------
+
+	/**
+	 * Builds a manager in the 'Auto' mode with a literal service ID that no
+	 * service is registered under.
+	 */
+	private function makeAutoManagerWithUnregisteredId(string $id = 'literal-reporter'): TTestHttpHeadersManager
+	{
+		$manager = $this->makeManagerWithCsp();
+		$manager->setReportingServiceMode('Auto');
+		$manager->setReportOnly(false);
+		$manager->setReportingServiceId($id);
+		$app = \Prado\Prado::getApplication();
+		$services = PradoUnit::getProp($app, '_services');
+		unset($services[$id]);
+		PradoUnit::setProp($app, '_services', $services);
+		return $manager;
+	}
+
+	public function testAutoModeLiteralIdWithoutReportingLeavesHeadersAlone()
+	{
+		$manager = $this->makeAutoManagerWithUnregisteredId();
+		$manager->ensureReportingServiceRegistered();
+		$manager->publicFinalizeReporterService();
+
+		$csp = $manager->getHeadersByClass(THttpHeaderCsp::class)[0];
+		self::assertFalse($csp->hasPolicy(TCspDirective::ReportTo));
+		self::assertSame([], $manager->getHeadersByClass(THttpHeaderReportingEndpoints::class));
+		self::assertFalse(\Prado\Prado::getApplication()->hasRegisteredService('literal-reporter'));
+	}
+
+	public function testAutoModeLiteralIdWithReportToRegistersAndWires()
+	{
+		$manager = $this->makeAutoManagerWithUnregisteredId();
+		$csp = $manager->getHeadersByClass(THttpHeaderCsp::class)[0];
+		$csp->addPolicy(TCspDirective::ReportTo, $manager->getReportingEndpointName());
+		$manager->ensureReportingServiceRegistered();
+		$manager->publicFinalizeReporterService();
+
+		self::assertSame(TCspReportingService::class, \Prado\Prado::getApplication()->getRegisteredService('literal-reporter')[0]);
+		$re = $manager->getHeadersByClass(THttpHeaderReportingEndpoints::class)[0];
+		self::assertSame('https://example.com/csp-report/literal-reporter', $re->getEndpointUrl($manager->getReportingEndpointName()));
+	}
+
+	public function testAutoModeLiteralIdIgnoresReportToAnotherEndpoint()
+	{
+		$manager = $this->makeAutoManagerWithUnregisteredId();
+		$csp = $manager->getHeadersByClass(THttpHeaderCsp::class)[0];
+		$csp->addPolicy(TCspDirective::ReportTo, 'someone-else');
+		$manager->publicFinalizeReporterService();
+
+		self::assertSame([], $manager->getHeadersByClass(THttpHeaderReportingEndpoints::class));
+		self::assertFalse(\Prado\Prado::getApplication()->hasRegisteredService('literal-reporter'));
+	}
+
+	public function testAutoModeLiteralIdWithAReportingEndpointsPlaceholderWires()
+	{
+		$manager = $this->makeAutoManagerWithUnregisteredId();
+		$re = new THttpHeaderReportingEndpoints();
+		$manager->addHeader($re);
+		$re->addEndpoint('mine', '');
+		$manager->publicFinalizeReporterService();
+
+		self::assertSame('https://example.com/csp-report/literal-reporter', $re->getEndpointUrl('mine'));
+		self::assertTrue(\Prado\Prado::getApplication()->hasRegisteredService('literal-reporter'));
+	}
+
+	public function testAutoModeLiteralIdIgnoresAReportingEndpointsHeaderWithoutPlaceholder()
+	{
+		$manager = $this->makeAutoManagerWithUnregisteredId();
+		$re = new THttpHeaderReportingEndpoints();
+		$manager->addHeader($re);
+		$re->addEndpoint('other', 'https://example.com/other');
+		$manager->publicFinalizeReporterService();
+
+		self::assertSame(['other'], $re->getEndpointNames());
+		self::assertFalse(\Prado\Prado::getApplication()->hasRegisteredService('literal-reporter'));
+	}
+
+	public function testAutoModeRegisteredLiteralIdWiresWithoutReporting()
+	{
+		$restore = $this->injectService('literal-reporter');
+		try {
+			$manager = $this->makeManagerWithCsp();
+			$manager->setReportingServiceMode('Auto');
+			$manager->setReportOnly(false);
+			$manager->setReportingServiceId('literal-reporter');
+			$manager->publicFinalizeReporterService();
+
+			$csp = $manager->getHeadersByClass(THttpHeaderCsp::class)[0];
+			self::assertSame([$manager->getReportingEndpointName()], $csp->getReportToNames());
+			self::assertCount(1, $manager->getHeadersByClass(THttpHeaderReportingEndpoints::class));
+		} finally {
+			$restore();
+		}
+	}
+
+	public function testTrueModeRegistersAnUnregisteredLiteralIdWhenTheHookWasBypassed()
+	{
+		$manager = $this->makeAutoManagerWithUnregisteredId();
+		$manager->setReportingServiceMode(true);
+		$manager->publicFinalizeReporterService();
+
+		self::assertSame(TCspReportingService::class, \Prado\Prado::getApplication()->getRegisteredService('literal-reporter')[0]);
+		self::assertSame('literal-reporter', $manager->getReportingServiceId());
 	}
 }

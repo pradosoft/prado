@@ -1127,6 +1127,69 @@ class THttpRequestTest extends \PHPUnit\Framework\TestCase
 		self::assertSame('/demos/personal/index.php?page=Home', $request->getRequestUri());
 	}
 
+	/**
+	 * @return array<string, array{string, string, string}> the `SCRIPT_NAME`, its URL path, and the HiddenPath path info.
+	 */
+	public static function scriptNameProvider(): array
+	{
+		return [
+			'Windows drive path' => ['D:\\a\\prado\\index.php', '/D:/a/prado/index.php', '/index.php'],
+			'Windows drive path of the CI phpunit' => ['D:\\a\\prado\\prado\\vendor\\bin\\/phpunit', '/D:/a/prado/prado/vendor/bin//phpunit', '//phpunit'],
+			'Windows rooted path' => ['\\prado\\index.php', '/prado/index.php', '/index.php'],
+			'Windows UNC path' => ['\\\\server\\share\\index.php', '/server/share/index.php', '/index.php'],
+			'relative path' => ['vendor/bin/phpunit', '/vendor/bin/phpunit', '/phpunit'],
+			'relative path from the current directory' => ['./index.php', '/./index.php', '/index.php'],
+			'posix absolute path' => ['/var/www/prado/index.php', '/var/www/prado/index.php', '/index.php'],
+			'posix absolute path with a backslash' => ['/var/www/pra\\do/index.php', '/var/www/pra\\do/index.php', '/index.php'],
+			'empty' => ['', '', ''],
+		];
+	}
+
+	/**
+	 * Without `REQUEST_URI`, as under the command line, the request URI, the request URL and
+	 * the application URL are the `SCRIPT_NAME` file path as a URL path.
+	 */
+	#[\PHPUnit\Framework\Attributes\DataProvider('scriptNameProvider')]
+	public function testInitRequestUriFromScriptFilePath(string $scriptName, string $scriptUrl, string $hiddenPath)
+	{
+		$server = ['REQUEST_URI' => null, 'PATH_INFO' => null, 'SCRIPT_NAME' => $scriptName, 'PHP_SELF' => $scriptName, 'HTTP_HOST' => '', 'QUERY_STRING' => ''];
+		$request = $this->initRequest($server);
+		self::assertSame($scriptUrl, $request->getRequestUri());
+		// TUri percent-encodes a backslash
+		$uriPath = str_replace('\\', '%5C', $scriptUrl);
+		self::assertSame('localhost', $request->getUrl()->getHost());
+		self::assertSame($uriPath, $request->getUrl()->getPath());
+		self::assertSame('http://localhost', $request->getBaseUrl());
+		self::assertSame($scriptUrl, $request->getApplicationUrl());
+		self::assertSame('http://localhost' . $scriptUrl, $request->getAbsoluteApplicationUrl());
+		self::assertSame('', $request->getPathInfo());
+		self::assertSame($scriptUrl . '?page=Home', $request->constructUrl('page', 'Home'));
+
+		$request = $this->initRequest(['QUERY_STRING' => 'page=Home'] + $server);
+		self::assertSame($scriptUrl . '?page=Home', $request->getRequestUri());
+		self::assertSame($uriPath, $request->getUrl()->getPath());
+		self::assertSame('page=Home', $request->getUrl()->getQuery());
+	}
+
+	/**
+	 * The path info of the Path and HiddenPath URL formats is measured against the same
+	 * URL path as the request URI.
+	 */
+	#[\PHPUnit\Framework\Attributes\DataProvider('scriptNameProvider')]
+	public function testInitPathInfoFromScriptFilePath(string $scriptName, string $scriptUrl, string $hiddenPath)
+	{
+		$server = ['REQUEST_URI' => null, 'PATH_INFO' => null, 'SCRIPT_NAME' => $scriptName, 'PHP_SELF' => $scriptName, 'QUERY_STRING' => ''];
+		self::assertSame('', $this->initRequest($server, THttpRequestUrlFormat::Path)->getPathInfo());
+		self::assertSame($hiddenPath, $this->initRequest($server, THttpRequestUrlFormat::HiddenPath)->getPathInfo());
+	}
+
+	public function testGetApplicationUrlWithoutScriptName()
+	{
+		$request = $this->initRequest([]);
+		unset($_SERVER['SCRIPT_NAME']);
+		self::assertNull($request->getApplicationUrl());
+	}
+
 	public function testInitPathInfo()
 	{
 		// ORIG_PATH_INFO with the CGI path fix

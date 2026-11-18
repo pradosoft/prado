@@ -51,9 +51,9 @@ THttpRequest provides storage and access scheme for user requests sent via HTTP.
 - `getQueryString()`: Returns query string part of request URL  
 - `getHeaders($case = null)`: Returns HTTP request headers, cached per module instance
 - `getHeader($name, $default = null)`: Returns one request header, matched without regard to case (@since 4.4.0)
-- `getRequestUri()`: Returns full request URI
+- `getRequestUri()`: Returns full request URI: `REQUEST_URI`, or without it `getScriptUrl()` and the query string
 - `getBaseUrl($forceSecureConnection = null)`: Returns base URL (schema + hostname)
-- `getApplicationUrl()`: Returns entry script URL (w/o host part)
+- `getApplicationUrl()`: Returns entry script URL (w/o host part): `ORIG_SCRIPT_NAME` with `CGIFIX__SCRIPT_NAME`, otherwise `getScriptUrl()`
 - `getAbsoluteApplicationUrl()`: Returns entry script URL (w/ host part)
 - `getApplicationFilePath()`: Returns application entry script file path
 - `getServerName()`: Returns server name
@@ -111,6 +111,14 @@ THttpRequest implements ArrayAccess, IteratorAggregate, and Countable interfaces
   2. **PATH Format**: index.php/name1,value1/name2,value2
 - Customizable URL manager modules through module configuration
 - Caching support for URL managers to improve performance with many TUrlMappings  
+
+## Script URL (@since 4.4.0)
+The protected `getScriptUrl()` returns `SCRIPT_NAME` as a URL path. The fallback request URI, the `Path` and `HiddenPath` path info, and `getApplicationUrl()` read it, so `getUrl()`, `getBaseUrl()`, `getAbsoluteApplicationUrl()` and `constructUrl()` agree.
+- starts with `/` (every web server value, a posix absolute CLI path) → unchanged, backslashes included
+- any other value (the CLI on Windows, a relative CLI path) → backslashes become `/` and one leading `/` is set: `D:\app\index.php` → `/D:/app/index.php`, `\\server\share\index.php` → `/server/share/index.php`, `vendor/bin/phpunit` → `/vendor/bin/phpunit`
+- empty or missing → unchanged
+
+The path is not percent-encoded. `TUri` encodes it when `getUrl()` parses the request URI.
 
 ## Event Handling
 - `onResolveRequest`: Event for custom request resolution logic

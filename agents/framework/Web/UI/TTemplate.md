@@ -42,6 +42,9 @@ TTemplate implements PRADO template parsing logic. It represents a parsed PRADO 
 - `validateAttributes()` accepts the form because the first path segment (`Attributes`) is readable.
   A bare hyphenated attribute (`<com:TNav aria-label="Primary" />`) is not a property of the control and
   throws `template_property_unknown`.
+- A property or event may also come from a class behavior attached to the component's class, a
+  parent class or an interface (`isClassBehaviorMethod()`); a class behavior keyed by a class that does not
+  exist is skipped.
 
 ### Directive
 - Format: `<%@ property name-value pairs %>`
