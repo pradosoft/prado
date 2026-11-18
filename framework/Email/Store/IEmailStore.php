@@ -10,6 +10,7 @@
 
 namespace Prado\Email\Store;
 
+use Prado\Email\Bounce\TEmailBounce;
 use Prado\Email\TEmail;
 
 /**
@@ -29,6 +30,17 @@ use Prado\Email\TEmail;
  * | Sending | {@see markFailed} | Queued for a retry, or Failed |
  *
  * A claim is atomic: of the processes that claim a queued email, one gets it.
+ *
+ * A stored email is identified by its {@see TEmail::getTrackingId TrackingId}.  The
+ * info of an email is an array of its stored fields: "tracking_id",
+ * "rfc_message_id", "username", "list_name", "subject", "status", "attempts",
+ * "error_text", "created_time", "sent_time", "open_count", "opened_time",
+ * "click_count", "clicked_time", "unsubscribed_time", and "recipients", a list of
+ * arrays with "address", "display_name", "kind" (to, cc, or bcc), "bounce_status",
+ * "bounce_action", "bounce_diagnostic", and "bounced_time".
+ *
+ * A suppression stops emails to an address.  One with a list name stops the
+ * emails of that list; one with an empty list name stops every email.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0
@@ -78,4 +90,92 @@ interface IEmailStore
 	 * @return string[] the suppressed addresses, in lower case.
 	 */
 	public function getSuppressed(array $addresses, string $list = ''): array;
+
+	/**
+	 * Adds an address to the suppression list.  An address already suppressed for the list stays as it is.
+	 * @param string $address the address.
+	 * @param string $reason the {@see TEmailSuppressionReason}.
+	 * @param string $list the mailing list to suppress; empty suppresses every email.
+	 * @param ?string $trackingId the tracking ID of the email that caused the suppression.
+	 */
+	public function addSuppression(string $address, string $reason, string $list = '', ?string $trackingId = null): void;
+
+	/**
+	 * Removes an address from the suppression list.
+	 * @param string $address the address.
+	 * @param ?string $list the mailing list to remove it from; empty for the suppression of every email, null for all its suppressions.
+	 * @return int the number of suppressions removed.
+	 */
+	public function removeSuppression(string $address, ?string $list = null): int;
+
+	/**
+	 * Rebuilds a stored email.
+	 * @param string $trackingId the tracking ID.
+	 * @return ?TEmail the final email with its stored Status, null when it is unknown.
+	 */
+	public function getEmail(string $trackingId): ?TEmail;
+
+	/**
+	 * Returns the stored fields of an email.
+	 * @param string $trackingId the tracking ID.
+	 * @return ?array the info of the email, null when it is unknown.
+	 */
+	public function getEmailInfo(string $trackingId): ?array;
+
+	/**
+	 * Counts an open of an email.
+	 * @param string $trackingId the tracking ID.
+	 * @return bool whether the email is known.
+	 */
+	public function recordOpen(string $trackingId): bool;
+
+	/**
+	 * Counts a click of a tracked link.
+	 * @param string $trackingId the tracking ID.
+	 * @param int $link the link number.
+	 * @return ?string the target URL of the link, null when the email or the link is unknown.
+	 */
+	public function recordClick(string $trackingId, int $link): ?string;
+
+	/**
+	 * Records an unsubscribe.  An email of a list with one To address suppresses that
+	 * address for the list.
+	 * @param string $trackingId the tracking ID.
+	 * @return ?array the info of the email with "suppressed", the suppressed address or null; null when the email is unknown.
+	 */
+	public function recordUnsubscribe(string $trackingId): ?array;
+
+	/**
+	 * Records a bounce on the recipient of the email it reports.  A permanent bounce
+	 * suppresses the address for every email.
+	 * @param TEmailBounce $bounce the bounce of one recipient.
+	 * @return ?array the info of the email with "suppressed", the suppressed address or null; null when no email and recipient match.
+	 */
+	public function recordBounce(TEmailBounce $bounce): ?array;
+
+	/**
+	 * Lists stored emails, newest first.
+	 * @param ?string $username the user name of the emails; null for every user.
+	 * @param ?string $status the TEmailStatus of the emails; null for every status.
+	 * @param int $limit the most emails to return; 0 for all.
+	 * @param int $offset the number of emails to skip.
+	 * @return array|false the infos of the emails without "recipients"; false when reading the log is not permitted.
+	 */
+	public function findEmails(?string $username = null, ?string $status = null, int $limit = 0, int $offset = 0): array|false;
+
+	/**
+	 * Counts stored emails.
+	 * @param ?string $username the user name of the emails; null for every user.
+	 * @param ?string $status the TEmailStatus of the emails; null for every status.
+	 * @return false|int the number of emails; false when reading the log is not permitted.
+	 */
+	public function countEmails(?string $username = null, ?string $status = null): false|int;
+
+	/**
+	 * Deletes stored emails created before an age.
+	 * @param int $seconds the age in seconds.
+	 * @param ?string $status the TEmailStatus to delete; null deletes every status except Queued and Sending.
+	 * @return false|int the number of emails deleted; false when deleting from the log is not permitted.
+	 */
+	public function deleteEmails(int $seconds, ?string $status = null): false|int;
 }

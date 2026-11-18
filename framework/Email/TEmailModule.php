@@ -10,6 +10,12 @@
 
 namespace Prado\Email;
 
+use Prado\Email\Bounce\TEmailBounce;
+use Prado\Email\Bounce\TEmailBounceParser;
+use Prado\Email\Cron\TEmailBounceTask;
+use Prado\Email\Cron\TEmailCleanupTask;
+use Prado\Email\Cron\TEmailQueueTask;
+use Prado\Email\Shell\TShellEmailAction;
 use Prado\Email\Store\IEmailStore;
 use Prado\Email\Transport\IEmailTransport;
 use Prado\Email\Transport\TEmailTransportException;
@@ -19,9 +25,13 @@ use Prado\Email\UI\TEmailBodyTemplate;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Prado;
+use Prado\Security\Permissions\IPermissions;
+use Prado\Security\Permissions\TPermissionEvent;
+use Prado\Shell\TShellApplication;
 use Prado\TComponent;
 use Prado\TPropertyValue;
 use Prado\Util\Clock\TApplicationClockAwareTrait;
+use Prado\Util\Cron\TCronTaskInfo;
 use Prado\Xml\TXmlElement;
 
 /**
@@ -75,10 +85,16 @@ use Prado\Xml\TXmlElement;
  * A {@see setStoreID store} logs every email and is required for Queued.
  * {@see sendEach} sends one template to many recipients, each as its own email.
  *
+ * The module offers its cron tasks to the cron module: {@see TEmailQueueTask},
+ * {@see TEmailCleanupTask}, and {@see TEmailBounceTask}.  {@see processBounceMessage}
+ * takes a bounce message, records it in the store, and raises onBounce.  In the
+ * shell the module adds the "email" action ({@see TShellEmailAction}).
+ *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0
+ * @method bool dyRegisterShellAction(bool $return)
  */
-class TEmailModule extends \Prado\TModule implements IEmailMailer
+class TEmailModule extends \Prado\TModule implements IEmailMailer, IPermissions
 {
 	use TApplicationClockAwareTrait;
 
@@ -96,6 +112,9 @@ class TEmailModule extends \Prado\TModule implements IEmailMailer
 
 	/** The name of the behavior that the module attaches to the application. */
 	public const BEHAVIOR_NAME = 'email';
+
+	/** The permission to use the email shell action. */
+	public const PERM_EMAIL_SHELL = 'email_shell';
 
 	/** @var ?string the directory of the emails. */
 	private ?string $_basePath = null;
@@ -155,9 +174,47 @@ class TEmailModule extends \Prado\TModule implements IEmailMailer
 				$app->attachBehavior(self::BEHAVIOR_NAME, $behavior);
 			}
 			$app->attachEventHandler('onEndRequest', [$this, 'endRequest']);
+			if ($app instanceof TShellApplication && $this->dyRegisterShellAction(false) !== true) {
+				$app->addShellActionClass(['class' => TShellEmailAction::class, 'EmailModule' => $this]);
+			}
 		}
 		$this->_initialized = true;
 		parent::init($config);
+	}
+
+	/**
+	 * @return bool true; the module listens to global events so the cron module finds its tasks.
+	 */
+	public function getAutoGlobalListen()
+	{
+		return true;
+	}
+
+	/**
+	 * Offers the email cron tasks to the cron module.  The queue and cleanup tasks
+	 * are offered when the module has a store.
+	 * @param mixed $cron the cron module asking for tasks.
+	 * @param mixed $param the event parameter.
+	 * @return TCronTaskInfo[] the task infos.
+	 */
+	public function fxGetCronTaskInfos($cron, $param)
+	{
+		$infos = [new TCronTaskInfo('emailbounce', TEmailBounceTask::class, $this->getID(), Prado::localize('Email Bounce Task'), Prado::localize('Reads the mailbox that receives bounces and records them.'))];
+		if ($this->_store !== null) {
+			$infos[] = new TCronTaskInfo('emailqueue', TEmailQueueTask::class, $this->getID(), Prado::localize('Email Queue Task'), Prado::localize('Delivers the queued emails.'));
+			$infos[] = new TCronTaskInfo('emailcleanup', TEmailCleanupTask::class, $this->getID(), Prado::localize('Email Cleanup Task'), Prado::localize('Deletes stored emails older than a time period.'));
+		}
+		return $infos;
+	}
+
+	/**
+	 * Implements IPermissions for the email shell action.
+	 * @param \Prado\Security\Permissions\TPermissionsManager $manager the permissions manager.
+	 * @return TPermissionEvent[] the permission events.
+	 */
+	public function getPermissions($manager)
+	{
+		return [new TPermissionEvent(static::PERM_EMAIL_SHELL, 'Activates email shell commands.', 'dyRegisterShellAction')];
 	}
 
 	/**
@@ -546,6 +603,34 @@ class TEmailModule extends \Prado\TModule implements IEmailMailer
 	 */
 	protected function signalQueue(): void
 	{
+	}
+
+	/**
+	 * Parses a raw message, such as one from the mailbox of the Return-Path, as a
+	 * bounce.  Each failed or delayed recipient is recorded in the store and raises
+	 * onBounce.  A message that is not a bounce does nothing.
+	 * @param string $message the raw message, headers and body.
+	 * @return TEmailBounce[] the bounces found in the message.
+	 */
+	public function processBounceMessage(string $message): array
+	{
+		$bounces = (new TEmailBounceParser())->parse($message);
+		$store = $this->getStore();
+		foreach ($bounces as $bounce) {
+			$info = $store?->recordBounce($bounce);
+			$this->onBounce(new TEmailTrackingEventParameter($info['tracking_id'] ?? null, $info, null, $bounce));
+		}
+		return $bounces;
+	}
+
+	/**
+	 * Raised for each recipient of a bounce message.  With a store the bounce is
+	 * recorded first, and a permanent bounce has suppressed the address.
+	 * @param TEmailTrackingEventParameter $param the parameter with the bounce.
+	 */
+	public function onBounce($param)
+	{
+		$this->raiseEvent('onBounce', $this, $param);
 	}
 
 	/**

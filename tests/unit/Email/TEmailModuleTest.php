@@ -15,28 +15,20 @@ use Prado\Email\UI\TEmailBody;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Prado;
-use Prado\Test\Unit\Email\Store\TMemoryEmailStore;
+use Prado\Email\Store\TEmailSuppressionReason;
+use Prado\Test\Unit\Email\Store\TSqliteEmailStore;
 use Prado\Test\Unit\Email\Transport\TCaptureTransport;
 use Prado\Xml\TXmlDocument;
 
 class TEmailModuleTest extends TestCase
 {
+	use TEmailModuleCleanupTrait;
+
 	private TCaptureTransport $_transport;
 
-	protected function tearDown(): void
+	private function module(?TSqliteEmailStore $store = null): TEmailModule
 	{
-		$app = Prado::getApplication();
-		$app->detachBehavior(TEmailModule::BEHAVIOR_NAME);
-		foreach ($app->getEventHandlers('onEndRequest') as $handler) {
-			if (is_array($handler) && $handler[0] instanceof TEmailModule) {
-				$app->detachEventHandler('onEndRequest', $handler);
-			}
-		}
-	}
-
-	private function module(?TMemoryEmailStore $store = null): TEmailModule
-	{
-		$module = new TEmailModule();
+		$module = $this->newEmailModule();
 		$module->setBasePath(__DIR__ . '/Fixtures/Emails');
 		$module->setTransport($this->_transport = new TCaptureTransport());
 		$module->setStore($store);
@@ -54,6 +46,11 @@ class TEmailModuleTest extends TestCase
 		return $email;
 	}
 
+	private function stored(TSqliteEmailStore $store, TEmail $email): ?string
+	{
+		return $store->getEmailInfo($email->getTrackingId())['status'] ?? null;
+	}
+
 	private function transient(): TEmailTransportException
 	{
 		return (new TEmailTransportException('smtptransport_connection_failed', 'smtp.example.com', 'timeout'))->setIsTransient(true);
@@ -61,7 +58,7 @@ class TEmailModuleTest extends TestCase
 
 	public function testDefaults()
 	{
-		$module = new TEmailModule();
+		$module = $this->newEmailModule();
 		$this->assertInstanceOf(IEmailMailer::class, $module);
 		$this->assertInstanceOf(TMailTransport::class, $module->getTransport());
 		$this->assertNull($module->getStore());
@@ -81,7 +78,7 @@ class TEmailModuleTest extends TestCase
 		$xml = new TXmlDocument();
 		$xml->loadFromString('<module><transport class="' . TCaptureTransport::class . '" Label="primary" />'
 			. '<emails Email.ReplyTo="reply@example.com"><email id="Order.*" Number="7" /></emails></module>');
-		$module = new TEmailModule();
+		$module = $this->newEmailModule();
 		$module->setBasePath(__DIR__ . '/Fixtures/Emails');
 		$module->init($xml);
 		$transport = $module->getTransport();
@@ -106,7 +103,7 @@ class TEmailModuleTest extends TestCase
 
 	public function testInitPhpConfiguration()
 	{
-		$module = new TEmailModule();
+		$module = $this->newEmailModule();
 		$module->init(['transport' => ['class' => TCaptureTransport::class, 'properties' => ['Label' => 'php']], 'emails' => ['rules' => ['*' => ['Email.List' => 'all']]]]);
 		$this->assertSame('php', $module->getTransport()->getLabel());
 		$this->assertSame(['Email.List' => 'all'], $module->getConfiguration()->getEmailProperties('Simple'));
@@ -122,7 +119,7 @@ class TEmailModuleTest extends TestCase
 			$xml = new TXmlDocument();
 			$xml->loadFromString($config);
 			try {
-				(new TEmailModule())->init($xml);
+				$this->newEmailModule()->init($xml);
 				$this->fail('an invalid transport configuration throws: ' . $config);
 			} catch (TConfigurationException $e) {
 				$this->assertStringContainsString('transport', strtolower($e->getMessage()));
@@ -221,13 +218,13 @@ class TEmailModuleTest extends TestCase
 
 	public function testCancel()
 	{
-		$module = $this->module($store = new TMemoryEmailStore());
+		$module = $this->module($store = new TSqliteEmailStore());
 		$module->attachEventHandler('onSendEmail', fn ($sender, $param) => $param->cancel());
 		$email = $this->email();
 		$this->assertSame(TEmailStatus::Cancelled, $module->sendEmail($email));
 		$this->assertSame(TEmailStatus::Cancelled, $email->getStatus());
 		$this->assertSame([], $this->_transport->sent);
-		$this->assertSame([], $store->rows);
+		$this->assertSame(0, $store->countEmails());
 	}
 
 	public function testHandlerMayChangeTheEmail()
@@ -256,7 +253,7 @@ class TEmailModuleTest extends TestCase
 
 	public function testOtherExceptionIsRecordedAndRethrown()
 	{
-		$module = $this->module($store = new TMemoryEmailStore());
+		$module = $this->module($store = new TSqliteEmailStore());
 		$this->_transport->failures[] = new \RuntimeException('disk full');
 		$email = $this->email();
 		try {
@@ -264,26 +261,27 @@ class TEmailModuleTest extends TestCase
 			$this->fail('an exception that is not a refusal is rethrown');
 		} catch (\RuntimeException $e) {
 			$this->assertSame(TEmailStatus::Failed, $email->getStatus());
-			$this->assertSame(TEmailStatus::Failed, $store->status($email));
-			$this->assertSame('disk full', $store->rows[$email->getTrackingId()]['error']);
+			$this->assertSame(TEmailStatus::Failed, $this->stored($store, $email));
+			$this->assertSame('disk full', $store->getEmailInfo($email->getTrackingId())['error_text']);
 		}
 	}
 
 	public function testImmediateWithStoreLogsAndRetries()
 	{
-		$module = $this->module($store = new TMemoryEmailStore());
+		$module = $this->module($store = new TSqliteEmailStore());
+		$store->setRetryDelay(0);
 		$ok = $this->email();
 		$this->assertSame(TEmailStatus::Sent, $module->sendEmail($ok));
-		$this->assertSame(TEmailStatus::Sent, $store->status($ok));
+		$this->assertSame(TEmailStatus::Sent, $this->stored($store, $ok));
 
 		$this->_transport->failures[] = $this->transient();
 		$retry = $this->email('bob@example.com');
 		$this->assertSame(TEmailStatus::Queued, $module->sendEmail($retry));
 		$this->assertSame(TEmailStatus::Queued, $retry->getStatus());
-		$this->assertSame(TEmailStatus::Queued, $store->status($retry));
+		$this->assertSame(TEmailStatus::Queued, $this->stored($store, $retry));
 
 		$this->assertSame(1, $module->sendQueued());
-		$this->assertSame(TEmailStatus::Sent, $store->status($retry));
+		$this->assertSame(TEmailStatus::Sent, $this->stored($store, $retry));
 		$this->assertCount(2, $this->_transport->sent);
 		$this->assertSame('bob@example.com', $this->_transport->sent[1]->getTo()[0]->getAddress());
 		$this->assertSame($retry->getMessageId(), $this->_transport->sent[1]->getMessageId());
@@ -291,17 +289,19 @@ class TEmailModuleTest extends TestCase
 		$this->_transport->failures[] = new TEmailTransportException('smtptransport_command_failed', 'RCPT', '550 no such user');
 		$permanent = $this->email('gone@example.com');
 		$this->assertSame(TEmailStatus::Failed, $module->sendEmail($permanent));
-		$this->assertSame(TEmailStatus::Failed, $store->status($permanent));
+		$this->assertSame(TEmailStatus::Failed, $this->stored($store, $permanent));
 	}
 
 	public function testRetriesStopAtTheStoreLimit()
 	{
-		$module = $this->module($store = new TMemoryEmailStore());
+		$module = $this->module($store = new TSqliteEmailStore());
+		$store->setRetryDelay(0);
+		$store->setMaxAttempts(2);
 		$this->_transport->failures = [$this->transient(), $this->transient()];
 		$email = $this->email();
 		$this->assertSame(TEmailStatus::Queued, $module->sendEmail($email));
 		$this->assertSame(0, $module->sendQueued());
-		$this->assertSame(TEmailStatus::Failed, $store->status($email));
+		$this->assertSame(TEmailStatus::Failed, $this->stored($store, $email));
 		$this->assertSame(0, $module->sendQueued());
 	}
 
@@ -321,7 +321,7 @@ class TEmailModuleTest extends TestCase
 
 	public function testQueuedMode()
 	{
-		$module = $this->module($store = new TMemoryEmailStore());
+		$module = $this->module($store = new TSqliteEmailStore());
 		$module->setSendMode(TEmailSendMode::Queued);
 		$emails = [$this->email('ann@example.com'), $this->email('bob@example.com'), $this->email('cat@example.com')];
 		foreach ($emails as $email) {
@@ -333,7 +333,7 @@ class TEmailModuleTest extends TestCase
 		$this->assertSame(0, $module->sendQueued());
 		$this->assertCount(3, $this->_transport->sent);
 		foreach ($emails as $email) {
-			$this->assertSame(TEmailStatus::Sent, $store->status($email));
+			$this->assertSame(TEmailStatus::Sent, $this->stored($store, $email));
 		}
 	}
 
@@ -353,37 +353,39 @@ class TEmailModuleTest extends TestCase
 
 	public function testDeferredModeFallsBackToTheQueue()
 	{
-		$module = $this->module($store = new TMemoryEmailStore());
+		$module = $this->module($store = new TSqliteEmailStore());
+		$store->setRetryDelay(0);
 		$module->setSendMode(TEmailSendMode::Deferred);
 		$lost = $this->email('ann@example.com');
 		$module->sendEmail($lost);
-		$this->assertSame(TEmailStatus::Queued, $store->status($lost), 'the email is stored before the end of the request');
+		$this->assertSame(TEmailStatus::Queued, $this->stored($store, $lost), 'the email is stored before the end of the request');
 
 		$retry = $this->email('bob@example.com');
 		$module->sendEmail($retry);
 		$this->_transport->failures[] = $this->transient();
 		$this->assertSame(1, $module->sendDeferred());
-		$this->assertSame(TEmailStatus::Queued, $store->status($lost));
-		$this->assertSame(TEmailStatus::Sent, $store->status($retry));
+		$this->assertSame(TEmailStatus::Queued, $this->stored($store, $lost));
+		$this->assertSame(TEmailStatus::Sent, $this->stored($store, $retry));
 		$this->assertSame(1, $module->sendQueued());
-		$this->assertSame(TEmailStatus::Sent, $store->status($lost));
+		$this->assertSame(TEmailStatus::Sent, $this->stored($store, $lost));
 	}
 
 	public function testDeferredSkipsAnEmailAnotherProcessClaimed()
 	{
-		$module = $this->module($store = new TMemoryEmailStore());
+		$module = $this->module($store = new TSqliteEmailStore());
 		$module->setSendMode(TEmailSendMode::Deferred);
 		$email = $this->email();
 		$module->sendEmail($email);
-		$store->rows[$email->getTrackingId()]['status'] = TEmailStatus::Sending;
+		$this->assertTrue($store->claimEmail($email), 'another process claims the email first');
 		$this->assertSame(0, $module->sendDeferred());
 		$this->assertSame([], $this->_transport->sent);
 	}
 
 	public function testSuppression()
 	{
-		$store = new TMemoryEmailStore();
-		$store->suppressed = ['' => ['bounced@example.com'], 'news' => ['left@example.com']];
+		$store = new TSqliteEmailStore();
+		$store->addSuppression('bounced@example.com', TEmailSuppressionReason::Bounce);
+		$store->addSuppression('left@example.com', TEmailSuppressionReason::Unsubscribe, 'news');
 		$module = $this->module($store);
 		$module->setBcc('archive@example.com');
 
@@ -398,7 +400,7 @@ class TEmailModuleTest extends TestCase
 		$news->setList('news');
 		$this->assertSame(TEmailStatus::Suppressed, $module->sendEmail($news));
 		$this->assertSame(TEmailStatus::Suppressed, $news->getStatus());
-		$this->assertSame(TEmailStatus::Suppressed, $store->status($news));
+		$this->assertSame(TEmailStatus::Suppressed, $this->stored($store, $news));
 		$this->assertSame([], $news->getBcc(), 'a suppressed email is not copied');
 		$this->assertCount(2, $this->_transport->sent);
 	}
@@ -420,8 +422,8 @@ class TEmailModuleTest extends TestCase
 
 	public function testSendEach()
 	{
-		$module = $this->module($store = new TMemoryEmailStore());
-		$store->suppressed = ['news' => ['left@example.com']];
+		$module = $this->module($store = new TSqliteEmailStore());
+		$store->addSuppression('left@example.com', TEmailSuppressionReason::Unsubscribe, 'news');
 		$template = $module->createEmail('Simple');
 		$template->setFrom('shop@example.com');
 		$template->setData(['NAME' => 'friend']);
@@ -457,7 +459,7 @@ class TEmailModuleTest extends TestCase
 
 	public function testStoreId()
 	{
-		$module = new TEmailModule();
+		$module = $this->newEmailModule();
 		$module->setStoreID('no-such-module');
 		$this->assertSame('no-such-module', $module->getStoreID());
 		try {
@@ -471,7 +473,7 @@ class TEmailModuleTest extends TestCase
 
 	public function testBasePath()
 	{
-		$module = new TEmailModule();
+		$module = $this->newEmailModule();
 		$module->setBasePath(__DIR__ . '/Fixtures/Emails');
 		$this->assertSame(realpath(__DIR__ . '/Fixtures/Emails'), $module->getBasePath());
 		$this->expectException(TConfigurationException::class);
@@ -481,7 +483,7 @@ class TEmailModuleTest extends TestCase
 	public function testMessageIdDomainValidation()
 	{
 		$this->expectException(TConfigurationException::class);
-		(new TEmailModule())->setMessageIdDomain("example.com>\r\nBcc: x");
+		$this->newEmailModule()->setMessageIdDomain("example.com>\r\nBcc: x");
 	}
 
 	public function testCloseClosesTheTransport()
@@ -489,5 +491,61 @@ class TEmailModuleTest extends TestCase
 		$module = $this->module();
 		$module->close();
 		$this->assertSame(1, $this->_transport->closes);
+	}
+
+	public function testCronTaskInfos()
+	{
+		$module = $this->module();
+		$this->assertTrue($module->getAutoGlobalListen());
+		$this->assertSame(['emailbounce'], array_map(fn ($info) => $info->getName(), $module->fxGetCronTaskInfos(null, null)));
+		$module->setStore(new TSqliteEmailStore());
+		$infos = $module->fxGetCronTaskInfos(null, null);
+		$this->assertSame(['emailbounce', 'emailqueue', 'emailcleanup'], array_map(fn ($info) => $info->getName(), $infos));
+		$this->assertSame(\Prado\Email\Cron\TEmailQueueTask::class, $infos[1]->getTask());
+	}
+
+	public function testPermissions()
+	{
+		$permissions = $this->module()->getPermissions(null);
+		$this->assertCount(1, $permissions);
+		$this->assertSame(TEmailModule::PERM_EMAIL_SHELL, $permissions[0]->getName());
+	}
+
+	public function testProcessBounceMessage()
+	{
+		$module = $this->module($store = new TSqliteEmailStore());
+		$email = $this->email('ann@example.com');
+		$module->sendEmail($email);
+		$events = [];
+		$module->attachEventHandler('onBounce', function ($sender, $param) use (&$events) {
+			$events[] = [$param->getBounce()->getRecipient(), $param->getTrackingId(), $param->getSuppressed(), $param->getInfo()['recipients'][0]['bounce_status'] ?? null];
+		});
+		$dsn = "From: MAILER-DAEMON@mx.example.com\r\nContent-Type: multipart/report; report-type=delivery-status; boundary=\"b\"\r\n\r\n"
+			. "--b\r\nContent-Type: text/plain\r\n\r\nDelivery failed.\r\n"
+			. "--b\r\nContent-Type: message/delivery-status\r\n\r\nReporting-MTA: dns; mx.example.com\r\n\r\n"
+			. "Final-Recipient: rfc822; ann@example.com\r\nAction: failed\r\nStatus: 5.1.1\r\nDiagnostic-Code: smtp; 550 5.1.1 no such user\r\n"
+			. "--b\r\nContent-Type: message/rfc822\r\n\r\nMessage-ID: <" . $email->getMessageId() . ">\r\nSubject: Hello\r\n\r\n--b--\r\n";
+		$bounces = $module->processBounceMessage($dsn);
+		$this->assertCount(1, $bounces);
+		$this->assertSame([['ann@example.com', $email->getTrackingId(), 'ann@example.com', '5.1.1']], $events);
+		$this->assertSame(['ann@example.com'], $store->getSuppressed(['ann@example.com']));
+
+		$again = $this->email('ann@example.com');
+		$this->assertSame(TEmailStatus::Suppressed, $module->sendEmail($again), 'a hard bounce stops the next email');
+		$this->assertSame([], $module->processBounceMessage("Subject: hello\r\n\r\nnot a bounce"));
+		$this->assertCount(1, $events);
+	}
+
+	public function testProcessBounceMessageWithoutStore()
+	{
+		$module = $this->module();
+		$events = [];
+		$module->attachEventHandler('onBounce', function ($sender, $param) use (&$events) {
+			$events[] = [$param->getBounce()->getStatus(), $param->getTrackingId(), $param->getInfo()];
+		});
+		$module->processBounceMessage("X-Failed-Recipients: gone@example.com\r\nSubject: Mail delivery failed\r\n\r\nThe address failed.");
+		$this->assertCount(1, $events);
+		$this->assertNull($events[0][1]);
+		$this->assertNull($events[0][2]);
 	}
 }

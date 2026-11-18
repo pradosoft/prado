@@ -16,9 +16,11 @@ use Prado\Web\UI\TPage;
 
 class TEmailBodyTest extends TestCase
 {
+	use \Prado\Test\Unit\Email\TEmailModuleCleanupTrait;
+
 	private function module(): TEmailModule
 	{
-		$module = new TEmailModule();
+		$module = $this->newEmailModule();
 		$module->setBasePath(__DIR__ . '/../Fixtures/Emails');
 		$module->setTransport(new TCaptureTransport());
 		return $module;
@@ -136,7 +138,7 @@ class TEmailBodyTest extends TestCase
 
 	public function testAdditionalEmailPaths()
 	{
-		$module = new TEmailModule();
+		$module = $this->newEmailModule();
 		$module->setBasePath(__DIR__);
 		$asked = [];
 		$module->attachEventHandler('onAdditionalEmailPaths', function ($sender, $emailPath) use (&$asked) {
