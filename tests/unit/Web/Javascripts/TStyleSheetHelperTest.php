@@ -234,4 +234,23 @@ class TStyleSheetHelperTest extends \PHPUnit\Framework\TestCase
 			$this->assertSame('stylesheet_integrity_required', $e->getErrorCode());
 		}
 	}
+
+	public function testRenderStyleSheetFilesWithOneEntry(): void
+	{
+		$this->assertSame("<link rel=\"stylesheet\" type=\"text/css\" href=\"/a.css\" />\n", TStyleSheetHelper::renderStyleSheetFiles(['/a.css']));
+		$this->assertSame("<link rel=\"stylesheet\" type=\"text/css\" media=\"print\" href=\"/b.css\" />\n", TStyleSheetHelper::renderStyleSheetFiles([['/b.css', 'print']]));
+	}
+
+	public function testRenderStyleSheetFileRemoteWithMedia(): void
+	{
+		$this->assertSame(
+			"<link rel=\"stylesheet\" type=\"text/css\" media=\"screen\" href=\"https://cdn.example.com/style.css\" />\n",
+			TStyleSheetHelper::renderStyleSheetFile(self::REMOTE, 'screen')
+		);
+		TStyleSheetHelper::setStyleIntegrity(self::REMOTE, 'HASH');
+		$this->assertSame(
+			"<link rel=\"stylesheet\" type=\"text/css\" media=\"screen\" href=\"https://cdn.example.com/style.css\" integrity=\"sha384-HASH\" crossorigin=\"anonymous\" />\n",
+			TStyleSheetHelper::renderStyleSheetFile(self::REMOTE, 'screen')
+		);
+	}
 }

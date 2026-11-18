@@ -29,8 +29,8 @@ Both paths apply the full Unicode case mapping (`upper('ÃŸ')` is `SS`, `lower('Ä
 | [`TKeyShortcuts`](../Web/UI/WebControls/TKeyShortcuts.md) `normalizeKey()` | one-character key tokens and their uppercase |
 | [`TBaseTerm`](../Web/UI/WebControls/TBaseTerm.md) `getTermKey()` | case-insensitive term keys |
 | [`TWebControl`](../Web/UI/WebControls/TWebControl.md) `setAccessKey()` | the one-character check |
-| [`TRangeValidator`](../Web/UI/WebControls/TRangeValidator.md) `isValidStringLength()` | `StringLength` when `Charset` is UTF-8; other charsets use `iconv_strlen()` |
-| [`TSimpleDateFormatter`](TSimpleDateFormatter.md) `length()`, `substring()` | pattern and value slicing when `Charset` is UTF-8; other charsets use iconv |
+| [`TRangeValidator`](../Web/UI/WebControls/TRangeValidator.md) `isValidStringLength()` | `StringLength`; a value of another `Charset` is converted to UTF-8 by [`TUtf8Converter`](TUtf8Converter.md) first |
+| [`TSimpleDateFormatter`](TSimpleDateFormatter.md) `length()`, `substring()` | pattern and value slicing; another `Charset` is converted to UTF-8 by [`TUtf8Converter`](TUtf8Converter.md) first |
 
 ## Testing the fallback
 

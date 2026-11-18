@@ -16,7 +16,7 @@ class TUtf8ConverterTest extends \PHPUnit\Framework\TestCase
 	protected function setUp(): void
 	{
 		$this->_locale = setlocale(LC_CTYPE, '0');
-		$this->_static = PradoUnit::snapshotStatic(TUtf8Converter::class, ['_iconv']);
+		$this->_static = PradoUnit::snapshotStatic(TUtf8Converter::class, ['_iconv', '_encodings']);
 	}
 
 	protected function tearDown(): void
@@ -137,5 +137,24 @@ class TUtf8ConverterTest extends \PHPUnit\Framework\TestCase
 		// ICU substitutes SUB (0x1A) for a character ASCII cannot hold.
 		self::assertSame("caf\x1a", TUtf8Converter::fromUTF8("caf\u{2603}", 'ASCII//TRANSLIT'));
 		self::assertSame(self::UTF8, TUtf8Converter::toUTF8(self::LATIN1, 'ISO-8859-1//IGNORE'));
+	}
+
+	/**
+	 * @dataProvider pathProvider
+	 */
+	public function testIsEncoding(bool $iconv)
+	{
+		if ($iconv && !extension_loaded('iconv')) {
+			self::markTestSkipped('The iconv extension is not loaded.');
+		}
+		if (!$iconv) {
+			$this->withoutIconv();
+		}
+		PradoUnit::setStaticProp(TUtf8Converter::class, '_encodings', []);
+		self::assertTrue(TUtf8Converter::isEncoding('ISO-8859-1'));
+		self::assertTrue(TUtf8Converter::isEncoding('iso-8859-1'), 'The cached answer is case-insensitive.');
+		self::assertTrue(TUtf8Converter::isEncoding('ISO-8859-1//TRANSLIT'));
+		self::assertFalse(TUtf8Converter::isEncoding('NO-SUCH-ENCODING'));
+		self::assertCount(3, PradoUnit::getStaticProp(TUtf8Converter::class, '_encodings'));
 	}
 }

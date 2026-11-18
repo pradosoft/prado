@@ -41,15 +41,18 @@ use Prado\Util\IDbModule;
  * By default, the name of the table is called 'pradocache'. If the table does not
  * exist in the database, it will be automatically created with the following structure:
  * ```sql
- * CREATE TABLE pradocache (itemkey CHAR(128) PRIMARY KEY, value BLOB, expire INTEGER)
+ * CREATE TABLE pradocache (itemkey CHAR(128) NOT NULL PRIMARY KEY, value BLOB, expire INTEGER)
  * CREATE INDEX IX_pradocache_expire ON pradocache (expire)
  * ```
  *
- * Note, some DBMS might not support BLOB type. In this case, replace 'BLOB' with a suitable
- * binary data type (e.g. LONGBLOB in MySQL, BYTEA in PostgreSQL.)
+ * The value column is `LONGBLOB` on MySQL, `BYTEA` on PostgreSQL, `VARBINARY(MAX)` on SQL
+ * Server, and `BLOB(1G)` on IBM DB2. The key is `VARCHAR2(128)` on Oracle and `VARCHAR(128)`
+ * on IBM DB2 ({@see getColumnTypes()}).
  *
- * `itemkey` is the primary key; the upsert of {@see set()} replaces the row with the same key.
- * The `expire` index is named after the table.
+ * `itemkey` is the primary key; the upsert of {@see set()} replaces the row with the same key
+ * ({@see getUpsertSql()}). The `expire` index is named after the table.
+ *
+ * On IBM DB2, pdo_ibm fetches a value of about 64 KiB or more as `NULL`, which reads as a miss.
  *
  * If you want to change the cache table name, or if you want to create the table by yourself,
  * you may set {@see \Prado\Caching\TDbCache::setCacheTableName() CacheTableName} and {@see \Prado\Caching\TDbCache::setAutoCreateCacheTable() AutoCreateCacheTable} properties.
@@ -118,6 +121,11 @@ class TDbCache extends TSerializingCache implements IDbModule
 	use TDbPropertiesTrait {
 		getDbConnection as getTraitDbConnection;
 	}
+
+	/** @var string the PL/SQL variable that holds the value on Oracle ({@see getOracleValueBlock()}). */
+	public const ORACLE_VALUE_VARIABLE = 'cachevalue';
+	/** @var int the bytes of the value in each `HEXTORAW` literal on Oracle ({@see getOracleValueBlock()}). */
+	public const ORACLE_CHUNK_SIZE = 16000;
 
 	/**
 	 * @var string name of the DB cache table
@@ -253,16 +261,8 @@ class TDbCache extends TSerializingCache implements IDbModule
 			// DB table not exists
 			Prado::trace('Autocreate: ' . $cacheTable, TDbCache::class);
 
-			$driver = TDbDriverCapabilities::normalizeDriver($db->getDriverName());
-			if ($driver === TDbDriver::DRIVER_MYSQL) {
-				$blob = 'LONGBLOB';
-			} elseif ($driver === TDbDriver::DRIVER_PGSQL) {
-				$blob = 'BYTEA';
-			} else {
-				$blob = 'BLOB';
-			}
-
-			$sql = 'CREATE TABLE ' . $cacheTable . " (itemkey CHAR(128) PRIMARY KEY, value $blob, expire INTEGER)";
+			[$keyType, $valueType] = $this->getColumnTypes(TDbDriverCapabilities::normalizeDriver($db->getDriverName()));
+			$sql = 'CREATE TABLE ' . $cacheTable . " (itemkey $keyType NOT NULL PRIMARY KEY, value $valueType, expire INTEGER)";
 			$db->createCommand($sql)->execute();
 
 			$sql = 'CREATE INDEX ' . $this->getExpireIndexName() . ' ON ' . $cacheTable . ' (expire)';
@@ -477,12 +477,13 @@ class TDbCache extends TSerializingCache implements IDbModule
 	 * and you want to create the DB table manually by yourself,
 	 * you need to make sure the DB table is of the following structure:
 	 * ```sql
-	 * CREATE TABLE pradocache (itemkey CHAR(128) PRIMARY KEY, value BLOB, expire INTEGER)
+	 * CREATE TABLE pradocache (itemkey CHAR(128) NOT NULL PRIMARY KEY, value BLOB, expire INTEGER)
 	 * CREATE INDEX IX_pradocache_expire ON pradocache (expire)
 	 * ```
 	 *
-	 * Note, some DBMS might not support BLOB type. In this case, replace 'BLOB' with a suitable
-	 * binary data type (e.g. LONGBLOB in MySQL, BYTEA in PostgreSQL.)
+	 * The value column is `LONGBLOB` on MySQL, `BYTEA` on PostgreSQL, `VARBINARY(MAX)` on SQL
+	 * Server, and `BLOB(1G)` on IBM DB2. The key is `VARCHAR2(128)` on Oracle and `VARCHAR(128)`
+	 * on IBM DB2 ({@see getColumnTypes()}).
 	 *
 	 * `itemkey` is the primary key; the upsert of {@see set()} replaces the row with the same key.
 	 *
@@ -516,6 +517,8 @@ class TDbCache extends TSerializingCache implements IDbModule
 	}
 
 	/**
+	 * Returns the serialized value of a key. IBM DB2 (pdo_ibm) fetches a `BLOB` of about
+	 * 64 KiB or more as `NULL`; a `NULL` value is a miss.
 	 * @param string $key a unique key identifying the cached value
 	 * @return false|string the serialized value on a hit, or `false` on a miss or expiry.
 	 * @since 4.4.0
@@ -527,8 +530,7 @@ class TDbCache extends TSerializingCache implements IDbModule
 		}
 
 		$sql = 'SELECT value FROM ' . $this->getCacheTableName() . ' WHERE itemkey=:key AND (expire=0 OR expire>=' . $this->getClock()->time() . ') ORDER BY expire DESC';
-		$db = $this->getDbConnection();
-		return $this->runCacheCommand($sql, [':key' => [$key, $db::PARAM_STR]], 'queryScalar');
+		return $this->runCacheCommand($sql, [':key' => [$key, \PDO::PARAM_STR]], 'queryScalar') ?? false;
 	}
 
 	/**
@@ -543,45 +545,22 @@ class TDbCache extends TSerializingCache implements IDbModule
 		if (!$this->getIsCacheInitialized()) {
 			$this->initializeCache();
 		}
-		$db = $this->getDbConnection();
-		$driver = TDbDriverCapabilities::normalizeDriver($db->getDriverName());
-		if (in_array($driver, [TDbDriver::DRIVER_MYSQL, TDbDriver::DRIVER_SQLITE, TDbDriver::DRIVER_IBM, TDbDriver::DRIVER_OCI, TDbDriver::DRIVER_SQLSRV, TDbDriver::DRIVER_DBLIB, TDbDriver::DRIVER_PGSQL])) {
-			$expire = ($expire <= 0) ? 0 : $this->getClock()->time() + $expire;
-			$cacheTable = $this->getCacheTableName();
-			if (in_array($driver, [TDbDriver::DRIVER_MYSQL, TDbDriver::DRIVER_SQLITE])) {
-				$sql = "REPLACE INTO {$cacheTable} (itemkey,value,expire) VALUES (:key,:value,$expire)";
-			} elseif ($driver === TDbDriver::DRIVER_PGSQL) {
-				$sql = "INSERT INTO {$cacheTable} (itemkey, value, expire) VALUES (:key, :value, $expire) " .
-					"ON CONFLICT (itemkey) DO UPDATE SET value = EXCLUDED.value, expire = EXCLUDED.expire";
-			} else {
-				$sql = "MERGE INTO {$cacheTable} AS c " .
-				"USING (SELECT :key AS itemkey, :value AS value, $expire AS expire) AS data " .
-				"ON c.itemkey = data.itemkey " .
-				"WHEN MATCHED THEN " .
-					"UPDATE SET c.value = data.value, c.expire = data.expire " .
-				"WHEN NOT MATCHED THEN " .
-					"INSERT (itemkey, value, expire) " .
-					"VALUES (data.itemkey, data.value, data.expire)";
-			}
-			try {
-				$this->runCacheCommand($sql, [':key' => [$key, $db::PARAM_STR], ':value' => [$value, $db::PARAM_LOB]]);
-				return true;
-			} catch (\Exception $e) {
-				return false;
-			}
-		} else {
-			$isCurrentTransaction = $this->getDbConnection()->getCurrentTransaction();
-			$transaction = $this->getDbConnection()->getCurrentTransaction() ?? $this->getDbConnection()->beginTransaction();
-
-			$this->deleteValue($key);
-			$return = $this->addSerializedValue($key, $value, $expire);
-
-			if (!$isCurrentTransaction) {
-				$transaction->commit();
-			}
-
-			return $return;
+		$driver = TDbDriverCapabilities::normalizeDriver($this->getDbConnection()->getDriverName());
+		$expire = ($expire <= 0) ? 0 : $this->getClock()->time() + $expire;
+		if (($sql = $this->getUpsertSql($driver, $expire)) !== null) {
+			return $this->storeValue($driver, $sql, $key, $value);
 		}
+		$isCurrentTransaction = $this->getDbConnection()->getCurrentTransaction();
+		$transaction = $isCurrentTransaction ?? $this->getDbConnection()->beginTransaction();
+
+		$this->deleteValue($key);
+		$return = $this->storeValue($driver, $this->getInsertSql($driver, $expire), $key, $value);
+
+		if (!$isCurrentTransaction) {
+			$transaction->commit();
+		}
+
+		return $return;
 	}
 
 	/**
@@ -596,15 +575,9 @@ class TDbCache extends TSerializingCache implements IDbModule
 		if (!$this->getIsCacheInitialized()) {
 			$this->initializeCache();
 		}
+		$driver = TDbDriverCapabilities::normalizeDriver($this->getDbConnection()->getDriverName());
 		$expire = ($expire <= 0) ? 0 : $this->getClock()->time() + $expire;
-		$sql = "INSERT INTO {$this->getCacheTableName()} (itemkey,value,expire) VALUES(:key,:value,$expire)";
-		$db = $this->getDbConnection();
-		try {
-			$this->runCacheCommand($sql, [':key' => [$key, $db::PARAM_STR], ':value' => [$value, $db::PARAM_LOB]]);
-			return true;
-		} catch (\Exception $e) {
-			return false;
-		}
+		return $this->storeValue($driver, $this->getInsertSql($driver, $expire), $key, $value);
 	}
 
 	/**
@@ -652,18 +625,168 @@ class TDbCache extends TSerializingCache implements IDbModule
 	 */
 	protected function runCacheCommand(string $sql, array $params = [], string $method = 'execute'): mixed
 	{
-		$attempt = function () use ($sql, $params, $method): mixed {
+		return $this->retryAfterInitializing(function () use ($sql, $params, $method): mixed {
 			$command = $this->getDbConnection()->createCommand($sql);
 			foreach ($params as $name => [$value, $type]) {
 				$command->bindValue($name, $value, $type);
 			}
 			return $command->$method();
-		};
+		});
+	}
+
+	/**
+	 * Runs an operation on the cache table, and runs it once more after initializing the
+	 * table again when it fails.
+	 * @param callable(): mixed $attempt the operation.
+	 * @throws \Exception if the second attempt fails.
+	 * @return mixed the result of the operation.
+	 * @since 4.4.0
+	 */
+	protected function retryAfterInitializing(callable $attempt): mixed
+	{
 		try {
 			return $attempt();
 		} catch (\Exception $e) {
 			$this->initializeCache(true);
 			return $attempt();
 		}
+	}
+
+	/**
+	 * Returns the statement that inserts or replaces an entry, or `null` for a driver
+	 * without an upsert, which deletes and inserts. The statement binds `:key` and holds
+	 * the value expression of {@see getValueSql()}.
+	 *
+	 * | Driver | Upsert |
+	 * |---|---|
+	 * | MySQL, SQLite | `REPLACE INTO` |
+	 * | PostgreSQL | `INSERT ... ON CONFLICT` |
+	 * | SQL Server, IBM DB2, Oracle | `MERGE` |
+	 * @param string $driver the normalized PDO driver name.
+	 * @param int $expire the Unix time the entry expires at; 0 means never.
+	 * @return ?string the upsert statement, or `null`.
+	 * @since 4.4.0
+	 */
+	protected function getUpsertSql(string $driver, int $expire): ?string
+	{
+		$table = $this->getCacheTableName();
+		$value = $this->getValueSql($driver);
+		$actions = "ON (t.itemkey = s.itemkey) WHEN MATCHED THEN UPDATE SET t.value = s.value, t.expire = $expire " .
+			"WHEN NOT MATCHED THEN INSERT (itemkey, value, expire) VALUES (s.itemkey, s.value, $expire)";
+		return match ($driver) {
+			TDbDriver::DRIVER_MYSQL, TDbDriver::DRIVER_SQLITE => "REPLACE INTO {$table} (itemkey,value,expire) VALUES (:key,$value,$expire)",
+			TDbDriver::DRIVER_PGSQL => "INSERT INTO {$table} (itemkey, value, expire) VALUES (:key, $value, $expire) " .
+				'ON CONFLICT (itemkey) DO UPDATE SET value = EXCLUDED.value, expire = EXCLUDED.expire',
+			TDbDriver::DRIVER_SQLSRV, TDbDriver::DRIVER_DBLIB => "MERGE INTO {$table} AS t USING (SELECT :key AS itemkey, $value AS value) AS s $actions;",
+			TDbDriver::DRIVER_IBM => "MERGE INTO {$table} AS t USING (SELECT CAST(:key AS VARCHAR(128)) AS itemkey, $value AS value " .
+				"FROM SYSIBM.SYSDUMMY1) AS s $actions",
+			TDbDriver::DRIVER_OCI => "MERGE INTO {$table} t USING (SELECT :key AS itemkey, $value AS value FROM DUAL) s $actions",
+			default => null,
+		};
+	}
+
+	/**
+	 * Returns the statement that inserts an entry. It binds `:key` and holds the value
+	 * expression of {@see getValueSql()}.
+	 * @param string $driver the normalized PDO driver name.
+	 * @param int $expire the Unix time the entry expires at; 0 means never.
+	 * @return string the insert statement.
+	 * @since 4.4.0
+	 */
+	protected function getInsertSql(string $driver, int $expire): string
+	{
+		return "INSERT INTO {$this->getCacheTableName()} (itemkey,value,expire) VALUES(:key,{$this->getValueSql($driver)},$expire)";
+	}
+
+	/**
+	 * Returns the SQL expression of the value in a statement that stores an entry.
+	 *
+	 * | Driver | Expression | Reason |
+	 * |---|---|---|
+	 * | SQL Server | `CONVERT(VARBINARY(MAX), :value, 2)` | pdo_sqlsrv binds a string as `nvarchar`, which does not convert to `VARBINARY`; the value is bound as hex. |
+	 * | IBM DB2 | `CAST(:value AS BLOB(1G))` | DB2 needs the type of a parameter in a `SELECT`. |
+	 * | Oracle | `cachevalue` | The PL/SQL variable of {@see getOracleValueBlock()}. |
+	 * | Others | `:value` | The value is bound as a LOB. |
+	 * @param string $driver the normalized PDO driver name.
+	 * @return string the value expression.
+	 * @since 4.4.0
+	 */
+	protected function getValueSql(string $driver): string
+	{
+		return match ($driver) {
+			TDbDriver::DRIVER_SQLSRV, TDbDriver::DRIVER_DBLIB => 'CONVERT(VARBINARY(MAX), :value, 2)',
+			TDbDriver::DRIVER_IBM => 'CAST(:value AS BLOB(1G))',
+			TDbDriver::DRIVER_OCI => self::ORACLE_VALUE_VARIABLE,
+			default => ':value',
+		};
+	}
+
+	/**
+	 * Runs a statement of {@see getUpsertSql()} or {@see getInsertSql()} with the key and
+	 * the value. Oracle runs the statement in the PL/SQL block of {@see getOracleValueBlock()}.
+	 * @param string $driver the normalized PDO driver name.
+	 * @param string $sql the statement.
+	 * @param string $key the item key.
+	 * @param string $value the serialized value.
+	 * @return bool whether the value is stored.
+	 * @since 4.4.0
+	 */
+	protected function storeValue(string $driver, string $sql, string $key, string $value): bool
+	{
+		$params = [':key' => [$key, \PDO::PARAM_STR]];
+		if ($driver === TDbDriver::DRIVER_OCI) {
+			$sql = $this->getOracleValueBlock($sql, $value);
+		} elseif ($driver === TDbDriver::DRIVER_SQLSRV || $driver === TDbDriver::DRIVER_DBLIB) {
+			$params[':value'] = [bin2hex($value), \PDO::PARAM_STR];
+		} else {
+			$params[':value'] = [$value, \PDO::PARAM_LOB];
+		}
+		try {
+			$this->runCacheCommand($sql, $params);
+			return true;
+		} catch (\Exception $e) {
+			return false;
+		}
+	}
+
+	/**
+	 * Returns a PL/SQL block that builds the value in a temporary `BLOB` and runs the
+	 * statement with it. {@see \Prado\Data\Common\Oracle\TOracleDbCommand} writes each
+	 * bound value into the SQL as a quoted string, which Oracle reads as hex for a `BLOB`.
+	 * The block appends the value as `HEXTORAW` literals of {@see ORACLE_CHUNK_SIZE} bytes,
+	 * within the 32,767-byte limit of a PL/SQL string.
+	 * @param string $sql the statement, which reads the value from {@see ORACLE_VALUE_VARIABLE}.
+	 * @param string $value the serialized value.
+	 * @return string the PL/SQL block.
+	 * @since 4.4.0
+	 */
+	protected function getOracleValueBlock(string $sql, string $value): string
+	{
+		$lob = self::ORACLE_VALUE_VARIABLE;
+		$writes = '';
+		foreach (str_split($value, self::ORACLE_CHUNK_SIZE) as $chunk) {
+			$writes .= "DBMS_LOB.WRITEAPPEND($lob, " . strlen($chunk) . ", HEXTORAW('" . bin2hex($chunk) . "')); ";
+		}
+		return "DECLARE $lob BLOB; BEGIN DBMS_LOB.CREATETEMPORARY($lob, TRUE); {$writes}{$sql}; DBMS_LOB.FREETEMPORARY($lob); END;";
+	}
+
+	/**
+	 * Returns the column types of the cache table for a driver: the item key, then the value.
+	 * The value is a binary column; the key is `VARCHAR` where a `CHAR` key would compare
+	 * with its padding, as on Oracle.
+	 * @param string $driver the normalized PDO driver name.
+	 * @return array{0: string, 1: string} the key type and the value type.
+	 * @since 4.4.0
+	 */
+	protected function getColumnTypes(string $driver): array
+	{
+		return match ($driver) {
+			TDbDriver::DRIVER_MYSQL => ['CHAR(128)', 'LONGBLOB'],
+			TDbDriver::DRIVER_PGSQL => ['CHAR(128)', 'BYTEA'],
+			TDbDriver::DRIVER_SQLSRV, TDbDriver::DRIVER_DBLIB => ['CHAR(128)', 'VARBINARY(MAX)'],
+			TDbDriver::DRIVER_OCI => ['VARCHAR2(128)', 'BLOB'],
+			TDbDriver::DRIVER_IBM => ['VARCHAR(128)', 'BLOB(1G)'],
+			default => ['CHAR(128)', 'BLOB'],
+		};
 	}
 }

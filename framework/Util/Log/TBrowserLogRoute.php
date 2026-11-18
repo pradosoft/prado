@@ -199,7 +199,7 @@ class TBrowserLogRoute extends TLogRoute implements IOutputLogRoute
 		if ($this->_addPrefix) {
 			$msg = $this->formatLogMessage($log);
 		} else {
-			$msg = $log[0];
+			$msg = $this->messageToString($log[TLogger::LOG_MESSAGE]);
 		}
 		$msg = preg_replace('/\(line[^\)]+\)$/', '', $msg); //remove line number info
 
@@ -207,7 +207,7 @@ class TBrowserLogRoute extends TLogRoute implements IOutputLogRoute
 		if ($this->getCssClass()) {
 			$colorCssClass = $log[TLogger::LOG_LEVEL];
 			$messageCssClass = $log['even'] ? 'even' : 'odd';
-			$category = $log[TLogger::LOG_CATEGORY];
+			$category = THttpUtility::htmlEncode($log[TLogger::LOG_CATEGORY]);
 			$string = <<<EOD
 					<tr class="message level$colorCssClass $messageCssClass">
 						<td class="code">&nbsp;</td>
@@ -237,7 +237,7 @@ class TBrowserLogRoute extends TLogRoute implements IOutputLogRoute
 			}
 
 			$color = $this->getColorLevel($log[TLogger::LOG_LEVEL]);
-			$category = $log[TLogger::LOG_CATEGORY];
+			$category = THttpUtility::htmlEncode($log[TLogger::LOG_CATEGORY]);
 			$string = <<<EOD
 					<tr style="background-color: {$bgcolor}; color:#000">
 						<td style="border:1px solid silver;background-color: {$color}">&nbsp;</td>
