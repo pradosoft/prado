@@ -1688,4 +1688,47 @@ class THttpHeaderCspTest extends \PHPUnit\Framework\TestCase
 			$csp->getHeaderValue()
 		);
 	}
+
+	// =========================================================================
+	// init — NONCE without an application, raw policies
+	// =========================================================================
+
+	public function testInitWithNonceAndNoApplicationLeavesTheNonceUnset(): void
+	{
+		$app = \Prado\Prado::getApplication();
+		PradoUnit::setStaticProp(\Prado\Prado::class, '_application', null);
+		try {
+			$this->csp->init(['policies' => [['name' => 'script-src', 'value' => THttpHeaderCsp::NONCE]]]);
+		} finally {
+			PradoUnit::setStaticProp(\Prado\Prado::class, '_application', $app);
+		}
+		self::assertNull(TJavaScript::getScriptNonce());
+		self::assertSame(THttpHeaderCsp::NONCE, $this->csp->getPolicy('script-src'));
+	}
+
+	public function testInitWithRawPoliciesKeepsThem(): void
+	{
+		$this->csp->setPolicies("default-src 'self' NONCE");
+		$this->csp->init([]);
+		self::assertSame("default-src 'self' NONCE", $this->csp->getPolicies());
+		self::assertNull(TJavaScript::getScriptNonce());
+	}
+
+	// =========================================================================
+	// getHeaderValue — nonce with a valueless policy or no policies
+	// =========================================================================
+
+	public function testGetHeaderValueWithNonceAndOnlyAValuelessPolicy(): void
+	{
+		TJavaScript::setScriptNonce('abc');
+		$this->csp->addPolicy(TCspDirective::UpgradeInsecureRequests);
+		self::assertSame('upgrade-insecure-requests', $this->csp->getHeaderValue());
+	}
+
+	public function testGetHeaderValueWithNonceAndNoPolicies(): void
+	{
+		TJavaScript::setScriptNonce('abc');
+		$this->csp->init([]);
+		self::assertSame('', $this->csp->getHeaderValue());
+	}
 }

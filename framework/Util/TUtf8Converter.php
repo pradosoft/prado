@@ -21,7 +21,7 @@ namespace Prado\Util;
  * |---|---|---|
  * | conversion | `iconv()` | `\UConverter::transcode()` |
  * | `//TRANSLIT` or `//IGNORE` on the encoding | applied | removed; ICU substitutes what the target encoding cannot hold |
- * | unknown encoding | the string unchanged | the string unchanged |
+ * | unknown encoding ({@see isEncoding()} is false) | the string unchanged | the string unchanged |
  * | input invalid in its encoding | the string unchanged | the converted string with substitutes |
  *
  * @author Fabio Bas <fbio.bas@gmail.com>
@@ -32,6 +32,9 @@ class TUtf8Converter
 	/** @var ?bool whether the iconv extension is loaded, resolved on first use */
 	private static ?bool $_iconv = null;
 
+	/** @var array<string, bool> whether each encoding is known, by converter and upper-case name */
+	private static array $_encodings = [];
+
 	/**
 	 * Tells whether `iconv()` converts the strings.
 	 * @return bool whether the iconv extension is loaded.
@@ -40,6 +43,24 @@ class TUtf8Converter
 	public static function hasIconv(): bool
 	{
 		return self::$_iconv ??= extension_loaded('iconv');
+	}
+
+	/**
+	 * Tells whether the converter of {@see hasIconv()} knows an encoding. The answer
+	 * is cached per process.
+	 * @param string $encoding the encoding name, such as `ISO-8859-1`.
+	 * @return bool whether the encoding converts to UTF-8.
+	 * @since 4.4.0
+	 */
+	public static function isEncoding(string $encoding): bool
+	{
+		$iconv = self::hasIconv();
+		$key = ($iconv ? 'iconv:' : 'icu:') . strtoupper($encoding);
+		if (!isset(self::$_encodings[$key])) {
+			// Both converters warn for an unknown encoding and return false.
+			self::$_encodings[$key] = ($iconv ? @iconv($encoding, 'UTF-8', '') : @\UConverter::transcode('', 'UTF-8', explode('//', $encoding, 2)[0])) !== false;
+		}
+		return self::$_encodings[$key];
 	}
 
 	/**

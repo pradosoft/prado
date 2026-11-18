@@ -235,4 +235,36 @@ class TOracleDbCommandTest extends \PHPUnit\Framework\TestCase
 
 		$this->assertSame(['q' => '?', 'v' => 'v'], $command->queryRow());
 	}
+
+	public function test_placeholders_after_a_long_literal_are_substituted()
+	{
+		$long = str_repeat('ab', 50_000);
+		$command = $this->command("SELECT length('$long') AS n, 'it''s :id' AS e, :id AS b");
+		$command->bindValue(':id', 7);
+
+		$this->assertSame(['n' => 100_000, 'e' => "it's :id", 'b' => '7'], $command->queryRow());
+
+		$command = $this->command("SELECT length('$long') AS n, ? AS v");
+		$command->bindValue(1, 'v');
+
+		$this->assertSame(['n' => 100_000, 'v' => 'v'], $command->queryRow());
+	}
+
+	public function test_a_failed_substitution_throws()
+	{
+		$jit = ini_get('pcre.jit');
+		$limit = ini_get('pcre.backtrack_limit');
+		ini_set('pcre.jit', '0');
+		ini_set('pcre.backtrack_limit', '1');
+		try {
+			$command = $this->command("SELECT 'a' || 'b' AS v, :id AS b");
+			$command->bindValue(':id', 1);
+			$this->expectException(TDbException::class);
+			$this->expectExceptionMessage('limit');
+			$command->queryRow();
+		} finally {
+			ini_set('pcre.jit', $jit);
+			ini_set('pcre.backtrack_limit', $limit);
+		}
+	}
 }

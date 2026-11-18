@@ -20,26 +20,26 @@ This file defines the CSS package registry for PRADO. It declares all CSS packag
 | Package | Files |
 |---------|-------|
 | `jquery-ui` | `jquery-ui/themes/base/jquery-ui.css` |
-| `jquery.ui.accordion` | `jquery-ui/themes/base/jquery.ui.accordion.css` |
-| `jquery.ui.autocomplete` | `jquery-ui/themes/base/jquery.ui.autocomplete.css` |
-| `jquery.ui.button` | `jquery-ui/themes/base/jquery.ui.button.css` |
-| `jquery.ui.core` | `jquery-ui/themes/base/jquery.ui.core.css` |
-| `jquery.ui.datepicker` | `jquery-ui/themes/base/jquery.ui.datepicker.css` |
-| `jquery.ui.dialog` | `jquery-ui/themes/base/jquery.ui.dialog.css` |
-| `jquery.ui.menu` | `jquery-ui/themes/base/jquery.ui.menu.css` |
-| `jquery.ui.progressbar` | `jquery-ui/themes/base/jquery.ui.progressbar.css` |
-| `jquery.ui.resizable` | `jquery-ui/themes/base/jquery.ui.resizable.css` |
-| `jquery.ui.selectable` | `jquery-ui/themes/base/jquery.ui.selectable.css` |
-| `jquery.ui.slider` | `jquery-ui/themes/base/jquery.ui.slider.css` |
-| `jquery.ui.spinner` | `jquery-ui/themes/base/jquery.ui.spinner.css` |
-| `jquery.ui.tabs` | `jquery-ui/themes/base/jquery.ui.tabs.css` |
-| `jquery.ui.theme` | `jquery-ui/themes/base/jquery.ui.theme.css` |
-| `jquery.ui.tooltip` | `jquery-ui/themes/base/jquery.ui.tooltip.css` |
+| `jquery.ui.accordion` | `jquery-ui/themes/base/accordion.css` |
+| `jquery.ui.autocomplete` | `jquery-ui/themes/base/autocomplete.css` |
+| `jquery.ui.button` | `jquery-ui/themes/base/button.css` |
+| `jquery.ui.core` | `jquery-ui/themes/base/core.css` |
+| `jquery.ui.datepicker` | `jquery-ui/themes/base/datepicker.css` |
+| `jquery.ui.dialog` | `jquery-ui/themes/base/dialog.css` |
+| `jquery.ui.menu` | `jquery-ui/themes/base/menu.css` |
+| `jquery.ui.progressbar` | `jquery-ui/themes/base/progressbar.css` |
+| `jquery.ui.resizable` | `jquery-ui/themes/base/resizable.css` |
+| `jquery.ui.selectable` | `jquery-ui/themes/base/selectable.css` |
+| `jquery.ui.slider` | `jquery-ui/themes/base/slider.css` |
+| `jquery.ui.spinner` | `jquery-ui/themes/base/spinner.css` |
+| `jquery.ui.tabs` | `jquery-ui/themes/base/tabs.css` |
+| `jquery.ui.theme` | `jquery-ui/themes/base/theme.css` |
+| `jquery.ui.tooltip` | `jquery-ui/themes/base/tooltip.css` |
 | `highlightjs` | `highlightjs/styles/default.css` |
 
 ## Dependencies
 
-All jQuery UI component packages depend on `jquery.ui.core`, which depends on `jquery-ui` itself.
+Each `jquery.ui.<component>` package loads `jquery.ui.core` and its own stylesheet; `jquery-ui` loads the whole theme. The file names are those jQuery UI ships in `themes/base` since 1.11. `TJavaScriptPackagesTest` checks that every listed file exists.
 
 ## See Also
 

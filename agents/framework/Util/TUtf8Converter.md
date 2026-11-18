@@ -22,9 +22,14 @@
 | Method | Returns | Description |
 |--------|---------|-------------|
 | `static hasIconv(): bool` | `bool` | Whether the iconv extension is loaded and `iconv()` converts. @since 4.4.0 |
+| `static isEncoding(string $encoding): bool` | `bool` | Whether the converter of `hasIconv()` knows `$encoding`, cached per process. @since 4.4.0 |
 | `static toUTF8(string $string, string $from, ?string $lang = null): string` | `string` | Converts `$string` from encoding `$from` to UTF-8. Returns the original string if the conversion fails. |
 | `static fromUTF8(string $string, string $to, ?string $lang = null): string` | `string` | Converts a UTF-8 `$string` to encoding `$to`. Returns the original string if the conversion fails. |
 | `static parseEncodingLanguage(string &$encoding, mixed &$lang): void` | `void` | Splits `'ISO-8859-1.fr_FR'` into the encoding `'ISO-8859-1'` and the language `'fr_FR'`, written back through the reference parameters. |
+
+## Callers
+
+[`TSimpleDateFormatter`](TSimpleDateFormatter.md) and [`TRangeValidator`](../Web/UI/WebControls/TRangeValidator.md) measure a non-UTF-8 charset through it, [`TJavaScript::jsonEncode()`](../Web/Javascripts/TJavaScript.md) converts strings of a non-UTF-8 globalization charset, and [`TPage`](../Web/UI/TPage.md) converts callback post data to the application charset with `//IGNORE`.
 
 ## See Also
 

@@ -214,6 +214,7 @@ abstract class TBaseHttpHeader extends \Prado\TComponent
 	 * @param string $header        raw header string, e.g. `X-Frame-Options: DENY`.
 	 * @param bool   $replace       replace an existing same-name header; default `true`.
 	 * @param int    $response_code HTTP response code to force; `0` leaves it unchanged.
+	 * @codeCoverageIgnore Sends to the SAPI; under the CLI the test runner's output has already sent the headers.
 	 */
 	protected function header(string $header, bool $replace = true, int $response_code = 0): void
 	{

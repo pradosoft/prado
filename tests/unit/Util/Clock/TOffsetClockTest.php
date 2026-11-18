@@ -2,6 +2,7 @@
 
 namespace Prado\Test\Unit\Util\Clock;
 
+use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Util\Clock\TOffsetClock;
 use Prado\Util\Clock\TClockDecorator;
 use Prado\Util\Clock\TNativeClock;
@@ -98,4 +99,47 @@ class TOffsetClockTest extends \PHPUnit\Framework\TestCase
 		self::assertSame(3, $clock->getOffset());
 	}
 
+	public function testFractionalOffsetAcrossTheEpoch()
+	{
+		$clock = new TOffsetClock(-0.5, (new TMockClock())->setTimezone('UTC')->setTime(0));
+		self::assertSame(-0.5, $clock->microtime());
+		self::assertSame(-1, $clock->time());
+		self::assertSame('1969-12-31 23:59:59.500000', $clock->now()->format('Y-m-d H:i:s.u'));
+		self::assertSame(-1, $clock->now()->getTimestamp());
+		$clock->setOffset(-1.25);
+		self::assertSame('1969-12-31 23:59:58.750000', $clock->now()->format('Y-m-d H:i:s.u'));
+	}
+
+	public function testInvalidOffsetThrows()
+	{
+		foreach ([NAN, INF, -INF] as $offset) {
+			try {
+				new TOffsetClock($offset);
+				self::fail("TOffsetClock accepts the offset $offset.");
+			} catch (TInvalidDataValueException $e) {
+				self::assertSame('offsetclock_offset_invalid', $e->getErrorCode());
+			}
+		}
+	}
+
+	public function testShift()
+	{
+		$instant = new \DateTimeImmutable('2024-01-01 00:00:00.999999', new \DateTimeZone('Asia/Tokyo'));
+		$shifted = TOffsetClock::shift($instant, 0.000001);
+		self::assertSame('2024-01-01 00:00:01.000000', $shifted->format('Y-m-d H:i:s.u'));
+		self::assertSame('Asia/Tokyo', $shifted->getTimezone()->getName());
+		self::assertSame('2023-12-31 23:59:59.999999', TOffsetClock::shift($instant, -1)->format('Y-m-d H:i:s.u'));
+		self::assertSame('2024-01-01 00:00:00.999999', TOffsetClock::shift($instant, 0)->format('Y-m-d H:i:s.u'));
+		$mutable = new \DateTime('@1700000000');
+		self::assertSame('1700000000.123456', TOffsetClock::shift($mutable, 0.123456)->format('U.u'));
+		self::assertSame('1700000000', $mutable->format('U'));
+		foreach ([NAN, INF, 1.0e20, PHP_INT_MAX] as $seconds) {
+			try {
+				TOffsetClock::shift($instant, $seconds);
+				self::fail("shift() accepts $seconds seconds.");
+			} catch (TInvalidDataValueException $e) {
+				self::assertSame('offsetclock_shift_invalid', $e->getErrorCode());
+			}
+		}
+	}
 }

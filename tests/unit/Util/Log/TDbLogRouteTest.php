@@ -6,8 +6,30 @@ use Prado\Util\Log\TLogger;
 use Prado\Util\Log\TSysLogRoute;
 use Prado\Util\Log\TDbLogRoute;
 use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\TLogException;
+use Prado\Data\IDataConnection;
+use Prado\Data\TDbConnection;
+use Prado\Data\TDbDriver;
+use Prado\Test\Unit\PradoUnit;
 
 class TTestDbLogRoute extends TDbLogRoute {
+}
+
+/**
+ * A TDbLogRoute over a given connection.
+ */
+class TConnectionDbLogRoute extends TDbLogRoute
+{
+	public function __construct(public TDbConnection $connection)
+	{
+		parent::__construct();
+	}
+
+	public function getDbConnection(): IDataConnection
+	{
+		return $this->connection;
+	}
 }
 
 class TDbLogRouteTest extends \PHPUnit\Framework\TestCase
@@ -19,6 +41,7 @@ class TDbLogRouteTest extends \PHPUnit\Framework\TestCase
 	protected function tearDown(): void
 	{
 	}
+
 	public function testRetainPeriod()
 	{
 		$route = new TTestDbLogRoute();
@@ -221,5 +244,138 @@ class TDbLogRouteTest extends \PHPUnit\Framework\TestCase
 		} finally {
 			$route->removeTestFile();
 		}
+	}
+	public static function driverProvider(): array
+	{
+		return [
+			'sqlite' => [TDbDriver::DRIVER_SQLITE],
+			'mysql' => [TDbDriver::DRIVER_MYSQL],
+			'pgsql' => [TDbDriver::DRIVER_PGSQL],
+		];
+	}
+
+	private function driverConnection(string $driver): TDbConnection
+	{
+		if ($driver === TDbDriver::DRIVER_SQLITE && !extension_loaded('pdo_sqlite')) {
+			$this->markTestSkipped('The pdo_sqlite extension is not available.');
+		}
+		$conn = match ($driver) {
+			TDbDriver::DRIVER_SQLITE => new TDbConnection('sqlite::memory:'),
+			TDbDriver::DRIVER_MYSQL => PradoUnit::setupMysqlConnection('prado_unitest'),
+			TDbDriver::DRIVER_PGSQL => PradoUnit::setupPgsqlConnection('prado_unitest'),
+		};
+		if (is_array($conn)) {
+			PradoUnit::failFirstThenSkip($this, $conn[0], null, $conn[1]);
+		} elseif ($conn instanceof \Exception) {
+			throw $conn;
+		}
+		$conn->setActive(true);
+		return $conn;
+	}
+
+	/**
+	 * @dataProvider driverProvider
+	 */
+	public function testInitCreatesTheTableOnEachDriver(string $driver)
+	{
+		$conn = $this->driverConnection($driver);
+		$table = 'pradolog_' . bin2hex(random_bytes(4));
+		$route = new TConnectionDbLogRoute($conn);
+		$route->setLogTableName($table);
+		try {
+			$route->init(null);
+			PradoUnit::invoke($route, 'processLogs', [
+				TLogEntryFactory::entry('one', TLogger::INFO, 'Cat'),
+				TLogEntryFactory::entry('two', TLogger::ERROR, 'Cat'),
+			], true, []);
+
+			$rows = $route->getDBLogs(null, null, null, null, 'log_id')->readAll();
+			$this->assertCount(2, $rows);
+			$this->assertSame(['one', 'two'], array_column($rows, 'message'));
+			$this->assertNotEquals($rows[0]['log_id'], $rows[1]['log_id']);
+		} finally {
+			$conn->createCommand('DROP TABLE IF EXISTS ' . $table)->execute();
+			$conn->setActive(false);
+		}
+	}
+
+	public function testInitWithoutTheTableThrowsWithoutAutoCreate()
+	{
+		$route = new TConnectionDbLogRoute($this->driverConnection(TDbDriver::DRIVER_SQLITE));
+		$this->assertTrue($route->getAutoCreateLogTable());
+		$this->assertSame($route, $route->setAutoCreateLogTable('false'));
+		$this->assertFalse($route->getAutoCreateLogTable());
+		try {
+			$route->init(null);
+			$this->fail('A missing table without AutoCreateLogTable throws TConfigurationException.');
+		} catch (TConfigurationException $e) {
+			$this->assertSame('dblogroute_table_nonexistent', $e->getErrorCode());
+		}
+	}
+
+	public function testProcessLogsThrowsWhenTheInsertIsIgnored()
+	{
+		$conn = $this->driverConnection(TDbDriver::DRIVER_SQLITE);
+		$route = new TConnectionDbLogRoute($conn);
+		$route->init(null);
+		$conn->createCommand('CREATE TRIGGER pradolog_ignore BEFORE INSERT ON pradolog BEGIN SELECT RAISE(IGNORE); END')->execute();
+		try {
+			PradoUnit::invoke($route, 'processLogs', [TLogEntryFactory::entry()], true, []);
+			$this->fail('An insert of no row throws TLogException.');
+		} catch (TLogException $e) {
+			$this->assertSame('dblogroute_insert_failed', $e->getErrorCode());
+		}
+	}
+
+	public function testAnUnknownConnectionIDThrows()
+	{
+		$route = new TTestDbLogRoute();
+		$route->setConnectionID('missing_connection_module');
+		try {
+			$route->getDbConnection();
+			$this->fail('An unknown ConnectionID throws TConfigurationException.');
+		} catch (TConfigurationException $e) {
+			$this->assertSame('dblogroute_connectionid_invalid', $e->getErrorCode());
+		}
+	}
+
+	public function testGetDBLogsOfEachClause()
+	{
+		$route = new TConnectionDbLogRoute($this->driverConnection(TDbDriver::DRIVER_SQLITE));
+		$route->init(null);
+		PradoUnit::invoke($route, 'processLogs', [
+			TLogEntryFactory::entry('one', TLogger::INFO, 'Cat'),
+			TLogEntryFactory::entry('two', TLogger::ERROR, 'Dog'),
+			TLogEntryFactory::entry('three', TLogger::ERROR, 'Cat'),
+		], true, []);
+
+		$this->assertSame(['three', 'one'], array_column($route->getDBLogs(null, 'Cat', null, null, 'log_id DESC')->readAll(), 'message'));
+		$this->assertSame(['two', 'three'], array_column($route->getDBLogs(TLogger::ERROR, null, null, null, '', '2')->readAll(), 'message'));
+		$this->assertSame(['two'], array_column($route->getDBLogs(null, null, null, null, '', '1 OFFSET 1')->readAll(), 'message'));
+		$this->assertSame(['one'], array_column($route->getDBLogs(null, 'Cat', null, null, 'log_id', '1')->readAll(), 'message'));
+		$this->assertCount(3, $route->getDBLogs()->readAll());
+		try {
+			$route->getDBLogs(null, null, null, null, 'log_id', 'bogus');
+			$this->fail('An invalid limit throws TInvalidDataValueException.');
+		} catch (TInvalidDataValueException $e) {
+			$this->assertSame('dblogroute_limit_invalid', $e->getErrorCode());
+		}
+	}
+
+	public function testProcessLogsWithoutLogs()
+	{
+		$route = new TConnectionDbLogRoute($this->driverConnection(TDbDriver::DRIVER_SQLITE));
+		$route->init(null);
+		$route->setRetainPeriod(100);
+		$old = microtime(true) - 1000;
+		$route->connection->createCommand("INSERT INTO pradolog (level, category, prefix, logtime, message) VALUES (4, 'test', '', '" . sprintf('%F', $old) . "', 'old')")->execute();
+
+		$route->setPruneOnFlush(false);
+		PradoUnit::invoke($route, 'processLogs', [], true, []);
+		$this->assertEquals(1, $route->getDBLogCount());
+
+		$route->setPruneOnFlush(true);
+		PradoUnit::invoke($route, 'processLogs', [], true, []);
+		$this->assertEquals(0, $route->getDBLogCount());
 	}
 }

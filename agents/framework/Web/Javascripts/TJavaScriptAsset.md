@@ -14,13 +14,14 @@ TJavaScriptAsset is a utility class for passing JavaScript asset files between P
 
 - `getUrl()` / `setUrl($url)` - Gets or sets the asset URL
 - `getAsync()` / `setAsync($async)` - Gets or sets whether to load asynchronously
-- `__toString()` - Renders the script tag (with optional async attribute)
+- `getIntegrity()` / `setIntegrity($integrity)` - The SRI hash; `null` falls back to `TJavaScript::getScriptIntegrity()`, `false` opts out of integrity
+- `__toString()` - Renders the script tag with `async`, the CSP nonce, and for a remote URL `integrity` and `crossorigin`; throws `TConfigurationException` (`javascript_script_integrity_required`) for a remote URL without integrity when `TJavaScript::getRequireScriptIntegrity()` is on
 
 ## Usage
 
 ```php
 $asset = new TJavaScriptAsset('/assets/myfile.js', true);
-echo $asset; // <script async src="/assets/myfile.js"></script>
+echo $asset; // <script src="/assets/myfile.js" async></script>
 ```
 
 ## See Also

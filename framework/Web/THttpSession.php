@@ -251,7 +251,9 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	 * Deletes the sessions older than {@see getTimeout Timeout} through `session_gc()`,
 	 * which calls the save handler's collection, {@see _gc} with
 	 * {@see setUseCustomStorage UseCustomStorage}.  Without a started session, a
-	 * session is started for the collection and then destroyed.
+	 * session is started for the collection and then destroyed.  That start runs no
+	 * probabilistic collection ({@see setGCProbability GCProbability}), so the count
+	 * includes every expired session.
 	 * @return false|int the number of sessions deleted; false when the collection fails
 	 *   or a session cannot start because headers are sent.
 	 * @since 4.4.0
@@ -259,17 +261,24 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	public function gc(): int|false
 	{
 		$started = $this->getIsStarted();
+		$probability = false;
 		if (!$started) {
 			if ($this->sessionHeadersSent()) {
 				return false;
 			}
-			$this->open();
+			$probability = static::setSessionIniConfig('gc_probability', '0');
 		}
 		try {
+			if (!$started) {
+				$this->open();
+			}
 			return $this->sessionGc();
 		} finally {
 			if (!$started) {
 				$this->destroy();
+				if ($probability !== false) {
+					static::setSessionIniConfig('gc_probability', $probability);
+				}
 			}
 		}
 	}
