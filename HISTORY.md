@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TControl::ensureChildControls()` marks the child controls created when `createChildControls()` throws a PHP `Error`; the control stayed in creation, so a later call never created them. (belisoful)
 BUG: Issue #1497 - `TUtf8Converter` converts with `\UConverter` when the iconv extension is not loaded (`hasIconv()`), returns the string unchanged when a conversion fails, and restores the locale; `TSimpleDateFormatter` measures a non-UTF-8 charset through it. Without iconv both failed, and a failed `iconv()` threw `TPhpErrorException`. (belisoful)
 BUG: Issue #1497 - `TSimpleDateFormatter` parses `K` hours with PM as afternoon hours and `D` as the day in the year when the pattern has no month and day, and formats fractional seconds zero-padded to the digits of the pattern; it ignored PM for `K` and the parsed `D`, and wrote 5 ms with `SSS` as `5`. (belisoful)
 BUG: Issue #1497 - `TSignalsDispatcher::disarm()` without an attached dispatcher returns null; it threw `TPhpErrorException`. (belisoful)
