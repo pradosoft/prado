@@ -15,7 +15,7 @@ TClientSideOptions manages client-side options for components with common JavaSc
 - `Options` - Returns the TMap containing all options
 - `setOption($name, $value)` - Sets an option value
 - `getOption($name)` - Gets an option value
-- `setFunction($name, $code)` - Sets an option as a JavaScript function, wrapping code if needed
+- `setFunction($name, $code)` - Sets an option as a JavaScript function: statements are wrapped in a function block; a `TJavaScriptLiteral` is used unchanged
 - `ensureFunction($javascript)` - Ensures JavaScript code is wrapped in a function block
 
 ## See Also

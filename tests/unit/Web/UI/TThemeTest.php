@@ -8,13 +8,33 @@ use Prado\Web\UI\WebControls\TLabel;
 use Prado\Web\UI\WebControls\TButton;
 use Prado\Web\UI\WebControls\TPanel;
 use Prado\Web\UI\TTemplate;
+use Prado\Caching\TMemoryCache;
+use Prado\Exceptions\TConfigurationException;
 use Prado\TApplication;
+use Prado\TApplicationMode;
 use Prado\Prado;
+use Prado\Test\Unit\Harness\TTestApplication;
 use Prado\Test\Unit\Harness\Web\UI\TNestedPathControl;
 use Prado\Test\Unit\PradoUnit;
 
+/**
+ * A theme that skips each file named in {@see $skipped} through dyProcessFile.
+ */
+class TSkippingTheme extends TTheme
+{
+	public static array $skipped = [];
+
+	public function dyProcessFile($returnValue, $file)
+	{
+		return in_array($file, static::$skipped, true);
+	}
+}
+
 class TThemeTest extends \PHPUnit\Framework\TestCase
 {
+	/** @var ?TTestApplication The application of a test that needs its own cache, mode, or culture. */
+	private ?TTestApplication $_testApp = null;
+
 	private $_themePath;
 	private $_app;
 
@@ -31,6 +51,11 @@ class TThemeTest extends \PHPUnit\Framework\TestCase
 
 	protected function tearDown(): void
 	{
+		if ($this->_testApp !== null) {
+			$this->_testApp->restoreApplication();
+			$this->_testApp = null;
+		}
+		TSkippingTheme::$skipped = [];
 		$this->removeDirectory($this->_tempDir);
 		$this->_tempDir = null;
 		$this->_themePath = null;
@@ -687,5 +712,294 @@ class TThemeTest extends \PHPUnit\Framework\TestCase
 		$theme = new TTheme($this->_themePath, '/themes/testtheme');
 		$files = $theme->getJavaScriptFiles();
 		$this->assertIsArray($files);
+	}
+	// ================================================================================
+	// Construction from the theme directory
+	// ================================================================================
+
+	/**
+	 * @return TTestApplication an application of this test, with no cache in Debug mode.
+	 */
+	private function newApplication(): TTestApplication
+	{
+		return $this->_testApp = new TTestApplication(__DIR__ . '/../app');
+	}
+
+	/**
+	 * Writes a file into the theme directory.
+	 * @param string $name the file name.
+	 * @param string $content the file content.
+	 * @return string the file path.
+	 */
+	private function writeThemeFile(string $name, string $content = ''): string
+	{
+		$path = $this->_themePath . DIRECTORY_SEPARATOR . $name;
+		file_put_contents($path, $content);
+		return $path;
+	}
+
+	public function testConstructParsesTheSkinFilesWithASkinID()
+	{
+		$this->newApplication();
+		$this->writeThemeFile('label.skin', "<com:TLabel Text=\"Default\" />\n<com:TLabel SkinID=\"Big\" Text=\"Big\" />\n");
+
+		$theme = new TTheme($this->_themePath, '/themes/testtheme');
+
+		$skins = $theme->getSkins();
+		$this->assertSame([0, 'Big'], array_keys($skins[TLabel::class]));
+		$label = new TLabel();
+		$this->assertTrue($theme->applySkin($label));
+		$this->assertSame('Default', $label->getText());
+		$label = new TLabel();
+		$label->setSkinID('Big');
+		$this->assertTrue($theme->applySkin($label));
+		$this->assertSame('Big', $label->getText());
+	}
+
+	public function testConstructRejectsANestedSkinControl()
+	{
+		$this->newApplication();
+		$this->writeThemeFile('panel.skin', '<com:TPanel><com:TLabel Text="x" /></com:TPanel>');
+		$this->expectException(TConfigurationException::class);
+		$this->expectExceptionMessage('cannot be within another skin');
+		new TTheme($this->_themePath, '/themes/testtheme');
+	}
+
+	public function testConstructRejectsADuplicatedSkinIDAcrossSkinFiles()
+	{
+		$this->newApplication();
+		$this->writeThemeFile('a.skin', '<com:TLabel SkinID="Big" Text="a" />');
+		$this->writeThemeFile('b.skin', '<com:TLabel SkinID="Big" Text="b" />');
+		$this->expectException(TConfigurationException::class);
+		$this->expectExceptionMessage('Big');
+		new TTheme($this->_themePath, '/themes/testtheme');
+	}
+
+	public function testConstructSortsTheStyleSheetAndJavaScriptFilesAndIgnoresOtherFiles()
+	{
+		$this->newApplication();
+		foreach (['b.css', 'a.css', 'b.js', 'a.js', 'readme.txt'] as $file) {
+			$this->writeThemeFile($file);
+		}
+		$theme = new TTheme($this->_themePath, '/t');
+		$this->assertSame(['/t/a.css', '/t/b.css'], $theme->getStyleSheetFiles());
+		$this->assertSame(['/t/a.js', '/t/b.js'], $theme->getJavaScriptFiles());
+		$this->assertSame([], $theme->getSkins());
+	}
+
+	public function testConstructSkipsAFileTheProcessFileEventClaims()
+	{
+		$this->newApplication();
+		$this->writeThemeFile('a.css');
+		$this->writeThemeFile('skip.css');
+		TSkippingTheme::$skipped = ['skip.css'];
+		$theme = new TSkippingTheme($this->_themePath, '/t');
+		$this->assertSame(['/t/a.css'], $theme->getStyleSheetFiles());
+	}
+
+	public function testConstructOfAMissingDirectoryThrows()
+	{
+		$this->newApplication();
+		$this->expectException(\Prado\Exceptions\TPhpErrorException::class);
+		new TTheme($this->_themePath . DIRECTORY_SEPARATOR . 'missing', '/t');
+	}
+
+	// ================================================================================
+	// Right-to-left style sheets
+	// ================================================================================
+
+	/**
+	 * Writes one left-to-right style sheet and three right-to-left ones.
+	 */
+	private function writeRtlStyleSheets(): void
+	{
+		foreach (['main.css', 'main.rtl.css', 'printrtl.css', 'side.rtl.print.css', 'x.y.css'] as $file) {
+			$this->writeThemeFile($file);
+		}
+	}
+
+	public function testALeftToRightCultureDropsTheRtlStyleSheets()
+	{
+		$this->newApplication()->getGlobalization()->setCulture('en');
+		$this->writeRtlStyleSheets();
+		$theme = new TTheme($this->_themePath, '/t');
+		$this->assertSame(['/t/main.css', '/t/x.y.css'], array_values($theme->getStyleSheetFiles()));
+	}
+
+	public function testARightToLeftCultureAppendsTheRtlStyleSheets()
+	{
+		$this->newApplication()->getGlobalization()->setCulture('ar');
+		$this->writeRtlStyleSheets();
+		$theme = new TTheme($this->_themePath, '/t');
+		$this->assertSame(
+			['/t/main.css', '/t/x.y.css', '/t/main.rtl.css', '/t/printrtl.css', '/t/side.rtl.print.css'],
+			array_values($theme->getStyleSheetFiles())
+		);
+	}
+
+	// ================================================================================
+	// The theme cache
+	// ================================================================================
+
+	/**
+	 * @return TMemoryCache the cache of a new application of this test.
+	 */
+	private function newCachingApplication(): TMemoryCache
+	{
+		$app = $this->newApplication();
+		$app->setCache($cache = new TMemoryCache());
+		return $cache;
+	}
+
+	/**
+	 * @return string the cache key of the test theme.
+	 */
+	private function cacheKey(): string
+	{
+		return TTheme::THEME_CACHE_PREFIX . $this->_themePath;
+	}
+
+	/**
+	 * @return array a skin list no skin file of this test holds.
+	 */
+	private function cachedSkins(): array
+	{
+		return [TLabel::class => [0 => ['text' => [TTemplate::PROP_TYPE => TTemplate::CONFIG_VALUE, TTemplate::PROP_NAME => 'Text', TTemplate::PROP_VALUE => 'Cached']]]];
+	}
+
+	public function testConstructCachesTheParsedTheme()
+	{
+		$cache = $this->newCachingApplication();
+		$this->_testApp->setClock((new \Prado\Util\Clock\TMockClock())->setTime(5000));
+		$this->writeThemeFile('label.skin', '<com:TLabel Text="Default" />');
+		$this->writeThemeFile('a.css');
+
+		$theme = new TTheme($this->_themePath, '/t');
+
+		[$skins, $cssFiles, $jsFiles, $timestamp] = $cache->get($this->cacheKey());
+		$this->assertSame($theme->getSkins(), $skins);
+		$this->assertSame($theme->getStyleSheetFiles(), $cssFiles);
+		$this->assertSame([], $jsFiles);
+		$this->assertSame(5000, $timestamp);
+	}
+
+	public function testConstructUsesTheCachedSkinsWhileTheSkinFilesAreUnchanged()
+	{
+		$cache = $this->newCachingApplication();
+		$skin = $this->writeThemeFile('label.skin', '<com:TLabel Text="Default" />');
+		foreach (['a.css', 'a.js', 'readme.txt'] as $file) {
+			$this->writeThemeFile($file);
+		}
+		touch($skin, 1000);
+		$cache->set($this->cacheKey(), [$this->cachedSkins(), [], [], 2000]);
+
+		$theme = new TTheme($this->_themePath, '/t');
+
+		$this->assertSame($this->cachedSkins(), $theme->getSkins());
+	}
+
+	public function testConstructReparsesASkinFileNewerThanTheCache()
+	{
+		$cache = $this->newCachingApplication();
+		$skin = $this->writeThemeFile('label.skin', '<com:TLabel Text="Default" />');
+		touch($skin, 3000);
+		$cache->set($this->cacheKey(), [$this->cachedSkins(), [], [], 2000]);
+
+		$theme = new TTheme($this->_themePath, '/t');
+
+		$label = new TLabel();
+		$theme->applySkin($label);
+		$this->assertSame('Default', $label->getText());
+		$this->assertSame($theme->getSkins(), $cache->get($this->cacheKey())[0], 'the reparsed theme is cached again');
+	}
+
+	public function testConstructSkipsAClaimedFileWhileCheckingTheCache()
+	{
+		$cache = $this->newCachingApplication();
+		$skin = $this->writeThemeFile('label.skin', '<com:TLabel Text="Default" />');
+		touch($skin, 3000);
+		$cache->set($this->cacheKey(), [$this->cachedSkins(), [], [], 2000]);
+		TSkippingTheme::$skipped = ['label.skin'];
+
+		$theme = new TSkippingTheme($this->_themePath, '/t');
+
+		$this->assertSame($this->cachedSkins(), $theme->getSkins(), 'a claimed skin file does not invalidate the cache');
+	}
+
+	public function testConstructIgnoresACacheEntryThatIsNoArray()
+	{
+		$cache = $this->newCachingApplication();
+		$this->writeThemeFile('label.skin', '<com:TLabel Text="Default" />');
+		$cache->set($this->cacheKey(), 'corrupt');
+
+		$theme = new TTheme($this->_themePath, '/t');
+
+		$this->assertSame([0], array_keys($theme->getSkins()[TLabel::class]));
+	}
+
+	public function testConstructInPerformanceModeTrustsTheCacheWithoutReadingTheDirectory()
+	{
+		$cache = $this->newCachingApplication();
+		$this->_testApp->setMode(TApplicationMode::Performance);
+		$skin = $this->writeThemeFile('label.skin', '<com:TLabel Text="Default" />');
+		touch($skin, 3000);
+		$cache->set($this->cacheKey(), [$this->cachedSkins(), ['/t/cached.css'], ['/t/cached.js'], 2000]);
+
+		$theme = new TTheme($this->_themePath, '/t');
+
+		$this->assertSame($this->cachedSkins(), $theme->getSkins());
+		$this->assertSame(['/t/cached.css'], $theme->getStyleSheetFiles());
+		$this->assertSame(['/t/cached.js'], $theme->getJavaScriptFiles());
+	}
+
+	// ================================================================================
+	// Protected setters and applySkin errors
+	// ================================================================================
+
+	public function testFileUrlsJoinTheThemeUrlWithASlash()
+	{
+		$this->newApplication();
+		$this->writeThemeFile('a.css', '');
+		$this->writeThemeFile('b.js', '');
+		$theme = new TTheme($this->_themePath, '/themes/t');
+		$this->assertSame(['/themes/t/a.css'], array_values($theme->getStyleSheetFiles()));
+		$this->assertSame(['/themes/t/b.js'], $theme->getJavaScriptFiles());
+	}
+
+	public function testProtectedSetters()
+	{
+		$theme = new TTheme($this->_themePath, '/t');
+		PradoUnit::invoke($theme, 'setName', 'other');
+		PradoUnit::invoke($theme, 'setBaseUrl', '/u/');
+		PradoUnit::invoke($theme, 'setBasePath', '/p');
+		PradoUnit::invoke($theme, 'setSkins', ['k' => []]);
+		PradoUnit::invoke($theme, 'setStyleSheetFiles', ['/u/a.css']);
+		PradoUnit::invoke($theme, 'setJavaScriptFiles', ['/u/a.js']);
+		$this->assertSame('other', $theme->getName());
+		$this->assertSame('/u', $theme->getBaseUrl());
+		$this->assertSame('/p', $theme->getBasePath());
+		$this->assertSame(['k' => []], $theme->getSkins());
+		$this->assertSame(['/u/a.css'], $theme->getStyleSheetFiles());
+		$this->assertSame(['/u/a.js'], $theme->getJavaScriptFiles());
+	}
+
+	public function testApplySkin_ReadOnlyProperty_ThrowsException()
+	{
+		$theme = $this->_createSkin(TLabel::class, 0, [
+			'clientid' => [TTemplate::PROP_TYPE => TTemplate::CONFIG_VALUE, TTemplate::PROP_NAME => 'ClientID', TTemplate::PROP_VALUE => 'x'],
+		]);
+		$this->expectException(TConfigurationException::class);
+		$this->expectExceptionMessage('read-only');
+		$theme->applySkin(new TLabel());
+	}
+
+	public function testApplySkin_UndefinedProperty_ThrowsException()
+	{
+		$theme = $this->_createSkin(TLabel::class, 0, [
+			'nosuchproperty' => [TTemplate::PROP_TYPE => TTemplate::CONFIG_VALUE, TTemplate::PROP_NAME => 'NoSuchProperty', TTemplate::PROP_VALUE => 'x'],
+		]);
+		$this->expectException(TConfigurationException::class);
+		$this->expectExceptionMessage('NoSuchProperty');
+		$theme->applySkin(new TLabel());
 	}
 }

@@ -7,7 +7,22 @@ use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Web\UI\TControl;
 use Prado\Web\UI\THtmlWriter;
 use Prado\Web\UI\TRenderFilterContext;
+use Prado\TComponent;
+use Prado\Web\UI\IFilterRenderable;
 use Prado\Web\UI\TRenderFilterParameter;
+use Prado\Web\UI\Traits\TFilterRenderableTrait;
+
+/**
+ * A filter-renderable component that is no control, so its filter has no depth limit.
+ */
+class TRenderFilterContextComponent extends TComponent implements IFilterRenderable
+{
+	use TFilterRenderableTrait;
+
+	public function render($writer)
+	{
+	}
+}
 
 /**
  * Tests for {@see TRenderFilterContext} and {@see TControl::getRenderFilterExempt}.
@@ -486,5 +501,22 @@ class TRenderFilterContextTest extends TestCase
 		$context = new TRenderFilterContext();
 		$this->assertSame($writer, $writer->setRenderFilterContext($context));
 		$this->assertSame($context, $writer->getRenderFilterContext());
+	}
+	public function testWrapDepthAboveTheSecondLevelAddsNoMarkers()
+	{
+		$context = new TRenderFilterContext();
+		$context->beginCapture(2, 1);
+		$this->assertSame('x', $context->wrapDepth('x'));
+	}
+
+	public function testFilterOutputOfAComponentRaisesItsOnRenderFilter()
+	{
+		$component = new TRenderFilterContextComponent();
+		$component->attachEventHandler('onRenderFilter', function ($sender, TRenderFilterParameter $param) {
+			$param->setFilterText(strtoupper($param->getFilterText()));
+		});
+		$context = new TRenderFilterContext();
+		$context->beginCapture(2);
+		$this->assertSame('X', $context->filterOutput($component, 'x'), 'a component has no depth parameter, even under a depth limit');
 	}
 }

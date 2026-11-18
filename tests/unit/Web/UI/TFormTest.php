@@ -237,4 +237,87 @@ class TFormTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals($form->getUniqueID(), $form->getName());
 		$this->assertEquals('myForm', $form->getName());
 	}
+
+	public function testEnctypeRenders()
+	{
+		$output = $this->renderForm(fn ($form) => $form->setEnctype('multipart/form-data'));
+		$this->assertStringContainsString('enctype="multipart/form-data"', $output);
+	}
+
+	public function testDefaultButtonRegistersWithTheClientScript()
+	{
+		$client = null;
+		$button = null;
+		$this->renderForm(function ($form) use (&$client, &$button) {
+			$client = new TFormTestClientScript($form->getPage());
+			\Prado\Test\Unit\PradoUnit::setProp($form->getPage(), '_clientScript', $client);
+			$button = new \Prado\Web\UI\WebControls\TButton();
+			$button->setID('Save');
+			$form->getControls()->add($button);
+			$form->setDefaultButton('Save');
+		});
+		$this->assertSame([$button], $client->defaultButtons);
+	}
+
+	public function testDefaultButtonMustExist()
+	{
+		$this->expectException(\Prado\Exceptions\TInvalidDataValueException::class);
+		$this->expectExceptionMessage('Missing');
+		$this->renderForm(fn ($form) => $form->setDefaultButton('Missing'));
+	}
+
+	public function testRenderWithoutJavaScript()
+	{
+		$output = $this->renderForm(function ($form) {
+			$form->getPage()->setClientSupportsJavaScript(false);
+			$form->getPage()->setEnableCsrfValidation(false);
+			$form->getControls()->add('<p>body</p>');
+		});
+		$this->assertMatchesRegularExpression('#^<form id="TestForm"[^>]*><p>body</p><div[^>]*>\s*<input[^>]*PRADO_PAGESTATE[^>]*/>\s*</div>\s*</form>$#', $output);
+		$this->assertStringNotContainsString('<script', $output);
+	}
+
+	public function testTeleportContentRendersAfterTheForm()
+	{
+		foreach ([true, false] as $javaScript) {
+			$form = null;
+			$output = $this->renderForm(function ($f) use (&$form, $javaScript) {
+				$form = $f;
+				$form->getPage()->setClientSupportsJavaScript($javaScript);
+				$form->registerTeleportContent('dialog', '<dialog>d</dialog>');
+				$form->registerTeleportContent('menu', '<menu>m</menu>');
+				$this->assertTrue($form->getHasTeleportContent());
+			});
+			$this->assertStringContainsString('</form><dialog>d</dialog><menu>m</menu>', $output);
+			$this->assertSame(1, substr_count($output, '</form>'));
+			$this->assertSame([], $form->getTeleportContents());
+			$this->assertFalse($form->getHasTeleportContent());
+		}
+	}
+
+	public function testAutoCompleteOnRenders()
+	{
+		$this->assertStringContainsString('autocomplete="on"', $this->renderForm(fn ($form) => $form->setAutoComplete(true)));
+	}
+
+	public function testAutoCompleteNullClearsIt()
+	{
+		$form = new TForm();
+		$form->setAutoComplete(true);
+		$form->setAutoComplete(null);
+		$this->assertNull($form->getAutoComplete());
+	}
+}
+
+/**
+ * Records the default buttons a form registers.
+ */
+class TFormTestClientScript extends \Prado\Web\UI\TClientScriptManager
+{
+	public array $defaultButtons = [];
+
+	public function registerDefaultButton($panel, $button)
+	{
+		$this->defaultButtons[] = $button;
+	}
 }

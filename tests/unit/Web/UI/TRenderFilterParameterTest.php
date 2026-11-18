@@ -1198,6 +1198,7 @@ class TRenderFilterParameterTest extends TestCase
 			'document with encoding comment' => '<!DOCTYPE html><!--?xml encoding="UTF-8"--><html><head><title>T</title></head><body><p>x</p></body></html>',
 			'head' => '<head><title>T</title></head>',
 			'body' => '<body class="b"><p>x</p></body>',
+			'document without doctype' => '<html><body><p>x</p></body></html>',
 			'template rows' => '<search><output name="o">1</output></search><template><tr><td>x</td></tr></template>',
 			'shadow root template' => '<template shadowrootmode="open"><slot></slot></template><b>light</b>',
 			'non-XML attribute names' => '<div @click="go()" :class="c" [prop]="v" (event)="e" x-on:click.prevent="z" ü="j">x</div>',
@@ -1443,6 +1444,18 @@ class TRenderFilterParameterTest extends TestCase
 				'<div data-prado-filter-exempt="true"><p data-prado-filter-exempt="true">HTML</p></div><p>HTML</p>',
 				'<div data-prado-filter-exempt="true"><p data-prado-filter-exempt="true">HTML</p></div><p>X</p>',
 			],
+			're-enabled inside re-enabled' => [
+				'<div data-prado-filter-exempt="true">HTML<span data-prado-filter-exempt="false">HTML <b data-prado-filter-exempt="false">HTML</b></span></div>',
+				'<div data-prado-filter-exempt="true">HTML<span data-prado-filter-exempt="false">X <b data-prado-filter-exempt="false">X</b></span></div>',
+			],
+			'adjacent re-enabled elements' => [
+				'<div data-prado-filter-exempt="true"><b data-prado-filter-exempt="false">HTML</b><i data-prado-filter-exempt="false">HTML</i></div>',
+				'<div data-prado-filter-exempt="true"><b data-prado-filter-exempt="false">X</b><i data-prado-filter-exempt="false">X</i></div>',
+			],
+			'exempt inside a plain element' => [
+				'<div><p data-prado-filter-exempt="true">HTML</p></div>HTML',
+				'<div><p data-prado-filter-exempt="true">HTML</p></div>X',
+			],
 			'non-XML attribute name' => [
 				'<div data-prado-filter-exempt="true" @click="go()">HTML <span data-prado-filter-exempt="false">HTML</span></div>',
 				'<div data-prado-filter-exempt="true" @click="go()">HTML <span data-prado-filter-exempt="false">X</span></div>',
@@ -1515,5 +1528,123 @@ class TRenderFilterParameterTest extends TestCase
 		$this->assertStringNotContainsString('HTML', $param->getFilterText());
 		$param->postRaiseEvent([], 'onrenderfilter', null, $param, null, null);
 		$this->assertSame($html, $param->getFilterText());
+	}
+	public function testExemptRemovedByAHandlerStaysRemoved()
+	{
+		$param = new TRenderFilterParameterLibxml('<pre data-prado-filter-exempt="">HTML</pre><p>a</p>');
+		$param->preRaiseEvent('onrenderfilter', null, $param, null, null);
+		$param->setFilterText('<p>b</p>');
+		$param->postRaiseEvent([], 'onrenderfilter', null, $param, null, null);
+		$this->assertSame('<p>b</p>', $param->getFilterText());
+	}
+
+	public function testExemptAttributeNameInTextExemptsNothing()
+	{
+		$html = '<p>data-prado-filter-exempt</p>';
+		$param = new TRenderFilterParameterLibxml($html);
+		$param->preRaiseEvent('onrenderfilter', null, $param, null, null);
+		$this->assertSame($html, $param->getFilterText());
+	}
+
+	public function testExemptMarkupOfAnUnparsedDocumentIsLeftAlone()
+	{
+		$html = '<pre data-prado-filter-exempt="">HTML</pre>';
+		$param = new TRenderFilterParameterParseFail($html);
+		$param->preRaiseEvent('onrenderfilter', null, $param, null, null);
+		$this->assertSame($html, $param->getFilterText());
+	}
+
+	public function testWalkElementsOfANodeWithoutElementChildren()
+	{
+		$param = new TRenderFilterParameter('<p>text</p>');
+		$p = $param->getFilterDOM()->getElementsByTagName('p')->item(0);
+		$visited = 0;
+		$param->walkElements(function () use (&$visited) {
+			$visited++;
+		}, $p);
+		$this->assertSame(0, $visited);
+	}
+
+	// ================================================================================
+	// 14. Depth limit and libxml raw markup
+	// ================================================================================
+
+	public function testDepthMaxIsTheMarkedDepth()
+	{
+		$param = new TRenderFilterParameter(self::DEPTH_HTML);
+		$this->assertSame(0, $param->getDepthMax());
+		$param->setDepthMarker('m-', 2);
+		$this->assertSame(2, $param->getDepthMax());
+	}
+
+	public function testSettingTheCurrentDepthLimitKeepsTheText()
+	{
+		$param = new TRenderFilterParameter(self::DEPTH_HTML);
+		$param->setDepthMarker('m-', 2);
+		$param->setFilterText('<p>changed</p>');
+		$param->setDepthLimit(2);
+		$this->assertSame('<p>changed</p>', $param->getFilterText());
+	}
+
+	public function testDepthLimitOfTextWithoutTheHiddenOutputRestoresNothing()
+	{
+		$param = new TRenderFilterParameter(self::DEPTH_HTML);
+		$param->setDepthMarker('m-', 2);
+		$param->setFilterText('<p>changed</p>');
+		$param->setDepthLimit(1);
+		$this->assertSame('<p>changed</p>', $param->getFilterText());
+	}
+
+	public static function libxmlSvgProvider(): array
+	{
+		return [
+			'self-closing' => ['<svg/><p>x</p>'],
+			'nested' => ['<svg><g/><svg><rect/></svg></svg><p>x</p>'],
+			'unclosed' => ['<p>x</p><svg><g>'],
+			'name at the end' => ['<p>x</p><svg'],
+		];
+	}
+
+	public static function libxmlUnclosedRawMarkupProvider(): array
+	{
+		return [
+			'comment' => ['<p>a</p><!-- open'],
+			'script' => ['<p>a</p><script>if (a<b) {'],
+		];
+	}
+
+	/**
+	 * @dataProvider libxmlUnclosedRawMarkupProvider
+	 */
+	public function testLibxmlKeepsUnclosedRawMarkupToTheEnd(string $html)
+	{
+		$param = new TRenderFilterParameterLibxml($html);
+		$param->getFilterDOM();
+		$this->assertStringStartsWith('<p>a</p>', $param->getFilterText());
+		$this->assertStringNotContainsString('prado-raw', $param->getFilterText());
+	}
+
+	public function testDoctypeWithASystemIdentifierSerialized()
+	{
+		$p = new TRenderFilterParameterLibxml('<!DOCTYPE html SYSTEM "about:legacy-compat"><html><body><p>x</p></body></html>');
+		$p->getFilterDOM();
+		$this->assertStringStartsWith('<!DOCTYPE html SYSTEM "about:legacy-compat">', $p->getFilterText());
+	}
+
+	/**
+	 * @dataProvider libxmlSvgProvider
+	 */
+	public function testLibxmlKeepsSvgMarkup(string $html)
+	{
+		$param = new TRenderFilterParameterLibxml($html);
+		$param->getFilterDOM();
+		$this->assertSame($html, $param->getFilterText());
+	}
+
+	public function testLibxmlLeavesAnUnclosedStartTagToTheParser()
+	{
+		$param = new TRenderFilterParameterLibxml('<p>a</p><b @click="x" class=y');
+		$this->assertInstanceOf(\DOMDocument::class, $param->getFilterDOM());
+		$this->assertStringStartsWith('<p>a</p>', $param->getFilterText());
 	}
 }

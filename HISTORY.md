@@ -1,4 +1,11 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TTheme` joins its style sheet and JavaScript URLs and trims its `BaseUrl` with `/`; on Windows it used `\`. (belisoful)
+BUG: Issue #1497 - `TTemplate` validates `<com:TControl>` and `<com:TComponent>` after their short names are aliased, takes template properties from a class behavior attached to the component's own class, skips a class behavior keyed by an unknown class, and reports a missing `<%include %>` after another include as a template error; they were rejected, or threw `ReflectionException` or `TPhpErrorException`. (belisoful)
+BUG: Issue #1497 - `TThemeManager::getAvailableThemes()` lists a theme directory named `0` and the ones read after it; the listing stopped there. (belisoful)
+BUG: Issue #1497 - `TTheme` loads a `.skin` file whose skins have a `SkinID`; it threw a `TypeError`. (belisoful)
+BUG: Issue #1497 - `TClientScriptManager` renders each value of an array hidden field, and `getPradoScriptAssetUrl()` and `getPradoScriptAssetPath()` throw `TInvalidOperationException` for a key that names no script folder; an array threw a `TypeError`, and such a key a `TPhpErrorException`. (belisoful)
+BUG: Issue #1497 - `TPage::getClientScript()` accepts an aliased short `ClientScriptManagerClass`, such as `TClientScriptManager`; it threw `TConfigurationException`. (belisoful)
+BUG: Issue #1497 - `TControl::ensureChildControls()` marks the child controls created when `createChildControls()` throws a PHP `Error`; the control stayed in creation, so a later call never created them. (belisoful)
 BUG: `TRevoltEventLoop::cancel()` and `disable()` drop a signal queued on Revolt's `stream_select()` driver once the signal has no callback left; its next dispatch raised "Undefined array key" and stopped the loop, as with `SIGCHLD` after `TProcess::wait()`. (belisoful)
 BUG: Issue #1497 - `THttpSession::gc()` starts its session without PHP's probabilistic collection, so it counts every expired session it deletes; when that collection ran at the start, `gc()` returned 0. (belisoful)
 BUG: Cron (#833): `TShellCronAction::sleep()` of `cron/top` and the `TCronWakeSocket` key-file retry pause through `TAsync::sleep()`, so a fiber yields to the event loop; they blocked the process with `usleep()`. (belisoful)
