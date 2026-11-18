@@ -44,6 +44,8 @@ $route->setCategories(string $categories): static // 'Prado.Web,!Prado.Web.UI'
 $route->getEnabled(): bool
 $route->setEnabled(bool|callable $value): static
 $route->getLogPrefix(array $log): string         // formats log entry prefix
+$route->formatLogMessage(array $log): string     // time, prefix, level, category, message, traces
+$route->messageToString(mixed $message): string  // protected; a Throwable as its string, other non-strings as a TVarDumper dump
 ```
 
 ## Level Constants (from TLogger)
@@ -84,7 +86,7 @@ TLogger::PROFILE = 0x40000  TLogger::PROFILE_BEGIN = 0x80000  TLogger::PROFILE_E
 | Property | Description |
 |----------|-------------|
 | `ConnectionID` | ID of `TDbConnection` module |
-| `LogTableName` | Database table name (default: `prado_log`) |
+| `LogTableName` | Database table name (default: `pradolog`) |
 | `AutoCreateLogTable` | Auto-create table if missing (default: true) |
 
 ### TEmailLogRoute
@@ -92,7 +94,7 @@ TLogger::PROFILE = 0x40000  TLogger::PROFILE_BEGIN = 0x80000  TLogger::PROFILE_E
 ```xml
 <route class="Prado\Util\Log\TEmailLogRoute"
        SentFrom="app@example.com"
-       SentTo="admin@example.com"
+       Emails="admin@example.com"
        Subject="Application Error"
        Levels="Error|Fatal" />
 ```
@@ -100,8 +102,8 @@ TLogger::PROFILE = 0x40000  TLogger::PROFILE_BEGIN = 0x80000  TLogger::PROFILE_E
 | Property | Description |
 |----------|-------------|
 | `SentFrom` | From email address |
-| `SentTo` | Comma-separated recipient addresses |
-| `Subject` | Email subject |
+| `Emails` | Comma-separated recipient addresses |
+| `Subject` | Email subject (default: `TEmailLogRoute::DEFAULT_SUBJECT`) |
 
 ### TBrowserLogRoute
 
@@ -164,6 +166,7 @@ return [
 
 - **`processLogs()` only called on flush** — logs accumulate in `$_logs` until `ProcessInterval` is reached or `$final=true`. Do not assume immediate delivery.
 - **Category exclusion** — prefix with `!` or `~` to exclude: `'Prado.Web,!Prado.Web.UI'` includes all `Prado.Web.*` but not `Prado.Web.UI.*`.
-- **`Enabled` as callable** — useful for conditional routing: `function($route, $logs) { return php_sapi_name() !== 'cli'; }`.
-- **Custom prefix** — `setPrefixCallback(callable $fn)` where `$fn(array $log): string`; receives the raw log entry array.
+- **`Enabled` as callable** — useful for conditional routing: `function(TLogRoute $route): bool { return php_sapi_name() !== 'cli'; }`.
+- **Custom prefix** — `setPrefixCallback(callable $fn)` where `$fn(array $log, string $prefix): string`; receives the raw log entry array and the computed prefix.
+- **Test seams** — the routes reach mail, STDOUT, the syslog, and the HTTP header state through protected methods a test subclass overrides: `TEmailLogRoute::sendMail()`, `TStdOutLogRoute::createWriter()`, `TSysLogRoute::writeSysLog()`, `TFirePhpLogRoute::getHeadersSent()`.
 - **`IOutputLogRoute`** — routes that output directly to the HTTP response (e.g., `TBrowserLogRoute`) implement this interface so `TLogRouter` can call them at the right time.

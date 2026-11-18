@@ -1016,6 +1016,31 @@ public function testSetThemeToNonEmptyStringStoresString(): void
 	{
 		$this->assertEquals('PRADO_CALLBACK_PARAMETER', TPage::FIELD_CALLBACK_PARAMETER);
 	}
+
+	public function testDecodeUTF8ConvertsStringsAndArrays()
+	{
+		$static = PradoUnit::snapshotStatic(\Prado\Util\TUtf8Converter::class, ['_iconv']);
+		try {
+			foreach ([null, false] as $iconv) {
+				PradoUnit::setStaticProp(\Prado\Util\TUtf8Converter::class, '_iconv', $iconv);
+				$decoded = PradoUnit::invoke(TPage::class, 'decodeUTF8', ['a' => "caf\u{e9}", 'b' => ["\u{e9}"], 'c' => 5], 'ISO-8859-1');
+				$this->assertSame(['a' => "caf\xe9", 'b' => ["\xe9"], 'c' => 5], $decoded);
+			}
+		} finally {
+			PradoUnit::restoreStatic(\Prado\Util\TUtf8Converter::class, $static);
+		}
+	}
+
+	public function testDecodeUTF8OfEmptyAndOneElementArrays()
+	{
+		$this->assertSame([], PradoUnit::invoke(TPage::class, 'decodeUTF8', [], 'ISO-8859-1'));
+		$this->assertSame(["\xe9"], PradoUnit::invoke(TPage::class, 'decodeUTF8', ["\u{e9}"], 'ISO-8859-1'));
+	}
+
+	public function testDecodeUTF8OfAnUnknownCharsetKeepsTheString()
+	{
+		$this->assertSame("caf\u{e9}", PradoUnit::invoke(TPage::class, 'decodeUTF8', "caf\u{e9}", 'NO-SUCH-ENCODING'));
+	}
 }
 
 /**

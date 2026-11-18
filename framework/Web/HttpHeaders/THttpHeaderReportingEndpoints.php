@@ -199,9 +199,6 @@ class THttpHeaderReportingEndpoints extends TBaseHttpHeader
 	{
 		$value = (string) $value;
 		$entries = preg_split('/\s*,\s*/', trim($value), -1, PREG_SPLIT_NO_EMPTY);
-		if ($entries === false) {
-			return;
-		}
 		foreach ($entries as $entry) {
 			if (preg_match('/^([A-Za-z0-9_-]+)\s*=\s*"([^"]*)"$/', trim($entry), $m)) {
 				$this->addEndpoint($m[1], $m[2]);

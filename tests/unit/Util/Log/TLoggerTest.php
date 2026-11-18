@@ -686,4 +686,90 @@ class TLoggerTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals(1, count($logs));
 		$this->assertEquals('token', $logs[0][0]);
 	}
+
+	public function testMergeLogsDropsRetainedProfileBeginsWithoutFlushing(): void
+	{
+		$logger = new TTestLogger();
+		$logger->setFlushCount(3);
+		$flushed = 0;
+		$logger->attachEventHandler('onFlushLogs', function () use (&$flushed) {
+			$flushed++;
+		});
+		$pid = getmypid();
+		$logger->mergeLogs([
+			['a', TLogger::PROFILE_BEGIN, 'Cat', 1.0, 0, null, null, $pid],
+			['b', TLogger::PROFILE_BEGIN, 'Cat', 2.0, 0, null, null, $pid],
+			['c', TLogger::PROFILE_BEGIN, 'Cat', 3.0, 0, null, null, $pid],
+			['d', TLogger::INFO, 'Cat', 4.0, 0, null, null, $pid],
+		]);
+
+		$this->assertSame(0, $flushed);
+		$this->assertSame(3, $logger->getFlushCount());
+		$this->assertSame(0, $logger->getLogCount(false));
+		$logs = $logger->getLogs();
+		$this->assertCount(2, $logs);
+		$this->assertSame('d', $logs[0][TLogger::LOG_MESSAGE]);
+		$this->assertSame('Too many retained profiler logs', $logs[1][TLogger::LOG_MESSAGE]);
+		$this->assertSame(TLogger::WARNING, $logs[1][TLogger::LOG_LEVEL]);
+	}
+
+	public function testGetLogsWithAnEmptyCategoryOrControl(): void
+	{
+		$logger = new TTestLogger();
+		$pid = getmypid();
+		$logger->mergeLogs([
+			['one', TLogger::INFO, 'Cat', 2.0, 0, 'ctl0', null, $pid],
+			['two', TLogger::INFO, 'Dog', 2.0, 0, null, null, $pid],
+			['three', TLogger::INFO, 'Cat', 1.0, 0, 'ctl1', null, $pid],
+		]);
+
+		$this->assertSame(['three', 'one'], array_column($logger->getLogs(null, [null, 'Cat']), TLogger::LOG_MESSAGE));
+		$this->assertSame(['three', 'one'], array_column($logger->getLogs(null, null, ['ctl*']), TLogger::LOG_MESSAGE));
+		$this->assertSame(['three', 'one', 'two'], array_column($logger->getLogs(null, null, ['', 'ctl*']), TLogger::LOG_MESSAGE));
+		$this->assertSame(['two'], array_column($logger->getLogs(null, null, ['!ctl*']), TLogger::LOG_MESSAGE));
+	}
+
+	public function testGetLogsKeepsTheOrderOfEqualTimes(): void
+	{
+		$logger = new TTestLogger();
+		$pid = getmypid();
+		$logger->mergeLogs([
+			['first', TLogger::INFO, 'Cat', 5.0, 0, null, null, $pid],
+			['second', TLogger::INFO, 'Cat', 5.0, 0, null, null, $pid],
+		]);
+		$this->assertSame(['first', 'second'], array_column($logger->getLogs(), TLogger::LOG_MESSAGE));
+	}
+
+	public function testLogWithoutAnApplicationDoesNotRegister(): void
+	{
+		$logger = new TTestLogger();
+		$app = \Prado\Prado::getApplication();
+		\Prado\Prado::setApplication(null);
+		try {
+			$logger->log('no app', TLogger::INFO, 'Cat');
+		} finally {
+			\Prado\Prado::setApplication($app);
+		}
+		$this->assertFalse(\Prado\Test\Unit\PradoUnit::getProp($logger, '_registered'));
+		$this->assertCount(1, $logger->getLogs());
+
+		$logger->log('app', TLogger::INFO, 'Cat');
+		$this->assertTrue(\Prado\Test\Unit\PradoUnit::getProp($logger, '_registered'));
+		$app->detachEventHandler('onEndRequest', [$logger, 'onFlushLogs']);
+	}
+
+	public function testFlushCountOfZeroKeepsProfileLogs(): void
+	{
+		$logger = new TTestLogger();
+		$logger->log('token', TLogger::PROFILE_BEGIN, 'Cat');
+		$logger->setFlushCount(0);
+		$this->assertSame(1, $logger->getLogCount(false));
+	}
+
+	public function testMergeLogsOfNoLogs(): void
+	{
+		$logger = new TTestLogger();
+		$logger->mergeLogs([]);
+		$this->assertSame(0, $logger->getLogCount());
+	}
 }

@@ -28,6 +28,7 @@ use Prado\Web\UI\ActiveControls\TActivePageAdapter;
 use Prado\Web\UI\ActiveControls\TActiveUpdateMode;
 use Prado\Web\UI\ActiveControls\TCallbackClientScript;
 use Prado\Web\UI\WebControls\THead;
+use Prado\Util\TUtf8Converter;
 
 /**
  * TPage class
@@ -394,7 +395,7 @@ class TPage extends TTemplateControl
 			}
 			return $data;
 		} elseif (is_string($data)) {
-			return iconv('UTF-8', $enc . '//IGNORE', $data);
+			return TUtf8Converter::fromUTF8($data, $enc . '//IGNORE');
 		} else {
 			return $data;
 		}

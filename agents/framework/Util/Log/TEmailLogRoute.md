@@ -22,8 +22,12 @@
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
 | `Emails` | `array` | `[]` | Destination addresses; accepts a comma-separated string or array. |
-| `Subject` | `string` | `DEFAULT_SUBJECT` | Email subject line. |
+| `Subject` | `?string` | `DEFAULT_SUBJECT` | Email subject line; null restores `DEFAULT_SUBJECT`. |
 | `SentFrom` | `string` | `''` | Sender address; falls back to `sendmail_from` INI setting if empty. |
+
+## Delivery
+
+`processLogs()` sends one mail per address through the protected `sendMail()`, which calls `mail()`; a test subclass overrides it. A refused mail throws `TLogException` (`emaillogroute_mail_failed`).
 
 ## Configuration
 

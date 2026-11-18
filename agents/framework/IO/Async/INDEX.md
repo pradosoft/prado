@@ -61,6 +61,7 @@ The conformance suite `tests/unit/IO/Async/EventLoopConformanceTestCase.php` run
 - Revolt callbacks must return null; `TRevoltEventLoop` wraps every callback so a non-null return is discarded.
 - A Revolt loop whose only enabled callbacks are signal callbacks sleeps indefinitely (`usleep(PHP_INT_MAX)`): `run()` does not return and nothing but a signal ends the wait. Keep a timer beside a signal callback, or `stop()` the loop.
 - `TRevoltEventLoop::onSignal()` restores the `pcntl_signal()` handler in place before the first callback of a signal once the last one is cancelled; the driver itself leaves `SIG_DFL`.
+- Revolt's `stream_select()` driver dispatches a queued signal without checking that it still has a callback. A signal caught outside the loop's dispatch and then left without a callback raised "Undefined array key" and broke the loop (macOS CI, `SIGCHLD` from `TProcess::wait()`). `TRevoltEventLoop::cancel()` and `disable()` drop such queued signals.
 - `IEventLoop::run()` returns when no enabled callback remains. A disabled callback does not keep it alive.
 - No fiber switch inside `__destruct` on the 8.2 floor.
 - Sleep policy: `\usleep()` lives only in `TAsync::sleep()`; `IClock::sleep()` and the framework's other pauses delegate to it (table in [`TAsync`](./TAsync.md)).
