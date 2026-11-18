@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TThemeManager::getAvailableThemes()` lists a theme directory named `0` and the ones read after it; the listing stopped there. (belisoful)
 BUG: Issue #1497 - `TTheme` loads a `.skin` file whose skins have a `SkinID`; it threw a `TypeError`. (belisoful)
 BUG: Issue #1497 - `TClientScriptManager` renders each value of an array hidden field, and `getPradoScriptAssetUrl()` and `getPradoScriptAssetPath()` throw `TInvalidOperationException` for a key that names no script folder; an array threw a `TypeError`, and such a key a `TPhpErrorException`. (belisoful)
 BUG: Issue #1497 - `TPage::getClientScript()` accepts an aliased short `ClientScriptManagerClass`, such as `TClientScriptManager`; it threw `TConfigurationException`. (belisoful)
