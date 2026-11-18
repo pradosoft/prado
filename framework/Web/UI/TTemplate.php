@@ -548,8 +548,8 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 					}
 					$openTag = array_pop($tagStack);
 					if ($openTag !== $tag) {
-						$expected = $openTag[0] === '@' ? '</prop:' . substr($openTag, 1) . '>' : "</com:$openTag>";
-						throw new TConfigurationException('template_closingtag_expected', $expected, "</com:$tag>");
+						// An open property tag skips the component tags inside it, so the open tag is a component tag.
+						throw new TConfigurationException('template_closingtag_expected', "</com:$openTag>", "</com:$tag>");
 					}
 					$container = $tpl[$container][self::TPL_PARENT_INDEX];
 				} elseif (strncasecmp($str, '<%@', 3) === 0) {	// directive
@@ -647,7 +647,8 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 					}
 					$textStart = $matchEnd + 1;
 				} else {
-					throw new TConfigurationException('template_matching_unexpected', $match);
+					// REGEX_RULES matches only the tags handled above.
+					throw new TConfigurationException('template_matching_unexpected', $match); // @codeCoverageIgnore
 				}
 			}
 			if (!empty($tagStack)) {
@@ -928,7 +929,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 		if (!$this->_attributevalidation) {
 			return $class->getName();	//	Skins don't validate.
 		}
-		if (is_subclass_of($className, TControl::class) || $className === TControl::class) {
+		if (is_a($className, TControl::class, true)) {
 			foreach ($attributes as $attrKey => $propInfo) {
 				if (($pos = strpos($attrKey, '.')) !== false) {	// a subproperty, first segment is readable
 					$subname = substr($attrKey, 0, $pos);
@@ -957,7 +958,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 					}
 				}
 			}
-		} elseif (is_subclass_of($className, TComponent::class) || $className === TComponent::class) {
+		} elseif (is_a($className, TComponent::class, true)) {
 			foreach ($attributes as $attrKey => $propInfo) {
 				if ($propInfo[self::PROP_TYPE] === self::CONFIG_DATABIND) {
 					throw new TConfigurationException('template_databind_forbidden', $type, $attrKey);
@@ -1081,15 +1082,18 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 	protected function preprocess($input)
 	{
 		if ($n = preg_match_all('/<%include(.*?)%>/', $input, $matches, PREG_SET_ORDER | PREG_OFFSET_CAPTURE)) {
+			$includedFiles = [];
 			for ($i = 0; $i < $n; ++$i) {
 				$filePath = Prado::getPathOfNamespace(trim($matches[$i][1][0]), TTemplateManager::TEMPLATE_FILE_EXT);
 				if ($filePath !== null && is_file($filePath)) {
-					$this->_includedFiles[] = $filePath;
+					$includedFiles[] = $filePath;
 				} else {
 					$errorLine = substr_count($input, "\n", 0, $matches[$i][0][1] + 1) + 1;
 					$this->handleException(new TConfigurationException('template_include_invalid', trim($matches[$i][1][0])), $errorLine, $input);
 				}
 			}
+			// The included files are recorded after all are found, since an error line is in the unexpanded input.
+			$this->_includedFiles = $includedFiles;
 			$base = 0;
 			for ($i = 0; $i < $n; ++$i) {
 				$ext = file_get_contents($this->_includedFiles[$i]);
@@ -1106,20 +1110,17 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 	}
 
 	/**
-	 * Checks if the given method belongs to a previously attached class behavior.
-	 * @param \ReflectionClass $class
-	 * @param string $method
-	 * @return bool
+	 * Checks whether a class behavior attached to the class, a parent class, or an interface has the method.
+	 * @param \ReflectionClass $class the class of the component
+	 * @param string $method the method name
+	 * @return bool whether a class behavior of the class has the method
 	 */
 	protected function isClassBehaviorMethod(\ReflectionClass $class, $method)
 	{
 		$component = TComponentReflection::getReflectionClassByType(TComponent::class);
 		$behaviors = $component->getStaticProperties();
-		if (!isset($behaviors['_um'])) {
-			return false;
-		}
 		foreach ($behaviors['_um'] as $name => $list) {
-			if (strtolower($class->getShortName()) !== $name && !$class->isSubclassOf($name)) {
+			if (!is_a($class->getName(), $name, true)) {
 				continue;
 			}
 			foreach ($list as $param) {
