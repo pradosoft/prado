@@ -10,6 +10,7 @@
 
 namespace Prado\Test\Unit\Util\Mutex;
 
+use Prado\Test\Unit\PradoUnit;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;
 use Prado\Util\Helpers\TProcessHelper;
@@ -65,6 +66,17 @@ class TSyncMutexTestMutex extends TSyncMutex
  * semaphore, and exclusion over real `SyncSemaphore`s when the `sync` extension is
  * loaded (otherwise skipped).
  */
+/**
+ * A TSyncMutex without the sync extension.
+ */
+class TSyncMutexTestUnavailable extends TSyncMutex
+{
+	public static function getIsAvailable(): bool
+	{
+		return false;
+	}
+}
+
 class TSyncMutexTest extends \PHPUnit\Framework\TestCase
 {
 	private array $mutexes = [];
@@ -113,11 +125,8 @@ class TSyncMutexTest extends \PHPUnit\Framework\TestCase
 
 	public function testInitThrowsWhenExtensionUnavailable(): void
 	{
-		if (TSyncMutex::getIsAvailable()) {
-			$this->markTestSkipped('sync extension present; cannot exercise the unavailable path.');
-		}
 		$this->expectException(TConfigurationException::class);
-		(new TSyncMutex())->init(null);
+		(new TSyncMutexTestUnavailable())->init(null);
 	}
 
 	public function testSemaphoreName(): void
@@ -210,5 +219,41 @@ class TSyncMutexTest extends \PHPUnit\Framework\TestCase
 		$a->fxRestoreAfterFork(null, ['pid' => 0]);
 		gc_collect_cycles();
 		$this->assertTrue($this->newLive()->acquire('job'));
+	}
+
+	public function testBackendReleaseOfUnheldName(): void
+	{
+		$this->assertFalse(PradoUnit::invoke($this->newFake(), 'releaseLock', 'never-held'));
+	}
+
+	public function testInitWithFakeSemaphores(): void
+	{
+		$mutex = new class () extends TSyncMutexTestMutex {
+			public static function getIsAvailable(): bool
+			{
+				return true;
+			}
+		};
+		$mutex->init(null);
+		$this->assertTrue($mutex->acquire('job'));
+		$this->assertTrue($mutex->release('job'));
+	}
+
+	public function testNewSemaphoreOfTheExtension(): void
+	{
+		if (!TSyncMutex::getIsAvailable()) {
+			$this->markTestSkipped('The sync extension is not available.');
+		}
+		$semaphore = PradoUnit::invoke(new TSyncMutex(), 'newSemaphore', 'prado-unit-' . bin2hex(random_bytes(6)));
+		$this->assertInstanceOf(\SyncSemaphore::class, $semaphore);
+	}
+
+	public function testForkWithoutHeldNamesWarnsNothing(): void
+	{
+		$mutex = $this->newFake();
+		$logger = Prado::getLogger();
+		$logger->deleteLogs(TLogger::WARNING, TSyncMutexTestMutex::class);
+		$this->assertSame([], $mutex->fxPrepareForFork(null, null));
+		$this->assertSame([], $logger->deleteLogs(TLogger::WARNING, TSyncMutexTestMutex::class));
 	}
 }

@@ -10,6 +10,7 @@
 
 namespace Prado\Test\Unit\Util\Mutex;
 
+use Prado\Test\Unit\PradoUnit;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;
 use Prado\Util\Helpers\TProcessHelper;
@@ -23,6 +24,17 @@ class TFileMutexTestMutex extends TFileMutex
 	public function pubIsSameFile($handle, string $file): bool
 	{
 		return $this->isSameFile($handle, $file);
+	}
+}
+
+/**
+ * A TFileMutex whose lock file is always replaced after it opens it.
+ */
+class TFileMutexTestReplacedMutex extends TFileMutex
+{
+	protected function isSameFile($handle, string $file): bool
+	{
+		return false;
 	}
 }
 
@@ -197,5 +209,68 @@ class TFileMutexTest extends \PHPUnit\Framework\TestCase
 		fclose($pipes[1]);
 		proc_close($process);
 		return trim($output);
+	}
+
+	public function testReplacedLockFileIsNotAcquired(): void
+	{
+		$mutex = new TFileMutexTestReplacedMutex();
+		$mutex->setMutexPath($this->dir);
+		$this->mutexes[] = $mutex;
+		$this->assertFalse($mutex->acquire('job'));
+		$mutex->setFileMode(0o600);
+		$this->assertFalse($mutex->acquire('job'));
+		$this->assertTrue($this->newMutex()->acquire('job'), 'The rejected handle is unlocked.');
+	}
+
+	public function testUnopenableLockFileIsNotAcquired(): void
+	{
+		$mutex = $this->newMutex();
+		mkdir($this->dir);
+		mkdir($mutex->getLockFile('job'));
+		try {
+			$this->assertFalse($mutex->acquire('job'));
+		} finally {
+			rmdir($mutex->getLockFile('job'));
+		}
+	}
+
+	public function testBackendReleaseAndForgetOfUnheldName(): void
+	{
+		$mutex = $this->newMutex();
+		$this->assertFalse(PradoUnit::invoke($mutex, 'releaseLock', 'never-held'));
+		PradoUnit::invoke($mutex, 'forgetLock', 'never-held');
+		$this->assertSame([], $mutex->getAcquiredLocks());
+	}
+
+	public function testModeValues(): void
+	{
+		$mutex = $this->newMutex();
+		$mutex->setFileMode(0o600);
+		$this->assertSame(0o600, $mutex->getFileMode());
+		$mutex->setFileMode(null);
+		$this->assertNull($mutex->getFileMode());
+		$mutex->setDirMode(null);
+		$this->assertSame(TFileMutex::DEFAULT_DIR_MODE, $mutex->getDirMode());
+	}
+
+	public function testExistingDirectoryIsKept(): void
+	{
+		mkdir($this->dir, 0o700);
+		$mutex = $this->newMutex();
+		$mutex->setDirMode(0o755);
+		$this->assertTrue($mutex->acquire('job'));
+		clearstatcache();
+		if (!TProcessHelper::isSystemWindows()) {
+			$this->assertSame(0o700, fileperms($this->dir) & 0o777);
+		}
+	}
+
+	public function testContendedLockWithFileMode(): void
+	{
+		$holder = $this->newMutex();
+		$this->assertTrue($holder->acquire('job'));
+		$mutex = $this->newMutex();
+		$mutex->setFileMode(0o600);
+		$this->assertFalse($mutex->acquire('job'));
 	}
 }

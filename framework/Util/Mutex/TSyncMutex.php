@@ -110,7 +110,8 @@ class TSyncMutex extends TMutex
 	{
 		$semaphoreName = self::NAME_PREFIX . md5($this->getLockKey($name));
 		if ($this->getGlobalNamespace() && TProcessHelper::isSystemWindows()) {
-			$semaphoreName = 'Global\\' . $semaphoreName;
+			// Only Windows runs this branch.
+			$semaphoreName = 'Global\\' . $semaphoreName; // @codeCoverageIgnore
 		}
 		return $semaphoreName;
 	}

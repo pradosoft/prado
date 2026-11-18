@@ -127,4 +127,9 @@ class TCacheMutexTest extends \PHPUnit\Framework\TestCase
 		$this->expectException(TConfigurationException::class);
 		$mutex->getCache();
 	}
+
+	public function testBackendReleaseOfUnheldName(): void
+	{
+		$this->assertFalse(PradoUnit::invoke($this->newMutex(), 'releaseLock', 'never-held'));
+	}
 }

@@ -10,6 +10,10 @@
 
 namespace Prado\Test\Unit\Util\Mutex;
 
+use Prado\Prado;
+use Prado\Test\Unit\PradoUnit;
+use Prado\Test\Unit\Harness\Util\Mutex\TTestLockConnection;
+use Prado\Test\Unit\Harness\Util\Mutex\TTestLockCommand;
 use Prado\Data\IDataConnection;
 use Prado\Data\TDbConnection;
 use Prado\Exceptions\TInvalidDataValueException;
@@ -27,6 +31,36 @@ class TDbTableMutexTestMutex extends TDbTableMutex
 	public function getDbConnection(): IDataConnection
 	{
 		return $this->testConnection ?? parent::getDbConnection();
+	}
+}
+
+/**
+ * A scripted lock connection whose commands for the listed SQL prefixes throw, once each.
+ */
+class TDbTableMutexTestThrowingConnection extends TTestLockConnection
+{
+	/** @var string[] the SQL prefixes whose next command throws. */
+	public array $throwing = [];
+
+	public function createCommand($query)
+	{
+		foreach ($this->throwing as $i => $prefix) {
+			if (str_starts_with($query, $prefix)) {
+				unset($this->throwing[$i]);
+				return $this->commands[] = new class ($query) extends TTestLockCommand {
+					public function execute()
+					{
+						throw new \RuntimeException('failed: ' . $this->sql);
+					}
+
+					public function queryScalar()
+					{
+						throw new \RuntimeException('failed: ' . $this->sql);
+					}
+				};
+			}
+		}
+		return parent::createCommand($query);
 	}
 }
 
@@ -208,5 +242,41 @@ class TDbTableMutexTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame('dbmutexflushexpired', $info->getName());
 		$this->assertSame('lockmod->flushExpired()', $info->getTask());
 		$this->assertSame('lockmod', $info->getModuleId());
+	}
+
+	public function testBackendReleaseOfUnheldName(): void
+	{
+		$this->assertFalse(PradoUnit::invoke($this->newMutex(), 'releaseLock', 'never-held'));
+	}
+
+	public function testTableCreatedByAnotherConnectionMeanwhile(): void
+	{
+		$connection = new TDbTableMutexTestThrowingConnection('sqlite');
+		$connection->throwing = ['SELECT 1', 'CREATE TABLE'];
+		$mutex = new TDbTableMutexTestMutex();
+		$mutex->testConnection = $connection;
+		PradoUnit::invoke($mutex, 'ensureMutexTable');
+		$this->assertSame(['SELECT 1', 'CREATE TABLE', 'SELECT 1'], array_map(fn ($c) => substr($c->sql, 0, strpos($c->sql, ' ', 7)), $connection->commands));
+		PradoUnit::invoke($mutex, 'ensureMutexTable');
+		$this->assertCount(3, $connection->commands);
+	}
+
+	public function testTableNotCreatableThrows(): void
+	{
+		$connection = new TDbTableMutexTestThrowingConnection('sqlite');
+		$connection->throwing = ['SELECT 1', 'CREATE TABLE', 'SELECT 1'];
+		$mutex = new TDbTableMutexTestMutex();
+		$mutex->testConnection = $connection;
+		$this->expectException(\RuntimeException::class);
+		PradoUnit::invoke($mutex, 'ensureMutexTable');
+	}
+
+	public function testDefaultConnectionIsRuntimeSqlite(): void
+	{
+		$mutex = new TDbTableMutex();
+		$connection = $mutex->getDbConnection();
+		$this->assertTrue($connection->getActive());
+		$this->assertSame('sqlite:' . Prado::getApplication()->getRuntimePath() . DIRECTORY_SEPARATOR . 'sqlite3.mutex', $connection->getConnectionString());
+		$connection->setActive(false);
 	}
 }

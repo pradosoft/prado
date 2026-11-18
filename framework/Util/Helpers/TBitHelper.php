@@ -147,6 +147,8 @@ class TBitHelper
 	 *   crc32 function without any prior running data.
 	 * @param ?int $crc2 The existing CRC to update when specifying $string as a file
 	 *   (with $crc = true).  Default null for new initial $crc for a file.
+	 * @return false|int The CRC32, or false when the file cannot be read, a stream
+	 *   ends before the size to read, or $string is no data, file, or stream.
 	 */
 	public static function crc32(mixed $string, bool|int $crc = 0, ?int $crc2 = null): false|int
 	{
@@ -212,14 +214,18 @@ class TBitHelper
 				return $crc;
 			} elseif (realpath($string) || preg_match('/^[-+\.\w\d]{1,20}\:\/\//i', $string)) {
 				if ($length === null && !$startOffset && !$crc2) {
-					$hash = hash_file('crc32b', $string, true);
+					$hash = @hash_file('crc32b', $string, true);
+					if ($hash === false) {
+						return false;
+					}
 					$value = unpack('N', $hash)[1];
 					if (PHP_INT_SIZE === 4 && $value > self::PHP_INT32_MAX) {
-						$value = (int) ($value - self::PHP_INT32_UMAX - 1);
+						// Only 32-bit PHP runs this branch.
+						$value = (int) ($value - self::PHP_INT32_UMAX - 1); // @codeCoverageIgnore
 					}
 					return $value;
 				}
-				$string = fopen($string, 'rb');
+				$string = @fopen($string, 'rb');
 				if (!$string) {
 					return false;
 				}
@@ -302,7 +308,7 @@ class TBitHelper
 	{
 		$exponentBits = ($exponentBits === null) ? 5 : $exponentBits;
 		$mantissaBits = ($mantissaBits === null) ? 10 : $mantissaBits;
-		$exponentMaxValue = ~(-1 << $exponentBits);
+		$exponentMaxValue = $exponentBits > 0 ? ~(-1 << $exponentBits) : 0;
 		$exponentBias = ($exponentBias === null) ? $exponentMaxValue >> 1 : $exponentBias;
 		if ($exponentBits <= 0 || $mantissaBits <= 0 || ($exponentBits + $mantissaBits + 1) > PHP_INT_SIZE * 8 || $exponentBias < 0 || $exponentBias > $exponentMaxValue) {
 			throw new TInvalidDataValueException('bithelper_bad_fp_format', $exponentBits, $mantissaBits, $exponentBias, PHP_INT_SIZE * 8);
@@ -427,7 +433,7 @@ class TBitHelper
 	{
 		$exponentBits = ($exponentBits === null) ? 5 : $exponentBits;
 		$mantissaBits = ($mantissaBits === null) ? 10 : $mantissaBits;
-		$exponentMaxValue = ~(-1 << $exponentBits);
+		$exponentMaxValue = $exponentBits > 0 ? ~(-1 << $exponentBits) : 0;
 		if ($exponentBits <= 0 || $mantissaBits <= 0 || ($exponentBits + $mantissaBits + 1) > PHP_INT_SIZE * 8 ||
 			($exponentBias !== null && ($exponentBias < 0 || $exponentBias > $exponentMaxValue))) {
 			throw new TInvalidDataValueException('bithelper_bad_fp_format', $exponentBits, $mantissaBits, $exponentBias, PHP_INT_SIZE * 8);

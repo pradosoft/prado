@@ -365,5 +365,95 @@ class TRationalTest extends \PHPUnit\Framework\TestCase
 		self::assertEquals([1, $maxValue], $class::float2rational(0.5 / 4294967295.0, null, true));
 		self::assertEquals([1, $maxValue], $class::float2rational(1.0 / 4294967295.0, null, true));
 		self::assertEquals([1, $maxValue], $class::float2rational(1.49999 / 4294967295.0, null, true));
+		self::assertEquals([$maxValue, 1], $class::float2rational(5000000000.0, null, true));
+	}
+
+	public function testSetValueKeyedArray()
+	{
+		$this->obj->setValue([TRational::NUMERATOR => 3, TRational::DENOMINATOR => 4]);
+		self::assertEquals([3, 4], $this->obj->toArray());
+		$this->obj->setValue([TRational::DENOMINATOR => 4]);
+		self::assertEquals([0, 4], $this->obj->toArray());
+		$this->obj->setValue([1 => 5]);
+		self::assertEquals([0, 5], $this->obj->toArray());
+		$this->obj->setValue([TRational::NUMERATOR => 2.5]);
+		self::assertEquals([5, 2], $this->obj->toArray());
+		$this->obj->setValue([]);
+		self::assertEquals([0, 1], $this->obj->toArray());
+	}
+
+	public function testFloat2rationalKeepsTheSignOfTinyValues()
+	{
+		$class = $this->getTestClass();
+		self::assertEquals([-1, 2147483647], $class::float2rational(-1.0 / 2147483647.0));
+		self::assertEquals([-1, 2147483647], $class::float2rational(-1.499 / 2147483647.0));
+		self::assertEquals([0, 1], $class::float2rational(-0.5 / 2147483647.5));
+	}
+
+	public function testToStringOfFloatParts()
+	{
+		$class = $this->getTestClass();
+		$obj = new $class();
+		$set = function () {
+			$this->_numerator = 4294967295.0;
+			$this->_denominator = 4294967294.0;
+		};
+		$set->call($obj);
+		self::assertSame('4294967295/4294967294', (string) $obj);
+	}
+
+	public function testConstructWithFalse()
+	{
+		$class = $this->getTestClass();
+		self::assertEquals([0, 1], (new $class(false))->toArray());
+		self::assertEquals([0, 1], (new $class(false, 3))->toArray());
+		self::assertEquals([3, 1], (new $class(3, false))->toArray());
+	}
+
+	public function testValueOfNegativeOneNumerator()
+	{
+		$this->obj->setNumerator(-1)->setDenominator(4);
+		self::assertSame($this->obj->getIsUnsigned() ? 0.0 : -0.25, $this->obj->getValue());
+	}
+
+	public function testToStringOfOneFloatPart()
+	{
+		$class = $this->getTestClass();
+		$obj = new $class(1, 2);
+		(function () {
+			$this->_numerator = 4294967295.0;
+		})->call($obj);
+		self::assertSame('4294967295/2', (string) $obj);
+		$obj = new $class(1, 2);
+		(function () {
+			$this->_denominator = 4294967295.0;
+		})->call($obj);
+		self::assertSame('1/4294967295', (string) $obj);
+	}
+
+	public function testUnknownOffset()
+	{
+		foreach ([2, 'unknown'] as $offset) {
+			foreach (['offsetGet' => [$offset], 'offsetSet' => [$offset, 1], 'offsetUnset' => [$offset]] as $method => $args) {
+				try {
+					$this->obj->$method(...$args);
+					self::fail("$method accepts the offset '$offset'.");
+				} catch (TInvalidDataValueException $e) {
+					self::assertSame('rational_bad_offset', $e->getErrorCode());
+				}
+			}
+		}
+	}
+
+	public function testBadOffsetType()
+	{
+		foreach (['offsetGet' => [true], 'offsetSet' => [true, 1], 'offsetUnset' => [true]] as $method => $args) {
+			try {
+				$this->obj->$method(...$args);
+				self::fail("$method accepts a boolean offset.");
+			} catch (TInvalidDataValueException $e) {
+			}
+		}
+		self::assertFalse($this->obj->offsetExists(true));
 	}
 }

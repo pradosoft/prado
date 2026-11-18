@@ -145,4 +145,14 @@ class TPgsqlMutexTest extends \PHPUnit\Framework\TestCase
 		$this->assertTrue($b->acquire('job', 1));
 		$b->releaseAll();
 	}
+
+	public function testIntegerAndStringResults(): void
+	{
+		$mutex = $this->newMutex();
+		$mutex->testConnection->results = [[1], ['1'], [0], ['0']];
+		$this->assertTrue($mutex->acquire('job'));
+		$this->assertTrue($mutex->release('job'));
+		$this->assertFalse($mutex->acquire('job'));
+		$this->assertFalse($mutex->acquire('job'));
+	}
 }

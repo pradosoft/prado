@@ -180,7 +180,8 @@ class TFileMutex extends TMutex
 		flock($handle, LOCK_UN);
 		fclose($handle);
 		if ($windows) {
-			@unlink($file);
+			// Only Windows runs this branch.
+			@unlink($file); // @codeCoverageIgnore
 		}
 		return true;
 	}
@@ -210,7 +211,8 @@ class TFileMutex extends TMutex
 	protected function isSameFile($handle, string $file): bool
 	{
 		if (TProcessHelper::isSystemWindows()) {
-			return true;
+			// Only Windows runs this branch.
+			return true; // @codeCoverageIgnore
 		}
 		clearstatcache(true, $file);
 		$stat = fstat($handle);

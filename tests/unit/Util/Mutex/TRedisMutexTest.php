@@ -10,6 +10,7 @@
 
 namespace Prado\Test\Unit\Util\Mutex;
 
+use Prado\Test\Unit\PradoUnit;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
@@ -95,6 +96,17 @@ class TRedisMutexTestMutex extends TRedisMutex
  * server when the `redis` extension and a server on localhost are present
  * (otherwise skipped).
  */
+/**
+ * A TRedisMutex without the redis extension.
+ */
+class TRedisMutexTestUnavailable extends TRedisMutex
+{
+	public static function getIsAvailable(): bool
+	{
+		return false;
+	}
+}
+
 class TRedisMutexTest extends \PHPUnit\Framework\TestCase
 {
 	private function newMutex(?TRedisMutexTestFakeRedis $fake = null): TRedisMutexTestMutex
@@ -113,11 +125,8 @@ class TRedisMutexTest extends \PHPUnit\Framework\TestCase
 
 	public function testInitThrowsWhenExtensionUnavailable(): void
 	{
-		if (TRedisMutex::getIsAvailable()) {
-			$this->markTestSkipped('redis extension present; cannot exercise the unavailable path.');
-		}
 		$this->expectException(TConfigurationException::class);
-		(new TRedisMutex())->init(null);
+		(new TRedisMutexTestUnavailable())->init(null);
 	}
 
 	public function testConnectionProperties(): void
@@ -221,5 +230,32 @@ class TRedisMutexTest extends \PHPUnit\Framework\TestCase
 		$this->assertTrue($b->acquire('job'));
 		$this->assertTrue($b->release('job'));
 		$this->assertFalse($a->release('job'));
+	}
+
+	public function testEmptySocketIsUnset(): void
+	{
+		$mutex = new TRedisMutexTestMutex();
+		$mutex->setSocket('/var/run/redis.sock')->setSocket('');
+		$this->assertNull($mutex->getSocket());
+		$mutex->setSocket('/var/run/redis.sock')->setSocket(null);
+		$this->assertNull($mutex->getSocket());
+	}
+
+	public function testBackendReleaseOfUnheldName(): void
+	{
+		$this->assertFalse(PradoUnit::invoke($this->newMutex(), 'releaseLock', 'never-held'));
+	}
+
+	public function testNewRedisOfTheExtensionClosesOnDestruct(): void
+	{
+		if (!TRedisMutex::getIsAvailable()) {
+			$this->markTestSkipped('redis extension not available.');
+		}
+		$mutex = new TRedisMutex();
+		$redis = PradoUnit::invoke($mutex, 'newRedis');
+		$this->assertInstanceOf(\Redis::class, $redis);
+		PradoUnit::invoke($mutex, 'setRedisDirect', $redis);
+		unset($mutex);
+		$this->assertFalse($redis->isConnected());
 	}
 }

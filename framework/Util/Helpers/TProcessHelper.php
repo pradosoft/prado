@@ -157,11 +157,15 @@ class TProcessHelper
 		if ($pid > 0) {
 			Prado::info("Fork child: $pid", static::class);
 		} elseif ($pid === 0) {
+			// Only the forked child runs this branch, and its coverage is not collected.
+			// @codeCoverageIgnoreStart
 			Prado::info("Executing child fork", static::class);
 			TAsync::resetLoopForChild();
 			TSignalsDispatcher::singleton();
+			// @codeCoverageIgnoreEnd
 		} elseif ($pid === -1) {
-			Prado::notice("failed fork", static::class);
+			// Only a failed pcntl_fork() runs this branch.
+			Prado::notice("failed fork", static::class); // @codeCoverageIgnore
 		}
 		return $pid;
 	}
@@ -182,8 +186,11 @@ class TProcessHelper
 	public static function watchChildSignal(IEventLoop $loop, callable $callback): \Closure
 	{
 		if (!TSignalsDispatcher::hasSignals()) {
+			// Only PHP without pcntl runs this branch.
+			// @codeCoverageIgnoreStart
 			return static function (): void {
 			};
+			// @codeCoverageIgnoreEnd
 		}
 		$dispatcher = TSignalsDispatcher::singleton(false);
 		if ($dispatcher !== null) {
@@ -229,7 +236,7 @@ class TProcessHelper
 	{
 		$command = str_replace(static::PHP_COMMAND, PHP_BINARY, $command);
 
-		if (TProcessHelper::isSystemWindows()) {
+		if (static::isSystemWindows()) {
 			if (is_string($command)) {
 				$command = '"' . $command . '"';  //Windows, better command support
 			}
@@ -255,8 +262,11 @@ class TProcessHelper
 		if (function_exists("posix_kill")) {
 			return posix_kill($pid, $signal);
 		}
+		// Only PHP without posix runs this fallback.
+		// @codeCoverageIgnoreStart
 		exec("/usr/bin/kill -s $signal $pid 2>&1", $output, $return_code);
 		return !$return_code;
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -267,7 +277,8 @@ class TProcessHelper
 	public static function kill(int $pid): bool
 	{
 		if (static::isSystemWindows()) {
-			return shell_exec("taskkill /F /PID $pid") !== null;
+			// Only Windows runs this branch.
+			return shell_exec("taskkill /F /PID $pid") !== null; // @codeCoverageIgnore
 		}
 		return static::sendSignal(SIGKILL, $pid);
 	}
@@ -279,18 +290,22 @@ class TProcessHelper
 	public static function isRunning(int $pid): bool
 	{
 		if (static::isSystemWindows()) {
+			// Only Windows runs this branch.
+			// @codeCoverageIgnoreStart
 			$out = [];
 			exec("TASKLIST /FO LIST /FI \"PID eq $pid\"", $out);
 			return count($out) > 1;
+			// @codeCoverageIgnoreEnd
 		}
 
 		return static::sendSignal(0, $pid);
 	}
 
 	/**
+	 * Returns the priority of a process.
 	 * @param ?int $pid The process id to get the priority of, default null for current
 	 *   process.
-	 * @return ?int The priority of the process.
+	 * @return ?int The priority of the process, or null when the process does not exist.
 	 */
 	public static function getProcessPriority(?int $pid = null): ?int
 	{
@@ -298,6 +313,8 @@ class TProcessHelper
 			$pid = getmypid();
 		}
 		if (static::isSystemWindows()) {
+			// Only Windows runs this branch.
+			// @codeCoverageIgnoreStart
 			// wmic is deprecated and removed on modern Windows (Server 2025 / Win11+); use PowerShell.
 			$psOutput = shell_exec("powershell -NoProfile -Command \"try { (Get-Process -Id $pid).PriorityClass } catch { '' }\" 2>NUL");
 			// PowerShell returns the ProcessPriorityClass enum name, e.g. 'Normal', 'BelowNormal'.
@@ -323,8 +340,10 @@ class TProcessHelper
 				TProcessWindowsPriority::Realtime => static::WINDOWS_REALTIME_PRIORITY,
 			];
 			return $priorityValues[$numericPriority] ?? null;
+			// @codeCoverageIgnoreEnd
 		} else {
-			if (strlen($priority = trim(shell_exec('exec ps -o nice= -p ' . $pid)))) {
+			$priority = trim((string) shell_exec('exec ps -o nice= -p ' . $pid . ' 2>/dev/null'));
+			if (strlen($priority)) {
 				return (int) $priority;
 			}
 			return null;
@@ -332,10 +351,12 @@ class TProcessHelper
 	}
 
 	/**
-	 * In linux systems, the priority can only go up (and have less priority).
+	 * Sets the priority of a process.  Without privileges, the priority can only go
+	 * up (and have less priority).
 	 * @param int $priority The priority of the PID.
 	 * @param ?int $pid The PID to change the priority, default null for current process.
-	 * @return bool Was successful.
+	 * @return bool Was successful; false when the process does not exist or the system
+	 *   denies the change.
 	 */
 	public static function setProcessPriority(int $priority, ?int $pid = null): bool
 	{
@@ -343,6 +364,8 @@ class TProcessHelper
 			$pid = getmypid();
 		}
 		if (static::isSystemWindows()) {
+			// Only Windows runs this branch.
+			// @codeCoverageIgnoreStart
 			// wmic is deprecated and removed on modern Windows (Server 2025 / Win11+); use PowerShell.
 			// Map Prado priority thresholds to PowerShell ProcessPriorityClass enum names.
 			$psNames = [
@@ -361,6 +384,7 @@ class TProcessHelper
 			$exitCode = -1;
 			exec("powershell -NoProfile -Command \"try { (Get-Process -Id $pid).PriorityClass = [System.Diagnostics.ProcessPriorityClass]::$psName; exit 0 } catch { exit 1 }\" 2>NUL", $psOut, $exitCode);
 			return $exitCode === 0;
+			// @codeCoverageIgnoreEnd
 		} else {
 			if (static::isSystemMacOS()) {
 				if (($pp = static::getProcessPriority($pid)) === null) {
@@ -370,18 +394,10 @@ class TProcessHelper
 				$priority -= $pp;
 			}
 
-			$result = shell_exec("exec renice -n $priority -p $pid");
-
-			// On MacOS, working properly consists of returning nothing.
-			//	only errors return "renice: 40812: setpriority: Permission denied" (when lowering priority without permission)
-			//		(Lowering the priority is increasing its importance)
-			// On the github linux test system it return "3539 (process ID) old priority 0, new priority 8"
-			//	for an error, it return: "renice: failed to set priority for 3612 (process ID): Permission denied"
-			if (is_string($result) && str_contains($result, 'denied')) {
-				return false;
-			}
-
-			return true;
+			$output = [];
+			$exitCode = -1;
+			exec("exec renice -n $priority -p $pid 2>&1", $output, $exitCode);
+			return $exitCode === 0;
 		}
 	}
 

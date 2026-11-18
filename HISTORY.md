@@ -1,4 +1,10 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TProcessHelper::getProcessPriority()` returns null for a missing process, and `setProcessPriority()` returns false when the process is missing or the system denies the change; they threw `TPhpErrorException` or returned true. (belisoful)
+BUG: Issue #1497 - `TProcessHelper::filterCommand()` reads `isSystemWindows()` through the called class, as the other methods do. (belisoful)
+BUG: Issue #1497 - `TBitHelper::floatToFpXX()` and `fpXXToFloat()` throw `TInvalidDataValueException` for negative exponent bits; they threw an `ArithmeticError`. (belisoful)
+BUG: Issue #1497 - `TBitHelper::crc32()` returns false for a file path or URL it cannot read; it threw `TPhpErrorException`. (belisoful)
+BUG: Issue #1497 - `TRational::float2rational()` returns `-1/2147483647` for a negative value of about that size; it returned `1/2147483647`. (belisoful)
+BUG: Issue #1497 - `TSemaphoreMutex::acquire()` returns false for a semaphore the process may not use; it threw `TPhpErrorException`. (belisoful)
 BUG: Issue #1497 - `TJavaScript::encode()` escapes an array key inside its single quotes, so a key with `'`, `\`, `</script>`, or a line break no longer breaks or injects into the script; a plain key renders as before. (belisoful)
 BUG: Issue #1497 - `THttpRequest` without `REQUEST_URI`, as under the command line, reads a `SCRIPT_NAME` file path as a URL path (`getScriptUrl()`), so `D:\app\index.php` is `/D:/app/index.php`; `getUrl()` threw `TInvalidDataValueException` on Windows, and a relative script name ran into the host name. (belisoful)
 BUG: Issue #1497 - `TTheme` joins its style sheet and JavaScript URLs and trims its `BaseUrl` with `/`; on Windows it used `\`. (belisoful)
