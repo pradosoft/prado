@@ -32,7 +32,7 @@ TTheme represents a particular theme as a collection of control skins stored in 
 
 ## Caching
 
-TTheme uses the application cache (`getApplication()->getCache()`) to store `[$skins, $cssFiles, $jsFiles, $timestamp]`. In `Performance` mode the timestamp check is skipped entirely and cached data is returned immediately. Otherwise, the skin file timestamps are compared against the cached timestamp to detect changes.
+TTheme uses the application cache (`getApplication()->getCache()`) to store `[$skins, $cssFiles, $jsFiles, $timestamp]`, with the sorted file lists of the directory before the RTL filtering. `loadCachedTheme()` restores it. In `Performance` mode the cached lists are used as they are. Otherwise the CSS and JavaScript lists are read from the directory again, and a skin file newer than the cached timestamp makes the theme parse its skins again. The RTL filtering and `dyThemeProcess` run for every theme, cached or not, so each culture gets its own list.
 
 ## RTL Support
 
@@ -44,7 +44,7 @@ All CSS files ending in `.*rtl.css` or `.*rtl.(media).css` are removed from the 
 |---|---|---|
 | `dyThemeConstruct` | `(string $themePath, string $themeUrl)` | Called in constructor after `parent::__construct()` |
 | `dyProcessFile` | `(bool $return, string $file)` | Called per directory entry; return `true` to skip a file |
-| `dyThemeProcess` | `()` | Called after all files have been scanned |
+| `dyThemeProcess` | `()` | Called after the files are read or restored from cache and the RTL filtering |
 | `dyCssMediaType` | `(string $return, string $url)` | Allows behaviors to override the CSS media type for a URL |
 
 ## Patterns & Gotchas
@@ -53,7 +53,7 @@ All CSS files ending in `.*rtl.css` or `.*rtl.(media).css` are removed from the 
 - **TSkinTemplate is used for skin files** — skin file parsing uses `TSkinTemplate` (which disables class/attribute validation), not `TTemplate`.
 - **Nested controls in skins are forbidden** — a skin entry with a non-`-1` parent index throws `TConfigurationException('theme_control_nested')`.
 - **Duplicate SkinIDs throw** — same class + SkinID combination in the same theme throws `TConfigurationException('theme_skinid_duplicated')`.
-- **Non-existent theme path** — constructor throws `TIOException('theme_path_inexistent')` if `opendir()` fails.
+- **Non-existent theme path** — constructor throws `TIOException('theme_path_inexistent')` if the directory cannot be opened.
 
 ## See Also
 
