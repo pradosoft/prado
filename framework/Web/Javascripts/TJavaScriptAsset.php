@@ -95,7 +95,7 @@ class TJavaScriptAsset
 			'integrity' => $integrity,
 			'crossorigin' => $integrity !== null ? 'anonymous' : null,
 		]);
-		return '<script' . ($attrs !== '' ? ' ' . $attrs : '') . '></script>';
+		return '<script ' . $attrs . '></script>';
 	}
 
 	/**

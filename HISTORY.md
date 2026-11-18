@@ -1,4 +1,11 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - The `httpheadersmanager_header_required` message names `TBaseHttpHeader`, the class `THttpHeadersManager` requires. (belisoful)
+BUG: Issue #1497 - The `jquery.ui.*` style packages in `css-packages.php` link the jQuery UI theme files by their current names, such as `dialog.css`; they linked `jquery.ui.dialog.css`, which jQuery UI no longer ships. (belisoful)
+BUG: Issue #1497 - `TCorsModule::isOriginAllowed()` ignores a blank entry in `AllowOrigin`; it allowed an empty origin. (belisoful)
+BUG: Issue #1497 - `THeaderParametersTrait::setParameters()` keeps a semicolon inside a quoted value, removes backslash escapes from a double-quoted value, and stores no empty value; `TContentDisposition` and `TMediaType` read such a header back unchanged. (belisoful)
+BUG: Issue #1497 - `TJavaScript::encode()` passes `$encodeEmptyStrings` on when it encodes an object. (belisoful)
+BUG: Issue #1497 - `TJavaScript::encode()` writes NaN as `Number.NaN`; it wrote `NAN`, which is undefined in JavaScript. (belisoful)
+BUG: Issue #1497 - `TRangeValidator`, `TJavaScript::jsonEncode()`, and `TPage` callback post data convert a non-UTF-8 charset through `TUtf8Converter`, which adds `isEncoding()`; they called `iconv` directly, so they failed without the iconv extension, and `TPage` threw for a charset iconv rejects. (belisoful)
 BUG: Issue #1497 - `TSysLogRoute::setFacility()` works on Windows, which does not define `LOG_LOCAL0` to `LOG_LOCAL7`; it threw an `Error` for an undefined constant. (belisoful)
 BUG: Issue #1497 - `TFirebugLogRoute` writes the logs only for a `TPageService` page and encodes invalid UTF-8 as U+FFFD; it threw outside a page service and wrote a serialized PHP array as its script. (belisoful)
 BUG: Issue #1497 - `TSysLogRoute::setFacility()` throws `TConfigurationException` for an unknown facility name; it threw a `TypeError`. (belisoful)
