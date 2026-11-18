@@ -413,4 +413,34 @@ class TBaseHttpHeaderTest extends \PHPUnit\Framework\TestCase
 		self::assertSame('REPORT_URI', \Prado\Web\HttpHeaders\THttpHeaderCsp::REPORT_URI);
 		self::assertSame('REPORT_URI', \Prado\Web\HttpHeaders\THttpHeaderReportingEndpoints::REPORT_URI);
 	}
+
+	// =========================================================================
+	// sendHeader — response from the manager, or a falsy response
+	// =========================================================================
+
+	public function testSendHeaderUsesTheManagersResponse(): void
+	{
+		$response = new TResponseStub();
+		$manager = new class ($response) extends THttpHeadersManager {
+			public function __construct(private TResponseStub $stub)
+			{
+				parent::__construct();
+			}
+
+			public function getResponse()
+			{
+				return $this->stub;
+			}
+		};
+		$this->h->setManager($manager);
+		$this->h->sendHeader();
+		self::assertSame([['header' => 'X-Test: test-value', 'replace' => true]], $response->capturedCalls);
+		self::assertSame([], $this->h->capturedHeaderCalls);
+	}
+
+	public function testSendHeaderWithAFalsyResponseUsesTheHeaderSeam(): void
+	{
+		$this->h->sendHeader(false);
+		self::assertSame('X-Test: test-value', $this->h->capturedHeaderCalls[0]['header']);
+	}
 }

@@ -10,7 +10,7 @@
 **Implements:** `IOutputLogRoute`
 
 ## Overview
-`TFirePhpLogRoute` delivers log entries to the Firebug console via the FirePHP library, using HTTP response headers rather than inline HTML. Logs are grouped under a collapsible label. If headers have already been sent, it falls back gracefully to `TBrowserLogRoute` output with an error notice.
+`TFirePhpLogRoute` delivers log entries to the Firebug console via the FirePHP library, using HTTP response headers rather than inline HTML. Logs are grouped under a collapsible label. If headers have already been sent, it falls back to `TBrowserLogRoute` output with an error notice. The protected `getHeadersSent()` reports the header state; a test subclass overrides it. A non-string message is converted by `TLogRoute::messageToString()`.
 
 ## Constants
 

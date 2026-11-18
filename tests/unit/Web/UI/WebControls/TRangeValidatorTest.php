@@ -53,9 +53,45 @@ class TRangeValidatorTest extends TestCase
 				$this->assertFalse($this->valid('héé'));
 			}
 			$this->validator->setCharset('ISO-8859-1');
-			$this->assertTrue($this->valid(mb_convert_encoding('héllo', 'ISO-8859-1', 'UTF-8')));
+			$this->assertTrue($this->valid("h\xe9llo"));
 		} finally {
 			PradoUnit::setStaticProp(TMultibyteString::class, '_mbstring', $mbstring);
+		}
+	}
+
+	public function testStringLengthOfAnotherCharsetWithAndWithoutIconv()
+	{
+		$this->configure(TRangeValidationDataType::StringLength, '4', '5');
+		$this->validator->setCharset('ISO-8859-1');
+		$static = PradoUnit::snapshotStatic(\Prado\Util\TUtf8Converter::class, ['_iconv']);
+		try {
+			foreach ([null, false] as $iconv) {
+				PradoUnit::setStaticProp(\Prado\Util\TUtf8Converter::class, '_iconv', $iconv);
+				$this->assertTrue($this->valid("h\xe9llo"));
+				$this->assertFalse($this->valid("h\xe9ll\xe9s"));
+				$this->assertFalse($this->valid("\xe9t\xe9"));
+			}
+		} finally {
+			PradoUnit::restoreStatic(\Prado\Util\TUtf8Converter::class, $static);
+		}
+	}
+
+	public function testStringLengthUsesTheGlobalizationCharset()
+	{
+		$this->configure(TRangeValidationDataType::StringLength, '4', '5');
+		$this->validator->setCharset('');
+		$app = \Prado::getApplication();
+		$original = PradoUnit::getProp($app, '_globalization');
+		try {
+			$g = new \Prado\I18N\TGlobalization();
+			$g->setCharset('ISO-8859-1');
+			PradoUnit::setProp($app, '_globalization', $g);
+			$this->assertTrue($this->valid("h\xe9llo"), 'The application charset ISO-8859-1 counts the byte as one character.');
+
+			$g->setCharset('');
+			$this->assertTrue($this->valid('héllo'), 'An empty application charset is UTF-8.');
+		} finally {
+			PradoUnit::setProp($app, '_globalization', $original);
 		}
 	}
 

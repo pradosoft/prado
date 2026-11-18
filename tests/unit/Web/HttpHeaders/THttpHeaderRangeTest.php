@@ -157,4 +157,18 @@ class THttpHeaderRangeTest extends \PHPUnit\Framework\TestCase
 	{
 		self::assertSame($expected, $this->range($value)->resolve($size));
 	}
+
+	public function testGetHeaderValueWithOnlyASuffixRange(): void
+	{
+		self::assertSame('bytes=-20', $this->range('bytes=-20')->getHeaderValue());
+	}
+
+	public function testPositionsOfNineteenDigits(): void
+	{
+		$max = (string) PHP_INT_MAX;
+		self::assertSame([[0, PHP_INT_MAX]], $this->range('bytes=0-' . str_repeat('9', strlen($max)))->getRanges());
+		self::assertSame([[0, PHP_INT_MAX]], $this->range('bytes=0-' . $max)->getRanges());
+		$lower = '1' . str_repeat('0', strlen($max) - 1);
+		self::assertSame([[(int) $lower, null]], $this->range('bytes=' . $lower . '-')->getRanges());
+	}
 }

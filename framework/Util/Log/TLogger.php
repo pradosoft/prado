@@ -166,9 +166,12 @@ class TLogger extends \Prado\TComponent
 	{
 		if ($flushShutdown) {
 			register_shutdown_function(function () {
+				// The closure runs at process shutdown, after coverage stops.
+				// @codeCoverageIgnoreStart
 				$this->onFlushLogs();
 				// flush any logs in the shutdown function.
 				register_shutdown_function([$this, 'onFlushLogs'], $this, true);
+				// @codeCoverageIgnoreEnd
 			});
 		}
 		parent::__construct();

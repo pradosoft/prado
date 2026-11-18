@@ -545,4 +545,17 @@ class THttpHeaderContentTypeTest extends \PHPUnit\Framework\TestCase
 		self::assertSame('text/html', $ct->getContentType());
 		self::assertNull($ct->getCharset());
 	}
+
+	public function testFinalizeHeaderWithoutApplicationUsesTheDefaultCharset(): void
+	{
+		$ct = new THttpHeaderContentType();
+		$app = Prado::getApplication();
+		PradoUnit::setStaticProp(Prado::class, '_application', null);
+		try {
+			$ct->finalizeHeader();
+		} finally {
+			PradoUnit::setStaticProp(Prado::class, '_application', $app);
+		}
+		self::assertSame(THttpResponse::DEFAULT_CHARSET, $ct->getCharset());
+	}
 }
