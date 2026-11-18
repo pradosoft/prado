@@ -4,6 +4,7 @@ namespace Prado\Test\Unit\Util\Behaviors;
 
 use Prado\I18N\TGlobalization;
 use Prado\Prado;
+use Prado\Test\Unit\PradoUnit;
 use Prado\Util\Behaviors\TPageGlobalizationCharsetBehavior;
 use Prado\Web\UI\TPage;
 use Prado\Web\UI\WebControls\THead;
@@ -12,13 +13,17 @@ class TPageGlobalizationCharsetBehaviorTest extends \PHPUnit\Framework\TestCase
 {
 	protected $obj;
 
+	private array $savedApp = [];
+
 	protected function setUp(): void
 	{
+		$this->savedApp = PradoUnit::snapshot(Prado::getApplication(), ['_globalization']);
 		$this->obj = new TPageGlobalizationCharsetBehavior();
 	}
 
 	protected function tearDown(): void
 	{
+		PradoUnit::restore(Prado::getApplication(), $this->savedApp);
 	}
 
 	public function testConstruct()

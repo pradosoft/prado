@@ -11,6 +11,7 @@ use Prado\Data\TDbTransaction;
 use Prado\Exceptions\TDbException;
 use ReflectionClass;
 use Prado\TApplication;
+use Prado\Test\Unit\Harness\TTestApplication;
 use Prado\Test\Unit\PradoUnit;
 use Prado\TApplicationMode;
 
@@ -131,6 +132,8 @@ class TDbTransactionTest extends \PHPUnit\Framework\TestCase
 {
 	private $_connection;
 
+	private ?TTestApplication $_app = null;
+
 	protected function setUp(): void
 	{
 		// Remove any stale DB file from a previous test run (guards against Windows
@@ -138,7 +141,8 @@ class TDbTransactionTest extends \PHPUnit\Framework\TestCase
 		@unlink(TEST_DB_FILE);
 
 		// create application just to provide application mode
-		(new TApplication(__DIR__, false, TApplication::CONFIG_TYPE_PHP))->setMode(TApplicationMode::Debug);
+		$this->_app = new TTestApplication(__DIR__, false, TApplication::CONFIG_TYPE_PHP);
+		$this->_app->setMode(TApplicationMode::Debug);
 
 		$this->_connection = new TDbConnection('sqlite:' . TEST_DB_FILE);
 		$this->_connection->Active = true;
@@ -154,6 +158,8 @@ class TDbTransactionTest extends \PHPUnit\Framework\TestCase
 			$this->_connection = null;
 		}
 		@unlink(TEST_DB_FILE);
+		$this->_app?->restoreApplication();
+		$this->_app = null;
 	}
 
 	public function testRollBack()

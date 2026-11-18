@@ -221,14 +221,28 @@ class TSysLogRouteTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame([], $route->entries);
 	}
 
-	public function testSysLogFlagsIgnoreUnknownNames()
+	public function testSysLogFlagsRejectUnknownNames()
 	{
 		$route = new TTestSysLogRoute();
-		$route->setSysLogFlags('bogus');
-		$this->assertSame(0, $route->getSysLogFlags());
-		$route->setSysLogFlags(['bogus']);
-		$this->assertSame(0, $route->getSysLogFlags());
-		$route->setSysLogFlags(['log_pid']);
+		$route->setSysLogFlags(LOG_PERROR);
+		foreach (['bogus', 'log_pid | bogus', ['log_pid', 'bogus']] as $value) {
+			try {
+				$route->setSysLogFlags($value);
+				$this->fail('An unknown flag name throws TConfigurationException.');
+			} catch (TConfigurationException $e) {
+				$this->assertSame('syslogroute_bad_flags', $e->getErrorCode());
+				$this->assertStringContainsString('BOGUS', $e->getMessage());
+			}
+			$this->assertSame(LOG_PERROR, $route->getSysLogFlags());
+		}
+	}
+
+	public function testSysLogFlagsSkipEmptyNames()
+	{
+		$route = new TTestSysLogRoute();
+		$route->setSysLogFlags('log_pid, ');
+		$this->assertSame(LOG_PID, $route->getSysLogFlags());
+		$route->setSysLogFlags(['log_pid', '']);
 		$this->assertSame(LOG_PID, $route->getSysLogFlags());
 		$route->setSysLogFlags([]);
 		$this->assertSame(0, $route->getSysLogFlags());

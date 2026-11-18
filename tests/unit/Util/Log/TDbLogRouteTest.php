@@ -12,6 +12,7 @@ use Prado\Data\IDataConnection;
 use Prado\Data\TDbConnection;
 use Prado\Data\TDbDriver;
 use Prado\Test\Unit\PradoUnit;
+use Prado\Util\Clock\TMockClock;
 
 class TTestDbLogRoute extends TDbLogRoute {
 }
@@ -75,6 +76,33 @@ class TDbLogRouteTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals(45, $route->getRetainPeriod());
 	}
 	
+	public function testRetainPeriodOfZeroSecondsIsNull()
+	{
+		$route = new TTestDbLogRoute();
+		$route->setRetainPeriod('PT0S');
+		$this->assertNull($route->getRetainPeriod());
+	}
+
+	public function testRetainPeriodIsMeasuredFromTheClock()
+	{
+		$route = new TTestDbLogRoute();
+		$route->setClock($clock = new TMockClock());
+		$clock->setNow('2026-02-01 00:00:00 UTC');
+		$route->setRetainPeriod('P1M');
+		$this->assertEquals(28 * 86400, $route->getRetainPeriod());
+
+		$clock->setNow('2026-03-01 00:00:00 UTC');
+		$route->setRetainPeriod('P1M');
+		$this->assertEquals(31 * 86400, $route->getRetainPeriod());
+	}
+
+	public function testTimespanToSecondsFromATime()
+	{
+		$this->assertSame(29 * 86400, TDbLogRoute::timespanToSeconds('P1M', new \DateTimeImmutable('2028-02-01 00:00:00 UTC')));
+		$this->assertSame(23 * 3600, TDbLogRoute::timespanToSeconds('P1D', new \DateTime('2026-03-08 00:00:00', new \DateTimeZone('America/New_York'))));
+		$this->assertSame(90, TDbLogRoute::timespanToSeconds('PT1M30S'));
+	}
+
 	public function testCollect()
 	{
 		$logger = new TLogger();
@@ -293,6 +321,32 @@ class TDbLogRouteTest extends \PHPUnit\Framework\TestCase
 			$this->assertCount(2, $rows);
 			$this->assertSame(['one', 'two'], array_column($rows, 'message'));
 			$this->assertNotEquals($rows[0]['log_id'], $rows[1]['log_id']);
+		} finally {
+			$conn->createCommand('DROP TABLE IF EXISTS ' . $table)->execute();
+			$conn->setActive(false);
+		}
+	}
+
+	/**
+	 * @dataProvider driverProvider
+	 */
+	public function testTimeFiltersCompareLogTimeAsANumber(string $driver)
+	{
+		$conn = $this->driverConnection($driver);
+		$table = 'pradolog_' . bin2hex(random_bytes(4));
+		$route = new TConnectionDbLogRoute($conn);
+		$route->setLogTableName($table);
+		try {
+			$route->init(null);
+			PradoUnit::invoke($route, 'processLogs', [
+				TLogEntryFactory::entry('nine digits', time: 999999999.5),
+				TLogEntryFactory::entry('ten digits', time: 1000000000.5),
+			], true, []);
+
+			$this->assertSame(['nine digits', 'ten digits'], array_column($route->getDBLogs(null, null, 999999999.0, null, 'log_id')->readAll(), 'message'));
+			$this->assertSame(['nine digits'], array_column($route->getDBLogs(null, null, null, 1000000000.0, 'log_id')->readAll(), 'message'));
+			$this->assertSame(1, (int) $route->deleteDBLog(null, null, null, 1000000000.0));
+			$this->assertSame(['ten digits'], array_column($route->getDBLogs(null, null, null, null, 'log_id')->readAll(), 'message'));
 		} finally {
 			$conn->createCommand('DROP TABLE IF EXISTS ' . $table)->execute();
 			$conn->setActive(false);

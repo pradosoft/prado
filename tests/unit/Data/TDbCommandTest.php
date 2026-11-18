@@ -7,6 +7,7 @@ use Prado\Data\TDbCommand;
 use Prado\Data\TDbDataReader;
 use Prado\Exceptions\TDbException;
 use Prado\TApplication;
+use Prado\Test\Unit\Harness\TTestApplication;
 use Prado\TApplicationMode;
 
 if (!defined('TEST_DB_FILE')) {
@@ -17,13 +18,16 @@ class TDbCommandTest extends \PHPUnit\Framework\TestCase
 {
 	private $_connection;
 
+	private ?TTestApplication $_app = null;
+
 	protected function setUp(): void
 	{
 		// Defensive unlink
 		@unlink(TEST_DB_FILE);
 
 		// create application just to provide application mode
-		(new TApplication(__DIR__, false, TApplication::CONFIG_TYPE_PHP))->setMode(TApplicationMode::Debug);
+		$this->_app = new TTestApplication(__DIR__, false, TApplication::CONFIG_TYPE_PHP);
+		$this->_app->setMode(TApplicationMode::Debug);
 
 		$this->_connection = new TDbConnection('sqlite:' . TEST_DB_FILE);
 		$this->_connection->Active = true;
@@ -39,6 +43,8 @@ class TDbCommandTest extends \PHPUnit\Framework\TestCase
 			$this->_connection = null;
 		}
 		@unlink(TEST_DB_FILE);
+		$this->_app?->restoreApplication();
+		$this->_app = null;
 	}
 
 	public function testGetText()

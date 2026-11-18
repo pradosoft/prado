@@ -65,7 +65,7 @@ class TEmailLogRoute extends TLogRoute
 	/**
 	 * Regex pattern for email address.
 	 */
-	public const EMAIL_PATTERN = '/^([0-9a-zA-Z]+[-._+&])*[0-9a-zA-Z]+@([-0-9a-zA-Z]+[.])+[a-zA-Z]{2,6}$/';
+	public const EMAIL_PATTERN = '/^([0-9a-zA-Z]+[-._+&])*[0-9a-zA-Z]+@([-0-9a-zA-Z]+[.])+[a-zA-Z]{2,}$/';
 	/**
 	 * Default email subject.
 	 */
@@ -146,20 +146,21 @@ class TEmailLogRoute extends TLogRoute
 	}
 
 	/**
+	 * Sets the destination email addresses.  Each address is trimmed, and an address
+	 * that does not match {@see EMAIL_PATTERN} is dropped.
 	 * @param array|string $emails list of destination email addresses. If the value is
 	 * a string, it is assumed to be comma-separated email addresses.
 	 */
 	public function setEmails($emails)
 	{
-		if (is_array($emails)) {
-			$this->_emails = $emails;
-		} else {
-			$this->_emails = [];
-			foreach (explode(',', $emails) as $email) {
-				$email = trim($email);
-				if (preg_match(self::EMAIL_PATTERN, $email)) {
-					$this->_emails[] = $email;
-				}
+		if (!is_array($emails)) {
+			$emails = explode(',', $emails);
+		}
+		$this->_emails = [];
+		foreach ($emails as $email) {
+			$email = trim((string) $email);
+			if (preg_match(self::EMAIL_PATTERN, $email)) {
+				$this->_emails[] = $email;
 			}
 		}
 	}

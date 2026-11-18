@@ -1,4 +1,8 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TSysLogRoute::setSysLogFlags()` throws `TConfigurationException` for an unknown flag name, as for an unknown flag bit; it ignored the name. (belisoful)
+BUG: Issue #1497 - `TDbLogRoute::setRetainPeriod()` measures an ISO 8601 duration from the application clock, and `'PT0S'` is null like `0`; `timespanToSeconds()` takes the start time as `$from`. It measured from the wall clock, and `'PT0S'` was 0. (belisoful)
+BUG: Issue #1497 - `TDbLogRoute` time filters compare `logtime` as a number; they compared its text, so a time of fewer digits, such as a long `RetainPeriod` before now, matched the wrong rows. (belisoful)
+BUG: Issue #1497 - `TEmailLogRoute::setEmails()` checks each address of an array against `EMAIL_PATTERN`, and the pattern accepts top-level domains longer than 6 letters; an array was stored unchecked. (belisoful)
 BUG: Issue #1497 - `TProcessHelper::getProcessPriority()` returns null for a missing process, and `setProcessPriority()` returns false when the process is missing or the system denies the change; they threw `TPhpErrorException` or returned true. (belisoful)
 BUG: Issue #1497 - `TProcessHelper::filterCommand()` reads `isSystemWindows()` through the called class, as the other methods do. (belisoful)
 BUG: Issue #1497 - `TBitHelper::floatToFpXX()` and `fpXXToFloat()` throw `TInvalidDataValueException` for negative exponent bits; they threw an `ArithmeticError`. (belisoful)

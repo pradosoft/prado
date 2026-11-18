@@ -14,6 +14,7 @@ use Prado\Data\TDbDriverCapabilities;
 use Prado\Data\TDbNullConversionMode;
 use Prado\Exceptions\TDbException;
 use Prado\TApplication;
+use Prado\Test\Unit\Harness\TTestApplication;
 use Prado\Test\Unit\PradoUnit;
 use Prado\TApplicationMode;
 
@@ -180,6 +181,8 @@ class TDbConnectionTest extends \PHPUnit\Framework\TestCase
 	private $_connection1;
 	private $_connection2;
 
+	private ?TTestApplication $_app = null;
+
 	protected function setUp(): void
 	{
 		// Defensive unlink
@@ -187,7 +190,8 @@ class TDbConnectionTest extends \PHPUnit\Framework\TestCase
 		@unlink(TEST_DB_FILE2);
 
 		// create application just to provide application mode
-		(new TApplication(__DIR__, false, TApplication::CONFIG_TYPE_PHP))->setMode(TApplicationMode::Debug);
+		$this->_app = new TTestApplication(__DIR__, false, TApplication::CONFIG_TYPE_PHP);
+		$this->_app->setMode(TApplicationMode::Debug);
 
 		$this->_connection1 = new TDbConnection('sqlite:' . TEST_DB_FILE);
 		$this->_connection1->Active = true;
@@ -213,6 +217,8 @@ class TDbConnectionTest extends \PHPUnit\Framework\TestCase
 		gc_collect_cycles();
 		@unlink(TEST_DB_FILE);
 		@unlink(TEST_DB_FILE2);
+		$this->_app?->restoreApplication();
+		$this->_app = null;
 	}
 
 	public function testActive()
