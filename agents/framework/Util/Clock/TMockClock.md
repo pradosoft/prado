@@ -35,17 +35,18 @@ $clock->setNow(null);                // back to the system clock, still reportin
 | Method | Description |
 |--------|-------------|
 | `now(): \DateTimeImmutable` | The pinned instant when set, otherwise the real system time in `timezone()`. |
-| `time(): int` / `microtime(): float` | The pinned timestamp when set, otherwise the fast real-time path (overrides [`TClockTrait`](TClockTrait.md)). |
+| `time(): int` / `microtime(): float` | The pinned timestamp when set, otherwise the fast real-time path (overrides [`TClockTrait`](TClockTrait.md)). The pinned `microtime()` is read from `getTimestamp()` and the microseconds, so it is exact before the epoch. |
 | `timezone(): \DateTimeZone` | The pinned instant's zone, else the fixed zone from `setTimezone()`, else the cached system default (the trait's `systemTimezone()`). |
 | `sleep(float\|int $seconds): void` | When pinned, advances the instant by `$seconds` (microsecond fractions honored, timezone preserved, negative rewinds) instead of blocking; when not pinned, a real pause through [`TAsync::sleep()`](../../IO/Async/TAsync.md). |
 | `getNow(): ?\DateTimeImmutable` | The pinned instant, or null when following the system clock. |
 | `setNow(\DateTimeInterface\|string\|int\|float\|null $value): static` | Pin to a fixed instant — a `\DateTime` is converted to immutable, a string is parsed by `\DateTimeImmutable` (e.g. `'2024-01-01 12:00'`, `'@1700000000'`; a string without a zone is parsed in the fixed zone when one is set), an int or float is a Unix timestamp built in `timezone()`, null releases. With a fixed zone the pin is re-expressed in it. Returns `$this`. |
 | `setTime(?int $time): static` | `setNow()` typed for a whole-second Unix timestamp; null releases. |
-| `setMicrotime(?float $microtime): static` | `setNow()` typed for a fractional Unix timestamp; null releases. |
+| `setMicrotime(?float $microtime): static` | `setNow()` typed for a fractional Unix timestamp; null releases. A NAN, infinite, or out-of-range timestamp throws `offsetclock_shift_invalid`. |
 | `getTimezone(): ?\DateTimeZone` | The fixed reported zone, or null when none is set. |
 | `setTimezone(\DateTimeZone\|string\|null $timezone): static` | Fix the reported zone. A pinned instant is re-expressed in it (same instant); an unpinned clock reports real time in it. Null clears the fixed zone; a pinned instant keeps the zone it already has. |
 
 ## Notes
 - Registered in `framework/classes.php` as `TMockClock`.
 - Pairs with [`TClockAwareTrait`](TClockAwareTrait.md): inject a `TMockClock` via the holder's `setClock()`, then pin it with the mock's `setNow()` (or `setTime()`/`setMicrotime()`) to make a clock-dependent class deterministic. The holder default is [`TNativeClock`](TNativeClock.md), not `TMockClock`.
+- A float pin and `sleep()` go through [`TOffsetClock::shift()`](TOffsetClock.md), exact to the microsecond on either side of the Unix epoch.
 - Accessor pattern: `getNow()`/`getTimezone()` return the raw settings (nullable); `now()`/`time()`/`microtime()`/`timezone()` return the reported values.

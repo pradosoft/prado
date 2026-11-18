@@ -876,12 +876,35 @@ class TJavaScriptTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame("{'b':\"x\"}", $result);
 	}
 
+	public function testEncodeObjectKeepsEncodeEmptyStrings(): void
+	{
+		$obj = new \stdClass();
+		$obj->a = '';
+		$obj->b = 'x';
+		$this->assertSame("{'a':\"\",'b':\"x\"}", TJavaScript::encode($obj, true, true));
+		$this->assertSame("{'b':\"x\"}", TJavaScript::encode($obj));
+	}
+
+	public function testEncodeFloatUsesDotUnderACommaLocale(): void
+	{
+		$original = setlocale(LC_NUMERIC, '0');
+		$locale = setlocale(LC_NUMERIC, 'de_DE.UTF-8', 'de_DE', 'fr_FR.UTF-8', 'fr_FR');
+		try {
+			if ($locale === false) {
+				$this->markTestSkipped('No locale with a comma decimal separator is installed.');
+			}
+			$this->assertSame(',', localeconv()['decimal_point']);
+			$this->assertSame('1.5', TJavaScript::encode(1.5));
+		} finally {
+			setlocale(LC_NUMERIC, $original);
+		}
+	}
+
 	public function testEncodeNanFloat(): void
 	{
-		// NaN is a float that is neither INF nor -INF, so it falls through to the
-		// default: branch and produces "NAN" via string interpolation. This documents
-		// the silent fallback — callers should validate inputs before encoding.
-		$this->assertSame('NAN', TJavaScript::encode(NAN));
+		// JavaScript has no `NAN` identifier; `Number.NaN` matches the INF mappings.
+		$this->assertSame('Number.NaN', TJavaScript::encode(NAN));
+		$this->assertSame('[Number.NaN]', TJavaScript::encode([NAN]));
 	}
 
 	public function testEncodeUnrecognizedTypeReturnsEmptyString(): void
@@ -1015,6 +1038,25 @@ class TJavaScriptTest extends \PHPUnit\Framework\TestCase
 		$this->withGlobalizationCharset('ISO-8859-1', function () use ($latin1) {
 			$json = TJavaScript::jsonEncode(['name' => $latin1]);
 			$this->assertSame(['name' => 'Café'], json_decode($json, true));
+		});
+	}
+
+	public function testJsonEncodeWithoutApplication(): void
+	{
+		$app = \Prado\Prado::getApplication();
+		PradoUnit::setStaticProp(\Prado\Prado::class, '_application', null);
+		try {
+			$this->assertSame('{"x":1}', TJavaScript::jsonEncode(['x' => 1]));
+		} finally {
+			PradoUnit::setStaticProp(\Prado\Prado::class, '_application', $app);
+		}
+	}
+
+	public function testJsonEncodeTranscodesEmptyContainers(): void
+	{
+		$this->withGlobalizationCharset('ISO-8859-1', function () {
+			$this->assertSame('[]', TJavaScript::jsonEncode([]));
+			$this->assertSame('{}', TJavaScript::jsonEncode(new \stdClass()));
 		});
 	}
 
@@ -1227,5 +1269,30 @@ class TJavaScriptTest extends \PHPUnit\Framework\TestCase
 		TJavaScript::setRequireScriptIntegrity(true);
 		$this->expectException(TConfigurationException::class);
 		TJavaScript::renderScriptFile('//cdn.example.com/other.js');
+	}
+
+	public function testJsonEncodeTranscodesWithoutIconv(): void
+	{
+		$static = PradoUnit::snapshotStatic(\Prado\Util\TUtf8Converter::class, ['_iconv']);
+		PradoUnit::setStaticProp(\Prado\Util\TUtf8Converter::class, '_iconv', false);
+		try {
+			$this->withGlobalizationCharset('ISO-8859-1', function () {
+				$json = TJavaScript::jsonEncode(['name' => "Caf\xe9"]);
+				$this->assertSame(['name' => 'Café'], json_decode($json, true));
+			});
+			$this->withGlobalizationCharset('fr', function () {
+				$this->assertSame('{"n":1}', TJavaScript::jsonEncode(['n' => 1]));
+			});
+			$this->withGlobalizationCharset('ISO-8859-1', function () {
+				$this->assertSame('[]', TJavaScript::jsonEncode([]));
+				$this->assertSame('{}', TJavaScript::jsonEncode(new \stdClass()));
+				$this->assertSame(['é'], json_decode(TJavaScript::jsonEncode(["\xe9"]), true));
+				$one = new \stdClass();
+				$one->a = "\xe9";
+				$this->assertSame(['a' => 'é'], json_decode(TJavaScript::jsonEncode($one), true));
+			});
+		} finally {
+			PradoUnit::restoreStatic(\Prado\Util\TUtf8Converter::class, $static);
+		}
 	}
 }

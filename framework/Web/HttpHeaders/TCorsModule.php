@@ -237,7 +237,8 @@ class TCorsModule extends TModule
 		}
 		$origin = trim($origin);
 		foreach (explode(',', $allowOrigin) as $allowed) {
-			if ($allowed !== '' && strcasecmp(trim($allowed), $origin) === 0) {
+			$allowed = trim($allowed);
+			if ($allowed !== '' && strcasecmp($allowed, $origin) === 0) {
 				return true;
 			}
 		}

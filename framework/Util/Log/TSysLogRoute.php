@@ -83,9 +83,24 @@ class TSysLogRoute extends TLogRoute
 	 */
 	protected function processLogs(array $logs, bool $final, array $meta)
 	{
-		openlog($this->getSysLogPrefix(), $this->getSysLogFlags(), $this->getFacility());
+		$entries = [];
 		foreach ($logs as $log) {
-			syslog($this->translateLogLevel($log[TLogger::LOG_LEVEL]), $this->formatLogMessage($log));
+			$entries[] = [$this->translateLogLevel($log[TLogger::LOG_LEVEL]), $this->formatLogMessage($log)];
+		}
+		$this->writeSysLog($entries);
+	}
+
+	/**
+	 * Opens the system log, writes each entry, and closes it.
+	 * @param array $entries the `[priority, message]` pairs to write.
+	 * @since 4.4.0
+	 */
+	protected function writeSysLog(array $entries): void
+	{
+		openlog($this->getSysLogPrefix(), $this->getSysLogFlags(), $this->getFacility());
+		foreach ($entries as [$priority, $message]) {
+			// Writes to the system log of the host.
+			syslog($priority, $message); // @codeCoverageIgnore
 		}
 		closelog();
 	}
@@ -202,31 +217,18 @@ class TSysLogRoute extends TLogRoute
 	}
 
 	/**
+	 * Sets the syslog facility by its value or `LOG_*` name.  Only the facilities PHP
+	 * defines are valid; Windows does not define `LOG_LOCAL0` to `LOG_LOCAL7`.
 	 * @param int|string $value the options for syslog
 	 * @return static The current object.
 	 */
 	public function setFacility($value): static
 	{
-		static $_facilitiesMap = [
-			'LOG_AUTH' => LOG_AUTH,		// 0x20
-			'LOG_CRON' => LOG_CRON,		// 0x48
-			'LOG_DAEMON' => LOG_DAEMON,	// 0x18
-			'LOG_KERN' => LOG_KERN,		// 0x00
-			'LOG_LOCAL0' => LOG_LOCAL0,	// 0x80
-			'LOG_LOCAL1' => LOG_LOCAL1,	// 0x88
-			'LOG_LOCAL2' => LOG_LOCAL2,	// 0x90
-			'LOG_LOCAL3' => LOG_LOCAL3,	// 0x98
-			'LOG_LOCAL4' => LOG_LOCAL4,	// 0xa0
-			'LOG_LOCAL5' => LOG_LOCAL5,	// 0xa8
-			'LOG_LOCAL6' => LOG_LOCAL6,	// 0xb0
-			'LOG_LOCAL7' => LOG_LOCAL7,	// 0xb8
-			'LOG_LPR' => LOG_LPR,		// 0x30
-			'LOG_MAIL' => LOG_MAIL,		// 0x10
-			'LOG_NEWS' => LOG_NEWS, 	// 0x38
-			'LOG_SYSLOG' => LOG_SYSLOG, // 0x28
-			'LOG_USER' => LOG_USER, 	// 0x08
-			'LOG_UUCP' => LOG_UUCP, 	// 0x40
-		];
+		static $_facilitiesMap = null;
+		if ($_facilitiesMap === null) {
+			$names = array_filter(['LOG_AUTH', 'LOG_CRON', 'LOG_DAEMON', 'LOG_KERN', 'LOG_LOCAL0', 'LOG_LOCAL1', 'LOG_LOCAL2', 'LOG_LOCAL3', 'LOG_LOCAL4', 'LOG_LOCAL5', 'LOG_LOCAL6', 'LOG_LOCAL7', 'LOG_LPR', 'LOG_MAIL', 'LOG_NEWS', 'LOG_SYSLOG', 'LOG_USER', 'LOG_UUCP'], 'defined');
+			$_facilitiesMap = array_combine($names, array_map('constant', $names));
+		}
 		if (defined('LOG_AUTHPRIV')) {
 			$_facilitiesMap['LOG_AUTH'] = LOG_AUTHPRIV;
 		}
@@ -244,7 +246,7 @@ class TSysLogRoute extends TLogRoute
 			if (isset($_facilitiesMap[$value])) {
 				$value = $_facilitiesMap[$value];
 			} else {
-				throw new TConfigurationException('syslogroute_bad_facility', '0x' . dechex($value));
+				throw new TConfigurationException('syslogroute_bad_facility', $value);
 			}
 		}
 		$this->_facility = $value;
@@ -257,13 +259,7 @@ class TSysLogRoute extends TLogRoute
 	 */
 	public function formatLogMessage(array $log): string
 	{
-		if (!is_string($log[TLogger::LOG_MESSAGE])) {
-			if ($log[TLogger::LOG_MESSAGE] instanceof \Exception || $log[TLogger::LOG_MESSAGE] instanceof \Throwable) {
-				$log[TLogger::LOG_MESSAGE] = (string) $log[TLogger::LOG_MESSAGE];
-			} else {
-				$log[TLogger::LOG_MESSAGE] = \Prado\Util\TVarDumper::dump($log[TLogger::LOG_MESSAGE]);
-			}
-		}
+		$log[TLogger::LOG_MESSAGE] = $this->messageToString($log[TLogger::LOG_MESSAGE]);
 
 		$prefix = $this->getLogPrefix($log);
 
