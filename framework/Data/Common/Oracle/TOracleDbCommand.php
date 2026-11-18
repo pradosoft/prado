@@ -93,8 +93,11 @@ class TOracleDbCommand extends TDbCommand
 	 *
 	 * Both positional (`?`) and named (`:name`) placeholders are supported.
 	 * Placeholders inside quoted literals and quoted identifiers are left unchanged.
-	 * NULL values are rendered as the literal SQL NULL.
+	 * The literal pattern matches a run of plain characters at a time, so a literal of
+	 * any length stays within the PCRE stack. NULL values are rendered as the literal
+	 * SQL NULL.
 	 *
+	 * @throws TDbException if the substitution fails.
 	 * @return ?string Substituted SQL ready for direct execution, or null
 	 *                     if no parameters have been bound.
 	 */
@@ -107,30 +110,35 @@ class TOracleDbCommand extends TDbCommand
 		$params = $this->_ociParams;
 		$quote = static fn ($value) => $value === null ? 'NULL' : $pdo->quote((string) $value);
 		// One pass over the SQL; quoted literals and identifiers are matched first and kept.
-		$literal = '\'(?:[^\']|\'\')*\'|"(?:[^"]|"")*"';
+		$literal = '\'[^\']*+(?:\'\'[^\']*+)*+\'|"[^"]*+(?:""[^"]*+)*+"';
 		if (is_int(array_key_first($params))) {
 			// Positional '?' placeholders, replaced left to right.
 			$values = array_values($params);
 			$i = 0;
-			return preg_replace_callback('/' . $literal . '|\?/', static function ($m) use ($quote, $values, &$i) {
+			$sql = preg_replace_callback('/' . $literal . '|\?/', static function ($m) use ($quote, $values, &$i) {
 				if ($m[0] !== '?') {
 					return $m[0];
 				}
 				return $quote($values[$i++] ?? null);
 			}, $this->getText());
-		}
-		// Named placeholders, matched as whole names so ':id' leaves ':id2' alone.
-		return preg_replace_callback('/' . $literal . '|(?<!:):([A-Za-z_]\w*)/', static function ($m) use ($quote, $params) {
-			if (!isset($m[1])) {
-				return $m[0];
-			}
-			foreach ([$m[0], $m[1]] as $key) {
-				if (array_key_exists($key, $params)) {
-					return $quote($params[$key]);
+		} else {
+			// Named placeholders, matched as whole names so ':id' leaves ':id2' alone.
+			$sql = preg_replace_callback('/' . $literal . '|(?<!:):([A-Za-z_]\w*)/', static function ($m) use ($quote, $params) {
+				if (!isset($m[1])) {
+					return $m[0];
 				}
-			}
-			return $m[0];
-		}, $this->getText());
+				foreach ([$m[0], $m[1]] as $key) {
+					if (array_key_exists($key, $params)) {
+						return $quote($params[$key]);
+					}
+				}
+				return $m[0];
+			}, $this->getText());
+		}
+		if ($sql === null) {
+			throw new TDbException('dbcommand_prepare_failed', preg_last_error_msg(), $this->getDebugStatementText());
+		}
+		return $sql;
 	}
 
 	// -----------------------------------------------------------------------
