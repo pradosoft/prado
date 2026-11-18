@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `THttpSession::gc()` starts its session without PHP's probabilistic collection, so it counts every expired session it deletes; when that collection ran at the start, `gc()` returned 0. (belisoful)
 BUG: Cron (#833): `TShellCronAction::sleep()` of `cron/top` and the `TCronWakeSocket` key-file retry pause through `TAsync::sleep()`, so a fiber yields to the event loop; they blocked the process with `usleep()`. (belisoful)
 BUG: Issue #1497 - `TMockClock` and `TOffsetClock` keep fractional instants before the Unix epoch, and throw `TInvalidDataValueException` for a NAN, infinite, or out-of-range timestamp or offset; `setMicrotime(-0.5)` read back `0.5`, and NAN pinned the epoch. `TOffsetClock::shift()` moves an instant by a number of seconds. (belisoful)
 BUG: Issue #1497 - `THttpHeadersManager` in the `Auto` `ReportingServiceMode` wires a literal `ReportingServiceId` that has no registered service only when a CSP header reports to its endpoint, holds a report-uri placeholder, or report-only is on, as documented, and then registers the service under that ID; it pointed `report-to` at the unregistered service. (belisoful)
