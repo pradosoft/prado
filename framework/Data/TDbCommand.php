@@ -343,6 +343,8 @@ class TDbCommand extends \Prado\TComponent implements IDbCommand
 	 * Executes the SQL statement and returns the value of the first column in the first row of data.
 	 * This is a convenient method of {@see query} when only a single scalar
 	 * value is needed (e.g. obtaining the count of the records).
+	 * A LOB value is read from its stream before the cursor closes, since a driver such as
+	 * IBM DB2 ends the stream with the cursor.
 	 * @throws TDbException execution failed
 	 * @return mixed the value of the first column in the first row of the query result. False is returned if there is no value.
 	 */
@@ -358,12 +360,11 @@ class TDbCommand extends \Prado\TComponent implements IDbCommand
 				$this->setPdoStatement($statement);
 			}
 			$result = $statement->fetchColumn();
-			$statement->closeCursor();
 			if (is_resource($result) && get_resource_type($result) === 'stream') {
-				return stream_get_contents($result);
-			} else {
-				return $result;
+				$result = stream_get_contents($result);
 			}
+			$statement->closeCursor();
+			return $result;
 		} catch (Exception $e) {
 			throw new TDbException('dbcommand_query_failed', $e->getMessage(), $this->getDebugStatementText());
 		}

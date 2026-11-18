@@ -86,14 +86,14 @@ class TStdOutLogRoute extends TLogRoute
 	}
 
 	/**
+	 * Writes the logs to STDOUT, each with a colored level badge.
 	 * @param array $logs list of log messages
 	 * @param bool $final is the final flush
 	 * @param array $meta the meta data for the logs.
-	 * @throws TLogException When failing to write to syslog.
 	 */
 	protected function processLogs(array $logs, bool $final, array $meta)
 	{
-		$writer = new TShellWriter(new TStdOutWriter());
+		$writer = $this->createWriter();
 
 		foreach ($logs as $log) {
 			$writer->write('[' . static::getLevelName($log[TLogger::LOG_LEVEL]) . ']', $this->levelColor($log[TLogger::LOG_LEVEL]));
@@ -103,9 +103,19 @@ class TStdOutLogRoute extends TLogRoute
 	}
 
 	/**
-	 * Translates a PRADO log level attribute into one understood by syslog
+	 * Creates the shell writer that {@see processLogs()} writes to.
+	 * @return TShellWriter a shell writer over STDOUT.
+	 * @since 4.4.0
+	 */
+	protected function createWriter(): TShellWriter
+	{
+		return new TShellWriter(new TStdOutWriter());
+	}
+
+	/**
+	 * Translates a PRADO log level into a {@see TShellWriter} background color.
 	 * @param int $level prado log level
-	 * @return ?int syslog priority
+	 * @return ?int the background color; null for INFO.
 	 */
 	protected static function levelColor($level)
 	{
@@ -138,13 +148,7 @@ class TStdOutLogRoute extends TLogRoute
 	 */
 	public function formatLogMessage(array $log): string
 	{
-		if (!is_string($log[TLogger::LOG_MESSAGE])) {
-			if ($log[TLogger::LOG_MESSAGE] instanceof \Exception || $log[TLogger::LOG_MESSAGE] instanceof \Throwable) {
-				$log[TLogger::LOG_MESSAGE] = (string) $log[TLogger::LOG_MESSAGE];
-			} else {
-				$log[TLogger::LOG_MESSAGE] = \Prado\Util\TVarDumper::dump($log[TLogger::LOG_MESSAGE]);
-			}
-		}
+		$log[TLogger::LOG_MESSAGE] = $this->messageToString($log[TLogger::LOG_MESSAGE]);
 
 		return '[' . $log[TLogger::LOG_CATEGORY] . '] ' . $log[TLogger::LOG_MESSAGE];
 	}

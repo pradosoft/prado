@@ -20,6 +20,29 @@ class TTestPsrLoggerCaller
 	}
 }
 
+/**
+ * Logs through a TPsrLogger without a category from a function outside any class.
+ */
+function psrLoggerLogFromFunction(TPsrLogger $logger): void
+{
+	$logger->log(LogLevel::INFO, 'function');
+}
+
+/**
+ * A TPsrLogger that logs from deep inside its own methods.
+ */
+class TTestDeepPsrLogger extends TPsrLogger
+{
+	public function deep(int $depth): void
+	{
+		if ($depth > 0) {
+			$this->deep($depth - 1);
+			return;
+		}
+		$this->info('deep');
+	}
+}
+
 class TTestPsrLoggerStringable
 {
 	public function __toString(): string
@@ -288,5 +311,39 @@ class TPsrLoggerTest extends \PHPUnit\Framework\TestCase
 		$logs = $this->logger->getLogs();
 		$this->assertEquals(TTestPsrLoggerCaller::class, $logs[0][TLogger::LOG_CATEGORY]);
 		$this->assertEquals(self::class, $logs[1][TLogger::LOG_CATEGORY]);
+	}
+
+	public function testDefaultCategoryFromAFunctionIsTheLoggerClass(): void
+	{
+		$psr = new TPsrLogger($this->logger);
+		psrLoggerLogFromFunction($psr);
+		$this->assertSame(TPsrLogger::class, $this->logger->getLogs()[0][TLogger::LOG_CATEGORY]);
+	}
+
+	public function testDefaultCategoryBeyondTheTraceDepthIsTheLoggerClass(): void
+	{
+		$psr = new TTestDeepPsrLogger($this->logger);
+		$psr->deep(8);
+		$this->assertSame(TTestDeepPsrLogger::class, $this->logger->getLogs()[0][TLogger::LOG_CATEGORY]);
+	}
+
+	public function testToPradoLevelOfStringablesAndScalars(): void
+	{
+		$info = new class () implements \Stringable {
+			public function __toString(): string
+			{
+				return ' Info ';
+			}
+		};
+		$this->assertSame(TLogger::INFO, TPsrLogger::toPradoLevel($info));
+
+		foreach ([new TTestPsrLoggerStringable(), 1.5] as $level) {
+			try {
+				TPsrLogger::toPradoLevel($level);
+				$this->fail('An unknown level throws InvalidArgumentException.');
+			} catch (InvalidArgumentException $e) {
+				$this->assertStringContainsString(is_float($level) ? "'1.5'" : "'" . TTestPsrLoggerStringable::class . "'", $e->getMessage());
+			}
+		}
 	}
 }
