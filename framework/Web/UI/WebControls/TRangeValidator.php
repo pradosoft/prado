@@ -16,6 +16,7 @@ use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Util\TMultibyteString;
 use Prado\Util\TSimpleDateFormatter;
+use Prado\Util\TUtf8Converter;
 
 /**
  * TRangeValidator class
@@ -454,9 +455,9 @@ class TRangeValidator extends TBaseValidator
 	}
 
 	/**
-	 * A UTF-8 value is measured by {@see TMultibyteString::length()}; any other
-	 * {@see getCharset() Charset} is measured by `iconv_strlen()`, which needs the
-	 * iconv extension.
+	 * The value is measured in characters by {@see TMultibyteString::length()},
+	 * after {@see TUtf8Converter::toUTF8()} converts a value of any other
+	 * {@see getCharset() Charset} to UTF-8.
 	 * @param string $value string for comparision
 	 * @return bool true if min and max string length are satisfied.
 	 */
@@ -475,7 +476,10 @@ class TRangeValidator extends TBaseValidator
 			}
 		}
 
-		$length = strcasecmp(str_replace('-', '', $charset), 'utf8') === 0 ? TMultibyteString::length($value) : iconv_strlen($value, $charset);
+		if (strcasecmp(str_replace('-', '', $charset), 'utf8') !== 0) {
+			$value = TUtf8Converter::toUTF8($value, $charset);
+		}
+		$length = TMultibyteString::length($value);
 		if ($minValue !== '') {
 			$valid = $this->isGreaterThan($length, (int) $minValue);
 		}

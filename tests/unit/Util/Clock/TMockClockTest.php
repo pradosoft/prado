@@ -2,6 +2,7 @@
 
 namespace Prado\Test\Unit\Util\Clock;
 
+use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Util\Clock\TMockClock;
 use Prado\Util\Clock\TNativeClock;
 use Prado\Util\Clock\IClock;
@@ -261,5 +262,43 @@ class TMockClockTest extends \PHPUnit\Framework\TestCase
 		$start = \microtime(true);
 		$clock->sleep(0.01); // not pinned, so a real pause
 		self::assertGreaterThanOrEqual(0.005, \microtime(true) - $start);
+	}
+
+	public function testFractionalTimestampBeforeTheEpoch()
+	{
+		$clock = (new TMockClock())->setTimezone('UTC');
+		foreach ([[-0.5, '1969-12-31 23:59:59.500000', -1], [-1.5, '1969-12-31 23:59:58.500000', -2], [-0.000001, '1969-12-31 23:59:59.999999', -1]] as [$microtime, $date, $time]) {
+			$clock->setMicrotime($microtime);
+			self::assertSame($microtime, $clock->microtime());
+			self::assertSame($date, $clock->now()->format('Y-m-d H:i:s.u'));
+			self::assertSame($time, $clock->time());
+			self::assertSame($time, $clock->now()->getTimestamp());
+		}
+	}
+
+	public function testSleepAcrossTheEpoch()
+	{
+		$clock = (new TMockClock())->setTimezone('UTC')->setTime(0);
+		$clock->sleep(-0.25);
+		self::assertSame(-0.25, $clock->microtime());
+		self::assertSame('1969-12-31 23:59:59.750000', $clock->now()->format('Y-m-d H:i:s.u'));
+		$clock->sleep(0.5);
+		self::assertSame(0.25, $clock->microtime());
+		self::assertSame('1970-01-01 00:00:00.250000', $clock->now()->format('Y-m-d H:i:s.u'));
+	}
+
+	public function testInvalidFractionalTimestampThrows()
+	{
+		foreach ([NAN, INF, -INF, 1.0e20] as $microtime) {
+			try {
+				(new TMockClock())->setMicrotime($microtime);
+				self::fail("setMicrotime() accepts $microtime.");
+			} catch (TInvalidDataValueException $e) {
+				self::assertSame('offsetclock_shift_invalid', $e->getErrorCode());
+			}
+		}
+		$clock = (new TMockClock())->setTime(0);
+		self::expectException(TInvalidDataValueException::class);
+		$clock->sleep(1.0e20);
 	}
 }

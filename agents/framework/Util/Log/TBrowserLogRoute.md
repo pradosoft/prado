@@ -10,7 +10,7 @@
 **Implements:** `IOutputLogRoute`
 
 ## Overview
-`TBrowserLogRoute` appends an HTML log table directly into the HTTP response body. Each row shows the timestamp, time delta, log level, category, and message. It supports optional CSS-class–based styling (otherwise inline styles are used), heat-map colorization of the time-delta cell, and alternating row shading. It is suppressed in Performance mode and when the application runs as a shell.
+`TBrowserLogRoute` appends an HTML log table directly into the HTTP response body. Each row shows the timestamp, time delta, log level, category, and message. It supports optional CSS-class–based styling (otherwise inline styles are used), heat-map colorization of the time-delta cell, and alternating row shading. It is suppressed in Performance mode and when the application runs as a shell. The message and category are HTML-encoded; a non-string message is converted by `TLogRoute::messageToString()`.
 
 ## Properties
 

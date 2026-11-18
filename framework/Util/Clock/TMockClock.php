@@ -81,6 +81,8 @@ class TMockClock extends TComponent implements IClock
 	 * An int is a whole-second Unix timestamp and a float a fractional one, both expressed in
 	 * {@see timezone}. When a {@see setTimezone fixed zone} is set the pin is expressed in that zone.
 	 * @param null|\DateTimeInterface|float|int|string $value the instant to pin to, or null to unpin
+	 * @throws \Prado\Exceptions\TInvalidDataValueException when a float is NAN, infinite, or past the range
+	 *   of a date
 	 * @return $this for method chaining.
 	 */
 	public function setNow(\DateTimeInterface|string|int|float|null $value): static
@@ -109,6 +111,8 @@ class TMockClock extends TComponent implements IClock
 	/**
 	 * Pins the clock at a Unix timestamp with microseconds, expressed in {@see timezone}.
 	 * @param ?float $microtime the fractional Unix timestamp to pin to, or null to unpin
+	 * @throws \Prado\Exceptions\TInvalidDataValueException when the timestamp is NAN, infinite, or past the
+	 *   range of a date
 	 * @return $this for method chaining.
 	 */
 	public function setMicrotime(?float $microtime): static
@@ -172,7 +176,10 @@ class TMockClock extends TComponent implements IClock
 	 */
 	public function microtime(): float
 	{
-		return $this->_now !== null ? (float) $this->_now->format('U.u') : microtime(true);
+		if ($this->_now === null) {
+			return microtime(true);
+		}
+		return ($this->_now->getTimestamp() * 1000000 + (int) $this->_now->format('u')) / 1000000;
 	}
 
 	/**
@@ -191,6 +198,8 @@ class TMockClock extends TComponent implements IClock
 	 * {@see \Prado\IO\Async\TAsync::sleep()}, as {@see \Prado\Util\Clock\TClockTrait::sleep()} does.
 	 * Microsecond fractions are honored and the displayed timezone is preserved; a negative value rewinds.
 	 * @param float|int $seconds the number of seconds to advance the pinned instant, or to pause
+	 * @throws \Prado\Exceptions\TInvalidDataValueException when the pinned instant moves past the range of a
+	 *   date
 	 */
 	public function sleep(float|int $seconds): void
 	{
@@ -198,7 +207,7 @@ class TMockClock extends TComponent implements IClock
 			TAsync::sleep($seconds);
 			return;
 		}
-		$this->_now = $this->fromMicrotime((float) $this->_now->format('U.u') + $seconds);
+		$this->_now = TOffsetClock::shift($this->_now, $seconds);
 	}
 
 	// =========================================================================
@@ -208,12 +217,12 @@ class TMockClock extends TComponent implements IClock
 	/**
 	 * Builds an instant from a fractional Unix timestamp, expressed in {@see timezone}.
 	 * @param float $seconds the Unix timestamp with microseconds
+	 * @throws \Prado\Exceptions\TInvalidDataValueException when the timestamp is NAN, infinite, or past
+	 *   the range of a date
 	 * @return \DateTimeImmutable the instant in {@see timezone}
 	 */
 	private function fromMicrotime(float $seconds): \DateTimeImmutable
 	{
-		$instant = \DateTimeImmutable::createFromFormat('U.u', sprintf('%.6f', $seconds))
-			?: new \DateTimeImmutable('@' . (int) floor($seconds));
-		return $instant->setTimezone($this->timezone());
+		return TOffsetClock::shift(new \DateTimeImmutable('@0'), $seconds)->setTimezone($this->timezone());
 	}
 }

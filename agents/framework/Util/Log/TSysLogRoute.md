@@ -18,7 +18,7 @@
 |----------|------|---------|-------------|
 | `SysLogPrefix` | `string\|false` | `false` | Identity string passed as `$ident` to `openlog()`; `false` omits the ident. |
 | `SysLogFlags` | `int` | `LOG_ODELAY\|LOG_PID` | `openlog()` option flags; accepts int, comma/pipe-delimited string, or array of `LOG_*` names (`LOG_CONS`, `LOG_NDELAY`, `LOG_ODELAY`, `LOG_PERROR`, `LOG_PID`). |
-| `Facility` | `int` | `LOG_USER` | `openlog()` facility; accepts int or a `LOG_*` name string (`LOG_AUTH`, `LOG_DAEMON`, `LOG_USER`, etc.). |
+| `Facility` | `int` | `LOG_USER` | `openlog()` facility; accepts int or a `LOG_*` name string (`LOG_AUTH`, `LOG_DAEMON`, `LOG_USER`, etc.). An unknown value throws `TConfigurationException` (`syslogroute_bad_facility`). |
 
 ## Level Mapping
 
@@ -31,6 +31,8 @@
 | Error | `LOG_ERR` |
 | Alert | `LOG_ALERT` |
 | Fatal | `LOG_CRIT` |
+
+`processLogs()` translates each entry to a `[priority, message]` pair and passes the list to the protected `writeSysLog()`, which opens, writes, and closes the system log; a test subclass overrides it.
 
 ## Configuration
 
