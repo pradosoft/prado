@@ -39,7 +39,9 @@ use Prado\Util\Clock\TApplicationClockAwareTrait;
  * re-added at the end of the css files so rtl css has priority.
  *
  * Whenever possible, TTheme will try to make use of available cache to save
- * the parsing time.
+ * the parsing time. The cache holds the skins and the sorted CSS and JavaScript
+ * file lists of the directory. The right-to-left filtering and
+ * {@see dyThemeProcess} apply to every theme after it is read or restored.
  *
  * To apply a theme to a particular control, call {@see applySkin}.
  *
@@ -100,46 +102,13 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 		$this->_name = basename($themePath);
 		parent::__construct();
 		$this->dyThemeConstruct($themePath, $themeUrl);
-		$cacheValid = false;
-		// TODO: the following needs to be cleaned up (Qiang)
-		if (($cache = $this->getApplication()->getCache()) !== null) {
-			$array = $cache->get(self::THEME_CACHE_PREFIX . $themePath);
-			if (is_array($array)) {
-				[$skins, $cssFiles, $jsFiles, $timestamp] = $array;
-				if ($this->getApplication()->getMode() !== TApplicationMode::Performance) {
-					if (($dir = opendir($themePath)) === false) {
-						throw new TIOException('theme_path_inexistent', $themePath);
-					}
-					$cacheValid = true;
-					while (($file = readdir($dir)) !== false) {
-						if ($file === '.' || $file === '..' || $this->dyProcessFile(false, $file)) {
-							continue;
-						} elseif (basename($file, '.css') !== $file) {
-							$this->_cssFiles[] = $themeUrl . '/' . $file;
-						} elseif (basename($file, '.js') !== $file) {
-							$this->_jsFiles[] = $themeUrl . '/' . $file;
-						} elseif (basename($file, self::SKIN_FILE_EXT) !== $file && filemtime($themePath . DIRECTORY_SEPARATOR . $file) > $timestamp) {
-							$cacheValid = false;
-							break;
-						}
-					}
-					closedir($dir);
-					if ($cacheValid) {
-						$this->_skins = $skins;
-					}
-				} else {
-					$cacheValid = true;
-					$this->_cssFiles = $cssFiles;
-					$this->_jsFiles = $jsFiles;
-					$this->_skins = $skins;
-				}
-			}
-		}
+		$cache = $this->getApplication()->getCache();
+		$cacheValid = $cache !== null && $this->loadCachedTheme($cache->get(self::THEME_CACHE_PREFIX . $themePath), $themePath, $themeUrl);
 		if (!$cacheValid) {
 			$this->_cssFiles = [];
 			$this->_jsFiles = [];
 			$this->_skins = [];
-			if (($dir = opendir($themePath)) === false) {
+			if (($dir = @opendir($themePath)) === false) {
 				throw new TIOException('theme_path_inexistent', $themePath);
 			}
 			while (($file = readdir($dir)) !== false) {
@@ -177,12 +146,58 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 			closedir($dir);
 			sort($this->_cssFiles);
 			sort($this->_jsFiles);
-			$this->postProcessCssRTL();
-			$this->dyThemeProcess();
 			if ($cache !== null) {
 				$cache->set(self::THEME_CACHE_PREFIX . $themePath, [$this->_skins, $this->_cssFiles, $this->_jsFiles, $this->getClock()->time()]);
 			}
 		}
+		$this->postProcessCssRTL();
+		$this->dyThemeProcess();
+	}
+
+	/**
+	 * Restores the skins and file lists of the theme from its cached data.
+	 * In {@see \Prado\TApplicationMode::Performance Performance} mode the cached
+	 * lists are used as they are. Otherwise the CSS and JavaScript lists are read
+	 * from the theme directory, and the cache is stale when a skin file is newer
+	 * than the cached data.
+	 * @param mixed $cached the cached `[skins, css files, js files, timestamp]`, or anything else when not cached
+	 * @param string $themePath the theme path
+	 * @param string $themeUrl the theme URL
+	 * @throws TIOException if the theme directory cannot be read
+	 * @return bool whether the cached data is valid and restored
+	 * @since 4.4.0
+	 */
+	protected function loadCachedTheme($cached, $themePath, $themeUrl): bool
+	{
+		if (!is_array($cached)) {
+			return false;
+		}
+		[$skins, $cssFiles, $jsFiles, $timestamp] = $cached;
+		if ($this->getApplication()->getMode() !== TApplicationMode::Performance) {
+			if (($dir = @opendir($themePath)) === false) {
+				throw new TIOException('theme_path_inexistent', $themePath);
+			}
+			$cssFiles = $jsFiles = [];
+			while (($file = readdir($dir)) !== false) {
+				if ($file === '.' || $file === '..' || $this->dyProcessFile(false, $file)) {
+					continue;
+				} elseif (basename($file, '.css') !== $file) {
+					$cssFiles[] = $themeUrl . '/' . $file;
+				} elseif (basename($file, '.js') !== $file) {
+					$jsFiles[] = $themeUrl . '/' . $file;
+				} elseif (basename($file, self::SKIN_FILE_EXT) !== $file && filemtime($themePath . DIRECTORY_SEPARATOR . $file) > $timestamp) {
+					closedir($dir);
+					return false;
+				}
+			}
+			closedir($dir);
+			sort($cssFiles);
+			sort($jsFiles);
+		}
+		$this->_skins = $skins;
+		$this->_cssFiles = $cssFiles;
+		$this->_jsFiles = $jsFiles;
+		return true;
 	}
 
 	/**

@@ -800,7 +800,7 @@ class TThemeTest extends \PHPUnit\Framework\TestCase
 	public function testConstructOfAMissingDirectoryThrows()
 	{
 		$this->newApplication();
-		$this->expectException(\Prado\Exceptions\TPhpErrorException::class);
+		$this->expectException(\Prado\Exceptions\TIOException::class);
 		new TTheme($this->_themePath . DIRECTORY_SEPARATOR . 'missing', '/t');
 	}
 
