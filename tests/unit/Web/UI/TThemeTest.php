@@ -782,8 +782,8 @@ class TThemeTest extends \PHPUnit\Framework\TestCase
 			$this->writeThemeFile($file);
 		}
 		$theme = new TTheme($this->_themePath, '/t');
-		$this->assertSame(['/t' . DIRECTORY_SEPARATOR . 'a.css', '/t' . DIRECTORY_SEPARATOR . 'b.css'], $theme->getStyleSheetFiles());
-		$this->assertSame(['/t' . DIRECTORY_SEPARATOR . 'a.js', '/t' . DIRECTORY_SEPARATOR . 'b.js'], $theme->getJavaScriptFiles());
+		$this->assertSame(['/t/a.css', '/t/b.css'], $theme->getStyleSheetFiles());
+		$this->assertSame(['/t/a.js', '/t/b.js'], $theme->getJavaScriptFiles());
 		$this->assertSame([], $theme->getSkins());
 	}
 
@@ -794,7 +794,7 @@ class TThemeTest extends \PHPUnit\Framework\TestCase
 		$this->writeThemeFile('skip.css');
 		TSkippingTheme::$skipped = ['skip.css'];
 		$theme = new TSkippingTheme($this->_themePath, '/t');
-		$this->assertSame(['/t' . DIRECTORY_SEPARATOR . 'a.css'], $theme->getStyleSheetFiles());
+		$this->assertSame(['/t/a.css'], $theme->getStyleSheetFiles());
 	}
 
 	public function testConstructOfAMissingDirectoryThrows()
@@ -823,7 +823,7 @@ class TThemeTest extends \PHPUnit\Framework\TestCase
 		$this->newApplication()->getGlobalization()->setCulture('en');
 		$this->writeRtlStyleSheets();
 		$theme = new TTheme($this->_themePath, '/t');
-		$this->assertSame(['/t/main.css', '/t/x.y.css'], array_values(str_replace(DIRECTORY_SEPARATOR, '/', $theme->getStyleSheetFiles())));
+		$this->assertSame(['/t/main.css', '/t/x.y.css'], array_values($theme->getStyleSheetFiles()));
 	}
 
 	public function testARightToLeftCultureAppendsTheRtlStyleSheets()
@@ -833,7 +833,7 @@ class TThemeTest extends \PHPUnit\Framework\TestCase
 		$theme = new TTheme($this->_themePath, '/t');
 		$this->assertSame(
 			['/t/main.css', '/t/x.y.css', '/t/main.rtl.css', '/t/printrtl.css', '/t/side.rtl.print.css'],
-			array_values(str_replace(DIRECTORY_SEPARATOR, '/', $theme->getStyleSheetFiles()))
+			array_values($theme->getStyleSheetFiles())
 		);
 	}
 
@@ -955,6 +955,16 @@ class TThemeTest extends \PHPUnit\Framework\TestCase
 	// ================================================================================
 	// Protected setters and applySkin errors
 	// ================================================================================
+
+	public function testFileUrlsJoinTheThemeUrlWithASlash()
+	{
+		$this->newApplication();
+		$this->writeThemeFile('a.css', '');
+		$this->writeThemeFile('b.js', '');
+		$theme = new TTheme($this->_themePath, '/themes/t');
+		$this->assertSame(['/themes/t/a.css'], array_values($theme->getStyleSheetFiles()));
+		$this->assertSame(['/themes/t/b.js'], $theme->getJavaScriptFiles());
+	}
 
 	public function testProtectedSetters()
 	{

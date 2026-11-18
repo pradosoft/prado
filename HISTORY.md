@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TTheme` joins its style sheet and JavaScript URLs and trims its `BaseUrl` with `/`; on Windows it used `\`. (belisoful)
 BUG: Issue #1497 - `TTemplate` validates `<com:TControl>` and `<com:TComponent>` after their short names are aliased, takes template properties from a class behavior attached to the component's own class, skips a class behavior keyed by an unknown class, and reports a missing `<%include %>` after another include as a template error; they were rejected, or threw `ReflectionException` or `TPhpErrorException`. (belisoful)
 BUG: Issue #1497 - `TThemeManager::getAvailableThemes()` lists a theme directory named `0` and the ones read after it; the listing stopped there. (belisoful)
 BUG: Issue #1497 - `TTheme` loads a `.skin` file whose skins have a `SkinID`; it threw a `TypeError`. (belisoful)
