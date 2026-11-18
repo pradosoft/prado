@@ -797,6 +797,8 @@ dbparametermodule_serializer_not_callable= TDbParameterModule Serializer is not 
 
 clockawaretrait_invalid_clock_class		= Clock class ''{0}'' must implement Prado\Util\Clock\IClock.
 utcclock_timezone_fixed					= TUTCClock is fixed to UTC; use TTimezoneClock for another zone.
+offsetclock_offset_invalid				= TOffsetClock.Offset must be a finite number of seconds; {0} given.
+offsetclock_shift_invalid				= The instant {0} cannot move by {1} seconds; the result is not a date.
 
 processcrontask_no_command				= TProcessCronTask ''{0}'' has no Command to run.
 processcrontask_launch_failed			= TProcessCronTask failed to launch the process: ''{0}''.
