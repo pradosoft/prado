@@ -10,6 +10,8 @@
 
 namespace Prado\Util\Clock;
 
+use Prado\Exceptions\TInvalidDataValueException;
+
 /**
  * TOffsetClock class.
  *
@@ -19,7 +21,8 @@ namespace Prado\Util\Clock;
  * run a pinned {@see \Prado\Util\Clock\TMockClock} ahead in tests. For expressing the held clock's `now()` in
  * another timezone, use {@see \Prado\Util\Clock\TTimezoneDecorator}.
  *
- * {@see setOffset} changes the offset in place.
+ * {@see setOffset} changes the offset in place.  The static {@see shift()} moves any instant by a number of
+ * seconds, exact to the microsecond before and after the Unix epoch.
  *
  * ```php
  * $ahead = new TOffsetClock(90);          // 90 seconds ahead of real time
@@ -52,10 +55,14 @@ class TOffsetClock extends TClockDecorator
 	/**
 	 * Sets the offset in seconds applied to {@see now()}, {@see time()}, and {@see microtime()}.
 	 * @param float|int $value the offset in seconds; positive runs ahead, negative behind
+	 * @throws TInvalidDataValueException when the offset is NAN or infinite
 	 * @return static $this for method chaining
 	 */
 	public function setOffset(float|int $value): static
 	{
+		if (is_float($value) && !is_finite($value)) {
+			throw new TInvalidDataValueException('offsetclock_offset_invalid', $value);
+		}
 		$this->_offset = $value;
 		return $this;
 	}
@@ -84,8 +91,32 @@ class TOffsetClock extends TClockDecorator
 		if (!$this->_offset) {
 			return $base;
 		}
-		$shifted = \DateTimeImmutable::createFromFormat('U.u', sprintf('%.6f', (float) $base->format('U.u') + $this->_offset));
-		return ($shifted ?: $base)->setTimezone($base->getTimezone());
+		return static::shift($base, $this->_offset);
+	}
+
+	/**
+	 * Returns an instant moved by a number of seconds, in the instant's zone.  The whole seconds and the
+	 * microseconds are added apart, so the result is exact to the microsecond on either side of the Unix
+	 * epoch.
+	 * @param \DateTimeInterface $instant the instant to move
+	 * @param float|int $seconds the seconds to move it; negative moves it back
+	 * @throws TInvalidDataValueException when the seconds are NAN or infinite, or the result is past the
+	 *   range of a date
+	 * @return \DateTimeImmutable the moved instant
+	 */
+	public static function shift(\DateTimeInterface $instant, float|int $seconds): \DateTimeImmutable
+	{
+		if (is_float($seconds) && !is_finite($seconds)) {
+			throw new TInvalidDataValueException('offsetclock_shift_invalid', $instant->format('Y-m-d\\TH:i:s.uP'), $seconds);
+		}
+		$whole = floor($seconds);
+		$microseconds = (int) $instant->format('u') + (int) round(($seconds - $whole) * 1000000);
+		$whole += $instant->getTimestamp() + intdiv($microseconds, 1000000);
+		$shifted = \DateTimeImmutable::createFromFormat('U.u', sprintf('%.0f.%06d', $whole, $microseconds % 1000000));
+		if ($shifted === false) {
+			throw new TInvalidDataValueException('offsetclock_shift_invalid', $instant->format('Y-m-d\\TH:i:s.uP'), $seconds);
+		}
+		return $shifted->setTimezone($instant->getTimezone());
 	}
 
 	// =========================================================================
