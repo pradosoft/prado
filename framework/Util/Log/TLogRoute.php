@@ -365,25 +365,30 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 	{
 		$prefix = $this->getLogPrefix($log);
 		$traces = [];
-		if (!is_string($log[TLogger::LOG_MESSAGE])) {
-			if ($log[TLogger::LOG_MESSAGE] instanceof \Exception || $log[TLogger::LOG_MESSAGE] instanceof \Throwable) {
-				$log[TLogger::LOG_MESSAGE] = (string) $log[TLogger::LOG_MESSAGE];
-			} else {
-				$log[TLogger::LOG_MESSAGE] = \Prado\Util\TVarDumper::dump($log[TLogger::LOG_MESSAGE]);
-			}
-		}
-		if (!is_string($log[TLogger::LOG_MESSAGE])) {
-			if ($log[TLogger::LOG_MESSAGE] instanceof \Exception || $log[TLogger::LOG_MESSAGE] instanceof \Throwable) {
-				$log[TLogger::LOG_MESSAGE] = (string) $log[TLogger::LOG_MESSAGE];
-			} else {
-				$log[TLogger::LOG_MESSAGE] = \Prado\Util\TVarDumper::dump($log[TLogger::LOG_MESSAGE]);
-			}
-		}
+		$log[TLogger::LOG_MESSAGE] = $this->messageToString($log[TLogger::LOG_MESSAGE]);
 		if (isset($log[TLogger::LOG_TRACES])) {
 			$traces = array_map(fn ($trace) => "in {$trace['file']}:{$trace['line']}", $log[TLogger::LOG_TRACES]);
 		}
 		return $this->getTime($log[TLogger::LOG_TIME]) . ' ' . $prefix . '[' . $this->getLevelName($log[TLogger::LOG_LEVEL]) . '] [' . $log[TLogger::LOG_CATEGORY] . '] ' . $log[TLogger::LOG_MESSAGE]
 			. (empty($traces) ? '' : "\n    " . implode("\n    ", $traces));
+	}
+
+	/**
+	 * Converts a logged message to a string.
+	 * @param mixed $message the logged message.
+	 * @return string the message; a Throwable as its string form, and any other non-string
+	 *   as a {@see \Prado\Util\TVarDumper} dump.
+	 * @since 4.4.0
+	 */
+	protected function messageToString(mixed $message): string
+	{
+		if (is_string($message)) {
+			return $message;
+		}
+		if ($message instanceof \Throwable) {
+			return (string) $message;
+		}
+		return \Prado\Util\TVarDumper::dump($message);
 	}
 
 	/**

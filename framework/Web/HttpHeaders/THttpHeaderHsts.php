@@ -182,9 +182,6 @@ class THttpHeaderHsts extends THttpHeader
 	{
 		$value = TPropertyValue::ensureString($value);
 		$tokens = preg_split('/\s*;\s*/', trim($value), -1, PREG_SPLIT_NO_EMPTY);
-		if ($tokens === false) {
-			return;
-		}
 		foreach ($tokens as $token) {
 			$token = trim($token);
 			if (preg_match('/^max-age\s*=\s*(\d+)$/i', $token, $m)) {

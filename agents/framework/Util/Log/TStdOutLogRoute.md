@@ -18,6 +18,10 @@
 |----------|------|---------|-------------|
 | `OnlyDevServer` | `bool` | `false` | When `true`, the route is active only inside the PHP built-in web server. |
 
+## Output
+
+`processLogs()` writes each entry as `[Level][Category] message` through the `TShellWriter` that the protected `createWriter()` returns; a test subclass overrides it to capture the output. A non-string message is converted by `TLogRoute::messageToString()`.
+
 ## Configuration
 
 Configured as a `<route>` sub-element inside a `TLogRouter` module, not as a standalone module.

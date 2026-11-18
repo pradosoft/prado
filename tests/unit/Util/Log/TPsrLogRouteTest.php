@@ -12,6 +12,7 @@ use Psr\Log\AbstractLogger;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LoggerTrait;
 use Psr\Log\LogLevel;
+use Prado\Test\Unit\PradoUnit;
 
 class TTestPsrCollector extends AbstractLogger
 {
@@ -33,6 +34,13 @@ class TTestPsrLoggerModule extends TModule implements LoggerInterface
 	{
 		$this->entries[] = [$level, (string) $message, $context];
 	}
+}
+
+/**
+ * A module that is not a PSR-3 logger.
+ */
+class TTestNotPsrLoggerModule extends TModule
+{
 }
 
 class TPsrLogRouteTest extends \PHPUnit\Framework\TestCase
@@ -223,5 +231,69 @@ class TPsrLogRouteTest extends \PHPUnit\Framework\TestCase
 
 		$this->assertCount(1, $this->collector->entries);
 		$this->assertEquals(LogLevel::CRITICAL, $this->collector->entries[0][0]);
+	}
+
+	public function testLoggerModuleThatIsNotALogger(): void
+	{
+		$id = 'psrLogRouteTestNotLogger' . uniqid();
+		Prado::getApplication()->setModule($id, new TTestNotPsrLoggerModule());
+		$this->route->setLogger($id);
+		try {
+			$this->route->getLogger();
+			$this->fail('A module that is not a PSR-3 logger throws TConfigurationException.');
+		} catch (TConfigurationException $e) {
+			$this->assertSame('psrlogroute_logger_invalid', $e->getErrorCode());
+		}
+	}
+
+	public function testProcessLogsWithoutLogs(): void
+	{
+		$this->route->setLogger($this->collector);
+		PradoUnit::invoke($this->route, 'processLogs', [], true, []);
+		$this->assertSame([], $this->collector->entries);
+	}
+
+	public function testPsrMessageOfAStringable(): void
+	{
+		$stringable = new class () implements \Stringable {
+			public function __toString(): string
+			{
+				return 'stringable';
+			}
+		};
+		$message = PradoUnit::invoke($this->route, 'getPsrMessage', TLogEntryFactory::entry($stringable));
+		$this->assertSame('stringable', $message);
+	}
+
+	/**
+	 * Each combination of control, traces, timing, and exception sets its own context keys.
+	 */
+	public function testPsrContextOfEachCombination(): void
+	{
+		$pid = getmypid();
+		for ($mask = 0; $mask < 16; $mask++) {
+			$hasControl = (bool) ($mask & 1);
+			$hasTraces = (bool) ($mask & 2);
+			$hasTiming = (bool) ($mask & 4);
+			$hasException = (bool) ($mask & 8);
+			$exception = new \RuntimeException('boom');
+			$log = [$hasException ? $exception : 'text', TLogger::INFO, 'Cat', 12.5, 2048, $hasControl ? 'ctl0' : null, $hasTraces ? [['file' => '/a.php', 'line' => 1]] : [], $pid];
+			if ($hasTiming) {
+				$log['delta'] = 0.25;
+				$log['total'] = 1.25;
+			}
+			$context = PradoUnit::invoke($this->route, 'getPsrContext', $log);
+
+			$this->assertSame('Cat', $context[TPsrLogger::CONTEXT_CATEGORY], "mask {$mask}");
+			$this->assertSame(TLogger::INFO, $context[TPsrLogger::CONTEXT_LEVEL], "mask {$mask}");
+			$this->assertSame(12.5, $context[TPsrLogger::CONTEXT_TIME], "mask {$mask}");
+			$this->assertSame(2048, $context[TPsrLogger::CONTEXT_MEMORY], "mask {$mask}");
+			$this->assertSame($pid, $context[TPsrLogger::CONTEXT_PID], "mask {$mask}");
+			$this->assertSame($hasControl ? 'ctl0' : null, $context[TPsrLogger::CONTEXT_CONTROL] ?? null, "mask {$mask}");
+			$this->assertSame($hasTraces, isset($context[TPsrLogger::CONTEXT_TRACES]), "mask {$mask}");
+			$this->assertSame($hasTiming ? 0.25 : null, $context[TPsrLogger::CONTEXT_DELTA] ?? null, "mask {$mask}");
+			$this->assertSame($hasTiming ? 1.25 : null, $context[TPsrLogger::CONTEXT_TOTAL] ?? null, "mask {$mask}");
+			$this->assertSame($hasException ? $exception : null, $context[TPsrLogger::CONTEXT_EXCEPTION] ?? null, "mask {$mask}");
+		}
 	}
 }

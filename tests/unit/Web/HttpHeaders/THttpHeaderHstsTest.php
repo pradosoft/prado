@@ -480,4 +480,31 @@ class THttpHeaderHstsTest extends \PHPUnit\Framework\TestCase
 		$hsts->init(new \Prado\Xml\TXmlElement('header'));
 		$this->addToAssertionCount(1);
 	}
+
+	public function testSetHeaderValueWithOnlyIncludeSubDomains(): void
+	{
+		$hsts = new THttpHeaderHsts();
+		$hsts->setHeaderValue('includeSubDomains');
+		self::assertTrue($hsts->getIncludeSubDomains());
+		self::assertFalse($hsts->getPreload());
+	}
+
+	public function testSetHeaderValueWithOnlyPreload(): void
+	{
+		$hsts = new THttpHeaderHsts();
+		$hsts->setHeaderValue('preload');
+		self::assertTrue($hsts->getPreload());
+		self::assertFalse($hsts->getIncludeSubDomains());
+	}
+
+	public function testFinalizeHeaderWithPreloadAndIncludeSubDomainsDoesNotWarn(): void
+	{
+		$hsts = new THttpHeaderHsts();
+		$hsts->setPreload(true);
+		$hsts->setIncludeSubDomains(true);
+		$logger = \Prado\Prado::getLogger();
+		$logger->deleteLogs();
+		$hsts->finalizeHeader();
+		self::assertSame([], $logger->getLogs(\Prado\Util\Log\TLogger::WARNING, THttpHeaderHsts::class));
+	}
 }
