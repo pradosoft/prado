@@ -255,8 +255,8 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 		// SCRIPT_FILENAME is the file path to the executing script
 		if (isset($_SERVER['REQUEST_URI'])) {
 			$this->_requestUri = $_SERVER['REQUEST_URI'];
-		} else {  // TBD: in this case, SCRIPT_NAME need to be escaped
-			$this->_requestUri = $_SERVER['SCRIPT_NAME'] . (empty($_SERVER['QUERY_STRING']) ? '' : '?' . $_SERVER['QUERY_STRING']);
+		} else {  // without REQUEST_URI, as under the command line, the script URL path stands in
+			$this->_requestUri = $this->getScriptUrl() . (empty($_SERVER['QUERY_STRING']) ? '' : '?' . $_SERVER['QUERY_STRING']);
 		}
 
 		if ($this->_cgiFix & self::CGIFIX__PATH_INFO && isset($_SERVER['ORIG_PATH_INFO'])) {
@@ -266,9 +266,9 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 		} elseif (strpos($_SERVER['PHP_SELF'], $_SERVER['SCRIPT_NAME']) === 0 && $_SERVER['PHP_SELF'] !== $_SERVER['SCRIPT_NAME']) {
 			$this->_pathInfo = substr($_SERVER['PHP_SELF'], strlen($_SERVER['SCRIPT_NAME']));
 		} elseif ($this->_urlFormat === THttpRequestUrlFormat::Path) {
-			$this->_pathInfo = substr($this->_requestUri, strlen($_SERVER['SCRIPT_NAME']));
+			$this->_pathInfo = substr($this->_requestUri, strlen($this->getScriptUrl()));
 		} elseif ($this->_urlFormat === THttpRequestUrlFormat::HiddenPath) {
-			$this->_pathInfo = substr($this->_requestUri, strlen(dirname($_SERVER['SCRIPT_NAME'])));
+			$this->_pathInfo = substr($this->_requestUri, strlen(dirname($this->getScriptUrl())));
 		} else {
 			$this->_pathInfo = '';
 		}
@@ -798,7 +798,27 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 			return $_SERVER['ORIG_SCRIPT_NAME'];
 		}
 
-		return $_SERVER['SCRIPT_NAME'] ?? null;
+		return $this->getScriptUrl();
+	}
+
+	/**
+	 * Returns `SCRIPT_NAME` as the URL path of the entry script.
+	 * A web server sends a URL path. Under the command line `SCRIPT_NAME` is the file
+	 * path PHP was started with.
+	 * - starts with `/` → unchanged
+	 * - any other value → backslashes become `/` and it gains one leading `/`:
+	 *   `D:\app\index.php` is `/D:/app/index.php` and `bin/app` is `/bin/app`
+	 * - empty or missing → unchanged
+	 * @return ?string the URL path of the entry script, null without `SCRIPT_NAME`.
+	 * @since 4.4.0
+	 */
+	protected function getScriptUrl(): ?string
+	{
+		$scriptName = $_SERVER['SCRIPT_NAME'] ?? null;
+		if ($scriptName === null || $scriptName === '' || $scriptName[0] === '/') {
+			return $scriptName;
+		}
+		return '/' . ltrim(str_replace('\\', '/', $scriptName), '/');
 	}
 
 	/**
