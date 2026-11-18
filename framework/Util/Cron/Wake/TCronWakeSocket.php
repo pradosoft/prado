@@ -11,6 +11,7 @@
 namespace Prado\Util\Cron\Wake;
 
 use Prado\IO\Async\IEventLoop;
+use Prado\IO\Async\TAsync;
 use Prado\Prado;
 use Prado\TModule;
 use Prado\TPropertyValue;
@@ -75,8 +76,11 @@ class TCronWakeSocket extends TModule implements ICronWakeTransport
 	/** @var string the file in the runtime directory holding the shared signing key */
 	public const KEY_FILE = 'cronwake.key';
 
-	/** @var int the reads of an empty key file, 10 ms apart, before it is rewritten */
+	/** @var int the reads of an empty key file, {@see KEY_FILE_RETRY_DELAY} apart, before it is rewritten */
 	protected const KEY_FILE_ATTEMPTS = 50;
+
+	/** @var float the seconds between reads of an empty key file */
+	protected const KEY_FILE_RETRY_DELAY = 0.01;
 
 	/** @var ?string the runtime directory holding the udg socket files, or null for the application runtime path */
 	private ?string $_runtimePath;
@@ -195,8 +199,9 @@ class TCronWakeSocket extends TModule implements ICronWakeTransport
 	/**
 	 * Reads the shared key from the key file, creating the file with a random key when it does not
 	 * exist.  An exclusive create makes one process the author; the others read the key it writes
-	 * under a shared lock.  A file left empty by a crashed author is rewritten.  When the file
-	 * cannot be written, every process falls back to a key derived from the file's path.
+	 * under a shared lock, waiting through {@see \Prado\IO\Async\TAsync::sleep()} between reads, so
+	 * a fiber yields to the event loop.  A file left empty by a crashed author is rewritten.  When
+	 * the file cannot be written, every process falls back to a key derived from the file's path.
 	 * @param string $file the key file path
 	 * @return string the key
 	 */
@@ -222,7 +227,7 @@ class TCronWakeSocket extends TModule implements ICronWakeTransport
 					return $key;
 				}
 			}
-			usleep(10000);
+			TAsync::sleep(static::KEY_FILE_RETRY_DELAY);
 		}
 		$key = bin2hex(random_bytes(32));
 		if (@file_put_contents($file, $key, LOCK_EX) === strlen($key)) {

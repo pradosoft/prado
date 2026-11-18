@@ -3,6 +3,7 @@
 namespace Prado\Test\Unit\Util\Cron;
 
 use Prado\Exceptions\TExitException;
+use Prado\IO\Async\TAsync;
 use Prado\IO\TTextWriter;
 use Prado\Shell\TShellWriter;
 use Prado\Test\Unit\PradoUnit;
@@ -706,6 +707,26 @@ class TShellCronActionTest extends \PHPUnit\Framework\TestCase
 		$this->writer->write('flushed');
 		PradoUnit::invoke($action, 'flushView');
 		self::assertSame('', $this->writer->flush(), 'the view flushes the writer');
+	}
+
+	public function testSleepYieldsToTheEventLoop()
+	{
+		$action = new TShellCronAction();
+		$ran = false;
+		TAsync::getLoop()->defer(static function () use (&$ran) {
+			$ran = true;
+		});
+		PradoUnit::invoke($action, 'sleep', 0.01);
+		self::assertTrue($ran, 'the main fiber runs the loop while it waits');
+
+		$order = [];
+		$sleeper = TAsync::run(static function () use ($action, &$order) {
+			PradoUnit::invoke($action, 'sleep', 0.01);
+			$order[] = 'woke';
+		});
+		$order[] = 'yielded';
+		TAsync::await($sleeper);
+		self::assertSame(['yielded', 'woke'], $order, 'a worker fiber yields while it waits');
 	}
 
 	public function testTagArguments()

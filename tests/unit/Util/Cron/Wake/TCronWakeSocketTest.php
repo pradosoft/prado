@@ -84,6 +84,15 @@ class TCronWakeSocketTest extends \PHPUnit\Framework\TestCase
 		self::assertNotSame($rewritten, $fallback);
 	}
 
+	public function testKeyFileRetryYieldsToTheEventLoop()
+	{
+		$file = $this->runtime . DIRECTORY_SEPARATOR . TCronWakeSocket::KEY_FILE;
+		file_put_contents($file, '');
+		$key = str_repeat('ab', 32);
+		TAsync::getLoop()->defer(static fn () => file_put_contents($file, $key));
+		self::assertSame($key, (new TCronWakeSocket($this->runtime))->getKey(), 'the pause between reads runs the deferred writer, so the next read returns its key');
+	}
+
 	public function testKeyFileSignsAcrossTransports()
 	{
 		$sender = new TCronWakeSocket($this->runtime);
