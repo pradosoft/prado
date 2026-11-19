@@ -991,8 +991,19 @@ class TClientScriptManagerTest extends \PHPUnit\Framework\TestCase
 		$output = $writer->flush();
 
 		$this->assertSame(2, substr_count($output, 'name="list[]"'));
-		$this->assertStringContainsString('value="a"', $output);
-		$this->assertStringContainsString('value="b&lt;c"', $output);
+		$this->assertStringContainsString('name="list[]" id="list" value="a"', $output);
+		$this->assertStringContainsString('name="list[]" value="b&lt;c"', $output);
+		$this->assertSame(1, substr_count($output, 'id="list"'));
+	}
+
+	public function testRenderHiddenFieldsRendersNothingForAnEmptyArrayField()
+	{
+		$this->_cs->registerHiddenField('list', []);
+
+		$writer = $this->createWriter();
+		$this->_cs->renderHiddenFieldsBegin($writer);
+
+		$this->assertSame('', $writer->flush());
 	}
 
 	public function testGetHiddenFields()
