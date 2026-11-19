@@ -724,4 +724,104 @@ class TCronModuleBaseTest extends \PHPUnit\Framework\TestCase
 		$module->fakeMicrotime = (float) ($module->getNextPendingTime() - 5);
 		self::assertEqualsWithDelta(5.0, PradoUnit::invoke($module, 'getDaemonWait', $start), 0.01, 'the next trigger');
 	}
+
+	public function testTransportAndMutexTypes()
+	{
+		$module = $this->_modules[] = new TCronModule();
+		foreach (['setWakeTransport' => new TCronWakeFile(sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'cronwake-' . bin2hex(random_bytes(4))), 'setDaemonMutex' => new TMemoryMutex()] as $setter => $valid) {
+			$module->$setter('moduleId');
+			$module->$setter($valid);
+			$module->$setter(null);
+			foreach ([5, new \stdClass()] as $invalid) {
+				try {
+					$module->$setter($invalid);
+					self::fail($setter . ' accepted a ' . get_debug_type($invalid));
+				} catch (TConfigurationException $e) {
+					self::assertStringContainsString(get_debug_type($invalid), $e->getMessage());
+				}
+			}
+		}
+	}
+
+	public function testAPausedFileThatCannotBeReadPausesNothing()
+	{
+		if (function_exists('posix_getuid') && posix_getuid() === 0) {
+			self::markTestSkipped('root reads any file');
+		}
+		$module = $this->newModule([$this->job('unreadablePause')]);
+		$file = PradoUnit::invoke($module, 'getPausedFile');
+		try {
+			file_put_contents($file, json_encode(['unreadablePause']));
+			chmod($file, 0o000);
+			self::assertSame([], $module->getPausedTasks());
+		} finally {
+			@chmod($file, 0o600);
+			@unlink($file);
+		}
+	}
+
+	public function testBeginStatusRemovesTheEndedStatusesOfThisHostOnly()
+	{
+		$module = $this->_modules[] = new TCronModule();
+		$module->setID('cronBaseBegin');
+		$module->setStatusPath($dir = $this->statusDir());
+		$module->setEnableStatus(true);
+		$module->init(null);
+		mkdir($dir);
+		$host = (string) gethostname();
+		file_put_contents($dir . DIRECTORY_SEPARATOR . 'ended.json', json_encode(['module' => 'cronBaseBegin', 'host' => $host, 'pid' => 999999999]));
+		file_put_contents($dir . DIRECTORY_SEPARATOR . 'alive.json', json_encode(['module' => 'cronBaseBegin', 'host' => $host, 'pid' => getmypid()]));
+		file_put_contents($dir . DIRECTORY_SEPARATOR . 'remote.json', json_encode(['module' => 'cronBaseBegin', 'host' => 'another-host.invalid', 'pid' => 1, 'updated' => 0]));
+		try {
+			self::assertTrue(PradoUnit::invoke($module, 'beginStatus', TCronModule::STATUS_ROLE_SWEEP));
+			self::assertFalse(PradoUnit::invoke($module, 'beginStatus', TCronModule::STATUS_ROLE_SWEEP), 'a status is begun once');
+			self::assertFileDoesNotExist($dir . DIRECTORY_SEPARATOR . 'ended.json');
+			self::assertFileExists($dir . DIRECTORY_SEPARATOR . 'alive.json');
+			self::assertFileExists($dir . DIRECTORY_SEPARATOR . 'remote.json', 'another host checks its own processes');
+		} finally {
+			PradoUnit::invoke($module, 'endStatus');
+		}
+	}
+
+	public function testWatchDaemonSignalsOnALoopWithoutSignals()
+	{
+		if (!extension_loaded('pcntl')) {
+			self::markTestSkipped('the signal watch needs pcntl');
+		}
+		$module = $this->newModule();
+		$loop = $this->createMock(\Prado\IO\Async\IEventLoop::class);
+		$loop->method('onSignal')->willThrowException(new \Prado\Exceptions\TNotSupportedException('eventloop_signals_unsupported'));
+		self::assertSame([], PradoUnit::invoke($module, 'watchDaemonSignals', $loop));
+		$loop = $this->createMock(\Prado\IO\Async\IEventLoop::class);
+		$loop->method('onSignal')->willReturnOnConsecutiveCalls('sigterm', 'sigint');
+		self::assertSame(['sigterm', 'sigint'], PradoUnit::invoke($module, 'watchDaemonSignals', $loop));
+	}
+
+	public function testTasksByTypeFilterSortAndPage()
+	{
+		$module = $this->newModule([
+			$this->job('typeB'),
+			$this->job('typeA'),
+			$this->job('otherType', '0 0 1 1 ? 2099', \Prado\Util\Cron\TCronMethodTask::class),
+		]);
+		self::assertSame(['typeA', 'typeB'], array_keys($module->getTasksByType(TTestCronModuleTask::class)));
+		self::assertSame(['typeB', 'typeA'], array_keys($module->getTasksByType(TTestCronModuleTask::class, null, 0, 0, false)));
+		self::assertSame(['typeB'], array_keys($module->getTasksByType(TTestCronModuleTask::class, null, 1, 1)));
+		self::assertSame([], $module->getTasksByType(TTestCronModuleTask::class, 'nothing%'));
+	}
+
+	public function testLogCronDaemonStartWithAndWithoutWatching()
+	{
+		$module = $this->newModule();
+		PradoUnit::invoke($module, 'logCronDaemonStart', 'cron:daemon:test', false);
+		PradoUnit::invoke($module, 'logCronDaemonStart', 'cron:daemon:test', true);
+		$this->addToAssertionCount(1);
+	}
+
+	public function testMetricsOfOneTask()
+	{
+		$metrics = $this->newModule([$this->job('metricTask')])->getMonitorMetrics();
+		self::assertStringContainsString('prado_cron_task_running{', $metrics);
+		self::assertStringContainsString('task="metricTask"', $metrics);
+	}
 }
