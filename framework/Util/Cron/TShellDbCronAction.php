@@ -115,6 +115,7 @@ class TShellDbCronAction extends TShellCronAction
 
 	/**
 	 * Adds a task to the database with its name, task id, schedule, and other properties.
+	 * Each property argument is `Name=value`, split at its first `=`.
 	 * @param array $args command arguments
 	 */
 	public function actionAdd($args)
@@ -169,7 +170,7 @@ class TShellDbCronAction extends TShellCronAction
 		$task->setName($taskName);
 		$task->setSchedule($schedule);
 		for ($i = 4; $i < count($args); $i++) {
-			$parts = explode('=', $args[$i]);
+			$parts = explode('=', $args[$i], 2);
 			$parts[0] = trim($parts[0]);
 			$property = strtolower($parts[0]);
 			if ($task->canSetProperty($property)) {
@@ -188,6 +189,7 @@ class TShellDbCronAction extends TShellCronAction
 
 	/**
 	 * Updates a task in the database by its name, setting its schedule, username, moduleid, and other properties.
+	 * Each property argument is `Name=value`, split at its first `=`.
 	 * @param array $args command arguments
 	 */
 	public function actionUpdate($args)
@@ -211,7 +213,7 @@ class TShellDbCronAction extends TShellCronAction
 			return true;
 		}
 		for ($i = 2; $i < count($args); $i++) {
-			$parts = explode('=', $args[$i]);
+			$parts = explode('=', $args[$i], 2);
 			$parts[0] = trim($parts[0]);
 			$property = strtolower($parts[0]);
 			if ($task->canSetProperty($property)) {

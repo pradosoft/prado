@@ -555,6 +555,28 @@ class TShellDbCronActionTest extends \PHPUnit\Framework\TestCase
 		}
 	}
 
+	public function testActionAddAndUpdateKeepAnEqualsSignInAValue()
+	{
+		$cron = new TDbCronManager();
+		$cron->setId('cronmodule80');
+		$cron->setTableName('shellequals');
+		$db = $cron->getDbConnection();
+		$db->createCommand('DROP TABLE IF EXISTS shellequals')->execute();
+		$cron->init([]);
+		$this->obj->setCronModule($cron);
+		try {
+			self::assertTrue($this->obj->actionAdd(['cron/add', 'equalsTask', 'cronclean', '0 0 1 1 ? 2099', 'PingAfterUrl=https://example.test/ping?a=b']));
+			self::assertStringContainsString("Task 'equalsTask' was added to the database", $this->writer->flush());
+			self::assertSame('https://example.test/ping?a=b', $cron->getTask('equalsTask')->getPingAfterUrl());
+			self::assertTrue($this->obj->actionUpdate(['cron/update', 'equalsTask', 'PingSuccessUrl = https://example.test/ok?c=d&e=f']));
+			self::assertStringContainsString("Task 'equalsTask' was updated in the database", $this->writer->flush());
+			self::assertSame('https://example.test/ok?c=d&e=f', $cron->getTask('equalsTask')->getPingSuccessUrl());
+		} finally {
+			$db->createCommand('DROP TABLE IF EXISTS shellequals')->execute();
+			$cron->unlisten();
+		}
+	}
+
 	public function testActionLogOfARunWithoutADuration()
 	{
 		$cron = new TDbCronManager();
