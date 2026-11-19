@@ -23,6 +23,7 @@ use Prado\Exceptions\TInvalidOperationException;
 use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Util\IDbModule;
+use Prado\Util\Log\TLogger;
 
 /**
  * TDbCronManager class.
@@ -295,11 +296,12 @@ class TDbCronManager extends TCronModule implements IDbModule
 		foreach ($results as $properties) {
 			$name = $properties['name'];
 			$this->_taskRows[$name] = $properties;
-			if (($task = $this->getTask($name)) instanceof TCronTask) {
-				// Another process may have run the task since this process loaded it: the row is current.
-				$task->setLastExecTime($properties['lastexectime']);
-				$task->setProcessCount((int) $properties['processcount']);
+			if (!(($task = $this->getTask($name)) instanceof TCronTask)) {
+				continue;
 			}
+			// Another process may have run the task since this process loaded it: the row is current.
+			$task->setLastExecTime($properties['lastexectime']);
+			$task->setProcessCount((int) $properties['processcount']);
 			$pendingtasks[$name] = $task;
 		}
 		return $pendingtasks;
@@ -346,7 +348,10 @@ class TDbCronManager extends TCronModule implements IDbModule
 		foreach ($results->readAll() as $data) {
 			$name = $data['name'];
 			if ($data['active'] && !isset($this->_tasks[$name])) {
-				$this->_tasks[$name] = $this->unserializeTask($data['options']);
+				if (($task = $this->unserializeTask($data['options'], $name)) === null) {
+					continue;
+				}
+				$this->_tasks[$name] = $task;
 			}
 			$tasks[$name] = $data['active'] ? $this->_tasks[$name] : parent::getTask($name);
 			$this->_taskRows[$name] = $data;
@@ -430,7 +435,10 @@ class TDbCronManager extends TCronModule implements IDbModule
 		foreach ($cmd->query()->readAll() as $data) {
 			$name = $data['name'];
 			if ($data['active'] && !isset($this->_tasks[$name])) {
-				$this->_tasks[$name] = $this->unserializeTask($data['options']);
+				if (($task = $this->unserializeTask($data['options'], $name)) === null) {
+					continue;
+				}
+				$this->_tasks[$name] = $task;
 			}
 			$userTasks[$name] = $data['active'] ? $this->_tasks[$name] : parent::getTask($name);
 			$this->_taskRows[$name] = $data;
@@ -590,8 +598,8 @@ class TDbCronManager extends TCronModule implements IDbModule
 		$cmd = $db->createCommand("UPDATE {$this->_tableName} SET nextexectime=:ntime WHERE name=:name AND active IS NOT NULL");
 		$filled = 0;
 		foreach ($rows as $row) {
-			$task = $this->unserializeTask($row['options']);
-			if (!($task instanceof TCronTask)) {
+			$task = $this->unserializeTask($row['options'], $row['name']);
+			if ($task === null) {
 				continue;
 			}
 			$cmd->bindValue(":ntime", $task->getNextTriggerTime((int) $row['lastexectime']), $db::PARAM_STR);
@@ -895,17 +903,22 @@ class TDbCronManager extends TCronModule implements IDbModule
 	}
 
 	/**
-	 * Unserializes a task from its row and prepares it ({@see prepareTask}).
+	 * Unserializes a task from its row and prepares it ({@see prepareTask}).  A row that holds no task,
+	 * such as one of a task class that no longer exists, is a WARNING log entry and null, so the other
+	 * tasks still load and run.
 	 * @param ?string $options the `options` column value
-	 * @return mixed the task, or false when the value does not unserialize
+	 * @param ?string $name the task name, for the log entry
+	 * @return ?TCronTask the task, or null when the row holds no task
 	 * @since 4.4.0
 	 */
-	protected function unserializeTask(?string $options): mixed
+	protected function unserializeTask(?string $options, ?string $name = null): ?TCronTask
 	{
 		$task = @unserialize((string) $this->decodeTaskOptions($options));
-		if ($task instanceof TCronTask) {
-			$this->prepareTask($task);
+		if (!($task instanceof TCronTask)) {
+			Prado::log('Cron task (' . $name . ') row holds no task and is skipped', TLogger::WARNING, TDbCronManager::class);
+			return null;
 		}
+		$this->prepareTask($task);
 		return $task;
 	}
 
@@ -1101,8 +1114,10 @@ class TDbCronManager extends TCronModule implements IDbModule
 				} elseif (isset($configTasks[$taskName])) {
 					return parent::getTask($taskName);
 				} elseif (isset($this->_taskRows[$taskName])) {
-					$this->_tasks[$taskName] = $this->unserializeTask($this->_taskRows[$taskName]['options']);
-					return $this->_tasks[$taskName];
+					if (($task = $this->unserializeTask($this->_taskRows[$taskName]['options'], $taskName)) !== null) {
+						$this->_tasks[$taskName] = $task;
+					}
+					return $task;
 				}
 			} else {
 				parent::ensureTasks();
@@ -1126,7 +1141,10 @@ class TDbCronManager extends TCronModule implements IDbModule
 
 		$this->_taskRows[$taskName] = $result;
 		if (!isset($this->_tasks[$taskName])) {
-			$this->_tasks[$taskName] = $this->unserializeTask($result['options']);
+			if (($task = $this->unserializeTask($result['options'], $taskName)) === null) {
+				return null;
+			}
+			$this->_tasks[$taskName] = $task;
 		}
 		if ($this->dyGetUserTasks(false, $username = $this->_tasks[$taskName]->getUserName(), $taskName, ['extra' => ['username' => $username]]) === true) {
 			$this->dyLogPermissionFailed(static::PERM_CRON_READ_TASKS, 'getting cron task \'' . $taskName . '\'');

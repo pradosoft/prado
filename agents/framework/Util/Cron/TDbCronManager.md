@@ -193,6 +193,7 @@ php prado-cli.php /app cron/migrate          # create the table when missing; ad
 
 ## Patterns & Gotchas
 
+- **A row that holds no task is skipped** — `unserializeTask()` returns null for an `options` value that does not unserialize to a `TCronTask`, such as one of a task class removed in a deployment; the task lists, `getTask()`, and `getPendingTasks()` skip the row with a WARNING log entry, so the other tasks run.
 - **Config tasks vs DB tasks** — tasks declared in `application.xml` (config tasks) coexist with DB tasks. Their names must not collide; loading the tasks throws `TConfigurationException` if they do.
 - **Stale config-task rows** — `setPersistentData()` removes the shadow rows (`active = 0`) of config tasks whose config entry has since been removed, on its first load.
 - **`active` field semantics** — `NULL` = log row (not a task), `0` = config-task shadow row, `1` = active DB task.
