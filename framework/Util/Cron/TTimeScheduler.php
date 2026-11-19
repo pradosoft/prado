@@ -476,7 +476,7 @@ class TTimeScheduler extends \Prado\TComponent
 			return;
 		}
 		if (preg_match('/^every\s+(.+?)(\s+after\s+end)?(?:\s+from\s+(\S+(?:\s+\S+)*?))?(?:\s+until\s+(\S+(?:\s+\S+)*?))?$/i', $schedule, $everyMatch)) {
-			$this->parsePeriod($everyMatch[1], ($everyMatch[3] ?? '') ?: null, ($everyMatch[4] ?? '') ?: null, ($everyMatch[2] ?? '') !== '');
+			$this->parsePeriod($everyMatch[1], $everyMatch[3] ?? null, $everyMatch[4] ?? null, ($everyMatch[2] ?? '') !== '');
 			return;
 		}
 		$this->_schedule = $schedule;

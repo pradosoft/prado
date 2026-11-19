@@ -132,7 +132,7 @@ class TTimeSchedulerTest extends \PHPUnit\Framework\TestCase
 			'H(5-3) * * * ?', '* * * * * H', '#hourly@midnight',
 			// periods: no interval, an unparsable or non-positive interval, an unparsable time
 			'every', 'every garbage text', 'every 0 seconds', 'every -1 day', 'every 10 seconds from nonsense',
-			'every 10 seconds until @5x',
+			'every 10 seconds until @5x', 'every 10 seconds from 0', 'every 10 seconds until 0',
 		];
 		$out = [];
 		foreach ($bad as $schedule) {
