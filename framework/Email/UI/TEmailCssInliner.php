@@ -98,7 +98,7 @@ class TEmailCssInliner
 			}
 			$order++;
 			foreach ($nodes as $node) {
-				$list = $matches->contains($node) ? $matches[$node] : [];
+				$list = $matches[$node] ?? [];
 				foreach ($declarations as [$property, $value, $important]) {
 					$list[] = [$important ? 1 : 0, $specificity, $order, $property, $value];
 				}
