@@ -22,6 +22,27 @@ class TDbCronManagerPathTestTakenName extends TDbCronManager
 }
 
 /**
+ * A TDbCronManager that counts its wakes instead of sending them, on a clock the test sets.
+ */
+class TDbCronManagerPathTestWaking extends TDbCronManager
+{
+	public int $wakes = 0;
+
+	public ?int $now = null;
+
+	public function signalWake(): bool
+	{
+		$this->wakes++;
+		return true;
+	}
+
+	public function time(): int
+	{
+		return $this->now ?? parent::time();
+	}
+}
+
+/**
  * Tests of TDbCronManager branches on an in-memory SQLite table of each test's own.
  */
 class TDbCronManagerPathTest extends \PHPUnit\Framework\TestCase
@@ -170,5 +191,134 @@ class TDbCronManagerPathTest extends \PHPUnit\Framework\TestCase
 		self::assertCount(2, $manager->checked);
 		self::assertSame($manager->checked[1], $name);
 		self::assertNotSame($manager->checked[0], $name);
+	}
+
+	public function testGetTaskResultsOfEachColumnState()
+	{
+		$manager = $this->newManager();
+		self::assertSame([], $manager->getTaskResults(), 'no rows');
+		self::assertTrue($manager->addTask($this->newTask('resultTask')));
+		$conn = $manager->getDbConnection();
+		foreach ([
+			[null, null, null, [null, null, null]],
+			['100', '1.5', '2.5', [100, 1.5, 2.5]],
+			['100', null, '2.5', [100, null, 2.5]],
+			[null, '1.5', null, [null, 1.5, null]],
+		] as [$time, $duration, $max, $expected]) {
+			$cmd = $conn->createCommand('UPDATE crontabs SET lastexectime=:time, lastduration=:duration, maxduration=:max WHERE active IS NOT NULL');
+			$cmd->bindValue(':time', $time);
+			$cmd->bindValue(':duration', $duration);
+			$cmd->bindValue(':max', $max);
+			$cmd->execute();
+			$result = $manager->getTaskResults()['resultTask'];
+			self::assertSame($expected, [$result['time'], $result['duration'], $result['max']]);
+		}
+	}
+
+	public function testAddTaskInternalOfAnInvalidScheduleAndAsARuntimeTask()
+	{
+		$manager = $this->newManager();
+		$task = $this->newTask('badSchedule');
+		$task->setSchedule('not a schedule');
+		self::assertFalse(PradoUnit::invoke($manager, 'addTaskInternal', $task));
+		self::assertTrue(PradoUnit::invoke($manager, 'addTaskInternal', $this->newTask('runtimeAdded'), true));
+		self::assertSame(['runtimeAdded'], array_keys($manager->getRuntimeTasks()));
+	}
+
+	public function testUpdateTaskInternal()
+	{
+		$manager = $this->newManager();
+		self::assertFalse(PradoUnit::invoke($manager, 'updateTaskInternal', $this->newTask('noSuchTask')));
+		self::assertTrue($manager->addTask($this->newTask('updated')));
+		self::assertFalse(PradoUnit::invoke($manager, 'updateTaskInternal', $this->newTask('updated', 'not a schedule')), 'an invalid schedule is not stored');
+		$task = $manager->getTask('updated');
+		$task->setLastExecTime(12345);
+		self::assertTrue(PradoUnit::invoke($manager, 'updateTaskInternal', $task));
+		self::assertSame(12345, (int) $task->getLastExecTime(), 'an unchanged schedule keeps the last run');
+		$task->setSchedule('0 0 1 1 ? 2098');
+		self::assertTrue(PradoUnit::invoke($manager, 'updateTaskInternal', $task));
+		self::assertNotSame(12345, (int) $task->getLastExecTime(), 'a changed schedule resets the last run');
+
+		$other = $this->_managers[] = new TDbCronManager();
+		PradoUnit::setProp($other, '_conn', $manager->getDbConnection());
+		$other->init([['name' => 'updated', 'schedule' => '0 0 1 1 ? 2097', 'task' => TTestCronModuleTask::class]]);
+		$configured = new TTestCronModuleTask();
+		$configured->setName('updated');
+		$configured->setSchedule('0 0 1 1 ? 2097');
+		PradoUnit::setProp($other, '_taskRows', []);
+		self::assertTrue(PradoUnit::invoke($other, 'updateTaskInternal', $configured), 'a configured task without a cached row');
+		self::assertSame('0 0 1 1 ? 2097', PradoUnit::getProp($other, '_taskRows')['updated']['schedule']);
+	}
+
+	public function testTaskCountsByNameAndUser()
+	{
+		$manager = $this->newManager();
+		self::assertTrue($manager->addTask($this->newTask('countA')));
+		$owned = $this->newTask('countB');
+		$owned->setUserName('admin');
+		self::assertTrue($manager->addTask($owned));
+		self::assertSame(2, $manager->getTasksCount());
+		self::assertSame(1, $manager->getTasksCount('countA'));
+		self::assertSame(1, $manager->getUserTasksCount('admin'));
+		self::assertSame(1, $manager->getUserTasksCount('admin', 'count%'));
+		self::assertSame(0, $manager->getUserTasksCount('admin', 'countA'));
+		self::assertSame(1, $manager->getUserTasksCount($manager->getDefaultUserName()), 'a row without a user is the default user\'s');
+		$manager->attachBehavior('deny', new TTestCronDenyingBehavior(['dyGetTasks', 'dyGetUserTasks']));
+		self::assertNull($manager->getTasksCount());
+		self::assertNull($manager->getUserTasksCount('admin'));
+	}
+
+	public function testRowUpdatesOfATaskWithoutACachedRow()
+	{
+		$manager = $this->newManager();
+		self::assertTrue($manager->addTask($task = $this->newTask('uncached')));
+		PradoUnit::setProp($manager, '_taskRows', []);
+		$task->setProcessCount(2);
+		PradoUnit::invoke($manager, 'uncountTaskRun', $task);
+		self::assertSame(1, $task->getProcessCount());
+		PradoUnit::invoke($manager, 'updateTaskEnd', $task);
+		self::assertSame([], PradoUnit::getProp($manager, '_taskRows'), 'no cached row is made');
+		self::assertSame((int) $task->getLastExecTime(), (int) $manager->getDbConnection()->createCommand("SELECT lastexectime FROM crontabs WHERE name='uncached'")->queryScalar());
+	}
+
+	public function testSignalWakeIfEarliest()
+	{
+		$manager = $this->newManager(null, TDbCronManagerPathTestWaking::class);
+		$now = $manager->now = (int) (floor(time() / 60) * 60 + 10);
+		PradoUnit::invoke($manager, 'signalWakeIfEarliest', $this->newTask('noRow'));
+		self::assertTrue($manager->addTask($this->newTask('later')), 'a trigger after this minute');
+		self::assertSame(0, $manager->wakes);
+		$soon = $this->newTask('soon', '* * * * *');
+		self::assertTrue($manager->addTask($soon));
+		$rows = PradoUnit::getProp($manager, '_taskRows');
+		$rows['soon']['nextexectime'] = $now + 20;
+		PradoUnit::setProp($manager, '_taskRows', $rows);
+		PradoUnit::invoke($manager, 'signalWakeIfEarliest', $soon);
+		self::assertSame(1, $manager->wakes, 'the earliest trigger of this minute wakes');
+		$manager->getDbConnection()->createCommand("UPDATE crontabs SET nextexectime=" . ($now + 5) . " WHERE name='later'")->execute();
+		PradoUnit::invoke($manager, 'signalWakeIfEarliest', $soon);
+		self::assertSame(1, $manager->wakes, 'a later trigger of this minute does not wake');
+		$manager->getDbConnection()->createCommand('DELETE FROM crontabs')->execute();
+		PradoUnit::invoke($manager, 'signalWakeIfEarliest', $soon);
+		self::assertSame(2, $manager->wakes, 'without a pending row the trigger is the earliest');
+	}
+
+	public function testAddTheNextTriggerColumnToAnEmptyOldTable()
+	{
+		$manager = $this->_managers[] = new TDbCronManager();
+		$conn = new TDbConnection('sqlite::memory:');
+		$conn->setActive(true);
+		$conn->createCommand('CREATE TABLE crontabs (tabuid INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(127) NOT NULL, schedule VARCHAR(127) NOT NULL, task VARCHAR(256) NOT NULL, moduleid VARCHAR(127) NULL, username VARCHAR(127) NULL, options MEDIUMTEXT NULL, processcount INT NOT NULL DEFAULT 0, lastexectime VARCHAR(20) NULL DEFAULT NULL, active BOOLEAN NULL)')->execute();
+		PradoUnit::setProp($manager, '_conn', $conn);
+		self::assertSame(0, PradoUnit::invoke($manager, 'ensureNextExecTimeColumn'), 'no rows to fill');
+		self::assertNull(PradoUnit::invoke($manager, 'ensureNextExecTimeColumn'), 'the column exists');
+	}
+
+	public function testNoNextTriggersForAZeroLimit()
+	{
+		$manager = $this->newManager();
+		self::assertTrue($manager->addTask($this->newTask('limited')));
+		self::assertSame([], $manager->getNextTriggers(0));
+		self::assertSame(['limited'], array_keys($manager->getNextTriggers(1)));
 	}
 }
