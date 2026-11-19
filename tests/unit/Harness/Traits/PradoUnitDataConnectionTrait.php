@@ -34,8 +34,9 @@ use Prado\Data\TDbDriver;
  *
  * - {@see getDatabaseName()} — the database name passed to the factory method.  It
  *   is null for Firebird, Oracle, and IBM DB2, whose databases are a file path or
- *   service name, to have a direct connection without a specific database, and
- *   `'prado_unitest'` for all others.
+ *   service name, to have a direct connection without a specific database; null for
+ *   SQLite, whose database is then in memory, since a name is a file in the working
+ *   directory; and `'prado_unitest'` for all others.
  *
  * - {@see getTestTables()} — the array of tables that the test uses.  The generic
  *   setUp in the trait checks for each of them.
@@ -113,6 +114,7 @@ trait PradoUnitDataConnectionTrait
 			case 'setupFirebirdConnection':
 			case 'setupOracleConnection':
 			case 'setupIbmConnection':
+			case 'setupSqliteConnection':
 				return null;
 			default:
 				return 'prado_unitest';
