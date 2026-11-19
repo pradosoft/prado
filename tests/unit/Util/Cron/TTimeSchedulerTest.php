@@ -612,6 +612,20 @@ class TTimeSchedulerTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame(self::hashed('', 'minute', 0, 59) . ' * * * ?', $this->obj->getResolvedSchedule());
 	}
 
+	public function testHashContext_NullIsTheEmptyContext()
+	{
+		$this->obj->setSchedule('H * * * ?');
+		$this->obj->setHashContext(null);
+		self::assertSame('', $this->obj->getHashContext(), 'null is the unchanged empty context');
+		self::assertSame(self::hashed('', 'minute', 0, 59) . ' * * * ?', $this->obj->getResolvedSchedule());
+
+		$this->obj->setSchedule('0 * * * ?');
+		$this->obj->setHashContext('alpha');
+		$this->obj->setHashContext(null);
+		self::assertSame('', $this->obj->getHashContext(), 'null clears a context');
+		self::assertSame('0 * * * ?', $this->obj->getResolvedSchedule(), 'a schedule without a hashed field is unchanged');
+	}
+
 	public function testHashedShortcutsResolve()
 	{
 		$this->obj->setHashContext('alpha');
@@ -968,6 +982,15 @@ class TTimeSchedulerTest extends \PHPUnit\Framework\TestCase
 		self::assertSame(['10-31 08:00 EDT', '11-01 08:00 EST'], $format($this->obj->getNextTriggerTimes(2, gmmktime(0, 0, 0, 10, 1, 2026))), 'a period anchor parses in the zone and steps the local calendar');
 	}
 
+	public function testTimeZone_NullIsTheApplicationTimeZone()
+	{
+		$this->obj->setTimeZone('Asia/Tokyo');
+		$this->obj->setTimeZone(null);
+		self::assertNull($this->obj->getTimeZone());
+		$this->obj->setSchedule('0 9 * * *');
+		self::assertSame(gmmktime(9, 0, 0, 6, 1, 2026), $this->obj->getNextTriggerTime(gmmktime(0, 0, 0, 6, 1, 2026)), 'the application zone is UTC');
+	}
+
 	public function testGetNextTriggerTime_AnUnparsableTimeHasNoTrigger()
 	{
 		$this->obj->setSchedule('* * * * *');
@@ -1017,6 +1040,18 @@ class TTimeSchedulerTest extends \PHPUnit\Framework\TestCase
 
 		$this->obj->setSchedule('#daily except 01-01');
 		self::assertStringEndsWith(' except 01-01', $this->obj->getResolvedSchedule());
+	}
+
+	public function testExcept_AYearlyRangeAcrossTheNewYearExcludesItsLastDay()
+	{
+		$this->obj->setSchedule('0 0 * * * except 12-31..01-01');
+		self::assertSame(gmmktime(0, 0, 0, 1, 2, 2027), $this->obj->getNextTriggerTime(gmmktime(23, 0, 0, 12, 31, 2026)), 'January 1 is in the range from December 31');
+	}
+
+	public function testPeriodTime_AnEmptyValueIsAbsent()
+	{
+		self::assertNull(\Prado\Test\Unit\PradoUnit::invoke($this->obj, 'parsePeriodTime', ''));
+		self::assertNull(\Prado\Test\Unit\PradoUnit::invoke($this->obj, 'parsePeriodTime', null));
 	}
 
 	public function testExcept_InTheTimeZone()
