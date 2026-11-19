@@ -149,6 +149,18 @@ class TEmailLogRouteTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame(['x@example.com', 'y@example.com'], $route->getEmails());
 	}
 
+	public function testEmailsOfAnArrayOfOneInvalidOrNoAddress()
+	{
+		$route = new TEmailLogRoute();
+		$route->setEmails(['a@example.com']);
+		$route->setEmails(['not-an-address']);
+		$this->assertSame([], $route->getEmails());
+
+		$route->setEmails(['a@example.com']);
+		$route->setEmails([]);
+		$this->assertSame([], $route->getEmails());
+	}
+
 	public function testEmailsAcceptLongTopLevelDomains()
 	{
 		$route = new TEmailLogRoute();
