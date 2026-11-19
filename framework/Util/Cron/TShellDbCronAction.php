@@ -115,7 +115,7 @@ class TShellDbCronAction extends TShellCronAction
 
 	/**
 	 * Adds a task to the database with its name, task id, schedule, and other properties.
-	 * Each property argument is `Name=value`, split at its first `=`.
+	 * Each property argument is `Name=value`, split at its first `=`; a property without a value is an error.
 	 * @param array $args command arguments
 	 */
 	public function actionAdd($args)
@@ -174,6 +174,10 @@ class TShellDbCronAction extends TShellCronAction
 			$parts[0] = trim($parts[0]);
 			$property = strtolower($parts[0]);
 			if ($task->canSetProperty($property)) {
+				if (!isset($parts[1])) {
+					$this->_outWriter->writeError("Task Property '{$parts[0]}' has no value");
+					return true;
+				}
 				$property = 'set' . $property;
 				$task->$property(trim($parts[1]));
 			} else {
@@ -189,7 +193,7 @@ class TShellDbCronAction extends TShellCronAction
 
 	/**
 	 * Updates a task in the database by its name, setting its schedule, username, moduleid, and other properties.
-	 * Each property argument is `Name=value`, split at its first `=`.
+	 * Each property argument is `Name=value`, split at its first `=`; a property without a value is an error.
 	 * @param array $args command arguments
 	 */
 	public function actionUpdate($args)
@@ -217,6 +221,10 @@ class TShellDbCronAction extends TShellCronAction
 			$parts[0] = trim($parts[0]);
 			$property = strtolower($parts[0]);
 			if ($task->canSetProperty($property)) {
+				if (!isset($parts[1])) {
+					$this->_outWriter->writeError("Task Property '{$parts[0]}' has no value");
+					return true;
+				}
 				if ($property === 'schedule') {
 					$s = Prado::createComponent(TTimeScheduler::class);
 					try {

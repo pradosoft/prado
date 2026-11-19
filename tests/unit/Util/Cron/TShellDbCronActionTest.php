@@ -577,6 +577,33 @@ class TShellDbCronActionTest extends \PHPUnit\Framework\TestCase
 		}
 	}
 
+	public function testActionAddAndUpdateRejectAPropertyWithoutAValue()
+	{
+		$cron = new TDbCronManager();
+		$cron->setId('cronmodule79');
+		$cron->setTableName('shellnovalue');
+		$db = $cron->getDbConnection();
+		$db->createCommand('DROP TABLE IF EXISTS shellnovalue')->execute();
+		$cron->init([]);
+		$this->obj->setCronModule($cron);
+		try {
+			self::assertTrue($this->obj->actionAdd(['cron/add', 'noValueTask', 'cronclean', '0 0 1 1 ? 2099', 'username']));
+			self::assertStringContainsString("Task Property 'username' has no value", $this->writer->flush());
+			self::assertFalse($cron->taskExists('noValueTask'), 'the task is not added');
+
+			self::assertTrue($this->obj->actionAdd(['cron/add', 'noValueTask', 'cronclean', '0 0 1 1 ? 2099']));
+			$this->writer->flush();
+			foreach (['username', 'schedule'] as $property) {
+				self::assertTrue($this->obj->actionUpdate(['cron/update', 'noValueTask', $property]));
+				self::assertStringContainsString("Task Property '{$property}' has no value", $this->writer->flush());
+			}
+			self::assertSame('0 0 1 1 ? 2099', $cron->getTask('noValueTask')->getSchedule(), 'the task is not changed');
+		} finally {
+			$db->createCommand('DROP TABLE IF EXISTS shellnovalue')->execute();
+			$cron->unlisten();
+		}
+	}
+
 	public function testActionLogOfARunWithoutADuration()
 	{
 		$cron = new TDbCronManager();
