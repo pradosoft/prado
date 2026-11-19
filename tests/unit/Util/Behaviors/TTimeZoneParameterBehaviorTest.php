@@ -72,6 +72,42 @@ class TTimeZoneParameterBehaviorTest extends \PHPUnit\Framework\TestCase
 		unset($params['test:TimeZone']);
 	}
 
+	public function testSetEnabled_withoutOwnerWaitsForAttach()
+	{
+		$app = Prado::getApplication();
+		$params = $app->getParameters();
+		$this->obj->setTimeZoneParameter('test:TimeZone');
+
+		$this->obj->setEnabled(true);
+		self::assertNull($params->asa(TTimeZoneParameterBehavior::APP_PARAM_ROUTE_BEHAVIOR_NAME));
+
+		$app->attachBehavior('timezonetest', $this->obj);
+		self::assertNotNull($params->asa(TTimeZoneParameterBehavior::APP_PARAM_ROUTE_BEHAVIOR_NAME));
+		$app->detachBehavior('timezonetest');
+		self::assertNull($params->asa(TTimeZoneParameterBehavior::APP_PARAM_ROUTE_BEHAVIOR_NAME));
+	}
+
+	public function testDetach_releasesTheRoute()
+	{
+		$app = Prado::getApplication();
+		$params = $app->getParameters();
+		$this->obj->setTimeZoneParameter('test:TimeZone');
+		$app->attachBehavior('timezonetest', $this->obj);
+		$app->detachBehavior('timezonetest');
+
+		$other = new TTimeZoneParameterBehavior();
+		$other->setTimeZoneParameter('test:TimeZone');
+		$app->attachBehavior('timezonetest2', $other);
+
+		// The detached behavior no longer owns the route, so disabling it keeps the other route.
+		$this->obj->setEnabled(false);
+		$params['test:TimeZone'] = 'Europe/Rome';
+		self::assertEquals('Europe/Rome', $this->obj->getTimeZone());
+
+		$app->detachBehavior('timezonetest2');
+		unset($params['test:TimeZone']);
+	}
+
 	public function testTimeZoneParameter()
 	{
 		self::assertTrue(is_string($this->obj->getTimeZoneParameter()));

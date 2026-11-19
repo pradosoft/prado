@@ -13,8 +13,8 @@ TTimeZoneParameterBehavior sets PHP's default timezone from an application param
 ## Key Properties/Methods
 
 - `attach($owner)` - Sets timezone from application parameter and attaches route behavior
-- `detach($owner)` - Removes the parameter route behavior
-- `setEnabled($enabled)` - Enables/disables the parameter route behavior
+- `detach($owner)` - Removes and releases the parameter route behavior
+- `setEnabled($enabled)` - Enables/disables the parameter route behavior; without an owner, the route waits for `attach()`
 - `getTimeZoneParameter()` / `setTimeZoneParameter($value)` - Gets/sets the application parameter key (default: 'prop:TimeZone')
 - `getTimeZone()` - Gets current timezone from `date_default_timezone_get()`
 - `setTimeZone($value)` - Sets timezone via `date_default_timezone_set()`

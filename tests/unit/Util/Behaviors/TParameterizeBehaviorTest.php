@@ -244,6 +244,64 @@ class TParameterizeBehaviorTest extends \PHPUnit\Framework\TestCase
 		unset($params[$key]);
 	}
 
+	public function testReattach_routesParameterChanges()
+	{
+		$params = Prado::getApplication()->getParameters();
+		$this->obj->setParameter('param_reattach');
+		$this->obj->setProperty('Field');
+		$this->obj->setRouteBehaviorName('reattachRoute');
+		$first = new TParameterizeObject;
+		$first->attachBehavior('parameterize', $this->obj);
+		$first->detachBehavior('parameterize');
+		self::assertEquals('reattachRoute', $this->obj->getRouteBehaviorName());
+		self::assertNull($params->asa('reattachRoute'));
+
+		$second = new TParameterizeObject;
+		$second->attachBehavior('parameterize', $this->obj);
+		$params['param_reattach'] = 'routed';
+		self::assertEquals('routed', $second->getField());
+		self::assertNull($first->getField());
+
+		$second->detachBehavior('parameterize');
+		self::assertNull($params->asa('reattachRoute'));
+		unset($params['param_reattach']);
+	}
+
+	public function testSetParameter_nullAfterAttachThrows()
+	{
+		$this->obj->setParameter('param_null');
+		$this->obj->setProperty('Field');
+		$this->obj->setRouteBehaviorName('nullParameterRoute');
+		$owner = new TParameterizeObject;
+		$owner->attachBehavior('parameterize', $this->obj);
+		try {
+			$this->obj->setParameter(null);
+			$this->fail('A null Parameter after attach should throw TInvalidOperationException.');
+		} catch (TInvalidOperationException $e) {
+		}
+		self::assertEquals('param_null', $this->obj->getParameter());
+		$owner->detachBehavior('parameterize');
+	}
+
+	public function testSetEnabled_withoutOwnerWaitsForAttach()
+	{
+		$params = Prado::getApplication()->getParameters();
+		$this->obj->setParameter('param_enabled');
+		$this->obj->setProperty('Field');
+		$this->obj->setRouteBehaviorName('enabledRoute');
+
+		$this->obj->setEnabled(true);
+		self::assertNull($params->asa('enabledRoute'));
+
+		$owner = new TParameterizeObject;
+		$owner->attachBehavior('parameterize', $this->obj);
+		$params['param_enabled'] = 'routed';
+		self::assertEquals('routed', $owner->getField());
+		$owner->detachBehavior('parameterize');
+		self::assertNull($params->asa('enabledRoute'));
+		unset($params['param_enabled']);
+	}
+
 	public function testParameter()
 	{
 		self::assertNull($this->obj->getParameter());
