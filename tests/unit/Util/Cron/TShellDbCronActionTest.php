@@ -474,4 +474,107 @@ class TShellDbCronActionTest extends \PHPUnit\Framework\TestCase
 			$cron->unlisten();
 		}
 	}
+
+	public function testActionMigrateReportsEachChange()
+	{
+		$cron = new class () extends TDbCronManager {
+			public array $result = [];
+
+			public function migrateTable(): array
+			{
+				return $this->result;
+			}
+		};
+		$cron->setId('cronmodule83');
+		$cron->setTableName('migratereport');
+		$this->obj->setCronModule($cron);
+		try {
+			$cron->result = ['created' => false, 'column' => 2, 'run' => false];
+			self::assertTrue($this->obj->actionMigrate(['cron/migrate']));
+			$text = $this->writer->flush();
+			self::assertStringContainsString('Added the nextexectime column to migratereport and set it on 2 task row(s).', $text);
+			self::assertStringNotContainsString('run columns', $text);
+			$cron->result = ['created' => false, 'column' => null, 'run' => true];
+			self::assertTrue($this->obj->actionMigrate(['cron/migrate']));
+			$text = $this->writer->flush();
+			self::assertStringContainsString('Added the run columns', $text);
+			self::assertStringNotContainsString('nextexectime', $text);
+		} finally {
+			$cron->unlisten();
+		}
+	}
+
+	public function testActionUpdateOneProperty()
+	{
+		$cron = new TDbCronManager();
+		$cron->setId('cronmodule82');
+		$cron->setTableName('shellupdateone');
+		$db = $cron->getDbConnection();
+		$db->createCommand('DROP TABLE IF EXISTS shellupdateone')->execute();
+		$cron->init([]);
+		$task = new TTestCronModuleTask();
+		$task->setName('updateOne');
+		$task->setSchedule('0 0 1 1 ? 2099');
+		$cron->addTask($task);
+		$this->obj->setCronModule($cron);
+		try {
+			self::assertTrue($this->obj->actionUpdate(['cron/update', 'updateOne', 'schedule=0 0 1 1 ? 2098']));
+			self::assertStringContainsString("Task 'updateOne' was updated in the database", $this->writer->flush());
+			self::assertSame('0 0 1 1 ? 2098', $cron->getTask('updateOne')->getSchedule());
+			self::assertTrue($this->obj->actionUpdate(['cron/update', 'updateOne', 'username=cron009']));
+			self::assertStringContainsString("Task 'updateOne' was updated in the database", $this->writer->flush());
+			self::assertSame('cron009', $cron->getTask('updateOne')->getUserName());
+		} finally {
+			$db->createCommand('DROP TABLE IF EXISTS shellupdateone')->execute();
+			$cron->unlisten();
+		}
+	}
+
+	public function testConstructByUserPermissions()
+	{
+		$app = Prado::getApplication();
+		$prior = $app->getUser();
+		$user = new TUser(new TUserManager());
+		$user->setName('hank');
+		if ($user->asa(TPermissionsManager::USER_PERMISSIONS_BEHAVIOR)) {
+			$user->detachBehavior(TPermissionsManager::USER_PERMISSIONS_BEHAVIOR);
+		}
+		PradoUnit::setProp($app, '_user', $user);
+		try {
+			$methods = PradoUnit::getProp(new TShellDbCronAction(), 'methods');
+			self::assertContains('add', $methods, 'a user without the permissions behavior keeps every method');
+			self::assertContains('migrate', $methods);
+
+			$user->attachBehavior(TPermissionsManager::USER_PERMISSIONS_BEHAVIOR, $permissions = new TTestCronUserPermissions());
+			$permissions->allowed = [TDbCronManager::PERM_CRON_ADD_TASK];
+			$methods = PradoUnit::getProp(new TShellDbCronAction(), 'methods');
+			self::assertContains('add', $methods, 'a user who adds tasks keeps add');
+			self::assertContains('migrate', $methods);
+		} finally {
+			PradoUnit::setProp($app, '_user', $prior);
+		}
+	}
+
+	public function testActionLogOfARunWithoutADuration()
+	{
+		$cron = new TDbCronManager();
+		$cron->setId('cronmodule81');
+		$cron->setTableName('shelllogduration');
+		$db = $cron->getDbConnection();
+		$db->createCommand('DROP TABLE IF EXISTS shelllogduration')->execute();
+		$cron->init([['name' => 'logTimed', 'schedule' => '0 0 1 1 ? 2099', 'task' => TTestCronModuleTask::class]]);
+		$this->obj->setCronModule($cron);
+		try {
+			self::assertTrue($cron->runTask($cron->getTask('logTimed')));
+			$db->createCommand("INSERT INTO shelllogduration (name, schedule, task, username, processcount, lastexectime, active) VALUES ('logUntimed', '* * * * *', 'TTestCronModuleTask', 'cron', 1, " . (time() - 60) . ", NULL)")->execute();
+			self::assertTrue($this->obj->actionLog(['cron/log']));
+			$text = $this->writer->flush();
+			self::assertStringContainsString('Cron Log found 2 records', $text);
+			self::assertMatchesRegularExpression('/logTimed .*\d\.\d\ds/', $text, 'a run with a duration shows it');
+			self::assertMatchesRegularExpression('/logUntimed .*-\s+-\s*$/m', $text, 'a run without a duration shows -');
+		} finally {
+			$db->createCommand('DROP TABLE IF EXISTS shelllogduration')->execute();
+			$cron->unlisten();
+		}
+	}
 }

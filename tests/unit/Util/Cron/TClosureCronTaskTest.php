@@ -302,4 +302,39 @@ class TClosureCronTaskTest extends \PHPUnit\Framework\TestCase
 		$task->setSecurityManagerID(null);
 		self::assertNull($task->getSecurityManagerID());
 	}
+
+	public function testAnEncryptedPayloadThatIsNoClosureIsRejected()
+	{
+		$task = new TClosureCronTask();
+		$task->setName('cct_encrypted_bad');
+		PradoUnit::setProp($task, '_payload', $task->getSecurityManager()->encrypt(serialize('not a closure')));
+		PradoUnit::setProp($task, '_payloadEncrypted', true);
+		try {
+			$task->getClosure();
+			self::fail('an encrypted payload that is no closure was accepted');
+		} catch (TConfigurationException $e) {
+			self::assertStringContainsString('cct_encrypted_bad', $e->getMessage());
+		}
+	}
+
+	public function testSerialize_LeavesOutEachDefault()
+	{
+		$closure = fn ($t, $c) => 'ran';
+		for ($mask = 0; $mask < 16; $mask++) {
+			$task = new TClosureCronTask(($mask & 1) ? $closure : null);
+			$task->setStoreRaw((bool) ($mask & 2));
+			$task->setSecurityManagerID(($mask & 4) ? '' : null);
+			$task->setData(($mask & 8) ? ['a' => 1] : null);
+			$text = serialize($task);
+			$prop = static fn (string $name): bool => str_contains($text, "\0Prado\\Util\\Cron\\TClosureCronTask\0" . $name);
+			self::assertFalse($prop('_closure'), 'mask ' . $mask);
+			self::assertSame((bool) ($mask & 1), $prop('_payload'), 'mask ' . $mask);
+			self::assertSame((bool) ($mask & 2), $prop('_storeRaw'), 'mask ' . $mask);
+			self::assertSame((bool) ($mask & 4), $prop('_securityManagerID'), 'mask ' . $mask);
+			self::assertSame((bool) ($mask & 8), $prop('_data'), 'mask ' . $mask);
+			if ($mask & 1) {
+				self::assertSame('ran', unserialize($text)->execute(null), 'mask ' . $mask);
+			}
+		}
+	}
 }

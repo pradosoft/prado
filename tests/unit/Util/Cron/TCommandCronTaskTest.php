@@ -5,6 +5,7 @@ namespace Prado\Test\Unit\Util\Cron;
 use Prado\Exceptions\TCancelledException;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TIOException;
+use Prado\IO\Async\TAsync;
 use Prado\IO\Async\TCancellationToken;
 use Prado\Util\Cron\TCommandCronTask;
 use Prado\Util\Cron\TCronModule;
@@ -132,17 +133,52 @@ class TCommandCronTaskTest extends \PHPUnit\Framework\TestCase
 		if (\Prado\Util\Helpers\TProcessHelper::isSystemWindows() || !function_exists('pcntl_signal')) {
 			self::markTestSkipped('ignoring SIGTERM needs pcntl on POSIX');
 		}
+		// The run is cancelled once the command ignores SIGTERM, however slowly the child starts.
+		$ready = $this->log . '.ready';
 		$task = new TTestShortGraceCommandCronTask();
 		$task->setName('stubborn');
-		$task->setCommand("exec @php -r 'pcntl_signal(SIGTERM, SIG_IGN); sleep(5);'");
-		$task->setCancellationToken(new TCancellationToken(0.3));
+		$task->setCommand("exec @php -r 'pcntl_signal(SIGTERM, SIG_IGN); touch(\"{$ready}\"); sleep(10);'");
+		$token = new TCancellationToken();
+		$loop = TAsync::getLoop();
+		$watch = $loop->repeat(0.05, static function () use ($ready, $token) {
+			if (is_file($ready)) {
+				$token->cancel();
+			}
+		});
+		$task->setCancellationToken($token);
 		$start = microtime(true);
 		try {
 			$task->execute(new TCronModule());
 			self::fail('a cancelled run did not throw');
 		} catch (TCancelledException $e) {
+		} finally {
+			$loop->cancel($watch);
+			if (is_file($ready)) {
+				unlink($ready);
+			}
 		}
-		self::assertLessThan(3.0, microtime(true) - $start, 'the command is killed after the grace');
+		self::assertLessThan(8.0, microtime(true) - $start, 'the command is killed after the grace');
+	}
+
+	public function testExecute_WithoutALogFileDiscardsTheOutput()
+	{
+		$this->task->setCommand('@php -r "echo \'discarded\';"');
+		$this->task->execute(new TCronModule());
+		self::assertSame(0, $this->task->getExitCode());
+	}
+
+	public function testSerialize_LeavesOutEachDefault()
+	{
+		for ($mask = 0; $mask < 8; $mask++) {
+			$task = new TCommandCronTask();
+			$task->setDirectory(($mask & 1) ? '/tmp' : null)->setLogFile(($mask & 2) ? '/tmp/command.log' : null)->setAppendLog(!($mask & 4));
+			$text = serialize($task);
+			$prop = static fn (string $name): bool => str_contains($text, "\0Prado\\Util\\Cron\\TCommandCronTask\0" . $name);
+			self::assertSame((bool) ($mask & 1), $prop('_directory'), 'mask ' . $mask);
+			self::assertSame((bool) ($mask & 2), $prop('_logFile'), 'mask ' . $mask);
+			self::assertSame((bool) ($mask & 4), $prop('_appendLog'), 'mask ' . $mask);
+			self::assertFalse($prop('_exitCode'));
+		}
 	}
 
 	public function testCommandNull()

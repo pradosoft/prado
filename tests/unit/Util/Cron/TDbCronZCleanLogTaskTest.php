@@ -133,4 +133,48 @@ class TDbCronZCleanLogTaskTest extends TCronTaskTest
 		$task->setUsername('');
 		self::assertNull($task->getUsername());
 	}
+
+	public function testExecuteByModuleIdAndShellLog()
+	{
+		$app = \Prado\Prado::getApplication();
+		$snapshot = PradoUnit::snapshot($app, ['_modules']);
+		$dbcron = new TDbCronManager();
+		$cron = new TCronModule();
+		PradoUnit::invoke($dbcron, 'ensureTable');
+		try {
+			$app->setModule('cleanLogDb', $dbcron);
+			$app->setModule('cleanLogCron', $cron);
+			foreach ([false, true] as $logged) {
+				$writers = [];
+				if ($logged) {
+					foreach ([$dbcron, $cron] as $module) {
+						$module->attachBehavior('shellLog', new TShellCronLogBehavior($writers[] = new TShellWriter(new TTextWriter())));
+					}
+				}
+				foreach ([[null, $dbcron], ['cleanLogDb', $cron], [null, $cron], ['cleanLogCron', $dbcron]] as [$moduleId, $passed]) {
+					$task = new TDbCronCleanLogTask();
+					$task->setModuleId($moduleId);
+					$task->execute($passed);
+				}
+				if ($logged) {
+					$text = $writers[0]->flush() . $writers[1]->flush();
+					self::assertSame(2, substr_count($text, 'Cron Task Logs'), 'each TDbCronManager run writes its count');
+					self::assertSame(2, substr_count($text, 'No DB Cron Module to clean'), 'each TCronModule run writes its warning');
+					$dbcron->detachBehavior('shellLog');
+					$cron->detachBehavior('shellLog');
+				}
+			}
+		} finally {
+			PradoUnit::restore($app, $snapshot);
+			$dbcron->unlisten();
+			$cron->unlisten();
+		}
+	}
+
+	public function testTimePeriodOfAnInvalidIsoPeriodThatIsARelativeTime()
+	{
+		$task = new TDbCronCleanLogTask();
+		$task->setTimePeriod('Previous week');
+		self::assertSame('Previous week', $task->getTimePeriod(), 'a P string that is no ISO 8601 period is read as a relative time, as clearCronLog() does');
+	}
 }

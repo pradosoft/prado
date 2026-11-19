@@ -375,6 +375,57 @@ class TCronTaskTest extends \PHPUnit\Framework\TestCase
 		self::assertSame('', $this->obj->getDescription());
 	}
 
+	public function testNullAndEmptyResetToTheDefault()
+	{
+		$this->obj->setTimeout(5);
+		$this->obj->setTimeout(null);
+		self::assertNull($this->obj->getTimeout());
+		$this->obj->setStartingDeadline(5);
+		$this->obj->setStartingDeadline(null);
+		self::assertNull($this->obj->getStartingDeadline());
+		$this->obj->setProcessMemoryLimit('64M');
+		$this->obj->setProcessMemoryLimit(null);
+		self::assertNull($this->obj->getProcessMemoryLimit());
+		$this->obj->setWarnDuration(5);
+		$this->obj->setWarnDuration('');
+		self::assertNull($this->obj->getWarnDuration());
+		$this->obj->setPriority(3);
+		$this->obj->setPriority(null);
+		self::assertSame((float) TCronTask::DEFAULT_PRIORITY, $this->obj->getPriority());
+		$this->obj->setProcessPriority(5);
+		$this->obj->setProcessPriority(null);
+		self::assertNull($this->obj->getProcessPriority());
+		$this->obj->setTimeZone('Asia/Tokyo');
+		$this->obj->setTimeZone('');
+		self::assertNull($this->obj->getTimeZone());
+		$this->obj->setPingBeforeUrl('https://example.test/before');
+		$this->obj->setPingBeforeUrl(null);
+		self::assertNull($this->obj->getPingBeforeUrl());
+		$this->obj->setTags('nightly');
+		$this->obj->setTags('');
+		self::assertSame([], $this->obj->getTags());
+	}
+
+	public function testOverlapBooleans()
+	{
+		$this->obj->setOverlap(true);
+		self::assertSame(TCronTaskOverlap::Allow, $this->obj->getOverlap(), 'true is Allow');
+		$this->obj->setOverlap('false');
+		self::assertSame(TCronTaskOverlap::Skip, $this->obj->getOverlap(), "'false' is Skip");
+		self::expectException(TInvalidDataValueException::class);
+		$this->obj->setOverlap(5);
+	}
+
+	public function testTimeWindowAndExclusion()
+	{
+		$this->obj->setDefaultTimeZone('UTC');
+		$this->obj->setBetween('08:00-17:00');
+		self::assertFalse($this->obj->getIsInWindow(gmmktime(7, 0, 0, 6, 1, 2026)), 'before the start is outside');
+		$this->obj->setUnlessBetween('12:00-13:00');
+		self::assertTrue($this->obj->getIsInWindow(gmmktime(9, 0, 0, 6, 1, 2026)));
+		self::assertFalse($this->obj->getIsInWindow(gmmktime(12, 30, 0, 6, 1, 2026)), 'the exclusion wins inside the window');
+	}
+
 	public function testTimeWindowBounds()
 	{
 		$this->obj->setBetween('08:00:30-17:00');
