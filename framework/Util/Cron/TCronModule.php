@@ -3569,7 +3569,8 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	{
 		$ids = [];
 		if (!\extension_loaded('pcntl')) {
-			return $ids;
+			// Only a PHP without pcntl runs this branch.
+			return $ids; // @codeCoverageIgnore
 		}
 		foreach ([15, 2] as $signal) { // SIGTERM, SIGINT
 			try {

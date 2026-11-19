@@ -824,4 +824,106 @@ class TCronModuleBaseTest extends \PHPUnit\Framework\TestCase
 		self::assertStringContainsString('prado_cron_task_running{', $metrics);
 		self::assertStringContainsString('task="metricTask"', $metrics);
 	}
+
+	public function testGetTaskResultsOfEachCombinationOfRecordedValues()
+	{
+		$app = Prado::getApplication();
+		foreach ([false, true] as $hasTime) {
+			foreach ([false, true] as $hasDuration) {
+				foreach ([false, true] as $hasMax) {
+					$name = 'combo' . (int) $hasTime . (int) $hasDuration . (int) $hasMax;
+					$info = ['lastExecTime' => $hasTime ? 100 : null, 'processCount' => 0];
+					if ($hasDuration) {
+						$info['lastDuration'] = 1.5;
+					}
+					if ($hasMax) {
+						$info['maxDuration'] = 2.5;
+					}
+					$app->setGlobalState(TCronModule::TASKS_INFO, [$name => $info]);
+					$result = $this->newModule([$this->job($name)])->getTaskResults()[$name];
+					self::assertSame([$hasTime ? 100 : null, $hasDuration ? 1.5 : null, $hasMax ? 2.5 : null], [$result['time'], $result['duration'], $result['max']]);
+				}
+			}
+		}
+	}
+
+	public function testEnableStatusEmptyIsUnset()
+	{
+		$module = $this->_modules[] = new TCronModule();
+		$module->setEnableStatus(true);
+		$module->setEnableStatus('');
+		self::assertNull($module->getEnableStatus());
+	}
+
+	public function testWaitForWakeSleepsWhenTheTransportIsUnavailable()
+	{
+		$module = $this->_modules[] = new TCronModule();
+		$module->setWakeTransport(new TCronWakeFile(sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'no-such-dir-' . bin2hex(random_bytes(4)) . DIRECTORY_SEPARATOR . 'cronwake'));
+		self::assertFalse(PradoUnit::invoke($module, 'waitForWake', microtime(true) - 1));
+	}
+
+	public function testReadTasksInfoFreshFromAStoreWithoutTaskInformation()
+	{
+		$app = Prado::getApplication();
+		$persister = PradoUnit::getProp($app, '_statePersister');
+		$store = new class () implements \Prado\IStatePersister {
+			public mixed $state = null;
+
+			public function load()
+			{
+				return $this->state;
+			}
+
+			public function save($state)
+			{
+			}
+		};
+		try {
+			PradoUnit::setProp($app, '_statePersister', $store);
+			$module = $this->newModule();
+			self::assertSame([], PradoUnit::invoke($module, 'readTasksInfo', true), 'a state that is no array');
+			$store->state = ['other' => 1];
+			self::assertSame([], PradoUnit::invoke($module, 'readTasksInfo', true), 'a state without task information');
+			$store->state = [TCronModule::TASKS_INFO => 'not a list'];
+			self::assertSame([], PradoUnit::invoke($module, 'readTasksInfo', true), 'task information that is no array');
+			$store->state = [TCronModule::TASKS_INFO => ['stored' => ['lastExecTime' => 1]]];
+			self::assertSame(['stored' => ['lastExecTime' => 1]], PradoUnit::invoke($module, 'readTasksInfo', true));
+		} finally {
+			PradoUnit::setProp($app, '_statePersister', $persister);
+		}
+	}
+
+	public function testGetStatusesOfAnotherModuleOnly()
+	{
+		$module = $this->_modules[] = new TCronModule();
+		$module->setID('cronBaseOnlyOther');
+		$module->setStatusPath($dir = $this->statusDir());
+		mkdir($dir);
+		file_put_contents($dir . DIRECTORY_SEPARATOR . 'other.json', json_encode(['module' => 'anotherModule']));
+		self::assertSame([], $module->getStatuses());
+		unlink($dir . DIRECTORY_SEPARATOR . 'other.json');
+		file_put_contents($dir . DIRECTORY_SEPARATOR . 'broken.json', 'not json');
+		self::assertSame([], $module->getStatuses());
+	}
+
+	public function testSweepWithAnInCronShellSetting()
+	{
+		$module = $this->newTestModule([$this->job('futureInCron')]);
+		$module->setInCronShell(false);
+		self::assertSame(0, PradoUnit::invoke($module, 'sweepPendingTasks'), 'nothing due');
+		$module->attachBehavior('deny', new TTestCronDenyingBehavior(['dyGetPendingTasks']));
+		self::assertSame(0, PradoUnit::invoke($module, 'sweepPendingTasks'), 'denied');
+	}
+
+	public function testDaemonConfigFilesOfAnEmptyConfigurationFileName()
+	{
+		$app = Prado::getApplication();
+		$file = PradoUnit::getProp($app, '_configFile');
+		try {
+			PradoUnit::setProp($app, '_configFile', '');
+			self::assertSame([], $this->newModule()->getDaemonConfigFiles());
+		} finally {
+			PradoUnit::setProp($app, '_configFile', $file);
+		}
+	}
 }
