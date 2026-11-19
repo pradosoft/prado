@@ -3,6 +3,7 @@
 namespace Prado\Test\Unit\Util\Cron;
 
 use Prado\Data\TDbConnection;
+use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Test\Unit\PradoUnit;
 use Prado\Util\Cron\TDbCronManager;
@@ -199,12 +200,15 @@ class TDbCronManagerPathTest extends \PHPUnit\Framework\TestCase
 		self::assertSame([], $manager->getTaskResults(), 'no rows');
 		self::assertTrue($manager->addTask($this->newTask('resultTask')));
 		$conn = $manager->getDbConnection();
-		foreach ([
-			[null, null, null, [null, null, null]],
-			['100', '1.5', '2.5', [100, 1.5, 2.5]],
-			['100', null, '2.5', [100, null, 2.5]],
-			[null, '1.5', null, [null, 1.5, null]],
-		] as [$time, $duration, $max, $expected]) {
+		$cases = [];
+		foreach (['100', null] as $time) {
+			foreach (['1.5', null] as $duration) {
+				foreach (['2.5', null] as $max) {
+					$cases[] = [$time, $duration, $max, [($time === null) ? null : 100, ($duration === null) ? null : 1.5, ($max === null) ? null : 2.5]];
+				}
+			}
+		}
+		foreach ($cases as [$time, $duration, $max, $expected]) {
 			$cmd = $conn->createCommand('UPDATE crontabs SET lastexectime=:time, lastduration=:duration, maxduration=:max WHERE active IS NOT NULL');
 			$cmd->bindValue(':time', $time);
 			$cmd->bindValue(':duration', $duration);
@@ -320,5 +324,74 @@ class TDbCronManagerPathTest extends \PHPUnit\Framework\TestCase
 		self::assertTrue($manager->addTask($this->newTask('limited')));
 		self::assertSame([], $manager->getNextTriggers(0));
 		self::assertSame(['limited'], array_keys($manager->getNextTriggers(1)));
+	}
+
+	public function testAConfiguredNameOfADatabaseTaskConflicts()
+	{
+		$manager = $this->newManager();
+		self::assertTrue($manager->addTask($this->newTask('clash')));
+		self::assertFalse($manager->addTask($this->newTask('clash')), 'a name is added once');
+		$configured = $this->_managers[] = new TDbCronManager();
+		PradoUnit::setProp($configured, '_conn', $manager->getDbConnection());
+		$configured->init([['name' => 'clash', 'schedule' => '0 0 1 1 ? 2099', 'task' => TTestCronModuleTask::class]]);
+		$this->expectException(TConfigurationException::class);
+		$configured->getTasks();
+	}
+
+	public function testRemoveTheLastRuntimeTaskByObject()
+	{
+		$manager = $this->newManager();
+		$manager->addRuntimeTask($task = $this->newTask('lastRuntime'));
+		$manager->removeRuntimeTask($task);
+		self::assertNull($manager->getRuntimeTasks());
+	}
+
+	public function testRemoveALogRowWithoutAUser()
+	{
+		$manager = $this->newManager();
+		self::assertTrue($manager->addTask($task = $this->newTask('anonLogged')));
+		$logId = PradoUnit::invoke($manager, 'logCronTask', $task, 'cron');
+		$manager->getDbConnection()->createCommand('UPDATE crontabs SET username=NULL WHERE active IS NULL')->execute();
+		$manager->attachBehavior('deny', new TTestCronDenyingBehavior(['dyRemoveCronLogItem']));
+		self::assertNull($manager->removeCronLogItem($logId), 'a log row without a user belongs to the default user');
+		$manager->detachBehavior('deny');
+		self::assertTrue($manager->removeCronLogItem($logId));
+	}
+
+	public function testRemoveATaskObjectWithoutPermission()
+	{
+		$manager = $this->newManager();
+		self::assertTrue($manager->addTask($task = $this->newTask('deniedObject')));
+		$manager->attachBehavior('deny', new TTestCronDenyingBehavior(['dyRemoveTask']));
+		self::assertNull($manager->removeTask($task));
+	}
+
+	public function testAPendingRowAloneThatHoldsNoTask()
+	{
+		$manager = $this->newManager();
+		self::assertTrue($manager->addTask($this->newTask('aloneBroken', '* * * * *')));
+		$conn = $manager->getDbConnection();
+		$conn->createCommand("UPDATE crontabs SET nextexectime=1, options='not serialized' WHERE active IS NOT NULL")->execute();
+		$reader = $this->_managers[] = new TDbCronManager();
+		PradoUnit::setProp($reader, '_conn', $conn);
+		$reader->init(null);
+		self::assertSame([], $reader->getPendingTasks());
+	}
+
+	public function testUserTasksCountOfTheDefaultUserByName()
+	{
+		$manager = $this->newManager();
+		self::assertTrue($manager->addTask($this->newTask('defaultNamed')));
+		self::assertSame(1, $manager->getUserTasksCount($manager->getDefaultUserName(), 'default%'));
+	}
+
+	public function testTheLogOfTheDefaultUser()
+	{
+		$manager = $this->newManager();
+		self::assertTrue($manager->addTask($task = $this->newTask('defaultLogged')));
+		PradoUnit::invoke($manager, 'logCronTask', $task, $manager->getDefaultUserName());
+		$manager->getDbConnection()->createCommand('UPDATE crontabs SET username=NULL WHERE active IS NULL')->execute();
+		self::assertCount(1, $manager->getCronLog(null, 0, 0, null, $manager->getDefaultUserName()), 'a log row without a user is the default user\'s');
+		self::assertSame(1, $manager->clearCronLog(null, null, $manager->getDefaultUserName()));
 	}
 }

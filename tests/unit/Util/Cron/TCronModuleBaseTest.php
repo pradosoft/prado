@@ -926,4 +926,92 @@ class TCronModuleBaseTest extends \PHPUnit\Framework\TestCase
 			PradoUnit::setProp($app, '_configFile', $file);
 		}
 	}
+
+	public function testGetNextTriggersFreshOfOneTask()
+	{
+		$app = Prado::getApplication();
+		foreach (['0 0 1 1 ? 2098', '@never'] as $schedule) {
+			foreach ([true, false] as $recorded) {
+				$name = 'freshOne' . bin2hex(random_bytes(3));
+				$module = $this->newModule([$this->job($name, $schedule)]);
+				$module->getTasks();
+				$info = $app->getGlobalState(TCronModule::TASKS_INFO, []);
+				if ($recorded) {
+					$info[$name]['lastExecTime'] = gmmktime(0, 0, 0, 1, 1, 2097);
+				} else {
+					unset($info[$name]);
+				}
+				$app->setGlobalState(TCronModule::TASKS_INFO, $info);
+				$app->saveGlobals();
+				self::assertSame(($schedule === '@never') ? [] : [$name], array_keys($module->getNextTriggers(10, true)));
+			}
+		}
+	}
+
+	public function testTasksByTypeOfOneTask()
+	{
+		foreach ([TTestCronModuleTask::class, \Prado\Util\Cron\TCronMethodTask::class] as $class) {
+			foreach ([true, false] as $ascending) {
+				foreach ([0, 1] as $pageSize) {
+					$module = $this->newModule([$this->job('oneTyped', '0 0 1 1 ? 2099', $class)]);
+					$expected = ($class === TTestCronModuleTask::class) ? ['oneTyped'] : [];
+					self::assertSame($expected, array_keys($module->getTasksByType(TTestCronModuleTask::class, null, $pageSize, 0, $ascending)));
+				}
+			}
+		}
+		foreach ([true, false] as $ascending) {
+			foreach ([0, 1] as $pageSize) {
+				self::assertSame([], $this->newModule()->getTasksByType(TTestCronModuleTask::class, null, $pageSize, 0, $ascending));
+			}
+		}
+	}
+
+	public function testBeginStatusWithOneStatusFile()
+	{
+		$host = (string) gethostname();
+		foreach ([
+			[null, true],
+			[['host' => $host, 'pid' => 999999999], false],
+			[['host' => $host, 'pid' => getmypid()], true],
+			[['host' => 'another-host.invalid', 'pid' => 1, 'updated' => 0], true],
+		] as [$status, $kept]) {
+			$module = $this->_modules[] = new TCronModule();
+			$module->setID('cronBaseOneStatus');
+			$module->setStatusPath($dir = $this->statusDir());
+			$module->setEnableStatus(true);
+			mkdir($dir);
+			if ($status !== null) {
+				file_put_contents($dir . DIRECTORY_SEPARATOR . 'one.json', json_encode(['module' => 'cronBaseOneStatus'] + $status));
+			}
+			try {
+				self::assertTrue(PradoUnit::invoke($module, 'beginStatus', TCronModule::STATUS_ROLE_SWEEP));
+				if ($status !== null) {
+					self::assertSame($kept, is_file($dir . DIRECTORY_SEPARATOR . 'one.json'));
+				}
+			} finally {
+				PradoUnit::invoke($module, 'endStatus');
+			}
+		}
+		$module = $this->_modules[] = new TCronModule();
+		self::assertFalse(PradoUnit::invoke($module, 'beginStatus', TCronModule::STATUS_ROLE_SWEEP), 'without EnableStatus');
+	}
+
+	public function testMetricsWithARunningDaemon()
+	{
+		$module = $this->_modules[] = new class () extends TCronModule {
+			public function getMonitorReport(?array $tasks = null): array
+			{
+				return ['module' => 'cronMetrics', 'daemon' => ['pid' => 1], 'processes' => [['pid' => 1]], 'tasks' => []];
+			}
+		};
+		self::assertStringContainsString('prado_cron_daemon_up{module="cronMetrics"} 1', $module->getMonitorMetrics());
+	}
+
+	public function testTimeZoneEmptyIsUnset()
+	{
+		$module = $this->_modules[] = new TCronModule();
+		$module->setTimeZone('UTC');
+		$module->setTimeZone('');
+		self::assertNull($module->getTimeZone());
+	}
 }
