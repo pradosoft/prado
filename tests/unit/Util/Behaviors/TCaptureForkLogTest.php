@@ -381,6 +381,19 @@ class TCaptureForkLogTest extends \PHPUnit\Framework\TestCase
 		}
 	}
 
+	public function testDyAttachBehaviorKeepsOneInstance()
+	{
+		$owner = new TComponent();
+		$first = new TCaptureForkLog();
+		$owner->attachBehavior('first', $first);
+		$owner->attachBehavior('second', new TCaptureForkLog());
+
+		self::assertCount(1, $owner->getBehaviors(TCaptureForkLog::class));
+		self::assertSame($first, $owner->asa('first'));
+		self::assertNull($owner->asa('second'));
+		$owner->detachBehavior('first');
+	}
+
 	public function testCollectLogsFromChildrenWithoutConnections()
 	{
 		$behavior = new TCaptureForkLog();

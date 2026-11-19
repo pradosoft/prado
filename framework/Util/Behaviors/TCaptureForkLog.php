@@ -105,16 +105,15 @@ class TCaptureForkLog extends \Prado\Util\TBehavior
 
 	/**
 	 * This is the singleton behavior.  Only one instance of itself can be a behavior
-	 * of the owner.
+	 * of the owner, so another instance being added is detached.
 	 * @param string $name The name of the behavior being added to the owner.
 	 * @param IBaseBehavior $behavior The behavior being added to the owner.
 	 * @param TCallChain $chain The chain of event handlers.
 	 */
 	public function dyAttachBehavior($name, $behavior, TCallChain $chain)
 	{
-		$owner = $this->getOwner();
-		if (count($owner->getBehaviors(self::class)) > 1) {
-			$owner->detachBehavior($name);
+		if ($behavior !== $this && $behavior instanceof self) {
+			$this->getOwner()->detachBehavior($name);
 		}
 		return $chain->dyAttachBehavior($name, $behavior);
 	}
