@@ -2851,6 +2851,40 @@ class TCronModuleTest extends \PHPUnit\Framework\TestCase
 		self::assertFalse($this->obj->getDaemonMutex()->isAcquired($this->obj->getDaemonLockName()), 'the lease is released');
 	}
 
+	public function testRunDaemon_AnErrorAtTheStartReleasesTheLeaseAndTheTransport()
+	{
+		$this->obj->setDaemon(true);
+		$this->obj->setDaemonLifetime(0);
+		$this->obj->setDaemonMutex(new TMemoryMutex());
+		$transport = new class (sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'cronwake-' . bin2hex(random_bytes(4))) extends TCronWakeFile {
+			public int $closed = 0;
+
+			public function close(): void
+			{
+				$this->closed++;
+				parent::close();
+			}
+		};
+		$this->obj->setWakeTransport($transport);
+		$this->obj->init(null);
+		$this->obj->attachEventHandler('OnDaemonStart', function () {
+			throw new \RuntimeException('start failed');
+		});
+		$end = null;
+		$this->obj->attachEventHandler('OnDaemonEnd', function ($sender, $param) use (&$end) {
+			$end = $param->getReason();
+		});
+		try {
+			$this->obj->processPendingTasks();
+			self::fail('the error of an OnDaemonStart handler is lost');
+		} catch (\RuntimeException $e) {
+			self::assertSame('start failed', $e->getMessage());
+		}
+		self::assertSame(TCronDaemonEventParameter::REASON_ERROR, $end);
+		self::assertSame(1, $transport->closed, 'the transport is closed');
+		self::assertFalse($this->obj->getDaemonMutex()->isAcquired($this->obj->getDaemonLockName()), 'the lease is released');
+	}
+
 	public function testRunDaemon_ASignalStopsTheDaemon()
 	{
 		if (!extension_loaded('pcntl') || !function_exists('posix_kill')) {
