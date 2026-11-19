@@ -68,7 +68,7 @@ Auto-created as `crontabs` (configurable via `TableName`):
 | `options` | MEDIUMTEXT (`TEXT` on PostgreSQL) | Serialized `TCronTask` object; base64 encoded on PostgreSQL, whose `TEXT` ends at a NUL byte (`serializeTask()`, `decodeTaskOptions()`). `getCronLog()` returns it decoded |
 | `processcount` | INT | Times task has run |
 | `lastexectime` | VARCHAR(20) | Unix timestamp of last run |
-| `nextexectime` | INT | Unix timestamp of the next trigger after `lastexectime` (4.4.0); `getPendingTasks()` selects `nextexectime <= now` |
+| `nextexectime` | BIGINT | Unix timestamp of the next trigger after `lastexectime` (4.4.0); `getPendingTasks()` selects `nextexectime <= now` |
 | `lastresult` | VARCHAR(16) | Result of the last finished run: `ok`, `error`, `denied`, `timeout`, or `missed` (4.4.0); on a log row, the result of that run |
 | `lastduration` | VARCHAR(20) | Seconds the last finished run took (4.4.0); on a log row, the seconds of that run |
 | `paused` | INT | `1` while the task is paused (`pauseTask()`), else `NULL` (4.4.0) |

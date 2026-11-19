@@ -106,6 +106,47 @@ class TDbCronManagerDriverTest extends \PHPUnit\Framework\TestCase
 	/**
 	 * @dataProvider driverProvider
 	 */
+	public function testATriggerAfter2038IsStored(string $driver)
+	{
+		$conn = $this->driverConnection($driver);
+		$manager = $this->driverManager($conn, 'crondrv_y2038');
+		$task = $this->newTask('drvfar');
+		$task->setSchedule('0 0 1 1 ? 2099');
+		self::assertTrue($manager->addTask($task));
+		$stored = (int) $conn->createCommand("SELECT nextexectime FROM crondrv_y2038 WHERE name='drvfar'")->queryScalar();
+		self::assertGreaterThan(2 ** 31, $stored);
+		self::assertSame((int) $task->getNextTriggerTime(), $stored);
+	}
+
+	/**
+	 * @dataProvider driverProvider
+	 */
+	public function testAConfiguredTaskKeepsItsRowAndTakesItsNewConfiguration(string $driver)
+	{
+		$conn = $this->driverConnection($driver);
+		$job = ['name' => 'drvkeep', 'schedule' => '0 0 1 1 ? 2099', 'task' => TTestCronModuleTask::class];
+		$first = $this->driverManager($conn, 'crondrv_keep', [$job]);
+		$first->getTasks();
+		$tabuid = $conn->createCommand("SELECT tabuid FROM crondrv_keep WHERE name='drvkeep'")->queryScalar();
+
+		$same = $this->_managers[] = new TDbCronManager();
+		PradoUnit::setProp($same, '_conn', $conn);
+		$same->setTableName('crondrv_keep');
+		$same->init([$job]);
+		self::assertTrue(PradoUnit::invoke($same, 'setPersistentData', 'drvkeep', $same->getTask('drvkeep')), 'an unchanged configuration keeps its row');
+
+		$changed = $this->_managers[] = new TDbCronManager();
+		PradoUnit::setProp($changed, '_conn', $conn);
+		$changed->setTableName('crondrv_keep');
+		$changed->init([['schedule' => '0 0 1 1 ? 2098'] + $job]);
+		$changed->getTasks();
+		$row = $conn->createCommand("SELECT tabuid, schedule FROM crondrv_keep WHERE name='drvkeep'")->queryRow();
+		self::assertSame([(string) $tabuid, '0 0 1 1 ? 2098'], [(string) $row['tabuid'], $row['schedule']], 'a changed configuration updates its row');
+	}
+
+	/**
+	 * @dataProvider driverProvider
+	 */
 	public function testAConfiguredTaskNoLongerConfiguredLosesItsRow(string $driver)
 	{
 		$conn = $this->driverConnection($driver);

@@ -583,7 +583,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 			return null;
 		}
 		$db = $this->getDbConnection();
-		$db->createCommand('ALTER TABLE ' . $this->_tableName . ' ADD COLUMN nextexectime INT NULL DEFAULT NULL')->execute();
+		$db->createCommand('ALTER TABLE ' . $this->_tableName . ' ADD COLUMN nextexectime BIGINT NULL DEFAULT NULL')->execute();
 		$db->createCommand('CREATE INDEX ' . $this->getIndexName('tnext') . ' ON ' . $this->_tableName . '(nextexectime)')->execute();
 
 		$rows = $db->createCommand("SELECT name, options, lastexectime FROM {$this->_tableName} WHERE active IS NOT NULL")->query()->readAll();
@@ -671,7 +671,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 			options ' . $textType . ' NULL,
 			processcount INT NOT NULL DEFAULT 0,
 			lastexectime VARCHAR (20) NULL DEFAULT NULL,
-			nextexectime INT NULL DEFAULT NULL,
+			nextexectime BIGINT NULL DEFAULT NULL,
 			lastresult VARCHAR (16) NULL DEFAULT NULL,
 			lastduration VARCHAR (20) NULL DEFAULT NULL,
 			paused INT NULL DEFAULT NULL,
