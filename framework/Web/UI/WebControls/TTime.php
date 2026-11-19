@@ -640,17 +640,15 @@ class TTime extends TI18NWebControl
 				$timeType = IntlDateFormatter::FULL;
 				break;
 			default:
-				// Treat $format as an ICU datetime pattern (e.g. "MMMM d, yyyy")
-				if ($format !== null) {
-					$formatter = $this->getIntlDateFormatter(
-						$this->getCulture(),
-						IntlDateFormatter::NONE,
-						IntlDateFormatter::NONE,
-						$format
-					);
-					if ($formatter !== null && ($result = $formatter->format($dt)) !== false) {
-						return (string) $result;
-					}
+				// Treat $format as an ICU datetime pattern (e.g. "MMMM d, yyyy"); null is HtmlDateTime above.
+				$formatter = $this->getIntlDateFormatter(
+					$this->getCulture(),
+					IntlDateFormatter::NONE,
+					IntlDateFormatter::NONE,
+					$format
+				);
+				if ($formatter !== null && ($result = $formatter->format($dt)) !== false) {
+					return (string) $result;
 				}
 				return $dt->format('Y-m-d\TH:i:sP');
 		}
