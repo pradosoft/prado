@@ -11,7 +11,7 @@
 ## Overview
 `TConstantReflectionTrait` adds static reflection methods to any class that defines PHP constants. The four methods (`hasConstant`, `hasConstantValue`, `valueOfConstant`, `constantOfValue`) all share the same flexible signature: exact match, case-insensitive match, or affix-filtered match (prefix or suffix).
 
-`ReflectionClass` instances are cached in a static `$_reflection_cache` array, so the reflection cost is paid once per class.
+`ReflectionClass` instances come from [`TReflectionClassTrait`](INDEX.md), which caches them in `TComponentReflection`, so the reflection cost is paid once per class.
 
 ## Quick Example
 
@@ -75,4 +75,5 @@ TMyClass::hasConstant('BottomMargin', '-margin', false); // true (case-insensiti
 
 - **String constants only** — the trait works on any constant type, but `valueOfConstant` / `constantOfValue` return `?string`; non-string constant values may produce unexpected results when compared.
 - **Inherited constants included** — `ReflectionClass::getConstants()` returns constants from the entire inheritance chain, not just the declaring class.
-- **Cache is per-class static** — the `$_reflection_cache` array lives in the trait, indexed by `static::class`, so each concrete class that uses the trait has its own cache slot.
+- **Cache is per class** — `getReflectionClass()` caches by `static::class`, so each subclass reflects its own constants.
+- **Any non-empty affix filters** — an affix of `'0'` is a prefix; only `''` (or a bare `'*'` or `'-'`) applies no filter.
