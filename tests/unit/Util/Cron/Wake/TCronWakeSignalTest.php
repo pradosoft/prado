@@ -69,6 +69,26 @@ class TCronWakeSignalTest extends \PHPUnit\Framework\TestCase
 		self::assertFileDoesNotExist($this->pidFile, 'close removes this process\'s pid file');
 	}
 
+	public function testWaitInstallsTheHandlerBeforeItRecordsThePid()
+	{
+		$t = new class ($this->pidFile) extends TCronWakeSignal {
+			public mixed $handlerAtWrite = null;
+
+			protected function writePid(): bool
+			{
+				$this->handlerAtWrite = pcntl_signal_get_handler($this->getSignal());
+				return parent::writePid();
+			}
+		};
+		$now = microtime(true);
+		try {
+			self::assertFalse($t->wait($now, $now));
+			self::assertInstanceOf(\Closure::class, $t->handlerAtWrite, 'a signal sent once the pid file names this process is handled');
+		} finally {
+			$t->close();
+		}
+	}
+
 	public function testWatchDeliversTheSignalOnTheLoop()
 	{
 		$t = new TCronWakeSignal($this->pidFile);
