@@ -1715,6 +1715,8 @@ class TComponent
 	 * Detaches an existing event handler.
 	 * This method is the opposite of {@see attachEventHandler}.  It will detach
 	 * any 'on' events defined by an objects active behaviors as well.
+	 * A handler that is not attached throws no internal exception: {@see unlisten}
+	 * detaches from {@see __destruct}, and a destructor does not throw.
 	 * @param string $name event name
 	 * @param callable $handler the event handler to be removed
 	 * @param null|false|numeric $priority the priority of the handler, defaults to false which translates
@@ -1725,10 +1727,13 @@ class TComponent
 	{
 		if ($this->hasEventHandler($name)) {
 			try {
-				$this->getEventHandlers($name)->remove($handler, $priority);
-				return true;
+				$handlers = $this->getEventHandlers($name);
+				if ($handlers->indexOf($handler, $priority) !== -1) {
+					$handlers->remove($handler, $priority);
+					return true;
+				}
 			} catch (TInvalidDataValueException $e) {
-				// The handler is not attached at the given priority; nothing to detach.
+				// A destructor removed the handler after indexOf() found it; nothing to detach.
 			}
 		}
 		return false;
