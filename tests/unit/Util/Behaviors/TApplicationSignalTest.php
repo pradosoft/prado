@@ -19,6 +19,14 @@ class TTestApplicationSignals extends TApplicationSignals
 	
 }
 
+class TTestNoSignalsDispatcher extends TSignalsDispatcher
+{
+	public static function hasSignals(): bool
+	{
+		return false;
+	}
+}
+
 class TApplicationSignalTest extends \PHPUnit\Framework\TestCase
 {
 	public const BEHAVIOR_NAME = 'appSignals';
@@ -104,6 +112,15 @@ class TApplicationSignalTest extends \PHPUnit\Framework\TestCase
 		$this->behavior->setAsyncSignals(true);
 		pcntl_async_signals($ogAsyncSignal);
 		self::assertEquals($ogAsyncSignal, $this->behavior->getAsyncSignals());
+	}
+
+	public function testAsyncSignals_withoutSignals()
+	{
+		$this->behavior->setSignalsClass(TTestNoSignalsDispatcher::class);
+
+		self::assertNull($this->behavior->getAsyncSignals());
+		self::assertNull($this->behavior->setAsyncSignals(true));
+		self::assertNull($this->behavior->getSignalsDispatcher());
 	}
 
 	public function testPriorHandlerPriority()

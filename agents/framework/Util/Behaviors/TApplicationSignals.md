@@ -16,7 +16,7 @@ This behavior installs the [TSignalsDispatcher](../TSignalsDispatcher.md) for th
 - `detachEventHandlers([TComponent](../../TComponent.md) $component)` - Detaches the signals dispatcher
 - `getSignalsDispatcher()` - Gets the [TSignalsDispatcher](../TSignalsDispatcher.md) instance
 - `getSignalsClass()` / `setSignalsClass($value)` - Gets/sets the signals dispatcher class (default: TSignalsDispatcher)
-- `getAsyncSignals()` / `setAsyncSignals($value)` - Gets/sets whether signals are handled asynchronously
+- `getAsyncSignals()` / `setAsyncSignals($value)` - Gets/sets whether signals are handled asynchronously; null without signals
 - `getPriorHandlerPriority()` / `setPriorHandlerPriority($value)` - Gets/sets priority of original signal handlers
 
 ## See Also

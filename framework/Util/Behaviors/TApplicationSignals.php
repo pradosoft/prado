@@ -122,18 +122,20 @@ class TApplicationSignals extends TBehavior
 	}
 
 	/**
-	 * @return bool Is the system executing signal handlers asynchronously.
+	 * @return ?bool Is the system executing signal handlers asynchronously, or null
+	 *   without signals.
 	 */
-	public function getAsyncSignals(): bool
+	public function getAsyncSignals(): ?bool
 	{
 		return ($this->getSignalsClass())::getAsyncSignals();
 	}
 
 	/**
 	 * @param mixed $value Set the system to execute signal handlers asynchronously (or synchronously on false).
-	 * @return bool Was the system executing signal handlers asynchronously.
+	 * @return ?bool Was the system executing signal handlers asynchronously, or null
+	 *   without signals.
 	 */
-	public function setAsyncSignals($value): bool
+	public function setAsyncSignals($value): ?bool
 	{
 		return ($this->getSignalsClass())::setAsyncSignals(TPropertyValue::ensureBoolean($value));
 	}
