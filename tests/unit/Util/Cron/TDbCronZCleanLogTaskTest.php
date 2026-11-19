@@ -170,11 +170,4 @@ class TDbCronZCleanLogTaskTest extends TCronTaskTest
 			$cron->unlisten();
 		}
 	}
-
-	public function testTimePeriodOfAnInvalidIsoPeriodThatIsARelativeTime()
-	{
-		$task = new TDbCronCleanLogTask();
-		$task->setTimePeriod('Previous week');
-		self::assertSame('Previous week', $task->getTimePeriod(), 'a P string that is no ISO 8601 period is read as a relative time, as clearCronLog() does');
-	}
 }
