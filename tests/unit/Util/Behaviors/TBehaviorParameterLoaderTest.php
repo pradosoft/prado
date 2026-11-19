@@ -187,6 +187,25 @@ class TBehaviorParameterLoaderTest extends \PHPUnit\Framework\TestCase
 		$module->detachBehavior(0);
 	}
 	
+	public function testAttachModuleBehaviors_onInitComplete()
+	{
+		$app = Prado::getApplication();
+		$module = new TestModuleLoaderBM;
+		$module->init(null);
+		$app->setModule('TBPLoaderInitTest', $module);
+		$this->obj->BehaviorName = 'initBehavior';
+		$this->obj->BehaviorClass = TestModuleBehaviorLoader1::class;
+		$this->obj->AttachTo = 'module:TBPLoaderInitTest';
+		$this->assertEquals(0, count($app->onInitComplete));
+
+		$this->obj->dyInit(null);
+		$app->onInitComplete();
+
+		$this->assertInstanceOf(TestModuleBehaviorLoader1::class, $module->asa('initBehavior'));
+		$module->detachBehavior('initBehavior');
+		$module->unlisten();
+	}
+
 	public function testAttachTPageBehaviors()
 	{
 		$behaviorName = 'testBehavior';

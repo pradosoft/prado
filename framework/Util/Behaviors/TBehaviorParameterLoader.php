@@ -97,7 +97,7 @@ class TBehaviorParameterLoader extends TComponent
 				return;
 			} elseif (strncasecmp(strtolower($this->_attachto), 'module:', 7) === 0) {
 				if (!count(self::$_moduleBehaviors)) {
-					Prado::getApplication()->attachEventHandler('onInitComplete', [$this, 'attachModulesBehaviors'], -20);
+					Prado::getApplication()->attachEventHandler('onInitComplete', [$this, 'attachModuleBehaviors'], -20);
 				}
 				$moduleid = trim(substr($this->_attachto, 7));
 				if (!$moduleid) {
@@ -140,9 +140,10 @@ class TBehaviorParameterLoader extends TComponent
 	}
 
 	/**
-	 * This method attaches page behaviors to the TPage handling the TPageService::OnPreInitPage event.
+	 * TApplication::onInitComplete handler that attaches the module behaviors to their modules.
 	 * @param object $sender the object that raised the event
-	 * @param \Prado\Web\UI\TPage $page the page being initialized
+	 * @param mixed $page parameter of the event
+	 * @throws TConfigurationException when a module is not found
 	 */
 	public function attachModuleBehaviors($sender, $page)
 	{
@@ -183,7 +184,7 @@ class TBehaviorParameterLoader extends TComponent
 		if ($this->_attachtoclass) {
 			TComponent::detachClassBehavior($this->_behaviorName, $this->_attachtoclass);
 		}
-		Prado::getApplication()->detachEventHandler('onInitComplete', [$this, 'attachModulesBehaviors']);
+		Prado::getApplication()->detachEventHandler('onInitComplete', [$this, 'attachModuleBehaviors']);
 		Prado::getApplication()->detachEventHandler('onBeginRequest', [$this, 'attachTPageServiceHandler']);
 		self::$_moduleBehaviors = [];
 		self::$_pageBehaviors = [];

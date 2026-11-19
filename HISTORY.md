@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TBehaviorParameterLoader` attaches the behaviors for `AttachTo="module:<id>"` at `onInitComplete`; its handler named a missing method, so `onInitComplete` threw `TInvalidDataValueException`. (belisoful)
 ENH: Issue #534 - `IMinifier` is the seam behind `TJavaScript::minify()` and `TStyleSheetHelper::minify()`, set with `setMinifier()`; the defaults are `TJavaScriptMinifier` (JSMin) and the dependency-free `TStyleSheetMinifier`. Outside Debug mode `TClientScriptManager` serves PRADO CSS packages minified, as it does JavaScript. (belisoful)
 BUG: Issue #1497 - `TSysLogRoute::setSysLogFlags()` throws `TConfigurationException` for an unknown flag name, as for an unknown flag bit; it ignored the name. (belisoful)
 BUG: Issue #1497 - `TDbLogRoute::setRetainPeriod()` measures an ISO 8601 duration from the application clock, and `'PT0S'` is null like `0`; `timespanToSeconds()` takes the start time as `$from`. It measured from the wall clock, and `'PT0S'` was 0. (belisoful)
