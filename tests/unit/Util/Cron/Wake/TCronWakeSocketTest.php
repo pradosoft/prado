@@ -3,6 +3,7 @@
 namespace Prado\Test\Unit\Util\Cron\Wake;
 
 use Prado\IO\Async\TAsync;
+use Prado\Test\Unit\PradoUnit;
 use Prado\Util\Cron\Wake\TCronWakeSocket;
 
 class TCronWakeSocketTest extends \PHPUnit\Framework\TestCase
@@ -328,5 +329,169 @@ class TCronWakeSocketTest extends \PHPUnit\Framework\TestCase
 		$now = microtime(true);
 		self::assertFalse($s->watch(TAsync::getLoop(), static fn () => null), 'a socket in a missing directory cannot be bound');
 		self::assertNull($s->wait($now + 1, $now));
+	}
+
+	public function testSetKeyNullReturnsToTheKeyFile()
+	{
+		$s = new TCronWakeSocket($this->runtime);
+		$key = $s->getKey();
+		self::assertSame('secret', $s->setKey('secret')->getKey());
+		self::assertSame($key, $s->setKey(null)->getKey(), 'null returns to the key file');
+	}
+
+	public function testKeyFileWithoutRetries()
+	{
+		$file = $this->runtime . DIRECTORY_SEPARATOR . TCronWakeSocket::KEY_FILE;
+		$none = new class ($this->runtime) extends TCronWakeSocket {
+			protected const KEY_FILE_ATTEMPTS = 0;
+		};
+		$key = $none->getKey();
+		self::assertSame(64, strlen($key), 'without attempts the key file is written at once');
+		self::assertSame($key, file_get_contents($file));
+
+		$missing = $this->runtime . DIRECTORY_SEPARATOR . 'missing';
+		$none = new class ($missing) extends TCronWakeSocket {
+			protected const KEY_FILE_ATTEMPTS = 0;
+		};
+		self::assertSame(hash_hmac('sha256', 'prado:cron:wake', $missing . DIRECTORY_SEPARATOR . TCronWakeSocket::KEY_FILE), $none->getKey(), 'an unwritable key file falls back to the key of its path');
+	}
+
+	public function testKeyFileWithOneAttempt()
+	{
+		$file = $this->runtime . DIRECTORY_SEPARATOR . TCronWakeSocket::KEY_FILE;
+		file_put_contents($file, '');
+		$once = new class ($this->runtime) extends TCronWakeSocket {
+			protected const KEY_FILE_ATTEMPTS = 1;
+			protected const KEY_FILE_RETRY_DELAY = 0.0;
+		};
+		$key = $once->getKey();
+		self::assertSame(64, strlen($key), 'a file still empty after the attempt is rewritten');
+		self::assertSame($key, file_get_contents($file));
+
+		$missing = $this->runtime . DIRECTORY_SEPARATOR . 'missing';
+		$once = new class ($missing) extends TCronWakeSocket {
+			protected const KEY_FILE_ATTEMPTS = 1;
+			protected const KEY_FILE_RETRY_DELAY = 0.0;
+		};
+		self::assertSame(hash_hmac('sha256', 'prado:cron:wake', $missing . DIRECTORY_SEPARATOR . TCronWakeSocket::KEY_FILE), $once->getKey(), 'a key file that can be neither made nor read falls back to the key of its path');
+	}
+
+	public function testKeyFileWithOneAttemptAndPermissions()
+	{
+		if (DIRECTORY_SEPARATOR !== '/' || (function_exists('posix_geteuid') && posix_geteuid() === 0)) {
+			self::markTestSkipped('file permissions bind a process that is not root on a POSIX system');
+		}
+		$file = $this->runtime . DIRECTORY_SEPARATOR . TCronWakeSocket::KEY_FILE;
+		$make = fn () => new class ($this->runtime) extends TCronWakeSocket {
+			protected const KEY_FILE_ATTEMPTS = 1;
+			protected const KEY_FILE_RETRY_DELAY = 0.0;
+		};
+		$fallback = hash_hmac('sha256', 'prado:cron:wake', $file);
+
+		file_put_contents($file, '');
+		chmod($file, 0o400);
+		self::assertSame($fallback, $make()->getKey(), 'an empty key file that cannot be rewritten falls back to the key of its path');
+
+		chmod($file, 0o200);
+		$key = $make()->getKey();
+		self::assertSame(64, strlen($key));
+		self::assertNotSame($fallback, $key, 'a key file that cannot be read takes a new key');
+		chmod($file, 0o600);
+		self::assertSame($key, file_get_contents($file));
+	}
+
+	public function testBindAndReleaseUdp()
+	{
+		if (!in_array('udp', stream_get_transports(), true)) {
+			self::markTestSkipped('no udp transport');
+		}
+		$s = new TCronWakeSocket($this->runtime);
+		$server = PradoUnit::invoke($s, 'bind', 'udp://127.0.0.1:0');
+		self::assertIsResource($server, 'a udp address binds');
+		$address = 'udp://' . stream_socket_get_name($server, false);
+		self::assertNull(PradoUnit::invoke($s, 'bind', $address), 'an address in use does not bind');
+		PradoUnit::invoke($s, 'release', $server, $address);
+		self::assertFalse(is_resource($server), 'release closes the socket');
+		PradoUnit::invoke($s, 'release', $server, $address);
+	}
+
+	public function testReleaseOfAClosedUdgSocketRemovesItsFile()
+	{
+		$s = new TCronWakeSocket($this->runtime);
+		$path = $this->runtime . DIRECTORY_SEPARATOR . 'closed.sock';
+		touch($path);
+		$closed = fopen('php://memory', 'r');
+		fclose($closed);
+		PradoUnit::invoke($s, 'release', $closed, 'udg://' . $path);
+		self::assertFileDoesNotExist($path);
+	}
+
+	public function testEnsureBoundRebindsOnANewAddress()
+	{
+		$socket = new class ($this->runtime) extends TCronWakeSocket {
+			public bool $failBind = false;
+
+			protected function bind(string $address)
+			{
+				return $this->failBind ? null : parent::bind($address);
+			}
+		};
+		$this->skipWithoutTransport($socket);
+		$even = $socket->getAddress(20);
+		$odd = $socket->getAddress(21);
+		$this->unlinkUdg($even);
+		$this->unlinkUdg($odd);
+		self::assertTrue(PradoUnit::invoke($socket, 'ensureBound', $even));
+		self::assertTrue(PradoUnit::invoke($socket, 'ensureBound', $odd), 'the next minute binds its own address');
+		self::assertSame($odd, PradoUnit::getProp($socket, '_serverAddress'));
+		$socket->failBind = true;
+		self::assertFalse(PradoUnit::invoke($socket, 'ensureBound', $even), 'an address that cannot be bound');
+		self::assertNull(PradoUnit::getProp($socket, '_server'), 'the previous socket is released');
+		$socket->close();
+	}
+
+	public function testSignalWithoutAListenerOrATransport()
+	{
+		$s = new TCronWakeSocket($this->runtime);
+		$this->skipWithoutTransport($s);
+		if ($s->getTransport() === 'udg') {
+			self::assertFalse($s->signal(22 * 60 + 1.0), 'a udg socket file without a listener receives nothing');
+		}
+		PradoUnit::setProp($s, '_transport', null);
+		self::assertFalse($s->signal(22 * 60 + 1.0), 'without a transport there is no address');
+	}
+
+	public function testWatchIgnoresAForeignDatagram()
+	{
+		$socket = new TCronWakeSocket($this->runtime);
+		$this->skipWithoutTransport($socket);
+		$address = $socket->getDaemonAddress();
+		$this->unlinkUdg($address);
+		$loop = TAsync::getLoop();
+		$wakes = 0;
+		$suspension = $loop->suspension();
+		$resumed = false;
+		$resume = static function () use ($suspension, &$resumed) {
+			if (!$resumed) {
+				$resumed = true;
+				$suspension->resume();
+			}
+		};
+		$send = static function (string $data) use ($address) {
+			$client = stream_socket_client($address, $e1, $e2, 0, STREAM_CLIENT_CONNECT);
+			fwrite($client, $data);
+			fclose($client);
+		};
+		self::assertTrue($socket->watch($loop, static function () use (&$wakes, $resume) {
+			$wakes++;
+			$resume();
+		}));
+		$loop->delay(0.02, static fn () => $send('foreign'));
+		$loop->delay(0.15, static fn () => $send($socket->createToken()));
+		$timeout = $loop->delay(2.0, $resume);
+		$suspension->suspend();
+		$loop->cancel($timeout);
+		$socket->close();
+		self::assertSame(1, $wakes, 'only the signed datagram wakes');
 	}
 }

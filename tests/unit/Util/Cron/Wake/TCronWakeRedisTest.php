@@ -4,6 +4,7 @@ namespace Prado\Test\Unit\Util\Cron\Wake;
 
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\IO\Async\TAsync;
+use Prado\Test\Unit\PradoUnit;
 use Prado\Util\Cron\Wake\TCronWakeRedis;
 
 /**
@@ -200,6 +201,7 @@ class TCronWakeRedisTest extends \PHPUnit\Framework\TestCase
 			$now = microtime(true);
 			self::assertFalse($make()->signal($now), 'no password is rejected');
 			self::assertFalse($make()->setPassword('wrong')->signal($now), 'a wrong password is rejected');
+			self::assertFalse($make()->setUsername('acl')->setPassword('wrong')->signal($now), 'a wrong password of an ACL user is rejected');
 			$t = $make()->setPassword('secret');
 			self::assertFalse($t->wait($now + 0.05, $now), 'the password authenticates the subscriber');
 			self::assertTrue($t->signal($now));
@@ -414,5 +416,127 @@ class TCronWakeRedisTest extends \PHPUnit\Framework\TestCase
 			fclose($readOnly);
 			unlink($file);
 		}
+	}
+
+	/**
+	 * @return array{0: resource, 1: resource} two connected stream sockets
+	 */
+	private function socketPair(): array
+	{
+		$pair = stream_socket_pair(DIRECTORY_SEPARATOR === '\\' ? STREAM_PF_INET : STREAM_PF_UNIX, STREAM_SOCK_STREAM, STREAM_IPPROTO_IP);
+		self::assertIsArray($pair);
+		return $pair;
+	}
+
+	public function testNullPropertiesAreUnset()
+	{
+		$t = (new TCronWakeRedis())->setSocket('/run/redis.sock')->setUsername('cron')->setPassword('secret')->setPeerName('redis.example.com');
+		$t->setSocket(null)->setUsername(null)->setPassword(null)->setPeerName(null);
+		self::assertNull($t->getSocket());
+		self::assertNull($t->getUsername());
+		self::assertNull($t->getPassword());
+		self::assertNull($t->getPeerName());
+	}
+
+	public function testTlsContextOfEachFileCombination()
+	{
+		$t = (new TCronWakeRedis())->setTls(true)->setHost('redis.internal');
+		$files = ['cafile' => 'setCaFile', 'local_cert' => 'setLocalCert', 'local_pk' => 'setLocalKey'];
+		for ($mask = 0; $mask < 8; $mask++) {
+			$expected = ['verify_peer' => true, 'verify_peer_name' => true, 'peer_name' => 'redis.internal'];
+			$bit = 1;
+			foreach ($files as $option => $setter) {
+				$file = ($mask & $bit) ? '/etc/ssl/' . $option . '.pem' : null;
+				$t->$setter($file);
+				if ($file !== null) {
+					$expected[$option] = $file;
+				}
+				$bit <<= 1;
+			}
+			self::assertSame(['ssl' => $expected], PradoUnit::invoke($t, 'getStreamContextOptions'), 'files ' . $mask);
+		}
+	}
+
+	public function testUnavailable()
+	{
+		$t = new class () extends TCronWakeRedis {
+			protected function getIsAvailable(): bool
+			{
+				return false;
+			}
+		};
+		$now = microtime(true);
+		self::assertFalse($t->signal($now));
+		self::assertNull($t->wait($now + 1, $now));
+		self::assertFalse($t->watch(TAsync::getLoop(), static fn () => null));
+	}
+
+	public function testEncodeACommandWithoutArguments()
+	{
+		self::assertSame("*0\r\n", PradoUnit::invoke(new TCronWakeRedis(), 'encode', []));
+	}
+
+	public function testACommandWhoseConnectionEndsHasNoReply()
+	{
+		[$local, $peer] = $this->socketPair();
+		try {
+			stream_socket_shutdown($peer, STREAM_SHUT_WR);
+			self::assertNull(PradoUnit::invoke(new TCronWakeRedis(), 'command', $local, ['PING']), 'the end of the stream before a reply');
+		} finally {
+			fclose($local);
+			fclose($peer);
+		}
+	}
+
+	public function testASubscribeReplyThatIsNoSubscription()
+	{
+		[$local, $peer] = $this->socketPair();
+		fwrite($peer, "*1\r\n\$4\r\npong\r\n");
+		$t = new class ($local) extends TCronWakeRedis {
+			public function __construct(public mixed $socket)
+			{
+				parent::__construct();
+			}
+
+			protected function connect()
+			{
+				return $this->socket;
+			}
+		};
+		try {
+			$now = microtime(true);
+			self::assertNull($t->wait($now + 1, $now), 'an array reply other than subscribe does not subscribe');
+			self::assertFalse(is_resource($local), 'the connection is closed');
+		} finally {
+			fclose($peer);
+		}
+	}
+
+	public function testWatchIgnoresAReplyThatIsNoMessage()
+	{
+		$t = $this->liveTransport();
+		$loop = TAsync::getLoop();
+		$wakes = 0;
+		$suspension = $loop->suspension();
+		$resumed = false;
+		$resume = static function () use ($suspension, &$resumed) {
+			if (!$resumed) {
+				$resumed = true;
+				$suspension->resume();
+			}
+		};
+		self::assertTrue($t->watch($loop, static function () use (&$wakes, $resume) {
+			$wakes++;
+			$resume();
+		}));
+		// A PING on the subscribed connection replies with a pong, which is no message.
+		fwrite(PradoUnit::getProp($t, '_subscriber'), PradoUnit::invoke($t, 'encode', ['PING']));
+		$loop->delay(0.15, static fn () => $t->signal(microtime(true)));
+		$timeout = $loop->delay(3.0, $resume);
+		$suspension->suspend();
+		$loop->cancel($timeout);
+		self::assertNotNull(PradoUnit::getProp($t, '_watcher'), 'the watch goes on after the pong');
+		$t->close();
+		self::assertSame(1, $wakes, 'only the message wakes');
 	}
 }

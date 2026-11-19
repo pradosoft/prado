@@ -3,10 +3,13 @@
 namespace Prado\Test\Unit\Util\Cron\Wake;
 
 use Prado\Data\IDataConnection;
+use Prado\Data\TDataSourceConfig;
 use Prado\Data\TDbConnection;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\IO\Async\TAsync;
+use Prado\Prado;
+use Prado\Test\Unit\PradoUnit;
 use Prado\Test\Unit\Harness\Util\Mutex\TTestLockConnection;
 use Prado\Util\Cron\Wake\TCronWakeOracle;
 
@@ -225,5 +228,70 @@ class TCronWakeOracleTest extends \PHPUnit\Framework\TestCase
 		self::assertSame(1, $wakes, 'the second poll saw status 0');
 		self::assertGreaterThanOrEqual(3, count($listener->commands));
 		self::assertSame(0, $listener->commands[1]->bound[':timeout'], 'the loop polls with a zero timeout');
+	}
+
+	public function testClosedConnectionsAreReopened()
+	{
+		$t = new TCronWakeOracleTestTransport(new TTestLockConnection('oci'));
+		self::assertTrue($t->signal(1.0));
+		self::assertFalse($t->wait(1.0, 1.0));
+		[$signaler, $listener] = $t->connections;
+		$signaler->setActive(false);
+		$listener->setActive(false);
+
+		self::assertTrue($t->signal(1.0), 'a closed signaling connection is reopened');
+		self::assertFalse($t->wait(1.0, 1.0), 'a closed listening connection is reopened');
+		self::assertCount(4, $t->connections);
+		[, , $signaler, $listener] = $t->connections;
+		self::assertSame('BEGIN DBMS_ALERT.REGISTER(:name); END;', $listener->commands[0]->sql, 'the new listener registers for the alert');
+		$t->close();
+		self::assertSame('BEGIN DBMS_ALERT.REMOVE(:name); END;', end($listener->commands)->sql);
+		self::assertFalse($listener->getActive());
+		self::assertFalse($signaler->getActive());
+	}
+
+	public function testCloseWithAnInactiveListenerClosesTheSignaler()
+	{
+		$t = new TCronWakeOracleTestTransport(new TTestLockConnection('oci'));
+		self::assertTrue($t->signal(1.0));
+		self::assertFalse($t->wait(1.0, 1.0));
+		[$signaler, $listener] = $t->connections;
+		$listener->setActive(false);
+		$count = count($listener->commands);
+		$t->close();
+		self::assertCount($count, $listener->commands, 'an inactive listener is not unregistered');
+		self::assertFalse($signaler->getActive(), 'the signaling connection is closed');
+	}
+
+	public function testGetDbConnectionChecksTheDriverOfEachSource()
+	{
+		$sqlite = new TDbConnection('sqlite::memory:');
+		$sqlite->setActive(true);
+		try {
+			(new TCronWakeOracle($sqlite))->getDbConnection();
+			self::fail('an active SQLite connection was accepted');
+		} catch (TConfigurationException $e) {
+		}
+
+		$app = Prado::getApplication();
+		$modules = PradoUnit::getProp($app, '_modules');
+		try {
+			$config = new TDataSourceConfig();
+			PradoUnit::setProp($config, '_conn', $oci = new TTestLockConnection('oci'));
+			$app->setModule('cronWakeOracleSource', $config);
+			$t = new TCronWakeOracle();
+			$t->setConnectionID('cronWakeOracleSource');
+			self::assertSame($oci, $t->getDbConnection(), 'the ConnectionID connection');
+
+			$config = new TDataSourceConfig();
+			PradoUnit::setProp($config, '_conn', new TDbConnection('sqlite::memory:'));
+			$app->setModule('cronWakeOracleSqliteSource', $config);
+			$t = new TCronWakeOracle();
+			$t->setConnectionID('cronWakeOracleSqliteSource');
+			self::expectException(TConfigurationException::class);
+			$t->getDbConnection();
+		} finally {
+			PradoUnit::setProp($app, '_modules', $modules);
+		}
 	}
 }
