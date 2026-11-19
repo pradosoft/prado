@@ -108,6 +108,44 @@ class TTimeZoneParameterBehaviorTest extends \PHPUnit\Framework\TestCase
 		unset($params['test:TimeZone']);
 	}
 
+	public function testAttach_disabledOrWithoutParameter()
+	{
+		$app = Prado::getApplication();
+		$params = $app->getParameters();
+		$params['test:TimeZone'] = 'Europe/Rome';
+		$this->obj->setTimeZoneParameter('test:TimeZone');
+		$this->obj->setEnabled(false);
+		$app->attachBehavior('timezonetest', $this->obj);
+		self::assertEquals('UTC', $this->obj->getTimeZone());
+		self::assertNull($params->asa(TTimeZoneParameterBehavior::APP_PARAM_ROUTE_BEHAVIOR_NAME));
+		$app->detachBehavior('timezonetest');
+
+		$behavior = new TTimeZoneParameterBehavior();
+		$behavior->setTimeZoneParameter('');
+		$app->attachBehavior('timezonetest', $behavior);
+		self::assertEquals('UTC', $behavior->getTimeZone());
+		self::assertNull($params->asa(TTimeZoneParameterBehavior::APP_PARAM_ROUTE_BEHAVIOR_NAME));
+		$app->detachBehavior('timezonetest');
+		unset($params['test:TimeZone']);
+	}
+
+	public function testSetTimeZoneParameter_whileAttached()
+	{
+		$app = Prado::getApplication();
+		$params = $app->getParameters();
+		$this->obj->setTimeZoneParameter('test:TimeZone');
+		$app->attachBehavior('timezonetest', $this->obj);
+
+		$this->obj->setTimeZoneParameter('test:OtherZone');
+		$params['test:TimeZone'] = 'Europe/Rome';
+		self::assertEquals('UTC', $this->obj->getTimeZone());
+		$params['test:OtherZone'] = 'Europe/London';
+		self::assertEquals('Europe/London', $this->obj->getTimeZone());
+
+		$app->detachBehavior('timezonetest');
+		unset($params['test:TimeZone'], $params['test:OtherZone']);
+	}
+
 	public function testTimeZoneParameter()
 	{
 		self::assertTrue(is_string($this->obj->getTimeZoneParameter()));

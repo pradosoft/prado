@@ -133,11 +133,13 @@ class TCaptureForkLog extends \Prado\Util\TBehavior
 	{
 		$this->_forkConnection = null;
 		if (!function_exists('socket_create_pair')) {
-			return null;
+			// Only a PHP without the sockets extension runs this line.
+			return null; // @codeCoverageIgnore
 		}
 		$domain = TProcessHelper::isSystemWindows() ? AF_INET : AF_UNIX;
 		if (!socket_create_pair($domain, SOCK_STREAM, 0, $pair)) {
-			return null;
+			// Only a system out of descriptors or socket buffers runs this line.
+			return null; // @codeCoverageIgnore
 		}
 		$this->_forkConnection = [socket_export_stream($pair[0]), socket_export_stream($pair[1])];
 		$this->_forkSpoolFile = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'prado-forklog-' . bin2hex(random_bytes(8)) . '.bin';

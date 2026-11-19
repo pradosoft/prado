@@ -13,6 +13,7 @@ namespace Prado\Test\Unit\Util\Behaviors;
 use Prado\Prado;
 use Prado\TComponent;
 use Prado\TEventParameter;
+use Prado\Test\Unit\PradoUnit;
 use Prado\Util\Behaviors\TEventLoggingBehavior;
 use Prado\Util\TBehavior;
 use Prado\Util\Log\TLogger;
@@ -1006,6 +1007,18 @@ class TEventLoggingBehaviorTest extends \PHPUnit\Framework\TestCase
 		$this->assertFalse($this->owner->hasEventHandler('OnDelta'));
 	}
 
+	public function testDyDetachRemovesEventThatOtherBehaviorsLack(): void
+	{
+		$this->owner->attachBehavior('logger', $this->behavior);
+		$this->owner->attachBehavior('noevents', new TEventLoggingBehaviorNoEvents());
+		$this->owner->attachBehavior('delta', new TEventLoggingBehaviorWithDelta());
+
+		$this->owner->detachBehavior('delta');
+
+		$this->assertFalse($this->owner->hasEventHandler('OnDelta'));
+		$this->assertNotContains('onDelta', PradoUnit::getProp($this->behavior, '_loggedEvents'));
+	}
+
 	public function testDyDetachBehaviorWithNoOnEventsChangesNothing(): void
 	{
 		$this->owner->attachBehavior('logger', $this->behavior);
@@ -1016,5 +1029,87 @@ class TEventLoggingBehaviorTest extends \PHPUnit\Framework\TestCase
 		$this->owner->detachBehavior('noevents');
 
 		$this->assertSame($hadAlpha, $this->owner->hasEventHandler('OnAlpha'));
+	}
+
+	public function testDyDetachWithOwnerBehaviorsDisabledChangesNothing(): void
+	{
+		$this->owner->attachBehavior('logger', $this->behavior);
+		$first = new TEventLoggingBehaviorWithEvent();
+		$this->owner->attachBehavior('first', $first);
+		$this->owner->attachBehavior('second', new TEventLoggingBehaviorWithGamma());
+		// Disabling the owner's behaviors removes the logger's handlers.
+		$this->owner->disableBehaviors();
+		$this->assertSame([], PradoUnit::getProp($this->behavior, '_loggedEvents'));
+
+		$this->behavior->dyDetachBehavior('first', $first);
+
+		$this->assertSame([], PradoUnit::getProp($this->behavior, '_loggedEvents'));
+		$this->owner->enableBehaviors();
+		$this->assertContains('onGamma', PradoUnit::getProp($this->behavior, '_loggedEvents'));
+	}
+
+	// ── Handler installation guards ──────────────────────────────────────────
+
+	public function testAttachAndDetachOnAnOwnerWithoutEvents(): void
+	{
+		$owner = new TComponent();
+		$owner->attachBehavior('logger', $this->behavior);
+		$this->assertSame([], PradoUnit::getProp($this->behavior, '_loggedEvents'));
+
+		$owner->detachBehavior('logger');
+		$this->assertNull($this->behavior->getOwner());
+	}
+
+	public function testFilterOfBlankEntriesIsEmpty(): void
+	{
+		$this->behavior->setEventFilter(' ');
+		$this->assertSame([], $this->behavior->getEventFilter());
+		$this->behavior->setEventFilter([' ']);
+		$this->assertSame([], $this->behavior->getEventFilter());
+		$this->behavior->setEventFilter(['onAlpha']);
+		$this->behavior->setEventFilter([]);
+		$this->assertSame([], $this->behavior->getEventFilter());
+	}
+
+	public function testAttachEventHandlersOnlyOnce(): void
+	{
+		$this->owner->attachBehavior('logger', $this->behavior);
+
+		$this->assertFalse(PradoUnit::invoke($this->behavior, 'attachEventHandlers', $this->owner));
+		$this->assertCount(1, $this->owner->getEventHandlers('OnAlpha'));
+	}
+
+	public function testDetachEventHandlersWithoutInstalledHandlers(): void
+	{
+		$this->owner->attachBehavior('logger', $this->behavior);
+		$this->assertTrue(PradoUnit::invoke($this->behavior, 'detachEventHandlers', $this->owner));
+
+		$this->assertFalse(PradoUnit::invoke($this->behavior, 'detachEventHandlers', $this->owner));
+		$this->assertCount(0, $this->owner->getEventHandlers('OnAlpha'));
+	}
+
+	// ── logEvent with a parameter that is not a TEventParameter ──────────────
+
+	public function testLogEventWithoutEventParameterUsesUnnamedPlaceholder(): void
+	{
+		$cat = 'test.elb.noparam';
+		$this->behavior->setCategory($cat);
+
+		$this->behavior->logEvent($this->owner, null);
+
+		$logs = Prado::getLogger()->getLogs(TLogger::INFO, $cat);
+		$this->assertStringContainsString('(unnamed)', end($logs)[TLogger::LOG_MESSAGE]);
+	}
+
+	public function testLogEventWithFilterSkipsAParameterWithoutEventName(): void
+	{
+		$cat = 'test.elb.noparam.filter';
+		$this->behavior->setCategory($cat);
+		$this->behavior->setEventFilter(['onAlpha']);
+
+		$before = $this->countLogs(TLogger::INFO, $cat);
+		$this->behavior->logEvent($this->owner, 'not an event parameter');
+
+		$this->assertSame($before, $this->countLogs(TLogger::INFO, $cat));
 	}
 }

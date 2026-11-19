@@ -21,6 +21,8 @@ Pre-built installable behaviors for common Prado application concerns. Each beha
 | `TMapRouteBehavior` | [`TMap`](../../Collections/TMap.md) subclass | Routes `TMap` read/write operations through a handler; indexed by key on an `IMapRouteIndex` map such as [`TApplicationParameters`](../../TApplicationParameters.md) |
 | `IMapRouteIndex` | Interface | A map that indexes its `TMapRouteBehavior`s by key and leaves them out of the `dy` call chain |
 | `TNoUnserializeBehaviorTrait` | Behaviors | Trait preventing behavior from being unserialized (stateless behaviors) |
+| `TNoUnserializeClassBehaviorTrait` | Class behaviors | The `TClassBehavior` form of `TNoUnserializeBehaviorTrait` |
+| `TEventLoggingBehavior` | Any [`TComponent`](../../TComponent.md) | Logs the owner's `on` events, and optionally its `dy` events, through `Prado::log()` |
 | `TPageGlobalizationCharsetBehavior` | [`TPage`](../../Web/UI/TPage.md) | Sets the page charset from [`TGlobalization`](../../I18N/TGlobalization.md) settings |
 | `TPageNoCacheBehavior` | [`TPage`](../../Web/UI/TPage.md) | Adds HTTP no-cache headers to page responses |
 | `TPageTopAnchorBehavior` | [`TPage`](../../Web/UI/TPage.md) | Injects a `#top` anchor element at the top of the page |

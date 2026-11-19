@@ -3,6 +3,7 @@
 namespace Prado\Test\Unit\Util\Behaviors;
 
 use Prado\TComponent;
+use Prado\Test\Unit\PradoUnit;
 use Prado\Util\Behaviors\TForkable;
 
 
@@ -113,5 +114,14 @@ class TForkableTest extends \PHPUnit\Framework\TestCase
 		self::assertFalse($component->hasEventHandler('fxPrepareForFork'));
 		self::assertFalse($component->hasEventHandler('fxRestoreAfterFork'));
 	}
-	
+
+	public function testHandlersInstallOnce()
+	{
+		$component = new TComponent();
+		$component->attachBehavior('guarded', $this->behavior);
+
+		self::assertFalse(PradoUnit::invoke($this->behavior, 'attachEventHandlers', $component));
+		$component->detachBehavior('guarded');
+		self::assertFalse(PradoUnit::invoke($this->behavior, 'detachEventHandlers', $component));
+	}
 }

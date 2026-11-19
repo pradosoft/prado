@@ -302,6 +302,28 @@ class TParameterizeBehaviorTest extends \PHPUnit\Framework\TestCase
 		unset($params['param_enabled']);
 	}
 
+	public function testAttach_disabledWaitsForEnable()
+	{
+		$params = Prado::getApplication()->getParameters();
+		$params['param_disabled'] = 'initial';
+		$this->obj->setParameter('param_disabled');
+		$this->obj->setProperty('Field');
+		$this->obj->setRouteBehaviorName('disabledRoute');
+		$this->obj->setEnabled(false);
+		$owner = new TParameterizeObject;
+
+		$owner->attachBehavior('parameterize', $this->obj);
+		self::assertNull($owner->getField());
+		self::assertNull($params->asa('disabledRoute'));
+
+		$this->obj->setEnabled(true);
+		$params['param_disabled'] = 'routed';
+		self::assertEquals('routed', $owner->getField());
+
+		$owner->detachBehavior('parameterize');
+		unset($params['param_disabled']);
+	}
+
 	public function testParameter()
 	{
 		self::assertNull($this->obj->getParameter());

@@ -3,6 +3,7 @@
 namespace Prado\Test\Unit\Util\Behaviors;
 
 use Prado\TComponent;
+use Prado\Test\Unit\PradoUnit;
 use Prado\Util\Behaviors\TGlobalClassAware;
 
 
@@ -45,5 +46,14 @@ class TGlobalClassAwareTest extends \PHPUnit\Framework\TestCase
 		self::assertNotContains($attachKey, $component->getEventHandlers('fxAttachClassBehavior')->toArray());
 		self::assertNotContains($detachKey, $component->getEventHandlers('fxDetachClassBehavior')->toArray());
 	}
-	
+
+	public function testHandlersInstallOnce()
+	{
+		$component = new TComponent();
+		$component->attachBehavior('guarded', $this->behavior);
+
+		self::assertFalse(PradoUnit::invoke($this->behavior, 'attachEventHandlers', $component));
+		$component->detachBehavior('guarded');
+		self::assertFalse(PradoUnit::invoke($this->behavior, 'detachEventHandlers', $component));
+	}
 }

@@ -7,8 +7,10 @@ use Prado\Util\TBehavior;
 use Prado\Web\UI\TPage;
 use Prado\Test\Unit\Util\TestModuleBM;
 use Prado\Test\Unit\Util\TestModuleBM2;
+use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;
 use Prado\TModule;
+use Prado\Web\Services\TPageService;
 
 class TestModuleBehaviorLoader1 extends TBehavior
 {
@@ -187,6 +189,44 @@ class TBehaviorParameterLoaderTest extends \PHPUnit\Framework\TestCase
 		$module->detachBehavior(0);
 	}
 	
+	public function testDyInit_configurationErrors()
+	{
+		$this->obj->BehaviorClass = TestModuleBehaviorLoader1::class;
+		$this->obj->AttachTo = 'Application';
+		$this->obj->AttachToClass = TPage::class;
+		try {
+			$this->obj->dyInit(null);
+			$this->fail('AttachTo and AttachToClass together should throw TConfigurationException.');
+		} catch (TConfigurationException $e) {
+			$this->assertSame('behaviorparameterloader_attachto_and_class_only_one', $e->getErrorCode());
+		}
+		$this->obj->reset();
+
+		$this->obj->BehaviorClass = TestModuleBehaviorLoader1::class;
+		$this->obj->AttachTo = 'module: ';
+		try {
+			$this->obj->dyInit(null);
+			$this->fail('A blank module id should throw TConfigurationException.');
+		} catch (TConfigurationException $e) {
+			$this->assertSame('behaviorparameterloader_moduleid_required', $e->getErrorCode());
+		}
+		$this->obj->reset();
+
+		$app = Prado::getApplication();
+		$service = $app->getService();
+		$app->setService(null);
+		$this->obj->BehaviorClass = TestModuleBehaviorLoader1::class;
+		$this->obj->AttachTo = 'Service';
+		try {
+			$this->obj->dyInit(null);
+			$this->fail('An owner that is not found should throw TConfigurationException.');
+		} catch (TConfigurationException $e) {
+			$this->assertSame('behaviorparameterloader_behaviorowner_required', $e->getErrorCode());
+		} finally {
+			$app->setService($service);
+		}
+	}
+
 	public function testReset_anonymousClassBehavior()
 	{
 		$this->obj->BehaviorClass = TestModuleBehaviorLoader1::class;
@@ -195,6 +235,62 @@ class TBehaviorParameterLoaderTest extends \PHPUnit\Framework\TestCase
 		$this->obj->reset();
 
 		$this->assertNull($this->obj->getAttachToClass());
+	}
+
+	public function testDyInit_subPropertyOwner()
+	{
+		$params = Prado::getApplication()->getParameters();
+		$this->obj->BehaviorName = 'paramsBehavior';
+		$this->obj->BehaviorClass = TestModuleBehaviorLoader1::class;
+		$this->obj->AttachTo = 'Parameters';
+		$this->obj->Priority = 6;
+
+		$this->obj->dyInit(null);
+
+		$this->assertInstanceOf(TestModuleBehaviorLoader1::class, $params->asa('paramsBehavior'));
+		$this->assertEquals(6, $params->asa('paramsBehavior')->getPriority());
+		$params->detachBehavior('paramsBehavior');
+	}
+
+	public function testAttachModuleBehaviors_moduleNotFound()
+	{
+		$this->obj->BehaviorClass = TestModuleBehaviorLoader1::class;
+		$this->obj->AttachTo = 'module:TBPLoaderMissingModule';
+		$this->obj->dyInit(null);
+
+		try {
+			$this->obj->attachModuleBehaviors(null, null);
+			$this->fail('A missing module should throw TConfigurationException.');
+		} catch (TConfigurationException $e) {
+			$this->assertSame('behaviorparameterloader_behaviormodule_not_found', $e->getErrorCode());
+		}
+	}
+
+	public function testAttachTPageServiceHandler()
+	{
+		$app = Prado::getApplication();
+		$service = $app->getService();
+		$pageService = new TPageService();
+		try {
+			$app->setService(null);
+			$this->obj->attachTPageServiceHandler(null, null);
+
+			$app->setService($pageService);
+			$this->obj->attachTPageServiceHandler(null, null);
+			$this->assertTrue($pageService->getEventHandlers('onPreRunPage')->contains([$this->obj, 'attachTPageBehaviors']));
+		} finally {
+			$app->setService($service);
+			$pageService->unlisten();
+		}
+	}
+
+	public function testAttachBehaviors_withoutBehaviors()
+	{
+		$page = new TPage;
+		$this->obj->attachTPageBehaviors(null, $page);
+		$this->obj->attachModuleBehaviors(null, null);
+
+		$this->assertSame([], $page->getBehaviors());
 	}
 
 	public function testAttachModuleBehaviors_onInitComplete()
