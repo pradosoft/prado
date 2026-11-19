@@ -15,6 +15,7 @@ TClientScriptManager manages JavaScript and CSS stylesheets for a page. It suppo
 - `RequiresHead` - Whether THead is required for CSS/JS rendering
 - `registerPradoScript($name)` - Registers a PRADO JavaScript library by name
 - `registerPradoStyle($name)` - Registers a PRADO CSS library by name
+- Outside Debug mode both serve the minified copy of each package file, `name.min.js` or `name.min.css`, which `minifiedPackageFile()` writes once into the published folder with `TJavaScript::getMinifier()` or `TStyleSheetHelper::getMinifier()` (CSS since 4.4.0)
 - `registerScriptFile($key, $url)` - Registers a JavaScript file within the form
 - `registerHeadScriptFile($key, $url, $async)` - Registers a JavaScript file in the page head
 - `registerStyleSheetFile($key, $url, $media)` - Registers a CSS file; `renderStyleSheetFiles()` and `renderStyleSheets()` render through [TStyleSheetHelper](../Javascripts/TStyleSheetHelper.md) with the CSP nonce and, for remote files, SRI (4.4.0)

@@ -11,9 +11,11 @@
 namespace Prado\Test\Unit\Web\Javascripts;
 
 use Prado\Exceptions\TConfigurationException;
+use Prado\Web\Javascripts\IMinifier;
 use Prado\Web\Javascripts\TJavaScript;
 use Prado\Web\Javascripts\TJavaScriptAsset;
 use Prado\Web\Javascripts\TJavaScriptLiteral;
+use Prado\Web\Javascripts\TJavaScriptMinifier;
 use Prado\Web\Javascripts\TJavaScriptString;
 use Prado\Test\Unit\PradoUnit;
 
@@ -37,6 +39,7 @@ class TJavaScriptTest extends \PHPUnit\Framework\TestCase
 	{
 		TJavaScript::setScriptNonce(null);
 		TJavaScript::setRequireScriptIntegrity(false);
+		TJavaScript::setMinifier(null);
 		$this->resetScriptIntegrity();
 	}
 
@@ -1202,6 +1205,37 @@ class TJavaScriptTest extends \PHPUnit\Framework\TestCase
 	public function testJSMinEmptyStringReturnsEmpty(): void
 	{
 		$this->assertSame('', trim(TJavaScript::JSMin('')));
+	}
+
+	// -----------------------------------------------------------------------
+	// minify() and the IMinifier seam
+	// -----------------------------------------------------------------------
+
+	public function testMinifierDefaultsToJSMin(): void
+	{
+		$minifier = TJavaScript::getMinifier();
+		$this->assertInstanceOf(TJavaScriptMinifier::class, $minifier);
+		$this->assertSame($minifier, TJavaScript::getMinifier(), 'The default is created once.');
+		$input = "/* c */\nvar  x = 1 ;";
+		$this->assertSame(TJavaScript::JSMin($input), TJavaScript::minify($input));
+		$this->assertSame(TJavaScript::JSMin($input), (new TJavaScriptMinifier())->minify($input));
+	}
+
+	public function testSetMinifierReplacesAndRestoresTheDefault(): void
+	{
+		$custom = new class () implements IMinifier {
+			public function minify(string $code): string
+			{
+				return 'custom:' . $code;
+			}
+		};
+		TJavaScript::setMinifier($custom);
+		$this->assertSame($custom, TJavaScript::getMinifier());
+		$this->assertSame('custom:var x;', TJavaScript::minify('var x;'));
+		$this->assertSame('var x;', TJavaScript::JSMin('var x;'), 'JSMin() always runs JSMin.');
+
+		TJavaScript::setMinifier(null);
+		$this->assertInstanceOf(TJavaScriptMinifier::class, TJavaScript::getMinifier());
 	}
 
 	// Helper: assert $actual length is ≤ $expected (minified must not grow).
