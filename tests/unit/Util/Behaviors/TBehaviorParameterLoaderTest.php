@@ -187,6 +187,16 @@ class TBehaviorParameterLoaderTest extends \PHPUnit\Framework\TestCase
 		$module->detachBehavior(0);
 	}
 	
+	public function testReset_anonymousClassBehavior()
+	{
+		$this->obj->BehaviorClass = TestModuleBehaviorLoader1::class;
+		$this->obj->AttachToClass = TestModuleLoaderBM2::class;
+
+		$this->obj->reset();
+
+		$this->assertNull($this->obj->getAttachToClass());
+	}
+
 	public function testAttachModuleBehaviors_onInitComplete()
 	{
 		$app = Prado::getApplication();

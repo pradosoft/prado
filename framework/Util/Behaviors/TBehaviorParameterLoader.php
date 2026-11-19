@@ -179,11 +179,12 @@ class TBehaviorParameterLoader extends TComponent
 	}
 
 	/**
-	 * This resets the module and page behavior cache data.
+	 * This resets the module and page behavior cache data, and detaches the named
+	 * class behavior.  An anonymous class behavior has no name to detach it by.
 	 */
 	public function reset()
 	{
-		if ($this->_attachtoclass) {
+		if ($this->_attachtoclass && $this->_behaviorName !== null) {
 			TComponent::detachClassBehavior($this->_behaviorName, $this->_attachtoclass);
 		}
 		Prado::getApplication()->detachEventHandler('onInitComplete', [$this, 'attachModuleBehaviors']);
