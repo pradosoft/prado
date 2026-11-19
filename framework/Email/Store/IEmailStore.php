@@ -154,6 +154,23 @@ interface IEmailStore
 	public function recordBounce(TEmailBounce $bounce): ?array;
 
 	/**
+	 * Records that a recipient reported an email as spam.  The address is
+	 * suppressed for every email.
+	 * @param string $trackingId the tracking ID.
+	 * @param ?string $address the address that complained, a recipient of the email; null for its only recipient.
+	 * @return ?array the info of the email with "suppressed", the suppressed address; null when the email or the recipient is unknown.
+	 */
+	public function recordComplaint(string $trackingId, ?string $address = null): ?array;
+
+	/**
+	 * Finds a stored email by its Message-ID, which is how a bounce or a mail
+	 * provider names an email.
+	 * @param string $messageId the Message-ID, with or without angle brackets.
+	 * @return ?string the tracking ID of the email, null when it is unknown.
+	 */
+	public function findTrackingId(string $messageId): ?string;
+
+	/**
 	 * Lists stored emails, newest first.
 	 * @param ?string $username the user name of the emails; null for every user.
 	 * @param ?string $status the TEmailStatus of the emails; null for every status.

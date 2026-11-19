@@ -488,6 +488,49 @@ class TDbEmailStore extends TDbModule implements IEmailStore, IPermissions
 	}
 
 	/**
+	 * Records that a recipient reported an email as spam.  The address must be a
+	 * recipient of the email; it is suppressed for every email.
+	 * @param string $trackingId the tracking ID.
+	 * @param ?string $address the address that complained; null for the only recipient of the email.
+	 * @return ?array the info of the email with "suppressed", the suppressed address; null when the email or the recipient is unknown.
+	 */
+	public function recordComplaint(string $trackingId, ?string $address = null): ?array
+	{
+		if (($row = $this->findMessage('tracking_id = :id', [':id' => $trackingId])) === null) {
+			return null;
+		}
+		$info = $this->createInfo($row);
+		$addresses = array_map(fn (array $recipient) => strtolower($recipient['address']), $info['recipients']);
+		if ($address === null) {
+			$address = count($addresses) === 1 ? $addresses[0] : null;
+		} else {
+			$address = in_array(strtolower(trim($address)), $addresses, true) ? strtolower(trim($address)) : null;
+		}
+		if ($address === null) {
+			return null;
+		}
+		$this->addSuppression($address, TEmailSuppressionReason::Complaint, '', $trackingId);
+		$info['suppressed'] = $address;
+		return $info;
+	}
+
+	/**
+	 * Finds a stored email by its Message-ID.
+	 * @param string $messageId the Message-ID, with or without angle brackets.
+	 * @return ?string the tracking ID of the email, null when it is unknown.
+	 */
+	public function findTrackingId(string $messageId): ?string
+	{
+		$messageId = trim($messageId, " \t<>");
+		if ($messageId === '') {
+			return null;
+		}
+		$this->ensureTables();
+		$id = $this->queryScalar('SELECT tracking_id FROM ' . $this->getTableName('messages') . ' WHERE rfc_message_id = :id', [':id' => $messageId]);
+		return is_string($id) ? $id : null;
+	}
+
+	/**
 	 * Lists stored emails, newest first.
 	 * @param ?string $username the user name of the emails; null for every user.
 	 * @param ?string $status the TEmailStatus of the emails; null for every status.

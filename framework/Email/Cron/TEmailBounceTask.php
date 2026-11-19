@@ -12,6 +12,8 @@ namespace Prado\Email\Cron;
 
 use Prado\Email\Mailbox\IEmailMailbox;
 use Prado\Email\Mailbox\TImapMailbox;
+use Prado\Exceptions\TConfigurationException;
+use Prado\Prado;
 use Prado\TPropertyValue;
 
 /**
@@ -21,6 +23,8 @@ use Prado\TPropertyValue;
  * bounces, the Return-Path of the emails, and hands each to
  * {@see \Prado\Email\TEmailModule::processBounceMessage}.  A processed message is
  * marked seen; a message that is not a bounce is marked seen and ignored.
+ * The mailbox is a {@see TImapMailbox}; {@see setMailboxClass MailboxClass} names
+ * another {@see IEmailMailbox}.
  *
  * <code>
  * <job Name="emailbounce" Schedule="5,35 * * * *" Task="Prado\Email\Cron\TEmailBounceTask"
@@ -37,6 +41,9 @@ class TEmailBounceTask extends TEmailTask
 
 	/** @var int the most messages per run. */
 	private int $_limit = 100;
+
+	/** @var string the class of the bounce mailbox. */
+	private string $_mailboxClass = TImapMailbox::class;
 
 	/**
 	 * Processes the unseen messages of the bounce mailbox.
@@ -65,13 +72,36 @@ class TEmailBounceTask extends TEmailTask
 	}
 
 	/**
-	 * @return IEmailMailbox the bounce mailbox, a {@see TImapMailbox} of the Dsn.
+	 * Creates the bounce mailbox from the MailboxClass and gives it the Dsn.
+	 * @throws TConfigurationException when the MailboxClass is not an IEmailMailbox.
+	 * @return IEmailMailbox the bounce mailbox.
 	 */
 	protected function createMailbox(): IEmailMailbox
 	{
-		$mailbox = new TImapMailbox();
-		$mailbox->setDsn($this->getDsn());
+		$mailbox = Prado::createComponent($this->getMailboxClass());
+		if (!($mailbox instanceof IEmailMailbox)) {
+			throw new TConfigurationException('emailbouncetask_mailboxclass_invalid', $this->getMailboxClass());
+		}
+		if (method_exists($mailbox, 'setDsn')) {
+			$mailbox->setDsn($this->getDsn());
+		}
 		return $mailbox;
+	}
+
+	/**
+	 * @return string the class of the bounce mailbox. Defaults to {@see TImapMailbox}.
+	 */
+	public function getMailboxClass(): string
+	{
+		return $this->_mailboxClass;
+	}
+
+	/**
+	 * @param string $value the class of the bounce mailbox, an {@see IEmailMailbox}; its "Dsn" property receives the Dsn.
+	 */
+	public function setMailboxClass($value)
+	{
+		$this->_mailboxClass = TPropertyValue::ensureString($value);
 	}
 
 	/**

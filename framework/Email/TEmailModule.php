@@ -107,6 +107,24 @@ use Prado\Xml\TXmlElement;
  * which wakes a waiting cron process or the cron daemon.  The scheduled task stays
  * the safety net for emails that a dead request or a dead process left behind.
  *
+ * Extensions attach at these points:
+ *
+ * | Point | Use |
+ * |---|---|
+ * | `<transport class="...">` | an {@see Transport\IEmailTransport}, such as the HTTP API of a mail provider |
+ * | StoreID | an {@see Store\IEmailStore} on another kind of storage |
+ * | `<service class="...">` | a {@see TEmailService} subclass that serves more requests |
+ * | onAdditionalEmailPaths | email templates of a plugin |
+ * | onSendEmail | change, tag, or cancel an email before it leaves |
+ * | onEmailSent, onEmailFailed, onBounce, onComplaint, onOpenEmail, onClickEmail, onUnsubscribe | react to what happened to an email, such as sending a webhook |
+ * | {@see recordBounce}, {@see recordComplaint}, {@see recordOpen}, {@see recordClick}, {@see recordUnsubscribe} | report what a mail provider told a webhook endpoint |
+ *
+ * Every event is also raised globally with the module as the sender: fxEmailSend,
+ * fxEmailSent, fxEmailFailed, fxEmailBounce, fxEmailComplaint, fxEmailOpen,
+ * fxEmailClick, fxEmailUnsubscribe, and fxEmailAdditionalPaths.  A component that
+ * listens to global events handles one by defining a method of that name, without
+ * knowing the ID of the email module.
+ *
  * The module offers its cron tasks to the cron module: {@see TEmailQueueTask},
  * {@see TEmailCleanupTask}, and {@see TEmailBounceTask}.  {@see processBounceMessage}
  * takes a bounce message, records it in the store, and raises onBounce.  In the
@@ -222,7 +240,11 @@ class TEmailModule extends \Prado\TModule implements IEmailMailer, IPermissions
 			}
 			$app->attachEventHandler('onEndRequest', [$this, 'endRequest']);
 			if ($this->_serviceProperties !== null) {
-				$app->registerService($this->getServiceID(), TEmailService::class, $this->_serviceProperties + ['EmailModule' => $this]);
+				$class = $this->_serviceProperties['class'] ?? TEmailService::class;
+				if (!is_a(Prado::usingClass($class) ?: $class, TEmailService::class, true)) {
+					throw new TConfigurationException('emailmodule_serviceclass_invalid', $class);
+				}
+				$app->registerService($this->getServiceID(), $class, array_diff_key($this->_serviceProperties, ['class' => true]) + ['EmailModule' => $this]);
 			}
 			if ($app instanceof TShellApplication && $this->dyRegisterShellAction(false) !== true) {
 				$app->addShellActionClass(['class' => TShellEmailAction::class, 'EmailModule' => $this]);
@@ -416,12 +438,16 @@ class TEmailModule extends \Prado\TModule implements IEmailMailer, IPermissions
 	 * Raised when an email is created, to add places that hold email files, such as
 	 * the directory of a plugin.  A handler returns the path of the email files
 	 * without an extension, e.g. "/plugin/Emails/Order/Shipped".
+	 * The event is also raised globally as fxEmailAdditionalPaths.
 	 * @param string $emailPath the email path, with "." between its segments.
 	 * @return array the handler results.
 	 */
 	public function onAdditionalEmailPaths($emailPath)
 	{
-		return $this->raiseEvent('onAdditionalEmailPaths', $this, $emailPath);
+		return array_merge(
+			$this->raiseEvent('onAdditionalEmailPaths', $this, $emailPath),
+			$this->raiseEvent('fxEmailAdditionalPaths', $this, $emailPath)
+		);
 	}
 
 	/**
@@ -689,30 +715,72 @@ class TEmailModule extends \Prado\TModule implements IEmailMailer, IPermissions
 
 	/**
 	 * Parses a raw message, such as one from the mailbox of the Return-Path, as a
-	 * bounce.  Each failed or delayed recipient is recorded in the store and raises
-	 * onBounce.  A message that is not a bounce does nothing.
+	 * bounce and passes each failed or delayed recipient to {@see recordBounce}.  A
+	 * message that is not a bounce does nothing.
 	 * @param string $message the raw message, headers and body.
 	 * @return TEmailBounce[] the bounces found in the message.
 	 */
 	public function processBounceMessage(string $message): array
 	{
 		$bounces = (new TEmailBounceParser())->parse($message);
-		$store = $this->getStore();
 		foreach ($bounces as $bounce) {
-			$info = $store?->recordBounce($bounce);
-			$this->onBounce(new TEmailTrackingEventParameter($info['tracking_id'] ?? null, $info, null, $bounce));
+			$this->recordBounce($bounce);
 		}
 		return $bounces;
 	}
 
 	/**
-	 * Raised for each recipient of a bounce message.  With a store the bounce is
-	 * recorded first, and a permanent bounce has suppressed the address.
+	 * Records the bounce of one recipient in the store and raises onBounce.  A
+	 * source of bounces other than a bounce message, such as the handler of a mail
+	 * provider's webhook, calls it with the bounce it was told of.
+	 * @param TEmailBounce $bounce the bounce of one recipient.
+	 * @return ?array the info of the email with "suppressed", null when there is no store or no stored email and recipient match.
+	 */
+	public function recordBounce(TEmailBounce $bounce): ?array
+	{
+		$info = $this->getStore()?->recordBounce($bounce);
+		$this->onBounce(new TEmailTrackingEventParameter($info['tracking_id'] ?? null, $info, null, $bounce));
+		return $info;
+	}
+
+	/**
+	 * Records that a recipient reported a stored email as spam and raises
+	 * onComplaint.  The store suppresses the address for every email.  A mail
+	 * provider reports complaints through a feedback loop or a webhook.
+	 * @param string $trackingId the tracking ID of the email.
+	 * @param ?string $address the address that complained; null for the only recipient of the email.
+	 * @return ?array the info of the email with "suppressed", null when there is no store or the email or recipient is unknown.
+	 */
+	public function recordComplaint(string $trackingId, ?string $address = null): ?array
+	{
+		if (($store = $this->getStore()) === null || ($info = $store->recordComplaint($trackingId, $address)) === null) {
+			return null;
+		}
+		$this->onComplaint(new TEmailTrackingEventParameter($trackingId, $info));
+		return $info;
+	}
+
+	/**
+	 * Raised when a recipient reported an email as spam.  The address is suppressed.
+	 * The event is also raised globally as fxEmailComplaint.
+	 * @param TEmailTrackingEventParameter $param the parameter with the email info and the suppressed address.
+	 */
+	public function onComplaint($param)
+	{
+		$this->raiseEvent('onComplaint', $this, $param);
+		$this->raiseEvent('fxEmailComplaint', $this, $param);
+	}
+
+	/**
+	 * Raised for each recipient of a bounce.  With a store the bounce is recorded
+	 * first, and a permanent bounce has suppressed the address.  The event is also
+	 * raised globally as fxEmailBounce.
 	 * @param TEmailTrackingEventParameter $param the parameter with the bounce.
 	 */
 	public function onBounce($param)
 	{
 		$this->raiseEvent('onBounce', $this, $param);
+		$this->raiseEvent('fxEmailBounce', $this, $param);
 	}
 
 	/**
@@ -725,7 +793,7 @@ class TEmailModule extends \Prado\TModule implements IEmailMailer, IPermissions
 		if (($store = $this->getStore()) === null || !$store->recordOpen($trackingId)) {
 			return false;
 		}
-		if ($this->hasEventHandler('onOpenEmail')) {
+		if ($this->hasEventHandler('onOpenEmail') || $this->hasEventHandler('fxEmailOpen')) {
 			$this->onOpenEmail(new TEmailTrackingEventParameter($trackingId, $store->getEmailInfo($trackingId)));
 		}
 		return true;
@@ -742,7 +810,7 @@ class TEmailModule extends \Prado\TModule implements IEmailMailer, IPermissions
 		if (($store = $this->getStore()) === null || ($url = $store->recordClick($trackingId, $link)) === null) {
 			return null;
 		}
-		if ($this->hasEventHandler('onClickEmail')) {
+		if ($this->hasEventHandler('onClickEmail') || $this->hasEventHandler('fxEmailClick')) {
 			$this->onClickEmail(new TEmailTrackingEventParameter($trackingId, $store->getEmailInfo($trackingId), $url));
 		}
 		return $url;
@@ -766,30 +834,36 @@ class TEmailModule extends \Prado\TModule implements IEmailMailer, IPermissions
 	/**
 	 * Raised when the tracker image of an email loads.  Mail clients that load images
 	 * through a proxy or ahead of the reader raise it without the reader opening the email.
+	 * The event is also raised globally as fxEmailOpen.
 	 * @param TEmailTrackingEventParameter $param the parameter with the email info.
 	 */
 	public function onOpenEmail($param)
 	{
 		$this->raiseEvent('onOpenEmail', $this, $param);
+		$this->raiseEvent('fxEmailOpen', $this, $param);
 	}
 
 	/**
-	 * Raised when a tracked link of an email is followed.
+	 * Raised when a tracked link of an email is followed.  The event is also raised
+	 * globally as fxEmailClick.
 	 * @param TEmailTrackingEventParameter $param the parameter with the email info and the URL.
 	 */
 	public function onClickEmail($param)
 	{
 		$this->raiseEvent('onClickEmail', $this, $param);
+		$this->raiseEvent('fxEmailClick', $this, $param);
 	}
 
 	/**
 	 * Raised when a recipient unsubscribes through an email.  An application that
-	 * keeps its own mailing lists removes the recipient here.
+	 * keeps its own mailing lists removes the recipient here.  The event is also raised
+	 * globally as fxEmailUnsubscribe.
 	 * @param TEmailTrackingEventParameter $param the parameter with the email info and the suppressed address.
 	 */
 	public function onUnsubscribe($param)
 	{
 		$this->raiseEvent('onUnsubscribe', $this, $param);
+		$this->raiseEvent('fxEmailUnsubscribe', $this, $param);
 	}
 
 	/**
@@ -869,30 +943,38 @@ class TEmailModule extends \Prado\TModule implements IEmailMailer, IPermissions
 	/**
 	 * Raised before an email is delivered, deferred, or queued.  The email is final.
 	 * A handler may change it, or cancel it with {@see TEmailEventParameter::cancel}.
+	 * The event is also raised globally as fxEmailSend, unless it is cancelled first.
 	 * @param TEmailEventParameter $param the parameter with the email.
 	 */
 	public function onSendEmail($param)
 	{
 		$this->raiseEvent('onSendEmail', $this, $param);
+		if (!$param->getIsCancelled()) {
+			$this->raiseEvent('fxEmailSend', $this, $param);
+		}
 	}
 
 	/**
-	 * Raised when a transport accepted an email.
+	 * Raised when a transport accepted an email.  The event is also raised globally
+	 * as fxEmailSent.
 	 * @param TEmailEventParameter $param the parameter with the email.
 	 */
 	public function onEmailSent($param)
 	{
 		$this->raiseEvent('onEmailSent', $this, $param);
+		$this->raiseEvent('fxEmailSent', $this, $param);
 	}
 
 	/**
 	 * Raised when a delivery attempt failed.  The Status of the email is Queued when
-	 * it will be tried again and Failed otherwise.
+	 * it will be tried again and Failed otherwise.  The event is also raised globally
+	 * as fxEmailFailed.
 	 * @param TEmailEventParameter $param the parameter with the email and the exception.
 	 */
 	public function onEmailFailed($param)
 	{
 		$this->raiseEvent('onEmailFailed', $this, $param);
+		$this->raiseEvent('fxEmailFailed', $this, $param);
 	}
 
 	/**
