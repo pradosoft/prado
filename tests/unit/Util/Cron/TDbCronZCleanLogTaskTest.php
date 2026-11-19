@@ -10,6 +10,7 @@ use Prado\IO\TTextWriter;
 use Prado\Shell\TShellWriter;
 use Prado\Util\Cron\TDbCronManager;
 use Prado\Util\Cron\TShellCronLogBehavior;
+use Prado\Test\Unit\PradoUnit;
 
 class TDbCronZCleanLogTaskTest extends TCronTaskTest
 {	
@@ -52,6 +53,8 @@ class TDbCronZCleanLogTaskTest extends TCronTaskTest
 		//works properly, output has green
 		{
 			
+			// The test inserts the log rows itself, so it creates the table when no earlier test did.
+			PradoUnit::invoke($dbcron, 'ensureTable');
 			$db = $dbcron->getDbConnection();
 			$time = time();
 			$cmd = $db->createCommand(

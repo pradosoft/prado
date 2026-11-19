@@ -2900,11 +2900,16 @@ class TCronModuleTest extends \PHPUnit\Framework\TestCase
 		$this->obj->attachEventHandler('OnDaemonEnd', function ($sender, $param) use (&$end) {
 			$end = $param->getReason();
 		});
-		TAsync::getLoop()->delay(0.1, static fn () => posix_kill(getmypid(), SIGTERM));
-		$start = microtime(true);
-		self::assertEquals(0, $this->obj->processPendingTasks());
-		self::assertLessThan(5.0, microtime(true) - $start, 'the signal ends the wait');
-		self::assertSame(TCronDaemonEventParameter::REASON_SIGNAL, $end);
+		// The timer is cancelled however the test ends: a SIGTERM after the daemon would end PHPUnit.
+		$timer = TAsync::getLoop()->delay(0.1, static fn () => posix_kill(getmypid(), SIGTERM));
+		try {
+			$start = microtime(true);
+			self::assertEquals(0, $this->obj->processPendingTasks());
+			self::assertLessThan(5.0, microtime(true) - $start, 'the signal ends the wait');
+			self::assertSame(TCronDaemonEventParameter::REASON_SIGNAL, $end);
+		} finally {
+			TAsync::getLoop()->cancel($timer);
+		}
 	}
 
 	public function testRunDaemon_ATickExitsWhenAnotherWaitsForTheHandoff()
