@@ -15,8 +15,11 @@ Client-side JavaScript/CSS package registry and asset utilities for the Prado we
   - `encode($value)` — renders a PHP value as a JavaScript literal; a `TJavaScriptLiteral` passes through unchanged.
   - `quoteJsLiteral($value)` — marks a value as raw JavaScript (`TJavaScriptLiteral`) so `encode()` does not quote it.
   - `jsonEncode($value, $options)` — `json_encode()` with `JSON_THROW_ON_ERROR`; strings in a non-UTF-8 application charset are transcoded to UTF-8 first.
+  - `minify($code)` — minifies JavaScript with the `IMinifier` of `setMinifier()`, `TJavaScriptMinifier` by default. @since 4.4.0
 
-- **[TStyleSheetHelper](TStyleSheetHelper.md)** — Static utility for `<style>` blocks and `<link rel="stylesheet">` tags: the CSP nonce (the script nonce), a stylesheet SRI registry, and `RequireStyleIntegrity`. The stylesheet counterpart of `TJavaScript`. @since 4.4.0
+- **[TStyleSheetHelper](TStyleSheetHelper.md)** — Static utility for `<style>` blocks and `<link rel="stylesheet">` tags: the CSP nonce (the script nonce), a stylesheet SRI registry, and `RequireStyleIntegrity`; `minify($css)` with the `IMinifier` of `setMinifier()`, `TStyleSheetMinifier` by default. The stylesheet counterpart of `TJavaScript`. @since 4.4.0
+
+- **[IMinifier](IMinifier.md)** — The minifier seam, `minify(string): string`. **[TJavaScriptMinifier](TJavaScriptMinifier.md)** wraps JSMin; **[TStyleSheetMinifier](TStyleSheetMinifier.md)** is the dependency-free CSS minifier. @since 4.4.0
 
 - **[TJavaScriptAsset](TJavaScriptAsset.md)** — A script URL with `Async` and `Integrity`; renders its own `<script>` tag. [TClientScriptManager](../UI/TClientScriptManager.md) passes these to `TJavaScript::renderScriptFile()`.
 
@@ -74,3 +77,4 @@ External packages (jQuery, jQuery UI, TinyMCE, HighlightJS, Clipboard) are sourc
 - **Never reference JS files directly** — always use the package name via [TClientScriptManager::registerPackage()](../UI/TClientScriptManager.md). The manager resolves dependencies, deduplicates, and handles publishing.
 - **TJavaScriptLiteral** must be used for any PHP value that is already valid JavaScript (function references, pre-encoded JSON). `quoteJsLiteral()` wraps a value in one; `encode()` otherwise quotes every string.
 - **Package manifests** — every file a package lists must exist under its folder, and every dependency must name a package; `TJavaScriptPackagesTest` checks both manifests.
+- **Minified packages** — outside Debug mode `TClientScriptManager` serves `name.min.js` and `name.min.css`, written once beside the published package file by `TJavaScript::getMinifier()` and `TStyleSheetHelper::getMinifier()`. An existing `.min` file is kept, so a changed minifier applies to packages published after it.

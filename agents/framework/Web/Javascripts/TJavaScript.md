@@ -31,6 +31,8 @@
 | `static jsonEncode(mixed $value, mixed $options = 0): string` | `string` | Encodes `$value` via `json_encode()` and returns the JSON string. Under a non-UTF-8 globalization charset that [`TUtf8Converter::isEncoding()`](../../Util/TUtf8Converter.md) knows, its strings are converted to UTF-8 first. |
 | `static jsonDecode(string $value, bool $assoc = false, int $depth = 512): mixed` | `mixed` | Decodes a JSON string via `json_decode()` and returns the PHP variable. |
 | `static JSMin(string $code): string` | `string` | Minimises JavaScript source using a Douglas Crockford JSMin implementation. |
+| `static minify(string $code): string` | `string` | Minifies JavaScript with `getMinifier()`. @since 4.4.0 |
+| `static getMinifier(): IMinifier` / `setMinifier(?IMinifier)` | | The [IMinifier](IMinifier.md) of `minify()`, for the process; `null` restores [TJavaScriptMinifier](TJavaScriptMinifier.md). @since 4.4.0 |
 
 ## See Also
 
