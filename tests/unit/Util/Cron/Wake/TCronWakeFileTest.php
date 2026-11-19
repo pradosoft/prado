@@ -51,6 +51,26 @@ class TCronWakeFileTest extends \PHPUnit\Framework\TestCase
 		self::assertFileExists($this->file);
 	}
 
+	public function testASignalBetweenWaitsEndsTheNextWaitAtOnce()
+	{
+		$t = (new TCronWakeFile($this->file))->setPollInterval(0.02);
+		$now = microtime(true);
+		self::assertFalse($t->wait($now, $now), 'the first wait takes the current stamp as seen');
+
+		// A signal arrives while the process is busy between waits; the next wait consumes it at once.
+		self::assertTrue($t->signal($now));
+		$start = microtime(true);
+		self::assertTrue($t->wait($start + 0.3, $start));
+		self::assertLessThan(0.02, microtime(true) - $start, 'the wait does not poll for a kept wake');
+		self::assertFalse($t->wait($start, $start), 'the wake is consumed');
+
+		// close() forgets the stamp: the first wait after it takes the current stamp as seen.
+		self::assertTrue($t->signal($now));
+		$t->close();
+		$start = microtime(true);
+		self::assertFalse($t->wait($start + 0.05, $start));
+	}
+
 	public function testWatchCallsBackOnEachSignal()
 	{
 		$t = (new TCronWakeFile($this->file))->setPollInterval(0.02);
