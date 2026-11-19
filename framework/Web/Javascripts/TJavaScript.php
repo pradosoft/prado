@@ -48,7 +48,9 @@ use Prado\Util\TUtf8Converter;
  * - {@see quoteString()} — JSON-encodes a string with HTML-safe hex escaping.
  * - {@see quoteJsLiteral()} / {@see isJsLiteral()} — wrap or detect raw JavaScript.
  * - {@see jsonEncode()} / {@see jsonDecode()} — thin wrappers around `json_encode` / `json_decode`.
- * - {@see JSMin()} — minifies a JavaScript source string.
+ * - {@see minify()} — minifies a JavaScript source string with the {@see IMinifier} of
+ *   {@see setMinifier()}, a {@see TJavaScriptMinifier} by default.
+ * - {@see JSMin()} — minifies a JavaScript source string with JSMin.
  *
  * @author Wei Zhuo<weizhuo[at]gmail[dot]com>
  * @since 3.0
@@ -80,6 +82,44 @@ class TJavaScript
 	 * @since 4.4.0
 	 */
 	private static $_requireScriptIntegrity = false;
+
+	/**
+	 * @var ?IMinifier The minifier of {@see minify()}; null is a {@see TJavaScriptMinifier}.
+	 * @since 4.4.0
+	 */
+	private static ?IMinifier $_minifier = null;
+
+	/**
+	 * Returns the minifier of {@see minify()}, a {@see TJavaScriptMinifier} unless
+	 * {@see setMinifier()} sets another.
+	 * @return IMinifier The JavaScript minifier.
+	 * @since 4.4.0
+	 */
+	public static function getMinifier(): IMinifier
+	{
+		return self::$_minifier ??= new TJavaScriptMinifier();
+	}
+
+	/**
+	 * Sets the minifier of {@see minify()}, for the PHP process.
+	 * @param ?IMinifier $minifier The JavaScript minifier, or null for a {@see TJavaScriptMinifier}.
+	 * @since 4.4.0
+	 */
+	public static function setMinifier(?IMinifier $minifier): void
+	{
+		self::$_minifier = $minifier;
+	}
+
+	/**
+	 * Minifies JavaScript with the minifier of {@see getMinifier()}.
+	 * @param string $code The JavaScript source.
+	 * @return string The minified JavaScript.
+	 * @since 4.4.0
+	 */
+	public static function minify(string $code): string
+	{
+		return self::getMinifier()->minify($code);
+	}
 
 	/**
 	 * Returns whether remote scripts are required to carry a registered SRI value.
@@ -593,6 +633,7 @@ class TJavaScript
 
 	/**
 	 * Minifies a JavaScript source string using Douglas Crockford's JSMin algorithm.
+	 * {@see minify()} runs the configured {@see IMinifier} instead.
 	 * @param string $code JavaScript source to minify
 	 * @return string minified JavaScript
 	 */

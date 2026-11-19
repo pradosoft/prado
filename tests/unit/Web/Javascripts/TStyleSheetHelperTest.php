@@ -12,8 +12,10 @@ namespace Prado\Test\Unit\Web\Javascripts;
 
 use Prado\Exceptions\TConfigurationException;
 use Prado\Test\Unit\PradoUnit;
+use Prado\Web\Javascripts\IMinifier;
 use Prado\Web\Javascripts\TJavaScript;
 use Prado\Web\Javascripts\TStyleSheetHelper;
+use Prado\Web\Javascripts\TStyleSheetMinifier;
 
 class TStyleSheetHelperTest extends \PHPUnit\Framework\TestCase
 {
@@ -34,7 +36,37 @@ class TStyleSheetHelperTest extends \PHPUnit\Framework\TestCase
 	{
 		TJavaScript::setScriptNonce(null);
 		TStyleSheetHelper::setRequireStyleIntegrity(false);
+		TStyleSheetHelper::setMinifier(null);
 		PradoUnit::setStaticProp(TStyleSheetHelper::class, '_styleIntegrity', []);
+	}
+
+	// -----------------------------------------------------------------------
+	// minify() and the IMinifier seam
+	// -----------------------------------------------------------------------
+
+	public function testMinifierDefaultsToTStyleSheetMinifier(): void
+	{
+		$minifier = TStyleSheetHelper::getMinifier();
+		$this->assertInstanceOf(TStyleSheetMinifier::class, $minifier);
+		$this->assertSame($minifier, TStyleSheetHelper::getMinifier(), 'The default is created once.');
+		$this->assertSame('a{b:c}', TStyleSheetHelper::minify("a { b: c; }\n"));
+	}
+
+	public function testSetMinifierReplacesAndRestoresTheDefault(): void
+	{
+		$custom = new class () implements IMinifier {
+			public function minify(string $code): string
+			{
+				return 'custom:' . $code;
+			}
+		};
+		TStyleSheetHelper::setMinifier($custom);
+		$this->assertSame($custom, TStyleSheetHelper::getMinifier());
+		$this->assertSame('custom:a{}', TStyleSheetHelper::minify('a{}'));
+		$this->assertNotSame($custom, TJavaScript::getMinifier(), 'The JavaScript minifier is separate.');
+
+		TStyleSheetHelper::setMinifier(null);
+		$this->assertInstanceOf(TStyleSheetMinifier::class, TStyleSheetHelper::getMinifier());
 	}
 
 	// -----------------------------------------------------------------------

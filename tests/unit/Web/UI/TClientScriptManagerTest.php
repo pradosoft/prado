@@ -7,8 +7,10 @@ use Prado\IO\TTextWriter;
 use Prado\Prado;
 use Prado\TApplication;
 use Prado\TApplicationMode;
+use Prado\Web\Javascripts\IMinifier;
 use Prado\Web\Javascripts\TJavaScript;
 use Prado\Web\Javascripts\TJavaScriptAsset;
+use Prado\Web\Javascripts\TStyleSheetHelper;
 use Prado\Web\UI\THtmlWriter;
 use Prado\Web\UI\TPage;
 use Prado\Web\UI\TClientScriptManager;
@@ -1416,6 +1418,74 @@ class TClientScriptManagerTest extends \PHPUnit\Framework\TestCase
 			$this->assertSame('/* kept */', file_get_contents($path));
 		} finally {
 			self::$app->setMode(TApplicationMode::Debug);
+		}
+	}
+
+	public function testRegisterPradoStyleMinifiesOutsideDebugMode()
+	{
+		self::$app->setMode(TApplicationMode::Normal);
+		try {
+			$this->_cs->registerPradoStyle('jquery.ui.core');
+			$urls = $this->_cs->getStyleSheetUrls();
+			$this->assertNotEmpty($urls);
+			foreach ($urls as $url) {
+				$this->assertStringEndsWith('.min.css', $url);
+			}
+			[$base, $subPath] = $this->invokePrivateMethod($this->_cs, 'getStylePackageFolder', ['jquery-ui/themes/base/core.css']);
+			[$path] = $this->invokePrivateMethod($this->_cs, 'getPackagePathUrl', [$base]);
+			$minFile = $path . DIRECTORY_SEPARATOR . 'themes' . DIRECTORY_SEPARATOR . 'base' . DIRECTORY_SEPARATOR . 'core.min.css';
+			$this->assertFileExists($minFile);
+			$this->assertSame(TStyleSheetHelper::minify(file_get_contents($base . '/' . $subPath)), file_get_contents($minFile));
+		} finally {
+			self::$app->setMode(TApplicationMode::Debug);
+		}
+	}
+
+	public function testRegisterPradoStyleKeepsTheSourceInDebugMode()
+	{
+		$this->_cs->registerPradoStyle('jquery.ui.core');
+		foreach ($this->_cs->getStyleSheetUrls() as $url) {
+			$this->assertStringEndsNotWith('.min.css', $url);
+		}
+	}
+
+	public function testMinifiedPackageFileWritesTheCopyOnce()
+	{
+		$root = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'prado-csm-' . uniqid();
+		$src = $root . DIRECTORY_SEPARATOR . 'src';
+		$dst = $root . DIRECTORY_SEPARATOR . 'dst';
+		mkdir($src . DIRECTORY_SEPARATOR . 'v1.2', 0777, true);
+		mkdir($dst . DIRECTORY_SEPARATOR . 'v1.2', 0777, true);
+		file_put_contents($src . '/a.css', 'a { b: c; }');
+		file_put_contents($src . '/v1.2/b.js', 'var b;');
+		$minifier = new class () implements IMinifier {
+			public int $calls = 0;
+
+			public function minify(string $code): string
+			{
+				$this->calls++;
+				return strtoupper($code);
+			}
+		};
+		try {
+			$this->assertSame('a.min.css', $this->invokePrivateMethod($this->_cs, 'minifiedPackageFile', [$src, $dst, 'a.css', $minifier]));
+			$this->assertSame('A { B: C; }', file_get_contents($dst . '/a.min.css'));
+			$this->assertSame('a.min.css', $this->invokePrivateMethod($this->_cs, 'minifiedPackageFile', [$src, $dst, 'a.css', $minifier]));
+			$this->assertSame(1, $minifier->calls, 'An existing copy is kept.');
+
+			$this->assertSame('v1.2/b.min.js', $this->invokePrivateMethod($this->_cs, 'minifiedPackageFile', [$src, $dst, 'v1.2/b.js', $minifier]));
+			$this->assertSame('VAR B;', file_get_contents($dst . '/v1.2/b.min.js'));
+
+			$this->assertSame('c.min.css', $this->invokePrivateMethod($this->_cs, 'minifiedPackageFile', [$src, $dst, 'c.min.css', $minifier]));
+			$this->assertSame('LICENSE', $this->invokePrivateMethod($this->_cs, 'minifiedPackageFile', [$src, $dst, 'LICENSE', $minifier]));
+			$this->assertSame(2, $minifier->calls, 'A minified or extensionless file is its own copy.');
+		} finally {
+			foreach (['/src/a.css', '/src/v1.2/b.js', '/dst/a.min.css', '/dst/v1.2/b.min.js'] as $file) {
+				@unlink($root . $file);
+			}
+			foreach (['/src/v1.2', '/dst/v1.2', '/src', '/dst', ''] as $dir) {
+				@rmdir($root . $dir);
+			}
 		}
 	}
 

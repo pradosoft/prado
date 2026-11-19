@@ -18,6 +18,7 @@ Static utility that renders `<style>` blocks and `<link rel="stylesheet">` tags 
 | CSP nonce | `getStyleNonce()` | Returns `TJavaScript::getScriptNonce()`: one nonce per response, which `THttpHeaderCsp` substitutes for `NONCE` in any directive |
 | SRI registry | `hasStyleIntegrity()`, `getStyleIntegrity()`, `setStyleIntegrity($url, ?$hash, $method = 'sha384')` | URL-keyed, normalized by `THttpUtility::normalizeIntegrityUrl()`; separate from the script registry; `TIntegrityManager` fills both |
 | Required integrity | `getRequireStyleIntegrity()`, `setRequireStyleIntegrity(bool)` | Default false; separate from `RequireScriptIntegrity` because font service CSS generated per browser has no fixed hash |
+| Minifier | `getMinifier()`, `setMinifier(?IMinifier)`, `minify($css)` | The [IMinifier](IMinifier.md) for the process; `null` restores [TStyleSheetMinifier](TStyleSheetMinifier.md); separate from the JavaScript minifier |
 
 ## Render Helpers
 

@@ -15,6 +15,7 @@ use Prado\Prado;
 use Prado\TApplicationMode;
 use Prado\TEventResults;
 use Prado\Exceptions\TInvalidOperationException;
+use Prado\Web\Javascripts\IMinifier;
 use Prado\Web\Javascripts\TJavaScript;
 use Prado\Web\Javascripts\TJavaScriptAsset;
 use Prado\Web\Javascripts\TStyleSheetHelper;
@@ -358,19 +359,9 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 								[$path, $baseUrl] = $this->getPackagePathUrl($base);
 
 								$this->_expandedScripts[$script] = true;
-								if ($isDebug) {
-									if (!in_array($url = $baseUrl . '/' . $subPath, $packagesUrl)) {
-										$packagesUrl[] = $url;
-									}
-								} else {
-									$minPath = preg_replace('/^(.*)(?<!\.min)\.js$/', "\\1.min.js", $subPath);
-									if (!in_array($url = $baseUrl . '/' . $minPath, $packagesUrl)) {
-										if (!is_file($filePath = $path . DIRECTORY_SEPARATOR . $minPath)) {
-											file_put_contents($filePath, TJavaScript::JSMin(file_get_contents($base . '/' . $subPath)));
-											chmod($filePath, Prado::getDefaultFilePermissions());
-										}
-										$packagesUrl[] = $url;
-									}
+								$file = $isDebug ? $subPath : $this->minifiedPackageFile($base, $path, $subPath, TJavaScript::getMinifier());
+								if (!in_array($url = $baseUrl . '/' . $file, $packagesUrl)) {
+									$packagesUrl[] = $url;
 								}
 							}
 						}
@@ -473,6 +464,28 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 		} else {
 			return [$assets->getBasePath() . str_replace($assets->getBaseUrl(), '', $base), $base];
 		}
+	}
+
+	/**
+	 * Returns the minified copy of a package file, used outside Debug mode, and writes it
+	 * into the published package folder when it is missing.  The copy of "name.ext" is
+	 * "name.min.ext"; a file already named "name.min.ext", or one without an extension,
+	 * is its own copy.
+	 * @param string $base The package source folder.
+	 * @param string $path The published package folder.
+	 * @param string $subPath The file path relative to the package folder.
+	 * @param IMinifier $minifier The minifier for the file's language.
+	 * @return string The path of the minified copy, relative to the package folder.
+	 * @since 4.4.0
+	 */
+	protected function minifiedPackageFile(string $base, string $path, string $subPath, IMinifier $minifier): string
+	{
+		$minPath = preg_replace('/^(.*)(?<!\.min)(\.[^.\/]+)$/', '\1.min\2', $subPath);
+		if ($minPath !== $subPath && !is_file($filePath = $path . DIRECTORY_SEPARATOR . $minPath)) {
+			file_put_contents($filePath, $minifier->minify(file_get_contents($base . '/' . $subPath)));
+			chmod($filePath, Prado::getDefaultFilePermissions());
+		}
+		return $minPath;
 	}
 
 	/**
@@ -735,8 +748,8 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 								[$path, $baseUrl] = $this->getPackagePathUrl($base);
 
 								$this->_expandedStyles[$style] = true;
-								// TODO minify css?
-								if (!in_array($url = $baseUrl . '/' . $subPath, $packagesUrl)) {
+								$file = $isDebug ? $subPath : $this->minifiedPackageFile($base, $path, $subPath, TStyleSheetHelper::getMinifier());
+								if (!in_array($url = $baseUrl . '/' . $file, $packagesUrl)) {
 									$packagesUrl[] = $url;
 								}
 							}

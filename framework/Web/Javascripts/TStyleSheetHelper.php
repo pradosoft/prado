@@ -46,6 +46,9 @@ use Prado\Web\THttpUtility;
  * - {@see renderStyleBlocks()} — multiple inline blocks in one tag.
  * - {@see renderStyleSheetFile()} / {@see renderStyleSheetFiles()} — `<link rel="stylesheet">` tags.
  *
+ * **Minifying:** {@see minify()} minifies CSS with the {@see IMinifier} of
+ * {@see setMinifier()}, a {@see TStyleSheetMinifier} by default.
+ *
  * A nonce does not cover `style="…"` attributes, which Prado controls render. A
  * policy that requires the nonce for style elements allows attributes separately,
  * for example `style-src-elem 'self' NONCE; style-src-attr 'unsafe-inline'`.
@@ -66,6 +69,40 @@ class TStyleSheetHelper
 	 * value throws a {@see TConfigurationException}. Defaults to `false`.
 	 */
 	private static $_requireStyleIntegrity = false;
+
+	/**
+	 * @var ?IMinifier The minifier of {@see minify()}; null is a {@see TStyleSheetMinifier}.
+	 */
+	private static ?IMinifier $_minifier = null;
+
+	/**
+	 * Returns the minifier of {@see minify()}, a {@see TStyleSheetMinifier} unless
+	 * {@see setMinifier()} sets another.
+	 * @return IMinifier The CSS minifier.
+	 */
+	public static function getMinifier(): IMinifier
+	{
+		return self::$_minifier ??= new TStyleSheetMinifier();
+	}
+
+	/**
+	 * Sets the minifier of {@see minify()}, for the PHP process.
+	 * @param ?IMinifier $minifier The CSS minifier, or null for a {@see TStyleSheetMinifier}.
+	 */
+	public static function setMinifier(?IMinifier $minifier): void
+	{
+		self::$_minifier = $minifier;
+	}
+
+	/**
+	 * Minifies CSS with the minifier of {@see getMinifier()}.
+	 * @param string $css The CSS source.
+	 * @return string The minified CSS.
+	 */
+	public static function minify(string $css): string
+	{
+		return self::getMinifier()->minify($css);
+	}
 
 	/**
 	 * Returns whether remote stylesheets are required to carry a registered SRI value.

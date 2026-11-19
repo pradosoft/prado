@@ -177,7 +177,11 @@ jobs:
   prado-macos:
     name: Prado OS (macOS)
     runs-on: macos-latest
-    timeout-minutes: 30
+    # Temporary fix for GitHub's macOS CI slowness: installing the PHP extensions
+    # takes about 27 minutes, where it normally takes about 3, and the rest of the
+    # job needs about 8 more. Return this to 30 when the macOS runners are back to
+    # their normal speed.
+    timeout-minutes: 40
     steps:
       - name: Checkout
         uses: actions/checkout@v7
