@@ -23,6 +23,10 @@ TBehaviorParameterLoader implements attaching Behaviors from Parameters before a
 - `getAttachToClass()` / `setAttachToClass($attachto)` - Gets/sets class to attach behavior to
 - `getProperties()` - Gets additional properties for the behavior
 
+## Patterns & Gotchas
+
+- **Priority** - `Priority` is the attach priority for every target. Page and module behaviors carry it until they attach.
+
 ## See Also
 
 - [TBehaviorsModule](../TBehaviorsModule.md)

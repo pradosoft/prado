@@ -228,6 +228,42 @@ class TBehaviorParameterLoaderTest extends \PHPUnit\Framework\TestCase
 		$page->unlisten();
 	}
 	
+	public function testAttachTPageBehaviors_priority()
+	{
+		$this->obj->BehaviorName = 'priorityBehavior';
+		$this->obj->BehaviorClass = TestModuleBehaviorLoader2::class;
+		$this->obj->AttachTo = 'page';
+		$this->obj->Priority = 5;
+
+		$this->obj->dyInit(null);
+		$page = new TPage;
+		$this->obj->attachTPageBehaviors(null, $page);
+
+		$this->assertEquals(5, $page->asa('priorityBehavior')->getPriority());
+		$this->assertArrayNotHasKey('priority', $this->obj->getProperties());
+		$page->detachBehavior('priorityBehavior');
+		$page->unlisten();
+	}
+
+	public function testAttachModuleBehaviors_priority()
+	{
+		$app = Prado::getApplication();
+		$module = new TestModuleLoaderBM;
+		$module->init(null);
+		$app->setModule('TBPLoaderPriorityTest', $module);
+		$this->obj->BehaviorName = 'priorityBehavior';
+		$this->obj->BehaviorClass = TestModuleBehaviorLoader1::class;
+		$this->obj->AttachTo = 'module:TBPLoaderPriorityTest';
+		$this->obj->Priority = 7;
+
+		$this->obj->dyInit(null);
+		$this->obj->attachModuleBehaviors(null, null);
+
+		$this->assertEquals(7, $module->asa('priorityBehavior')->getPriority());
+		$module->detachBehavior('priorityBehavior');
+		$module->unlisten();
+	}
+
 	public function testAttachTPageBehaviors_anonymous()
 	{
 		$app = Prado::getApplication();
