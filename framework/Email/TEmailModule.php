@@ -32,6 +32,7 @@ use Prado\TComponent;
 use Prado\TPropertyValue;
 use Prado\Util\Clock\TApplicationClockAwareTrait;
 use Prado\Util\Cron\TCronTaskInfo;
+use Prado\Util\Cron\TDbCronManager;
 use Prado\Web\THttpRequest;
 use Prado\Xml\TXmlElement;
 
@@ -99,6 +100,13 @@ use Prado\Xml\TXmlElement;
  * </module>
  * </code>
  *
+ * Queued emails are delivered by {@see TEmailQueueTask}.  With
+ * {@see setWakeCron WakeCron} and a {@see TDbCronManager} in the application, the
+ * module does not wait for the schedule of that task: when it leaves an email in
+ * the queue it adds a one-shot queue task due at the time of the next attempt,
+ * which wakes a waiting cron process or the cron daemon.  The scheduled task stays
+ * the safety net for emails that a dead request or a dead process left behind.
+ *
  * The module offers its cron tasks to the cron module: {@see TEmailQueueTask},
  * {@see TEmailCleanupTask}, and {@see TEmailBounceTask}.  {@see processBounceMessage}
  * takes a bounce message, records it in the store, and raises onBounce.  In the
@@ -132,6 +140,9 @@ class TEmailModule extends \Prado\TModule implements IEmailMailer, IPermissions
 
 	/** The default ID of the tracking service. */
 	public const DEFAULT_SERVICE_ID = 'email';
+
+	/** The prefix of the name of a one-shot queue task; the time it is due follows. */
+	public const WAKE_TASK_PREFIX = 'emailqueue-wake-';
 
 	/** @var ?string the directory of the emails. */
 	private ?string $_basePath = null;
@@ -177,6 +188,15 @@ class TEmailModule extends \Prado\TModule implements IEmailMailer, IPermissions
 
 	/** @var ?array the properties of the `<service>` element. */
 	private ?array $_serviceProperties = null;
+
+	/** @var null|string|TDbCronManager the cron module that is woken, or its ID. */
+	private null|string|TDbCronManager $_cron = null;
+
+	/** @var bool whether cron is woken when an email is left in the queue. */
+	private bool $_wakeCron = true;
+
+	/** @var array<int, bool> the due times a one-shot queue task was added for. */
+	private array $_wakeTimes = [];
 
 	/** @var TEmail[] the emails waiting for the end of the request. */
 	private array $_deferred = [];
@@ -562,7 +582,7 @@ class TEmailModule extends \Prado\TModule implements IEmailMailer, IPermissions
 			$email->setStatus($status);
 			$this->onEmailFailed(new TEmailEventParameter($email, $e));
 			if ($status === TEmailStatus::Queued) {
-				$this->signalQueue();
+				$this->signalQueue($store->getEmailInfo($email->getTrackingId())['next_attempt_time'] ?? null);
 			}
 			if (!$refused) {
 				throw $e;
@@ -638,11 +658,33 @@ class TEmailModule extends \Prado\TModule implements IEmailMailer, IPermissions
 	}
 
 	/**
-	 * Called when an email is left in the queue of the store.  It does nothing;
-	 * the queued emails wait for the next {@see sendQueued}.
+	 * Called when an email is left in the queue of the store.  With {@see getWakeCron WakeCron}
+	 * and a cron module, it adds a one-shot {@see TEmailQueueTask} due at the time,
+	 * which wakes cron; a task for the same time is added once.  The task belongs to
+	 * the current user, which the cron permissions allow a user to add.  Without a
+	 * cron module, or when cron refuses the task, the email waits for the scheduled queue task.
+	 * @param ?int $time the Unix timestamp the email is due; null for now.
 	 */
-	protected function signalQueue(): void
+	protected function signalQueue(?int $time = null): void
 	{
+		$time ??= $this->getClock()->time();
+		if (!$this->getWakeCron() || isset($this->_wakeTimes[$time]) || ($cron = $this->getCron()) === null) {
+			return;
+		}
+		$this->_wakeTimes[$time] = true;
+		try {
+			$task = Prado::createComponent(TEmailQueueTask::class);
+			$task->setName(self::WAKE_TASK_PREFIX . $time);
+			$task->setSchedule('@' . $time);
+			$task->setModuleId($this->getID());
+			$task->setAutoRemove(true);
+			if (($user = $this->getApplication()?->getUser()) !== null && !$user->getIsGuest()) {
+				$task->setUserName($user->getName());
+			}
+			$cron->addTask($task);
+		} catch (\Throwable $e) {
+			Prado::warning('The email queue could not wake cron: ' . $e->getMessage(), static::class);
+		}
 	}
 
 	/**
@@ -862,6 +904,7 @@ class TEmailModule extends \Prado\TModule implements IEmailMailer, IPermissions
 	{
 		$this->sendDeferred();
 		$this->close();
+		$this->_wakeTimes = [];
 	}
 
 	/**
@@ -938,6 +981,75 @@ class TEmailModule extends \Prado\TModule implements IEmailMailer, IPermissions
 	{
 		$value = TPropertyValue::ensureString($value);
 		$this->_store = $value === '' ? null : $value;
+	}
+
+	/**
+	 * Returns the cron module that is woken: the module of the CronID, or the first
+	 * {@see TDbCronManager} of the application.
+	 * @throws TConfigurationException when the CronID is not the ID of a TDbCronManager.
+	 * @return ?TDbCronManager the cron module, null when the application has none.
+	 */
+	public function getCron(): ?TDbCronManager
+	{
+		if (is_string($this->_cron)) {
+			$cron = $this->getApplication()?->getModule($this->_cron);
+			if (!($cron instanceof TDbCronManager)) {
+				throw new TConfigurationException('emailmodule_cronid_invalid', $this->_cron);
+			}
+			$this->_cron = $cron;
+		} elseif ($this->_cron === null && ($app = $this->getApplication()) !== null) {
+			foreach (array_keys($app->getModulesByType(TDbCronManager::class)) as $id) {
+				if (($cron = $app->getModule($id)) instanceof TDbCronManager) {
+					$this->_cron = $cron;
+					break;
+				}
+			}
+		}
+		return $this->_cron;
+	}
+
+	/**
+	 * @param ?TDbCronManager $cron the cron module that is woken; null to find it in the application.
+	 */
+	public function setCron(?TDbCronManager $cron)
+	{
+		$this->_cron = $cron;
+	}
+
+	/**
+	 * @return string the ID of the cron module that is woken, empty for the first TDbCronManager of the application. Defaults to ''.
+	 */
+	public function getCronID(): string
+	{
+		if (is_string($this->_cron)) {
+			return $this->_cron;
+		}
+		return $this->_cron === null ? '' : (string) $this->_cron->getID();
+	}
+
+	/**
+	 * @param string $value the ID of the {@see TDbCronManager} that is woken; empty for the first one of the application.
+	 */
+	public function setCronID($value)
+	{
+		$value = TPropertyValue::ensureString($value);
+		$this->_cron = $value === '' ? null : $value;
+	}
+
+	/**
+	 * @return bool whether cron is woken when an email is left in the queue. Defaults to true.
+	 */
+	public function getWakeCron(): bool
+	{
+		return $this->_wakeCron;
+	}
+
+	/**
+	 * @param bool|string $value whether cron is woken when an email is left in the queue.
+	 */
+	public function setWakeCron($value)
+	{
+		$this->_wakeCron = TPropertyValue::ensureBoolean($value);
 	}
 
 	/**

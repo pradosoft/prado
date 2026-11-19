@@ -500,6 +500,7 @@ emailimage_alternatetext_required				= TEmailImage ''{0}'' needs AlternateText, 
 emailmodule_basepath_invalid					= TEmailModule.BasePath ''{0}'' is not a directory.
 emailmodule_basepath_unchangeable				= TEmailModule.BasePath cannot be changed after the module is initialized.
 emailmodule_bodyclass_invalid					= The class ''{1}'' of the email ''{0}'' is not a TEmailBody.
+emailmodule_cronid_invalid						= TEmailModule.CronID ''{0}'' is not the ID of a TDbCronManager.
 emailmodule_email_resent						= An email with the status ''{0}'' cannot be sent again; send a clone of it.
 emailmodule_email_unknown						= The email ''{0}'' has no template and no class in the email paths.
 emailmodule_from_required						= The email needs a From address; set it on the email or as TEmailModule.From.
