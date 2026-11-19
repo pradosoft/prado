@@ -103,9 +103,11 @@ use Prado\Xml\TXmlElement;
  * Queued emails are delivered by {@see TEmailQueueTask}.  With
  * {@see setWakeCron WakeCron} and a {@see TDbCronManager} in the application, the
  * module does not wait for the schedule of that task: when it leaves an email in
- * the queue it adds a one-shot queue task due at the time of the next attempt,
- * which wakes a waiting cron process or the cron daemon.  The scheduled task stays
- * the safety net for emails that a dead request or a dead process left behind.
+ * the queue it adds a self-removing queue task due at the time of the next attempt
+ * ({@see TDbCronManager::addSystemTask}), which wakes a waiting cron process or the
+ * cron daemon.  The module adds the task, so every request wakes cron, a guest's
+ * included.  The scheduled task stays the safety net for emails that a dead request
+ * or a dead process left behind.
  *
  * Extensions attach at these points:
  *
@@ -213,7 +215,7 @@ class TEmailModule extends \Prado\TModule implements IEmailMailer, IPermissions
 	/** @var bool whether cron is woken when an email is left in the queue. */
 	private bool $_wakeCron = true;
 
-	/** @var array<int, bool> the due times a one-shot queue task was added for. */
+	/** @var array<int, bool> the due times this request asked cron for a queue task. */
 	private array $_wakeTimes = [];
 
 	/** @var TEmail[] the emails waiting for the end of the request. */
@@ -685,32 +687,50 @@ class TEmailModule extends \Prado\TModule implements IEmailMailer, IPermissions
 
 	/**
 	 * Called when an email is left in the queue of the store.  With {@see getWakeCron WakeCron}
-	 * and a cron module, it adds a one-shot {@see TEmailQueueTask} due at the time,
-	 * which wakes cron; a task for the same time is added once.  The task belongs to
-	 * the current user, which the cron permissions allow a user to add.  Without a
-	 * cron module, or when cron refuses the task, the email waits for the scheduled queue task.
+	 * and a cron module, a self-removing {@see TEmailQueueTask} due at the time wakes cron.
+	 * Cron removes the task when its run starts, so the task of a time this request already
+	 * asked for may have read the queue before this email entered it; the email is then given
+	 * the task of the next second, which has not started.  A request adds one task per second.
+	 * Without a cron module, or when cron cannot add the task, the email waits for the
+	 * scheduled queue task.
 	 * @param ?int $time the Unix timestamp the email is due; null for now.
 	 */
 	protected function signalQueue(?int $time = null): void
 	{
-		$time ??= $this->getClock()->time();
-		if (!$this->getWakeCron() || isset($this->_wakeTimes[$time]) || ($cron = $this->getCron()) === null) {
+		if (!$this->getWakeCron() || ($cron = $this->getCron()) === null) {
 			return;
 		}
+		$now = $this->getClock()->time();
+		$time = max($time ?? $now, $now);
+		if (isset($this->_wakeTimes[$time]) && $time === $now) {
+			$time++;
+		}
+		if (isset($this->_wakeTimes[$time])) {
+			return;
+		}
+		$this->_wakeTimes = array_filter($this->_wakeTimes, fn ($at) => $at >= $now, ARRAY_FILTER_USE_KEY);
 		$this->_wakeTimes[$time] = true;
 		try {
-			$task = Prado::createComponent(TEmailQueueTask::class);
-			$task->setName(self::WAKE_TASK_PREFIX . $time);
-			$task->setSchedule('@' . $time);
-			$task->setModuleId($this->getID());
-			$task->setAutoRemove(true);
-			if (($user = $this->getApplication()?->getUser()) !== null && !$user->getIsGuest()) {
-				$task->setUserName($user->getName());
-			}
-			$cron->addTask($task);
+			$cron->addSystemTask($this->createWakeTask($time));
 		} catch (\Throwable $e) {
 			Prado::warning('The email queue could not wake cron: ' . $e->getMessage(), static::class);
 		}
+	}
+
+	/**
+	 * Creates the task that delivers the queue at a time.  The task has no UserName, so it runs
+	 * as the default user of cron, as the scheduled queue task does.  A task of the same time
+	 * has the same name, so cron keeps one for all the requests that ask for it.
+	 * @param int $time the Unix timestamp the task is due.
+	 * @return TEmailQueueTask the task named {@see WAKE_TASK_PREFIX} and the time.
+	 */
+	protected function createWakeTask(int $time): TEmailQueueTask
+	{
+		$task = Prado::createComponent(TEmailQueueTask::class);
+		$task->setName(self::WAKE_TASK_PREFIX . $time);
+		$task->setSchedule('@' . $time);
+		$task->setModuleId($this->getID());
+		return $task;
 	}
 
 	/**

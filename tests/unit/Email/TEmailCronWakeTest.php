@@ -14,6 +14,7 @@ use Prado\Exceptions\TConfigurationException;
 use Prado\Test\Unit\Email\Store\TSqliteEmailStore;
 use Prado\Test\Unit\Email\Transport\TCaptureTransport;
 use Prado\Test\Unit\Harness\TTestApplication;
+use Prado\Test\Unit\Util\Cron\TTestCronDenyingBehavior;
 use Prado\Util\Clock\TMockClock;
 use Prado\Util\Cron\TDbCronManager;
 
@@ -37,12 +38,12 @@ class TEmailCronWakeTestCron extends TDbCronManager
 		return true;
 	}
 
-	public function addTask($task, $runtime = false)
+	public function addSystemTask($task): bool
 	{
 		if ($this->refuse) {
 			throw new \RuntimeException('the cron table is locked');
 		}
-		return parent::addTask($task, $runtime);
+		return parent::addSystemTask($task);
 	}
 }
 
@@ -64,12 +65,14 @@ class TEmailCronWakeTest extends TestCase
 
 	private TEmailCronWakeTestCron $_cron;
 
+	private TMockClock $_clock;
+
 	protected function setUp(): void
 	{
 		$this->_app = new TTestApplication();
 		$this->_module = $this->newEmailModule();
 		$this->_module->setID('email');
-		$this->_module->setClock((new TMockClock())->setTime(self::NOW));
+		$this->_module->setClock($this->_clock = (new TMockClock())->setTime(self::NOW));
 		$this->_module->setTransport($this->_transport = new TCaptureTransport());
 		$this->_module->setStore($this->_store = $this->newEmailStore(self::NOW));
 		$this->_cron = new TEmailCronWakeTestCron();
@@ -125,28 +128,115 @@ class TEmailCronWakeTest extends TestCase
 		$this->assertSame($this->_cron, $module->getCron());
 	}
 
-	public function testQueuedEmailAddsAOneShotTaskAndCronDeliversIt()
+	private function wakeTask(int $time): mixed
+	{
+		return $this->_cron->getTask(TEmailModule::WAKE_TASK_PREFIX . $time);
+	}
+
+	private function sentTo(): array
+	{
+		return array_map(fn ($e) => $e->getTo()[0]->getAddress(), $this->_transport->sent);
+	}
+
+	public function testQueuedEmailAddsASelfRemovingTaskAndCronDeliversIt()
 	{
 		$this->_module->setSendMode(TEmailSendMode::Queued);
-		$name = TEmailModule::WAKE_TASK_PREFIX . self::NOW;
-		$first = $this->email('ann@example.com');
-		$this->assertSame(TEmailStatus::Queued, $this->_module->sendEmail($first));
-		$task = $this->_cron->getTask($name);
+		$this->assertSame(TEmailStatus::Queued, $this->_module->sendEmail($this->email('ann@example.com')));
+		$task = $this->wakeTask(self::NOW);
 		$this->assertInstanceOf(TEmailQueueTask::class, $task);
 		$this->assertSame('@' . self::NOW, $task->getSchedule());
 		$this->assertSame('email', $task->getModuleId());
 		$this->assertTrue($task->getAutoRemove());
+		$this->assertEmpty($task->getUserName(), 'the task runs as the default user of cron');
 		$this->assertSame(1, $this->_cron->wakes, 'adding the earliest due task signals the wake');
-
-		$second = $this->email('bob@example.com');
-		$this->_module->sendEmail($second);
-		$this->assertSame(1, $this->_cron->wakes, 'a task for the same time is added once');
 		$this->assertSame([], $this->_transport->sent);
 
 		$this->_cron->processPendingTasks();
-		$this->assertSame(['ann@example.com', 'bob@example.com'], array_map(fn ($e) => $e->getTo()[0]->getAddress(), $this->_transport->sent));
-		$this->assertSame(2, $this->_store->countEmails(null, TEmailStatus::Sent));
-		$this->assertEmpty($this->_cron->getTask($name), 'the one-shot task removes itself');
+		$this->assertSame(['ann@example.com'], $this->sentTo());
+		$this->assertSame(1, $this->_store->countEmails(null, TEmailStatus::Sent));
+		$this->assertEmpty($this->wakeTask(self::NOW), 'the task removes itself');
+	}
+
+	public function testLaterEmailsOfTheSecondGetTheTaskOfTheNextSecond()
+	{
+		$this->_module->setSendMode(TEmailSendMode::Queued);
+		$this->_module->sendEmail($this->email('ann@example.com'));
+		$this->_cron->processPendingTasks();
+		$this->assertSame(['ann@example.com'], $this->sentTo(), 'the task of this second ran and is gone');
+
+		$this->_module->sendEmail($this->email('bob@example.com'));
+		$this->assertEmpty($this->wakeTask(self::NOW), 'the task of this second may have read the queue already');
+		$next = $this->wakeTask(self::NOW + 1);
+		$this->assertInstanceOf(TEmailQueueTask::class, $next);
+		$this->assertSame('@' . (self::NOW + 1), $next->getSchedule());
+		$this->_module->sendEmail($this->email('cat@example.com'));
+		$this->assertEmpty($this->wakeTask(self::NOW + 2), 'the task of the next second takes every email of this one');
+
+		$this->_clock->setTime(self::NOW + 1);
+		$this->_module->sendEmail($this->email('dan@example.com'));
+		$this->assertInstanceOf(TEmailQueueTask::class, $this->wakeTask(self::NOW + 2), 'the task of a second that began may have started');
+
+		$this->_cron->processPendingTasks();
+		$this->assertSame(['ann@example.com', 'bob@example.com', 'cat@example.com', 'dan@example.com'], $this->sentTo());
+		$this->assertEmpty($this->wakeTask(self::NOW + 1));
+		$this->assertEmpty($this->wakeTask(self::NOW + 2));
+	}
+
+	public function testRequestsOfOneSecondShareOneTask()
+	{
+		$this->_module->setSendMode(TEmailSendMode::Queued);
+		$this->_module->sendEmail($this->email('ann@example.com'));
+		$this->_module->endRequest();
+		$this->_module->sendEmail($this->email('bob@example.com'));
+		$this->assertSame(1, $this->_cron->wakes, 'the second request finds the task of this second waiting');
+		$this->assertEmpty($this->wakeTask(self::NOW + 1));
+		$this->assertSame(1, $this->wakeTaskRows(self::NOW));
+
+		$this->_cron->processPendingTasks();
+		$this->assertSame(['ann@example.com', 'bob@example.com'], $this->sentTo(), 'one run delivers both');
+		$this->assertSame(0, $this->wakeTaskRows(self::NOW));
+	}
+
+	private function wakeTaskRows(int $time): int
+	{
+		$command = $this->_cron->getDbConnection()->createCommand('SELECT COUNT(*) FROM ' . $this->_cron->getTableName() . ' WHERE name=:name AND active IS NOT NULL');
+		$command->bindValue(':name', TEmailModule::WAKE_TASK_PREFIX . $time);
+		return (int) $command->queryScalar();
+	}
+
+	public function testTwoRowsOfOneNameRunOnce()
+	{
+		$this->_module->setSendMode(TEmailSendMode::Queued);
+		$this->_module->sendEmail($this->email('ann@example.com'));
+		$table = $this->_cron->getTableName();
+		$columns = 'name, schedule, task, moduleid, username, options, lastexectime, nextexectime, processcount, active';
+		$copy = $this->_cron->getDbConnection()->createCommand("INSERT INTO {$table} ({$columns}) SELECT {$columns} FROM {$table} WHERE name=:name AND active IS NOT NULL");
+		$copy->bindValue(':name', TEmailModule::WAKE_TASK_PREFIX . self::NOW);
+		$copy->execute();
+		$this->assertSame(2, $this->wakeTaskRows(self::NOW), 'two processes added the task at the same moment');
+
+		$this->_cron->processPendingTasks();
+		$this->assertSame(['ann@example.com'], $this->sentTo());
+		$this->assertSame(0, $this->wakeTaskRows(self::NOW));
+		$this->_cron->processPendingTasks();
+		$this->assertCount(1, $this->_transport->sent);
+	}
+
+	public function testRequestOfAUserWithoutCronPermissionsWakesCron()
+	{
+		$this->_module->setSendMode(TEmailSendMode::Queued);
+		$this->_cron->attachBehavior('denies', new TTestCronDenyingBehavior(['dyAddTask', 'dyAddTaskGlobal']));
+		$denied = new TEmailQueueTask();
+		$denied->setName('denied');
+		$denied->setSchedule('@' . self::NOW);
+		$denied->setModuleId('email');
+		$this->assertNull($this->_cron->addTask($denied), 'the user, such as a guest, may not add a cron task');
+
+		$this->assertSame(TEmailStatus::Queued, $this->_module->sendEmail($this->email()));
+		$this->assertInstanceOf(TEmailQueueTask::class, $this->wakeTask(self::NOW));
+		$this->assertSame(1, $this->_cron->wakes);
+		$this->_cron->processPendingTasks();
+		$this->assertSame(['ann@example.com'], $this->sentTo());
 	}
 
 	public function testEndOfRequestAllowsTheNextWake()
