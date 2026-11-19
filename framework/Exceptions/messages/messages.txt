@@ -548,7 +548,6 @@ filelogroute_maxlogfiles_invalid		= TFileLogRoute.MaxLogFiles must be greater th
 
 emaillogroute_sentfrom_required			= TEmailLogRoute.SentFrom cannot be empty.
 emaillogroute_mail_failed				= TEmailLogRoute failed to send the log to ''{0}''.
-emaillogroute_mail_failed				= TEmailLogRoute failed to log to send to ''{0}''.
 emaillogroute_emailmoduleid_invalid	= TEmailLogRoute.EmailModuleID ''{0}'' is not the ID of a TEmailModule.
 
 syslogroute_bad_flags					= TSysLogRoute.SysLogFlags are not valid, ''{0}''.

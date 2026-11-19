@@ -38,7 +38,7 @@ class TEmailControlsTest extends TestCase
 	protected function setUp(): void
 	{
 		$this->_module = $this->newEmailModule();
-		$this->_module->setStore(new TSqliteEmailStore());
+		$this->_module->setStore($this->newEmailStore());
 		$this->_module->setServiceID('email');
 		$this->_module->setServiceUrl('https://www.example.com/index.php');
 		$this->_email = new TEmail();

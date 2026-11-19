@@ -17,6 +17,8 @@ use Prado\Util\IDbModule;
 
 class TDbEmailStoreTest extends TestCase
 {
+	use \Prado\Test\Unit\Email\TEmailModuleCleanupTrait;
+
 	private function email(string $to = 'Ann <ann@example.com>', string $list = ''): TEmail
 	{
 		$email = new TEmail();
@@ -32,7 +34,7 @@ class TDbEmailStoreTest extends TestCase
 
 	public function testDefaults()
 	{
-		$store = new TSqliteEmailStore();
+		$store = $this->newEmailStore();
 		$this->assertInstanceOf(IEmailStore::class, $store);
 		$this->assertInstanceOf(IDbModule::class, $store);
 		$this->assertInstanceOf(IPermissions::class, $store);
@@ -47,7 +49,7 @@ class TDbEmailStoreTest extends TestCase
 
 	public function testPropertiesLockAfterInit()
 	{
-		$store = new TSqliteEmailStore();
+		$store = $this->newEmailStore();
 		$store->setTablePrefix('mail_');
 		$store->setTablePrefix('');
 		$store->init(null);
@@ -65,12 +67,12 @@ class TDbEmailStoreTest extends TestCase
 	public function testInvalidTablePrefixThrows()
 	{
 		$this->expectException(TInvalidDataValueException::class);
-		(new TSqliteEmailStore())->setTablePrefix('mail; DROP TABLE x');
+		($this->newEmailStore())->setTablePrefix('mail; DROP TABLE x');
 	}
 
 	public function testAddEmailAndRebuild()
 	{
-		$store = new TSqliteEmailStore();
+		$store = $this->newEmailStore();
 		$email = new TEmail();
 		$email->setFrom('"Shop, Inc." <shop@example.com>');
 		$email->setSender('bot@example.com');
@@ -127,7 +129,7 @@ class TDbEmailStoreTest extends TestCase
 
 	public function testEmailInfo()
 	{
-		$store = new TSqliteEmailStore(1700000000);
+		$store = $this->newEmailStore(1700000000);
 		$email = $this->email('Ann <ann@example.com>');
 		$email->setUsername('ann');
 		$store->addEmail($email, TEmailStatus::Queued);
@@ -150,7 +152,7 @@ class TDbEmailStoreTest extends TestCase
 
 	public function testClaimIsExclusive()
 	{
-		$store = new TSqliteEmailStore();
+		$store = $this->newEmailStore();
 		$email = $this->email();
 		$store->addEmail($email, TEmailStatus::Queued);
 		$this->assertTrue($store->claimEmail($email));
@@ -167,7 +169,7 @@ class TDbEmailStoreTest extends TestCase
 
 	public function testAddEmailAsSendingIsAlreadyClaimed()
 	{
-		$store = new TSqliteEmailStore();
+		$store = $this->newEmailStore();
 		$email = $this->email();
 		$store->addEmail($email, TEmailStatus::Sending);
 		$this->assertFalse($store->claimEmail($email));
@@ -176,7 +178,7 @@ class TDbEmailStoreTest extends TestCase
 
 	public function testClaimEmailsOldestFirstWithLimit()
 	{
-		$store = new TSqliteEmailStore();
+		$store = $this->newEmailStore();
 		$emails = [$this->email('a@example.com'), $this->email('b@example.com'), $this->email('c@example.com')];
 		foreach ($emails as $email) {
 			$store->addEmail($email, TEmailStatus::Queued);
@@ -192,7 +194,7 @@ class TDbEmailStoreTest extends TestCase
 
 	public function testTransientFailureRetriesWithBackoff()
 	{
-		$store = new TSqliteEmailStore(1700000000);
+		$store = $this->newEmailStore(1700000000);
 		$store->setMaxAttempts(3);
 		$store->setRetryDelay(100);
 		$email = $this->email();
@@ -222,7 +224,7 @@ class TDbEmailStoreTest extends TestCase
 
 	public function testPermanentFailureIsNotRetried()
 	{
-		$store = new TSqliteEmailStore();
+		$store = $this->newEmailStore();
 		$email = $this->email();
 		$store->addEmail($email, TEmailStatus::Sending);
 		$this->assertSame(TEmailStatus::Failed, $store->markFailed($email, str_repeat('x', 5000), false));
@@ -233,7 +235,7 @@ class TDbEmailStoreTest extends TestCase
 
 	public function testMaxAttemptsOneTurnsRetriesOff()
 	{
-		$store = new TSqliteEmailStore();
+		$store = $this->newEmailStore();
 		$store->setMaxAttempts(1);
 		$email = $this->email();
 		$store->addEmail($email, TEmailStatus::Sending);
@@ -242,7 +244,7 @@ class TDbEmailStoreTest extends TestCase
 
 	public function testStaleClaimReturnsToTheQueue()
 	{
-		$store = new TSqliteEmailStore(1700000000);
+		$store = $this->newEmailStore(1700000000);
 		$store->setClaimTimeout(600);
 		$email = $this->email();
 		$store->addEmail($email, TEmailStatus::Sending);
@@ -256,7 +258,7 @@ class TDbEmailStoreTest extends TestCase
 
 	public function testOpenAndClick()
 	{
-		$store = new TSqliteEmailStore(1700000000);
+		$store = $this->newEmailStore(1700000000);
 		$email = new TEmail();
 		$email->setFrom('shop@example.com');
 		$email->setTo('ann@example.com');
@@ -286,7 +288,7 @@ class TDbEmailStoreTest extends TestCase
 
 	public function testClickMarksAnUnopenedEmailOpened()
 	{
-		$store = new TSqliteEmailStore(1700000000);
+		$store = $this->newEmailStore(1700000000);
 		$email = new TEmail();
 		$email->setFrom('shop@example.com');
 		$email->setTo('ann@example.com');
@@ -301,7 +303,7 @@ class TDbEmailStoreTest extends TestCase
 
 	public function testSuppressionList()
 	{
-		$store = new TSqliteEmailStore();
+		$store = $this->newEmailStore();
 		$this->assertSame([], $store->getSuppressed([], 'news'));
 		$this->assertSame([], $store->getSuppressed(['ann@example.com'], 'news'));
 		$store->addSuppression(' Ann@Example.com ', TEmailSuppressionReason::Unsubscribe, 'news');
@@ -323,12 +325,12 @@ class TDbEmailStoreTest extends TestCase
 	public function testInvalidSuppressionReasonThrows()
 	{
 		$this->expectException(TInvalidDataValueException::class);
-		(new TSqliteEmailStore())->addSuppression('ann@example.com', 'Bored');
+		($this->newEmailStore())->addSuppression('ann@example.com', 'Bored');
 	}
 
 	public function testUnsubscribeSuppressesTheListRecipient()
 	{
-		$store = new TSqliteEmailStore(1700000000);
+		$store = $this->newEmailStore(1700000000);
 		$news = $this->email('Ann <Ann@Example.com>', 'news');
 		$store->addEmail($news, TEmailStatus::Sent);
 		$info = $store->recordUnsubscribe($news->getTrackingId());
@@ -352,7 +354,7 @@ class TDbEmailStoreTest extends TestCase
 
 	public function testBounceIsRecordedOnTheRecipient()
 	{
-		$store = new TSqliteEmailStore(1700000000);
+		$store = $this->newEmailStore(1700000000);
 		$email = $this->email('ann@example.com, Bob <Bob@Example.com>');
 		$store->addEmail($email, TEmailStatus::Sent);
 		$bounce = new TEmailBounce('bob@example.com', 'failed', '5.1.1', '550 no such user', '<' . $email->getMessageId() . '>', 'mx.example.com');
@@ -369,7 +371,7 @@ class TDbEmailStoreTest extends TestCase
 
 	public function testDelayedBounceDoesNotSuppress()
 	{
-		$store = new TSqliteEmailStore();
+		$store = $this->newEmailStore();
 		$email = $this->email();
 		$store->addEmail($email, TEmailStatus::Sent);
 		$info = $store->recordBounce(new TEmailBounce('ann@example.com', 'delayed', '4.4.1', 'connection timed out', $email->getMessageId()));
@@ -380,7 +382,7 @@ class TDbEmailStoreTest extends TestCase
 
 	public function testBounceFallsBackToTheOnlyRecipient()
 	{
-		$store = new TSqliteEmailStore();
+		$store = $this->newEmailStore();
 		$email = $this->email('ann@example.com');
 		$store->addEmail($email, TEmailStatus::Sent);
 		$info = $store->recordBounce(new TEmailBounce('ann-alias@other.example', 'failed', '5.1.1', '', $email->getMessageId()));
@@ -389,7 +391,7 @@ class TDbEmailStoreTest extends TestCase
 
 	public function testForgedBounceSuppressesNothing()
 	{
-		$store = new TSqliteEmailStore();
+		$store = $this->newEmailStore();
 		$email = $this->email('ann@example.com, bob@example.com');
 		$store->addEmail($email, TEmailStatus::Sent);
 		$this->assertNull($store->recordBounce(new TEmailBounce('victim@example.com', 'failed', '5.1.1', '', 'unknown@example.com')), 'an unknown Message-ID matches no email');
@@ -400,7 +402,7 @@ class TDbEmailStoreTest extends TestCase
 
 	public function testLog()
 	{
-		$store = new TSqliteEmailStore(1700000000);
+		$store = $this->newEmailStore(1700000000);
 		$emails = [];
 		foreach ([['ann', TEmailStatus::Sent], ['ann', TEmailStatus::Failed], ['bob', TEmailStatus::Sent], [null, TEmailStatus::Queued]] as [$user, $status]) {
 			$email = $this->email();
@@ -422,7 +424,7 @@ class TDbEmailStoreTest extends TestCase
 
 	public function testDeleteEmails()
 	{
-		$store = new TSqliteEmailStore(1700000000);
+		$store = $this->newEmailStore(1700000000);
 		$old = [$this->email(), $this->email(), $this->email()];
 		$store->addEmail($old[0], TEmailStatus::Sent);
 		$store->addEmail($old[1], TEmailStatus::Failed);
@@ -444,7 +446,7 @@ class TDbEmailStoreTest extends TestCase
 
 	public function testPermissionBehaviorBlocksTheLog()
 	{
-		$store = new TSqliteEmailStore();
+		$store = $this->newEmailStore();
 		$store->addEmail($this->email(), TEmailStatus::Sent);
 		$store->attachBehavior('deny', new class () extends \Prado\Util\TBehavior {
 			public function dyFindEmails($return, $username, $status, $chain)

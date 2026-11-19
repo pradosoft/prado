@@ -35,7 +35,7 @@ class TShellEmailActionTest extends TestCase
 		$this->_module = $this->newEmailModule();
 		$this->_module->setFrom('Shop <shop@example.com>');
 		$this->_module->setTransport($this->_transport = new TCaptureTransport());
-		$this->_module->setStore($this->_store = new TSqliteEmailStore(1700000000));
+		$this->_module->setStore($this->_store = $this->newEmailStore(1700000000));
 		$this->_output = new TTextWriter();
 		$this->_input = fopen('php://memory', 'r+');
 		$input = $this->_input;

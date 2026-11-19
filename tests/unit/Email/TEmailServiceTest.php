@@ -90,7 +90,7 @@ class TEmailServiceTest extends TestCase
 	{
 		$this->_module = $this->newEmailModule();
 		$this->_module->setTransport(new TCaptureTransport());
-		$this->_module->setStore($this->_store = new TSqliteEmailStore(1700000000));
+		$this->_module->setStore($this->_store = $this->newEmailStore(1700000000));
 		$this->_module->setServiceID('email');
 		$this->_module->setServiceUrl('https://www.example.com/index.php');
 		$this->_email = new TEmail();

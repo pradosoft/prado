@@ -74,7 +74,7 @@ class TEmailTasksTest extends TestCase
 		$module = $this->newEmailModule();
 		$module->setTransport($this->_transport = new TCaptureTransport());
 		if ($withStore) {
-			$module->setStore($this->_store = new TSqliteEmailStore(1700000000));
+			$module->setStore($this->_store = $this->newEmailStore(1700000000));
 		}
 		return $module;
 	}

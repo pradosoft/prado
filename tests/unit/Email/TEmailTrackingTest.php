@@ -28,7 +28,7 @@ class TEmailTrackingTest extends TestCase
 		$module->setBasePath(__DIR__ . '/Fixtures/Emails');
 		$module->setFrom('Shop <shop@example.com>');
 		$module->setTransport($this->_transport = new TCaptureTransport());
-		$module->setStore($this->_store = new TSqliteEmailStore(1700000000));
+		$module->setStore($this->_store = $this->newEmailStore(1700000000));
 		$module->setServiceID('email');
 		$module->setServiceUrl(self::SERVICE);
 		return $module;
@@ -52,7 +52,7 @@ class TEmailTrackingTest extends TestCase
 		} catch (TConfigurationException $e) {
 		}
 		$module->setServiceUrl('https://www.example.com/index.php?lang=en');
-		$module->setStore(new TSqliteEmailStore());
+		$module->setStore($this->newEmailStore());
 		$this->assertTrue($module->getHasTracking());
 		$this->assertSame('https://www.example.com/index.php?lang=en&mail={{email:tracking-id}}', $module->getTrackingUrl());
 		$this->assertSame('https://www.example.com/index.php?lang=en&mail=abc&click=2&x=a%20b', $module->getTrackingUrl('abc', ['click' => 2, 'x' => 'a b']));

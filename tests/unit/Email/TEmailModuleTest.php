@@ -218,7 +218,7 @@ class TEmailModuleTest extends TestCase
 
 	public function testCancel()
 	{
-		$module = $this->module($store = new TSqliteEmailStore());
+		$module = $this->module($store = $this->newEmailStore());
 		$module->attachEventHandler('onSendEmail', fn ($sender, $param) => $param->cancel());
 		$email = $this->email();
 		$this->assertSame(TEmailStatus::Cancelled, $module->sendEmail($email));
@@ -253,7 +253,7 @@ class TEmailModuleTest extends TestCase
 
 	public function testOtherExceptionIsRecordedAndRethrown()
 	{
-		$module = $this->module($store = new TSqliteEmailStore());
+		$module = $this->module($store = $this->newEmailStore());
 		$this->_transport->failures[] = new \RuntimeException('disk full');
 		$email = $this->email();
 		try {
@@ -268,7 +268,7 @@ class TEmailModuleTest extends TestCase
 
 	public function testImmediateWithStoreLogsAndRetries()
 	{
-		$module = $this->module($store = new TSqliteEmailStore());
+		$module = $this->module($store = $this->newEmailStore());
 		$store->setRetryDelay(0);
 		$ok = $this->email();
 		$this->assertSame(TEmailStatus::Sent, $module->sendEmail($ok));
@@ -294,7 +294,7 @@ class TEmailModuleTest extends TestCase
 
 	public function testRetriesStopAtTheStoreLimit()
 	{
-		$module = $this->module($store = new TSqliteEmailStore());
+		$module = $this->module($store = $this->newEmailStore());
 		$store->setRetryDelay(0);
 		$store->setMaxAttempts(2);
 		$this->_transport->failures = [$this->transient(), $this->transient()];
@@ -321,7 +321,7 @@ class TEmailModuleTest extends TestCase
 
 	public function testQueuedMode()
 	{
-		$module = $this->module($store = new TSqliteEmailStore());
+		$module = $this->module($store = $this->newEmailStore());
 		$module->setSendMode(TEmailSendMode::Queued);
 		$emails = [$this->email('ann@example.com'), $this->email('bob@example.com'), $this->email('cat@example.com')];
 		foreach ($emails as $email) {
@@ -353,7 +353,7 @@ class TEmailModuleTest extends TestCase
 
 	public function testDeferredModeFallsBackToTheQueue()
 	{
-		$module = $this->module($store = new TSqliteEmailStore());
+		$module = $this->module($store = $this->newEmailStore());
 		$store->setRetryDelay(0);
 		$module->setSendMode(TEmailSendMode::Deferred);
 		$lost = $this->email('ann@example.com');
@@ -372,7 +372,7 @@ class TEmailModuleTest extends TestCase
 
 	public function testDeferredSkipsAnEmailAnotherProcessClaimed()
 	{
-		$module = $this->module($store = new TSqliteEmailStore());
+		$module = $this->module($store = $this->newEmailStore());
 		$module->setSendMode(TEmailSendMode::Deferred);
 		$email = $this->email();
 		$module->sendEmail($email);
@@ -383,7 +383,7 @@ class TEmailModuleTest extends TestCase
 
 	public function testSuppression()
 	{
-		$store = new TSqliteEmailStore();
+		$store = $this->newEmailStore();
 		$store->addSuppression('bounced@example.com', TEmailSuppressionReason::Bounce);
 		$store->addSuppression('left@example.com', TEmailSuppressionReason::Unsubscribe, 'news');
 		$module = $this->module($store);
@@ -422,7 +422,7 @@ class TEmailModuleTest extends TestCase
 
 	public function testSendEach()
 	{
-		$module = $this->module($store = new TSqliteEmailStore());
+		$module = $this->module($store = $this->newEmailStore());
 		$store->addSuppression('left@example.com', TEmailSuppressionReason::Unsubscribe, 'news');
 		$template = $module->createEmail('Simple');
 		$template->setFrom('shop@example.com');
@@ -498,7 +498,7 @@ class TEmailModuleTest extends TestCase
 		$module = $this->module();
 		$this->assertTrue($module->getAutoGlobalListen());
 		$this->assertSame(['emailbounce'], array_map(fn ($info) => $info->getName(), $module->fxGetCronTaskInfos(null, null)));
-		$module->setStore(new TSqliteEmailStore());
+		$module->setStore($this->newEmailStore());
 		$infos = $module->fxGetCronTaskInfos(null, null);
 		$this->assertSame(['emailbounce', 'emailqueue', 'emailcleanup'], array_map(fn ($info) => $info->getName(), $infos));
 		$this->assertSame(\Prado\Email\Cron\TEmailQueueTask::class, $infos[1]->getTask());
@@ -513,7 +513,7 @@ class TEmailModuleTest extends TestCase
 
 	public function testProcessBounceMessage()
 	{
-		$module = $this->module($store = new TSqliteEmailStore());
+		$module = $this->module($store = $this->newEmailStore());
 		$email = $this->email('ann@example.com');
 		$module->sendEmail($email);
 		$events = [];
