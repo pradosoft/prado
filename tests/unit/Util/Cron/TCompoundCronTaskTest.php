@@ -152,4 +152,16 @@ class TCompoundCronTaskTest extends \PHPUnit\Framework\TestCase
 		$this->module->getTask('top')->execute($this->module);
 		self::assertSame(['referenced', 'referenced'], TTestCompoundStepTask::$runs, 'a compound referenced twice is no cycle');
 	}
+
+	public function testTasksNullEmptyAndArray()
+	{
+		$task = new \Prado\Util\Cron\TCompoundCronTask();
+		$task->setTasks(['@a', ' ', ' @b ']);
+		self::assertSame(['@a', '@b'], $task->getTasks(), 'an array is trimmed and its blank steps dropped');
+		$task->setTasks(null);
+		self::assertSame([], $task->getTasks());
+		$task->setTasks('@a; @b');
+		$task->setTasks('');
+		self::assertSame([], $task->getTasks());
+	}
 }

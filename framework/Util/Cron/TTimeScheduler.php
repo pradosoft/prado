@@ -356,9 +356,12 @@ class TTimeScheduler extends \Prado\TComponent
 		$now = (new \DateTimeImmutable('@' . $this->time()))->setTimezone($this->getDateTimeZone());
 		try {
 			$time = @$now->modify($value); // false and a warning before PHP 8.3
-		} catch (\Throwable $e) { // DateMalformedStringException since PHP 8.3
+			// PHP 8.3 and later throw DateMalformedStringException.
+			// @codeCoverageIgnoreStart
+		} catch (\Throwable $e) {
 			$time = false;
 		}
+		// @codeCoverageIgnoreEnd
 		return ($time === false) ? false : $time->getTimestamp();
 	}
 
@@ -572,7 +575,8 @@ class TTimeScheduler extends \Prado\TComponent
 				// unchanged and spinning this loop forever on any mixed-case shortcut (e.g. '@DAILY').
 				$key = strtolower($matches[1]);
 				if (!isset(self::$_intervals[$key])) {
-					throw new TInvalidDataValueException('timescheduler_invalid_string', $schedule);
+					// The full validator admits only the shortcuts of $_intervals.
+					throw new TInvalidDataValueException('timescheduler_invalid_string', $schedule); // @codeCoverageIgnore
 				}
 				$resolved = self::$_intervals[$key];
 			}
@@ -604,7 +608,8 @@ class TTimeScheduler extends \Prado\TComponent
 				}
 				$this->_attr[self::MINUTE][] = $data;
 			} else {
-				throw new TInvalidDataValueException('timescheduler_invalid_string', $match);
+				// The full validator admits only the elements this field validator matches.
+				throw new TInvalidDataValueException('timescheduler_invalid_string', $match); // @codeCoverageIgnore
 			}
 		}
 
@@ -623,7 +628,8 @@ class TTimeScheduler extends \Prado\TComponent
 				}
 				$this->_attr[self::HOUR][] = $data;
 			} else {
-				throw new TInvalidDataValueException('timescheduler_invalid_string', $match);
+				// The full validator admits only the elements this field validator matches.
+				throw new TInvalidDataValueException('timescheduler_invalid_string', $match); // @codeCoverageIgnore
 			}
 		}
 
@@ -641,7 +647,8 @@ class TTimeScheduler extends \Prado\TComponent
 				}
 				$this->_attr[self::DAY_OF_MONTH][] = $data;
 			} else {
-				throw new TInvalidDataValueException('timescheduler_invalid_string', $match);
+				// The full validator admits only the elements this field validator matches.
+				throw new TInvalidDataValueException('timescheduler_invalid_string', $match); // @codeCoverageIgnore
 			}
 		}
 
@@ -660,7 +667,8 @@ class TTimeScheduler extends \Prado\TComponent
 				}
 				$this->_attr[self::MONTH_OF_YEAR][] = $data;
 			} else {
-				throw new TInvalidDataValueException('timescheduler_invalid_string', $match);
+				// The full validator admits only the elements this field validator matches.
+				throw new TInvalidDataValueException('timescheduler_invalid_string', $match); // @codeCoverageIgnore
 			}
 		}
 
@@ -682,7 +690,8 @@ class TTimeScheduler extends \Prado\TComponent
 				}
 				$this->_attr[self::DAY_OF_WEEK][] = $data;
 			} else {
-				throw new TInvalidDataValueException('timescheduler_invalid_string', $match);
+				// The full validator admits only the elements this field validator matches.
+				throw new TInvalidDataValueException('timescheduler_invalid_string', $match); // @codeCoverageIgnore
 			}
 		}
 
@@ -703,7 +712,8 @@ class TTimeScheduler extends \Prado\TComponent
 				}
 				$this->_attr[self::YEAR][] = $data;
 			} else {
-				throw new TInvalidDataValueException('timescheduler_invalid_string', $match);
+				// The full validator admits only the elements this field validator matches.
+				throw new TInvalidDataValueException('timescheduler_invalid_string', $match); // @codeCoverageIgnore
 			}
 		}
 	}
@@ -790,9 +800,12 @@ class TTimeScheduler extends \Prado\TComponent
 		$text = preg_replace('/\s+/', ' ', trim($text));
 		try {
 			$interval = @\DateInterval::createFromDateString($text); // false and a warning before PHP 8.3
-		} catch (\Throwable $e) { // @phpstan-ignore catch.neverThrown (DateMalformedIntervalStringException since PHP 8.3)
+			// PHP 8.3 and later throw DateMalformedIntervalStringException.
+			// @codeCoverageIgnoreStart
+		} catch (\Throwable $e) { // @phpstan-ignore catch.neverThrown
 			$interval = false;
 		}
+		// @codeCoverageIgnoreEnd
 		if ($interval === false) {
 			throw new TInvalidDataValueException('timescheduler_invalid_period', $text);
 		}
@@ -908,7 +921,7 @@ class TTimeScheduler extends \Prado\TComponent
 		}
 		// Unreachable for validator-accepted input; fail loud rather than silently mapping to 0 (January)
 		// if the keyword table and the field validator ever diverge.
-		throw new TInvalidDataValueException('timescheduler_invalid_string', $v);
+		throw new TInvalidDataValueException('timescheduler_invalid_string', $v); // @codeCoverageIgnore
 	}
 
 	protected function translateDayOfWeek($v)
@@ -923,7 +936,7 @@ class TTimeScheduler extends \Prado\TComponent
 		}
 		// Unreachable for validator-accepted input; fail loud rather than silently mapping to 0 (Sunday)
 		// if the keyword table and the field validator ever diverge.
-		throw new TInvalidDataValueException('timescheduler_invalid_string', $v);
+		throw new TInvalidDataValueException('timescheduler_invalid_string', $v); // @codeCoverageIgnore
 	}
 
 

@@ -8,16 +8,29 @@ use Prado\Util\Cron\Wake\TCronWakeRedis;
 
 /**
  * Tests for {@see TCronWakeRedis}: the properties, the RESP codec, an unreachable server, and the
- * publish/subscribe round trip on a live Redis server at localhost:6379 (skipped without one).
+ * publish/subscribe round trip on a live Redis server: the one at localhost:6379, or else a
+ * `redis-server` the test starts (skipped without either).
  */
 class TCronWakeRedisTest extends \PHPUnit\Framework\TestCase
 {
+	/** @var null|resource the redis-server a live test started when none listens at localhost:6379 */
+	private $_liveServer = null;
+
+	protected function tearDown(): void
+	{
+		if ($this->_liveServer !== null) {
+			$this->stopRedis($this->_liveServer);
+			$this->_liveServer = null;
+		}
+	}
+
 	private function liveTransport(): TCronWakeRedis
 	{
 		$t = (new TCronWakeRedis())->setChannel('prado:unit:cronwake:' . bin2hex(random_bytes(3)))->setTimeout(0.5);
 		$socket = @stream_socket_client('tcp://' . $t->getHost() . ':' . $t->getPort(), $errno, $errstr, 0.5);
 		if ($socket === false) {
-			self::markTestSkipped('No Redis server at localhost:6379.');
+			[$this->_liveServer, $port] = $this->startRedis('');
+			return $t->setHost('127.0.0.1')->setPort($port);
 		}
 		fclose($socket);
 		return $t;
@@ -382,7 +395,7 @@ class TCronWakeRedisTest extends \PHPUnit\Framework\TestCase
 		$t = $this->liveTransport();
 		$now = microtime(true);
 		self::assertFalse($t->wait($now + 0.02, $now));
-		$publisher = stream_socket_client('tcp://localhost:6379', $errno, $errstr, 0.5);
+		$publisher = stream_socket_client('tcp://' . $t->getHost() . ':' . $t->getPort(), $errno, $errstr, 0.5);
 		fwrite($publisher, "PUBLISH " . $t->getChannel() . " 1\r\n");
 		fread($publisher, 64);
 		fclose($publisher);

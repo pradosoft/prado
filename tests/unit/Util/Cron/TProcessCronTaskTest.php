@@ -328,4 +328,32 @@ class TProcessCronTaskTest extends \PHPUnit\Framework\TestCase
 		self::assertSame('websocket', $copy->getMatch());
 		self::assertSame($this->pidFile, $copy->getPidFile());
 	}
+
+	public function testNullPropertyValues()
+	{
+		$task = new TProcessCronTask();
+		$task->setName('nullprops');
+		foreach (['Command', 'Match', 'Directory', 'LogFile'] as $property) {
+			$task->{'set' . $property}('value');
+			$task->{'set' . $property}(null);
+			self::assertNull($task->{'get' . $property}(), $property);
+		}
+		$task->setPidFile('/tmp/x.pid');
+		$task->setPidFile(null);
+		self::assertStringEndsWith('nullprops.pid', $task->getPidFile(), 'a null PidFile is the default');
+	}
+
+	public function testAPidFileWithoutAPidHasNone()
+	{
+		file_put_contents($this->pidFile, "0\nSTART");
+		self::assertNull($this->makeTask()->getPid());
+	}
+
+	public function testTheStartTimeOfAMissingProcessIsNull()
+	{
+		if (TProcessHelper::isSystemWindows()) {
+			self::markTestSkipped('the POSIX start time');
+		}
+		self::assertNull(\Prado\Test\Unit\PradoUnit::invoke(new TProcessCronTask(), 'processStartTime', 999999999));
+	}
 }

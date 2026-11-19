@@ -117,4 +117,24 @@ class THttpCronTaskTest extends \PHPUnit\Framework\TestCase
 		}
 		self::assertSame('GET', unserialize($text)->getMethod());
 	}
+
+	public function testNullAndEmptyPropertyValues()
+	{
+		$task = new \Prado\Util\Cron\THttpCronTask();
+		$task->setUrl('https://example.test/');
+		$task->setUrl('');
+		self::assertNull($task->getUrl());
+		$task->setUrl('https://example.test/');
+		$task->setUrl(null);
+		self::assertNull($task->getUrl());
+		$task->setBody('hello');
+		$task->setBody(null);
+		self::assertNull($task->getBody());
+		$task->setLogFile('/tmp/http.log');
+		$task->setLogFile('');
+		self::assertNull($task->getLogFile());
+		$task->setLogFile('/tmp/http.log');
+		$task->setLogFile(null);
+		self::assertNull($task->getLogFile());
+	}
 }

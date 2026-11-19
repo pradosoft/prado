@@ -274,6 +274,19 @@ class TCronModuleTest extends \PHPUnit\Framework\TestCase
 	{
 		$this->assertInstanceOf($this->getTestClass(), $this->obj);
 	}
+
+	public function testMtRandSeamIsTheSystemRandom()
+	{
+		$module = new TCronModule();
+		try {
+			$value = PradoUnit::invoke($module, 'mt_rand');
+			self::assertIsInt($value);
+			self::assertGreaterThanOrEqual(0, $value);
+			self::assertLessThanOrEqual(mt_getrandmax(), $value);
+		} finally {
+			$module->unlisten();
+		}
+	}
 	
 	public function testInitAndRawTasks()
 	{

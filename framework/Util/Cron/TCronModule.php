@@ -2086,10 +2086,13 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 		if (!TProcessHelper::isSystemWindows()) {
 			return @fopen($file, 'ab');
 		}
+		// Only Windows runs the rest.
+		// @codeCoverageIgnoreStart
 		if (($handle = @fopen($file, 'cb')) !== false) {
 			fseek($handle, 0, SEEK_END);
 		}
 		return $handle;
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**

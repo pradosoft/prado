@@ -294,4 +294,12 @@ class TClosureCronTaskTest extends \PHPUnit\Framework\TestCase
 		self::expectException(TConfigurationException::class);
 		$task->getClosure();
 	}
+
+	public function testSecurityManagerIDNull()
+	{
+		$task = new \Prado\Util\Cron\TClosureCronTask();
+		$task->setSecurityManagerID('security');
+		$task->setSecurityManagerID(null);
+		self::assertNull($task->getSecurityManagerID());
+	}
 }

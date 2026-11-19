@@ -356,6 +356,38 @@ class TCronTaskTest extends \PHPUnit\Framework\TestCase
 		$this->obj->setBetween('25:00-26:00');
 	}
 
+	public function testNullAndEmptyPropertyValues()
+	{
+		$this->obj->setAutoRemove(true);
+		$this->obj->setAutoRemove(null);
+		self::assertNull($this->obj->getAutoRemove());
+		$this->obj->setProcessOutputFile('/tmp/out.log');
+		$this->obj->setProcessOutputFile('');
+		self::assertNull($this->obj->getProcessOutputFile());
+		$this->obj->setProcessOutputFile('/tmp/out.log');
+		$this->obj->setProcessOutputFile(null);
+		self::assertNull($this->obj->getProcessOutputFile());
+		$this->obj->setDefaultTimeZone('Asia/Tokyo');
+		$this->obj->setDefaultTimeZone('');
+		self::assertNull($this->obj->getDefaultTimeZone());
+		$this->obj->setDescription('nightly');
+		$this->obj->setDescription(null);
+		self::assertSame('', $this->obj->getDescription());
+	}
+
+	public function testTimeWindowBounds()
+	{
+		$this->obj->setBetween('08:00:30-17:00');
+		self::assertSame('08:00:30-17:00:00', $this->obj->getBetween(), 'seconds on the start show on both ends');
+		foreach (['24:00-05:00', '08:60-09:00', '08:00:60-09:00', '08:00-24:00', '08:00-09:60', '08:00-09:00:60', '8-9'] as $window) {
+			try {
+				$this->obj->setBetween($window);
+				self::fail('the window ' . $window . ' was accepted');
+			} catch (TInvalidDataValueException $e) {
+			}
+		}
+	}
+
 	public function testJitter()
 	{
 		$this->obj->setName('jittered');

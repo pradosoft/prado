@@ -144,4 +144,12 @@ class TCommandCronTaskTest extends \PHPUnit\Framework\TestCase
 		}
 		self::assertLessThan(3.0, microtime(true) - $start, 'the command is killed after the grace');
 	}
+
+	public function testCommandNull()
+	{
+		$task = new \Prado\Util\Cron\TCommandCronTask();
+		$task->setCommand('echo 1');
+		$task->setCommand(null);
+		self::assertNull($task->getCommand());
+	}
 }

@@ -124,4 +124,13 @@ class TDbCronZCleanLogTaskTest extends TCronTaskTest
 		$task->setTaskName('');
 		self::assertNull($task->getTaskName());
 	}
+
+	public function testUsernameEmptyIsNull()
+	{
+		$task = new TDbCronCleanLogTask();
+		$task->setUsername('admin');
+		self::assertSame('admin', $task->getUsername());
+		$task->setUsername('');
+		self::assertNull($task->getUsername());
+	}
 }

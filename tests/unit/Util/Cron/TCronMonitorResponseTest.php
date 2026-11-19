@@ -129,4 +129,18 @@ class TCronMonitorResponseTest extends \PHPUnit\Framework\TestCase
 			$module->unlisten();
 		}
 	}
+
+	public function testNullAndEmptyPropertyValues()
+	{
+		$response = new TCronMonitorResponse();
+		$response->setTag('web');
+		$response->setTag(null);
+		self::assertNull($response->getTag());
+		$response->setCronModuleID('cron');
+		$response->setCronModuleID('');
+		self::assertNull($response->getCronModuleID());
+		$response->setCronModuleID('cron');
+		$response->setCronModuleID(null);
+		self::assertNull($response->getCronModuleID());
+	}
 }

@@ -694,6 +694,53 @@ class TShellCronActionTest extends \PHPUnit\Framework\TestCase
 		}
 	}
 
+	public function testRenderTopFormatsEachKindOfRow()
+	{
+		$now = time();
+		$cron = new class () extends TCronModule {
+			public array $report = [];
+
+			public function getMonitorReport(?array $tasks = null): array
+			{
+				return $this->report;
+			}
+		};
+		$cron->setID('shellTopRows');
+		$cron->init(null);
+		$stats = static fn (?float $rate, ?float $avg) => ['successRate' => $rate, 'avgDuration' => $avg];
+		$task = static fn (array $values) => $values + ['mode' => 'Serial', 'next' => null, 'paused' => false, 'result' => null, 'last' => null, 'duration' => null, 'count' => 0, 'stats' => $stats(null, null)];
+		$cron->report = [
+			'module' => 'shellTopRows', 'daemonMode' => true, 'concurrency' => 1, 'processes' => [], 'ended' => [], 'runs' => [],
+			'tasks' => [
+				'farTask' => $task(['next' => $now + 3 * 86400]),
+				'dueTask' => $task(['next' => $now - 5]),
+				'pausedTask' => $task(['next' => $now + 60, 'paused' => true]),
+				'neverTask' => $task(['result' => 'ok']),
+				'oldTask' => $task(['result' => 'error', 'last' => $now - 3 * 86400, 'duration' => 1.5, 'count' => 4, 'stats' => $stats(0.75, 2.0)]),
+			],
+		];
+		$action = new TShellCronAction();
+		$action->setWriter($this->writer);
+		try {
+			$view = $action->renderTop($cron);
+			self::assertStringContainsString('No cron process is running; the next cron/run tick starts the daemon.', $view);
+			self::assertStringContainsString(date('Y-m-d', $now + 3 * 86400), $view, 'a trigger more than a day away shows its date');
+			self::assertStringContainsString('due', $view);
+			self::assertStringContainsString('paused', $view);
+			self::assertStringContainsString(date('Y-m-d', $now - 3 * 86400), $view, 'a run more than a day ago shows its date');
+			self::assertStringContainsString('75%', $view);
+			self::assertMatchesRegularExpression('/neverTask\s+Serial\s+-\s+-/', $view, 'a result without a run time or seconds');
+
+			$cron->report['daemonMode'] = false;
+			$cron->report['tasks'] = [];
+			$view = $action->renderTop($cron);
+			self::assertStringContainsString('No cron process is running.', $view);
+			self::assertStringNotContainsString('Next', $view, 'no triggers, no table');
+		} finally {
+			$cron->unlisten();
+		}
+	}
+
 	public function testShellSeams()
 	{
 		$action = new TShellCronAction();
