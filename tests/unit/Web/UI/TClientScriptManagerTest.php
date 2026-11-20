@@ -1525,6 +1525,40 @@ class TClientScriptManagerTest extends \PHPUnit\Framework\TestCase
 		);
 	}
 
+	public function testGetPackagePathUrlOfAFolderThatContainsTheBaseUrl()
+	{
+		$assets = self::$app->getAssetManager();
+		$folder = Prado::getFrameworkPath() . '/Web/Javascripts/source/prado/logger';
+		$baseUrl = $assets->getBaseUrl();
+		PradoUnit::setProp($assets, '_baseUrl', $folder . '-site');
+		try {
+			$this->assertSame(
+				[$assets->getPublishedPath($folder), $assets->publishFilePath($folder)],
+				$this->invokePrivateMethod($this->_cs, 'getPackagePathUrl', [$folder])
+			);
+			PradoUnit::setProp($assets, '_baseUrl', dirname($folder));
+			$this->assertSame(
+				[$assets->getBasePath() . '/logger', $folder],
+				$this->invokePrivateMethod($this->_cs, 'getPackagePathUrl', [$folder]),
+				'A base that starts with the base URL and a slash is a published URL.'
+			);
+			PradoUnit::setProp($assets, '_baseUrl', $folder);
+			$this->assertSame(
+				[$assets->getBasePath(), $folder],
+				$this->invokePrivateMethod($this->_cs, 'getPackagePathUrl', [$folder]),
+				'The base URL itself is a published URL.'
+			);
+			PradoUnit::setProp($assets, '_baseUrl', '');
+			$this->assertSame(
+				[$assets->getPublishedPath($folder), $assets->publishFilePath($folder)],
+				$this->invokePrivateMethod($this->_cs, 'getPackagePathUrl', [$folder]),
+				'An empty base URL matches no folder.'
+			);
+		} finally {
+			PradoUnit::setProp($assets, '_baseUrl', $baseUrl);
+		}
+	}
+
 	public function testGetStyleSheetUrlsIncludesThePublishedStyleSheets()
 	{
 		$assets = self::$app->getAssetManager();

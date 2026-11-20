@@ -40,7 +40,7 @@ TPage is the base class for all web pages in PRADO framework. It extends [TTempl
 - `StateCompression` ([TPageStateCompressionConfig](./TPageStateCompressionConfig.md), read-only): The page state compression settings: `Enabled`, `Method`, `Level`. A persister implementing `ICompressionConfigurable` holds them as `StatePersister.Compression`, which the three built-in persisters do; for any other persister, custom persisters written before 4.4.0 included, the page keeps them. `Method` defaults to `deflate`; `zstd`, `br` and `gzip` are available where the extension is. `setStatePersisterClass()` carries them to a replacement persister (4.4.0)
 - `EnableStateIGBinary` (bool): Whether validated page state uses the igbinary serializer when available
 - `ClientSupportsJavaScript` (bool): Whether client supports JavaScript
-- `Focus` (string|[TControl](./TControl.md)): Control or element to be focused on page load (write-only)
+- `Focus` (string|[TControl](./TControl.md)): Control or element to be focused on page load (write-only); an invisible control is not focused
 - `CallbackClient` ([TCallbackClientScript](./ActiveControls/TCallbackClientScript.md)): Client-side commands for a callback response
 
 ## Core Methods

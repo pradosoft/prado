@@ -447,9 +447,9 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	/**
 	 * Resolves the filesystem path and URL for a package base folder.
 	 *
-	 * If the base path is not already published via the asset manager,
-	 * it will be published. Returns both the local filesystem path and
-	 * the corresponding URL for the published asset.
+	 * A base that is the asset manager's base URL, or starts with it and a `/`, is
+	 * already published; its path is the asset base path joined with the rest of the
+	 * URL. Any other base is a folder, which is published.
 	 *
 	 * @param string $base The base folder path (javascript or css package path).
 	 * @return array Tuple containing `[$path, $url]` where:
@@ -459,11 +459,11 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	protected function getPackagePathUrl($base)
 	{
 		$assets = $this->getApplication()->getAssetManager();
-		if (strpos($base, $assets->getBaseUrl()) === false) {
+		$baseUrl = $assets->getBaseUrl();
+		if ($baseUrl === '' || ($base !== $baseUrl && !str_starts_with($base, $baseUrl . '/'))) {
 			return [$assets->getPublishedPath($base), $assets->publishFilePath($base)];
-		} else {
-			return [$assets->getBasePath() . str_replace($assets->getBaseUrl(), '', $base), $base];
 		}
+		return [$assets->getBasePath() . substr($base, strlen($baseUrl)), $base];
 	}
 
 	/**
