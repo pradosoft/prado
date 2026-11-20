@@ -276,15 +276,36 @@ class TLogRouteTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame(0, PradoUnit::invoke($route, 'getLevelValue', 'bogus'));
 	}
 
-	public function testSetLevelsIgnoresUnknownNames()
+	public function testSetLevelsRejectsUnknownNames()
 	{
 		$route = new TTestLogRoute();
-		$route->setLevels('bogus');
-		$this->assertNull($route->getLevels());
-		$route->setLevels(['warning', 'bogus']);
-		$this->assertSame(TLogger::WARNING, $route->getLevels());
+		$route->setLevels(TLogger::ERROR);
+		foreach (['bogus', 'warning | bogus', ['warning', 'bogus'], ['bogus']] as $value) {
+			try {
+				$route->setLevels($value);
+				$this->fail('An unknown level name throws TConfigurationException.');
+			} catch (TConfigurationException $e) {
+				$this->assertSame('logroute_bad_level', $e->getErrorCode());
+				$this->assertStringContainsString("'bogus'", $e->getMessage());
+			}
+			$this->assertSame(TLogger::ERROR, $route->getLevels());
+		}
 		$route->setLevels(0);
 		$this->assertSame(0, $route->getLevels());
+	}
+
+	public function testSetLevelsSkipsEmptyNames()
+	{
+		$route = new TTestLogRoute();
+		$route->setLevels('warning, ');
+		$this->assertSame(TLogger::WARNING, $route->getLevels());
+		$route->setLevels(['', 'fatal']);
+		$this->assertSame(TLogger::FATAL, $route->getLevels());
+		$route->setLevels('');
+		$this->assertNull($route->getLevels());
+		$route->setLevels(['fatal']);
+		$route->setLevels(['']);
+		$this->assertNull($route->getLevels());
 	}
 
 	public function testSetCategoriesSkipsEmptyNames()
@@ -369,8 +390,6 @@ class TLogRouteTest extends \PHPUnit\Framework\TestCase
 	{
 		$route = new TTestLogRoute();
 		$route->setLevels([]);
-		$this->assertNull($route->getLevels());
-		$route->setLevels(['bogus']);
 		$this->assertNull($route->getLevels());
 		$route->setLevels(['fatal']);
 		$this->assertSame(TLogger::FATAL, $route->getLevels());
