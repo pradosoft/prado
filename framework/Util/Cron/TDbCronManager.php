@@ -227,7 +227,8 @@ class TDbCronManager extends TCronModule implements IDbModule
 			$configTasks = parent::getRawTasks();
 			$db = $this->getDbConnection();
 
-			$cmd = $db->createCommand("SELECT * FROM {$this->_tableName} WHERE active=0");
+			$cmd = $db->createCommand("SELECT * FROM {$this->_tableName} WHERE active=:inactive");
+			$cmd->bindValue(":inactive", 0, $db::PARAM_INT);
 
 			$rmcmd = null;
 			foreach ($cmd->query()->readAll() as $data) {
