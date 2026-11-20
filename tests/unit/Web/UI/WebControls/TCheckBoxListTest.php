@@ -228,8 +228,20 @@ class TCheckBoxListTest extends TestCase
 			'ValidationGroup' => 'g',
 			'CausesValidation' => false,
 			'ListName' => 'List',
+			'IdSeparator' => ':',
 			'ItemCount' => 3,
 		], PradoUnit::invoke($list, 'getPostBackOptions'));
+	}
+
+	public function testGetPostBackOptionsCarryASetIdSeparator()
+	{
+		try {
+			TCheckBoxList::setIdSeparator('$');
+			[, $list] = $this->createPageList();
+			$this->assertSame('$', PradoUnit::invoke($list, 'getPostBackOptions')['IdSeparator']);
+		} finally {
+			TCheckBoxList::setIdSeparator(TCheckBoxList::DEFAULT_ID_SEPARATOR);
+		}
 	}
 
 	// ================================================================================

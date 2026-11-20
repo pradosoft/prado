@@ -362,6 +362,7 @@ class TRatingListTest extends TestCase
 			'ValidationGroup' => '',
 			'CausesValidation' => true,
 			'ListName' => 'Rate',
+			'IdSeparator' => ':',
 			'ItemCount' => 3,
 			'AutoPostBack' => false,
 			'ReadOnly' => true,
