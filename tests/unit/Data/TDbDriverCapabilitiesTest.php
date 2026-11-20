@@ -43,6 +43,7 @@ use Prado\Exceptions\TDbException;
  *  - getCharsetQuerySql
  *  - requiresPreBeginTransactionFlush
  *  - requiresPostTransactionFlush
+ *  - requiresAutoCommitOffInTransaction
  *  - getListTablesSql
  *  - supportsCharset
  *  - hasAutoCommitAttribute
@@ -887,6 +888,31 @@ class TDbDriverCapabilitiesTest extends \PHPUnit\Framework\TestCase
 			'dblib'     => [TDbDriver::DRIVER_DBLIB,    false],
 			'ibm'       => [TDbDriver::DRIVER_IBM,      false],
 			'unknown'   => ['unknown_driver',            false],
+		];
+	}
+
+	// =========================================================================
+	//  requiresAutoCommitOffInTransaction
+	// =========================================================================
+
+	/** @dataProvider provideRequiresAutoCommitOffInTransaction */
+	public function testRequiresAutoCommitOffInTransaction(string $driver, bool $expected): void
+	{
+		$this->assertSame($expected, TDbDriverCapabilities::requiresAutoCommitOffInTransaction($driver));
+	}
+
+	public static function provideRequiresAutoCommitOffInTransaction(): array
+	{
+		return [
+			'firebird before PHP 8.4' => [TDbDriver::DRIVER_FIREBIRD, PHP_VERSION_ID < 80400],
+			'interbase' => [TDbDriver::DRIVER_INTERBASE, false],
+			'mysql' => [TDbDriver::DRIVER_MYSQL, false],
+			'pgsql' => [TDbDriver::DRIVER_PGSQL, false],
+			'sqlite' => [TDbDriver::DRIVER_SQLITE, false],
+			'oci' => [TDbDriver::DRIVER_OCI, false],
+			'sqlsrv' => [TDbDriver::DRIVER_SQLSRV, false],
+			'ibm' => [TDbDriver::DRIVER_IBM, false],
+			'unknown' => ['unknown_driver', false],
 		];
 	}
 

@@ -267,4 +267,22 @@ class TOracleDbCommandTest extends \PHPUnit\Framework\TestCase
 			ini_set('pcre.backtrack_limit', $limit);
 		}
 	}
+
+	public function test_a_failed_positional_substitution_throws()
+	{
+		$jit = ini_get('pcre.jit');
+		$limit = ini_get('pcre.backtrack_limit');
+		ini_set('pcre.jit', '0');
+		ini_set('pcre.backtrack_limit', '1');
+		try {
+			$command = $this->command("SELECT 'a' || 'b' AS v, ? AS b");
+			$command->bindValue(1, 1);
+			$this->expectException(TDbException::class);
+			$this->expectExceptionMessage('limit');
+			$command->queryRow();
+		} finally {
+			ini_set('pcre.jit', $jit);
+			ini_set('pcre.backtrack_limit', $limit);
+		}
+	}
 }

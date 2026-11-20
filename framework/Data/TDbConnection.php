@@ -154,6 +154,13 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	private $_transaction;
 
 	/**
+	 * @var bool Whether {@see beginTransaction()} turned `PDO::ATTR_AUTOCOMMIT` off
+	 *   for the current transaction; {@see completeTransaction()} turns it back on.
+	 * @since 4.4.0
+	 */
+	private $_autoCommitSuspended = false;
+
+	/**
 	 * @var ?IDbMetaData
 	 */
 	private $_dbMeta;
@@ -198,8 +205,9 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	 * `_active` is excluded because the connection cannot survive serialization;
 	 * it will be `false` (the declared default) after deserialization and the
 	 * caller is responsible for reopening it.
-	 * `_transaction` is excluded because an in-flight transaction requires a
-	 * live PDO; without one it would be inconsistent after deserialization.
+	 * `_transaction` and `_autoCommitSuspended` are excluded because an in-flight
+	 * transaction requires a live PDO; without one it would be inconsistent after
+	 * deserialization.
 	 * `_dbMeta` is excluded when null because it is a lazy-loaded cache that
 	 * will be repopulated on first use; a populated instance is worth keeping.
 	 *
@@ -216,6 +224,7 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 		$exprops[] = "\0" . TDbConnection::class . "\0_pdo";
 		$exprops[] = "\0" . TDbConnection::class . "\0_active";
 		$exprops[] = "\0" . TDbConnection::class . "\0_transaction";
+		$exprops[] = "\0" . TDbConnection::class . "\0_autoCommitSuspended";
 		if ($this->_dbMeta === null) {
 			$exprops[] = "\0" . TDbConnection::class . "\0_dbMeta";
 		}
@@ -390,6 +399,7 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 		$rolledBack = $transaction instanceof TDbTransaction && $transaction->endOnClose();
 		$this->_pdo = null;
 		$this->_active = false;
+		$this->_autoCommitSuspended = false;
 		if ($rolledBack) {
 			$transaction->onRollback();
 		}
@@ -880,7 +890,10 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	 * For pdo_firebird, a pre-begin flush (PDO::commit()) is issued before
 	 * PDO::beginTransaction() to clear Firebird's always-running implicit
 	 * transaction; without this the driver throws "There is already an active
-	 * transaction".
+	 * transaction".  pdo_firebird before PHP 8.4 also commits every statement while
+	 * `PDO::ATTR_AUTOCOMMIT` is on, so autocommit is turned off until the transaction
+	 * ends and {@see getAutoCommit()} reads false meanwhile
+	 * ({@see TDbDriverCapabilities::requiresAutoCommitOffInTransaction()}).
 	 *
 	 * @throws TDbException if the connection is not active, or if a transaction
 	 *   is already open with uncommitted work.
@@ -911,7 +924,13 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 			} catch (PDOException $e) {
 			}
 		}
-		$pdo->beginTransaction();
+		$this->suspendAutoCommit();
+		try {
+			$pdo->beginTransaction();
+		} catch (PDOException $e) {
+			$this->resumeAutoCommit();
+			throw $e;
+		}
 		$this->_transaction = $transaction;
 		return $this->_transaction;
 	}
@@ -971,6 +990,7 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 		} catch (PDOException $e) {
 			if (!$this->_pdo->inTransaction()) {
 				$txn->deactivate();
+				$this->resumeAutoCommit();
 			}
 			throw $e;
 		}
@@ -982,8 +1002,9 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	}
 
 	/**
-	 * Deactivates the current transaction and runs any driver-specific
-	 * post-completion flush.  For pdo_firebird this commits the implicit
+	 * Runs any driver-specific post-completion flush, deactivates the current
+	 * transaction, and turns autocommit back on when {@see beginTransaction()}
+	 * turned it off.  For pdo_firebird the flush commits the implicit
 	 * transaction that the driver opens immediately after every commit or
 	 * rollback, so the next snapshot reflects the completed work.  Called by
 	 * {@see commit()} and {@see rollback()} after the PDO call succeeds.
@@ -1002,6 +1023,40 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 			}
 		}
 		$this->_transaction->deactivate();
+		$this->resumeAutoCommit();
+	}
+
+	/**
+	 * Turns `PDO::ATTR_AUTOCOMMIT` off for the transaction about to begin when the
+	 * driver would otherwise commit each of its statements
+	 * ({@see TDbDriverCapabilities::requiresAutoCommitOffInTransaction()}) and
+	 * autocommit is on.
+	 * @since 4.4.0
+	 */
+	protected function suspendAutoCommit(): void
+	{
+		if (!TDbDriverCapabilities::requiresAutoCommitOffInTransaction($this->getDriverName())) {
+			return;
+		}
+		$pdo = $this->getPdoInstance();
+		if (!$pdo->getAttribute(PDO::ATTR_AUTOCOMMIT)) {
+			return;
+		}
+		$pdo->setAttribute(PDO::ATTR_AUTOCOMMIT, false);
+		$this->_autoCommitSuspended = true;
+	}
+
+	/**
+	 * Turns `PDO::ATTR_AUTOCOMMIT` back on when {@see suspendAutoCommit()} turned it off.
+	 * @since 4.4.0
+	 */
+	protected function resumeAutoCommit(): void
+	{
+		if (!$this->_autoCommitSuspended) {
+			return;
+		}
+		$this->getPdoInstance()->setAttribute(PDO::ATTR_AUTOCOMMIT, true);
+		$this->_autoCommitSuspended = false;
 	}
 
 	/**
