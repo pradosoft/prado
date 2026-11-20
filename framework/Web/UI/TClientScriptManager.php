@@ -447,9 +447,9 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	/**
 	 * Resolves the filesystem path and URL for a package base folder.
 	 *
-	 * If the base path is not already published via the asset manager,
-	 * it will be published. Returns both the local filesystem path and
-	 * the corresponding URL for the published asset.
+	 * A base that is the asset manager's base URL, or starts with it and a `/`, is
+	 * already published; its path is the asset base path joined with the rest of the
+	 * URL. Any other base is a folder, which is published.
 	 *
 	 * @param string $base The base folder path (javascript or css package path).
 	 * @return array Tuple containing `[$path, $url]` where:
@@ -459,11 +459,11 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	protected function getPackagePathUrl($base)
 	{
 		$assets = $this->getApplication()->getAssetManager();
-		if (strpos($base, $assets->getBaseUrl()) === false) {
+		$baseUrl = $assets->getBaseUrl();
+		if ($baseUrl === '' || ($base !== $baseUrl && !str_starts_with($base, $baseUrl . '/'))) {
 			return [$assets->getPublishedPath($base), $assets->publishFilePath($base)];
-		} else {
-			return [$assets->getBasePath() . str_replace($assets->getBaseUrl(), '', $base), $base];
 		}
+		return [$assets->getBasePath() . substr($base, strlen($baseUrl)), $base];
 	}
 
 	/**
@@ -1220,6 +1220,8 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	 * Unfortunately this attribute is invalid for hidden fields, so text fields are
 	 * rendered instead (#642). Their container carries `data-prado-dirty-ignore`, so
 	 * {@see \Prado\Web\UI\WebControls\TUnsavedChangesGuard} does not watch them.
+	 * An array field renders one `name[]` field per element; only the first carries the
+	 * field's `id`, since an `id` is unique in a page.
 	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
 	 * @param mixed $initial
 	 */
@@ -1235,8 +1237,10 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 			}
 			$id = strtr($name, ':', '_');
 			if (is_array($value)) {
+				$idAttribute = ' id="' . $id . '"';
 				foreach ($value as $v) {
-					$str .= '<input type="text" style="display:none" autocomplete="off" name="' . $name . '[]" id="' . $id . '" value="' . THttpUtility::htmlEncode($v) . "\" />\n";
+					$str .= '<input type="text" style="display:none" autocomplete="off" name="' . $name . '[]"' . $idAttribute . ' value="' . THttpUtility::htmlEncode($v) . "\" />\n";
+					$idAttribute = '';
 				}
 			} else {
 				$str .= '<input type="text" style="display:none" autocomplete="off" name="' . $name . '" id="' . $id . '" value="' . THttpUtility::htmlEncode($value) . "\" />\n";

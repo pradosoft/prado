@@ -50,7 +50,7 @@ $conn->quoteTableName('my_table');         // driver-specific quoting
 $conn->quoteColumnName('my_col');
 $conn->getPdoInstance();                   // raw PDO object
 $conn->getDriverName();                    // e.g. 'mysql', 'pgsql', 'firebird', 'ibm'
-$conn->getLastInsertID($sequence = '');    // last auto-increment ID
+$conn->getLastInsertID($sequence = '');    // last auto-increment ID; '' is PDO's null (PostgreSQL LASTVAL())
 $conn->getDbMetaData();                    // returns [`TDbMetaData`](Common/TDbMetaData.md) for schema introspection
 $conn->getDatabaseCharset();               // charset reported by active connection (@since 4.3.3)
 $conn->getCanCharsetChange();              // true if charset can still be changed (@since 4.3.3)
@@ -137,5 +137,6 @@ Properties: `Active` (bool — whether transaction is open). Events: `OnCommit` 
 - **`Charset` cannot be changed after opening** for drivers that only support DSN-level charset (Firebird, Oracle, MSSQL). `getCanCharsetChange()` indicates whether it is still safe to set.
 - **`getDatabaseCharset()`** queries the live connection for the actual charset in use; useful for verification.
 - **One active transaction at a time** — `TDbConnection` tracks one `TDbTransaction`; nested transactions are not natively supported (use SAVEPOINTs manually if needed). `getCurrentTransaction()` returns it only while it is active, so code that defers work until the commit attaches to its `OnCommit` event.
+- **Firebird before PHP 8.4** — pdo_firebird commits each statement while autocommit is on, inside a transaction as well. `beginTransaction()` turns `PDO::ATTR_AUTOCOMMIT` off until the commit or rollback (`TDbDriverCapabilities::requiresAutoCommitOffInTransaction()`), so `AutoCommit` reads false meanwhile.
 - **`getDbMetaData()`** returns a cached `TDbMetaData` subclass — the correct driver is selected automatically from `getDriverName()`. Supports MySQL, PostgreSQL, SQLite, MSSQL, Oracle, IBM DB2, and Firebird.
 - **Implements `IDataConnection`** — can be used wherever a [`IDataConnection`](./IDataConnection.md) is expected.
