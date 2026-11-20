@@ -106,6 +106,28 @@ class TDbCronManagerDriverTest extends \PHPUnit\Framework\TestCase
 	/**
 	 * @dataProvider driverProvider
 	 */
+	public function testAFreshManagerReadsTheStoredTaskBack(string $driver)
+	{
+		$conn = $this->driverConnection($driver);
+		$manager = $this->driverManager($conn, 'crondrv_readback');
+		$task = $this->newTask('drvread');
+		$task->setPropertyA("a value with a \0 NUL byte");
+		self::assertStringContainsString("\0", serialize($task), 'a serialized task holds NUL bytes');
+		self::assertTrue($manager->addTask($task));
+
+		$reader = $this->_managers[] = new TDbCronManager();
+		PradoUnit::setProp($reader, '_conn', $conn);
+		$reader->setTableName('crondrv_readback');
+		$reader->init(null);
+		$read = $reader->getTask('drvread');
+		self::assertInstanceOf(TTestCronModuleTask::class, $read);
+		self::assertSame("a value with a \0 NUL byte", $read->getPropertyA());
+		self::assertSame($task->getSchedule(), $read->getSchedule());
+	}
+
+	/**
+	 * @dataProvider driverProvider
+	 */
 	public function testATriggerAfter2038IsStored(string $driver)
 	{
 		$conn = $this->driverConnection($driver);
