@@ -45,6 +45,19 @@ class TPermissionsManagerTest extends \PHPUnit\Framework\TestCase
 		Prado::getApplication()->getEventHandlers('fxdetachclassbehavior')->clear();
 
 		$this->obj = new TPermissionsManager();
+		$this->removeStoredConfiguration();
+	}
+
+	/**
+	 * Removes the manager's parameter from the sqlite store in the runtime path.
+	 * A failed or interrupted run leaves the parameter there, and each test starts without it.
+	 */
+	private function removeStoredConfiguration(): void
+	{
+		$dbparam = new TDbParameterModule();
+		$dbparam->unlisten();
+		$dbparam->remove($this->obj->getLoadParameter());
+		$dbparam->__destruct();
 	}
 
 	protected function tearDown(): void

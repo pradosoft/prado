@@ -76,7 +76,7 @@ A destructor can remove an entry while turning `DiscardInvalid` on registers the
 
 `clear()` in each implementing class re-reads its backing store on every pass and ends with the collection empty, `$_eventHandlerCount` at 0, and a fresh WeakMap. A removed `Closure` can hold the last reference to an object whose destructor removes or inserts entries while `clear()` runs. An inserted entry is removed by a later pass.
 
-A destructor calling `remove()` on an entry `clear()` already removed gets the normal result for a missing item: `list_item_inexistent` from a list, `null` from [TWeakMap](./TWeakMap.md). `clear()` does not catch the exception, so it propagates and the remaining entries stay until the next `clear()`. `TComponent::detachEventHandler()` catches it.
+A destructor calling `remove()` on an entry `clear()` already removed gets the normal result for a missing item: `list_item_inexistent` from a list, `null` from [TWeakMap](./TWeakMap.md). `clear()` does not catch the exception, so it propagates and the remaining entries stay until the next `clear()`. `TComponent::detachEventHandler()` finds the handler with `indexOf()` before it removes, so a missing handler throws nothing; it catches the exception when a destructor removes the handler between the two calls.
 
 ## Serialization
 

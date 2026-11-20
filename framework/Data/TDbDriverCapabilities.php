@@ -44,8 +44,9 @@ use Prado\Data\Common\Sqlite\TSqliteMetaData;
  *  - **Unix socket DSN rewriting** — {@see getSocketDsnParam},
  *    {@see getSocketDsnConflictParam}, {@see getSocketDsnParamsToRemove}
  *  - **Post-connect PDO attribute setup** — {@see getPostConnectAttributes}
- *  - **Transaction flushing** (Firebird implicit-transaction management) —
- *    {@see requiresPreBeginTransactionFlush}, {@see requiresPostTransactionFlush}
+ *  - **Transaction flushing and autocommit** (Firebird transaction management) —
+ *    {@see requiresPreBeginTransactionFlush}, {@see requiresPostTransactionFlush},
+ *    {@see requiresAutoCommitOffInTransaction}
  *  - **PDO attribute support** — {@see hasAutoCommitAttribute},
  *    {@see requiresUntypedParameters}
  *  - **Post-connect SQL setup** — {@see getPostConnectSql}
@@ -672,7 +673,7 @@ class TDbDriverCapabilities
 	}
 
 	// =========================================================================
-	//  Transaction — Firebird implicit-transaction management
+	//  Transaction — Firebird implicit-transaction and autocommit management
 	// =========================================================================
 
 	/**
@@ -710,6 +711,24 @@ class TDbDriverCapabilities
 	public static function requiresPostTransactionFlush(string $driver): bool
 	{
 		return $driver === TDbDriver::DRIVER_FIREBIRD;
+	}
+
+	/**
+	 * Returns true when the driver commits each statement of an explicit transaction
+	 * while `PDO::ATTR_AUTOCOMMIT` is on, so {@see TDbConnection::beginTransaction()}
+	 * turns autocommit off until the transaction ends.
+	 *
+	 * pdo_firebird before PHP 8.4 calls `isc_commit_retaining()` after every statement
+	 * in autocommit mode, inside `PDO::beginTransaction()` as well, and a rollback then
+	 * undoes nothing. PHP 8.4 (PHP PR #12741) commits only outside an explicit transaction.
+	 *
+	 * @param string $driver PDO driver name
+	 * @return bool
+	 * @since 4.4.0
+	 */
+	public static function requiresAutoCommitOffInTransaction(string $driver): bool
+	{
+		return $driver === TDbDriver::DRIVER_FIREBIRD && PHP_VERSION_ID < 80400;
 	}
 
 	// =========================================================================

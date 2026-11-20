@@ -9,7 +9,6 @@ use Prado\Data\TDbDriverCapabilities;
 use Prado\TApplication;
 use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
 use Prado\TApplicationMode;
-use Prado\Test\Unit\PradoUnit;
 
 /**
  * Integration tests for TDbDriverCapabilities — Firebird.
@@ -528,7 +527,6 @@ class TDbDriverCapabilitiesFirebirdIntegrationTest extends \PHPUnit\Framework\Te
 
 	public function testFirebirdRollbackDataIsNotVisibleAfterFlush(): void
 	{
-		PradoUnit::skipFirebirdRollbackBeforePhp84($this);
 		// A rolled-back INSERT must not be visible even with the post-flush.
 		$conn = $this->openFirebird('UTF-8');
 
@@ -556,7 +554,6 @@ class TDbDriverCapabilitiesFirebirdIntegrationTest extends \PHPUnit\Framework\Te
 
 	public function testFirebirdThreeSequentialTransactionsWithDataPersistCorrectly(): void
 	{
-		PradoUnit::skipFirebirdRollbackBeforePhp84($this);
 		// Verify that the pre-begin flush (clearing the implicit Firebird transaction
 		// before beginTransaction()) works correctly across three commit/rollback cycles.
 		// Each cycle calls beginTransaction() afresh; the pre-begin flush clears the
@@ -602,10 +599,11 @@ class TDbDriverCapabilitiesFirebirdIntegrationTest extends \PHPUnit\Framework\Te
 	// -----------------------------------------------------------------------
 	// Live connection — hasAutoCommitAttribute live verification
 	//
-	// pdo_firebird exposes PDO::ATTR_AUTOCOMMIT and always returns 1 (true),
-	// even inside an explicit transaction (the attribute reflects the PHP-level
-	// session setting, not the live transaction state). TDbConnection::HasAutoCommit
-	// returns true; AutoCommit reads the attribute and returns true by default.
+	// pdo_firebird exposes PDO::ATTR_AUTOCOMMIT and returns 1 (true) by default.
+	// TDbConnection::HasAutoCommit returns true; AutoCommit reads the attribute.
+	// Before PHP 8.4, beginTransaction() turns it off until the transaction ends
+	// (requiresAutoCommitOffInTransaction), because pdo_firebird otherwise commits
+	// each statement of the transaction.
 	// -----------------------------------------------------------------------
 
 	public function testFirebirdHasAutoCommitAttributeViaConnection(): void
@@ -625,6 +623,63 @@ class TDbDriverCapabilitiesFirebirdIntegrationTest extends \PHPUnit\Framework\Te
 			$conn->AutoCommit,
 			'Firebird AutoCommit must be true when no explicit transaction is active.'
 		);
+		$conn->Active = false;
+	}
+
+	public function testFirebirdTransactionSuspendsAutoCommitBeforePhp84(): void
+	{
+		$conn = $this->openFirebird('UTF-8');
+		$suspends = TDbDriverCapabilities::requiresAutoCommitOffInTransaction('firebird');
+
+		$tx = $conn->beginTransaction();
+		$this->assertSame(!$suspends, $conn->AutoCommit);
+		$tx->commit();
+		$this->assertTrue($conn->AutoCommit, 'AutoCommit is on again after a commit.');
+
+		$tx = $conn->beginTransaction();
+		$this->assertSame(!$suspends, $conn->AutoCommit);
+		$tx->rollBack();
+		$this->assertTrue($conn->AutoCommit, 'AutoCommit is on again after a rollback.');
+		$conn->Active = false;
+	}
+
+	public function testFirebirdTransactionLeavesAutoCommitOffWhenItWasOff(): void
+	{
+		$conn = $this->openFirebird('UTF-8');
+		$conn->AutoCommit = false;
+		$tx = $conn->beginTransaction();
+		$tx->rollBack();
+		$this->assertFalse($conn->AutoCommit);
+		$conn->Active = false;
+	}
+
+	public function testFirebirdStatementsAfterARollbackAutoCommit(): void
+	{
+		// After a rollback, a statement outside a transaction commits on its own and
+		// another connection sees it.
+		$conn = $this->openFirebird('UTF-8');
+		try {
+			$conn->createCommand('DROP TABLE CAPS_FB_AUTOCOMMIT_TEST')->execute();
+		} catch (\Exception $e) {
+		}
+		$conn->createCommand(
+			'CREATE TABLE CAPS_FB_AUTOCOMMIT_TEST (ID INTEGER NOT NULL PRIMARY KEY)'
+		)->execute();
+
+		$tx = $conn->beginTransaction();
+		$conn->createCommand('INSERT INTO CAPS_FB_AUTOCOMMIT_TEST VALUES (1)')->execute();
+		$tx->rollBack();
+		$conn->createCommand('INSERT INTO CAPS_FB_AUTOCOMMIT_TEST VALUES (2)')->execute();
+
+		$other = $this->openFirebird('UTF-8');
+		$ids = $other->createCommand('SELECT ID FROM CAPS_FB_AUTOCOMMIT_TEST')->queryColumn();
+		$other->Active = false;
+		$this->assertSame([2], array_map('intval', $ids));
+
+		try {
+			$conn->createCommand('DROP TABLE CAPS_FB_AUTOCOMMIT_TEST')->execute();
+		} catch (\Exception $e) {
+		}
 		$conn->Active = false;
 	}
 
