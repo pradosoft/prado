@@ -225,7 +225,8 @@ class TCronWakePgsql extends TModule implements ICronWakeTransport, IDbModule
 	protected function getNotify(\PDO $pdo, int $milliseconds): array|false
 	{
 		if ($pdo instanceof \Pdo\Pgsql) {
-			return $pdo->getNotify(\PDO::FETCH_ASSOC, $milliseconds);
+			// PHP 8.4 and later connect a Pdo\Pgsql driver instance.
+			return $pdo->getNotify(\PDO::FETCH_ASSOC, $milliseconds); // @codeCoverageIgnore
 		}
 		return $pdo->pgsqlGetNotify(\PDO::FETCH_ASSOC, $milliseconds);
 	}

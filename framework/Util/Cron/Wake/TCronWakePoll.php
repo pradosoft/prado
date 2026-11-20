@@ -47,6 +47,12 @@ abstract class TCronWakePoll extends TModule implements ICronWakeTransport
 	/** @var mixed the stamp last seen by the watcher */
 	private mixed $_seen = null;
 
+	/** @var bool whether a {@see wait()} has seen a stamp since the last {@see close()} */
+	private bool $_waited = false;
+
+	/** @var mixed the stamp last seen by {@see wait()} */
+	private mixed $_waitSeen = null;
+
 	/**
 	 * Reads the current stamp.  Two reads without a {@see writeStamp()} between them return equal
 	 * values; a read after a write returns a different value.
@@ -113,7 +119,9 @@ abstract class TCronWakePoll extends TModule implements ICronWakeTransport
 	}
 
 	/**
-	 * Polls the stamp until it changes or the timestamp passes.  The remaining time is measured on
+	 * Polls the stamp until it changes or the timestamp passes.  A stamp that changed since the
+	 * previous wait ends the wait at once, so a wake that arrives between waits is kept; the first
+	 * wait after {@see close()} takes the current stamp as seen.  The remaining time is measured on
 	 * the real clock from `$now`.
 	 * @param float $until the Unix timestamp to wait until
 	 * @param float $now the current Unix timestamp with microseconds
@@ -124,12 +132,19 @@ abstract class TCronWakePoll extends TModule implements ICronWakeTransport
 		if (!$this->getIsAvailable()) {
 			return null;
 		}
-		$seen = $this->readStamp();
+		$stamp = $this->readStamp();
+		if ($this->_waited && $stamp !== $this->_waitSeen) {
+			$this->_waitSeen = $stamp;
+			return true;
+		}
+		$this->_waited = true;
+		$this->_waitSeen = $stamp;
 		$remaining = $until - $now;
 		$start = \microtime(true);
 		while ($remaining > 0) {
 			TAsync::sleep(min($remaining, $this->getPollInterval()));
-			if ($this->readStamp() !== $seen) {
+			if (($stamp = $this->readStamp()) !== $this->_waitSeen) {
+				$this->_waitSeen = $stamp;
 				return true;
 			}
 			$remaining = ($until - $now) - (\microtime(true) - $start);
@@ -174,10 +189,12 @@ abstract class TCronWakePoll extends TModule implements ICronWakeTransport
 	}
 
 	/**
-	 * Cancels the polling loop callback.
+	 * Cancels the polling loop callback and forgets the stamp the waits saw.
 	 */
 	public function close(): void
 	{
 		$this->unwatch();
+		$this->_waited = false;
+		$this->_waitSeen = null;
 	}
 }
