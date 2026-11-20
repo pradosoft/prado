@@ -150,7 +150,7 @@ export class PradoTestHelper {
 	//   "id=foo"   → #foo
 	//   "name=foo" → [name="foo"]
 	//   "//..."    → xpath=...
-	//   "a$b"      → [name="a$b"]  (Prado $ name convention)
+	//   "a:b"      → [name="a:b"]  (Prado UniqueID; "a$b" with IdSeparator="$")
 	//   "foo"      → #foo          (default: by ID)
 
 	getLocator(id) {
@@ -164,7 +164,7 @@ export class PradoTestHelper {
 			if (id.startsWith('//')) {
 				return this.page.locator(`xpath=${id}`);
 			}
-			if (id.includes('$')) {
+			if (id.includes(':') || id.includes('$')) {
 				return this.page.locator(`[name="${id}"]`);
 			}
 		}

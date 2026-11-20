@@ -16,12 +16,12 @@ test('QuickstartDataGrid3TestCase', async ({ page }) => {
   // edit the 2nd row
   await h.byId('ctl0_body_DataGrid_ctl2_ctl7').click();
   await h.pause(50);
-  await h.type('ctl0$body$DataGrid$ctl2$ctl1', 'Design Pattern: Elements of Reusable Object-Oriented Software');
-  await h.type('ctl0$body$DataGrid$ctl2$ctl3', 'Addison Wesley Professional');
-  await h.type('ctl0$body$DataGrid$ctl2$ctl5', '$57.04');
-  await h.byXPath("//input[@name='ctl0$body$DataGrid$ctl2$ctl7']").click();
+  await h.type('ctl0:body:DataGrid:ctl2:ctl1', 'Design Pattern: Elements of Reusable Object-Oriented Software');
+  await h.type('ctl0:body:DataGrid:ctl2:ctl3', 'Addison Wesley Professional');
+  await h.type('ctl0:body:DataGrid:ctl2:ctl5', '$57.04');
+  await h.byXPath("//input[@name='ctl0:body:DataGrid:ctl2:ctl7']").click();
   await h.pause(50);
-  await h.select('ctl0$body$DataGrid$ctl2$ctl9', '1');
+  await h.select('ctl0:body:DataGrid:ctl2:ctl9', '1');
   await h.byLinkText('Save').click();
   await h.pause(50);
 

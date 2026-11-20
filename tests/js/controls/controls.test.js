@@ -1328,21 +1328,36 @@ describe('Prado.WebUI.TCheckBoxList', () => {
 		expect(global.Prado.Registry['tcbl2_c2']).toBeDefined();
 	});
 
-	it('sets EventTarget to ListName$cN for each child', () => {
+	/** Builds a one-item list and returns the EventTarget its TCheckBox wrapper receives. */
+	function childEventTargets(id, extra) {
 		createForm();
-		createElement('div', 'tcbl3');
-		createElement('input', 'tcbl3_c0', { type: 'checkbox' });
-		new TCheckBoxList({
-			ID: 'tcbl3',
-			ItemCount: 1,
-			ListName: 'MyList',
-			FormID: 'testForm',
-			EventParameter: '',
-			CausesValidation: false,
-		});
-		// The child TCheckBox should have been created; we verify via registry
-		const child = global.Prado.Registry['tcbl3_c0'];
-		expect(child).toBeDefined();
+		createElement('div', id);
+		createElement('input', `${id}_c0`, { type: 'checkbox' });
+		const original = global.Prado.WebUI.TCheckBox;
+		const targets = [];
+		global.Prado.WebUI.TCheckBox = function (options) { targets.push(options.EventTarget); };
+		try {
+			new TCheckBoxList({
+				ID: id,
+				ItemCount: 1,
+				ListName: 'MyList',
+				FormID: 'testForm',
+				EventParameter: '',
+				CausesValidation: false,
+				...extra,
+			});
+		} finally {
+			global.Prado.WebUI.TCheckBox = original;
+		}
+		return targets;
+	}
+
+	it('sets EventTarget to ListName, the default separator, and cN for each child', () => {
+		expect(childEventTargets('tcbl3', {})).toEqual(['MyList:c0']);
+	});
+
+	it('sets EventTarget with the IdSeparator option', () => {
+		expect(childEventTargets('tcbl5', { IdSeparator: '$' })).toEqual(['MyList$c0']);
 	});
 
 	it('creates zero children when ItemCount is 0', () => {

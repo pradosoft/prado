@@ -66,9 +66,10 @@ class TFormGuardTest extends \PHPUnit\Framework\TestCase
 	private function submit(TFormGuard $guard, string $honeypot, ?string $stamp): bool
 	{
 		$key = $guard->getUniqueID();
-		$values = [$key . '$' . $guard->getHoneypotName() => $honeypot];
+		$prefix = $key . TFormGuard::getIdSeparator();
+		$values = [$prefix . $guard->getHoneypotName() => $honeypot];
 		if ($stamp !== null) {
-			$values[$key . TFormGuard::STAMP_SUFFIX] = $stamp;
+			$values[$prefix . TFormGuard::STAMP_NAME] = $stamp;
 		}
 		$guard->loadPostData($key, $values);
 		return PradoUnit::invoke($guard, 'evaluateIsValid');
@@ -128,12 +129,12 @@ class TFormGuardTest extends \PHPUnit\Framework\TestCase
 
 		self::assertMatchesRegularExpression('/<span aria-hidden="true" style="[^"]*left:-10000px[^"]*">/', $html);
 		self::assertStringContainsString('<label for="' . $guard->getClientID() . '_hp">Leave this field empty</label>', $html);
-		self::assertStringContainsString('name="' . $guard->getUniqueID() . '$website"', $html);
+		self::assertStringContainsString('name="' . $guard->getUniqueID() . ':website"', $html);
 		self::assertStringContainsString('tabindex="-1"', $html);
 		self::assertStringContainsString('autocomplete="off"', $html);
-		self::assertMatchesRegularExpression('/<input type="hidden" name="' . preg_quote($guard->getUniqueID() . '$ts', '/') . '" value="([^"]+)"/', $html);
+		self::assertMatchesRegularExpression('/<input type="hidden" name="' . preg_quote($guard->getUniqueID() . ':ts', '/') . '" value="([^"]+)"/', $html);
 
-		preg_match('/name="' . preg_quote($guard->getUniqueID() . '$ts', '/') . '" value="([^"]+)"/', $html, $matches);
+		preg_match('/name="' . preg_quote($guard->getUniqueID() . ':ts', '/') . '" value="([^"]+)"/', $html, $matches);
 		$data = Prado::getApplication()->getSecurityManager()->validateData(html_entity_decode($matches[1]));
 		self::assertSame(self::START . ':' . $guard->getUniqueID(), $data);
 	}
@@ -292,5 +293,30 @@ class TFormGuardTest extends \PHPUnit\Framework\TestCase
 		$guard->setCacheModuleID('no-such-module');
 		$this->expectException(TConfigurationException::class);
 		$this->submit($guard, '', $this->stamp($guard, self::START));
+	}
+
+	// -----------------------------------------------------------------------
+	// IdSeparator
+	// -----------------------------------------------------------------------
+
+	public function testFieldNamesFollowTheIdSeparator(): void
+	{
+		try {
+			TFormGuard::setIdSeparator('$');
+			$guard = $this->makeGuard();
+			$tw = new TTextWriter();
+			PradoUnit::invoke($guard, 'renderGuardFields', new THtmlWriter($tw));
+			$html = $tw->flush();
+			self::assertStringContainsString('name="Guard$website"', $html);
+			self::assertStringContainsString('name="Guard$ts"', $html);
+
+			$this->_clock->setTime(self::START + 10);
+			$stamp = $this->stamp($guard, self::START);
+			$guard->loadPostData('Guard', ['Guard$website' => 'spam', 'Guard$ts' => $stamp]);
+			self::assertFalse(PradoUnit::invoke($guard, 'evaluateIsValid'));
+			self::assertSame(TFormGuardFailure::Honeypot, $guard->getFailureReason());
+		} finally {
+			TFormGuard::setIdSeparator(TFormGuard::DEFAULT_ID_SEPARATOR);
+		}
 	}
 }

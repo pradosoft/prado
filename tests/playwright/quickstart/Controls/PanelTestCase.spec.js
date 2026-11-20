@@ -9,7 +9,7 @@ test('QuickstartPanelTestCase', async ({ page }) => {
   await h.assertSourceContains("This is panel content with");
   await h.assertElementPresent("//span[text()='label']");
   await h.assertSourceContains('grouping text');
-  await h.byXPath("//input[@name='ctl0$body$ctl17']").click();
+  await h.byXPath("//input[@name='ctl0:body:ctl17']").click();
   await h.assertSourceNotContains("You have clicked on 'button2'.");
   await h.byXPath("//input[@type='submit' and @value='button2']").click();
   await h.assertSourceContains("You have clicked on 'button2'.");
