@@ -24,6 +24,10 @@ Pre-built installable behaviors for common Prado application concerns; each beha
 
 - **`TNoUnserializeBehaviorTrait`** — Trait preventing behavior from being unserialized (stateless behaviors).
 
+- **`TNoUnserializeClassBehaviorTrait`** — The `TClassBehavior` form of `TNoUnserializeBehaviorTrait`.
+
+- **`TEventLoggingBehavior`** — Attaches to any `TComponent`; logs its `on` events, and optionally its `dy` events.
+
 - **`TPageGlobalizationCharsetBehavior`** — Attaches to `TPage`; sets page charset from `TGlobalization` settings.
 
 - **`TPageNoCacheBehavior`** — Attaches to `TPage`; adds HTTP no-cache headers to page responses.

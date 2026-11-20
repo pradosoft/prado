@@ -1,4 +1,11 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TBehaviorParameterLoader` attaches the behaviors for `AttachTo="module:<id>"` at `onInitComplete`; its handler named a missing method, so `onInitComplete` threw `TInvalidDataValueException`. (belisoful)
+BUG: Issue #1497 - `TBehaviorParameterLoader` attaches page and module behaviors with its `Priority`; they took the default priority. (belisoful)
+BUG: Issue #1497 - `TBehaviorParameterLoader::reset()` skips an anonymous `AttachToClass` behavior; it threw `TPhpErrorException`. (belisoful)
+BUG: Issue #1497 - `TParameterizeBehavior` and `TTimeZoneParameterBehavior` install their parameter route only with an owner and release it on detach, so an `Enabled` set before attach no longer throws or leaves a route, and an attach after a detach routes again; `TParameterizeBehavior::setParameter(null)` after attach throws `TInvalidOperationException`. (belisoful)
+BUG: Issue #1497 - `TCaptureForkLog` detaches a second instance attached to its owner; it threw an `Error`. (belisoful)
+BUG: Issue #1497 - `TApplicationSignals::getAsyncSignals()` and `setAsyncSignals()` return null without signals; they threw a `TypeError`. (belisoful)
+BUG: Issue #1497 - `TConstantReflectionTrait` filters by an affix of `'0'`; it ignored it. (belisoful)
 BUG: Issue #1497 - `TClientScriptManager` renders the `id` of an array hidden field on its first element only; every element repeated it. (belisoful)
 BUG: Issue #1497 - `TPage::endFormRender()` registers no focus script for an invisible `TControl` set with `setFocus()`; it focused the control's client ID. (belisoful)
 BUG: Issue #1497 - `TClientScriptManager` treats a package base as a published URL only when it is the asset base URL or starts with it and a `/`; a folder path that contained the base URL anywhere, such as `/assets` in `/srv/assets-site/...`, was not published. (belisoful)

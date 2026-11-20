@@ -19,6 +19,18 @@ class TPageNoCacheBehaviorTest extends \PHPUnit\Framework\TestCase
 	{
 	}
 
+	public function testEvents()
+	{
+		$behavior = new TPageNoCacheBehavior();
+		$this->assertSame(['OnInitComplete' => 'addNoCacheMeta'], $behavior->events());
+
+		$page = new TPage();
+		$page->attachBehavior('pageBehavior', $behavior);
+		$this->assertTrue($page->hasEventHandler('OnInitComplete'));
+		$page->detachBehavior('pageBehavior');
+		$this->assertFalse($page->hasEventHandler('OnInitComplete'));
+	}
+
 	public function testConstruct()
 	{
 		$this->assertInstanceOf(TPageNoCacheBehavior::class, $this->obj);

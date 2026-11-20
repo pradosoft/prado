@@ -26,6 +26,18 @@ class TPageGlobalizationCharsetBehaviorTest extends \PHPUnit\Framework\TestCase
 		PradoUnit::restore(Prado::getApplication(), $this->savedApp);
 	}
 
+	public function testEvents()
+	{
+		$behavior = new TPageGlobalizationCharsetBehavior();
+		$this->assertSame(['OnInitComplete' => 'addCharsetMeta'], $behavior->events());
+
+		$page = new TPage();
+		$page->attachBehavior('pageBehavior', $behavior);
+		$this->assertTrue($page->hasEventHandler('OnInitComplete'));
+		$page->detachBehavior('pageBehavior');
+		$this->assertFalse($page->hasEventHandler('OnInitComplete'));
+	}
+
 	public function testConstruct()
 	{
 		$this->assertInstanceOf(TPageGlobalizationCharsetBehavior::class, $this->obj);

@@ -3,10 +3,22 @@
 namespace Prado\Test\Unit\Util\Behaviors;
 
 use Prado\Exceptions\TInvalidDataTypeException;
+use Prado\Prado;
 use Prado\TComponent;
 use Prado\Util\Behaviors\TMapRouteBehavior;
 use Prado\Collections\TMap;
 
+
+/**
+ * A route that overrides dyAddItem, so an IMapRouteIndex map does not index it.
+ */
+class TMapRouteBehaviorUnindexed extends TMapRouteBehavior
+{
+	public function dyAddItem($key, $value, $callchain)
+	{
+		return parent::dyAddItem($key, $value, $callchain);
+	}
+}
 
 class TMapRouteBehaviorTest extends \PHPUnit\Framework\TestCase
 {
@@ -171,5 +183,27 @@ class TMapRouteBehaviorTest extends \PHPUnit\Framework\TestCase
 		self::assertEquals('key1', $this->behavior->getParameter());
 		$this->behavior->setParameter('key2');
 		self::assertEquals('key2', $this->behavior->getParameter());
+	}
+
+	public function testRouteChange_nullKeyIsNotRouted()
+	{
+		$this->behavior->routeChange(null, 'value');
+
+		self::assertNull($this->_property);
+	}
+
+	public function testUnindexedRouteOnAnIndexMap()
+	{
+		$params = Prado::getApplication()->getParameters();
+		$route = new TMapRouteBehaviorUnindexed('unindexed_key', [$this, 'setProperty']);
+		self::assertFalse($route->getIsIndexable());
+
+		$params->attachBehavior('unindexedRoute', $route);
+		$route->setParameter('unindexed_key2');
+		$params['unindexed_key2'] = 'routed';
+		self::assertEquals('routed', $this->_property);
+
+		$params->detachBehavior('unindexedRoute');
+		unset($params['unindexed_key2']);
 	}
 }

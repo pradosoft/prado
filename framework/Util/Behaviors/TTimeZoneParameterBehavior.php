@@ -87,6 +87,7 @@ class TTimeZoneParameterBehavior extends TBehavior
 	{
 		if ($this->_paramBehavior) {
 			$this->getApplication()->getParameters()->detachBehavior(self::APP_PARAM_ROUTE_BEHAVIOR_NAME);
+			$this->_paramBehavior = null;
 		}
 		parent::detach($owner);
 	}
@@ -94,12 +95,13 @@ class TTimeZoneParameterBehavior extends TBehavior
 
 	/**
 	 * This attaches and detaches the routing behavior on the Application Parameters.
+	 * Without an owner, the route waits for {@see attach}.
 	 * @param bool $enabled whether this behavior is enabled
 	 */
 	public function setEnabled($enabled)
 	{
 		$enabled = TPropertyValue::ensureBoolean($enabled);
-		if ($enabled && !$this->_paramBehavior) {
+		if ($enabled && !$this->_paramBehavior && $this->getOwner()) {
 			$this->_paramBehavior = new TMapRouteBehavior($this->_timeZoneParameter, [$this, 'setTimeZone']);
 			$this->getApplication()->getParameters()->attachBehavior(self::APP_PARAM_ROUTE_BEHAVIOR_NAME, $this->_paramBehavior);
 		} elseif (!$enabled && $this->_paramBehavior) {

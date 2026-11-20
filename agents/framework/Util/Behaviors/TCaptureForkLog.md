@@ -31,7 +31,7 @@ Requires `pcntl` to fork and the `sockets` extension to capture. Without `socket
 
 - `events()` - Returns `[TProcessHelper::FX_PREPARE_FOR_FORK => 'generateConnection', TProcessHelper::FX_RESTORE_AFTER_FORK => 'configureForChildLogs']`
 - `getPriority()` - Returns -10 (default priority for capture)
-- `dyAttachBehavior($name, $behavior, [TCallChain](../TCallChain.md) $chain)` - Singleton enforcement for this behavior
+- `dyAttachBehavior($name, $behavior, [TCallChain](../TCallChain.md) $chain)` - Singleton enforcement: another TCaptureForkLog attached to the owner is detached
 - `generateConnection(mixed $sender, mixed $param)` - Creates socket pair before fork
 - `configureForChildLogs(mixed $sender, mixed $data)` - Configures parent/child for log routing after fork
 - `collectLogsFromChildren(mixed $sender, mixed $final)` - `TLogger::onCollectLogs` handler; calls `receiveLogsFromChildren(null, (bool) $final)`
