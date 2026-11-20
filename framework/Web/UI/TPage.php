@@ -1094,18 +1094,19 @@ class TPage extends TTemplateControl
 
 	/**
 	 * Registers the {@see setFocus} target, if any, as the control focused on page load.
+	 * A {@see TControl} target registers its client ID when it is visible, and nothing when
+	 * it is invisible, since it is not rendered.
 	 * @internal This method is invoked by TForm at the end of its rendering
 	 * @param \Prado\Web\UI\THtmlWriter $writer the HTML writer
 	 */
 	public function endFormRender($writer)
 	{
 		if ($this->_focus) {
-			if (($this->_focus instanceof TControl) && $this->_focus->getVisible(true)) {
-				$focus = $this->_focus->getClientID();
-			} else {
-				$focus = $this->_focus;
+			if (!($this->_focus instanceof TControl)) {
+				$this->getClientScript()->registerFocusControl($this->_focus);
+			} elseif ($this->_focus->getVisible(true)) {
+				$this->getClientScript()->registerFocusControl($this->_focus->getClientID());
 			}
-			$this->getClientScript()->registerFocusControl($focus);
 		}
 		$this->_inFormRender = false;
 	}
