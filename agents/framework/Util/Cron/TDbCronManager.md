@@ -65,7 +65,7 @@ Auto-created as `crontabs` (configurable via `TableName`):
 | `task` | VARCHAR(256) | Class or `module->method(args)` |
 | `moduleid` | VARCHAR(127) | Optional module context |
 | `username` | VARCHAR(127) | Run-as user; `NULL` is the `DefaultUserName` |
-| `options` | MEDIUMTEXT | Serialized `TCronTask` object |
+| `options` | MEDIUMTEXT (`TEXT` on PostgreSQL) | Serialized `TCronTask` object; base64 encoded on PostgreSQL, whose `TEXT` ends at a NUL byte (`serializeTask()`, `decodeTaskOptions()`). `getCronLog()` returns it decoded |
 | `processcount` | INT | Times task has run |
 | `lastexectime` | VARCHAR(20) | Unix timestamp of last run |
 | `nextexectime` | INT | Unix timestamp of the next trigger after `lastexectime` (4.4.0); `getPendingTasks()` selects `nextexectime <= now` |
@@ -74,9 +74,9 @@ Auto-created as `crontabs` (configurable via `TableName`):
 | `paused` | INT | `1` while the task is paused (`pauseTask()`), else `NULL` (4.4.0) |
 | `okcount`, `failcount` | INT | Finished runs that succeeded, and that failed (`error`, `timeout`) (4.4.0) |
 | `totalduration`, `maxduration` | DOUBLE PRECISION | Total and longest seconds of the finished runs (4.4.0) |
-| `active` | BOOLEAN | `1` = DB task, `0` = config task shadow, `NULL` = log entry |
+| `active` | BOOLEAN (`SMALLINT` on PostgreSQL) | `1` = DB task, `0` = config task shadow, `NULL` = log entry |
 
-Active rows (`active IS NOT NULL`) are task definitions; rows with `active IS NULL` are execution log entries. `ensureTable()` adds the `nextexectime` column, its index, and the values for the active rows, and the run columns of `RUN_COLUMNS` (`ensureRunColumns()`, each when missing), to a table created before 4.4.0. `migrateTable()` does the same on demand, creates a missing table whatever `AutoCreateCronTable` says, and returns what it did (`created`, `column`, `run`); `cron/migrate` calls it at deployment. The indexes are named `<table>_tname`, `<table>_tclass`, `<table>_tnext`, `<table>_tuser`, and `<table>_tactive`, so several cron tables share a SQLite or PostgreSQL schema (4.4.0; earlier tables keep `tname`, `tclass`, `tactive`).
+Active rows (`active IS NOT NULL`) are task definitions; rows with `active IS NULL` are execution log entries. `ensureTable()` adds the `nextexectime` column, its index, and the values for the active rows, and the run columns of `RUN_COLUMNS` (`ensureRunColumns()`, each when missing), to a table created before 4.4.0. `migrateTable()` does the same on demand, creates a missing table whatever `AutoCreateCronTable` says, and returns what it did (`created`, `column`, `run`); `cron/migrate` calls it at deployment. The indexes are named `<table>_tname`, `<table>_tclass`, `<table>_tnext`, `<table>_tuser`, and `<table>_tactive`, so several cron tables share a SQLite or PostgreSQL schema (4.4.0; earlier tables keep `tname`, `tclass`, `tactive`). `createDbTable()` runs the table and each index as its own command, with unquoted column names.
 
 ## Key Properties
 

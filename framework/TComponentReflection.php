@@ -134,11 +134,7 @@ class TComponentReflection extends \Prado\TComponent
 				// Class does not exist and may be autoloaded later — do not cache
 				return null;
 			}
-			try {
-				self::$_reflection_method_cache[$classKey] = $rc->getMethod($method);
-			} catch (\ReflectionException) {
-				self::$_reflection_method_cache[$classKey] = null;
-			}
+			self::$_reflection_method_cache[$classKey] = $rc->hasMethod($method) ? $rc->getMethod($method) : null;
 		}
 
 		$classMethod = self::$_reflection_method_cache[$classKey];
