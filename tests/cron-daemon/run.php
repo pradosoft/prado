@@ -360,8 +360,10 @@ final class CronDaemonE2E
 			}
 			$this->reap();
 			if ($resumed === null && $now >= $t0 + 12) {
-				$this->cli(['cron/resume', '#halt']);
+				// The resume wakes the daemon, which can run the task before the CLI process exits, so
+				// the resume time is taken before the command starts.
 				$resumed = microtime(true);
+				$this->cli(['cron/resume', '#halt']);
 			}
 			if (!$checked && $now >= $t0 + 20) {
 				$checked = true;
@@ -483,10 +485,18 @@ final class CronDaemonE2E
 		}
 		$overdue = array_values(array_filter($events, fn ($e) => $e['e'] === 'toverdue' && $e['task'] === 'slowproc'));
 		$slowDone = array_values(array_filter($events, fn ($e) => $e['e'] === 'done' && $e['task'] === 'slowproc'));
-		$this->check(count($overdue) === count($ends('slowproc')), 'each slowproc run was overdue once');
-		for ($i = 0; $i < min(count($overdue), count($slowDone)); $i++) {
-			$this->check($overdue[$i]['t'] < $slowDone[$i]['t'], 'the warning came while the run was running');
+		$slowEnds = $ends('slowproc');
+		$this->check(count($overdue) === count($slowEnds), 'each slowproc run was overdue once');
+		// The daemon warns from a loop timer while the child runs, or when the run ends if another task
+		// blocked the loop past the child's exit (a Serial task's usleep() on a loaded runner).
+		for ($i = 0; $i < min(count($overdue), count($slowEnds)); $i++) {
+			$this->check($overdue[$i]['t'] <= $slowEnds[$i]['t'] && $overdue[$i]['duration'] > 1, 'the warning came by the end of the run, past its WarnDuration');
 		}
+		$live = 0;
+		for ($i = 0; $i < min(count($overdue), count($slowDone)); $i++) {
+			$live += ($overdue[$i]['t'] < $slowDone[$i]['t']) ? 1 : 0;
+		}
+		$this->check($live > 0, 'a warning came while the run was running');
 		$this->check(substr_count((string) @file_get_contents($out), 'hello') === count($slow), 'the child wrote its output to the ProcessOutputFile');
 
 		$this->check(str_contains($log, 'error') && str_contains($log, 'ok'), 'cron/log shows the results of the runs');
