@@ -13,6 +13,7 @@ use Prado\Prado;
 use Prado\Util\Cron\TClosureCronTask;
 use Prado\Data\IDataConnection;
 use Prado\Data\TDbConnection;
+use Prado\Data\TDbDriver;
 use Prado\Exceptions\TDbException;
 use Prado\Util\Cron\TCronModule;
 use Prado\Util\Cron\TShellCronLogBehavior;
@@ -1275,9 +1276,70 @@ class TDbCronManagerTest extends TCronModuleTest
 			} catch (TDbException $e) {
 			}
 		}
-		self::assertStringContainsString('`tabuid` INTEGER PRIMARY KEY AUTO_INCREMENT', $manager->recorder->sql[0]);
-		self::assertStringContainsString('`tabuid` SERIAL PRIMARY KEY', $manager->recorder->sql[1]);
+		self::assertStringContainsString('tabuid INTEGER PRIMARY KEY AUTO_INCREMENT', $manager->recorder->sql[0]);
+		self::assertStringContainsString('tabuid SERIAL PRIMARY KEY', $manager->recorder->sql[1]);
 		$manager->unlisten();
+	}
+
+	public static function driverProvider(): array
+	{
+		return [
+			'sqlite' => [TDbDriver::DRIVER_SQLITE],
+			'mysql' => [TDbDriver::DRIVER_MYSQL],
+			'pgsql' => [TDbDriver::DRIVER_PGSQL],
+		];
+	}
+
+	/**
+	 * @dataProvider driverProvider
+	 */
+	public function testCreateDbTable_OnEachDriver(string $driver)
+	{
+		$conn = match ($driver) {
+			TDbDriver::DRIVER_SQLITE => new TDbConnection('sqlite::memory:'),
+			TDbDriver::DRIVER_MYSQL => PradoUnit::setupMysqlConnection('prado_unitest'),
+			TDbDriver::DRIVER_PGSQL => PradoUnit::setupPgsqlConnection('prado_unitest'),
+		};
+		if (is_array($conn)) {
+			PradoUnit::failFirstThenSkip($this, $conn[0], null, $conn[1]);
+		} elseif ($conn instanceof \Exception) {
+			throw $conn;
+		}
+		$conn->setActive(true);
+		$table = 'crondriver_test';
+		$conn->createCommand('DROP TABLE IF EXISTS ' . $table)->execute();
+		$manager = new TDbCronManager();
+		PradoUnit::setProp($manager, '_conn', $conn);
+		try {
+			$manager->setTableName($table);
+			self::assertSame(['created' => true, 'column' => null, 'run' => false], $manager->migrateTable());
+
+			$task = new TTestCronModuleTask();
+			$task->setName('driverTask');
+			$task->setSchedule('* * * * *');
+			$task->setPropertyA('driverValue');
+			self::assertTrue($manager->addTask($task));
+
+			$reader = new TDbCronManager();
+			PradoUnit::setProp($reader, '_conn', $conn);
+			$reader->setTableName($table);
+			self::assertSame('driverValue', $reader->getTask('driverTask', false)->getPropertyA());
+			self::assertSame(1, $reader->getTasksCount());
+
+			$reader->setLogCronTasks(true);
+			PradoUnit::invoke($reader, 'logCronTask', $reader->getTask('driverTask', false), 'driverUser');
+			$log = $reader->getCronLog('driverTask');
+			self::assertCount(1, $log);
+			self::assertSame('driverValue', unserialize($log[0]['options'])->getPropertyA());
+			$reader->clearCronLog(0);
+
+			self::assertTrue($reader->removeTask('driverTask'));
+			self::assertSame(0, (int) $conn->createCommand('SELECT COUNT(*) FROM ' . $table)->queryScalar());
+		} finally {
+			$conn->createCommand('DROP TABLE IF EXISTS ' . $table)->execute();
+			$manager->unlisten();
+			$reader?->unlisten();
+		}
 	}
 
 	public function testExecuteRuntimeTasks_NoneAndTheShellLog()
