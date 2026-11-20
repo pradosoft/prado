@@ -117,6 +117,9 @@ class TTimeSchedulerTest extends \PHPUnit\Framework\TestCase
 			'50-64 * * * *', '* 20-30 * * *', '* * 30-40 * *', '* * * 10-20 *', '* * * * 5-10',
 			'0-59/60 * * * *', '* 0-23/24 * * *', '* * 0-31/32 * *', '* * * 1-12/13 *', '* * * * 0-6/7',
 			'* * L-10 * ?', '* * * * 7L', '* * ? * 0#6',
+			// A reversed range matches nothing, so it is rejected.
+			'50-10 * * * *', '0:50-10 * * * *', '0 23-1 * * *', '0 0 20-5 * *', '0 0 1 12-1 *', '0 0 1 nov-feb *',
+			'0 0 ? * fri-mon', '0 0 ? * 5-1', '0 0 1 1 * 2030-2027', '0 0 1 12-1,6 *',
 			'* * * * * 1969', '* * * * * 2100',
 			'* * ?-8 * *', '* * * * ?-4', '* * ?/8 * *', '* * * * ?/4',
 			'@', '@test',
@@ -1112,5 +1115,13 @@ class TTimeSchedulerTest extends \PHPUnit\Framework\TestCase
 		self::assertSame('2031-01-01 00:00', date('Y-m-d H:i', $next), 'a step of 05 is every five years');
 		$scheduler->setSchedule('0 0 1 1 * 2026/00');
 		self::assertSame('2027-01-01 00:00', date('Y-m-d H:i', $scheduler->getNextTriggerTime(mktime(0, 0, 0, 6, 1, 2026))), 'a step of 00 is every year');
+	}
+
+	public function testARangeThatStartsAtItsEndIsOneValue()
+	{
+		$scheduler = new TTimeScheduler();
+		$scheduler->setSchedule('5-5 3-3 * jan-jan mon-mon');
+		$next = $scheduler->getNextTriggerTime(mktime(0, 0, 0, 12, 31, 2025));
+		self::assertSame('2026-01-05 03:05', date('Y-m-d H:i', (int) $next));
 	}
 }
