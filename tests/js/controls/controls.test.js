@@ -1263,6 +1263,25 @@ describe('Prado.WebUI.TCheckBoxList', () => {
 		expect(child).toBeDefined();
 	});
 
+	it('sets EventTarget with the IdSeparator option, and with $ without it', () => {
+		const targets = (id, extra) => {
+			createForm();
+			createElement('div', id);
+			createElement('input', `${id}_c0`, { type: 'checkbox' });
+			const original = global.Prado.WebUI.TCheckBox;
+			const seen = [];
+			global.Prado.WebUI.TCheckBox = function (options) { seen.push(options.EventTarget); };
+			try {
+				new TCheckBoxList({ ID: id, ItemCount: 1, ListName: 'MyList', FormID: 'testForm', EventParameter: '', CausesValidation: false, ...extra });
+			} finally {
+				global.Prado.WebUI.TCheckBox = original;
+			}
+			return seen;
+		};
+		expect(targets('tcbl5', {})).toEqual(['MyList$c0']);
+		expect(targets('tcbl6', { IdSeparator: ':' })).toEqual(['MyList:c0']);
+	});
+
 	it('creates zero children when ItemCount is 0', () => {
 		createElement('div', 'tcbl4');
 		new TCheckBoxList({

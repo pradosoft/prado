@@ -510,7 +510,7 @@ Prado.WebUI.TCheckBoxList = jQuery.klass(Prado.WebUI.Control,
 			var checkBoxOptions = jQuery.extend({}, options,
 			{
 				ID : options.ID+"_c"+i,
-				EventTarget : options.ListName+"$c"+i
+				EventTarget : options.ListName+(options.IdSeparator || '$')+"c"+i
 			});
 			new Prado.WebUI.TCheckBox(checkBoxOptions);
 		}
@@ -526,7 +526,7 @@ Prado.WebUI.TRadioButtonList = jQuery.klass(Prado.WebUI.Control,
 			var radioButtonOptions = jQuery.extend({}, options,
 			{
 				ID : options.ID+"_c"+i,
-				EventTarget : options.ListName+"$c"+i
+				EventTarget : options.ListName+(options.IdSeparator || '$')+"c"+i
 			});
 			new Prado.WebUI.TRadioButton(radioButtonOptions);
 		}
