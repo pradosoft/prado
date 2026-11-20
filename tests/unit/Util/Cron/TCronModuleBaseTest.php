@@ -1014,4 +1014,36 @@ class TCronModuleBaseTest extends \PHPUnit\Framework\TestCase
 		$module->setTimeZone('');
 		self::assertNull($module->getTimeZone());
 	}
+
+	public function testDaemonConfigFilesIsTheApplicationConfigurationFile()
+	{
+		$app = Prado::getApplication();
+		$file = PradoUnit::getProp($app, '_configFile');
+		try {
+			PradoUnit::setProp($app, '_configFile', '/srv/app/application.xml');
+			self::assertSame(['/srv/app/application.xml'], $this->newModule()->getDaemonConfigFiles());
+		} finally {
+			PradoUnit::setProp($app, '_configFile', $file);
+		}
+	}
+
+	public function testRunDaemonWithoutAWakeTransport()
+	{
+		$module = $this->_modules[] = new class () extends TCronModule {
+			public function getWakeTransport(): ?\Prado\Util\Cron\Wake\ICronWakeTransport
+			{
+				return null;
+			}
+		};
+		$module->setID('cronBaseNoWake' . bin2hex(random_bytes(3)));
+		$module->setDaemonMutex(new TMemoryMutex());
+		$module->init(null);
+		$watching = null;
+		$module->attachEventHandler('OnDaemonStart', static function ($sender, $param) use (&$watching) {
+			$watching = $param->getWatching();
+			$sender->stopDaemon();
+		});
+		self::assertSame(0, $module->runDaemon());
+		self::assertFalse($watching, 'without a transport the daemon watches no wakes');
+	}
 }

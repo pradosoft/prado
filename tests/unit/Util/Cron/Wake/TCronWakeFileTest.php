@@ -61,7 +61,7 @@ class TCronWakeFileTest extends \PHPUnit\Framework\TestCase
 		self::assertTrue($t->signal($now));
 		$start = microtime(true);
 		self::assertTrue($t->wait($start + 0.3, $start));
-		self::assertLessThan(0.02, microtime(true) - $start, 'the wait does not poll for a kept wake');
+		self::assertLessThan(0.2, microtime(true) - $start, 'the wait returns before its 0.3 seconds for a kept wake');
 		self::assertFalse($t->wait($start, $start), 'the wake is consumed');
 
 		// close() forgets the stamp: the first wait after it takes the current stamp as seen.

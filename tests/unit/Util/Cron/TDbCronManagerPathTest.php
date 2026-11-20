@@ -406,6 +406,12 @@ class TDbCronManagerPathTest extends \PHPUnit\Framework\TestCase
 			self::assertNull(TDbCronManager::parsePeriod($period), var_export($period, true));
 		}
 		$manager = $this->newManager();
+		try {
+			$manager->clearCronLog($inverted);
+			self::fail('clearCronLog accepted a negative interval');
+		} catch (TInvalidDataValueException $e) {
+			self::assertStringContainsString('DateInterval', $e->getMessage());
+		}
 		foreach (['last week', '-1 week', 'yesterday'] as $period) {
 			try {
 				$manager->clearCronLog($period);
