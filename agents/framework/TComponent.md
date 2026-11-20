@@ -150,7 +150,7 @@ All existing + future instances of `MyClass` receive the behavior. Cannot attach
 - `__clone()` — re-attaches behaviors; a clone of a listening component listens itself; fires `dyClone` dynamic event. Handlers of the original's behaviors are removed from the clone, including a `TEventHandler` or Closure bound to one; function-name and static-method handlers are kept. Always call `parent::__clone()`.
 - `__wakeup()` — re-attaches behaviors, replacing named class behaviors with their current instances; a component that listened to global events when serialized listens again; fires `dyWakeUp`.
 - `__sleep()` — `_getZappableSleepProps()` returns an array of private property names (mangled format: `"\0ClassName\0_prop"`) that should be excluded from serialization. Every class adds its own zappable props by overriding and calling `parent::_getZappableSleepProps($exprops)`.
-- `__destruct()` — removes all global event (`fx*`) listeners; detaches behaviors.
+- `__destruct()` — removes all global event (`fx*`) listeners; detaches behaviors. The destructor path throws no exception, caught or uncaught: `detachEventHandler()` returns false for a handler that is not attached, without a throw. Xdebug in develop mode keeps the arguments and local variables of the last 8 thrown exceptions and frees the oldest inside its throw hook; an object destructed there that throws re-enters the hook, and PHP crashes with a segmentation fault.
 
 ## Key Static Methods / Constants
 

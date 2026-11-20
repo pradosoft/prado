@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: `TComponent::detachEventHandler()` and `TComponentReflection::getReflectionMethodByType()` throw no internal exception for a handler that is not attached or a missing method; a component destructed inside Xdebug's develop-mode throw hook threw from `unlisten()` and PHP crashed with a segmentation fault. (belisoful)
 BUG: Issue #1497 - `TDbConnection` turns autocommit off during a Firebird transaction before PHP 8.4, where pdo_firebird committed each statement and a rollback undid nothing. (belisoful)
 ENH: Issue #534 - `IMinifier` is the seam behind `TJavaScript::minify()` and `TStyleSheetHelper::minify()`, set with `setMinifier()`; the defaults are `TJavaScriptMinifier` (JSMin) and the dependency-free `TStyleSheetMinifier`. Outside Debug mode `TClientScriptManager` serves PRADO CSS packages minified, as it does JavaScript. (belisoful)
 BUG: Issue #1497 - `TSysLogRoute::setSysLogFlags()` throws `TConfigurationException` for an unknown flag name, as for an unknown flag bit; it ignored the name. (belisoful)
