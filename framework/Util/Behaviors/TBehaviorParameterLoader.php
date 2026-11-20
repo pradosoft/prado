@@ -57,10 +57,10 @@ class TBehaviorParameterLoader extends TComponent
 	/** @var array<string, string> additional properties to feed the behavior */
 	private $_properties = [];
 
-	/** @var array<int|string, array<string, string>> the behaviors to attach to the page; anonymous behaviors take integer keys */
+	/** @var array<int|string, array<string, mixed>> the behaviors to attach to the page, each with its 'priority'; anonymous behaviors take integer keys */
 	private static $_pageBehaviors = [];
 
-	/** @var array<string, array<int|string, array<string, string>>> the behaviors to attach to each module; anonymous behaviors take integer keys */
+	/** @var array<string, array<int|string, array<string, mixed>>> the behaviors to attach to each module, each with its 'priority'; anonymous behaviors take integer keys */
 	private static $_moduleBehaviors = [];
 
 	/**
@@ -89,25 +89,29 @@ class TBehaviorParameterLoader extends TComponent
 				if (!count(self::$_pageBehaviors)) {
 					Prado::getApplication()->attachEventHandler('onBeginRequest', [$this, 'attachTPageServiceHandler']);
 				}
+				$properties = $this->_properties;
+				$properties['priority'] = $this->getPriority();
 				if ($name === null) {
-					self::$_pageBehaviors[] = $this->_properties;
+					self::$_pageBehaviors[] = $properties;
 				} else {
-					self::$_pageBehaviors[$name] = $this->_properties;
+					self::$_pageBehaviors[$name] = $properties;
 				}
 				return;
 			} elseif (strncasecmp(strtolower($this->_attachto), 'module:', 7) === 0) {
 				if (!count(self::$_moduleBehaviors)) {
-					Prado::getApplication()->attachEventHandler('onInitComplete', [$this, 'attachModulesBehaviors'], -20);
+					Prado::getApplication()->attachEventHandler('onInitComplete', [$this, 'attachModuleBehaviors'], -20);
 				}
 				$moduleid = trim(substr($this->_attachto, 7));
 				if (!$moduleid) {
 					throw new TConfigurationException('behaviorparameterloader_moduleid_required', $moduleid);
 				}
 				self::$_moduleBehaviors[$moduleid] = self::$_moduleBehaviors[$moduleid] ?? [];
+				$properties = $this->_properties;
+				$properties['priority'] = $this->getPriority();
 				if ($name === null) {
-					self::$_moduleBehaviors[$moduleid][] = $this->_properties;
+					self::$_moduleBehaviors[$moduleid][] = $properties;
 				} else {
-					self::$_moduleBehaviors[$moduleid][$name] = $this->_properties;
+					self::$_moduleBehaviors[$moduleid][$name] = $properties;
 				}
 				return;
 			} elseif (strtolower($this->_attachto) == "application") {
@@ -115,8 +119,6 @@ class TBehaviorParameterLoader extends TComponent
 			} else {
 				$owner = Prado::getApplication()->getSubProperty($this->_attachto);
 			}
-			$priority = $this->_properties['priority'] ?? null;
-			unset($this->_properties['priority']);
 			if (!$owner) {
 				throw new TConfigurationException('behaviorparameterloader_behaviorowner_required', $this->_attachto);
 			}
@@ -140,9 +142,10 @@ class TBehaviorParameterLoader extends TComponent
 	}
 
 	/**
-	 * This method attaches page behaviors to the TPage handling the TPageService::OnPreInitPage event.
+	 * TApplication::onInitComplete handler that attaches the module behaviors to their modules.
 	 * @param object $sender the object that raised the event
-	 * @param \Prado\Web\UI\TPage $page the page being initialized
+	 * @param mixed $page parameter of the event
+	 * @throws TConfigurationException when a module is not found
 	 */
 	public function attachModuleBehaviors($sender, $page)
 	{
@@ -176,14 +179,15 @@ class TBehaviorParameterLoader extends TComponent
 	}
 
 	/**
-	 * This resets the module and page behavior cache data.
+	 * This resets the module and page behavior cache data, and detaches the named
+	 * class behavior.  An anonymous class behavior has no name to detach it by.
 	 */
 	public function reset()
 	{
-		if ($this->_attachtoclass) {
+		if ($this->_attachtoclass && $this->_behaviorName !== null) {
 			TComponent::detachClassBehavior($this->_behaviorName, $this->_attachtoclass);
 		}
-		Prado::getApplication()->detachEventHandler('onInitComplete', [$this, 'attachModulesBehaviors']);
+		Prado::getApplication()->detachEventHandler('onInitComplete', [$this, 'attachModuleBehaviors']);
 		Prado::getApplication()->detachEventHandler('onBeginRequest', [$this, 'attachTPageServiceHandler']);
 		self::$_moduleBehaviors = [];
 		self::$_pageBehaviors = [];

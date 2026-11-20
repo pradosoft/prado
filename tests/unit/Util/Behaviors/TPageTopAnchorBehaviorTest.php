@@ -19,6 +19,18 @@ class TPageTopAnchorBehaviorTest extends \PHPUnit\Framework\TestCase
 	{
 	}
 
+	public function testEvents()
+	{
+		$behavior = new TPageTopAnchorBehavior();
+		$this->assertSame(['OnSaveStateComplete' => 'addFormANameAnchor'], $behavior->events());
+
+		$page = new TPage();
+		$page->attachBehavior('pageBehavior', $behavior);
+		$this->assertTrue($page->hasEventHandler('OnSaveStateComplete'));
+		$page->detachBehavior('pageBehavior');
+		$this->assertFalse($page->hasEventHandler('OnSaveStateComplete'));
+	}
+
 	public function testConstruct()
 	{
 		$this->assertInstanceOf(TPageTopAnchorBehavior::class, $this->obj);
@@ -38,6 +50,15 @@ class TPageTopAnchorBehaviorTest extends \PHPUnit\Framework\TestCase
 		$this->obj->setEnabled(true);
 		$this->obj->addFormANameAnchor($page, null);
 		self::assertEquals(2, $page->getControls()->count());
+	}
+
+	public function testAddFormANameAnchor_withoutForm()
+	{
+		$page = new TPage;
+
+		$this->obj->addFormANameAnchor($page, null);
+
+		self::assertEquals(0, $page->getControls()->count());
 	}
 
 	public function testTopAnchor()

@@ -854,6 +854,20 @@ public function testSetThemeToNonEmptyStringStoresString(): void
 		$this->assertSame([$control->getClientID()], $page->getClientScript()->focusTargets);
 	}
 
+	public function testEndFormRenderRegistersNoFocusForAnInvisibleControl(): void
+	{
+		$page = $this->createPageWithClientScript();
+		$control = new TControl();
+		$control->setID('myControl');
+		$control->setPage($page);
+		$control->setVisible(false);
+		$page->setFocus($control);
+		$page->endFormRender(null);
+
+		$this->assertSame([], $page->getClientScript()->focusTargets);
+		$this->assertFalse($page->getInFormRender());
+	}
+
 	public function testEndFormRenderIgnoresPostedLastFocus(): void
 	{
 		$page = $this->createPageWithClientScript();

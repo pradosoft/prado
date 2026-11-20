@@ -122,9 +122,8 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	}
 
 	/**
-	 *
-	 *
-	 * @param $owner The owner to receive parameter changes
+	 * Attaches a {@see TMapRouteBehavior} named RouteBehaviorName to the application
+	 * parameters, which sets the owner property when the parameter changes.
 	 */
 	protected function attachParamMapRoute()
 	{
@@ -146,12 +145,13 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 
 	/**
 	 * This attaches and detaches the routing behavior on the Application Parameters.
+	 * Without an owner, the route waits for {@see attach}.
 	 * @param bool $enabled whether this behavior is enabled
 	 */
 	public function setEnabled($enabled)
 	{
 		$enabled = TPropertyValue::ensureBoolean($enabled);
-		if ($enabled && !$this->_paramBehavior) {
+		if ($enabled && !$this->_paramBehavior && $this->getOwner()) {
 			$this->attachParamMapRoute();
 		} elseif (!$enabled && $this->_paramBehavior) {
 			$this->getApplication()->getParameters()->detachBehavior($this->_routeBehaviorName);
@@ -168,7 +168,7 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	{
 		if ($this->_paramBehavior) {
 			$this->getApplication()->getParameters()->detachBehavior($this->_routeBehaviorName);
-			$this->_routeBehaviorName = null;
+			$this->_paramBehavior = null;
 		}
 		parent::detach($owner);
 	}
@@ -188,10 +188,10 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	{
 		$parameter = TPropertyValue::ensureString($value);
 		if ($this->_paramBehavior) {
-			if (!strlen($value)) {
+			if ($parameter === '') {
 				throw new TInvalidOperationException('parameterizebehavior_cannot_set_parameter_to_blank_after_attach');
 			}
-			$this->_paramBehavior->setParameter($value);
+			$this->_paramBehavior->setParameter($parameter);
 		}
 		$this->_parameter = $parameter;
 	}

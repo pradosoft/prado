@@ -108,7 +108,7 @@ trait TConstantReflectionTrait
 				continue;
 			}
 
-			if (empty($affix)) {
+			if ($affix === null || $affix === '') {
 				return true;
 			}
 
@@ -149,7 +149,7 @@ trait TConstantReflectionTrait
 				continue;
 			}
 
-			if (empty($affix)) {
+			if ($affix === null || $affix === '') {
 				return true;
 			}
 			$affixLen = strlen($affix);
@@ -189,7 +189,7 @@ trait TConstantReflectionTrait
 				continue;
 			}
 
-			if (empty($affix)) {
+			if ($affix === null || $affix === '') {
 				return $value;
 			}
 			$affixLen = strlen($affix);
@@ -229,7 +229,7 @@ trait TConstantReflectionTrait
 				continue;
 			}
 
-			if (empty($affix)) {
+			if ($affix === null || $affix === '') {
 				return $name;
 			}
 			$affixLen = strlen($affix);

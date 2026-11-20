@@ -24,7 +24,7 @@ abstract protected function processLogs(array $logs, bool $final, array $meta): 
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `Levels` | int\|string | null (all) | Bitmask or pipe-separated level names to include |
+| `Levels` | int\|string\|array | null (all) | Bitmask, or level names separated by `\|` or `,`, to include. An unknown bit or name throws `TConfigurationException` (4.4.0); empty names are skipped. |
 | `Categories` | string | '' (all) | Comma-separated category prefixes; prefix with `!` or `~` to exclude |
 | `Enabled` | bool\|callable | true | Toggle route on/off; callable receives `($route, $logs)` |
 | `ProcessInterval` | int | 1000 | Batch logs before calling `processLogs()` |
@@ -38,7 +38,7 @@ abstract protected function processLogs(array $logs, bool $final, array $meta): 
 $route->collectLogs(?TLogger $logger, bool $final): void  // called by TLogRouter
 $route->getLogCount(): int
 $route->getLevels(): ?int
-$route->setLevels(int|string $levels): static   // 'Debug|Warning|Error' or bitmask
+$route->setLevels(int|string|array $levels): static   // 'Debug|Warning|Error' or bitmask; unknown names throw
 $route->getCategories(): ?array
 $route->setCategories(string $categories): static // 'Prado.Web,!Prado.Web.UI'
 $route->getEnabled(): bool

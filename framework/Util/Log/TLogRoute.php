@@ -171,10 +171,13 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param int|string $levels integer log level filter (in bits). If the value is
+	 * Sets the log level filter.  Level names are case-insensitive, `_` matches a space,
+	 * and empty names are skipped.  Without a level name, the filter is null.
+	 * @param array|int|string $levels integer log level filter (in bits). If the value is
 	 * a string, it is assumed to be comma-separated level names. Valid level names
 	 * include 'Debug', 'Info', 'Notice', 'Warning', 'Error', 'Alert', 'Fatal', 'Profile,
 	 * 'Profile Begin', and 'Profile End'.
+	 * @throws TConfigurationException when a level bit or level name is not valid.
 	 * @return static The current object.
 	 */
 	public function setLevels($levels): static
@@ -188,16 +191,22 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 			}
 			$this->_levels = $levels;
 		} else {
-			$this->_levels = null;
 			if (!is_array($levels)) {
 				$levels = preg_split('/[|,]/', $levels);
 			}
+			$value = null;
 			foreach ($levels as $level) {
-				$level = str_replace('_', ' ', strtolower(trim($level)));
-				if (isset(static::$_levelValues[$level])) {
-					$this->_levels |= static::$_levelValues[$level];
+				$level = trim((string) $level);
+				$name = str_replace('_', ' ', strtolower($level));
+				if ($name === '') {
+					continue;
 				}
+				if (!isset(static::$_levelValues[$name])) {
+					throw new TConfigurationException('logroute_bad_level', $level);
+				}
+				$value |= static::$_levelValues[$name];
 			}
+			$this->_levels = $value;
 		}
 
 		return $this;

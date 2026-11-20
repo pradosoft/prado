@@ -247,7 +247,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 		if ($set) {
 			$task->setLastExecTime($this->_taskRows[$name]['lastexectime']);
 			$task->setProcessCount((int) $this->_taskRows[$name]['processcount']);
-			if (serialize($task) !== $this->_taskRows[$name]['options']) {
+			if ($this->serializeTask($task) !== $this->_taskRows[$name]['options']) {
 				$this->updateTaskInternal($task);
 				return false;
 			}
@@ -631,51 +631,58 @@ class TDbCronManager extends TCronModule implements IDbModule
 	}
 
 	/**
-	 * creates the module table
+	 * Creates the cron table and its indexes, one statement per command.  The column types follow the driver:
+	 *
+	 * | Driver | `tabuid` | `options` | `active` |
+	 * |---|---|---|---|
+	 * | MySQL | `INTEGER PRIMARY KEY AUTO_INCREMENT` | `MEDIUMTEXT` | `BOOLEAN` |
+	 * | SQLite | `INTEGER PRIMARY KEY AUTOINCREMENT` | `MEDIUMTEXT` | `BOOLEAN` |
+	 * | PostgreSQL | `SERIAL PRIMARY KEY` | `TEXT` | `SMALLINT` |
+	 * | Others | `INTEGER PRIMARY KEY` | `MEDIUMTEXT` | `BOOLEAN` |
+	 *
+	 * PostgreSQL has no `MEDIUMTEXT`, and its `BOOLEAN` does not compare with the integers the queries use.
 	 */
 	protected function createDbTable()
 	{
 		$db = $this->getDbConnection();
 		$driver = TDbDriverCapabilities::normalizeDriver($db->getDriverName());
-		$autotype = 'INTEGER';
-		$autoidAttributes = '';
+		$table = $this->_tableName;
+		$idColumn = 'INTEGER PRIMARY KEY';
+		$textType = 'MEDIUMTEXT';
+		$activeType = 'BOOLEAN';
 		if ($driver === TDbDriver::DRIVER_MYSQL) {
-			$autoidAttributes = ' AUTO_INCREMENT';
+			$idColumn .= ' AUTO_INCREMENT';
 		} elseif ($driver === TDbDriver::DRIVER_SQLITE) {
-			$autoidAttributes = ' AUTOINCREMENT';
+			$idColumn .= ' AUTOINCREMENT';
 		} elseif ($driver === TDbDriver::DRIVER_PGSQL) {
-			$autotype = 'SERIAL';
+			$idColumn = 'SERIAL PRIMARY KEY';
+			$textType = 'TEXT';
+			$activeType = 'SMALLINT';
 		}
-		$postIndices = '; CREATE INDEX ' . $this->getIndexName('tname') . ' ON ' . $this->_tableName . '(`name`);' .
-			'CREATE INDEX ' . $this->getIndexName('tclass') . ' ON ' . $this->_tableName . '(`task`);' .
-			'CREATE INDEX ' . $this->getIndexName('tnext') . ' ON ' . $this->_tableName . '(`nextexectime`);' .
-			'CREATE INDEX ' . $this->getIndexName('tuser') . ' ON ' . $this->_tableName . '(`username`);' .
-			'CREATE INDEX ' . $this->getIndexName('tactive') . ' ON ' . $this->_tableName . '(`active`);';
 
-		$sql = 'CREATE TABLE IF NOT EXISTS ' . $this->_tableName . ' (
-			`tabuid` ' . $autotype . ' PRIMARY KEY' . $autoidAttributes . ',
-			`name` VARCHAR (127) NOT NULL,
-			`schedule` VARCHAR (127) NOT NULL,
-			`task` VARCHAR (256) NOT NULL,
-			`moduleid` VARCHAR (127) NULL,
-			`username` VARCHAR (127) NULL,
-			`options` MEDIUMTEXT NULL,
-			`processcount` INT NOT NULL DEFAULT 0,
-			`lastexectime` VARCHAR (20) NULL DEFAULT NULL,
-			`nextexectime` INT NULL DEFAULT NULL,
-			`lastresult` VARCHAR (16) NULL DEFAULT NULL,
-			`lastduration` VARCHAR (20) NULL DEFAULT NULL,
-			`paused` INT NULL DEFAULT NULL,
-			`okcount` INT NULL DEFAULT NULL,
-			`failcount` INT NULL DEFAULT NULL,
-			`totalduration` DOUBLE PRECISION NULL DEFAULT NULL,
-			`maxduration` DOUBLE PRECISION NULL DEFAULT NULL,
-			`active` BOOLEAN NULL
-			)' . $postIndices;
-
-		$cmd = $db->createCommand($sql);
-
-		$cmd->execute();
+		$db->createCommand('CREATE TABLE IF NOT EXISTS ' . $table . ' (
+			tabuid ' . $idColumn . ',
+			name VARCHAR (127) NOT NULL,
+			schedule VARCHAR (127) NOT NULL,
+			task VARCHAR (256) NOT NULL,
+			moduleid VARCHAR (127) NULL,
+			username VARCHAR (127) NULL,
+			options ' . $textType . ' NULL,
+			processcount INT NOT NULL DEFAULT 0,
+			lastexectime VARCHAR (20) NULL DEFAULT NULL,
+			nextexectime INT NULL DEFAULT NULL,
+			lastresult VARCHAR (16) NULL DEFAULT NULL,
+			lastduration VARCHAR (20) NULL DEFAULT NULL,
+			paused INT NULL DEFAULT NULL,
+			okcount INT NULL DEFAULT NULL,
+			failcount INT NULL DEFAULT NULL,
+			totalduration DOUBLE PRECISION NULL DEFAULT NULL,
+			maxduration DOUBLE PRECISION NULL DEFAULT NULL,
+			active ' . $activeType . ' NULL
+			)')->execute();
+		foreach (['tname' => 'name', 'tclass' => 'task', 'tnext' => 'nextexectime', 'tuser' => 'username', 'tactive' => 'active'] as $suffix => $column) {
+			$db->createCommand('CREATE INDEX ' . $this->getIndexName($suffix) . ' ON ' . $table . ' (' . $column . ')')->execute();
+		}
 	}
 
 	/**
@@ -703,7 +710,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 			$cmd->bindValue(":schedule", $task->getSchedule(), $db::PARAM_STR);
 			$cmd->bindValue(":mid", $task->getModuleId(), $db::PARAM_STR);
 			$cmd->bindValue(":username", $username, $db::PARAM_STR);
-			$cmd->bindValue(":options", serialize($task), $db::PARAM_STR);
+			$cmd->bindValue(":options", $this->serializeTask($task), $db::PARAM_STR);
 			$cmd->bindValue(":count", $task->getProcessCount(), $db::PARAM_INT);
 			$cmd->bindValue(":time", $task->getLastExecTime(), $db::PARAM_STR);
 			$cmd->execute();
@@ -742,7 +749,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 		$cmd->bindValue(":count", $count, $db::PARAM_STR);
 		$cmd->bindValue(":time", $time, $db::PARAM_STR);
 		$cmd->bindValue(":ntime", $ntime = $task->getNextTriggerTime($time), $db::PARAM_STR);
-		$cmd->bindValue(":task", $serial = serialize($task), $db::PARAM_STR);
+		$cmd->bindValue(":task", $serial = $this->serializeTask($task), $db::PARAM_STR);
 		$cmd->bindValue(":name", $name, $db::PARAM_STR);
 		if ($claim === ' AND nextexectime=:seen') {
 			$cmd->bindValue(":seen", $seen, $db::PARAM_STR);
@@ -838,7 +845,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 		$cmd = $db->createCommand("UPDATE {$this->_tableName} SET lastexectime=:time, nextexectime=:ntime, options=:task WHERE name=:name AND active IS NOT NULL");
 		$cmd->bindValue(":time", $time, $db::PARAM_STR);
 		$cmd->bindValue(":ntime", $ntime = $task->getNextTriggerTime($time), $db::PARAM_STR);
-		$cmd->bindValue(":task", $serial = serialize($task), $db::PARAM_STR);
+		$cmd->bindValue(":task", $serial = $this->serializeTask($task), $db::PARAM_STR);
 		$cmd->bindValue(":name", $name, $db::PARAM_STR);
 		$cmd->execute();
 		if (isset($this->_taskRows[$name])) {
@@ -849,14 +856,52 @@ class TDbCronManager extends TCronModule implements IDbModule
 	}
 
 	/**
+	 * Serializes a task for the `options` column.  A serialized object holds NUL bytes, and PostgreSQL
+	 * `TEXT` ends a value at its first NUL byte, so the value is base64 encoded on PostgreSQL
+	 * ({@see getEncodesTaskOptions}).
+	 * @param mixed $task the task
+	 * @return string the column value
+	 * @since 4.4.0
+	 */
+	protected function serializeTask(mixed $task): string
+	{
+		$serial = serialize($task);
+		return $this->getEncodesTaskOptions() ? base64_encode($serial) : $serial;
+	}
+
+	/**
+	 * Returns the serialized task of an `options` column value, decoding it on PostgreSQL ({@see serializeTask}).
+	 * @param ?string $options the column value
+	 * @return ?string the serialized task, or the value itself when it is not base64
+	 * @since 4.4.0
+	 */
+	protected function decodeTaskOptions(?string $options): ?string
+	{
+		if ($options === null || !$this->getEncodesTaskOptions()) {
+			return $options;
+		}
+		$decoded = base64_decode($options, true);
+		return $decoded === false ? $options : $decoded;
+	}
+
+	/**
+	 * @return bool whether the `options` column holds base64 encoded tasks: true on PostgreSQL
+	 * @since 4.4.0
+	 */
+	protected function getEncodesTaskOptions(): bool
+	{
+		return TDbDriverCapabilities::normalizeDriver($this->getDbConnection()->getDriverName()) === TDbDriver::DRIVER_PGSQL;
+	}
+
+	/**
 	 * Unserializes a task from its row and prepares it ({@see prepareTask}).
-	 * @param ?string $options the serialized task
+	 * @param ?string $options the `options` column value
 	 * @return mixed the task, or false when the value does not unserialize
 	 * @since 4.4.0
 	 */
 	protected function unserializeTask(?string $options): mixed
 	{
-		$task = @unserialize((string) $options);
+		$task = @unserialize((string) $this->decodeTaskOptions($options));
 		if ($task instanceof TCronTask) {
 			$this->prepareTask($task);
 		}
@@ -1281,7 +1326,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 		$cmd->bindValue(":task", $taskExec = $task->getTask(), $db::PARAM_STR);
 		$cmd->bindValue(":mid", $mid = $task->getModuleId(), $db::PARAM_STR);
 		$cmd->bindValue(":username", $username = $task->getUserName(), $db::PARAM_STR);
-		$cmd->bindValue(":options", $serial = serialize($task), $db::PARAM_STR);
+		$cmd->bindValue(":options", $serial = $this->serializeTask($task), $db::PARAM_STR);
 		$cmd->bindValue(":time", $time = $task->getLastExecTime(), $db::PARAM_STR);
 		$cmd->bindValue(":ntime", $ntime = $task->getNextTriggerTime($time), $db::PARAM_STR);
 		$cmd->bindValue(":count", $count = $task->getProcessCount(), $db::PARAM_INT);
@@ -1359,7 +1404,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 		$cmd->bindValue(":task", $taskExec = $task->getTask(), $db::PARAM_STR);
 		$cmd->bindValue(":mid", $mid = $task->getModuleId(), $db::PARAM_STR);
 		$cmd->bindValue(":username", $username = $task->getUserName(), $db::PARAM_STR);
-		$cmd->bindValue(":options", $serial = serialize($task), $db::PARAM_STR);
+		$cmd->bindValue(":options", $serial = $this->serializeTask($task), $db::PARAM_STR);
 		$cmd->bindValue(":count", $count = $task->getProcessCount(), $db::PARAM_STR);
 		$cmd->bindValue(":time", $time = $task->getLastExecTime(), $db::PARAM_STR);
 		$cmd->bindValue(":ntime", $ntime = $task->getNextTriggerTime($time), $db::PARAM_STR);
@@ -1660,7 +1705,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 	 *    when paging and leaves the order unspecified otherwise.
 	 * @param ?string $username username of the tasks to get from the log, or null
 	 *    for all, _ is wild card and % is wild string, default null.
-	 * @return ?array the log rows, null when access is denied
+	 * @return ?array the log rows, each `options` the serialized task, null when access is denied
 	 */
 	public function getCronLog($name = null, $pageSize = 0, $offset = 0, $sortingDesc = null, $username = null)
 	{
@@ -1697,8 +1742,13 @@ class TDbCronManager extends TCronModule implements IDbModule
 		if (is_string($name)) {
 			$cmd->bindParameter(":name", $name, $db::PARAM_STR);
 		}
-		$results = $cmd->query();
-		return $results->readAll();
+		$rows = $cmd->query()->readAll();
+		if ($this->getEncodesTaskOptions()) {
+			foreach ($rows as &$row) {
+				$row['options'] = $this->decodeTaskOptions($row['options']);
+			}
+		}
+		return $rows;
 	}
 
 	/**

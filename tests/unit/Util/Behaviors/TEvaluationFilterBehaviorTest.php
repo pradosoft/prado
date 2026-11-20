@@ -129,6 +129,11 @@ class TEvaluationFilterBehaviorTest extends \PHPUnit\Framework\TestCase
 		}
 	}
 
+	public function testEmptyCodeIsAllowed()
+	{
+		$this->assertNull($this->behavior->findDeniedCode(''));
+	}
+
 	public function testStatementsDeniedByDefault()
 	{
 		$this->assertFalse($this->behavior->getAllowStatements());
@@ -206,6 +211,10 @@ class TEvaluationFilterBehaviorTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame('cba', $this->component->evaluateExpression('strrev($this->Text)'));
 
 		$this->behavior->setAllowedFunctions([]);
+		$this->assertSame([], $this->behavior->getAllowedFunctions());
+		$this->behavior->setAllowedFunctions(' ');
+		$this->assertSame([], $this->behavior->getAllowedFunctions());
+		$this->behavior->setAllowedFunctions(['\\']);
 		$this->assertSame([], $this->behavior->getAllowedFunctions());
 
 		$this->behavior->setAllowedFunctions(null);

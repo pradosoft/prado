@@ -3,6 +3,7 @@
 namespace Prado\Test\Unit;
 
 use Prado\Collections\TPriorityList;
+use Prado\Collections\TWeakCallableCollection;
 use Prado\Exceptions\TInvalidOperationException;
 
 /**
@@ -254,8 +255,7 @@ class TComponentEventTest extends TComponentTestBase
 
 		$this->component->attachEventHandler('OnMyEvent', 'foo');
 
-		// Detaching a handler that is not attached swallows the
-		// 'list_item_inexistent' TInvalidDataValueException and returns false.
+		// Detaching a handler that is not attached returns false.
 		$this->assertFalse($this->component->detachEventHandler('OnMyEvent', 'notattached'));
 		$this->assertEquals(1, $this->component->getEventHandlers('OnMyEvent')->getCount());
 
@@ -266,5 +266,38 @@ class TComponentEventTest extends TComponentTestBase
 		// Only the 'list_item_inexistent' TInvalidDataValueException is swallowed;
 		// any other exception from remove() (e.g. a read-only 'list_readonly'
 		// TInvalidOperationException) propagates rather than being masked as false.
+	}
+
+	/**
+	 * A handler that is not attached is never passed to remove(), which throws for it.
+	 * unlisten() detaches from a destructor, and Xdebug's develop mode crashes PHP when
+	 * a destructor it runs inside its throw hook throws, even when the throw is caught.
+	 */
+	public function testDetachEventHandlerOfMissingHandlerThrowsNothing()
+	{
+		$handlers = new class () extends TWeakCallableCollection {
+			public int $removes = 0;
+
+			public function remove($item, $priority = false)
+			{
+				$this->removes++;
+				return parent::remove($item, $priority);
+			}
+		};
+		$handlers->add('foo');
+		$events = PradoUnit::getProp($this->component, '_e');
+		$events['onmyevent'] = $handlers;
+		PradoUnit::setProp($this->component, '_e', $events);
+		$this->assertSame($handlers, $this->component->getEventHandlers('OnMyEvent'));
+
+		$this->assertFalse($this->component->detachEventHandler('OnMyEvent', 'notattached'));
+		$this->assertFalse($this->component->detachEventHandler('OnMyEvent', 'notattached', null));
+		$this->assertFalse($this->component->detachEventHandler('OnMyEvent', 'foo', 5));
+		$this->assertSame(0, $handlers->removes);
+		$this->assertSame(1, $handlers->getCount());
+
+		$this->assertTrue($this->component->detachEventHandler('OnMyEvent', 'foo'));
+		$this->assertSame(1, $handlers->removes);
+		$this->assertSame(0, $handlers->getCount());
 	}
 }
