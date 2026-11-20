@@ -1096,15 +1096,17 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	}
 
 	/**
-	 * Returns the ID of the last inserted row or sequence value.
-	 * @param string $sequenceName name of the sequence object (required by some DBMS)
+	 * Returns the ID of the last inserted row or sequence value.  An empty sequence name passes
+	 * `null` to PDO, so PostgreSQL returns the last value of any sequence (`LASTVAL()`) instead
+	 * of failing on `CURRVAL('')`.
+	 * @param ?string $sequenceName name of the sequence object (required by some DBMS), or empty for none
 	 * @return string the row ID of the last row inserted, or the last value retrieved from the sequence object
 	 * @see http://www.php.net/manual/en/function.PDO-lastInsertId.php
 	 */
 	public function getLastInsertID($sequenceName = '')
 	{
 		$this->assertActive();
-		return $this->getPdoInstance()->lastInsertId($sequenceName);
+		return $this->getPdoInstance()->lastInsertId($sequenceName === '' ? null : $sequenceName);
 	}
 
 	/**

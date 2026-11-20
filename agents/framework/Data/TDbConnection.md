@@ -50,7 +50,7 @@ $conn->quoteTableName('my_table');         // driver-specific quoting
 $conn->quoteColumnName('my_col');
 $conn->getPdoInstance();                   // raw PDO object
 $conn->getDriverName();                    // e.g. 'mysql', 'pgsql', 'firebird', 'ibm'
-$conn->getLastInsertID($sequence = '');    // last auto-increment ID
+$conn->getLastInsertID($sequence = '');    // last auto-increment ID; '' is PDO's null (PostgreSQL LASTVAL())
 $conn->getDbMetaData();                    // returns [`TDbMetaData`](Common/TDbMetaData.md) for schema introspection
 $conn->getDatabaseCharset();               // charset reported by active connection (@since 4.3.3)
 $conn->getCanCharsetChange();              // true if charset can still be changed (@since 4.3.3)
