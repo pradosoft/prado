@@ -430,4 +430,29 @@ class TDatePickerTest extends TestCase
 		$picker = new TDatePicker();
 		$this->assertSame([], PradoUnit::invoke($picker, 'getAccessibleTextOptions'));
 	}
+
+	// ================================================================
+	// Drop down list post data
+	// ================================================================
+
+	public function testGetDateFromPostDataReadsTheFieldsAfterTheIdSeparator()
+	{
+		$picker = new TDatePicker();
+		$picker->setDateFormat('yyyy-MM-dd');
+		$values = ['Date:day' => '9', 'Date:month' => '2', 'Date:year' => '2031'];
+		$this->assertSame('2031-03-09', PradoUnit::invoke($picker, 'getDateFromPostData', 'Date', $values));
+	}
+
+	public function testGetDateFromPostDataFollowsASetIdSeparator()
+	{
+		try {
+			TDatePicker::setIdSeparator('$');
+			$picker = new TDatePicker();
+			$picker->setDateFormat('yyyy-MM-dd');
+			$values = ['Date$day' => '9', 'Date$month' => '2', 'Date$year' => '2031'];
+			$this->assertSame('2031-03-09', PradoUnit::invoke($picker, 'getDateFromPostData', 'Date', $values));
+		} finally {
+			TDatePicker::setIdSeparator(TDatePicker::DEFAULT_ID_SEPARATOR);
+		}
+	}
 }

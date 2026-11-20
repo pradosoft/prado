@@ -27,7 +27,7 @@ test('QuickstartButtonTestCase', async ({ page }) => {
   await h.assertNotVisible('ctl0_body_ctl3');
   await h.byXPath("//input[@type='submit' and @value='submit']").click();
   await h.assertVisible('ctl0_body_ctl3');
-  await h.type('ctl0$body$TextBox', 'test');
+  await h.type('ctl0:body:TextBox', 'test');
   await h.byXPath("//input[@type='submit' and @value='submit']").click();
   await h.assertNotVisible('ctl0_body_ctl3');
 });

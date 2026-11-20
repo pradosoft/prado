@@ -46,20 +46,20 @@ test('QuickstartDataGrid5TestCase', async ({ page }) => {
   await h.assertSourceNotContains('ITN006');
 
   // show top pager
-  await h.byXPath("//input[@name='ctl0$body$ctl1$c0' and @value='Top']").click();
+  await h.byXPath("//input[@name='ctl0:body:ctl1:c0' and @value='Top']").click();
   await h.pause(50);
   await h.byId('ctl0_body_DataGrid_ctl8_ctl3').click();
   await h.pause(50);
   await h.byLinkText('Page 1').first().click();  // both top and bottom pagers have "Page 1"
   await h.pause(50);
   // hide top pager
-  await h.byXPath("//input[@name='ctl0$body$ctl1$c0' and @value='Top']").click();
+  await h.byXPath("//input[@name='ctl0:body:ctl1:c0' and @value='Top']").click();
   await h.pause(50);
 
   // change next prev caption
-  await h.type('ctl0$body$NextPageText', 'Next Page');
+  await h.type('ctl0:body:NextPageText', 'Next Page');
   await h.pause(50);
-  await h.type('ctl0$body$PrevPageText', 'Prev Page');
+  await h.type('ctl0:body:PrevPageText', 'Prev Page');
   await h.byXPath("//input[@type='submit' and @value='Submit']").first().click();
 
   // verify next prev paging
@@ -89,8 +89,8 @@ test('QuickstartDataGrid5TestCase', async ({ page }) => {
   await h.assertSourceNotContains('ITN006');
 
   // change button count
-  await h.type('ctl0$body$PageButtonCount', '2');
-  await h.byName('ctl0$body$ctl6').click();
+  await h.type('ctl0:body:PageButtonCount', '2');
+  await h.byName('ctl0:body:ctl6').click();
   await h.pause(50);
   await h.byLinkText('Next Page').click();
   await h.assertSourceNotContains('ITN010');
@@ -104,12 +104,12 @@ test('QuickstartDataGrid5TestCase', async ({ page }) => {
   await h.assertSourceContains('ITN006');
   await h.assertSourceNotContains('ITN011');
 
-  await h.type('ctl0$body$PageButtonCount', '10');
-  await h.byName('ctl0$body$ctl6').click();
+  await h.type('ctl0:body:PageButtonCount', '10');
+  await h.byName('ctl0:body:ctl6').click();
   await h.pause(50);
-  await h.type('ctl0$body$PageSize', '2');
+  await h.type('ctl0:body:PageSize', '2');
   await h.pause(50);
-  await h.byName('ctl0$body$ctl8').click();
+  await h.byName('ctl0:body:ctl8').click();
   await h.assertSourceContains('ITN001');
   await h.assertSourceContains('ITN002');
   await h.assertSourceNotContains('ITN003');

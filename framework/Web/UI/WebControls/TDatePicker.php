@@ -517,22 +517,22 @@ class TDatePicker extends TTextBox
 
 		$order = $formatter->getDayMonthYearOrdering();
 
-		if (isset($values[$key . '$day'])) {
-			$day = (int) ($values[$key . '$day']);
+		if (isset($values[$key . self::getIdSeparator() . 'day'])) {
+			$day = (int) ($values[$key . self::getIdSeparator() . 'day']);
 		} elseif (in_array('day', $order)) {
 			$day = $date['mday'];
 		} else {
 			$day = 1;
 		}
 
-		if (isset($values[$key . '$month'])) {
-			$month = (int) ($values[$key . '$month']) + 1;
+		if (isset($values[$key . self::getIdSeparator() . 'month'])) {
+			$month = (int) ($values[$key . self::getIdSeparator() . 'month']) + 1;
 		} else {
 			$month = $date['mon'];
 		}
 
-		if (isset($values[$key . '$year'])) {
-			$year = (int) ($values[$key . '$year']);
+		if (isset($values[$key . self::getIdSeparator() . 'year'])) {
+			$year = (int) ($values[$key . self::getIdSeparator() . 'year']);
 		} else {
 			$year = $date['year'];
 		}
@@ -752,7 +752,7 @@ class TDatePicker extends TTextBox
 	{
 		$days = $this->getDropDownDayOptions();
 		$writer->addAttribute('id', $this->getClientID() . TControl::CLIENT_ID_SEPARATOR . 'day');
-		$writer->addAttribute('name', $this->getUniqueID() . TControl::ID_SEPARATOR . 'day');
+		$writer->addAttribute('name', $this->getUniqueID() . self::getIdSeparator() . 'day');
 		$writer->addAttribute('class', 'datepicker_day_options ' . $this->getDropDownCssClass());
 		if ($this->getReadOnly() || !$this->getEnabled(true)) {
 			$writer->addAttribute('disabled', 'disabled');
@@ -785,7 +785,7 @@ class TDatePicker extends TTextBox
 	{
 		$info = $this->getLocalizedCalendarInfo();
 		$writer->addAttribute('id', $this->getClientID() . TControl::CLIENT_ID_SEPARATOR . 'month');
-		$writer->addAttribute('name', $this->getUniqueID() . TControl::ID_SEPARATOR . 'month');
+		$writer->addAttribute('name', $this->getUniqueID() . self::getIdSeparator() . 'month');
 		$writer->addAttribute('class', 'datepicker_month_options ' . $this->getDropDownCssClass());
 		if ($this->getReadOnly() || !$this->getEnabled(true)) {
 			$writer->addAttribute('disabled', 'disabled');
@@ -840,7 +840,7 @@ class TDatePicker extends TTextBox
 			$years[$i] = $i;
 		}
 		$writer->addAttribute('id', $this->getClientID() . TControl::CLIENT_ID_SEPARATOR . 'year');
-		$writer->addAttribute('name', $this->getUniqueID() . TControl::ID_SEPARATOR . 'year');
+		$writer->addAttribute('name', $this->getUniqueID() . self::getIdSeparator() . 'year');
 		$writer->addAttribute('class', 'datepicker_year_options ' . $this->getDropDownCssClass());
 		if ($this->getReadOnly() || !$this->getEnabled(true)) {
 			$writer->addAttribute('disabled', 'disabled');

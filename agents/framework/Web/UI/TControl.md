@@ -32,8 +32,10 @@ $control->ensureChildControls();   // createChildControls() once; a throw still 
 $control->setID('myId');           // logical ID (within naming container)
 $control->getID();                 // 'myId'
 $control->getClientID();           // 'container_myId' (HTML id attribute)
-$control->getUniqueID();           // 'container$myId' (form field name)
+$control->getUniqueID();           // 'container:myId' (form field name)
 ```
+
+`TControl::getIdSeparator()` is the character between the IDs of a UniqueID; `setIdSeparator()` sets it for every control (@since 4.4.0). The default is `:` (`DEFAULT_ID_SEPARATOR`). It is static because the renderer, `findControl()`, and every `loadPostData()` read the same separator, and a control caches its UniqueID, so it is set before a page is created: [TPageService](../Services/TPageService.md) `IdSeparator`. A separator is one ASCII punctuation character other than `_` (an ID character and `CLIENT_ID_SEPARATOR`), `.` and `[` (PHP rewrites them in a posted field name); another value throws `control_idseparator_invalid`. `ID_SEPARATOR` (`$`) is the deprecated separator of 4.3: OWASP Core Rule Set rule 942290 rejects a field name where `$` precedes an ID such as `Note`, `Order` or `TextBox1` (#1612). Code that builds a field name beside a UniqueID, or parses one, calls `getIdSeparator()`; `findControl()` takes a path separated by `.` or by the separator.
 
 If `ID` is not set, auto-assigned as `ctl0`, `ctl1`, … Don't rely on auto-IDs in JavaScript.
 

@@ -29,7 +29,7 @@ test('QuickstartLinkButtonTestCase', async ({ page }) => {
   await h.assertNotVisible('ctl0_body_ctl4');
   await h.byLinkText('submit').click();
   await h.assertVisible('ctl0_body_ctl4');
-  await h.type('ctl0$body$TextBox', 'test');
+  await h.type('ctl0:body:TextBox', 'test');
   await h.byLinkText('submit').click();
   await h.assertNotVisible('ctl0_body_ctl4');
 });
