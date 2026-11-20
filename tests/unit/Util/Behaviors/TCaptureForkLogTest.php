@@ -381,6 +381,309 @@ class TCaptureForkLogTest extends \PHPUnit\Framework\TestCase
 		}
 	}
 
+	/**
+	 * Runs $test with a fresh TLogger as the Prado logger.
+	 */
+	protected function withFreshLogger(callable $test): void
+	{
+		$saved = PradoUnit::getStaticProp(Prado::class, '_logger');
+		$logger = new TLogger(false);
+		PradoUnit::setStaticProp(Prado::class, '_logger', $logger);
+		try {
+			$test($logger);
+		} finally {
+			PradoUnit::setStaticProp(Prado::class, '_logger', $saved);
+		}
+	}
+
+	/**
+	 * Returns a parent and a child stream from a socket pair.
+	 */
+	protected function socketPair(): array
+	{
+		if (!function_exists('socket_create_pair')) {
+			self::markTestSkipped('socket_create_pair is not available.');
+		}
+		socket_create_pair(TProcessHelper::isSystemWindows() ? AF_INET : AF_UNIX, SOCK_STREAM, 0, $pair);
+		return [socket_export_stream($pair[0]), socket_export_stream($pair[1])];
+	}
+
+	public function testDyAttachBehaviorKeepsOneInstance()
+	{
+		$owner = new TComponent();
+		$first = new TCaptureForkLog();
+		$owner->attachBehavior('first', $first);
+		$owner->attachBehavior('second', new TCaptureForkLog());
+
+		self::assertCount(1, $owner->getBehaviors(TCaptureForkLog::class));
+		self::assertSame($first, $owner->asa('first'));
+		self::assertNull($owner->asa('second'));
+		$owner->detachBehavior('first');
+	}
+
+	public function testConfigureForChildLogsWithoutConnection()
+	{
+		$behavior = new TCaptureForkLog();
+
+		$behavior->configureForChildLogs(null, ['pid' => 999999]);
+
+		self::assertEmpty(PradoUnit::getProp($behavior, '_parentConnections'));
+		self::assertNull(PradoUnit::getProp($behavior, '_childConnection'));
+	}
+
+	public function testConfigureForChildLogsAfterFailedFork()
+	{
+		$behavior = new TCaptureForkLog();
+		$behavior->generateConnection(null, null);
+		$connection = PradoUnit::getProp($behavior, '_forkConnection');
+		if (!$connection) {
+			self::markTestSkipped('socket_create_pair is not available.');
+		}
+
+		$behavior->configureForChildLogs(null, ['pid' => -1]);
+
+		self::assertNull(PradoUnit::getProp($behavior, '_forkConnection'));
+		self::assertEmpty(PradoUnit::getProp($behavior, '_parentConnections'));
+		self::assertSame('', fread($connection[0], 1));
+		self::assertSame('', fread($connection[1], 1));
+	}
+
+	public function testConfigureForChildLogsInTheChild()
+	{
+		$this->withFreshLogger(function (TLogger $logger) {
+			$child = new TCaptureForkLog();
+			$child->generateConnection(null, null);
+			$connection = PradoUnit::getProp($child, '_forkConnection');
+			if (!$connection) {
+				self::markTestSkipped('socket_create_pair is not available.');
+			}
+			$spoolFile = PradoUnit::getProp($child, '_forkSpoolFile');
+			$logger->attachEventHandler('onFlushLogs', fn () => null);
+			Prado::notice('parent notice', 'fork');
+			Prado::profileBegin('token', 'fork');
+
+			$child->configureForChildLogs(null, ['pid' => 0]);
+
+			self::assertSame($connection[1], PradoUnit::getProp($child, '_childConnection'));
+			self::assertSame($spoolFile, PradoUnit::getProp($child, '_spoolFile'));
+			$handlers = $logger->getEventHandlers('onFlushLogs');
+			self::assertCount(1, $handlers);
+			self::assertTrue($handlers->contains([$child, 'sendLogsToParent']));
+			$logs = $logger->getLogs();
+			self::assertEquals(['token'], array_column($logs, 0));
+			self::assertSame(getmypid(), $logs[0][TLogger::LOG_PID]);
+
+			// A log already logged is not sent; a non-TLogger sender sends the Prado logger.
+			$time = microtime(true);
+			PradoUnit::setProp($logger, '_logs', [
+				['logged', TLogger::NOTICE | TLogger::LOGGED, 'fork', $time, 0, null, null, getmypid()],
+				['child notice', TLogger::NOTICE, 'fork', $time, 0, null, null, getmypid()],
+			]);
+			$child->sendLogsToParent(null, false);
+			$logger->deleteLogs();
+			$logger->deleteProfileLogs();
+			$child->sendLogsToParent($logger, true);
+			self::assertNull(PradoUnit::getProp($child, '_childConnection'));
+
+			$data = stream_get_contents($connection[0]);
+			$header = unpack('N', $data)[1];
+			self::assertSame(0, $header & 0x80000000);
+			$messages = array_column(unserialize(substr($data, 4, $header)), 0);
+			sort($messages);
+			self::assertEquals(['child notice', 'token'], $messages);
+			// The final message has no logs.
+			self::assertSame(pack('N', 0x80000000), substr($data, 4 + $header));
+		});
+	}
+
+	public function testReceiveLogsFromChildrenOfAnUnknownPid()
+	{
+		$behavior = new TCaptureForkLog();
+		[$parentStream, $childStream] = $this->socketPair();
+		PradoUnit::setProp($behavior, '_parentConnections', [999999 => $parentStream]);
+
+		$behavior->receiveLogsFromChildren(999998);
+
+		self::assertArrayHasKey(999999, PradoUnit::getProp($behavior, '_parentConnections'));
+	}
+
+	public function testSendLogsToParentWithoutConnection()
+	{
+		$behavior = new TCaptureForkLog();
+		$behavior->sendLogsToParent(Prado::getLogger(), true);
+		self::assertNull(PradoUnit::getProp($behavior, '_childConnection'));
+	}
+
+	public function testSendLogsToParentWaitsOnTheParent()
+	{
+		if (!TProcessHelper::isForkable()) {
+			$this->markTestSkipped('pcntl_fork is not available on this platform.');
+		}
+		[$parentStream, $childStream] = $this->socketPair();
+		$message = str_repeat('x', 1 << 20); // Larger than any socket buffer.
+		$this->withFreshLogger(function (TLogger $logger) use ($parentStream, $childStream, $message) {
+			$pid = TProcessHelper::fork();
+			if ($pid === 0) {
+				// The reader waits past one stream_select timeout of the writer.
+				try {
+					fclose($childStream);
+					usleep(1100000);
+					$data = stream_get_contents($parentStream);
+					$header = unpack('N', $data)[1];
+					$messages = array_column(unserialize(substr($data, 4)), 0);
+					exit(($header & 0x80000000) && strlen($data) === 4 + ($header & 0x7FFFFFFF) && in_array($message, $messages, true) ? 0 : 2);
+				} finally {
+					exit(1);
+				}
+			}
+			fclose($parentStream);
+			$behavior = new TCaptureForkLog();
+			PradoUnit::setProp($behavior, '_childConnection', $childStream);
+			Prado::warning($message, 'spool');
+
+			// Without a spool file, the child writes to the parent as it reads.
+			$behavior->sendLogsToParent($logger, true);
+
+			self::assertNull(PradoUnit::getProp($behavior, '_childConnection'));
+			pcntl_waitpid($pid, $status);
+			self::assertSame(0, pcntl_wexitstatus($status), 'The parent did not receive the whole message.');
+		});
+	}
+
+	public function testSendLogsToParentStopsWhenTheParentCloses()
+	{
+		if (!TProcessHelper::isForkable()) {
+			$this->markTestSkipped('pcntl_fork is not available on this platform.');
+		}
+		[$parentStream, $childStream] = $this->socketPair();
+		$this->withFreshLogger(function (TLogger $logger) use ($parentStream, $childStream) {
+			$pid = TProcessHelper::fork();
+			if ($pid === 0) {
+				// The parent closes its connection without reading.
+				try {
+					usleep(200000);
+				} finally {
+					exit(0);
+				}
+			}
+			fclose($parentStream);
+			$behavior = new TCaptureForkLog();
+			PradoUnit::setProp($behavior, '_childConnection', $childStream);
+			Prado::warning(str_repeat('x', 1 << 20), 'spool');
+
+			$behavior->sendLogsToParent($logger, false);
+
+			self::assertNull(PradoUnit::getProp($behavior, '_childConnection'));
+			pcntl_waitpid($pid, $status);
+		});
+	}
+
+	public function testDyAttachBehaviorKeepsOtherBehaviors()
+	{
+		$owner = new TComponent();
+		$owner->attachBehavior('capture', new TCaptureForkLog());
+		$owner->attachBehavior('other', $other = new TMapLazyLoadBehavior(fn () => null));
+
+		self::assertSame($other, $owner->asa('other'));
+		$owner->detachBehavior('other');
+		$owner->detachBehavior('capture');
+	}
+
+	public function testConfigureForChildLogsInTheChildWithoutProfileLogs()
+	{
+		$this->withFreshLogger(function (TLogger $logger) {
+			$child = new TCaptureForkLog();
+			$child->generateConnection(null, null);
+			$connection = PradoUnit::getProp($child, '_forkConnection');
+			if (!$connection) {
+				self::markTestSkipped('socket_create_pair is not available.');
+			}
+
+			$child->configureForChildLogs(null, ['pid' => 0]);
+
+			self::assertSame([], $logger->getLogs());
+			self::assertSame($connection[1], PradoUnit::getProp($child, '_childConnection'));
+		});
+	}
+
+	public function testWriteToParent()
+	{
+		[$parentStream, $childStream] = $this->socketPair();
+		$behavior = new TCaptureForkLog();
+
+		// Nothing to write, and no connection to write to.
+		PradoUnit::invoke($behavior, 'writeToParent', '');
+		PradoUnit::invoke($behavior, 'writeToParent', 'lost');
+
+		PradoUnit::setProp($behavior, '_childConnection', $childStream);
+		PradoUnit::invoke($behavior, 'writeToParent', 'data');
+		self::assertSame('data', fread($parentStream, 4));
+		self::assertSame($childStream, PradoUnit::getProp($behavior, '_childConnection'));
+
+		// The parent closed its connection.
+		fclose($parentStream);
+		PradoUnit::invoke($behavior, 'writeToParent', 'data');
+		self::assertNull(PradoUnit::getProp($behavior, '_childConnection'));
+	}
+
+	public function testSpoolLogsWithAnExistingSpoolFile()
+	{
+		$behavior = new TCaptureForkLog();
+		$spoolFile = tempnam(sys_get_temp_dir(), 'prado-forklog-test');
+		try {
+			PradoUnit::setProp($behavior, '_spoolFile', $spoolFile);
+
+			self::assertFalse(PradoUnit::invoke($behavior, 'spoolLogs', 'data'));
+			self::assertNull(PradoUnit::getProp($behavior, '_spoolHandle'));
+			self::assertSame('', file_get_contents($spoolFile));
+		} finally {
+			unlink($spoolFile);
+		}
+	}
+
+	public function testExtractChildLogsKeepsAShortHeader()
+	{
+		$behavior = new TCaptureForkLog();
+		PradoUnit::setProp($behavior, '_receiveBuffers', [999999 => "\0\0"]);
+		$completeLogs = [];
+
+		self::assertFalse(PradoUnit::reflectionMethod($behavior, 'extractChildLogs')->invokeArgs($behavior, [999999, &$completeLogs]));
+
+		self::assertSame([], $completeLogs);
+		self::assertSame([999999 => "\0\0"], PradoUnit::getProp($behavior, '_receiveBuffers'));
+	}
+
+	public function testExtractChildLogsOfAFinalMessageWithoutLogs()
+	{
+		$behavior = new TCaptureForkLog();
+		PradoUnit::setProp($behavior, '_receiveBuffers', [999999 => pack('N', 0x80000000)]);
+		$completeLogs = [];
+
+		self::assertTrue(PradoUnit::reflectionMethod($behavior, 'extractChildLogs')->invokeArgs($behavior, [999999, &$completeLogs]));
+
+		self::assertSame([], $completeLogs);
+		self::assertSame([999999 => ''], PradoUnit::getProp($behavior, '_receiveBuffers'));
+	}
+
+	public function testCloseChildConnectionWithAnEmptyOrNoSpoolFile()
+	{
+		$behavior = new TCaptureForkLog();
+		[$parentA] = $this->socketPair();
+		[$parentB] = $this->socketPair();
+		$spoolFile = tempnam(sys_get_temp_dir(), 'prado-forklog-test');
+		PradoUnit::setProp($behavior, '_parentConnections', [999998 => $parentA, 999999 => $parentB]);
+		PradoUnit::setProp($behavior, '_spoolFiles', [999998 => $spoolFile]);
+		$completeLogs = [];
+
+		$close = PradoUnit::reflectionMethod($behavior, 'closeChildConnection');
+		$close->invokeArgs($behavior, [999998, &$completeLogs]);
+		$close->invokeArgs($behavior, [999999, &$completeLogs]);
+
+		self::assertSame([], $completeLogs);
+		self::assertFileDoesNotExist($spoolFile);
+		self::assertSame([], PradoUnit::getProp($behavior, '_parentConnections'));
+	}
+
 	public function testCollectLogsFromChildrenWithoutConnections()
 	{
 		$behavior = new TCaptureForkLog();

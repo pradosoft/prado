@@ -5,6 +5,7 @@ namespace Prado\Test\Unit\Util\Behaviors;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\TComponent;
+use Prado\Test\Unit\PradoUnit;
 use Prado\Util\Behaviors\TApplicationSignals;
 use Prado\Util\TSignalsDispatcher;
 use Prado\Prado;
@@ -17,6 +18,14 @@ class TTestAppSignalsDispatcher extends TSignalsDispatcher
 class TTestApplicationSignals extends TApplicationSignals
 {
 	
+}
+
+class TTestNoSignalsDispatcher extends TSignalsDispatcher
+{
+	public static function hasSignals(): bool
+	{
+		return false;
+	}
 }
 
 class TApplicationSignalTest extends \PHPUnit\Framework\TestCase
@@ -78,6 +87,10 @@ class TApplicationSignalTest extends \PHPUnit\Framework\TestCase
 		$this->behavior->setSignalsClass(null);
 		
 		self::assertEquals(TSignalsDispatcher::class, $this->behavior->getSignalsClass());
+
+		$this->behavior->setSignalsClass(TTestAppSignalsDispatcher::class);
+		$this->behavior->setSignalsClass('');
+		self::assertEquals(TSignalsDispatcher::class, $this->behavior->getSignalsClass());
 			
 		self::expectException(TInvalidDataValueException::class);
 		$this->behavior->setSignalsClass(TComponent::class);
@@ -106,6 +119,28 @@ class TApplicationSignalTest extends \PHPUnit\Framework\TestCase
 		self::assertEquals($ogAsyncSignal, $this->behavior->getAsyncSignals());
 	}
 
+	public function testAsyncSignals_withoutSignals()
+	{
+		$this->behavior->setSignalsClass(TTestNoSignalsDispatcher::class);
+
+		self::assertNull($this->behavior->getAsyncSignals());
+		self::assertNull($this->behavior->setAsyncSignals(true));
+		self::assertNull($this->behavior->getSignalsDispatcher());
+	}
+
+	public function testAttachDetach_withoutSignals()
+	{
+		$app = Prado::getApplication();
+		$this->behavior->setSignalsClass(TTestNoSignalsDispatcher::class);
+
+		$app->attachBehavior('appSignals', $this->behavior);
+		self::assertNull($this->behavior->getSignalsDispatcher());
+		self::assertFalse(PradoUnit::invoke($this->behavior, 'attachEventHandlers', $app));
+
+		$app->detachBehavior('appSignals');
+		self::assertFalse(PradoUnit::invoke($this->behavior, 'detachEventHandlers', $app));
+	}
+
 	public function testPriorHandlerPriority()
 	{
 		$ogHandlerPriority = $this->behavior->getPriorHandlerPriority();
@@ -118,6 +153,9 @@ class TApplicationSignalTest extends \PHPUnit\Framework\TestCase
 		self::assertEquals(5, $this->behavior->getPriorHandlerPriority());
 		
 		self::assertTrue($this->behavior->setPriorHandlerPriority(null));
+		self::assertNull($this->behavior->getPriorHandlerPriority());
+		self::assertTrue($this->behavior->setPriorHandlerPriority(5));
+		self::assertTrue($this->behavior->setPriorHandlerPriority(''));
 		self::assertNull($this->behavior->getPriorHandlerPriority());
 		self::assertTrue($this->behavior->setPriorHandlerPriority($ogHandlerPriority));
 		self::assertEquals($ogHandlerPriority, $this->behavior->getPriorHandlerPriority());

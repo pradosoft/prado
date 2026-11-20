@@ -15,13 +15,17 @@ TBehaviorParameterLoader implements attaching Behaviors from Parameters before a
 - `dyInit($config)` - Dynamic event handler called after a parameter class is loaded, attaches the specified behavior
 - `attachTPageServiceHandler($sender, $param)` - Handler for attaching page behaviors at `onBeginRequest`
 - `attachTPageBehaviors($sender, $page)` - Attaches behaviors to [TPage](../../Web/UI/TPage.md) during `OnPreInitPage` event
-- `attachModuleBehaviors($sender, $page)` - Attaches behaviors to modules at `onInitComplete`
-- `reset()` - Resets module and page behavior cache data
+- `attachModuleBehaviors($sender, $page)` - Attaches behaviors to modules at `onInitComplete`; throws `TConfigurationException` for a missing module
+- `reset()` - Resets module and page behavior cache data and detaches the named class behavior; an anonymous class behavior has no name to detach it by
 - `getBehaviorName()` / `setBehaviorName($name)` - Gets/sets the behavior name
 - `getBehaviorClass()` / `setBehaviorClass($className)` - Gets/sets the behavior class
 - `getAttachTo()` / `setAttachTo($attachto)` - Gets/sets attachment target (page, module:moduleid, application, or subproperty path)
 - `getAttachToClass()` / `setAttachToClass($attachto)` - Gets/sets class to attach behavior to
 - `getProperties()` - Gets additional properties for the behavior
+
+## Patterns & Gotchas
+
+- **Priority** - `Priority` is the attach priority for every target. Page and module behaviors carry it until they attach.
 
 ## See Also
 

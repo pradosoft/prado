@@ -49,8 +49,8 @@ Supports localization of values (`Localize=true`) and a `DefaultValue` for when 
 ## Key Methods
 
 - `attach($owner)` — reads the parameter, applies localization and defaulting, sets the property; installs route behavior if `RouteBehaviorName` is set
-- `detach($owner)` — removes the route behavior from the parameter map
-- `setEnabled($enabled)` — when toggled, enables/disables the route behavior
+- `detach($owner)` — removes the route behavior from the parameter map; attaching again installs a new route
+- `setEnabled($enabled)` — when toggled, enables/disables the route behavior; without an owner, the route waits for `attach()`
 
 ## Patterns & Gotchas
 

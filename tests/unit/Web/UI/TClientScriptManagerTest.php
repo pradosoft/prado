@@ -991,8 +991,19 @@ class TClientScriptManagerTest extends \PHPUnit\Framework\TestCase
 		$output = $writer->flush();
 
 		$this->assertSame(2, substr_count($output, 'name="list[]"'));
-		$this->assertStringContainsString('value="a"', $output);
-		$this->assertStringContainsString('value="b&lt;c"', $output);
+		$this->assertStringContainsString('name="list[]" id="list" value="a"', $output);
+		$this->assertStringContainsString('name="list[]" value="b&lt;c"', $output);
+		$this->assertSame(1, substr_count($output, 'id="list"'));
+	}
+
+	public function testRenderHiddenFieldsRendersNothingForAnEmptyArrayField()
+	{
+		$this->_cs->registerHiddenField('list', []);
+
+		$writer = $this->createWriter();
+		$this->_cs->renderHiddenFieldsBegin($writer);
+
+		$this->assertSame('', $writer->flush());
 	}
 
 	public function testGetHiddenFields()
@@ -1512,6 +1523,40 @@ class TClientScriptManagerTest extends \PHPUnit\Framework\TestCase
 			[$assets->getBasePath() . '/abc/def', $url],
 			$this->invokePrivateMethod($this->_cs, 'getPackagePathUrl', [$url])
 		);
+	}
+
+	public function testGetPackagePathUrlOfAFolderThatContainsTheBaseUrl()
+	{
+		$assets = self::$app->getAssetManager();
+		$folder = Prado::getFrameworkPath() . '/Web/Javascripts/source/prado/logger';
+		$baseUrl = $assets->getBaseUrl();
+		PradoUnit::setProp($assets, '_baseUrl', $folder . '-site');
+		try {
+			$this->assertSame(
+				[$assets->getPublishedPath($folder), $assets->publishFilePath($folder)],
+				$this->invokePrivateMethod($this->_cs, 'getPackagePathUrl', [$folder])
+			);
+			PradoUnit::setProp($assets, '_baseUrl', dirname($folder));
+			$this->assertSame(
+				[$assets->getBasePath() . '/logger', $folder],
+				$this->invokePrivateMethod($this->_cs, 'getPackagePathUrl', [$folder]),
+				'A base that starts with the base URL and a slash is a published URL.'
+			);
+			PradoUnit::setProp($assets, '_baseUrl', $folder);
+			$this->assertSame(
+				[$assets->getBasePath(), $folder],
+				$this->invokePrivateMethod($this->_cs, 'getPackagePathUrl', [$folder]),
+				'The base URL itself is a published URL.'
+			);
+			PradoUnit::setProp($assets, '_baseUrl', '');
+			$this->assertSame(
+				[$assets->getPublishedPath($folder), $assets->publishFilePath($folder)],
+				$this->invokePrivateMethod($this->_cs, 'getPackagePathUrl', [$folder]),
+				'An empty base URL matches no folder.'
+			);
+		} finally {
+			PradoUnit::setProp($assets, '_baseUrl', $baseUrl);
+		}
 	}
 
 	public function testGetStyleSheetUrlsIncludesThePublishedStyleSheets()

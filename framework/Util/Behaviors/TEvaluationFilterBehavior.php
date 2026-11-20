@@ -214,9 +214,6 @@ class TEvaluationFilterBehavior extends TClassBehavior
 		$nextText = isset($tokens[$i + 1]) ? $this->tokenText($tokens[$i + 1]) : '';
 
 		if (isset(self::DENIED_TOKENS[$id])) {
-			if ($id === T_CLASS && $prevId === T_DOUBLE_COLON) {
-				return null;
-			}
 			return $text;
 		}
 		if ($id === T_OBJECT_OPERATOR || $id === T_NULLSAFE_OBJECT_OPERATOR) {
@@ -224,7 +221,7 @@ class TEvaluationFilterBehavior extends TClassBehavior
 				return $text . $nextText;
 			}
 		} elseif ($id === T_DOUBLE_COLON) {
-			if ($nextId === T_CLASS || ($nextId === T_STRING && $this->tokenId($tokens[$i + 2] ?? '') !== '(')) {
+			if ($nextId === T_STRING && $this->tokenId($tokens[$i + 2] ?? '') !== '(') {
 				return null;
 			}
 			$member = $nextId === T_VARIABLE ? '*' : $nextText;

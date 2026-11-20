@@ -3,6 +3,7 @@
 namespace Prado\Test\Unit\Util\Behaviors;
 
 use Prado\TComponent;
+use Prado\Util\TCallChain;
 use Prado\Util\TClassBehavior;
 use Prado\Util\Behaviors\TNoUnserializeClassBehaviorTrait;
 
@@ -61,5 +62,17 @@ class TNoUnserializeClassBehaviorTraitTest extends \PHPUnit\Framework\TestCase
 		$copy = unserialize($data);
 		self::assertNotNull($copy->asa(1));
 		self::assertNull($copy->asa(0), 'Deprecated behavior should be detached after unserialize at index 0');
+	}
+
+	public function testDyWakeUp_ownerWithoutTheBehavior()
+	{
+		$component = new DeprecatedClassTestTComponent();
+		$component->attachBehavior('b1', $b1 = new TTestNonDeprecatedClassBehaviorClass());
+		$behavior = new TTestDeprecatedClassBehaviorClass();
+
+		$behavior->dyWakeUp($component, new TCallChain('dyWakeUp'));
+
+		self::assertSame($b1, $component->asa('b1'));
+		self::assertCount(1, $component->getBehaviors());
 	}
 }
