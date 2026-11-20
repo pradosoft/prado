@@ -31,7 +31,7 @@ php prado-cli.php /app cron/daemon | cron/retire [seconds] | cron/stop [seconds]
 php prado-cli.php /app cron/top [seconds] [count] | cron/exec <name> | cron/now <name> | cron/next [name] [count] | cron/pause <name> | cron/resume <name> | cron/report [json|prometheus]   # the commands of TShellCronAction
 ```
 
-Name and user filters are `LIKE` patterns: `_` is a wild card and `%` a wild string. The `flush` period is seconds or a `\DateInterval` specification (`P7D`, `"1 week"`); without a period every matching log row is deleted.
+Name and user filters are `LIKE` patterns: `_` is a wild card and `%` a wild string. The `flush` period is seconds or a `\DateInterval` specification (`P7D`, `"1 week"`) that reaches back in time (`TDbCronManager::parsePeriod()`); an argument that is no period is a task name; without a period every matching log row is deleted.
 
 ## Key Methods
 

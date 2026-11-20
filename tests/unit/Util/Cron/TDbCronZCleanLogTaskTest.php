@@ -170,4 +170,18 @@ class TDbCronZCleanLogTaskTest extends TCronTaskTest
 			$cron->unlisten();
 		}
 	}
+
+	public function testTimePeriodThatDoesNotReachBackIsRejected()
+	{
+		$task = new TDbCronCleanLogTask();
+		foreach (['last week', 'Previous week', '-1 week', 'yesterday', '-5'] as $period) {
+			try {
+				$task->setTimePeriod($period);
+				self::fail('the period ' . $period . ' was accepted');
+			} catch (TInvalidDataValueException $e) {
+			}
+		}
+		$task->setTimePeriod('1 week');
+		self::assertSame('1 week', $task->getTimePeriod());
+	}
 }

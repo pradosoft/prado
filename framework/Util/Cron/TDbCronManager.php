@@ -1536,32 +1536,73 @@ class TDbCronManager extends TCronModule implements IDbModule
 	 * Normalizes a time period to a \DateInterval.  A numeric value is seconds; a string is an ISO 8601
 	 * duration, eg. "P1Y6M3DT12H20M30S", or a relative date string, eg. "1 year 6 months 3 days".
 	 * @param \DateInterval|int|string $period the period
-	 * @throws TInvalidDataValueException when the string is not a period
+	 * @throws TInvalidDataValueException when the value is not a period that reaches back in time ({@see parsePeriod})
 	 * @return \DateInterval the period as an interval
 	 * @since 4.4.0
 	 */
 	protected function toDateInterval($period): DateInterval
 	{
+		$interval = static::parsePeriod($period);
+		if ($interval === null) {
+			throw new TInvalidDataValueException('dbcron_period_invalid', is_object($period) ? 'DateInterval' : trim((string) $period));
+		}
+		return $interval;
+	}
+
+	/**
+	 * Parses a period of the cron log: seconds, a \DateInterval, an ISO 8601 duration ("P7D"), or a relative
+	 * date string ("1 week").  The period reaches back in time: subtracting it from a time gives a time no
+	 * later than that time.  A negative period ("-1 week", "yesterday") and a period that names a day
+	 * ("last week", "last monday"), which a \DateTimeImmutable cannot subtract, are not periods.
+	 * @param mixed $period the period
+	 * @return ?\DateInterval the period, or null when the value is not a period
+	 * @since 4.4.0
+	 */
+	public static function parsePeriod($period): ?DateInterval
+	{
 		if ($period instanceof DateInterval) {
-			return $period;
-		}
-		if (is_numeric($period)) {
-			return new DateInterval('PT' . ((int) $period) . 'S');
-		}
-		$period = trim((string) $period);
-		try {
-			$di = str_starts_with($period, 'P') ? new DateInterval($period) : null;
-		} catch (\Exception $e) {
-			$di = null;
-		}
-		if ($di === null) {
+			$interval = $period;
+		} elseif (is_numeric($period)) {
+			$interval = ((int) $period >= 0) ? new DateInterval('PT' . ((int) $period) . 'S') : null;
+		} else {
+			$period = trim((string) $period);
 			try {
-				$di = @DateInterval::createFromDateString($period) ?: new DateInterval($period);
+				$interval = str_starts_with($period, 'P') ? new DateInterval($period) : null;
 			} catch (\Exception $e) {
-				throw new TInvalidDataValueException('dbcron_period_invalid', $period);
+				$interval = null;
+			}
+			if ($interval === null) {
+				try {
+					$interval = @DateInterval::createFromDateString($period) ?: null;
+					// PHP 8.3 and later throw DateMalformedIntervalStringException.
+					// @codeCoverageIgnoreStart
+				} catch (\Exception $e) { // @phpstan-ignore catch.neverThrown
+					$interval = null;
+				}
+				// @codeCoverageIgnoreEnd
 			}
 		}
-		return $di;
+		if ($interval === null) {
+			return null;
+		}
+		$reference = new \DateTimeImmutable('2000-01-01 00:00:00 UTC');
+		$cutoff = $reference;
+		$failed = false;
+		set_error_handler(static function () use (&$failed): bool {
+			$failed = true;
+			return true;
+		});
+		try {
+			$cutoff = $reference->sub($interval);
+			// PHP 8.3 and later throw DateInvalidOperationException for a period that names a day.
+			// @codeCoverageIgnoreStart
+		} catch (\Exception $e) {
+			$failed = true;
+		} finally {
+			// @codeCoverageIgnoreEnd
+			restore_error_handler();
+		}
+		return (!$failed && $cutoff <= $reference) ? $interval : null;
 	}
 
 	/**

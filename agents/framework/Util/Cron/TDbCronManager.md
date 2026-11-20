@@ -116,7 +116,7 @@ $cron->clearCronLog(null|\DateInterval|int|string $period = null, ?string $name 
 $cron->removeCronLogItem(int $taskUID): ?bool
 ```
 
-`$period` is seconds, a `\DateInterval`, or a `\DateInterval` specification (`P1Y6M3DT12H20M30S` or `"1 year 6 months"`); `null` clears regardless of time. Paging is `LIMIT n OFFSET m` on every driver.
+`$period` is seconds, a `\DateInterval`, or a `\DateInterval` specification (`P1Y6M3DT12H20M30S` or `"1 year 6 months"`); `null` clears regardless of time. `parsePeriod()` (static) reads a period and returns null for one that does not reach back in time: a negative period (`"-1 week"`, `"yesterday"`) or one that names a day (`"last week"`), which `clearCronLog()` rejects with `dbcron_period_invalid`. Paging is `LIMIT n OFFSET m` on every driver.
 
 ## Runtime Tasks
 

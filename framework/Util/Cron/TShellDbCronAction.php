@@ -382,21 +382,14 @@ class TShellDbCronAction extends TShellCronAction
 		return true;
 	}
 	/**
-	 * Parses a flush period argument: seconds, an ISO 8601 duration (`P7D`), or a relative date string (`1 week`).
+	 * Parses a flush period argument: seconds, an ISO 8601 duration (`P7D`), or a relative date string (`1 week`)
+	 * that reaches back in time ({@see TDbCronManager::parsePeriod()}).
 	 * @param string $arg the argument
 	 * @return ?DateInterval the period, or null when the argument is not a period
 	 * @since 4.4.0
 	 */
 	protected function parsePeriod(string $arg): ?DateInterval
 	{
-		$arg = trim($arg);
-		if (is_numeric($arg)) {
-			return new DateInterval('PT' . ((int) $arg) . 'S');
-		}
-		try {
-			return str_starts_with($arg, 'P') ? new DateInterval($arg) : (@DateInterval::createFromDateString($arg) ?: null);
-		} catch (\Exception $e) {
-			return null;
-		}
+		return TDbCronManager::parsePeriod(trim($arg));
 	}
 }

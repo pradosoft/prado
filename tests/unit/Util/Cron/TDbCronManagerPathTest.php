@@ -394,4 +394,25 @@ class TDbCronManagerPathTest extends \PHPUnit\Framework\TestCase
 		self::assertCount(1, $manager->getCronLog(null, 0, 0, null, $manager->getDefaultUserName()), 'a log row without a user is the default user\'s');
 		self::assertSame(1, $manager->clearCronLog(null, null, $manager->getDefaultUserName()));
 	}
+
+	public function testAPeriodReachesBackInTime()
+	{
+		foreach (['1 week', 'P7D', 3600, '0', 'PT0S', '+2 days', new \DateInterval('P1D')] as $period) {
+			self::assertInstanceOf(\DateInterval::class, TDbCronManager::parsePeriod($period), var_export($period, true));
+		}
+		$inverted = new \DateInterval('P1D');
+		$inverted->invert = 1;
+		foreach (['-1 week', 'yesterday', 'last week', 'last monday', 'Previous week', -5, 'not a period', 'Pbad', $inverted] as $period) {
+			self::assertNull(TDbCronManager::parsePeriod($period), var_export($period, true));
+		}
+		$manager = $this->newManager();
+		foreach (['last week', '-1 week', 'yesterday'] as $period) {
+			try {
+				$manager->clearCronLog($period);
+				self::fail('clearCronLog accepted ' . $period);
+			} catch (TInvalidDataValueException $e) {
+				self::assertStringContainsString($period, $e->getMessage());
+			}
+		}
+	}
 }
