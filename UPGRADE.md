@@ -21,6 +21,11 @@ and upgrades without them. The 4.4 UPGRADE.md lists every change.
     encrypted without an HMAC does not decrypt.
   - `TUserManager.PasswordMode`: 4.4 defaults to `SHA1`; 4.3 to `MD5`.
   - `THttpCookie.HttpOnly`: 4.4 defaults to `true`. A cookie that JavaScript reads sets `HttpOnly="false"`.
+  - `TPageService.IdSeparator`: 4.4 defaults to `:`; 4.3 to `$`. It separates the IDs of a control `UniqueID`,
+    which names the posted fields: `ctl0:Main:Note`. The OWASP Core Rule Set rule 942290 rejects `$` before
+    an ID such as `Note` or `Order`. With `:`, application JavaScript, tests, and `findControl()` paths that
+    write a name with `$` change to `:`, and a hidden field registered under a `UniqueID` renders the
+    control's `ClientID` as its `id`. Code that builds or parses a name reads `TControl::getIdSeparator()`.
 - 4.4 refuses a postback or callback without the page's CSRF token. A form or script outside Prado that
   posts to a page adds the token when it moves to 4.4.
 - ActiveRecord, SqlMap, and RPC leave the framework in 4.4. An application that uses them requires

@@ -554,7 +554,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 
 	checkHiddenField: function(name, value)
 	{
-		var id = name.replace(':','_');
+		var id = name.replace(/:/g,'_');
 		if (!document.getElementById(id))
 		{
 			var field = document.createElement('input');

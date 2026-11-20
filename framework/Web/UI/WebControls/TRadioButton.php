@@ -155,7 +155,7 @@ class TRadioButton extends TCheckBox
 			$groupName = $this->getGroupName();
 			$this->_previousUniqueID = $uniqueID;
 			if ($uniqueID !== '') {
-				if (($pos = strrpos($uniqueID, \Prado\Web\UI\TControl::ID_SEPARATOR)) !== false) {
+				if (($pos = strrpos($uniqueID, self::getIdSeparator())) !== false) {
 					if ($groupName !== '') {
 						$groupName = substr($uniqueID, 0, $pos + 1) . $groupName;
 					} elseif ($this->getNamingContainer() instanceof TRadioButtonList) {
