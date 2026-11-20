@@ -1209,6 +1209,38 @@ class TDbCronManagerTest extends TCronModuleTest
 		$fresh->unlisten();
 	}
 
+	public function testAddSystemTask_AddsWithoutThePermissionOfTheCurrentUser()
+	{
+		$this->obj->init(null);
+		$this->obj->attachBehavior('denies', new TTestCronDenyingBehavior(['dyAddTask', 'dyAddTaskGlobal']));
+		$denied = new TTestCronModuleTask();
+		$denied->setName('dbSystemDenied');
+		$denied->setSchedule('@' . (time() - 60));
+		self::assertNull($this->obj->addTask($denied), 'the user may not add a task');
+
+		$task = new TTestCronModuleTask();
+		$task->setName('dbSystem');
+		$task->setSchedule('@' . (time() - 60));
+		self::assertNull($task->getAutoRemove());
+		self::assertTrue($this->obj->addSystemTask($task));
+		self::assertTrue($task->getAutoRemove());
+		self::assertTrue($this->obj->taskExists('dbSystem'));
+		self::assertFalse($this->obj->taskExists('dbSystemDenied'));
+
+		$same = new TTestCronModuleTask();
+		$same->setName('dbSystem');
+		$same->setSchedule('@' . (time() - 30));
+		self::assertFalse($this->obj->addSystemTask($same), 'a name in use is not added again');
+		$invalid = new TTestCronModuleTask();
+		$invalid->setName('not a name');
+		$invalid->setSchedule('@' . time());
+		self::assertFalse($this->obj->addSystemTask($invalid));
+		$this->obj->detachBehavior('denies');
+
+		self::assertTrue($this->obj->runTask($this->obj->getTask('dbSystem')));
+		self::assertFalse($this->obj->taskExists('dbSystem'), 'the task removes itself when it runs');
+	}
+
 	public function testDbPermissions_DenyTheRowsAndTheLog()
 	{
 		$this->obj->init(null);

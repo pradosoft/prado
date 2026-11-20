@@ -22,4 +22,8 @@ jsonservice_provider_unknown			= 请求的JSON提供者“{0}”未知。
 feedservice_feed_unknown				= 请求的Feed“{0}”未知。
 httprequest_body_json_invalid				= THttpRequest 请求体不是有效的 JSON。
 
+emailservice_email_forbidden				= 邮件只能由其收件人查看。
+emailservice_email_unknown					= 无法找到邮件。
+emailservice_link_unknown					= 无法找到邮件的链接。
+
 errorhandler_internal_error				= 服务器发生内部错误。

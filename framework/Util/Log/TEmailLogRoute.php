@@ -10,8 +10,12 @@
 
 namespace Prado\Util\Log;
 
+use Prado\Email\TEmail;
+use Prado\Email\TEmailModule;
+use Prado\Email\TEmailStatus;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TLogException;
+use Prado\TPropertyValue;
 
 /**
  * TEmailLogRoute class.
@@ -20,6 +24,11 @@ use Prado\Exceptions\TLogException;
  * The target email addresses may be specified via {@see setEmails Emails} property.
  * Optionally, you may set the email {@see setSubject Subject} and the
  * {@see setSentFrom SentFrom} address.
+ *
+ * The messages are sent with the PHP mail() function.  When
+ * {@see setEmailModuleID EmailModuleID} is the ID of a {@see TEmailModule}, they
+ * are sent through that module and its transport, and the SentFrom may be left
+ * to the From of the module.
  *
  * TEmailLogRoute is configured as a `<route>` element inside a
  * {@see \Prado\Util\Log\TLogRouter} module in the application configuration.
@@ -82,15 +91,22 @@ class TEmailLogRoute extends TLogRoute
 	 * @var string email sent from address
 	 */
 	private $_from = '';
+	/**
+	 * @var string the ID of the email module that sends the messages
+	 */
+	private $_emailModuleID = '';
 
 	/**
 	 * Initializes the route.
 	 * @param null|array|\Prado\Xml\TXmlElement $config configurations specified in {@see \Prado\Util\Log\TLogRouter}.
 	 * @throws TConfigurationException if {@see getSentFrom SentFrom} is empty and
-	 *   'sendmail_from' in php.ini is also empty.
+	 *   'sendmail_from' in php.ini is also empty, unless an EmailModuleID is set.
 	 */
 	public function init($config)
 	{
+		if ($this->_emailModuleID !== '') {
+			return;
+		}
 		if ($this->_from === '') {
 			$this->_from = ini_get('sendmail_from');
 		}
@@ -114,6 +130,10 @@ class TEmailLogRoute extends TLogRoute
 			$message .= $this->formatLogMessage($log) . "\n";
 		}
 		$message = wordwrap($message, 70);
+		if (($module = $this->getEmailModule()) !== null) {
+			$this->sendByModule($module, $message);
+			return;
+		}
 		$returnPath = ini_get('sendmail_path') ? "Return-Path:{$this->_from}\r\n" : '';
 		foreach ($this->_emails as $email) {
 			if (!$this->sendMail($email, $this->getSubject(), $message, "From:{$this->_from}\r\n{$returnPath}")) {
@@ -198,5 +218,63 @@ class TEmailLogRoute extends TLogRoute
 	public function setSentFrom($value)
 	{
 		$this->_from = $value;
+	}
+
+	/**
+	 * Sends the log text to each address through an email module.  The text is a
+	 * placeholder value, so "{{...}}" in a log message stays as it is.
+	 * @param TEmailModule $module the email module.
+	 * @param string $message the log text.
+	 * @throws TLogException when an email fails.
+	 * @since 4.4.0
+	 */
+	protected function sendByModule(TEmailModule $module, string $message): void
+	{
+		foreach ($this->_emails as $address) {
+			$email = new TEmail();
+			$email->setTo($address);
+			$email->setFrom($this->_from);
+			$email->setSubject($this->getSubject());
+			$email->setText('{{{LOG}}}');
+			$email->setData(['LOG' => $message]);
+			if ($module->sendEmail($email) === TEmailStatus::Failed) {
+				throw new TLogException('emaillogroute_mail_failed', $address);
+			}
+		}
+	}
+
+	/**
+	 * @throws TConfigurationException when the EmailModuleID is not the ID of a TEmailModule.
+	 * @return ?TEmailModule the email module that sends the messages, null to send with mail().
+	 * @since 4.4.0
+	 */
+	protected function getEmailModule(): ?TEmailModule
+	{
+		if ($this->_emailModuleID === '') {
+			return null;
+		}
+		$module = $this->getApplication()->getModule($this->_emailModuleID);
+		if (!($module instanceof TEmailModule)) {
+			throw new TConfigurationException('emaillogroute_emailmoduleid_invalid', $this->_emailModuleID);
+		}
+		return $module;
+	}
+
+	/**
+	 * @return string the ID of the email module that sends the messages, empty to send with mail(). Defaults to ''.
+	 * @since 4.4.0
+	 */
+	public function getEmailModuleID()
+	{
+		return $this->_emailModuleID;
+	}
+
+	/**
+	 * @param string $value the ID of the {@see TEmailModule} that sends the messages; empty to send with mail().
+	 * @since 4.4.0
+	 */
+	public function setEmailModuleID($value)
+	{
+		$this->_emailModuleID = TPropertyValue::ensureString($value);
 	}
 }

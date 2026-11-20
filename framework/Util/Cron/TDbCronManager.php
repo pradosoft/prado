@@ -1199,6 +1199,26 @@ class TDbCronManager extends TCronModule implements IDbModule
 	}
 
 	/**
+	 * Adds a self-removing task for the application's own code, such as a module that leaves work
+	 * for cron; {@see deferTask} is the same for a closure.  The caller is code, so the permissions
+	 * of the current user do not gate it, where {@see addTask} answers a user's request.  The task
+	 * runs once at its Schedule as its UserName, else as the {@see getDefaultUserName DefaultUserName},
+	 * and a waiting cron process is woken when it is the earliest task due.
+	 * @param TCronTask $task the task; its AutoRemove is set
+	 * @return bool was the task added; false for an invalid name or Schedule and for a name in use
+	 * @since 4.4.0
+	 */
+	public function addSystemTask($task): bool
+	{
+		$task->setAutoRemove(true);
+		if (!$this->addTaskInternal($task)) {
+			return false;
+		}
+		$this->signalWakeIfEarliest($task);
+		return true;
+	}
+
+	/**
 	 * Wakes a sleeping second-resolution cron process when the given task becomes the earliest pending
 	 * task due within the current minute, so it runs on time instead of after the remaining sleep. A
 	 * task scheduled later than the current head, or beyond this minute, needs no kick. {@see signalWake}

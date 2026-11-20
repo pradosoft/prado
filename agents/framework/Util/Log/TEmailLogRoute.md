@@ -24,6 +24,7 @@
 | `Emails` | `array` | `[]` | Destination addresses; accepts a comma-separated string or array. An address that does not match `EMAIL_PATTERN` is dropped. |
 | `Subject` | `?string` | `DEFAULT_SUBJECT` | Email subject line; null restores `DEFAULT_SUBJECT`. |
 | `SentFrom` | `string` | `''` | Sender address; falls back to `sendmail_from` INI setting if empty. |
+| `EmailModuleID` | `string` | `''` | ID of a [`TEmailModule`](../../Email/INDEX.md) that sends the messages through its transport; empty sends with `mail()`. With it, an empty `SentFrom` is filled by the module's `From`. |
 
 ## Delivery
 
