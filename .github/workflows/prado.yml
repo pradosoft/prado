@@ -40,7 +40,7 @@ jobs:
           php-version: ${{ matrix.php-versions }}
           # sysvsem and sync back TSemaphoreMutex and TSyncMutex
           extensions: ctype, dom, intl, json, mbstring, memcached, pdo_mysql, pdo_pgsql, pdo_sqlite, openssl, pcre, spl, zlib, bz2, zstd, brotli, sysvsem, sync, :pdo_firebird, :pdo_sqlsrv
-          tools: php-cs-fixer, phpstan, cs2pr
+          tools: php-cs-fixer, cs2pr
 
       - name: Report mutex extensions
         run: |
@@ -70,7 +70,7 @@ jobs:
         run: composer stantest
 
       - name: Validate code using phpstan
-        run: phpstan analyse --error-format=checkstyle | cs2pr
+        run: vendor/bin/phpstan analyse --error-format=checkstyle | cs2pr
 
       - name: Setup mysql service
         run: |
@@ -192,7 +192,7 @@ jobs:
           php-version: ${{ env.PHP_VERSION }}
           # sysvsem and sync back TSemaphoreMutex and TSyncMutex
           extensions: ctype, dom, intl, json, mbstring, memcached, pdo_mysql, pdo_pgsql, pdo_sqlite, openssl, pcre, spl, zlib, bz2, zstd, brotli, sysvsem, sync
-          tools: php-cs-fixer, phpstan, cs2pr
+          tools: php-cs-fixer, cs2pr
 
       - name: Report mutex extensions
         run: |
@@ -219,7 +219,7 @@ jobs:
         run: composer install --no-progress --prefer-dist --optimize-autoloader
 
       - name: Validate code using phpstan
-        run: phpstan analyse --error-format=checkstyle | cs2pr
+        run: vendor/bin/phpstan analyse --error-format=checkstyle | cs2pr
 
       - name: Setup MySQL service
         run: |
@@ -270,7 +270,7 @@ jobs:
           # memcached extension omitted: libmemcached is not available on Windows
           # sysvsem omitted: System V IPC is not available on Windows; sync backs TSyncMutex
           extensions: ctype, dom, intl, json, mbstring, pdo_mysql, pdo_pgsql, pdo_sqlite, openssl, pcre, spl, bz2, xsl, zip, zlib, zstd, brotli, sync
-          tools: php-cs-fixer, phpstan, cs2pr
+          tools: php-cs-fixer, cs2pr
 
       - name: Report mutex extensions
         run: |
@@ -300,7 +300,7 @@ jobs:
         run: composer install --no-progress --prefer-dist --optimize-autoloader
 
       - name: Validate code using phpstan
-        run: phpstan analyse --error-format=checkstyle | cs2pr
+        run: vendor/bin/phpstan analyse --error-format=checkstyle | cs2pr
 
       - name: Setup MySQL service
         uses: shogo82148/actions-setup-mysql@v1
