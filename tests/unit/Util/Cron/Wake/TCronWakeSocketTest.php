@@ -409,7 +409,7 @@ class TCronWakeSocketTest extends \PHPUnit\Framework\TestCase
 		$server = PradoUnit::invoke($s, 'bind', 'udp://127.0.0.1:0');
 		self::assertIsResource($server, 'a udp address binds');
 		$address = 'udp://' . stream_socket_get_name($server, false);
-		self::assertNull(PradoUnit::invoke($s, 'bind', $address), 'an address in use does not bind');
+		self::assertNull(PradoUnit::invoke($s, 'bind', 'udp://192.0.2.1:0'), 'an address of another host does not bind');
 		PradoUnit::invoke($s, 'release', $server, $address);
 		self::assertFalse(is_resource($server), 'release closes the socket');
 		PradoUnit::invoke($s, 'release', $server, $address);

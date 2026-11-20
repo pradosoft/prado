@@ -745,8 +745,8 @@ class TCronModuleBaseTest extends \PHPUnit\Framework\TestCase
 
 	public function testAPausedFileThatCannotBeReadPausesNothing()
 	{
-		if (function_exists('posix_getuid') && posix_getuid() === 0) {
-			self::markTestSkipped('root reads any file');
+		if (DIRECTORY_SEPARATOR !== '/' || (function_exists('posix_getuid') && posix_getuid() === 0)) {
+			self::markTestSkipped('file permissions block reading for a process that is not root on a POSIX system');
 		}
 		$module = $this->newModule([$this->job('unreadablePause')]);
 		$file = PradoUnit::invoke($module, 'getPausedFile');
