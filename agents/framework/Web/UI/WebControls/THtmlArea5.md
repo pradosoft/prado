@@ -21,6 +21,8 @@ THtmlArea5 wraps TinyMCE version 5 to provide a WYSIWYG HTML text editor. It is 
 - `getAvailablePlugins()` - Returns list of available plugins
 - `getAvailableThemes()` - Returns list of available themes
 
+Each list is read once per process from its TinyMCE package folder by `scanAssetNames()`; a missing folder gives an empty list.
+
 ## See Also
 
 - [TTextBox](./TTextBox.md)
