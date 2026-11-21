@@ -48,7 +48,7 @@ TButton creates a clickable button control on the page. It is primarily used for
 
 ## Button Tags
 - **Input**: Renders as `<input type="button|submit|reset">` with `Text` in the value attribute (default)
-- **Button**: Renders as `<button type="button|submit|reset">` with `Text` as the body content (HTML5)
+- **Button**: Renders as `<button type="button|submit|reset">` with its child controls and then `Text` as the body content (HTML5)
 
 ## Validation Integration
 - `CausesValidation` (boolean): Controls whether clicking button triggers validation

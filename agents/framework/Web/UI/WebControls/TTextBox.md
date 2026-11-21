@@ -71,7 +71,7 @@ Implements: `IPostBackDataHandler`, `IValidatable`, `IDataRenderer`
 | `getText()` / `setText($value)` | Get/set raw text content (no encoding). Resets the cached SafeText. |
 | `getData()` / `setData($value)` | Aliases for `getText()`/`setText()`. Required by `IDataRenderer`. |
 | `getSafeText()` | Returns text purified by HTMLPurifier (strips JS, malicious markup). Cached per-text value. Use when displaying user input. |
-| `setConfig(HTMLPurifier_Config)` | Provides a custom HTMLPurifier configuration for `getSafeText()`. |
+| `setConfig(HTMLPurifier_Config)` | Provides a custom HTMLPurifier configuration for `getSafeText()`. Kept in view state: about 25 KB of page state, over 100 KB once it has purified text. v5.0 keeps it for the current request only. |
 | `getConfig()` | Returns the HTMLPurifier config, creating a default one (with runtime serializer path) if not set. |
 | `loadPostData($key, $values)` | Reads posted value; applies `AutoTrim` if set; ignores value if `ReadOnly`. Returns whether value changed. |
 | `raisePostDataChangedEvent()` | Triggers validation (if `AutoPostBack` + `CausesValidation`) then raises `OnTextChanged`. |
@@ -92,7 +92,7 @@ Implements: `IPostBackDataHandler`, `IValidatable`, `IDataRenderer`
 - **AutoTrim** — Applied during `loadPostData`, so it affects the stored `Text` value for the rest of the request.
 - **`Wrap=false`** — Adds `wrap="off"` which is not valid XHTML. No XHTML-compatible alternative exists.
 - **`AutoCompleteType`** with `Enabled`/`Disabled` — Also not XHTML-compatible.
-- **SafeText caching** — The HTMLPurifier result is cached in `$_safeText`. Calling `setText()` clears the cache. The HTMLPurifier instance is shared statically across all TTextBox instances.
+- **SafeText caching** — The HTMLPurifier result is cached in `$_safeText`. Calling `setText()` clears the cache. Text boxes without a custom `Config` share one static HTMLPurifier instance; a text box with a custom `Config` has its own.
 - **Client JS** — Registered only when `EnableClientScript=true`, the control is enabled, and either `AutoPostBack=true` or `TextMode=SingleLine`.
 - **`SuggestionList`** — Resolved with `findControl()` at render; a missing control throws `textbox_suggestionlist_invalid`. No `list` for `MultiLine` or `Password`, or when the list is not visible.
 - **Constraints render per text mode** (`addConstraintAttributesToRender()`): `min`/`max`/`step` for Date, DatetimeLocal, Month, Number, Range, Time, Week; `pattern` for SingleLine, Email, Password, Search, Tel, Url; `minlength` and `dirname` for those text modes plus MultiLine; `multiple` for Email; `placeholder` for those text modes plus MultiLine and Number; `required` for every mode except Color and Range.
