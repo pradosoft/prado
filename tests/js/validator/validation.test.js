@@ -612,4 +612,20 @@ describe('TDataTypeValidator', () => {
 		v.validate();
 		expect(v.isValid).toBe(false);
 	});
+
+	it('validates a Date without DateFormat, before 1970 included', () => {
+		const v = new WebUI.TDataTypeValidator({
+			ID:               'dtValidator',
+			FormID:           'dtForm',
+			ControlToValidate:'dtInput',
+			ErrorMessage:     '*',
+			Enabled:          true,
+			DataType:         'Date',
+		});
+		for (const [value, valid] of [['2024-06-15', true], ['1969-12-31', true], ['not a date', false]]) {
+			input.value = value;
+			v.validate();
+			expect(v.isValid).toBe(valid);
+		}
+	});
 });

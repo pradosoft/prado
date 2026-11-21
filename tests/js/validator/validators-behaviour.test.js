@@ -109,6 +109,23 @@ describe('TCompareValidator.compare — pure logic', () => {
 			expect(cmp('String', 'Equal', 'hello', 'hello')).toBe(true);
 			expect(cmp('String', 'Equal', 'abc', 'xyz')).toBe(false);
 		});
+
+		it('does not compare numeric strings as numbers', () => {
+			expect(cmp('String', 'Equal', '1e3', '1000')).toBe(false);
+			expect(cmp('String', 'GreaterThan', '9', '10')).toBe(true);
+		});
+	});
+
+	describe('Date without DateFormat', () => {
+		it('compares dates before 1970', () => {
+			expect(cmp('Date', 'LessThan', '1969-12-31', '2024-01-01')).toBe(true);
+			expect(cmp('Date', 'Equal', '1969-12-31', '1969-12-31')).toBe(true);
+		});
+
+		it('fails when the input is not a date and passes when the value to compare is not', () => {
+			expect(cmp('Date', 'Equal', 'not a date', '2024-01-01')).toBe(false);
+			expect(cmp('Date', 'Equal', '2024-01-01', 'not a date')).toBe(true);
+		});
 	});
 });
 
