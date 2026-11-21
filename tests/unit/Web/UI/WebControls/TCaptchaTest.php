@@ -69,6 +69,14 @@ class TestCaptcha extends TCaptcha
 		return $this->getFontFile();
 	}
 
+	/**
+	 * Reports gd with TrueType support, so the PreRender tests run without it; the image itself is not drawn.
+	 */
+	public static function checkRequirements()
+	{
+		return true;
+	}
+
 	public function getToken()
 	{
 		return $this->fixedToken ?? parent::getToken();
