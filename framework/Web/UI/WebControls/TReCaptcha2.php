@@ -441,10 +441,16 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 		$this->getPage()->getClientScript()->registerHeadScriptFile('grecaptcha2', 'https://www.google.com/recaptcha/api.js?onload=TReCaptcha2_onloadCallback&render=explicit&hl=' . $this->getLanguage());
 	}
 
+	/**
+	 * Adds the client ID to the widget container.
+	 * {@see getTabIndex TabIndex} belongs to the widget, so the container renders no `tabindex`.
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
+	 */
 	protected function addAttributesToRender($writer)
 	{
 		$writer->addAttribute('id', $this->getClientID());
 		parent::addAttributesToRender($writer);
+		$writer->removeAttribute('tabindex');
 	}
 
 	public function raiseCallbackEvent($param)
