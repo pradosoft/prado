@@ -16,6 +16,7 @@ TValidationDataType defines the enumerable type for the possible data types that
 - `Float` - Double-precision floating point
 - `Date` - Date data type
 - `String` - String data type
+- `convert(string $dataType, string $value, string $dateFormat = '')` - Converts a value with the rules of the client validators; null when it does not convert. `Integer`: sign and digits. `Float`: sign, digits, `.` fraction, no exponent. `Date`: `TSimpleDateFormatter` with a format, else `strtotime()`. `String`: unchanged. Used by `TCompareValidator` and `TDataTypeValidator` (@since 4.4.0)
 
 ## See Also
 
