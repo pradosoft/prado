@@ -491,6 +491,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 		$options['ValidationGroup'] = $this->getValidationGroup();
 		$options['CausesValidation'] = $this->getCausesValidation();
 		$options['ListName'] = $this->getUniqueID();
+		$options['IdSeparator'] = self::getIdSeparator();
 		$options['ItemCount'] = $this->getItemCount();
 		return $options;
 	}

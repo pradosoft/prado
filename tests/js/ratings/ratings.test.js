@@ -584,6 +584,13 @@ describe('TRatingList.dispatchRequest', () => {
 		const calledOptions = global.Prado.PostBack.mock.calls[0][0];
 		expect(calledOptions.EventTarget).toBe('rl14_list$c2');
 	});
+
+	it('sets EventTarget with the IdSeparator option', () => {
+		rl.options.IdSeparator = ':';
+		rl.dispatchRequest({ preventDefault: vi.fn() });
+		const calledOptions = global.Prado.PostBack.mock.calls[0][0];
+		expect(calledOptions.EventTarget).toBe('rl14_list:c2');
+	});
 });
 
 // ─── TRatingList — edge cases ─────────────────────────────────────────────────

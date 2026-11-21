@@ -234,4 +234,23 @@ class TCheckBoxListTest extends TestCase
 	// TCheckBoxItem
 	// ================================================================================
 
+
+	// ================================================================
+	// IdSeparator client option
+	// ================================================================
+
+	public function testGetPostBackOptionsCarryTheIdSeparator()
+	{
+		$list = new TCheckBoxList();
+		$list->setID('List');
+		$options = PradoUnit::invoke($list, 'getPostBackOptions');
+		$this->assertSame('List', $options['ListName']);
+		$this->assertSame('$', $options['IdSeparator']);
+		try {
+			TCheckBoxList::setIdSeparator(':');
+			$this->assertSame(':', PradoUnit::invoke($list, 'getPostBackOptions')['IdSeparator']);
+		} finally {
+			TCheckBoxList::setIdSeparator(TCheckBoxList::DEFAULT_ID_SEPARATOR);
+		}
+	}
 }
