@@ -77,9 +77,8 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	protected $_routeBehaviorName;
 
 	/**
-	 * This method sets the Owner Property to the Application Parameter of Parameter. When
-	 * {@see getRouteBehaviorName} is set, a {@see \Prado\Util\Behaviors\TMapRouteBehavior} is attached to
-	 * the Application Parameter on the key so any changes are also routed to the Property.
+	 * This method sets the Owner Property to the Application Parameter of Parameter when
+	 * the behavior is enabled. When disabled, {@see setEnabled} applies the parameter later.
 	 * @param object $owner the object to which this behavior is being attached
 	 * @throws TConfigurationException when missing the parameter, property, or property is not able to set
 	 */
@@ -87,35 +86,50 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	{
 		parent::attach($owner);
 
-		if (!$this->getEnabled()) {
-			return;
+		if ($this->getEnabled()) {
+			$this->applyParameter($owner);
 		}
-		if (!$this->_parameter) {
+	}
+
+	/**
+	 * Sets the owner Property to the Application Parameter, or to DefaultValue when the
+	 * parameter is null and ValidNullValue is false. When {@see getRouteBehaviorName} is set,
+	 * a {@see \Prado\Util\Behaviors\TMapRouteBehavior} is attached to the Application
+	 * Parameters on the key so later changes are routed to the Property.
+	 * @param object $owner the object whose Property is set.
+	 * @throws TConfigurationException when missing the parameter, property, or property is not able to set
+	 * @since 4.4.0
+	 */
+	protected function applyParameter($owner)
+	{
+		$parameter = $this->getParameter();
+		$property = $this->getProperty();
+		if (!$parameter) {
 			throw new TConfigurationException('parameterizebehavior_no_parameter');
 		}
-		if (!$this->_property) {
+		if (!$property) {
 			throw new TConfigurationException('parameterizebehavior_no_property');
 		}
-		if (!$owner->canSetProperty($this->_property)) {
-			if ($owner->canGetProperty($this->_property)) {
-				throw new TConfigurationException('parameterizebehavior_owner_get_only_property', $this->_property);
+		if (!$owner->canSetProperty($property)) {
+			if ($owner->canGetProperty($property)) {
+				throw new TConfigurationException('parameterizebehavior_owner_get_only_property', $property);
 			} else {
-				throw new TConfigurationException('parameterizebehavior_owner_has_no_property', $this->_property);
+				throw new TConfigurationException('parameterizebehavior_owner_has_no_property', $property);
 			}
 		}
 
+		$localize = $this->getLocalize();
 		$appParams = $this->getApplication()->getParameters();
-		if (($value = $appParams->itemAt($this->_parameter)) !== null || $this->getValidNullValue()) {
-			if ($this->_localize && $value && is_string($value)) {
+		if (($value = $appParams->itemAt($parameter)) !== null || $this->getValidNullValue()) {
+			if ($localize && $value && is_string($value)) {
 				$value = Prado::localize($value);
 			}
-			$owner->setSubProperty($this->_property, $value);
-		} elseif ($this->_defaultValue !== null) {
-			$value = $this->_defaultValue;
-			if ($this->_localize && is_string($value)) {
+			$owner->setSubProperty($property, $value);
+		} elseif (($value = $this->getDefaultValue()) !== null) {
+			if ($localize && is_string($value)) {
 				$value = Prado::localize($value);
 			}
-			$owner->setSubProperty($this->_property, $value);
+			$owner->setSubProperty($property, $value);
 		}
 
 		$this->attachParamMapRoute();
@@ -144,15 +158,17 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 
 
 	/**
-	 * This attaches and detaches the routing behavior on the Application Parameters.
-	 * Without an owner, the route waits for {@see attach}.
+	 * Enabling an attached, disabled behavior applies the parameter with {@see applyParameter},
+	 * which sets the owner Property and attaches the routing behavior. Disabling detaches the
+	 * routing behavior. Without an owner, the parameter waits for {@see attach}.
 	 * @param bool $enabled whether this behavior is enabled
+	 * @throws TConfigurationException when enabling with a missing parameter, property, or property is not able to set
 	 */
 	public function setEnabled($enabled)
 	{
 		$enabled = TPropertyValue::ensureBoolean($enabled);
-		if ($enabled && !$this->_paramBehavior && $this->getOwner()) {
-			$this->attachParamMapRoute();
+		if ($enabled && !$this->getEnabled() && ($owner = $this->getOwner())) {
+			$this->applyParameter($owner);
 		} elseif (!$enabled && $this->_paramBehavior) {
 			$this->getApplication()->getParameters()->detachBehavior($this->_routeBehaviorName);
 			$this->_paramBehavior = null;

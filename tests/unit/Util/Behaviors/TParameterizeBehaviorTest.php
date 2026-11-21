@@ -317,11 +317,69 @@ class TParameterizeBehaviorTest extends \PHPUnit\Framework\TestCase
 		self::assertNull($params->asa('disabledRoute'));
 
 		$this->obj->setEnabled(true);
+		self::assertEquals('initial', $owner->getField());
 		$params['param_disabled'] = 'routed';
 		self::assertEquals('routed', $owner->getField());
 
 		$owner->detachBehavior('parameterize');
 		unset($params['param_disabled']);
+	}
+
+	public function testSetEnabled_appliesTheValueChangedWhileDisabled()
+	{
+		$params = Prado::getApplication()->getParameters();
+		$params['param_reenable'] = 'first';
+		$this->obj->setParameter('param_reenable');
+		$this->obj->setProperty('Field');
+		$this->obj->setRouteBehaviorName('reenableRoute');
+		$owner = new TParameterizeObject;
+		$owner->attachBehavior('parameterize', $this->obj);
+		self::assertEquals('first', $owner->getField());
+
+		$this->obj->setEnabled(false);
+		$params['param_reenable'] = 'second';
+		self::assertEquals('first', $owner->getField());
+
+		$this->obj->setEnabled(true);
+		self::assertEquals('second', $owner->getField());
+		$owner->setField('direct');
+		$this->obj->setEnabled(true);
+		self::assertEquals('direct', $owner->getField());
+
+		$owner->detachBehavior('parameterize');
+		unset($params['param_reenable']);
+	}
+
+	public function testSetEnabled_withoutRouteAppliesDefaultValue()
+	{
+		$this->obj->setParameter('param_enable_default');
+		$this->obj->setProperty('Field');
+		$this->obj->setDefaultValue('fallback');
+		$this->obj->setEnabled(false);
+		$owner = new TParameterizeObject;
+		$owner->attachBehavior('parameterize', $this->obj);
+		self::assertNull($owner->getField());
+
+		$this->obj->setEnabled(true);
+		self::assertEquals('fallback', $owner->getField());
+		$owner->detachBehavior('parameterize');
+	}
+
+	public function testSetEnabled_validatesTheProperty()
+	{
+		$this->obj->setParameter('param_enable_invalid');
+		$this->obj->setProperty('Field');
+		$this->obj->setEnabled(false);
+		$owner = new TParameterizeObjectNoSet;
+		$owner->attachBehavior('parameterize', $this->obj);
+
+		try {
+			$this->obj->setEnabled(true);
+			$this->fail('Enabling for a get-only property should throw TConfigurationException.');
+		} catch (TConfigurationException $e) {
+		}
+		self::assertFalse($this->obj->getEnabled());
+		$owner->detachBehavior('parameterize');
 	}
 
 	public function testParameter()
