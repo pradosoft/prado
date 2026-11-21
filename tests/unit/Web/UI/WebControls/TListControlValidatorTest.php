@@ -250,7 +250,10 @@ class TListControlValidatorTest extends TestCase
 		$this->assertSame(4, $options['TotalItems']);
 	}
 
-	public function testClientScriptOptionsRejectNonListControl()
+	/**
+	 * Builds a page whose TListControlValidator targets a text box.
+	 */
+	private function createTextBoxValidator(): TListControlValidator
 	{
 		$page = new TPage();
 		$form = new TForm();
@@ -263,8 +266,25 @@ class TListControlValidatorTest extends TestCase
 		$validator->setID('Valid');
 		$validator->setControlToValidate('Text');
 		$page->getControls()->add($validator);
+		return $validator;
+	}
+
+	public function testClientScriptOptionsRejectNonListControl()
+	{
+		$validator = $this->createTextBoxValidator();
 		try {
 			PradoUnit::invoke($validator, 'getClientScriptOptions');
+			$this->fail('TConfigurationException expected.');
+		} catch (TConfigurationException $e) {
+			$this->assertSame('listcontrolvalidator_invalid_control', $e->getErrorCode());
+		}
+	}
+
+	public function testServerValidationRejectsNonListControl()
+	{
+		$validator = $this->createTextBoxValidator();
+		try {
+			$this->isValid($validator);
 			$this->fail('TConfigurationException expected.');
 		} catch (TConfigurationException $e) {
 			$this->assertSame('listcontrolvalidator_invalid_control', $e->getErrorCode());
