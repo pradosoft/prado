@@ -207,8 +207,8 @@ Upgrading from v4.3.3
 - TCaptcha derives tokens and signs the image options with HMAC-SHA256 instead of MD5. A page rendered before the
   upgrade shows a token that no longer validates; the user receives a new one on the next postback. Republish
   `captcha.php`, which the asset manager does when the framework version changes.
-- TReCaptcha and TReCaptchaValidator are deprecated and log a warning. Google retired reCAPTCHA v1, so they
-  cannot validate. Replace them with TReCaptcha2 and TReCaptcha2Validator, using reCAPTCHA v2 keys:
+- TReCaptcha and TReCaptchaValidator are removed; 4.3.3 deprecates them. Google retired reCAPTCHA v1, so they
+  could not validate. Replace them with TReCaptcha2 and TReCaptcha2Validator, using reCAPTCHA v2 keys:
   `PublicKey` becomes `SiteKey` and `PrivateKey` becomes `SecretKey`.
 - TReCaptcha2 verifies the response token with Google's siteverify, so validation needs the correct `SecretKey`
   and outbound HTTPS from the server to `www.google.com`, through cURL or `allow_url_fopen`. Before, any non-empty
