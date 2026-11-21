@@ -13,6 +13,7 @@ namespace Prado\Web\UI\WebControls;
 use Prado\Exceptions\TNotSupportedException;
 use Prado\Prado;
 use Prado\TPropertyValue;
+use Prado\Util\Clock\TApplicationClockAwareTrait;
 use Prado\Web\Javascripts\TJavaScript;
 use Prado\Web\UI\TControl;
 use Prado\Util\TSimpleDateFormatter;
@@ -82,6 +83,10 @@ use Prado\I18N\core\CultureInfo;
  * data types. TDatePicker renders the same calendar in every browser and posts the
  * text of its {@see setDateFormat DateFormat}.
  *
+ * Today comes from the application clock, or one set with {@see setClock}: the default
+ * {@see getFromYear FromYear} and {@see getUpToYear UpToYear}, missing drop down list fields,
+ * and the drop down lists of a Text that does not parse.
+ *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @author Carl G. Mathisen <carlgmathisen@gmail.com>
  * @since 3.0
@@ -91,6 +96,8 @@ class TDatePicker extends TTextBox
 	/**
 	 * Script path relative to the TClientScriptManager::SCRIPT_PATH
 	 */
+	use TApplicationClockAwareTrait;
+
 	public const SCRIPT_PATH = 'datepicker';
 
 	/**
@@ -274,35 +281,53 @@ class TDatePicker extends TTextBox
 	}
 
 	/**
-	 * @param int $value date picker starting year, default is 2000.
+	 * @param int $value date picker starting year, default -5 years from today's year.
 	 */
 	public function setFromYear($value)
 	{
-		$this->setViewState('FromYear', TPropertyValue::ensureInteger($value), (int) (@date('Y')) - 5);
+		$this->setViewState('FromYear', TPropertyValue::ensureInteger($value), $this->getTodayYear() - 5);
 	}
 
 	/**
-	 * @return int date picker starting year, default is -5 years
+	 * @return int date picker starting year, default -5 years from today's year
 	 */
 	public function getFromYear()
 	{
-		return $this->getViewState('FromYear', (int) (@date('Y')) - 5);
+		return $this->getViewState('FromYear', $this->getTodayYear() - 5);
 	}
 
 	/**
-	 * @param int $value date picker ending year, default +10 years
+	 * @param int $value date picker ending year, default +10 years from today's year
 	 */
 	public function setUpToYear($value)
 	{
-		$this->setViewState('UpToYear', TPropertyValue::ensureInteger($value), (int) (@date('Y')) + 10);
+		$this->setViewState('UpToYear', TPropertyValue::ensureInteger($value), $this->getTodayYear() + 10);
 	}
 
 	/**
-	 * @return int date picker ending year, default +10 years
+	 * @return int date picker ending year, default +10 years from today's year
 	 */
 	public function getUpToYear()
 	{
-		return $this->getViewState('UpToYear', (int) (@date('Y')) + 10);
+		return $this->getViewState('UpToYear', $this->getTodayYear() + 10);
+	}
+
+	/**
+	 * Returns today at the {@see getClock clock}'s current time, in the default timezone that
+	 * {@see TSimpleDateFormatter} formats in.
+	 * @return \DateTime the current date and time.
+	 */
+	protected function getToday(): \DateTime
+	{
+		return (new \DateTime())->setTimestamp($this->getClock()->time());
+	}
+
+	/**
+	 * @return int the year of {@see getToday today}.
+	 */
+	protected function getTodayYear(): int
+	{
+		return (int) $this->getToday()->format('Y');
 	}
 
 	/**
@@ -503,13 +528,14 @@ class TDatePicker extends TTextBox
 
 	/**
 	 * Loads date from drop down list data.
+	 * A missing day, month, or year is today's, from the {@see getClock clock}; a format without a day uses the first.
 	 * @param string $key the key that can be used to retrieve data from the input data collection
 	 * @param array $values the input data collection
 	 * @return string the date selected
 	 */
 	protected function getDateFromPostData($key, $values)
 	{
-		$date = @getdate();
+		$date = getdate($this->getClock()->time());
 
 		$pattern = $this->getDateFormat();
 		$pattern = str_replace(['MMMM', 'MMM'], ['MM', 'MM'], $pattern);
@@ -655,7 +681,8 @@ class TDatePicker extends TTextBox
 
 	/**
 	 * Renders the drop down list date picker.
-	 * @param mixed $writer
+	 * The lists select the date of {@see getText Text}, or today when Text does not parse.
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	protected function renderDropDownListCalendar($writer)
 	{
@@ -672,8 +699,10 @@ class TDatePicker extends TTextBox
 		}
 		$writer->renderBeginTag('span');
 
-		$date = new \DateTime();
-		$date->setTimeStamp($this->getTimeStampFromText());
+		$date = $this->getToday();
+		if (($timestamp = $this->getTimeStampFromText()) !== null) {
+			$date->setTimestamp($timestamp);
+		}
 		$this->renderCalendarSelections($writer, $date);
 
 		//render a hidden input field
@@ -745,6 +774,7 @@ class TDatePicker extends TTextBox
 
 	/**
 	 * Renders the day drop down list options.
+	 * The select's `aria-label` is the localized "Day".
 	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 * @param null|mixed $selected selected day.
 	 */
@@ -754,6 +784,7 @@ class TDatePicker extends TTextBox
 		$writer->addAttribute('id', $this->getClientID() . TControl::CLIENT_ID_SEPARATOR . 'day');
 		$writer->addAttribute('name', $this->getUniqueID() . TControl::ID_SEPARATOR . 'day');
 		$writer->addAttribute('class', 'datepicker_day_options ' . $this->getDropDownCssClass());
+		$writer->addAttribute('aria-label', Prado::localize('Day'));
 		if ($this->getReadOnly() || !$this->getEnabled(true)) {
 			$writer->addAttribute('disabled', 'disabled');
 		}
@@ -778,6 +809,7 @@ class TDatePicker extends TTextBox
 
 	/**
 	 * Renders the month drop down list options.
+	 * The select's `aria-label` is the localized "Month".
 	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 * @param null|mixed $selected selected month.
 	 */
@@ -787,6 +819,7 @@ class TDatePicker extends TTextBox
 		$writer->addAttribute('id', $this->getClientID() . TControl::CLIENT_ID_SEPARATOR . 'month');
 		$writer->addAttribute('name', $this->getUniqueID() . TControl::ID_SEPARATOR . 'month');
 		$writer->addAttribute('class', 'datepicker_month_options ' . $this->getDropDownCssClass());
+		$writer->addAttribute('aria-label', Prado::localize('Month'));
 		if ($this->getReadOnly() || !$this->getEnabled(true)) {
 			$writer->addAttribute('disabled', 'disabled');
 		}
@@ -830,6 +863,7 @@ class TDatePicker extends TTextBox
 
 	/**
 	 * Renders the year drop down list options.
+	 * The select's `aria-label` is the localized "Year".
 	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 * @param null|mixed $selected selected year.
 	 */
@@ -842,6 +876,7 @@ class TDatePicker extends TTextBox
 		$writer->addAttribute('id', $this->getClientID() . TControl::CLIENT_ID_SEPARATOR . 'year');
 		$writer->addAttribute('name', $this->getUniqueID() . TControl::ID_SEPARATOR . 'year');
 		$writer->addAttribute('class', 'datepicker_year_options ' . $this->getDropDownCssClass());
+		$writer->addAttribute('aria-label', Prado::localize('Year'));
 		if ($this->getReadOnly() || !$this->getEnabled(true)) {
 			$writer->addAttribute('disabled', 'disabled');
 		}
