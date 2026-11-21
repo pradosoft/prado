@@ -441,6 +441,13 @@ class TDatePickerTest extends TestCase
 	// Rendering and scripts
 	// ================================================================================
 
+	private function fixedClock(): \Prado\Util\Clock\TMockClock
+	{
+		$clock = new \Prado\Util\Clock\TMockClock();
+		$clock->setTime(mktime(12, 0, 0, 7, 15, 2030));
+		return $clock;
+	}
+
 	private function createPicker(?TPanel $parent = null): array
 	{
 		$page = new TPage();
@@ -451,6 +458,7 @@ class TDatePickerTest extends TestCase
 		PradoUnit::setProp($page, '_clientScript', $cs);
 		$picker = new TDatePicker();
 		$picker->setID('d');
+		$picker->setClock($this->fixedClock());
 		$picker->setEnableClientScript(false);
 		if ($parent !== null) {
 			$page->getControls()->add($parent);
@@ -580,7 +588,7 @@ class TDatePickerTest extends TestCase
 		$picker->setText('March 2026');
 		$output = $this->renderPicker($picker);
 		$this->assertStringNotContainsString('d_day', $output);
-		$this->assertStringContainsString('<option value="' . (date('n') - 1) . '" selected="selected">' . date('F') . '</option>', $output);
+		$this->assertStringContainsString('<option value="6" selected="selected">July</option>', $output);
 		$picker->setText('03 2026');
 		$this->assertStringContainsString('<option value="2" selected="selected">March</option>', $this->renderPicker($picker));
 	}
@@ -726,10 +734,11 @@ class TDatePickerTest extends TestCase
 	public function testLoadPostDataWithoutFieldsUsesToday()
 	{
 		$picker = new TDatePicker();
+		$picker->setClock($this->fixedClock());
 		$picker->setDateInputMode(TDatePickerInputMode::DropDownList);
 		$picker->setDateFormat('yyyy-MM-dd');
 		$picker->loadPostData('d', []);
-		$this->assertSame(date('Y-m-d'), $picker->getText());
+		$this->assertSame('2030-07-15', $picker->getText());
 	}
 
 	// ================================================================================
@@ -756,6 +765,7 @@ class TDatePickerTest extends TestCase
 	public function testDateFromPostDataFillsMissingFields(string $dayCase, bool $month, bool $year)
 	{
 		$picker = new TDatePicker();
+		$picker->setClock($this->fixedClock());
 		$picker->setDateFormat($dayCase === 'first' ? 'MM yyyy' : 'yyyy-MM-dd');
 		$values = [];
 		if ($dayCase === 'day') {
@@ -768,13 +778,13 @@ class TDatePickerTest extends TestCase
 			$values['d$year'] = '2026';
 		}
 		$text = PradoUnit::invoke($picker, 'getDateFromPostData', 'd', $values);
-		$y = $year ? '2026' : date('Y');
-		$m = $month ? '01' : date('m');
+		$y = $year ? '2026' : '2030';
+		$m = $month ? '01' : '07';
 		if ($dayCase === 'first') {
 			$this->assertSame("$m $y", $text);
 		} else {
-			$d = $dayCase === 'day' ? '09' : date('d');
-			$this->assertSame((new \DateTime())->setDate((int) $y, (int) $m, (int) $d)->format('Y-m-d'), $text);
+			$d = $dayCase === 'day' ? '09' : '15';
+			$this->assertSame("$y-$m-$d", $text);
 		}
 	}
 
@@ -805,7 +815,7 @@ class TDatePickerTest extends TestCase
 		PradoUnit::invoke($picker, 'renderDropDownListCalendar', new THtmlWriter($tw));
 		$output = $tw->flush();
 		$this->assertSame($cssClass !== '', str_contains(substr($output, 0, strpos($output, '>')), 'class="cal"'));
-		$this->assertStringContainsString($parses ? '<option value="2026" selected="selected">' : '<option value="' . date('Y') . '" selected="selected">', $output);
+		$this->assertStringContainsString($parses ? '<option value="2026" selected="selected">' : '<option value="2030" selected="selected">', $output);
 		$this->assertSame($mode === TDatePickerMode::Basic ? TDatePickerMode::ImageButton : $mode, $picker->getMode());
 	}
 
@@ -959,5 +969,17 @@ class TDatePickerTest extends TestCase
 			PradoUnit::setStaticProp(\Prado\I18N\Translation::class, 'formatters', $formatters);
 			PradoUnit::setProp($app, '_globalization', $savedGlobalization);
 		}
+	}
+
+	public function testYearRangeDefaultsFollowTheClock()
+	{
+		$picker = new TDatePicker();
+		$picker->setClock($this->fixedClock());
+		$this->assertSame(2025, $picker->getFromYear());
+		$this->assertSame(2040, $picker->getUpToYear());
+		$picker->setFromYear(2020);
+		$this->assertSame(2020, $picker->getFromYear());
+		$picker->setUpToYear(2041);
+		$this->assertSame(2041, $picker->getUpToYear());
 	}
 }

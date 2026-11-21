@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+CHG: Issue #1497 - `TDatePicker` takes today from the application clock (`TApplicationClockAwareTrait`, `setClock()`): the default `FromYear` and `UpToYear`, missing drop down list fields, and the lists of a `Text` that does not parse. It read the system clock. (belisoful)
 BUG: Issue #1497 - `TSlider` treats post data without its hidden field as unchanged, sends `values` as a list, sends `disabled` for a disabled parent, and stores `StepSize` as a float; a missing field threw `TPhpErrorException`, and an out-of-range `Values` entry turned the client's list into an object. (belisoful)
 BUG: Issue #1497 - `TDatePicker` in DropDownList mode selects today when `Text` does not parse; it threw `TPhpErrorException`. (belisoful)
 ENH: Issue #1497 - `TDatePicker`'s day, month, and year lists carry a localized `aria-label`. (belisoful)
