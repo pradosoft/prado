@@ -197,8 +197,8 @@ class TCompareValidator extends TBaseValidator
 
 	/**
 	 * Converts both values to {@see getDataType DataType} with {@see TValidationDataType::convert()}.
-	 * @param string $value1 the input value.
-	 * @param string $value2 the value to compare.
+	 * @param float|int|string $value1 the input value; a {@see TDatePicker} gives a timestamp.
+	 * @param float|int|string $value2 the value to compare.
 	 * @return array the two converted values; a value that does not convert is null.
 	 */
 	protected function getComparisonValues($value1, $value2)
@@ -206,8 +206,8 @@ class TCompareValidator extends TBaseValidator
 		$dataType = $this->getDataType();
 		$dateFormat = $this->getDateFormat();
 		return [
-			TValidationDataType::convert($dataType, (string) $value1, $dateFormat),
-			TValidationDataType::convert($dataType, (string) $value2, $dateFormat),
+			TValidationDataType::convert($dataType, $value1, $dateFormat),
+			TValidationDataType::convert($dataType, $value2, $dateFormat),
 		];
 	}
 

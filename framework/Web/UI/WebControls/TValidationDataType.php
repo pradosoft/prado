@@ -42,29 +42,33 @@ class TValidationDataType extends \Prado\TEnumerable
 	 * |---|---|---|
 	 * | `Integer` | optional sign and digits | int |
 	 * | `Float` | optional sign, digits, and a `.` fraction, without an exponent | float |
+	 * | `Date` | an int or float timestamp, as from {@see TDatePicker} | int timestamp |
 	 * | `Date` with a date format | a date that {@see TSimpleDateFormatter} parses | int timestamp |
 	 * | `Date` without a date format | a date that `strtotime()` parses, before 1970 included | int timestamp |
 	 * | `String` or another type | any value | string |
 	 * Surrounding whitespace is allowed for `Integer` and `Float`.
 	 * @param string $dataType the data type.
-	 * @param string $value the value to convert.
+	 * @param float|int|string $value the value to convert.
 	 * @param string $dateFormat the date format for `Date`; empty for `strtotime()`.
 	 * @return null|float|int|string the converted value, or null when the value does not convert.
 	 * @since 4.4.0
 	 */
-	public static function convert(string $dataType, string $value, string $dateFormat = ''): int|float|string|null
+	public static function convert(string $dataType, int|float|string $value, string $dateFormat = ''): int|float|string|null
 	{
 		switch ($dataType) {
 			case self::Integer:
-				return preg_match('/^\s*[-+]?\d+\s*$/', $value) ? (int) trim($value) : null;
+				return preg_match('/^\s*[-+]?\d+\s*$/', (string) $value) ? (int) trim((string) $value) : null;
 			case self::Float:
-				return preg_match('/^\s*[-+]?(\d+(\.\d+)?|\.\d+)\s*$/', $value) ? (float) trim($value) : null;
+				return preg_match('/^\s*[-+]?(\d+(\.\d+)?|\.\d+)\s*$/', (string) $value) ? (float) trim((string) $value) : null;
 			case self::Date:
+				if (!is_string($value)) {
+					return (int) $value;
+				}
 				if ($dateFormat !== '') {
 					return (new TSimpleDateFormatter($dateFormat))->parse($value, false);
 				}
 				return ($time = strtotime($value)) === false ? null : $time;
 		}
-		return $value;
+		return (string) $value;
 	}
 }

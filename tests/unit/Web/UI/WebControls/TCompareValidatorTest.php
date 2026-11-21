@@ -2,9 +2,11 @@
 
 namespace Prado\Test\Unit\Web\UI\WebControls;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Prado\Web\UI\TPage;
 use Prado\Web\UI\WebControls\TCompareValidator;
+use Prado\Web\UI\WebControls\TDatePicker;
 use Prado\Web\UI\WebControls\TTextBox;
 use Prado\Web\UI\WebControls\TValidationCompareOperator;
 use Prado\Web\UI\WebControls\TValidationDataType;
@@ -66,9 +68,7 @@ class TCompareValidatorTest extends TestCase
 		];
 	}
 
-	/**
-	 * @dataProvider provideComparisons
-	 */
+	#[DataProvider('provideComparisons')]
 	public function testComparesWithTheClientRules(string $dataType, string $operator, string $value, string $compareTo, bool $expected)
 	{
 		$this->assertSame($expected, $this->isValid($this->createValidator($dataType, $operator), $value, $compareTo));
@@ -95,6 +95,32 @@ class TCompareValidatorTest extends TestCase
 		$this->assertFalse($validator->evaluateIsValid());
 		$this->other->setText('42');
 		$this->assertTrue($validator->evaluateIsValid());
+	}
+
+	public function testComparesDatePickerTimestamps()
+	{
+		$page = new TPage();
+		$pickers = [];
+		foreach (['Date1' => '14/4/2024', 'Date2' => '29/4/2024'] as $id => $text) {
+			$pickers[$id] = new TDatePicker();
+			$pickers[$id]->setID($id);
+			$pickers[$id]->setDateFormat('d/M/yyyy');
+			$pickers[$id]->setText($text);
+			$page->getControls()->add($pickers[$id]);
+		}
+		$validator = new TCompareValidator();
+		$validator->setID('Valid');
+		$validator->setControlToValidate('Date2');
+		$validator->setControlToCompare('Date1');
+		$validator->setOperator(TValidationCompareOperator::GreaterThan);
+		$validator->setDataType(TValidationDataType::Date);
+		$validator->setDateFormat('d/M/yyyy');
+		$page->getControls()->add($validator);
+
+		$this->assertIsInt($pickers['Date2']->getValidationPropertyValue());
+		$this->assertTrue($validator->evaluateIsValid());
+		$pickers['Date2']->setText('7/4/2024');
+		$this->assertFalse($validator->evaluateIsValid());
 	}
 
 	public function testEmptyInputIsValid()

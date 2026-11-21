@@ -2,9 +2,11 @@
 
 namespace Prado\Test\Unit\Web\UI\WebControls;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Prado\Web\UI\TPage;
 use Prado\Web\UI\WebControls\TDataTypeValidator;
+use Prado\Web\UI\WebControls\TDatePicker;
 use Prado\Web\UI\WebControls\TTextBox;
 use Prado\Web\UI\WebControls\TValidationDataType;
 
@@ -48,9 +50,7 @@ class TDataTypeValidatorTest extends TestCase
 		];
 	}
 
-	/**
-	 * @dataProvider provideValues
-	 */
+	#[DataProvider('provideValues')]
 	public function testChecksWithTheClientRules(string $dataType, string $dateFormat, string $value, bool $expected)
 	{
 		$validator = $this->createValidator($dataType, $dateFormat);
@@ -58,8 +58,31 @@ class TDataTypeValidatorTest extends TestCase
 		$this->assertSame($expected, $validator->evaluateIsValid());
 	}
 
+	public function testChecksADatePickerTimestamp()
+	{
+		$page = new TPage();
+		$picker = new TDatePicker();
+		$picker->setID('Picker');
+		$picker->setDateFormat('d/M/yyyy');
+		$picker->setText('14/4/2024');
+		$page->getControls()->add($picker);
+		$validator = new TDataTypeValidator();
+		$validator->setID('Valid');
+		$validator->setControlToValidate('Picker');
+		$validator->setDataType(TValidationDataType::Date);
+		$validator->setDateFormat('d/M/yyyy');
+		$page->getControls()->add($validator);
+
+		$this->assertIsInt($picker->getValidationPropertyValue());
+		$this->assertTrue($validator->evaluateIsValid());
+	}
+
 	public function testConvert()
 	{
+		$this->assertSame(1713052800, TValidationDataType::convert(TValidationDataType::Date, 1713052800, 'd/M/yyyy'));
+		$this->assertSame(-86400, TValidationDataType::convert(TValidationDataType::Date, -86400.5));
+		$this->assertSame(42, TValidationDataType::convert(TValidationDataType::Integer, 42));
+		$this->assertSame('42', TValidationDataType::convert(TValidationDataType::String, 42));
 		$this->assertSame(-42, TValidationDataType::convert(TValidationDataType::Integer, ' -42 '));
 		$this->assertNull(TValidationDataType::convert(TValidationDataType::Integer, '1e3'));
 		$this->assertSame(0.5, TValidationDataType::convert(TValidationDataType::Float, '.5'));

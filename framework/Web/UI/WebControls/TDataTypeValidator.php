@@ -89,7 +89,7 @@ class TDataTypeValidator extends TBaseValidator
 		if ($value == '') {
 			return true;
 		}
-		return TValidationDataType::convert($this->getDataType(), (string) $value, $this->getDateFormat()) !== null;
+		return TValidationDataType::convert($this->getDataType(), $value, $this->getDateFormat()) !== null;
 	}
 
 	/**
