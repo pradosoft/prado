@@ -2788,44 +2788,6 @@ Prado.WebUI.TIbanValidator = Prado.Class(Prado.WebUI.TBaseValidator,
 });
 
 /**
- * TReCaptchaValidator client-side control.
- * Deprecated with TReCaptcha (reCAPTCHA v1); use Prado.WebUI.TReCaptcha2Validator.
- *
- * @class Prado.WebUI.TReCaptchaValidator
- * @extends Prado.WebUI.TBaseValidator
- * @deprecated 4.4.0
- */
-Prado.WebUI.TReCaptchaValidator = Prado.Class(Prado.WebUI.TBaseValidator,
-{
-	onInit() {
-		const obj = this;
-		const elements = document.getElementsByName(this.options.ResponseFieldName);
-		if (elements)
-		 if (elements.length>=1)
-		 {
-		  this.observe(elements[0],'change',() => { obj.responseChanged() });
-		  this.observe(elements[0],'keydown',() => { obj.responseChanged() });
-		 }
-	},
-
-	responseChanged() {
-		const field = document.getElementById(`${this.options.ID}_1`);
-		if (field.value=='1') return;
-		field.value = '1';
-		Prado.Validation.validateControl(this.options.ID);
-	},
-
-	/**
-	 * Evaluate validation state
-	 * @function {boolean} ?
-	 * @return True if the captcha has validate, False otherwise.
-	 */
-	evaluateIsValid() {
-		return document.getElementById(`${this.options.ID}_1`).value=='1';
-	}
-});
-
-/**
  * Registry for TReCaptcha2 components
  */
 Prado.WebUI.TReCaptcha2Instances = {};
