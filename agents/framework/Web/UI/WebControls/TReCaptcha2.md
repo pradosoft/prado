@@ -21,7 +21,7 @@ TReCaptcha2 displays the Google reCAPTCHA v2 widget with callback support. It ex
 - `getTheme()` / `setTheme(string)` - Widget theme ('light' or 'dark')
 - `getType()` / `setType(string)` - CAPTCHA type ('image' or 'audio')
 - `getSize()` / `setSize(string)` - Widget size ('normal' or 'compact')
-- `getTabIndex()` / `setTabIndex(int)` - Tab index for accessibility
+- `getTabIndex()` / `setTabIndex(int)` - Tab index of the widget, passed to grecaptcha as `tabindex`; the container `<div>` renders no `tabindex`
 - `getCaptchaResponse()` / `setCaptchaResponse(string)` - The reCAPTCHA response token set by the widget callback
 - `HttpClient` - The `THttpClient` that posts to siteverify (@since 4.4.0)
 - `getVerifyResult()` - Google's decoded siteverify answer for this request (@since 4.4.0)

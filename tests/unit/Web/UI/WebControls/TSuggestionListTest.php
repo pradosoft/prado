@@ -237,4 +237,13 @@ class TSuggestionListTest extends TestCase
 		$this->assertCount(2, $list->getItems());
 		$this->assertSame('Rome', $list->getItems()[0]->getValue());
 	}
+
+	public function testRenderContentsSkipsAnItemWithoutOptionData()
+	{
+		$item = new \Prado\Web\UI\WebControls\TListItem('', '');
+		$list = $this->createList([$item]);
+		$writer = new \Prado\Web\UI\THtmlWriter(new \Prado\IO\TTextWriter());
+		$list->renderContents($writer);
+		$this->assertStringNotContainsString('<option', $writer->flush());
+	}
 }

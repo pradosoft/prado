@@ -1,4 +1,11 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TReCaptcha2Validator` throws `TConfigurationException` when `ControlToValidate` is not a TReCaptcha2; it threw `\Exception`. (belisoful)
+BUG: Issue #1497 - `TReCaptcha2` renders no `tabindex` on its widget container; the default `TabIndex` of 0 put the empty container in the tab order. (belisoful)
+BUG: Issue #1497 - `TOutputCache` reads a cached entry without a cache time; it threw `TPhpErrorException`. (belisoful)
+BUG: Issue #1497 - `TSlider` treats post data without its hidden field as unchanged, sends `values` as a list, sends `disabled` for a disabled parent, and stores `StepSize` as a float; a missing field threw `TPhpErrorException`, and an out-of-range `Values` entry turned the client's list into an object. (belisoful)
+BUG: Issue #1497 - `TDatePicker` in DropDownList mode selects today when `Text` does not parse; it threw `TPhpErrorException`. (belisoful)
+ENH: Issue #1497 - `TDatePicker`'s day, month, and year lists carry a localized `aria-label`. (belisoful)
+BUG: Issue #1497 - `THtmlArea5` lists no languages, plugins, or themes for a missing TinyMCE folder; it threw `TPhpErrorException`. (belisoful)
 BUG: Issue #1497 - `TLogRoute::setLevels()` throws `TConfigurationException` for an unknown level name, as for an unknown level bit; it ignored the name, so a misspelled level in a configuration dropped that level. (belisoful)
 BUG: Issue #1497 - `TBehaviorParameterLoader` attaches the behaviors for `AttachTo="module:<id>"` at `onInitComplete`; its handler named a missing method, so `onInitComplete` threw `TInvalidDataValueException`. (belisoful)
 BUG: Issue #1497 - `TBehaviorParameterLoader` attaches page and module behaviors with its `Priority`; they took the default priority. (belisoful)

@@ -84,55 +84,52 @@ class THtmlArea5 extends TTextBox
 		parent::__construct();
 	}
 
+	/**
+	 * Lists the names in the folder of a namespace, without `.` and `..`.
+	 * A missing or unreadable folder lists nothing.
+	 * @param string $namespace the namespace of the folder.
+	 * @return string[] the file and folder names.
+	 */
+	protected function scanAssetNames(string $namespace): array
+	{
+		if (($path = Prado::getPathOfNameSpace($namespace)) === null || ($files = @scandir($path)) === false) {
+			return [];
+		}
+		return array_values(array_diff($files, ['.', '..']));
+	}
+
+	/**
+	 * Loads the TinyMCE language names, the `.js` files of the tinymce-langs package, once per process.
+	 */
 	protected function loadAvailableLanguages()
 	{
 		if (self::$_langs === null) {
 			self::$_langs = [];
-			$path = Prado::getPathOfNameSpace('Vendor\\pradosoft\\tinymce-langs\\langs');
-			$files = scandir($path);
-			if ($files !== false) {
-				foreach ($files as $f) {
-					if ($f === '.' || $f === '..' || strlen($f) < 4 || substr($f, -3) != '.js') {
-						continue;
-					}
-					$filename = substr($f, 0, -3);
-					self::$_langs[] = $filename;
+			foreach ($this->scanAssetNames('Vendor\\pradosoft\\tinymce-langs\\langs') as $f) {
+				if (strlen($f) > 3 && substr($f, -3) === '.js') {
+					self::$_langs[] = substr($f, 0, -3);
 				}
 			}
 		}
 	}
 
+	/**
+	 * Loads the TinyMCE plugin names once per process.
+	 */
 	protected function loadAvailablePlugins()
 	{
 		if (self::$_plugins === null) {
-			self::$_plugins = [];
-			$path = Prado::getPathOfNameSpace('Vendor\\bower-asset\\tinymce\\plugins');
-			$files = scandir($path);
-			if ($files !== false) {
-				foreach ($files as $f) {
-					if ($f === '.' || $f === '..') {
-						continue;
-					}
-					self::$_plugins[] = $f;
-				}
-			}
+			self::$_plugins = $this->scanAssetNames('Vendor\\bower-asset\\tinymce\\plugins');
 		}
 	}
 
+	/**
+	 * Loads the TinyMCE theme names once per process.
+	 */
 	protected function loadAvailableThemes()
 	{
 		if (self::$_themes === null) {
-			self::$_themes = [];
-			$path = Prado::getPathOfNameSpace('Vendor\\bower-asset\\tinymce\\themes');
-			$files = scandir($path);
-			if ($files !== false) {
-				foreach ($files as $f) {
-					if ($f === '.' || $f === '..') {
-						continue;
-					}
-					self::$_themes[] = $f;
-				}
-			}
+			self::$_themes = $this->scanAssetNames('Vendor\\bower-asset\\tinymce\\themes');
 		}
 	}
 
