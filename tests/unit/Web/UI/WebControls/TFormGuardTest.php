@@ -293,4 +293,34 @@ class TFormGuardTest extends \PHPUnit\Framework\TestCase
 		$this->expectException(TConfigurationException::class);
 		$this->submit($guard, '', $this->stamp($guard, self::START));
 	}
+
+	// --- Coverage: client class, post data hooks, PreRender, render ---
+
+	public function testPostDataHooksAndClientClass()
+	{
+		$guard = $this->makeGuard();
+		$this->assertSame('Prado.WebUI.TBaseValidator', PradoUnit::invoke($guard, 'getClientClassName'));
+		$this->assertFalse($guard->getDataChanged());
+		$guard->raisePostDataChangedEvent();
+	}
+
+	public function testOnPreRenderRequiresPostData()
+	{
+		$guard = $this->makeGuard();
+		$guard->onPreRender(null);
+		$this->assertArrayHasKey($guard->getUniqueID(), PradoUnit::getProp($guard->getPage(), '_controlsRegisteredForPostData'));
+	}
+
+	public function testRenderWritesTheGuardFields()
+	{
+		$guard = $this->makeGuard();
+		$page = $guard->getPage();
+		PradoUnit::setProp($page, '_inFormRender', true);
+		PradoUnit::setProp($page, '_clientScript', $this->getMockBuilder(\Prado\Web\UI\TClientScriptManager::class)->setConstructorArgs([$page])->onlyMethods(['registerPradoScript', 'registerEndScript', 'registerHiddenField'])->getMock());
+		$tw = new TTextWriter();
+		$guard->render(new THtmlWriter($tw));
+		$output = $tw->flush();
+		$this->assertStringContainsString('name="' . $guard->getUniqueID() . '$' . $guard->getHoneypotName() . '"', $output);
+		$this->assertStringContainsString('name="' . $guard->getUniqueID() . TFormGuard::STAMP_SUFFIX . '"', $output);
+	}
 }

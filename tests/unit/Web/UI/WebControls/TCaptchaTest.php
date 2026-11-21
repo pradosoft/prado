@@ -92,8 +92,19 @@ class TestCaptcha extends TCaptcha
 	}
 }
 
+class TCaptchaTestWithoutGd extends TCaptcha
+{
+	public static function checkRequirements()
+	{
+		return false;
+	}
+}
+
 class TCaptchaTest extends \PHPUnit\Framework\TestCase
 {
+	use \Prado\Test\Unit\Harness\Traits\TAssetManagerMockTrait;
+	use \Prado\Test\Unit\Harness\Traits\TTempDirectoryTrait;
+
 	/** @var TestCaptcha[] captchas whose temp key files must be removed */
 	private array $_toClean = [];
 
@@ -107,6 +118,8 @@ class TCaptchaTest extends \PHPUnit\Framework\TestCase
 		}
 		$this->_toClean = [];
 		PradoUnit::setProp(Prado::getApplication(), '_cache', $this->_appCache);
+		$this->restoreAssetManager();
+		$this->removeTempDirectories();
 	}
 
 	protected function setUp(): void
@@ -889,5 +902,115 @@ require __DIR__ . "/captcha.php";
 		self::assertSame('', $stdout, 'No error text or image is written.');
 		self::assertSame('', $stderr, 'No error is displayed.');
 		self::assertSame(1, $exitCode);
+	}
+
+	// -----------------------------------------------------------------------
+	// Coverage: claim lifetime, PreRender, private key file
+	// -----------------------------------------------------------------------
+
+	public function testClaimLifetimeBeforeTheTokenIsGenerated(): void
+	{
+		$captcha = $this->newCaptcha();
+		$captcha->setTokenExpiry(600);
+		self::assertSame(600, PradoUnit::invoke($captcha, 'getClaimLifetime'));
+	}
+
+	public function testOnPreRenderPublishesTheImageOnce(): void
+	{
+		$assets = $this->mockAssetManager();
+		$clock = new TMockClock();
+		$clock->setTime(5_000);
+		$captcha = $this->newCaptcha();
+		$captcha->setClock($clock);
+		$captcha->setPage(new \Prado\Web\UI\TPage());
+		$captcha->onPreRender(null);
+		self::assertStringStartsWith('/assets/captcha.php?options=', $captcha->getImageUrl());
+		self::assertSame(5_000, $captcha->pubGetViewState('TokenGenerated'));
+		$url = $captcha->getImageUrl();
+		$clock->setTime(6_000);
+		$captcha->onPreRender(null);
+		self::assertSame($url, $captcha->getImageUrl());
+		self::assertSame(5_000, $captcha->pubGetViewState('TokenGenerated'));
+	}
+
+	public function testOnPreRenderRegeneratesAClaimedToken(): void
+	{
+		$this->installCache();
+		$this->mockAssetManager();
+		$captcha = $this->newCaptcha();
+		$captcha->setPage(new \Prado\Web\UI\TPage());
+		$captcha->setPublicKey('claimedpublic');
+		$captcha->pubSetTokenGenerated(1_000);
+		$captcha->setTokenExpiry(0);
+		self::assertTrue($captcha->validate($captcha->getToken()));
+		$captcha->onPreRender(null);
+		self::assertNotSame('claimedpublic', $captcha->getPublicKey());
+		self::assertStringStartsWith('/assets/captcha.php?options=', $captcha->getImageUrl());
+	}
+
+	public function testOnPreRenderNeedsTrueTypeSupport(): void
+	{
+		$captcha = new TCaptchaTestWithoutGd();
+		$captcha->setPage(new \Prado\Web\UI\TPage());
+		try {
+			$captcha->onPreRender(null);
+			self::fail('Expected TConfigurationException');
+		} catch (TConfigurationException $e) {
+			self::assertSame('captcha_imagettftext_required', $e->getErrorCode());
+		}
+	}
+
+	public function testPrivateKeyFileIsCreatedOnceBesideThePublishedScript(): void
+	{
+		$base = $this->makeTempDirectory() . DIRECTORY_SEPARATOR . 'published';
+		$this->mockAssetManager([], $base);
+		$captcha = new TCaptcha();
+		$file = PradoUnit::invoke($captcha, 'generatePrivateKeyFile');
+		self::assertSame($base . DIRECTORY_SEPARATOR . 'captcha_key.php', $file);
+		self::assertMatchesRegularExpression("/^<\\?php\n\\\$privateKey='[0-9a-f]{32}';\n\\?>$/", file_get_contents($file));
+		$key = $captcha->getPrivateKey();
+		self::assertSame($file, PradoUnit::invoke(new TCaptcha(), 'generatePrivateKeyFile'));
+		self::assertSame($key, (new TCaptcha())->getPrivateKey());
+	}
+
+	public static function storedSeedProvider(): array
+	{
+		return [
+			'fixed background' => [false, 42],
+			'changing background' => [true, 0],
+		];
+	}
+
+	/**
+	 * @dataProvider storedSeedProvider
+	 */
+	public function testTokenImageOptionsReuseTheStoredSeed(bool $changing, int $expected): void
+	{
+		$captcha = $this->newCaptcha();
+		$captcha->setPublicKey('seedpublic');
+		$captcha->pubSetViewState('RandomSeed', 42);
+		$captcha->setChangingTokenBackground($changing);
+		$str = substr(base64_decode($captcha->pubGetTokenImageOptions()), 64);
+		self::assertSame($expected, unserialize($str)['randomSeed']);
+		self::assertSame(42, $captcha->pubGetViewState('RandomSeed'));
+	}
+
+	public static function hashProvider(): array
+	{
+		return [
+			'empty hex, default alphabet' => ['', '', ''],
+			'zero hex, default alphabet' => ['000000', '', ''],
+			'empty hex, given alphabet' => ['', 'ab', ''],
+			'zero hex, given alphabet' => ['000000', 'ab', ''],
+			'one, given alphabet' => ['000001', 'ab', 'b'],
+		];
+	}
+
+	/**
+	 * @dataProvider hashProvider
+	 */
+	public function testHash2stringOfShortHex(string $hex, string $alphabet, string $expected): void
+	{
+		self::assertSame($expected, $this->newCaptcha()->pubHash2string($hex, $alphabet));
 	}
 }
