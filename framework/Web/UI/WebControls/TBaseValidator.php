@@ -182,12 +182,11 @@ abstract class TBaseValidator extends TLabel implements IValidator
 			$options['FocusElementID'] = $this->getFocusElementID();
 		}
 		$options['ValidationGroup'] = $this->getValidationGroup();
+		$options['ControlCssClass'] = $this->getControlCssClass();
 		if ($control) {
 			$options['ControlToValidate'] = $control->getClientID();
+			$options['ControlType'] = $this->getClientControlClass($control);
 		}
-		$options['ControlCssClass'] = $this->getControlCssClass();
-
-		$options['ControlType'] = $this->getClientControlClass($control);
 		$options['Enabled'] = $this->getEnabled(true);
 		if ($this->getEncode()) {
 			$options['Encode'] = true;
@@ -446,7 +445,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 
 	/**
 	 * Gets the ID of the HTML element that will receive focus if validation fails and {@see getFocusOnError FocusOnError} is true.
-	 * Defaults to the client ID of the {@see getControlToValidate ControlToValidate}.
+	 * Defaults to the client ID of the {@see getControlToValidate ControlToValidate}, or an empty string when the validator has no target.
 	 * @return string the ID of the HTML element to receive focus
 	 */
 	public function getFocusElementID()
@@ -458,7 +457,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 			 */
 			if ($target instanceof TCheckBoxList && $target->getItemCount() > 0) {
 				$id = $target->getClientID() . '_c0';
-			} else {
+			} elseif ($target !== null) {
 				$id = $target->getClientID();
 			}
 		}
