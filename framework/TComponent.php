@@ -2189,7 +2189,7 @@ class TComponent
 	 *	This will remove a behavior from a class.  It unregisters it from future instances and
 	 * pulls the changes from all the instances that are listening as well.
 	 * PHP 5.3 uses Late Static Binding to derive the static class upon which this method is called.
-	 * @param string $name the key of the class behavior
+	 * @param ?string $name the key of the class behavior; null names no behavior.
 	 * @param string $class class on which to attach this behavior.  Defaults to null.
 	 * @param null|false|numeric $priority priority: false is any priority, null is default
 	 *		{@see \Prado\Collections\TWeakCallableCollection} priority, and numeric is a specific priority.
@@ -2206,7 +2206,7 @@ class TComponent
 			$class = get_called_class();
 		}
 		$class = strtolower($class);
-		$name = strtolower($name);
+		$name = strtolower($name !== null ? $name : '');
 		if (empty(self::$_um[$class]) || !isset(self::$_um[$class][$name])) {
 			return null;
 		}
@@ -2453,14 +2453,14 @@ class TComponent
 	 * to be executed when detachBehavior is called.  All attached behaviors are notified through
 	 * dyDetachBehavior.
 	 *
-	 * @param string $name the behavior's name. It uniquely identifies the behavior.
+	 * @param ?string $name the behavior's name. It uniquely identifies the behavior; null names no behavior.
 	 * @param false|numeric $priority the behavior's priority. This defaults to false, which is any priority.
 	 * @return null|IBaseBehavior the detached behavior. Null if the behavior does not exist.
 	 * @since 3.2.3
 	 */
 	public function detachBehavior($name, $priority = false)
 	{
-		$name = strtolower($name);
+		$name = strtolower($name !== null ? $name : '');
 		if ($this->_m != null && ($behavior = $this->_m->itemAt($name, $priority))) {
 			$this->callBehaviorsMethod('dyDetachBehavior', $return, $name, $behavior);
 			$behavior->detach($this);
@@ -2544,13 +2544,13 @@ class TComponent
 	 * to be executed when enableBehavior is called.  All attached behaviors are notified through
 	 * dyEnableBehavior.
 	 *
-	 * @param string $name the behavior's name. It uniquely identifies the behavior.
+	 * @param ?string $name the behavior's name. It uniquely identifies the behavior; null names no behavior.
 	 * @return bool Was the behavior found and enabled.
 	 * @since 3.2.3
 	 */
 	public function enableBehavior($name): bool
 	{
-		$name = strtolower($name);
+		$name = strtolower($name !== null ? $name : '');
 		if ($this->_m != null && isset($this->_m[$name])) {
 			$behavior = $this->_m[$name];
 			if ($behavior->getEnabled() === false) {
@@ -2576,13 +2576,13 @@ class TComponent
 	 * to be executed when disableBehavior is called.  All attached behaviors are notified through
 	 * dyDisableBehavior.
 	 *
-	 * @param string $name the behavior's name. It uniquely identifies the behavior.
+	 * @param ?string $name the behavior's name. It uniquely identifies the behavior; null names no behavior.
 	 * @return bool Was the behavior found and disabled.
 	 * @since 3.2.3
 	 */
 	public function disableBehavior($name): bool
 	{
-		$name = strtolower($name);
+		$name = strtolower($name !== null ? $name : '');
 		if ($this->_m != null && isset($this->_m[$name])) {
 			$behavior = $this->_m[$name];
 			if ($behavior->getEnabled() === true) {
