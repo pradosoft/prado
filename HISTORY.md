@@ -2,6 +2,7 @@
 BUG: Issue #1497 - `TTextBox::getSafeText()` purifies with the text box's own `Config`; every text box used the configuration of the first one to purify. (belisoful)
 BUG: Issue #1497 - `TFileUpload::loadPostData()` reads a scalar posted file as one file when `Multiple` or `Directory` is set; it threw `TPhpErrorException`. (belisoful)
 BUG: Issue #1497 - `TCheckBox::render()` keeps the control's `onclick` attribute; a second render lost it. (belisoful)
+BUG: Issue #1497 - `TButton` with `ButtonTag="Button"` renders its `Text` once; each render added the text again as a child control. (belisoful)
 BUG: Issue #1497 - `TLogRoute::setLevels()` throws `TConfigurationException` for an unknown level name, as for an unknown level bit; it ignored the name, so a misspelled level in a configuration dropped that level. (belisoful)
 BUG: Issue #1497 - `TBehaviorParameterLoader` attaches the behaviors for `AttachTo="module:<id>"` at `onInitComplete`; its handler named a missing method, so `onInitComplete` threw `TInvalidDataValueException`. (belisoful)
 BUG: Issue #1497 - `TBehaviorParameterLoader` attaches page and module behaviors with its `Priority`; they took the default priority. (belisoful)
