@@ -762,6 +762,7 @@ captcha_maxtokenlength_invalid			= TCaptcha.MaxTokenLength must be an integer be
 captcha_tokenalphabet_invalid			= TCaptcha.TokenAlphabet must be a string consisting of at least 2 characters.
 captcha_privatekey_unknown				= TCaptcha.PrivateKey is unknown. Please make sure that your assets directory is writable by the Web server process.
 captcha_imagettftext_required			= TCaptcha requires PHP GD2 extension with TrueType font support.
+recaptcha2validator_control_invalid		= TReCaptcha2Validator.ControlToValidate {0} must point to a TReCaptcha2 control.
 
 captchavalidator_captchacontrol_required	= TCaptchaValidator.CaptchaControl must point to an existing TCaptcha control.
 captchavalidator_captchacontrol_inexistent	= TCaptchaValidator.CaptchaControl {0} must point to an existing TCaptcha control.
