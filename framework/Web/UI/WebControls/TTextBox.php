@@ -90,9 +90,13 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	 */
 	public const DEFAULT_COLUMNS = 20;
 	/**
-	 * @var mixed safe text parser
+	 * @var mixed safe text parser for the default configuration, shared by every TTextBox
 	 */
 	private static $_safeTextParser;
+	/**
+	 * @var ?\HTMLPurifier safe text parser for this text box's custom {@see setConfig Config}
+	 */
+	private $_configParser;
 	/**
 	 * @var ?string safe textbox content with javascript stripped off
 	 */
@@ -857,14 +861,23 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	}
 
 	/**
+	 * Returns the parser for {@see getSafeText SafeText}.
+	 * Without a custom {@see setConfig Config}, every TTextBox shares one parser with the default configuration.
+	 * A text box with a custom Config has its own parser.
 	 * @return \HTMLPurifier safe text parser
 	 */
 	protected function getSafeTextParser()
 	{
-		if (!self::$_safeTextParser) {
-			self::$_safeTextParser = new \HTMLPurifier($this->getConfig());
+		if ($this->getViewState('Config', null) === null) {
+			if (!self::$_safeTextParser) {
+				self::$_safeTextParser = new \HTMLPurifier($this->getConfig());
+			}
+			return self::$_safeTextParser;
 		}
-		return self::$_safeTextParser;
+		if ($this->_configParser === null) {
+			$this->_configParser = new \HTMLPurifier($this->getConfig());
+		}
+		return $this->_configParser;
 	}
 
 	/**
@@ -919,15 +932,23 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	}
 
 	/**
-	 * Sets a custom configuration for HTMLPurifier.
+	 * Sets a custom configuration for HTMLPurifier, which {@see getSafeText SafeText} uses.
+	 * The configuration is kept in view state, so it persists across postbacks.
+	 * Its serialized form adds about 25 KB to the page state, and over 100 KB once it has purified text.
 	 * @param \HTMLPurifier_Config $value custom configuration
 	 */
 	public function setConfig(\HTMLPurifier_Config $value)
 	{
 		$this->setViewState('Config', $value, null);
+		$this->_configParser = null;
+		$this->_safeText = null;
 	}
 
 	/**
+	 * Returns the HTMLPurifier configuration.
+	 * Without a custom configuration, this creates a default one that caches its definitions
+	 * in the `htmlpurifier` folder of the runtime path.
+	 * @throws TConfigurationException if the `htmlpurifier` folder cannot be created.
 	 * @return \HTMLPurifier_Config Configuration for HTMLPurifier.
 	 */
 	public function getConfig()
