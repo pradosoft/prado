@@ -611,7 +611,9 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 * This event is raised right before the validator starts to perform validation.
 	 * You may use this event to change the behavior of validation.
 	 * For example, you may disable the validator if certain condition is satisfied.
-	 * Note, the event will NOT be raised if the validator is invisible.
+	 * The event is raised before the visibility and enabled checks, so it is raised
+	 * for an invisible or disabled validator, and a handler that disables the validator
+	 * skips the validation.
 	 */
 	public function onValidate()
 	{

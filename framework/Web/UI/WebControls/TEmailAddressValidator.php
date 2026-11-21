@@ -73,7 +73,7 @@ class TEmailAddressValidator extends TRegularExpressionValidator
 	}
 
 	/**
-	 * @return bool whether to check MX record for the email address being validated. Defaults to true.
+	 * @return bool whether to check MX record for the email address being validated. Defaults to false.
 	 */
 	public function getCheckMXRecord()
 	{
