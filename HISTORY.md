@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+CHG: Issue #1497 - `TDatePicker` takes today from the application clock (`TApplicationClockAwareTrait`, `setClock()`): the default `FromYear` and `UpToYear`, missing drop down list fields, and the lists of a `Text` that does not parse. It read the system clock. (belisoful)
 ENH: Issue #1635 - `TMultibyteString::cut()` returns part of a UTF-8 string by byte position on character boundaries, as `mb_strcut()` does, for text bounded in bytes. (belisoful)
 BUG: Issue #1634 - `TBinaryStream::readBytes()` reads in `CHUNK_SIZE` pieces, so a length past the end of the stream throws `TIOException`; it allocated the whole length first, and a large one exhausted memory. (belisoful)
 BUG: Issue #1497 - `TReCaptcha2Validator` throws `TConfigurationException` when `ControlToValidate` is not a TReCaptcha2; it threw `\Exception`. (belisoful)
