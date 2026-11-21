@@ -24,8 +24,7 @@ and upgrades without them. The 4.4 UPGRADE.md lists every change.
   - `TPageService.IdSeparator`: 4.4 defaults to `:`; 4.3 to `$`. It separates the IDs of a control `UniqueID`,
     which names the posted fields: `ctl0:Main:Note`. The OWASP Core Rule Set rule 942290 rejects `$` before
     an ID such as `Note` or `Order`. With `:`, application JavaScript, tests, and `findControl()` paths that
-    write a name with `$` change to `:`, and a hidden field registered under a `UniqueID` renders the
-    control's `ClientID` as its `id`. Code that builds or parses a name reads `TControl::getIdSeparator()`.
+    write a name with `$` change to `:`. Code that builds or parses a name reads `TControl::getIdSeparator()`.
 - 4.4 refuses a postback or callback without the page's CSRF token. A form or script outside Prado that
   posts to a page adds the token when it moves to 4.4.
 - ActiveRecord, SqlMap, and RPC leave the framework in 4.4. An application that uses them requires
@@ -44,6 +43,9 @@ and upgrades without them. The 4.4 UPGRADE.md lists every change.
 
 Upgrading from v4.3.2
 ---------------------
+- The `id` of a hidden field registered with `TClientScriptManager::registerHiddenField()` is its name, as in
+  4.4; before, a `:` in the name was `_` in the `id`. A script that finds such a field by the `_` form of its
+  `id` uses the name.
 - TDatePicker::InputMode is deprecated; use DateInputMode. Prado 4.4 removes InputMode.
 - A PHP-configured TFeedService reads its feeds from a `feeds` key. Feeds beside the service `class` key still
   load; that form is deprecated.
