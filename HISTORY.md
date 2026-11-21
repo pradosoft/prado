@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TSlider` treats post data without its hidden field as unchanged, sends `values` as a list, sends `disabled` for a disabled parent, and stores `StepSize` as a float; a missing field threw `TPhpErrorException`, and an out-of-range `Values` entry turned the client's list into an object. (belisoful)
 BUG: Issue #1497 - `TLogRoute::setLevels()` throws `TConfigurationException` for an unknown level name, as for an unknown level bit; it ignored the name, so a misspelled level in a configuration dropped that level. (belisoful)
 BUG: Issue #1497 - `TBehaviorParameterLoader` attaches the behaviors for `AttachTo="module:<id>"` at `onInitComplete`; its handler named a missing method, so `onInitComplete` threw `TInvalidDataValueException`. (belisoful)
 BUG: Issue #1497 - `TBehaviorParameterLoader` attaches page and module behaviors with its `Priority`; they took the default priority. (belisoful)

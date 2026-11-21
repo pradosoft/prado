@@ -144,7 +144,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	public function setStepSize($value)
 	{
-		$this->setViewState('StepSize', $value, 1.0);
+		$this->setViewState('StepSize', TPropertyValue::ensureFloat($value), 1.0);
 	}
 
 	/**
@@ -287,7 +287,8 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * Loads user input data.
+	 * Loads user input data from the `<ClientID>_1` hidden field.
+	 * Post data without the field leaves the value unchanged.
 	 * This method is primarly used by framework developers.
 	 * @param string $key the key that can be used to retrieve data from the input data collection
 	 * @param array $values the input data collection
@@ -295,6 +296,9 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	public function loadPostData($key, $values)
 	{
+		if (!isset($values[$this->getClientID() . '_1'])) {
+			return false;
+		}
 		$value = (float) $values[$this->getClientID() . '_1'];
 		if ($this->getValue() !== $value) {
 			$this->setValue($value);
@@ -452,7 +456,8 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * Get javascript sliderr options.
+	 * Get javascript slider options.
+	 * `values` is a list: values outside [MinValue, MaxValue] are removed and the list is reindexed.
 	 * @return array slider client-side options
 	 */
 	protected function getSliderOptions()
@@ -471,7 +476,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 		$options['range'] = [$minValue, $maxValue];
 		$options['step'] = $this->getStepSize();
 		$options['sliderValue'] = $this->getValue();
-		$options['disabled'] = !$this->getEnabled();
+		$options['disabled'] = !$this->getEnabled(true);
 		$values = $this->getValues();
 		if (!empty($values)) {
 			// Values are provided. Check if min/max are present in them
@@ -490,6 +495,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 					unset($values[$idx]);
 				}
 			}
+			$values = array_values($values);
 		} else {
 			// Values are not provided, generate automatically using stepsize
 			$step = $this->getStepSize();

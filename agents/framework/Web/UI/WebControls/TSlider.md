@@ -17,7 +17,7 @@ TSlider displays a slider for numeric input. It consists of a track defining the
 - `getMaxValue()` / `setMaxValue($value)` - Maximum value (default 100.0)
 - `getStepSize()` / `setStepSize($value)` - Step between values
 - `getValue()` / `setValue($value)` - Current slider value
-- `getValues()` / `setValues($value)` - Array of allowed values
+- `getValues()` / `setValues($value)` - Array of allowed values; the client receives those within [MinValue, MaxValue], with both, as a list
 - `getProgressIndicator()` / `setProgressIndicator($value)` - Whether to show progress bar
 - `getCssUrl()` / `setCssUrl($value)` - Custom CSS file URL
 - `getAutoPostBack()` / `setAutoPostBack($value)` - Auto postback on change
