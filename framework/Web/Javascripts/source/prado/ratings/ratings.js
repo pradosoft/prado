@@ -77,7 +77,7 @@ Prado.WebUI.TRatingList = jQuery.klass(Prado.WebUI.Control,
 		var requestOptions =jQuery.extend({}, this.options,
 		{
 			ID : this.options.ID+"_c"+this.selectedIndex,
-			EventTarget : this.options.ListName+"$c"+this.selectedIndex
+			EventTarget : this.options.ListName+(this.options.IdSeparator || '$')+"c"+this.selectedIndex
 		});
 		new Prado.PostBack(requestOptions, ev);
  	},
@@ -171,7 +171,7 @@ Prado.WebUI.TActiveRatingList = jQuery.klass(Prado.WebUI.TRatingList,
 		var requestOptions =jQuery.extend({}, this.options,
 		{
 			ID : this.options.ID+"_c"+this.selectedIndex,
-			EventTarget : this.options.ListName+"$c"+this.selectedIndex
+			EventTarget : this.options.ListName+(this.options.IdSeparator || '$')+"c"+this.selectedIndex
 		});
 		var request = new Prado.CallbackRequest(requestOptions.EventTarget, requestOptions);
 		if(request.dispatch()==false)

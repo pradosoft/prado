@@ -56,7 +56,7 @@ class TJuiEventParameter extends TCallbackEventParameter
 		if ($service instanceof TPageService) {
 			// Find the control
 			// Warning, this will not work if you have a '_' in your control Id !
-			$controlId = str_replace(TControl::CLIENT_ID_SEPARATOR, TControl::ID_SEPARATOR, $id);
+			$controlId = str_replace(TControl::CLIENT_ID_SEPARATOR, TControl::getIdSeparator(), $id);
 			$control = $service->getRequestedPage()->findControl($controlId);
 		}
 		return $control;

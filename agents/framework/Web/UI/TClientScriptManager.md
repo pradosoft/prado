@@ -20,7 +20,7 @@ TClientScriptManager manages JavaScript and CSS stylesheets for a page. It suppo
 - `registerStyleSheetFile($key, $url, $media)` - Registers a CSS file
 - `registerBeginScript($key, $script)` - Registers JavaScript at the beginning of the form
 - `registerEndScript($key, $script)` - Registers JavaScript at the end of the form
-- `registerHiddenField($name, $value)` - Registers a hidden field
+- `registerHiddenField($name, $value)` - Registers a hidden field; the `id` of the field is its name
 - `registerDefaultButton($panel, $button)` - Registers a default button for a panel
 - `registerFocusControl($target)` - Registers a control to receive default focus
 - `getCallbackReference($callbackHandler, $options)` - Returns JavaScript for callback request

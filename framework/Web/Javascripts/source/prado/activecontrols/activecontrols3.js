@@ -61,7 +61,7 @@ Prado.WebUI.TActiveCheckBoxList = jQuery.klass(Prado.WebUI.Control,
 			var checkBoxOptions = jQuery.extend({}, options,
 			{
 				ID : options.ID+"_c"+i,
-				EventTarget : options.ListName+"$c"+i
+				EventTarget : options.ListName+(options.IdSeparator || '$')+"c"+i
 			});
 			new Prado.WebUI.TActiveCheckBox(checkBoxOptions);
 		}
