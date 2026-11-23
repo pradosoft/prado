@@ -120,7 +120,7 @@ Drop-down mode:
 - **`AutoPostBack` throws** — if you need server-side response on date change, use a Submit button or a hidden field + JavaScript instead.
 - **DateFormat case-sensitive** — `M` and `m` are different tokens. `MM` = month; `mm` = minutes (not used in date-only picker).
 - **Culture** — if not set, uses `TGlobalization` culture. Month/day names are localized when `Culture` is set.
-- **`DropDownList` mode** — renders separate `<select>` elements for day, month, year. `InputMode=DropDownList` hides the text input; `InputMode=TextBox` shows text + drop-downs side by side.
+- **`DropDownList` mode** — renders separate `<select>` elements for day, month, year, named by `aria-label` (localized "Day", "Month", "Year"). `InputMode=DropDownList` hides the text input; `InputMode=TextBox` shows text + drop-downs side by side.
 - **Timestamp vs formatted string** — `getTimeStamp()` returns a Unix timestamp; `getDate()` returns the formatted string. Prefer `getTimeStamp()` for database storage.
 - **Year range** — without `FromYear`/`UpToYear`, the calendar defaults to ±10 years from today. Set explicit ranges for registration forms.
 

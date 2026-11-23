@@ -655,7 +655,8 @@ class TDatePicker extends TTextBox
 
 	/**
 	 * Renders the drop down list date picker.
-	 * @param mixed $writer
+	 * The lists select the date of {@see getText Text}, or today when Text does not parse.
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	protected function renderDropDownListCalendar($writer)
 	{
@@ -673,7 +674,9 @@ class TDatePicker extends TTextBox
 		$writer->renderBeginTag('span');
 
 		$date = new \DateTime();
-		$date->setTimeStamp($this->getTimeStampFromText());
+		if (($timestamp = $this->getTimeStampFromText()) !== null) {
+			$date->setTimestamp($timestamp);
+		}
 		$this->renderCalendarSelections($writer, $date);
 
 		//render a hidden input field
@@ -745,6 +748,7 @@ class TDatePicker extends TTextBox
 
 	/**
 	 * Renders the day drop down list options.
+	 * The select's `aria-label` is the localized "Day".
 	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 * @param null|mixed $selected selected day.
 	 */
@@ -754,6 +758,7 @@ class TDatePicker extends TTextBox
 		$writer->addAttribute('id', $this->getClientID() . TControl::CLIENT_ID_SEPARATOR . 'day');
 		$writer->addAttribute('name', $this->getUniqueID() . self::getIdSeparator() . 'day');
 		$writer->addAttribute('class', 'datepicker_day_options ' . $this->getDropDownCssClass());
+		$writer->addAttribute('aria-label', Prado::localize('Day'));
 		if ($this->getReadOnly() || !$this->getEnabled(true)) {
 			$writer->addAttribute('disabled', 'disabled');
 		}
@@ -778,6 +783,7 @@ class TDatePicker extends TTextBox
 
 	/**
 	 * Renders the month drop down list options.
+	 * The select's `aria-label` is the localized "Month".
 	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 * @param null|mixed $selected selected month.
 	 */
@@ -787,6 +793,7 @@ class TDatePicker extends TTextBox
 		$writer->addAttribute('id', $this->getClientID() . TControl::CLIENT_ID_SEPARATOR . 'month');
 		$writer->addAttribute('name', $this->getUniqueID() . self::getIdSeparator() . 'month');
 		$writer->addAttribute('class', 'datepicker_month_options ' . $this->getDropDownCssClass());
+		$writer->addAttribute('aria-label', Prado::localize('Month'));
 		if ($this->getReadOnly() || !$this->getEnabled(true)) {
 			$writer->addAttribute('disabled', 'disabled');
 		}
@@ -830,6 +837,7 @@ class TDatePicker extends TTextBox
 
 	/**
 	 * Renders the year drop down list options.
+	 * The select's `aria-label` is the localized "Year".
 	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 * @param null|mixed $selected selected year.
 	 */
@@ -842,6 +850,7 @@ class TDatePicker extends TTextBox
 		$writer->addAttribute('id', $this->getClientID() . TControl::CLIENT_ID_SEPARATOR . 'year');
 		$writer->addAttribute('name', $this->getUniqueID() . self::getIdSeparator() . 'year');
 		$writer->addAttribute('class', 'datepicker_year_options ' . $this->getDropDownCssClass());
+		$writer->addAttribute('aria-label', Prado::localize('Year'));
 		if ($this->getReadOnly() || !$this->getEnabled(true)) {
 			$writer->addAttribute('disabled', 'disabled');
 		}

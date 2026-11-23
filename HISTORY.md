@@ -1,4 +1,8 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TSlider` treats post data without its hidden field as unchanged, sends `values` as a list, sends `disabled` for a disabled parent, and stores `StepSize` as a float; a missing field threw `TPhpErrorException`, and an out-of-range `Values` entry turned the client's list into an object. (belisoful)
+BUG: Issue #1497 - `TDatePicker` in DropDownList mode selects today when `Text` does not parse; it threw `TPhpErrorException`. (belisoful)
+ENH: Issue #1497 - `TDatePicker`'s day, month, and year lists carry a localized `aria-label`. (belisoful)
+BUG: Issue #1497 - `THtmlArea5` lists no languages, plugins, or themes for a missing TinyMCE folder; it threw `TPhpErrorException`. (belisoful)
 BUG: Issue #1497 - `TTextBox::getSafeText()` purifies with the text box's own `Config`; every text box used the configuration of the first one to purify. (belisoful)
 BUG: Issue #1497 - `TFileUpload::loadPostData()` reads a scalar posted file as one file when `Multiple` or `Directory` is set; it threw `TPhpErrorException`. (belisoful)
 BUG: Issue #1497 - `TCheckBox::render()` keeps the control's `onclick` attribute; a second render lost it. (belisoful)
