@@ -12,6 +12,25 @@ use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\UriFactoryInterface;
 
+class THttpFactoryTestRequest extends TRequest
+{
+}
+
+class THttpFactoryTestResponse extends TResponse
+{
+}
+
+class THttpFactoryTestUri extends TResourceUri
+{
+}
+
+class THttpFactoryTestFactory extends THttpFactory
+{
+	public const REQUEST_CLASS = THttpFactoryTestRequest::class;
+	public const RESPONSE_CLASS = THttpFactoryTestResponse::class;
+	public const URI_CLASS = THttpFactoryTestUri::class;
+}
+
 class THttpFactoryTest extends \PHPUnit\Framework\TestCase
 {
 	public function testImplementsPsr17()
@@ -61,5 +80,22 @@ class THttpFactoryTest extends \PHPUnit\Framework\TestCase
 		$stream = (new THttpFactory())->createStream('abc');
 		self::assertInstanceOf(TStream::class, $stream);
 		self::assertSame('abc', (string) $stream);
+	}
+
+	public function testSubclassOverridesClasses()
+	{
+		$factory = new THttpFactoryTestFactory();
+
+		$request = $factory->createRequest('POST', 'https://example.com/a');
+		self::assertInstanceOf(THttpFactoryTestRequest::class, $request);
+		self::assertSame('POST', $request->getMethod());
+
+		$response = $factory->createResponse(404);
+		self::assertInstanceOf(THttpFactoryTestResponse::class, $response);
+		self::assertSame('Not Found', $response->getReasonPhrase());
+
+		$uri = $factory->createUri('https://example.com/b');
+		self::assertInstanceOf(THttpFactoryTestUri::class, $uri);
+		self::assertSame('https://example.com/b', (string) $uri);
 	}
 }

@@ -32,21 +32,47 @@ use Psr\Http\Message\UriInterface;
  *     ->withBody($factory->createStream('payload'));
  * ```
  *
+ * Each class it builds is a constant:
+ * | Constant | Default |
+ * |---|---|
+ * | {@see REQUEST_CLASS} | {@see TRequest} |
+ * | {@see RESPONSE_CLASS} | {@see TResponse} |
+ * | {@see URI_CLASS} | {@see TResourceUri} |
+ *
+ * A subclass overrides a constant to build its own subclass of the default.  Streams come
+ * from {@see TStreamFactory}.
+ * ```php
+ * class TApiFactory extends THttpFactory
+ * {
+ *     public const REQUEST_CLASS = TApiRequest::class;
+ * }
+ * ```
+ *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0
  */
 class THttpFactory extends TStreamFactory implements RequestFactoryInterface, ResponseFactoryInterface, UriFactoryInterface
 {
+	/** The {@see TRequest} class that {@see createRequest()} builds. */
+	public const REQUEST_CLASS = TRequest::class;
+
+	/** The {@see TResponse} class that {@see createResponse()} builds. */
+	public const RESPONSE_CLASS = TResponse::class;
+
+	/** The {@see TResourceUri} class that {@see createUri()} builds. */
+	public const URI_CLASS = TResourceUri::class;
+
 	/**
 	 * Creates a request with the method and URI and no body.
 	 * @param string $method The request method.
 	 * @param string|UriInterface $uri The request URI.
 	 * @throws \InvalidArgumentException When the method or URI is invalid.
-	 * @return RequestInterface The {@see TRequest}.
+	 * @return RequestInterface The {@see REQUEST_CLASS} instance.
 	 */
 	public function createRequest(string $method, $uri): RequestInterface
 	{
-		return new TRequest($method, $uri);
+		$class = static::REQUEST_CLASS;
+		return new $class($method, $uri);
 	}
 
 	/**
@@ -54,21 +80,23 @@ class THttpFactory extends TStreamFactory implements RequestFactoryInterface, Re
 	 * @param int $code The status code.
 	 * @param string $reasonPhrase The reason phrase, or `''` for the standard phrase.
 	 * @throws \InvalidArgumentException When the status code is out of range.
-	 * @return ResponseInterface The {@see TResponse}.
+	 * @return ResponseInterface The {@see RESPONSE_CLASS} instance.
 	 */
 	public function createResponse(int $code = TResponse::DEFAULT_STATUS, string $reasonPhrase = ''): ResponseInterface
 	{
-		return new TResponse($code, [], null, TResponse::DEFAULT_PROTOCOL_VERSION, $reasonPhrase === '' ? null : $reasonPhrase);
+		$class = static::RESPONSE_CLASS;
+		return new $class($code, [], null, $class::DEFAULT_PROTOCOL_VERSION, $reasonPhrase === '' ? null : $reasonPhrase);
 	}
 
 	/**
 	 * Creates a URI from a string.
 	 * @param string $uri The URI, or `''` for an empty URI.
 	 * @throws \InvalidArgumentException When the URI cannot be parsed.
-	 * @return UriInterface The {@see TResourceUri}.
+	 * @return UriInterface The {@see URI_CLASS} instance.
 	 */
 	public function createUri(string $uri = ''): UriInterface
 	{
-		return new TResourceUri($uri);
+		$class = static::URI_CLASS;
+		return new $class($uri);
 	}
 }
