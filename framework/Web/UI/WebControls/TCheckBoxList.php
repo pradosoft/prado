@@ -510,6 +510,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 
 	/**
 	 * Gets the post back options for this checkbox.
+	 * The client script names the item at an index `ListName`, `IdSeparator`, 'c' and the index.
 	 * @return array
 	 */
 	protected function getPostBackOptions()
@@ -518,6 +519,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 		$options['ValidationGroup'] = $this->getValidationGroup();
 		$options['CausesValidation'] = $this->getCausesValidation();
 		$options['ListName'] = $this->getUniqueID();
+		$options['IdSeparator'] = self::getIdSeparator();
 		$options['ItemCount'] = $this->getItemCount();
 		return $options;
 	}

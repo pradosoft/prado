@@ -28,7 +28,7 @@ TNoScript represents the HTML `<noscript>` element. A browser with scripting dis
 | Callback re-render | Inserts content a scripting browser does not show. |
 | Scripting enabled | The content is absent from the accessibility tree. |
 
-TReCaptcha and TProofOfWork write their own inline `<noscript>` fallbacks.
+TProofOfWork writes its own inline `<noscript>` fallback.
 
 Playwright's `javaScriptEnabled: false` keeps the HTML parser's scripting flag, so no engine shows `<noscript>` content in a test; the functional test checks the served markup.
 

@@ -314,7 +314,7 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	public function loadPostData($key, $values)
 	{
 		if (isset($_FILES[$key])) {
-			if ($this->getMultiple() || $this->getDirectory() || is_array($_FILES[$key]['name'])) {
+			if (is_array($_FILES[$key]['name'])) {
 				foreach ($_FILES[$key]['name'] as $index => $name) {
 					$this->_files[$index] = new static::$fileUploadItemClass($name, $_FILES[$key]['size'][$index], $_FILES[$key]['type'][$index], $_FILES[$key]['error'][$index], $_FILES[$key]['tmp_name'][$index], $_FILES[$key]['full_path'][$index] ?? $name);
 				}

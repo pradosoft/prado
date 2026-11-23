@@ -33,14 +33,14 @@ test('QuickstartDataGrid2TestCase', async ({ page }) => {
   await h.assertAttribute('ctl0_body_DataGrid_ctl6_ctl5@disabled', 'regexp:true|disabled');
 
   // verify toggle column visibility
-  await h.byXPath("//input[@name='ctl0$body$ctl1$c0' and @value='Book Title']").click();
+  await h.byXPath("//input[@name='ctl0:body:ctl1:c0' and @value='Book Title']").click();
   await h.assertSourceNotContains('Head First Design Patterns');
-  await h.byXPath("//input[@name='ctl0$body$ctl1$c3' and @value='In-stock']").click();
+  await h.byXPath("//input[@name='ctl0:body:ctl1:c3' and @value='In-stock']").click();
   await h.pause(50);
   await h.assertElementNotPresent('ctl0_body_DataGrid_ctl1_ctl5');
-  await h.byXPath("//input[@name='ctl0$body$ctl1$c3' and @value='In-stock']").click();
+  await h.byXPath("//input[@name='ctl0:body:ctl1:c3' and @value='In-stock']").click();
   await h.pause(50);
   await h.assertElementPresent('ctl0_body_DataGrid_ctl1_ctl5');
-  await h.byXPath("//input[@name='ctl0$body$ctl1$c0' and @value='Book Title']").click();
+  await h.byXPath("//input[@name='ctl0:body:ctl1:c0' and @value='Book Title']").click();
   await h.assertSourceContains('Head First Design Patterns');
 });

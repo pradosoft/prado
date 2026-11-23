@@ -362,6 +362,7 @@ class TRatingListTest extends TestCase
 			'ValidationGroup' => '',
 			'CausesValidation' => true,
 			'ListName' => 'Rate',
+			'IdSeparator' => ':',
 			'ItemCount' => 3,
 			'AutoPostBack' => false,
 			'ReadOnly' => true,
@@ -411,7 +412,7 @@ class TRatingListTest extends TestCase
 		$this->assertSame(['ratings'], $cs->getRegisteredPradoScripts());
 		$this->assertTrue($cs->isStyleSheetFileRegistered('/assets/prado/ratings/default.css'));
 		$this->assertSame(
-			['Rate$c0' => true, 'Rate$c1' => true],
+			['Rate:c0' => true, 'Rate:c1' => true],
 			PradoUnit::getProp($page, '_controlsRegisteredForPostData')
 		);
 	}

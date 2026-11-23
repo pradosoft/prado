@@ -1018,15 +1018,16 @@ class TClientScriptManagerTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals('value2', $fields['field2']);
 	}
 
-	public function testHiddenFieldNameSpecialCharacters()
+	public function testHiddenFieldIdIsItsName()
 	{
+		// A UniqueID holds ':'; mapping it to '_' would repeat the control's ClientID.
 		$this->_cs->registerHiddenField('field:name', 'value');
 
 		$writer = $this->createWriter();
 		$this->_cs->renderHiddenFieldsBegin($writer);
 		$output = $writer->flush();
 
-		$this->assertStringContainsString('id="field_name"', $output);
+		$this->assertStringContainsString('name="field:name" id="field:name"', $output);
 	}
 
 	public function testRegisterScriptFileSameKeyOverwrites()

@@ -14,5 +14,5 @@ test('QuickstartLabelTestCase', async ({ page }) => {
 
   await h.assertAttribute('ctl0_body_Label2@disabled', 'regexp:true|disabled');
 
-  await h.type('ctl0$body$test', 'test');
+  await h.type('ctl0:body:test', 'test');
 });

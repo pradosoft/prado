@@ -12,7 +12,6 @@ namespace Prado\Web\UI\WebControls;
 
 use Prado\Prado;
 use Prado\TPropertyValue;
-use Prado\Util\TSimpleDateFormatter;
 
 /**
  * TDataTypeValidator class
@@ -27,6 +26,8 @@ use Prado\Util\TSimpleDateFormatter;
  * For <b>Date</b> type, the property {@see setDateFormat DateFormat}
  * will be used to determine how to parse the date string. If it is not
  * provided, the string will be assumed to be in GNU datetime format.
+ * The server and the client check a value with the same rules, {@see TValidationDataType::convert()}:
+ * a <b>Float</b> has no exponent, and a <b>Date</b> without a DateFormat may be before 1970.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @since 3.0
@@ -88,22 +89,7 @@ class TDataTypeValidator extends TBaseValidator
 		if ($value == '') {
 			return true;
 		}
-
-		switch ($this->getDataType()) {
-			case TValidationDataType::Integer:
-				return preg_match('/^[-+]?[0-9]+$/', trim($value));
-			case TValidationDataType::Float:
-				return preg_match('/^[-+]?([0-9]*\.)?[0-9]+([eE][-+]?[0-9]+)?$/', trim($value));
-			case TValidationDataType::Date:
-				$dateFormat = $this->getDateFormat();
-				if (strlen($dateFormat)) {
-					$formatter = new TSimpleDateFormatter($dateFormat);
-					return $formatter->isValidDate($value);
-				} else {
-					return strtotime($value) > 0;
-				}
-		}
-		return true;
+		return TValidationDataType::convert($this->getDataType(), $value, $this->getDateFormat()) !== null;
 	}
 
 	/**

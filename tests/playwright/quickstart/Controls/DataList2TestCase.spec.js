@@ -21,9 +21,9 @@ test('QuickstartDataList2TestCase', async ({ page }) => {
   // verify editing an item
   await h.byId('ctl0_body_DataList_ctl5_ctl0').click();
   await h.pause(50);
-  await h.type('ctl0$body$DataList$ctl5$ProductQuantity', '11');
-  await h.type('ctl0$body$DataList$ctl5$ProductPrice', '140.99');
-  await h.byXPath("//input[@name='ctl0$body$DataList$ctl5$ProductImported']").click();
+  await h.type('ctl0:body:DataList:ctl5:ProductQuantity', '11');
+  await h.type('ctl0:body:DataList:ctl5:ProductPrice', '140.99');
+  await h.byXPath("//input[@name='ctl0:body:DataList:ctl5:ProductImported']").click();
   await h.byLinkText('Save').click();
   await h.pause(50);
 
@@ -35,9 +35,9 @@ test('QuickstartDataList2TestCase', async ({ page }) => {
   // verify editing another item
   await h.byId('ctl0_body_DataList_ctl3_ctl1').click();
   await h.pause(50);
-  await h.type('ctl0$body$DataList$ctl3$ProductName', 'Hard Drive');
-  await h.type('ctl0$body$DataList$ctl3$ProductQuantity', '23');
-  await h.byXPath("//input[@name='ctl0$body$DataList$ctl3$ProductImported']").click();
+  await h.type('ctl0:body:DataList:ctl3:ProductName', 'Hard Drive');
+  await h.type('ctl0:body:DataList:ctl3:ProductQuantity', '23');
+  await h.byXPath("//input[@name='ctl0:body:DataList:ctl3:ProductImported']").click();
   await h.byLinkText('Cancel').click();
   await h.pause(50);
 

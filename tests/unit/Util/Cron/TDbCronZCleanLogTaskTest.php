@@ -10,6 +10,7 @@ use Prado\IO\TTextWriter;
 use Prado\Shell\TShellWriter;
 use Prado\Util\Cron\TDbCronManager;
 use Prado\Util\Cron\TShellCronLogBehavior;
+use Prado\Test\Unit\PradoUnit;
 
 class TDbCronZCleanLogTaskTest extends TCronTaskTest
 {	
@@ -52,6 +53,8 @@ class TDbCronZCleanLogTaskTest extends TCronTaskTest
 		//works properly, output has green
 		{
 			
+			// The test inserts the log rows itself, so it creates the table when no earlier test did.
+			PradoUnit::invoke($dbcron, 'ensureTable');
 			$db = $dbcron->getDbConnection();
 			$time = time();
 			$cmd = $db->createCommand(
@@ -120,5 +123,65 @@ class TDbCronZCleanLogTaskTest extends TCronTaskTest
 		self::assertSame('nightly%', $task->getTaskName());
 		$task->setTaskName('');
 		self::assertNull($task->getTaskName());
+	}
+
+	public function testUsernameEmptyIsNull()
+	{
+		$task = new TDbCronCleanLogTask();
+		$task->setUsername('admin');
+		self::assertSame('admin', $task->getUsername());
+		$task->setUsername('');
+		self::assertNull($task->getUsername());
+	}
+
+	public function testExecuteByModuleIdAndShellLog()
+	{
+		$app = \Prado\Prado::getApplication();
+		$snapshot = PradoUnit::snapshot($app, ['_modules']);
+		$dbcron = new TDbCronManager();
+		$cron = new TCronModule();
+		PradoUnit::invoke($dbcron, 'ensureTable');
+		try {
+			$app->setModule('cleanLogDb', $dbcron);
+			$app->setModule('cleanLogCron', $cron);
+			foreach ([false, true] as $logged) {
+				$writers = [];
+				if ($logged) {
+					foreach ([$dbcron, $cron] as $module) {
+						$module->attachBehavior('shellLog', new TShellCronLogBehavior($writers[] = new TShellWriter(new TTextWriter())));
+					}
+				}
+				foreach ([[null, $dbcron], ['cleanLogDb', $cron], [null, $cron], ['cleanLogCron', $dbcron]] as [$moduleId, $passed]) {
+					$task = new TDbCronCleanLogTask();
+					$task->setModuleId($moduleId);
+					$task->execute($passed);
+				}
+				if ($logged) {
+					$text = $writers[0]->flush() . $writers[1]->flush();
+					self::assertSame(2, substr_count($text, 'Cron Task Logs'), 'each TDbCronManager run writes its count');
+					self::assertSame(2, substr_count($text, 'No DB Cron Module to clean'), 'each TCronModule run writes its warning');
+					$dbcron->detachBehavior('shellLog');
+					$cron->detachBehavior('shellLog');
+				}
+			}
+		} finally {
+			PradoUnit::restore($app, $snapshot);
+			$dbcron->unlisten();
+			$cron->unlisten();
+		}
+	}
+
+	public function testTimePeriodThatDoesNotReachBackIsRejected()
+	{
+		$task = new TDbCronCleanLogTask();
+		foreach (['last week', 'Previous week', '-1 week', 'yesterday', '-5'] as $period) {
+			try {
+				$task->setTimePeriod($period);
+				self::fail('the period ' . $period . ' was accepted');
+			} catch (TInvalidDataValueException $e) {
+			}
+		}
+		$task->setTimePeriod('1 week');
+		self::assertSame('1 week', $task->getTimePeriod());
 	}
 }
