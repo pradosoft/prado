@@ -1602,11 +1602,15 @@ Object.assign(Date,
 	 */
 	SimpleParse(value, format) {
 		const val=String(value);
-		format=String(format);
+		format=format == null ? "" : String(format);
 
 		if(val.length <= 0) return null;
 
-		if(format.length <= 0) return new Date(value);
+		if(format.length <= 0)
+		{
+			const date = new Date(value);
+			return isNaN(date.getTime()) ? null : date;
+		}
 
 		const isInteger = val => {
 			const digits="1234567890";
