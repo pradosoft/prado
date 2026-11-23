@@ -129,4 +129,52 @@ class TCronMonitorResponseTest extends \PHPUnit\Framework\TestCase
 			$module->unlisten();
 		}
 	}
+
+	public function testTag_LimitsThePrometheusMetrics()
+	{
+		$module = new TCronModule();
+		$module->setID('monitorTaggedMetrics');
+		$module->init([
+			['name' => 'metricOne', 'schedule' => '0 0 1 1 ? 2099', 'task' => TTestCronModuleTask::class, 'tags' => 'web'],
+			['name' => 'metricTwo', 'schedule' => '0 0 1 1 ? 2099', 'task' => TTestCronModuleTask::class],
+		]);
+		$written = '';
+		$http = $this->createMock(THttpResponse::class);
+		$http->method('write')->willReturnCallback(function ($text) use (&$written) {
+			$written .= $text;
+		});
+		try {
+			$response = new TTestCronMonitorResponse();
+			$response->module = $module;
+			$response->response = $http;
+			$response->setFormat(TCronMonitorResponse::FORMAT_PROMETHEUS);
+			$response->setTag('web');
+			self::assertNull($response->getJsonContent());
+			self::assertStringContainsString('task="metricOne"', $written);
+			self::assertStringNotContainsString('task="metricTwo"', $written);
+		} finally {
+			$module->unlisten();
+		}
+	}
+
+	public function testGetCronModule_WithoutACronModuleThrows()
+	{
+		$response = new TCronMonitorResponse();
+		self::expectException(TConfigurationException::class);
+		$response->getCronModule();
+	}
+
+	public function testNullAndEmptyPropertyValues()
+	{
+		$response = new TCronMonitorResponse();
+		$response->setTag('web');
+		$response->setTag(null);
+		self::assertNull($response->getTag());
+		$response->setCronModuleID('cron');
+		$response->setCronModuleID('');
+		self::assertNull($response->getCronModuleID());
+		$response->setCronModuleID('cron');
+		$response->setCronModuleID(null);
+		self::assertNull($response->getCronModuleID());
+	}
 }

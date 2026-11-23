@@ -198,7 +198,8 @@ class TProcessCronTask extends TCronTask
 		if (TProcessHelper::isSystemWindows()) {
 			// The pid is the cmd.exe wrapper that stays attached to the managed process (a documented
 			// limitation). Redirection uses plain cmd '>' (caret-escaped '^>' would pass a literal '>' to
-			// the command); the working directory and log path are quoted.
+			// the command); the working directory and log path are quoted.  Only Windows runs this branch.
+			// @codeCoverageIgnoreStart
 			$log = $this->getLogFile() ?? 'NUL';
 			$dir = $this->getDirectory();
 			$cd = ($dir !== null && $dir !== '') ? 'cd /d "' . $dir . '" & ' : '';
@@ -206,6 +207,7 @@ class TProcessCronTask extends TCronTask
 			$out = shell_exec('powershell -NoProfile -Command "(Start-Process -FilePath cmd.exe -ArgumentList \'/c ' . $inner . '\' -WindowStyle Hidden -PassThru).Id"');
 			$pid = (int) trim((string) $out);
 			return $pid > 0 ? $pid : null;
+			// @codeCoverageIgnoreEnd
 		}
 		$log = $this->getLogFile() ?? '/dev/null';
 		$prefix = '';
@@ -289,8 +291,11 @@ class TProcessCronTask extends TCronTask
 	protected function processStartTime(int $pid): ?string
 	{
 		if (TProcessHelper::isSystemWindows()) {
+			// Only Windows runs this branch.
+			// @codeCoverageIgnoreStart
 			$out = trim((string) shell_exec('powershell -NoProfile -Command "try { (Get-Process -Id ' . $pid . ' -ErrorAction Stop).StartTime.Ticks } catch { \'\' }" 2>NUL'));
 			return $out !== '' ? $out : null;
+			// @codeCoverageIgnoreEnd
 		}
 		$out = trim((string) shell_exec('ps -o lstart= -p ' . $pid . ' 2>/dev/null'));
 		return $out !== '' ? $out : null;

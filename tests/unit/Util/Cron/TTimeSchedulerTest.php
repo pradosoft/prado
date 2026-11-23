@@ -117,6 +117,9 @@ class TTimeSchedulerTest extends \PHPUnit\Framework\TestCase
 			'50-64 * * * *', '* 20-30 * * *', '* * 30-40 * *', '* * * 10-20 *', '* * * * 5-10',
 			'0-59/60 * * * *', '* 0-23/24 * * *', '* * 0-31/32 * *', '* * * 1-12/13 *', '* * * * 0-6/7',
 			'* * L-10 * ?', '* * * * 7L', '* * ? * 0#6',
+			// A reversed range matches nothing, so it is rejected.
+			'50-10 * * * *', '0:50-10 * * * *', '0 23-1 * * *', '0 0 20-5 * *', '0 0 1 12-1 *', '0 0 1 nov-feb *',
+			'0 0 ? * fri-mon', '0 0 ? * 5-1', '0 0 1 1 * 2030-2027', '0 0 1 12-1,6 *',
 			'* * * * * 1969', '* * * * * 2100',
 			'* * ?-8 * *', '* * * * ?-4', '* * ?/8 * *', '* * * * ?/4',
 			'@', '@test',
@@ -132,7 +135,7 @@ class TTimeSchedulerTest extends \PHPUnit\Framework\TestCase
 			'H(5-3) * * * ?', '* * * * * H', '#hourly@midnight',
 			// periods: no interval, an unparsable or non-positive interval, an unparsable time
 			'every', 'every garbage text', 'every 0 seconds', 'every -1 day', 'every 10 seconds from nonsense',
-			'every 10 seconds until @5x',
+			'every 10 seconds until @5x', 'every 10 seconds from 0', 'every 10 seconds until 0',
 		];
 		$out = [];
 		foreach ($bad as $schedule) {
@@ -612,6 +615,20 @@ class TTimeSchedulerTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame(self::hashed('', 'minute', 0, 59) . ' * * * ?', $this->obj->getResolvedSchedule());
 	}
 
+	public function testHashContext_NullIsTheEmptyContext()
+	{
+		$this->obj->setSchedule('H * * * ?');
+		$this->obj->setHashContext(null);
+		self::assertSame('', $this->obj->getHashContext(), 'null is the unchanged empty context');
+		self::assertSame(self::hashed('', 'minute', 0, 59) . ' * * * ?', $this->obj->getResolvedSchedule());
+
+		$this->obj->setSchedule('0 * * * ?');
+		$this->obj->setHashContext('alpha');
+		$this->obj->setHashContext(null);
+		self::assertSame('', $this->obj->getHashContext(), 'null clears a context');
+		self::assertSame('0 * * * ?', $this->obj->getResolvedSchedule(), 'a schedule without a hashed field is unchanged');
+	}
+
 	public function testHashedShortcutsResolve()
 	{
 		$this->obj->setHashContext('alpha');
@@ -968,6 +985,15 @@ class TTimeSchedulerTest extends \PHPUnit\Framework\TestCase
 		self::assertSame(['10-31 08:00 EDT', '11-01 08:00 EST'], $format($this->obj->getNextTriggerTimes(2, gmmktime(0, 0, 0, 10, 1, 2026))), 'a period anchor parses in the zone and steps the local calendar');
 	}
 
+	public function testTimeZone_NullIsTheApplicationTimeZone()
+	{
+		$this->obj->setTimeZone('Asia/Tokyo');
+		$this->obj->setTimeZone(null);
+		self::assertNull($this->obj->getTimeZone());
+		$this->obj->setSchedule('0 9 * * *');
+		self::assertSame(gmmktime(9, 0, 0, 6, 1, 2026), $this->obj->getNextTriggerTime(gmmktime(0, 0, 0, 6, 1, 2026)), 'the application zone is UTC');
+	}
+
 	public function testGetNextTriggerTime_AnUnparsableTimeHasNoTrigger()
 	{
 		$this->obj->setSchedule('* * * * *');
@@ -1017,6 +1043,18 @@ class TTimeSchedulerTest extends \PHPUnit\Framework\TestCase
 
 		$this->obj->setSchedule('#daily except 01-01');
 		self::assertStringEndsWith(' except 01-01', $this->obj->getResolvedSchedule());
+	}
+
+	public function testExcept_AYearlyRangeAcrossTheNewYearExcludesItsLastDay()
+	{
+		$this->obj->setSchedule('0 0 * * * except 12-31..01-01');
+		self::assertSame(gmmktime(0, 0, 0, 1, 2, 2027), $this->obj->getNextTriggerTime(gmmktime(23, 0, 0, 12, 31, 2026)), 'January 1 is in the range from December 31');
+	}
+
+	public function testPeriodTime_AnEmptyValueIsAbsent()
+	{
+		self::assertNull(\Prado\Test\Unit\PradoUnit::invoke($this->obj, 'parsePeriodTime', ''));
+		self::assertNull(\Prado\Test\Unit\PradoUnit::invoke($this->obj, 'parsePeriodTime', null));
 	}
 
 	public function testExcept_InTheTimeZone()
@@ -1077,5 +1115,13 @@ class TTimeSchedulerTest extends \PHPUnit\Framework\TestCase
 		self::assertSame('2031-01-01 00:00', date('Y-m-d H:i', $next), 'a step of 05 is every five years');
 		$scheduler->setSchedule('0 0 1 1 * 2026/00');
 		self::assertSame('2027-01-01 00:00', date('Y-m-d H:i', $scheduler->getNextTriggerTime(mktime(0, 0, 0, 6, 1, 2026))), 'a step of 00 is every year');
+	}
+
+	public function testARangeThatStartsAtItsEndIsOneValue()
+	{
+		$scheduler = new TTimeScheduler();
+		$scheduler->setSchedule('5-5 3-3 * jan-jan mon-mon');
+		$next = $scheduler->getNextTriggerTime(mktime(0, 0, 0, 12, 31, 2025));
+		self::assertSame('2026-01-05 03:05', date('Y-m-d H:i', (int) $next));
 	}
 }
