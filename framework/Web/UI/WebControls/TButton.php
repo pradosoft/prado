@@ -137,9 +137,7 @@ class TButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 		if (($uniqueID = $this->getUniqueID()) !== '') {
 			$writer->addAttribute('name', $uniqueID);
 		}
-		if ($this->getButtonTag() === TButtonTag::Button) {
-			$this->addParsedObject($this->getText());
-		} else {
+		if ($this->getButtonTag() !== TButtonTag::Button) {
 			$writer->addAttribute('value', $this->getText());
 		}
 		if ($this->getEnabled(true)) {
@@ -240,14 +238,14 @@ class TButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 
 	/**
 	 * Renders the body content enclosed between the control tag.
-	 * This overrides the parent implementation with nothing to be rendered for input tags,
-	 * button tags are rendered normally.
+	 * An input tag has no body. A button tag renders its child controls followed by {@see getText Text}.
 	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderContents($writer)
 	{
 		if ($this->getButtonTag() === TButtonTag::Button) {
 			parent::renderContents($writer);
+			$writer->write($this->getText());
 		}
 	}
 
