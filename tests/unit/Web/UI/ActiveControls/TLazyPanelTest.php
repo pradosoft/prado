@@ -180,7 +180,7 @@ class TLazyPanelTest extends TestCase
 		$this->assertSame('param', $raised[0][1]);
 		$this->assertNotNull($raised[0][2], 'the content exists when OnLoadContent is raised');
 		$this->assertSame($raised[0][2], $page->Value, 'content controls register with the template control');
-		$this->assertSame('Lazy$Value', $raised[0][2]->getUniqueID());
+		$this->assertSame('Lazy:Value', $raised[0][2]->getUniqueID());
 
 		$panel->loadContent();
 		$this->assertCount(1, $raised, 'loaded content is left as it is');

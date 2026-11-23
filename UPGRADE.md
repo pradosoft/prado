@@ -10,6 +10,14 @@ for both A and B.
 Upgrading from v4.3.3
 ---------------------
 - PHP 8.2 is now required. Applications running PHP 8.1 stay on Prado 4.3.
+- Issue #1612 - The separator between the IDs of a control `UniqueID` is `:`; in 4.3 it was `$`. A posted field is
+  named `ctl0:Main:Note`, and `PRADO_POSTBACK_TARGET` and `PRADO_CALLBACK_TARGET` carry the same form. The OWASP Core
+  Rule Set rule 942290 rejects `$` before an ID such as `Note`, `Order` or `TextBox1`, so a ModSecurity host refused
+  such forms. Application JavaScript, tests, and `findControl()` paths that write a name with `$` change to `:`;
+  `findControl('Main.Note')` is unchanged, and client IDs keep `_`. Code that builds or parses a name reads
+  `TControl::getIdSeparator()`; `TControl::ID_SEPARATOR` stays `$` and is deprecated. To keep `$`, set
+  `<service id="page" class="TPageService" IdSeparator="$">`. The `id` of a hidden field registered with
+  `TClientScriptManager::registerHiddenField()` is its name; in 4.3 a `:` in the name was `_` in the `id`.
 - Issue #1497 - A page path an `onAdditionalPagePaths` handler offers must lie inside the `Application` path after its
   `..` segments are resolved; others throw `THttpException` 403. In 4.3 any path beginning with the application path
   was taken, including `protected/../other` and a sibling `protected2`. Return pages from inside the application.

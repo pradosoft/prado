@@ -8,5 +8,5 @@ test('QuickstartStatementsTestCase', async ({ page }) => {
 
   await h.assertTitle('PRADO QuickStart Sample');
 
-  await h.assertSourceContains("UniqueID is 'ctl0$body$ctl0'");
+  await h.assertSourceContains("UniqueID is 'ctl0:body:ctl0'");
 });
