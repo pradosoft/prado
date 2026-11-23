@@ -5,6 +5,7 @@ namespace Prado\Test\Unit\Web\UI\WebControls;
 use Prado\Exceptions\TNotSupportedException;
 use Prado\IO\TTextWriter;
 use Prado\Web\UI\TClientScriptManager;
+use Prado\Web\UI\TControl;
 use Prado\Web\UI\THtmlWriter;
 use Prado\Web\UI\TPage;
 use Prado\Web\UI\WebControls\TDatePickerClientScript;
@@ -504,17 +505,21 @@ class TDatePickerTest extends TestCase
 		$picker->setMode(TDatePickerMode::Button);
 		$picker->setButtonText('Pick');
 		$picker->setCssClass('date');
-		$this->assertSame('<input name="d" type="text" id="d" class="date" />'
+		$this->assertSame(
+			'<input name="d" type="text" id="d" class="date" />'
 			. '<input id="dbutton" type="button" class="date TDatePickerButton" value="Pick" aria-label="Choose date" aria-haspopup="dialog" aria-expanded="false" />',
-			$this->renderPicker($picker));
+			$this->renderPicker($picker)
+		);
 	}
 
 	public function testRenderTextBoxWithAnImageButton()
 	{
 		[$picker] = $this->createPicker();
 		$picker->setMode(TDatePickerMode::ImageButton);
-		$this->assertStringEndsWith('<input id="dbutton" src="/js/datepicker/calendar.png" alt="Choose date" aria-haspopup="dialog" aria-expanded="false" class=" TDatePickerImageButton" type="image" onclick="return false;" />',
-			$this->renderPicker($picker));
+		$this->assertStringEndsWith(
+			'<input id="dbutton" src="/js/datepicker/calendar.png" alt="Choose date" aria-haspopup="dialog" aria-expanded="false" class=" TDatePickerImageButton" type="image" onclick="return false;" />',
+			$this->renderPicker($picker)
+		);
 		$picker->setButtonImageUrl('/cal.png');
 		$this->assertStringContainsString('src="/cal.png"', $this->renderPicker($picker));
 	}
@@ -541,6 +546,8 @@ class TDatePickerTest extends TestCase
 
 	/**
 	 * @dataProvider noButtonProvider
+	 * @param string $mode
+	 * @param bool $showCalendar
 	 */
 	public function testRenderTextBoxWithoutAButton(string $mode, bool $showCalendar)
 	{
@@ -552,6 +559,7 @@ class TDatePickerTest extends TestCase
 
 	public function testRenderDropDownListsSelectTheDate()
 	{
+		$separator = TControl::getIdSeparator();
 		[$picker, $cs] = $this->createPicker();
 		$picker->setDateInputMode(TDatePickerInputMode::DropDownList);
 		$picker->setDateFormat('dd-MM-yyyy');
@@ -562,11 +570,11 @@ class TDatePickerTest extends TestCase
 		$cs->method('isEndScriptRegistered')->willReturn(false);
 		$cs->expects($this->exactly(2))->method('registerEndScript');
 		$output = $this->renderPicker($picker);
-		$this->assertStringContainsString('<select id="d_day" name="d$day" class="datepicker_day_options dd" aria-label="Day">', $output);
+		$this->assertStringContainsString('<select id="d_day" name="d' . $separator . 'day" class="datepicker_day_options dd" aria-label="Day">', $output);
 		$this->assertStringContainsString('<option value="9" selected="selected">09</option>', $output);
-		$this->assertStringContainsString('<select id="d_month" name="d$month" class="datepicker_month_options dd" aria-label="Month"><option value="0">01</option>', $output);
+		$this->assertStringContainsString('<select id="d_month" name="d' . $separator . 'month" class="datepicker_month_options dd" aria-label="Month"><option value="0">01</option>', $output);
 		$this->assertStringContainsString('<option value="2" selected="selected">03</option>', $output);
-		$this->assertStringContainsString('<select id="d_year" name="d$year" class="datepicker_year_options dd" aria-label="Year"><option value="2025">2025</option><option value="2026" selected="selected">2026</option><option value="2027">2027</option></select>', $output);
+		$this->assertStringContainsString('<select id="d_year" name="d' . $separator . 'year" class="datepicker_year_options dd" aria-label="Year"><option value="2025">2025</option><option value="2026" selected="selected">2026</option><option value="2027">2027</option></select>', $output);
 		$this->assertStringContainsString('<input name="d" type="hidden" value="09-03-2026" /></span>', $output);
 		$this->assertSame(TDatePickerMode::ImageButton, $picker->getMode());
 		$this->assertStringEndsWith('TDatePickerImageButton" type="image" onclick="return false;" />', $output);
@@ -645,6 +653,9 @@ class TDatePickerTest extends TestCase
 
 	/**
 	 * @dataProvider triggerProvider
+	 * @param string $mode
+	 * @param ?string $trigger
+	 * @param ?string $event
 	 */
 	public function testDatePickerOptions(string $mode, ?string $trigger, ?string $event)
 	{
@@ -697,9 +708,10 @@ class TDatePickerTest extends TestCase
 
 	public function testLoadPostDataFromTheDropDownLists()
 	{
+		$separator = TControl::getIdSeparator();
 		$picker = new TDatePicker();
 		$picker->setDateInputMode(TDatePickerInputMode::DropDownList);
-		$values = ['d$day' => '9', 'd$month' => '2', 'd$year' => '2026'];
+		$values = ['d' . $separator . 'day' => '9', 'd' . $separator . 'month' => '2', 'd' . $separator . 'year' => '2026'];
 		$this->assertTrue($picker->loadPostData('d', $values));
 		$this->assertSame('09-03-2026', $picker->getText());
 		$this->assertFalse($picker->loadPostData('d', $values));
@@ -707,19 +719,21 @@ class TDatePickerTest extends TestCase
 
 	public function testLoadPostDataIgnoresAReadOnlyPicker()
 	{
+		$separator = TControl::getIdSeparator();
 		$picker = new TDatePicker();
 		$picker->setDateInputMode(TDatePickerInputMode::DropDownList);
 		$picker->setReadOnly(true);
-		$this->assertFalse($picker->loadPostData('d', ['d$day' => '9', 'd$month' => '2', 'd$year' => '2026']));
+		$this->assertFalse($picker->loadPostData('d', ['d' . $separator . 'day' => '9', 'd' . $separator . 'month' => '2', 'd' . $separator . 'year' => '2026']));
 		$this->assertSame('', $picker->getText());
 	}
 
 	public function testLoadPostDataWithoutADayPatternUsesTheFirstDay()
 	{
+		$separator = TControl::getIdSeparator();
 		$picker = new TDatePicker();
 		$picker->setDateInputMode(TDatePickerInputMode::DropDownList);
 		$picker->setDateFormat('MMMM yyyy');
-		$picker->loadPostData('d', ['d$month' => '2', 'd$year' => '2026']);
+		$picker->loadPostData('d', ['d' . $separator . 'month' => '2', 'd' . $separator . 'year' => '2026']);
 		$this->assertSame('03 2026', $picker->getText());
 	}
 
@@ -752,20 +766,24 @@ class TDatePickerTest extends TestCase
 
 	/**
 	 * @dataProvider postedFieldsProvider
+	 * @param string $dayCase
+	 * @param bool $month
+	 * @param bool $year
 	 */
 	public function testDateFromPostDataFillsMissingFields(string $dayCase, bool $month, bool $year)
 	{
+		$separator = TControl::getIdSeparator();
 		$picker = new TDatePicker();
 		$picker->setDateFormat($dayCase === 'first' ? 'MM yyyy' : 'yyyy-MM-dd');
 		$values = [];
 		if ($dayCase === 'day') {
-			$values['d$day'] = '9';
+			$values['d' . $separator . 'day'] = '9';
 		}
 		if ($month) {
-			$values['d$month'] = '0';
+			$values['d' . $separator . 'month'] = '0';
 		}
 		if ($year) {
-			$values['d$year'] = '2026';
+			$values['d' . $separator . 'year'] = '2026';
 		}
 		$text = PradoUnit::invoke($picker, 'getDateFromPostData', 'd', $values);
 		$y = $year ? '2026' : date('Y');
@@ -792,6 +810,9 @@ class TDatePickerTest extends TestCase
 
 	/**
 	 * @dataProvider dropDownCalendarProvider
+	 * @param string $mode
+	 * @param string $cssClass
+	 * @param bool $parses
 	 */
 	public function testDropDownCalendarWrapper(string $mode, string $cssClass, bool $parses)
 	{
@@ -821,6 +842,8 @@ class TDatePickerTest extends TestCase
 
 	/**
 	 * @dataProvider calendarSelectionProvider
+	 * @param string $format
+	 * @param array $ids
 	 */
 	public function testCalendarSelectionsFollowTheFormat(string $format, array $ids)
 	{
@@ -843,6 +866,9 @@ class TDatePickerTest extends TestCase
 
 	/**
 	 * @dataProvider dropDownOptionsProvider
+	 * @param array $options
+	 * @param int $selected
+	 * @param string $expected
 	 */
 	public function testDropDownListOptions(array $options, int $selected, string $expected)
 	{
@@ -863,6 +889,9 @@ class TDatePickerTest extends TestCase
 
 	/**
 	 * @dataProvider emptyYearRangeProvider
+	 * @param bool $readOnly
+	 * @param bool $parentDisabled
+	 * @param bool $disabled
 	 */
 	public function testYearOptionsWithAnEmptyRange(bool $readOnly, bool $parentDisabled, bool $disabled)
 	{
