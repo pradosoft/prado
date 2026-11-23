@@ -1,4 +1,8 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TTextBox::getSafeText()` purifies with the text box's own `Config`; every text box used the configuration of the first one to purify. (belisoful)
+BUG: Issue #1497 - `TFileUpload::loadPostData()` reads a scalar posted file as one file when `Multiple` or `Directory` is set; it threw `TPhpErrorException`. (belisoful)
+BUG: Issue #1497 - `TCheckBox::render()` keeps the control's `onclick` attribute; a second render lost it. (belisoful)
+BUG: Issue #1497 - `TButton` with `ButtonTag="Button"` renders its `Text` once; each render added the text again as a child control. (belisoful)
 BUG: Issue #1497 - `TParameterizeBehavior` and `TTimeZoneParameterBehavior` apply the current parameter value when an attached, disabled behavior is enabled; enabling only routed later changes, so the owner kept a stale value. `TParameterizeBehavior` checks its Parameter and Property on enable as on attach. (belisoful)
 BUG: Issue #1497 - `TComponent::detachClassBehavior()`, `detachBehavior()`, `enableBehavior()`, and `disableBehavior()` with a null name find no behavior and return null or false; they threw `TPhpErrorException`. (belisoful)
 BUG: Issue #1497 - `TCompareValidator` and `TDataTypeValidator` convert values with the client's rules through the new `TValidationDataType::convert()`. `TCompareValidator` compares strings exactly, where `1e3` equaled `1000`. An input that does not convert fails, and a value to compare that does not convert passes. A `Date` without `DateFormat` may be before 1970 on the server, and `TDataTypeValidator` no longer accepts a `Float` with an exponent. On the client, `Date.SimpleParse()` without a format parses with the `Date` parser; it failed for every value. (belisoful)
