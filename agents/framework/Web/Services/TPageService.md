@@ -48,6 +48,7 @@ Activated when the URL contains no special service parameter, or when `ServiceID
 |----------|-------------|
 | `BasePath` | Root directory for page files (default: `pages/` under app root) |
 | `DefaultPage` | Page to serve when no page specified (default: `'Home'`) |
+| `IdSeparator` | Character between the IDs of a control UniqueID, which names the posted fields (default: `':'`). Reads and sets `TControl::getIdSeparator()`; refused after `init()`. `IdSeparator="$"` restores the separator of 4.3 (#1612) |
 | `ServiceParameter` | URL parameter identifying the page path |
 
 ### Page Resolution

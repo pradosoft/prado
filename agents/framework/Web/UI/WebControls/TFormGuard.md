@@ -12,8 +12,8 @@
 TFormGuard is a `TBaseValidator` that rejects automated submissions without asking the user anything. It validates the form it sits in: `getValidationTarget()` returns null (the `TCustomValidator` pattern) and `ControlToValidate` is ignored. Client script is off.
 
 It renders, after the validator's error span:
-- a honeypot `<input type="text">` named `UniqueID$HoneypotName` inside a `<span aria-hidden="true">` positioned off-screen, with `tabindex="-1"` and `autocomplete="off"`;
-- a hidden `UniqueID$ts` stamp: `TSecurityManager::hashData("<time>:<UniqueID>")`.
+- a honeypot `<input type="text">` named `UniqueID:HoneypotName` (the separator is `TControl::getIdSeparator()`) inside a `<span aria-hidden="true">` positioned off-screen, with `tabindex="-1"` and `autocomplete="off"`;
+- a hidden `UniqueID:ts` stamp (`STAMP_NAME`): `TSecurityManager::hashData("<time>:<UniqueID>")`.
 
 It implements `IPostBackDataHandler` and calls `registerRequiresPostData()` in `onPreRender`, so `loadPostData()` reads both sub-fields from the full post data on the next postback (sub-fields have no control of their own to receive them).
 

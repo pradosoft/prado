@@ -229,6 +229,7 @@ class TComponentClassBehaviorTest extends TComponentTestBase
 
 		$noReturnBehavior = $this->component->detachClassBehavior('NoBehaviorOfThisName');
 		$this->assertNull($noReturnBehavior);
+		$this->assertNull($this->component->detachClassBehavior(null));
 
 		$this->assertNull($this->component->asa($fooClassBehaviorName), "Component has the FooClassBehavior and should _not_ have this behavior");
 		$this->assertNull($prenolistencomponent->asa($fooClassBehaviorName), "Component has the FooClassBehavior and should _not_ have this behavior");
@@ -309,6 +310,21 @@ class TComponentClassBehaviorTest extends TComponentTestBase
 
 		$this->assertSame(2, $component->unlisten());
 		$this->assertSame($count, $handlers->getCount());
+	}
+
+	/**
+	 * detachClassBehavior(null) returns null and leaves an anonymous class behavior attached.
+	 */
+	public function testDetachClassBehavior_nullName(): void
+	{
+		$behavior = $this->component->attachClassBehavior(null, new FooClassBehavior());
+		$indexName = $this->anonymousClassIndex++;
+		$this->tearDownScripts[] = function () use ($indexName) {
+			NewComponent::detachClassBehavior($indexName);
+		};
+
+		$this->assertNull($this->component->detachClassBehavior(null));
+		$this->assertSame([$behavior], $this->component->getBehaviors());
 	}
 }
 

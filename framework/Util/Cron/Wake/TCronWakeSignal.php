@@ -148,8 +148,9 @@ class TCronWakeSignal extends TModule implements ICronWakeTransport
 	}
 
 	/**
-	 * Records the pid, installs the handler, and sleeps in slices until the signal arrives or the
-	 * timestamp passes.  A signal that arrived since the last wait is consumed at once.
+	 * Installs the handler, records the pid, and sleeps in slices until the signal arrives or the
+	 * timestamp passes.  A signal that arrived since the last wait is consumed at once.  The handler is
+	 * in place before the pid file names this process, so a signal sent at once does not end it.
 	 * @param float $until the Unix timestamp to wait until
 	 * @param float $now the current Unix timestamp with microseconds
 	 * @return ?bool true when the signal arrived, false when the wait timed out, null when unavailable
@@ -159,8 +160,8 @@ class TCronWakeSignal extends TModule implements ICronWakeTransport
 		if (!$this->getIsAvailable()) {
 			return null;
 		}
-		$this->writePid();
 		$this->installHandler();
+		$this->writePid();
 		$remaining = $until - $now;
 		$start = \microtime(true);
 		while (true) {

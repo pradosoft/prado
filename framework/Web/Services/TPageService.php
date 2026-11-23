@@ -12,11 +12,14 @@ namespace Prado\Web\Services;
 
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\THttpException;
+use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Prado;
 use Prado\TApplication;
 use Prado\TApplicationMode;
+use Prado\TPropertyValue;
 use Prado\Util\Traits\TInitializedTrait;
+use Prado\Web\UI\TControl;
 use Prado\Web\UI\TPage;
 use Prado\Web\UI\TTemplateManager;
 use Prado\Web\UI\TThemeManager;
@@ -86,6 +89,11 @@ use Prado\Web\UI\TThemeManager;
  * where {@see setDefaultPage DefaultPage} is the page shown when no page is
  * specified in the request and {@see setBasePath BasePath} is the namespace
  * path to the pages directory.
+ *
+ * {@see setIdSeparator IdSeparator} is the character between the IDs of a control's
+ * UniqueID, which names its posted fields: `ctl0:Main:Note`. It defaults to ':'.
+ * `IdSeparator="$"` restores the separator of 4.3, which the OWASP Core Rule Set
+ * rule 942290 rejects before an ID such as "Note", "Order" or "TextBox1".
  *
  * PHP configuration style:
  * ```php
@@ -469,6 +477,32 @@ class TPageService extends \Prado\TService
 	public function getClientScriptManagerClass()
 	{
 		return $this->_clientScriptManagerClass;
+	}
+
+	/**
+	 * Returns the character that separates the IDs in a control's UniqueID.
+	 * @return string the separator. Defaults to ':'.
+	 * @since 4.4.0
+	 */
+	public function getIdSeparator(): string
+	{
+		return TControl::getIdSeparator();
+	}
+
+	/**
+	 * Sets the character that separates the IDs in a control's UniqueID.
+	 * The UniqueID names the posted fields of every control, so the separator is set
+	 * once for the application. `IdSeparator="$"` restores the separator of 4.3.
+	 * @param string $value one ASCII punctuation character other than '_', '.', and '['
+	 * @throws TInvalidOperationException if the page service is initialized
+	 * @throws TInvalidDataValueException if the value is not such a character
+	 * @see \Prado\Web\UI\TControl::setIdSeparator()
+	 * @since 4.4.0
+	 */
+	public function setIdSeparator($value)
+	{
+		$this->assertUninitialized('IdSeparator');
+		TControl::setIdSeparator(TPropertyValue::ensureString($value));
 	}
 
 	/**

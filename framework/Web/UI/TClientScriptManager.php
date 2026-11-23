@@ -1220,8 +1220,8 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	 * Unfortunately this attribute is invalid for hidden fields, so text fields are
 	 * rendered instead (#642). Their container carries `data-prado-dirty-ignore`, so
 	 * {@see \Prado\Web\UI\WebControls\TUnsavedChangesGuard} does not watch them.
-	 * An array field renders one `name[]` field per element; only the first carries the
-	 * field's `id`, since an `id` is unique in a page.
+	 * The `id` of a field is its name. An array field renders one `name[]` field per
+	 * element; only the first carries the `id`, since an `id` is unique in a page.
 	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
 	 * @param mixed $initial
 	 */
@@ -1235,15 +1235,14 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 			if (in_array($name, $this->_renderedHiddenFields)) {
 				continue;
 			}
-			$id = strtr($name, ':', '_');
 			if (is_array($value)) {
-				$idAttribute = ' id="' . $id . '"';
+				$idAttribute = ' id="' . $name . '"';
 				foreach ($value as $v) {
 					$str .= '<input type="text" style="display:none" autocomplete="off" name="' . $name . '[]"' . $idAttribute . ' value="' . THttpUtility::htmlEncode($v) . "\" />\n";
 					$idAttribute = '';
 				}
 			} else {
-				$str .= '<input type="text" style="display:none" autocomplete="off" name="' . $name . '" id="' . $id . '" value="' . THttpUtility::htmlEncode($value) . "\" />\n";
+				$str .= '<input type="text" style="display:none" autocomplete="off" name="' . $name . '" id="' . $name . '" value="' . THttpUtility::htmlEncode($value) . "\" />\n";
 			}
 			$this->_renderedHiddenFields[] = $name;
 		}

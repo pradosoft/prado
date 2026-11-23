@@ -66,7 +66,7 @@ test('TAuthViewTestCase: role case', async ({ page }) => {
 	await page.goto(PAGE_URL);
 	await expect(page.locator('#admin-link')).toHaveText('Administration');
 	await expect(page.locator('#welcome')).toHaveCount(0);
-	await expect(page.getByRole('button', { name: 'Purge' })).toHaveAttribute('name', 'ctl0$Content$Purge');
+	await expect(page.getByRole('button', { name: 'Purge' })).toHaveAttribute('name', 'ctl0:Content:Purge');
 	await postBack(page, 'Purge');
 	await expect(page.locator(`#${ID}Purged`)).toHaveText('purged');
 	await page.goto(BASE + '?page=Home&action=logout');
@@ -85,7 +85,7 @@ test('TAuthViewTestCase: unchosen case ignores a crafted postback', async ({ pag
 			const form = document.forms[0];
 			const field = document.createElement('input');
 			field.type = 'hidden';
-			field.name = 'ctl0$Content$Purge';
+			field.name = 'ctl0:Content:Purge';
 			field.value = 'Purge';
 			form.appendChild(field);
 			form.submit();

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * TRequiredFieldValidator class file
+ * TRegularExpressionValidator class file
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
@@ -33,6 +33,10 @@ namespace Prado\Web\UI\WebControls;
  * U.S. ZIP Code: \d{5}(-\d{4})?
  * U.S. Social Security Number: \d{3}-\d{2}-\d{4}
  * </pre>
+ *
+ * The expression matches the whole value on the server and on the client. It is grouped
+ * between the start and end anchors, so an alternation such as `\d{18}|\d{15}` applies to
+ * the whole value. Do not escape `/`; an escaped `\/` also works.
  *
  * Note, the validation succeeds if the associated input control contains empty input.
  * Use a {@see \Prado\Web\UI\WebControls\TRequiredFieldValidator} to ensure the input is not empty.
@@ -80,12 +84,25 @@ class TRegularExpressionValidator extends TBaseValidator
 		if (($value = $this->getValidationValue($this->getValidationTarget())) === '') {
 			return true;
 		}
-		if (($expression = addcslashes($this->getRegularExpression(), "/")) !== '') {
-			$mods = $this->getPatternModifiers();
-			return (bool) preg_match("/^$expression\$/{$mods}", $value);
-		} else {
+		if (($expression = $this->getRegularExpression()) === '') {
 			return true;
 		}
+		return (bool) preg_match($this->getMatchPattern($expression), $value);
+	}
+
+	/**
+	 * Returns the PCRE pattern that matches a whole value against the expression.
+	 * The expression is grouped between `\A` and `\z`, so an alternation applies to the
+	 * whole value and a trailing newline does not match. Each `/` that is not already
+	 * escaped is escaped for the delimiter. {@see getPatternModifiers PatternModifiers} follow the delimiter.
+	 * @param string $expression the regular expression.
+	 * @return string the PCRE pattern.
+	 * @since 4.4.0
+	 */
+	protected function getMatchPattern(string $expression): string
+	{
+		$expression = preg_replace('/(?<!\\\\)((?:\\\\\\\\)*)\//', '$1\\/', $expression);
+		return '/\A(?:' . $expression . ')\z/' . $this->getPatternModifiers();
 	}
 
 	/**
