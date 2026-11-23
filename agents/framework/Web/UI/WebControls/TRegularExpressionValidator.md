@@ -16,6 +16,12 @@ TRegularExpressionValidator validates whether the value of an associated input c
 - `getPatternModifiers()` / `setPatternModifiers(string)` - Server-side PCRE modifiers
 - `getClientSidePatternModifiers()` / `setClientSidePatternModifiers(string)` - Client-side modifiers (g, i, m)
 - `evaluateIsValid()` - Performs server-side validation
+- `getMatchPattern(string)` - The PCRE pattern `/\A(?:expr)\z/` plus `PatternModifiers`; each `/` that is not escaped is escaped (@since 4.4.0)
+
+## Patterns & Gotchas
+
+- **Whole-value match** — The expression matches the whole value on the server and on the client. It is grouped between the anchors, so `\d{18}|\d{15}` rejects `123456789012345678xyz`, and `a|ab` accepts `ab`. The server anchors with `\A` and `\z`, so a trailing newline fails, as on the client.
+- **Slashes** — Write `/` plain or escaped (`\/`); both work on both sides. Before 4.4.0, the server escaped `\/` again, so the pattern failed to compile.
 
 ## See Also
 

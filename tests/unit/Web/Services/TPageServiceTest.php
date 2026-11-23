@@ -17,6 +17,7 @@ namespace Prado\Test\Unit\Web\Services;
 
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\THttpException;
+use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Prado;
 use Prado\TApplication;
@@ -25,6 +26,7 @@ use Prado\Test\Unit\Harness\TTestApplication;
 use Prado\Test\Unit\PradoUnit;
 use Prado\Web\Services\TPageConfiguration;
 use Prado\Web\Services\TPageService;
+use Prado\Web\UI\TControl;
 use Prado\Web\UI\TPage;
 use Prado\Web\UI\TTemplateManager;
 use Prado\Web\UI\TThemeManager;
@@ -1061,5 +1063,55 @@ class TPageServiceTest extends \PHPUnit\Framework\TestCase
 		$xml->loadFromString('<service><pages><page id="Home" Title="Xml cached"/></pages></service>');
 		$config = PradoUnit::invoke($service, 'loadPageConfig', $xml);
 		$this->assertSame('Xml cached', $config->getProperties()['Title'] ?? null);
+	}
+
+	// ================================================================
+	// IdSeparator
+	// ================================================================
+
+	/**
+	 * IdSeparator reads and sets the separator of every control's UniqueID.
+	 */
+	public function testIdSeparatorIsTheControlIdSeparator()
+	{
+		$service = $this->service();
+		try {
+			$this->assertSame(':', $service->getIdSeparator());
+			$service->setIdSeparator('$');
+			$this->assertSame('$', $service->getIdSeparator());
+			$this->assertSame('$', TControl::getIdSeparator());
+		} finally {
+			TControl::setIdSeparator(TControl::DEFAULT_ID_SEPARATOR);
+		}
+	}
+
+	/**
+	 * An invalid separator is refused and the separator in use is kept.
+	 */
+	public function testSetIdSeparatorRefusesAnInvalidCharacter()
+	{
+		$service = $this->service();
+		try {
+			$service->setIdSeparator('_');
+			$this->fail('TInvalidDataValueException expected');
+		} catch (TInvalidDataValueException $e) {
+			$this->assertSame('control_idseparator_invalid', $e->getErrorCode());
+		}
+		$this->assertSame(':', TControl::getIdSeparator());
+	}
+
+	/**
+	 * The separator cannot change once the service is initialized.
+	 */
+	public function testSetIdSeparatorAfterInitializationIsRefused()
+	{
+		$service = $this->service('PageServiceApp', 'Home');
+		$service->init(null);
+		try {
+			$service->setIdSeparator('$');
+			$this->fail('TInvalidOperationException expected');
+		} catch (TInvalidOperationException $e) {
+			$this->assertSame(':', TControl::getIdSeparator());
+		}
 	}
 }

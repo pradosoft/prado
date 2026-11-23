@@ -12,27 +12,27 @@ test('QuickstartMultiViewTestCase', async ({ page }) => {
   await h.assertElementNotPresent('ctl0_body_Result1');
   await h.assertElementNotPresent('ctl0_body_Result2');
   await h.type('ctl0_body_Memo', 'test');
-  await h.byName('ctl0$body$ctl0').click(); // view 2 to select the dropdown
+  await h.byName('ctl0:body:ctl0').click(); // view 2 to select the dropdown
   await h.pause(50);
-  await h.byName('ctl0$body$ctl4').click();
+  await h.byName('ctl0:body:ctl4').click();
 
   // view 3 : check if the output is updated
   await h.assertSourceContains('Your text input is: test');
   await h.assertSourceContains('Your color choice is: Red');
-  await h.byName('ctl0$body$ctl7').click();
+  await h.byName('ctl0:body:ctl7').click();
   await h.pause(50);
 
   // view 2 : update dropdownlist
   await h.assertElementNotPresent('ctl0_body_Result1');
   await h.assertElementNotPresent('ctl0_body_Result2');
-  await h.select('ctl0$body$DropDownList', 'Blue');
-  await h.byName('ctl0$body$ctl4').click();
+  await h.select('ctl0:body:DropDownList', 'Blue');
+  await h.byName('ctl0:body:ctl4').click();
 
   // view 3 : check if the output is updated
   await h.assertSourceContains('Your text input is: test');
   await h.assertSourceContains('Your color choice is: Blue');
-  await h.byName('ctl0$body$ctl7').click();
+  await h.byName('ctl0:body:ctl7').click();
 
   // view 2 : check if dropdownlist maintains state
-  await h.assertSelected('ctl0$body$DropDownList', 'Blue');
+  await h.assertSelected('ctl0:body:DropDownList', 'Blue');
 });

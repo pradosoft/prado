@@ -85,11 +85,11 @@ class TCallbackClientScriptTest extends TestCase
 		$callback->setID('onOpen');
 		$page->getControls()->add($callback);
 		$page->getCallbackClient()->notify('Hi', [], $callback, ['order' => 7]);
-		$page->getCallbackClient()->notify('Hi', ['body' => 'b'], 'ctl0$other');
+		$page->getCallbackClient()->notify('Hi', ['body' => 'b'], 'ctl0:other');
 		$this->assertSame(
 			[
 				['Prado.Notification.show' => ['Hi', ['EventTarget' => $callback->getUniqueID(), 'CallbackParameter' => ['order' => 7]]]],
-				['Prado.Notification.show' => ['Hi', ['body' => 'b', 'EventTarget' => 'ctl0$other']]],
+				['Prado.Notification.show' => ['Hi', ['body' => 'b', 'EventTarget' => 'ctl0:other']]],
 			],
 			$page->getClientFunctions()
 		);

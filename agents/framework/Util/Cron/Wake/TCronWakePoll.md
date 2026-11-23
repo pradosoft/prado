@@ -13,7 +13,7 @@
 ## Overview
 `TCronWakePoll` is the abstract base of the wake transports that signal through a shared stamp and detect a wake by polling it. A signal writes a new stamp (`writeStamp()`); the waiting side compares `readStamp()` every `PollInterval` seconds with the stamp it last saw. A medium several hosts share carries the wake between hosts: a file system ([`TCronWakeFile`](TCronWakeFile.md)) or a cache ([`TCronWakeCache`](TCronWakeCache.md)).
 
-- `wait()` sleeps in `PollInterval` slices through `TAsync::sleep()`, so a fiber yields; the remaining time is measured on the real clock from the given `$now`.
+- `wait()` sleeps in `PollInterval` slices through `TAsync::sleep()`, so a fiber yields; the remaining time is measured on the real clock from the given `$now`. A stamp that changed since the previous wait ends the next wait at once, so a wake between waits is kept; `close()` forgets the stamp, and the first wait after it takes the current stamp as seen.
 - `watch()` registers a `repeat(PollInterval)` loop callback that calls back when the stamp changes.
 - `getIsAvailable()` gates every method: an unavailable medium makes `signal()` false, `wait()` null, and `watch()` false.
 
