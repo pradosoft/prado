@@ -14,13 +14,13 @@ test('QuickstartWizard5TestCase', async ({ page }) => {
   await h.assertVisible('ctl0_body_Wizard1_SideBarList_ctl1_SideBarButton');
   await h.assertAttribute('ctl0_body_Wizard1_SideBarList_ctl2_SideBarButton@disabled', 'regexp:true|disabled');
   await h.select('ctl0_body_Wizard1_DropDownList1', 'Cyan');
-  await h.byName('ctl0$body$Wizard1$ctl4$ctl0').click();
+  await h.byName('ctl0:body:Wizard1:ctl4:ctl0').click();
   await h.pause(50);
 
   // step 2
   await h.select('ctl0_body_Wizard1_Step2_DropDownList2', 'Football');
   await h.pause(50);
-  await h.byName('ctl0$body$Wizard1$ctl6$ctl0').click();
+  await h.byName('ctl0:body:Wizard1:ctl6:ctl0').click();
   await h.pause(50);
 
   // step 1
@@ -30,7 +30,7 @@ test('QuickstartWizard5TestCase', async ({ page }) => {
 
   // step 2
   await h.assertSelected('ctl0_body_Wizard1_Step2_DropDownList2', 'Football');
-  await h.byName('ctl0$body$Wizard1$ctl6$ctl1').click();
+  await h.byName('ctl0:body:Wizard1:ctl6:ctl1').click();
   await h.pause(50);
 
   // step 3

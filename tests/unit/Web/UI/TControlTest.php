@@ -1400,8 +1400,8 @@ class TControlTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame('ctl0', $child->getUniqueID());
 
 		$container->setID('Box');
-		$this->assertSame('Box' . TControl::ID_SEPARATOR . 'ctl0', $child->getUniqueID());
-		$this->assertSame('Box' . TControl::ID_SEPARATOR . 'ctl0', $child->getUniqueID());
+		$this->assertSame('Box:ctl0', $child->getUniqueID());
+		$this->assertSame('Box:ctl0', $child->getUniqueID());
 	}
 
 	public function testClearCachedUniqueIDReachesTheChildrenOfANamingContainer()
@@ -1413,9 +1413,9 @@ class TControlTest extends \PHPUnit\Framework\TestCase
 		$child = new TControl();
 		$child->setID('C');
 		$container->getControls()->add($child);
-		$this->assertSame('A' . TControl::ID_SEPARATOR . 'C', $child->getUniqueID());
+		$this->assertSame('A:C', $child->getUniqueID());
 		$container->setID('B');
-		$this->assertSame('B' . TControl::ID_SEPARATOR . 'C', $child->getUniqueID());
+		$this->assertSame('B:C', $child->getUniqueID());
 	}
 
 	public function testFocusSetsThePageFocus()
@@ -1577,8 +1577,91 @@ class TControlTest extends \PHPUnit\Framework\TestCase
 		$child->setID('Item');
 		$container->getControls()->add($child);
 		$this->assertSame($child, $page->findControl('Box.Item'));
-		$this->assertSame($child, $page->findControl('Box' . TControl::ID_SEPARATOR . 'Item'));
+		$this->assertSame($child, $page->findControl('Box:Item'));
 		$this->assertNull($page->findControl('None.Item'));
+	}
+
+	public function testIdSeparatorDefaultsToAColon()
+	{
+		$this->assertSame(':', TControl::DEFAULT_ID_SEPARATOR);
+		$this->assertSame(':', TControl::getIdSeparator());
+		$this->assertSame('A_B_C', TControl::convertUniqueIdToClientId('A:B:C'));
+	}
+
+	public function testSetIdSeparatorSeparatesUniqueIDsAndControlPaths()
+	{
+		try {
+			TControl::setIdSeparator('$');
+			$this->assertSame('$', TControl::getIdSeparator());
+			$page = new TPage();
+			$container = new TControlTestContainer();
+			$container->setID('Box');
+			$page->getControls()->add($container);
+			$child = new TControl();
+			$child->setID('Item');
+			$container->getControls()->add($child);
+			$this->assertSame('Box$Item', $child->getUniqueID());
+			$this->assertSame('Box_Item', $child->getClientID());
+			$this->assertSame('A_B_C', TControl::convertUniqueIdToClientId('A$B$C'));
+			$this->assertSame($child, $page->findControl('Box$Item'));
+			$this->assertSame($child, $page->findControl('Box.Item'));
+			$this->assertNull($page->findControl('Box:Item'));
+		} finally {
+			TControl::setIdSeparator(TControl::DEFAULT_ID_SEPARATOR);
+		}
+	}
+
+	public static function validIdSeparators(): array
+	{
+		return [[':'], ['$'], ['|'], ['-'], ['~'], ['!']];
+	}
+
+	/**
+	 * @dataProvider validIdSeparators
+	 */
+	public function testSetIdSeparatorTakesOnePunctuationCharacter(string $value)
+	{
+		try {
+			TControl::setIdSeparator($value);
+			$this->assertSame($value, TControl::getIdSeparator());
+		} finally {
+			TControl::setIdSeparator(TControl::DEFAULT_ID_SEPARATOR);
+		}
+	}
+
+	public static function invalidIdSeparators(): array
+	{
+		return [
+			'empty' => [''],
+			'two characters' => ['::'],
+			'letter' => ['a'],
+			'digit' => ['1'],
+			'underscore, an ID character' => ['_'],
+			'period, rewritten by PHP' => ['.'],
+			'bracket, rewritten by PHP' => ['['],
+			'space, rewritten by PHP' => [' '],
+			'control character' => ["\n"],
+			'multibyte character' => ["\u{00A7}"],
+		];
+	}
+
+	/**
+	 * @dataProvider invalidIdSeparators
+	 */
+	public function testSetIdSeparatorRefusesAnInvalidCharacter(string $value)
+	{
+		try {
+			TControl::setIdSeparator($value);
+			$this->fail('TInvalidDataValueException expected');
+		} catch (\Prado\Exceptions\TInvalidDataValueException $e) {
+			$this->assertSame('control_idseparator_invalid', $e->getErrorCode());
+		}
+		$this->assertSame(':', TControl::getIdSeparator());
+	}
+
+	public function testIdSeparatorConstantKeepsTheSeparatorOfPrado43()
+	{
+		$this->assertSame('$', TControl::ID_SEPARATOR);
 	}
 
 	public function testFindControlRejectsADuplicateID()

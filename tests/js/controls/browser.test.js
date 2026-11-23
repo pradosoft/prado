@@ -161,7 +161,7 @@ describe('Prado.Notification', () => {
 	});
 
 	it('show creates the notification with the API options once permission is granted', async () => {
-		const notification = await Notification.show('Order shipped', { body: 'Today', tag: 'order-1', EventTarget: 'ctl0$btn', closeAfter: 0 });
+		const notification = await Notification.show('Order shipped', { body: 'Today', tag: 'order-1', EventTarget: 'ctl0:btn', closeAfter: 0 });
 		expect(notification).toBe(created[0]);
 		expect(created[0].title).toBe('Order shipped');
 		expect(created[0].options).toEqual({ body: 'Today', tag: 'order-1' });
@@ -193,13 +193,13 @@ describe('Prado.Notification', () => {
 		const clicks = [];
 		const listener = (e) => clicks.push(e.detail);
 		document.addEventListener('prado:notificationclick', listener);
-		const notification = await Notification.show('Hi', { EventTarget: 'ctl0$btn', CallbackParameter: { id: 7 } });
+		const notification = await Notification.show('Hi', { EventTarget: 'ctl0:btn', CallbackParameter: { id: 7 } });
 		notification.dispatchEvent(new Event('click'));
 		expect(focus).toHaveBeenCalled();
 		expect(clicks).toHaveLength(1);
 		expect(clicks[0].notification).toBe(notification);
 		expect(clicks[0].title).toBe('Hi');
-		expect(callback).toHaveBeenCalledWith('ctl0$btn', { id: 7 });
+		expect(callback).toHaveBeenCalledWith('ctl0:btn', { id: 7 });
 		expect(notification.close).toHaveBeenCalled();
 		document.removeEventListener('prado:notificationclick', listener);
 	});

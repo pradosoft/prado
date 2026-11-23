@@ -12,6 +12,8 @@ use Prado\TComponent;
 use Prado\Util\Cron\TCronTask;
 use Prado\Util\Cron\TShellCronAction;
 use Prado\Util\Cron\TCronModule;
+use Prado\Util\Cron\TCronTaskMode;
+use Prado\Util\Cron\TShellCronLogBehavior;
 use Prado\Util\Mutex\TMemoryMutex;
 use Prado\Security\Permissions\TPermissionsManager;
 use Prado\Security\TUser;
@@ -694,6 +696,53 @@ class TShellCronActionTest extends \PHPUnit\Framework\TestCase
 		}
 	}
 
+	public function testRenderTopFormatsEachKindOfRow()
+	{
+		$now = time();
+		$cron = new class () extends TCronModule {
+			public array $report = [];
+
+			public function getMonitorReport(?array $tasks = null): array
+			{
+				return $this->report;
+			}
+		};
+		$cron->setID('shellTopRows');
+		$cron->init(null);
+		$stats = static fn (?float $rate, ?float $avg) => ['successRate' => $rate, 'avgDuration' => $avg];
+		$task = static fn (array $values) => $values + ['mode' => 'Serial', 'next' => null, 'paused' => false, 'result' => null, 'last' => null, 'duration' => null, 'count' => 0, 'stats' => $stats(null, null)];
+		$cron->report = [
+			'module' => 'shellTopRows', 'daemonMode' => true, 'concurrency' => 1, 'processes' => [], 'ended' => [], 'runs' => [],
+			'tasks' => [
+				'farTask' => $task(['next' => $now + 3 * 86400]),
+				'dueTask' => $task(['next' => $now - 5]),
+				'pausedTask' => $task(['next' => $now + 60, 'paused' => true]),
+				'neverTask' => $task(['result' => 'ok']),
+				'oldTask' => $task(['result' => 'error', 'last' => $now - 3 * 86400, 'duration' => 1.5, 'count' => 4, 'stats' => $stats(0.75, 2.0)]),
+			],
+		];
+		$action = new TShellCronAction();
+		$action->setWriter($this->writer);
+		try {
+			$view = $action->renderTop($cron);
+			self::assertStringContainsString('No cron process is running; the next cron/run tick starts the daemon.', $view);
+			self::assertStringContainsString(date('Y-m-d', $now + 3 * 86400), $view, 'a trigger more than a day away shows its date');
+			self::assertStringContainsString('due', $view);
+			self::assertStringContainsString('paused', $view);
+			self::assertStringContainsString(date('Y-m-d', $now - 3 * 86400), $view, 'a run more than a day ago shows its date');
+			self::assertStringContainsString('75%', $view);
+			self::assertMatchesRegularExpression('/neverTask\s+Serial\s+-\s+-/', $view, 'a result without a run time or seconds');
+
+			$cron->report['daemonMode'] = false;
+			$cron->report['tasks'] = [];
+			$view = $action->renderTop($cron);
+			self::assertStringContainsString('No cron process is running.', $view);
+			self::assertStringNotContainsString('Next', $view, 'no triggers, no table');
+		} finally {
+			$cron->unlisten();
+		}
+	}
+
 	public function testShellSeams()
 	{
 		$action = new TShellCronAction();
@@ -780,6 +829,362 @@ class TShellCronActionTest extends \PHPUnit\Framework\TestCase
 			if (is_file($file)) {
 				unlink($file);
 			}
+		}
+	}
+
+	/**
+	 * Sets the application user for the shell actions constructed in $test.
+	 * @param ?TUser $user the user, or null for none
+	 * @param callable $test runs with the user
+	 */
+	protected function withUser(?TUser $user, callable $test): void
+	{
+		$app = Prado::getApplication();
+		$prior = $app->getUser();
+		PradoUnit::setProp($app, '_user', $user);
+		try {
+			$test();
+		} finally {
+			PradoUnit::setProp($app, '_user', $prior);
+		}
+	}
+
+	/**
+	 * @param ?array $allowed the permissions of the user, or null for a user without the permissions behavior
+	 * @return TUser the user 'alice'
+	 */
+	protected function createUser(?array $allowed): TUser
+	{
+		$user = new TUser(new TUserManager());
+		$user->setName('alice');
+		if ($user->asa(TPermissionsManager::USER_PERMISSIONS_BEHAVIOR)) {
+			$user->detachBehavior(TPermissionsManager::USER_PERMISSIONS_BEHAVIOR);
+		}
+		if ($allowed !== null) {
+			$permissions = new TTestCronUserPermissions();
+			$permissions->allowed = $allowed;
+			$user->attachBehavior(TPermissionsManager::USER_PERMISSIONS_BEHAVIOR, $permissions);
+		}
+		return $user;
+	}
+
+	public function testReadableTasksByUserAndTag()
+	{
+		$cron = new TCronModule();
+		$cron->setID('shellReadable' . bin2hex(random_bytes(3)));
+		$cron->init([
+			['name' => 'aliceWeb', 'schedule' => '0 0 1 1 ? 2099', 'task' => TTestCronModuleTask::class, 'username' => 'alice', 'tags' => 'web'],
+			['name' => 'aliceMail', 'schedule' => '0 0 1 1 ? 2099', 'task' => TTestCronModuleTask::class, 'username' => 'alice'],
+			['name' => 'bobWeb', 'schedule' => '0 0 1 1 ? 2099', 'task' => TTestCronModuleTask::class, 'username' => 'bob', 'tags' => 'web'],
+		]);
+		$report = function (TShellCronAction $action, array $args): ?array {
+			self::assertTrue($action->actionReport($args));
+			$text = $this->writer->flush();
+			return ($text === '') ? null : array_keys(json_decode($text, true)['tasks']);
+		};
+		$action = function () use ($cron): TShellCronAction {
+			$action = new TShellCronAction();
+			$action->setWriter($this->writer);
+			$action->setCronModule($cron);
+			return $action;
+		};
+		try {
+			$this->withUser($this->createUser([]), function () use ($action, $report) {
+				self::assertSame(['aliceWeb'], $report($action(), ['cron/report', '#web']), 'a restricted user sees their tasks of the tag');
+			});
+			$this->withUser($this->createUser([TCronModule::PERM_CRON_READ_TASKS]), function () use ($cron, $action, $report) {
+				$reader = $action();
+				self::assertEqualsCanonicalizing(['aliceWeb', 'aliceMail', 'bobWeb'], $report($reader, ['cron/report']), 'a reader sees every task');
+				self::assertEqualsCanonicalizing(['aliceWeb', 'bobWeb'], $report($reader, ['cron/report', '#web']), 'a reader sees every task of the tag');
+				$cron->attachBehavior('denies', new TTestCronDenyingBehavior(['dyGetTasks']));
+				self::assertNull($report($reader, ['cron/report']), 'a denied read shows nothing');
+				$cron->detachBehavior('denies');
+			});
+			$this->withUser(null, function () use ($cron, $action, $report) {
+				$cron->attachBehavior('denies', new TTestCronDenyingBehavior(['dyGetTasks']));
+				self::assertNull($report($action(), ['cron/report']), 'a denied read without a user shows nothing');
+				$cron->detachBehavior('denies');
+			});
+		} finally {
+			$cron->unlisten();
+		}
+	}
+
+	public function testConstructWithAUserWithoutPermissions()
+	{
+		$this->withUser($this->createUser(null), function () {
+			$methods = PradoUnit::getProp(new TShellCronAction(), 'methods');
+			self::assertContains('run', $methods, 'a user without the permissions behavior keeps every method');
+			self::assertContains('stop', $methods);
+		});
+	}
+
+	public function testRunningStatesOfEachStatus()
+	{
+		$module = new class () {
+			public array $statuses = [];
+
+			public function getStatuses(): array
+			{
+				return $this->statuses;
+			}
+		};
+		$action = new TShellCronAction();
+		$states = static function (array $statuses) use ($module, $action): array {
+			$module->statuses = $statuses;
+			return PradoUnit::invoke($action, 'getRunningStates', $module);
+		};
+		self::assertSame([], $states([['alive' => false, 'running' => [['name' => 'gone', 'mode' => 'Serial']]]]), 'an ended process runs nothing');
+		self::assertSame([], $states([['alive' => true, 'running' => []]]));
+		self::assertSame(['inProcess' => 'running'], $states([['alive' => true, 'running' => [['name' => 'inProcess', 'mode' => 'Serial']]]]));
+		self::assertSame(['child' => 'pid 41'], $states([['alive' => true, 'running' => [['name' => 'child', 'mode' => TCronTaskMode::Process, 'pid' => 41]]]]));
+		self::assertSame(['child' => 'pid 41, pid 42'], $states([['alive' => true, 'running' => [
+			['name' => 'child', 'mode' => TCronTaskMode::Process, 'pid' => 41],
+			['name' => 'child', 'mode' => TCronTaskMode::Process, 'pid' => 42],
+		]]]), 'the runs of one task are listed together');
+	}
+
+	public function testCronModuleOfTheApplicationWithItsShellLog()
+	{
+		$app = Prado::getApplication();
+		$snapshot = PradoUnit::snapshot($app, ['_modules']);
+		$cron = new TCronModule();
+		$behavior = new TShellCronLogBehavior($this->writer);
+		$cron->attachBehavior(TCronModule::SHELL_LOG_BEHAVIOR, $behavior);
+		try {
+			$app->setModule('shellLogged' . bin2hex(random_bytes(3)), $cron);
+			$action = new TShellCronAction();
+			$action->setWriter(new TShellWriter(new TTextWriter()));
+			self::assertSame($cron, $action->getCronModule());
+			self::assertSame($behavior, $cron->asa(TCronModule::SHELL_LOG_BEHAVIOR), 'the shell keeps the log behavior of the module');
+		} finally {
+			PradoUnit::restore($app, $snapshot);
+			$cron->unlisten();
+		}
+	}
+
+	public function testActionExecWithoutATaskName()
+	{
+		try {
+			$this->obj->actionExec(['cron/exec']);
+			self::fail('cron/exec without a task name did not exit');
+		} catch (TExitException $e) {
+			self::assertSame(TCronModule::EXIT_NO_TASK, $e->getExitCode());
+		}
+		self::assertStringContainsString("Cron task '' is not found", $this->writer->flush());
+	}
+
+	public function testActionDaemonInDaemonModeWithoutADaemon()
+	{
+		$cron = new TCronModule();
+		$cron->setID('shellDaemonMode' . bin2hex(random_bytes(3)));
+		$cron->setDaemon(true);
+		$cron->setDaemonMutex(new TMemoryMutex());
+		$cron->init(null);
+		$this->obj->setCronModule($cron);
+		try {
+			self::assertTrue($this->obj->actionDaemon(['cron/daemon']));
+			self::assertStringContainsString('the next cron/run tick starts one', $this->writer->flush());
+		} finally {
+			$cron->unlisten();
+		}
+	}
+
+	public function testRequestTimeoutOfANonNumericArgument()
+	{
+		$cron = new TTestShellCronRequestModule();
+		$cron->setID('shellTimeoutArg' . bin2hex(random_bytes(3)));
+		$cron->init(null);
+		$this->obj->setCronModule($cron);
+		try {
+			self::assertTrue($this->obj->actionRetire(['cron/retire', 'soon']));
+			self::assertStringContainsString('No cron daemon is running', $this->writer->flush());
+			self::assertNull(PradoUnit::invoke($this->obj, 'requestTimeout', ['cron/retire', 'soon']));
+			self::assertSame(0.5, PradoUnit::invoke($this->obj, 'requestTimeout', ['cron/retire', '0.5']));
+		} finally {
+			$cron->unlisten();
+		}
+	}
+
+	public function testActionReportArguments()
+	{
+		$cron = new TCronModule();
+		$cron->setID('shellReportArgs' . bin2hex(random_bytes(3)));
+		$cron->init([['name' => 'argTask', 'schedule' => '0 0 1 1 ? 2099', 'task' => TTestCronModuleTask::class, 'tags' => 'web']]);
+		$this->obj->setCronModule($cron);
+		try {
+			self::assertTrue($this->obj->actionReport([]));
+			self::assertArrayHasKey('argTask', json_decode($this->writer->flush(), true)['tasks'], 'no arguments is the JSON report');
+			self::assertTrue($this->obj->actionReport([1 => '#web']));
+			self::assertArrayHasKey('argTask', json_decode($this->writer->flush(), true)['tasks'], 'a tag as the only argument');
+			self::assertTrue($this->obj->actionReport([1 => 'json']));
+			self::assertArrayHasKey('argTask', json_decode($this->writer->flush(), true)['tasks']);
+			self::assertTrue($this->obj->actionReport([1 => 5]));
+			self::assertStringContainsString("The report format '5' is not json or prometheus", $this->writer->flush());
+		} finally {
+			$cron->unlisten();
+		}
+	}
+
+	public function testActionTopInATerminalRunsUntilTheTasksCannotBeRead()
+	{
+		$cron = new TCronModule();
+		$cron->setID('shellTopLive' . bin2hex(random_bytes(3)));
+		$cron->init([['name' => 'liveTask', 'schedule' => '0 0 1 1 ? 2099', 'task' => TTestCronModuleTask::class]]);
+		$action = new class () extends TTestShellCronTopAction {
+			public ?TCronModule $deny = null;
+
+			protected function sleep(float $seconds): void
+			{
+				parent::sleep($seconds);
+				if (count($this->sleeps) === 2) {
+					$this->deny->attachBehavior('denies', new TTestCronDenyingBehavior(['dyGetTasks']));
+				}
+			}
+		};
+		$action->deny = $cron;
+		$action->interactive = true;
+		$action->setWriter($this->writer);
+		$action->setCronModule($cron);
+		try {
+			self::assertTrue($action->actionTop(['cron/top']));
+			self::assertSame([1.0, 1.0], $action->sleeps, 'a terminal without a count redraws until the view ends');
+			self::assertSame(2, substr_count($this->writer->flush(), "\033[H\033[2J"));
+		} finally {
+			$cron->unlisten();
+		}
+	}
+
+	public function testRenderTopOfADaemonNotWatching()
+	{
+		$now = microtime(true);
+		$cron = new class () extends TCronModule {
+			public array $report = [];
+
+			public function getMonitorReport(?array $tasks = null): array
+			{
+				return $this->report;
+			}
+		};
+		$cron->setID('shellTopDaemon');
+		$cron->init(null);
+		$cron->report = [
+			'module' => 'shellTopDaemon', 'daemonMode' => true, 'concurrency' => 1, 'ended' => [], 'runs' => [], 'tasks' => [],
+			'processes' => [['role' => TCronModule::STATUS_ROLE_DAEMON, 'pid' => 7, 'host' => 'here', 'alive' => true, 'started' => $now - 30,
+				'daemon' => ['state' => 'running', 'transport' => 'Prado\\Util\\Cron\\Wake\\TCronWakeFile', 'watching' => false, 'wake' => null]]],
+		];
+		$action = new TShellCronAction();
+		$action->setWriter($this->writer);
+		try {
+			$view = $action->renderTop($cron);
+			self::assertStringContainsString('TCronWakeFile not watching', $view);
+			self::assertStringNotContainsString('next sweep', $view, 'without a wake time no next sweep is shown');
+		} finally {
+			$cron->unlisten();
+		}
+	}
+
+	public function testActionRunWithTheStatusSet()
+	{
+		$cron = new TCronModule();
+		$cron->setID('shellRunStatus' . bin2hex(random_bytes(3)));
+		$cron->init(null);
+		$cron->setEnableStatus(false);
+		$this->obj->setCronModule($cron);
+		$prior = $cron->getLastCronTime();
+		try {
+			$cron->setLastCronTime(0);
+			self::assertTrue($this->obj->actionRun(['cron/run']));
+			self::assertStringContainsString('Last cron run time was never', $this->writer->flush());
+			$cron->setLastCronTime(1700000000);
+			self::assertTrue($this->obj->actionRun(['cron/run']));
+			self::assertStringContainsString('Last cron run time was ' . date('Y-m-d H:i:s', 1700000000), $this->writer->flush());
+			self::assertFalse($cron->getEnableStatus(), 'cron/run keeps a status that is set');
+		} finally {
+			$cron->setLastCronTime($prior);
+			$cron->unlisten();
+		}
+	}
+
+	public function testActionNextShowsADueTrigger()
+	{
+		$cron = new TCronModule();
+		$cron->setID('shellNextDue' . bin2hex(random_bytes(3)));
+		$cron->init([['name' => 'dueNow', 'schedule' => '* * * * *', 'task' => TTestCronModuleTask::class]]);
+		$cron->getTask('dueNow')->setLastExecTime(time() - 3600);
+		$this->obj->setCronModule($cron);
+		try {
+			self::assertTrue($this->obj->actionNext(['cron/next', 'dueNow', '2']));
+			self::assertStringContainsString('due', $this->writer->flush());
+		} finally {
+			$cron->unlisten();
+		}
+	}
+
+	public function testActionNowReportsTheTaskAndNotItsChain()
+	{
+		$cron = new TCronModule();
+		$cron->setID('shellNowChain' . bin2hex(random_bytes(3)));
+		$cron->setDaemonMutex(new TMemoryMutex());
+		$cron->init([
+			['name' => 'nowFirst', 'schedule' => '0 0 1 1 ? 2099', 'task' => TTestCronModuleTask::class, 'then' => 'nowSecond'],
+			['name' => 'nowSecond', 'schedule' => '@never', 'task' => TTestCronShellFailingTask::class],
+		]);
+		$cron->setEnableStatus(false);
+		$this->obj->setCronModule($cron);
+		try {
+			self::assertTrue($this->obj->actionNow(['cron/now', 'nowFirst']));
+			$text = $this->writer->flush();
+			self::assertStringContainsString("Cron task 'nowFirst' ran: ok", $text, 'the failed chained task is not the result');
+			self::assertSame(1, $cron->getTask('nowSecond')->getProcessCount(), 'the chained task ran');
+		} finally {
+			$cron->unlisten();
+		}
+	}
+
+	public function testActionTasksStatesAndResults()
+	{
+		$cron = new class () extends TCronModule {
+			public float $lastCronTime = 0;
+
+			public function getLastCronTime()
+			{
+				return $this->lastCronTime;
+			}
+
+			public function getPausedTasks(): array
+			{
+				return ['pausedRunning', 'pausedOnly'];
+			}
+
+			public function getStatuses(): array
+			{
+				return [['alive' => true, 'running' => [['name' => 'pausedRunning', 'mode' => 'Serial']]]];
+			}
+
+			public function getTaskResults(bool $fresh = false): array
+			{
+				return ['pausedRunning' => ['result' => 'ok', 'duration' => null], 'pausedOnly' => ['result' => 'error', 'duration' => 12.0]];
+			}
+		};
+		$cron->setID('shellTaskStates');
+		$cron->init([
+			['name' => 'pausedRunning', 'schedule' => '0 0 1 1 ? 2099', 'task' => TTestCronModuleTask::class],
+			['name' => 'pausedOnly', 'schedule' => '0 0 1 1 ? 2099', 'task' => TTestCronModuleTask::class],
+		]);
+		$this->obj->setCronModule($cron);
+		try {
+			self::assertTrue($this->obj->actionTasks(['cron/tasks']));
+			$text = $this->writer->flush();
+			self::assertStringContainsString('Last cron run was never', $text);
+			self::assertStringContainsString('paused, running', $text, 'a paused task that runs shows both');
+			self::assertMatchesRegularExpression('/pausedRunning.*\bok\b/', $text, 'a result without a duration');
+			self::assertStringContainsString('error 12s', $text);
+			$cron->lastCronTime = 1700000000;
+			self::assertTrue($this->obj->actionTasks(['cron/tasks']));
+			self::assertStringContainsString('Last cron run was ' . date('Y-m-d H:i:s', 1700000000), $this->writer->flush());
+		} finally {
+			$cron->unlisten();
 		}
 	}
 }

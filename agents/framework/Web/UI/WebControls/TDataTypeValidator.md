@@ -15,7 +15,7 @@ TDataTypeValidator verifies if input data matches a specified data type. Support
 - `getDataType()` / `setDataType(TValidationDataType)` - The data type to validate against
 - `getDateFormat()` / `setDateFormat(string)` - Date format for Date validation
 - `evaluateIsValid()` - Performs server-side validation
-- `evaluateDataTypeCheck($value)` - Checks if value matches the data type
+- `evaluateDataTypeCheck($value)` - Checks if value matches the data type with `TValidationDataType::convert()`, the rules of the client: a `Float` has no exponent (`1e5` fails), and a `Date` without `DateFormat` may be before 1970 (4.4.0)
 
 ## See Also
 

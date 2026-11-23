@@ -130,7 +130,7 @@ Prado.WebUI.TRatingList = Prado.Class(Prado.WebUI.Control,
 		const requestOptions = Object.assign({}, this.options,
 		{
 			ID : `${this.options.ID}_c${this.selectedIndex}`,
-			EventTarget : `${this.options.ListName}$c${this.selectedIndex}`
+			EventTarget : `${this.options.ListName}${this.options.IdSeparator ?? ':'}c${this.selectedIndex}`
 		});
 		new Prado.PostBack(requestOptions, ev);
  	},
@@ -221,7 +221,7 @@ Prado.WebUI.TActiveRatingList = Prado.Class(Prado.WebUI.TRatingList,
 		const requestOptions = Object.assign({}, this.options,
 		{
 			ID : `${this.options.ID}_c${this.selectedIndex}`,
-			EventTarget : `${this.options.ListName}$c${this.selectedIndex}`
+			EventTarget : `${this.options.ListName}${this.options.IdSeparator ?? ':'}c${this.selectedIndex}`
 		});
 		const request = new Prado.CallbackRequest(requestOptions.EventTarget, requestOptions);
 		if(request.dispatch()==false)

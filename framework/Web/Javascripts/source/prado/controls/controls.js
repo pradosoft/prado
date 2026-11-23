@@ -524,7 +524,7 @@ Prado.WebUI.TCheckBoxList = Prado.Class(Prado.WebUI.Control,
 			const checkBoxOptions = {
 				...options,
 				ID : `${options.ID}_c${i}`,
-				EventTarget : `${options.ListName}$c${i}`
+				EventTarget : `${options.ListName}${options.IdSeparator ?? ':'}c${i}`
 			};
 			new Prado.WebUI.TCheckBox(checkBoxOptions);
 		}
@@ -539,7 +539,7 @@ Prado.WebUI.TRadioButtonList = Prado.Class(Prado.WebUI.Control,
 			const radioButtonOptions = {
 				...options,
 				ID : `${options.ID}_c${i}`,
-				EventTarget : `${options.ListName}$c${i}`
+				EventTarget : `${options.ListName}${options.IdSeparator ?? ':'}c${i}`
 			};
 			new Prado.WebUI.TRadioButton(radioButtonOptions);
 		}

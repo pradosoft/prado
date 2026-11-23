@@ -21,7 +21,7 @@ TClientScriptManager manages JavaScript and CSS stylesheets for a page. It suppo
 - `registerStyleSheetFile($key, $url, $media)` - Registers a CSS file; `renderStyleSheetFiles()` and `renderStyleSheets()` render through [TStyleSheetHelper](../Javascripts/TStyleSheetHelper.md) with the CSP nonce and, for remote files, SRI (4.4.0)
 - `registerBeginScript($key, $script)` - Registers JavaScript at the beginning of the form
 - `registerEndScript($key, $script)` - Registers JavaScript at the end of the form
-- `registerHiddenField($name, $value)` - Registers a hidden field; hidden fields render as `type="text"` inputs (#642) inside a `data-prado-dirty-ignore` container; an array value renders one `name[]` input per element, and only the first carries the `id`
+- `registerHiddenField($name, $value)` - Registers a hidden field; hidden fields render as `type="text"` inputs (#642) inside a `data-prado-dirty-ignore` container; the `id` of a field is its name; an array value renders one `name[]` input per element, and only the first carries the `id`
 - `registerDefaultButton($panel, $button)` - Registers a default button for a panel
 - `registerFocusControl($target)` - Registers a control to receive default focus
 - `getPradoScriptAssetUrl($folder)` / `getPradoScriptAssetPath($folder)` - Published URL and path of a script library folder (`prado`, `jquery`, `jquery-ui`, `tinymce`, ...); a key that names no folder throws `TInvalidOperationException`

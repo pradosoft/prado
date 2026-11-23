@@ -117,4 +117,81 @@ class THttpCronTaskTest extends \PHPUnit\Framework\TestCase
 		}
 		self::assertSame('GET', unserialize($text)->getMethod());
 	}
+
+	public function testNullAndEmptyPropertyValues()
+	{
+		$task = new \Prado\Util\Cron\THttpCronTask();
+		$task->setUrl('https://example.test/');
+		$task->setUrl('');
+		self::assertNull($task->getUrl());
+		$task->setUrl('https://example.test/');
+		$task->setUrl(null);
+		self::assertNull($task->getUrl());
+		$task->setBody('hello');
+		$task->setBody(null);
+		self::assertNull($task->getBody());
+		$task->setLogFile('/tmp/http.log');
+		$task->setLogFile('');
+		self::assertNull($task->getLogFile());
+		$task->setLogFile('/tmp/http.log');
+		$task->setLogFile(null);
+		self::assertNull($task->getLogFile());
+	}
+
+	public function testExecute_TimeoutLogAndStatusCombinations()
+	{
+		$log = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'prado-httptask-' . bin2hex(random_bytes(4)) . '.log';
+		$timed = new TCronModule();
+		$timed->setTaskTimeout(4.2);
+		$default = (new THttpCronTaskTestClient())->getTimeout();
+		$modules = ['TaskTimeout' => [$timed, 5], 'no TaskTimeout' => [new TCronModule(), $default], 'no module' => [null, $default]];
+		try {
+			foreach ($modules as $label => [$module, $timeout]) {
+				foreach ([null, $log] as $logFile) {
+					foreach ([200, 500] as $status) {
+						$client = new THttpCronTaskTestClient();
+						$client->status = $status;
+						$task = new THttpCronTask();
+						$task->setName('http');
+						$task->setUrl('https://example.test/run')->setLogFile($logFile)->setHttpClient($client);
+						@unlink($log);
+						try {
+							$task->execute($module);
+							self::assertSame(200, $status, $label . ': a 2xx status does not throw');
+						} catch (TIOException $e) {
+							self::assertSame(500, $status, $label . ': a non-2xx status throws');
+						}
+						self::assertSame($status, $task->getStatusCode());
+						self::assertSame($timeout, $client->requests[0][4], $label . ': the client timeout');
+						self::assertSame($logFile !== null, is_file($log), $label . ': the log file');
+					}
+				}
+			}
+		} finally {
+			$timed->unlisten();
+			if (is_file($log)) {
+				unlink($log);
+			}
+		}
+	}
+
+	public function testSerialize_LeavesOutEachDefault()
+	{
+		$values = ['_method' => 'POST', '_headers' => ['X-A' => '1'], '_body' => 'payload', '_logFile' => '/tmp/http.log'];
+		$setters = ['_method' => 'setMethod', '_headers' => 'setHeaders', '_body' => 'setBody', '_logFile' => 'setLogFile'];
+		for ($mask = 0; $mask < 16; $mask++) {
+			$task = new THttpCronTask();
+			$set = [];
+			foreach (array_keys($values) as $i => $prop) {
+				if ($mask & (1 << $i)) {
+					$task->{$setters[$prop]}($values[$prop]);
+					$set[] = $prop;
+				}
+			}
+			$text = serialize($task);
+			foreach (array_keys($values) as $prop) {
+				self::assertSame(in_array($prop, $set, true), str_contains($text, "\0Prado\\Util\\Cron\\THttpCronTask\0" . $prop), $prop . ' in mask ' . $mask);
+			}
+		}
+	}
 }

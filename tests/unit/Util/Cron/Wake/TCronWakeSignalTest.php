@@ -69,6 +69,26 @@ class TCronWakeSignalTest extends \PHPUnit\Framework\TestCase
 		self::assertFileDoesNotExist($this->pidFile, 'close removes this process\'s pid file');
 	}
 
+	public function testWaitInstallsTheHandlerBeforeItRecordsThePid()
+	{
+		$t = new class ($this->pidFile) extends TCronWakeSignal {
+			public mixed $handlerAtWrite = null;
+
+			protected function writePid(): bool
+			{
+				$this->handlerAtWrite = pcntl_signal_get_handler($this->getSignal());
+				return parent::writePid();
+			}
+		};
+		$now = microtime(true);
+		try {
+			self::assertFalse($t->wait($now, $now));
+			self::assertInstanceOf(\Closure::class, $t->handlerAtWrite, 'a signal sent once the pid file names this process is handled');
+		} finally {
+			$t->close();
+		}
+	}
+
 	public function testWatchDeliversTheSignalOnTheLoop()
 	{
 		$t = new TCronWakeSignal($this->pidFile);
@@ -104,12 +124,33 @@ class TCronWakeSignalTest extends \PHPUnit\Framework\TestCase
 			}
 		};
 		$now = microtime(true);
+		file_put_contents($this->pidFile, (string) getmypid());
+		self::assertFalse($t->signal($now), 'an unavailable transport does not signal the pid');
 		self::assertNull($t->wait($now + 1, $now));
 		self::assertFalse($t->watch(TAsync::getLoop(), static fn () => null));
+		$t->close();
+		self::assertFileExists($this->pidFile, 'an unavailable transport leaves the pid file');
 
 		$loop = $this->createMock(\Prado\IO\Async\IEventLoop::class);
 		$loop->method('onSignal')->willThrowException(new \Prado\Exceptions\TNotSupportedException('eventloop_signals_unsupported'));
 		$t = new TCronWakeSignal($this->pidFile);
 		self::assertFalse($t->watch($loop, static fn () => null), 'a loop without signals cannot watch');
+	}
+
+	public function testAPidFileWithoutAPid()
+	{
+		$t = new TCronWakeSignal($this->pidFile);
+		file_put_contents($this->pidFile, 'not a pid');
+		self::assertNull($t->getPid());
+		file_put_contents($this->pidFile, '0');
+		self::assertNull($t->getPid());
+	}
+
+	public function testCloseKeepsThePidFileOfAnotherProcess()
+	{
+		$t = new TCronWakeSignal($this->pidFile);
+		file_put_contents($this->pidFile, '999999999');
+		$t->close();
+		self::assertSame(999999999, $t->getPid(), 'the pid file of another process stays');
 	}
 }
