@@ -61,8 +61,8 @@ class TFormGuard extends TBaseValidator implements IPostBackDataHandler
 
 	/** Cache key prefix of submission counters. */
 	public const CACHE_KEY_PREFIX = 'prado:formguard:';
-	/** Post field suffix of the signed stamp. */
-	public const STAMP_SUFFIX = '$ts';
+	/** Post field name of the signed stamp, after the UniqueID and its separator. */
+	public const STAMP_NAME = 'ts';
 
 	/** @var ?string the honeypot value posted in this request. */
 	private ?string $_honeypot = null;
@@ -200,8 +200,9 @@ class TFormGuard extends TBaseValidator implements IPostBackDataHandler
 	 */
 	public function loadPostData($key, $values)
 	{
-		$this->_honeypot = (string) ($values[$key . '$' . $this->getHoneypotName()] ?? '');
-		$this->_stamp = (string) ($values[$key . self::STAMP_SUFFIX] ?? '');
+		$prefix = $key . self::getIdSeparator();
+		$this->_honeypot = (string) ($values[$prefix . $this->getHoneypotName()] ?? '');
+		$this->_stamp = (string) ($values[$prefix . self::STAMP_NAME] ?? '');
 		return false;
 	}
 
@@ -261,7 +262,7 @@ class TFormGuard extends TBaseValidator implements IPostBackDataHandler
 		$writer->renderEndTag();
 		$writer->addAttribute('type', 'text');
 		$writer->addAttribute('id', $id);
-		$writer->addAttribute('name', $this->getUniqueID() . '$' . $this->getHoneypotName());
+		$writer->addAttribute('name', $this->getUniqueID() . self::getIdSeparator() . $this->getHoneypotName());
 		$writer->addAttribute('value', '');
 		$writer->addAttribute('tabindex', '-1');
 		$writer->addAttribute('autocomplete', 'off');
@@ -270,7 +271,7 @@ class TFormGuard extends TBaseValidator implements IPostBackDataHandler
 		$writer->renderEndTag();
 
 		$writer->addAttribute('type', 'hidden');
-		$writer->addAttribute('name', $this->getUniqueID() . self::STAMP_SUFFIX);
+		$writer->addAttribute('name', $this->getUniqueID() . self::getIdSeparator() . self::STAMP_NAME);
 		$writer->addAttribute('value', $this->createStamp());
 		$writer->renderBeginTag('input');
 		$writer->renderEndTag();

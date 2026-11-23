@@ -2,12 +2,17 @@
 
 namespace Prado\Test\Unit\Util\Cron\Wake;
 
+use Prado\Data\IDataConnection;
+use Prado\Data\TDataSourceConfig;
 use Prado\Data\TDbConnection;
 use Prado\Data\TDbDriver;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\IO\Async\TAsync;
+use Prado\Prado;
 use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
+use Prado\Test\Unit\Harness\Util\Mutex\TTestLockConnection;
+use Prado\Test\Unit\PradoUnit;
 use Prado\Util\Cron\Wake\TCronWakePgsql;
 
 /**
@@ -78,6 +83,32 @@ class TCronWakePgsqlTest extends \PHPUnit\Framework\TestCase
 		$start = microtime(true);
 		self::assertTrue($t->wait($start + 5.0, $start), 'a notification sent while busy is received by the next wait');
 		self::assertLessThan(2.0, microtime(true) - $start);
+
+		// Two notifications from two transactions queue two; one wait takes both.
+		self::assertTrue($t->signal($now));
+		self::assertTrue($t->signal($now));
+		usleep(20000);
+		$start = microtime(true);
+		self::assertTrue($t->wait($start + 1.0, $start));
+		$start = microtime(true);
+		self::assertFalse($t->wait($start + 0.05, $start), 'the second notification was taken with the first');
+		$t->close();
+	}
+
+	public function testAClosedListenerIsReopened()
+	{
+		$connection = $this->pgsqlConnection();
+		$t = (new TCronWakePgsql($connection))->setChannel('prado_unit_cronwake_' . bin2hex(random_bytes(3)));
+		$now = microtime(true);
+		self::assertFalse($t->wait($now, $now));
+		$listener = PradoUnit::getProp($t, '_listener');
+		$listener->setActive(false);
+
+		self::assertFalse($t->wait($now, $now), 'the wait opens a new listener');
+		self::assertNotSame($listener, PradoUnit::getProp($t, '_listener'));
+		self::assertTrue($t->signal($now));
+		$start = microtime(true);
+		self::assertTrue($t->wait($start + 5.0, $start), 'the new listener listens on the channel');
 		$t->close();
 	}
 
@@ -141,5 +172,61 @@ class TCronWakePgsqlTest extends \PHPUnit\Framework\TestCase
 		self::assertFalse($t->signal($now));
 		self::assertNull($t->wait($now + 1, $now));
 		self::assertFalse($t->watch(TAsync::getLoop(), static fn () => null));
+	}
+
+	public function testCloseWithoutAListener()
+	{
+		$t = new TCronWakePgsql(new TTestLockConnection('pgsql'));
+		$t->close();
+		self::assertNull(PradoUnit::getProp($t, '_listener'));
+	}
+
+	public function testGetDbConnectionChecksTheDriverOfEachSource()
+	{
+		$connection = new TTestLockConnection('pgsql');
+		$connection->setActive(false);
+		$t = new TCronWakePgsql($connection);
+		self::assertSame($connection, $t->getDbConnection());
+		self::assertTrue($connection->getActive(), 'an inactive connection is activated');
+
+		$sqlite = new TDbConnection('sqlite::memory:');
+		$sqlite->setActive(true);
+		try {
+			(new TCronWakePgsql($sqlite))->getDbConnection();
+			self::fail('an active SQLite connection was accepted');
+		} catch (TConfigurationException $e) {
+		}
+
+		$app = Prado::getApplication();
+		$modules = PradoUnit::getProp($app, '_modules');
+		try {
+			$config = new TDataSourceConfig();
+			PradoUnit::setProp($config, '_conn', $pgsql = new TTestLockConnection('pgsql'));
+			$app->setModule('cronWakePgsqlSource', $config);
+			$t = new TCronWakePgsql();
+			$t->setConnectionID('cronWakePgsqlSource');
+			self::assertSame($pgsql, $t->getDbConnection(), 'the ConnectionID connection');
+
+			$config = new TDataSourceConfig();
+			PradoUnit::setProp($config, '_conn', new TDbConnection('sqlite::memory:'));
+			$app->setModule('cronWakeSqliteSource', $config);
+			$t = new TCronWakePgsql();
+			$t->setConnectionID('cronWakeSqliteSource');
+			self::expectException(TConfigurationException::class);
+			$t->getDbConnection();
+		} finally {
+			PradoUnit::setProp($app, '_modules', $modules);
+		}
+	}
+
+	public function testAClosedListenerOverASourceThatIsNoTDbConnection()
+	{
+		$source = $this->createMock(IDataConnection::class);
+		$source->method('getActive')->willReturn(true);
+		$source->method('getDriverName')->willReturn('pgsql');
+		$t = new TCronWakePgsql($source);
+		PradoUnit::setProp($t, '_listener', new TDbConnection('sqlite::memory:'));
+		self::expectException(TConfigurationException::class);
+		PradoUnit::invoke($t, 'getListener');
 	}
 }

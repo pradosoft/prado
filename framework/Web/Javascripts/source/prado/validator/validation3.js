@@ -2048,15 +2048,17 @@ Prado.WebUI.TRegularExpressionValidator = Prado.Class(Prado.WebUI.TBaseValidator
 
 	/**
 	 * Evaluate validation state
+	 * The expression is grouped between the anchors, so an alternation
+	 * applies to the whole value, as on the server.
 	 * @function {boolean} ?
-	 * @return True if value matches regular expression or value is empty.
+	 * @return True if the whole value matches the regular expression or value is empty.
 	 */
 	evaluateIsValid() {
 		const value = this.getRawValidationValue();
 		if (value.length <= 0)
 	    	return true;
 
-		const rx = new RegExp(`^${this.options.ValidationExpression}$`,this.options.PatternModifiers);
+		const rx = new RegExp(`^(?:${this.options.ValidationExpression})$`,this.options.PatternModifiers);
 		const matches = rx.exec(value);
 		return (matches != null && value == matches[0]);
 	}
@@ -2784,44 +2786,6 @@ Prado.WebUI.TIbanValidator = Prado.Class(Prado.WebUI.TBaseValidator,
 				remainder = (remainder * 10 + Number(digit)) % 97;
 		}
 		return remainder;
-	}
-});
-
-/**
- * TReCaptchaValidator client-side control.
- * Deprecated with TReCaptcha (reCAPTCHA v1); use Prado.WebUI.TReCaptcha2Validator.
- *
- * @class Prado.WebUI.TReCaptchaValidator
- * @extends Prado.WebUI.TBaseValidator
- * @deprecated 4.4.0
- */
-Prado.WebUI.TReCaptchaValidator = Prado.Class(Prado.WebUI.TBaseValidator,
-{
-	onInit() {
-		const obj = this;
-		const elements = document.getElementsByName(this.options.ResponseFieldName);
-		if (elements)
-		 if (elements.length>=1)
-		 {
-		  this.observe(elements[0],'change',() => { obj.responseChanged() });
-		  this.observe(elements[0],'keydown',() => { obj.responseChanged() });
-		 }
-	},
-
-	responseChanged() {
-		const field = document.getElementById(`${this.options.ID}_1`);
-		if (field.value=='1') return;
-		field.value = '1';
-		Prado.Validation.validateControl(this.options.ID);
-	},
-
-	/**
-	 * Evaluate validation state
-	 * @function {boolean} ?
-	 * @return True if the captcha has validate, False otherwise.
-	 */
-	evaluateIsValid() {
-		return document.getElementById(`${this.options.ID}_1`).value=='1';
 	}
 });
 

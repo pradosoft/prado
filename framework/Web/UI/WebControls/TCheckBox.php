@@ -379,16 +379,19 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 		}
 		if ($this->getHasAttributes()) {
 			$attributes = $this->getAttributes();
+			// value and onclick render on the input tag, not the surrounding span
 			$value = $attributes->remove('value');
-			// onclick js should only be added to input tag
-			if (($onclick = $attributes->remove('onclick')) === null) {
-				$onclick = '';
-			}
+			$onclick = $attributes->remove('onclick');
 			if ($attributes->getCount()) {
 				$writer->addAttributes($attributes);
 			}
 			if ($value !== null) {
 				$attributes->add('value', $value);
+			}
+			if ($onclick !== null) {
+				$attributes->add('onclick', $onclick);
+			} else {
+				$onclick = '';
 			}
 		} else {
 			$onclick = '';
