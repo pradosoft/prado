@@ -115,6 +115,7 @@ class TShellDbCronAction extends TShellCronAction
 
 	/**
 	 * Adds a task to the database with its name, task id, schedule, and other properties.
+	 * Each property argument is `Name=value`, split at its first `=`; a property without a value is an error.
 	 * @param array $args command arguments
 	 */
 	public function actionAdd($args)
@@ -169,10 +170,14 @@ class TShellDbCronAction extends TShellCronAction
 		$task->setName($taskName);
 		$task->setSchedule($schedule);
 		for ($i = 4; $i < count($args); $i++) {
-			$parts = explode('=', $args[$i]);
+			$parts = explode('=', $args[$i], 2);
 			$parts[0] = trim($parts[0]);
 			$property = strtolower($parts[0]);
 			if ($task->canSetProperty($property)) {
+				if (!isset($parts[1])) {
+					$this->_outWriter->writeError("Task Property '{$parts[0]}' has no value");
+					return true;
+				}
 				$property = 'set' . $property;
 				$task->$property(trim($parts[1]));
 			} else {
@@ -188,6 +193,7 @@ class TShellDbCronAction extends TShellCronAction
 
 	/**
 	 * Updates a task in the database by its name, setting its schedule, username, moduleid, and other properties.
+	 * Each property argument is `Name=value`, split at its first `=`; a property without a value is an error.
 	 * @param array $args command arguments
 	 */
 	public function actionUpdate($args)
@@ -211,10 +217,14 @@ class TShellDbCronAction extends TShellCronAction
 			return true;
 		}
 		for ($i = 2; $i < count($args); $i++) {
-			$parts = explode('=', $args[$i]);
+			$parts = explode('=', $args[$i], 2);
 			$parts[0] = trim($parts[0]);
 			$property = strtolower($parts[0]);
 			if ($task->canSetProperty($property)) {
+				if (!isset($parts[1])) {
+					$this->_outWriter->writeError("Task Property '{$parts[0]}' has no value");
+					return true;
+				}
 				if ($property === 'schedule') {
 					$s = Prado::createComponent(TTimeScheduler::class);
 					try {
@@ -372,21 +382,14 @@ class TShellDbCronAction extends TShellCronAction
 		return true;
 	}
 	/**
-	 * Parses a flush period argument: seconds, an ISO 8601 duration (`P7D`), or a relative date string (`1 week`).
+	 * Parses a flush period argument: seconds, an ISO 8601 duration (`P7D`), or a relative date string (`1 week`)
+	 * that reaches back in time ({@see TDbCronManager::parsePeriod()}).
 	 * @param string $arg the argument
 	 * @return ?DateInterval the period, or null when the argument is not a period
 	 * @since 4.4.0
 	 */
 	protected function parsePeriod(string $arg): ?DateInterval
 	{
-		$arg = trim($arg);
-		if (is_numeric($arg)) {
-			return new DateInterval('PT' . ((int) $arg) . 'S');
-		}
-		try {
-			return str_starts_with($arg, 'P') ? new DateInterval($arg) : (@DateInterval::createFromDateString($arg) ?: null);
-		} catch (\Exception $e) {
-			return null;
-		}
+		return TDbCronManager::parsePeriod(trim($arg));
 	}
 }

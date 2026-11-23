@@ -228,8 +228,20 @@ class TCheckBoxListTest extends TestCase
 			'ValidationGroup' => 'g',
 			'CausesValidation' => false,
 			'ListName' => 'List',
+			'IdSeparator' => ':',
 			'ItemCount' => 3,
 		], PradoUnit::invoke($list, 'getPostBackOptions'));
+	}
+
+	public function testGetPostBackOptionsCarryASetIdSeparator()
+	{
+		try {
+			TCheckBoxList::setIdSeparator('$');
+			[, $list] = $this->createPageList();
+			$this->assertSame('$', PradoUnit::invoke($list, 'getPostBackOptions')['IdSeparator']);
+		} finally {
+			TCheckBoxList::setIdSeparator(TCheckBoxList::DEFAULT_ID_SEPARATOR);
+		}
 	}
 
 	// ================================================================================
@@ -393,7 +405,7 @@ class TCheckBoxListTest extends TestCase
 	{
 		[, $list] = $this->createPageList();
 		$this->assertFalse($list->getDataChanged());
-		$this->assertTrue($list->loadPostData('List$c1', ['List$c1' => 'b']));
+		$this->assertTrue($list->loadPostData('List:c1', ['List:c1' => 'b']));
 		$this->assertSame([1], $list->getSelectedIndices());
 		$this->assertTrue($list->getDataChanged());
 	}
@@ -402,17 +414,17 @@ class TCheckBoxListTest extends TestCase
 	{
 		[, $list] = $this->createPageList();
 		$list->setSelectedIndices([0, 2]);
-		$this->assertTrue($list->loadPostData('List$c2', []));
+		$this->assertTrue($list->loadPostData('List:c2', []));
 		$this->assertSame([0], $list->getSelectedIndices());
 	}
 
 	public function testLoadPostDataReportsChangeOnlyOnce()
 	{
 		[, $list] = $this->createPageList();
-		$values = ['List$c0' => 'a', 'List$c2' => 'c'];
-		$this->assertTrue($list->loadPostData('List$c0', $values));
-		$this->assertFalse($list->loadPostData('List$c1', $values));
-		$this->assertFalse($list->loadPostData('List$c2', $values));
+		$values = ['List:c0' => 'a', 'List:c2' => 'c'];
+		$this->assertTrue($list->loadPostData('List:c0', $values));
+		$this->assertFalse($list->loadPostData('List:c1', $values));
+		$this->assertFalse($list->loadPostData('List:c2', $values));
 		$this->assertSame([0, 2], $list->getSelectedIndices());
 	}
 
@@ -420,8 +432,8 @@ class TCheckBoxListTest extends TestCase
 	{
 		[, $list] = $this->createPageList();
 		$list->setSelectedIndices([1]);
-		$this->assertFalse($list->loadPostData('List$c1', ['List$c1' => 'b']));
-		$this->assertFalse($list->loadPostData('List$c0', []));
+		$this->assertFalse($list->loadPostData('List:c1', ['List:c1' => 'b']));
+		$this->assertFalse($list->loadPostData('List:c0', []));
 		$this->assertSame([1], $list->getSelectedIndices());
 		$this->assertFalse($list->getDataChanged());
 	}
@@ -430,14 +442,14 @@ class TCheckBoxListTest extends TestCase
 	{
 		[, $list] = $this->createPageList();
 		$list->getItems()->itemAt(1)->setEnabled(false);
-		$this->assertFalse($list->loadPostData('List$c1', ['List$c1' => 'b']));
+		$this->assertFalse($list->loadPostData('List:c1', ['List:c1' => 'b']));
 		$this->assertSame([], $list->getSelectedIndices());
 	}
 
 	public function testLoadPostDataOutOfRangeIndexIsIgnored()
 	{
 		[, $list] = $this->createPageList();
-		$this->assertFalse($list->loadPostData('List$c9', ['List$c9' => 'x']));
+		$this->assertFalse($list->loadPostData('List:c9', ['List:c9' => 'x']));
 		$this->assertSame([], $list->getSelectedIndices());
 	}
 
@@ -445,7 +457,7 @@ class TCheckBoxListTest extends TestCase
 	{
 		[, $list] = $this->createPageList();
 		$list->setEnabled(false);
-		$this->assertFalse($list->loadPostData('List$c0', ['List$c0' => 'a']));
+		$this->assertFalse($list->loadPostData('List:c0', ['List:c0' => 'a']));
 		$this->assertSame([], $list->getSelectedIndices());
 	}
 
@@ -460,7 +472,7 @@ class TCheckBoxListTest extends TestCase
 		$list->getItems()->add(new TListItem('A', 'a'));
 		$panel->getControls()->add($list);
 		$panel->setEnabled(false);
-		$this->assertFalse($list->loadPostData('P$List$c0', ['P$List$c0' => 'a']));
+		$this->assertFalse($list->loadPostData('P:List:c0', ['P:List:c0' => 'a']));
 		$this->assertSame([], $list->getSelectedIndices());
 	}
 
@@ -514,7 +526,7 @@ class TCheckBoxListTest extends TestCase
 		$this->assertFalse($item->getCausesValidation());
 		$this->assertSame('g', $item->getValidationGroup());
 		$this->assertSame(
-			['List$c0' => true, 'List$c1' => true, 'List$c2' => true],
+			['List:c0' => true, 'List:c1' => true, 'List:c2' => true],
 			PradoUnit::getProp($page, '_controlsRegisteredForPostData')
 		);
 	}
@@ -567,11 +579,11 @@ class TCheckBoxListTest extends TestCase
 		$this->assertStringEndsWith('</table>', $output);
 		$this->assertSame(3, substr_count($output, '<td>'));
 		$this->assertStringContainsString(
-			'<input id="List_c0" type="checkbox" value="a" name="List$c0" /><label for="List_c0">A</label>',
+			'<input id="List_c0" type="checkbox" value="a" name="List:c0" /><label for="List_c0">A</label>',
 			$output
 		);
 		$this->assertStringContainsString(
-			'<input id="List_c1" type="checkbox" value="b" name="List$c1" checked="checked" />',
+			'<input id="List_c1" type="checkbox" value="b" name="List:c1" checked="checked" />',
 			$output
 		);
 	}
@@ -669,8 +681,8 @@ class TCheckBoxListTest extends TestCase
 		[, $list] = $this->createPageList(['a' => 'A', 'b' => 'B']);
 		$list->getItems()->itemAt(1)->setEnabled(false);
 		$output = $this->render($list);
-		$this->assertStringContainsString('name="List$c0" />', $output);
-		$this->assertStringContainsString('name="List$c1" disabled="disabled" />', $output);
+		$this->assertStringContainsString('name="List:c0" />', $output);
+		$this->assertStringContainsString('name="List:c1" disabled="disabled" />', $output);
 	}
 
 	public function testRenderDisabledListDisablesAllItems()
@@ -678,8 +690,8 @@ class TCheckBoxListTest extends TestCase
 		[, $list] = $this->createPageList(['a' => 'A', 'b' => 'B']);
 		$list->setEnabled(false);
 		$output = $this->render($list);
-		$this->assertStringContainsString('name="List$c0" disabled="disabled" />', $output);
-		$this->assertStringContainsString('name="List$c1" disabled="disabled" />', $output);
+		$this->assertStringContainsString('name="List:c0" disabled="disabled" />', $output);
+		$this->assertStringContainsString('name="List:c1" disabled="disabled" />', $output);
 	}
 
 	public function testRenderAutoPostBackRegistersListScript()

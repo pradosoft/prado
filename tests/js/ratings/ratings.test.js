@@ -579,7 +579,14 @@ describe('TRatingList.dispatchRequest', () => {
 		expect(calledOptions.ID).toBe('rl14_c2');
 	});
 
-	it('sets EventTarget to ListName$cIndex', () => {
+	it('sets EventTarget to ListName, the default separator, and cIndex', () => {
+		rl.dispatchRequest({ preventDefault: vi.fn() });
+		const calledOptions = global.Prado.PostBack.mock.calls[0][0];
+		expect(calledOptions.EventTarget).toBe('rl14_list:c2');
+	});
+
+	it('sets EventTarget with the IdSeparator option', () => {
+		rl.options.IdSeparator = '$';
 		rl.dispatchRequest({ preventDefault: vi.fn() });
 		const calledOptions = global.Prado.PostBack.mock.calls[0][0];
 		expect(calledOptions.EventTarget).toBe('rl14_list$c2');
@@ -844,7 +851,7 @@ describe('TActiveRatingList', () => {
 			expect(dispatchCalled).toBe(true);
 		});
 
-		it('passes EventTarget as ListName$cIndex', () => {
+		it('passes EventTarget as ListName, the separator, and cIndex', () => {
 			// The source passes eventTarget as the first arg to CallbackRequest.
 			// Capture it by intercepting via a wrapper constructor.
 			let capturedTarget;
@@ -856,7 +863,7 @@ describe('TActiveRatingList', () => {
 			global.Prado.CallbackRequest = CapturingCR;
 			arl.dispatchRequest({ preventDefault: vi.fn() });
 			global.Prado.CallbackRequest = origCR;
-			expect(capturedTarget).toBe('arl2_list$c1');
+			expect(capturedTarget).toBe('arl2_list:c1');
 		});
 
 		it('calls preventDefault when dispatch returns false', () => {

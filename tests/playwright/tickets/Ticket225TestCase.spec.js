@@ -16,5 +16,5 @@ test('Ticket225TestCase', async ({ page }) => {
 	await h.byId(`${base}button4`).click();
 
 	await h.assertNotVisible(`${base}validator1`);
-	await h.assertText(`${base}label1`, 'ctl0$Content$button1 ctl0$Content$button2 ctl0$Content$button3');
+	await h.assertText(`${base}label1`, 'ctl0:Content:button1 ctl0:Content:button2 ctl0:Content:button3');
 });

@@ -328,4 +328,84 @@ class TProcessCronTaskTest extends \PHPUnit\Framework\TestCase
 		self::assertSame('websocket', $copy->getMatch());
 		self::assertSame($this->pidFile, $copy->getPidFile());
 	}
+
+	public function testNullPropertyValues()
+	{
+		$task = new TProcessCronTask();
+		$task->setName('nullprops');
+		foreach (['Command', 'Match', 'Directory', 'LogFile'] as $property) {
+			$task->{'set' . $property}('value');
+			$task->{'set' . $property}(null);
+			self::assertNull($task->{'get' . $property}(), $property);
+		}
+		$task->setPidFile('/tmp/x.pid');
+		$task->setPidFile(null);
+		self::assertStringEndsWith('nullprops.pid', $task->getPidFile(), 'a null PidFile is the default');
+	}
+
+	public function testAPidFileWithoutAPidHasNone()
+	{
+		file_put_contents($this->pidFile, "0\nSTART");
+		self::assertNull($this->makeTask()->getPid());
+	}
+
+	public function testTheStartTimeOfAMissingProcessIsNull()
+	{
+		if (TProcessHelper::isSystemWindows()) {
+			self::markTestSkipped('the POSIX start time');
+		}
+		self::assertNull(\Prado\Test\Unit\PradoUnit::invoke(new TProcessCronTask(), 'processStartTime', 999999999));
+	}
+
+	public function testAnEmptyCommandThrows()
+	{
+		$task = $this->makeTask();
+		$task->setCommand('');
+		self::expectException(TConfigurationException::class);
+		$task->execute(null);
+	}
+
+	public function testALaunchWithoutAPositivePidThrows()
+	{
+		$task = $this->makeTask();
+		$task->nextPid = 0;
+		self::expectException(TConfigurationException::class);
+		$task->startProcess();
+	}
+
+	public function testAPidFileWithAnEmptyStartTimeHasNone()
+	{
+		file_put_contents($this->pidFile, "4242\n");
+		$task = $this->makeTask();
+		self::assertSame(4242, $task->getPid());
+		self::assertNull(PradoUnit::invoke($task, 'getRecordedStart'));
+	}
+
+	public function testVerifyProcessByMatch()
+	{
+		if (TProcessHelper::isSystemWindows()) {
+			self::markTestSkipped('Match is not checked on Windows');
+		}
+		$task = $this->makeTask();
+		$task->setMatch('');
+		self::assertTrue(PradoUnit::invoke($task, 'verifyProcess', 999999999), 'an empty Match checks nothing');
+		$task->setMatch('websocket-server');
+		self::assertFalse(PradoUnit::invoke($task, 'verifyProcess', 999999999), 'a process without arguments does not match');
+	}
+
+	public function testLaunchProcessWithoutADirectory()
+	{
+		if (TProcessHelper::isSystemWindows()) {
+			self::markTestSkipped('the POSIX launch');
+		}
+		$task = new TProcessCronTask();
+		$task->setName('nodirectory');
+		foreach ([null, ''] as $directory) {
+			$task->setDirectory($directory);
+			$pid = PradoUnit::invoke($task, 'launchProcess', 'true');
+			self::assertIsInt($pid, 'a command launches without a Directory');
+			self::assertGreaterThan(0, $pid);
+			self::assertNull(PradoUnit::invoke($task, 'launchProcess', 'true; exit 0 #'), 'a command that ends the shell before it echoes the pid has none');
+		}
+	}
 }

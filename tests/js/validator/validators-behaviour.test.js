@@ -418,6 +418,23 @@ describe('TRegularExpressionValidator.evaluateIsValid', () => {
 		v.validate();
 		expect(v.isValid).toBe(true);
 	});
+
+	it('applies an alternation to the whole value', () => {
+		env.input.value = 'ab';
+		const v = makeValidator({ ValidationExpression: 'a|ab' });
+		v.validate();
+		expect(v.isValid).toBe(true);
+		env.input.value = 'abZ';
+		v.validate();
+		expect(v.isValid).toBe(false);
+	});
+
+	it('accepts an escaped slash', () => {
+		env.input.value = 'a/b';
+		const v = makeValidator({ ValidationExpression: 'a\\/b' });
+		v.validate();
+		expect(v.isValid).toBe(true);
+	});
 });
 
 // ─── TListControlValidator.evaluateIsValid ───────────────────────────────────
