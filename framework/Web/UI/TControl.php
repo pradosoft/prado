@@ -114,9 +114,15 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	 */
 	public const ID_FORMAT = '/^[a-zA-Z_]\\w*$/';
 	/**
-	 * separator char between IDs in a UniqueID
+	 * separator char between IDs in a UniqueID through 4.3
+	 * @deprecated since 4.4.0, {@see getIdSeparator()} returns the separator in use.
 	 */
 	public const ID_SEPARATOR = '$';
+	/**
+	 * default separator char between IDs in a UniqueID
+	 * @since 4.4.0
+	 */
+	public const DEFAULT_ID_SEPARATOR = ':';
 	/**
 	 * separator char between IDs in a ClientID
 	 */
@@ -164,6 +170,10 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	public const RF_AUTO_BINDINGS = 10;		// auto data bindings
 	public const RF_INIT_BINDINGS = 11;		// init bindings, applied once at the start of initRecursive
 
+	/**
+	 * @var string separator char between IDs in the UniqueID of every control
+	 */
+	private static string $_idSeparator = self::DEFAULT_ID_SEPARATOR;
 	/**
 	 * @var string control ID
 	 */
@@ -490,7 +500,7 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	/**
 	 * Returns a unique ID that identifies the control in the page hierarchy.
 	 * A unique ID is the contenation of all naming container controls' IDs and the control ID.
-	 * These IDs are separated by '$' character.
+	 * These IDs are separated by {@see getIdSeparator()}, ':' by default.
 	 * Control users should not rely on the specific format of UniqueID, however.
 	 * @return string a unique ID that identifies the control in the page hierarchy
 	 */
@@ -504,7 +514,7 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 				} elseif (($prefix = $namingContainer->getUniqueID()) === '') {
 					return $this->_id;
 				} else {
-					return ($this->_uid = $prefix . self::ID_SEPARATOR . $this->_id);
+					return ($this->_uid = $prefix . self::getIdSeparator() . $this->_id);
 				}
 			} else {	// no naming container
 				return $this->_id;
@@ -531,7 +541,41 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	 */
 	public function getClientID()
 	{
-		return strtr($this->getUniqueID(), self::ID_SEPARATOR, self::CLIENT_ID_SEPARATOR);
+		return self::convertUniqueIdToClientId($this->getUniqueID());
+	}
+
+	/**
+	 * Returns the character that separates the IDs in a UniqueID.
+	 * @return string the separator. Defaults to ':'.
+	 * @since 4.4.0
+	 */
+	public static function getIdSeparator(): string
+	{
+		return self::$_idSeparator;
+	}
+
+	/**
+	 * Sets the character that separates the IDs in the UniqueID of every control.
+	 * A UniqueID names a posted field and is cached by its control, and the renderer,
+	 * {@see findControl()}, and every `loadPostData()` read the one separator. Set it
+	 * before a page is created; {@see \Prado\Web\Services\TPageService::setIdSeparator()}
+	 * sets it from the configuration.
+	 *
+	 * The separator is one ASCII punctuation character:
+	 * - '_' is refused: it is an ID character and the {@see CLIENT_ID_SEPARATOR}.
+	 * - '.' and '[' are refused: PHP rewrites them in the name of a posted field.
+	 * - '$' is the separator through 4.3. OWASP Core Rule Set rule 942290 rejects a
+	 *   field name where '$' precedes an ID such as "Note", "Order" or "TextBox1".
+	 * @param string $value the separator character
+	 * @throws TInvalidDataValueException if the value is not such a character
+	 * @since 4.4.0
+	 */
+	public static function setIdSeparator(string $value): void
+	{
+		if (strlen($value) !== 1 || !ctype_punct($value) || strpbrk($value, '_.[') !== false) {
+			throw new TInvalidDataValueException('control_idseparator_invalid', $value);
+		}
+		self::$_idSeparator = $value;
 	}
 
 	/**
@@ -541,7 +585,7 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	 */
 	public static function convertUniqueIdToClientId($uniqueID)
 	{
-		return strtr($uniqueID, self::ID_SEPARATOR, self::CLIENT_ID_SEPARATOR);
+		return strtr($uniqueID, self::getIdSeparator(), self::CLIENT_ID_SEPARATOR);
 	}
 
 	/**
@@ -1214,7 +1258,7 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	 * Finds a control by ID path within the current naming container.
 	 * The current naming container is either the control itself
 	 * if it implements {@see \Prado\Web\UI\INamingContainer} or the control's naming container.
-	 * The ID path is an ID sequence separated by {@see \Prado\Web\UI\TControl::ID_SEPARATOR}.
+	 * The ID path is an ID sequence separated by '.' or by {@see getIdSeparator()}.
 	 * For example, 'Repeater1.Item1.Button1' looks for a control with ID 'Button1'
 	 * whose naming container is 'Item1' whose naming container is 'Repeater1'.
 	 * @param string $id ID of the control to be looked up
@@ -1223,7 +1267,8 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	 */
 	public function findControl($id)
 	{
-		$id = strtr($id, '.', self::ID_SEPARATOR);
+		$separator = self::getIdSeparator();
+		$id = strtr($id, '.', $separator);
 		$container = ($this instanceof INamingContainer) ? $this : $this->getNamingContainer();
 		if (!$container || !$container->getHasControls()) {
 			return null;
@@ -1232,7 +1277,7 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 			$container->_rf[self::RF_NAMED_CONTROLS] = [];
 			$container->fillNameTable($container, $container->_rf[self::RF_CONTROLS]);
 		}
-		if (($pos = strpos($id, self::ID_SEPARATOR)) === false) {
+		if (($pos = strpos($id, $separator)) === false) {
 			return $container->_rf[self::RF_NAMED_CONTROLS][$id] ?? null;
 		} else {
 			$cid = substr($id, 0, $pos);

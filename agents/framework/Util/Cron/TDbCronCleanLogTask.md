@@ -15,7 +15,7 @@
 
 ## Key Properties/Methods
 
-- `getTimePeriod()` / `setTimePeriod(int|string $timeperiod)` — the age before which log entries are deleted: seconds (default `2419200` = 28 days), or a `\DateInterval` specification such as `P7D` or `"1 week"` (4.4.0); an invalid specification throws `TInvalidDataValueException`
+- `getTimePeriod()` / `setTimePeriod(int|string $timeperiod)` — the age before which log entries are deleted: seconds (default `2419200` = 28 days), or a `\DateInterval` specification such as `P7D` or `"1 week"` (4.4.0); a negative value, or a specification that is invalid or does not reach back in time (`"-1 week"`, `"last week"`, see `TDbCronManager::parsePeriod()`), throws `TInvalidDataValueException`
 - `getTaskName()` / `setTaskName(?string $name)` — delete only the log rows of matching task names; `_` is a wild card, `%` a wild string (4.4.0)
 - `getUsername()` / `setUsername(?string $username)` — delete only the log rows of matching user names (4.4.0)
 - `execute(TCronModule|TDbCronManager $cron)` — clears the log on the `TDbCronManager` specified by `ModuleId` (or the running cron module if none set) through `clearCronLog($period, $name, $username)`; writes cleared-count to shell output when run via CLI

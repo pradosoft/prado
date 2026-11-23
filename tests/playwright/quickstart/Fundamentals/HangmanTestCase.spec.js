@@ -12,7 +12,7 @@ test('QuickstartHangmanTestCase', async ({ page }) => {
   await h.assertSourceContains('You must choose a difficulty level');
   await h.byXPath("//input[@type='submit' and @value='Play!']").click();
   await h.pause(50);
-  await h.byXPath("//input[@name='ctl0$body$LevelSelection' and @value='3']").click();
+  await h.byXPath("//input[@name='ctl0:body:LevelSelection' and @value='3']").click();
   await h.pause(50);
   await h.byXPath("//input[@type='submit' and @value='Play!']").click();
   await h.assertSourceContains('Please make a guess');
@@ -32,7 +32,7 @@ test('QuickstartHangmanTestCase', async ({ page }) => {
   await h.assertSourceContains('You Lose');
   await h.byLinkText('Start Again').click();
   await h.pause(50);
-  await h.byXPath("//input[@name='ctl0$body$LevelSelection' and @value='5']").click();
+  await h.byXPath("//input[@name='ctl0:body:LevelSelection' and @value='5']").click();
   await h.pause(50);
   await h.byXPath("//input[@type='submit' and @value='Play!']").click();
   await h.assertSourceContains('maximum of 5');
