@@ -322,7 +322,7 @@ class TFormGuardTest extends \PHPUnit\Framework\TestCase
 		$guard->render(new THtmlWriter($tw));
 		$output = $tw->flush();
 		$this->assertStringContainsString('name="' . $guard->getUniqueID() . TControl::getIdSeparator() . $guard->getHoneypotName() . '"', $output);
-		$this->assertStringContainsString('name="' . $guard->getUniqueID() . TFormGuard::STAMP_SUFFIX . '"', $output);
+		$this->assertStringContainsString('name="' . $guard->getUniqueID() . TFormGuard::STAMP_NAME . '"', $output);
   }
 
 	// -----------------------------------------------------------------------
