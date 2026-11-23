@@ -23,6 +23,7 @@ use Prado\Exceptions\TInvalidOperationException;
 use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Util\IDbModule;
+use Prado\Util\Log\TLogger;
 
 /**
  * TDbCronManager class.
@@ -227,7 +228,8 @@ class TDbCronManager extends TCronModule implements IDbModule
 			$configTasks = parent::getRawTasks();
 			$db = $this->getDbConnection();
 
-			$cmd = $db->createCommand("SELECT * FROM {$this->_tableName} WHERE active=0");
+			$cmd = $db->createCommand("SELECT * FROM {$this->_tableName} WHERE active=:inactive");
+			$cmd->bindValue(":inactive", 0, $db::PARAM_INT);
 
 			$rmcmd = null;
 			foreach ($cmd->query()->readAll() as $data) {
@@ -294,11 +296,12 @@ class TDbCronManager extends TCronModule implements IDbModule
 		foreach ($results as $properties) {
 			$name = $properties['name'];
 			$this->_taskRows[$name] = $properties;
-			if (($task = $this->getTask($name)) instanceof TCronTask) {
-				// Another process may have run the task since this process loaded it: the row is current.
-				$task->setLastExecTime($properties['lastexectime']);
-				$task->setProcessCount((int) $properties['processcount']);
+			if (!(($task = $this->getTask($name)) instanceof TCronTask)) {
+				continue;
 			}
+			// Another process may have run the task since this process loaded it: the row is current.
+			$task->setLastExecTime($properties['lastexectime']);
+			$task->setProcessCount((int) $properties['processcount']);
 			$pendingtasks[$name] = $task;
 		}
 		return $pendingtasks;
@@ -345,7 +348,10 @@ class TDbCronManager extends TCronModule implements IDbModule
 		foreach ($results->readAll() as $data) {
 			$name = $data['name'];
 			if ($data['active'] && !isset($this->_tasks[$name])) {
-				$this->_tasks[$name] = $this->unserializeTask($data['options']);
+				if (($task = $this->unserializeTask($data['options'], $name)) === null) {
+					continue;
+				}
+				$this->_tasks[$name] = $task;
 			}
 			$tasks[$name] = $data['active'] ? $this->_tasks[$name] : parent::getTask($name);
 			$this->_taskRows[$name] = $data;
@@ -429,7 +435,10 @@ class TDbCronManager extends TCronModule implements IDbModule
 		foreach ($cmd->query()->readAll() as $data) {
 			$name = $data['name'];
 			if ($data['active'] && !isset($this->_tasks[$name])) {
-				$this->_tasks[$name] = $this->unserializeTask($data['options']);
+				if (($task = $this->unserializeTask($data['options'], $name)) === null) {
+					continue;
+				}
+				$this->_tasks[$name] = $task;
 			}
 			$userTasks[$name] = $data['active'] ? $this->_tasks[$name] : parent::getTask($name);
 			$this->_taskRows[$name] = $data;
@@ -582,15 +591,15 @@ class TDbCronManager extends TCronModule implements IDbModule
 			return null;
 		}
 		$db = $this->getDbConnection();
-		$db->createCommand('ALTER TABLE ' . $this->_tableName . ' ADD COLUMN nextexectime INT NULL DEFAULT NULL')->execute();
+		$db->createCommand('ALTER TABLE ' . $this->_tableName . ' ADD COLUMN nextexectime BIGINT NULL DEFAULT NULL')->execute();
 		$db->createCommand('CREATE INDEX ' . $this->getIndexName('tnext') . ' ON ' . $this->_tableName . '(nextexectime)')->execute();
 
 		$rows = $db->createCommand("SELECT name, options, lastexectime FROM {$this->_tableName} WHERE active IS NOT NULL")->query()->readAll();
 		$cmd = $db->createCommand("UPDATE {$this->_tableName} SET nextexectime=:ntime WHERE name=:name AND active IS NOT NULL");
 		$filled = 0;
 		foreach ($rows as $row) {
-			$task = $this->unserializeTask($row['options']);
-			if (!($task instanceof TCronTask)) {
+			$task = $this->unserializeTask($row['options'], $row['name']);
+			if ($task === null) {
 				continue;
 			}
 			$cmd->bindValue(":ntime", $task->getNextTriggerTime((int) $row['lastexectime']), $db::PARAM_STR);
@@ -670,7 +679,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 			options ' . $textType . ' NULL,
 			processcount INT NOT NULL DEFAULT 0,
 			lastexectime VARCHAR (20) NULL DEFAULT NULL,
-			nextexectime INT NULL DEFAULT NULL,
+			nextexectime BIGINT NULL DEFAULT NULL,
 			lastresult VARCHAR (16) NULL DEFAULT NULL,
 			lastduration VARCHAR (20) NULL DEFAULT NULL,
 			paused INT NULL DEFAULT NULL,
@@ -894,17 +903,22 @@ class TDbCronManager extends TCronModule implements IDbModule
 	}
 
 	/**
-	 * Unserializes a task from its row and prepares it ({@see prepareTask}).
+	 * Unserializes a task from its row and prepares it ({@see prepareTask}).  A row that holds no task,
+	 * such as one of a task class that no longer exists, is a WARNING log entry and null, so the other
+	 * tasks still load and run.
 	 * @param ?string $options the `options` column value
-	 * @return mixed the task, or false when the value does not unserialize
+	 * @param ?string $name the task name, for the log entry
+	 * @return ?TCronTask the task, or null when the row holds no task
 	 * @since 4.4.0
 	 */
-	protected function unserializeTask(?string $options): mixed
+	protected function unserializeTask(?string $options, ?string $name = null): ?TCronTask
 	{
 		$task = @unserialize((string) $this->decodeTaskOptions($options));
-		if ($task instanceof TCronTask) {
-			$this->prepareTask($task);
+		if (!($task instanceof TCronTask)) {
+			Prado::log('Cron task (' . $name . ') row holds no task and is skipped', TLogger::WARNING, TDbCronManager::class);
+			return null;
 		}
+		$this->prepareTask($task);
 		return $task;
 	}
 
@@ -1100,8 +1114,10 @@ class TDbCronManager extends TCronModule implements IDbModule
 				} elseif (isset($configTasks[$taskName])) {
 					return parent::getTask($taskName);
 				} elseif (isset($this->_taskRows[$taskName])) {
-					$this->_tasks[$taskName] = $this->unserializeTask($this->_taskRows[$taskName]['options']);
-					return $this->_tasks[$taskName];
+					if (($task = $this->unserializeTask($this->_taskRows[$taskName]['options'], $taskName)) !== null) {
+						$this->_tasks[$taskName] = $task;
+					}
+					return $task;
 				}
 			} else {
 				parent::ensureTasks();
@@ -1125,7 +1141,10 @@ class TDbCronManager extends TCronModule implements IDbModule
 
 		$this->_taskRows[$taskName] = $result;
 		if (!isset($this->_tasks[$taskName])) {
-			$this->_tasks[$taskName] = $this->unserializeTask($result['options']);
+			if (($task = $this->unserializeTask($result['options'], $taskName)) === null) {
+				return null;
+			}
+			$this->_tasks[$taskName] = $task;
 		}
 		if ($this->dyGetUserTasks(false, $username = $this->_tasks[$taskName]->getUserName(), $taskName, ['extra' => ['username' => $username]]) === true) {
 			$this->dyLogPermissionFailed(static::PERM_CRON_READ_TASKS, 'getting cron task \'' . $taskName . '\'');
@@ -1537,32 +1556,73 @@ class TDbCronManager extends TCronModule implements IDbModule
 	 * Normalizes a time period to a \DateInterval.  A numeric value is seconds; a string is an ISO 8601
 	 * duration, eg. "P1Y6M3DT12H20M30S", or a relative date string, eg. "1 year 6 months 3 days".
 	 * @param \DateInterval|int|string $period the period
-	 * @throws TInvalidDataValueException when the string is not a period
+	 * @throws TInvalidDataValueException when the value is not a period that reaches back in time ({@see parsePeriod})
 	 * @return \DateInterval the period as an interval
 	 * @since 4.4.0
 	 */
 	protected function toDateInterval($period): DateInterval
 	{
+		$interval = static::parsePeriod($period);
+		if ($interval === null) {
+			throw new TInvalidDataValueException('dbcron_period_invalid', is_object($period) ? 'DateInterval' : trim((string) $period));
+		}
+		return $interval;
+	}
+
+	/**
+	 * Parses a period of the cron log: seconds, a \DateInterval, an ISO 8601 duration ("P7D"), or a relative
+	 * date string ("1 week").  The period reaches back in time: subtracting it from a time gives a time no
+	 * later than that time.  A negative period ("-1 week", "yesterday") and a period that names a day
+	 * ("last week", "last monday"), which a \DateTimeImmutable cannot subtract, are not periods.
+	 * @param mixed $period the period
+	 * @return ?\DateInterval the period, or null when the value is not a period
+	 * @since 4.4.0
+	 */
+	public static function parsePeriod($period): ?DateInterval
+	{
 		if ($period instanceof DateInterval) {
-			return $period;
-		}
-		if (is_numeric($period)) {
-			return new DateInterval('PT' . ((int) $period) . 'S');
-		}
-		$period = trim((string) $period);
-		try {
-			$di = str_starts_with($period, 'P') ? new DateInterval($period) : null;
-		} catch (\Exception $e) {
-			$di = null;
-		}
-		if ($di === null) {
+			$interval = $period;
+		} elseif (is_numeric($period)) {
+			$interval = ((int) $period >= 0) ? new DateInterval('PT' . ((int) $period) . 'S') : null;
+		} else {
+			$period = trim((string) $period);
 			try {
-				$di = @DateInterval::createFromDateString($period) ?: new DateInterval($period);
+				$interval = str_starts_with($period, 'P') ? new DateInterval($period) : null;
 			} catch (\Exception $e) {
-				throw new TInvalidDataValueException('dbcron_period_invalid', $period);
+				$interval = null;
+			}
+			if ($interval === null) {
+				try {
+					$interval = @DateInterval::createFromDateString($period) ?: null;
+					// PHP 8.3 and later throw DateMalformedIntervalStringException.
+					// @codeCoverageIgnoreStart
+				} catch (\Exception $e) { // @phpstan-ignore catch.neverThrown
+					$interval = null;
+				}
+				// @codeCoverageIgnoreEnd
 			}
 		}
-		return $di;
+		if ($interval === null) {
+			return null;
+		}
+		$reference = new \DateTimeImmutable('2000-01-01 00:00:00 UTC');
+		$cutoff = $reference;
+		$failed = false;
+		set_error_handler(static function () use (&$failed): bool {
+			$failed = true;
+			return true;
+		});
+		try {
+			$cutoff = $reference->sub($interval);
+			// PHP 8.3 and later throw DateInvalidOperationException for a period that names a day.
+			// @codeCoverageIgnoreStart
+		} catch (\Exception $e) {
+			$failed = true;
+		} finally {
+			// @codeCoverageIgnoreEnd
+			restore_error_handler();
+		}
+		return (!$failed && $cutoff <= $reference) ? $interval : null;
 	}
 
 	/**

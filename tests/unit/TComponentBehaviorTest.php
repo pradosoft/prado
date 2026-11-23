@@ -1463,6 +1463,21 @@ class TComponentBehaviorTest extends TComponentTestBase
 	}
 
 	/**
+	 * detachBehavior(), enableBehavior(), and disableBehavior() with a null name find no
+	 * behavior and leave an anonymous behavior attached and enabled.
+	 */
+	public function testBehaviorMethods_nullName(): void
+	{
+		$this->component->attachBehavior(null, $behavior = new FooBehavior());
+
+		$this->assertNull($this->component->detachBehavior(null));
+		$this->assertFalse($this->component->disableBehavior(null));
+		$this->assertFalse($this->component->enableBehavior(null));
+		$this->assertSame([$behavior], $this->component->getBehaviors());
+		$this->assertTrue($behavior->getEnabled());
+	}
+
+	/**
 	 * detachBehaviors() with an empty list leaves the attached behaviors in place.
 	 */
 	public function testDetachBehaviors_emptyList(): void

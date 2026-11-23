@@ -1301,15 +1301,19 @@ class TDbCronManagerTest extends TCronModuleTest
 	{
 		$manager = new TDbCronManagerTestPgsqlManager();
 		$manager->recorder = new TDbCronManagerTestPgsqlConnection('sqlite::memory:');
-		foreach (['mysql', 'pgsql'] as $driver) {
+		foreach (['mysql', 'pgsql', 'sqlsrv'] as $driver) {
 			$manager->recorder->driver = $driver;
 			try {
 				PradoUnit::invoke($manager, 'createDbTable');
 			} catch (TDbException $e) {
 			}
 		}
-		self::assertStringContainsString('tabuid INTEGER PRIMARY KEY AUTO_INCREMENT', $manager->recorder->sql[0]);
-		self::assertStringContainsString('tabuid SERIAL PRIMARY KEY', $manager->recorder->sql[1]);
+		self::assertStringContainsString('tabuid INTEGER PRIMARY KEY AUTO_INCREMENT,', $manager->recorder->sql[0]);
+		self::assertStringContainsString('options MEDIUMTEXT NULL', $manager->recorder->sql[0]);
+		self::assertStringContainsString('tabuid SERIAL PRIMARY KEY,', $manager->recorder->sql[1]);
+		self::assertStringContainsString('options TEXT NULL', $manager->recorder->sql[1]);
+		self::assertStringContainsString('tabuid INTEGER PRIMARY KEY,', $manager->recorder->sql[2], 'another driver has no auto-increment attribute');
+		self::assertStringNotContainsString('`', implode('', $manager->recorder->sql));
 		$manager->unlisten();
 	}
 

@@ -2086,10 +2086,13 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 		if (!TProcessHelper::isSystemWindows()) {
 			return @fopen($file, 'ab');
 		}
+		// Only Windows runs the rest.
+		// @codeCoverageIgnoreStart
 		if (($handle = @fopen($file, 'cb')) !== false) {
 			fseek($handle, 0, SEEK_END);
 		}
 		return $handle;
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -3017,6 +3020,8 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	 * until a tick's process waits on the handoff lock, then releases the lease to it, so the module is
 	 * never without a daemon.  {@see stopDaemon}, SIGTERM, and SIGINT end it at once.  Tasks run through
 	 * {@see runTasks} by their Mode; after releasing the lease, the process waits for its Process tasks.
+	 * The lease is released, the watchers are cancelled, and `onDaemonEnd` is raised however the
+	 * daemon ends, an exception of an `onDaemonStart` handler included.
 	 * @return int the number of tasks the daemon ran
 	 * @since 4.4.0
 	 */
@@ -3035,30 +3040,31 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 		$this->_daemonRetiring = false;
 		$this->_daemonRetireRequested = false;
 		$this->_daemonFingerprint = $this->getDaemonWatchConfig() ? $this->getDaemonConfigFingerprint() : null;
-		$transport = $this->getWakeTransport();
-		$watching = $transport !== null && $transport->watch($loop, function () {
-			$this->wakeDaemon();
-		});
-		$signals = $this->watchDaemonSignals($loop);
 		$this->_daemonReason = null;
-		$this->logCronDaemonStart($lockName, $watching);
-		$this->beginStatus(static::STATUS_ROLE_DAEMON);
-		$this->updateDaemonStatus([
-			'lock' => $lockName,
-			'state' => static::DAEMON_STATE_RUNNING,
-			'transport' => ($transport !== null) ? $transport::class : null,
-			'watching' => $watching,
-			'lifetime' => $this->getDaemonLifetime(),
-			'idle' => $this->getDaemonIdle(),
-			'sweeps' => 0,
-			'tasks' => 0,
-			'wake' => null,
-			'next' => [],
-		]);
-		$sweeps = 0;
-		$param = $this->newDaemonEventParameter($lockName, $watching);
-		$this->onDaemonStart($param);
+		$transport = $this->getWakeTransport();
+		$watching = false;
+		$signals = [];
 		try {
+			$watching = $transport !== null && $transport->watch($loop, function () {
+				$this->wakeDaemon();
+			});
+			$signals = $this->watchDaemonSignals($loop);
+			$this->logCronDaemonStart($lockName, $watching);
+			$this->beginStatus(static::STATUS_ROLE_DAEMON);
+			$this->updateDaemonStatus([
+				'lock' => $lockName,
+				'state' => static::DAEMON_STATE_RUNNING,
+				'transport' => ($transport !== null) ? $transport::class : null,
+				'watching' => $watching,
+				'lifetime' => $this->getDaemonLifetime(),
+				'idle' => $this->getDaemonIdle(),
+				'sweeps' => 0,
+				'tasks' => 0,
+				'wake' => null,
+				'next' => [],
+			]);
+			$sweeps = 0;
+			$this->onDaemonStart($this->newDaemonEventParameter($lockName, $watching));
 			while (true) {
 				$this->consumeDaemonWake();
 				if ($this->isDaemonDone($start)) {
@@ -3563,7 +3569,8 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	{
 		$ids = [];
 		if (!\extension_loaded('pcntl')) {
-			return $ids;
+			// Only a PHP without pcntl runs this branch.
+			return $ids; // @codeCoverageIgnore
 		}
 		foreach ([15, 2] as $signal) { // SIGTERM, SIGINT
 			try {

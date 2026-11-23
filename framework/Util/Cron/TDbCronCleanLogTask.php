@@ -10,7 +10,6 @@
 
 namespace Prado\Util\Cron;
 
-use DateInterval;
 use Prado\Shell\TShellWriter;
 use Prado\TPropertyValue;
 use Prado\Exceptions\TInvalidDataValueException;
@@ -80,28 +79,19 @@ class TDbCronCleanLogTask extends TCronTask
 
 	/**
 	 * Numeric values are seconds.  Other strings are an ISO 8601 duration, eg. "P1Y6M3DT12H20M30S",
-	 * or a relative date string, eg. "1 year 6 months".
+	 * or a relative date string, eg. "1 year 6 months", that reaches back in time
+	 * ({@see \Prado\Util\Cron\TDbCronManager::parsePeriod()}).
 	 * @param int|string $timeperiod the period before which cron logs are to be deleted
-	 * @throws TInvalidDataValueException when the string is not a \DateInterval specification
+	 * @throws TInvalidDataValueException when the value is negative or the string is not such a period
 	 */
 	public function setTimePeriod($timeperiod)
 	{
 		$timeperiod = trim((string) $timeperiod);
 		if ($timeperiod === '' || is_numeric($timeperiod)) {
-			$this->_timeperiod = TPropertyValue::ensureInteger($timeperiod);
-			return;
+			$timeperiod = TPropertyValue::ensureInteger($timeperiod);
 		}
-		try {
-			$valid = str_starts_with($timeperiod, 'P') ? new DateInterval($timeperiod) : null;
-		} catch (\Exception $e) {
-			$valid = null;
-		}
-		if ($valid === null) {
-			try {
-				@DateInterval::createFromDateString($timeperiod) ?: new DateInterval($timeperiod);
-			} catch (\Exception $e) {
-				throw new TInvalidDataValueException('dbcronclean_timeperiod_invalid', $timeperiod);
-			}
+		if (TDbCronManager::parsePeriod($timeperiod) === null) {
+			throw new TInvalidDataValueException('dbcronclean_timeperiod_invalid', $timeperiod);
 		}
 		$this->_timeperiod = $timeperiod;
 	}

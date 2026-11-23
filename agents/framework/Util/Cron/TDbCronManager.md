@@ -68,7 +68,7 @@ Auto-created as `crontabs` (configurable via `TableName`):
 | `options` | MEDIUMTEXT (`TEXT` on PostgreSQL) | Serialized `TCronTask` object; base64 encoded on PostgreSQL, whose `TEXT` ends at a NUL byte (`serializeTask()`, `decodeTaskOptions()`). `getCronLog()` returns it decoded |
 | `processcount` | INT | Times task has run |
 | `lastexectime` | VARCHAR(20) | Unix timestamp of last run |
-| `nextexectime` | INT | Unix timestamp of the next trigger after `lastexectime` (4.4.0); `getPendingTasks()` selects `nextexectime <= now` |
+| `nextexectime` | BIGINT | Unix timestamp of the next trigger after `lastexectime` (4.4.0); `getPendingTasks()` selects `nextexectime <= now` |
 | `lastresult` | VARCHAR(16) | Result of the last finished run: `ok`, `error`, `denied`, `timeout`, or `missed` (4.4.0); on a log row, the result of that run |
 | `lastduration` | VARCHAR(20) | Seconds the last finished run took (4.4.0); on a log row, the seconds of that run |
 | `paused` | INT | `1` while the task is paused (`pauseTask()`), else `NULL` (4.4.0) |
@@ -116,7 +116,7 @@ $cron->clearCronLog(null|\DateInterval|int|string $period = null, ?string $name 
 $cron->removeCronLogItem(int $taskUID): ?bool
 ```
 
-`$period` is seconds, a `\DateInterval`, or a `\DateInterval` specification (`P1Y6M3DT12H20M30S` or `"1 year 6 months"`); `null` clears regardless of time. Paging is `LIMIT n OFFSET m` on every driver.
+`$period` is seconds, a `\DateInterval`, or a `\DateInterval` specification (`P1Y6M3DT12H20M30S` or `"1 year 6 months"`); `null` clears regardless of time. `parsePeriod()` (static) reads a period and returns null for one that does not reach back in time: a negative period (`"-1 week"`, `"yesterday"`) or one that names a day (`"last week"`), which `clearCronLog()` rejects with `dbcron_period_invalid`. Paging is `LIMIT n OFFSET m` on every driver.
 
 ## Runtime Tasks
 
@@ -195,6 +195,7 @@ php prado-cli.php /app cron/migrate          # create the table when missing; ad
 
 ## Patterns & Gotchas
 
+- **A row that holds no task is skipped** — `unserializeTask()` returns null for an `options` value that does not unserialize to a `TCronTask`, such as one of a task class removed in a deployment; the task lists, `getTask()`, and `getPendingTasks()` skip the row with a WARNING log entry, so the other tasks run.
 - **Config tasks vs DB tasks** — tasks declared in `application.xml` (config tasks) coexist with DB tasks. Their names must not collide; loading the tasks throws `TConfigurationException` if they do.
 - **Stale config-task rows** — `setPersistentData()` removes the shadow rows (`active = 0`) of config tasks whose config entry has since been removed, on its first load.
 - **`active` field semantics** — `NULL` = log row (not a task), `0` = config-task shadow row, `1` = active DB task.

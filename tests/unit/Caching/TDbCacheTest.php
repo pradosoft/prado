@@ -1084,6 +1084,21 @@ class TDbCacheTest extends \PHPUnit\Framework\TestCase
 		}
 	}
 
+	public function testFirebirdQuotesTheValueColumn()
+	{
+		$this->_cache->setCacheTableName('fbcache');
+		$this->assertSame('"VALUE"', PradoUnit::invoke($this->_cache, 'getValueColumn', 'firebird'));
+		$this->assertSame('value', PradoUnit::invoke($this->_cache, 'getValueColumn', 'sqlite'));
+		$this->assertSame(
+			'UPDATE OR INSERT INTO fbcache (itemkey, "VALUE", expire) VALUES (:key, :value, 60) MATCHING (itemkey)',
+			PradoUnit::invoke($this->_cache, 'getUpsertSql', 'firebird', 60)
+		);
+		$this->assertSame(
+			'INSERT INTO fbcache (itemkey,"VALUE",expire) VALUES(:key,:value,0)',
+			PradoUnit::invoke($this->_cache, 'getInsertSql', 'firebird', 0)
+		);
+	}
+
 	/**
 	 * @dataProvider frozenSetterProvider
 	 */
