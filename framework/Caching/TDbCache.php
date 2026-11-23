@@ -47,7 +47,8 @@ use Prado\Util\IDbModule;
  *
  * The value column is `LONGBLOB` on MySQL, `BYTEA` on PostgreSQL, `VARBINARY(MAX)` on SQL
  * Server, and `BLOB(1G)` on IBM DB2. The key is `VARCHAR2(128)` on Oracle and `VARCHAR(128)`
- * on IBM DB2 ({@see getColumnTypes()}).
+ * on IBM DB2 ({@see getColumnTypes()}). Firebird reserves `VALUE`, so its value column is the
+ * quoted `"VALUE"` ({@see getValueColumn()}).
  *
  * `itemkey` is the primary key; the upsert of {@see set()} replaces the row with the same key
  * ({@see getUpsertSql()}). The `expire` index is named after the table.
@@ -261,8 +262,9 @@ class TDbCache extends TSerializingCache implements IDbModule
 			// DB table not exists
 			Prado::trace('Autocreate: ' . $cacheTable, TDbCache::class);
 
-			[$keyType, $valueType] = $this->getColumnTypes(TDbDriverCapabilities::normalizeDriver($db->getDriverName()));
-			$sql = 'CREATE TABLE ' . $cacheTable . " (itemkey $keyType NOT NULL PRIMARY KEY, value $valueType, expire INTEGER)";
+			$driver = TDbDriverCapabilities::normalizeDriver($db->getDriverName());
+			[$keyType, $valueType] = $this->getColumnTypes($driver);
+			$sql = 'CREATE TABLE ' . $cacheTable . " (itemkey $keyType NOT NULL PRIMARY KEY, {$this->getValueColumn($driver)} $valueType, expire INTEGER)";
 			$db->createCommand($sql)->execute();
 
 			$sql = 'CREATE INDEX ' . $this->getExpireIndexName() . ' ON ' . $cacheTable . ' (expire)';
@@ -529,7 +531,8 @@ class TDbCache extends TSerializingCache implements IDbModule
 			$this->initializeCache();
 		}
 
-		$sql = 'SELECT value FROM ' . $this->getCacheTableName() . ' WHERE itemkey=:key AND (expire=0 OR expire>=' . $this->getClock()->time() . ') ORDER BY expire DESC';
+		$column = $this->getValueColumn(TDbDriverCapabilities::normalizeDriver($this->getDbConnection()->getDriverName()));
+		$sql = 'SELECT ' . $column . ' FROM ' . $this->getCacheTableName() . ' WHERE itemkey=:key AND (expire=0 OR expire>=' . $this->getClock()->time() . ') ORDER BY expire DESC';
 		return $this->runCacheCommand($sql, [':key' => [$key, \PDO::PARAM_STR]], 'queryScalar') ?? false;
 	}
 
@@ -662,6 +665,7 @@ class TDbCache extends TSerializingCache implements IDbModule
 	 * | MySQL, SQLite | `REPLACE INTO` |
 	 * | PostgreSQL | `INSERT ... ON CONFLICT` |
 	 * | SQL Server, IBM DB2, Oracle | `MERGE` |
+	 * | Firebird | `UPDATE OR INSERT ... MATCHING` |
 	 * @param string $driver the normalized PDO driver name.
 	 * @param int $expire the Unix time the entry expires at; 0 means never.
 	 * @return ?string the upsert statement, or `null`.
@@ -681,6 +685,7 @@ class TDbCache extends TSerializingCache implements IDbModule
 			TDbDriver::DRIVER_IBM => "MERGE INTO {$table} AS t USING (SELECT CAST(:key AS VARCHAR(128)) AS itemkey, $value AS value " .
 				"FROM SYSIBM.SYSDUMMY1) AS s $actions",
 			TDbDriver::DRIVER_OCI => "MERGE INTO {$table} t USING (SELECT :key AS itemkey, $value AS value FROM DUAL) s $actions",
+			TDbDriver::DRIVER_FIREBIRD => "UPDATE OR INSERT INTO {$table} (itemkey, {$this->getValueColumn($driver)}, expire) VALUES (:key, $value, $expire) MATCHING (itemkey)",
 			default => null,
 		};
 	}
@@ -695,7 +700,19 @@ class TDbCache extends TSerializingCache implements IDbModule
 	 */
 	protected function getInsertSql(string $driver, int $expire): string
 	{
-		return "INSERT INTO {$this->getCacheTableName()} (itemkey,value,expire) VALUES(:key,{$this->getValueSql($driver)},$expire)";
+		return "INSERT INTO {$this->getCacheTableName()} (itemkey,{$this->getValueColumn($driver)},expire) VALUES(:key,{$this->getValueSql($driver)},$expire)";
+	}
+
+	/**
+	 * Returns the name of the value column in SQL. `VALUE` is a reserved word in Firebird,
+	 * so Firebird quotes it as `"VALUE"`, the name Firebird gives an unquoted `value`.
+	 * @param string $driver the normalized PDO driver name.
+	 * @return string the value column.
+	 * @since 4.4.0
+	 */
+	protected function getValueColumn(string $driver): string
+	{
+		return $driver === TDbDriver::DRIVER_FIREBIRD ? '"VALUE"' : 'value';
 	}
 
 	/**

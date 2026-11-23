@@ -51,6 +51,14 @@ class TDCronMethodTaskTest extends TCronTaskTest
 		$this->obj = new TCronMethodTask('module', 'method');
 		self::assertEquals('module', $this->obj->getModuleId());
 		self::assertEquals('method', $this->obj->getMethod());
+
+		$this->obj = new TCronMethodTask('module');
+		self::assertEquals('module', $this->obj->getModuleId());
+		self::assertNull($this->obj->getMethod());
+
+		$this->obj = new TCronMethodTask(null, 'method');
+		self::assertNull($this->obj->getModuleId());
+		self::assertEquals('method', $this->obj->getMethod());
 	}
 	
 	public function testGetTask()
