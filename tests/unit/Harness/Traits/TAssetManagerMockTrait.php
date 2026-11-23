@@ -20,7 +20,8 @@ use Prado\Web\TAssetManager;
  * that publishes its assets writes no files.
  *
  * {@see mockAssetManager()} installs the mock: `publishFilePath()` returns `/assets/` and the
- * path's base name, and `getPublishedPath()` returns `/published/` and the base name.
+ * path's base name, and `getPublishedPath()` returns the published base (default `/published`),
+ * `/`, and the base name.
  * {@see restoreAssetManager()} puts the original asset manager back; call it in `tearDown()`.
  *
  * @author Brad Anderson <belisoful@icloud.com>
@@ -37,9 +38,10 @@ trait TAssetManagerMockTrait
 	/**
 	 * Installs a mock asset manager on the application.
 	 * @param string[] $methods further methods to mock; the test sets their behavior.
+	 * @param string $publishedBase the folder `getPublishedPath()` places a published file in.
 	 * @return MockObject&TAssetManager the mock.
 	 */
-	protected function mockAssetManager(array $methods = []): TAssetManager
+	protected function mockAssetManager(array $methods = [], string $publishedBase = '/published'): TAssetManager
 	{
 		$app = Prado::getApplication();
 		if (!$this->_assetManagerSaved) {
@@ -50,7 +52,7 @@ trait TAssetManagerMockTrait
 			->onlyMethods(array_unique(array_merge(['publishFilePath', 'getPublishedPath'], $methods)))
 			->getMock();
 		$manager->method('publishFilePath')->willReturnCallback(fn ($path) => '/assets/' . basename($path));
-		$manager->method('getPublishedPath')->willReturnCallback(fn ($path) => '/published/' . basename($path));
+		$manager->method('getPublishedPath')->willReturnCallback(fn ($path) => $publishedBase . '/' . basename($path));
 		$app->setAssetManager($manager);
 		return $manager;
 	}

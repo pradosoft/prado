@@ -12,7 +12,7 @@ TReCaptcha2Validator validates the TReCaptcha2 named by `ControlToValidate` (not
 
 ## Key Properties/Methods
 
-- `getCaptchaControl()` - Gets the associated TReCaptcha2 control
+- `getCaptchaControl()` - Gets the associated TReCaptcha2 control; throws `TConfigurationException` (`recaptcha2validator_control_invalid`) when `ControlToValidate` names another control
 - `getEnableClientScript()` - Always returns true, client script enabled
 - `evaluateIsValid()` - Server-side validation logic
 

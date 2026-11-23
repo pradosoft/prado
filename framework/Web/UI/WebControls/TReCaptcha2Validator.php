@@ -10,7 +10,7 @@
 
 namespace Prado\Web\UI\WebControls;
 
-use Exception;
+use Prado\Exceptions\TConfigurationException;
 use Prado\Web\Javascripts\TJavaScript;
 
 /**
@@ -37,14 +37,16 @@ class TReCaptcha2Validator extends TBaseValidator
 	{
 		return true;
 	}
+	/**
+	 * Returns the TReCaptcha2 control this validator validates.
+	 * @throws TConfigurationException if ControlToValidate is empty, missing, or not a TReCaptcha2.
+	 * @return TReCaptcha2 the reCAPTCHA control.
+	 */
 	protected function getCaptchaControl()
 	{
 		$control = $this->getValidationTarget();
-		if (!$control) {
-			throw new Exception('No target control specified for TReCaptcha2Validator');
-		}
 		if (!($control instanceof TReCaptcha2)) {
-			throw new Exception('TReCaptcha2Validator only works with TReCaptcha2 controls');
+			throw new TConfigurationException('recaptcha2validator_control_invalid', $this->getControlToValidate());
 		}
 		return $control;
 	}

@@ -51,6 +51,13 @@ class ShellTestRunApplication extends TTestShellApplication
 	public ?TTestCapturingTextWriter $text = null;
 	public ?int $exitCode = null;
 
+	protected function createShellWriter(): TShellWriter
+	{
+		$writer = parent::createShellWriter();
+		$writer->setColorSupported(false);
+		return $writer;
+	}
+
 	protected function createStdOutWriter(): ITextWriter
 	{
 		return $this->text ??= new TTestCapturingTextWriter();
@@ -722,7 +729,9 @@ class TShellApplicationTest extends \PHPUnit\Framework\TestCase
 		$this->_app->addShellActionClass(TFlushCachesAction::class);
 		$text = new TTestCapturingTextWriter();
 
-		$this->_app->printHelp(new TShellWriter($text));
+		$writer = new TShellWriter($text);
+		$writer->setColorSupported(false);
+		$this->_app->printHelp($writer);
 
 		$output = $text->getCaptured();
 		$this->assertStringContainsString("usage: prado-cli <command>[/<method>] <parameter> [optional]\n", $output);

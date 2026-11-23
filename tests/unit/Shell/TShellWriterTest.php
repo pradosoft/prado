@@ -52,6 +52,7 @@ class TShellWriterTest extends \PHPUnit\Framework\TestCase
 		$this->writer = new TTextWriter();
 		$baseClass = $this->getTestClass();
 		$this->obj = new $baseClass($this->writer);
+		$this->obj->setColorSupported(false);
 	}
 
 	/** @var array<string, false|string> environment variables to restore in tearDown */

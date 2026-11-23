@@ -12,6 +12,21 @@ class TTimeTest extends TestCase
 {
 	use TWebControlRenderTrait;
 
+	private string $_originalTimezone;
+
+	protected function setUp(): void
+	{
+		parent::setUp();
+		$this->_originalTimezone = date_default_timezone_get();
+		date_default_timezone_set('UTC');
+	}
+
+	protected function tearDown(): void
+	{
+		date_default_timezone_set($this->_originalTimezone);
+		parent::tearDown();
+	}
+
 	private function invokeMethod(object $object, string $method, array $args = []): mixed
 	{
 		$rm = new \ReflectionMethod($object, $method);
@@ -367,6 +382,8 @@ class TTimeTest extends TestCase
 
 	/**
 	 * @dataProvider formatDateTimeProvider
+	 * @param string $format
+	 * @param string $expected
 	 */
 	public function testFormatDateTimeAttribute(string $format, string $expected)
 	{
@@ -382,25 +399,25 @@ class TTimeTest extends TestCase
 	public static function formatDateTimeProvider(): array
 	{
 		return [
-			'TimeShort'                   => [TTimeFormat::TimeShort,                   '10:30'],
-			'Time'                        => [TTimeFormat::Time,                        '10:30:45'],
-			'TimePrecise'                 => [TTimeFormat::TimePrecise,                 '10:30:45.123'],
-			'Date'                        => [TTimeFormat::Date,                        '2024-06-15'],
-			'Month'                       => [TTimeFormat::Month,                       '2024-06'],
-			'Week'                        => [TTimeFormat::Week,                        '2024-W24'],
-			'YearlessDate'                => [TTimeFormat::YearlessDate,                '06-15'],
-			'Year'                        => [TTimeFormat::Year,                        '2024'],
-			'DateTimeShort'               => [TTimeFormat::DateTimeShort,               '2024-06-15 10:30'],
-			'DateTime'                    => [TTimeFormat::DateTime,                    '2024-06-15 10:30:45'],
-			'DateTimePrecise'             => [TTimeFormat::DateTimePrecise,             '2024-06-15 10:30:45.123'],
-			'HtmlDateTimeShort'           => [TTimeFormat::HtmlDateTimeShort,           '2024-06-15T10:30'],
-			'HtmlDateTime'                => [TTimeFormat::HtmlDateTime,                '2024-06-15T10:30:45'],
-			'HtmlDateTimePrecise'         => [TTimeFormat::HtmlDateTimePrecise,         '2024-06-15T10:30:45.123'],
-			'DateTimeShortTimezone'       => [TTimeFormat::DateTimeShortTimezone,       '2024-06-15 10:30+00:00'],
-			'DateTimeTimezone'            => [TTimeFormat::DateTimeTimezone,            '2024-06-15 10:30:45+00:00'],
-			'DateTimePreciseTimezone'     => [TTimeFormat::DateTimePreciseTimezone,     '2024-06-15 10:30:45.123+00:00'],
-			'HtmlDateTimeShortTimezone'   => [TTimeFormat::HtmlDateTimeShortTimezone,   '2024-06-15T10:30+00:00'],
-			'HtmlDateTimeTimezone'        => [TTimeFormat::HtmlDateTimeTimezone,        '2024-06-15T10:30:45+00:00'],
+			'TimeShort' => [TTimeFormat::TimeShort,                   '10:30'],
+			'Time' => [TTimeFormat::Time,                        '10:30:45'],
+			'TimePrecise' => [TTimeFormat::TimePrecise,                 '10:30:45.123'],
+			'Date' => [TTimeFormat::Date,                        '2024-06-15'],
+			'Month' => [TTimeFormat::Month,                       '2024-06'],
+			'Week' => [TTimeFormat::Week,                        '2024-W24'],
+			'YearlessDate' => [TTimeFormat::YearlessDate,                '06-15'],
+			'Year' => [TTimeFormat::Year,                        '2024'],
+			'DateTimeShort' => [TTimeFormat::DateTimeShort,               '2024-06-15 10:30'],
+			'DateTime' => [TTimeFormat::DateTime,                    '2024-06-15 10:30:45'],
+			'DateTimePrecise' => [TTimeFormat::DateTimePrecise,             '2024-06-15 10:30:45.123'],
+			'HtmlDateTimeShort' => [TTimeFormat::HtmlDateTimeShort,           '2024-06-15T10:30'],
+			'HtmlDateTime' => [TTimeFormat::HtmlDateTime,                '2024-06-15T10:30:45'],
+			'HtmlDateTimePrecise' => [TTimeFormat::HtmlDateTimePrecise,         '2024-06-15T10:30:45.123'],
+			'DateTimeShortTimezone' => [TTimeFormat::DateTimeShortTimezone,       '2024-06-15 10:30+00:00'],
+			'DateTimeTimezone' => [TTimeFormat::DateTimeTimezone,            '2024-06-15 10:30:45+00:00'],
+			'DateTimePreciseTimezone' => [TTimeFormat::DateTimePreciseTimezone,     '2024-06-15 10:30:45.123+00:00'],
+			'HtmlDateTimeShortTimezone' => [TTimeFormat::HtmlDateTimeShortTimezone,   '2024-06-15T10:30+00:00'],
+			'HtmlDateTimeTimezone' => [TTimeFormat::HtmlDateTimeTimezone,        '2024-06-15T10:30:45+00:00'],
 			'HtmlDateTimePreciseTimezone' => [TTimeFormat::HtmlDateTimePreciseTimezone, '2024-06-15T10:30:45.123+00:00'],
 		];
 	}
@@ -758,7 +775,7 @@ class TTimeTest extends TestCase
 
 	public function testFormatTextIntervalNegativeIntervalPrefixesMinus()
 	{
-		$later  = new \DateTimeImmutable('2024-06-15T00:00:00Z', new \DateTimeZone('UTC'));
+		$later = new \DateTimeImmutable('2024-06-15T00:00:00Z', new \DateTimeZone('UTC'));
 		$earlier = new \DateTimeImmutable('2023-06-15T00:00:00Z', new \DateTimeZone('UTC'));
 		$interval = $later->diff($earlier); // invert === 1 (negative: earlier minus later)
 
@@ -782,7 +799,7 @@ class TTimeTest extends TestCase
 	public function testFormatIntervalNegativeIntervalRendersPositive()
 	{
 		// datetime attribute has no negative duration form — always positive
-		$later   = new \DateTimeImmutable('2024-06-15T00:00:00Z', new \DateTimeZone('UTC'));
+		$later = new \DateTimeImmutable('2024-06-15T00:00:00Z', new \DateTimeZone('UTC'));
 		$earlier = new \DateTimeImmutable('2023-06-15T00:00:00Z', new \DateTimeZone('UTC'));
 		$interval = $later->diff($earlier);
 
@@ -860,20 +877,22 @@ class TTimeTest extends TestCase
 	public static function isIcuPatternProvider(): array
 	{
 		return [
-			'year pattern'              => ['yyyy', true],
-			'full datetime pattern'     => ['MMMM d, yyyy', true],
-			'time pattern'              => ['HH:mm:ss', true],
-			'quoted literal only'       => ["'hello'", false],
-			'quoted with letter after'  => ["'hello' yyyy", true],
-			'digits only'               => ['20240615', false],
-			'punctuation only'          => ['--::', false],
-			'empty string'              => ['', false],
-			'escaped quote in literal'  => ["'it''s' d MMMM", true],
+			'year pattern' => ['yyyy', true],
+			'full datetime pattern' => ['MMMM d, yyyy', true],
+			'time pattern' => ['HH:mm:ss', true],
+			'quoted literal only' => ["'hello'", false],
+			'quoted with letter after' => ["'hello' yyyy", true],
+			'digits only' => ['20240615', false],
+			'punctuation only' => ['--::', false],
+			'empty string' => ['', false],
+			'escaped quote in literal' => ["'it''s' d MMMM", true],
 		];
 	}
 
 	/**
 	 * @dataProvider isIcuPatternProvider
+	 * @param string $input
+	 * @param bool $expected
 	 */
 	public function testIsIcuPattern(string $input, bool $expected)
 	{
