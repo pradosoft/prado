@@ -1508,6 +1508,7 @@ class TSimpleDateFormatterTest extends \PHPUnit\Framework\TestCase
 		PradoUnit::setStaticProp(TUtf8Converter::class, '_iconv', false);
 		try {
 			$formatter = new TSimpleDateFormatter("dd 'de' MMMM yyyy", 'ISO-8859-1');
+			$formatter->setCulture('en_US');
 			$this->assertSame('04 de March 2024', $formatter->format(mktime(0, 0, 0, 3, 4, 2024)));
 			$this->assertSame(mktime(0, 0, 0, 3, 4, 2024), $formatter->parse('04 de March 2024', false));
 			$this->assertNull($formatter->parse("04 d\xe9 March 2024", false));
