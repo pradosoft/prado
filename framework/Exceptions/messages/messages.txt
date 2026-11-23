@@ -366,6 +366,7 @@ control_skinid_unchangeable				= {0}.SkinID cannot be modified after a skin has 
 control_enabletheming_unchangeable		= {0}.EnableTheming cannot be modified after the child controls have been created.
 control_stylesheet_applied				= StyleSheet skin has already been applied to {0}.
 control_id_nonunique					= {0}.ID ''{1}'' is not unique among all controls under the same naming container.
+control_idseparator_invalid				= TControl IdSeparator ''{0}'' is invalid. It must be one ASCII punctuation character other than ''_'', ''.'' and ''[''.
 control_renderfilterdepth_invalid		= {0}.RenderFilterDepth ''{1}'' must not be negative.
 
 templatecontrol_mastercontrol_invalid	= Master control must be of type TTemplateControl or a child class.

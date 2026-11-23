@@ -13,7 +13,6 @@ namespace Prado\Web\UI\WebControls;
 use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Exceptions\TInvalidDataValueException;
-use Prado\Util\TSimpleDateFormatter;
 
 /**
  * TCompareValidator class
@@ -38,6 +37,12 @@ use Prado\Util\TSimpleDateFormatter;
  * Use the {@see setOperator Operator} property to specify the type of comparison
  * to perform. Valid operators include Equal, NotEqual, GreaterThan, GreaterThanEqual,
  * LessThan and LessThanEqual.
+ *
+ * The server and the client convert both values with the same rules, {@see TValidationDataType::convert()}:
+ * - The validation succeeds when the input is empty.
+ * - The validation fails when the input does not convert to the data type.
+ * - The validation succeeds when the value to compare does not convert to the data type.
+ * - Strings compare exactly and in byte order; a numeric string is not a number.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
@@ -143,8 +148,10 @@ class TCompareValidator extends TBaseValidator
 	/**
 	 * This method overrides the parent's implementation.
 	 * The validation succeeds if the input data compares successfully.
-	 * The validation always succeeds if ControlToValidate is not specified
-	 * or the input data is empty.
+	 * The validation always succeeds if the input data is empty or the value
+	 * to compare does not convert to {@see getDataType DataType}. It fails if the
+	 * input data does not convert to DataType.
+	 * @throws TInvalidDataValueException if {@see getControlToCompare ControlToCompare} names no control.
 	 * @return bool whether the validation succeeds
 	 */
 	public function evaluateIsValid()
@@ -157,55 +164,51 @@ class TCompareValidator extends TBaseValidator
 			if (($control2 = $this->findControl($controlToCompare)) === null) {
 				throw new TInvalidDataValueException('comparevalidator_controltocompare_invalid');
 			}
-			if (($value2 = $this->getValidationValue($control2)) === '') {
-				return false;
-			}
+			$value2 = $this->getValidationValue($control2);
 		} else {
 			$value2 = $this->getValueToCompare();
 		}
 
-		$values = $this->getComparisonValues($value, $value2);
+		[$value1, $value2] = $this->getComparisonValues($value, $value2);
+		if ($value1 === null) {
+			return false;
+		}
+		if ($value2 === null) {
+			return true;
+		}
+		$order = is_string($value1) ? strcmp($value1, (string) $value2) : $value1 <=> $value2;
 		switch ($this->getOperator()) {
 			case TValidationCompareOperator::Equal:
-				return $values[0] == $values[1];
+				return $order === 0;
 			case TValidationCompareOperator::NotEqual:
-				return $values[0] != $values[1];
+				return $order !== 0;
 			case TValidationCompareOperator::GreaterThan:
-				return $values[0] > $values[1];
+				return $order > 0;
 			case TValidationCompareOperator::GreaterThanEqual:
-				return $values[0] >= $values[1];
+				return $order >= 0;
 			case TValidationCompareOperator::LessThan:
-				return $values[0] < $values[1];
+				return $order < 0;
 			case TValidationCompareOperator::LessThanEqual:
-				return $values[0] <= $values[1];
+				return $order <= 0;
 		}
 
 		return false;
 	}
 
 	/**
-	 * Parse the pair of values into the appropriate value type.
-	 * @param string $value1 value one
-	 * @param string $value2 second value
-	 * @return array appropriate type of the value pair, array($value1, $value2);
+	 * Converts both values to {@see getDataType DataType} with {@see TValidationDataType::convert()}.
+	 * @param float|int|string $value1 the input value; a {@see TDatePicker} gives a timestamp.
+	 * @param float|int|string $value2 the value to compare.
+	 * @return array the two converted values; a value that does not convert is null.
 	 */
 	protected function getComparisonValues($value1, $value2)
 	{
-		switch ($this->getDataType()) {
-			case TValidationDataType::Integer:
-				return [(int) $value1, (int) $value2];
-			case TValidationDataType::Float:
-				return [(float) $value1, (float) $value2];
-			case TValidationDataType::Date:
-				$dateFormat = $this->getDateFormat();
-				if ($dateFormat !== '') {
-					$formatter = new TSimpleDateFormatter($dateFormat);
-					return [$formatter->parse($value1), $formatter->parse($value2)];
-				} else {
-					return [strtotime($value1), strtotime($value2)];
-				}
-		}
-		return [$value1, $value2];
+		$dataType = $this->getDataType();
+		$dateFormat = $this->getDateFormat();
+		return [
+			TValidationDataType::convert($dataType, $value1, $dateFormat),
+			TValidationDataType::convert($dataType, $value2, $dateFormat),
+		];
 	}
 
 	/**

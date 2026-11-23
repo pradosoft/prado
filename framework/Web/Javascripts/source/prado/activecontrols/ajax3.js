@@ -728,12 +728,11 @@ Prado.CallbackRequest = Prado.Class(Prado.PostBack,
 	},
 
 	checkHiddenField(name, value) {
-		const id = name.replace(':','_');
-		if (!document.getElementById(id))
+		if (!document.getElementById(name))
 		{
 			const field = document.createElement('input');
 			field.setAttribute('type','hidden');
-			field.id = id;
+			field.id = name;
 			field.name = name;
 			field.value = value;
 			document.body.appendChild(field);

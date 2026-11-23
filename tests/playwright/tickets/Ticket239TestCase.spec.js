@@ -14,7 +14,7 @@ test('Ticket239TestCase', async ({ page }) => {
 	await h.assertSourceNotContains('view3 is deactivated');
 
 	// goto view2
-	await h.byName('ctl0$Content$ctl1').click();
+	await h.byName('ctl0:Content:ctl1').click();
 	await h.assertSourceNotContains('view1 is activated');
 	await h.assertSourceContains('view1 is deactivated');
 	await h.assertSourceContains('view2 is activated');
@@ -23,7 +23,7 @@ test('Ticket239TestCase', async ({ page }) => {
 	await h.assertSourceNotContains('view3 is deactivated');
 
 	// goto view3
-	await h.byName('ctl0$Content$ctl3').click();
+	await h.byName('ctl0:Content:ctl3').click();
 	await h.assertSourceNotContains('view1 is activated');
 	await h.assertSourceNotContains('view1 is deactivated');
 	await h.assertSourceNotContains('view2 is activated');
@@ -32,7 +32,7 @@ test('Ticket239TestCase', async ({ page }) => {
 	await h.assertSourceNotContains('view3 is deactivated');
 
 	// goto view2
-	await h.byName('ctl0$Content$ctl4').click();
+	await h.byName('ctl0:Content:ctl4').click();
 	await h.assertSourceNotContains('view1 is activated');
 	await h.assertSourceNotContains('view1 is deactivated');
 	await h.assertSourceContains('view2 is activated');
@@ -41,7 +41,7 @@ test('Ticket239TestCase', async ({ page }) => {
 	await h.assertSourceContains('view3 is deactivated');
 
 	// goto view1
-	await h.byName('ctl0$Content$ctl2').click();
+	await h.byName('ctl0:Content:ctl2').click();
 	await h.assertSourceContains('view1 is activated');
 	await h.assertSourceNotContains('view1 is deactivated');
 	await h.assertSourceNotContains('view2 is activated');

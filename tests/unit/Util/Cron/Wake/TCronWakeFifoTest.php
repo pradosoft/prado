@@ -3,7 +3,37 @@
 namespace Prado\Test\Unit\Util\Cron\Wake;
 
 use Prado\IO\Async\TAsync;
+use Prado\Test\Unit\PradoUnit;
 use Prado\Util\Cron\Wake\TCronWakeFifo;
+
+/**
+ * A stream whose reads return the scripted {@see $reads} in order, then false, a read error.
+ */
+class TCronWakeFifoTestStream
+{
+	public const PROTOCOL = 'prado-cronwake-fifo-test';
+
+	/** @var array<int, false|string> the results of the next reads */
+	public static array $reads = [];
+
+	/** @var resource the stream context */
+	public $context;
+
+	public function stream_open(string $path, string $mode, int $options, ?string &$openedPath): bool
+	{
+		return true;
+	}
+
+	public function stream_read(int $count): false|string
+	{
+		return array_shift(self::$reads) ?? false;
+	}
+
+	public function stream_eof(): bool
+	{
+		return false;
+	}
+}
 
 class TCronWakeFifoTest extends \PHPUnit\Framework\TestCase
 {
@@ -131,5 +161,52 @@ class TCronWakeFifoTest extends \PHPUnit\Framework\TestCase
 		self::assertTrue($t->signal($now));
 		self::assertTrue($t->wait($now - 1, $now), 'a queued wake is consumed at once');
 		$t->close();
+	}
+
+	public function testCloseWithoutAnOpenPipe()
+	{
+		$t = new TCronWakeFifo($this->fifo);
+		$t->close();
+		self::assertNull(PradoUnit::getProp($t, '_pipe'));
+		self::assertFileDoesNotExist($this->fifo, 'nothing was opened or made');
+	}
+
+	public function testWatchOnAPlainFile()
+	{
+		file_put_contents($this->fifo, 'not a pipe');
+		$t = new TCronWakeFifo($this->fifo);
+		self::assertFalse($t->watch(TAsync::getLoop(), static fn () => null), 'a plain file is no pipe to watch');
+	}
+
+	public function testANewPipeThatCannotBeOpened()
+	{
+		if (posix_geteuid() === 0) {
+			self::markTestSkipped('root opens a read-only pipe for writing');
+		}
+		$umask = umask(0o277);
+		try {
+			$t = new TCronWakeFifo($this->fifo);
+			self::assertFalse($t->signal(microtime(true)), 'the umask makes the new pipe read-only, so it cannot be opened for writing');
+			self::assertSame('fifo', filetype($this->fifo));
+		} finally {
+			umask($umask);
+		}
+	}
+
+	public function testDrainStopsAtAReadError()
+	{
+		stream_wrapper_register(TCronWakeFifoTestStream::PROTOCOL, TCronWakeFifoTestStream::class);
+		try {
+			$t = new TCronWakeFifo($this->fifo);
+			TCronWakeFifoTestStream::$reads = ['1', false];
+			PradoUnit::setProp($t, '_pipe', fopen(TCronWakeFifoTestStream::PROTOCOL . '://pipe', 'r+'));
+			self::assertTrue(PradoUnit::invoke($t, 'drain'), 'the bytes before the error are read');
+			TCronWakeFifoTestStream::$reads = [false];
+			self::assertFalse(PradoUnit::invoke($t, 'drain'), 'an error at once reads nothing');
+			$t->close();
+		} finally {
+			TCronWakeFifoTestStream::$reads = [];
+			stream_wrapper_unregister(TCronWakeFifoTestStream::PROTOCOL);
+		}
 	}
 }

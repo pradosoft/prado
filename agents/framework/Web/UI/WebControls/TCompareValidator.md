@@ -18,6 +18,19 @@ TCompareValidator compares a value against another input control value or a cons
 - `Operator` - Comparison operation (Equal, NotEqual, GreaterThan, etc.)
 - `DateFormat` - Date format for date validation
 - `evaluateIsValid()` - Performs the comparison validation
+- `getComparisonValues($value1, $value2)` - Converts both values with `TValidationDataType::convert()`; a value that does not convert is null
+
+## Patterns & Gotchas
+
+The server and the client apply the same rules (4.4.0):
+
+| Case | Result |
+|---|---|
+| Input is empty | valid |
+| Input does not convert to `DataType` | invalid |
+| Value to compare (or an empty `ControlToCompare`) does not convert | valid |
+| `String` | exact comparison in byte order; `1e3` is not `1000`, `9` is greater than `10` |
+| `Date` without `DateFormat` | any date `strtotime()` parses (client: `Date.SimpleParse()` with the browser `Date` parser), before 1970 included |
 
 ## See Also
 

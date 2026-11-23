@@ -152,4 +152,43 @@ class TCompoundCronTaskTest extends \PHPUnit\Framework\TestCase
 		$this->module->getTask('top')->execute($this->module);
 		self::assertSame(['referenced', 'referenced'], TTestCompoundStepTask::$runs, 'a compound referenced twice is no cycle');
 	}
+
+	public function testTasksNullEmptyAndArray()
+	{
+		$task = new \Prado\Util\Cron\TCompoundCronTask();
+		$task->setTasks(['@a', ' ', ' @b ']);
+		self::assertSame(['@a', '@b'], $task->getTasks(), 'an array is trimmed and its blank steps dropped');
+		$task->setTasks(null);
+		self::assertSame([], $task->getTasks());
+		$task->setTasks('@a; @b');
+		$task->setTasks('');
+		self::assertSame([], $task->getTasks());
+	}
+
+	public function testExecute_AReferencedCompoundWithoutStepsThrows()
+	{
+		$this->module->init([
+			['name' => 'empty', 'schedule' => '@never', 'task' => TCompoundCronTask::class],
+		]);
+		$this->task->setTasks('@empty');
+		try {
+			$this->task->execute($this->module);
+			self::fail('a referenced compound without steps did not throw');
+		} catch (TConfigurationException $e) {
+			self::assertStringContainsString('empty', $e->getMessage());
+		}
+	}
+
+	public function testSerialize_LeavesOutEachDefault()
+	{
+		for ($mask = 0; $mask < 8; $mask++) {
+			$task = new TCompoundCronTask();
+			$task->setTasks(($mask & 1) ? '@a' : '')->setStopOnFailure(!($mask & 2))->setParallel((bool) ($mask & 4));
+			$text = serialize($task);
+			$prop = static fn (string $name): bool => str_contains($text, "\0Prado\\Util\\Cron\\TCompoundCronTask\0" . $name);
+			self::assertSame((bool) ($mask & 1), $prop('_tasks'), 'mask ' . $mask);
+			self::assertSame((bool) ($mask & 2), $prop('_stopOnFailure'), 'mask ' . $mask);
+			self::assertSame((bool) ($mask & 4), $prop('_parallel'), 'mask ' . $mask);
+		}
+	}
 }

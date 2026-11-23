@@ -2048,15 +2048,17 @@ Prado.WebUI.TRegularExpressionValidator = Prado.Class(Prado.WebUI.TBaseValidator
 
 	/**
 	 * Evaluate validation state
+	 * The expression is grouped between the anchors, so an alternation
+	 * applies to the whole value, as on the server.
 	 * @function {boolean} ?
-	 * @return True if value matches regular expression or value is empty.
+	 * @return True if the whole value matches the regular expression or value is empty.
 	 */
 	evaluateIsValid() {
 		const value = this.getRawValidationValue();
 		if (value.length <= 0)
 	    	return true;
 
-		const rx = new RegExp(`^${this.options.ValidationExpression}$`,this.options.PatternModifiers);
+		const rx = new RegExp(`^(?:${this.options.ValidationExpression})$`,this.options.PatternModifiers);
 		const matches = rx.exec(value);
 		return (matches != null && value == matches[0]);
 	}

@@ -79,6 +79,20 @@ describe('Date.SimpleParse', () => {
 		expect(Date.SimpleParse('', 'yyyy/MM/dd')).toBeNull();
 	});
 
+	it('parses with the Date parser when the format is missing or empty', () => {
+		for (const format of [undefined, null, '']) {
+			const d = Date.SimpleParse('2024-06-15', format);
+			expect(d).not.toBeNull();
+			expect(d.getUTCFullYear()).toBe(2024);
+		}
+		expect(Date.SimpleParse('1969-12-31', undefined).getTime()).toBeLessThan(0);
+	});
+
+	it('returns null for an unparsable value without a format', () => {
+		expect(Date.SimpleParse('not a date', undefined)).toBeNull();
+		expect(Date.SimpleParse('not a date', '')).toBeNull();
+	});
+
 	it('parses yyyy/MM/dd format', () => {
 		const d = Date.SimpleParse('2024/01/05', 'yyyy/MM/dd');
 		expect(d).not.toBeNull();

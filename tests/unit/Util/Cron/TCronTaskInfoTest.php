@@ -103,4 +103,27 @@ class TCronTaskInfoTest extends \PHPUnit\Framework\TestCase
 		$info = new \Prado\Util\Cron\TCronTaskInfo('name', 'task', null, 'title', 'description');
 		self::assertNull($info->getModule());
 	}
+
+	public function testConstructWithSomeOptionalValues()
+	{
+		$info = new TCronTaskInfo('a', 'task', 'mid', 'title');
+		self::assertSame(['mid', 'title', null], [$info->getModuleId(), $info->getTitle(), $info->getDescription()]);
+		$info = new TCronTaskInfo('b', 'task', 'mid', null, 'description');
+		self::assertSame(['mid', null, 'description'], [$info->getModuleId(), $info->getTitle(), $info->getDescription()]);
+		$info = new TCronTaskInfo('c', 'task', null, 'title');
+		self::assertSame([null, 'title', null], [$info->getModuleId(), $info->getTitle(), $info->getDescription()]);
+		$info = new TCronTaskInfo('d', 'task', null, null, 'description');
+		self::assertSame([null, null, 'description'], [$info->getModuleId(), $info->getTitle(), $info->getDescription()]);
+	}
+
+	public function testModuleIdOfAStringableObject()
+	{
+		$this->obj->setModuleId(new class () {
+			public function __toString(): string
+			{
+				return 'stringModule';
+			}
+		});
+		self::assertSame('stringModule', $this->obj->getModuleId());
+	}
 }
