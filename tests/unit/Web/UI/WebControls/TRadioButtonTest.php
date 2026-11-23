@@ -123,9 +123,9 @@ class TRadioButtonTest extends TestCase
 		$panel->setID('tc');
 		$page->getControls()->add($panel);
 		$radio = $this->createRadio('rb', $panel);
-		$this->assertSame('tc$rb', $radio->getUniqueGroupName());
+		$this->assertSame('tc:rb', $radio->getUniqueGroupName());
 		$radio->setGroupName('g');
-		$this->assertSame('tc$g', $radio->getUniqueGroupName());
+		$this->assertSame('tc:g', $radio->getUniqueGroupName());
 	}
 
 	public function testUniqueGroupNameInARadioButtonListIsTheList()

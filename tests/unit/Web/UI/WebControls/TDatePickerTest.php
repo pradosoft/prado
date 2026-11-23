@@ -562,11 +562,11 @@ class TDatePickerTest extends TestCase
 		$cs->method('isEndScriptRegistered')->willReturn(false);
 		$cs->expects($this->exactly(2))->method('registerEndScript');
 		$output = $this->renderPicker($picker);
-		$this->assertStringContainsString('<select id="d_day" name="d$day" class="datepicker_day_options dd" aria-label="Day">', $output);
+		$this->assertStringContainsString('<select id="d_day" name="d:day" class="datepicker_day_options dd" aria-label="Day">', $output);
 		$this->assertStringContainsString('<option value="9" selected="selected">09</option>', $output);
-		$this->assertStringContainsString('<select id="d_month" name="d$month" class="datepicker_month_options dd" aria-label="Month"><option value="0">01</option>', $output);
+		$this->assertStringContainsString('<select id="d_month" name="d:month" class="datepicker_month_options dd" aria-label="Month"><option value="0">01</option>', $output);
 		$this->assertStringContainsString('<option value="2" selected="selected">03</option>', $output);
-		$this->assertStringContainsString('<select id="d_year" name="d$year" class="datepicker_year_options dd" aria-label="Year"><option value="2025">2025</option><option value="2026" selected="selected">2026</option><option value="2027">2027</option></select>', $output);
+		$this->assertStringContainsString('<select id="d_year" name="d:year" class="datepicker_year_options dd" aria-label="Year"><option value="2025">2025</option><option value="2026" selected="selected">2026</option><option value="2027">2027</option></select>', $output);
 		$this->assertStringContainsString('<input name="d" type="hidden" value="09-03-2026" /></span>', $output);
 		$this->assertSame(TDatePickerMode::ImageButton, $picker->getMode());
 		$this->assertStringEndsWith('TDatePickerImageButton" type="image" onclick="return false;" />', $output);
@@ -699,7 +699,7 @@ class TDatePickerTest extends TestCase
 	{
 		$picker = new TDatePicker();
 		$picker->setDateInputMode(TDatePickerInputMode::DropDownList);
-		$values = ['d$day' => '9', 'd$month' => '2', 'd$year' => '2026'];
+		$values = ['d:day' => '9', 'd:month' => '2', 'd:year' => '2026'];
 		$this->assertTrue($picker->loadPostData('d', $values));
 		$this->assertSame('09-03-2026', $picker->getText());
 		$this->assertFalse($picker->loadPostData('d', $values));
@@ -710,7 +710,7 @@ class TDatePickerTest extends TestCase
 		$picker = new TDatePicker();
 		$picker->setDateInputMode(TDatePickerInputMode::DropDownList);
 		$picker->setReadOnly(true);
-		$this->assertFalse($picker->loadPostData('d', ['d$day' => '9', 'd$month' => '2', 'd$year' => '2026']));
+		$this->assertFalse($picker->loadPostData('d', ['d:day' => '9', 'd:month' => '2', 'd:year' => '2026']));
 		$this->assertSame('', $picker->getText());
 	}
 
@@ -719,7 +719,7 @@ class TDatePickerTest extends TestCase
 		$picker = new TDatePicker();
 		$picker->setDateInputMode(TDatePickerInputMode::DropDownList);
 		$picker->setDateFormat('MMMM yyyy');
-		$picker->loadPostData('d', ['d$month' => '2', 'd$year' => '2026']);
+		$picker->loadPostData('d', ['d:month' => '2', 'd:year' => '2026']);
 		$this->assertSame('03 2026', $picker->getText());
 	}
 
@@ -759,13 +759,13 @@ class TDatePickerTest extends TestCase
 		$picker->setDateFormat($dayCase === 'first' ? 'MM yyyy' : 'yyyy-MM-dd');
 		$values = [];
 		if ($dayCase === 'day') {
-			$values['d$day'] = '9';
+			$values['d:day'] = '9';
 		}
 		if ($month) {
-			$values['d$month'] = '0';
+			$values['d:month'] = '0';
 		}
 		if ($year) {
-			$values['d$year'] = '2026';
+			$values['d:year'] = '2026';
 		}
 		$text = PradoUnit::invoke($picker, 'getDateFromPostData', 'd', $values);
 		$y = $year ? '2026' : date('Y');
