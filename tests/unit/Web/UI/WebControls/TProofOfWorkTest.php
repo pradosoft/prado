@@ -367,4 +367,40 @@ class TProofOfWorkTest extends \PHPUnit\Framework\TestCase
 		$this->expectException(TConfigurationException::class);
 		$this->makeValidator($work, 'Box')->validate();
 	}
+
+	// --- Coverage: texts, post data hooks, PreRender ---
+
+	public function testVerifiedAndFailedTexts()
+	{
+		$work = new TProofOfWork();
+		$work->setVerifiedText('Done');
+		$work->setFailedText('Retry');
+		$this->assertSame('Done', $work->getVerifiedText());
+		$this->assertSame('Retry', $work->getFailedText());
+	}
+
+	public function testValidationPropertyValueIsTheSolution()
+	{
+		$work = $this->makeWork();
+		$this->assertSame('', $work->getValidationPropertyValue());
+		PradoUnit::setProp($work, '_solution', 'abc');
+		$this->assertSame('abc', $work->getValidationPropertyValue());
+		$work->raisePostDataChangedEvent();
+	}
+
+	public function testOnPreRenderRegistersTheChallenge()
+	{
+		$work = $this->makeWork();
+		$page = $work->getPage();
+		$cs = $this->getMockBuilder(\Prado\Web\UI\TClientScriptManager::class)->setConstructorArgs([$page])
+			->onlyMethods(['registerPradoScript', 'registerEndScript', 'getPradoScriptAssetUrl'])->getMock();
+		$cs->method('getPradoScriptAssetUrl')->willReturn('/js');
+		$cs->expects($this->once())->method('registerPradoScript')->with(TProofOfWork::SCRIPT_PACKAGE);
+		$cs->expects($this->once())->method('registerEndScript')->with('prado:Work', $this->callback(function ($script) {
+			return str_starts_with($script, 'new Prado.WebUI.TProofOfWork({') && str_contains($script, '"\\/js' . str_replace('/', '\\/', TProofOfWork::SOLVER_SCRIPT) . '"');
+		}));
+		PradoUnit::setProp($page, '_clientScript', $cs);
+		$work->onPreRender(null);
+		$this->assertArrayHasKey($work->getUniqueID(), PradoUnit::getProp($page, '_controlsRegisteredForPostData'));
+	}
 }

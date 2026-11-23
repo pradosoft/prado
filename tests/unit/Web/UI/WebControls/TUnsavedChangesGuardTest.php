@@ -264,4 +264,47 @@ class TUnsavedChangesGuardTest extends TestCase
 	{
 		$this->assertSame('Prado.WebUI.TUnsavedChangesGuard', PradoUnit::invoke(new TUnsavedChangesGuard(), 'getClientClassName'));
 	}
+
+	public function testRegisterClientScriptRegistersThePackageAndControl()
+	{
+		[$guard, $page] = $this->makeOnPage();
+		$cs = $this->getMockBuilder(\Prado\Web\UI\TClientScriptManager::class)->setConstructorArgs([$page])
+			->onlyMethods(['registerPradoScript', 'registerEndScript'])->getMock();
+		$cs->expects($this->once())->method('registerPradoScript')->with('unsavedchanges');
+		$cs->expects($this->once())->method('registerEndScript')->with('prado:Guard', $this->stringStartsWith('new Prado.WebUI.TUnsavedChangesGuard({'));
+		PradoUnit::setProp($page, '_clientScript', $cs);
+		PradoUnit::invoke($guard, 'registerClientScript');
+	}
+
+	public static function oneValidatorProvider(): array
+	{
+		// validators on a postback page => failed validation
+		return [
+			'none' => [[], false],
+			'one valid' => [[true], false],
+			'one invalid' => [[false], true],
+		];
+	}
+
+	/**
+	 * @dataProvider oneValidatorProvider
+	 */
+	public function testFailedValidationWithOneOrNoValidators(array $validity, bool $expected)
+	{
+		[$guard, $page] = $this->makeOnPage();
+		PradoUnit::setProp($page, '_postData', []);
+		foreach ($validity as $valid) {
+			$validator = new TRequiredFieldValidator();
+			$page->getControls()->add($validator);
+			$page->getValidators()->add($validator);
+			$validator->setIsValid($valid);
+		}
+		$this->assertSame($expected, PradoUnit::invoke($guard, 'hasFailedValidation'));
+	}
+
+	public function testFailedValidationIsFalseOutsideAPostback()
+	{
+		[$guard] = $this->makeOnPage();
+		$this->assertFalse(PradoUnit::invoke($guard, 'hasFailedValidation'));
+	}
 }

@@ -129,14 +129,14 @@ class TFormGuardTest extends \PHPUnit\Framework\TestCase
 
 		self::assertMatchesRegularExpression('/<span aria-hidden="true" style="[^"]*left:-10000px[^"]*">/', $html);
 		self::assertStringContainsString('<label for="' . $guard->getClientID() . '_hp">Leave this field empty</label>', $html);
-		self::assertStringContainsString('name="' . $guard->getUniqueID() . ':website"', $html);
+		self::assertStringContainsString('name="' . $guard->getUniqueID() . TControl::getIdSeparator() . 'website"', $html);
 		self::assertStringContainsString('tabindex="-1"', $html);
 		self::assertStringContainsString('autocomplete="off"', $html);
-		self::assertMatchesRegularExpression('/<input type="hidden" name="' . preg_quote($guard->getUniqueID() . ':ts', '/') . '" value="([^"]+)"/', $html);
+		self::assertMatchesRegularExpression('/<input type="hidden" name="' . preg_quote($guard->getUniqueID() . TControl::getIdSeparator() . 'ts', '/') . '" value="([^"]+)"/', $html);
 
-		preg_match('/name="' . preg_quote($guard->getUniqueID() . ':ts', '/') . '" value="([^"]+)"/', $html, $matches);
+		preg_match('/name="' . preg_quote($guard->getUniqueID() . TControl::getIdSeparator() . 'ts', '/') . '" value="([^"]+)"/', $html, $matches);
 		$data = Prado::getApplication()->getSecurityManager()->validateData(html_entity_decode($matches[1]));
-		self::assertSame(self::START . ':' . $guard->getUniqueID(), $data);
+		self::assertSame(self::START . TControl::getIdSeparator() . $guard->getUniqueID(), $data);
 	}
 
 	public function testRerenderKeepsTheFirstRenderTime(): void
@@ -294,6 +294,36 @@ class TFormGuardTest extends \PHPUnit\Framework\TestCase
 		$this->expectException(TConfigurationException::class);
 		$this->submit($guard, '', $this->stamp($guard, self::START));
 	}
+
+	// --- Coverage: client class, post data hooks, PreRender, render ---
+
+	public function testPostDataHooksAndClientClass()
+	{
+		$guard = $this->makeGuard();
+		$this->assertSame('Prado.WebUI.TBaseValidator', PradoUnit::invoke($guard, 'getClientClassName'));
+		$this->assertFalse($guard->getDataChanged());
+		$guard->raisePostDataChangedEvent();
+	}
+
+	public function testOnPreRenderRequiresPostData()
+	{
+		$guard = $this->makeGuard();
+		$guard->onPreRender(null);
+		$this->assertArrayHasKey($guard->getUniqueID(), PradoUnit::getProp($guard->getPage(), '_controlsRegisteredForPostData'));
+	}
+
+	public function testRenderWritesTheGuardFields()
+	{
+		$guard = $this->makeGuard();
+		$page = $guard->getPage();
+		PradoUnit::setProp($page, '_inFormRender', true);
+		PradoUnit::setProp($page, '_clientScript', $this->getMockBuilder(\Prado\Web\UI\TClientScriptManager::class)->setConstructorArgs([$page])->onlyMethods(['registerPradoScript', 'registerEndScript', 'registerHiddenField'])->getMock());
+		$tw = new TTextWriter();
+		$guard->render(new THtmlWriter($tw));
+		$output = $tw->flush();
+		$this->assertStringContainsString('name="' . $guard->getUniqueID() . TControl::getIdSeparator() . $guard->getHoneypotName() . '"', $output);
+		$this->assertStringContainsString('name="' . $guard->getUniqueID() . TControl::getIdSeparator() . TFormGuard::STAMP_NAME . '"', $output);
+  }
 
 	// -----------------------------------------------------------------------
 	// IdSeparator

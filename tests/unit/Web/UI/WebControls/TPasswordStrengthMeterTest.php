@@ -15,6 +15,14 @@ use Prado\Web\UI\WebControls\TWebControl;
 
 class TPasswordStrengthMeterTest extends TestCase
 {
+	use \Prado\Test\Unit\Harness\Traits\TAssetManagerMockTrait;
+
+	protected function tearDown(): void
+	{
+		$this->restoreAssetManager();
+		parent::tearDown();
+	}
+
 	private TTextBox $input;
 	private TPasswordStrengthMeter $meter;
 
@@ -178,5 +186,79 @@ class TPasswordStrengthMeterTest extends TestCase
 		$this->assertSame('de-DE', $options['Culture']);
 		// The CLDR "one" pattern has a no-break space.
 		$this->assertSame(['one' => "{0}\u{00A0}Bit", 'other' => '{0} Bit'], $options['BitsPatterns']);
+	}
+
+	// --- Coverage: style sheet and client script ---
+
+	private function mockClientScript(): \Prado\Web\UI\TClientScriptManager
+	{
+		$page = $this->meter->getPage();
+		$cs = $this->getMockBuilder(\Prado\Web\UI\TClientScriptManager::class)->setConstructorArgs([$page])
+			->onlyMethods(['registerStyleSheetFile', 'registerPradoScript', 'registerEndScript'])->getMock();
+		PradoUnit::setProp($page, '_clientScript', $cs);
+		return $cs;
+	}
+
+	public function testOnPreRenderPublishesTheDefaultStyleSheet()
+	{
+		$this->mockAssetManager();
+		$cs = $this->mockClientScript();
+		$cs->expects($this->once())->method('registerStyleSheetFile')->with('/assets/passwordstrengthmeter.css', '/assets/passwordstrengthmeter.css');
+		$cs->expects($this->once())->method('registerPradoScript')->with('validator');
+		$cs->expects($this->once())->method('registerEndScript')->with('prado:meter', $this->stringStartsWith('new Prado.WebUI.TPasswordStrengthMeter({'));
+		$this->meter->onPreRender(null);
+	}
+
+	public function testOnPreRenderUsesTheCssUrl()
+	{
+		$cs = $this->mockClientScript();
+		$this->meter->setCssUrl('/meter.css');
+		$cs->expects($this->once())->method('registerStyleSheetFile')->with('/meter.css', '/meter.css');
+		$this->meter->onPreRender(null);
+	}
+
+	public function testOnPreRenderWithoutAStyleSheet()
+	{
+		$cs = $this->mockClientScript();
+		$this->meter->setCssUrl('');
+		$cs->expects($this->never())->method('registerStyleSheetFile');
+		$cs->expects($this->once())->method('registerEndScript');
+		$this->meter->onPreRender(null);
+	}
+
+	public function testRenderContentsWithTextAndBits()
+	{
+		$this->meter->setShowText(true);
+		$this->meter->setShowBits(true);
+		$output = $this->render();
+		$this->assertStringContainsString('prado-password-meter-text', $output);
+		$this->assertStringContainsString('prado-password-meter-bits', $output);
+	}
+
+	public function testMeasureTargetNeedsControlToMeasure()
+	{
+		$this->meter->setControlToMeasure('');
+		$this->expectException(TConfigurationException::class);
+		$this->meter->getMeasureTarget();
+	}
+
+	public static function labelProvider(): array
+	{
+		// how the meter is labelled => default aria-label rendered
+		return [
+			'aria labelledby' => [fn ($meter) => $meter->getAria()->add('labelledby', 'lbl'), false],
+			'attribute aria-label' => [fn ($meter) => $meter->getAttributes()->add('aria-label', 'Strength'), false],
+			'attribute aria-labelledby' => [fn ($meter) => $meter->getAttributes()->add('aria-labelledby', 'lbl'), false],
+			'other attribute' => [fn ($meter) => $meter->getAttributes()->add('title', 'x'), true],
+		];
+	}
+
+	/**
+	 * @dataProvider labelProvider
+	 */
+	public function testDefaultLabelOnlyWhenUnlabelled(\Closure $label, bool $default)
+	{
+		$label($this->meter);
+		$this->assertSame($default, str_contains($this->render(), 'aria-label="Password strength"'));
 	}
 }
