@@ -61,21 +61,34 @@ class TTimeZoneParameterBehavior extends TBehavior
 	private $_paramBehavior;
 
 	/**
-	 * This sets the date_default_timezone_set with the value of the TimeZoneParameter
-	 * in the application parameters.  It attaches the Application Parameter handler behavior.
+	 * This applies the TimeZoneParameter with {@see applyTimeZoneParameter} when the
+	 * behavior is enabled. When disabled, {@see setEnabled} applies the parameter later.
 	 * @param object $owner the object that this behavior is attached to.
 	 */
 	public function attach($owner)
 	{
 		parent::attach($owner);
-		if (!$this->getEnabled() || !$this->_timeZoneParameter) {
+		if ($this->getEnabled()) {
+			$this->applyTimeZoneParameter();
+		}
+	}
+
+	/**
+	 * Sets date_default_timezone_set with the value of the TimeZoneParameter in the
+	 * application parameters and attaches the Application Parameter handler behavior.
+	 * An empty TimeZoneParameter applies nothing.
+	 * @since 4.4.0
+	 */
+	protected function applyTimeZoneParameter()
+	{
+		if (!($parameter = $this->getTimeZoneParameter())) {
 			return;
 		}
 		$appParams = $this->getApplication()->getParameters();
-		if ($default_timezone = $appParams->itemAt($this->_timeZoneParameter)) {
+		if ($default_timezone = $appParams->itemAt($parameter)) {
 			$this->setTimeZone($default_timezone);
 		}
-		$this->_paramBehavior = new TMapRouteBehavior($this->_timeZoneParameter, [$this, 'setTimeZone']);
+		$this->_paramBehavior = new TMapRouteBehavior($parameter, [$this, 'setTimeZone']);
 		$appParams->attachBehavior(self::APP_PARAM_ROUTE_BEHAVIOR_NAME, $this->_paramBehavior);
 	}
 
@@ -94,16 +107,17 @@ class TTimeZoneParameterBehavior extends TBehavior
 
 
 	/**
-	 * This attaches and detaches the routing behavior on the Application Parameters.
-	 * Without an owner, the route waits for {@see attach}.
+	 * Enabling an attached, disabled behavior applies the TimeZoneParameter with
+	 * {@see applyTimeZoneParameter}, which sets the time zone and attaches the routing
+	 * behavior. Disabling detaches the routing behavior. Without an owner, the parameter
+	 * waits for {@see attach}.
 	 * @param bool $enabled whether this behavior is enabled
 	 */
 	public function setEnabled($enabled)
 	{
 		$enabled = TPropertyValue::ensureBoolean($enabled);
-		if ($enabled && !$this->_paramBehavior && $this->getOwner()) {
-			$this->_paramBehavior = new TMapRouteBehavior($this->_timeZoneParameter, [$this, 'setTimeZone']);
-			$this->getApplication()->getParameters()->attachBehavior(self::APP_PARAM_ROUTE_BEHAVIOR_NAME, $this->_paramBehavior);
+		if ($enabled && !$this->getEnabled() && $this->getOwner()) {
+			$this->applyTimeZoneParameter();
 		} elseif (!$enabled && $this->_paramBehavior) {
 			$this->getApplication()->getParameters()->detachBehavior(self::APP_PARAM_ROUTE_BEHAVIOR_NAME);
 			$this->_paramBehavior = null;
