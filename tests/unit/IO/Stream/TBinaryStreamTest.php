@@ -88,6 +88,37 @@ class TBinaryStreamTest extends \PHPUnit\Framework\TestCase
 		self::assertSame('-and-body', $b->getContents());
 	}
 
+	public function testReadBytesFarPastTheEndThrowsWithoutAllocatingTheLength()
+	{
+		// fread() allocates the length it is given, so each pass asks for one piece at most.
+		$b = new class (TStream::fromString(str_repeat('x', 64))) extends TBinaryStream {
+			public array $lengths = [];
+
+			public function read(int $length): string
+			{
+				$this->lengths[] = $length;
+				return parent::read($length);
+			}
+		};
+		try {
+			$b->readBytes(PHP_INT_MAX);
+			self::fail('A read past the end throws.');
+		} catch (TIOException $e) {
+			self::assertSame('binarystream_unexpected_eof', $e->getErrorCode());
+		}
+		self::assertSame([TBinaryStream::CHUNK_SIZE, TBinaryStream::CHUNK_SIZE], $b->lengths);
+	}
+
+	public function testReadBytesLongerThanOnePieceReturnsEveryByte()
+	{
+		$length = 2 * TBinaryStream::CHUNK_SIZE + 123;
+		$bytes = random_bytes($length);
+		$b = $this->over($bytes . 'tail');
+		self::assertSame($bytes, $b->readBytes($length));
+		self::assertSame($length, $b->tell());
+		self::assertSame('tail', $b->getContents());
+	}
+
 	public function testUnexpectedEofThrows()
 	{
 		$b = $this->over("\x01");   // only one byte
