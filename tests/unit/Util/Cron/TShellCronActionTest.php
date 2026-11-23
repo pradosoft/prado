@@ -90,6 +90,7 @@ class TShellCronActionTest extends \PHPUnit\Framework\TestCase
 	{
 		$this->obj = Prado::createComponent($this->getTestClass());
 		$this->writer = new TShellWriter(new TTextWriter());
+		$this->writer->setColorSupported(false);
 		$this->obj->setWriter($this->writer);
 	}
 
