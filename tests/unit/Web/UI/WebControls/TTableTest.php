@@ -328,4 +328,25 @@ class TTableTest extends TestCase
 		$this->expectException(TInvalidDataValueException::class);
 		(new TTable())->setCaptionAlign('Center');
 	}
+
+	public function testBeginTagCombinationsOfCaptionAndColumnGroups()
+	{
+		foreach (['', 'Sales'] as $caption) {
+			foreach (['none', 'empty', 'one'] as $groups) {
+				$table = new TTable();
+				$table->setCaption($caption);
+				if ($groups !== 'none') {
+					$table->getColumnGroups();
+				}
+				if ($groups === 'one') {
+					$table->getColumnGroups()->add(new TTableColumnGroup());
+				}
+				$expected = '<table>'
+					. ($caption !== '' ? '<caption>Sales</caption>' : '')
+					. ($groups === 'one' ? "\n<colgroup></colgroup>\n" : '')
+					. '</table>';
+				$this->assertSame($expected, $this->render($table), "caption '$caption', groups $groups");
+			}
+		}
+	}
 }
