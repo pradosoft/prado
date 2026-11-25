@@ -1011,4 +1011,34 @@ class TDatePickerTest extends TestCase
 		$picker->setUpToYear(2041);
 		$this->assertSame(2041, $picker->getUpToYear());
 	}
+
+	public static function dayPatternProvider(): array
+	{
+		return [
+			'dd' => ['dd-MM-yyyy', true],
+			'd' => ['d/M/yyyy', true],
+			'month and year' => ['MMMM yyyy', false],
+		];
+	}
+
+	/**
+	 * @dataProvider dayPatternProvider
+	 */
+	public function testHasDayPattern(string $format, bool $expected)
+	{
+		$picker = new TDatePicker();
+		$picker->setDateFormat($format);
+		$this->assertSame($expected, PradoUnit::invoke($picker, 'hasDayPattern'));
+	}
+
+	public function testAMonthYearDropDownPickerKeepsThePopupCalendar()
+	{
+		[$picker, $cs] = $this->createPicker();
+		$picker->setDateInputMode(TDatePickerInputMode::DropDownList);
+		$picker->setDateFormat('MMMM yyyy');
+		$picker->setText('03 2026');
+		$cs->method('isEndScriptRegistered')->willReturn(false);
+		$cs->expects($this->exactly(2))->method('registerEndScript');
+		$this->assertStringEndsWith('TDatePickerImageButton" type="image" onclick="return false;" />', $this->renderPicker($picker));
+	}
 }
