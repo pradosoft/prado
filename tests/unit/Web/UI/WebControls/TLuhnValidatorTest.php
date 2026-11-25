@@ -91,4 +91,17 @@ class TLuhnValidatorTest extends TestCase
 		$this->validator->setAllowSeparators(true);
 		$this->assertTrue(PradoUnit::invoke($this->validator, 'getClientScriptOptions')['AllowSeparators']);
 	}
+
+	public function testValueThatIsNotAStringIsInvalid()
+	{
+		$page = new TPage();
+		$box = new \Prado\Web\UI\WebControls\TCheckBox();
+		$box->setID('box');
+		$page->getControls()->add($box);
+		$validator = new TLuhnValidator();
+		$validator->setControlToValidate('box');
+		$page->getControls()->add($validator);
+
+		$this->assertFalse(PradoUnit::invoke($validator, 'evaluateIsValid'));
+	}
 }

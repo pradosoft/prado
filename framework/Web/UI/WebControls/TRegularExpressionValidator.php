@@ -75,8 +75,7 @@ class TRegularExpressionValidator extends TBaseValidator
 	/**
 	 * This method overrides the parent's implementation.
 	 * The validation succeeds if the input data matches the regular expression.
-	 * The validation always succeeds if ControlToValidate is not specified
-	 * or the regular expression is empty, or the input data is empty.
+	 * The validation always succeeds if the regular expression or the input data is empty.
 	 * @return bool whether the validation succeeds
 	 */
 	public function evaluateIsValid()

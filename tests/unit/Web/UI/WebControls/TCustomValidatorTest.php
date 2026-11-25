@@ -103,4 +103,18 @@ class TCustomValidatorTest extends TestCase
 		$this->assertFalse($validator->evaluateIsValid());
 		$this->assertSame([''], $values);
 	}
+
+	public function testServerValidatesTheTargetValue()
+	{
+		$validator = $this->createPageValidator();
+		$validator->findControl('Box')->setText('value');
+		$params = [];
+		$validator->attachEventHandler('OnServerValidate', function ($sender, $param) use (&$params) {
+			$params[] = $param;
+		});
+		$this->assertTrue($validator->evaluateIsValid(), 'Without a handler that fails it, the validation succeeds.');
+		$this->assertSame('value', $params[0]->getValue());
+		$this->assertTrue($params[0]->getIsValid());
+		$this->assertSame('Prado.WebUI.TCustomValidator', \Prado\Test\Unit\PradoUnit::invoke($validator, 'getClientClassName'));
+	}
 }

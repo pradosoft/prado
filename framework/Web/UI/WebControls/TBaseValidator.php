@@ -257,26 +257,27 @@ abstract class TBaseValidator extends TLabel implements IValidator
 
 	/**
 	 * Renders the javascript code to the end script.
+	 * It registers the validator script, the form's validation manager once, and
+	 * this validator, when {@see getEnableClientScript EnableClientScript} is true.
 	 * If you override this method, be sure to call the parent implementation
 	 * so that the event handlers can be invoked.
 	 * @param \Prado\Web\UI\THtmlWriter $writer the renderer
 	 */
 	public function renderClientControlScript($writer)
 	{
-		$scripts = $this->getPage()->getClientScript();
-		if ($this->getEnableClientScript()) {
-			$scripts->registerPradoScript('validator');
+		if (!$this->getEnableClientScript()) {
+			return;
 		}
+		$scripts = $this->getPage()->getClientScript();
+		$scripts->registerPradoScript('validator');
 		$formID = $this->getPage()->getForm()->getClientID();
 		$scriptKey = "TBaseValidator:$formID";
-		if ($this->getEnableClientScript() && !$scripts->isEndScriptRegistered($scriptKey)) {
+		if (!$scripts->isEndScriptRegistered($scriptKey)) {
 			$manager['FormID'] = $formID;
 			$options = TJavaScript::encode($manager);
 			$scripts->registerEndScript($scriptKey, "new Prado.ValidationManager({$options});");
 		}
-		if ($this->getEnableClientScript()) {
-			$this->registerClientScriptValidator();
-		}
+		$this->registerClientScriptValidator();
 	}
 
 	/**

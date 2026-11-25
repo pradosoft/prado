@@ -4,6 +4,8 @@ namespace Prado\Test\Unit\Web\UI\WebControls;
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Prado\Test\Unit\Harness\Traits\TFormPageTrait;
+use Prado\Test\Unit\PradoUnit;
 use Prado\Web\UI\TPage;
 use Prado\Web\UI\WebControls\TDataTypeValidator;
 use Prado\Web\UI\WebControls\TDatePicker;
@@ -12,6 +14,8 @@ use Prado\Web\UI\WebControls\TValidationDataType;
 
 class TDataTypeValidatorTest extends TestCase
 {
+	use TFormPageTrait;
+
 	private TTextBox $box;
 
 	/**
@@ -91,5 +95,28 @@ class TDataTypeValidatorTest extends TestCase
 		$this->assertNull(TValidationDataType::convert(TValidationDataType::Date, 'not a date'));
 		$this->assertNull(TValidationDataType::convert(TValidationDataType::Date, 'x', 'yyyy-MM-dd'));
 		$this->assertSame('1e3', TValidationDataType::convert(TValidationDataType::String, '1e3'));
+	}
+
+	public function testEmptyValueIsOfEveryType()
+	{
+		$validator = $this->createValidator(TValidationDataType::Integer);
+		$this->assertTrue(PradoUnit::invoke($validator, 'evaluateDataTypeCheck', ''));
+		$this->assertTrue(PradoUnit::invoke($validator, 'evaluateDataTypeCheck', null));
+	}
+
+	public function testClientScriptOptions()
+	{
+		$validator = $this->createValidator(TValidationDataType::Float);
+		$this->createFormPage($this->box, $validator);
+		$options = PradoUnit::invoke($validator, 'getClientScriptOptions');
+		$this->assertSame(TValidationDataType::Float, $options['DataType']);
+		$this->assertArrayNotHasKey('DateFormat', $options);
+
+		$validator->setDataType(TValidationDataType::Date);
+		$validator->setDateFormat('yyyy-MM-dd');
+		$options = PradoUnit::invoke($validator, 'getClientScriptOptions');
+		$this->assertSame(TValidationDataType::Date, $options['DataType']);
+		$this->assertSame('yyyy-MM-dd', $options['DateFormat']);
+		$this->assertSame('Prado.WebUI.TDataTypeValidator', PradoUnit::invoke($validator, 'getClientClassName'));
 	}
 }
