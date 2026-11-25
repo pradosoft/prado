@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TStyle::setDisplayStyle()` with `Fixed` or `Hidden` removes the `display:none` that `None` wrote, and `copyFrom()` and `mergeWith()` carry a display style that is not the source's default; a control set to `None` and then `Fixed` stayed hidden. (belisoful)
 BUG: Issue #1497 - `TWizard` keeps an `ActiveStepIndex` set before its steps are added, and keeps the active step when its child controls are recreated; both reset to the first step. (belisoful)
 BUG: Issue #1497 - `TWizard` restores the current step when a `MoveTo` command naming a step ID is cancelled; it activated the last step it compared. (belisoful)
 BUG: Issue #1497 - `TWizard` finds no previous step in an empty history; it threw `TInvalidOperationException`. (belisoful)

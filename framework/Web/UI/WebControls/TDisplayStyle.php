@@ -17,7 +17,7 @@ namespace Prado\Web\UI\WebControls;
  * The following enumerable values are defined:
  * - None: the control is not displayed and not included in the layout.
  * - Dynamic: the control is displayed and included in the layout, the layout flow is dependent on the control (equivalent to display:'' in css).
- * - Fixed: Similar to Dynamic with CSS "visibility" set "shown".
+ * - Fixed: Similar to Dynamic with CSS "visibility" set to "visible".
  * - Hidden: the control is not displayed and is included in the layout.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>

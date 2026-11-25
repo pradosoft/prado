@@ -1522,4 +1522,128 @@ class TWebControlTest extends TestCase
 		$control->setID('plain');
 		$this->assertStringNotContainsString('aria-invalid', $this->render($control));
 	}
+
+	public function testDraggableBlankResetsToDefault()
+	{
+		$control = new TWebControl();
+		$control->setDraggable('false');
+		$this->assertFalse($control->getDraggable());
+		$control->setDraggable('');
+		$this->assertNull($control->getDraggable());
+		$this->assertStringNotContainsString('draggable', $this->render($control));
+	}
+
+	public function testWritingSuggestionsBlankResetsToDefault()
+	{
+		$control = new TWebControl();
+		$control->setWritingSuggestions('false');
+		$this->assertFalse($control->getWritingSuggestions());
+		$control->setWritingSuggestions('');
+		$this->assertNull($control->getWritingSuggestions());
+		$this->assertStringNotContainsString('writingsuggestions', $this->render($control));
+	}
+
+	public function testMicrodataRendersOnlyTheSetAttributes()
+	{
+		$control = new TWebControl();
+		$control->setItemProp('name');
+		$this->assertSame('<span itemprop="name"></span>', $this->render($control));
+
+		$scoped = new TWebControl();
+		$scoped->setItemScope(true);
+		$this->assertSame('<span itemscope="itemscope"></span>', $this->render($scoped));
+	}
+
+	// ================================================================================
+	// Attribute routing: data-* to the dataset, aria-* to ARIA
+	// ================================================================================
+
+	public function testSetAttributeRoutesDataToTheDataset()
+	{
+		$control = new TWebControl();
+		$control->setAttribute('Data-User-Id', '5');
+		$this->assertSame('5', $control->getDataset()->itemAt('user-id'));
+		$this->assertFalse($control->getHasAttributes());
+		$this->assertStringContainsString('data-user-id="5"', $this->render($control));
+	}
+
+	public function testSetAttributeRoutesAriaToAria()
+	{
+		$control = new TWebControl();
+		$control->setAttribute('ARIA-Label', 'Close');
+		$this->assertSame('Close', $control->getAria()->itemAt('label'));
+		$this->assertFalse($control->getHasAttributes());
+		$this->assertStringContainsString('aria-label="Close"', $this->render($control));
+	}
+
+	public function testSetAttributeKeepsOtherNamesInAttributes()
+	{
+		$control = new TWebControl();
+		$control->setAttribute('rel', 'next');
+		$this->assertSame('next', $control->getAttributes()->itemAt('rel'));
+		$this->assertFalse($control->getHasDataset());
+		$this->assertFalse($control->getHasAria());
+	}
+
+	public function testGetAttributeReadsEachCollection()
+	{
+		$control = new TWebControl();
+		$control->getDataset()->add('user-id', '5');
+		$control->getAria()->add('label', 'Close');
+		$control->getAttributes()->add('rel', 'next');
+		$this->assertSame('5', $control->getAttribute('data-user-id'));
+		$this->assertSame('5', $control->getAttribute('DATA-user-id'));
+		$this->assertSame('Close', $control->getAttribute('aria-label'));
+		$this->assertSame('next', $control->getAttribute('rel'));
+		$this->assertNull($control->getAttribute('data-missing'));
+		$this->assertNull($control->getAttribute('aria-missing'));
+		$this->assertNull($control->getAttribute('missing'));
+	}
+
+	public function testRemoveAttributeRemovesFromEachCollection()
+	{
+		$control = new TWebControl();
+		$control->setAttribute('data-user-id', '5');
+		$control->setAttribute('aria-label', 'Close');
+		$control->setAttribute('rel', 'next');
+		$this->assertSame('5', $control->removeAttribute('Data-User-Id'));
+		$this->assertSame('Close', $control->removeAttribute('aria-label'));
+		$this->assertSame('next', $control->removeAttribute('rel'));
+		$this->assertFalse($control->getHasDataset());
+		$this->assertFalse($control->getHasAria());
+		$this->assertFalse($control->getHasAttributes());
+		$this->assertNull($control->removeAttribute('data-user-id'));
+		$this->assertNull($control->removeAttribute('aria-label'));
+		$this->assertNull($control->removeAttribute('rel'));
+	}
+
+	// ================================================================================
+	// Display and pre-render
+	// ================================================================================
+
+	public function testGetDisplayReadsTheStyle()
+	{
+		$control = new TWebControl();
+		$this->assertSame(TDisplayStyle::Fixed, $control->getDisplay());
+		$control->setDisplay(TDisplayStyle::Hidden);
+		$this->assertSame(TDisplayStyle::Hidden, $control->getDisplay());
+		$this->assertSame(TDisplayStyle::Hidden, $control->getStyle()->getDisplayStyle());
+	}
+
+	public function testOnPreRenderWithoutDecoratorCreatesNone()
+	{
+		$control = new TWebControl();
+		$control->onPreRender(null);
+		$this->assertNull($control->getDecorator(false));
+	}
+
+	public function testOnPreRenderInstantiatesTheDecorator()
+	{
+		$control = new TWebControl();
+		$decorator = $control->getDecorator();
+		$decorator->setPreTagText('<b>before</b>');
+		$control->onPreRender(null);
+		$this->assertSame($decorator, $control->getDecorator(false));
+		$this->assertStringContainsString('<b>before</b>', $this->render($control));
+	}
 }
