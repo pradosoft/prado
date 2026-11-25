@@ -108,6 +108,31 @@ class TAccordionViewTest extends TestCase
 		$this->assertSame('<b>text</b>', $this->renderContents($view));
 	}
 
+	public function testRenderContentsEncodesTextWhenEncode()
+	{
+		$view = new TAccordionView();
+		$this->assertFalse($view->getEncode());
+		$view->setText('<b>a & b</b>');
+		$this->assertSame('<b>a & b</b>', $this->renderContents($view));
+
+		$view->setEncode(true);
+		$this->assertTrue($view->getEncode());
+		$this->assertSame('&lt;b&gt;a & b&lt;/b&gt;', $this->renderContents($view));
+	}
+
+	public function testRenderHeaderEncodesCaptionWhenEncode()
+	{
+		$view = $this->createView();
+		$view->setCaption('<b>a & b</b>');
+		$view->setNavigateUrl('/x');
+		$this->assertSame('<div id="v_0" class="accordion-header"><a href="/x"><b>a & b</b></a></div>', $this->renderHeader($view));
+
+		$view->setEncode(true);
+		$this->assertSame('<div id="v_0" class="accordion-header"><a href="/x">&lt;b&gt;a & b&lt;/b&gt;</a></div>', $this->renderHeader($view));
+		$view->setCaption('');
+		$this->assertSame('<div id="v_0" class="accordion-header"><a href="/x">&nbsp;</a></div>', $this->renderHeader($view));
+	}
+
 	public function testRenderHeader()
 	{
 		$view = $this->createView();
