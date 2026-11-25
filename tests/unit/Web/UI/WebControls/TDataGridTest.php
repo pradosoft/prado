@@ -494,6 +494,16 @@ class TDataGridTest extends TestCase
 		$this->assertNull($grid->getEditItem());
 	}
 
+	public function testEditItemIndexLeavingTheSelectedItemRestoresItsSelection()
+	{
+		$grid = $this->bind($this->createGrid(), $this->rows(3));
+		$grid->setSelectedItemIndex(1);
+		$grid->setEditItemIndex(1);
+		$this->assertSame(TListItemType::EditItem, $grid->getItems()->itemAt(1)->getItemType());
+		$grid->setEditItemIndex(-1);
+		$this->assertSame([TListItemType::Item, TListItemType::SelectedItem, TListItemType::Item], $this->itemTypes($grid));
+	}
+
 	// ================================================================================
 	// Data binding
 	// ================================================================================

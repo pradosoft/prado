@@ -1409,6 +1409,31 @@ class TDataListTest extends TestCase
 		$this->assertSame($list->getItems()->itemAt(2), $list->getEditItem());
 	}
 
+	public function testSetEditItemIndexLeavingTheSelectedItemRestoresItsSelection(): void
+	{
+		$list = $this->newBoundList(['a', 'b', 'c'], [], function ($list) {
+			$list->setSelectedItemIndex(1);
+			$list->setEditItemIndex(1);
+		});
+		$this->assertSame(['Item0', 'EditItem1', 'Item2'], $this->controlTypes($list));
+		$list->setEditItemIndex(2);
+		$this->assertSame(['Item0', 'SelectedItem1', 'EditItem2'], $this->controlTypes($list));
+		$list->setEditItemIndex(-1);
+		$this->assertSame(['Item0', 'SelectedItem1', 'Item2'], $this->controlTypes($list));
+	}
+
+	public function testSetEditItemIndexSkipsAnItemThatIsNoItemDataRenderer(): void
+	{
+		$list = new TDataList();
+		$list->setItemRenderer(TDataListTestPlainRenderer::class);
+		$list->setDataSource(['a', 'b']);
+		$list->dataBind();
+		$list->setEditItemIndex(1);
+		$list->setEditItemIndex(0);
+		$this->assertSame(0, $list->getEditItemIndex());
+		$this->assertInstanceOf(TDataListTestPlainRenderer::class, $list->getEditItem());
+	}
+
 	public function testDataBindReadsTheKeyField(): void
 	{
 		$list = $this->newBoundList([['id' => 'k1'], ['id' => 'k2']], [], function ($list) {
