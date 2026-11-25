@@ -1279,7 +1279,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	protected function getPreviousStepIndex($popStack)
 	{
 		$history = $this->getHistory();
-		if ($history->getCount() >= 0) {
+		if ($history->getCount() > 0) {
 			$activeStepIndex = $this->getActiveStepIndex();
 			$previousStepIndex = -1;
 			if ($popStack) {

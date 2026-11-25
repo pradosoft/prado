@@ -263,6 +263,25 @@ class TWizardTest extends TestCase
 		$this->assertStringContainsString('[b]', $output);
 	}
 
+	public function testRenderWithoutHistoryHidesThePreviousButton()
+	{
+		$wizard = $this->createWizard();
+		$wizard->setActiveStepIndex(1);
+		$output = $this->render($wizard);
+		$this->assertStringContainsString('[b]', $output);
+		$this->assertFalse($wizard->getStepNavigation()->getPreviousButton()->getVisible(false));
+	}
+
+	public function testPreviousWithoutHistoryStays()
+	{
+		$wizard = $this->createWizard();
+		$wizard->setActiveStepIndex(1);
+		$this->recordEvents($wizard);
+		$this->assertTrue($wizard->bubbleEvent($this, $this->command(TWizard::CMD_PREVIOUS)));
+		$this->assertSame(['PreviousButtonClick:1>1'], $this->events);
+		$this->assertSame(1, $wizard->getActiveStepIndex());
+	}
+
 	public function testMoveToByStepIdCancelledRestoresTheCurrentStep()
 	{
 		$wizard = $this->createWizard();
