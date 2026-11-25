@@ -460,7 +460,7 @@ class TBulletedListTest extends TestCase
 						$enabled = $listEnabled && $itemEnabled;
 						$this->assertSame($enabled, str_contains($output, 'href="/a"'), $label);
 						$this->assertSame($enabled && $target !== '', str_contains($output, 'target="_blank"'), $label);
-						$this->assertSame($accessKey !== '', str_contains($output, 'accesskey="k"'), $label);
+						$this->assertSame($enabled && $accessKey !== '', str_contains($output, 'accesskey="k"'), $label);
 						$this->assertStringContainsString('>A</a></li>', $output, $label);
 					}
 				}
@@ -483,10 +483,33 @@ class TBulletedListTest extends TestCase
 					$enabled = $listEnabled && $itemEnabled;
 					$this->assertSame($enabled, str_contains($output, 'href="javascript:;//List0"'), $label);
 					$this->assertCount($enabled ? 1 : 0, $page->getClientScript()->getPostBackControls(), $label);
-					$this->assertSame($accessKey !== '', str_contains($output, 'accesskey="k"'), $label);
+					$this->assertSame($enabled && $accessKey !== '', str_contains($output, 'accesskey="k"'), $label);
 					$this->assertStringContainsString('>A</a></li>', $output, $label);
 				}
 			}
 		}
+	}
+
+	public function testAccessKeyIsOnTheFirstEnabledLinkOnly()
+	{
+		foreach ([TBulletedListDisplayMode::HyperLink, TBulletedListDisplayMode::LinkButton] as $mode) {
+			[, $list] = $this->createPageList(['a' => 'A', 'b' => 'B', 'c' => 'C']);
+			$list->setDisplayMode($mode);
+			$list->setAccessKey('k');
+			$list->getItems()->itemAt(0)->setEnabled(false);
+			$this->assertStringNotContainsString('accesskey', $this->renderBeginTag($list), "$mode: not on the list");
+			$output = $this->renderContents($list);
+			$this->assertSame(1, substr_count($output, 'accesskey="k"'), $mode);
+			$this->assertMatchesRegularExpression('#<a [^>]*accesskey="k"[^>]*>B</a>#', $output, $mode);
+			$this->assertSame(1, substr_count($this->renderContents($list), 'accesskey="k"'), "$mode: again on the next render");
+		}
+	}
+
+	public function testAccessKeyOfATextListIsOnTheList()
+	{
+		[, $list] = $this->createPageList(['a' => 'A']);
+		$list->setAccessKey('k');
+		$this->assertStringContainsString('accesskey="k"', $this->renderBeginTag($list));
+		$this->assertStringNotContainsString('accesskey', $this->renderContents($list));
 	}
 }
