@@ -1329,7 +1329,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	/**
 	 * Handles bubbled events.
 	 * This method mainly translate certain command events into
-	 * wizard-specific events.
+	 * wizard-specific events. Without an active step only the Cancel command is handled.
 	 * @param mixed $sender sender of the original command event
 	 * @param \Prado\TEventParameter $param event parameter
 	 * @throws TInvalidDataValueException if a navigation command is associated with an invalid parameter
@@ -1343,7 +1343,10 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 				return true;
 			}
 
-			$type = $this->getStepType($this->getActiveStep());
+			if (($activeStep = $this->getActiveStep()) === null) {
+				return false;
+			}
+			$type = $this->getStepType($activeStep);
 			$index = $this->getActiveStepIndex();
 			$navParam = new TWizardNavigationEventParameter($index);
 			if (($sender instanceof \Prado\Web\UI\IButtonControl) && $sender->getCausesValidation() && ($page = $this->getPage()) !== null && !$page->getIsValid()) {

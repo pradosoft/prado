@@ -272,6 +272,16 @@ class TWizardTest extends TestCase
 		$this->assertFalse($wizard->getStepNavigation()->getPreviousButton()->getVisible(false));
 	}
 
+	public function testCommandsWithoutAnActiveStepAreNotHandled()
+	{
+		$wizard = $this->createWizard([]);
+		$this->recordEvents($wizard);
+		$this->assertFalse($wizard->bubbleEvent($this, $this->command(TWizard::CMD_NEXT)));
+		$this->assertFalse($wizard->bubbleEvent($this, $this->command('Save')));
+		$this->assertTrue($wizard->bubbleEvent($this, $this->command(TWizard::CMD_CANCEL)));
+		$this->assertSame(['CancelButtonClick'], $this->events);
+	}
+
 	public function testPreviousWithoutHistoryStays()
 	{
 		$wizard = $this->createWizard();
