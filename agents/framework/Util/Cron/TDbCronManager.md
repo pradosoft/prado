@@ -59,24 +59,26 @@ Auto-created as `crontabs` (configurable via `TableName`):
 
 | Column | Type | Notes |
 |--------|------|-------|
-| `tabuid` | INTEGER PK AUTOINCREMENT | Row ID |
+| `tabuid` | INTEGER PK AUTOINCREMENT (identity on Oracle) | Row ID |
 | `name` | VARCHAR(127) | Task name (unique for active tasks) |
 | `schedule` | VARCHAR(127) | Cron expression |
 | `task` | VARCHAR(256) | Class or `module->method(args)` |
 | `moduleid` | VARCHAR(127) | Optional module context |
 | `username` | VARCHAR(127) | Run-as user; `NULL` is the `DefaultUserName` |
-| `options` | MEDIUMTEXT (`TEXT` on PostgreSQL) | Serialized `TCronTask` object; base64 encoded on PostgreSQL, whose `TEXT` ends at a NUL byte (`serializeTask()`, `decodeTaskOptions()`). `getCronLog()` returns it decoded |
+| `options` | MEDIUMTEXT (`TEXT` on PostgreSQL, `CLOB` on Oracle) | Serialized `TCronTask` object; base64 encoded on PostgreSQL, whose `TEXT` ends at a NUL byte, and on Oracle, whose pdo_oci quoting does the same (`serializeTask()`, `decodeTaskOptions()`). `getCronLog()` returns it decoded |
 | `processcount` | INT | Times task has run |
 | `lastexectime` | VARCHAR(20) | Unix timestamp of last run |
-| `nextexectime` | BIGINT | Unix timestamp of the next trigger after `lastexectime` (4.4.0); `getPendingTasks()` selects `nextexectime <= now` |
+| `nextexectime` | BIGINT (`NUMBER(19)` on Oracle) | Unix timestamp of the next trigger after `lastexectime` (4.4.0); `getPendingTasks()` selects `nextexectime <= now` |
 | `lastresult` | VARCHAR(16) | Result of the last finished run: `ok`, `error`, `denied`, `timeout`, or `missed` (4.4.0); on a log row, the result of that run |
 | `lastduration` | VARCHAR(20) | Seconds the last finished run took (4.4.0); on a log row, the seconds of that run |
 | `paused` | INT | `1` while the task is paused (`pauseTask()`), else `NULL` (4.4.0) |
 | `okcount`, `failcount` | INT | Finished runs that succeeded, and that failed (`error`, `timeout`) (4.4.0) |
 | `totalduration`, `maxduration` | DOUBLE PRECISION | Total and longest seconds of the finished runs (4.4.0) |
-| `active` | BOOLEAN (`SMALLINT` on PostgreSQL) | `1` = DB task, `0` = config task shadow, `NULL` = log entry |
+| `active` | BOOLEAN (`SMALLINT` on PostgreSQL, `NUMBER(1)` on Oracle) | `1` = DB task, `0` = config task shadow, `NULL` = log entry |
 
-Active rows (`active IS NOT NULL`) are task definitions; rows with `active IS NULL` are execution log entries. `ensureTable()` adds the `nextexectime` column, its index, and the values for the active rows, and the run columns of `RUN_COLUMNS` (`ensureRunColumns()`, each when missing), to a table created before 4.4.0. `migrateTable()` does the same on demand, creates a missing table whatever `AutoCreateCronTable` says, and returns what it did (`created`, `column`, `run`); `cron/migrate` calls it at deployment. The indexes are named `<table>_tname`, `<table>_tclass`, `<table>_tnext`, `<table>_tuser`, and `<table>_tactive`, so several cron tables share a SQLite or PostgreSQL schema (4.4.0; earlier tables keep `tname`, `tclass`, `tactive`). `createDbTable()` runs the table and each index as its own command, with unquoted column names.
+Active rows (`active IS NOT NULL`) are task definitions; rows with `active IS NULL` are execution log entries. `ensureTable()` adds the `nextexectime` column, its index, and the values for the active rows, and the run columns of `RUN_COLUMNS` (`ensureRunColumns()`, each when missing), to a table created before 4.4.0. `migrateTable()` does the same on demand, creates a missing table whatever `AutoCreateCronTable` says, and returns what it did (`created`, `column`, `run`); `cron/migrate` calls it at deployment. The indexes are named `<table>_tname`, `<table>_tclass`, `<table>_tnext`, `<table>_tuser`, and `<table>_tactive`, so several cron tables share a SQLite, PostgreSQL, or Oracle schema (4.4.0; earlier tables keep `tname`, `tclass`, `tactive`). `createDbTable()` runs the table and each index as its own command, with unquoted column names.
+
+**Oracle** (12c and later, 4.4.0): the table takes the `ORACLE_COLUMNS` definitions (`VARCHAR2`, `NUMBER`, `CLOB`, an identity `tabuid`) in a `CREATE TABLE` without `IF NOT EXISTS`, which Oracle before 23ai rejects. `getAddColumnSql()` adds a column as `ADD (column definition)`. Paging is `OFFSET m ROWS FETCH NEXT n ROWS ONLY` (`limitClause()`). `readRows()` and `readRow()` lower-case the upper-case column names and read each `CLOB` stream (`normalizeRow()`). pdo_oci has no `lastInsertId()`, so `getLastInsertTaskUID()` reads `CURRVAL` of the identity sequence named in `user_tab_identities`. `TOracleDbCommand` writes bound values into the SQL as literals, so a serialized task is limited to Oracle's 4,000-byte literal; before 12.2, a table name has at most 22 bytes, so its index names fit 30 bytes.
 
 ## Key Properties
 
@@ -116,7 +118,7 @@ $cron->clearCronLog(null|\DateInterval|int|string $period = null, ?string $name 
 $cron->removeCronLogItem(int $taskUID): ?bool
 ```
 
-`$period` is seconds, a `\DateInterval`, or a `\DateInterval` specification (`P1Y6M3DT12H20M30S` or `"1 year 6 months"`); `null` clears regardless of time. `parsePeriod()` (static) reads a period and returns null for one that does not reach back in time: a negative period (`"-1 week"`, `"yesterday"`) or one that names a day (`"last week"`), which `clearCronLog()` rejects with `dbcron_period_invalid`. Paging is `LIMIT n OFFSET m` on every driver.
+`$period` is seconds, a `\DateInterval`, or a `\DateInterval` specification (`P1Y6M3DT12H20M30S` or `"1 year 6 months"`); `null` clears regardless of time. `parsePeriod()` (static) reads a period and returns null for one that does not reach back in time: a negative period (`"-1 week"`, `"yesterday"`) or one that names a day (`"last week"`), which `clearCronLog()` rejects with `dbcron_period_invalid`. Paging is `LIMIT n OFFSET m`, and `OFFSET m ROWS FETCH NEXT n ROWS ONLY` on Oracle.
 
 ## Runtime Tasks
 
