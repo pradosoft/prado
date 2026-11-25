@@ -183,7 +183,8 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	}
 
 	/**
-	 * @return string URL for the CSS file including all relevant CSS class definitions. Defaults to ''.
+	 * @return string URL for the CSS file including all relevant CSS class definitions.
+	 *   Defaults to 'default', which publishes the embedded CSS file; '' registers no CSS file.
 	 */
 	public function getCssUrl()
 	{
@@ -195,7 +196,7 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	public function setCssUrl($value)
 	{
-		$this->setViewState('CssUrl', TPropertyValue::ensureString($value), '');
+		$this->setViewState('CssUrl', TPropertyValue::ensureString($value), 'default');
 	}
 
 	/**
