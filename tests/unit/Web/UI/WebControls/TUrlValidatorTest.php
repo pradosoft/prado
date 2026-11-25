@@ -177,6 +177,16 @@ class TUrlValidatorTest extends TestCase
 		$this->validator->setCheckDns(true);
 		$this->assertArrayNotHasKey('CheckDns', PradoUnit::invoke($this->validator, 'getClientScriptOptions'));
 	}
+
+	public function testHostThatIdnaCannotConvertIsInvalid()
+	{
+		$this->assertFalse($this->valid('http://' . str_repeat('ä', 64) . '.com'));
+	}
+
+	public function testLookupDnsAsksTheResolver()
+	{
+		$this->assertFalse(PradoUnit::invoke($this->validator, 'lookupDns', 'host.invalid'), 'The .invalid top-level domain has no records.');
+	}
 }
 
 /**

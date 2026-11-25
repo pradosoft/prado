@@ -10,8 +10,6 @@
 
 namespace Prado\Web\UI\WebControls;
 
-use Prado\Exceptions\TInvalidDataTypeException;
-
 /**
  * TCustomValidator class
  *
@@ -107,18 +105,16 @@ class TCustomValidator extends TBaseValidator
 	}
 
 	/**
-	 * @throws TInvalidDataTypeException
-	 * @return null|\Prado\Web\UI\TControl control to be validated. Null if no control is found.
+	 * @throws \Prado\Exceptions\TConfigurationException if {@see getControlToValidate ControlToValidate}
+	 * does not name a control.
+	 * @return ?\Prado\Web\UI\TControl control to be validated, or null when ControlToValidate is empty.
 	 */
 	public function getValidationTarget()
 	{
-		if (($id = $this->getControlToValidate()) !== '' && ($control = $this->findControl($id)) !== null) {
-			return $control;
-		} elseif (($id = $this->getControlToValidate()) !== '') {
-			throw new TInvalidDataTypeException('basevalidator_validatable_required', $this::class);
-		} else {
+		if ($this->getControlToValidate() === '') {
 			return null;
 		}
+		return parent::getValidationTarget();
 	}
 
 	/**

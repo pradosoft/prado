@@ -3,6 +3,7 @@
 namespace Prado\Test\Unit\Web\UI\WebControls;
 
 use PHPUnit\Framework\TestCase;
+use Prado\Test\Unit\Harness\Traits\TFormPageTrait;
 use Prado\Test\Unit\PradoUnit;
 use Prado\Web\UI\TPage;
 use Prado\Web\UI\WebControls\TEmailAddressValidator;
@@ -11,6 +12,8 @@ use Prado\Web\UI\WebControls\TTextBox;
 
 class TRegularExpressionValidatorTest extends TestCase
 {
+	use TFormPageTrait;
+
 	private TTextBox $box;
 
 	/**
@@ -92,5 +95,20 @@ class TRegularExpressionValidatorTest extends TestCase
 		$this->assertTrue($this->isValid($validator, 'user@example.com'));
 		$this->assertFalse($this->isValid($validator, "user@example.com\n"));
 		$this->assertFalse($this->isValid($validator, 'user@example.com other'));
+	}
+
+	public function testClientScriptOptions()
+	{
+		$validator = $this->createValidator('\\d+');
+		$this->createFormPage($this->box, $validator);
+		$this->assertSame('', $validator->getClientSidePatternModifiers());
+		$options = PradoUnit::invoke($validator, 'getClientScriptOptions');
+		$this->assertSame('\\d+', $options['ValidationExpression']);
+		$this->assertSame('', $options['PatternModifiers']);
+
+		$validator->setClientSidePatternModifiers('i');
+		$this->assertSame('i', $validator->getClientSidePatternModifiers());
+		$this->assertSame('i', PradoUnit::invoke($validator, 'getClientScriptOptions')['PatternModifiers']);
+		$this->assertSame('Prado.WebUI.TRegularExpressionValidator', PradoUnit::invoke($validator, 'getClientClassName'));
 	}
 }

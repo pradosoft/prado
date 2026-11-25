@@ -61,7 +61,7 @@ Note: `ForControl` (inherited from TLabel) is **not supported** and throws `TNot
 
 | Event | Raised When |
 |---|---|
-| `OnValidate` | Before validation runs (only if the validator is visible and enabled) |
+| `OnValidate` | Before validation runs, ahead of the visibility and enabled checks; a handler that disables the validator skips the validation |
 | `OnValidationSuccess` | After validation completes and the result is valid |
 | `OnValidationError` | After validation completes and the result is invalid |
 

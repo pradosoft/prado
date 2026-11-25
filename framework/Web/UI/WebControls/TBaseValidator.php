@@ -182,12 +182,11 @@ abstract class TBaseValidator extends TLabel implements IValidator
 			$options['FocusElementID'] = $this->getFocusElementID();
 		}
 		$options['ValidationGroup'] = $this->getValidationGroup();
+		$options['ControlCssClass'] = $this->getControlCssClass();
 		if ($control) {
 			$options['ControlToValidate'] = $control->getClientID();
+			$options['ControlType'] = $this->getClientControlClass($control);
 		}
-		$options['ControlCssClass'] = $this->getControlCssClass();
-
-		$options['ControlType'] = $this->getClientControlClass($control);
 		$options['Enabled'] = $this->getEnabled(true);
 		if ($this->getEncode()) {
 			$options['Encode'] = true;
@@ -258,26 +257,27 @@ abstract class TBaseValidator extends TLabel implements IValidator
 
 	/**
 	 * Renders the javascript code to the end script.
+	 * It registers the validator script, the form's validation manager once, and
+	 * this validator, when {@see getEnableClientScript EnableClientScript} is true.
 	 * If you override this method, be sure to call the parent implementation
 	 * so that the event handlers can be invoked.
 	 * @param \Prado\Web\UI\THtmlWriter $writer the renderer
 	 */
 	public function renderClientControlScript($writer)
 	{
-		$scripts = $this->getPage()->getClientScript();
-		if ($this->getEnableClientScript()) {
-			$scripts->registerPradoScript('validator');
+		if (!$this->getEnableClientScript()) {
+			return;
 		}
+		$scripts = $this->getPage()->getClientScript();
+		$scripts->registerPradoScript('validator');
 		$formID = $this->getPage()->getForm()->getClientID();
 		$scriptKey = "TBaseValidator:$formID";
-		if ($this->getEnableClientScript() && !$scripts->isEndScriptRegistered($scriptKey)) {
+		if (!$scripts->isEndScriptRegistered($scriptKey)) {
 			$manager['FormID'] = $formID;
 			$options = TJavaScript::encode($manager);
 			$scripts->registerEndScript($scriptKey, "new Prado.ValidationManager({$options});");
 		}
-		if ($this->getEnableClientScript()) {
-			$this->registerClientScriptValidator();
-		}
+		$this->registerClientScriptValidator();
 	}
 
 	/**
@@ -446,7 +446,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 
 	/**
 	 * Gets the ID of the HTML element that will receive focus if validation fails and {@see getFocusOnError FocusOnError} is true.
-	 * Defaults to the client ID of the {@see getControlToValidate ControlToValidate}.
+	 * Defaults to the client ID of the {@see getControlToValidate ControlToValidate}, or an empty string when the validator has no target.
 	 * @return string the ID of the HTML element to receive focus
 	 */
 	public function getFocusElementID()
@@ -458,7 +458,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 			 */
 			if ($target instanceof TCheckBoxList && $target->getItemCount() > 0) {
 				$id = $target->getClientID() . '_c0';
-			} else {
+			} elseif ($target !== null) {
 				$id = $target->getClientID();
 			}
 		}
@@ -612,7 +612,9 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 * This event is raised right before the validator starts to perform validation.
 	 * You may use this event to change the behavior of validation.
 	 * For example, you may disable the validator if certain condition is satisfied.
-	 * Note, the event will NOT be raised if the validator is invisible.
+	 * The event is raised before the visibility and enabled checks, so it is raised
+	 * for an invisible or disabled validator, and a handler that disables the validator
+	 * skips the validation.
 	 */
 	public function onValidate()
 	{

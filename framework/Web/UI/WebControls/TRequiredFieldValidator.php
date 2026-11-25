@@ -21,6 +21,7 @@ use Prado\TPropertyValue;
  *
  * Validation will also succeed if input is of TListControl type and the number
  * of selected values different from the initial value is greater than zero.
+ * A selected value differs unless it is exactly the initial value, so `01` differs from `1`.
  *
  * If the input is of TListControl type and has a {@see \Prado\Web\UI\WebControls\TListControl::setPromptValue PromptValue}
  * set, it will be automatically considered as the validator's {@see setInitialValue InitialValue}.
@@ -102,7 +103,7 @@ class TRequiredFieldValidator extends TBaseValidator
 		$initial = trim($this->getInitialValue());
 		$count = 0;
 		foreach ($control->getItems() as $item) {
-			if ($item->getSelected() && $item->getValue() != $initial) {
+			if ($item->getSelected() && $item->getValue() !== $initial) {
 				$count++;
 			}
 		}

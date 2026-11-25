@@ -655,4 +655,16 @@ class TFileValidatorTest extends TestCase
 		$this->assertEquals('Invalid: {files}', $options['ErrorMessage']);
 		$this->assertEquals('Invalid: bad.gif', $validator->getErrorMessage());
 	}
+
+	public function testAnyMimeTypeMatchesEveryType()
+	{
+		foreach (['*', '*/*'] as $pattern) {
+			[$page, $upload] = $this->createPageWithUpload();
+			$validator = $this->createValidator($page, $upload);
+			$validator->setAllowedFileTypes($pattern);
+			$this->setFiles($upload, [$this->makeFile('a.bin', 10, 'application/octet-stream')]);
+
+			$this->assertTrue($this->invokeEvaluateIsValid($validator), $pattern);
+		}
+	}
 }
