@@ -39,6 +39,7 @@ BUG: Issue #1497 - `TCustomValidator` without a `ControlToValidate` renders its 
 BUG: Issue #1497 - `TListControlValidator` server validation throws `TConfigurationException` for a target that is not a `TListControl`, as its client options do; it threw an `Error`. (belisoful)
 BUG: Issue #1497 - `TRangeValidator` with the `Date` type rejects a value that is not a date and ignores a bound that is not a date, as the client does; a value that is not a date passed with only a `MaxValue`. (belisoful)
 BUG: Issue #1497 - `TRequiredFieldValidator` compares a selected list value with `InitialValue` exactly, as the client does; `01` matched `1`. (belisoful)
+ENH: Issue #1497 - `TEmailAddressValidator` looks up the MX record of the domain after the last `@` through `hasMxRecord()`, which a subclass overrides. (belisoful)
 BUG: Issue #1497 - `TLogRoute::setLevels()` throws `TConfigurationException` for an unknown level name, as for an unknown level bit; it ignored the name, so a misspelled level in a configuration dropped that level. (belisoful)
 BUG: Issue #1497 - `TBehaviorParameterLoader` attaches the behaviors for `AttachTo="module:<id>"` at `onInitComplete`; its handler named a missing method, so `onInitComplete` threw `TInvalidDataValueException`. (belisoful)
 BUG: Issue #1497 - `TBehaviorParameterLoader` attaches page and module behaviors with its `Priority`; they took the default priority. (belisoful)
