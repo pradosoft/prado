@@ -70,4 +70,34 @@ class TTabPanelTest extends TestCase
 		$panel->setCssUrl('default');
 		$this->assertSame('default', $panel->getCssUrl());
 	}
+
+	public function testLoadPostDataIgnoresAnIndexOutsideTheViews()
+	{
+		$panel = $this->createPanel();
+		$key = $panel->getClientID() . '_1';
+		$this->assertFalse($panel->loadPostData($key, new TMap([$key => '3'])));
+		$this->assertFalse($panel->loadPostData($key, new TMap([$key => '-1'])));
+		$this->assertFalse($panel->loadPostData($key, new TMap([$key => 'x'])));
+		$this->assertSame(0, $panel->getActiveViewIndex());
+		$this->assertFalse($panel->getDataChanged());
+	}
+
+	public function testRenderWithoutViews()
+	{
+		$panel = $this->createPanel([]);
+		$panel->setCssUrl('');
+		$panel->onPreRender(new TEventParameter());
+		$this->assertSame('<div id="tp" class="tab-panel"></div>', $this->render($panel));
+		$this->assertSame(['tp_1' => 0], $this->clientScript($panel)->hiddenFields);
+	}
+
+	public function testRenderWithoutAnActiveView()
+	{
+		$panel = $this->createPanel();
+		$panel->setCssUrl('');
+		$panel->setActiveViewIndex(-1);
+		$panel->onPreRender(new TEventParameter());
+		$this->render($panel);
+		$this->assertSame(['tp_1' => 0], $this->clientScript($panel)->hiddenFields);
+	}
 }

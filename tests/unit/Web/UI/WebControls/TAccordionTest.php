@@ -70,4 +70,34 @@ class TAccordionTest extends TestCase
 		$accordion->setCssUrl('default');
 		$this->assertSame('default', $accordion->getCssUrl());
 	}
+
+	public function testLoadPostDataIgnoresAnIndexOutsideTheViews()
+	{
+		$accordion = $this->createAccordion();
+		$key = $accordion->getClientID() . '_1';
+		$this->assertFalse($accordion->loadPostData($key, new TMap([$key => '3'])));
+		$this->assertFalse($accordion->loadPostData($key, new TMap([$key => '-1'])));
+		$this->assertFalse($accordion->loadPostData($key, new TMap([$key => 'x'])));
+		$this->assertSame(0, $accordion->getActiveViewIndex());
+		$this->assertFalse($accordion->getDataChanged());
+	}
+
+	public function testRenderWithoutViews()
+	{
+		$accordion = $this->createAccordion([]);
+		$accordion->setCssUrl('');
+		$accordion->onPreRender(new TEventParameter());
+		$this->assertSame('<div id="acc" class="accordion"></div>', $this->render($accordion));
+		$this->assertSame(['acc_1' => 0], $this->clientScript($accordion)->hiddenFields);
+	}
+
+	public function testRenderWithoutAnActiveView()
+	{
+		$accordion = $this->createAccordion();
+		$accordion->setCssUrl('');
+		$accordion->setActiveViewIndex(-1);
+		$accordion->onPreRender(new TEventParameter());
+		$this->render($accordion);
+		$this->assertSame(['acc_1' => 0], $this->clientScript($accordion)->hiddenFields);
+	}
 }
