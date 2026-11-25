@@ -500,7 +500,7 @@ repeateritemcollection_item_invalid		= TRepeaterItemCollection can only accept o
 datalist_template_required				= TDataList.{0} requires a template instance implementing ITemplate interface.
 datalist_datakeyfield_required				= TDataList.DataKeyField is required to read SelectedDataKey.
 datalist_itemtype_unknown					= TDataList item type ''{0}'' is unknown.
-datalistitemcollection_datalistitem_required = TDataListItemCollection can only accept TDataListItem objects.
+datalistitemcollection_datalistitem_required = TDataListItemCollection can only accept objects that are instance of TControl or its descendant class.
 
 datagrid_template_required				= TDataGrid.{0} requires a template instance implementing ITemplate interface.
 templatecolumn_template_required		= TTemplateColumn.{0} requires a template instance implementing ITemplate interface.

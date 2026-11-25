@@ -494,6 +494,16 @@ class TDataGridTest extends TestCase
 		$this->assertNull($grid->getEditItem());
 	}
 
+	public function testEditItemIndexLeavingTheSelectedItemRestoresItsSelection()
+	{
+		$grid = $this->bind($this->createGrid(), $this->rows(3));
+		$grid->setSelectedItemIndex(1);
+		$grid->setEditItemIndex(1);
+		$this->assertSame(TListItemType::EditItem, $grid->getItems()->itemAt(1)->getItemType());
+		$grid->setEditItemIndex(-1);
+		$this->assertSame([TListItemType::Item, TListItemType::SelectedItem, TListItemType::Item], $this->itemTypes($grid));
+	}
+
 	// ================================================================================
 	// Data binding
 	// ================================================================================
@@ -2100,5 +2110,27 @@ class TDataGridTest extends TestCase
 		$this->attachToPage($grid);
 		$output = $this->render($grid);
 		$this->assertLessThan(strpos($output, '<nav'), strpos($output, '</div>'));
+	}
+
+	public function testApplySortStateWithoutAHeaderDoesNothing()
+	{
+		$grid = $this->createGrid();
+		$grid->setSortExpression('name');
+		PradoUnit::invoke($grid, 'applySortState');
+		$this->assertNull($grid->getHeader());
+	}
+
+	public function testApplySortStateStopsAtTheLastHeaderCell()
+	{
+		$grid = $this->createGrid(['name', 'city']);
+		$grid->getColumns()->itemAt(1)->setSortExpression('city');
+		$grid->setAllowSorting(true);
+		$this->bind($grid, $this->rows(1));
+		$grid->setSortExpression('city');
+		$cells = $grid->getHeader()->getCells();
+		$cells->removeAt(1);
+		PradoUnit::invoke($grid, 'applySortState');
+		$this->assertSame(1, $cells->getCount());
+		$this->assertFalse($cells->itemAt(0)->getHasAria());
 	}
 }

@@ -744,7 +744,8 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 
 	/**
 	 * Edits an item by its index in {@see getItems Items}.
-	 * Previously editting item will change to normal item state.
+	 * The previous edit item returns to the selected item state when it is the
+	 * {@see getSelectedItemIndex SelectedItemIndex}, otherwise to the normal item state.
 	 * If the index is less than 0, any existing edit item will be cleared up.
 	 * @param int $value the edit item index
 	 */
@@ -758,10 +759,12 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 			$items = $this->getItems();
 			$itemCount = $items->getCount();
 			if ($current >= 0 && $current < $itemCount) {
-				$items->itemAt($current)->setItemType($current % 2 ? TListItemType::AlternatingItem : TListItemType::Item);
+				if (($item = $items->itemAt($current)) instanceof IItemDataRenderer) {
+					$item->setItemType($current === $this->getSelectedItemIndex() ? TListItemType::SelectedItem : ($current % 2 ? TListItemType::AlternatingItem : TListItemType::Item));
+				}
 			}
-			if ($value >= 0 && $value < $itemCount) {
-				$items->itemAt($value)->setItemType(TListItemType::EditItem);
+			if ($value >= 0 && $value < $itemCount && ($item = $items->itemAt($value)) instanceof IItemDataRenderer) {
+				$item->setItemType(TListItemType::EditItem);
 			}
 		}
 	}

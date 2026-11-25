@@ -451,10 +451,11 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	}
 
 	/**
-	 * Performs databinding to populate data items from data source.
-	 * This method is invoked by {@see dataBind()}.
-	 * You may override this function to provide your own way of data population.
-	 * @param \Traversable $param the bound data
+	 * Builds the pager for the {@see getControlToPaginate ControlToPaginate} control.
+	 * The pager takes the page count and current page index of the control when the
+	 * control allows paging, and has no pages otherwise.
+	 * @param \Prado\TEventParameter $param event parameter
+	 * @throws TConfigurationException if the control is not found or is not a TDataBoundControl
 	 */
 	public function onPreRender($param)
 	{
