@@ -1876,8 +1876,10 @@ class TDataListTest extends TestCase
 	{
 		$items = new TDataListItemCollection();
 		$items->add($item = new TDataListItem());
-		$this->assertSame($item, $items->itemAt(0));
+		$items->add($control = new TDataListTestPlainRenderer());
+		$this->assertSame($control, $items->itemAt(1), 'any control');
 		$this->expectException(TInvalidDataTypeException::class);
+		$this->expectExceptionMessage('TControl');
 		$items->add('item');
 	}
 
