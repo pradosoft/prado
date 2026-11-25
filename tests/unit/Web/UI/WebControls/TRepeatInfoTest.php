@@ -416,4 +416,29 @@ class TRepeatInfoTest extends TestCase
 			$this->render($this->createInfo(TRepeatLayout::Flow, TRepeatDirection::Vertical, 2), $this->createItemsUser(3, false, false, true))
 		);
 	}
+
+	public function testEveryLayoutRendersEachItemAndSeparatorOnce()
+	{
+		foreach ([TRepeatLayout::Table, TRepeatLayout::Flow] as $layout) {
+			foreach ([TRepeatDirection::Vertical, TRepeatDirection::Horizontal] as $direction) {
+				for ($columns = 0; $columns <= 6; $columns++) {
+					for ($count = 0; $count <= 12; $count++) {
+						$html = $this->render($this->createInfo($layout, $direction, $columns), $this->createItemsUser($count, false, false, true));
+						preg_match_all('/Item(\d+)/', $html, $items);
+						preg_match_all('/Separator(\d+)/', $html, $separators);
+						$label = "$layout $direction $columns columns $count items";
+						$this->assertSame($count ? range(0, $count - 1) : [], $this->sorted($items[1]), $label);
+						$this->assertSame($count > 1 ? range(0, $count - 2) : [], $this->sorted($separators[1]), $label);
+					}
+				}
+			}
+		}
+	}
+
+	private function sorted(array $numbers): array
+	{
+		$numbers = array_map('intval', $numbers);
+		sort($numbers);
+		return $numbers;
+	}
 }

@@ -371,9 +371,6 @@ class TRepeatInfo extends \Prado\TComponent
 							$index--;
 						}
 					}
-					if ($index >= $itemCount) {
-						continue;
-					}
 					$renderedItems++;
 					if (($style = $user->generateItemStyle(TListItemType::Item, $index)) !== null) {
 						$style->addAttributesToRender($writer);
@@ -427,9 +424,6 @@ class TRepeatInfo extends \Prado\TComponent
 						if ($col - 1 >= $lastColumns) {
 							$index--;
 						}
-					}
-					if ($index >= $itemCount) {
-						continue;
 					}
 					$renderedItems++;
 					$user->renderItem($writer, $this, TListItemType::Item, $index);
