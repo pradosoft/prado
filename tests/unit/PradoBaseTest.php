@@ -2033,9 +2033,11 @@ class PradoBaseTest extends \PHPUnit\Framework\TestCase
 		}
 		$this->assertSame(TCallCollectorTrait::class, $fqn);
 		$this->assertTrue(trait_exists('TPradoBaseTestClassMapTrait', false));
-		$this->assertContains(TCallCollectorTrait::class, class_uses(new class () {
+		// PHP 8.6+ class_uses() reports the alias as written; ReflectionClass resolves it to the trait.
+		$traits = array_map(fn ($name) => (new \ReflectionClass($name))->getName(), class_uses(new class () {
 			use \TPradoBaseTestClassMapTrait;
 		}));
+		$this->assertContains(TCallCollectorTrait::class, $traits);
 	}
 
 	public function testUsing_classMapNameWithoutLoadableClass_returnsNull(): void
