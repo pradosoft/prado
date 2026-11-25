@@ -13,7 +13,7 @@ TAccordionView represents a single view in a TAccordion control. Each view has a
 ## Key Properties/Methods
 
 - `Caption` - Text displayed on the view header
-- `NavigateUrl` - URL for header hyperlink (if set, clicking redirects)
+- `NavigateUrl` - URL for the header hyperlink, attribute-encoded in `href`. A view with a `NavigateUrl` renders a plain link header, without the `role`/`aria-*` disclosure attributes
 - `Text` - Text content displayed on the view (overrides child content)
 - `Active` - Whether this view is currently active
 - `renderHeader()` - Renders the header associated with the view

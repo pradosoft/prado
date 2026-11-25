@@ -14,7 +14,7 @@ TDisplayStyle defines styles for web control display.
 
 - `None` - Not displayed, not in layout
 - `Dynamic` - Displayed, in layout (equivalent to display:'')
-- `Fixed` - Displayed with visibility:shown
+- `Fixed` - Displayed with visibility:visible
 - `Hidden` - Not displayed but in layout
 
 ## See Also

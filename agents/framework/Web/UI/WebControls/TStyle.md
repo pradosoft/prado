@@ -22,6 +22,18 @@ TStyle encapsulates CSS style properties applied to a control. It manages five d
 
 - **`copyFrom`** — source wins. Each source field overwrites the target field; source `_class` and `_customStyle` replace target values when non-null.
 - **`mergeWith`** — target wins. Source fields fill in only what the target lacks; target keeps its own values when already set.
+- Display style: `copyFrom` takes the source's when it differs from the source's `DEFAULT_DISPLAY_STYLE`; `mergeWith` takes the base's when the target's is its default and the base's is not. Both apply it through `setDisplayStyle()` before the fields (@since 4.4.0).
+
+## DisplayStyle
+
+| State | CSS fields written |
+|---|---|
+| `Fixed` | `visibility:visible`; removes `display:none` |
+| `None` | `display:none` |
+| `Dynamic` | removes `display` and `visibility` |
+| `Hidden` | `visibility:hidden`; removes `display:none` |
+
+`Fixed` and `Hidden` keep a `display` value other than `none`, so any state can follow any other (@since 4.4.0).
 
 ## Key Properties/Methods
 

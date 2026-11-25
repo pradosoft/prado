@@ -15,6 +15,8 @@ TWizardStepCollection represents the collection of wizard steps owned by a TWiza
 - `insertAt($index, $item)` - Inserts a TWizardStep and syncs with MultiView
 - `removeAt($index)` - Removes step and syncs with MultiView
 
+Adding a step that belongs to another wizard moves it: the other wizard's collection and MultiView lose it.
+
 ## See Also
 
 - [TWizard](./TWizard.md)

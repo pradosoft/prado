@@ -8,7 +8,7 @@
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-TAccordionViewCollection is a collection of TAccordionView controls for use within a TAccordion. Only TAccordionView objects can be added to this collection.
+TAccordionViewCollection is a collection of TAccordionView controls for use within a TAccordion. Only TAccordionView objects can be added to this collection; any other item throws `TInvalidDataTypeException` (`accordionviewcollection_accordionview_required`).
 
 ## Key Properties/Methods
 

@@ -15,7 +15,9 @@ TWizardNavigationButtonStyle defines the style applied to wizard navigation butt
 - `getImageUrl()` / `setImageUrl(string)` - Image URL for image buttons
 - `getButtonText()` / `setButtonText(string)` - Button caption text
 - `getButtonType()` / `setButtonType(TWizardNavigationButtonType)` - Type of button
-- `apply($button)` - Applies style to a button control
+- `apply($button)` - Applies style to a button control; the button keeps its own text, image URL, and style fields
+- `copyFrom($style)` - The source's set fields overwrite this style's, including `ImageUrl`, `ButtonText`, and `ButtonType`, as in `TStyle`
+- `mergeWith($style)` - This style's set fields win; the base fills only the unset ones, as in `TStyle`
 
 ## See Also
 

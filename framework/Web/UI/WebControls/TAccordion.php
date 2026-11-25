@@ -28,8 +28,9 @@ use Prado\Web\Javascripts\TJavaScript;
  * - {@see setActiveViewIndex ActiveViewIndex} - the zero-based integer index of the view in the view collection.
  * - {@see setActiveViewID ActiveViewID} - the text ID of the visible view.
  * - {@see setActiveView ActiveView} - the visible view instance.
- * If both {@see setActiveViewIndex ActiveViewIndex} and {@see setActiveViewID ActiveViewID}
- * are set, the latter takes precedence.
+ * A non-empty {@see setActiveViewID ActiveViewID} takes precedence over
+ * {@see setActiveViewIndex ActiveViewIndex}. Setting ActiveViewIndex clears ActiveViewID,
+ * so of the two the one set last selects the view.
  *
  * TAccordion uses CSS to specify the appearance of the accordion headers and panel. By default,
  * an embedded CSS file will be published which contains the default CSS for TTabPanel.
@@ -104,6 +105,7 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	}
 
 	/**
+	 * Sets the active view by index and clears {@see setActiveViewID ActiveViewID}.
 	 * @param int $value the zero-based index of the current view in the view collection. -1 if no active view.
 	 * @throws TInvalidDataValueException if the view index is invalid
 	 */
@@ -136,6 +138,7 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 * Returns the currently active view.
 	 * This method will examin the ActiveViewID, ActiveViewIndex and Views collection to
 	 * determine which view is currently active. It will update ActiveViewID and ActiveViewIndex accordingly.
+	 * A control without views has no active view.
 	 * @throws TInvalidDataValueException if the active view ID or index set previously is invalid
 	 * @return TAccordionView the currently active view, null if no active view
 	 */
@@ -152,7 +155,7 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 		} elseif (($index = $this->getActiveViewIndex()) >= 0) {
 			if ($index < $views->getCount()) {
 				$activeView = $views->itemAt($index);
-			} else {
+			} elseif ($views->getCount() > 0) {
 				throw new TInvalidDataValueException('accordion_activeviewindex_invalid', $index);
 			}
 		} else {
@@ -183,7 +186,8 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	}
 
 	/**
-	 * @return string URL for the CSS file including all relevant CSS class definitions. Defaults to ''.
+	 * @return string URL for the CSS file including all relevant CSS class definitions.
+	 *   Defaults to 'default', which publishes the embedded CSS file; '' registers no CSS file.
 	 */
 	public function getCssUrl()
 	{
@@ -195,7 +199,7 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	public function setCssUrl($value)
 	{
-		$this->setViewState('CssUrl', TPropertyValue::ensureString($value), '');
+		$this->setViewState('CssUrl', TPropertyValue::ensureString($value), 'default');
 	}
 
 	/**
@@ -350,13 +354,14 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 * Loads user input data.
 	 * This method is primarly used by framework developers.
 	 * @param string $key the key that can be used to retrieve data from the input data collection
+	 * A posted index that is not the index of a view is ignored.
 	 * @param array $values the input data collection
 	 * @return bool whether the data of the control has been changed
 	 */
 	public function loadPostData($key, $values)
 	{
-		if (($index = $values[$this->getClientID() . '_1']) !== null) {
-			$index = (int) $index;
+		$index = $values[$this->getClientID() . '_1'] ?? null;
+		if (is_numeric($index) && ($index = (int) $index) >= 0 && $index < $this->getViews()->getCount()) {
 			$currentIndex = $this->getActiveViewIndex();
 			if ($currentIndex !== $index) {
 				$this->setActiveViewID(''); // clear up view ID
@@ -450,7 +455,8 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 		$cs->registerEndScript("prado:$id", $code);
 		// ensure an item is always active and visible
 		$index = $this->getActiveViewIndex();
-		if (!$this->getViews()->itemAt($index)->Visible) {
+		$views = $this->getViews();
+		if ($index < 0 || $index >= $views->getCount() || !$views->itemAt($index)->getVisible()) {
 			$index = 0;
 		}
 		$cs->registerHiddenField($id . '_1', $index);

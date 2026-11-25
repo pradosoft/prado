@@ -59,13 +59,18 @@ class TWizardStepCollection extends \Prado\Collections\TList
 
 	/**
 	 * Removes an item at the specified position.
+	 * The step leaves the wizard's multiview unless another multiview took it,
+	 * as when the step moves to another wizard.
 	 * @param int $index the index of the item to be removed.
 	 * @return mixed the removed item.
 	 */
 	public function removeAt($index)
 	{
 		$step = parent::removeAt($index);
-		$this->_wizard->getMultiView()->getViews()->remove($step);
+		$views = $this->_wizard->getMultiView()->getViews();
+		if ($views->contains($step)) {
+			$views->remove($step);
+		}
 		$this->_wizard->removedWizardStep($step);
 		return $step;
 	}

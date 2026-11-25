@@ -629,14 +629,34 @@ class TStyleTest extends TestCase
 		$this->assertFalse($style->hasStyleField('visibility'));
 	}
 
-	public function testDisplayStyleTransitionNoneToFixedLeavesDisplayField()
+	public function testDisplayStyleTransitionNoneToFixedClearsDisplayNone()
 	{
-		// None → Fixed does NOT clear display:none; use Dynamic as an intermediate step
 		$style = new TStyle();
-		$style->setDisplayStyle(TDisplayStyle::None);   // sets display:none
-		$style->setDisplayStyle(TDisplayStyle::Fixed);  // sets visibility:visible; display:none remains
-		$this->assertEquals('none', $style->getStyleField('display'));
+		$style->setDisplayStyle(TDisplayStyle::None);
+		$style->setDisplayStyle(TDisplayStyle::Fixed);
+		$this->assertFalse($style->hasStyleField('display'));
 		$this->assertEquals('visible', $style->getStyleField('visibility'));
+		$this->assertSame('<div style="visibility:visible;"></div>', $this->renderStyle($style));
+	}
+
+	public function testDisplayStyleTransitionNoneToHiddenClearsDisplayNone()
+	{
+		$style = new TStyle();
+		$style->setDisplayStyle(TDisplayStyle::None);
+		$style->setDisplayStyle(TDisplayStyle::Hidden);
+		$this->assertFalse($style->hasStyleField('display'));
+		$this->assertEquals('hidden', $style->getStyleField('visibility'));
+		$this->assertSame('<div style="visibility:hidden;"></div>', $this->renderStyle($style));
+	}
+
+	public function testDisplayStyleFixedAndHiddenKeepOtherDisplayValues()
+	{
+		$style = new TStyle();
+		$style->setStyleField('display', 'flex');
+		$style->setDisplayStyle(TDisplayStyle::Fixed);
+		$this->assertEquals('flex', $style->getStyleField('display'));
+		$style->setDisplayStyle(TDisplayStyle::Hidden);
+		$this->assertEquals('flex', $style->getStyleField('display'));
 	}
 
 	public function testDisplayStyleTransitionNoneToDynamicThenFixed()
@@ -1270,19 +1290,60 @@ class TStyleTest extends TestCase
 		$this->assertEquals('12px', $target->getFont()->getSize());
 	}
 
-	public function testCopyFromDisplayStyleEnumNotCopied()
+	public function testCopyFromCopiesNonDefaultDisplayStyle()
 	{
 		$source = new TStyle();
-		$source->setDisplayStyle(TDisplayStyle::None); // writes display:none to fields
+		$source->setDisplayStyle(TDisplayStyle::None);
 
 		$target = new TStyle();
-		$target->setDisplayStyle(TDisplayStyle::Fixed); // writes visibility:visible
+		$target->setDisplayStyle(TDisplayStyle::Hidden);
 		$target->copyFrom($source);
 
-		// Enum is NOT copied
-		$this->assertEquals(TDisplayStyle::Fixed, $target->getDisplayStyle());
-		// But the field from None IS present (came from source _fields)
+		$this->assertEquals(TDisplayStyle::None, $target->getDisplayStyle());
 		$this->assertEquals('none', $target->getStyleField('display'));
+	}
+
+	public function testCopyFromDisplayStyleClearsTheTargetDisplayNone()
+	{
+		$source = new TStyle();
+		$source->setDisplayStyle(TDisplayStyle::Hidden);
+
+		$target = new TStyle();
+		$target->setDisplayStyle(TDisplayStyle::None);
+		$target->copyFrom($source);
+
+		$this->assertEquals(TDisplayStyle::Hidden, $target->getDisplayStyle());
+		$this->assertFalse($target->hasStyleField('display'));
+		$this->assertEquals('hidden', $target->getStyleField('visibility'));
+	}
+
+	public function testCopyFromDynamicKeepsTheSourceDisplayField()
+	{
+		$source = new TStyle();
+		$source->setDisplayStyle(TDisplayStyle::Dynamic);
+		$source->setStyleField('display', 'flex');
+
+		$target = new TStyle();
+		$target->setDisplayStyle(TDisplayStyle::Hidden);
+		$target->copyFrom($source);
+
+		$this->assertEquals(TDisplayStyle::Dynamic, $target->getDisplayStyle());
+		$this->assertEquals('flex', $target->getStyleField('display'));
+		$this->assertFalse($target->hasStyleField('visibility'));
+	}
+
+	public function testCopyFromDefaultDisplayStyleKeepsTheTargetDisplayStyle()
+	{
+		$source = new TStyle();
+		$source->setWidth('10px');
+
+		$target = new TStyle();
+		$target->setDisplayStyle(TDisplayStyle::None);
+		$target->copyFrom($source);
+
+		$this->assertEquals(TDisplayStyle::None, $target->getDisplayStyle());
+		$this->assertEquals('none', $target->getStyleField('display'));
+		$this->assertEquals('10px', $target->getWidth());
 	}
 
 	public function testCopyFromDisplayStyleFieldsCopied()
@@ -1446,7 +1507,7 @@ class TStyleTest extends TestCase
 		$this->assertEquals('14px', $target->getFont()->getSize());
 	}
 
-	public function testMergeWithDisplayStyleEnumNotCopied()
+	public function testMergeWithDisplayStyleTakenWhenTargetIsAtDefault()
 	{
 		$base = new TStyle();
 		$base->setDisplayStyle(TDisplayStyle::Hidden);
@@ -1455,7 +1516,46 @@ class TStyleTest extends TestCase
 		$target->setDisplayStyle(TDisplayStyle::Fixed);
 		$target->mergeWith($base);
 
+		$this->assertEquals(TDisplayStyle::Hidden, $target->getDisplayStyle());
+		$this->assertEquals('hidden', $target->getStyleField('visibility'));
+	}
+
+	public function testMergeWithDisplayStyleNoneIntoAFreshStyle()
+	{
+		$base = new TStyle();
+		$base->setDisplayStyle(TDisplayStyle::None);
+
+		$target = new TStyle();
+		$target->setWidth('10px');
+		$target->mergeWith($base);
+
+		$this->assertEquals(TDisplayStyle::None, $target->getDisplayStyle());
+		$this->assertSame('<div style="display:none;width:10px;"></div>', $this->renderStyle($target));
+	}
+
+	public function testMergeWithKeepsANonDefaultTargetDisplayStyle()
+	{
+		$base = new TStyle();
+		$base->setDisplayStyle(TDisplayStyle::Hidden);
+
+		$target = new TStyle();
+		$target->setDisplayStyle(TDisplayStyle::Dynamic);
+		$target->mergeWith($base);
+
+		$this->assertEquals(TDisplayStyle::Dynamic, $target->getDisplayStyle());
+		$this->assertEquals('hidden', $target->getStyleField('visibility'), 'base fields still fill unset target fields');
+	}
+
+	public function testMergeWithDefaultBaseDisplayStyleKeepsTheTarget()
+	{
+		$base = new TStyle();
+		$base->setWidth('10px');
+
+		$target = new TStyle();
+		$target->mergeWith($base);
+
 		$this->assertEquals(TDisplayStyle::Fixed, $target->getDisplayStyle());
+		$this->assertFalse($target->hasStyleField('visibility'));
 	}
 
 	public function testMergeWithNonTStyleIgnored()
@@ -2845,31 +2945,39 @@ class TStyleTest extends TestCase
 
 	// ---- constructor with source arg ----
 
-	public function testSubclassConstructorWithSourceArgDoesNotOverwriteDisplayStyle()
+	public function testSubclassConstructorWithSourceArgCopiesNonDefaultDisplayStyle()
 	{
-		// copyFrom (called from __construct) must not copy _displayStyle.
-		// The subclass default set by the constructor must survive.
 		$source = new TStyle();
 		$source->setDisplayStyle(TDisplayStyle::Hidden);
 		$source->setWidth('50px');
 
 		$style = new TStyleNoneDefault($source);
 
-		$this->assertSame(TDisplayStyle::None, $style->getDisplayStyle(),
-			'copyFrom must not overwrite _displayStyle; subclass default must be preserved');
-		$this->assertSame('50px', $style->getWidth(), 'non-display fields must be copied');
+		$this->assertSame(TDisplayStyle::Hidden, $style->getDisplayStyle());
+		$this->assertSame('hidden', $style->getStyleField('visibility'));
+		$this->assertSame('50px', $style->getWidth());
 	}
 
-	public function testSubclassConstructorOrderSetsThenCopies()
+	public function testSubclassConstructorWithSourceAtItsDefaultKeepsTheSubclassDefault()
 	{
-		// Constructor: (1) init _displayStyle = static::DEFAULT_DISPLAY_STYLE
-		//              (2) copyFrom($source) — adds fields but never touches _displayStyle
-		// Result: subclass default wins regardless of source's display state.
+		// The source is at its own default (Fixed), so the subclass default (Dynamic) stays.
 		$source = new TStyle();
-		$source->setDisplayStyle(TDisplayStyle::None);
+		$source->setWidth('50px');
 
 		$style = new TStyleDynamicDefault($source);
 
 		$this->assertSame(TDisplayStyle::Dynamic, $style->getDisplayStyle());
+		$this->assertSame('50px', $style->getWidth());
+	}
+
+	public function testSubclassSourceAtItsDefaultIsNotCopied()
+	{
+		// A TStyleNoneDefault source never set its display style, so it writes no display:none.
+		$target = new TStyle();
+		$target->copyFrom(new TStyleNoneDefault());
+		$this->assertSame(TDisplayStyle::Fixed, $target->getDisplayStyle());
+
+		$target->mergeWith(new TStyleNoneDefault());
+		$this->assertSame(TDisplayStyle::Fixed, $target->getDisplayStyle());
 	}
 }
