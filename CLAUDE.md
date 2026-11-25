@@ -167,7 +167,7 @@ Database tests need MySQL/PostgreSQL initialized from `tests/initdb_mysql.sql` /
 
 - Indentation: **tabs** (not spaces)
 - Line endings: Unix (`\n`)
-- PHP minimum: 8.2 (CI tests 8.2, 8.3, 8.4, 8.5)
+- PHP minimum: 8.2 (CI tests 8.2, 8.3, 8.4, 8.5, 8.6)
 - PSR-12 enforced via php-cs-fixer
 - Use `?` for single nullable types and in doc blocks
 

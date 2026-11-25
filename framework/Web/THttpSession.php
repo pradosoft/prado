@@ -624,6 +624,35 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 		return true;
 	}
 
+	/**
+	 * Session ID creation handler.
+	 * PHP 8.6 and later call it through {@see THttpSessionHandler::create_sid()} when
+	 * {@see setUseCustomStorage UseCustomStorage} is true. The ID is 32 hexadecimal
+	 * characters from a cryptographically secure source, matching PHP's default format.
+	 * Calling `session_create_id()` here recurses into the handler.
+	 * @return string the new session ID
+	 * @since 4.4.0
+	 */
+	public function _createSid()
+	{
+		return bin2hex(random_bytes(16));
+	}
+
+	/**
+	 * Session ID validation handler.
+	 * PHP calls it through {@see THttpSessionHandler::validateId()} under `session.use_strict_mode`
+	 * when {@see setUseCustomStorage UseCustomStorage} is true. An ID is valid when {@see _read()}
+	 * returns non-empty data, matching PHP's behavior for handlers without `validateId()`.
+	 * @param string $id session ID
+	 * @return bool whether a session with the ID exists
+	 * @since 4.4.0
+	 */
+	public function _validateId($id)
+	{
+		$data = $this->_read($id);
+		return is_string($data) && $data !== '';
+	}
+
 	//	----- The following methods enable THttpSession to be TMap-like -----
 
 	/**

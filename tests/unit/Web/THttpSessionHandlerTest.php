@@ -46,6 +46,12 @@ class THttpSessionHandlerTestSession extends THttpSession
 		$this->calls[] = ['gc', $maxLifetime];
 		return $this->gcResult;
 	}
+
+	public function _createSid()
+	{
+		$this->calls[] = ['createSid'];
+		return 'new-sid';
+	}
 }
 
 class THttpSessionHandlerTest extends \PHPUnit\Framework\TestCase
@@ -88,5 +94,35 @@ class THttpSessionHandlerTest extends \PHPUnit\Framework\TestCase
 		$session->gcResult = false;
 		$this->assertFalse($handler->gc(60));
 		$this->assertSame([['gc', 60], ['gc', 60], ['gc', 60]], $session->calls);
+	}
+
+	public function testCreateSidForwardsToTheSession()
+	{
+		$session = new THttpSessionHandlerTestSession();
+		$handler = new THttpSessionHandler($session);
+		$this->assertSame('new-sid', $handler->create_sid());
+		$this->assertSame([['createSid']], $session->calls);
+	}
+
+	public function testDefaultCreateSidIsThirtyTwoHexCharacters()
+	{
+		$handler = new THttpSessionHandler(new THttpSession());
+		$sid = $handler->create_sid();
+		$this->assertMatchesRegularExpression('/^[0-9a-f]{32}$/', $sid);
+		$this->assertNotSame($sid, $handler->create_sid());
+	}
+
+	public function testValidateIdForwardsToTheSession()
+	{
+		$session = new THttpSessionHandlerTestSession();
+		$handler = new THttpSessionHandler($session);
+		$this->assertTrue($handler->validateId('abc'));
+		$this->assertSame([['read', 'abc']], $session->calls);
+	}
+
+	public function testDefaultValidateIdRejectsAnIdWithoutData()
+	{
+		$handler = new THttpSessionHandler(new THttpSession());
+		$this->assertFalse($handler->validateId('abc'));
 	}
 }
