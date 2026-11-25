@@ -564,7 +564,7 @@ class PradoUnit
 		if ($rm === null) {
 			throw new \ReflectionException("Method {$method} not found on {$class}");
 		}
-		return $rm->invoke(is_object($object) ? $object : null, ...$args);
+		return $rm->invoke(is_object($object) && !$rm->isStatic() ? $object : null, ...$args);
 	}
 
 	// =========================================================================

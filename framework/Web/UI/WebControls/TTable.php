@@ -312,9 +312,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	{
 		parent::renderBeginTag($writer);
 		if (($caption = $this->getCaption()) !== '') {
-			if (($align = $this->getCaptionAlign()) !== TTableCaptionAlign::NotSet) {
-				$writer->addStyleAttribute('caption-side', strtolower($align));
-			}
+			$this->addCaptionAlignToRender($writer);
 			$writer->renderBeginTag('caption');
 			$writer->write($this->encodeText($caption));
 			$writer->renderEndTag();
@@ -327,6 +325,33 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 				$writer->writeLine();
 			}
 		}
+	}
+
+	/**
+	 * Adds the caption's alignment style to the writer before the `<caption>` tag.
+	 *
+	 * | CaptionAlign | style |
+	 * |---|---|
+	 * | NotSet | none |
+	 * | Top, Bottom | `caption-side:top` or `caption-side:bottom` |
+	 * | Left, Right | `caption-side:top` and `text-align:left` or `text-align:right` |
+	 *
+	 * CSS has no left or right `caption-side`, so Left and Right align the text of a top caption.
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
+	 * @since 4.4.0
+	 */
+	protected function addCaptionAlignToRender($writer)
+	{
+		$align = $this->getCaptionAlign();
+		if ($align === TTableCaptionAlign::NotSet) {
+			return;
+		}
+		if ($align === TTableCaptionAlign::Left || $align === TTableCaptionAlign::Right) {
+			$writer->addStyleAttribute('caption-side', 'top');
+			$writer->addStyleAttribute('text-align', strtolower($align));
+			return;
+		}
+		$writer->addStyleAttribute('caption-side', strtolower($align));
 	}
 
 	/**

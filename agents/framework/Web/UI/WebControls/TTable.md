@@ -103,7 +103,7 @@ Or with sections:
 
 ## Patterns & Gotchas
 
-- **Section ordering** — if using `TTableSection`, rows must be added in `TableHeader → TableBody → TableFooter` order. The renderer outputs sections in that fixed order regardless of insertion order; mismatched ordering produces invalid HTML.
-- **`Caption` requires `CaptionAlign`** — if `Caption` is set but `CaptionAlign` is `NotSet`, the caption is still rendered without an `align` attribute (valid HTML5).
+- **Section ordering** — rows render in `<thead>`, `<tbody>`, and `<tfoot>` when any row's `TableSection` is not `Body`. Rows must be in `Header → Body → Footer` order; a row out of order throws `TConfigurationException` (`table_tablesection_outoforder`) at render.
+- **`CaptionAlign`** — renders as a `caption-side` style on the `<caption>`; `Left` and `Right` render `caption-side:top` with `text-align`. `NotSet` renders no style.
 - **`TDataGrid` uses TTable internally** — `TDataGrid` is a specialized subclass; use `TTable` directly only for static or manually managed table layouts.
-- **`addParsedObject()`** — accepts both `TTableRow` (direct child) and `TTableSection` (group container). Template parsing routes children automatically.
+- **`addParsedObject()`** — routes a `TTableRow` to `Rows` and a `TTableColumnGroup` to `ColumnGroups`; other content is ignored.

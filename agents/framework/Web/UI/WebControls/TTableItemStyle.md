@@ -16,6 +16,8 @@ TTableItemStyle represents the CSS style specific for HTML table items (td/th). 
 - `getVerticalAlign()` / `setVerticalAlign(TVerticalAlign)` - Vertical alignment
 - `getWrap()` / `setWrap(bool)` - Whether content wraps
 - `addAttributesToRender($writer)` - Renders style attributes
+- `copyFrom($style)` - Source wins for the alignment and `Wrap`, as for the TStyle fields
+- `mergeWith($style)` - Target wins: base values fill only the unset alignment and `Wrap`. TDataGrid and TDataList merge `SelectedItemStyle` or `EditItemStyle` before `ItemStyle`, so the first wins (fixed in 4.4.0; the two were reversed)
 
 ## See Also
 
