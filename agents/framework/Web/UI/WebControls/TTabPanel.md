@@ -21,8 +21,8 @@ Extends `[TWebControl](./TWebControl.md)`, implements `[IPostBackDataHandler](..
 | `ActiveViewIndex` | int | 0 | Zero-based index of the visible tab |
 | `ActiveViewID` | string | '' | ID of the active `TTabView` (takes precedence over index if set) |
 | `ActiveView` | TTabView | — | The active TTabView control |
-| `AutoSwitch` | bool | true | Whether clicking a tab switches the view client-side |
-| `CssUrl` | string | '' | URL to custom CSS stylesheet |
+| `AutoSwitch` | bool | false | Whether hovering a tab caption switches to its view |
+| `CssUrl` | string | `default` | URL of the CSS file; `default` publishes the embedded `tabpanel.css`, `''` registers no CSS file |
 | `CssClass` | string | `tab-panel` | CSS class for outer div |
 | `TabCssClass` | string | `tab-normal` | CSS class for inactive tabs |
 | `ActiveTabCssClass` | string | `tab-active` | CSS class for active tab |
@@ -84,9 +84,10 @@ Override default styles by setting `CssUrl` to a custom stylesheet. Default CSS 
 
 ## Patterns & Gotchas
 
-- **`ActiveViewID` vs `ActiveViewIndex`** — `ActiveViewID` takes precedence. Set `ActiveViewID` to `''` to use index-based selection.
+- **`ActiveViewID` vs `ActiveViewIndex`** — `ActiveViewID` takes precedence. Set `ActiveViewID` to `''` to use index-based selection. `getActiveView()` records the active view's ID, so after it runs a new `ActiveViewIndex` needs `ActiveViewID=''` too.
+- **Without views** — a tab panel without views has no active view and renders an empty `div`. `loadPostData()` ignores a posted index that is not the index of a view.
 - **JavaScript required** — tab switching without a page reload requires the published JS. Ensure assets are published (`TAssetManager`).
-- **`AutoSwitch=false`** — disables client-side tab switching; tab changes cause a postback. Useful when tab content requires server-side re-render.
+- **`AutoSwitch=true`** — the tab under the pointer becomes active without a click. Tabs always switch on the client; the active index posts back in the `<ClientID>_1` hidden field.
 - **Tab headers are rendered as part of the same `<div>`** — not as `<ul>/<li>`. The JS manages visibility of the content panes.
 - **Custom CSS** — the `CssUrl` overrides the default asset CSS. The JS still expects the same class name convention unless you also override the client-side class name.
 

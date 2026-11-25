@@ -15,12 +15,18 @@ TAccordion displays an accordion control where users can click on view headers t
 - `ActiveViewIndex` - Zero-based index of the active view
 - `ActiveViewID` - Text ID of the visible view
 - `ActiveView` - The active view instance
-- `CssUrl` - URL for custom CSS file
+- `CssUrl` - URL for the CSS file. `'default'` (the default) publishes the embedded `accordion.css`; `''` registers no CSS file
 - `HeaderCssClass` / `ActiveHeaderCssClass` - CSS classes for headers
 - `ViewCssClass` - CSS class for view content div
 - `ViewHeight` - Maximum height for views (auto-sizes if not set)
 - `AnimationDuration` - Animation length in seconds (default 1s)
 - `Views` - Collection of TAccordionView controls
+
+## Patterns & Gotchas
+
+- **Active view** — `ActiveViewID` wins over `ActiveViewIndex`; setting `ActiveViewIndex` clears `ActiveViewID`. With an index of -1 the first view whose `Active` is true is the active view. An accordion without views has no active view and renders an empty `div`.
+- **Post data** — the client posts the open view's index in the `<ClientID>_1` hidden field. `loadPostData()` ignores a value that is not the index of a view.
+- **Not a naming container** — the views' client IDs carry no accordion prefix; the header of view `v` has the ID `v_0`.
 
 ## See Also
 

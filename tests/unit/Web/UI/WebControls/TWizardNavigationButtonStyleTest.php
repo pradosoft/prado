@@ -35,6 +35,34 @@ class TWizardNavigationButtonStyleTest extends TestCase
 		return [$style->getImageUrl(), $style->getButtonText(), $style->getButtonType(), $style->getCssClass()];
 	}
 
+	public function testDefaults()
+	{
+		$style = new TWizardNavigationButtonStyle();
+		$this->assertSame('', $style->getImageUrl());
+		$this->assertSame('', $style->getButtonText());
+		$this->assertSame(TWizardNavigationButtonType::Button, $style->getButtonType());
+	}
+
+	public function testSetters()
+	{
+		$style = $this->createStyle('/a.png', 'Go', 'link');
+		$this->assertSame(['/a.png', 'Go', TWizardNavigationButtonType::Link, ''], $this->fields($style));
+		$this->expectException(TInvalidDataValueException::class);
+		$style->setButtonType('Unknown');
+	}
+
+	public function testButtonTypeConstants()
+	{
+		$this->assertSame(['Button', 'Image', 'Link'], array_values((new \ReflectionClass(TWizardNavigationButtonType::class))->getConstants()));
+	}
+
+	public function testReset()
+	{
+		$style = $this->createStyle('/a.png', 'Go', TWizardNavigationButtonType::Image, 'btn');
+		$style->reset();
+		$this->assertSame(['', '', TWizardNavigationButtonType::Button, ''], $this->fields($style));
+	}
+
 	public function testCopyFromOverwritesWithTheSourceFields()
 	{
 		$style = $this->createStyle('/a.png', 'Go', TWizardNavigationButtonType::Image, 'a');
@@ -81,5 +109,58 @@ class TWizardNavigationButtonStyleTest extends TestCase
 		$empty = new TWizardNavigationButtonStyle();
 		$empty->mergeWith(new TWizardNavigationButtonStyle());
 		$this->assertSame(['', '', TWizardNavigationButtonType::Button, ''], $this->fields($empty));
+	}
+
+	public function testCopyAndMergeWithAPlainStyle()
+	{
+		$base = new TStyle();
+		$base->setCssClass('base');
+		$style = $this->createStyle(null, 'Go', null);
+		$style->mergeWith($base);
+		$this->assertSame(['', 'Go', TWizardNavigationButtonType::Button, 'base'], $this->fields($style));
+		$base->setCssClass('other');
+		$style->copyFrom($base);
+		$this->assertSame(['', 'Go', TWizardNavigationButtonType::Button, 'other'], $this->fields($style));
+	}
+
+	public function testApplyToAButton()
+	{
+		$style = $this->createStyle('/a.png', 'Go', null, 'btn');
+		$button = new TButton();
+		$style->apply($button);
+		$this->assertSame('Go', $button->getText());
+		$this->assertSame('btn', $button->getCssClass());
+
+		// the button's own text and class win
+		$button = new TButton();
+		$button->setText('Mine');
+		$button->setCssClass('own');
+		$style->apply($button);
+		$this->assertSame('Mine', $button->getText());
+		$this->assertSame('own', $button->getCssClass());
+	}
+
+	public function testApplyToAnImageButton()
+	{
+		$style = $this->createStyle('/a.png', 'Go', TWizardNavigationButtonType::Image);
+		$button = new TImageButton();
+		$style->apply($button);
+		$this->assertSame('/a.png', $button->getImageUrl());
+
+		$button = new TImageButton();
+		$button->setImageUrl('/own.png');
+		$style->apply($button);
+		$this->assertSame('/own.png', $button->getImageUrl());
+		$this->assertSame('Go', $button->getText());
+
+		// an image button with its own text
+		foreach (['', '/own.png'] as $url) {
+			$button = new TImageButton();
+			$button->setImageUrl($url);
+			$button->setText('Mine');
+			$style->apply($button);
+			$this->assertSame($url === '' ? '/a.png' : $url, $button->getImageUrl());
+			$this->assertSame('Mine', $button->getText());
+		}
 	}
 }

@@ -35,6 +35,89 @@ class TAccordionViewTest extends TestCase
 		return $tw->flush();
 	}
 
+	public function testDefaults()
+	{
+		$view = new TAccordionView();
+		$this->assertSame('div', PradoUnit::invoke($view, 'getTagName'));
+		$this->assertSame('', $view->getCaption());
+		$this->assertSame('', $view->getNavigateUrl());
+		$this->assertSame('', $view->getText());
+		$this->assertFalse($view->getActive());
+	}
+
+	public function testSetters()
+	{
+		$view = new TAccordionView();
+		$view->setCaption('Cap');
+		$this->assertSame('Cap', $view->getCaption());
+		$view->setNavigateUrl('/x');
+		$this->assertSame('/x', $view->getNavigateUrl());
+		$view->setText('Body');
+		$this->assertSame('Body', $view->getText());
+		$view->setActive('true');
+		$this->assertTrue($view->getActive());
+	}
+
+	public function testRenderAnInactiveView()
+	{
+		$view = $this->createView();
+		$this->assertSame('<div id="v" class="accordion-view" role="region" aria-labelledby="v_0" style="display:none;"></div>', $this->render($view));
+	}
+
+	public function testRenderAnActiveView()
+	{
+		$view = $this->createView();
+		$view->setActive(true);
+		$view->getParent()->setViewCssClass('body');
+		$this->assertSame('<div id="v" class="body" role="region" aria-labelledby="v_0"></div>', $this->render($view));
+	}
+
+	public function testRenderWithoutJavaScriptShowsTheView()
+	{
+		$view = $this->createView('v', false);
+		$this->assertSame('<div id="v" class="accordion-view" role="region" aria-labelledby="v_0"></div>', $this->render($view));
+	}
+
+	public function testRenderANavigationView()
+	{
+		$view = $this->createView();
+		$view->setActive(true);
+		$view->setNavigateUrl('/x');
+		$this->assertSame('<div id="v" class="accordion-view"></div>', $this->render($view));
+	}
+
+	public function testRenderAnInactiveNavigationView()
+	{
+		$view = $this->createView();
+		$view->setNavigateUrl('/x');
+		$this->assertSame('<div id="v" class="accordion-view" style="display:none;"></div>', $this->render($view));
+		$view = $this->createView('v', false);
+		$view->setNavigateUrl('/x');
+		$this->assertSame('<div id="v" class="accordion-view"></div>', $this->render($view));
+	}
+
+	public function testRenderContents()
+	{
+		$view = $this->createView();
+		$this->assertSame('', $this->renderContents($view));
+		$literal = new TLiteral();
+		$literal->setText('child');
+		$view->getControls()->add($literal);
+		$this->assertSame('child', $this->renderContents($view));
+		$view->setText('<b>text</b>');
+		$this->assertSame('<b>text</b>', $this->renderContents($view));
+	}
+
+	public function testRenderHeader()
+	{
+		$view = $this->createView();
+		$this->assertSame('<div id="v_0" role="button" aria-expanded="false" aria-controls="v" tabindex="0" class="accordion-header">&nbsp;</div>', $this->renderHeader($view));
+
+		$view->setActive(true);
+		$view->setCaption('Cap');
+		$this->assertSame('<div id="v_0" role="button" aria-expanded="true" aria-controls="v" tabindex="0" class="accordion-header-active">Cap</div>', $this->renderHeader($view));
+	}
+
 	public function testRenderANavigationHeader()
 	{
 		$view = $this->createView();
@@ -44,5 +127,15 @@ class TAccordionViewTest extends TestCase
 		$view->setActive(true);
 		$view->setCaption('');
 		$this->assertSame('<div id="v_0" class="accordion-header-active"><a href="/x?a=1&b=&quot;2&quot;">&nbsp;</a></div>', $this->renderHeader($view));
+	}
+
+	public function testRenderHeaderOfAHiddenViewOrWithoutJavaScript()
+	{
+		$view = $this->createView();
+		$view->setVisible(false);
+		$this->assertSame('', $this->renderHeader($view));
+
+		$view = $this->createView('v', false);
+		$this->assertSame('', $this->renderHeader($view));
 	}
 }
