@@ -24,7 +24,7 @@ TDataList represents a data-bound and updatable list control. Displays items rep
 ## Item Creation
 `createItem()` uses the renderer of the item type, else its template; a type without either falls back: AlternatingItem to Item, SelectedItem to Item (even index) or AlternatingItem (odd), EditItem to SelectedItem. Header and footer are created only when the data has an item. A data item with no renderer and no template is an empty `TDataListItem`; a header, footer, or separator with neither is not created (also [TRepeater](./TRepeater.md)).
 
-`applyItemStyles()` merges ItemStyle into AlternatingItemStyle and SelectedItemStyle into EditItemStyle; each item takes the style of its index: edit, selected, even, odd. A selected or edit item does not take ItemStyle.
+`applyItemStyles()` merges ItemStyle into AlternatingItemStyle and SelectedItemStyle into EditItemStyle. An edit or selected item merges its style, then ItemStyle (even index) or AlternatingItemStyle (odd index), as in [TDataGrid](./TDataGrid.md).
 
 ## See Also
 

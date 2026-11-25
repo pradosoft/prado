@@ -2086,4 +2086,24 @@ class TDataListTest extends TestCase
 		$restored->loadState();
 		$this->assertSame(['Item0', 'AlternatingItem1'], $this->controlTypes($restored));
 	}
+
+	public function testSelectedAndEditItemsInheritTheStyleOfTheirIndex(): void
+	{
+		$list = $this->newBoundList(['a', 'b', 'c', 'd'], [], function ($list) {
+			$list->setSelectedItemIndex(1);
+			$list->setEditItemIndex(2);
+		});
+		$list->getItemStyle()->setForeColor('red');
+		$list->getItemStyle()->setCssClass('item');
+		$list->getAlternatingItemStyle()->setBackColor('gray');
+		$list->getSelectedItemStyle()->setCssClass('sel');
+		$list->callApplyItemStyles();
+		$items = $list->getItems();
+		$this->assertSame('sel', $items->itemAt(1)->getStyle()->getCssClass(), 'the selected style wins');
+		$this->assertSame('gray', $items->itemAt(1)->getStyle()->getBackColor(), 'an odd selected item takes AlternatingItemStyle');
+		$this->assertSame('red', $items->itemAt(1)->getStyle()->getForeColor(), 'through AlternatingItemStyle, ItemStyle');
+		$this->assertSame('sel', $items->itemAt(2)->getStyle()->getCssClass(), 'EditItemStyle inherits SelectedItemStyle');
+		$this->assertSame('red', $items->itemAt(2)->getStyle()->getForeColor(), 'an even edit item takes ItemStyle');
+		$this->assertSame('', $items->itemAt(2)->getStyle()->getBackColor());
+	}
 }
