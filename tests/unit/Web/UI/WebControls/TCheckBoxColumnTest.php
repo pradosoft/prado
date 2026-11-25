@@ -219,4 +219,17 @@ class TCheckBoxColumnTest extends TestCase
 		$this->assertTrue($edit->getEnabled(false));
 		$this->assertTrue($items->itemAt(2)->getCells()->itemAt(0)->CheckBox->getChecked());
 	}
+
+	public function testDataBindColumnWithoutDataFieldIgnoresNonCheckBoxSender()
+	{
+		$column = new TCheckBoxColumn();
+		$item = new TDataGridItem(0, 0, TListItemType::Item);
+		$item->setData(true);
+		$cell = new TTableCell();
+		$item->getCells()->add($cell);
+		$label = new TLabel();
+		$cell->getControls()->add($label);
+		$column->dataBindColumn($label, null);
+		$this->assertSame('', $label->getText());
+	}
 }

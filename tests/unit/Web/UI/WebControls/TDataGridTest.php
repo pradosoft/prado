@@ -2133,4 +2133,140 @@ class TDataGridTest extends TestCase
 		$this->assertSame(1, $cells->getCount());
 		$this->assertFalse($cells->itemAt(0)->getHasAria());
 	}
+
+	// ================================================================================
+	// Path coverage (#1497)
+	// ================================================================================
+
+	public function testNextPrevPagerEveryPagePositionAndText()
+	{
+		foreach ([[1, 0], [3, 0], [3, 1], [3, 2]] as [$pageCount, $pageIndex]) {
+			foreach (['', 'F'] as $first) {
+				foreach (['', 'La'] as $last) {
+					$grid = $this->createGrid();
+					$grid->setViewState('PageCount', $pageCount, 1);
+					$grid->setCurrentPageIndex($pageIndex);
+					$style = $grid->getPagerStyle();
+					$style->setFirstPageText($first);
+					$style->setPrevPageText('P');
+					$style->setNextPageText('N');
+					$style->setLastPageText($last);
+					$pager = new TDataGridPager($grid);
+					PradoUnit::invoke($grid, 'buildNextPrevPager', $pager);
+
+					$expected = [];
+					if ($pageIndex === 0) {
+						if ($first !== '') {
+							$expected[] = 'L:F';
+						}
+						$expected[] = 'L:P';
+					} else {
+						if ($first !== '') {
+							$expected[] = 'B:F|Page|First';
+						}
+						$expected[] = 'B:P|Page|Previous';
+					}
+					if ($pageIndex === $pageCount - 1) {
+						$expected[] = 'L:N';
+						if ($last !== '') {
+							$expected[] = 'L:La';
+						}
+					} else {
+						$expected[] = 'B:N|Page|Next';
+						if ($last !== '') {
+							$expected[] = 'B:La|Page|Last';
+						}
+					}
+					$this->assertSame($expected, $this->pagerSummary($pager), "$pageCount pages, page $pageIndex, first '$first', last '$last'");
+				}
+			}
+		}
+	}
+
+	public function testRenderPlacesThePagersAroundTheTableOrScrollRegion()
+	{
+		foreach (['', TDataGridPagerPosition::Top, TDataGridPagerPosition::Bottom, TDataGridPagerPosition::TopAndBottom] as $position) {
+			foreach ([TDataGridResponsiveMode::None, TDataGridResponsiveMode::Scroll] as $mode) {
+				$grid = $this->createGrid();
+				$grid->setResponsiveMode($mode);
+				if ($position !== '') {
+					$grid->setAllowPaging(true);
+					$grid->setPageSize(1);
+					$grid->getPagerStyle()->setPosition($position);
+				}
+				$this->bind($grid, $this->rows(2));
+				$this->attachToPage($grid);
+				$output = $this->render($grid);
+				$label = "pager '$position', $mode";
+				$table = strpos($output, $mode === TDataGridResponsiveMode::Scroll ? '<div role="region"' : '<table');
+				$this->assertNotFalse($table, $label);
+				$navs = substr_count($output, '<nav');
+				$this->assertSame(['' => 0, 'Top' => 1, 'Bottom' => 1, 'TopAndBottom' => 2][$position], $navs, $label);
+				$hasTop = $position === TDataGridPagerPosition::Top || $position === TDataGridPagerPosition::TopAndBottom;
+				$this->assertSame($hasTop, $navs > 0 && strpos($output, '<nav') < $table, $label);
+			}
+		}
+	}
+
+	public function testScrollRegionWithOtherAriaAttributesIsNamedTable()
+	{
+		$grid = $this->createGrid();
+		$grid->setAttribute('aria-describedby', 'note');
+		$grid->setResponsiveMode(TDataGridResponsiveMode::Scroll);
+		$this->bind($grid, $this->rows(1));
+		$this->attachToPage($grid);
+		$this->assertStringContainsString('<div role="region" aria-label="Table" tabindex="0"', $this->render($grid));
+	}
+
+	public function testScrollRegionCaptionKeepsItsAlignment()
+	{
+		$grid = $this->createGrid();
+		$grid->setCaption('Cities');
+		$grid->setCaptionAlign(TTableCaptionAlign::Bottom);
+		$grid->setResponsiveMode(TDataGridResponsiveMode::Scroll);
+		$this->bind($grid, $this->rows(1));
+		$this->attachToPage($grid);
+		$this->assertStringContainsString('<caption id="Grid_caption" style="caption-side:bottom;">Cities</caption>', $this->render($grid));
+	}
+
+	public function testStickyHeaderWithTableHeadStyleWithoutBackColorUsesCanvas()
+	{
+		$grid = $this->createGrid();
+		$grid->setStickyHeader(true);
+		$grid->getTableHeadStyle()->setCssClass('thead');
+		$this->bind($grid, $this->rows(1));
+		$this->attachToPage($grid);
+		$output = $this->render($grid);
+		$this->assertMatchesRegularExpression('#<thead class="thead" style="[^"]*background-color:Canvas;#', $output);
+	}
+
+	public function testFocusSortControlIgnoresASourceThatIsNoControl()
+	{
+		$grid = $this->createGrid();
+		$this->attachToPage($grid);
+		PradoUnit::invoke($grid, 'focusSortControl', null);
+		$this->assertNull(PradoUnit::invoke($grid, 'getSortFocusID'));
+	}
+
+	public function testInitializeItemWithoutColumnsAddsNoCells()
+	{
+		$grid = new TDataGrid();
+		$item = new TDataGridItem(0, 0, TListItemType::Item);
+		PradoUnit::invoke($grid, 'initializeItem', $item, new TDataGridColumnCollection($grid));
+		$this->assertSame(0, $item->getCells()->getCount());
+	}
+
+	public function testCreateAutoColumnsFromAnEmptyFirstRow()
+	{
+		$grid = new TDataGrid();
+		$columns = PradoUnit::invoke($grid, 'createAutoColumns', new \ArrayIterator([[], ['name' => 'n']]));
+		$this->assertSame(0, $columns->getCount(), 'only the first row names the columns');
+	}
+
+	public function testCreateAutoColumnsFromAnEmptyTraversableFirstRow()
+	{
+		$grid = new TDataGrid();
+		$columns = PradoUnit::invoke($grid, 'createAutoColumns', new \ArrayIterator([new \Prado\Collections\TMap(), ['name' => 'n']]));
+		$this->assertSame(0, $columns->getCount());
+	}
 }
