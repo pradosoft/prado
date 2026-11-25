@@ -19,6 +19,7 @@ TLinkButton creates a hyperlink-style button that posts back to the page. Can be
 - `CausesValidation` - Whether button triggers validation, default true
 - `ValidationGroup` - Validation group to trigger
 - `EnableClientScript` - Whether to render the href and postback javascript, default true
+- Disabled, in a disabled parent, or without client script: no `href`, `aria-disabled="true"`, and `role="link"` unless `Role` is set; `<a>` has no `disabled` attribute (4.4.0)
 - `IsDefaultButton` - Set by a [TPanel](./TPanel.md) to make this the panel's default button
 - `onClick($param)` - Click event
 - `onCommand($param)` - Command event (bubbles)

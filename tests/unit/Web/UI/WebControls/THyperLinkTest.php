@@ -83,4 +83,26 @@ class THyperLinkTest extends TestCase
 		$this->expectException(TInvalidDataValueException::class);
 		(new THyperLink())->setReferrerPolicy('nobody');
 	}
+
+	public function testDisabledLinkIsAnnouncedDisabled()
+	{
+		$link = new THyperLink();
+		$link->setNavigateUrl('/a');
+		$link->setText('A');
+		$link->setEnabled(false);
+		$this->assertSame('<a role="link" aria-disabled="true">A</a>', $this->render($link));
+		$link->setRole('menuitem');
+		$this->assertSame('<a role="menuitem" aria-disabled="true">A</a>', $this->render($link));
+	}
+
+	public function testLinkInADisabledParentIsAnnouncedDisabled()
+	{
+		$parent = new \Prado\Web\UI\WebControls\TPanel();
+		$link = new THyperLink();
+		$link->setNavigateUrl('/a');
+		$link->setText('A');
+		$parent->getControls()->add($link);
+		$parent->setEnabled(false);
+		$this->assertSame('<a role="link" aria-disabled="true">A</a>', $this->render($link));
+	}
 }

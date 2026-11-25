@@ -18,6 +18,7 @@ TBulletedList displays items in a bullet format with configurable bullet styles 
 - `FirstBulletNumber` - Starting index for numbered lists
 - `Target` - Target window for hyperlinks
 - `onClick()` - Event raised when LinkButton item clicked
+- A disabled HyperLink or LinkButton item renders `<a role="link" aria-disabled="true">` without `href`; a disabled Text item renders a plain `<span>`
 - LinkButton item links have the ID `{ClientID}_c{index}` (`getItemClientID()`)
 - `AccessKey` - In the HyperLink and LinkButton modes, rendered on the first enabled item link only (`addAccessKeyToRender()`), not on the list; in Text mode, on the list
 
