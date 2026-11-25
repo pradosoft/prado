@@ -43,8 +43,8 @@ use Revolt\EventLoop\UnsupportedFeatureException;
  * throws without an {@see setErrorHandler() ErrorHandler} leaves {@see run()} as the original
  * exception, unwrapped from Revolt's {@see UncaughtThrowable}.
  *
- * Revolt's `stream_select()` driver dispatches a queued signal without checking that it has a
- * callback, so {@see cancel()} and {@see disable()} of a signal callback drop the queued signals
+ * Revolt's `stream_select()` and `Io\Poll` drivers dispatch a queued signal without checking that it
+ * has a callback, so {@see cancel()} and {@see disable()} of a signal callback drop the queued signals
  * left without one ({@see dropOrphanSignals()}).
  *
  * {@see isRunning()} is true while a {@see run()} of this class is in progress or while the
@@ -75,8 +75,11 @@ class TRevoltEventLoop extends TComponent implements IEventLoop
 	/** @var ?\Closure The reader of a driver's loop fiber, bound to the driver's scope. */
 	private static ?\Closure $_loopFiberReader = null;
 
-	/** @var ?\Closure The remover of a `stream_select()` driver's orphan queued signals, bound to the driver's scope. */
-	private static ?\Closure $_orphanSignalDropper = null;
+	/** Revolt's `Io\Poll` driver (revolt/event-loop 1.1+ on PHP 8.6+), named as a string for older Revolt. */
+	public const IO_POLL_DRIVER = 'Revolt\\EventLoop\\Driver\\IoPollDriver';
+
+	/** @var array<class-string, \Closure> The removers of a driver's orphan queued signals, by driver class, each bound to its driver's scope. */
+	private static array $_orphanSignalDroppers = [];
 
 	/**
 	 * Gives a forked child a driver with no callbacks.  The inherited driver's callbacks are
@@ -375,7 +378,7 @@ class TRevoltEventLoop extends TComponent implements IEventLoop
 	}
 
 	/**
-	 * Drops the queued signals of a `stream_select()` driver that have no callback left.  The
+	 * Drops the queued signals of a `stream_select()` or `Io\Poll` driver that have no callback left.  The
 	 * driver's pcntl handler queues a caught signal, and its next dispatch reads the callbacks of
 	 * each queued signal.  A signal caught by a `pcntl_signal_dispatch()` outside the loop, or
 	 * delivered asynchronously, waits in the queue; when its last callback is then cancelled or
@@ -385,10 +388,15 @@ class TRevoltEventLoop extends TComponent implements IEventLoop
 	protected static function dropOrphanSignals(): void
 	{
 		$driver = EventLoop::getDriver();
-		if (!($driver instanceof StreamSelectDriver) || !property_exists(StreamSelectDriver::class, 'signalQueue') || !property_exists(StreamSelectDriver::class, 'signalCallbacks')) {
+		$class = match (true) {
+			$driver instanceof StreamSelectDriver => StreamSelectDriver::class,
+			is_a($driver, self::IO_POLL_DRIVER) => self::IO_POLL_DRIVER,
+			default => null,
+		};
+		if ($class === null || !property_exists($class, 'signalQueue') || !property_exists($class, 'signalCallbacks')) {
 			return;
 		}
-		self::$_orphanSignalDropper ??= \Closure::bind(static function (StreamSelectDriver $driver): void {
+		self::$_orphanSignalDroppers[$class] ??= \Closure::bind(static function (object $driver): void {
 			$queue = $driver->signalQueue;
 			for ($count = $queue->count(); $count > 0; $count--) {
 				$signal = $queue->dequeue();
@@ -396,8 +404,8 @@ class TRevoltEventLoop extends TComponent implements IEventLoop
 					$queue->enqueue($signal);
 				}
 			}
-		}, null, StreamSelectDriver::class);
-		(self::$_orphanSignalDropper)($driver);
+		}, null, $class);
+		(self::$_orphanSignalDroppers[$class])($driver);
 	}
 
 	/**

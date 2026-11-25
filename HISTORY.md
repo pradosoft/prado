@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: `TRevoltEventLoop` drops orphan queued signals on Revolt's `IoPollDriver` (revolt 1.1 on PHP 8.6) as on its `stream_select()` driver. (belisoful)
 BUG: `TPriorityList` and `TPriorityMap` flatten again when garbage collection runs a destructor that changes the collection mid-flatten; `TWeakCallableCollection::indexOf()` threw `TypeError`. (belisoful)
 ENH: CI tests PHP 8.6; `THttpSessionHandler` implements `create_sid()` and `validateId()` through `THttpSession::_createSid()` and `_validateId()`. (belisoful)
 BUG: Issue #1497 - `TRepeatInfo` in the Vertical direction renders a separator after each item but the last; it left out one separator, so a `TDataList` of two items rendered none. (belisoful)
