@@ -8,7 +8,7 @@
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-Color picker control. Extends `TTextBox`, displaying a color swatch button that opens a popup HSB color picker widget. The selected color is stored as a hex string (e.g., `#ff3300`) in the text box.
+Color picker control. Extends `TTextBox`, displaying a color swatch button that opens a popup HSB color picker widget. The selected color is stored as a hex string (e.g., `#ff3300`) in the text box. The swatch shows `Text` as its background only when `isCssColor()` accepts it (`#hex`, `rgb()`/`hsl()` of numbers, or a color name), so posted text cannot add CSS declarations.
 
 JavaScript: `colorpicker/colorpicker.js` (published via `TAssetManager`).
 
