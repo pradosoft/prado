@@ -2036,4 +2036,14 @@ class TDataListTest extends TestCase
 		$list->setAlternatingItemTemplate(new TTestDataTemplate('A'));
 		$this->assertSame('A', $list->callCreateItem(1, TListItemType::SelectedItem)->getControls()->itemAt(0)->getText(), 'an odd selected item falls back to the alternating template');
 	}
+
+	public function testSelectionAndEditMoveFromAnIndexPastTheItems(): void
+	{
+		$list = $this->newBoundList(['a', 'b']);
+		$list->setSelectedItemIndex(5);
+		$list->setSelectedItemIndex(1);
+		$list->setEditItemIndex(6);
+		$list->setEditItemIndex(0);
+		$this->assertSame(['EditItem0', 'SelectedItem1'], $this->controlTypes($list));
+	}
 }
