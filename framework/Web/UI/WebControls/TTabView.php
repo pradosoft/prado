@@ -12,6 +12,7 @@
 namespace Prado\Web\UI\WebControls;
 
 use Prado\TPropertyValue;
+use Prado\Web\THttpUtility;
 
 /**
  * TTabView class.
@@ -189,7 +190,8 @@ class TTabView extends \Prado\Web\UI\WebControls\TWebControl
 	 * Renders the content in the tab. A navigation tab ({@see setNavigateUrl
 	 * NavigateUrl}) renders a hyperlink; a JS-switching tab renders its caption
 	 * as text, so the `role="tab"` element itself is the only focusable control.
-	 * The caption is HTML-encoded when {@see getEncode Encode} is true.
+	 * The caption is HTML-encoded when {@see getEncode Encode} is true. The URL is
+	 * attribute-encoded.
 	 * @param \Prado\Web\UI\THtmlWriter $writer the HTML writer
 	 */
 	protected function renderTabContent($writer)
@@ -202,6 +204,7 @@ class TTabView extends \Prado\Web\UI\WebControls\TWebControl
 		if (($url = $this->getNavigateUrl()) === '') {
 			$writer->write($caption);
 		} else {
+			$url = THttpUtility::htmlEncode($url);
 			$writer->write("<a href=\"{$url}\">{$caption}</a>");
 		}
 	}
