@@ -244,6 +244,9 @@ Upgrading from v4.3.3
 - Issue #1497 - `TXmlDocument::loadFromString()` with an empty string, and `loadFromFile()` of an empty file, reset
   the document and return false, as malformed XML does. In 4.3 an empty string left the document unchanged. After a
   failed load, `Value` is null, as in a new document; it was the empty string.
+- Issue #1497 - Setting `TTabPanel::ActiveViewIndex` clears `ActiveViewID`, as `TAccordion`'s does. In 4.3 the ID
+  kept precedence, and the panel records the active view's ID when it renders, so an index set on a later postback
+  was ignored. A tag that sets both selects by the one set last; set `ActiveViewID` alone to select by ID.
 
 Upgrading from v4.3.2
 ---------------------

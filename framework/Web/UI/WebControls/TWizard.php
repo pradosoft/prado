@@ -1176,6 +1176,8 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 
 	/**
 	 * Creates wizard step content.
+	 * The first step becomes active when no step is active, so an ActiveStepIndex
+	 * set before the steps exist and the active step of recreated controls are kept.
 	 */
 	protected function createStepContent()
 	{
@@ -1188,7 +1190,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 		$this->_stepContent = new TPanel();
 		$this->_stepContent->getControls()->add($multiView);
 		$this->getControls()->add($this->_stepContent);
-		if ($multiView->getViews()->getCount()) {
+		if ($multiView->getViews()->getCount() && $multiView->getActiveViewIndex() < 0) {
 			$multiView->setActiveViewIndex(0);
 		}
 	}
@@ -1277,7 +1279,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	protected function getPreviousStepIndex($popStack)
 	{
 		$history = $this->getHistory();
-		if ($history->getCount() >= 0) {
+		if ($history->getCount() > 0) {
 			$activeStepIndex = $this->getActiveStepIndex();
 			$previousStepIndex = -1;
 			if ($popStack) {
@@ -1327,7 +1329,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	/**
 	 * Handles bubbled events.
 	 * This method mainly translate certain command events into
-	 * wizard-specific events.
+	 * wizard-specific events. Without an active step only the Cancel command is handled.
 	 * @param mixed $sender sender of the original command event
 	 * @param \Prado\TEventParameter $param event parameter
 	 * @throws TInvalidDataValueException if a navigation command is associated with an invalid parameter
@@ -1341,7 +1343,10 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 				return true;
 			}
 
-			$type = $this->getStepType($this->getActiveStep());
+			if (($activeStep = $this->getActiveStep()) === null) {
+				return false;
+			}
+			$type = $this->getStepType($activeStep);
 			$index = $this->getActiveStepIndex();
 			$navParam = new TWizardNavigationEventParameter($index);
 			if (($sender instanceof \Prado\Web\UI\IButtonControl) && $sender->getCausesValidation() && ($page = $this->getPage()) !== null && !$page->getIsValid()) {
@@ -1387,9 +1392,9 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 				$requestedStep = $param->getCommandParameter();
 				if (!is_numeric($requestedStep)) {
 					$requestedIndex = -1;
-					foreach ($this->getWizardSteps() as $index => $step) {
+					foreach ($this->getWizardSteps() as $stepIndex => $step) {
 						if ($step->getId() === $requestedStep) {
-							$requestedIndex = $index;
+							$requestedIndex = $stepIndex;
 							break;
 						}
 					}

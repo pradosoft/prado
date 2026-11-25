@@ -35,7 +35,7 @@ class TAccordionViewCollection extends \Prado\Web\UI\TControlCollection
 		if ($item instanceof TAccordionView) {
 			parent::insertAt($index, $item);
 		} else {
-			throw new TInvalidDataTypeException('tabviewcollection_tabview_required');
+			throw new TInvalidDataTypeException('accordionviewcollection_accordionview_required');
 		}
 	}
 

@@ -19,7 +19,7 @@ TWizard::CMD_PREVIOUS = 'PreviousStep'
 TWizard::CMD_NEXT     = 'NextStep'
 TWizard::CMD_CANCEL   = 'Cancel'
 TWizard::CMD_COMPLETE = 'Complete'
-TWizard::CMD_MOVETO   = 'MoveTo'   // jump to specific step by index
+TWizard::CMD_MOVETO   = 'MoveTo'   // jump to a step by index or step ID
 
 TWizard::ID_SIDEBAR_BUTTON = 'SideBarButton'
 TWizard::ID_SIDEBAR_LIST   = 'SideBarList'
@@ -39,7 +39,7 @@ TWizardStepType::Complete  // final step; no back navigation
 
 | Property | Type | Description |
 |----------|------|-------------|
-| `ActiveStepIndex` | int | Zero-based index of the current step |
+| `ActiveStepIndex` | int | Zero-based index of the current step; an index set before the steps exist (a template attribute) applies at init |
 | `ActiveStep` | TWizardStep | Current step control |
 | `WizardSteps` | TWizardStepCollection | All step controls |
 | `ShowCancelButton` | bool | Show Cancel button in navigation (default: false) |
@@ -93,7 +93,7 @@ $wizard->removedWizardStep(TWizardStep $step): void
 
 ## History / Back Navigation
 
-The wizard maintains a history stack of visited step indices in viewstate. The Previous button pops from this stack rather than simply decrementing the index, supporting non-linear navigation.
+The wizard keeps a `TStack` of visited step indices in control state; `saveState()` pushes the active index when it differs from the top. The Previous button moves to the step below the active one on the stack and pops both, so navigation can be non-linear. With an empty history there is no previous step, and the Previous button is hidden. A navigation command does not return to a step in the history whose `AllowReturn` is false.
 
 ## TWizardStep
 
@@ -131,8 +131,9 @@ The wizard maintains a history stack of visited step indices in viewstate. The P
 ## Patterns & Gotchas
 
 - **`CancelNavigation`** — always check whether you need `$param->setCancelNavigation(true)` in navigation events when validation fails.
-- **Step validation** — validators inside a step should use a `ValidationGroup` matching the step's Next button. The built-in navigation templates do this automatically with default layouts.
+- **Step validation** — the built-in Next and Complete buttons cause validation; Previous and Cancel do not. When the page is invalid after a validating button, the navigation is cancelled. Give each step's validators and its buttons a `ValidationGroup` to validate one step at a time.
 - **`ActiveStepIndex` vs `ActiveStep`** — use index for serializable state; use `ActiveStep` for the control reference.
 - **Sidebar requires `ShowSideBar=true`** — enabled by default. The sidebar renders a list of step titles with click-through navigation (subject to `AllowReturn`).
 - **Sidebar step indicator** — the default `TWizardSideBarTemplate` sets the `SideBarList` `TDataList` to `TRepeatLayout::OrderedList`, so the steps render as an `<ol>` (a `<table>` before 4.4.0). `applySideBarProperties()` puts `aria-current="step"` on the active step's button. A custom `SideBarTemplate` sets `RepeatLayout="OrderedList"` on its data list for the same structure.
-- **`UseDefaultLayout=false`** — when using fully custom navigation templates, disable this to avoid double-rendering default layout containers.
+- **`UseDefaultLayout=false`** — renders the sidebar, header, step, and navigation panels one after another inside the wizard `div`, without the layout `<table>`.
+- **Recreated controls** — setting a template after init recreates the child controls on the next `ensureChildControls()`; the active step is kept.
