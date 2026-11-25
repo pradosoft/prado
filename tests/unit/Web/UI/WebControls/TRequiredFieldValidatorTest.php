@@ -10,11 +10,14 @@ use Prado\Web\UI\WebControls\TListItem;
 use Prado\Web\UI\WebControls\TRadioButton;
 use Prado\Exceptions\TConfigurationException;
 use PHPUnit\Framework\TestCase;
+use Prado\Test\Unit\Harness\Traits\TFormPageTrait;
 use Prado\Test\Unit\Harness\Traits\TWebControlRenderTrait;
+use Prado\Web\UI\WebControls\TCheckBoxList;
 use Prado\Test\Unit\PradoUnit;
 
 class TRequiredFieldValidatorTest extends TestCase
 {
+	use TFormPageTrait;
 	use TWebControlRenderTrait;
 
 	private function createPageWithControls()
@@ -511,5 +514,113 @@ class TRequiredFieldValidatorTest extends TestCase
 		$this->assertTrue($textbox->getIsValid());
 		[$html] = $this->renderRequest($page, $textbox);
 		$this->assertStringNotContainsString('aria-invalid', $html);
+	}
+
+	public function testValidateListControlComparesValuesExactly()
+	{
+		$page = new \Prado\Web\UI\TPage();
+		$list = new TCheckBoxList();
+		$list->setID('list1');
+		$list->getItems()->add(new TListItem('One', '01'));
+		$list->getItems()->add(new TListItem('Initial', '1'));
+		$page->getControls()->add($list);
+		$validator = $this->createValidator($page, $list);
+		$validator->setInitialValue('1');
+
+		$this->assertFalse($this->invokeEvaluateIsValid($validator), 'No item is selected.');
+		$list->getItems()->itemAt(1)->setSelected(true);
+		$this->assertFalse($this->invokeEvaluateIsValid($validator));
+		$list->getItems()->itemAt(0)->setSelected(true);
+		$this->assertTrue($this->invokeEvaluateIsValid($validator), 'The value 01 is not the initial value 1.');
+	}
+
+	/**
+	 * Builds radio buttons of a group on a page and a validator of the first.
+	 * @param string[] $values the radio button values.
+	 * @return array the validator and the radio buttons.
+	 */
+	private function createRadioGroup(array $values): array
+	{
+		$page = new \Prado\Web\UI\TPage();
+		$radios = [];
+		foreach ($values as $i => $value) {
+			$radio = new TRadioButton();
+			$radio->setID('radio' . $i);
+			$radio->setGroupName('Group');
+			$radio->setValue($value);
+			$page->getControls()->add($radio);
+			$radio->onInit(null);
+			$radios[] = $radio;
+		}
+		$validator = $this->createValidator($page, $radios[0]);
+		return [$validator, $radios];
+	}
+
+	public function testValidateRadioButtonGroup()
+	{
+		[$validator, $radios] = $this->createRadioGroup(['', 'a', 'b']);
+		try {
+			$validator->setInitialValue('a');
+			$this->assertFalse($this->invokeEvaluateIsValid($validator), 'No radio button of the group is checked.');
+			$radios[1]->setChecked(true);
+			$this->assertFalse($this->invokeEvaluateIsValid($validator), 'The checked value is the initial value.');
+			$radios[1]->setChecked(false);
+			$radios[2]->setChecked(true);
+			$this->assertTrue($this->invokeEvaluateIsValid($validator), 'A checked button of the group counts, not only the target.');
+			$radios[2]->setChecked(false);
+			$radios[0]->setChecked(true);
+			$this->assertTrue($this->invokeEvaluateIsValid($validator), 'A checked button without a value is a selection.');
+		} finally {
+			foreach ($radios as $radio) {
+				$radio->onUnload(null);
+			}
+		}
+	}
+
+	public function testClientScriptOptionsOfAListControl()
+	{
+		$list = new TCheckBoxList();
+		$list->setID('list1');
+		$list->getItems()->add(new TListItem('One', '1'));
+		$list->getItems()->add(new TListItem('Two', '2'));
+		$validator = new TRequiredFieldValidator();
+		$validator->setControlToValidate('list1');
+		$validator->setInitialValue('1');
+		$this->createFormPage($list, $validator);
+
+		$options = PradoUnit::invoke($validator, 'getClientScriptOptions');
+		$this->assertSame('1', $options['InitialValue']);
+		$this->assertSame(2, $options['TotalItems']);
+		$this->assertArrayNotHasKey('GroupName', $options);
+	}
+
+	public function testClientScriptOptionsOfARadioButton()
+	{
+		$radio = new TRadioButton();
+		$radio->setID('radio1');
+		$validator = new TRequiredFieldValidator();
+		$validator->setControlToValidate('radio1');
+		$this->createFormPage($radio, $validator);
+
+		$options = PradoUnit::invoke($validator, 'getClientScriptOptions');
+		$this->assertSame('', $options['InitialValue']);
+		$this->assertArrayNotHasKey('GroupName', $options, 'A radio button without a group has no group name.');
+		$this->assertArrayNotHasKey('TotalItems', $options);
+
+		$radio->setGroupName('Group');
+		$this->assertSame('Group', PradoUnit::invoke($validator, 'getClientScriptOptions')['GroupName']);
+	}
+
+	public function testValidateACheckBox()
+	{
+		$page = new \Prado\Web\UI\TPage();
+		$box = new \Prado\Web\UI\WebControls\TCheckBox();
+		$box->setID('box1');
+		$page->getControls()->add($box);
+		$validator = $this->createValidator($page, $box);
+
+		$this->assertFalse($this->invokeEvaluateIsValid($validator), 'An unchecked check box is not filled in.');
+		$box->setChecked(true);
+		$this->assertTrue($this->invokeEvaluateIsValid($validator));
 	}
 }
