@@ -263,4 +263,11 @@ class TWizardTest extends TestCase
 		$this->assertStringContainsString('[b]', $output);
 	}
 
+	public function testMoveToByStepIdCancelledRestoresTheCurrentStep()
+	{
+		$wizard = $this->createWizard();
+		PradoUnit::setProp($wizard, '_cancelNavigation', true);
+		$this->assertTrue($wizard->bubbleEvent($this, $this->command(TWizard::CMD_MOVETO, 'c')));
+		$this->assertSame(0, $wizard->getActiveStepIndex());
+	}
 }

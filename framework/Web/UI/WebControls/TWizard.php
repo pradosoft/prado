@@ -1389,9 +1389,9 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 				$requestedStep = $param->getCommandParameter();
 				if (!is_numeric($requestedStep)) {
 					$requestedIndex = -1;
-					foreach ($this->getWizardSteps() as $index => $step) {
+					foreach ($this->getWizardSteps() as $stepIndex => $step) {
 						if ($step->getId() === $requestedStep) {
-							$requestedIndex = $index;
+							$requestedIndex = $stepIndex;
 							break;
 						}
 					}
