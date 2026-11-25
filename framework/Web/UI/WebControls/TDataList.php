@@ -1204,9 +1204,12 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 
 	/**
 	 * Creates a datalist item instance based on the item type and index.
+	 * The renderer of the item type takes precedence over its template. A data item
+	 * (item, alternating, selected, or edit) with neither is an empty {@see TDataListItem};
+	 * a header, footer, or separator with neither is not created.
 	 * @param int $itemIndex zero-based item index
 	 * @param string|TListItemType $itemType item type
-	 * @return \Prado\Web\UI\TControl created datalist item
+	 * @return ?\Prado\Web\UI\TControl created datalist item, null if the type has no content
 	 */
 	protected function createItem($itemIndex, $itemType)
 	{
@@ -1247,11 +1250,13 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 				$item->setItemIndex($itemIndex);
 				$item->setItemType($itemType);
 			}
-		} elseif ($template !== null) {
+		} elseif ($template !== null || in_array($itemType, [TListItemType::Item, TListItemType::AlternatingItem, TListItemType::SelectedItem, TListItemType::EditItem], true)) {
 			$item = new TDataListItem();
 			$item->setItemIndex($itemIndex);
 			$item->setItemType($itemType);
-			$template->instantiateIn($item);
+			if ($template !== null) {
+				$template->instantiateIn($item);
+			}
 		} else {
 			$item = null;
 		}

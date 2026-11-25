@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TRepeater` and `TDataList` bound to data with no `ItemTemplate` or `ItemRenderer` create an empty item per row; they threw `TInvalidDataTypeException`. (belisoful)
 BUG: Issue #1497 - `TRepeatInfo` in the Vertical direction renders a separator after each item but the last; it left out one separator, so a `TDataList` of two items rendered none. (belisoful)
 BUG: Issue #1497 - `TDataGrid` and `TDataList` return an item that leaves edit mode to the selected state when it is the selected item, and `TDataList::setEditItemIndex()` skips an item renderer that has no item type; the item became a normal item, and a plain renderer threw `TUnknownMethodException`. (belisoful)
 BUG: Issue #1497 - `TStyle::setDisplayStyle()` with `Fixed` or `Hidden` removes the `display:none` that `None` wrote, and `copyFrom()` and `mergeWith()` carry a display style that is not the source's default; a control set to `None` and then `Fixed` stayed hidden. (belisoful)

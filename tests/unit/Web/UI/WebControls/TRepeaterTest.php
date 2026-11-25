@@ -291,8 +291,20 @@ class TRepeaterTest extends TestCase
 	public function testCreateItemWithoutTemplateOrRendererIsNull()
 	{
 		$repeater = new TRepeaterTestRepeater();
-		foreach ([TListItemType::Item, TListItemType::AlternatingItem, TListItemType::Header, TListItemType::Footer, TListItemType::Separator] as $type) {
+		foreach ([TListItemType::Header, TListItemType::Footer, TListItemType::Separator] as $type) {
 			$this->assertNull($repeater->callCreateItem(0, $type), $type);
+		}
+	}
+
+	public function testCreateItemWithoutAnItemTemplateOrRendererIsAnEmptyItem()
+	{
+		$repeater = new TRepeaterTestRepeater();
+		foreach ([TListItemType::Item, TListItemType::AlternatingItem] as $type) {
+			$item = $repeater->callCreateItem(3, $type);
+			$this->assertInstanceOf(TRepeaterItem::class, $item, $type);
+			$this->assertSame(3, $item->getItemIndex());
+			$this->assertSame($type, $item->getItemType());
+			$this->assertSame(0, $item->getControls()->getCount());
 		}
 	}
 
@@ -660,5 +672,23 @@ class TRepeaterTest extends TestCase
 			$repeater->getControls()->add($marker);
 			$this->assertSame($renders, str_contains($this->render($repeater), 'M'), "case $i");
 		}
+	}
+
+	public function testDataBindWithoutAnItemTemplateRendersHeaderAndFooter()
+	{
+		$repeater = new TRepeater();
+		$repeater->setHeaderTemplate(new TTestDataTemplate('H'));
+		$repeater->setFooterTemplate(new TTestDataTemplate('F'));
+		$this->bind($repeater, ['x' => 'a', 'y' => 'b']);
+		$this->assertSame(['Header-1', 'Item0', 'AlternatingItem1', 'Footer-1'], $this->itemTypes($repeater));
+		$this->assertSame('b', $repeater->getItems()->itemAt(1)->getData());
+		$this->assertSame(['x', 'y'], $repeater->getDataKeys()->toArray());
+		$this->assertSame('HF', $this->render($repeater));
+
+		$restored = new TRepeater();
+		$restored->setHeaderTemplate(new TTestDataTemplate('H'));
+		$restored->setViewState('ItemCount', 2, 0);
+		$restored->loadState();
+		$this->assertSame(['Header-1', 'Item0', 'AlternatingItem1'], $this->itemTypes($restored));
 	}
 }
