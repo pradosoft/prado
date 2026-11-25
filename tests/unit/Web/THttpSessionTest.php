@@ -307,6 +307,8 @@ class THttpSessionTest extends \PHPUnit\Framework\TestCase
 	 */
 	public function testSetSessionID()
 	{
+		// PHP 8.6+ defaults use_strict_mode on, which replaces an ID with no stored session.
+		ini_set('session.use_strict_mode', '0');
 		$session = new THttpSession();
 		$session->setSessionID('testsessionid123');
 		$session->open();
@@ -947,6 +949,8 @@ class THttpSessionTest extends \PHPUnit\Framework\TestCase
 	 */
 	public function testSessionRegenerateIdChangesTheID()
 	{
+		// PHP 8.6+ defaults use_strict_mode on, which replaces an ID with no stored session.
+		ini_set('session.use_strict_mode', '0');
 		$session = new THttpSession();
 		$session->setSessionID('regenerateoldid');
 		$session->open();

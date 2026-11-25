@@ -9,6 +9,7 @@ use Prado\Test\Unit\Harness\Caching\TTestArrayCache;
 use Prado\Test\Unit\PradoUnit;
 use Prado\Util\Clock\TMockClock;
 use Prado\IO\TTextWriter;
+use Prado\Web\UI\TControl;
 use Prado\Web\UI\TForm;
 use Prado\Web\UI\THtmlWriter;
 use Prado\Web\UI\TPage;

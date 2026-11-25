@@ -94,6 +94,10 @@ When `UseCustomStorage` is true, the following methods can be overridden:
 - `_write($id, $data)`: Session write handler
 - `_destroy($id)`: Session destroy handler
 - `_gc($maxLifetime)`: Session garbage collection handler
+- `_createSid()` (4.4.0): New session ID; 32 hex characters from `random_bytes()`. `session_create_id()` here recurses into the handler
+- `_validateId($id)` (4.4.0): Strict-mode ID check; true when `_read($id)` returns non-empty data, PHP's fallback for handlers without `validateId()`
+
+PHP 8.6 defaults `session.use_strict_mode` to 1: `setSessionID()` with an ID that has no stored session gets a new ID at `open()`.
 
 ## Cron Garbage Collection
 A session module with an ID registers the cron task `sessiongc` (`'<id>->gc()'`) through `fxGetCronTaskInfos`. Schedule it and set `GCProbability="0"` so requests do not collect. Every session module registers the same task name, and `cron/add` takes the first.
