@@ -46,11 +46,12 @@ use Prado\TPropertyValue;
  *
  * ## DisplayStyle
  *
- * {@see setDisplayStyle} writes CSS directly into `_fields` but does **not**
- * clean up fields set by a previous display state. Transition through
- * {@see TDisplayStyle::Dynamic} to clear both `display` and `visibility` fields
- * before switching to a new visible state. {@see reset} restores all state to
- * the constructor default, including `_displayStyle` → {@see DEFAULT_DISPLAY_STYLE}.
+ * {@see setDisplayStyle} writes the CSS of each display state into `_fields`.
+ * `Fixed` and `Hidden` remove the `display:none` that `None` writes, so any
+ * state can follow any other. {@see copyFrom} and {@see mergeWith} carry a display
+ * style that differs from the source's {@see DEFAULT_DISPLAY_STYLE}. {@see reset}
+ * restores all state to the constructor default, including `_displayStyle` →
+ * {@see DEFAULT_DISPLAY_STYLE}.
  *
  * ## ArrayAccess
  *
@@ -459,14 +460,12 @@ class TStyle extends \Prado\TComponent implements \ArrayAccess
 	/**
 	 * Sets the logical display state and writes the corresponding CSS into `_fields`.
 	 *
-	 * - `TDisplayStyle::Fixed` — sets `visibility:visible`
+	 * - `TDisplayStyle::Fixed` — sets `visibility:visible` and removes `display:none`
 	 * - `TDisplayStyle::None` — sets `display:none`
 	 * - `TDisplayStyle::Dynamic` — clears both `display` and `visibility` fields
-	 * - `TDisplayStyle::Hidden` — sets `visibility:hidden`
+	 * - `TDisplayStyle::Hidden` — sets `visibility:hidden` and removes `display:none`
 	 *
-	 * Note: switching from `None` to `Fixed` leaves `display:none` in `_fields`
-	 * because only `visibility:visible` is written. Pass `Dynamic` first to clear
-	 * both fields before transitioning to a visible state.
+	 * `Fixed` and `Hidden` keep a `display` value other than `none`.
 	 *
 	 * @param string $value {@see TDisplayStyle} constant
 	 */
@@ -483,12 +482,35 @@ class TStyle extends \Prado\TComponent implements \ArrayAccess
 				$this->clearStyleField('visibility');
 				break;
 			case TDisplayStyle::Fixed:
+				$this->clearDisplayNone();
 				$this->setStyleField('visibility', 'visible');
 				break;
 			case TDisplayStyle::Hidden:
+				$this->clearDisplayNone();
 				$this->setStyleField('visibility', 'hidden');
 				break;
 		}
+	}
+
+	/**
+	 * Removes the `display:none` field that {@see TDisplayStyle::None} writes.
+	 * @since 4.4.0
+	 */
+	private function clearDisplayNone(): void
+	{
+		if ($this->getStyleField('display') === 'none') {
+			$this->clearStyleField('display');
+		}
+	}
+
+	/**
+	 * @param TStyle $style the style to check
+	 * @return bool whether the style's display style differs from its {@see DEFAULT_DISPLAY_STYLE}
+	 * @since 4.4.0
+	 */
+	private static function hasChangedDisplayStyle(TStyle $style): bool
+	{
+		return $style->getDisplayStyle() !== $style::DEFAULT_DISPLAY_STYLE;
 	}
 
 	/**
@@ -607,13 +629,18 @@ class TStyle extends \Prado\TComponent implements \ArrayAccess
 	 * - Custom style: replaced by source value when source custom style has been set.
 	 * - Font: if source has a font, it is merged into this font via
 	 *   {@see TFont::copyFrom} (source font properties overwrite target font properties).
-	 * - Display style: **not copied** — only the CSS fields it wrote are.
+	 * - Display style: replaced by the source's when the source's differs from its
+	 *   {@see DEFAULT_DISPLAY_STYLE}. It is set through {@see setDisplayStyle}
+	 *   before the CSS fields are copied.
 	 *
 	 * @param TStyle $style source style; non-TStyle values are silently ignored
 	 */
 	public function copyFrom($style)
 	{
 		if ($style instanceof TStyle) {
+			if (self::hasChangedDisplayStyle($style)) {
+				$this->setDisplayStyle($style->getDisplayStyle());
+			}
 			if ($style->getHasStyleFields()) {
 				$this->_fields = array_merge($this->getStyleFields(), $style->getStyleFields());
 			}
@@ -637,13 +664,18 @@ class TStyle extends \Prado\TComponent implements \ArrayAccess
 	 * - Custom style: taken from base only when this style's custom style has not been set.
 	 * - Font: if base has a font, it is merged into this font via
 	 *   {@see TFont::mergeWith} (this font properties take precedence).
-	 * - Display style: **not copied** — only the CSS fields it wrote are.
+	 * - Display style: taken from base when this style's is its own
+	 *   {@see DEFAULT_DISPLAY_STYLE} and base's differs from base's default. It is set
+	 *   through {@see setDisplayStyle} before the CSS fields are merged.
 	 *
 	 * @param TStyle $style base style to merge from; non-TStyle values are silently ignored
 	 */
 	public function mergeWith($style)
 	{
 		if ($style instanceof TStyle) {
+			if (!self::hasChangedDisplayStyle($this) && self::hasChangedDisplayStyle($style)) {
+				$this->setDisplayStyle($style->getDisplayStyle());
+			}
 			if ($style->getHasStyleFields()) {
 				$this->_fields = array_merge($style->getStyleFields(), $this->getStyleFields());
 			}
