@@ -17,10 +17,10 @@ namespace Prado\Web\UI\WebControls;
  *
  * The following enumerable values are defined:
  * - NotSet: alignment not specified
- * - Top: top aligned
- * - Bottom: bottom aligned
- * - Left: left aligned
- * - Right: right aligned
+ * - Top: the caption is above the table (`caption-side:top`)
+ * - Bottom: the caption is below the table (`caption-side:bottom`)
+ * - Left: the caption is above the table with its text aligned left (`text-align:left`)
+ * - Right: the caption is above the table with its text aligned right (`text-align:right`)
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0.4
