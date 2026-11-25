@@ -10,6 +10,7 @@
 
 namespace Prado\Util\Mutex;
 
+use Prado\Data\TDbDriver;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Prado;
 use Prado\TPropertyValue;
@@ -40,8 +41,10 @@ use Prado\Util\Cron\TCronTaskInfo;
  * With {@see getAutoCreateMutexTable AutoCreateMutexTable} true, the default, the
  * table is created on first use:
  * ```sql
- * CREATE TABLE pradomutex (lockname VARCHAR(191) NOT NULL PRIMARY KEY, locktoken CHAR(32) NOT NULL, expire INTEGER NOT NULL)
+ * CREATE TABLE pradomutex (lockname VARCHAR(191) NOT NULL PRIMARY KEY, locktoken CHAR(32) NOT NULL, expire BIGINT NOT NULL)
  * ```
+ * `expire` is `BIGINT`, so a lease can end after 2038.  On Oracle it is `INTEGER`,
+ * which is `NUMBER(38)` there ({@see getExpireColumnType}).
  * A name with the {@see getKeyPrefix KeyPrefix} longer than 191 characters becomes
  * its SHA-1 hash.
  *
@@ -266,12 +269,27 @@ class TDbTableMutex extends TBaseDbMutex
 			}
 			Prado::trace('Autocreate: ' . $table, static::class);
 			try {
-				$connection->createCommand("CREATE TABLE {$table} (lockname VARCHAR(191) NOT NULL PRIMARY KEY, locktoken CHAR(32) NOT NULL, expire INTEGER NOT NULL)")->execute();
+				$expireType = $this->getExpireColumnType((string) $connection->getDriverName());
+				$connection->createCommand("CREATE TABLE {$table} (lockname VARCHAR(191) NOT NULL PRIMARY KEY, locktoken CHAR(32) NOT NULL, expire {$expireType} NOT NULL)")->execute();
 			} catch (\Exception $createError) {
 				$connection->createCommand("SELECT 1 FROM {$table} WHERE 0=1")->queryScalar();
 			}
 		}
 		$this->_tableChecked = true;
+	}
+
+	/**
+	 * Returns the SQL type of the `expire` column, which holds Unix times after 2038.
+	 * @param string $driver the PDO driver name of the lock connection.
+	 * @return string `INTEGER` on Oracle, where it is `NUMBER(38)` and `BIGINT` does
+	 *   not exist; `BIGINT` on every other driver.
+	 */
+	protected function getExpireColumnType(string $driver): string
+	{
+		if (strtolower($driver) === TDbDriver::DRIVER_OCI) {
+			return 'INTEGER';
+		}
+		return 'BIGINT';
 	}
 
 	/**

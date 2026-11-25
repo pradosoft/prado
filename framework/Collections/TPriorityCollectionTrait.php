@@ -184,21 +184,22 @@ trait TPriorityCollectionTrait
 	/**
 	 * This flattens the priority list into a flat array [0,...,n-1] (with array_merge)
 	 * and a priority map into a single flat map of keys and values (with array_replace).
+	 * Garbage collection during flattening can run a destructor that changes this
+	 * collection and clears `_fd`; flattening repeats until `_fd` holds an array.
 	 */
 	protected function flattenPriorities(): void
 	{
-		if (is_array($this->_fd)) {
-			return;
-		}
-		if (empty($this->_d)) {
-			$this->_fd = [];
-			return;
-		}
-		$this->sortPriorities();
-		if ($this->getPriorityCombineStyle()) {
-			$this->_fd = array_merge(...array_values($this->_d));
-		} else {
-			$this->_fd = array_replace(...array_values($this->_d));
+		while (!is_array($this->_fd)) {
+			if (empty($this->_d)) {
+				$this->_fd = [];
+			} else {
+				$this->sortPriorities();
+				if ($this->getPriorityCombineStyle()) {
+					$this->_fd = array_merge(...array_values($this->_d));
+				} else {
+					$this->_fd = array_replace(...array_values($this->_d));
+				}
+			}
 		}
 	}
 
