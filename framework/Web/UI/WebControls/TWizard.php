@@ -1176,6 +1176,8 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 
 	/**
 	 * Creates wizard step content.
+	 * The first step becomes active when no step is active, so an ActiveStepIndex
+	 * set before the steps exist and the active step of recreated controls are kept.
 	 */
 	protected function createStepContent()
 	{
@@ -1188,7 +1190,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 		$this->_stepContent = new TPanel();
 		$this->_stepContent->getControls()->add($multiView);
 		$this->getControls()->add($this->_stepContent);
-		if ($multiView->getViews()->getCount()) {
+		if ($multiView->getViews()->getCount() && $multiView->getActiveViewIndex() < 0) {
 			$multiView->setActiveViewIndex(0);
 		}
 	}
