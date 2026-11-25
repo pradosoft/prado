@@ -11,6 +11,7 @@
 
 namespace Prado\Web\UI\WebControls;
 
+use Prado\Exceptions\TInvalidDataValueException;
 use Prado\TPropertyValue;
 
 /**
@@ -140,11 +141,15 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 * An evenly distributed stop marks will be generated according to
 	 * {@see getMinValue MinValue}, {@see getMaxValue MaxValue} and StepSize.
 	 * To use uneven stop marks, set {@see setValues Values}.
-	 * @param float $value Step size.
+	 * @param float $value Step size, greater than 0.
+	 * @throws TInvalidDataValueException if the step size is 0 or less.
 	 */
 	public function setStepSize($value)
 	{
-		$this->setViewState('StepSize', TPropertyValue::ensureFloat($value), 1.0);
+		if (($value = TPropertyValue::ensureFloat($value)) <= 0) {
+			throw new TInvalidDataValueException('slider_stepsize_invalid', $value);
+		}
+		$this->setViewState('StepSize', $value, 1.0);
 	}
 
 	/**

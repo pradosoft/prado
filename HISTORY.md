@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TSlider::setStepSize()` throws `TInvalidDataValueException` for a step of 0 or less; a step of 0 threw `DivisionByZeroError` when the slider rendered. (belisoful)
 BUG: Issue #1497 - `TDatePicker::hasDayPattern()` is false for a format without a day; it compared with `null` and was always true. A month-year DropDownList picker keeps its popup calendar. (belisoful)
 BUG: Issue #1497 - `TTextBox`, `THiddenField`, `TCheckBox`, and `TSlider` treat a posted value that is not a scalar, such as an array from a `name[]` field, as no change; `TTextBox` with `AutoTrim` threw a `TypeError`. (belisoful)
 BUG: Issue #1497 - `THtmlArea` and `THtmlArea5` allow no event handler attributes in their default `extended_valid_elements`; `onclick` on `a` and `onmouseover`/`onmouseout` on `img` let editor content carry script. See UPGRADE.md. (belisoful)

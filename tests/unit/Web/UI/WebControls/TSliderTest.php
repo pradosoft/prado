@@ -293,4 +293,24 @@ class TSliderTest extends TestCase
 		$this->assertFalse($slider->loadPostData('sl', ['sl_1' => ['9']]));
 		$this->assertSame(7.0, $slider->getValue());
 	}
+
+	public static function badStepProvider(): array
+	{
+		return ['zero' => ['0'], 'negative' => [-1]];
+	}
+
+	/**
+	 * @dataProvider badStepProvider
+	 */
+	public function testStepSizeMustBePositive(mixed $step)
+	{
+		$slider = new TSlider();
+		try {
+			$slider->setStepSize($step);
+			$this->fail('Expected TInvalidDataValueException');
+		} catch (\Prado\Exceptions\TInvalidDataValueException $e) {
+			$this->assertSame('slider_stepsize_invalid', $e->getErrorCode());
+		}
+		$this->assertSame(1.0, $slider->getStepSize());
+	}
 }
