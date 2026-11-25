@@ -11,6 +11,17 @@ use Prado\Web\UI\TControl;
 use Prado\Web\UI\WebControls\TDataList;
 use Prado\Web\UI\WebControls\TDataListCommandEventParameter;
 use Prado\Web\UI\WebControls\TDataListItem;
+use Prado\Web\UI\WebControls\TDataListItemCollection;
+use Prado\Web\UI\WebControls\TDataListItemEventParameter;
+use Prado\Web\UI\WebControls\TDataListItemRenderer;
+use Prado\Web\UI\WebControls\TButton;
+use Prado\Web\UI\WebControls\THorizontalAlign;
+use Prado\Web\UI\WebControls\TTableGridLines;
+use Prado\Web\UI\WebControls\TTableStyle;
+use Prado\Collections\TList;
+use Prado\TEventParameter;
+use Prado\Test\Unit\Harness\Web\UI\TTestDataTemplate;
+use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Web\UI\WebControls\TListItemType;
 use Prado\Web\UI\WebControls\TRepeatDirection;
 use Prado\Web\UI\WebControls\TRepeatInfo;
@@ -80,6 +91,66 @@ class StubTemplate implements ITemplate
 	public function getIncludedFiles(): array
 	{
 		return [];
+	}
+}
+
+/**
+ * Data list item renderer without a template file.
+ */
+class TDataListTestRenderer extends TDataListItemRenderer
+{
+	public function getTemplate()
+	{
+		return null;
+	}
+
+	public function renderContents($writer)
+	{
+		$data = $this->getData();
+		$writer->write('R' . $this->getItemType() . $this->getItemIndex() . ($data === null ? '' : '=' . $data));
+	}
+}
+
+/**
+ * Data list item renderer that renders no tag.
+ */
+class TDataListTestNoTagRenderer extends TDataListTestRenderer
+{
+	protected function getTagName()
+	{
+		return '';
+	}
+}
+
+/**
+ * A plain control as an item renderer.
+ */
+class TDataListTestPlainRenderer extends TControl
+{
+	public function render($writer)
+	{
+		$writer->write('P');
+	}
+}
+
+/**
+ * Exposes the protected TDataList members.
+ */
+class TDataListTestList extends TDataList
+{
+	public function callCreateItem($index, $type)
+	{
+		return $this->createItem($index, $type);
+	}
+
+	public function callApplyItemStyles()
+	{
+		$this->applyItemStyles();
+	}
+
+	public function callGetDataFieldValue($data, $field)
+	{
+		return $this->getDataFieldValue($data, $field);
 	}
 }
 
@@ -1162,5 +1233,665 @@ class TDataListTest extends TestCase
 
 		$this->assertSame($tpl, $list->getItemTemplate());
 		$this->assertSame('MyNamespace.MyItemRenderer', $list->getItemRenderer());
+	}
+
+	// ========================================================================
+	// Data binding (#1497)
+	// ========================================================================
+
+	private function newBoundList(array $data, array $templates = [], ?callable $setup = null): TDataListTestList
+	{
+		$list = new TDataListTestList();
+		$list->setItemTemplate(new TTestDataTemplate('I'));
+		foreach ($templates as $setter => $label) {
+			$list->$setter(new TTestDataTemplate($label));
+		}
+		if ($setup) {
+			$setup($list);
+		}
+		$list->setDataSource($data);
+		$list->dataBind();
+		return $list;
+	}
+
+	private function controlTypes(TControl $control): array
+	{
+		$types = [];
+		foreach ($control->getControls() as $child) {
+			$types[] = method_exists($child, 'getItemType') ? $child->getItemType() . $child->getItemIndex() : $child::class;
+		}
+		return $types;
+	}
+
+	private function renderRaw(TDataList $list): string
+	{
+		$list->setRepeatLayout(TRepeatLayout::Raw);
+		$writer = $this->writer();
+		$list->render($writer);
+		return $writer->flush();
+	}
+
+	public static function createItemTemplateProvider(): array
+	{
+		return [
+			[TListItemType::Item, 'setItemTemplate'],
+			[TListItemType::AlternatingItem, 'setAlternatingItemTemplate'],
+			[TListItemType::SelectedItem, 'setSelectedItemTemplate'],
+			[TListItemType::EditItem, 'setEditItemTemplate'],
+			[TListItemType::Header, 'setHeaderTemplate'],
+			[TListItemType::Footer, 'setFooterTemplate'],
+			[TListItemType::Separator, 'setSeparatorTemplate'],
+		];
+	}
+
+	/**
+	 * @dataProvider createItemTemplateProvider
+	 */
+	public function testCreateItemInstantiatesTheTemplateOfTheType(string $type, string $setter): void
+	{
+		$list = new TDataListTestList();
+		$list->$setter($template = new TTestDataTemplate($type));
+		$item = $list->callCreateItem(4, $type);
+		$this->assertInstanceOf(TDataListItem::class, $item);
+		$this->assertSame(4, $item->getItemIndex());
+		$this->assertSame($type, $item->getItemType());
+		$this->assertSame(1, $template->getInstantiations());
+	}
+
+	public static function createItemRendererProvider(): array
+	{
+		return [
+			[TListItemType::Item, 'setItemRenderer'],
+			[TListItemType::AlternatingItem, 'setAlternatingItemRenderer'],
+			[TListItemType::SelectedItem, 'setSelectedItemRenderer'],
+			[TListItemType::EditItem, 'setEditItemRenderer'],
+			[TListItemType::Header, 'setHeaderRenderer'],
+			[TListItemType::Footer, 'setFooterRenderer'],
+			[TListItemType::Separator, 'setSeparatorRenderer'],
+		];
+	}
+
+	/**
+	 * @dataProvider createItemRendererProvider
+	 */
+	public function testCreateItemPrefersTheRendererOfTheType(string $type, string $setter): void
+	{
+		$list = new TDataListTestList();
+		foreach (self::createItemTemplateProvider() as [$t, $templateSetter]) {
+			$list->$templateSetter(new TTestDataTemplate($t));
+		}
+		$list->$setter(TDataListTestRenderer::class);
+		$item = $list->callCreateItem(2, $type);
+		$this->assertInstanceOf(TDataListTestRenderer::class, $item);
+		$this->assertSame(2, $item->getItemIndex());
+		$this->assertSame($type, $item->getItemType());
+	}
+
+	public function testCreateItemWithAPlainRendererSetsNoIndexOrType(): void
+	{
+		$list = new TDataListTestList();
+		$list->setItemRenderer(TDataListTestPlainRenderer::class);
+		$this->assertInstanceOf(TDataListTestPlainRenderer::class, $list->callCreateItem(0, TListItemType::Item));
+	}
+
+	public static function createItemFallbackProvider(): array
+	{
+		// [type, index, templates set, label expected]
+		return [
+			'alternating to item' => [TListItemType::AlternatingItem, 1, ['setItemTemplate' => 'I'], 'I'],
+			'selected even to item' => [TListItemType::SelectedItem, 2, ['setItemTemplate' => 'I', 'setAlternatingItemTemplate' => 'A'], 'I'],
+			'selected odd to alternating' => [TListItemType::SelectedItem, 3, ['setItemTemplate' => 'I', 'setAlternatingItemTemplate' => 'A'], 'A'],
+			'selected odd to item' => [TListItemType::SelectedItem, 3, ['setItemTemplate' => 'I'], 'I'],
+			'edit to selected' => [TListItemType::EditItem, 0, ['setItemTemplate' => 'I', 'setSelectedItemTemplate' => 'S'], 'S'],
+			'edit odd to alternating' => [TListItemType::EditItem, 1, ['setItemTemplate' => 'I', 'setAlternatingItemTemplate' => 'A'], 'A'],
+		];
+	}
+
+	/**
+	 * @dataProvider createItemFallbackProvider
+	 */
+	public function testCreateItemFallsBackToALowerTemplate(string $type, int $index, array $templates, string $expected): void
+	{
+		$list = new TDataListTestList();
+		foreach ($templates as $setter => $label) {
+			$list->$setter(new TTestDataTemplate($label));
+		}
+		$item = $list->callCreateItem($index, $type);
+		$this->assertSame($type, $item->getItemType());
+		$this->assertSame($expected, $item->getControls()->itemAt(0)->getText());
+	}
+
+	public function testCreateItemFallsBackToTheItemRenderer(): void
+	{
+		$list = new TDataListTestList();
+		$list->setItemRenderer(TDataListTestRenderer::class);
+		foreach ([TListItemType::AlternatingItem, TListItemType::SelectedItem, TListItemType::EditItem] as $type) {
+			$this->assertInstanceOf(TDataListTestRenderer::class, $list->callCreateItem(1, $type), $type);
+		}
+	}
+
+	public function testCreateItemWithoutTemplateOrRendererIsNull(): void
+	{
+		$list = new TDataListTestList();
+		foreach (self::createItemTemplateProvider() as [$type]) {
+			$this->assertNull($list->callCreateItem(0, $type), $type);
+		}
+	}
+
+	public function testCreateItemRejectsAnUnknownType(): void
+	{
+		$list = new TDataListTestList();
+		$this->expectException(TInvalidDataValueException::class);
+		$list->callCreateItem(0, TListItemType::Pager);
+	}
+
+	public function testDataBindCreatesItemsInOrder(): void
+	{
+		$list = $this->newBoundList(['a', 'b', 'c'], ['setHeaderTemplate' => 'H', 'setFooterTemplate' => 'F', 'setSeparatorTemplate' => 'S']);
+		$this->assertSame(['Header-1', 'Item0', 'Separator0', 'AlternatingItem1', 'Separator1', 'Item2', 'Footer-1'], $this->controlTypes($list));
+		$this->assertSame(3, $list->getItemCount());
+		$this->assertSame(TListItemType::Header, $list->getHeader()->getItemType());
+		$this->assertSame(TListItemType::Footer, $list->getFooter()->getItemType());
+		$this->assertSame([0, 1, 2], $list->getDataKeys()->toArray());
+		$this->assertSame(3, $list->getViewState('ItemCount'));
+		$this->assertSame('b', $list->getItems()->itemAt(1)->getData());
+		$this->assertSame('I:b', $list->getItems()->itemAt(1)->getControls()->itemAt(0)->getText());
+	}
+
+	public function testDataBindMarksTheSelectedAndEditItems(): void
+	{
+		$list = $this->newBoundList(['a', 'b', 'c', 'd'], [], function ($list) {
+			$list->setSelectedItemIndex(1);
+			$list->setEditItemIndex(2);
+		});
+		$this->assertSame(['Item0', 'SelectedItem1', 'EditItem2', 'AlternatingItem3'], $this->controlTypes($list));
+		$this->assertSame($list->getItems()->itemAt(1), $list->getSelectedItem());
+		$this->assertSame($list->getItems()->itemAt(2), $list->getEditItem());
+	}
+
+	public function testDataBindReadsTheKeyField(): void
+	{
+		$list = $this->newBoundList([['id' => 'k1'], ['id' => 'k2']], [], function ($list) {
+			$list->setDataKeyField('id');
+			$list->setSelectedItemIndex(1);
+		});
+		$this->assertSame(['k1', 'k2'], $list->getDataKeys()->toArray());
+		$this->assertSame('k2', $list->getSelectedDataKey());
+		$list->setSelectedItemIndex(5);
+		$this->assertNull($list->getSelectedDataKey());
+		$this->assertSame('v', $list->callGetDataFieldValue(['f' => 'v'], 'f'));
+	}
+
+	public function testDataBindSetsTheDataOfRenderers(): void
+	{
+		$list = new TDataList();
+		$list->setItemRenderer(TDataListTestRenderer::class);
+		$list->setSeparatorRenderer(TDataListTestPlainRenderer::class);
+		$list->setDataSource(['a', 'b']);
+		$list->dataBind();
+		$this->assertSame('<span>RItem0=a</span>P<span>RAlternatingItem1=b</span>', $this->renderRaw($list));
+	}
+
+	public function testDataBindRaisesItemEvents(): void
+	{
+		$created = $bound = [];
+		$this->newBoundList(['a', 'b'], [], function ($list) use (&$created, &$bound) {
+			$list->attachEventHandler('OnItemCreated', function ($sender, $param) use (&$created) {
+				$this->assertInstanceOf(TDataListItemEventParameter::class, $param);
+				$created[] = [$param->getItem()->getItemIndex(), $param->getItem()->getParent()];
+			});
+			$list->attachEventHandler('OnItemDataBound', function ($sender, $param) use (&$bound) {
+				$bound[] = $param->getItem()->getControls()->itemAt(0)->getText();
+			});
+		});
+		$this->assertSame([[0, null], [1, null]], $created);
+		$this->assertSame(['I:a', 'I:b'], $bound);
+	}
+
+	public function testDataBindEmptyUsesTheEmptyTemplate(): void
+	{
+		$list = $this->newBoundList([], ['setHeaderTemplate' => 'H', 'setEmptyTemplate' => 'E']);
+		$this->assertSame(0, $list->getItemCount());
+		$this->assertNull($list->getHeader());
+		$this->assertSame([\Prado\Web\UI\WebControls\TLiteral::class], $this->controlTypes($list));
+		$this->assertSame('<span>E</span>', $this->renderRaw($list));
+	}
+
+	public function testDataBindEmptyPrefersTheEmptyRenderer(): void
+	{
+		$list = $this->newBoundList([], ['setEmptyTemplate' => 'E'], function ($list) {
+			$list->setEmptyRenderer(TDataListTestPlainRenderer::class);
+		});
+		$this->assertSame('<span>P</span>', $this->renderRaw($list));
+	}
+
+	public function testRenderWithoutItemsOrEmptyContentRendersNothing(): void
+	{
+		$list = $this->newBoundList([]);
+		$this->assertSame('', $this->renderRaw($list), 'no controls');
+		$list->getControls()->add(new TDataListTestPlainRenderer());
+		$this->assertSame('', $this->renderRaw($list), 'controls but no items and no empty content');
+	}
+
+	public function testRenderRawLayoutRendersHeaderItemsSeparatorsAndFooter(): void
+	{
+		$list = $this->newBoundList(['a', 'b'], ['setHeaderTemplate' => 'H', 'setFooterTemplate' => 'F', 'setSeparatorTemplate' => 'S']);
+		$this->assertSame('<div>H</div><div>I:a</div><div>S</div><div>I:b</div><div>F</div>', $this->renderRaw($list));
+	}
+
+	public function testRenderTableLayoutRendersTheItemsInCells(): void
+	{
+		$list = $this->newBoundList(['a', 'b']);
+		$list->setID('dl');
+		$writer = $this->writer();
+		$list->render($writer);
+		$html = $writer->flush();
+		$this->assertStringContainsString('<table id="dl">', $html);
+		$this->assertStringContainsString('<span>I:a</span>', $html);
+		$this->assertStringContainsString('<span>I:b</span>', $html);
+	}
+
+	// ------------------------------------------------------------------
+	// Styles
+	// ------------------------------------------------------------------
+
+	public function testApplyItemStylesMergesTheStyleOfEachItemType(): void
+	{
+		$list = $this->newBoundList(['a', 'b', 'c', 'd', 'e'], ['setHeaderTemplate' => 'H', 'setFooterTemplate' => 'F', 'setSeparatorTemplate' => 'S'], function ($list) {
+			$list->setSelectedItemIndex(2);
+			$list->setEditItemIndex(3);
+		});
+		$list->getItemStyle()->setCssClass('item');
+		$list->getItemStyle()->setForeColor('red');
+		$list->getAlternatingItemStyle()->setCssClass('alt');
+		$list->getSelectedItemStyle()->setCssClass('sel');
+		$list->getSelectedItemStyle()->setBackColor('blue');
+		$list->getEditItemStyle()->setCssClass('edit');
+		$list->getHeaderStyle()->setCssClass('head');
+		$list->getFooterStyle()->setCssClass('foot');
+		$list->getSeparatorStyle()->setCssClass('sep');
+		$list->callApplyItemStyles();
+
+		$items = $list->getItems();
+		$this->assertSame('item', $items->itemAt(0)->getStyle()->getCssClass());
+		$this->assertSame('alt', $items->itemAt(1)->getStyle()->getCssClass());
+		$this->assertSame('red', $items->itemAt(1)->getStyle()->getForeColor(), 'AlternatingItemStyle inherits ItemStyle');
+		$this->assertSame('sel', $items->itemAt(2)->getStyle()->getCssClass());
+		$this->assertSame('edit', $items->itemAt(3)->getStyle()->getCssClass());
+		$this->assertSame('blue', $items->itemAt(3)->getStyle()->getBackColor(), 'EditItemStyle inherits SelectedItemStyle');
+		$this->assertSame('item', $items->itemAt(4)->getStyle()->getCssClass());
+		$this->assertSame('head', $list->getHeader()->getStyle()->getCssClass());
+		$this->assertSame('foot', $list->getFooter()->getStyle()->getCssClass());
+		$controls = $list->getControls();
+		foreach ([2, 4, 6, 8] as $i) {
+			$this->assertSame(TListItemType::Separator, $controls->itemAt($i)->getItemType());
+			$this->assertSame('sep', $controls->itemAt($i)->getStyle()->getCssClass(), "separator at $i");
+		}
+	}
+
+	public function testApplyItemStylesUsesTheItemStyleForAlternatingItemsWithoutTheirOwn(): void
+	{
+		$list = $this->newBoundList(['a', 'b'], [], function ($list) {
+			$list->setSelectedItemIndex(0);
+			$list->setEditItemIndex(1);
+		});
+		$list->getItemStyle()->setCssClass('item');
+		$list->getSelectedItemStyle()->setCssClass('sel');
+		$list->callApplyItemStyles();
+		$this->assertSame('sel', $list->getItems()->itemAt(0)->getStyle()->getCssClass());
+		$this->assertSame('sel', $list->getItems()->itemAt(1)->getStyle()->getCssClass(), 'an edit item without EditItemStyle uses SelectedItemStyle');
+
+		$list = $this->newBoundList(['a', 'b']);
+		$list->getItemStyle()->setCssClass('item');
+		$list->callApplyItemStyles();
+		$this->assertSame('item', $list->getItems()->itemAt(1)->getStyle()->getCssClass());
+	}
+
+	public function testApplyItemStylesWithoutStylesLeavesItemsUnstyled(): void
+	{
+		$list = $this->newBoundList(['a', 'b', 'c'], ['setSeparatorTemplate' => 'S', 'setHeaderTemplate' => 'H', 'setFooterTemplate' => 'F']);
+		$list->callApplyItemStyles();
+		foreach ($list->getControls() as $control) {
+			$this->assertFalse($control->getHasStyle());
+		}
+	}
+
+	public function testApplyItemStylesSkipsControlsThatAreNotStyleable(): void
+	{
+		$list = new TDataListTestList();
+		foreach (['setItemRenderer', 'setHeaderRenderer', 'setFooterRenderer', 'setSeparatorRenderer'] as $setter) {
+			$list->$setter(TDataListTestPlainRenderer::class);
+		}
+		$list->setDataSource(['a', 'b']);
+		$list->dataBind();
+		foreach (['getItemStyle', 'getHeaderStyle', 'getFooterStyle', 'getSeparatorStyle'] as $getter) {
+			$list->$getter()->setCssClass('x');
+		}
+		$list->callApplyItemStyles();
+		$this->assertSame(5, $list->getControls()->getCount());
+	}
+
+	public function testSeparatorStyleWithoutAHeaderStartsAtTheFirstSeparator(): void
+	{
+		$list = $this->newBoundList(['a', 'b', 'c'], ['setSeparatorTemplate' => 'S']);
+		$list->getSeparatorStyle()->setCssClass('sep');
+		$list->callApplyItemStyles();
+		$controls = $list->getControls();
+		$this->assertFalse($controls->itemAt(0)->getHasStyle());
+		$this->assertSame('sep', $controls->itemAt(1)->getStyle()->getCssClass());
+		$this->assertSame('sep', $controls->itemAt(3)->getStyle()->getCssClass());
+	}
+
+	public function testGenerateItemStyleMovesTheItemStyleToTheRepeater(): void
+	{
+		$list = $this->newBoundList(['a', 'b'], ['setHeaderTemplate' => 'H', 'setFooterTemplate' => 'F', 'setSeparatorTemplate' => 'S']);
+		$list->getHeader()->getStyle()->setCssClass('h');
+		$list->getFooter()->getStyle()->setCssClass('f');
+		$list->getControls()->itemAt(2)->getStyle()->setCssClass('s');
+		$list->getItems()->itemAt(1)->getStyle()->setCssClass('i');
+
+		$this->assertSame('h', $list->generateItemStyle(TListItemType::Header, -1)->getCssClass());
+		$this->assertFalse($list->getHeader()->getHasStyle(), 'the item style is cleared');
+		$this->assertSame('f', $list->generateItemStyle(TListItemType::Footer, -1)->getCssClass());
+		$this->assertSame('s', $list->generateItemStyle(TListItemType::Separator, 0)->getCssClass());
+		$this->assertSame('i', $list->generateItemStyle(TListItemType::AlternatingItem, 1)->getCssClass());
+		$this->assertNull($list->generateItemStyle(TListItemType::Item, 0), 'an item without a style');
+		$this->assertNull($list->generateItemStyle(TListItemType::Pager, 0), 'no item of the type');
+	}
+
+	public function testGenerateItemStyleOfASeparatorWithoutAHeader(): void
+	{
+		$list = $this->newBoundList(['a', 'b'], ['setSeparatorTemplate' => 'S']);
+		$list->getControls()->itemAt(1)->getStyle()->setCssClass('s');
+		$this->assertSame('s', $list->generateItemStyle(TListItemType::Separator, 0)->getCssClass());
+	}
+
+	public function testGenerateItemStyleOfAPlainRendererIsNull(): void
+	{
+		$list = new TDataList();
+		$list->setItemRenderer(TDataListTestPlainRenderer::class);
+		$list->setDataSource(['a']);
+		$list->dataBind();
+		$this->assertNull($list->generateItemStyle(TListItemType::Item, 0));
+	}
+
+	// ------------------------------------------------------------------
+	// View state
+	// ------------------------------------------------------------------
+
+	public function testSaveStateKeepsTheItemCount(): void
+	{
+		$list = $this->newBoundList(['a', 'b']);
+		$list->clearViewState('ItemCount');
+		$list->saveState();
+		$this->assertSame(2, $list->getViewState('ItemCount'));
+
+		$list = new TDataList();
+		$list->setViewState('ItemCount', 3, 0);
+		$list->saveState();
+		$this->assertSame(0, $list->getViewState('ItemCount', 0), 'without items');
+	}
+
+	public function testLoadStateRestoresTheItems(): void
+	{
+		$list = new TDataListTestList();
+		foreach (['setItemTemplate' => 'I', 'setHeaderTemplate' => 'H', 'setFooterTemplate' => 'F', 'setSeparatorTemplate' => 'S'] as $setter => $label) {
+			$list->$setter(new TTestDataTemplate($label));
+		}
+		$created = 0;
+		$list->attachEventHandler('OnItemCreated', function () use (&$created) {
+			$created++;
+		});
+		$list->setSelectedItemIndex(1);
+		$list->setEditItemIndex(2);
+		$list->setViewState('ItemCount', 4, 0);
+		$list->loadState();
+
+		$this->assertSame(['Header-1', 'Item0', 'Separator0', 'SelectedItem1', 'Separator1', 'EditItem2', 'Separator2', 'AlternatingItem3', 'Footer-1'], $this->controlTypes($list));
+		$this->assertSame(9, $created);
+		$this->assertSame(4, $list->getItemCount());
+		$this->assertSame(0, $list->getViewState('ItemCount', 0));
+	}
+
+	public function testLoadStateWithoutItemsCreatesTheEmptyContent(): void
+	{
+		$list = new TDataList();
+		$list->setItemTemplate(new TTestDataTemplate('I'));
+		$list->setEmptyTemplate(new TTestDataTemplate('E'));
+		$list->loadState();
+		$this->assertSame([\Prado\Web\UI\WebControls\TLiteral::class], $this->controlTypes($list));
+
+		$list = new TDataList();
+		$list->setEmptyRenderer(TDataListTestPlainRenderer::class);
+		$list->loadState();
+		$this->assertSame([TDataListTestPlainRenderer::class], $this->controlTypes($list));
+
+		$list = new TDataList();
+		$list->loadState();
+		$this->assertSame(0, $list->getControls()->getCount());
+	}
+
+	public function testLoadStateAfterDataBindingKeepsTheItems(): void
+	{
+		$list = $this->newBoundList(['a']);
+		$item = $list->getItems()->itemAt(0);
+		$list->loadState();
+		$this->assertSame($item, $list->getItems()->itemAt(0));
+	}
+
+	public function testResetClearsItemsHeaderAndFooter(): void
+	{
+		$list = $this->newBoundList(['a'], ['setHeaderTemplate' => 'H', 'setFooterTemplate' => 'F']);
+		$list->reset();
+		$this->assertSame(0, $list->getControls()->getCount());
+		$this->assertSame(0, $list->getItemCount());
+		$this->assertNull($list->getHeader());
+		$this->assertNull($list->getFooter());
+	}
+
+	// ------------------------------------------------------------------
+	// Commands
+	// ------------------------------------------------------------------
+
+	public function testAButtonCommandBubblesThroughTheItem(): void
+	{
+		$list = new TDataList();
+		$list->setItemTemplate(new class () implements ITemplate {
+			public function instantiateIn($parent)
+			{
+				$button = new TButton();
+				$button->setCommandName('Select');
+				$parent->getControls()->add($button);
+			}
+
+			public function getIncludedFiles()
+			{
+				return [];
+			}
+		});
+		$list->setDataSource(['a', 'b']);
+		$list->dataBind();
+		$events = [];
+		foreach (['OnItemCommand', 'OnSelectedIndexChanged'] as $event) {
+			$list->attachEventHandler($event, function ($sender, $param) use (&$events, $event) {
+				$events[] = [$event, $param->getItem()->getItemIndex(), $param->getCommandSource()::class];
+			});
+		}
+		$list->getItems()->itemAt(1)->getControls()->itemAt(0)->onCommand(new TCommandEventParameter('Select', ''));
+		$this->assertSame([['OnItemCommand', 1, TButton::class], ['OnSelectedIndexChanged', 1, TButton::class]], $events);
+		$this->assertSame(1, $list->getSelectedItemIndex());
+		$this->assertSame(TListItemType::SelectedItem, $list->getItems()->itemAt(1)->getItemType());
+	}
+
+	public static function commandEventProvider(): array
+	{
+		return [['Edit', 'OnEditCommand'], ['Delete', 'OnDeleteCommand'], ['Update', 'OnUpdateCommand'], ['Cancel', 'OnCancelCommand']];
+	}
+
+	/**
+	 * @dataProvider commandEventProvider
+	 */
+	public function testBubbleEventRaisesTheCommandEvent(string $command, string $event): void
+	{
+		$list = new TDataList();
+		$raised = [];
+		foreach (['OnItemCommand', $event] as $name) {
+			$list->attachEventHandler($name, function () use (&$raised, $name) {
+				$raised[] = $name;
+			});
+		}
+		$this->assertTrue($list->bubbleEvent(new TControl(), $this->makeCommandParam(strtolower($command), new TDataListItem())));
+		$this->assertSame(['OnItemCommand', $event], $raised);
+	}
+
+	public function testSelectCommandFromAPlainItemKeepsTheSelection(): void
+	{
+		$list = new TDataList();
+		$list->setSelectedItemIndex(3);
+		$raised = 0;
+		$list->attachEventHandler('OnSelectedIndexChanged', function () use (&$raised) {
+			$raised++;
+		});
+		$this->assertTrue($list->bubbleEvent(new TControl(), $this->makeCommandParam('Select', new NonDataListItem())));
+		$this->assertSame(3, $list->getSelectedItemIndex());
+		$this->assertSame(1, $raised);
+	}
+
+	public function testItemsBubbleCommands(): void
+	{
+		$source = new TControl();
+		foreach ([new TDataListItem(), new TDataListTestRenderer()] as $item) {
+			$parent = new class () extends TControl {
+				public $received;
+
+				public function bubbleEvent($sender, $param)
+				{
+					$this->received = $param;
+					return true;
+				}
+			};
+			$parent->getControls()->add($item);
+			$this->assertTrue($item->bubbleEvent($source, new TCommandEventParameter('Go', 'p')));
+			$this->assertInstanceOf(TDataListCommandEventParameter::class, $parent->received);
+			$this->assertSame($item, $parent->received->getItem());
+			$this->assertSame($source, $parent->received->getCommandSource());
+			$this->assertSame('Go', $parent->received->getCommandName());
+			$this->assertSame('p', $parent->received->getCommandParameter());
+			$this->assertFalse($item->bubbleEvent($source, new TEventParameter()));
+		}
+	}
+
+	// ------------------------------------------------------------------
+	// TDataListItem, TDataListItemRenderer, TDataListItemCollection
+	// ------------------------------------------------------------------
+
+	public function testDataListItemProperties(): void
+	{
+		$item = new TDataListItem();
+		$this->assertInstanceOf(TTableItemStyle::class, $item->getStyle());
+		$item->setItemIndex('3');
+		$item->setItemType('edititem');
+		$item->setData('d');
+		$this->assertSame(3, $item->getItemIndex());
+		$this->assertSame(TListItemType::EditItem, $item->getItemType());
+		$this->assertSame('d', $item->getData());
+		$writer = $this->writer();
+		$item->render($writer);
+		$this->assertSame('<span></span>', $writer->flush());
+	}
+
+	public function testDataListItemRendererStyle(): void
+	{
+		$renderer = new TDataListTestRenderer();
+		$this->assertFalse($renderer->getHasStyle());
+		$style = $renderer->getStyle();
+		$this->assertInstanceOf(TTableItemStyle::class, $style);
+		$this->assertTrue($renderer->getHasStyle());
+		$this->assertSame($style, $renderer->getStyle());
+		$style->setCssClass('c');
+		$renderer->setItemType(TListItemType::Item);
+		$renderer->setItemIndex(0);
+		$writer = $this->writer();
+		$renderer->render($writer);
+		$this->assertSame('<span class="c">RItem0</span>', $writer->flush());
+		$renderer->clearStyle();
+		$this->assertFalse($renderer->getHasStyle());
+		$writer = $this->writer();
+		$renderer->render($writer);
+		$this->assertSame('<span>RItem0</span>', $writer->flush());
+	}
+
+	public function testDataListItemRendererWithoutATagRendersItsContents(): void
+	{
+		$renderer = new TDataListTestNoTagRenderer();
+		$renderer->setItemType(TListItemType::Footer);
+		$renderer->setItemIndex(-1);
+		$writer = $this->writer();
+		$renderer->render($writer);
+		$this->assertSame('RFooter-1', $writer->flush());
+	}
+
+	public function testDataListItemRendererRendersItsChildren(): void
+	{
+		$renderer = new class () extends TDataListItemRenderer {
+			public function getTemplate()
+			{
+				return null;
+			}
+		};
+		$literal = new \Prado\Web\UI\WebControls\TLiteral();
+		$literal->setText('child');
+		$renderer->getControls()->add($literal);
+		$writer = $this->writer();
+		$renderer->render($writer);
+		$this->assertSame('<span>child</span>', $writer->flush());
+	}
+
+	public function testItemCollectionAcceptsOnlyControls(): void
+	{
+		$items = new TDataListItemCollection();
+		$items->add($item = new TDataListItem());
+		$this->assertSame($item, $items->itemAt(0));
+		$this->expectException(TInvalidDataTypeException::class);
+		$items->add('item');
+	}
+
+	// ------------------------------------------------------------------
+	// TBaseDataList
+	// ------------------------------------------------------------------
+
+	public function testBaseDataListTableProperties(): void
+	{
+		$list = new TDataList();
+		$this->assertSame(-1, $list->getCellSpacing());
+		$this->assertSame(-1, $list->getCellPadding());
+		$this->assertSame(THorizontalAlign::NotSet, $list->getHorizontalAlign());
+		$this->assertSame(TTableGridLines::None, $list->getGridLines());
+		$this->assertFalse($list->getHasStyle(), 'the getters create no style');
+
+		$list->setCellSpacing(2);
+		$list->setCellPadding(3);
+		$list->setHorizontalAlign(THorizontalAlign::Center);
+		$list->setGridLines(TTableGridLines::Both);
+		$this->assertInstanceOf(TTableStyle::class, $list->getStyle());
+		$this->assertSame(2, $list->getCellSpacing());
+		$this->assertSame(3, $list->getCellPadding());
+		$this->assertSame(THorizontalAlign::Center, $list->getHorizontalAlign());
+		$this->assertSame(TTableGridLines::Both, $list->getGridLines());
+	}
+
+	public function testBaseDataListKeysAndSelectedIndexChanged(): void
+	{
+		$list = new TDataList();
+		$this->assertSame('', $list->getDataKeyField());
+		$keys = $list->getDataKeys();
+		$this->assertInstanceOf(TList::class, $keys);
+		$this->assertSame($keys, $list->getDataKeys());
+		$raised = null;
+		$list->attachEventHandler('OnSelectedIndexChanged', function ($sender, $param) use (&$raised) {
+			$raised = $param;
+		});
+		$list->onSelectedIndexChanged($param = new TEventParameter());
+		$this->assertSame($param, $raised);
 	}
 }
