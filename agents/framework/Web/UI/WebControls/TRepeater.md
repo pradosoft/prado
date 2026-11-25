@@ -105,3 +105,5 @@ Implements: `INamingContainer`
 - **`OnItemCreated` fires before `dataBind()`** — The item exists but its data is not bound yet. Use `OnItemDataBound` when you need to read bound data values.
 - **`OnItemCommand` centralises button handling** — Instead of attaching an `OnCommand` handler to every button inside every item, attach a single `OnItemCommand` handler to the repeater.
 - **Empty data rendering** — The repeater renders nothing (not even an outer tag) when there are no items and no EmptyTemplate/EmptyRenderer is set.
+- **An item template or renderer is required for data** — With data but no `ItemTemplate`/`ItemRenderer`, `createItem()` returns null and `Items` (a `TRepeaterItemCollection`, controls only) throws `repeateritemcollection_item_invalid`.
+- **Postback restore** — `loadState()` rebuilds `ItemCount` items from the templates and renderers (not data bound) unless the repeater was data bound in this request; `saveState()` stores the count.

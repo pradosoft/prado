@@ -39,8 +39,9 @@ TDataGrid::CMD_PAGE_LAST  = 'Last'
 | [`TRowSelectColumn`](./TRowSelectColumn.md) | Row checkboxes with a select-all header checkbox; `getSelectedIndices()` / `getSelectedKeys()` (@since 4.4.0) |
 | `TDropDownListColumn` | Drop-down in edit mode |
 | `TTemplateColumn` | Custom `ItemTemplate`, `EditItemTemplate`, `HeaderTemplate`, `FooterTemplate` |
-| `TAutoIdColumn` | Auto-incrementing row number |
-| `TAutoGenerateColumns` mode | Generates `TBoundColumn` per data field (prototyping only) |
+| `THyperLinkColumn` | Hyperlink per row, from a URL and text field |
+| `TLiteralColumn` | Data field text without a control |
+| `AutoGenerateColumns` mode | Generates `TBoundColumn` per data field (prototyping only) |
 
 ## Key Properties
 
@@ -59,7 +60,7 @@ TDataGrid::CMD_PAGE_LAST  = 'Last'
 | `VirtualItemCount` | int | Total item count for custom paging |
 | `AllowCustomPaging` | bool | Enable server-side paging (sets `VirtualItemCount`) |
 | `EditItemIndex` | int | Row index in edit mode (-1 = none) |
-| `SelectedItemIndex` | int | Row index selected (-1 = none) |
+| `SelectedItemIndex` | int | Row index selected (-1 = none). An item leaving edit mode returns to `SelectedItem` when it is the selected index |
 | `ShowHeader` | bool | Show column headers (default: true) |
 | `ShowFooter` | bool | Show column footers (default: false) |
 | `Caption` | string | Table caption text, rendered as HTML unless `Encode` is true |
@@ -178,4 +179,4 @@ protected function updateRow($sender, $param)
 - **`DataKeyField`** — important for identifying the correct record on update/delete. Access via `$grid->getDataKeys()[$item->ItemIndex]`.
 - **Column order** — columns render in the order they appear in the `<Columns>` block (or in the data for auto-generated).
 - **Pager position** — `ShowTopPager`/`ShowBottomPager` control where the pager row appears. Both can be shown simultaneously.
-- **`groupCells()`** — internal method that merges adjacent same-value cells when `AllowGrouping` is enabled on a column.
+- **`groupCells()`** — internal method that merges adjacent same-value cells when `EnableCellGrouping` is enabled on a column.

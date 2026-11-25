@@ -8,7 +8,7 @@
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-A single tab pane within a `TTabPanel`. Renders a `<div>` for content and a tab header. The tab header text is determined from `Caption`, `Text`, or `NavigateUrl` (in that order of precedence).
+A single tab pane within a `TTabPanel`. Renders a `<div>` for content and a tab header. The tab header shows `Caption`; `Text` is the pane's content.
 
 Extends `[TWebControl](./TWebControl.md)`.
 
@@ -16,19 +16,18 @@ Extends `[TWebControl](./TWebControl.md)`.
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `Caption` | string | '' | Tab header label. If set, used as the tab title (highest precedence) |
-| `Text` | string | '' | Alternative tab label (used if Caption is empty) |
+| `Caption` | string | '' | Tab header label; an empty caption renders `&nbsp;` |
+| `Text` | string | '' | Pane content; when set it renders in place of the child controls |
 | `Encode` | bool | false | Whether `Text` and `Caption` are HTML-encoded when rendered (4.4.0) |
-| `NavigateUrl` | string | '' | URL for tab header link; if set and Caption/Text are empty, the URL is used as the label |
+| `NavigateUrl` | string | '' | URL for the tab header link, attribute-encoded in `href`; the link text is the caption |
 | `Active` | bool | — | Whether this tab is the currently active view (read-only from outside; set by `TTabPanel`) |
 
 ## Tab Header Rendering Logic
 
 ```
-if Caption != ''  → use Caption
-else if Text != '' → use Text
-else if NavigateUrl != '' → render as <a href="NavigateUrl">NavigateUrl</a>
-else → empty tab header
+label = Caption, or &nbsp; when Caption is ''   (encoded when Encode is true)
+NavigateUrl != '' → <a href="NavigateUrl">label</a>, no role="tab"
+NavigateUrl == '' → label, with role="tab", aria-selected, aria-controls, roving tabindex
 ```
 
 ## Key Methods
@@ -59,5 +58,5 @@ $view->renderTab($writer): void         // renders tab header <div>
 
 - **Always place inside `TTabPanel`** — `TTabView` is only meaningful as a direct child of `TTabPanel`. The parent manages which view is active.
 - **`Active` is managed by `TTabPanel`** — do not set `Active` directly; use `TTabPanel::setActiveView()` or `setActiveViewIndex()` / `setActiveViewID()` instead.
-- **Caption takes precedence over Text** — if both are set, `Caption` wins for the tab header. `Text` is provided as an alias for compatibility with other controls.
+- **Caption and Text** — `Caption` is the tab header; `Text` replaces the pane's child controls.
 - **`NavigateUrl`** — renders the tab header as a hyperlink. Useful for tabs that should open a different page rather than switching content in place.
