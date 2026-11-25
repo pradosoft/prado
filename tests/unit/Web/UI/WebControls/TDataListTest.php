@@ -2046,4 +2046,15 @@ class TDataListTest extends TestCase
 		$list->setEditItemIndex(0);
 		$this->assertSame(['EditItem0', 'SelectedItem1'], $this->controlTypes($list));
 	}
+
+	public function testLeavingEditAndSelectionRestoresTheItemTypes(): void
+	{
+		$list = $this->newBoundList(['a', 'b', 'c']);
+		$list->setEditItemIndex(1);
+		$list->setEditItemIndex(0);
+		$this->assertSame(['EditItem0', 'AlternatingItem1', 'Item2'], $this->controlTypes($list), 'an odd item leaves edit mode as alternating');
+		$list->setSelectedItemIndex(0);
+		$list->setSelectedItemIndex(2);
+		$this->assertSame(['EditItem0', 'AlternatingItem1', 'SelectedItem2'], $this->controlTypes($list), 'deselecting keeps the edit item');
+	}
 }
