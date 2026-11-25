@@ -53,13 +53,13 @@ class TWizardNavigationButtonStyle extends TStyle
 	{
 		parent::copyFrom($style);
 		if ($style instanceof TWizardNavigationButtonStyle) {
-			if ($this->_imageUrl === null && $style->_imageUrl !== null) {
+			if ($style->_imageUrl !== null) {
 				$this->_imageUrl = $style->_imageUrl;
 			}
-			if ($this->_buttonText === null && $style->_buttonText !== null) {
+			if ($style->_buttonText !== null) {
 				$this->_buttonText = $style->_buttonText;
 			}
-			if ($this->_buttonType === null && $style->_buttonType !== null) {
+			if ($style->_buttonType !== null) {
 				$this->_buttonType = $style->_buttonType;
 			}
 		}
@@ -75,13 +75,13 @@ class TWizardNavigationButtonStyle extends TStyle
 	{
 		parent::mergeWith($style);
 		if ($style instanceof TWizardNavigationButtonStyle) {
-			if ($style->_imageUrl !== null) {
+			if ($this->_imageUrl === null && $style->_imageUrl !== null) {
 				$this->_imageUrl = $style->_imageUrl;
 			}
-			if ($style->_buttonText !== null) {
+			if ($this->_buttonText === null && $style->_buttonText !== null) {
 				$this->_buttonText = $style->_buttonText;
 			}
-			if ($style->_buttonType !== null) {
+			if ($this->_buttonType === null && $style->_buttonType !== null) {
 				$this->_buttonType = $style->_buttonType;
 			}
 		}
