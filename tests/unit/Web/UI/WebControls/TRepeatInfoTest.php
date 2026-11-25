@@ -448,6 +448,9 @@ class TRepeatInfoTest extends TestCase
 		$this->assertSame("<ul id=\"List\">\n<li>Header-1</li>\n</ul>", $this->render($info, $this->createItemsUser(0, true)));
 		$this->assertSame("<ul id=\"List\">\n<li>Item0</li>\n<li>Footer-1</li>\n</ul>", $this->render($info, $this->createItemsUser(1, false, true)));
 		$this->assertSame("<ul id=\"List\">\n</ul>", $this->render($info, $this->createItemsUser(0)));
+		$this->assertSame("<ul id=\"List\">\n<li>Header-1</li>\n<li>Footer-1</li>\n</ul>", $this->render($info, $this->createItemsUser(0, true, true)));
+		$this->assertSame("<ul id=\"List\">\n<li>Header-1</li>\n<li>Item0</li>\n</ul>", $this->render($info, $this->createItemsUser(1, true)));
+		$this->assertSame("<ul id=\"List\">\n<li>Footer-1</li>\n</ul>", $this->render($info, $this->createItemsUser(0, false, true)));
 	}
 
 	public function testSingleColumnHeaderAndFooterStyles()

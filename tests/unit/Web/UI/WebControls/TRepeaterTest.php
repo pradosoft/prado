@@ -641,6 +641,7 @@ class TRepeaterTest extends TestCase
 			[null, false, true, true],
 			[[], false, false, false],
 			[[], true, true, true],
+			[[], false, true, true],
 			[['a'], false, false, true],
 		];
 		foreach ($cases as $i => [$data, $template, $renderer, $renders]) {
