@@ -460,4 +460,59 @@ class TPagerTest extends TestCase
 		PradoUnit::invoke(new TPager(), 'labelPageNumberButton', $control, 2, true);
 		$this->assertFalse($control->getHasAttributes());
 	}
+
+	public function testNextPrevPagerForEveryPagePositionAndText()
+	{
+		foreach ([1, 3] as $pages) {
+			for ($index = 0; $index < $pages; $index++) {
+				foreach (['<<', ''] as $first) {
+					foreach (['>>', ''] as $last) {
+						$pager = $this->createPagerOf($pages, $index, function ($pager) use ($first, $last) {
+							$pager->setFirstPageText($first);
+							$pager->setLastPageText($last);
+						});
+						$expected = [];
+						$atFirst = $index === 0;
+						$atLast = $index === $pages - 1;
+						if ($first !== '') {
+							$expected[] = $atFirst ? 'TLabel(&lt;&lt;)' : 'TLinkButton(&lt;&lt;,First,)';
+							$expected[] = "\n";
+						}
+						$expected[] = $atFirst ? 'TLabel(&lt;)' : 'TLinkButton(&lt;,Previous,)';
+						$expected[] = "\n";
+						$expected[] = $atLast ? 'TLabel(&gt;)' : 'TLinkButton(&gt;,Next,)';
+						if ($last !== '') {
+							$expected[] = "\n";
+							$expected[] = $atLast ? 'TLabel(&gt;&gt;)' : 'TLinkButton(&gt;&gt;,Last,)';
+						}
+						$this->assertSame($expected, $this->describe($pager), "$pages pages, page $index, first '$first', last '$last'");
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Creates a pager of a checkbox list with the given number of pages.
+	 */
+	private function createPagerOf(int $pages, int $pageIndex, callable $configure): TPager
+	{
+		$page = new TPage();
+		PradoUnit::setProp($page, '_inFormRender', true);
+		PradoUnit::setProp($page, '_clientScript', new TPagerTestClientScript($page));
+		$list = new TCheckBoxList();
+		$list->setID('List');
+		$list->setAllowPaging(true);
+		$list->setPageSize(1);
+		$list->setCurrentPageIndex($pageIndex);
+		$page->getControls()->add($list);
+		$list->setDataSource(range(1, $pages));
+		$list->dataBind();
+		$pager = new TPager();
+		$pager->setControlToPaginate('List');
+		$page->getControls()->add($pager);
+		$configure($pager);
+		$pager->onPreRender(null);
+		return $pager;
+	}
 }

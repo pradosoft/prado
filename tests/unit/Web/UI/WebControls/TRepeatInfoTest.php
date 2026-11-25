@@ -441,4 +441,21 @@ class TRepeatInfoTest extends TestCase
 		sort($numbers);
 		return $numbers;
 	}
+
+	public function testListLayoutHeaderAndFooterAreOptional()
+	{
+		$info = $this->createInfo(TRepeatLayout::UnorderedList);
+		$this->assertSame("<ul id=\"List\">\n<li>Header-1</li>\n</ul>", $this->render($info, $this->createItemsUser(0, true)));
+		$this->assertSame("<ul id=\"List\">\n<li>Item0</li>\n<li>Footer-1</li>\n</ul>", $this->render($info, $this->createItemsUser(1, false, true)));
+		$this->assertSame("<ul id=\"List\">\n</ul>", $this->render($info, $this->createItemsUser(0)));
+	}
+
+	public function testSingleColumnHeaderAndFooterStyles()
+	{
+		$user = $this->createItemsUser(1, true, true);
+		$user->styles = [TListItemType::Header . '-1' => $this->style('h'), TListItemType::Footer . '-1' => $this->style('f')];
+		$html = $this->render($this->createInfo(TRepeatLayout::Table), $user);
+		$this->assertStringContainsString('<th scope="col" class="h">Header-1</th>', $html);
+		$this->assertStringContainsString('<td class="f">Footer-1</td>', $html);
+	}
 }
