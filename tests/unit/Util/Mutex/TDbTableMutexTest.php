@@ -10,6 +10,7 @@
 
 namespace Prado\Test\Unit\Util\Mutex;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use Prado\Prado;
 use Prado\Test\Unit\PradoUnit;
 use Prado\Test\Unit\Harness\Util\Mutex\TTestLockConnection;
@@ -259,6 +260,59 @@ class TDbTableMutexTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame(['SELECT 1', 'CREATE TABLE', 'SELECT 1'], array_map(fn ($c) => substr($c->sql, 0, strpos($c->sql, ' ', 7)), $connection->commands));
 		PradoUnit::invoke($mutex, 'ensureMutexTable');
 		$this->assertCount(3, $connection->commands);
+	}
+
+	public static function expireColumnTypeProvider(): array
+	{
+		return [
+			'sqlite' => ['sqlite', 'BIGINT'],
+			'mysql' => ['mysql', 'BIGINT'],
+			'pgsql' => ['pgsql', 'BIGINT'],
+			'sqlsrv' => ['sqlsrv', 'BIGINT'],
+			'dblib' => ['dblib', 'BIGINT'],
+			'ibm' => ['ibm', 'BIGINT'],
+			'firebird' => ['firebird', 'BIGINT'],
+			'oci' => ['oci', 'INTEGER'],
+			'OCI' => ['OCI', 'INTEGER'],
+		];
+	}
+
+	#[DataProvider('expireColumnTypeProvider')]
+	public function testCreatesExpireColumnForDriver(string $driver, string $type): void
+	{
+		$connection = new TDbTableMutexTestThrowingConnection($driver);
+		$connection->throwing = ['SELECT 1'];
+		$mutex = new TDbTableMutexTestMutex();
+		$mutex->testConnection = $connection;
+		PradoUnit::invoke($mutex, 'ensureMutexTable');
+		$this->assertSame('CREATE TABLE pradomutex (lockname VARCHAR(191) NOT NULL PRIMARY KEY, locktoken CHAR(32) NOT NULL, expire ' . $type . ' NOT NULL)', $connection->commands[1]->sql);
+	}
+
+	public static function serverProvider(): array
+	{
+		return [
+			'mysql' => ['setupMysqlConnection'],
+			'pgsql' => ['setupPgsqlConnection'],
+		];
+	}
+
+	#[DataProvider('serverProvider')]
+	public function testLeaseEndsAfter2038OnServer(string $setup): void
+	{
+		$connection = PradoUnit::$setup('prado_unitest');
+		if (!$connection instanceof TDbConnection) {
+			$this->markTestSkipped(is_array($connection) ? $connection[1] : 'No database connection.');
+		}
+		$table = 'pradomutex_' . bin2hex(random_bytes(4));
+		$this->clock->setTime(2_200_000_000);
+		$mutex = $this->newMutex($connection)->setMutexTableName($table);
+		try {
+			$this->assertTrue($mutex->acquire('job'));
+			$this->assertEquals(2_200_000_030, $this->rows($connection, $table)[0]['expire']);
+			$this->assertTrue($mutex->release('job'));
+		} finally {
+			$connection->createCommand("DROP TABLE {$table}")->execute();
+		}
 	}
 
 	public function testTableNotCreatableThrows(): void
