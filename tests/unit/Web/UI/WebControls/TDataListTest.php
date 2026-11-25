@@ -1921,4 +1921,35 @@ class TDataListTest extends TestCase
 		$list->onSelectedIndexChanged($param = new TEventParameter());
 		$this->assertSame($param, $raised);
 	}
+
+	public function testCaptionAlign(): void
+	{
+		$list = new TDataList();
+		$this->assertSame(\Prado\Web\UI\WebControls\TTableCaptionAlign::NotSet, $list->getCaptionAlign());
+		$list->setCaptionAlign('left');
+		$this->assertSame(\Prado\Web\UI\WebControls\TTableCaptionAlign::Left, $list->getCaptionAlign());
+	}
+
+	public function testLoadStateWithoutHeaderOrFooterRestoresOnlyTheItems(): void
+	{
+		$list = new TDataList();
+		$list->setItemTemplate(new TTestDataTemplate('I'));
+		$list->setViewState('ItemCount', 2, 0);
+		$list->loadState();
+		$this->assertSame(['Item0', 'AlternatingItem1'], $this->controlTypes($list));
+		$this->assertNull($list->getHeader());
+		$this->assertNull($list->getFooter());
+	}
+
+	public function testSetSelectedItemIndexSkipsAnItemThatIsNoItemDataRenderer(): void
+	{
+		$list = new TDataList();
+		$list->setItemRenderer(TDataListTestPlainRenderer::class);
+		$list->setDataSource(['a', 'b']);
+		$list->dataBind();
+		$list->setSelectedItemIndex(1);
+		$list->setSelectedItemIndex(0);
+		$this->assertSame(0, $list->getSelectedItemIndex());
+		$this->assertInstanceOf(TDataListTestPlainRenderer::class, $list->getSelectedItem());
+	}
 }

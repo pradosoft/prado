@@ -621,4 +621,14 @@ class TRepeaterTest extends TestCase
 		$this->expectException(TInvalidDataValueException::class);
 		$repeater->callGetDataFieldValue(['f' => 'v'], 'missing');
 	}
+
+	public function testLoadStateWithoutHeaderOrFooterRestoresOnlyTheItems()
+	{
+		$repeater = $this->newRepeater();
+		$repeater->setViewState('ItemCount', 2, 0);
+		$repeater->loadState();
+		$this->assertSame(['Item0', 'AlternatingItem1'], $this->itemTypes($repeater));
+		$this->assertNull($repeater->getHeader());
+		$this->assertNull($repeater->getFooter());
+	}
 }

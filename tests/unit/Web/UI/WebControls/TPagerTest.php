@@ -432,4 +432,32 @@ class TPagerTest extends TestCase
 		$this->assertSame($source, $param->getCommandSource());
 		$this->assertSame(4, $param->getNewPageIndex());
 	}
+
+	public function testNumericPagerPastThePageCountShowsTheLastPageSet()
+	{
+		$page = new TPage();
+		PradoUnit::setProp($page, '_inFormRender', true);
+		PradoUnit::setProp($page, '_clientScript', new TPagerTestClientScript($page));
+		$list = new TCheckBoxList();
+		$list->setID('List');
+		$list->setAllowPaging(true);
+		$list->setPageSize(1);
+		$page->getControls()->add($list);
+		$list->setDataSource([1, 2, 3]);
+		$list->dataBind();
+		$list->setCurrentPageIndex(5);
+		$pager = new TPager();
+		$pager->setControlToPaginate('List');
+		$pager->setMode(TPagerMode::Numeric);
+		$page->getControls()->add($pager);
+		$pager->onPreRender(null);
+		$this->assertSame(['TLinkButton(1,Page,1)', "\n", 'TLinkButton(2,Page,2)', "\n", 'TLinkButton(3,Page,3)'], $this->describe($pager));
+	}
+
+	public function testPageNumberLabelSkipsAControlThatIsNoWebControl()
+	{
+		$control = new TControl();
+		PradoUnit::invoke(new TPager(), 'labelPageNumberButton', $control, 2, true);
+		$this->assertFalse($control->getHasAttributes());
+	}
 }

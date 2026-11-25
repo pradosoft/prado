@@ -2111,4 +2111,26 @@ class TDataGridTest extends TestCase
 		$output = $this->render($grid);
 		$this->assertLessThan(strpos($output, '<nav'), strpos($output, '</div>'));
 	}
+
+	public function testApplySortStateWithoutAHeaderDoesNothing()
+	{
+		$grid = $this->createGrid();
+		$grid->setSortExpression('name');
+		PradoUnit::invoke($grid, 'applySortState');
+		$this->assertNull($grid->getHeader());
+	}
+
+	public function testApplySortStateStopsAtTheLastHeaderCell()
+	{
+		$grid = $this->createGrid(['name', 'city']);
+		$grid->getColumns()->itemAt(1)->setSortExpression('city');
+		$grid->setAllowSorting(true);
+		$this->bind($grid, $this->rows(1));
+		$grid->setSortExpression('city');
+		$cells = $grid->getHeader()->getCells();
+		$cells->removeAt(1);
+		PradoUnit::invoke($grid, 'applySortState');
+		$this->assertSame(1, $cells->getCount());
+		$this->assertFalse($cells->itemAt(0)->getHasAria());
+	}
 }
