@@ -327,7 +327,9 @@ class TRepeatInfo extends \Prado\TComponent
 	}
 
 	/**
-	 * Renders contents in veritcal repeat direction.
+	 * Renders contents in vertical repeat direction.
+	 * Items fill each column top to bottom. A separator follows each item
+	 * except the item with the last index.
 	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
 	 * @param IRepeatInfoUser $user repeat information user
 	 */
@@ -343,9 +345,6 @@ class TRepeatInfo extends \Prado\TComponent
 		} else {
 			$columns = $this->_repeatColumns;
 			$rows = (int) (($itemCount + $columns - 1) / $columns);
-			if ($rows == 0 && $itemCount > 0) {
-				$rows = 1;
-			}
 			if (($lastColumns = $itemCount % $columns) == 0) {
 				$lastColumns = $columns;
 			}
@@ -372,9 +371,6 @@ class TRepeatInfo extends \Prado\TComponent
 							$index--;
 						}
 					}
-					if ($index >= $itemCount) {
-						continue;
-					}
 					$renderedItems++;
 					if (($style = $user->generateItemStyle(TListItemType::Item, $index)) !== null) {
 						$style->addAttributesToRender($writer);
@@ -386,7 +382,7 @@ class TRepeatInfo extends \Prado\TComponent
 					if (!$hasSeparators) {
 						continue;
 					}
-					if ($renderedItems < $itemCount - 1) {
+					if ($index < $itemCount - 1) {
 						if ($columns == 1) {
 							$writer->renderEndTag();
 							$writer->renderBeginTag('tr');
@@ -429,16 +425,13 @@ class TRepeatInfo extends \Prado\TComponent
 							$index--;
 						}
 					}
-					if ($index >= $itemCount) {
-						continue;
-					}
 					$renderedItems++;
 					$user->renderItem($writer, $this, TListItemType::Item, $index);
 					$writer->writeLine();
 					if (!$hasSeparators) {
 						continue;
 					}
-					if ($renderedItems < $itemCount - 1) {
+					if ($index < $itemCount - 1) {
 						if ($columns == 1) {
 							$writer->writeBreak();
 						}
