@@ -67,7 +67,7 @@ class TMenuListTest extends TestCase
 		$menu->setDisplayMode(TBulletedListDisplayMode::LinkButton);
 		$output = $this->render($menu);
 		$this->assertStringStartsWith('<menu id="Menu">', $output);
-		$this->assertStringContainsString('<a id="Menu0" href="javascript:;//Menu0">Cut</a>', $output);
+		$this->assertStringContainsString('<a id="Menu_c0" href="javascript:;//Menu_c0">Cut</a>', $output);
 		$this->assertSame(['Prado.WebUI.TBulletedList', 'Prado.WebUI.TBulletedList'], $menu->getPage()->getClientScript()->postBackControls);
 	}
 

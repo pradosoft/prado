@@ -217,4 +217,35 @@ class TImageValidatorTest extends TestCase
 		$this->assertEquals(20, $options['MinImageHeight']);
 		$this->assertEquals(400, $options['MaxImageHeight']);
 	}
+
+	public function testImageWithoutWidthIsInvalid()
+	{
+		[$page, $upload] = $this->createPageWithUpload();
+		$validator = $this->createValidator($page, $upload);
+		$this->setFiles($upload, [$this->makeImageFile('empty.gif', 0, 10)]);
+
+		$this->assertFalse($this->invokeEvaluateIsValid($validator));
+	}
+
+	public function testImageUnderMinImageWidth()
+	{
+		[$page, $upload] = $this->createPageWithUpload();
+		$validator = $this->createValidator($page, $upload);
+		$validator->setMinImageWidth(100);
+		$this->setFiles($upload, [$this->makeImageFile('narrow.gif', 50, 150)]);
+
+		$this->assertFalse($this->invokeEvaluateIsValid($validator));
+	}
+
+	public function testImageOverMaxImageHeight()
+	{
+		[$page, $upload] = $this->createPageWithUpload();
+		$validator = $this->createValidator($page, $upload);
+		$validator->setMaxImageHeight(100);
+		$this->setFiles($upload, [$this->makeImageFile('tall.gif', 50, 150)]);
+
+		$this->assertFalse($this->invokeEvaluateIsValid($validator));
+		$this->setFiles($upload, [$this->makeImageFile('fits.gif', 50, 100)]);
+		$this->assertTrue($this->invokeEvaluateIsValid($validator));
+	}
 }

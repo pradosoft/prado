@@ -1204,9 +1204,12 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 
 	/**
 	 * Creates a datalist item instance based on the item type and index.
+	 * The renderer of the item type takes precedence over its template. A data item
+	 * (item, alternating, selected, or edit) with neither is an empty {@see TDataListItem};
+	 * a header, footer, or separator with neither is not created.
 	 * @param int $itemIndex zero-based item index
 	 * @param string|TListItemType $itemType item type
-	 * @return \Prado\Web\UI\TControl created datalist item
+	 * @return ?\Prado\Web\UI\TControl created datalist item, null if the type has no content
 	 */
 	protected function createItem($itemIndex, $itemType)
 	{
@@ -1247,11 +1250,13 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 				$item->setItemIndex($itemIndex);
 				$item->setItemType($itemType);
 			}
-		} elseif ($template !== null) {
+		} elseif ($template !== null || in_array($itemType, [TListItemType::Item, TListItemType::AlternatingItem, TListItemType::SelectedItem, TListItemType::EditItem], true)) {
 			$item = new TDataListItem();
 			$item->setItemIndex($itemIndex);
 			$item->setItemType($itemType);
-			$template->instantiateIn($item);
+			if ($template !== null) {
+				$template->instantiateIn($item);
+			}
 		} else {
 			$item = null;
 		}
@@ -1273,14 +1278,14 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 
 	/**
 	 * Applies styles to items, header, footer and separators.
-	 * Item styles are applied in a hierarchical way. Style in higher hierarchy
-	 * will inherit from styles in lower hierarchy.
-	 * Starting from the lowest hierarchy, the item styles include
-	 * item's own style, {@see getItemStyle ItemStyle}, {@see getAlternatingItemStyle AlternatingItemStyle},
-	 * {@see getSelectedItemStyle SelectedItemStyle}, and {@see getEditItemStyle EditItemStyle}.
-	 * Therefore, if background color is set as red in {@see getItemStyle ItemStyle},
-	 * {@see getEditItemStyle EditItemStyle} will also have red background color
-	 * unless it is set to a different value explicitly.
+	 * Each item merges the styles of its state, so a value set on the item wins,
+	 * then the value of the higher style:
+	 * - {@see getAlternatingItemStyle AlternatingItemStyle} inherits {@see getItemStyle ItemStyle},
+	 *   and {@see getEditItemStyle EditItemStyle} inherits {@see getSelectedItemStyle SelectedItemStyle}.
+	 * - An edit or selected item merges its style, then ItemStyle for an even index
+	 *   or AlternatingItemStyle for an odd index, as in {@see TDataGrid}.
+	 * Therefore, a background color set in ItemStyle also colors an even edit item
+	 * unless EditItemStyle or SelectedItemStyle sets one.
 	 */
 	protected function applyItemStyles()
 	{
@@ -1325,17 +1330,21 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 
 		// apply item styles if any
 		foreach ($this->getItems() as $index => $item) {
+			if (!($item instanceof IStyleable)) {
+				continue;
+			}
 			if ($index === $editIndex) {
 				$style = $editItemStyle;
 			} elseif ($index === $selectedIndex) {
 				$style = $selectedItemStyle;
-			} elseif ($index % 2 === 0) {
-				$style = $itemStyle;
 			} else {
-				$style = $alternatingItemStyle;
+				$style = null;
 			}
-			if ($style && $item instanceof IStyleable) {
+			if ($style) {
 				$item->getStyle()->mergeWith($style);
+			}
+			if ($baseStyle = ($index % 2 === 0 ? $itemStyle : $alternatingItemStyle)) {
+				$item->getStyle()->mergeWith($baseStyle);
 			}
 		}
 

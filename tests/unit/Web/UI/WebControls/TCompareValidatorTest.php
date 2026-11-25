@@ -4,6 +4,9 @@ namespace Prado\Test\Unit\Web\UI\WebControls;
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Test\Unit\Harness\Traits\TFormPageTrait;
+use Prado\Test\Unit\PradoUnit;
 use Prado\Web\UI\TPage;
 use Prado\Web\UI\WebControls\TCompareValidator;
 use Prado\Web\UI\WebControls\TDatePicker;
@@ -13,6 +16,8 @@ use Prado\Web\UI\WebControls\TValidationDataType;
 
 class TCompareValidatorTest extends TestCase
 {
+	use TFormPageTrait;
+
 	private TTextBox $box;
 	private TTextBox $other;
 
@@ -126,5 +131,52 @@ class TCompareValidatorTest extends TestCase
 	public function testEmptyInputIsValid()
 	{
 		$this->assertTrue($this->isValid($this->createValidator(TValidationDataType::Integer), '', 'abc'));
+	}
+
+	public function testMissingControlToCompareThrows()
+	{
+		$validator = $this->createValidator(TValidationDataType::Integer);
+		$validator->setControlToCompare('Missing');
+		$this->box->setText('42');
+		try {
+			$validator->evaluateIsValid();
+			$this->fail('TInvalidDataValueException expected.');
+		} catch (TInvalidDataValueException $e) {
+			$this->assertSame('comparevalidator_controltocompare_invalid', $e->getErrorCode());
+		}
+	}
+
+	public function testUnknownOperatorFails()
+	{
+		$validator = $this->createValidator(TValidationDataType::Integer);
+		PradoUnit::invoke($validator, 'setViewState', 'Operator', 'Unknown');
+		$this->assertFalse($this->isValid($validator, '42', '42'));
+	}
+
+	public function testClientScriptOptions()
+	{
+		$validator = $this->createValidator(TValidationDataType::Integer);
+		$this->createFormPage($this->box, $this->other, $validator);
+		$options = PradoUnit::invoke($validator, 'getClientScriptOptions');
+		$this->assertSame(TValidationDataType::Integer, $options['DataType']);
+		foreach (['ControlToCompare', 'ValueToCompare', 'Operator', 'DateFormat'] as $key) {
+			$this->assertArrayNotHasKey($key, $options);
+		}
+
+		$validator->setControlToCompare('Other');
+		$validator->setValueToCompare('42');
+		$validator->setOperator(TValidationCompareOperator::GreaterThan);
+		$validator->setDataType(TValidationDataType::Date);
+		$validator->setDateFormat('yyyy-MM-dd');
+		$options = PradoUnit::invoke($validator, 'getClientScriptOptions');
+		$this->assertSame($this->other->getClientID(), $options['ControlToCompare']);
+		$this->assertSame('42', $options['ValueToCompare']);
+		$this->assertSame(TValidationCompareOperator::GreaterThan, $options['Operator']);
+		$this->assertSame(TValidationDataType::Date, $options['DataType']);
+		$this->assertSame('yyyy-MM-dd', $options['DateFormat']);
+
+		$validator->setControlToCompare('Missing');
+		$this->assertArrayNotHasKey('ControlToCompare', PradoUnit::invoke($validator, 'getClientScriptOptions'));
+		$this->assertSame('Prado.WebUI.TCompareValidator', PradoUnit::invoke($validator, 'getClientClassName'));
 	}
 }

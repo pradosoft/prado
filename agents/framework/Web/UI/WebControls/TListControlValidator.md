@@ -16,6 +16,7 @@ TListControlValidator validates selection count and values in list controls that
 - `MaxSelection` - Maximum allowed selections
 - `RequiredSelections` - Comma-separated list of required values
 - `evaluateIsValid()` - Validates selection count and required values
+- `getValidationListControl()` - Returns the `TListControl` target; the server validation and the client options both throw `TConfigurationException` (`listcontrolvalidator_invalid_control`) for any other control (@since 4.4.0)
 
 ## See Also
 

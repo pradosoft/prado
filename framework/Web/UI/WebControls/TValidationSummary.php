@@ -253,7 +253,6 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 		if (!$cs->isEndScriptRegistered($scriptKey)) {
 			$manager['FormID'] = $formID;
 			$options = TJavaScript::encode($manager);
-			$cs->registerPradoScript('validator');
 			$cs->registerEndScript($scriptKey, "new Prado.ValidationManager({$options});");
 		}
 

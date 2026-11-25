@@ -16,8 +16,9 @@ use Prado\TPropertyValue;
  * TEmailAddressValidator class
  *
  * TEmailAddressValidator validates whether the value of an associated
- * input component is a valid email address. If {@see getCheckMXRecord CheckMXRecord}
- * is true, it will check MX record for the email adress, provided
+ * input component is a valid email address of at most 254 bytes. If
+ * {@see getCheckMXRecord CheckMXRecord} is true, the domain after the last `@`
+ * must also have an MX record, which {@see hasMxRecord()} looks up, provided
  * checkdnsrr() is available in the installed PHP.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -51,29 +52,39 @@ class TEmailAddressValidator extends TRegularExpressionValidator
 	}
 
 	/**
-	 * Returns an array of javascript validator options.
-	 * @return bool javascript validator options.
+	 * This method overrides the parent's implementation.
+	 * The validation succeeds if the input is empty, or is an email address of at
+	 * most 254 bytes whose domain has an MX record when {@see getCheckMXRecord CheckMXRecord} is true.
+	 * @return bool whether the validation succeeds
 	 */
 	public function evaluateIsValid()
 	{
 		$value = $this->getValidationValue($this->getValidationTarget());
-		$valid = is_string($value) && strlen($value) <= 254 && parent::evaluateIsValid();
-
-		if ($valid && $this->getCheckMXRecord() && function_exists('checkdnsrr')) {
-			if ($value !== '') {
-				if (($pos = strpos($value, '@')) !== false) {
-					$domain = substr($value, $pos + 1);
-					return $domain === '' ? false : checkdnsrr($domain, 'MX');
-				} else {
-					return false;
-				}
-			}
+		if (!is_string($value) || strlen($value) > 254 || !parent::evaluateIsValid()) {
+			return false;
 		}
-		return $valid;
+		if ($value === '' || !$this->getCheckMXRecord() || !function_exists('checkdnsrr')) {
+			return true;
+		}
+		if (($pos = strrpos($value, '@')) === false || ($domain = substr($value, $pos + 1)) === '') {
+			return false;
+		}
+		return $this->hasMxRecord($domain);
 	}
 
 	/**
-	 * @return bool whether to check MX record for the email address being validated. Defaults to true.
+	 * Looks up an MX record of a domain name.
+	 * @param string $domain the domain name.
+	 * @return bool whether the domain name has an MX record.
+	 * @since 4.4.0
+	 */
+	protected function hasMxRecord(string $domain): bool
+	{
+		return checkdnsrr($domain, 'MX');
+	}
+
+	/**
+	 * @return bool whether to check MX record for the email address being validated. Defaults to false.
 	 */
 	public function getCheckMXRecord()
 	{

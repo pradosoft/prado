@@ -3,15 +3,19 @@
 namespace Prado\Test\Unit\Web\UI\WebControls;
 
 use PHPUnit\Framework\TestCase;
+use Prado\Test\Unit\Harness\Traits\TFormPageTrait;
 use Prado\Test\Unit\PradoUnit;
 use Prado\Util\TMultibyteString;
 use Prado\Web\UI\TPage;
+use Prado\Web\UI\WebControls\TDatePicker;
 use Prado\Web\UI\WebControls\TRangeValidationDataType;
 use Prado\Web\UI\WebControls\TRangeValidator;
 use Prado\Web\UI\WebControls\TTextBox;
 
 class TRangeValidatorTest extends TestCase
 {
+	use TFormPageTrait;
+
 	private TTextBox $input;
 	private TRangeValidator $validator;
 
@@ -220,5 +224,235 @@ class TRangeValidatorTest extends TestCase
 	{
 		$this->configure(TRangeValidationDataType::Time, 'noon');
 		$this->assertFalse($this->valid('12:00'));
+	}
+
+	public function testDateRejectsAValueThatIsNotADate()
+	{
+		$this->configure(TRangeValidationDataType::Date, '', '2030-01-01');
+		$this->assertFalse($this->valid('not a date'));
+		$this->assertTrue($this->valid('2024-06-15'));
+
+		$this->validator->setDateFormat('d/M/yyyy');
+		$this->configure(TRangeValidationDataType::Date, '', '1/1/2030');
+		$this->assertFalse($this->valid('not a date'));
+		$this->assertFalse($this->valid('2024-06-15'));
+		$this->assertTrue($this->valid('15/6/2024'));
+	}
+
+	public function testDateWithoutBoundsChecksTheValue()
+	{
+		$this->configure(TRangeValidationDataType::Date);
+		$this->assertTrue($this->valid('2024-06-15'));
+		$this->assertFalse($this->valid('not a date'));
+	}
+
+	public function testDateIgnoresABoundThatIsNotADate()
+	{
+		$this->configure(TRangeValidationDataType::Date, 'not a date', '2030-01-01');
+		$this->assertTrue($this->valid('2024-06-15'));
+		$this->assertFalse($this->valid('2031-01-01'));
+
+		$this->configure(TRangeValidationDataType::Date, '2020-01-01', 'not a date');
+		$this->assertTrue($this->valid('2031-01-01'));
+		$this->assertFalse($this->valid('2019-01-01'));
+	}
+
+	public function testDateWithoutDateFormatBefore1970()
+	{
+		$this->configure(TRangeValidationDataType::Date, '1960-01-01', '1969-12-31');
+		$this->assertTrue($this->valid('1965-06-15'));
+		$this->assertFalse($this->valid('1970-01-02'));
+		$this->assertFalse($this->valid('1959-12-31'));
+	}
+
+	public function testDateStrictComparison()
+	{
+		$this->configure(TRangeValidationDataType::Date, '2024-01-01', '2024-12-31');
+		$this->validator->setStrictComparison(true);
+		$this->assertFalse($this->valid('2024-01-01'));
+		$this->assertFalse($this->valid('2024-12-31'));
+		$this->assertTrue($this->valid('2024-06-15'));
+	}
+
+	public function testDateOfADatePicker()
+	{
+		$page = new TPage();
+		$picker = new TDatePicker();
+		$picker->setID('picker');
+		$picker->setDateFormat('d/M/yyyy');
+		$page->getControls()->add($picker);
+		$validator = new TRangeValidator();
+		$validator->setControlToValidate('picker');
+		$validator->setDataType(TRangeValidationDataType::Date);
+		$validator->setDateFormat('d/M/yyyy');
+		$validator->setMinValue('1/4/2024');
+		$validator->setMaxValue('30/4/2024');
+		$validator->setStep('7');
+		$page->getControls()->add($validator);
+
+		$picker->setText('15/4/2024');
+		$this->assertIsInt($picker->getValidationPropertyValue());
+		$this->assertTrue(PradoUnit::invoke($validator, 'evaluateIsValid'));
+		$picker->setText('16/4/2024');
+		$this->assertFalse(PradoUnit::invoke($validator, 'evaluateIsValid'), 'The step counts from MinValue.');
+		$picker->setText('6/5/2024');
+		$this->assertFalse(PradoUnit::invoke($validator, 'evaluateIsValid'));
+	}
+
+	public function testStringComparesInByteOrder()
+	{
+		$this->configure(TRangeValidationDataType::String, 'b', 'd');
+		$this->assertTrue($this->valid('b'));
+		$this->assertTrue($this->valid('cat'));
+		$this->assertTrue($this->valid('d'));
+		$this->assertFalse($this->valid('a'));
+		$this->assertFalse($this->valid('dog'));
+		$this->assertFalse($this->valid('B'), 'Uppercase sorts before lowercase.');
+
+		$this->validator->setStrictComparison(true);
+		$this->assertFalse($this->valid('b'));
+		$this->assertFalse($this->valid('d'));
+
+		$this->configure(TRangeValidationDataType::String);
+		$this->assertTrue($this->valid('anything'));
+	}
+
+	public function testStringHasNoSteps()
+	{
+		$this->configure(TRangeValidationDataType::String, 'a', 'z', '2');
+		$this->assertTrue($this->valid('m'));
+		$this->assertNull(PradoUnit::invoke($this->validator, 'convertStepValue', 'm'));
+	}
+
+	public function testStepOfAValueThatDoesNotConvertIsInvalid()
+	{
+		$this->configure(TRangeValidationDataType::Integer, '', '', '2');
+		$this->assertFalse(PradoUnit::invoke($this->validator, 'isValidStep', 'abc'));
+		$this->assertTrue(PradoUnit::invoke($this->validator, 'isValidStep', '4'));
+	}
+
+	public function testStringLengthWithoutGlobalizationIsUtf8()
+	{
+		$validator = new class () extends TRangeValidator {
+			public function getApplication()
+			{
+				return new class () {
+					public function getGlobalization()
+					{
+						return null;
+					}
+				};
+			}
+		};
+		$validator->setDataType(TRangeValidationDataType::StringLength);
+		$validator->setMinValue('5');
+		$validator->setMaxValue('5');
+		$this->assertTrue(PradoUnit::invoke($validator, 'isValidStringLength', 'héllo'));
+		$this->assertFalse(PradoUnit::invoke($validator, 'isValidStringLength', 'héllo!'));
+	}
+
+	public function testClientScriptOptions()
+	{
+		$this->createFormPage($input = new TTextBox(), $validator = new TRangeValidator());
+		$input->setID('input');
+		$validator->setID('range');
+		$validator->setControlToValidate('input');
+		$validator->setDataType(TRangeValidationDataType::Date);
+		$validator->setMinValue('2024-01-01');
+		$validator->setMaxValue('2024-12-31');
+
+		$options = PradoUnit::invoke($validator, 'getClientScriptOptions');
+		$this->assertSame('2024-01-01', $options['MinValue']);
+		$this->assertSame('2024-12-31', $options['MaxValue']);
+		$this->assertSame(TRangeValidationDataType::Date, $options['DataType']);
+		$this->assertFalse($options['StrictComparison']);
+		$this->assertArrayNotHasKey('DateFormat', $options);
+		$this->assertArrayNotHasKey('Step', $options);
+
+		$validator->setDateFormat('yyyy-MM-dd');
+		$validator->setStep('7');
+		$validator->setStrictComparison(true);
+		$options = PradoUnit::invoke($validator, 'getClientScriptOptions');
+		$this->assertSame('yyyy-MM-dd', $options['DateFormat']);
+		$this->assertSame('7', $options['Step']);
+		$this->assertTrue($options['StrictComparison']);
+		$this->assertSame('Prado.WebUI.TRangeValidator', PradoUnit::invoke($validator, 'getClientClassName'));
+	}
+
+	public function testDateStepWithAMinValueThatIsNotADateCountsFrom1970()
+	{
+		$this->configure(TRangeValidationDataType::Date, 'not a date', '', '2');
+		$this->assertTrue($this->valid('1970-01-03'));
+		$this->assertFalse($this->valid('1970-01-04'));
+	}
+
+	public static function provideBounds(): array
+	{
+		$cases = [
+			TRangeValidationDataType::Integer => ['5', '0', '10', 'x', '1', '9'],
+			TRangeValidationDataType::Float => ['5.5', '0.5', '9.5', 'x', '1.5', '9'],
+			TRangeValidationDataType::String => ['m', 'a', 'z', null, 'b', 'y'],
+			TRangeValidationDataType::Time => ['12:00', '09:00', '14:00', 'noon', '10:00', '13:00'],
+		];
+		$data = [];
+		foreach ($cases as $type => [$in, $below, $above, $malformed, $min, $max]) {
+			$rows = [
+				'no bounds' => ['', '', $in, true],
+				'min, in range' => [$min, '', $in, true],
+				'min, below' => [$min, '', $below, false],
+				'max, in range' => ['', $max, $in, true],
+				'max, above' => ['', $max, $above, false],
+				'both, in range' => [$min, $max, $in, true],
+				'both, below' => [$min, $max, $below, false],
+				'both, above' => [$min, $max, $above, false],
+			];
+			if ($malformed !== null) {
+				$rows += [
+					'no bounds, malformed' => ['', '', $malformed, false],
+					'min, malformed' => [$min, '', $malformed, false],
+					'max, malformed' => ['', $max, $malformed, false],
+					'both, malformed' => [$min, $max, $malformed, false],
+				];
+			}
+			foreach ($rows as $name => $row) {
+				$data["$type, $name"] = [$type, ...$row];
+			}
+		}
+		$data['Time, min malformed'] = [TRangeValidationDataType::Time, 'noon', '', '12:00', false];
+		$data['Time, max malformed'] = [TRangeValidationDataType::Time, '', 'noon', '12:00', false];
+		$data['Time, min malformed, max'] = [TRangeValidationDataType::Time, 'noon', '13:00', '12:00', false];
+		$data['Time, min, max malformed'] = [TRangeValidationDataType::Time, '10:00', 'noon', '12:00', false];
+		return $data;
+	}
+
+	/**
+	 * @param string $dataType the data type.
+	 * @param string $min the MinValue.
+	 * @param string $max the MaxValue.
+	 * @param string $value the input.
+	 * @param bool $expected whether the input is valid.
+	 */
+	#[\PHPUnit\Framework\Attributes\DataProvider('provideBounds')]
+	public function testBounds(string $dataType, string $min, string $max, string $value, bool $expected)
+	{
+		$this->configure($dataType, $min, $max);
+		$this->assertSame($expected, $this->valid($value));
+	}
+
+	public function testClientScriptOptionsWithDateFormatOrStep()
+	{
+		$this->createFormPage($input = new TTextBox(), $validator = new TRangeValidator());
+		$input->setID('input');
+		$validator->setControlToValidate('input');
+		$validator->setDateFormat('yyyy-MM-dd');
+		$options = PradoUnit::invoke($validator, 'getClientScriptOptions');
+		$this->assertSame('yyyy-MM-dd', $options['DateFormat']);
+		$this->assertArrayNotHasKey('Step', $options);
+
+		$validator->setDateFormat('');
+		$validator->setStep('2');
+		$options = PradoUnit::invoke($validator, 'getClientScriptOptions');
+		$this->assertArrayNotHasKey('DateFormat', $options);
+		$this->assertSame('2', $options['Step']);
 	}
 }

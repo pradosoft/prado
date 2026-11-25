@@ -15,7 +15,6 @@ use DateTimeZone;
 use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Util\TMultibyteString;
-use Prado\Util\TSimpleDateFormatter;
 use Prado\Util\TUtf8Converter;
 
 /**
@@ -291,12 +290,10 @@ class TRangeValidator extends TBaseValidator
 			case TRangeValidationDataType::Float:
 				return is_numeric(trim($value)) ? (float) $value : null;
 			case TRangeValidationDataType::Date:
-				$dateFormat = $this->getDateFormat();
-				$timestamp = $dateFormat !== '' ? (new TSimpleDateFormatter($dateFormat))->parse($value) : strtotime($value);
-				if (!is_numeric($timestamp)) {
+				if (($timestamp = TValidationDataType::convert(TValidationDataType::Date, $value, $this->getDateFormat())) === null) {
 					return null;
 				}
-				$date = getdate((int) $timestamp);
+				$date = getdate($timestamp);
 				return (float) (gmmktime(0, 0, 0, $date['mon'], $date['mday'], $date['year']) / 86400);
 			default:
 				return $this->convertHtmlValue($dataType, $value);
@@ -399,38 +396,25 @@ class TRangeValidator extends TBaseValidator
 
 	/**
 	 * Determine if the date is within the specified range.
-	 * Uses pradoParseDate and strtotime to get the date from string.
-	 * @param string $value date as string to validate
+	 * {@see TValidationDataType::convert()} converts the value and the bounds, as the client does.
+	 * A value that does not convert is invalid, and a bound that does not convert is ignored.
+	 * @param int|string $value the date to validate; a {@see TDatePicker} gives a timestamp.
 	 * @return bool true if within range.
 	 */
 	protected function isValidDate($value)
 	{
-		$minValue = $this->getMinValue();
-		$maxValue = $this->getMaxValue();
-
-		$valid = true;
-
 		$dateFormat = $this->getDateFormat();
-		if ($dateFormat !== '') {
-			$formatter = new TSimpleDateFormatter($dateFormat);
-			$value = $formatter->parse($value);
-			if ($minValue !== '') {
-				$valid = $this->isGreaterThan($value, $formatter->parse($minValue));
-			}
-			if ($maxValue !== '') {
-				$valid = $valid && $this->isLessThan($value, $formatter->parse($maxValue));
-			}
-			return $valid;
-		} else {
-			$value = strtotime($value);
-			if ($minValue !== '') {
-				$valid = $this->isGreaterThan($value, strtotime($minValue));
-			}
-			if ($maxValue !== '') {
-				$valid = $valid && $this->isLessThan($value, strtotime($maxValue));
-			}
-			return $valid;
+		if (($value = TValidationDataType::convert(TValidationDataType::Date, $value, $dateFormat)) === null) {
+			return false;
 		}
+		$valid = true;
+		if (($minValue = $this->getMinValue()) !== '' && ($min = TValidationDataType::convert(TValidationDataType::Date, $minValue, $dateFormat)) !== null) {
+			$valid = $this->isGreaterThan($value, $min);
+		}
+		if (($maxValue = $this->getMaxValue()) !== '' && ($max = TValidationDataType::convert(TValidationDataType::Date, $maxValue, $dateFormat)) !== null) {
+			$valid = $valid && $this->isLessThan($value, $max);
+		}
+		return $valid;
 	}
 
 	/**

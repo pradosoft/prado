@@ -78,13 +78,13 @@ class TTableItemStyle extends TStyle
 	{
 		parent::copyFrom($style);
 		if ($style instanceof TTableItemStyle) {
-			if ($this->_verticalAlign === null && $style->_verticalAlign !== null) {
+			if ($style->_verticalAlign !== null) {
 				$this->_verticalAlign = $style->_verticalAlign;
 			}
-			if ($this->_horizontalAlign === null && $style->_horizontalAlign !== null) {
+			if ($style->_horizontalAlign !== null) {
 				$this->_horizontalAlign = $style->_horizontalAlign;
 			}
-			if ($this->_wrap === null && $style->_wrap !== null) {
+			if ($style->_wrap !== null) {
 				$this->_wrap = $style->_wrap;
 			}
 		}
@@ -100,13 +100,13 @@ class TTableItemStyle extends TStyle
 	{
 		parent::mergeWith($style);
 		if ($style instanceof TTableItemStyle) {
-			if ($style->_verticalAlign !== null) {
+			if ($this->_verticalAlign === null && $style->_verticalAlign !== null) {
 				$this->_verticalAlign = $style->_verticalAlign;
 			}
-			if ($style->_horizontalAlign !== null) {
+			if ($this->_horizontalAlign === null && $style->_horizontalAlign !== null) {
 				$this->_horizontalAlign = $style->_horizontalAlign;
 			}
-			if ($style->_wrap !== null) {
+			if ($this->_wrap === null && $style->_wrap !== null) {
 				$this->_wrap = $style->_wrap;
 			}
 		}

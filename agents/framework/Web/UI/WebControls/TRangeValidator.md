@@ -18,6 +18,7 @@ TRangeValidator tests whether an input value is within a specified range. It use
 - `getStep()` / `setStep($value)` - Step between valid values, in the data type's unit; `''`, `any`, or a non-positive value checks no step (4.4.0)
 - `getStrictComparison()` / `setStrictComparison($value)` - Whether to use strict comparison (< or <=)
 - `getDateFormat()` / `setDateFormat($value)` - Date format for date validation
+- `isValidDate($value)` - Converts the value and the bounds with `TValidationDataType::convert()`, as the client does: a value that is not a date is invalid, a bound that is not a date is ignored, and a `TDatePicker` timestamp is a date (4.4.0)
 - `getCharset()` / `setCharset($value)` - Charset for string length comparison; UTF-8 (the default) is measured by [`TMultibyteString::length()`](../../../Util/TMultibyteString.md), after [`TUtf8Converter::toUTF8()`](../../../Util/TUtf8Converter.md) converts a value of any other charset
 
 ## HTML Input Values (4.4.0)
@@ -31,7 +32,7 @@ The values a `TTextBox` of the matching `TextMode` posts. MinValue and MaxValue 
 | `Week` | `yyyy-Www` (ISO 8601; week 53 only in 53-week years) | weeks since 1970-W01 |
 | `DateTimeLocal` | `yyyy-MM-ddTHH:mm[:ss[.sss]]` (`T` or space) | seconds since 1970-01-01T00:00 |
 
-Step: `(value - MinValue) / Step` is a whole number; without MinValue the base is 0 of the unit. Integer and Float step in numbers, Date in days (`DateFormat` or `strtotime`), the HTML types in the units above. String and StringLength have no step.
+Step: `(value - MinValue) / Step` is a whole number; without MinValue the base is 0 of the unit. Integer and Float step in numbers, Date in days (`TValidationDataType::convert()`), the HTML types in the units above. String and StringLength have no step.
 
 ## See Also
 

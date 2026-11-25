@@ -84,6 +84,7 @@ class TTableStyle extends TStyle
 	 */
 	public function reset()
 	{
+		parent::reset();
 		$this->_backImageUrl = null;
 		$this->_horizontalAlign = null;
 		$this->_cellPadding = null;
@@ -225,7 +226,7 @@ class TTableStyle extends TStyle
 	 */
 	public function setHorizontalAlign($value)
 	{
-		$this->_horizontalAlign = TPropertyValue::ensureEnum($value, 'THorizontalAlign');
+		$this->_horizontalAlign = TPropertyValue::ensureEnum($value, THorizontalAlign::class);
 	}
 
 	/**

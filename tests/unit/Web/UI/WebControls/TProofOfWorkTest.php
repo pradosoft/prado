@@ -341,6 +341,7 @@ class TProofOfWorkTest extends \PHPUnit\Framework\TestCase
 	public function testValidatorIsServerOnly(): void
 	{
 		self::assertFalse((new TProofOfWorkValidator())->getEnableClientScript());
+		self::assertSame('Prado.WebUI.TBaseValidator', PradoUnit::invoke(new TProofOfWorkValidator(), 'getClientClassName'));
 	}
 
 	public function testValidatorPassesAValidSolution(): void

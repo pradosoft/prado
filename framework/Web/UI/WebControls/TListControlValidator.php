@@ -126,6 +126,26 @@ class TListControlValidator extends TBaseValidator
 	}
 
 	/**
+	 * Returns the list control to validate.
+	 * @throws TConfigurationException if {@see getControlToValidate ControlToValidate} does not name a {@see TListControl}.
+	 * @return TListControl the list control to validate.
+	 * @since 4.4.0
+	 */
+	protected function getValidationListControl(): TListControl
+	{
+		$control = $this->getValidationTarget();
+		if (!($control instanceof TListControl)) {
+			throw new TConfigurationException(
+				'listcontrolvalidator_invalid_control',
+				$this->getID(),
+				$this->getControlToValidate(),
+				$control::class
+			);
+		}
+		return $control;
+	}
+
+	/**
 	 * This method overrides the parent's implementation.
 	 * The validation succeeds if the input component changes its data
 	 * from the InitialValue or the input component is not given.
@@ -133,7 +153,7 @@ class TListControlValidator extends TBaseValidator
 	 */
 	protected function evaluateIsValid()
 	{
-		$control = $this->getValidationTarget();
+		$control = $this->getValidationListControl();
 
 		$exists = true;
 		$values = $this->getSelection($control);
@@ -199,16 +219,7 @@ class TListControlValidator extends TBaseValidator
 	protected function getClientScriptOptions()
 	{
 		$options = parent::getClientScriptOptions();
-		$control = $this->getValidationTarget();
-
-		if (!$control instanceof TListControl) {
-			throw new TConfigurationException(
-				'listcontrolvalidator_invalid_control',
-				$this->getID(),
-				$this->getControlToValidate(),
-				$control::class
-			);
-		}
+		$control = $this->getValidationListControl();
 
 		$min = $this->getMinSelection();
 		$max = $this->getMaxSelection();

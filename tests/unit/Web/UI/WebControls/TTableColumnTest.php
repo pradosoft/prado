@@ -34,6 +34,18 @@ class TTableColumnTest extends TestCase
 		$this->assertSame(2, $col->getSpan());
 	}
 
+	public function testSettingDefaultsClearsTheAttributes()
+	{
+		$col = new TTableColumn();
+		$col->setSpan(3);
+		$col->setCssClass('wide');
+		$col->setSpan(1);
+		$col->setCssClass('');
+		$this->assertSame(1, $col->getSpan());
+		$this->assertSame('', $col->getCssClass());
+		$this->assertSame('<col />', $this->render($col));
+	}
+
 	public function testSetSpanBelowOneThrows()
 	{
 		$col = new TTableColumn();
