@@ -103,8 +103,6 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 
 - **`TRepeater`** — Flexible repeating container; template-driven, no built-in editing or paging.
 
-- **`TListView`** — Enhanced repeater with paging, sorting, and grouping support.
-
 ### Validation Controls
 
 - **`TBaseValidator`** — Base class for all validators; properties: `ControlToValidate`, `ErrorMessage`, `Display`, `ValidationGroup`.

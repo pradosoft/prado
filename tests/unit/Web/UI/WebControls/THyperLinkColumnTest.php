@@ -285,4 +285,20 @@ class THyperLinkColumnTest extends TestCase
 		$this->expectException(TInvalidDataValueException::class);
 		$this->bindLink($column, ['id' => 1]);
 	}
+
+	public function testDataBindColumnWithoutFieldsKeepsTheLink()
+	{
+		$column = new THyperLinkColumn();
+		$item = new TDataGridItem(0, 0, TListItemType::Item);
+		$item->setData(['name' => 'zeta']);
+		$cell = new TTableCell();
+		$item->getCells()->add($cell);
+		$link = new THyperLink();
+		$link->setText('fixed');
+		$link->setNavigateUrl('/fixed');
+		$cell->getControls()->add($link);
+		$column->dataBindColumn($link, null);
+		$this->assertSame('fixed', $link->getText());
+		$this->assertSame('/fixed', $link->getNavigateUrl());
+	}
 }

@@ -12,6 +12,7 @@
 namespace Prado\Web\UI\WebControls;
 
 use Prado\TPropertyValue;
+use Prado\Web\THttpUtility;
 
 /**
  * Class TAccordionView.
@@ -174,7 +175,7 @@ class TAccordionView extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Renders the content in the header.
-	 * By default, a hyperlink is displayed.
+	 * By default, a hyperlink is displayed. The URL is attribute-encoded.
 	 * @param \Prado\Web\UI\THtmlWriter $writer the HTML writer
 	 */
 	protected function renderHeaderContent($writer)
@@ -185,7 +186,7 @@ class TAccordionView extends \Prado\Web\UI\WebControls\TWebControl
 		}
 
 		if ($url != '') {
-			$writer->write("<a href=\"{$url}\">");
+			$writer->write('<a href="' . THttpUtility::htmlEncode($url) . '">');
 		}
 		$writer->write("{$caption}");
 		if ($url != '') {

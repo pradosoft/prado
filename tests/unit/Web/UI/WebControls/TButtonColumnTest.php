@@ -334,4 +334,40 @@ class TButtonColumnTest extends TestCase
 		$this->expectException(TInvalidDataValueException::class);
 		$this->bindButton($column, ['name' => 'alpha']);
 	}
+
+	public function testDataBindColumnImageButtonWithoutAnImageUrlField()
+	{
+		$column = new TButtonColumn();
+		$item = new TDataGridItem(0, 0, TListItemType::Item);
+		$item->setData(['name' => 'eta', 'icon' => '/e.png']);
+		$cell = new TTableCell();
+		$item->getCells()->add($cell);
+		$image = new TImageButton();
+		$image->setImageUrl('/fixed.png');
+		$cell->getControls()->add($image);
+
+		$column->dataBindColumn($image, null);
+		$this->assertSame('', $image->getText(), 'no DataTextField');
+		$this->assertSame('/fixed.png', $image->getImageUrl(), 'no DataImageUrlField');
+
+		$column->setDataTextField('name');
+		$column->dataBindColumn($image, null);
+		$this->assertSame('eta', $image->getText());
+		$this->assertSame('/fixed.png', $image->getImageUrl());
+	}
+
+	public function testDataBindColumnButtonWithoutADataTextField()
+	{
+		$column = new TButtonColumn();
+		$column->setDataImageUrlField('icon');
+		$item = new TDataGridItem(0, 0, TListItemType::Item);
+		$item->setData(['icon' => '/t.png']);
+		$cell = new TTableCell();
+		$item->getCells()->add($cell);
+		$link = new TLinkButton();
+		$link->setText('keep');
+		$cell->getControls()->add($link);
+		$column->dataBindColumn($link, null);
+		$this->assertSame('keep', $link->getText());
+	}
 }

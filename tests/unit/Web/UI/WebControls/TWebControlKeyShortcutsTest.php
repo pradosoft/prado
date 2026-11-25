@@ -167,6 +167,23 @@ class TWebControlKeyShortcutsTest extends TestCase
 		], $control->getKeyShortcutsAttributes());
 	}
 
+	public function testReservedFirstShortcutThrows()
+	{
+		$control = new TWebControl();
+		$control->setKeyShortcuts('Control+Z Control+S');
+		$this->expectException(TInvalidOperationException::class);
+		$control->getKeyShortcutsAttributes();
+	}
+
+	public function testAllowReservedOnAPageRegistersTheScriptPackage()
+	{
+		$control = $this->onPage(new THyperLink());
+		$control->setKeyShortcuts('Control+Z');
+		$control->setKeyShortcutAllowReserved(true);
+		$this->assertStringContainsString('aria-keyshortcuts="Control+Z" data-prado-keyshortcuts="" data-prado-keyshortcuts-reserved="true"', $this->render($control));
+		$this->assertContains('keyshortcuts', $control->getPage()->getClientScript()->pradoScripts);
+	}
+
 	public function testCopyBaseAttributesCopiesResolvedScope()
 	{
 		$source = $this->onPage(new THyperLink(), 'bold');

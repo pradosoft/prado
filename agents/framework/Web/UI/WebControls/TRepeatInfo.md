@@ -12,6 +12,12 @@ TRepeatInfo represents repeat information for controls like TCheckBoxList. It sp
 
 The OrderedList and UnorderedList layouts (@since 4.4.0) render an `<ol>`/`<ul>` carrying the user's ID, attributes, and style. `renderListContents()` puts the header, each item, and the footer in an `<li>` that carries the item style (`generateItemStyle()`). Separators, the caption, `RepeatColumns`, and `RepeatDirection` do not apply.
 
+The Table and Flow layouts place items by `RepeatDirection`:
+- Horizontal: rows of `RepeatColumns` items (all items in one row when 0); a separator follows each item but the last.
+- Vertical: columns filled top to bottom (one column when `RepeatColumns` is 0 or 1); a separator follows each item but the item with the last index.
+- Table cells missing from the last row or column render as empty `<td>`. The header renders in `<thead>` as a `<th scope="col">`, the footer in `<tfoot>`, each spanning all columns.
+- Raw renders the header, the items with separators, and the footer, with no markup of its own.
+
 ## Key Properties/Methods
 
 - `getCaption()` / `setCaption($value)` - Table caption

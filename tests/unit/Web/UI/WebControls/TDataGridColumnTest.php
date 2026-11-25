@@ -508,4 +508,27 @@ class TDataGridColumnTest extends TestCase
 		$this->assertSame('Footer', $grid->getFooter()->getCells()->itemAt(0)->getText());
 		$this->assertSame(2, $grid->getItems()->getCount());
 	}
+
+	public function testRendererControlInAnItemWithoutData()
+	{
+		$column = new TDataGridColumnTestColumn();
+		$row = new TDataGridColumnTestItemRow();
+		$cell = new TTableCell();
+		$row->getCells()->add($cell);
+		$control = PradoUnit::invoke($column, 'initializeCellRendererControl', $cell, TDataGridColumnTestItemRenderer::class);
+		$this->assertSame(7, $control->getItemIndex());
+		$this->assertSame(TListItemType::AlternatingItem, $control->getItemType());
+		$this->assertNull($control->getData());
+	}
+
+	public function testRendererControlWithDataOutsideAnItem()
+	{
+		$column = new TDataGridColumnTestColumn();
+		$item = new TDataGridItem(3, 3, TListItemType::Item);
+		$cell = new TTableCell();
+		$item->getCells()->add($cell);
+		$control = PradoUnit::invoke($column, 'initializeCellRendererControl', $cell, TDataGridColumnTestItemRenderer::class, 'payload');
+		$this->assertNull($control->getItemIndex());
+		$this->assertSame('payload', $control->getData());
+	}
 }

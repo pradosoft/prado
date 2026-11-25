@@ -1465,6 +1465,33 @@ class TFontTest extends TestCase
 		$this->assertStringContainsString('_size', $data, '_size must be included when non-empty');
 	}
 
+	public function testSerializeZapsEachEmptyPropertyBesideSetFlags()
+	{
+		$cases = [
+			'size only' => [null, '12px', ['_flags', '_size'], ['_name']],
+			'name only' => ['Arial', null, ['_flags', '_name'], ['_size']],
+			'name and size' => ['Arial', '12px', ['_flags', '_name', '_size'], []],
+		];
+		foreach ($cases as $label => [$name, $size, $kept, $zapped]) {
+			$font = new TFont();
+			$font->setItalic(true);
+			if ($name !== null) {
+				$font->setName($name);
+			}
+			if ($size !== null) {
+				$font->setSize($size);
+			}
+			$data = serialize($font);
+			foreach ($kept as $field) {
+				$this->assertStringContainsString($field, $data, "$label keeps $field");
+			}
+			foreach ($zapped as $field) {
+				$this->assertStringNotContainsString($field, $data, "$label zaps $field");
+			}
+			$this->assertSame($font->toString(), unserialize($data)->toString(), "$label round trip");
+		}
+	}
+
 	public function testSerializeZapsNameWhenEmptyEvenAfterSet()
 	{
 		// setName('') sets IS_SET_NAME in _flags but _name stays '' → zapped

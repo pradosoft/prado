@@ -190,4 +190,18 @@ class TLiteralColumnTest extends TestCase
 		$this->assertSame('a&b&lt;/p&gt;', $items->itemAt(0)->getCells()->itemAt(0)->getText());
 		$this->assertSame('c', $items->itemAt(1)->getCells()->itemAt(0)->getText());
 	}
+
+	public function testDataBindColumnWithoutDataFieldIgnoresNonCellSender()
+	{
+		$column = new TLiteralColumn();
+		$item = new TDataGridItem(0, 0, TListItemType::Item);
+		$item->setData('Ann');
+		$cell = new TTableCell();
+		$item->getCells()->add($cell);
+		$label = new TLabel();
+		$cell->getControls()->add($label);
+		$column->dataBindColumn($label, null);
+		$this->assertSame('', $label->getText());
+		$this->assertSame('', $cell->getText());
+	}
 }

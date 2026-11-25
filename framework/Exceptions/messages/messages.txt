@@ -582,7 +582,7 @@ repeateritemcollection_item_invalid		= TRepeaterItemCollection can only accept o
 datalist_template_required				= TDataList.{0} requires a template instance implementing ITemplate interface.
 datalist_datakeyfield_required				= TDataList.DataKeyField is required to read SelectedDataKey.
 datalist_itemtype_unknown					= TDataList item type ''{0}'' is unknown.
-datalistitemcollection_datalistitem_required = TDataListItemCollection can only accept TDataListItem objects.
+datalistitemcollection_datalistitem_required = TDataListItemCollection can only accept objects that are instance of TControl or its descendant class.
 
 datagrid_template_required				= TDataGrid.{0} requires a template instance implementing ITemplate interface.
 templatecolumn_template_required		= TTemplateColumn.{0} requires a template instance implementing ITemplate interface.
@@ -992,6 +992,7 @@ ratinglist_table_layout_only				= TRatingList.RepeatLayout must be Table.
 accordion_activeviewid_invalid			= TAccordion.ActiveViewID has an invalid ID ''{0}''.
 accordion_activeviewindex_invalid		= TAccordion.ActiveViewIndex has an invalid Index ''{0}''.
 accordion_view_inexistent				= TAccordion cannot find the specified view.
+accordionviewcollection_accordionview_required	= TAccordion can only accept TAccordionView as child.
 
 dot_bad_size							= TDot Size must be a positive integer but is ''{0}''
 dot_bad_border_width					= TDot FlatBorderWidth must be a number with an optional % or CSS length unit but is ''{0}''
