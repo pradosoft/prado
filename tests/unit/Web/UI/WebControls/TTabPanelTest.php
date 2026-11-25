@@ -195,10 +195,31 @@ class TTabPanelTest extends TestCase
 	public function testActiveViewIdTakesPrecedence()
 	{
 		$panel = $this->createPanel();
-		$panel->setActiveViewID('c');
 		$panel->setActiveViewIndex(1);
+		$panel->setActiveViewID('c');
 		$this->assertSame($panel->getViews()->itemAt(2), $panel->getActiveView());
 		$this->assertSame(2, $panel->getActiveViewIndex());
+	}
+
+	public function testSettingTheIndexClearsTheId()
+	{
+		$panel = $this->createPanel();
+		$panel->setActiveViewID('c');
+		$panel->setActiveViewIndex(1);
+		$this->assertSame('', $panel->getActiveViewID());
+		$this->assertSame($panel->getViews()->itemAt(1), $panel->getActiveView());
+	}
+
+	public function testAnIndexSetAfterTheActiveViewIsRecordedSelectsTheView()
+	{
+		$panel = $this->createPanel();
+		$panel->setActiveViewIndex(0);
+		$panel->getActiveView();
+		$this->assertSame('a', $panel->getActiveViewID());
+		// a postback handler selects another tab
+		$panel->setActiveViewIndex(2);
+		$this->assertSame($panel->getViews()->itemAt(2), $panel->getActiveView());
+		$this->assertSame([false, false, true], $this->activeFlags($panel));
 	}
 
 	public function testActiveViewIndexPastTheViewsThrows()

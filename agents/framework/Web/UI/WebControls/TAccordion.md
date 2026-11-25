@@ -24,7 +24,7 @@ TAccordion displays an accordion control where users can click on view headers t
 
 ## Patterns & Gotchas
 
-- **Active view** — `ActiveViewID` wins over `ActiveViewIndex`; setting `ActiveViewIndex` clears `ActiveViewID`. With an index of -1 the first view whose `Active` is true is the active view. An accordion without views has no active view and renders an empty `div`.
+- **Active view** — a non-empty `ActiveViewID` wins over `ActiveViewIndex`; setting `ActiveViewIndex` clears `ActiveViewID`, so the one set last selects the view. With an index of -1 the first view whose `Active` is true is the active view. An accordion without views has no active view and renders an empty `div`.
 - **Post data** — the client posts the open view's index in the `<ClientID>_1` hidden field. `loadPostData()` ignores a value that is not the index of a view.
 - **Not a naming container** — the views' client IDs carry no accordion prefix; the header of view `v` has the ID `v_0`.
 

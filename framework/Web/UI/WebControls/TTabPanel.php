@@ -31,8 +31,9 @@ use Prado\Web\Javascripts\TJavaScript;
  * - {@see setActiveViewIndex ActiveViewIndex} - the zero-based integer index of the view in the view collection.
  * - {@see setActiveViewID ActiveViewID} - the text ID of the visible view.
  * - {@see setActiveView ActiveView} - the visible view instance.
- * If both {@see setActiveViewIndex ActiveViewIndex} and {@see setActiveViewID ActiveViewID}
- * are set, the latter takes precedence.
+ * A non-empty {@see setActiveViewID ActiveViewID} takes precedence over
+ * {@see setActiveViewIndex ActiveViewIndex}. Setting ActiveViewIndex clears ActiveViewID,
+ * so of the two the one set last selects the view.
  *
  * TTabPanel uses CSS to specify the appearance of the tab bar and panel. By default,
  * an embedded CSS file will be published which contains the default CSS for TTabPanel.
@@ -99,12 +100,14 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	}
 
 	/**
+	 * Sets the active view by index and clears {@see setActiveViewID ActiveViewID}.
 	 * @param int $value the zero-based index of the current view in the view collection. -1 if no active view.
 	 * @throws TInvalidDataValueException if the view index is invalid
 	 */
 	public function setActiveViewIndex($value)
 	{
 		$this->setViewState('ActiveViewIndex', TPropertyValue::ensureInteger($value), 0);
+		$this->setActiveViewID('');
 	}
 
 	/**

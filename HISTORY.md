@@ -7,6 +7,7 @@ BUG: Issue #1497 - A `TWizardStep` added to another `TWizard` moves to it; it th
 BUG: Issue #1497 - `TWizardNavigationButtonStyle::copyFrom()` takes the source's image URL, button text, and button type, and `mergeWith()` keeps its own, as their docblocks and `TStyle` state; the two were reversed. (belisoful)
 BUG: Issue #1497 - `TAccordion` and `TTabPanel` register no CSS file for an empty `CssUrl` in a template; it published the default CSS. (belisoful)
 BUG: Issue #1497 - `TAccordion` and `TTabPanel` render without views or without an active view, and ignore a posted index that is not a view's; these threw `TInvalidDataValueException`. (belisoful)
+BUG: Issue #1497 - Setting `TTabPanel::ActiveViewIndex` clears `ActiveViewID`, as in `TAccordion`; an index set on postback was ignored after the panel recorded the active view's ID. See UPGRADE.md. (belisoful)
 BUG: Issue #1497 - `TAccordionViewCollection` names `TAccordion` in the error for a child that is not a `TAccordionView`. (belisoful)
 BUG: Issue #1497 - `TAccordionView` and `TTabView` attribute-encode `NavigateUrl` in the header and tab link. (belisoful)
 ENH: Issue #1635 - `TMultibyteString::cut()` returns part of a UTF-8 string by byte position on character boundaries, as `mb_strcut()` does, for text bounded in bytes. (belisoful)

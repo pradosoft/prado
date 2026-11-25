@@ -19,7 +19,7 @@ Extends `[TWebControl](./TWebControl.md)`, implements `[IPostBackDataHandler](..
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
 | `ActiveViewIndex` | int | 0 | Zero-based index of the visible tab |
-| `ActiveViewID` | string | '' | ID of the active `TTabView` (takes precedence over index if set) |
+| `ActiveViewID` | string | '' | ID of the active `TTabView`; a non-empty ID takes precedence over the index. Setting `ActiveViewIndex` clears it |
 | `ActiveView` | TTabView | — | The active TTabView control |
 | `AutoSwitch` | bool | false | Whether hovering a tab caption switches to its view |
 | `CssUrl` | string | `default` | URL of the CSS file; `default` publishes the embedded `tabpanel.css`, `''` registers no CSS file |
@@ -52,7 +52,7 @@ $panel->getDataChanged(): bool
 
 `TTabPanel` implements `IPostBackDataHandler` to receive the active tab index from the hidden postback field. On postback, if the active tab changed, `raisePostDataChangedEvent()` is called (no public event raised — the active view is simply updated).
 
-**`ActiveViewID` takes precedence** — if `ActiveViewID` is set, it overrides `ActiveViewIndex` for determining the active tab.
+**`ActiveViewID` takes precedence** — a non-empty `ActiveViewID` overrides `ActiveViewIndex`. Setting `ActiveViewIndex` clears `ActiveViewID`, so of the two the one set last selects the tab.
 
 ## Template Usage
 
@@ -84,7 +84,7 @@ Override default styles by setting `CssUrl` to a custom stylesheet. Default CSS 
 
 ## Patterns & Gotchas
 
-- **`ActiveViewID` vs `ActiveViewIndex`** — `ActiveViewID` takes precedence. Set `ActiveViewID` to `''` to use index-based selection. `getActiveView()` records the active view's ID, so after it runs a new `ActiveViewIndex` needs `ActiveViewID=''` too.
+- **`ActiveViewID` vs `ActiveViewIndex`** — `getActiveView()` records both the index and the ID of the active view. Setting `ActiveViewIndex` clears the ID (as in `TAccordion`, since 4.4.0), so an index set on postback selects the tab.
 - **Without views** — a tab panel without views has no active view and renders an empty `div`. `loadPostData()` ignores a posted index that is not the index of a view.
 - **JavaScript required** — tab switching without a page reload requires the published JS. Ensure assets are published (`TAssetManager`).
 - **`AutoSwitch=true`** — the tab under the pointer becomes active without a click. Tabs always switch on the client; the active index posts back in the `<ClientID>_1` hidden field.
