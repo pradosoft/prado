@@ -193,6 +193,7 @@ class THtmlArea5Test extends TestCase
 		$this->assertSame('250px', $options['height']);
 		$this->assertTrue($options['menubar']);
 		$this->assertArrayNotHasKey('readonly', $options);
+		$this->assertDoesNotMatchRegularExpression('/\bon[a-z]+\b/', $options['extended_valid_elements']);
 	}
 
 	public function testReadOnlyEditorOptions()

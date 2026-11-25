@@ -400,6 +400,8 @@ class THtmlArea extends TTextBox
 
 	/**
 	 * Default editor options gives basic tool bar only.
+	 * The default `extended_valid_elements` allow no event handler attributes; add them through
+	 * {@see setOptions Options} when needed.
 	 * @return array editor initialization options.
 	 */
 	protected function getEditorOptions()
@@ -419,7 +421,7 @@ class THtmlArea extends TTextBox
 		$options['theme_advanced_toolbar_location'] = 'top';
 		$options['theme_advanced_toolbar_align'] = 'left';
 		$options['theme_advanced_path_location'] = 'bottom';
-		$options['extended_valid_elements'] = 'a[name|href|target|title|onclick],img[class|src|border=0|alt|title|hspace|vspace|width|height|align|onmouseover|onmouseout|name],hr[class|width|size|noshade],font[face|size|color|style],span[class|align|style]';
+		$options['extended_valid_elements'] = 'a[name|href|target|title],img[class|src|border=0|alt|title|hspace|vspace|width|height|align|name],hr[class|width|size|noshade],font[face|size|color|style],span[class|align|style]';
 		if ($this->getReadOnly()) {
 			$options['readonly'] = true;
 		}

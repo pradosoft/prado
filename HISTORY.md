@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `THtmlArea` and `THtmlArea5` allow no event handler attributes in their default `extended_valid_elements`; `onclick` on `a` and `onmouseover`/`onmouseout` on `img` let editor content carry script. See UPGRADE.md. (belisoful)
 BUG: Issue #1497 - `TColorPicker` shows `Text` as its button's background only when it is a CSS color (`isCssColor()`); posted text such as `red;background-image:url(...)` added CSS declarations to the button's style. (belisoful)
 BUG: Issue #1497 - `TBulletedList` LinkButton item links have the ID `{ClientID}_c{index}`; `{ClientID}{index}` let two lists share an ID. UPGRADE.md lists the change. (belisoful)
 BUG: Issue #1497 - `TBulletedList` in the HyperLink and LinkButton modes renders its `AccessKey` on the first enabled item link only; the list and every item link carried it. (belisoful)
