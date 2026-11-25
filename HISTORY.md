@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TTable` with `CaptionAlign` `Left` or `Right` renders `caption-side:top` and `text-align`; it rendered `caption-side:left` or `right`, which are not CSS values, so the caption kept its default alignment. (belisoful)
 BUG: Issue #1497 - `TTableStyle::reset()` clears the TStyle fields, CSS class, custom style, and font; it reset only the table properties. (belisoful)
 BUG: Issue #1497 - `TTableItemStyle::copyFrom()` lets the source win and `mergeWith()` lets the target win for `HorizontalAlign`, `VerticalAlign`, and `Wrap`, as for the TStyle fields; the two were reversed, so a TDataGrid or TDataList selected or edit item took `ItemStyle`'s alignment and `Wrap` over `SelectedItemStyle`'s and `EditItemStyle`'s. (belisoful)
 BUG: Issue #1497 - `TRepeatInfo` in the Vertical direction renders a separator after each item but the last; it left out one separator, so a `TDataList` of two items rendered none. (belisoful)

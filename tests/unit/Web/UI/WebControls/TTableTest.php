@@ -11,6 +11,8 @@ use Prado\Web\UI\WebControls\TTableRow;
 use Prado\Web\UI\WebControls\TTableFooterRow;
 use Prado\Web\UI\WebControls\TTableHeaderRow;
 use Prado\Web\UI\WebControls\TTableRowSection;
+use Prado\Web\UI\WebControls\TTableCaptionAlign;
+use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Web\UI\WebControls\TTableStyle;
 use Prado\Web\UI\WebControls\TTableGridLines;
 use Prado\Web\UI\WebControls\THorizontalAlign;
@@ -285,5 +287,45 @@ class TTableTest extends TestCase
 		} catch (TConfigurationException $e) {
 			$this->assertSame('table_tablesection_outoforder', $e->getErrorCode());
 		}
+	}
+
+	// ================================================================================
+	// Caption alignment
+	// ================================================================================
+
+	public static function captionAlignProvider(): array
+	{
+		return [
+			'NotSet' => [TTableCaptionAlign::NotSet, '<caption>Sales</caption>'],
+			'Top' => [TTableCaptionAlign::Top, '<caption style="caption-side:top;">Sales</caption>'],
+			'Bottom' => [TTableCaptionAlign::Bottom, '<caption style="caption-side:bottom;">Sales</caption>'],
+			'Left' => [TTableCaptionAlign::Left, '<caption style="caption-side:top;text-align:left;">Sales</caption>'],
+			'Right' => [TTableCaptionAlign::Right, '<caption style="caption-side:top;text-align:right;">Sales</caption>'],
+		];
+	}
+
+	/**
+	 * @dataProvider captionAlignProvider
+	 */
+	public function testCaptionAlign(string $align, string $expected)
+	{
+		$table = new TTable();
+		$table->setCaption('Sales');
+		$table->setCaptionAlign($align);
+		$this->assertSame($align, $table->getCaptionAlign());
+		$this->assertSame('<table>' . $expected . '</table>', $this->render($table));
+	}
+
+	public function testCaptionAlignWithoutCaptionRendersNoCaption()
+	{
+		$table = new TTable();
+		$table->setCaptionAlign(TTableCaptionAlign::Left);
+		$this->assertSame('<table></table>', $this->render($table));
+	}
+
+	public function testCaptionAlignRejectsInvalidValues()
+	{
+		$this->expectException(TInvalidDataValueException::class);
+		(new TTable())->setCaptionAlign('Center');
 	}
 }
