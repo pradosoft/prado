@@ -213,6 +213,21 @@ class TTableStyleTest extends TestCase
 		$this->assertSame($this->defaults(), $this->properties($style));
 	}
 
+	public function testResetClearsTheBaseStyle()
+	{
+		$style = $this->createFullStyle();
+		$style->setWidth('10px');
+		$style->setCssClass('grid');
+		$style->setCustomStyle('color:red');
+		$style->getFont()->setBold(true);
+		$style->reset();
+		$this->assertFalse($style->getHasStyleFields());
+		$this->assertFalse($style->getHasCssClass());
+		$this->assertFalse($style->getHasCustomStyle());
+		$this->assertFalse($style->getHasFont());
+		$this->assertSame('<table></table>', $this->renderStyle($style));
+	}
+
 	public function testCopyFromTableStyleOverwrites()
 	{
 		$target = new TTableStyle();

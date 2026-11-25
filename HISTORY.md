@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TTableStyle::reset()` clears the TStyle fields, CSS class, custom style, and font; it reset only the table properties. (belisoful)
 BUG: Issue #1497 - `TTableItemStyle::copyFrom()` lets the source win and `mergeWith()` lets the target win for `HorizontalAlign`, `VerticalAlign`, and `Wrap`, as for the TStyle fields; the two were reversed, so a TDataGrid or TDataList selected or edit item took `ItemStyle`'s alignment and `Wrap` over `SelectedItemStyle`'s and `EditItemStyle`'s. (belisoful)
 BUG: Issue #1497 - `TRepeatInfo` in the Vertical direction renders a separator after each item but the last; it left out one separator, so a `TDataList` of two items rendered none. (belisoful)
 BUG: Issue #1497 - `TDataGrid` and `TDataList` return an item that leaves edit mode to the selected state when it is the selected item, and `TDataList::setEditItemIndex()` skips an item renderer that has no item type; the item became a normal item, and a plain renderer threw `TUnknownMethodException`. (belisoful)
