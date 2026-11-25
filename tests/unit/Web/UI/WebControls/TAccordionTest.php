@@ -71,6 +71,20 @@ class TAccordionTest extends TestCase
 		$this->assertSame('default', $accordion->getCssUrl());
 	}
 
+	public function testViewCollection()
+	{
+		$accordion = $this->createAccordion();
+		$views = $accordion->getViews();
+		$this->assertInstanceOf(TAccordionViewCollection::class, $views);
+		$this->assertSame($accordion->getControls(), $views);
+		$this->assertSame(1, $views->findIndexByID('b'));
+		$this->assertSame(-1, $views->findIndexByID('missing'));
+
+		$this->expectException(TInvalidDataTypeException::class);
+		$this->expectExceptionMessage('TAccordion can only accept TAccordionView as child.');
+		$views->add(new TLiteral());
+	}
+
 	public function testLoadPostDataIgnoresAnIndexOutsideTheViews()
 	{
 		$accordion = $this->createAccordion();
