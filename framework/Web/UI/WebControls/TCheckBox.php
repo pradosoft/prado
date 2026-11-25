@@ -66,6 +66,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 
 	/**
 	 * Loads user input data.
+	 * A posted value that is not a scalar, such as an array from a `name[]` field, changes nothing.
 	 * This method is primarly used by framework developers.
 	 * @param string $key the key that can be used to retrieve data from the input data collection
 	 * @param array $values the input data collection
@@ -73,6 +74,9 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function loadPostData($key, $values)
 	{
+		if (isset($values[$key]) && !is_scalar($values[$key])) {
+			return false;
+		}
 		$checked = $this->getChecked();
 		if ($newChecked = isset($values[$key])) {
 			$this->setValue($values[$key]);

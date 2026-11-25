@@ -288,7 +288,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 
 	/**
 	 * Loads user input data from the `<ClientID>_1` hidden field.
-	 * Post data without the field leaves the value unchanged.
+	 * Post data without the field, or with a value that is not a scalar, leaves the value unchanged.
 	 * This method is primarly used by framework developers.
 	 * @param string $key the key that can be used to retrieve data from the input data collection
 	 * @param array $values the input data collection
@@ -296,7 +296,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	public function loadPostData($key, $values)
 	{
-		if (!isset($values[$this->getClientID() . '_1'])) {
+		if (!is_scalar($values[$this->getClientID() . '_1'] ?? null)) {
 			return false;
 		}
 		$value = (float) $values[$this->getClientID() . '_1'];

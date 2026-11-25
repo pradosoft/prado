@@ -444,4 +444,13 @@ class TCheckBoxTest extends TestCase
 	{
 		$this->assertSame('input', PradoUnit::invoke(new TCheckBox(), 'getTagName'));
 	}
+
+	public function testLoadPostDataIgnoresAnArrayValue()
+	{
+		$checkBox = new TCheckBox();
+		$checkBox->setValue('yes');
+		$this->assertFalse($checkBox->loadPostData('cb', ['cb' => ['x']]));
+		$this->assertFalse($checkBox->getChecked());
+		$this->assertSame('yes', $checkBox->getValue());
+	}
 }

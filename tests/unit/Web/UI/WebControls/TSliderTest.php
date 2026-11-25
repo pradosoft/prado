@@ -285,4 +285,12 @@ class TSliderTest extends TestCase
 			}
 		}
 	}
+
+	public function testLoadPostDataIgnoresAnArrayValue()
+	{
+		[$slider] = $this->createSlider();
+		$slider->setValue(7);
+		$this->assertFalse($slider->loadPostData('sl', ['sl_1' => ['9']]));
+		$this->assertSame(7.0, $slider->getValue());
+	}
 }
