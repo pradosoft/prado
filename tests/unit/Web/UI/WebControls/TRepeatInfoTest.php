@@ -372,4 +372,48 @@ class TRepeatInfoTest extends TestCase
 			$this->render($this->createInfo(TRepeatLayout::Flow, TRepeatDirection::Vertical, 3), $this->createItemsUser(7))
 		);
 	}
+
+	public function testVerticalTableRendersASeparatorAfterEachItemButTheLast()
+	{
+		$this->assertSame(
+			"<table id=\"List\">\n<tbody><tr><td>Item0</td>\n</tr><tr><td>Separator0</td>\n</tr>\n"
+			. "<tr><td>Item1</td>\n</tr><tr><td>Separator1</td>\n</tr>\n<tr><td>Item2</td>\n</tr>\n</tbody></table>",
+			$this->render($this->createInfo(TRepeatLayout::Table), $this->createItemsUser(3, false, false, true))
+		);
+	}
+
+	public function testVerticalTableColumnsRenderASeparatorAfterEachItemButTheLast()
+	{
+		$info = $this->createInfo(TRepeatLayout::Table, TRepeatDirection::Vertical, 2);
+		$this->assertSame(
+			"<table id=\"List\">\n<tbody><tr><td>Item0</td>\n<td>Separator0</td>\n<td>Item2</td>\n<td>Separator2</td>\n</tr>\n"
+			. "<tr><td>Item1</td>\n<td>Separator1</td>\n<td>Item3</td>\n<td></td>\n</tr>\n</tbody></table>",
+			$this->render($info, $this->createItemsUser(4, false, false, true))
+		);
+		$this->assertSame(
+			"<table id=\"List\">\n<tbody><tr><td>Item0</td>\n<td>Separator0</td>\n<td>Item2</td>\n<td></td>\n</tr>\n"
+			. "<tr><td>Item1</td>\n<td>Separator1</td>\n<td></td>\n<td></td>\n</tr>\n</tbody></table>",
+			$this->render($info, $this->createItemsUser(3, false, false, true)),
+			'the separator of the last item is never requested'
+		);
+	}
+
+	public function testVerticalTableAppliesTheSeparatorStyle()
+	{
+		$user = $this->createItemsUser(2, false, false, true);
+		$user->styles = [TListItemType::Separator . '0' => $this->style('s')];
+		$this->assertStringContainsString('<td class="s">Separator0</td>', $this->render($this->createInfo(TRepeatLayout::Table), $user));
+	}
+
+	public function testVerticalFlowRendersASeparatorAfterEachItemButTheLast()
+	{
+		$this->assertSame(
+			"<span id=\"List\">\nItem0\n<br/>Separator0\n<br/>Item1\n<br/>Separator1\n<br/>Item2\n\n</span>",
+			$this->render($this->createInfo(TRepeatLayout::Flow), $this->createItemsUser(3, false, false, true))
+		);
+		$this->assertSame(
+			"<span id=\"List\">\nItem0\nSeparator0\nItem2\n\n<br/>Item1\nSeparator1\n</span>",
+			$this->render($this->createInfo(TRepeatLayout::Flow, TRepeatDirection::Vertical, 2), $this->createItemsUser(3, false, false, true))
+		);
+	}
 }

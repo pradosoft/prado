@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TRepeatInfo` in the Vertical direction renders a separator after each item but the last; it left out one separator, so a `TDataList` of two items rendered none. (belisoful)
 BUG: Issue #1497 - `TDataGrid` and `TDataList` return an item that leaves edit mode to the selected state when it is the selected item, and `TDataList::setEditItemIndex()` skips an item renderer that has no item type; the item became a normal item, and a plain renderer threw `TUnknownMethodException`. (belisoful)
 ENH: Issue #1635 - `TMultibyteString::cut()` returns part of a UTF-8 string by byte position on character boundaries, as `mb_strcut()` does, for text bounded in bytes. (belisoful)
 BUG: Issue #1634 - `TBinaryStream::readBytes()` reads in `CHUNK_SIZE` pieces, so a length past the end of the stream throws `TIOException`; it allocated the whole length first, and a large one exhausted memory. (belisoful)
