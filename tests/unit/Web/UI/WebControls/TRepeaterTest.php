@@ -631,4 +631,34 @@ class TRepeaterTest extends TestCase
 		$this->assertNull($repeater->getHeader());
 		$this->assertNull($repeater->getFooter());
 	}
+
+	public function testRenderNeedsItemsOrEmptyContent()
+	{
+		$cases = [
+			// [bind data, empty template, empty renderer, renders]
+			[null, false, false, false],
+			[null, true, false, true],
+			[null, false, true, true],
+			[[], false, false, false],
+			[[], true, true, true],
+			[[], false, true, true],
+			[['a'], false, false, true],
+		];
+		foreach ($cases as $i => [$data, $template, $renderer, $renders]) {
+			$repeater = $this->newRepeater();
+			if ($template) {
+				$repeater->setEmptyTemplate(new TTestDataTemplate('E'));
+			}
+			if ($renderer) {
+				$repeater->setEmptyRenderer(TRepeaterTestPlainRenderer::class);
+			}
+			if ($data !== null) {
+				$this->bind($repeater, $data);
+			}
+			$marker = new TLiteral();
+			$marker->setText('M');
+			$repeater->getControls()->add($marker);
+			$this->assertSame($renders, str_contains($this->render($repeater), 'M'), "case $i");
+		}
+	}
 }

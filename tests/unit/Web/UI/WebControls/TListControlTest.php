@@ -1088,4 +1088,94 @@ class TListControlTest extends TestCase
 		$this->renderBeginTag($list);
 		$this->assertSame([], $page->getClientScript()->getPostBackControls());
 	}
+
+	// ================================================================================
+	// Paths (#1497)
+	// ================================================================================
+
+	public function testCloneWithAnEmptyItemCollection()
+	{
+		$list = $this->createList();
+		$items = $list->getItems();
+		$clone = clone $list;
+		$this->assertNotSame($items, $clone->getItems());
+		$this->assertSame(0, $clone->getItemCount());
+	}
+
+	public function testSelectionQueriesOfAnEmptyItemCollection()
+	{
+		$list = $this->createList(true);
+		$list->getItems();
+		$this->assertSame(-1, $list->getSelectedIndex());
+		$this->assertSame([], $list->getSelectedIndices());
+		$this->assertSame([], $list->getSelectedValues());
+	}
+
+	public function testSelectedValuesOfOneItem()
+	{
+		$list = $this->createList(true, ['a' => 'A']);
+		$this->assertSame([], $list->getSelectedValues());
+		$list->getItems()->itemAt(0)->setSelected(true);
+		$this->assertSame(['a'], $list->getSelectedValues());
+	}
+
+	public function testClearSelectionWithAndWithoutAnAdapter()
+	{
+		foreach ([false, true] as $withAdapter) {
+			foreach (['none', 'empty', 'one'] as $items) {
+				$list = $this->createList(true, $items === 'one' ? ['a' => 'A'] : []);
+				if ($items === 'empty') {
+					$list->getItems();
+				} elseif ($items === 'one') {
+					$list->getItems()->itemAt(0)->setSelected(true);
+				}
+				if ($withAdapter) {
+					$list->setAdapter($adapter = new TListControlTestAdapter($list));
+				}
+				$list->clearSelection();
+				$this->assertSame([], $list->getSelectedIndices(), "$items items");
+				if ($withAdapter) {
+					$this->assertSame([['clearSelection']], $adapter->getCalls(), "$items items");
+				}
+			}
+		}
+	}
+
+	public function testSetSelectedIndicesOfEachIndexWithAndWithoutAnAdapter()
+	{
+		$cases = [
+			'no items' => [null, [0], []],
+			'no indices' => [['a' => 'A'], [], []],
+			'negative' => [['a' => 'A'], [-1], []],
+			'past the end' => [['a' => 'A'], [1], []],
+			'in range' => [['a' => 'A'], [0], [0]],
+		];
+		foreach ([false, true] as $withAdapter) {
+			foreach ($cases as $name => [$items, $indices, $selected]) {
+				$list = $this->createList(true, $items ?? []);
+				if ($withAdapter) {
+					$list->setAdapter($adapter = new TListControlTestAdapter($list));
+				}
+				$list->setSelectedIndices($indices);
+				$this->assertSame($selected, $list->getSelectedIndices(), $name);
+				$this->assertSame($indices, PradoUnit::getProp($list, '_cachedSelectedIndices'), $name);
+				if ($withAdapter) {
+					$calls = $adapter->getCalls();
+					$this->assertSame(['setSelectedIndices', $indices], end($calls), $name);
+				}
+			}
+		}
+	}
+
+	public function testSetSelectedValueNullOrMissingForwardsToTheAdapter()
+	{
+		foreach ([null, 'missing'] as $value) {
+			$list = $this->createList(false, ['a' => 'A']);
+			$list->getItems()->itemAt(0)->setSelected(true);
+			$list->setAdapter($adapter = new TListControlTestAdapter($list));
+			$list->setSelectedValue($value);
+			$this->assertSame(-1, $list->getSelectedIndex());
+			$this->assertSame([['clearSelection'], ['setSelectedValue', $value]], $adapter->getCalls());
+		}
+	}
 }

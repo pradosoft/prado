@@ -160,6 +160,18 @@ class TDataBoundControlTest extends TestCase
 		$this->assertSame([['a', 'b'], ['c', 'c']], $this->control->getDataSource()->toArray());
 	}
 
+	public function testSetDataSourceEmptyStringIsAnEmptyList(): void
+	{
+		$this->control->setDataSource('');
+		$this->assertSame([], $this->control->getDataSource()->toArray());
+	}
+
+	public function testSetDataSourceStringOfArraysOnly(): void
+	{
+		$this->control->setDataSource('[["a","b"]]');
+		$this->assertSame([['a', 'b']], $this->control->getDataSource()->toArray());
+	}
+
 	public function testSetDataSourceCommaSeparatedString(): void
 	{
 		$this->control->setDataSource('a,b');

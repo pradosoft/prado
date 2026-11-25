@@ -1,4 +1,6 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TRepeatInfo` in the Vertical direction renders a separator after each item but the last; it left out one separator, so a `TDataList` of two items rendered none. (belisoful)
+BUG: Issue #1497 - `TDataGrid` and `TDataList` return an item that leaves edit mode to the selected state when it is the selected item, and `TDataList::setEditItemIndex()` skips an item renderer that has no item type; the item became a normal item, and a plain renderer threw `TUnknownMethodException`. (belisoful)
 BUG: Issue #1497 - `TStyle::setDisplayStyle()` with `Fixed` or `Hidden` removes the `display:none` that `None` wrote, and `copyFrom()` and `mergeWith()` carry a display style that is not the source's default; a control set to `None` and then `Fixed` stayed hidden. (belisoful)
 BUG: Issue #1497 - `TWizard` keeps an `ActiveStepIndex` set before its steps are added, and keeps the active step when its child controls are recreated; both reset to the first step. (belisoful)
 BUG: Issue #1497 - `TWizard` restores the current step when a `MoveTo` command naming a step ID is cancelled; it activated the last step it compared. (belisoful)

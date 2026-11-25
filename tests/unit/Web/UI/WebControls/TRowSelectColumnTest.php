@@ -213,4 +213,114 @@ class TRowSelectColumnTest extends TestCase
 		$this->assertMatchesRegularExpression('#<th><input [^>]*type="checkbox"[^>]*aria-label="Select all rows"#', $output);
 		$this->assertMatchesRegularExpression('#<td><input [^>]*type="checkbox"[^>]*aria-label="Select row 1"#', $output);
 	}
+
+	public function testRowCheckBoxesOfAColumnWithoutAGrid()
+	{
+		$column = new TRowSelectColumn();
+		$this->assertSame([], $column->getRowCheckBoxes(), 'no cell initialized');
+		$column->initializeCell(new \Prado\Web\UI\WebControls\TTableCell(), 0, \Prado\Web\UI\WebControls\TListItemType::Item);
+		$this->assertSame([], $column->getRowCheckBoxes(), 'no grid');
+		$this->assertSame([], $column->getSelectedIndices());
+		$this->assertSame([], $column->getSelectedKeys());
+	}
+
+	public function testRowCheckBoxesOfAGridWithoutRows()
+	{
+		$column = new TRowSelectColumn();
+		$grid = $this->createGrid($column);
+		$this->bind($grid, 0);
+		$this->assertSame([], $column->getRowCheckBoxes());
+	}
+
+	public function testRowCheckBoxesSkipRowsWithoutTheCheckBox()
+	{
+		$column = new TRowSelectColumn();
+		$grid = $this->createGrid($column);
+		$this->bind($grid, 3);
+		$items = $grid->getItems();
+		$items->itemAt(0)->getCells()->itemAt(0)->unregisterObject('CheckBox');
+		$cells = $items->itemAt(1)->getCells();
+		$cells->removeAt(1);
+		$cells->removeAt(0);
+		$checkBoxes = $column->getRowCheckBoxes();
+		$this->assertSame([2], array_keys($checkBoxes));
+		$checkBoxes[2]->setChecked(true);
+		$this->assertSame([2], $column->getSelectedIndices());
+		$this->assertSame(['k2'], $column->getSelectedKeys());
+	}
+
+	public function testSelectedKeysOfRowsPastTheDataKeys()
+	{
+		$column = new TRowSelectColumn();
+		$grid = $this->createGrid($column);
+		$this->bind($grid, 2);
+		foreach ($column->getRowCheckBoxes() as $checkBox) {
+			$checkBox->setChecked(true);
+		}
+		$grid->getDataKeys()->removeAt(1);
+		$this->assertSame([0, 1], $column->getSelectedIndices());
+		$this->assertSame(['k0'], $column->getSelectedKeys());
+	}
+
+	public function testRegisterClientScriptWithoutRows()
+	{
+		$column = new TRowSelectColumn();
+		$grid = $this->createGrid($column);
+		$page = $this->bind($grid, 0);
+		$selectAll = new TCheckBox();
+		$grid->getControls()->add($selectAll);
+		$column->registerClientScript($selectAll, null);
+		$this->assertSame([['Prado.WebUI.TRowSelectColumn', ['ID' => $selectAll->getClientID(), 'CheckBoxIDs' => []]]], $page->getClientScript()->postBackControls);
+	}
+
+	public function testRowCheckBoxesOfAnInitializedColumnInAGridWithoutRows()
+	{
+		$column = new TRowSelectColumn();
+		$this->createGrid($column);
+		$column->initializeCell(new \Prado\Web\UI\WebControls\TTableCell(), 0, \Prado\Web\UI\WebControls\TListItemType::Item);
+		$this->assertSame([], $column->getRowCheckBoxes());
+	}
+
+	public function testRowCheckBoxesWhenNoRowHasTheCheckBox()
+	{
+		$column = new TRowSelectColumn();
+		$grid = $this->createGrid($column);
+		$this->bind($grid, 2);
+		foreach ($grid->getItems() as $item) {
+			$item->getCells()->itemAt(0)->unregisterObject('CheckBox');
+		}
+		$this->assertSame([], $column->getRowCheckBoxes());
+	}
+
+	public function testRowCheckBoxesWhenNoRowHasTheColumnCell()
+	{
+		$column = new TRowSelectColumn();
+		$grid = $this->createGrid($column);
+		$this->bind($grid, 2);
+		foreach ($grid->getItems() as $item) {
+			$item->getCells()->clear();
+		}
+		$this->assertSame([], $column->getRowCheckBoxes());
+	}
+
+	public function testSelectedIndicesWhenNoRowIsChecked()
+	{
+		$column = new TRowSelectColumn();
+		$grid = $this->createGrid($column);
+		$this->bind($grid, 2);
+		$this->assertCount(2, $column->getRowCheckBoxes());
+		$this->assertSame([], $column->getSelectedIndices());
+		$this->assertSame([], $column->getSelectedKeys());
+	}
+
+	public function testSelectedKeysWhenEverySelectedRowIsPastTheDataKeys()
+	{
+		$column = new TRowSelectColumn();
+		$grid = $this->createGrid($column);
+		$this->bind($grid, 2);
+		$column->getRowCheckBoxes()[1]->setChecked(true);
+		$grid->getDataKeys()->clear();
+		$this->assertSame([1], $column->getSelectedIndices());
+		$this->assertSame([], $column->getSelectedKeys());
+	}
 }

@@ -432,4 +432,61 @@ class TBulletedListTest extends TestCase
 		$this->assertSame("\n" . '<li><a disabled="disabled">A</a></li>' . "\n", $this->renderContents($list));
 		$this->assertSame([], $page->getClientScript()->getPostBackControls());
 	}
+
+	// ================================================================================
+	// Paths (#1497)
+	// ================================================================================
+
+	public function testRenderContentsWithoutItems()
+	{
+		[, $list] = $this->createPageList([]);
+		$this->assertSame("\n", $this->renderContents($list));
+	}
+
+	public function testRenderHyperLinkOfEachState()
+	{
+		foreach ([true, false] as $listEnabled) {
+			foreach ([true, false] as $itemEnabled) {
+				foreach (['', '_blank'] as $target) {
+					foreach (['', 'k'] as $accessKey) {
+						[, $list] = $this->createPageList(['/a' => 'A']);
+						$list->setDisplayMode(TBulletedListDisplayMode::HyperLink);
+						$list->setEnabled($listEnabled);
+						$list->getItems()->itemAt(0)->setEnabled($itemEnabled);
+						$list->setTarget($target);
+						$list->setAccessKey($accessKey);
+						$output = $this->renderContents($list);
+						$label = json_encode([$listEnabled, $itemEnabled, $target, $accessKey]);
+						$enabled = $listEnabled && $itemEnabled;
+						$this->assertSame($enabled, str_contains($output, 'href="/a"'), $label);
+						$this->assertSame($enabled && $target !== '', str_contains($output, 'target="_blank"'), $label);
+						$this->assertSame($accessKey !== '', str_contains($output, 'accesskey="k"'), $label);
+						$this->assertStringContainsString('>A</a></li>', $output, $label);
+					}
+				}
+			}
+		}
+	}
+
+	public function testRenderLinkButtonOfEachState()
+	{
+		foreach ([true, false] as $listEnabled) {
+			foreach ([true, false] as $itemEnabled) {
+				foreach (['', 'k'] as $accessKey) {
+					[$page, $list] = $this->createPageList(['a' => 'A']);
+					$list->setDisplayMode(TBulletedListDisplayMode::LinkButton);
+					$list->setEnabled($listEnabled);
+					$list->getItems()->itemAt(0)->setEnabled($itemEnabled);
+					$list->setAccessKey($accessKey);
+					$output = $this->renderContents($list);
+					$label = json_encode([$listEnabled, $itemEnabled, $accessKey]);
+					$enabled = $listEnabled && $itemEnabled;
+					$this->assertSame($enabled, str_contains($output, 'href="javascript:;//List0"'), $label);
+					$this->assertCount($enabled ? 1 : 0, $page->getClientScript()->getPostBackControls(), $label);
+					$this->assertSame($accessKey !== '', str_contains($output, 'accesskey="k"'), $label);
+					$this->assertStringContainsString('>A</a></li>', $output, $label);
+				}
+			}
+		}
+	}
 }

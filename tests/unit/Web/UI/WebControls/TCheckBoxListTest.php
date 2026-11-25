@@ -750,4 +750,38 @@ class TCheckBoxListTest extends TestCase
 		$this->assertStringContainsString('<input id="Box" type="checkbox"', $output);
 		$this->assertSame([], $page->getClientScript()->getPostBackControls());
 	}
+
+	// ================================================================================
+	// Paths (#1497)
+	// ================================================================================
+
+	public function testLoadPostDataIgnoresANegativeIndex()
+	{
+		[, $list] = $this->createPageList();
+		$this->assertFalse($list->loadPostData('List:c-1', ['List:c-1' => 'a']));
+		$this->assertSame([], $list->getSelectedIndices());
+	}
+
+	public function testRenderDisabledListCopiesTheItemAttributes()
+	{
+		[, $list] = $this->createPageList(['a' => 'A']);
+		$list->getItems()->itemAt(0)->setAttribute('class', 'hot');
+		$list->setEnabled(false);
+		$output = $this->render($list);
+		$this->assertStringContainsString('class="hot"', $output);
+		$this->assertStringContainsString('name="List:c0" disabled="disabled" />', $output);
+	}
+
+	public function testSetEnabledActiveOnCallbackWithoutItems()
+	{
+		$page = new TCheckBoxListTestCallbackPage();
+		$page->setIsCallback(true);
+		$list = new TCheckBoxListTestActiveList();
+		$list->setID('List');
+		$list->getItems();
+		$page->getControls()->add($list);
+		$list->setEnabled(false);
+		$this->assertFalse($list->getEnabled());
+		$this->assertSame([], $page->getCallbackClient()->getAttributes());
+	}
 }

@@ -211,4 +211,13 @@ class TReadOnlyDataSourceTest extends TestCase
 		$this->assertFalse($view->getCanUpdate());
 		$this->assertFalse($view->getCanDelete());
 	}
+
+	public function testEachAcceptedDataSourceKind(): void
+	{
+		$list = new \Prado\Collections\TList([1]);
+		$inner = new TReadOnlyDataSource([7], 'm');
+		$this->assertInstanceOf(TReadOnlyDataSource::class, new TReadOnlyDataSource([1], ''));
+		$this->assertSame($list, (new TReadOnlyDataSource($list, ''))->getView('')->select(null));
+		$this->assertSame([7], (new TReadOnlyDataSource($inner, ''))->getView('m')->select(null)->toArray());
+	}
 }

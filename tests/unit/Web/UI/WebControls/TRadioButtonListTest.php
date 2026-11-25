@@ -225,4 +225,32 @@ class TRadioButtonListTest extends TestCase
 		$this->assertStringContainsString('<input id="Radio" type="radio" name="Radio"', $output);
 		$this->assertSame([], $page->getClientScript()->getPostBackControls());
 	}
+
+	// ================================================================================
+	// Paths (#1497)
+	// ================================================================================
+
+	public function testLoadPostDataWithoutItems()
+	{
+		[, $list] = $this->createPageList([]);
+		$this->assertFalse($list->loadPostData('List', ['List' => 'a']));
+		$this->assertFalse($list->getDataChanged());
+	}
+
+	public function testLoadPostDataOfOneItem()
+	{
+		[, $list] = $this->createPageList(['a' => 'A']);
+		$list->getItems()->itemAt(0)->setEnabled(false);
+		$this->assertFalse($list->loadPostData('List', ['List' => 'a']), 'a disabled item');
+		$this->assertSame(-1, $list->getSelectedIndex());
+
+		[, $list] = $this->createPageList(['a' => 'A']);
+		$this->assertTrue($list->loadPostData('List', ['List' => 'a']), 'an unselected item');
+		$this->assertSame(0, $list->getSelectedIndex());
+
+		[, $list] = $this->createPageList(['a' => 'A']);
+		$list->setSelectedIndex(0);
+		$this->assertFalse($list->loadPostData('List', ['List' => 'a']), 'the selected item');
+		$this->assertFalse($list->getDataChanged());
+	}
 }

@@ -1952,4 +1952,109 @@ class TDataListTest extends TestCase
 		$this->assertSame(0, $list->getSelectedItemIndex());
 		$this->assertInstanceOf(TDataListTestPlainRenderer::class, $list->getSelectedItem());
 	}
+
+	// ------------------------------------------------------------------
+	// Paths (#1497)
+	// ------------------------------------------------------------------
+
+	public static function templateSetterProvider(): array
+	{
+		return [['ItemTemplate'], ['AlternatingItemTemplate'], ['SelectedItemTemplate'], ['EditItemTemplate'], ['HeaderTemplate'], ['FooterTemplate'], ['SeparatorTemplate'], ['EmptyTemplate']];
+	}
+
+	/**
+	 * @dataProvider templateSetterProvider
+	 */
+	public function testTemplateSettersAcceptNull(string $property): void
+	{
+		$list = new TDataList();
+		$list->{'set' . $property}(new StubTemplate());
+		$list->{'set' . $property}(null);
+		$this->assertNull($list->{'get' . $property}());
+	}
+
+	public static function styleGetterProvider(): array
+	{
+		return [['ItemStyle'], ['AlternatingItemStyle'], ['SelectedItemStyle'], ['EditItemStyle'], ['HeaderStyle'], ['FooterStyle'], ['SeparatorStyle']];
+	}
+
+	/**
+	 * @dataProvider styleGetterProvider
+	 */
+	public function testStyleGettersKeepTheirStyle(string $property): void
+	{
+		$list = new TDataList();
+		$style = $list->{'get' . $property}();
+		$this->assertInstanceOf(TTableItemStyle::class, $style);
+		$this->assertSame($style, $list->{'get' . $property}());
+	}
+
+	public function testSelectedAndEditItemPastTheItemsAreNull(): void
+	{
+		$list = $this->newBoundList(['a']);
+		$list->setSelectedItemIndex(3);
+		$list->setEditItemIndex(4);
+		$this->assertNull($list->getSelectedItem());
+		$this->assertNull($list->getEditItem());
+		$list->setDataKeyField('id');
+		$this->assertNull($list->getSelectedDataKey());
+	}
+
+	public function testSeparatorAfterAHeaderRenderer(): void
+	{
+		$list = new TDataList();
+		$list->setItemTemplate(new TTestDataTemplate('I'));
+		$list->setSeparatorTemplate(new TTestDataTemplate('S'));
+		$list->setHeaderRenderer(TDataListTestRenderer::class);
+		$list->setDataSource(['a', 'b']);
+		$list->dataBind();
+		$list->getControls()->itemAt(2)->getStyle()->setCssClass('s');
+		$this->assertSame('s', $list->generateItemStyle(TListItemType::Separator, 0)->getCssClass());
+	}
+
+	public function testRenderWithOnlyAnEmptyRenderer(): void
+	{
+		$list = new TDataList();
+		$list->setEmptyRenderer(TDataListTestPlainRenderer::class);
+		$list->setDataSource([]);
+		$list->dataBind();
+		$this->assertSame('<span>P</span>', $this->renderRaw($list));
+	}
+
+	public function testCreateItemDisplaysOfRenderersAndTemplates(): void
+	{
+		$list = new TDataListTestList();
+		$list->setItemTemplate(new TTestDataTemplate('I'));
+		$list->setAlternatingItemRenderer(TDataListTestRenderer::class);
+		$list->setSelectedItemRenderer(TDataListTestRenderer::class);
+		$list->setEditItemRenderer(TDataListTestRenderer::class);
+		foreach ([TListItemType::AlternatingItem, TListItemType::SelectedItem, TListItemType::EditItem] as $type) {
+			$this->assertInstanceOf(TDataListTestRenderer::class, $list->callCreateItem(1, $type), $type);
+		}
+		$list = new TDataListTestList();
+		$list->setItemRenderer(TDataListTestRenderer::class);
+		$list->setAlternatingItemTemplate(new TTestDataTemplate('A'));
+		$this->assertSame('A', $list->callCreateItem(1, TListItemType::SelectedItem)->getControls()->itemAt(0)->getText(), 'an odd selected item falls back to the alternating template');
+	}
+
+	public function testSelectionAndEditMoveFromAnIndexPastTheItems(): void
+	{
+		$list = $this->newBoundList(['a', 'b']);
+		$list->setSelectedItemIndex(5);
+		$list->setSelectedItemIndex(1);
+		$list->setEditItemIndex(6);
+		$list->setEditItemIndex(0);
+		$this->assertSame(['EditItem0', 'SelectedItem1'], $this->controlTypes($list));
+	}
+
+	public function testLeavingEditAndSelectionRestoresTheItemTypes(): void
+	{
+		$list = $this->newBoundList(['a', 'b', 'c']);
+		$list->setEditItemIndex(1);
+		$list->setEditItemIndex(0);
+		$this->assertSame(['EditItem0', 'AlternatingItem1', 'Item2'], $this->controlTypes($list), 'an odd item leaves edit mode as alternating');
+		$list->setSelectedItemIndex(0);
+		$list->setSelectedItemIndex(2);
+		$this->assertSame(['EditItem0', 'AlternatingItem1', 'SelectedItem2'], $this->controlTypes($list), 'deselecting keeps the edit item');
+	}
 }
