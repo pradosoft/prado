@@ -390,8 +390,8 @@ class TBulletedListTest extends TestCase
 		$list->setValidationGroup('g');
 		$this->assertSame(
 			"\n"
-			. '<li><a id="List0" href="javascript:;//List0">A</a></li>' . "\n"
-			. '<li><a id="List1" href="javascript:;//List1">B</a></li>' . "\n",
+			. '<li><a id="List_c0" href="javascript:;//List_c0">A</a></li>' . "\n"
+			. '<li><a id="List_c1" href="javascript:;//List_c1">B</a></li>' . "\n",
 			$this->renderContents($list)
 		);
 		$options = [
@@ -400,8 +400,8 @@ class TBulletedListTest extends TestCase
 			'EventTarget' => 'List',
 		];
 		$this->assertSame([
-			['Prado.WebUI.TBulletedList', $options + ['EventParameter' => 0, 'ID' => 'List0', 'StopEvent' => true]],
-			['Prado.WebUI.TBulletedList', $options + ['EventParameter' => 1, 'ID' => 'List1', 'StopEvent' => true]],
+			['Prado.WebUI.TBulletedList', $options + ['EventParameter' => 0, 'ID' => 'List_c0', 'StopEvent' => true]],
+			['Prado.WebUI.TBulletedList', $options + ['EventParameter' => 1, 'ID' => 'List_c1', 'StopEvent' => true]],
 		], $page->getClientScript()->getPostBackControls());
 	}
 
@@ -410,7 +410,7 @@ class TBulletedListTest extends TestCase
 		[, $list] = $this->createPageList(['a' => 'A']);
 		$list->setDisplayMode(TBulletedListDisplayMode::LinkButton);
 		$list->setAccessKey('k');
-		$this->assertStringContainsString('<a id="List0" href="javascript:;//List0" accesskey="k">A</a>', $this->renderContents($list));
+		$this->assertStringContainsString('<a id="List_c0" href="javascript:;//List_c0" accesskey="k">A</a>', $this->renderContents($list));
 	}
 
 	public function testRenderLinkButtonDisabledItem()
@@ -420,7 +420,7 @@ class TBulletedListTest extends TestCase
 		$list->getItems()->itemAt(0)->setEnabled(false);
 		$output = $this->renderContents($list);
 		$this->assertStringContainsString('<li><a disabled="disabled">A</a></li>', $output);
-		$this->assertStringContainsString('<li><a id="List1" href="javascript:;//List1">B</a></li>', $output);
+		$this->assertStringContainsString('<li><a id="List_c1" href="javascript:;//List_c1">B</a></li>', $output);
 		$this->assertCount(1, $page->getClientScript()->getPostBackControls());
 	}
 
@@ -460,7 +460,7 @@ class TBulletedListTest extends TestCase
 						$enabled = $listEnabled && $itemEnabled;
 						$this->assertSame($enabled, str_contains($output, 'href="/a"'), $label);
 						$this->assertSame($enabled && $target !== '', str_contains($output, 'target="_blank"'), $label);
-						$this->assertSame($accessKey !== '', str_contains($output, 'accesskey="k"'), $label);
+						$this->assertSame($enabled && $accessKey !== '', str_contains($output, 'accesskey="k"'), $label);
 						$this->assertStringContainsString('>A</a></li>', $output, $label);
 					}
 				}
@@ -481,12 +481,46 @@ class TBulletedListTest extends TestCase
 					$output = $this->renderContents($list);
 					$label = json_encode([$listEnabled, $itemEnabled, $accessKey]);
 					$enabled = $listEnabled && $itemEnabled;
-					$this->assertSame($enabled, str_contains($output, 'href="javascript:;//List0"'), $label);
+					$this->assertSame($enabled, str_contains($output, 'href="javascript:;//List_c0"'), $label);
 					$this->assertCount($enabled ? 1 : 0, $page->getClientScript()->getPostBackControls(), $label);
-					$this->assertSame($accessKey !== '', str_contains($output, 'accesskey="k"'), $label);
+					$this->assertSame($enabled && $accessKey !== '', str_contains($output, 'accesskey="k"'), $label);
 					$this->assertStringContainsString('>A</a></li>', $output, $label);
 				}
 			}
+		}
+	}
+
+	public function testAccessKeyIsOnTheFirstEnabledLinkOnly()
+	{
+		foreach ([TBulletedListDisplayMode::HyperLink, TBulletedListDisplayMode::LinkButton] as $mode) {
+			[, $list] = $this->createPageList(['a' => 'A', 'b' => 'B', 'c' => 'C']);
+			$list->setDisplayMode($mode);
+			$list->setAccessKey('k');
+			$list->getItems()->itemAt(0)->setEnabled(false);
+			$this->assertStringNotContainsString('accesskey', $this->renderBeginTag($list), "$mode: not on the list");
+			$output = $this->renderContents($list);
+			$this->assertSame(1, substr_count($output, 'accesskey="k"'), $mode);
+			$this->assertMatchesRegularExpression('#<a [^>]*accesskey="k"[^>]*>B</a>#', $output, $mode);
+			$this->assertSame(1, substr_count($this->renderContents($list), 'accesskey="k"'), "$mode: again on the next render");
+		}
+	}
+
+	public function testAccessKeyOfATextListIsOnTheList()
+	{
+		[, $list] = $this->createPageList(['a' => 'A']);
+		$list->setAccessKey('k');
+		$this->assertStringContainsString('accesskey="k"', $this->renderBeginTag($list));
+		$this->assertStringNotContainsString('accesskey', $this->renderContents($list));
+	}
+
+	public function testLinkButtonItemIdsSeparateTheIndex()
+	{
+		foreach (['L1' => 0, 'L' => 10] as $id => $index) {
+			$items = array_fill_keys(range(0, $index), 'x');
+			[, $list] = $this->createPageList($items);
+			$list->setID($id);
+			$list->setDisplayMode(TBulletedListDisplayMode::LinkButton);
+			$this->assertStringContainsString('<a id="' . $id . '_c' . $index . '" href="javascript:;//' . $id . '_c' . $index . '">', $this->renderContents($list));
 		}
 	}
 }

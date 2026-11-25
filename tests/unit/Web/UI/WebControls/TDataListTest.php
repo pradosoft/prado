@@ -1373,8 +1373,20 @@ class TDataListTest extends TestCase
 	public function testCreateItemWithoutTemplateOrRendererIsNull(): void
 	{
 		$list = new TDataListTestList();
-		foreach (self::createItemTemplateProvider() as [$type]) {
+		foreach ([TListItemType::Header, TListItemType::Footer, TListItemType::Separator] as $type) {
 			$this->assertNull($list->callCreateItem(0, $type), $type);
+		}
+	}
+
+	public function testCreateItemWithoutAnItemTemplateOrRendererIsAnEmptyItem(): void
+	{
+		$list = new TDataListTestList();
+		foreach ([TListItemType::Item, TListItemType::AlternatingItem, TListItemType::SelectedItem, TListItemType::EditItem] as $type) {
+			$item = $list->callCreateItem(2, $type);
+			$this->assertInstanceOf(TDataListItem::class, $item, $type);
+			$this->assertSame(2, $item->getItemIndex());
+			$this->assertSame($type, $item->getItemType());
+			$this->assertSame(0, $item->getControls()->getCount());
 		}
 	}
 
@@ -2056,5 +2068,42 @@ class TDataListTest extends TestCase
 		$list->setSelectedItemIndex(0);
 		$list->setSelectedItemIndex(2);
 		$this->assertSame(['EditItem0', 'AlternatingItem1', 'SelectedItem2'], $this->controlTypes($list), 'deselecting keeps the edit item');
+	}
+
+	public function testDataBindWithoutAnItemTemplateRendersHeaderAndFooter(): void
+	{
+		$list = new TDataList();
+		$list->setHeaderTemplate(new TTestDataTemplate('H'));
+		$list->setFooterTemplate(new TTestDataTemplate('F'));
+		$list->setSelectedItemIndex(1);
+		$list->setDataSource(['a', 'b']);
+		$list->dataBind();
+		$this->assertSame(['Header-1', 'Item0', 'SelectedItem1', 'Footer-1'], $this->controlTypes($list));
+		$this->assertSame('<div>H</div><div></div><div></div><div>F</div>', $this->renderRaw($list));
+
+		$restored = new TDataList();
+		$restored->setViewState('ItemCount', 2, 0);
+		$restored->loadState();
+		$this->assertSame(['Item0', 'AlternatingItem1'], $this->controlTypes($restored));
+	}
+
+	public function testSelectedAndEditItemsInheritTheStyleOfTheirIndex(): void
+	{
+		$list = $this->newBoundList(['a', 'b', 'c', 'd'], [], function ($list) {
+			$list->setSelectedItemIndex(1);
+			$list->setEditItemIndex(2);
+		});
+		$list->getItemStyle()->setForeColor('red');
+		$list->getItemStyle()->setCssClass('item');
+		$list->getAlternatingItemStyle()->setBackColor('gray');
+		$list->getSelectedItemStyle()->setCssClass('sel');
+		$list->callApplyItemStyles();
+		$items = $list->getItems();
+		$this->assertSame('sel', $items->itemAt(1)->getStyle()->getCssClass(), 'the selected style wins');
+		$this->assertSame('gray', $items->itemAt(1)->getStyle()->getBackColor(), 'an odd selected item takes AlternatingItemStyle');
+		$this->assertSame('red', $items->itemAt(1)->getStyle()->getForeColor(), 'through AlternatingItemStyle, ItemStyle');
+		$this->assertSame('sel', $items->itemAt(2)->getStyle()->getCssClass(), 'EditItemStyle inherits SelectedItemStyle');
+		$this->assertSame('red', $items->itemAt(2)->getStyle()->getForeColor(), 'an even edit item takes ItemStyle');
+		$this->assertSame('', $items->itemAt(2)->getStyle()->getBackColor());
 	}
 }

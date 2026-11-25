@@ -503,9 +503,12 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 
 	/**
 	 * Creates a repeater item instance based on the item type and index.
+	 * The renderer of the item type takes precedence over its template. An item or
+	 * alternating item with neither is an empty {@see TRepeaterItem}; a header, footer,
+	 * or separator with neither is not created.
 	 * @param int $itemIndex zero-based item index
 	 * @param string|TListItemType $itemType item type
-	 * @return \Prado\Web\UI\TControl created repeater item
+	 * @return ?\Prado\Web\UI\TControl created repeater item, null if the type has no content
 	 */
 	protected function createItem($itemIndex, $itemType)
 	{
@@ -543,11 +546,13 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 				$item->setItemIndex($itemIndex);
 				$item->setItemType($itemType);
 			}
-		} elseif ($template !== null) {
+		} elseif ($template !== null || $itemType === TListItemType::Item || $itemType === TListItemType::AlternatingItem) {
 			$item = new TRepeaterItem();
 			$item->setItemIndex($itemIndex);
 			$item->setItemType($itemType);
-			$template->instantiateIn($item);
+			if ($template !== null) {
+				$template->instantiateIn($item);
+			}
 		} else {
 			$item = null;
 		}

@@ -41,6 +41,10 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 	 */
 	private $_isEnabled;
 	private $_currentRenderItemIndex;
+	/**
+	 * @var string access key that the next enabled item link renders
+	 */
+	private $_pendingAccessKey = '';
 
 	/**
 	 * Raises the postback event.
@@ -136,6 +140,9 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 			$writer->addAttribute('start', "$start");
 		}
 		parent::addAttributesToRender($writer);
+		if ($this->getDisplayMode() !== TBulletedListDisplayMode::Text) {
+			$writer->removeAttribute('accesskey');
+		}
 	}
 
 	/**
@@ -254,6 +261,7 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 	public function renderContents($writer)
 	{
 		$this->_isEnabled = $this->getEnabled(true);
+		$this->_pendingAccessKey = $this->getAccessKey();
 		$writer->writeLine();
 		foreach ($this->getItems() as $index => $item) {
 			if ($item->getHasAttributes()) {
@@ -308,9 +316,7 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 			if (($target = $this->getTarget()) !== '') {
 				$writer->addAttribute('target', $target);
 			}
-		}
-		if (($accesskey = $this->getAccessKey()) !== '') {
-			$writer->addAttribute('accesskey', $accesskey);
+			$this->addAccessKeyToRender($writer);
 		}
 		$writer->renderBeginTag('a');
 		$writer->write(THttpUtility::htmlEncode($item->getText()));
@@ -323,13 +329,11 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 			$writer->addAttribute('disabled', 'disabled');
 		} else {
 			$this->_currentRenderItemIndex = $index;
-			$writer->addAttribute('id', $this->getClientID() . $index);
-			$writer->addAttribute('href', "javascript:;//" . $this->getClientID() . $index);
+			$writer->addAttribute('id', $id = $this->getItemClientID($index));
+			$writer->addAttribute('href', "javascript:;//" . $id);
 			$cs = $this->getPage()->getClientScript();
 			$cs->registerPostBackControl($this->getClientClassName(), $this->getPostBackOptions());
-		}
-		if (($accesskey = $this->getAccessKey()) !== '') {
-			$writer->addAttribute('accesskey', $accesskey);
+			$this->addAccessKeyToRender($writer);
 		}
 		$writer->renderBeginTag('a');
 		$writer->write(THttpUtility::htmlEncode($item->getText()));
@@ -337,6 +341,35 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 	}
 
 	/**
+	 * Adds the {@see getAccessKey AccessKey} to the first enabled item link.
+	 * The HyperLink and LinkButton modes render the access key on that link only,
+	 * so one element answers the key; the list element renders none.
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer for the rendering purpose
+	 * @since 4.4.0
+	 */
+	protected function addAccessKeyToRender($writer)
+	{
+		if ($this->_pendingAccessKey !== '') {
+			$writer->addAttribute('accesskey', $this->_pendingAccessKey);
+			$this->_pendingAccessKey = '';
+		}
+	}
+
+	/**
+	 * Returns the client ID of a LinkButton item link, `{ClientID}_c{index}`.
+	 * The separator keeps the IDs of two lists apart, such as list `L1` item 0
+	 * and list `L` item 10.
+	 * @param int $index zero-based index of the item
+	 * @return string the client ID of the item link
+	 * @since 4.4.0
+	 */
+	protected function getItemClientID($index)
+	{
+		return $this->getClientID() . '_c' . $index;
+	}
+
+	/**
+	 * Returns the postback options of the LinkButton item being rendered.
 	 * @return array postback options used for linkbuttons.
 	 */
 	protected function getPostBackOptions()
@@ -345,7 +378,7 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 		$options['CausesValidation'] = $this->getCausesValidation();
 		$options['EventTarget'] = $this->getUniqueID();
 		$options['EventParameter'] = $this->_currentRenderItemIndex;
-		$options['ID'] = $this->getClientID() . $this->_currentRenderItemIndex;
+		$options['ID'] = $this->getItemClientID($this->_currentRenderItemIndex);
 		$options['StopEvent'] = true;
 		return $options;
 	}

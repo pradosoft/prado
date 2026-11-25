@@ -232,6 +232,10 @@ Upgrading from v4.3.3
   `span` or `div` pagers selects `nav`; a pager placed inline in text styles `nav` with `display: inline`. The default
   `TWizard` side bar renders its steps as an `<ol>` instead of a `<table>`; CSS for the side bar table, or
   `list-style: none`, restores the previous look. A custom `SideBarTemplate` is unchanged.
+- Issue #1497 - A `TBulletedList` LinkButton item link has the ID `{ClientID}_c{index}`, such as `List_c0`; in 4.3 it
+  was `List0`, so list `L1` item 0 and list `L` item 10 shared `L10`. CSS, JavaScript, and tests that select an item
+  link by ID add `_c`. In the HyperLink and LinkButton modes the `AccessKey` is on the first enabled item link only;
+  in 4.3 the list and every item link carried it.
 - Issue #1497 - `TXmlElement` array access throws `TInvalidDataTypeException` for an offset that is not null, an int,
   a string, or a `Stringable`. In 4.3 a float or bool offset addressed the attribute named by its string, or raised a
   PHP error. Use an int child index or a string attribute name.

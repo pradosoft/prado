@@ -1,4 +1,8 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TBulletedList` LinkButton item links have the ID `{ClientID}_c{index}`; `{ClientID}{index}` let two lists share an ID. UPGRADE.md lists the change. (belisoful)
+BUG: Issue #1497 - `TBulletedList` in the HyperLink and LinkButton modes renders its `AccessKey` on the first enabled item link only; the list and every item link carried it. (belisoful)
+BUG: Issue #1497 - A `TDataList` selected or edit item inherits `ItemStyle` or `AlternatingItemStyle` by its index, as its docblock states and as in `TDataGrid`; it took only its own style. (belisoful)
+BUG: Issue #1497 - `TRepeater` and `TDataList` bound to data with no `ItemTemplate` or `ItemRenderer` create an empty item per row; they threw `TInvalidDataTypeException`. (belisoful)
 BUG: Issue #1497 - `TTable` with `CaptionAlign` `Left` or `Right` renders `caption-side:top` and `text-align`; it rendered `caption-side:left` or `right`, which are not CSS values, so the caption kept its default alignment. (belisoful)
 BUG: Issue #1497 - `TTableStyle::reset()` clears the TStyle fields, CSS class, custom style, and font; it reset only the table properties. (belisoful)
 BUG: Issue #1497 - `TTableItemStyle::copyFrom()` lets the source win and `mergeWith()` lets the target win for `HorizontalAlign`, `VerticalAlign`, and `Wrap`, as for the TStyle fields; the two were reversed, so a TDataGrid or TDataList selected or edit item took `ItemStyle`'s alignment and `Wrap` over `SelectedItemStyle`'s and `EditItemStyle`'s. (belisoful)
