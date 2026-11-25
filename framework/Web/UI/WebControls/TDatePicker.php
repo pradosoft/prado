@@ -681,6 +681,7 @@ class TDatePicker extends TTextBox
 	/**
 	 * Renders the drop down list date picker.
 	 * The lists select the date of {@see getText Text}, or today when Text does not parse.
+	 * The wrapping span carries the web control attributes, without the text box's input attributes.
 	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	protected function renderDropDownListCalendar($writer)
@@ -688,9 +689,9 @@ class TDatePicker extends TTextBox
 		if ($this->getMode() == TDatePickerMode::Basic) {
 			$this->setMode(TDatePickerMode::ImageButton);
 		}
-		parent::addAttributesToRender($writer);
-		$writer->removeAttribute('name');
-		$writer->removeAttribute('type');
+		$this->getPage()->ensureRenderInForm($this);
+		// the span takes the web control attributes; the text box's input attributes belong to no element here
+		TWebControl::addAttributesToRender($writer);
 		$writer->addAttribute('id', $this->getClientID());
 
 		if (strlen($class = $this->getCssClass()) > 0) {

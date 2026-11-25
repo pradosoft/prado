@@ -1041,4 +1041,22 @@ class TDatePickerTest extends TestCase
 		$cs->expects($this->exactly(2))->method('registerEndScript');
 		$this->assertStringEndsWith('TDatePickerImageButton" type="image" onclick="return false;" />', $this->renderPicker($picker));
 	}
+
+	public function testDropDownWrapperHasNoInputAttributes()
+	{
+		[$picker] = $this->createPicker();
+		$picker->setDateInputMode(TDatePickerInputMode::DropDownList);
+		$picker->setText('09-03-2026');
+		$picker->setColumns(10);
+		$picker->setMaxLength(10);
+		$picker->setPlaceholder('date');
+		$picker->setRequired(true);
+		$picker->setAutoCompleteType('Disabled');
+		$picker->setLang('fr');
+		$picker->setShowCalendar(false);
+		$output = $this->renderPicker($picker);
+		$span = substr($output, 0, strpos($output, '>') + 1);
+		$this->assertSame('<span id="d" lang="fr">', $span);
+		$this->assertStringContainsString('<input name="d" type="hidden" value="09-03-2026" />', $output);
+	}
 }

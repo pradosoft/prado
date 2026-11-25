@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TDatePicker` in DropDownList mode renders its wrapper `<span>` with the web control attributes only; it carried the text box's `value`, `maxlength`, `placeholder`, `required`, and other input attributes. (belisoful)
 BUG: Issue #1497 - `TCheckBox` and `TRadioButton` render their `data-*` Dataset and global attributes (`Lang`, `Hidden`, microdata, ...) with their custom Attributes, and `AutoFocus` on the input; they rendered none of them. `TWebControl::addGlobalAttributesToRender()` renders the global attributes. (belisoful)
 BUG: Issue #1497 - `TSlider::setStepSize()` throws `TInvalidDataValueException` for a step of 0 or less; a step of 0 threw `DivisionByZeroError` when the slider rendered. (belisoful)
 BUG: Issue #1497 - `TDatePicker::hasDayPattern()` is false for a format without a day; it compared with `null` and was always true. A month-year DropDownList picker keeps its popup calendar. (belisoful)
