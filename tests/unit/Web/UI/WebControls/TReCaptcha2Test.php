@@ -919,4 +919,156 @@ class TReCaptcha2Test extends \PHPUnit\Framework\TestCase
 			$captcha->getClientSide()
 		);
 	}
+
+	// -----------------------------------------------------------------------
+	// Client script and rendering
+	// -----------------------------------------------------------------------
+
+	private function makeScriptedCaptcha(): array
+	{
+		$page = $this->getMockBuilder(TPage::class)->onlyMethods(['getForm'])->getMock();
+		$form = new \Prado\Web\UI\TForm();
+		$form->setID('form1');
+		$page->method('getForm')->willReturn($form);
+		$cs = $this->getMockBuilder(\Prado\Web\UI\TClientScriptManager::class)->setConstructorArgs([$page])
+			->onlyMethods(['registerPradoScript', 'registerEndScript'])->getMock();
+		\Prado\Test\Unit\PradoUnit::setProp($page, '_clientScript', $cs);
+		$captcha = new TReCaptcha2();
+		$captcha->setID('Captcha');
+		$captcha->setSiteKey('site');
+		$page->getControls()->add($captcha);
+		return [$captcha, $cs];
+	}
+
+	public function testClientOptionsCarryTheWidgetOptions(): void
+	{
+		[$captcha] = $this->makeScriptedCaptcha();
+		$captcha->setTheme('dark');
+		$captcha->setType('audio');
+		$captcha->setSize('compact');
+		$captcha->setTabIndex(3);
+		$captcha->attachEventHandler('OnCallback', fn () => null);
+		$this->assertSame([
+			'ID' => 'Captcha',
+			'EventTarget' => 'Captcha',
+			'FormID' => 'form1',
+			'onCallback' => true,
+			'onCallbackExpired' => false,
+			'options' => ['sitekey' => 'site', 'theme' => 'dark', 'type' => 'audio', 'size' => 'compact', 'tabindex' => 3],
+		], \Prado\Test\Unit\PradoUnit::invoke($captcha, 'getClientOptions'));
+	}
+
+	public function testClientOptionsOmitEmptyWidgetOptions(): void
+	{
+		[$captcha] = $this->makeScriptedCaptcha();
+		$captcha->setTheme('');
+		$captcha->setType('');
+		$captcha->setSize('');
+		$captcha->attachEventHandler('OnCallbackExpired', fn () => null);
+		$options = \Prado\Test\Unit\PradoUnit::invoke($captcha, 'getClientOptions');
+		$this->assertSame(['sitekey' => 'site'], $options['options']);
+		$this->assertFalse($options['onCallback']);
+		$this->assertTrue($options['onCallbackExpired']);
+	}
+
+	public function testRenderRegistersTheWidgetScript(): void
+	{
+		[$captcha, $cs] = $this->makeScriptedCaptcha();
+		$cs->expects($this->once())->method('registerPradoScript')->with('ajax');
+		$cs->expects($this->once())->method('registerEndScript')->with('grecaptcha:Captcha', $this->stringStartsWith('new Prado.WebUI.TReCaptcha2({'));
+		\Prado\Test\Unit\PradoUnit::setProp($captcha, '_stage', \Prado\Web\UI\TControl::CS_PRERENDERED);
+		$tw = new \Prado\IO\TTextWriter();
+		$captcha->render(new \Prado\Web\UI\THtmlWriter($tw));
+		$this->assertSame('<div id="Captcha"></div>', $tw->flush());
+	}
+
+	public function testTheContainerHasNoTabIndex(): void
+	{
+		[$captcha] = $this->makeScriptedCaptcha();
+		$captcha->setTabIndex(4);
+		\Prado\Test\Unit\PradoUnit::setProp($captcha, '_stage', \Prado\Web\UI\TControl::CS_PRERENDERED);
+		$tw = new \Prado\IO\TTextWriter();
+		$captcha->render(new \Prado\Web\UI\THtmlWriter($tw));
+		$this->assertSame('<div id="Captcha"></div>', $tw->flush());
+		$this->assertSame(4, \Prado\Test\Unit\PradoUnit::invoke($captcha, 'getClientOptions')['options']['tabindex']);
+	}
+
+	public function testResetCallsTheClientWithTheWidgetId(): void
+	{
+		$page = $this->getMockBuilder(TPage::class)->onlyMethods(['getCallbackClient'])->getMock();
+		$client = $this->getMockBuilder(\Prado\Web\UI\ActiveControls\TCallbackClientScript::class)->disableOriginalConstructor()->onlyMethods(['callClientFunction'])->getMock();
+		$client->expects($this->once())->method('callClientFunction')->with('grecaptcha.reset', [[5]]);
+		$page->method('getCallbackClient')->willReturn($client);
+		$captcha = new TReCaptcha2();
+		$page->getControls()->add($captcha);
+		$captcha->setWidgetId(5);
+		$captcha->reset();
+	}
+
+	public function testValidationPropertyValueReadsTheResponseField(): void
+	{
+		[$captcha] = $this->makeSpyWithPage();
+		$real = new TReCaptcha2();
+		$captcha->getPage()->getControls()->add($real);
+		$request = \Prado\Prado::getApplication()->getRequest();
+		$name = $real->getResponseFieldName();
+		$saved = $request->itemAt($name);
+		try {
+			$request->add($name, 'tok');
+			$this->assertSame('tok', $real->getValidationPropertyValue());
+		} finally {
+			$saved === null ? $request->remove($name) : $request->add($name, $saved);
+		}
+	}
+
+	public function testClientOptionsForEveryWidgetOptionCombination(): void
+	{
+		foreach (['', 'dark'] as $theme) {
+			foreach (['', 'audio'] as $type) {
+				foreach (['', 'compact'] as $size) {
+					foreach ([0, 2] as $tabIndex) {
+						[$captcha] = $this->makeScriptedCaptcha();
+						$captcha->setTheme($theme);
+						$captcha->setType($type);
+						$captcha->setSize($size);
+						$captcha->setTabIndex($tabIndex);
+						$expected = array_filter(['sitekey' => 'site', 'theme' => $theme, 'type' => $type, 'size' => $size, 'tabindex' => $tabIndex]);
+						$this->assertSame($expected, \Prado\Test\Unit\PradoUnit::invoke($captcha, 'getClientOptions')['options'], "$theme/$type/$size/$tabIndex");
+					}
+				}
+			}
+		}
+	}
+
+	public static function bothCallbacksProvider(): array
+	{
+		return [
+			'both raised' => [true, true],
+			'callback only' => [true, false],
+			'expired only' => [false, true],
+			'neither raised' => [false, false],
+		];
+	}
+
+	/**
+	 * @dataProvider bothCallbacksProvider
+	 */
+	public function testRaiseCallbackEventWithBothCallbackFlags(bool $onCallback, bool $onExpired): void
+	{
+		[$captcha, $page] = $this->makeSpyWithPage();
+		$raised = [];
+		$captcha->attachEventHandler('OnCallback', function () use (&$raised) {
+			$raised[] = 'callback';
+		});
+		$captcha->attachEventHandler('OnCallbackExpired', function () use (&$raised) {
+			$raised[] = 'expired';
+		});
+		$param = $this->makeCallbackParam($onCallback);
+		$param->onCallbackExpired = $onExpired;
+		$captcha->raiseCallbackEvent($this->makeEventParam($param));
+		$this->assertSame(array_values(array_filter([$onCallback ? 'callback' : null, $onExpired ? 'expired' : null])), $raised);
+		$this->assertSame('', $captcha->getCaptchaResponse());
+		$this->assertSame(1, $captcha->getResetCallCount());
+		$this->assertSame(7, $captcha->getWidgetId());
+	}
 }

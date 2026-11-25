@@ -405,7 +405,7 @@ class TProcessCronTaskTest extends \PHPUnit\Framework\TestCase
 			$pid = PradoUnit::invoke($task, 'launchProcess', 'true');
 			self::assertIsInt($pid, 'a command launches without a Directory');
 			self::assertGreaterThan(0, $pid);
-			self::assertNull(PradoUnit::invoke($task, 'launchProcess', 'true; exit 0 #'), 'a command that ends the shell before it echoes the pid has none');
+			self::assertNull(PradoUnit::invoke($task, 'launchProcess', 'true </dev/null >/dev/null 2>&1; exit 0 #'), 'a command that ends the shell before it echoes the pid has none');
 		}
 	}
 }

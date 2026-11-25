@@ -6,6 +6,7 @@ use PHPUnit\Framework\TestCase;
 use Prado\IO\TTextWriter;
 use Prado\Test\Unit\PradoUnit;
 use Prado\Web\UI\TClientScriptManager;
+use Prado\Web\UI\TControl;
 use Prado\Web\UI\THtmlWriter;
 use Prado\Web\UI\TPage;
 use Prado\Web\UI\WebControls\TPanel;
@@ -123,9 +124,10 @@ class TRadioButtonTest extends TestCase
 		$panel->setID('tc');
 		$page->getControls()->add($panel);
 		$radio = $this->createRadio('rb', $panel);
-		$this->assertSame('tc:rb', $radio->getUniqueGroupName());
+		$separator = TControl::getIdSeparator();
+		$this->assertSame('tc' . $separator . 'rb', $radio->getUniqueGroupName());
 		$radio->setGroupName('g');
-		$this->assertSame('tc:g', $radio->getUniqueGroupName());
+		$this->assertSame('tc' . $separator . 'g', $radio->getUniqueGroupName());
 	}
 
 	public function testUniqueGroupNameInARadioButtonListIsTheList()

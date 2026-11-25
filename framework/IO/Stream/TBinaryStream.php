@@ -106,6 +106,8 @@ class TBinaryStream extends TStreamDecorator
 
 	/**
 	 * Reads exactly $length bytes, looping over short reads and throwing at EOF.
+	 * Each pass asks the stream for at most {@see CHUNK_SIZE} bytes, so memory follows the
+	 * bytes the stream holds and a $length past its end throws without allocating $length.
 	 * @param int $length The number of bytes to read.
 	 * @throws TIOException When the stream ends before $length bytes are read.
 	 * @return string The bytes read.
@@ -117,7 +119,7 @@ class TBinaryStream extends TStreamDecorator
 		}
 		$data = '';
 		while (strlen($data) < $length) {
-			$chunk = $this->read($length - strlen($data));
+			$chunk = $this->read(min($length - strlen($data), static::CHUNK_SIZE));
 			if ($chunk === '') {
 				throw new TIOException('binarystream_unexpected_eof', $length, strlen($data));
 			}

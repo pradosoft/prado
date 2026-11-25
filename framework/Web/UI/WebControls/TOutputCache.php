@@ -130,7 +130,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 						$this->_dataCached = false;
 					}
 					if ($this->_dataCached) {
-						[$this->_contents, $this->_state, $this->_actions, $this->_cacheTime] = $data;
+						[$this->_contents, $this->_state, $this->_actions, $this->_cacheTime] = $data + [3 => 0];
 					}
 				}
 			}

@@ -30,7 +30,7 @@ Cross-cutting utilities: behavior/mixin system, logging, scheduled tasks, named 
 
 - **`TVarDumper`** — Human-readable variable dump for `TComponent` objects.
 
-- **`TMultibyteString`** — Character-based `length()`, `substr()`, `upper()`, `lower()` with mbstring, else pcre and intl.
+- **`TMultibyteString`** — Character-based `length()`, `substr()`, `upper()`, `lower()`, and the byte-bounded `cut()`, with mbstring, else pcre and intl.
 
 - **`TDataFieldAccessor`** — Dot-notation property path accessor (e.g., `"User.Profile.Name"`).
 

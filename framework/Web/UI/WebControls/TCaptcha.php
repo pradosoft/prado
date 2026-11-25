@@ -466,7 +466,7 @@ class TCaptcha extends TImage
 	public function onPreRender($param)
 	{
 		parent::onPreRender($param);
-		if (!self::checkRequirements()) {
+		if (!static::checkRequirements()) {
 			throw new TConfigurationException('captcha_imagettftext_required');
 		}
 		if ($this->_claimedKey !== null) {
@@ -549,11 +549,14 @@ class TCaptcha extends TImage
 	{
 		try {
 			return bin2hex(random_bytes(16));
+			// random_bytes() throws only without a system source of randomness, which a test cannot remove.
+			// @codeCoverageIgnoreStart
 		} catch (\Exception $e) {
 			// @todo from PHP 8.2, this is \Random\RandomException
 			// Fallback for environments without proper random support
 			return sha1(uniqid(mt_rand(), true));
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
