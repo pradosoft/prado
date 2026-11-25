@@ -111,7 +111,6 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 | `TDataGrid` | Tabular display with paging/sorting/editing. Columns: `TBoundColumn`, `TButtonColumn`, `TCheckBoxColumn`, `TDropDownListColumn`, `TTemplateColumn`. Events: `OnEditCommand`, `OnDeleteCommand`, `OnUpdateCommand`, `OnPageIndexChanged`, `OnSortCommand`. `SortExpression` / `SortDirection` (`TDataGridSortDirection`) hold the sort and render `aria-sort` on its header. `TRowSelectColumn`, `StickyHeader`, `ResponsiveMode` (`TDataGridResponsiveMode`), and a named `<nav>` pager (4.4.0) |
 | `TDataList` | Repeating item list with templates. Templates: `ItemTemplate`, `AlternatingItemTemplate`, `HeaderTemplate`, `FooterTemplate`, `EditItemTemplate`. `EditItemIndex` for inline editing. |
 | `TRepeater` | Flexible repeating container. Template-driven, no built-in editing or paging. Lightest-weight data control. |
-| `TListView` | Enhanced repeater with paging, sorting, and grouping support |
 
 ## Validation Controls
 
