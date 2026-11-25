@@ -24,13 +24,13 @@ test('QuickstartBulletedListTestCase', async ({ page }) => {
   await h.assertElementPresent("//a[@href='http://www.amazon.com/']");
 
   // verify linkbutton list
-  await h.byId('ctl0_body_ctl40').click();
+  await h.byId('ctl0_body_ctl4_c0').click();
   await h.pause(50);
   await h.assertSourceContains('You clicked google : http://www.google.com/.');
-  await h.byId('ctl0_body_ctl41').click();
+  await h.byId('ctl0_body_ctl4_c1').click();
   await h.pause(50);
   await h.assertSourceContains('You clicked yahoo : http://www.yahoo.com/.');
-  await h.byId('ctl0_body_ctl42').click();
+  await h.byId('ctl0_body_ctl4_c2').click();
   await h.pause(50);
   await h.assertSourceContains('You clicked amazon : http://www.amazon.com/.');
 });

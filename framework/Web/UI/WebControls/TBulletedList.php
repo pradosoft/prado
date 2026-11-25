@@ -329,8 +329,8 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 			$writer->addAttribute('disabled', 'disabled');
 		} else {
 			$this->_currentRenderItemIndex = $index;
-			$writer->addAttribute('id', $this->getClientID() . $index);
-			$writer->addAttribute('href', "javascript:;//" . $this->getClientID() . $index);
+			$writer->addAttribute('id', $id = $this->getItemClientID($index));
+			$writer->addAttribute('href', "javascript:;//" . $id);
 			$cs = $this->getPage()->getClientScript();
 			$cs->registerPostBackControl($this->getClientClassName(), $this->getPostBackOptions());
 			$this->addAccessKeyToRender($writer);
@@ -340,9 +340,6 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 		$writer->renderEndTag();
 	}
 
-	/**
-	 * @return array postback options used for linkbuttons.
-	 */
 	/**
 	 * Adds the {@see getAccessKey AccessKey} to the first enabled item link.
 	 * The HyperLink and LinkButton modes render the access key on that link only,
@@ -358,13 +355,30 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 		}
 	}
 
+	/**
+	 * Returns the client ID of a LinkButton item link, `{ClientID}_c{index}`.
+	 * The separator keeps the IDs of two lists apart, such as list `L1` item 0
+	 * and list `L` item 10.
+	 * @param int $index zero-based index of the item
+	 * @return string the client ID of the item link
+	 * @since 4.4.0
+	 */
+	protected function getItemClientID($index)
+	{
+		return $this->getClientID() . '_c' . $index;
+	}
+
+	/**
+	 * Returns the postback options of the LinkButton item being rendered.
+	 * @return array postback options used for linkbuttons.
+	 */
 	protected function getPostBackOptions()
 	{
 		$options['ValidationGroup'] = $this->getValidationGroup();
 		$options['CausesValidation'] = $this->getCausesValidation();
 		$options['EventTarget'] = $this->getUniqueID();
 		$options['EventParameter'] = $this->_currentRenderItemIndex;
-		$options['ID'] = $this->getClientID() . $this->_currentRenderItemIndex;
+		$options['ID'] = $this->getItemClientID($this->_currentRenderItemIndex);
 		$options['StopEvent'] = true;
 		return $options;
 	}
