@@ -152,6 +152,7 @@ class THtmlAreaTest extends TestCase
 		$this->assertSame('en', $options['language']);
 		$this->assertSame('simple', $options['theme']);
 		$this->assertArrayNotHasKey('readonly', $options);
+		$this->assertDoesNotMatchRegularExpression('/\bon[a-z]+\b/', $options['extended_valid_elements']);
 		$area->setReadOnly(true);
 		$this->assertTrue(PradoUnit::invoke($area, 'getEditorOptions')['readonly']);
 	}

@@ -114,4 +114,32 @@ class TIbanValidatorTest extends TestCase
 		$this->validator->setCountries('CH');
 		$this->assertSame(['CH' => '5n,12c'], PradoUnit::invoke($this->validator, 'getClientScriptOptions')['CountryFormats']);
 	}
+
+	public function testBbanPatternOfOneRun()
+	{
+		$this->assertSame('/^[0-9]{10}$/', TIbanValidator::bbanPattern('10n'));
+		$this->assertSame('/^[A-Z]{4}[A-Z0-9]{8}$/', TIbanValidator::bbanPattern('4a,8c'));
+	}
+
+	public static function provideShortMod97(): array
+	{
+		return [
+			'digit' => ['7', 7],
+			'letter' => ['A', 10],
+			'two digits' => ['98', 1],
+			'digit and letter' => ['1Z', 135 % 97],
+			'letter and digit' => ['Z1', 351 % 97],
+			'two letters' => ['AB', 1011 % 97],
+		];
+	}
+
+	/**
+	 * @param string $value the value.
+	 * @param int $expected its remainder modulo 97.
+	 */
+	#[\PHPUnit\Framework\Attributes\DataProvider('provideShortMod97')]
+	public function testShortMod97(string $value, int $expected)
+	{
+		$this->assertSame($expected, TIbanValidator::mod97($value));
+	}
 }

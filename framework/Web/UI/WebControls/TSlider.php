@@ -11,6 +11,7 @@
 
 namespace Prado\Web\UI\WebControls;
 
+use Prado\Exceptions\TInvalidDataValueException;
 use Prado\TPropertyValue;
 
 /**
@@ -140,11 +141,15 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 * An evenly distributed stop marks will be generated according to
 	 * {@see getMinValue MinValue}, {@see getMaxValue MaxValue} and StepSize.
 	 * To use uneven stop marks, set {@see setValues Values}.
-	 * @param float $value Step size.
+	 * @param float $value Step size, greater than 0.
+	 * @throws TInvalidDataValueException if the step size is 0 or less.
 	 */
 	public function setStepSize($value)
 	{
-		$this->setViewState('StepSize', TPropertyValue::ensureFloat($value), 1.0);
+		if (($value = TPropertyValue::ensureFloat($value)) <= 0) {
+			throw new TInvalidDataValueException('slider_stepsize_invalid', $value);
+		}
+		$this->setViewState('StepSize', $value, 1.0);
 	}
 
 	/**
@@ -288,7 +293,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 
 	/**
 	 * Loads user input data from the `<ClientID>_1` hidden field.
-	 * Post data without the field leaves the value unchanged.
+	 * Post data without the field, or with a value that is not a scalar, leaves the value unchanged.
 	 * This method is primarly used by framework developers.
 	 * @param string $key the key that can be used to retrieve data from the input data collection
 	 * @param array $values the input data collection
@@ -296,7 +301,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	public function loadPostData($key, $values)
 	{
-		if (!isset($values[$this->getClientID() . '_1'])) {
+		if (!is_scalar($values[$this->getClientID() . '_1'] ?? null)) {
 			return false;
 		}
 		$value = (float) $values[$this->getClientID() . '_1'];

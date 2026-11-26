@@ -21,6 +21,7 @@ TPanelStyle represents the CSS style specific for panel HTML tags. It extends TS
 - `reset()` - Resets style to default values
 - `copyFrom($style)` - Copies style properties from another style
 - `mergeWith($style)` - Merges style with another
+- `getRenderStyleFields()` (protected) - Adds `background-image`, the `overflow` fields, `text-align`, `white-space`, `direction`, and `box-shadow` to the style fields at each render; the style's own fields are unchanged (@since 4.4.0)
 
 ## See Also
 

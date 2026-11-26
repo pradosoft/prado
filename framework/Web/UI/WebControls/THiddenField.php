@@ -79,6 +79,7 @@ class THiddenField extends \Prado\Web\UI\TControl implements \Prado\Web\UI\IPost
 
 	/**
 	 * Loads hidden field data.
+	 * A posted value that is not a scalar, such as an array from a `name[]` field, changes nothing.
 	 * This method is primarly used by framework developers.
 	 * @param string $key the key that can be used to retrieve data from the input data collection
 	 * @param array $values the input data collection
@@ -86,7 +87,9 @@ class THiddenField extends \Prado\Web\UI\TControl implements \Prado\Web\UI\IPost
 	 */
 	public function loadPostData($key, $values)
 	{
-		$value = $values[$key];
+		if (!is_scalar($value = $values[$key] ?? null)) {
+			return false;
+		}
 		if ($value === $this->getValue()) {
 			return false;
 		} else {

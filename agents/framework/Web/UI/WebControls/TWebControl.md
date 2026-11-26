@@ -40,6 +40,8 @@ Properties: `CssClass`, `Style`, `AccessKey`, `KeyShortcuts`, `TabIndex`, `ToolT
 | `Role`, `Aria`, `Dataset` | `role`, `aria-*`, `data-*` | |
 | `IsValid` (`IValidatable` controls) | `aria-invalid="true"` while false | request state, not view state; `addAriaInvalidAttributeToRender()` (4.4.0) |
 
+`addGlobalAttributesToRender()` renders the rows from `Lang` to the microdata. A control that renders its own elements, such as TCheckBox, calls it for the element that carries its custom attributes.
+
 ### Keyboard Shortcuts (4.4.0, #1408)
 
 | Property | Renders | Values |
