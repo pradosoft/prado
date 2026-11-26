@@ -14,7 +14,7 @@ TStyle encapsulates CSS style properties applied to a control. It manages five d
 
 `addAttributesToRender` emits in this order (lowest to highest priority):
 1. Custom style string (parsed field by field)
-2. Named `_fields`
+2. Named fields from `getRenderStyleFields()`: `_fields`, plus the CSS a subclass derives from its properties (@since 4.4.0)
 3. Font CSS from `TFont::addAttributesToRender`
 4. CSS class as `class=` attribute
 
@@ -58,6 +58,7 @@ TStyle encapsulates CSS style properties applied to a control. It manages five d
 - `copyFrom($style)` - Copies from another style (source wins)
 - `mergeWith($style)` - Merges with another style (target wins)
 - `addAttributesToRender($writer)` - Adds CSS attributes to renderer
+- `getRenderStyleFields(): array` (protected) - The fields `addAttributesToRender` writes. A subclass adds its derived CSS with `array_merge()`, so rendering leaves `_fields` unchanged (@since 4.4.0)
 
 ## New in 4.3.3
 
