@@ -23,8 +23,8 @@ use Prado\Util\TSimpleDateFormatter;
  *
  * TJuiDatePicker is a textbox that provides a date input. When the text box receives focus,
  * a calendar will pop up and users can pick up from it a date that will be automatically
- * entered into the text box. TJuiDatePicker is an extension to {@see \Prado\Web\UI\ActiveControls\TActivePanel} based on
- * jQuery-UI's {@see http://jqueryui.com/dialog/ Dialog} widget.
+ * entered into the text box. TJuiDatePicker is an extension to {@see \Prado\Web\UI\ActiveControls\TActiveTextBox} based on
+ * jQuery-UI's {@see http://jqueryui.com/datepicker/ Datepicker} widget.
  *
  * ```php
  * <com:TJuiDatePicker ID="datepicker1" />

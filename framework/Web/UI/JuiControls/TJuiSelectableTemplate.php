@@ -15,8 +15,8 @@ use Prado\Web\UI\ITemplate;
 /**
  * TJuiSelectableTemplate class.
  *
- * TJuiSelectableTemplate is the default template for TJuiSelectableTemplate
- * item template.
+ * TJuiSelectableTemplate is a template of fixed markup. {@see TJuiSelectable} uses it as the
+ * header, footer, and empty template of the list.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @since 3.1
@@ -25,14 +25,16 @@ class TJuiSelectableTemplate extends \Prado\TComponent implements ITemplate
 {
 	private $_template;
 
+	/**
+	 * @param string $template the markup the template adds
+	 */
 	public function __construct($template)
 	{
 		$this->_template = $template;
 		parent::__construct();
 	}
 	/**
-	 * Instantiates the template.
-	 * It creates a {@see \Prado\Web\UI\WebControls\TDataList} control.
+	 * Instantiates the template by adding its markup to the parent's controls.
 	 * @param \Prado\Web\UI\TControl $parent parent to hold the content within the template
 	 */
 	public function instantiateIn($parent)
