@@ -17,7 +17,7 @@ Textbox with jQuery UI autocomplete suggestions. Extends [TActiveTextBox](../Act
 - `setDataSource($data)` - Sets data source for suggestions
 - `getSeparator()` / `setSeparator($value)` - Token separators
 - `getFrequency()` / `setFrequency($value)` - Delay before requesting suggestions
-- `getMinChars()` / `setMinChars($value)` - Minimum characters before suggestions
+- `getMinChars()` / `setMinChars($value)` - Minimum characters before suggestions, sent as jQuery UI `minLength`; default 1
 - `onSuggest($param)` - Raises OnSuggest event with token
 - `onSuggestionSelected($param)` - Raises OnSuggestionSelected event with index
 - `dataBind()` - Renders suggestions during callback
