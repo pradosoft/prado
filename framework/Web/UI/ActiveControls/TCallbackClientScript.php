@@ -473,14 +473,15 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * Toggles the visibility of the element.
+	 * Toggles the visibility of the element. Without an effect, or with an effect other
+	 * than 'fade' or 'slide', it toggles at once unless the options set a duration.
 	 * @param \Prado\Web\UI\TControl $element control element or element id
-	 * @param null|string $effect visual effect, such as, 'fade' or 'slide'.
+	 * @param ?string $effect visual effect, such as, 'fade' or 'slide'.
 	 * @param array $options additional options.
 	 */
 	public function toggle($element, $effect = null, $options = [])
 	{
-		switch (strtolower($effect)) {
+		switch (strtolower((string) $effect)) {
 			case 'fade':
 				$method = 'fadeToggle';
 				break;
@@ -717,7 +718,8 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * Renders the control and return the content boundary from
 	 * TCallbackResponseWriter. This method should only be used by framework
 	 * component developers. The render() method is defered to be called in the
-	 * TActivePageAdapter class.
+	 * TActivePageAdapter class. A control already registered for rendering keeps
+	 * its writer, so its boundary is returned.
 	 * @param \Prado\Web\UI\TControl $control control to be rendered on callback response.
 	 * @return string the boundary for which the rendered content is wrapped.
 	 */
@@ -725,7 +727,9 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	{
 		$writer = $this->getResponse()->createHtmlWriter();
 		$adapter = $control->getPage()->getAdapter();
-		$adapter->registerControlToRender($control, $writer);
+		if (($registered = $adapter->registerControlToRender($control, $writer)) instanceof THtmlWriter) {
+			$writer = $registered;
+		}
 		return $writer->getWriter()->getBoundary();
 	}
 

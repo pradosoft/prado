@@ -12,7 +12,7 @@ Triggers callback requests at fixed time intervals. Useful for polling scenarios
 
 ## Key Properties/Methods
 
-- `getInterval()` / `setInterval($value)` - Seconds between callbacks (must be positive)
+- `getInterval()` / `setInterval($value)` - Seconds between callbacks (must be positive). In a callback, a changed interval calls `setTimerInterval` on the client; an unchanged one sends nothing
 - `startTimer()` - Starts the timer
 - `stopTimer()` - Stops the timer
 - `getStartTimerOnLoad()` / `setStartTimerOnLoad($value)` - Auto-start on page load

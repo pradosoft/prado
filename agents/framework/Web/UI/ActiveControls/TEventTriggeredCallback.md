@@ -12,7 +12,7 @@ Triggers callback requests when a specific DOM event occurs on a control. For ex
 
 ## Key Properties/Methods
 
-- `getEventName()` / `setEventName($value)` - Client-side event name to listen for
+- `getEventName()` / `setEventName($value)` - Client-side event name to listen for. The client receives it in lower case without an `on` prefix in any case (`OnKeyUp` → `keyup`). Without an event name, no `EventName` option is sent and the client listens to `change` on a text input or a list, and to `click` otherwise
 - `getPreventDefaultAction()` / `setPreventDefaultAction($value)` - Stop default event behavior
 - `getClientClassName()` - Returns `Prado.WebUI.TEventTriggeredCallback`
 

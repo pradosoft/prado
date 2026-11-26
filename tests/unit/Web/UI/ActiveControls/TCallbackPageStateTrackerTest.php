@@ -508,4 +508,71 @@ class TCallbackPageStateTrackerTest extends TestCase
 		$removes = $this->client->getCollectedCalls('removeAttribute');
 		$this->assertSame(['aria-disabled'], array_map(fn ($call) => $call[1], $removes), 'an own role stays');
 	}
+
+	public function testUpdateStyleWithoutAStyleArraySetsOnlyTheClass()
+	{
+		$this->tracker->exposedUpdateStyle(['CssClass' => 'c', 'Style' => null]);
+		$this->tracker->exposedUpdateStyle(['CssClass' => null, 'Style' => null]);
+		$this->assertSame(1, $this->client->getCollectedCallCount('setAttribute'));
+		$this->assertSame(0, $this->client->getCollectedCallCount('setStyle'));
+	}
+
+	public function testUpdateOptionalAttributeRemovesAnEmptyValue()
+	{
+		$this->tracker->exposedUpdateOptionalAttribute('part', '');
+		$this->assertSame([['ctrl1', 'part']], array_map(fn ($call) => [$call[0]->getClientID(), $call[1]], $this->client->getCollectedCalls('removeAttribute')));
+	}
+
+	public function testTrackChangesClonesAnObjectState()
+	{
+		$map = new \Prado\Collections\TMap(['a' => 1]);
+		$this->control->setViewState('Attributes', $map);
+		$this->tracker->trackChanges();
+		$map->add('b', 2);
+		$changes = $this->tracker->exposedGetChanges();
+		$this->assertCount(1, $changes);
+		$this->assertSame([['b' => 2]], $changes[0][1]);
+	}
+
+	public function testRespondToChangesWithoutChangesCallsNothing()
+	{
+		$this->tracker->trackChanges();
+		$this->tracker->respondToChanges();
+		$this->assertSame(0, $this->client->getCollectedCallCount());
+	}
+
+	public static function keyShortcutAttributeProvider(): array
+	{
+		return [
+			'one set' => [['aria-keyshortcuts' => 'Alt+B'], 1, 0],
+			'one removed' => [['data-prado-keyshortcuts-reserved' => null], 0, 1],
+		];
+	}
+
+	/**
+	 * @dataProvider keyShortcutAttributeProvider
+	 */
+	public function testKeyShortcutsSendEachAttributeOnce(array $attributes, int $sets, int $removes)
+	{
+		$control = new FakeKeyShortcutControl();
+		$tracker = new TCallbackPageStateTrackerTestable($control, $this->client);
+		$tracker->trackChanges();
+		$control->setViewState('KeyShortcuts', 'Alt+B');
+		$control->keyShortcutsAttributes = $attributes;
+		$tracker->respondToChanges();
+		$tracker->respondToChanges();
+		$this->assertSame($sets, $this->client->getCollectedCallCount('setAttribute'));
+		$this->assertSame($removes, $this->client->getCollectedCallCount('removeAttribute'));
+		$this->assertSame(['keyshortcuts'], $control->pradoScripts);
+	}
+
+	public function testItemRefChangeSetsTheAttribute()
+	{
+		$this->tracker->trackChanges();
+		$this->control->setViewState('ItemRef', 'a b');
+		$this->tracker->respondToChanges();
+		$calls = $this->client->getCollectedCalls('setAttribute');
+		$this->assertCount(1, $calls);
+		$this->assertSame(['itemref', 'a b'], [$calls[0][1], $calls[0][2]]);
+	}
 }
