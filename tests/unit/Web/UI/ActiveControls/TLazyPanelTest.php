@@ -6,6 +6,8 @@ use PHPUnit\Framework\TestCase;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\IO\TTextWriter;
 use Prado\Test\Unit\Harness\Web\UI\TTestCallbackPage;
+use Prado\Prado;
+use Prado\Test\Unit\Harness\Web\TTestRecordingResponse;
 use Prado\Test\Unit\PradoUnit;
 use Prado\Web\UI\ActiveControls\ICallbackEventHandler;
 use Prado\Web\UI\ActiveControls\TActivePanel;
@@ -15,6 +17,7 @@ use Prado\Web\UI\ActiveControls\TLazyPanel;
 use Prado\Web\UI\ActiveControls\TLazyPanelTrigger;
 use Prado\Web\UI\INamingContainer;
 use Prado\Web\UI\TClientScriptManager;
+use Prado\Web\UI\ITemplate;
 use Prado\Web\UI\TControl;
 use Prado\Web\UI\TPage;
 use Prado\Web\UI\THtmlWriter;
@@ -267,5 +270,49 @@ class TLazyPanelTest extends TestCase
 		$calls = $page->getClientFunctions();
 		$this->assertCount(1, $calls);
 		$this->assertArrayHasKey('Prado.Element.replace', $calls[0]);
+	}
+
+	public function testATemplateThatIsNoTTemplateInstantiatesInThePanel()
+	{
+		[, $panel] = $this->createPanel();
+		$template = new class () implements ITemplate {
+			public ?TControl $parent = null;
+
+			public function instantiateIn($parent)
+			{
+				$this->parent = $parent;
+				$parent->getControls()->add('content');
+			}
+
+			public function getIncludedFiles()
+			{
+				return [];
+			}
+		};
+		PradoUnit::invoke($panel, 'instantiateTemplate', $template);
+		$this->assertSame($panel, $template->parent);
+		$this->assertContains('content', $panel->getControls()->toArray());
+	}
+
+	public function testLoadContentInACallbackWithoutAParameterWritesToTheResponse()
+	{
+		$app = Prado::getApplication();
+		$snapshot = PradoUnit::snapshot($app, ['_response']);
+		$app->setResponse(new TTestRecordingResponse());
+		try {
+			[$page, $panel] = $this->createPanel(true);
+			$panel->loadContent();
+			$this->assertArrayHasKey('Prado.Element.replace', $page->getClientFunctions()[0]);
+		} finally {
+			PradoUnit::restore($app, $snapshot);
+		}
+	}
+
+	public function testPlaceholderWithoutATemplateIsEmpty()
+	{
+		$panel = new TLazyPanel();
+		PradoUnit::invoke($panel, 'createPlaceholder');
+		PradoUnit::invoke($panel, 'createPlaceholder');
+		$this->assertFalse($panel->getHasControls());
 	}
 }
