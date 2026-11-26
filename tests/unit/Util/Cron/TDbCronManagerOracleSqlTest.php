@@ -259,10 +259,10 @@ class TDbCronManagerOracleSqlTest extends \PHPUnit\Framework\TestCase
 	public function testInsertIdIsTheIdentitySequenceValue()
 	{
 		$manager = $this->newManager();
-		$manager->recorder->answers = ['FROM user_tab_identities' => 'ISEQ$$_7301', '.CURRVAL FROM DUAL' => '42'];
+		$manager->recorder->answers = ['FROM user_tab_identity_cols' => 'ISEQ$$_7301', '.CURRVAL FROM DUAL' => '42'];
 		self::assertSame('42', PradoUnit::invoke($manager, 'getLastInsertTaskUID'));
 		[$identity, $current] = $manager->recorder->commands;
-		self::assertSame("SELECT sequence_name FROM user_tab_identities WHERE table_name=:table AND column_name='TABUID'", $identity->sql);
+		self::assertSame("SELECT sequence_name FROM user_tab_identity_cols WHERE table_name=:table AND column_name='TABUID'", $identity->sql);
 		self::assertSame('CRONTABS', $identity->bound[':table']);
 		self::assertSame('SELECT "ISEQ$$_7301".CURRVAL FROM DUAL', $current->sql);
 

@@ -602,7 +602,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 		if (!$this->getIsOracle()) {
 			return $db->getLastInsertID();
 		}
-		$cmd = $db->createCommand("SELECT sequence_name FROM user_tab_identities WHERE table_name=:table AND column_name='TABUID'");
+		$cmd = $db->createCommand("SELECT sequence_name FROM user_tab_identity_cols WHERE table_name=:table AND column_name='TABUID'");
 		$cmd->bindValue(':table', strtoupper($this->_tableName), $db::PARAM_STR);
 		$sequence = $cmd->queryScalar();
 		if (!is_string($sequence) || $sequence === '') {
