@@ -5,94 +5,22 @@ namespace Prado\Test\Unit\Web\UI;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\I18N\TGlobalization;
-use Prado\IO\TTextWriter;
 use Prado\Prado;
 use Prado\TComponent;
-use Prado\Test\Unit\Harness\Web\TTestCookieResponse;
+use Prado\Test\Unit\Harness\Traits\TPageLifecycleTrait;
+use Prado\Test\Unit\Harness\Web\UI\TTestLifecyclePage;
+use Prado\Test\Unit\Harness\Web\UI\TTestPageStatePersister;
 use Prado\Test\Unit\PradoUnit;
 use Prado\Util\TBehavior;
 use Prado\Web\Services\TPageService;
-use Prado\Web\TAssetManager;
 use Prado\Web\UI\ActiveControls\TActiveButton;
-use Prado\Web\UI\IPageStatePersister;
 use Prado\Web\UI\IPostBackEventHandler;
 use Prado\Web\UI\ITheme;
 use Prado\Web\UI\TControl;
 use Prado\Web\UI\TForm;
-use Prado\Web\UI\THtmlWriter;
 use Prado\Web\UI\TPage;
-use Prado\Web\UI\WebControls\TButton;
 use Prado\Web\UI\WebControls\TCheckBox;
 use Prado\Web\UI\WebControls\THead;
-use Prado\Web\UI\WebControls\TTextBox;
-
-/**
- * Returns a URL for a published path without copying files.
- */
-class TPageLifecycleTestAssetManager extends TAssetManager
-{
-	public function getBaseUrl()
-	{
-		return '/assets';
-	}
-
-	public function getBasePath()
-	{
-		return sys_get_temp_dir();
-	}
-
-	public function getPublishedPath($path)
-	{
-		return $this->getBasePath() . DIRECTORY_SEPARATOR . basename($path);
-	}
-
-	public function publishFilePath($path, $checkTimestamp = false)
-	{
-		return '/assets/' . basename($path);
-	}
-}
-
-/**
- * Records what is written to the response.
- */
-class TPageLifecycleTestResponse extends TTestCookieResponse
-{
-	public string $written = '';
-
-	public function write($str)
-	{
-		$this->written .= $str;
-	}
-}
-
-/**
- * Keeps the page state of the last saved page for the next page.
- */
-class TPageLifecycleTestPersister extends TComponent implements IPageStatePersister
-{
-	public static mixed $state = null;
-	private ?TPage $_page = null;
-
-	public function getPage()
-	{
-		return $this->_page;
-	}
-
-	public function setPage(TPage $page)
-	{
-		$this->_page = $page;
-	}
-
-	public function save($state)
-	{
-		self::$state = $state;
-	}
-
-	public function load()
-	{
-		return self::$state;
-	}
-}
 
 /**
  * A page service whose theme manager returns the themes a test sets.
@@ -201,146 +129,29 @@ class TPageLifecycleTestRecorder extends TControl
 	}
 }
 
-/**
- * A page whose controls are built in code, inside a form, by the test.
- */
-class TPageLifecycleTestPage extends TPage
-{
-	public array $events = [];
-	/** @var ?callable builds the controls of the form, receives the page and the form */
-	public $build;
-	/** @var ?callable runs on load, receives the page */
-	public $load;
-	/** @var ?callable runs on pre-render, receives the page */
-	public $preRender;
-
-	public function __construct()
-	{
-		parent::__construct();
-		$this->setEnableCsrfValidation(false);
-		$this->setStatePersisterClass(TPageLifecycleTestPersister::class);
-	}
-
-	public function createChildControls()
-	{
-		$form = new TForm();
-		$form->setID('Form');
-		$this->getControls()->add($form);
-		if ($this->build) {
-			($this->build)($this, $form);
-		}
-	}
-
-	public function onLoad($param)
-	{
-		parent::onLoad($param);
-		if ($this->load) {
-			($this->load)($this);
-		}
-	}
-
-	public function onPreRender($param)
-	{
-		parent::onPreRender($param);
-		if ($this->preRender) {
-			($this->preRender)($this);
-		}
-	}
-
-	/**
-	 * Adds a text box that records its changes.
-	 * @param TControl $parent the parent of the text box
-	 * @param string $id the ID of the text box
-	 * @return TTextBox the text box
-	 */
-	public function addTextBox(TControl $parent, string $id): TTextBox
-	{
-		$box = new TTextBox();
-		$box->setID($id);
-		$box->attachEventHandler('OnTextChanged', fn () => $this->events[] = 'changed:' . $id . '=' . $box->getText());
-		$parent->getControls()->add($box);
-		return $box;
-	}
-
-	/**
-	 * Adds a button that records its clicks.
-	 * @param TControl $parent the parent of the button
-	 * @param string $id the ID of the button
-	 * @return TButton the button
-	 */
-	public function addButton(TControl $parent, string $id): TButton
-	{
-		$button = new TButton();
-		$button->setID($id);
-		$button->attachEventHandler('OnClick', fn () => $this->events[] = 'click:' . $id);
-		$parent->getControls()->add($button);
-		return $button;
-	}
-}
-
 class TPageLifecycleTest extends \PHPUnit\Framework\TestCase
 {
-	private ?TPageLifecycleTestResponse $_response = null;
+	use TPageLifecycleTrait;
 
 	protected function setUp(): void
 	{
-		TPageLifecycleTestPersister::$state = null;
+		$this->resetPageState();
 		TPageLifecycleTestRecorder::$calls = [];
 	}
 
 	protected function tearDown(): void
 	{
-		TPageLifecycleTestPersister::$state = null;
-		$this->_response = null;
-	}
-
-	/**
-	 * Runs a page through its life cycle with the given request items, restoring the globals afterwards.
-	 * @param TPage $page the page to run
-	 * @param array $items the request items, as GET or POST data
-	 * @param ?TPageService $service the page service, a new one when null
-	 * @return string the rendered output
-	 */
-	private function runPage(TPage $page, array $items = [], ?TPageService $service = null): string
-	{
-		$app = Prado::getApplication();
-		$obLevel = ob_get_level();
-		$savedResponse = $app->getResponse();
-		$savedService = $app->getService();
-		$savedHandler = $app->getErrorHandler();
-		$savedGlobalization = PradoUnit::getProp($app, '_globalization');
-		$request = $app->getRequest();
-		$savedItems = PradoUnit::getProp($request, '_items');
-		$savedAssets = PradoUnit::getProp($app, '_assetManager');
-		$app->setAssetManager(new TPageLifecycleTestAssetManager());
-		$app->setResponse($this->_response = new TPageLifecycleTestResponse());
-		$app->setService($service ?? new TPageService());
-		PradoUnit::setProp($request, '_items', $items);
-		try {
-			$writer = new THtmlWriter(new TTextWriter());
-			$page->run($writer);
-			return $writer->flush();
-		} finally {
-			PradoUnit::setProp($request, '_items', $savedItems);
-			PradoUnit::setProp($app, '_assetManager', $savedAssets);
-			PradoUnit::setProp($app, '_globalization', $savedGlobalization);
-			$app->setResponse($savedResponse);
-			$app->setService($savedService);
-			$app->setErrorHandler($savedHandler);
-			while (ob_get_level() > $obLevel) {
-				ob_end_clean();
-			}
-		}
+		$this->resetPageState();
 	}
 
 	/**
 	 * @param ?callable $build builds the controls of the form, receives the page and the form
-	 * @return TPageLifecycleTestPage a page with a text box "Name" and a button "Go" in its form, and the given controls
+	 * @return TTestLifecyclePage a page with a text box "Name" and a button "Go" in its form, and the given controls
 	 */
-	private function newPage(?callable $build = null): TPageLifecycleTestPage
+	private function newPage(?callable $build = null): TTestLifecyclePage
 	{
-		$page = new TPageLifecycleTestPage();
-		$page->build = function (TPageLifecycleTestPage $page, TForm $form) use ($build) {
+		$page = new TTestLifecyclePage();
+		$page->build = function (TTestLifecyclePage $page, TForm $form) use ($build) {
 			$page->addTextBox($form, 'Name');
 			$page->addButton($form, 'Go');
 			if ($build) {
@@ -366,7 +177,7 @@ class TPageLifecycleTest extends \PHPUnit\Framework\TestCase
 		$this->assertStringContainsString('<form id="Form" method="post"', $html);
 		$this->assertStringContainsString('name="Name"', $html);
 		$this->assertStringContainsString('name="' . TPage::FIELD_PAGESTATE . '"', $html);
-		$this->assertSame(1, TPageLifecycleTestPersister::$state[0]['Visits']);
+		$this->assertSame(1, TTestPageStatePersister::$state[0]['Visits']);
 		$this->assertNull($page->getRequestClientState());
 		$this->assertNull($page->getPostBackEventTarget());
 		$this->assertNull($page->getPostBackEventParameter());
@@ -393,7 +204,7 @@ class TPageLifecycleTest extends \PHPUnit\Framework\TestCase
 		$this->assertTrue($page->getIsPostBack());
 		$this->assertSame([false, 'state'], $seen);
 		$this->assertSame(['changed:Name=Ann', 'click:Go'], $page->events);
-		$this->assertSame(2, TPageLifecycleTestPersister::$state[0]['Visits']);
+		$this->assertSame(2, TTestPageStatePersister::$state[0]['Visits']);
 		$this->assertSame('Go', $page->getPostBackEventTarget()->getID());
 		$this->assertSame('', $page->getPostBackEventParameter());
 	}
@@ -477,7 +288,7 @@ class TPageLifecycleTest extends \PHPUnit\Framework\TestCase
 		$page = $this->newPage($build(true));
 		$page->preRender = fn ($page) => $page->registerRequiresPostData('Missing');
 		$this->runPage($page);
-		$this->assertSame(['Missing' => true, 'Agree' => true], TPageLifecycleTestPersister::$state[0]['ControlsRequiringPostBack']);
+		$this->assertSame(['Missing' => true, 'Agree' => true], TTestPageStatePersister::$state[0]['ControlsRequiringPostBack']);
 
 		$page = $this->newPage($build(true));
 		$this->runPage($page, [TPage::FIELD_PAGESTATE => 'state']);
@@ -704,7 +515,7 @@ class TPageLifecycleTest extends \PHPUnit\Framework\TestCase
 			$page->flushWriter();
 		};
 		$html = $this->runPage($page);
-		$this->assertSame('early', $this->_response->written);
+		$this->assertSame('early', $this->getLifecycleResponse()->written);
 		$this->assertStringNotContainsString('early', $html);
 		$this->assertNull(PradoUnit::getProp($page, '_writer'));
 	}
