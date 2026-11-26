@@ -505,4 +505,13 @@ class TActivePageAdapterTest extends TestCase
 		}
 		$this->assertSame($expected, PradoUnit::invoke($this->adapter(), 'filterFragment', $ancestor, $panel, 'html', $context));
 	}
+
+	public function testControlRendersUnfilteredIntoAWriterThatIsNoHtmlWriter()
+	{
+		$control = $this->filter(new TControl());
+		$control->getControls()->add('html');
+		$writer = new TTextWriter();
+		PradoUnit::invoke($this->adapter(), 'renderDeferredControl', $control, $writer);
+		$this->assertSame('html', $writer->flush());
+	}
 }

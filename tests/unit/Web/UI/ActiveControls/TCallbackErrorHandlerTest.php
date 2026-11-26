@@ -183,4 +183,13 @@ class TCallbackErrorHandlerTest extends \PHPUnit\Framework\TestCase
 		self::assertSame(200, $response->getStatusCode());
 		self::assertStringStartsWith('a:', $response->content);
 	}
+
+	public function testDisplayExceptionSendsTheCodeOfTheException()
+	{
+		$response = $this->createResponse();
+
+		PradoUnit::invoke(new TCallbackErrorHandler(), 'displayException', new \Exception('failure', 42));
+
+		self::assertSame(42, json_decode($response->content, true)['code']);
+	}
 }
