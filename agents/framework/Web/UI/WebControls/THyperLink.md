@@ -32,6 +32,8 @@ THyperLink displays a hyperlink on a page. Can display text or an image, with co
 
 `addLinkAttributesToRender()` renders them only with the `href`, so a disabled link or one without `NavigateUrl` has none (HTML forbids them without `href`).
 
+A disabled link (its own `Enabled` or a disabled parent) renders no `href`, `aria-disabled="true"`, and `role="link"` unless `Role` is set; `<a>` has no `disabled` attribute (4.4.0). An active link toggles the same attributes in a callback ([TCallbackPageStateTracker](../ActiveControls/TCallbackPageStateTracker.md)).
+
 ## See Also
 
 - [TWebControl](./TWebControl.md)

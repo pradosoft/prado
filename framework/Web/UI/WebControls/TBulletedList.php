@@ -300,7 +300,6 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 		if ($item->getEnabled()) {
 			$writer->write(THttpUtility::htmlEncode($item->getText()));
 		} else {
-			$writer->addAttribute('disabled', 'disabled');
 			$writer->renderBeginTag('span');
 			$writer->write(THttpUtility::htmlEncode($item->getText()));
 			$writer->renderEndTag();
@@ -310,7 +309,8 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 	protected function renderHyperLinkItem($writer, $item, $index)
 	{
 		if (!$this->_isEnabled || !$item->getEnabled()) {
-			$writer->addAttribute('disabled', 'disabled');
+			$writer->addAttribute('role', 'link');
+			$writer->addAttribute('aria-disabled', 'true');
 		} else {
 			$writer->addAttribute('href', $item->getValue());
 			if (($target = $this->getTarget()) !== '') {
@@ -326,7 +326,8 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 	protected function renderLinkButtonItem($writer, $item, $index)
 	{
 		if (!$this->_isEnabled || !$item->getEnabled()) {
-			$writer->addAttribute('disabled', 'disabled');
+			$writer->addAttribute('role', 'link');
+			$writer->addAttribute('aria-disabled', 'true');
 		} else {
 			$this->_currentRenderItemIndex = $index;
 			$writer->addAttribute('id', $id = $this->getItemClientID($index));

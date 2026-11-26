@@ -114,7 +114,7 @@ class TLinkButtonTest extends TestCase
 		[$button, $cs] = $this->createButton(new TPanel());
 		$button->getParent()->setEnabled(false);
 		$cs->expects($this->never())->method('registerPostBackControl');
-		$this->assertSame('<a id="go" disabled="disabled"></a>', $this->render($button));
+		$this->assertSame('<a id="go" role="link" aria-disabled="true"></a>', $this->render($button));
 	}
 
 	public function testDisabledRendersDisabledOnce()
@@ -122,7 +122,7 @@ class TLinkButtonTest extends TestCase
 		[$button, $cs] = $this->createButton();
 		$button->setEnabled(false);
 		$cs->expects($this->never())->method('registerPostBackControl');
-		$this->assertSame('<a id="go" disabled="disabled"></a>', $this->render($button));
+		$this->assertSame('<a id="go" role="link" aria-disabled="true"></a>', $this->render($button));
 	}
 
 	public function testWithoutClientScriptRendersNoHref()
@@ -130,7 +130,17 @@ class TLinkButtonTest extends TestCase
 		[$button, $cs] = $this->createButton();
 		$button->setEnableClientScript(false);
 		$cs->expects($this->never())->method('registerPostBackControl');
-		$this->assertStringNotContainsString('href=', $this->render($button));
+		$output = $this->render($button);
+		$this->assertStringNotContainsString('href=', $output);
+		$this->assertStringContainsString('aria-disabled="true"', $output);
+	}
+
+	public function testDisabledKeepsItsRole()
+	{
+		[$button] = $this->createButton();
+		$button->setEnabled(false);
+		$button->setRole('button');
+		$this->assertSame('<a id="go" role="button" aria-disabled="true"></a>', $this->render($button));
 	}
 
 	public function testRaisePostBackEventValidatesAndRaisesClickAndCommand()
