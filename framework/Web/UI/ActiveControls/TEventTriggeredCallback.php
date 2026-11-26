@@ -61,13 +61,17 @@ class TEventTriggeredCallback extends TTriggeredCallback
 	}
 
 	/**
-	 * @return array list of timer options for client-side.
+	 * Returns the client-side options. The event name loses an `on` prefix in any case
+	 * and is lower case. Without an event name, the client listens to `change` on a text
+	 * input or a list, and to `click` otherwise.
+	 * @return array list of trigger options for client-side.
 	 */
 	protected function getTriggerOptions()
 	{
 		$options = parent::getTriggerOptions();
-		$name = preg_replace('/^on/', '', $this->getEventName());
-		$options['EventName'] = strtolower($name);
+		if (($name = $this->getEventName()) !== '') {
+			$options['EventName'] = strtolower(preg_replace('/^on/i', '', $name));
+		}
 		$options['StopEvent'] = $this->getPreventDefaultAction();
 		return $options;
 	}

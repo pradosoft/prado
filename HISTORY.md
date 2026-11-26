@@ -8,6 +8,7 @@ BUG: Issue #1497 - `THtmlArea` and `THtmlArea5` allow no event handler attribute
 BUG: Issue #1497 - `TColorPicker` shows `Text` as its button's background only when it is a CSS color (`isCssColor()`); posted text such as `red;background-image:url(...)` added CSS declarations to the button's style. (belisoful)
 BUG: Issue #1497 - A disabled `THyperLink`, `TLinkButton`, or `TBulletedList` link renders `role="link"` and `aria-disabled="true"` instead of `disabled`, which `<a>` does not have, also when an active link is disabled in a callback. UPGRADE.md lists the change. (belisoful)
 ENH: Issue #1497 - `TAccordionView.Encode` HTML-encodes `Text` and `Caption`, as on TTabView; off by default. (belisoful)
+BUG: Issue #1497 - `TEventTriggeredCallback` without an `EventName` lets the client listen to its default event, `change` or `click`; it listened to an empty event name. An `On` prefix is stripped in any case. (belisoful)
 BUG: Issue #1497 - `TTimeTriggeredCallback::setInterval()` sends no client update for an unchanged interval given as a string or an integer. (belisoful)
 BUG: Issue #1497 - A control that `TCallbackClientScript` registers twice for a callback render sends the boundary of its content each time; the second call sent an empty boundary. `TActivePageAdapter::registerControlToRender()` returns the registered writer. (belisoful)
 BUG: Issue #1497 - `TCallbackClientScript::toggle()` without an effect toggles at once; it threw `TPhpErrorException` for passing null to `strtolower()`. (belisoful)

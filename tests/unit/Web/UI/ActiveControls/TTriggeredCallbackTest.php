@@ -112,4 +112,32 @@ class TTriggeredCallbackTest extends TestCase
 		$this->expectException(TConfigurationException::class);
 		(new TValueTriggeredCallback())->setDecayRate(-1);
 	}
+
+	public function testEventTriggerSendsTheEventNameWithoutItsOnPrefix()
+	{
+		$trigger = new TEventTriggeredCallback();
+		$page = $this->place($trigger);
+		$trigger->setControlID('Name');
+		$this->assertSame('', $trigger->getEventName());
+		$this->assertFalse($trigger->getPreventDefaultAction());
+		$trigger->setEventName('OnKeyUp');
+		$trigger->setPreventDefaultAction('true');
+		$this->assertSame('OnKeyUp', $trigger->getEventName());
+		$this->assertTrue($trigger->getPreventDefaultAction());
+		$this->assertSame(
+			["new Prado.WebUI.TEventTriggeredCallback({'EventTarget':\"trigger\",'ID':\"trigger\",'ControlID':\"Name\",'EventName':\"keyup\",'StopEvent':true});"],
+			$this->renderScripts($page, $trigger)
+		);
+	}
+
+	public function testEventTriggerWithoutAnEventNameLeavesTheEventToTheClient()
+	{
+		$trigger = new TEventTriggeredCallback();
+		$this->place($trigger);
+		$trigger->setControlID('Name');
+		$options = PradoUnit::invoke($trigger, 'getTriggerOptions');
+		$this->assertArrayNotHasKey('EventName', $options);
+		$trigger->setEventName('onclick');
+		$this->assertSame('click', PradoUnit::invoke($trigger, 'getTriggerOptions')['EventName']);
+	}
 }
