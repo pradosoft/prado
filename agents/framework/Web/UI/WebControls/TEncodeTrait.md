@@ -22,6 +22,7 @@ TEncodeTrait backs the `Encode` property of a control that renders a text proper
 
 | Class | Text the property covers |
 |---|---|
+| [TButton](./TButton.md) with `ButtonTag` Button | `Text` |
 | [TLabel](./TLabel.md), [TLinkButton](./TLinkButton.md), [TCheckBox](./TCheckBox.md) (and TRadioButton), [TTableCell](./TTableCell.md) (and TTableHeaderCell), [TLiteral](./TLiteral.md) | `Text` |
 | [TTabView](./TTabView.md), [TAccordionView](./TAccordionView.md) | `Text` and `Caption` |
 | [TPanel](./TPanel.md) | `GroupingText` |
@@ -30,7 +31,7 @@ TEncodeTrait backs the `Encode` property of a control that renders a text proper
 | [TLiteralColumn](./TLiteralColumn.md) | `Text` and the bound data value |
 | [TBaseValidator](./TBaseValidator.md) (through TLabel) | `Text` and `ErrorMessage`, in the validator, in [TValidationSummary](./TValidationSummary.md), and on the client |
 
-The active counterparts TActiveLabel, TActiveLinkButton, TActiveCheckBox and TActiveRadioButton inherit it and encode the client update of `setText()` the same way.
+The active counterparts TActiveLabel, TActiveLinkButton, TActiveButton, TActiveCheckBox and TActiveRadioButton inherit it and encode the client update of `setText()` the same way. [TInPlaceTextBox](../ActiveControls/TInPlaceTextBox.md) uses it for its label text, on the server and on the client.
 
 ## Conventions
 - The using class has `getViewState()` and `setViewState()`: a `TControl`, or `TDataGridColumn`.

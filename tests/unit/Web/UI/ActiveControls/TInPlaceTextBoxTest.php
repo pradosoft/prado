@@ -35,6 +35,18 @@ class TInPlaceTextBoxTest extends TestCase
 		$this->assertSame('Hello', $this->renderContents($control));
 	}
 
+	public function testRenderContentsEncodesTheTextWhenEncode()
+	{
+		$control = new TInPlaceTextBox();
+		$control->setText('<b>a & b</b>');
+		$this->assertFalse($control->getEncode());
+		$this->assertSame('<b>a & b</b>', $this->renderContents($control));
+		$this->assertSame('', PradoUnit::invoke($control, 'getPostBackOptions')['Encode']);
+		$control->setEncode(true);
+		$this->assertSame('&lt;b&gt;a & b&lt;/b&gt;', $this->renderContents($control));
+		$this->assertTrue(PradoUnit::invoke($control, 'getPostBackOptions')['Encode']);
+	}
+
 	public function testRenderContentsShowsEmptyDisplayTextWhenTextIsEmpty()
 	{
 		$control = new TInPlaceTextBox();
@@ -176,6 +188,17 @@ class TInPlaceTextBoxTest extends TestCase
 		$page = new TActiveTestPage($callback);
 		$editor = $page->addControl(new TInPlaceTextBox(), 'Edit');
 		return [$page, $editor];
+	}
+
+	public function testSetTextWithEncodeUpdatesTheLabelEncodedAndTheValueAsIs()
+	{
+		[$page, $editor] = $this->createEditor();
+		$editor->setEncode(true);
+		$editor->setText('<i>Ann</i>');
+		$this->assertSame([
+			['Prado.WebUI.TInPlaceTextBox.setLabelText' => ['Edit', '&lt;i&gt;Ann&lt;/i&gt;']],
+			['Prado.Element.j' => ['Edit', 'val', ['<i>Ann</i>']]],
+		], $page->getClientFunctions());
 	}
 
 	public function testSetTextUpdatesTheLabelAndTheValueOnce()

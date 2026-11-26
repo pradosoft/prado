@@ -59,6 +59,16 @@ class TActiveButtonTest extends TestCase
 		$this->assertSame([['Prado.Element.j' => ['Go', 'html', ['<b>Save</b>']]]], $page->getClientFunctions());
 	}
 
+	public function testSetTextOfAButtonTagWithEncodeUpdatesTheContentEncoded()
+	{
+		[$page, $button] = $this->createButton();
+		$button->setButtonTag(TButtonTag::Button);
+		$button->setEncode(true);
+		$button->setText('<b>Save</b>');
+		$this->assertSame([['Prado.Element.j' => ['Go', 'html', ['&lt;b&gt;Save&lt;/b&gt;']]]], $page->getClientFunctions());
+		$this->assertSame('<b>Save</b>', $button->getText());
+	}
+
 	public function testSetTextUnchangedOrOutsideACallbackUpdatesNothing()
 	{
 		[$page, $button] = $this->createButton();

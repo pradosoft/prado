@@ -221,6 +221,42 @@ describe('TInPlaceTextBox getText', () => {
 	});
 });
 
+// ─── Encode ───────────────────────────────────────────────────────────────────
+
+describe('TInPlaceTextBox with Encode', () => {
+	let container, label;
+
+	beforeEach(() => {
+		clearRegistry(); clearTextboxes();
+		({ container, label } = buildDOM('lbl1', 'a &lt;b&gt; &amp; c'));
+	});
+
+	afterEach(() => { restoreMocks(); container.remove(); });
+
+	it('reads the label as text', () => {
+		const ctrl = new TInPlaceTextBox(makeOptions({ Encode: true }));
+		expect(ctrl.getText()).toBe('a <b> & c');
+		expect(ctrl.editField.value).toBe('a <b> & c');
+	});
+
+	it('writes the edited text to the label encoded', () => {
+		const ctrl = new TInPlaceTextBox(makeOptions({ Encode: true }));
+		ctrl.editField.value = '<img src=x onerror=alert(1)>';
+		ctrl.refreshLabel();
+		expect(label.querySelector('img')).toBeNull();
+		expect(label.textContent).toBe('<img src=x onerror=alert(1)>');
+		expect(ctrl.getText()).toBe('<img src=x onerror=alert(1)>');
+	});
+
+	it('writes the edited text as html without Encode', () => {
+		const ctrl = new TInPlaceTextBox(makeOptions());
+		ctrl.editField.value = '<b>x</b>';
+		ctrl.refreshLabel();
+		expect(label.querySelector('b')).not.toBeNull();
+		expect(ctrl.getText()).toBe('<b>x</b>');
+	});
+});
+
 // ─── showTextBox / showLabel ──────────────────────────────────────────────────
 
 describe('TInPlaceTextBox showTextBox and showLabel', () => {
