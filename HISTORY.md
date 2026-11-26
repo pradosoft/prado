@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+ENH: Issue #1497 - `TButton` with `ButtonTag` Button, `TActiveButton`, and `TInPlaceTextBox` have the opt-in `Encode` property, which HTML-encodes `Text` in the render and the callback update; `TInPlaceTextBox` also encodes the edited label text on the client. (belisoful)
 BUG: Issue #1497 - `TActivePager` image buttons of an unavailable page render disabled, as in `TPager`; they were hidden. See UPGRADE.md. (belisoful)
 BUG: Issue #1497 - `TJuiEventParameter` reads a component property such as `CallbackParameter` by name; only a name ending in `Control` looks up a control, and every other name returned null. (belisoful)
 BUG: Issue #1497 - `TJuiControlOptions` stores an option value set in PHP that is not a string, such as an array or null, as is; it threw a `TypeError` or `TPhpErrorException`. (belisoful)
