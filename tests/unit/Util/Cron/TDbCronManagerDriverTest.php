@@ -86,6 +86,8 @@ class TDbCronManagerDriverTest extends \PHPUnit\Framework\TestCase
 
 		self::assertTrue($first->addTask($this->newTask('drvtask')));
 		self::assertTrue($second->addTask($this->newTask('drvtask')));
+		self::assertTrue($first->taskExists('drvtask'), 'the count and the user name are one aggregate row');
+		self::assertFalse($first->taskExists('drvnone'));
 		self::assertTrue($first->runTaskNow($first->getTask('drvtask')));
 
 		$results = $first->getTaskResults();
