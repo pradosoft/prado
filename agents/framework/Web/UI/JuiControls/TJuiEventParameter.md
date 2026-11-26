@@ -13,7 +13,7 @@ Encapsulates callback parameters for TJui* component events. Provides helper met
 ## Key Properties/Methods
 
 - `getControl($id)` - Retrieves a PRADO control from its client-side ID
-- `__get($name)` - Dynamic property access (e.g., `$param->DraggableControl`)
+- `__get($name)` - A name ending in `Control` returns the control whose client ID is in that callback parameter field (`$param->DraggableControl` reads `draggable`); any other name is a component property (`$param->CallbackParameter`)
 - `getCallbackParameter()` - Gets the callback parameter from jQuery UI
 
 ## See Also

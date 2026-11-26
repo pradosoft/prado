@@ -3,8 +3,13 @@
 namespace Prado\Test\Unit\Web\UI\JuiControls;
 
 use PHPUnit\Framework\TestCase;
+use Prado\Test\Unit\Harness\Traits\TPageLifecycleTrait;
+use Prado\Test\Unit\Harness\Web\UI\TTestLifecyclePage;
 use Prado\Web\Javascripts\TJavaScriptLiteral;
 use Prado\Web\UI\JuiControls\TJuiCallbackPageStateTracker;
+use Prado\Web\UI\JuiControls\TJuiDraggable;
+use Prado\Web\UI\TForm;
+use Prado\Web\UI\WebControls\THead;
 
 /**
  * Control double with a jQuery UI widget and a page whose client script records end scripts.
@@ -61,6 +66,18 @@ class TJuiCallbackPageStateTrackerTestable extends TJuiCallbackPageStateTracker
  */
 class TJuiCallbackPageStateTrackerTest extends TestCase
 {
+	use TPageLifecycleTrait;
+
+	protected function setUp(): void
+	{
+		$this->resetPageState();
+	}
+
+	protected function tearDown(): void
+	{
+		$this->resetPageState();
+	}
+
 	public function testStatesToTrackIncludesJuiOptions(): void
 	{
 		$tracker = new TJuiCallbackPageStateTrackerTestable(new TJuiCallbackPageStateTrackerTestControl());
@@ -94,6 +111,42 @@ class TJuiCallbackPageStateTrackerTest extends TestCase
 			"jQuery('#ctl0_dialog').dialog('option', { title: \"It\\u0027s\", empty: \"\", modal: true, width: 300, "
 				. "position: {'my':\"center\",'at':\"center\"}, buttons: [1,2], open: function() {}, appendTo: null });",
 			reset($control->endScripts)
+		);
+	}
+
+	public function testUpdateJuiOptionsWithOneOption(): void
+	{
+		$control = new TJuiCallbackPageStateTrackerTestControl();
+		(new TJuiCallbackPageStateTrackerTestable($control))->exposedUpdateJuiOptions(['modal' => false]);
+		$this->assertSame(["jQuery('#ctl0_dialog').dialog('option', { modal: false });"], array_values($control->endScripts));
+	}
+
+	/**
+	 * An array option changed in a callback is sent with the other changed options, and the unchanged ones are not.
+	 */
+	public function testCallbackSendsTheChangedArrayOption(): void
+	{
+		$build = function (TTestLifecyclePage $page, TForm $form) {
+			$page->getControls()->insertAt(0, new THead());
+			$control = new TJuiDraggable();
+			$control->setID('Drag');
+			$control->getOptions()->cursorAt = ['top' => 1];
+			$control->getOptions()->grid = [10, 10];
+			$control->attachEventHandler('OnStop', function ($sender) {
+				$sender->getOptions()->cursorAt = ['top' => 5];
+				$sender->getOptions()->axis = 'x';
+			});
+			$form->getControls()->add($control);
+		};
+		$page = new TTestLifecyclePage();
+		$page->build = $build;
+		$this->runPage($page);
+		$page = new TTestLifecyclePage();
+		$page->build = $build;
+		$this->runCallback($page, 'Drag', ['event' => 'stop']);
+		$this->assertStringContainsString(
+			"jQuery('#Drag').draggable('option', { cursorAt: {'top':5}, axis: \"x\" });",
+			implode("\n", $this->getCallbackParts())
 		);
 	}
 }

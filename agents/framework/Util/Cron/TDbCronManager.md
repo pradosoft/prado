@@ -59,13 +59,13 @@ Auto-created as `crontabs` (configurable via `TableName`):
 
 | Column | Type | Notes |
 |--------|------|-------|
-| `tabuid` | INTEGER PK AUTOINCREMENT (identity on Oracle) | Row ID |
+| `tabuid` | INTEGER PK AUTOINCREMENT (identity on Oracle, SQL Server, IBM DB2, and Firebird) | Row ID |
 | `name` | VARCHAR(127) | Task name (unique for active tasks) |
 | `schedule` | VARCHAR(127) | Cron expression |
 | `task` | VARCHAR(256) | Class or `module->method(args)` |
 | `moduleid` | VARCHAR(127) | Optional module context |
 | `username` | VARCHAR(127) | Run-as user; `NULL` is the `DefaultUserName` |
-| `options` | MEDIUMTEXT (`TEXT` on PostgreSQL, `CLOB` on Oracle) | Serialized `TCronTask` object; base64 encoded on PostgreSQL, whose `TEXT` ends at a NUL byte, and on Oracle, whose pdo_oci quoting does the same (`serializeTask()`, `decodeTaskOptions()`). `getCronLog()` returns it decoded |
+| `options` | MEDIUMTEXT (`TEXT` on PostgreSQL, `CLOB` on Oracle, `NVARCHAR(MAX)` on SQL Server, `CLOB(1M)` on IBM DB2, `BLOB SUB_TYPE TEXT` on Firebird) | Serialized `TCronTask` object; base64 encoded on every driver but MySQL and SQLite, since PostgreSQL `TEXT` and pdo_oci quoting end a value at a NUL byte and the others convert it to their character set (`serializeTask()`, `decodeTaskOptions()`, `getEncodesTaskOptions()`). `getCronLog()` returns it decoded |
 | `processcount` | INT | Times task has run |
 | `lastexectime` | VARCHAR(20) | Unix timestamp of last run |
 | `nextexectime` | BIGINT (`NUMBER(19)` on Oracle) | Unix timestamp of the next trigger after `lastexectime` (4.4.0); `getPendingTasks()` selects `nextexectime <= now` |
@@ -74,11 +74,20 @@ Auto-created as `crontabs` (configurable via `TableName`):
 | `paused` | INT | `1` while the task is paused (`pauseTask()`), else `NULL` (4.4.0) |
 | `okcount`, `failcount` | INT | Finished runs that succeeded, and that failed (`error`, `timeout`) (4.4.0) |
 | `totalduration`, `maxduration` | DOUBLE PRECISION | Total and longest seconds of the finished runs (4.4.0) |
-| `active` | BOOLEAN (`SMALLINT` on PostgreSQL, `NUMBER(1)` on Oracle) | `1` = DB task, `0` = config task shadow, `NULL` = log entry |
+| `active` | BOOLEAN (`SMALLINT` on PostgreSQL, SQL Server, IBM DB2, and Firebird; `NUMBER(1)` on Oracle) | `1` = DB task, `0` = config task shadow, `NULL` = log entry |
 
-Active rows (`active IS NOT NULL`) are task definitions; rows with `active IS NULL` are execution log entries. `ensureTable()` adds the `nextexectime` column, its index, and the values for the active rows, and the run columns of `RUN_COLUMNS` (`ensureRunColumns()`, each when missing), to a table created before 4.4.0. `migrateTable()` does the same on demand, creates a missing table whatever `AutoCreateCronTable` says, and returns what it did (`created`, `column`, `run`); `cron/migrate` calls it at deployment. The indexes are named `<table>_tname`, `<table>_tclass`, `<table>_tnext`, `<table>_tuser`, and `<table>_tactive`, so several cron tables share a SQLite, PostgreSQL, or Oracle schema (4.4.0; earlier tables keep `tname`, `tclass`, `tactive`). `createDbTable()` runs the table and each index as its own command, with unquoted column names.
+Active rows (`active IS NOT NULL`) are task definitions; rows with `active IS NULL` are execution log entries. `ensureTable()` adds the `nextexectime` column, its index, and the values for the active rows, and the run columns of `RUN_COLUMNS` (`ensureRunColumns()`, each when missing), to a table created before 4.4.0. `migrateTable()` does the same on demand, creates a missing table whatever `AutoCreateCronTable` says, and returns what it did (`created`, `column`, `run`); `cron/migrate` calls it at deployment. The indexes are named `<table>_tname`, `<table>_tclass`, `<table>_tnext`, `<table>_tuser`, and `<table>_tactive`, so several cron tables share a SQLite, PostgreSQL, Oracle, IBM DB2, or Firebird schema (4.4.0; earlier tables keep `tname`, `tclass`, `tactive`). `createDbTable()` runs the table and each index as its own command, with unquoted column names.
 
-**Oracle** (12c and later, 4.4.0): the table takes the `ORACLE_COLUMNS` definitions (`VARCHAR2`, `NUMBER`, `CLOB`, an identity `tabuid`) in a `CREATE TABLE` without `IF NOT EXISTS`, which Oracle before 23ai rejects. `getAddColumnSql()` adds a column as `ADD (column definition)`. Paging is `OFFSET m ROWS FETCH NEXT n ROWS ONLY` (`limitClause()`). `readRows()` and `readRow()` lower-case the upper-case column names and read each `CLOB` stream (`normalizeRow()`). pdo_oci has no `lastInsertId()`, so `getLastInsertTaskUID()` reads `CURRVAL` of the identity sequence named in `user_tab_identity_cols`. `TOracleDbCommand` writes bound values into the SQL as literals, so a serialized task is limited to Oracle's 4,000-byte literal; before 12.2, a table name has at most 22 bytes, so its index names fit 30 bytes.
+**Oracle, SQL Server, IBM DB2, and Firebird** (4.4.0) take their own column definitions (`getColumnDefinitions()`: `ORACLE_COLUMNS`, `SQLSRV_COLUMNS`, `IBM_COLUMNS`, `FIREBIRD_COLUMNS`) in a `CREATE TABLE` without `IF NOT EXISTS`, which they reject (Oracle before 23ai). On these drivers:
+
+| Concern | Oracle 12c+ | SQL Server 2012+ | IBM DB2 11.1+ | Firebird 3+ |
+|---|---|---|---|---|
+| Add a column (`getAddColumnSql()`) | `ADD (column definition)` | `ADD column definition` | `ADD COLUMN column definition` | `ADD column definition` |
+| Paging (`limitClause()`) | `OFFSET m ROWS FETCH NEXT n ROWS ONLY` | the same, after `ORDER BY (SELECT NULL)` when unordered | the same | the same |
+| Inserted `tabuid` (`getLastInsertTaskUID()`, `executeInsert()`) | `CURRVAL` of the identity sequence in `user_tab_identity_cols` | `lastInsertId()` | `IDENTITY_VAL_LOCAL()` | `INSERT ... RETURNING tabuid` |
+| New maximum seconds (`updateTaskResult()`) | `TO_NUMBER(:newmax)` | `CAST(:newmax AS FLOAT)` | `CAST(:newmax AS DOUBLE)` | `CAST(:newmax AS DOUBLE PRECISION)` |
+
+The run seconds are bound as a fixed-point string on these drivers. IBM DB2 binds integers untyped (`getIntParamType()`). `readRows()` and `readRow()` lower-case the column names that Oracle, IBM DB2, and Firebird report in upper case, and read each stream as its row is fetched (`normalizeRow()`), since IBM DB2 ends a LOB stream at the next fetch or when the cursor closes. `TOracleDbCommand` writes bound values into the SQL as literals, so a serialized task on Oracle is limited to the 4,000-byte literal; before Oracle 12.2, a table name has at most 22 bytes, so its index names fit 30 bytes.
 
 ## Key Properties
 
@@ -118,7 +127,7 @@ $cron->clearCronLog(null|\DateInterval|int|string $period = null, ?string $name 
 $cron->removeCronLogItem(int $taskUID): ?bool
 ```
 
-`$period` is seconds, a `\DateInterval`, or a `\DateInterval` specification (`P1Y6M3DT12H20M30S` or `"1 year 6 months"`); `null` clears regardless of time. `parsePeriod()` (static) reads a period and returns null for one that does not reach back in time: a negative period (`"-1 week"`, `"yesterday"`) or one that names a day (`"last week"`), which `clearCronLog()` rejects with `dbcron_period_invalid`. Paging is `LIMIT n OFFSET m`, and `OFFSET m ROWS FETCH NEXT n ROWS ONLY` on Oracle.
+`$period` is seconds, a `\DateInterval`, or a `\DateInterval` specification (`P1Y6M3DT12H20M30S` or `"1 year 6 months"`); `null` clears regardless of time. `parsePeriod()` (static) reads a period and returns null for one that does not reach back in time: a negative period (`"-1 week"`, `"yesterday"`) or one that names a day (`"last week"`), which `clearCronLog()` rejects with `dbcron_period_invalid`. Paging is `LIMIT n OFFSET m`, and `OFFSET m ROWS FETCH NEXT n ROWS ONLY` on Oracle, SQL Server, IBM DB2, and Firebird.
 
 ## Runtime Tasks
 

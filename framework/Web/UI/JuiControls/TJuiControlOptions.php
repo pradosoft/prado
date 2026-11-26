@@ -67,6 +67,10 @@ class TJuiControlOptions
 	/**
 	 * Sets a named options with a value. Options are used to store and retrive
 	 * named values for the javascript control.
+	 * A string value, as a template gives it, is converted: `null`, `true`, and `false`
+	 * in any case become those values, a numeric string becomes a number, and a string
+	 * starting with `function` becomes a {@see TJavaScriptLiteral}. Any other value,
+	 * such as an array or null, is stored as is.
 	 * @param string $name option name.
 	 * @param mixed $value option value.
 	 * @throws TConfigurationException when the option is not a valid option of the control.
@@ -79,6 +83,10 @@ class TJuiControlOptions
 
 		foreach ($this->_control->getValidOptions() as $option) {
 			if (0 == strcasecmp($name, $option)) {
+				if (!is_string($value)) {
+					$this->_options[$option] = $value;
+					return;
+				}
 				$low = strtolower($value);
 				if ($low === 'null') {
 					$this->_options[$option] = null;

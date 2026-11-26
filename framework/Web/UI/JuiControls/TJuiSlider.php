@@ -148,7 +148,7 @@ class TJuiSlider extends TActivePanel implements IJuiOptions, ICallbackEventHand
 	}
 
 	/**
-	 * Raises the OnChange event
+	 * Raises the OnSlide event
 	 * @param object $params event parameters
 	 */
 	public function onSlide($params)
@@ -157,7 +157,7 @@ class TJuiSlider extends TActivePanel implements IJuiOptions, ICallbackEventHand
 	}
 
 	/**
-	 * Raises the OnChange event
+	 * Raises the OnStart event
 	 * @param object $params event parameters
 	 */
 	public function onStart($params)
@@ -166,7 +166,7 @@ class TJuiSlider extends TActivePanel implements IJuiOptions, ICallbackEventHand
 	}
 
 	/**
-	 * Raises the OnChange event
+	 * Raises the OnStop event
 	 * @param object $params event parameters
 	 */
 	public function onStop($params)
