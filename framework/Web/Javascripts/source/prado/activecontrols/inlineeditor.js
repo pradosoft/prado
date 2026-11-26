@@ -234,11 +234,13 @@ Prado.WebUI.TInPlaceControlBase = Prado.Class(Prado.WebUI.Control,
 	},
 
 	/**
-	 * @return {String} label inner html; the empty placeholder reads as an
-	 *   empty string.
+	 * @return {String} label inner html, or its text with options.Encode; the
+	 *   empty placeholder reads as an empty string.
 	 */
 	getText() {
-		return this.isShowingEmptyDisplayText() ? '' : this.element.innerHTML;
+		if(this.isShowingEmptyDisplayText())
+			return '';
+		return this.options.Encode ? this.element.textContent : this.element.innerHTML;
 	},
 
 	/**
@@ -417,11 +419,16 @@ Prado.WebUI.TInPlaceTextBox = Prado.Class(Prado.WebUI.TInPlaceControlBase,
 	},
 
 	/**
-	 * The label of this control holds the text unencoded.
+	 * The label of this control holds the text as html, HTML-encoded with
+	 * options.Encode.
 	 * @return {String} the editor value as label inner html.
 	 */
 	getEditorDisplayText() {
-		return this.editField.value;
+		if(!this.options.Encode)
+			return this.editField.value;
+		const holder = document.createElement('span');
+		holder.textContent = this.editField.value;
+		return holder.innerHTML;
 	},
 
 	/**
