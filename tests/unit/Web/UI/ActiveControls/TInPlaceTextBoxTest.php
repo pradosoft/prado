@@ -3,6 +3,8 @@
 namespace Prado\Test\Unit\Web\UI\ActiveControls;
 
 use Prado\IO\TTextWriter;
+use Prado\Prado;
+use Prado\Test\Unit\Harness\Web\TTestRecordingResponse;
 use Prado\Web\UI\ActiveControls\TCallbackEventParameter;
 use Prado\Web\UI\ActiveControls\TInPlaceTextBox;
 use Prado\Web\UI\THtmlWriter;
@@ -247,7 +249,22 @@ class TInPlaceTextBoxTest extends TestCase
 		$this->assertSame([], $page->getClientFunctions());
 	}
 
+	/**
+	 * The load action creates its event parameter with the response; a recording response
+	 * keeps the application from creating its buffered response here.
+	 */
 	public function testOnCallbackLoadsTheExternalText()
+	{
+		$snapshot = PradoUnit::snapshot(Prado::getApplication(), ['_response']);
+		Prado::getApplication()->setResponse(new TTestRecordingResponse());
+		try {
+			$this->runLoadExternalText();
+		} finally {
+			PradoUnit::restore(Prado::getApplication(), $snapshot);
+		}
+	}
+
+	private function runLoadExternalText(): void
 	{
 		[, $editor] = $this->createEditor();
 		$events = [];

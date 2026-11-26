@@ -94,6 +94,25 @@ class TViewStateDiffTest extends TestCase
 		$this->assertSame(['color' => 'red'], PradoUnit::invoke($diff, 'getStyleFromString', 'color: red; :x; y'));
 	}
 
+	public static function oneDeclarationProvider(): array
+	{
+		return [
+			'declaration' => ['color: red', ['color' => 'red']],
+			'no name' => [':x', []],
+			'no value' => ['y', []],
+			'empty' => ['', []],
+		];
+	}
+
+	/**
+	 * @dataProvider oneDeclarationProvider
+	 */
+	public function testStyleFromStringOfOneDeclaration(string $css, array $expected)
+	{
+		$diff = new TStyleDiff(null, null, $this->null);
+		$this->assertSame($expected, PradoUnit::invoke($diff, 'getStyleFromString', $css));
+	}
+
 	public function testCallbackEventParameterKeepsTheResponseDataInTheResponseAdapter()
 	{
 		$response = new THttpResponse();
