@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TXmlTransform` names the given `TransformPath` or `DocumentPath` in the error for a path it cannot resolve; the message showed an empty path. (belisoful)
 BUG: Issue #1497 - `TJuiDialog` raises each jQuery UI dialog event it lists, such as `OnClose`, `OnBeforeClose`, `OnFocus`, and `OnResizeStop`; only `OnOpen` could be attached. (belisoful)
 BUG: Issue #1497 - `TImageMap` renders its `<img>` with its ClientID, resolves each hot spot's mode and target at render without changing the hot spot, and renders the hot spots of a disabled image map as Inactive without postback scripts; `THotSpot` renders `title` and `alt` only when `AlternateText` is set. (belisoful)
 BUG: Issue #1497 - `THead` HTML-encodes `BaseUrl` and `ShortcutIcon`; a quote ended the `href` attribute. (belisoful)
