@@ -128,8 +128,28 @@ class TJuiAutoCompleteTest extends TestCase
 	public function testMinChars(): void
 	{
 		$control = $this->newControl();
+		$this->assertSame(1, $control->getMinChars());
 		$control->setMinChars('3');
 		$this->assertSame(3, $control->getMinChars());
+		$control->setMinChars(1);
+		$this->assertSame(1, $control->getMinChars());
+	}
+
+	/**
+	 * A template sets its properties with view state tracking off, so a value equal to the default is not stored.
+	 */
+	public function testMinCharsFromATemplateIsKept(): void
+	{
+		$control = $this->newControl();
+		$control->trackViewState(false);
+		$control->setMinChars('3');
+		$control->setMinChars('1');
+		$this->assertSame(1, $control->getMinChars());
+	}
+
+	public function testPostBackOptionsSendTheDefaultMinLength(): void
+	{
+		$this->assertSame(1, PradoUnit::invoke($this->newControl(), 'getPostBackOptions')['minLength']);
 	}
 
 	public function testResultPanelIsAChildPanel(): void
