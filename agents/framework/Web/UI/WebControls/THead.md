@@ -13,8 +13,8 @@ THead displays a head element on a page, rendering the page title, base URL, sho
 ## Key Properties/Methods
 
 - `getTitle()` / `setTitle()` - Gets or sets the page title
-- `getBaseUrl()` / `setBaseUrl()` - Gets or sets base URL for the page
-- `getShortcutIcon()` / `setShortcutIcon()` - Gets or sets favicon URL
+- `getBaseUrl()` / `setBaseUrl()` - Gets or sets base URL for the page; rendered HTML-encoded
+- `getShortcutIcon()` / `setShortcutIcon()` - Gets or sets favicon URL; rendered HTML-encoded
 - `getMetaTags()` - Returns the TMetaTagCollection
 - `getLinkTags()` - Returns the TLinkTagCollection (4.4.0)
 - `addParsedObject()` - Adds TMetaTag and TLinkTag components to their collections

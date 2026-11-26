@@ -1,5 +1,6 @@
 ## Version 4.4.0 - TBA
 BUG: Issue #1497 - `TImageMap` renders its `<img>` with its ClientID, resolves each hot spot's mode and target at render without changing the hot spot, and renders the hot spots of a disabled image map as Inactive without postback scripts; `THotSpot` renders `title` and `alt` only when `AlternateText` is set. (belisoful)
+BUG: Issue #1497 - `THead` HTML-encodes `BaseUrl` and `ShortcutIcon`; a quote ended the `href` attribute. (belisoful)
 BUG: Issue #1497 - A JuiControl callback raises only an event of the control's `getValidEvents()`; a callback naming another event, such as `load` or `dataBinding`, raised that event's handlers, and a non-string name threw a `TypeError`. UPGRADE.md lists the change. (belisoful)
 BUG: Issue #1497 - `TJuiAutoComplete::getMinChars()` defaults to 1, as documented and as jQuery UI's `minLength`; it returned `''`, so the client asked for suggestions for empty text and `MinChars="1"` in a template was ignored. UPGRADE.md lists the change. (belisoful)
 ENH: Issue #1497 - `TButton` with `ButtonTag` Button, `TActiveButton`, and `TInPlaceTextBox` have the opt-in `Encode` property, which HTML-encodes `Text` in the render and the callback update; `TInPlaceTextBox` also encodes the edited label text on the client. (belisoful)
