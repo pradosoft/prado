@@ -3,8 +3,10 @@
 namespace Prado\Test\Unit\Web\UI\ActiveControls;
 
 use Prado\IO\TTextWriter;
+use Prado\Web\UI\ActiveControls\TCallbackEventParameter;
 use Prado\Web\UI\ActiveControls\TInPlaceTextBox;
 use Prado\Web\UI\THtmlWriter;
+use Prado\Web\UI\WebControls\TButton;
 use PHPUnit\Framework\TestCase;
 use Prado\Test\Unit\PradoUnit;
 
@@ -167,5 +169,137 @@ class TInPlaceTextBoxTest extends TestCase
 		$this->assertNull($control->getEditTriggerControlID());
 		$control->setEditTriggerControlID('editButton');
 		$this->assertSame('editButton', $control->getEditTriggerControlID());
+	}
+
+	private function createEditor(bool $callback = true): array
+	{
+		$page = new TActiveTestPage($callback);
+		$editor = $page->addControl(new TInPlaceTextBox(), 'Edit');
+		return [$page, $editor];
+	}
+
+	public function testSetTextUpdatesTheLabelAndTheValueOnce()
+	{
+		[$page, $editor] = $this->createEditor();
+		$editor->setText('Ann');
+		$editor->setText('Ann');
+		$this->assertSame([
+			['Prado.WebUI.TInPlaceTextBox.setLabelText' => ['Edit', 'Ann']],
+			['Prado.Element.j' => ['Edit', 'val', ['Ann']]],
+		], $page->getClientFunctions());
+
+		[$page, $editor] = $this->createEditor(false);
+		$editor->setText('Ann');
+		$this->assertSame([], $page->getClientFunctions());
+		$this->assertSame('Ann', $editor->getText());
+	}
+
+	public function testSetReadOnlyUpdatesTheClientOnce()
+	{
+		[$page, $editor] = $this->createEditor();
+		$editor->setReadOnly('true');
+		$editor->setReadOnly(true);
+		$this->assertTrue($editor->getReadOnly());
+		$this->assertSame([['Prado.WebUI.TInPlaceTextBox.setReadOnly' => ['Edit', true]]], $page->getClientFunctions());
+
+		[$page, $editor] = $this->createEditor(false);
+		$editor->setReadOnly(true);
+		$this->assertSame([], $page->getClientFunctions());
+	}
+
+	public function testSetDisplayEditorAndEmptyDisplayTextUpdateTheClient()
+	{
+		[$page, $editor] = $this->createEditor();
+		$editor->setDisplayEditor(true);
+		$editor->setEmptyDisplayText('(none)');
+		$editor->setEmptyDisplayText('(none)');
+		$this->assertSame([
+			['Prado.WebUI.TInPlaceTextBox.setDisplayEditor' => ['Edit', true]],
+			['Prado.WebUI.TInPlaceTextBox.setEmptyDisplayText' => ['Edit', '(none)']],
+		], $page->getClientFunctions());
+
+		[$page, $editor] = $this->createEditor(false);
+		$editor->setDisplayEditor(true);
+		$editor->setEmptyDisplayText('(none)');
+		$this->assertSame([], $page->getClientFunctions());
+	}
+
+	public function testOnCallbackLoadsTheExternalText()
+	{
+		[, $editor] = $this->createEditor();
+		$events = [];
+		$editor->attachEventHandler('OnLoadingText', function ($sender, $param) use (&$events) {
+			$events[] = ['loading', $param->getCallbackParameter()];
+		});
+		$editor->attachEventHandler('OnCallback', function ($sender, $param) use (&$events) {
+			$events[] = ['callback', $param->getCallbackParameter()];
+		});
+		$editor->onCallback(new TCallbackEventParameter(null, ['__InlineEditor_loadExternalText__', 'current']));
+		$editor->onCallback(new TCallbackEventParameter(null, ['__InlineEditor_loadExternalText__']));
+		$editor->onCallback(new TCallbackEventParameter(null, []));
+		$editor->onCallback(new TCallbackEventParameter(null, ['other', 'x']));
+		$editor->onCallback(new TCallbackEventParameter(null, 'text'));
+		$this->assertSame([
+			['loading', 'current'],
+			['callback', ['__InlineEditor_loadExternalText__', 'current']],
+			['loading', null],
+			['callback', ['__InlineEditor_loadExternalText__']],
+			['callback', []],
+			['callback', ['other', 'x']],
+			['callback', 'text'],
+		], $events);
+	}
+
+	public function testPostBackOptionsOfTheOptionalSettings()
+	{
+		$control = new TInPlaceTextBox();
+		$control->setAutoHideEditor(false);
+		$control->setAutoPostBack(false);
+		$control->setTextMode('MultiLine');
+		$control->setRows(3);
+		$control->setWrap(false);
+		$options = PradoUnit::invoke($control, 'getPostBackOptions');
+		$this->assertSame('', $options['AutoHide']);
+		$this->assertSame('', $options['AutoPostBack']);
+		$this->assertSame(3, $options['Rows']);
+		$this->assertSame('', $options['Wrap']);
+		$this->assertArrayNotHasKey('LoadTextOnEdit', $options);
+
+		$control->setWrap(true);
+		$control->attachEventHandler('OnLoadingText', fn () => null);
+		$options = PradoUnit::invoke($control, 'getPostBackOptions');
+		$this->assertTrue($options['Wrap']);
+		$this->assertTrue($options['LoadTextOnEdit']);
+	}
+
+	public function testExternalControlIDResolvesAControl()
+	{
+		[$page, $editor] = $this->createEditor();
+		$page->addControl(new TButton(), 'Pen');
+		$this->assertSame('', PradoUnit::invoke($editor, 'getExternalControlID'));
+		$editor->setEditTriggerControlID('Pen');
+		$this->assertSame('Pen', PradoUnit::invoke($editor, 'getExternalControlID'));
+		$editor->setEditTriggerControlID('elsewhere');
+		$this->assertSame('elsewhere', PradoUnit::invoke($editor, 'getExternalControlID'));
+	}
+
+	public function testRenderIsALabelSpanThatRegistersTheEditor()
+	{
+		[$page, $editor] = $this->createEditor();
+		$editor->setEmptyDisplayText('(none)');
+		$editor->onPreRender(null);
+		$this->assertContains('inlineeditor', $page->cs->pradoScripts);
+		$writer = new THtmlWriter(new TTextWriter());
+		$editor->render($writer);
+		$html = $writer->flush();
+		$this->assertStringStartsWith('<span id="Edit__label" data-prado-empty="1" aria-live="polite" role="button" tabindex="0">', $html);
+		$this->assertStringEndsWith('(none)</span>', $html);
+		$this->assertSame('Prado.WebUI.TInPlaceTextBox', $page->cs->callbackControls[0][0]);
+		$this->assertSame('Edit', $page->cs->callbackControls[0][1]['TextBoxID']);
+
+		$editor->setText('Ann');
+		$writer = new THtmlWriter(new TTextWriter());
+		$editor->render($writer);
+		$this->assertStringNotContainsString('data-prado-empty', $writer->flush());
 	}
 }

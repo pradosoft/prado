@@ -9,6 +9,7 @@ use Prado\Web\UI\ActiveControls\TActiveListBox;
 use Prado\Web\UI\ActiveControls\TCallbackEventParameter;
 use Prado\Web\UI\ActiveControls\TInPlaceListBox;
 use Prado\Web\UI\THtmlWriter;
+use Prado\Web\UI\WebControls\TListItem;
 use Prado\Web\UI\WebControls\TListSelectionMode;
 use PHPUnit\Framework\TestCase;
 use Prado\Test\Unit\PradoUnit;
@@ -286,5 +287,33 @@ class TInPlaceListBoxTest extends TestCase
 		$param = new TCallbackEventParameter($control->getResponse(), []);
 		$control->onCallback($param);
 		$this->assertFalse($loadingRaised);
+	}
+
+	public function testSelectedItemTextWithoutItemsOrWithAnEmptySelectedItem()
+	{
+		$control = new TInPlaceListBox();
+		$this->assertSame('', PradoUnit::invoke($control, 'getSelectedItemText'));
+		$control->setSelectionMode(TListSelectionMode::Multiple);
+		$empty = new TListItem('', '');
+		$empty->setSelected(true);
+		$control->getItems()->add($empty);
+		$this->assertSame('', PradoUnit::invoke($control, 'getSelectedItemText'));
+		$beta = new TListItem('Beta', 'b');
+		$beta->setSelected(true);
+		$control->getItems()->add($beta);
+		$this->assertSame('Beta', PradoUnit::invoke($control, 'getSelectedItemText'));
+	}
+
+	public function testRenderShowsTheLabelAndTheHiddenMultipleSelect()
+	{
+		$page = new TActiveTestPage();
+		$control = $this->multiSelectListBox();
+		$page->addControl($control, 'Tags');
+		$writer = new THtmlWriter(new TTextWriter());
+		$control->render($writer);
+		$html = $writer->flush();
+		$this->assertStringStartsWith('<span id="Tags__label"', $html);
+		$this->assertMatchesRegularExpression('/<select[^>]* multiple="multiple"[^>]* id="Tags"/', $html);
+		$this->assertSame('Prado.WebUI.TInPlaceListBox', $page->cs->callbackControls[0][0]);
 	}
 }

@@ -14,7 +14,8 @@ Active counterpart to THyperLink. Text, ImageUrl, NavigateUrl, and Target proper
 
 - `setText($value)` - Sets text with client-side update; the text is HTML-encoded, as `THyperLink` renders it (4.4.0)
 - `setImageUrl($value)` - Sets image URL with client-side update
-- `setNavigateUrl($value)` - Sets href with client-side update
+- `setNavigateUrl($value)` - Sets href with client-side update; an empty URL or a disabled link removes `href`
+- `setEnabled($value)` - Sets or removes the client `href` in a callback, as a disabled link renders no `href` (4.4.0)
 - `setTarget($value)` - Sets target window/frame with client-side update
 - `getActiveControl()` - Returns [TBaseActiveControl](./TBaseActiveControl.md) options
 

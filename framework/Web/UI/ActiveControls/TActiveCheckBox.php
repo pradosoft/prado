@@ -186,14 +186,14 @@ class TActiveCheckBox extends TCheckBox implements IActiveControl, ICallbackEven
 	}
 
 	/**
-	 * @return string checkbox label ID;
+	 * @return string checkbox label ID: the `id` of the {@see getLabelAttributes LabelAttributes},
+	 *   or the client ID with `_label` when they have none
 	 */
 	protected function getDefaultLabelID()
 	{
-		if ($attributes = $this->getViewState('LabelAttributes', null)) {
-			return TCheckBox::getLabelAttributes()->itemAt('id');
-		} else {
-			return $this->getClientID() . '_label';
+		if (($attributes = $this->getViewState('LabelAttributes', null)) && ($id = $attributes->itemAt('id')) !== null) {
+			return $id;
 		}
+		return $this->getClientID() . '_label';
 	}
 }

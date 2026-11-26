@@ -13,6 +13,7 @@ namespace Prado\Web\UI\ActiveControls;
 /**
  * Load active control adapter.
  */
+use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Prado;
 use Prado\Web\UI\WebControls\TLabel;
 
@@ -71,8 +72,10 @@ class TActiveLabel extends TLabel implements IActiveControl
 	/**
 	 * Sets the ID of the control that the label is associated with.
 	 * The control must be locatable via {@see \Prado\Web\UI\TControl::findControl} using the ID.
-	 * On callback response, the For attribute of the label is updated.
+	 * On callback response, the For attribute of the label is updated, and an empty
+	 * ID removes it.
 	 * @param string $value the associated control ID
+	 * @throws TInvalidDataValueException if the ID locates no control in a callback
 	 */
 	public function setForControl($value)
 	{
@@ -82,8 +85,14 @@ class TActiveLabel extends TLabel implements IActiveControl
 
 		parent::setForControl($value);
 		if ($this->getActiveControl()->canUpdateClientSide()) {
-			$id = $this->findControl($value)->getClientID();
-			$this->getPage()->getCallbackClient()->setAttribute($this, 'for', $id);
+			$client = $this->getPage()->getCallbackClient();
+			if ($value === '') {
+				$client->removeAttribute($this, 'for');
+			} elseif (($control = $this->findControl($value)) !== null) {
+				$client->setAttribute($this, 'for', $control->getClientID());
+			} else {
+				throw new TInvalidDataValueException('label_associatedcontrol_invalid', $value);
+			}
 		}
 	}
 

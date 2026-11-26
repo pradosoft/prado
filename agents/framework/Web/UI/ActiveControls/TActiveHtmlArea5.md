@@ -12,7 +12,7 @@ Active counterpart to THtmlArea5 (TinyMCE 5+). Supports callback handling and co
 
 ## Key Properties/Methods
 
-- `setText($value)` - Sets content with TinyMCE update if visual edit enabled
+- `setText($value)` - Sets content with TinyMCE update if visual edit enabled; the script quotes the text with `TJavaScript::quoteString()`
 - `raiseCallbackEvent($param)` - Raises callback event
 - `onCallback($param)` - Event raised when callback is requested
 - `getClientClassName()` - Returns `Prado.WebUI.TActiveHtmlArea5`

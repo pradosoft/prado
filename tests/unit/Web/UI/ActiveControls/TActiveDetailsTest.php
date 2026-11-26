@@ -8,6 +8,9 @@ use Prado\Web\UI\ActiveControls\ICallbackEventHandler;
 use Prado\Web\UI\ActiveControls\TCallbackEventParameter;
 use Prado\Web\UI\WebControls\TDetails;
 use PHPUnit\Framework\TestCase;
+use Prado\IO\TTextWriter;
+use Prado\Test\Unit\PradoUnit;
+use Prado\Web\UI\THtmlWriter;
 
 class TActiveDetailsTest extends TestCase
 {
@@ -208,8 +211,34 @@ class TActiveDetailsTest extends TestCase
 		$this->assertArrayHasKey('EventTarget', $options);
 	}
 
-	// Note: rendering TActiveDetails requires a full page context (registerCallbackClientScript
-	// calls getClientScript() which needs TPage). Rendering is covered by integration tests.
+	public function testSetOpenUpdatesTheClientInACallback()
+	{
+		$page = new TActiveTestPage();
+		$details = $page->addControl(new TActiveDetails(), 'More');
+		$details->setOpen(true);
+		$details->setOpen(false);
+		$this->assertSame([
+			['Prado.WebUI.TActiveDetails.setOpen' => ['More', true]],
+			['Prado.WebUI.TActiveDetails.setOpen' => ['More', false]],
+		], $page->getClientFunctions());
+
+		$page = new TActiveTestPage(false);
+		$details = $page->addControl(new TActiveDetails(), 'More');
+		$details->setOpen(true);
+		$this->assertSame([], $page->getClientFunctions());
+	}
+
+	public function testAddAttributesToRenderRegistersTheCallbackControl()
+	{
+		$page = new TActiveTestPage();
+		$details = $page->addControl(new TActiveDetails(), 'More');
+		$writer = new THtmlWriter(new TTextWriter());
+		PradoUnit::invoke($details, 'addAttributesToRender', $writer);
+		$writer->renderBeginTag('details');
+		$this->assertStringContainsString('id="More"', $writer->flush());
+		$this->assertSame('Prado.WebUI.TActiveDetails', $page->cs->callbackControls[0][0]);
+		$this->assertSame('More', $page->cs->callbackControls[0][1]['EventTarget']);
+	}
 
 	// Helper: create a TCallbackEventParameter-like mock
 	private function createCallbackEventParameter(string $param): TCallbackEventParameter

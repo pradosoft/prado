@@ -301,6 +301,16 @@ class TActiveListControlAdapterTest extends TestCase
 		$this->assertSame([], $page->getClientFunctions());
 	}
 
+	public function testItemChangesOutsideACallbackLeaveTheListUnchanged()
+	{
+		[$page, $list, $adapter] = $this->createList(TActiveListBox::class, false);
+		$list->getItems()->removeAt(2);
+		$list->getItems()->add(new TListItem('Delta', 'd'));
+		$this->assertFalse($list->getItems()->getListHasChanged());
+		$adapter->updateListItems();
+		$this->assertSame([], $page->getClientFunctions());
+	}
+
 	public function testUpdateListItemsIgnoresPlainItemCollection()
 	{
 		[$page, $list, $adapter] = $this->createList(TActiveCheckBoxList::class);

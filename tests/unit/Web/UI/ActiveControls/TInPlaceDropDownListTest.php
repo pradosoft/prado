@@ -9,6 +9,7 @@ use Prado\Web\UI\ActiveControls\TActiveDropDownList;
 use Prado\Web\UI\ActiveControls\TCallbackEventParameter;
 use Prado\Web\UI\ActiveControls\TInPlaceDropDownList;
 use Prado\Web\UI\THtmlWriter;
+use Prado\Web\UI\WebControls\TListItem;
 use PHPUnit\Framework\TestCase;
 use Prado\Test\Unit\PradoUnit;
 
@@ -340,5 +341,133 @@ class TInPlaceDropDownListTest extends TestCase
 		$param = new TCallbackEventParameter($control->getResponse(), 'current');
 		$control->onCallback($param);
 		$this->assertFalse($raised);
+	}
+
+	public function testOnCallbackLoadsItemsWithoutAValue()
+	{
+		$control = new TInPlaceDropDownList();
+		$values = [];
+		$control->attachEventHandler('OnLoadingItems', function ($sender, $param) use (&$values) {
+			$values[] = $param->getCallbackParameter();
+		});
+		$control->onCallback(new TCallbackEventParameter(null, ['__InlineEditor_loadItems__']));
+		$this->assertSame([null], $values);
+	}
+
+	private function createList(bool $callback = true): array
+	{
+		$page = new TActiveTestPage($callback);
+		$list = $page->addControl(new TInPlaceDropDownList(), 'Pick');
+		foreach (['a' => 'Apple', '' => '', 'c' => '<C>'] as $value => $text) {
+			$list->getItems()->add(new TListItem($text, $value));
+		}
+		return [$page, $list];
+	}
+
+	public function testSetReadOnlyUpdatesTheClientOnce()
+	{
+		[$page, $list] = $this->createList();
+		$list->setReadOnly('true');
+		$list->setReadOnly(true);
+		$this->assertSame([['Prado.WebUI.TInPlaceDropDownList.setReadOnly' => ['Pick', true]]], $page->getClientFunctions());
+
+		[$page, $list] = $this->createList(false);
+		$list->setReadOnly(true);
+		$this->assertSame([], $page->getClientFunctions());
+		$this->assertTrue($list->getReadOnly());
+	}
+
+	public function testPreRenderInACallbackUpdatesTheLabel()
+	{
+		[$page, $list] = $this->createList();
+		$list->setSelectedIndex(2);
+		$list->onPreRender(null);
+		$this->assertContains('inlineeditor', $page->cs->pradoScripts);
+		$functions = $page->getClientFunctions();
+		$this->assertSame(['Prado.WebUI.TInPlaceDropDownList.setLabelText' => ['Pick', '&lt;C&gt;']], end($functions));
+
+		[$page, $list] = $this->createList(false);
+		$list->onPreRender(null);
+		$this->assertSame([], $page->getClientFunctions());
+	}
+
+	public function testSelectedItemWithoutTextShowsTheEmptyDisplayText()
+	{
+		[, $list] = $this->createList(false);
+		$list->setSelectedIndex(1);
+		$list->setEmptyDisplayText('(none)');
+		$this->assertSame('', PradoUnit::invoke($list, 'getSelectedItemText'));
+		$this->assertSame('(none)', PradoUnit::invoke($list, 'getSelectedDisplayText'));
+	}
+
+	public function testRenderShowsTheLabelAndTheHiddenSelect()
+	{
+		[$page, $list] = $this->createList();
+		$list->setSelectedIndex(0);
+		$list->setToolTip('Fruit');
+		$list->getStyle()->setCustomStyle('color:red');
+		$writer = new THtmlWriter(new TTextWriter());
+		$list->render($writer);
+		$html = $writer->flush();
+		$this->assertStringStartsWith('<span id="Pick__label" title="Fruit" aria-live="polite" role="button" tabindex="0" style="color:red;">Apple</span><select', $html);
+		$this->assertMatchesRegularExpression('/<select[^>]* id="Pick"[^>]* style="[^"]*display:none;/', $html);
+		$this->assertSame('Prado.WebUI.TInPlaceDropDownList', $page->cs->callbackControls[0][0]);
+		$this->assertSame('Fruit', $page->cs->callbackControls[0][1]['EditorLabel']);
+	}
+
+	public static function labelProvider(): array
+	{
+		$rows = [];
+		foreach ([false, true] as $style) {
+			foreach ([false, true] as $toolTip) {
+				foreach ([false, true] as $displayEditor) {
+					$rows[sprintf('style %d tooltip %d editor %d', $style, $toolTip, $displayEditor)] = [$style, $toolTip, $displayEditor];
+				}
+			}
+		}
+		return $rows;
+	}
+
+	/**
+	 * @dataProvider labelProvider
+	 */
+	public function testRenderLabelAttributes(bool $style, bool $toolTip, bool $displayEditor)
+	{
+		[, $list] = $this->createList(false);
+		if ($style) {
+			$list->getStyle()->setCustomStyle('color:red');
+		}
+		if ($toolTip) {
+			$list->setToolTip('Fruit');
+		}
+		$list->setDisplayEditor($displayEditor);
+		$writer = new THtmlWriter(new TTextWriter());
+		PradoUnit::invoke($list, 'renderLabel', $writer);
+		$html = $writer->flush();
+		$this->assertSame($toolTip, str_contains($html, 'title="Fruit"'));
+		$this->assertSame($style, str_contains($html, 'color:red'));
+		$this->assertSame($displayEditor, str_contains($html, 'display:none'));
+	}
+
+	public function testPostBackOptionsWithAToolTipAndALoadingItemsHandler()
+	{
+		[, $list] = $this->createList(false);
+		$list->setToolTip('Fruit');
+		$list->attachEventHandler('OnLoadingItems', fn () => null);
+		$options = PradoUnit::invoke($list, 'getPostBackOptions');
+		$this->assertSame('Fruit', $options['EditorLabel']);
+		$this->assertTrue($options['LoadItemsOnEdit']);
+	}
+
+	public function testRenderWithTheEditorDisplayedHidesTheLabel()
+	{
+		[, $list] = $this->createList();
+		$list->setDisplayEditor(true);
+		$list->setReadOnly(true);
+		$writer = new THtmlWriter(new TTextWriter());
+		$list->render($writer);
+		$html = $writer->flush();
+		$this->assertStringStartsWith('<span id="Pick__label" aria-live="polite" style="display:none;">', $html);
+		$this->assertDoesNotMatchRegularExpression('/<select[^>]*display:none/', $html);
 	}
 }

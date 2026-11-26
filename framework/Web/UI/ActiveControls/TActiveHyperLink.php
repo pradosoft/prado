@@ -12,6 +12,7 @@ namespace Prado\Web\UI\ActiveControls;
 
 use Prado\IO\TTextWriter;
 use Prado\Prado;
+use Prado\TPropertyValue;
 use Prado\Web\THttpUtility;
 use Prado\Web\UI\WebControls\THyperLink;
 
@@ -23,7 +24,8 @@ use Prado\Web\UI\WebControls\THyperLink;
  * property is true the during a callback request, setting {@see setText Text}
  * property will also set the text of the label on the client upon callback
  * completion. Similarly, for other properties such as {@see setImageUrl ImageUrl},
- * {@see setNavigateUrl NavigateUrl} and {@see setTarget Target}.
+ * {@see setNavigateUrl NavigateUrl} and {@see setTarget Target}. Enabling or
+ * disabling the link sets or removes its `href`.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @since 3.1
@@ -98,9 +100,43 @@ class TActiveHyperLink extends THyperLink implements IActiveControl
 
 		parent::setNavigateUrl($value);
 		if ($this->getActiveControl()->canUpdateClientSide()) {
-			//replace &amp; with & and urldecode the url (setting the href using javascript is literal)
-			$url = urldecode(str_replace('&amp;', '&', $value));
-			$this->getPage()->getCallbackClient()->setAttribute($this, 'href', $url);
+			$this->updateClientHref();
+		}
+	}
+
+	/**
+	 * Sets whether the link is enabled.  In a callback the client link gets its
+	 * {@see getNavigateUrl NavigateUrl} as `href` when enabled and loses `href` when
+	 * disabled, as a disabled THyperLink renders no `href`.
+	 * @param bool $value whether the link is enabled
+	 * @since 4.4.0
+	 */
+	public function setEnabled($value)
+	{
+		$value = TPropertyValue::ensureBoolean($value);
+		if (parent::getEnabled() === $value) {
+			return;
+		}
+
+		parent::setEnabled($value);
+		if ($this->getActiveControl()->canUpdateClientSide()) {
+			$this->updateClientHref();
+		}
+	}
+
+	/**
+	 * Sets the `href` of the client link to the {@see getNavigateUrl NavigateUrl}, or
+	 * removes it when the link is disabled or has no URL, as the link renders.
+	 * The URL is decoded, since a script sets `href` literally.
+	 * @since 4.4.0
+	 */
+	protected function updateClientHref(): void
+	{
+		$client = $this->getPage()->getCallbackClient();
+		if ($this->getEnabled(true) && ($url = $this->getNavigateUrl()) !== '') {
+			$client->setAttribute($this, 'href', urldecode(str_replace('&amp;', '&', $url)));
+		} else {
+			$client->removeAttribute($this, 'href');
 		}
 	}
 

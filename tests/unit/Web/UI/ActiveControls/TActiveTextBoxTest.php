@@ -2,10 +2,13 @@
 
 namespace Prado\Test\Unit\Web\UI\ActiveControls;
 
+use Prado\Test\Unit\Harness\Traits\TWebControlRenderTrait;
 use Prado\Test\Unit\Harness\Web\UI\TTestCallbackPage;
 use Prado\Test\Unit\PradoUnit;
 use Prado\Web\UI\ActiveControls\TActiveSuggestionList;
 use Prado\Web\UI\ActiveControls\TActiveTextBox;
+use Prado\Web\UI\ActiveControls\TCallbackClientSide;
+use Prado\Web\UI\ActiveControls\TCallbackEventParameter;
 use Prado\Web\UI\TControl;
 use Prado\Web\UI\WebControls\TSuggestionList;
 use Prado\Web\UI\WebControls\TTextBoxMode;
@@ -13,6 +16,8 @@ use PHPUnit\Framework\TestCase;
 
 class TActiveTextBoxTest extends TestCase
 {
+	use TWebControlRenderTrait;
+
 	public static function suggestionListClassProvider(): array
 	{
 		return [
@@ -108,5 +113,63 @@ class TActiveTextBoxTest extends TestCase
 		[$page, $textbox] = $this->createLoadedTextBox(false);
 		$textbox->setSuggestionList('Cities');
 		$this->assertSame([], $page->getClientFunctions());
+	}
+
+	// --- Text, callback, and render ---
+
+	private function createTextBox(bool $callback = true, int $stage = TControl::CS_LOADED): array
+	{
+		$page = new TActiveTestPage($callback);
+		$textbox = $page->addControl(new TActiveTextBox(), 'Name', $stage);
+		return [$page, $textbox];
+	}
+
+	public function testClientSideIsTheActiveControlClientSide()
+	{
+		$textbox = new TActiveTextBox();
+		$this->assertInstanceOf(TCallbackClientSide::class, $textbox->getClientSide());
+		$this->assertSame($textbox->getActiveControl()->getClientSide(), $textbox->getClientSide());
+	}
+
+	public function testSetTextAfterPostDataSetsTheValueOnce()
+	{
+		[$page, $textbox] = $this->createTextBox();
+		$textbox->setText('Ann');
+		$textbox->setText('Ann');
+		$this->assertSame([['Prado.Element.j' => ['Name', 'val', ['Ann']]]], $page->getClientFunctions());
+	}
+
+	public function testSetTextBeforePostDataOrOutsideACallbackUpdatesNothing()
+	{
+		[$page, $textbox] = $this->createTextBox(true, TControl::CS_INITIALIZED);
+		$textbox->setText('Ann');
+		$this->assertSame([], $page->getClientFunctions());
+
+		[$page, $textbox] = $this->createTextBox(false);
+		$textbox->setText('Ann');
+		$this->assertSame([], $page->getClientFunctions());
+		$this->assertSame('Ann', $textbox->getText());
+	}
+
+	public function testRaiseCallbackEventRaisesOnCallback()
+	{
+		[, $textbox] = $this->createTextBox();
+		$params = [];
+		$textbox->attachEventHandler('OnCallback', function ($sender, $param) use (&$params) {
+			$params[] = $param->getCallbackParameter();
+		});
+		$textbox->raiseCallbackEvent(new TCallbackEventParameter(null, 'p'));
+		$this->assertSame(['p'], $params);
+	}
+
+	public function testRenderRegistersTheCallbackControl()
+	{
+		[$page, $textbox] = $this->createTextBox();
+		$textbox->setAutoPostBack(true);
+		$html = $this->render($textbox);
+		$this->assertStringContainsString('id="Name"', $html);
+		$this->assertStringNotContainsString('onchange', $html);
+		$this->assertCount(1, $page->cs->callbackControls);
+		$this->assertSame('Prado.WebUI.TActiveTextBox', $page->cs->callbackControls[0][0]);
 	}
 }

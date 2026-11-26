@@ -8,6 +8,10 @@ use Prado\Web\UI\ActiveControls\ICallbackEventHandler;
 use Prado\Web\UI\ActiveControls\TCallbackEventParameter;
 use Prado\Web\UI\WebControls\TDialog;
 use PHPUnit\Framework\TestCase;
+use Prado\IO\TTextWriter;
+use Prado\Test\Unit\PradoUnit;
+use Prado\Web\UI\TControl;
+use Prado\Web\UI\THtmlWriter;
 
 class TActiveDialogTest extends TestCase
 {
@@ -256,8 +260,72 @@ class TActiveDialogTest extends TestCase
 		$this->assertFalse($ref->invoke($control)['ShowModal']);
 	}
 
-	// Note: rendering TActiveDialog requires a full page context (registerCallbackClientScript
-	// calls getClientScript() which needs TPage). Rendering is covered by integration tests.
+	public static function callbackParameterProvider(): array
+	{
+		return [
+			'open' => ['open', true, ''],
+			'array open' => [['open'], true, ''],
+			'close' => ['close', false, ''],
+			'array close' => [['close'], false, ''],
+			'array close with value' => [['close', 'yes'], false, 'yes'],
+			'array close with a number' => [['close', 2], false, '2'],
+			'array close with an array' => [['close', ['x']], false, ''],
+			'array unknown' => [['toggle'], null, 'kept'],
+			'empty array' => [[], null, 'kept'],
+			'unknown' => ['toggle', null, 'kept'],
+		];
+	}
+
+	/**
+	 * @dataProvider callbackParameterProvider
+	 */
+	public function testRaiseCallbackEventActionsAndReturnValue($parameter, ?bool $open, string $returnValue)
+	{
+		$control = new TActiveDialog();
+		$control->setViewState('ReturnValue', 'kept', '');
+		$control->raiseCallbackEvent(new TCallbackEventParameter(null, $parameter));
+		if ($open !== null) {
+			$this->assertSame($open, $control->getOpen());
+		} else {
+			$this->assertFalse($control->getOpen());
+		}
+		$this->assertSame($returnValue, $control->getReturnValue());
+	}
+
+	public function testSetOpenUpdatesTheClientInACallback()
+	{
+		$page = new TActiveTestPage();
+		$dialog = $page->addControl(new TActiveDialog(), 'Dlg');
+		$dialog->setModal(true);
+		$dialog->setOpen(true);
+		$dialog->setOpen(false);
+		$this->assertSame([
+			['Prado.WebUI.TActiveDialog.setOpen' => ['Dlg', true, true]],
+			['Prado.WebUI.TActiveDialog.setOpen' => ['Dlg', false, true]],
+		], $page->getClientFunctions());
+
+		$page = new TActiveTestPage(false);
+		$dialog = $page->addControl(new TActiveDialog(), 'Dlg');
+		$dialog->setOpen(true);
+		$this->assertSame([], $page->getClientFunctions());
+	}
+
+	public function testAddAttributesToRenderRegistersTheCallbackControlAndNoModalScript()
+	{
+		$page = new TActiveTestPage();
+		$dialog = $page->addControl(new TActiveDialog(), 'Dlg', TControl::CS_CONSTRUCTED);
+		$dialog->setOpen(true);
+		$dialog->setModal(true);
+		$writer = new THtmlWriter(new TTextWriter());
+		PradoUnit::invoke($dialog, 'addAttributesToRender', $writer);
+		$writer->renderBeginTag('dialog');
+		$this->assertStringContainsString('id="Dlg"', $writer->flush());
+		$this->assertSame('Prado.WebUI.TActiveDialog', $page->cs->callbackControls[0][0]);
+		$this->assertTrue($page->cs->callbackControls[0][1]['ShowModal']);
+		$this->assertArrayNotHasKey('prado:dialog:Dlg', PradoUnit::getProp($page->cs, '_endScripts'));
+		PradoUnit::invoke($dialog, 'registerShowModalScript');
+		$this->assertArrayNotHasKey('prado:dialog:Dlg', PradoUnit::getProp($page->cs, '_endScripts'));
+	}
 
 	// Helper: create a TCallbackEventParameter mock
 	private function createCallbackEventParameter(string|array $param): TCallbackEventParameter

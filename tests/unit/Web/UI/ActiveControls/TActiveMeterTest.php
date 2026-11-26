@@ -6,6 +6,8 @@ use Prado\Web\UI\ActiveControls\IActiveControl;
 use Prado\Web\UI\ActiveControls\TActiveMeter;
 use Prado\Web\UI\WebControls\TMeter;
 use PHPUnit\Framework\TestCase;
+use Prado\IO\TTextWriter;
+use Prado\Web\UI\THtmlWriter;
 
 class TActiveMeterTest extends TestCase
 {
@@ -83,6 +85,44 @@ class TActiveMeterTest extends TestCase
 		$this->assertSame(-10.0, $control->getMin());
 	}
 
-	// Note: rendering TActiveMeter requires a full page context; client-side
-	// attribute updates are covered by the ActiveMeterTestCase functional test.
+	public function testChangesUpdateTheClientAttributesInACallback()
+	{
+		$page = new TActiveTestPage();
+		$meter = $page->addControl(new TActiveMeter(), 'Gauge');
+		$meter->setValue('0.5');
+		$meter->setValue(0.5);
+		$meter->setMin(-1);
+		$meter->setMax(2);
+		$meter->setLow(0.2);
+		$meter->setHigh(0.8);
+		$meter->setOptimum(0.6);
+		$meter->setLow('');
+		$this->assertSame([
+			['Prado.Element.setAttribute' => ['Gauge', 'value', '0.5']],
+			['Prado.Element.setAttribute' => ['Gauge', 'min', '-1']],
+			['Prado.Element.setAttribute' => ['Gauge', 'max', '2']],
+			['Prado.Element.setAttribute' => ['Gauge', 'low', '0.2']],
+			['Prado.Element.setAttribute' => ['Gauge', 'high', '0.8']],
+			['Prado.Element.setAttribute' => ['Gauge', 'optimum', '0.6']],
+			['Prado.Element.removeAttribute' => ['Gauge', 'low']],
+		], $page->getClientFunctions());
+	}
+
+	public function testChangesOutsideACallbackUpdateNothing()
+	{
+		$page = new TActiveTestPage(false);
+		$meter = $page->addControl(new TActiveMeter(), 'Gauge');
+		$meter->setValue(0.5);
+		$this->assertSame([], $page->getClientFunctions());
+		$this->assertSame(0.5, $meter->getValue());
+	}
+
+	public function testRenderAddsTheId()
+	{
+		$page = new TActiveTestPage();
+		$meter = $page->addControl(new TActiveMeter(), 'Gauge');
+		$writer = new THtmlWriter(new TTextWriter());
+		$meter->render($writer);
+		$this->assertStringStartsWith('<meter id="Gauge"', $writer->flush());
+	}
 }

@@ -21,6 +21,7 @@ use Prado\Web\UI\TControl;
 use Prado\Web\UI\THtmlWriter;
 use Prado\Web\UI\WebControls\TCheckBoxList;
 use Prado\Web\UI\WebControls\TListItem;
+use Prado\Web\UI\WebControls\TRepeatLayout;
 
 /**
  * Client script manager that records script registrations without publishing assets.
@@ -127,6 +128,29 @@ class TActiveCheckBoxListTest extends TestCase
 	public function testSpanIsAlwaysNeeded()
 	{
 		$this->assertTrue(PradoUnit::invoke(new TActiveCheckBoxList(), 'getSpanNeeded'));
+		$list = new TActiveCheckBoxList();
+		$list->setRepeatLayout(TRepeatLayout::Raw);
+		$list->getItems()->add('a');
+		$this->assertTrue(PradoUnit::invoke($list, 'getSpanNeeded'));
+	}
+
+	public function testSetEnabledInACallbackDisablesTheItems()
+	{
+		$page = new TActiveTestPage();
+		$list = $page->addControl(new TActiveCheckBoxList(), 'Opts');
+		$list->getItems()->add('a');
+		$list->getItems()->add('b');
+		$list->setEnabled(false);
+		$this->assertSame([
+			['Prado.Element.setAttribute' => ['Opts_c0', 'disabled', true]],
+			['Prado.Element.setAttribute' => ['Opts_c1', 'disabled', true]],
+		], $page->getClientFunctions());
+
+		$page = new TActiveTestPage(false);
+		$list = $page->addControl(new TActiveCheckBoxList(), 'Opts');
+		$list->getItems()->add('a');
+		$list->setEnabled(false);
+		$this->assertSame([], $page->getClientFunctions());
 	}
 
 	public function testClientClassName()
