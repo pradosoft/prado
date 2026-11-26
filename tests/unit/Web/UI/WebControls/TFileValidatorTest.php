@@ -667,4 +667,32 @@ class TFileValidatorTest extends TestCase
 			$this->assertTrue($this->invokeEvaluateIsValid($validator), $pattern);
 		}
 	}
+
+	public function testFileWithoutLocalNameHasNoSniffedMimeType()
+	{
+		$this->assertNull(PradoUnit::invoke(new TFileValidator(), 'getSniffedMimeType', $this->makeFile('a.txt', 10, 'text/plain')));
+	}
+
+	public static function provideOneAcceptToken(): array
+	{
+		return [
+			'extension' => ['.png', ['png'], []],
+			'MIME type' => ['image/png', [], ['image/png']],
+		];
+	}
+
+	/**
+	 * @param string $accept the upload's Accept.
+	 * @param string[] $extensions the effective file extensions.
+	 * @param string[] $types the effective file types.
+	 */
+	#[\PHPUnit\Framework\Attributes\DataProvider('provideOneAcceptToken')]
+	public function testOneAcceptToken(string $accept, array $extensions, array $types)
+	{
+		[$page, $upload] = $this->createPageWithUpload();
+		$validator = $this->createValidator($page, $upload);
+		$upload->setAccept($accept);
+		$this->assertSame($extensions, PradoUnit::invoke($validator, 'getEffectiveFileExtensions'));
+		$this->assertSame($types, PradoUnit::invoke($validator, 'getEffectiveFileTypes'));
+	}
 }
