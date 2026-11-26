@@ -353,7 +353,8 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	public function raiseCallbackEvent($param)
 	{
 		$cp = $param->getCallbackParameter();
-		if ($key = $cp->targetID == $this->_target->getUniqueID()) {
+		if ($cp->targetID == $this->_target->getUniqueID()) {
+			$key = $this->getUniqueID();
 			$params = $this->popParamsByToken($cp->callbackToken);
 			foreach ($params->files as $index => $file) {
 				$_FILES[$key]['name'][$index] = stripslashes($file['fileName']);

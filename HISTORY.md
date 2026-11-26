@@ -13,6 +13,7 @@ BUG: Issue #1497 - `THtmlArea` and `THtmlArea5` allow no event handler attribute
 BUG: Issue #1497 - `TColorPicker` shows `Text` as its button's background only when it is a CSS color (`isCssColor()`); posted text such as `red;background-image:url(...)` added CSS declarations to the button's style. (belisoful)
 BUG: Issue #1497 - A disabled `THyperLink`, `TLinkButton`, or `TBulletedList` link renders `role="link"` and `aria-disabled="true"` instead of `disabled`, which `<a>` does not have, also when an active link is disabled in a callback. UPGRADE.md lists the change. (belisoful)
 ENH: Issue #1497 - `TAccordionView.Encode` HTML-encodes `Text` and `Caption`, as on TTabView; off by default. (belisoful)
+BUG: Issue #1497 - `TActiveFileUpload` loads the files of its upload callback under its unique ID; it stored them in `$_FILES[1]`, where a field named `1` collided with them. (belisoful)
 BUG: Issue #1497 - `TActivePager` with `ButtonType` `ImageButton` shows the page image URL of each button, as `TPager` does; the button text replaced it. (belisoful)
 BUG: Issue #1497 - The callback re-render of a control under a render filter reads `data-prado-filter-exempt` from the dataset of a web control; an exempt `THtmlElement` or `TPanel` ancestor was ignored. (belisoful)
 BUG: Issue #1497 - `TEventTriggeredCallback` without an `EventName` lets the client listen to its default event, `change` or `click`; it listened to an empty event name. An `On` prefix is stripped in any case. (belisoful)
