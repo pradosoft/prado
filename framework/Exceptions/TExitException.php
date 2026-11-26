@@ -32,7 +32,7 @@ class TExitException extends TSystemException
 	 * Constructor.
 	 * @param int $exitCode The status exit code.
 	 * @param ?string $message The error message.
-	 * @param array $args All the additional parameters.
+	 * @param mixed ...$args All the additional parameters.
 	 */
 	public function __construct(int $exitCode = 0, ?string $message = null, ...$args)
 	{

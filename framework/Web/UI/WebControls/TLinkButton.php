@@ -108,8 +108,13 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 		if ($this->getEnabled(true) && $this->getEnableClientScript()) {
 			$this->renderLinkButtonHref($writer);
 			$this->renderClientControlScript($writer);
-		} elseif ($this->getEnabled()) { // in this case, parent will not render 'disabled'
-			$writer->addAttribute('disabled', 'disabled');
+		} else {
+			// `disabled` is not an attribute of <a>; a link without href is inert
+			$writer->removeAttribute('disabled');
+			if ($this->getRole() === null) {
+				$writer->addAttribute('role', 'link');
+			}
+			$writer->addAttribute('aria-disabled', 'true');
 		}
 	}
 

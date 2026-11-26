@@ -756,6 +756,8 @@ urlmappingpattern_serviceparameter_required = TUrlMappingPattern.ServiceParamete
 keyboard_forcontrol_required			= TKeyboard.ForControl cannot be empty.
 keyboard_forcontrol_invalid				= TKeyboard.ForControl ''{0}'' is invalid.
 
+slider_stepsize_invalid					= TSlider.StepSize {0} must be greater than 0.
+
 captcha_tokenimagetheme_invalid			= TCaptcha.TokenImageTheme must be an integer between {0} and {1}.
 captcha_tokenfontsize_invalid			= TCaptcha.TokenFontSize must be an integer between {0} and {1}.
 captcha_mintokenlength_invalid			= TCaptcha.MinTokenLength must be an integer between {0} and {1}.

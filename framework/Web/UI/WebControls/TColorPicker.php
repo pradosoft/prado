@@ -213,9 +213,24 @@ class TColorPicker extends TTextBox
 	}
 
 	/**
+	 * Returns whether a text is a CSS color the button may show as its background.
+	 * A color is `#rgb`, `#rgba`, `#rrggbb`, or `#rrggbbaa`; `rgb()`, `rgba()`, `hsl()`, or `hsla()` of
+	 * numbers, percentages, commas, slashes, and spaces; or a color name of letters.
+	 * Any other text, such as one that adds a CSS declaration, is not a color.
+	 * @param string $color the text to check.
+	 * @return bool whether the text is a color.
+	 * @since 4.4.0
+	 */
+	protected function isCssColor(string $color): bool
+	{
+		return preg_match('/^(?:#(?:[0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})|(?:rgba?|hsla?)\\([0-9.%,\\/ ]+\\)|[a-z]+)\z/i', $color) === 1;
+	}
+
+	/**
 	 * Renders additional body content.
 	 * This method overrides parent implementation by adding
-	 * additional color picker button.
+	 * additional color picker button. The button shows {@see getText Text} as its
+	 * background only when {@see isCssColor} accepts it.
 	 * @param \Prado\Web\UI\THtmlWriter $writer writer
 	 */
 	public function renderEndTag($writer)
@@ -234,7 +249,7 @@ class TColorPicker extends TTextBox
 
 		$writer->addAttribute('id', $this->getClientID() . '_button');
 		$writer->addAttribute('src', $this->getAssetUrl('button.gif'));
-		if ($color !== '') {
+		if ($this->isCssColor($color)) {
 			$writer->addAttribute('style', "background-color:{$color};");
 		}
 		$writer->addAttribute('alt', '');

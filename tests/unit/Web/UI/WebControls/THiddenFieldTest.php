@@ -126,4 +126,13 @@ class THiddenFieldTest extends TestCase
 			$this->assertSame($code, $e->getErrorCode());
 		}
 	}
+
+	public function testLoadPostDataIgnoresAnArrayValue()
+	{
+		$field = new THiddenField();
+		$field->setValue('abc');
+		$this->assertFalse($field->loadPostData('token', ['token' => ['x']]));
+		$this->assertSame('abc', $field->getValue());
+		$this->assertFalse($field->getDataChanged());
+	}
 }

@@ -15,7 +15,7 @@ THtmlArea wraps the TinyMCE WYSIWYG editor for rich HTML editing. Displays a vis
 - `TextMode` - Always 'MultiLine' (read-only)
 - `EnableVisualEdit` - Show WYSIWYG editor (default true)
 - `Culture` - Editor language/culture
-- `Options` - TinyMCE editor options
+- `Options` - TinyMCE editor options; the default `extended_valid_elements` allow no event handler attributes
 - `CustomPluginPath` - Path to custom plugins
 - `getAvailablePlugins()` / `getAvailableThemes()` - Plugin/theme lists
 

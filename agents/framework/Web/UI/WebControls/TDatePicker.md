@@ -121,7 +121,7 @@ Drop-down mode:
 - **DateFormat case-sensitive** — `M` and `m` are different tokens. `MM` = month; `mm` = minutes (not used in date-only picker).
 - **Culture** — if not set, uses `TGlobalization` culture. Month/day names are localized when `Culture` is set.
 - **Clock** — today comes from the application clock, or one set with `setClock()` (`TApplicationClockAwareTrait`): the default `FromYear`/`UpToYear`, missing drop-down fields on postback, and the lists of an unparsable `Text`.
-- **`DropDownList` mode** — renders separate `<select>` elements for day, month, year, named by `aria-label` (localized "Day", "Month", "Year"). `InputMode=DropDownList` hides the text input; `InputMode=TextBox` shows text + drop-downs side by side.
+- **`DropDownList` mode** — renders separate `<select>` elements for day, month, year, named by `aria-label` (localized "Day", "Month", "Year"). The popup calendar is registered for every format, a month-year one included; `hasDayPattern()` reports whether the format has a day. The wrapping `<span>` takes the web control attributes only, not the text box's input attributes. `InputMode=DropDownList` hides the text input; `InputMode=TextBox` shows text + drop-downs side by side.
 - **Timestamp vs formatted string** — `getTimeStamp()` returns a Unix timestamp; `getDate()` returns the formatted string. Prefer `getTimeStamp()` for database storage.
 - **Year range** — without `FromYear`/`UpToYear`, the calendar defaults to ±10 years from today. Set explicit ranges for registration forms.
 
