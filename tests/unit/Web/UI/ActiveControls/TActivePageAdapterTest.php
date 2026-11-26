@@ -13,6 +13,7 @@ use Prado\Web\UI\TControl;
 use Prado\Web\UI\THtmlWriter;
 use Prado\Web\UI\TRenderFilterContext;
 use Prado\Web\UI\TRenderFilterParameter;
+use Prado\Web\UI\WebControls\TPanel;
 use Prado\Web\UI\WebControls\TAbbr;
 use Prado\Web\UI\WebControls\THtmlElement;
 
@@ -432,6 +433,37 @@ class TActivePageAdapterTest extends TestCase
 		$this->assertSame(2, PradoUnit::invoke($this->adapter(), 'getControlDepth', new TControl(), $panel));
 		$this->assertSame(1, PradoUnit::invoke($this->adapter(), 'getControlDepth', $page, new TControl()));
 		$this->assertSame(0, PradoUnit::invoke($this->adapter(), 'getControlDepth', $page, null));
+	}
+
+	public static function fragmentStartTagProvider(): array
+	{
+		return [
+			'element' => [true, null, ['abbr', '<abbr>']],
+			'element with another attribute' => [true, ['title' => 't'], ['abbr', '<abbr>']],
+			'element exempt' => [true, [TRenderFilterParameter::EXEMPT_ATTRIBUTE => 'a"b'], ['abbr', '<abbr ' . TRenderFilterParameter::EXEMPT_ATTRIBUTE . '="a&quot;b">']],
+			'control' => [false, null, null],
+			'control with another attribute' => [false, ['title' => 't'], null],
+			'control exempt' => [false, [TRenderFilterParameter::EXEMPT_ATTRIBUTE => ''], ['div', '<div ' . TRenderFilterParameter::EXEMPT_ATTRIBUTE . '="">']],
+			'control with another data attribute' => [false, ['data-x' => 'y'], null],
+			'control exempt in its attributes' => [false, [TRenderFilterParameter::EXEMPT_ATTRIBUTE => 'z'], ['div', '<div ' . TRenderFilterParameter::EXEMPT_ATTRIBUTE . '="z">'], true],
+		];
+	}
+
+	/**
+	 * A web control keeps the exempt attribute in its dataset, or in its attributes when added there.
+	 * @dataProvider fragmentStartTagProvider
+	 */
+	public function testFragmentStartTag(bool $element, ?array $attributes, ?array $expected, bool $plain = false)
+	{
+		$control = $element ? new TAbbr() : new TPanel();
+		foreach ($attributes ?? [] as $name => $value) {
+			if ($plain) {
+				$control->getAttributes()->add($name, $value);
+			} else {
+				$control->setAttribute($name, $value);
+			}
+		}
+		$this->assertSame($expected, PradoUnit::invoke($this->adapter(), 'getFragmentStartTag', $control));
 	}
 
 	public static function filterFragmentProvider(): array

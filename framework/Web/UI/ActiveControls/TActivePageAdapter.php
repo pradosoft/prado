@@ -23,6 +23,7 @@ use Prado\Web\UI\TPage;
 use Prado\Web\UI\TRenderFilterContext;
 use Prado\Web\UI\TRenderFilterParameter;
 use Prado\Web\UI\WebControls\THtmlElement;
+use Prado\Web\UI\WebControls\TWebControl;
 
 /**
  * TActivePageAdapter class.
@@ -312,11 +313,30 @@ class TActivePageAdapter extends TControlAdapter
 	{
 		$name = $control instanceof THtmlElement ? strtolower($control->getTagName()) : null;
 		$attribute = '';
-		if ($control->getHasAttributes() && ($value = $control->getAttribute(TRenderFilterParameter::EXEMPT_ATTRIBUTE)) !== null) {
+		if (($value = $this->getFragmentExemptValue($control)) !== null) {
 			$name ??= 'div';
-			$attribute = ' ' . TRenderFilterParameter::EXEMPT_ATTRIBUTE . '="' . htmlspecialchars((string) $value, ENT_QUOTES) . '"';
+			$attribute = ' ' . TRenderFilterParameter::EXEMPT_ATTRIBUTE . '="' . htmlspecialchars($value, ENT_QUOTES) . '"';
 		}
 		return $name === null ? null : [$name, '<' . $name . $attribute . '>'];
+	}
+
+	/**
+	 * Returns the {@see TRenderFilterParameter::EXEMPT_ATTRIBUTE} of a control. A web
+	 * control keeps a `data-*` attribute in its dataset, and renders both collections.
+	 * @param TControl $control a control on the path to the control re-rendering
+	 * @return ?string the value of the attribute, or null without it
+	 * @since 4.4.0
+	 */
+	protected function getFragmentExemptValue($control): ?string
+	{
+		if ($control instanceof TWebControl && $control->getHasDataset()
+			&& ($value = $control->getDataset()->itemAt(TRenderFilterParameter::EXEMPT_ATTRIBUTE)) !== null) {
+			return (string) $value;
+		}
+		if ($control->getHasAttributes() && ($value = $control->getAttributes()->itemAt(TRenderFilterParameter::EXEMPT_ATTRIBUTE)) !== null) {
+			return (string) $value;
+		}
+		return null;
 	}
 
 	/**
