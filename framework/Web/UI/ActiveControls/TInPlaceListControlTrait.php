@@ -209,7 +209,7 @@ trait TInPlaceListControlTrait
 	{
 		$action = $param->getCallbackParameter();
 		if (is_array($action) && ($action[0] ?? null) === '__InlineEditor_loadItems__') {
-			$parameter = new TCallbackEventParameter($this->getResponse(), $action[1]);
+			$parameter = new TCallbackEventParameter($this->getResponse(), $action[1] ?? null);
 			$this->onLoadingItems($parameter);
 		}
 		$this->raiseEvent('OnCallback', $this, $param);
