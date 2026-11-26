@@ -94,7 +94,9 @@ class TActiveButton extends TButton implements IActiveControl, ICallbackEventHan
 
 	/**
 	 * Updates the button text on the client-side if the
-	 * {@see setEnableUpdate EnableUpdate} property is set to true.
+	 * {@see setEnableUpdate EnableUpdate} property is set to true. A button tag
+	 * gets the text as its content, HTML-encoded when {@see getEncode Encode} is true;
+	 * an input tag gets it as its value.
 	 * @param string $value caption of the button
 	 */
 	public function setText($value)
@@ -106,7 +108,7 @@ class TActiveButton extends TButton implements IActiveControl, ICallbackEventHan
 		parent::setText($value);
 		if ($this->getActiveControl()->canUpdateClientSide()) {
 			if ($this->getButtonTag() === TButtonTag::Button) {
-				$this->getPage()->getCallbackClient()->update($this, $value);
+				$this->getPage()->getCallbackClient()->update($this, $this->encodeText($value));
 			} else {
 				$this->getPage()->getCallbackClient()->setAttribute($this, 'value', $value);
 			}

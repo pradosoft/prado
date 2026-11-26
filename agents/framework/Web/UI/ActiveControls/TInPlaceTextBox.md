@@ -17,6 +17,7 @@ Click-to-edit text box that displays as a label until clicked. When clicked, tra
 - `getEditTriggerControlID()` / `setEditTriggerControlID($value)` - External trigger control ID
 - `getReadOnly()` / `setReadOnly($value)` - Make control non-editable
 - `getEmptyDisplayText()` / `setEmptyDisplayText($value)` - Label html when the text is empty (since 4.4.0, via `TInPlaceControlTrait`); the label carries a `data-prado-empty` mark so the client tells the placeholder apart from a value
+- `getEncode()` / `setEncode($value)` - HTML-encode the label text ([TEncodeTrait](../WebControls/TEncodeTrait.md), default false, 4.4.0): the server render and the `setLabelText` update are encoded, and the `Encode` client option makes the label read as text and write the edited value encoded. The text is what the user types, so set Encode unless it is trusted HTML
 - `onLoadingText($param)` - Event raised to load text from server before editing
 - `getClientClassName()` - Returns `Prado.WebUI.TInPlaceTextBox`
 

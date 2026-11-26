@@ -211,6 +211,20 @@ class TButtonTest extends TestCase
 		$this->assertCount(1, $button->getControls());
 	}
 
+	public function testButtonTagEncodesTheTextWhenEncode()
+	{
+		$button = $this->createButton();
+		$button->setButtonTag(TButtonTag::Button);
+		$button->setText('<b>a & b</b>');
+		$this->assertFalse($button->getEncode());
+		$this->assertSame('<button type="submit" name="save" id="save"><b>a & b</b></button>', $this->render($button));
+		$button->setEncode(true);
+		$this->assertTrue($button->getEncode());
+		$this->assertSame('<button type="submit" name="save" id="save">&lt;b&gt;a & b&lt;/b&gt;</button>', $this->render($button));
+		$button->setButtonTag(TButtonTag::Input);
+		$this->assertSame('<input type="submit" name="save" value="&lt;b&gt;a & b&lt;/b&gt;" id="save" />', $this->render($button));
+	}
+
 	public function testDisabledParentRendersDisabled()
 	{
 		$page = new TPage();

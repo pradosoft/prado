@@ -32,6 +32,9 @@ Upgrading from v4.3.3
   callback raised the `On` event of any name the client sent, so `Prado.JuiCallback(id, 'callback', ...)` reached
   `TJuiDroppable.OnCallback`, which is not a droppable event. Handle a jQuery UI droppable event such as `OnDrop`
   instead, or raise a `TCallback` for a custom callback.
+- Issue #1497 - `TJuiAutoComplete.MinChars` defaults to 1, so the client asks for suggestions once one character is
+  typed. In 4.3 the default sent `minLength: ""`, and the client asked for suggestions for empty text. Set
+  `MinChars="0"` for the 4.3 behavior.
 - Issue #833 - The bare `prado-cli cron` shell action lists the cron tasks; in 4.3 it ran the pending tasks. Change the
   system crontab entry to `prado-cli <appdir> cron/run`. The `TDbCronManager` table gains the `nextexectime`,
   `lastresult`, `lastduration`, `paused`, `okcount`, `failcount`, `totalduration`, and `maxduration` columns, added (and `nextexectime` filled) on the first use of an existing
@@ -250,6 +253,9 @@ Upgrading from v4.3.3
 - Issue #1497 - An enabled `TLinkButton` with `EnableClientScript` false renders `<button type="submit" name="{UniqueID}">`,
   which posts back without javascript; in 4.3 it rendered an anchor marked `disabled` that performed no postback. CSS
   that styles the link button by `a` selects the `button` in this mode. `TActiveLinkButton` still renders an anchor.
+- Issue #1497 - A `TActivePager` with `ButtonType` `ImageButton` renders the image button of an unavailable page, such
+  as Previous on the first page, disabled, as `TPager` does; in 4.3 it hid the button, so the pager shifted between
+  pages. CSS or script that relies on the missing button selects `input[type="image"][disabled]`.
 - Issue #1497 - `TXmlElement` array access throws `TInvalidDataTypeException` for an offset that is not null, an int,
   a string, or a `Stringable`. In 4.3 a float or bool offset addressed the attribute named by its string, or raised a
   PHP error. Use an int child index or a string attribute name.

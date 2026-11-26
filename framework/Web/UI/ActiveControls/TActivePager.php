@@ -108,10 +108,10 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 	}
 
 	/**
-	 * Creates a pager button.
-	 * Override parent implementation to create, depending on the button type, a TActiveLinkButton,
-	 * a TActiveButton or a TActiveImageButton may be created. An image button shows the page
-	 * image URL of its command, as in {@see TPager}, and is hidden when disabled.
+	 * Creates a pager button: a TActiveLinkButton, a TActiveButton, or a TActiveImageButton
+	 * by button type. As in {@see TPager}, a disabled link button is a TLabel, a disabled
+	 * push or image button renders disabled, and an image button shows the page image URL
+	 * of its command.
 	 *
 	 * @param string $buttonType button type: LinkButton, PushButton, or ImageButton
 	 * @param bool $enabled whether the button should be enabled
@@ -132,16 +132,13 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 				$button->setCssClass($this->getButtonCssClass());
 				return $button;
 			}
-		} elseif ($buttonType === TPagerButtonType::ImageButton) {
-			$button = new TActiveImageButton();
-			$button->setImageUrl($this->getPageImageUrl($text, $commandName));
-			if ($enabled) {
-				$button->setVisible(true);
-			} else {
-				$button->setVisible(false);
-			}
 		} else {
-			$button = new TActiveButton();
+			if ($buttonType === TPagerButtonType::ImageButton) {
+				$button = new TActiveImageButton();
+				$button->setImageUrl($this->getPageImageUrl($text, $commandName));
+			} else {
+				$button = new TActiveButton();
+			}
 			if (!$enabled) {
 				$button->setEnabled(false);
 			}
