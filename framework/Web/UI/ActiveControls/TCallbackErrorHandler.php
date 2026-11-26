@@ -37,7 +37,8 @@ class TCallbackErrorHandler extends TErrorHandler
 
 	/**
 	 * Displays the exceptions to the client-side TJavascriptLogger.
-	 * A HTTP 500 status code is sent and the stack trace is sent as JSON encoded.
+	 * In Debug mode, a HTTP 500 status code is sent and the stack trace is sent as JSON encoded.
+	 * In other modes, the exception is logged and only the 500 status header is sent.
 	 * @param \Exception $exception exception details.
 	 */
 	protected function displayException($exception)
@@ -62,17 +63,7 @@ class TCallbackErrorHandler extends TErrorHandler
 			$content->write($trace);
 		} else {
 			error_log("Error happened while processing an existing error:\n" . $exception->__toString());
-
-			$header = 'HTTP/1.0 500 Internal Server Error';
-			$replaceHeader = true;
-			$code = 500;
-
-			$response = $this->getResponse();
-			if ($response) {
-				$response->appendHeader($header, $replaceHeader, $code);
-			} else {
-				header($header, $replaceHeader, $code);
-			}
+			$this->getResponse()->appendHeader('HTTP/1.0 500 Internal Server Error', true, 500);
 		}
 		$this->getApplication()->getResponse()->flush();
 	}
@@ -93,7 +84,6 @@ class TCallbackErrorHandler extends TErrorHandler
 			}
 
 			if (isset($v['args'])) {
-				$argsout = [];
 				foreach ($v['args'] as $kArg => $vArg) {
 					$data['trace'][$k]['args'][$kArg] = TVarDumper::dump($vArg, 0, false);
 				}
