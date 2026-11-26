@@ -14,7 +14,7 @@ Helper class that collects jQuery UI widget options for a control. The control m
 
 - `__set($name, $value)` / `__get($name)` - Set and get an option; the name matches a valid option without case. A string value (from a template) becomes `null`, `true`, `false`, a number, or a `TJavaScriptLiteral` for `function...`; any other value is stored as is
 - `toArray()` - Returns options array with event handlers attached
-- `raiseCallbackEvent($param)` - Raises the specific callback event handler
+- `raiseCallbackEvent($param)` - Raises the `On` event the callback names, only for an event in the control's `getValidEvents()`
 
 ## See Also
 

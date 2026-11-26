@@ -157,13 +157,16 @@ class TJuiControlOptions
 
 	/**
 	 * Raise the specific callback event handler of the target control.
+	 * The client names the event; only an event of the control's
+	 * {@see IJuiOptions::getValidEvents()} is raised, and any other name is ignored.
 	 * @param mixed $param callback parameters
 	 */
 	public function raiseCallbackEvent($param)
 	{
 		$callbackParam = $param->CallbackParameter;
-		if (isset($callbackParam->event)) {
-			$eventName = 'On' . ucfirst($callbackParam->event);
+		$event = $callbackParam->event ?? null;
+		if (in_array($event, $this->_control->getValidEvents(), true)) {
+			$eventName = 'On' . ucfirst($event);
 			if ($this->_control->hasEventHandler($eventName)) {
 				$this->_control->$eventName(
 					new TJuiEventParameter(
