@@ -3,6 +3,7 @@
 namespace Prado\Test\Unit;
 
 use PHPUnit\Framework\TestCase;
+use Prado\Exceptions\TPhpErrorException;
 use Prado\TApplicationStatePersister;
 use Prado\Test\Unit\Harness\Caching\TTestArrayCache;
 use Prado\Test\Unit\Harness\TTestApplication;
@@ -64,6 +65,20 @@ class TApplicationStatePersisterTest extends TestCase
 		$this->assertSame(['a' => 1], $this->_persister->load());
 	}
 
+	public function testLoad_emptyStateFile_returnsNull(): void
+	{
+		file_put_contents($this->stateFile(), '');
+		$this->assertNull($this->_persister->load());
+	}
+
+	public function testLoad_cacheMissEmptyStateFile_returnsNull(): void
+	{
+		$this->_app->setCache(new TTestArrayCache());
+		file_put_contents($this->stateFile(), '');
+
+		$this->assertNull($this->_persister->load());
+	}
+
 	public function testLoad_cacheHit_prefersCacheOverFile(): void
 	{
 		$cache = new TTestArrayCache();
@@ -94,6 +109,28 @@ class TApplicationStatePersisterTest extends TestCase
 	{
 		$this->_persister->save(['x' => 2]);
 		$this->assertSame(serialize(['x' => 2]), file_get_contents($this->stateFile()));
+	}
+
+	public function testSave_replacesStateFile_leavesNoTempFile(): void
+	{
+		$this->_persister->save(['x' => 1]);
+		$this->_persister->save(['x' => 2]);
+
+		$this->assertSame(serialize(['x' => 2]), file_get_contents($this->stateFile()));
+		$this->assertSame([], glob($this->stateFile() . '.*'));
+	}
+
+	public function testSave_renameFails_throwsAndRemovesTempFile(): void
+	{
+		mkdir($this->stateFile());
+		try {
+			$this->_persister->save(['x' => 1]);
+			$this->fail('save() over a directory must fail.');
+		} catch (TPhpErrorException $e) {
+			$this->assertSame([], glob($this->stateFile() . '.*'));
+		} finally {
+			rmdir($this->stateFile());
+		}
 	}
 
 	public function testSave_cacheChanged_writesCacheAndFile(): void

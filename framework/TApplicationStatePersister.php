@@ -17,6 +17,11 @@ namespace Prado;
  * in a file named 'global.cache' under the 'runtime' directory of the application.
  * Cache will be exploited if it is enabled.
  *
+ * {@see save()} writes the state to a temporary file in the runtime directory and
+ * renames it over 'global.cache', so a concurrent {@see load()} reads either the
+ * previous state or the new state. {@see load()} treats an empty or unreadable
+ * file as no state.
+ *
  * XML configuration style:
  * ```xml
  * <modules>
@@ -75,39 +80,56 @@ class TApplicationStatePersister extends \Prado\TModule implements IStatePersist
 
 	/**
 	 * Loads application state from persistent storage.
-	 * @return ?mixed application state
+	 * The cache takes precedence over the state file. An empty or unreadable state file is no state.
+	 * @return ?mixed application state, or null when there is no state
 	 */
 	public function load()
 	{
 		if (($cache = $this->getApplication()->getCache()) !== null && ($value = $cache->get(self::CACHE_NAME)) !== false) {
 			return unserialize($value);
-		} else {
-			if (($content = @file_get_contents($this->getStateFilePath())) !== false) {
-				return unserialize($content);
-			} else {
-				return null;
-			}
 		}
+		$content = @file_get_contents($this->getStateFilePath());
+		if ($content === false || $content === '') {
+			return null;
+		}
+		return unserialize($content);
 	}
 
 	/**
 	 * Saves application state in persistent storage.
+	 * The state file is written only when the cache is absent or holds a different state.
 	 * @param mixed $state application state
 	 */
 	public function save($state)
 	{
 		$content = serialize($state);
-		$saveFile = true;
 		if (($cache = $this->getApplication()->getCache()) !== null) {
 			if ($cache->get(self::CACHE_NAME) === $content) {
-				$saveFile = false;
-			} else {
-				$cache->set(self::CACHE_NAME, $content);
+				return;
 			}
+			$cache->set(self::CACHE_NAME, $content);
 		}
-		if ($saveFile) {
-			$fileName = $this->getStateFilePath();
-			file_put_contents($fileName, $content, LOCK_EX);
+		$this->writeStateFile($content);
+	}
+
+	/**
+	 * Writes the serialized state to a temporary file and renames it over the state file.
+	 * A reader in another process sees the old or the new content, never a partial file.
+	 * The temporary file is removed when the write or the rename fails.
+	 * @param string $content the serialized application state
+	 * @since 4.4.0
+	 */
+	protected function writeStateFile(string $content): void
+	{
+		$fileName = $this->getStateFilePath();
+		$tmpFile = $fileName . '.' . bin2hex(random_bytes(4)) . '.tmp';
+		try {
+			file_put_contents($tmpFile, $content);
+			rename($tmpFile, $fileName);
+		} finally {
+			if (is_file($tmpFile)) {
+				@unlink($tmpFile);
+			}
 		}
 	}
 }
