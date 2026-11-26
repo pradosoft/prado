@@ -207,4 +207,14 @@ class TUnicodeValidatorTest extends TestCase
 		$this->assertFalse($this->validator->isSuspicious('admin'));
 		$this->assertTrue($this->validator->isSuspicious("p\u{0430}ypal"));
 	}
+
+	public function testWithoutChecksNothingIsSuspicious()
+	{
+		$this->validator->setCheckInvisible(false);
+		$this->validator->setCheckMixedNumbers(false);
+		$this->validator->setCheckHiddenOverlay(false);
+		$this->validator->setRestrictionLevel(TUnicodeRestrictionLevel::Unrestricted);
+		$this->assertNull(PradoUnit::invoke($this->validator, 'createSpoofchecker'));
+		$this->assertFalse($this->validator->isSuspicious("p\u{0430}ypal"));
+	}
 }

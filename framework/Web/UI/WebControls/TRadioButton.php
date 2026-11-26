@@ -275,6 +275,9 @@ class TRadioButton extends TCheckBox
 		if (($accesskey = $this->getAccessKey()) !== '') {
 			$writer->addAttribute('accesskey', $accesskey);
 		}
+		if ($this->getAutoFocus()) {
+			$writer->addAttribute('autofocus', 'autofocus');
+		}
 		$this->addKeyShortcutsAttributesToRender($writer);
 		if (($tabindex = $this->getTabIndex()) !== null) {
 			$writer->addAttribute('tabindex', "$tabindex");

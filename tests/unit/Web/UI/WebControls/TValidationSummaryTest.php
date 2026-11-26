@@ -412,4 +412,77 @@ class TValidationSummaryTest extends TestCase
 		$this->assertFalse(PradoUnit::invoke($summary, 'getValidationFailed'));
 		$this->assertSame([], PradoUnit::invoke($summary, 'getErrorMessages'));
 	}
+
+	public function testValidationFailedWithOneValidValidator()
+	{
+		$summary = $this->createSummary();
+		$this->addFailedValidator($summary, 'one', 'One.', false)->setIsValid(true);
+		$this->assertFalse(PradoUnit::invoke($summary, 'getValidationFailed'));
+	}
+
+	public static function provideOneValidator(): array
+	{
+		return [
+			'valid' => [true, 'Message.', false, []],
+			'failed, no message' => [false, '', false, []],
+			'failed' => [false, '<b>Message</b>', false, ['<b>Message</b>']],
+			'failed, encoded' => [false, '<b>Message</b>', true, ['&lt;b&gt;Message&lt;/b&gt;']],
+		];
+	}
+
+	/**
+	 * @param bool $isValid whether the validator is valid.
+	 * @param string $message the error message.
+	 * @param bool $encode whether the message is encoded.
+	 * @param string[] $expected the summary's messages.
+	 */
+	#[\PHPUnit\Framework\Attributes\DataProvider('provideOneValidator')]
+	public function testErrorMessagesOfOneValidator(bool $isValid, string $message, bool $encode, array $expected)
+	{
+		$summary = $this->createSummary();
+		$this->addFailedValidator($summary, 'one', $message, $encode)->setIsValid($isValid);
+		$this->assertSame($expected, PradoUnit::invoke($summary, 'getErrorMessages'));
+	}
+
+	public function testErrorMessagesOfAValidatorThatIsNotABaseValidator()
+	{
+		$summary = $this->createSummary();
+		$summary->getPage()->getValidators()->add(new TValidationSummaryTestValidator());
+		$this->assertSame(['<b>Other</b>'], PradoUnit::invoke($summary, 'getErrorMessages'), 'A validator without Encode is not encoded.');
+		$this->assertTrue(PradoUnit::invoke($summary, 'getValidationFailed'));
+	}
+}
+
+/**
+ * A failed validator that is not a TBaseValidator.
+ */
+class TValidationSummaryTestValidator implements \Prado\Web\UI\IValidator
+{
+	public function validate()
+	{
+		return false;
+	}
+
+	public function getIsValid()
+	{
+		return false;
+	}
+
+	public function setIsValid($value)
+	{
+	}
+
+	public function getErrorMessage()
+	{
+		return '<b>Other</b>';
+	}
+
+	public function setErrorMessage($value)
+	{
+	}
+
+	public function getValidationGroup()
+	{
+		return '';
+	}
 }

@@ -248,4 +248,10 @@ class TImageValidatorTest extends TestCase
 		$this->setFiles($upload, [$this->makeImageFile('fits.gif', 50, 100)]);
 		$this->assertTrue($this->invokeEvaluateIsValid($validator));
 	}
+
+	public function testFileWithoutLocalNameHasNoImageSize()
+	{
+		$validator = new TImageValidator();
+		$this->assertNull(PradoUnit::invoke($validator, 'getImageSize', new TFileUploadItem('a.gif', 10, 'image/gif', UPLOAD_ERR_OK, '')));
+	}
 }

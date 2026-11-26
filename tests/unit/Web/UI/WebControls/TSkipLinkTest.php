@@ -161,7 +161,7 @@ class TSkipLinkTest extends TestCase
 	{
 		[, $link] = $this->newPageLink('Content');
 		$link->setEnabled(false);
-		$this->assertSame('<a disabled="disabled" class="skip-link">Skip to main content</a>', $this->render($link));
+		$this->assertSame('<a role="link" aria-disabled="true" class="skip-link">Skip to main content</a>', $this->render($link));
 	}
 
 	public function testCssUrlDefaultAndSet()

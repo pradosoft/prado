@@ -185,4 +185,51 @@ class TIpAddressValidatorTest extends TestCase
 		$this->assertTrue($options['RequireCidr']);
 		$this->assertSame($this->validator->getRangeList(), $options['Ranges']);
 	}
+
+	public static function provideCandidateBlocks(): array
+	{
+		return [
+			'IPv4' => ['192.0.2.1', 32, 1],
+			'IPv6, prefix under 96' => ['::ffff:192.0.2.1', 64, 1],
+			'IPv6, not IPv4-mapped' => ['2001:db8::1', 128, 1],
+			'IPv4-mapped IPv6' => ['::ffff:192.0.2.1', 128, 2],
+		];
+	}
+
+	/**
+	 * @param string $address the address.
+	 * @param int $prefix its prefix length.
+	 * @param int $count the number of candidate blocks.
+	 */
+	#[\PHPUnit\Framework\Attributes\DataProvider('provideCandidateBlocks')]
+	public function testCandidateBlocks(string $address, int $prefix, int $count)
+	{
+		$candidates = PradoUnit::invoke($this->validator, 'candidateBlocks', [inet_pton($address), $prefix]);
+		$this->assertCount($count, $candidates);
+		$this->assertSame([inet_pton($address), $prefix], $candidates[0]);
+		if ($count === 2) {
+			$this->assertSame([inet_pton('192.0.2.1'), 32], $candidates[1]);
+		}
+	}
+
+	public static function provideOneRange(): array
+	{
+		return [
+			'empty' => ['', 0],
+			'named' => ['private', 1],
+			'block' => ['10.0.0.0/8', 1],
+			'public' => ['public', 1],
+		];
+	}
+
+	/**
+	 * @param string $ranges the Ranges.
+	 * @param int $count the number of ranges.
+	 */
+	#[\PHPUnit\Framework\Attributes\DataProvider('provideOneRange')]
+	public function testRangeListOfOneEntry(string $ranges, int $count)
+	{
+		$this->validator->setRanges($ranges);
+		$this->assertCount($count, $this->validator->getRangeList());
+	}
 }

@@ -39,7 +39,7 @@ class THttpException extends TSystemException implements IUserException
 	 * in the message file. If so, the message in the preferred language
 	 * will be used as the error message. Any rest parameters will be used
 	 * to replace placeholders ({0}, {1}, {2}, etc.) in the message.
-	 * @param array $args
+	 * @param mixed ...$args The message arguments.
 	 * @todo v4.4, add type to $statusCode param
 	 */
 	public function __construct($statusCode, $errorMessage, ...$args)

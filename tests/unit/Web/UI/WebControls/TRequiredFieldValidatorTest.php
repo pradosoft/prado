@@ -623,4 +623,91 @@ class TRequiredFieldValidatorTest extends TestCase
 		$box->setChecked(true);
 		$this->assertTrue($this->invokeEvaluateIsValid($validator));
 	}
+
+	public static function provideOneAndTwoItemLists(): array
+	{
+		return [
+			'one item, not selected' => [['1'], [], false],
+			'one item, the initial value' => [['0'], [0], false],
+			'one item, selected' => [['1'], [0], true],
+			'two items, none selected' => [['0', '1'], [], false],
+			'two items, the second selected' => [['0', '1'], [1], true],
+			'two items, the initial value selected' => [['0', '1'], [0], false],
+			'two items, both selected' => [['0', '1'], [0, 1], true],
+		];
+	}
+
+	/**
+	 * @param string[] $values the item values; the initial value is `0`.
+	 * @param int[] $selected the selected item indexes.
+	 * @param bool $expected whether the list is filled in.
+	 */
+	#[\PHPUnit\Framework\Attributes\DataProvider('provideOneAndTwoItemLists')]
+	public function testValidateShortListControl(array $values, array $selected, bool $expected)
+	{
+		$page = new \Prado\Web\UI\TPage();
+		$list = new TCheckBoxList();
+		$list->setID('list1');
+		foreach ($values as $value) {
+			$list->getItems()->add(new TListItem('Item ' . $value, $value));
+		}
+		foreach ($selected as $index) {
+			$list->getItems()->itemAt($index)->setSelected(true);
+		}
+		$page->getControls()->add($list);
+		$validator = $this->createValidator($page, $list);
+		$validator->setInitialValue('0');
+		$this->assertSame($expected, $this->invokeEvaluateIsValid($validator));
+	}
+
+	public function testValidateRadioButtonWithoutGroup()
+	{
+		$page = new \Prado\Web\UI\TPage();
+		$radio = new TRadioButton();
+		$radio->setID('radio1');
+		$page->getControls()->add($radio);
+		$validator = $this->createValidator($page, $radio);
+		$this->assertFalse($this->invokeEvaluateIsValid($validator));
+		$radio->setChecked(true);
+		$this->assertTrue($this->invokeEvaluateIsValid($validator));
+	}
+
+	public function testValidateRadioButtonGroupWithTheFirstButtonChecked()
+	{
+		[$validator, $radios] = $this->createRadioGroup(['a', 'b']);
+		try {
+			$radios[0]->setChecked(true);
+			$this->assertTrue($this->invokeEvaluateIsValid($validator));
+			$validator->setInitialValue('a');
+			$this->assertFalse($this->invokeEvaluateIsValid($validator));
+		} finally {
+			foreach ($radios as $radio) {
+				$radio->onUnload(null);
+			}
+		}
+	}
+
+	public function testValidateRadioButtonGroupOfOneButton()
+	{
+		[$validator, $radios] = $this->createRadioGroup(['a']);
+		try {
+			$this->assertFalse($this->invokeEvaluateIsValid($validator));
+			$radios[0]->setChecked(true);
+			$this->assertTrue($this->invokeEvaluateIsValid($validator));
+		} finally {
+			$radios[0]->onUnload(null);
+		}
+	}
+
+	public function testValidateRadioButtonGroupNotYetInitialized()
+	{
+		$page = new \Prado\Web\UI\TPage();
+		$radio = new TRadioButton();
+		$radio->setID('radio1');
+		$radio->setGroupName('Group');
+		$radio->setChecked(true);
+		$page->getControls()->add($radio);
+		$validator = $this->createValidator($page, $radio);
+		$this->assertFalse($this->invokeEvaluateIsValid($validator), 'A button that is not initialized is in no group.');
+	}
 }

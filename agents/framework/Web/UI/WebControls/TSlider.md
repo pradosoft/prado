@@ -15,7 +15,7 @@ TSlider displays a slider for numeric input. It consists of a track defining the
 - `getDirection()` / `setDirection($value)` - Horizontal or Vertical
 - `getMinValue()` / `setMinValue($value)` - Minimum value (default 0.0)
 - `getMaxValue()` / `setMaxValue($value)` - Maximum value (default 100.0)
-- `getStepSize()` / `setStepSize($value)` - Step between values
+- `getStepSize()` / `setStepSize($value)` - Step between values, greater than 0 (`slider_stepsize_invalid` otherwise)
 - `getValue()` / `setValue($value)` - Current slider value
 - `getValues()` / `setValues($value)` - Array of allowed values; the client receives those within [MinValue, MaxValue], with both, as a list
 - `getProgressIndicator()` / `setProgressIndicator($value)` - Whether to show progress bar
