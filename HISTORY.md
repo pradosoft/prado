@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TActivePager` image buttons of an unavailable page render disabled, as in `TPager`; they were hidden. See UPGRADE.md. (belisoful)
 BUG: Issue #1497 - `TJuiEventParameter` reads a component property such as `CallbackParameter` by name; only a name ending in `Control` looks up a control, and every other name returned null. (belisoful)
 BUG: Issue #1497 - `TJuiControlOptions` stores an option value set in PHP that is not a string, such as an array or null, as is; it threw a `TypeError` or `TPhpErrorException`. (belisoful)
 BUG: Issue #1497 - `TMapCollectionDiff` compares an array item by its elements, so a callback that changes an array-valued jQuery UI option sends it; it threw `TPhpErrorException` for the array. (belisoful)
