@@ -247,6 +247,22 @@ class TDbCronManagerOracleSqlTest extends \PHPUnit\Framework\TestCase
 		self::assertSame('SELECT COUNT(*) AS count, MAX(username) AS username FROM crontabs WHERE name=:name AND active IS NOT NULL', end($manager->recorder->commands)->sql);
 	}
 
+	public function testRunStatisticsAreNumbersOnOracle()
+	{
+		$manager = $this->newManager();
+		PradoUnit::invoke($manager, 'updateTaskResult', $this->newTask('stats'), TDbCronManager::RESULT_OK, 0.00002);
+		$cmd = $manager->recorder->commands[0];
+		self::assertStringContainsString('maxduration < :max THEN TO_NUMBER(:newmax) ELSE maxduration END', $cmd->sql, 'both CASE branches are numbers');
+		foreach ([':sum', ':max', ':newmax'] as $param) {
+			self::assertSame('0.000020', $cmd->bound[$param], 'fixed point, no exponent');
+		}
+
+		$manager->recorder->driver = TDbDriver::DRIVER_MYSQL;
+		PradoUnit::invoke($manager, 'updateTaskResult', $this->newTask('stats'), TDbCronManager::RESULT_OK, 0.00002);
+		self::assertStringContainsString('THEN :newmax ELSE', $manager->recorder->commands[1]->sql, 'other drivers are unchanged');
+		self::assertSame(2.0E-5, $manager->recorder->commands[1]->bound[':newmax']);
+	}
+
 	public function testTaskOptionsAreBase64OnOracle()
 	{
 		$manager = $this->newManager();

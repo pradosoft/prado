@@ -943,7 +943,9 @@ class TDbCronManager extends TCronModule implements IDbModule
 	/**
 	 * Records the result of a run and the seconds it took in the task's row, and in the run's log row.  A
 	 * finished run ({@see getResultOutcome}) adds to the row's run statistics in the same statement, so
-	 * processes recording runs of one task at once lose no count.
+	 * processes recording runs of one task at once lose no count.  Oracle receives the seconds as a
+	 * fixed-point string, since {@see \Prado\Data\Common\Oracle\TOracleDbCommand} quotes each bound value,
+	 * and converts the new maximum with `TO_NUMBER` so both `CASE` branches are numbers.
 	 * @param TCronTask $task the task
 	 * @param string $result the run's result
 	 * @param float $duration the seconds the run took
@@ -953,18 +955,21 @@ class TDbCronManager extends TCronModule implements IDbModule
 	protected function updateTaskResult($task, string $result, float $duration, mixed $logId = null)
 	{
 		$db = $this->getDbConnection();
+		$oracle = $this->getIsOracle();
 		$stats = '';
 		if (($outcome = static::getResultOutcome($result)) !== null) {
 			$counter = ($outcome === 'ok') ? 'okcount' : 'failcount';
+			$newMax = $oracle ? 'TO_NUMBER(:newmax)' : ':newmax';
 			$stats = ", {$counter}=COALESCE({$counter}, 0) + 1, totalduration=COALESCE(totalduration, 0) + :sum"
-				. ", maxduration=CASE WHEN maxduration IS NULL OR maxduration < :max THEN :newmax ELSE maxduration END";
+				. ", maxduration=CASE WHEN maxduration IS NULL OR maxduration < :max THEN {$newMax} ELSE maxduration END";
 		}
 		$cmd = $db->createCommand("UPDATE {$this->_tableName} SET lastresult=:result, lastduration=:duration{$stats} WHERE name=:name AND active IS NOT NULL");
 		$cmd->bindValue(":result", $result, $db::PARAM_STR);
 		$cmd->bindValue(":duration", (string) round($duration, 6), $db::PARAM_STR);
 		if ($stats !== '') {
+			$seconds = $oracle ? sprintf('%.6F', $duration) : round($duration, 6);
 			foreach ([':sum', ':max', ':newmax'] as $param) {
-				$cmd->bindValue($param, round($duration, 6));
+				$cmd->bindValue($param, $seconds);
 			}
 		}
 		$cmd->bindValue(":name", $task->getName(), $db::PARAM_STR);
