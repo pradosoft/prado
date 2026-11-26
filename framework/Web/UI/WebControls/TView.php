@@ -68,19 +68,20 @@ class TView extends \Prado\Web\UI\TControl
 	}
 
 	/**
+	 * Returns whether the view is visible. The view's own visibility is its {@see getActive Active}
+	 * state; with $checkParents, its ancestors must also be visible.
 	 * @param bool $checkParents whether the parents should also be checked if visible
 	 * @return bool whether this view is visible.
-	 * The view is visible if it is active and its parent is visible.
 	 */
 	public function getVisible($checkParents = true)
 	{
-		if (($parent = $this->getParent()) === null) {
-			return $this->getActive();
-		} elseif ($this->getActive()) {
-			return $parent->getVisible($checkParents);
-		} else {
+		if (!$this->getActive()) {
 			return false;
 		}
+		if (!$checkParents || ($parent = $this->getParent()) === null) {
+			return true;
+		}
+		return $parent->getVisible(true);
 	}
 
 	/**
