@@ -12,7 +12,7 @@ Calculates changes to attribute collections by comparing old and new TMap collec
 
 ## Key Properties/Methods
 
-- `getDifference()` - Returns array of changed attributes or null if no difference
+- `getDifference()` - Returns the new and changed items, or the null sentinel when nothing changed. Items compare as strings; array items (jQuery UI options) compare by their elements
 
 ## See Also
 

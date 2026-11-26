@@ -65,14 +65,17 @@ class TJuiEventParameter extends TCallbackEventParameter
 	/**
 	 * Gets a control instance named after a returned control id.
 	 * Example: if a $param->draggable control id is returned from clientside,
-	 * calling $param->DraggableControl will return the control instance
+	 * calling $param->DraggableControl will return the control instance.
+	 * A name without the `Control` suffix is a component property, such as `CallbackParameter`.
 	 * @param mixed $name
 	 * @return mixed control or null if not set.
 	 */
 	public function __get($name)
 	{
-		$pos = strpos($name, 'Control', 1);
-		$name = strtolower(substr($name, 0, $pos));
+		if (strcasecmp(substr($name, -7), 'Control') !== 0) {
+			return parent::__get($name);
+		}
+		$name = strtolower(substr($name, 0, -7));
 
 		$cp = $this->getCallbackParameter();
 		if (!isset($cp->$name) || $cp->$name == '') {
