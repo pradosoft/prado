@@ -8,61 +8,42 @@
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-Renders Markdown text as HTML. Extends `TTextHighlighter`, which in turn handles syntax highlighting of fenced code blocks. `TMarkdown` post-processes the Markdown output to apply syntax highlighting to `<pre><code class="language-X">` blocks.
+Renders Markdown, its body or `Text`, as HTML in a `<div>`. [Parsedown](https://parsedown.org) (`erusev/parsedown`, a Composer dependency) converts it. Fenced code blocks render as `<pre><code class="language-x">`, and the client class `Prado.WebUI.TMarkdown` highlights each block with highlight.js.
 
-Requires a Markdown library (e.g., `league/commonmark` or `michelf/php-markdown`) installed via Composer.
+Extends [TTextHighlighter](./TTextHighlighter.md).
 
-Extends `[TTextHighlighter](./TTextHighlighter.md)`.
+## Rendering
 
-## Key Method
-
-```php
-protected function processText(string $text): string
-// Called by TTextHighlighter to transform the raw text.
-// 1. Renders Markdown → HTML via the configured Markdown library
-// 2. Applies syntax highlighting to fenced code blocks matching:
-//    <pre><code class="language-{lang}">...</code></pre>
-```
-
-The regex used:
-```
-/<pre><code class="language-(\w+)">((.|\n)*?)<\/code><\/pre>/im
-```
+- `getTagName()` is `div`; `renderBeginTag()` registers the `texthighlight` script package and renders the `div` with the ClientID.
+- `processText()` returns Parsedown's HTML unchanged.
+- The client highlights every `pre > code` in the `div`; a block without a language has its language detected. Prose and inline `code` are not highlighted.
 
 ## Key Properties (inherited from TTextHighlighter)
 
-| Property | Description |
-|----------|-------------|
-| `Text` | Markdown text to render |
-| `Language` | Default language for code blocks without a class |
-| `ShowLineNumbers` | Show line numbers in highlighted blocks |
-| `TabSize` | Tab width for code blocks |
-| `CssClass` | CSS class for the container |
+| Property | Applies to TMarkdown |
+|----------|----------------------|
+| `Text` | Markdown text; when empty, the rendered body is the Markdown |
+| `ShowLineNumbers` | Every code block of more than one line |
+| `EnableCopyCode` | A copy button on every code block |
+| `TabSize`, `SyntaxStyle` | Every code block |
+| `Language`, `EncodeHtml` | Do not apply |
 
 ## Usage
 
 ```xml
-<com:TMarkdown>
+<com:TMarkdown ShowLineNumbers="true">
 # Hello World
 
 This is **markdown** text.
 
-```php
+~~~php
 echo "Hello!";
-```
+~~~
 </com:TMarkdown>
-```
-
-Or programmatically:
-
-```php
-$md = new TMarkdown();
-$md->Text = '# Hello World';
 ```
 
 ## Patterns & Gotchas
 
-- **Requires Markdown library** — `TMarkdown` calls a Markdown parser. The specific library depends on the PRADO version and Composer dependencies. `league/commonmark` is the standard choice.
-- **Fenced code block syntax highlighting** — only blocks with an explicit language class (`language-php`, `language-js`, etc.) are highlighted. Plain `<pre><code>` blocks are not.
-- **`processText()` override** — if you need to customize Markdown rendering (e.g., add extensions, configure the parser), extend `TMarkdown` and override `processText()`.
-- **XSS** — Markdown rendering can include raw HTML if the parser allows it. Configure the Markdown library to strip unsafe HTML if accepting user input.
+- **Raw HTML** — Parsedown renders HTML written in the Markdown as is. Render Markdown from users inside a [TSafeHtml](./TSafeHtml.md).
+- **Template entities** — `TTextProcessor::addParsedObject()` decodes HTML entities in the template body, so `&lt;b&gt;` in the body is the Markdown `<b>`.
+- **Before 4.4.0** — TMarkdown rendered its HTML inside TTextHighlighter's `<pre><code>`, highlighted the whole document as one language, and wrote the last code block's language into `Language`. `highlightCode()` is deprecated and unused.
