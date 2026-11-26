@@ -185,14 +185,14 @@ class TActiveRadioButton extends TRadioButton implements IActiveControl, ICallba
 	}
 
 	/**
-	 * @return string radio button label ID;
+	 * @return string radio button label ID: the `id` of the {@see getLabelAttributes LabelAttributes},
+	 *   or the client ID with `_label` when they have none
 	 */
 	protected function getDefaultLabelID()
 	{
-		if ($attributes = $this->getViewState('LabelAttributes', null)) {
-			return $this->getLabelAttributes()->itemAt('id');
-		} else {
-			return $this->getClientID() . '_label';
+		if (($attributes = $this->getViewState('LabelAttributes', null)) && ($id = $attributes->itemAt('id')) !== null) {
+			return $id;
 		}
+		return $this->getClientID() . '_label';
 	}
 }

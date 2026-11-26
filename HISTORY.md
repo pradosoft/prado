@@ -18,6 +18,7 @@ BUG: Issue #1497 - `TEventTriggeredCallback` without an `EventName` lets the cli
 BUG: Issue #1497 - `TTimeTriggeredCallback::setInterval()` sends no client update for an unchanged interval given as a string or an integer. (belisoful)
 BUG: Issue #1497 - A control that `TCallbackClientScript` registers twice for a callback render sends the boundary of its content each time; the second call sent an empty boundary. `TActivePageAdapter::registerControlToRender()` returns the registered writer. (belisoful)
 BUG: Issue #1497 - `TCallbackClientScript::toggle()` without an effect toggles at once; it threw `TPhpErrorException` for passing null to `strtolower()`. (belisoful)
+BUG: Issue #1497 - `TActiveCheckBox` and `TActiveRadioButton` keep the label ID when `LabelAttributes` are set; the label lost its ID, and `TActiveRadioButton` recursed without end. (belisoful)
 BUG: Issue #1497 - `TBulletedList` LinkButton item links have the ID `{ClientID}_c{index}`; `{ClientID}{index}` let two lists share an ID. UPGRADE.md lists the change. (belisoful)
 BUG: Issue #1497 - `TBulletedList` in the HyperLink and LinkButton modes renders its `AccessKey` on the first enabled item link only; the list and every item link carried it. (belisoful)
 BUG: Issue #1497 - A `TDataList` selected or edit item inherits `ItemStyle` or `AlternatingItemStyle` by its index, as its docblock states and as in `TDataGrid`; it took only its own style. (belisoful)

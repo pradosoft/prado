@@ -14,6 +14,7 @@ Active counterpart to TRadioButton with AutoPostBack enabled by default. Text an
 
 - `setText($value)` - Sets text with client-side update, HTML-encoded when `Encode` is true (4.4.0)
 - `setChecked($value)` - Sets checked state with client-side update
+- `getLabelAttributes()` - The label `id` is the `id` of `LabelAttributes`, or `{ClientID}_label`; a callback updates the label by that ID
 - `raiseCallbackEvent($param)` - Raises callback event
 - `onCallback($param)` - Event raised when callback is requested
 - `getClientClassName()` - Returns `Prado.WebUI.TActiveRadioButton`
