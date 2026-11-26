@@ -8,6 +8,7 @@ use Prado\Exceptions\TExitException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\IO\TTextWriter;
 use Prado\Prado;
+use Prado\Test\Unit\Harness\Caching\TTestArrayCache;
 use Prado\Test\Unit\Harness\Traits\TTempDirectoryTrait;
 use Prado\Test\Unit\Harness\Web\TTestRecordingResponse;
 use Prado\Test\Unit\Harness\Web\TTestUrlAssetManager;
@@ -17,6 +18,7 @@ use Prado\Web\UI\ActiveControls\TActiveFileUpload;
 use Prado\Web\UI\ActiveControls\TActiveFileUploadCallbackParams;
 use Prado\Web\UI\ActiveControls\TActiveFileUploadItem;
 use Prado\Web\UI\ActiveControls\TCallbackEventParameter;
+use Prado\Web\UI\ActiveControls\TInvalidCallbackException;
 use Prado\Web\UI\TClientScriptManager;
 use Prado\Web\UI\TForm;
 use Prado\Web\UI\THtmlWriter;
@@ -251,7 +253,8 @@ class TActiveFileUploadTest extends TestCase
 		TActiveFileUploadTestWakeup::$wokeUp = false;
 		try {
 			PradoUnit::invoke($upload, 'popParamsByToken', $token);
-		} catch (\AssertionError $e) {
+			$this->fail('A token of another class throws.');
+		} catch (TInvalidCallbackException $e) {
 		}
 		$this->assertFalse(TActiveFileUploadTestWakeup::$wokeUp);
 	}
@@ -346,6 +349,34 @@ class TActiveFileUploadTest extends TestCase
 		$this->assertSame([], $upload->getFiles());
 	}
 
+	public function testUploadCallbackLoadsTheKeptFilesAndValidates()
+	{
+		[$page, $upload, $dir] = $this->createUpload(true);
+		$kept = tempnam($dir, 'kept');
+		$params = new TActiveFileUploadCallbackParams();
+		$params->files[] = ['fileName' => 'a\\\'b.txt', 'fileSize' => '4', 'fileType' => 'text/plain', 'errorCode' => '0', 'localName' => $kept];
+		$token = PradoUnit::invoke($upload, 'pushParamsAndGetToken', $params);
+		$validator = $this->addValidator($upload);
+		$validated = false;
+		$validator->attachEventHandler('OnValidate', function () use (&$validated) {
+			$validated = true;
+		});
+		$raised = null;
+		$upload->attachEventHandler('OnFileUpload', function ($sender, $param) use (&$raised) {
+			$raised = $param;
+		});
+		$param = new TCallbackEventParameter($page->getResponse(), (object) ['targetID' => PradoUnit::getProp($upload, '_target')->getUniqueID(), 'callbackToken' => $token]);
+		$upload->raiseCallbackEvent($param);
+		$this->assertSame($param, $raised);
+		$this->assertArrayHasKey($upload->getUniqueID(), $_FILES);
+		$this->assertArrayNotHasKey(1, $_FILES);
+		$file = $upload->getFiles()[0];
+		$this->assertSame("a'b.txt", $file->getFileName());
+		$this->assertSame(4, $file->getFileSize());
+		$this->assertSame($kept, $file->getLocalName());
+		$this->assertTrue($validated);
+	}
+
 	public function testUploadCallbackOfAnotherFrameOrWithoutValidationRaisesNoValidation()
 	{
 		[$page, $upload] = $this->createUpload(true);
@@ -364,6 +395,41 @@ class TActiveFileUploadTest extends TestCase
 		$upload->raiseCallbackEvent(new TCallbackEventParameter($page->getResponse(), (object) ['targetID' => PradoUnit::getProp($upload, '_target')->getUniqueID(), 'callbackToken' => $token]));
 		$this->assertSame(1, $raised);
 		$this->assertFalse($validated);
+	}
+
+	public function testCachedParamsTokenIsUsedOnce()
+	{
+		Prado::getApplication()->setCache(new TTestArrayCache());
+		$upload = new TActiveFileUpload();
+		$params = new TActiveFileUploadCallbackParams();
+		$params->files[] = ['fileName' => 'a.txt'];
+		$token = PradoUnit::invoke($upload, 'pushParamsAndGetToken', $params);
+		$this->assertMatchesRegularExpression('/^[0-9a-f]{32}$/', $token);
+		$this->assertNotSame($token, PradoUnit::invoke($upload, 'pushParamsAndGetToken', $params));
+		$this->assertSame($params->files, PradoUnit::invoke($upload, 'popParamsByToken', $token)->files);
+		$this->expectException(TInvalidCallbackException::class);
+		PradoUnit::invoke($upload, 'popParamsByToken', $token);
+	}
+
+	public static function invalidTokenProvider(): array
+	{
+		return [
+			'not a string' => [['token'], false],
+			'forged' => ['forged', false],
+			'unknown in the cache' => ['unknown', true],
+		];
+	}
+
+	/**
+	 * @dataProvider invalidTokenProvider
+	 */
+	public function testInvalidParamsTokenThrows(mixed $token, bool $cache)
+	{
+		if ($cache) {
+			Prado::getApplication()->setCache(new TTestArrayCache());
+		}
+		$this->expectException(TInvalidCallbackException::class);
+		PradoUnit::invoke(new TActiveFileUpload(), 'popParamsByToken', $token);
 	}
 
 	public function testPreRenderOfAnotherInputOrAPostBackEchoesNothing()
@@ -441,6 +507,27 @@ class TActiveFileUploadTest extends TestCase
 		$this->assertFalse($failed->saveAs($dir . '/failed'));
 	}
 
+	public static function cachedValueProvider(): array
+	{
+		return [
+			'not serialized' => ['garbage'],
+			'another class' => [serialize(new \stdClass())],
+			'not a string' => [['files' => []]],
+		];
+	}
+
+	/**
+	 * @dataProvider cachedValueProvider
+	 */
+	public function testCachedValueThatIsNoParamsThrows(mixed $value)
+	{
+		$cache = new TTestArrayCache();
+		$cache->set('token', $value);
+		Prado::getApplication()->setCache($cache);
+		$this->expectException(TInvalidCallbackException::class);
+		PradoUnit::invoke(new TActiveFileUpload(), 'popParamsByToken', 'token');
+	}
+
 	public function testUploadCallbackWithoutFilesValidates()
 	{
 		[$page, $upload] = $this->createUpload(true);
@@ -470,33 +557,5 @@ class TActiveFileUploadTest extends TestCase
 		$token = PradoUnit::invoke($upload, 'pushParamsAndGetToken', $params);
 		$upload->raiseCallbackEvent(new TCallbackEventParameter($page->getResponse(), (object) ['targetID' => PradoUnit::getProp($upload, '_target')->getUniqueID(), 'callbackToken' => $token]));
 		$this->assertSame('a.txt', $upload->getFileName());
-	}
-
-	public function testUploadCallbackLoadsTheKeptFilesAndValidates()
-	{
-		[$page, $upload, $dir] = $this->createUpload(true);
-		$kept = tempnam($dir, 'kept');
-		$params = new TActiveFileUploadCallbackParams();
-		$params->files[] = ['fileName' => 'a\\\'b.txt', 'fileSize' => '4', 'fileType' => 'text/plain', 'errorCode' => '0', 'localName' => $kept];
-		$token = PradoUnit::invoke($upload, 'pushParamsAndGetToken', $params);
-		$validator = $this->addValidator($upload);
-		$validated = false;
-		$validator->attachEventHandler('OnValidate', function () use (&$validated) {
-			$validated = true;
-		});
-		$raised = null;
-		$upload->attachEventHandler('OnFileUpload', function ($sender, $param) use (&$raised) {
-			$raised = $param;
-		});
-		$param = new TCallbackEventParameter($page->getResponse(), (object) ['targetID' => PradoUnit::getProp($upload, '_target')->getUniqueID(), 'callbackToken' => $token]);
-		$upload->raiseCallbackEvent($param);
-		$this->assertSame($param, $raised);
-		$this->assertArrayHasKey($upload->getUniqueID(), $_FILES);
-		$this->assertArrayNotHasKey(1, $_FILES);
-		$file = $upload->getFiles()[0];
-		$this->assertSame("a'b.txt", $file->getFileName());
-		$this->assertSame(4, $file->getFileSize());
-		$this->assertSame($kept, $file->getLocalName());
-		$this->assertTrue($validated);
 	}
 }

@@ -8,7 +8,7 @@
 **Namespace:** `Prado\Web\UI\ActiveControls`
 
 ## Overview
-Async file upload using hidden iframe. Does postback in hidden iframe followed by callback to raise OnFileUpload event. Displays status icons (spinning, checkmark, error) during upload. Supports HTML5 multiple file uploads. Requires application cache or security manager.
+Async file upload using hidden iframe. Does postback in hidden iframe followed by callback to raise OnFileUpload event. Displays status icons (spinning, checkmark, error) during upload. Supports HTML5 multiple file uploads. The callback finds the uploaded files by a token: with an application cache, a random cache key used once (kept 5 minutes); otherwise, the files encrypted by the security manager. An expired or forged token throws `TInvalidCallbackException` (`activefileupload_callbacktoken_invalid`).
 
 ## Key Properties/Methods
 
