@@ -654,26 +654,34 @@ class TDbCronManager extends TCronModule implements IDbModule
 	}
 
 	/**
-	 * Reads the rows of a query ({@see normalizeRow}).
+	 * Reads the rows of a query, each normalized as it is fetched ({@see normalizeRow}).  IBM DB2 ends a
+	 * LOB stream at the next fetch or when the cursor closes.
 	 * @param \Prado\Data\IDataCommand $cmd the query
 	 * @return array[] the rows
 	 * @since 4.4.0
 	 */
 	protected function readRows($cmd): array
 	{
-		return array_map([$this, 'normalizeRow'], $cmd->query()->readAll());
+		$rows = [];
+		foreach ($cmd->query() as $row) {
+			$rows[] = $this->normalizeRow($row);
+		}
+		return $rows;
 	}
 
 	/**
-	 * Reads the first row of a query ({@see normalizeRow}).
+	 * Reads the first row of a query, normalized before its cursor closes ({@see readRows}).
 	 * @param \Prado\Data\IDataCommand $cmd the query
 	 * @return ?array the row, or null when the query has no rows
 	 * @since 4.4.0
 	 */
 	protected function readRow($cmd): ?array
 	{
-		$row = $cmd->queryRow();
-		return is_array($row) ? $this->normalizeRow($row) : null;
+		$reader = $cmd->query();
+		$row = $reader->read();
+		$row = is_array($row) ? $this->normalizeRow($row) : null;
+		$reader->close();
+		return $row;
 	}
 
 	/**

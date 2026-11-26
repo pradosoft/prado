@@ -27,9 +27,21 @@ class TDbCronManagerScriptedSqlCommand extends TTestLockCommand
 			throw new \Exception('ORA-00904: invalid identifier');
 		}
 		$rows = $this->rows;
-		return new class ($rows) {
+		return new class ($rows) implements \IteratorAggregate {
+			public bool $closed = false;
+
 			public function __construct(private array $rows)
 			{
+			}
+
+			public function getIterator(): \Iterator
+			{
+				return new \ArrayIterator($this->rows);
+			}
+
+			public function read()
+			{
+				return array_shift($this->rows) ?? false;
 			}
 
 			public function readAll()
@@ -39,14 +51,9 @@ class TDbCronManagerScriptedSqlCommand extends TTestLockCommand
 
 			public function close()
 			{
+				$this->closed = true;
 			}
 		};
-	}
-
-	public function queryRow($fetchAssociative = true)
-	{
-		$this->runs++;
-		return $this->rows[0] ?? false;
 	}
 }
 
@@ -412,6 +419,72 @@ class TDbCronManagerScriptedSqlTest extends \PHPUnit\Framework\TestCase
 		self::assertStringEndsWith(':active) RETURNING tabuid', $insert->sql);
 		self::assertSame('23', $manager->getTask('returning', true, false)['tabuid']);
 		self::assertSame(1, $insert->runs, 'the insert runs once, as a query');
+	}
+
+	public function testRowsAreReadBeforeTheirStreamsEnd()
+	{
+		$manager = $this->newManager(TDbDriver::DRIVER_IBM);
+		$clob = function (string $value) {
+			$stream = fopen('php://memory', 'r+');
+			fwrite($stream, $value);
+			rewind($stream);
+			return $stream;
+		};
+		// A reader that ends a row's streams at the next fetch and at close, as pdo_ibm does.
+		$reader = fn (array $rows) => new class ($rows) implements \IteratorAggregate {
+			private array $open = [];
+
+			public function __construct(private array $rows)
+			{
+			}
+
+			private function end(): void
+			{
+				foreach ($this->open as $stream) {
+					fclose($stream);
+				}
+				$this->open = [];
+			}
+
+			private function fetch()
+			{
+				$this->end();
+				$row = array_shift($this->rows);
+				$this->open = array_filter($row ?? [], 'is_resource');
+				return $row ?? false;
+			}
+
+			public function getIterator(): \Generator
+			{
+				while (($row = $this->fetch()) !== false) {
+					yield $row;
+				}
+			}
+
+			public function read()
+			{
+				return $this->fetch();
+			}
+
+			public function close()
+			{
+				$this->end();
+			}
+		};
+		$command = fn (array $rows) => new class ($reader($rows)) {
+			public function __construct(private object $reader)
+			{
+			}
+
+			public function query()
+			{
+				return $this->reader;
+			}
+		};
+		$rows = PradoUnit::invoke($manager, 'readRows', $command([['OPTIONS' => $clob('first')], ['OPTIONS' => $clob('second')]]));
+		self::assertSame([['options' => 'first'], ['options' => 'second']], $rows);
+		self::assertSame(['options' => 'only'], PradoUnit::invoke($manager, 'readRow', $command([['OPTIONS' => $clob('only')]])));
+		self::assertNull(PradoUnit::invoke($manager, 'readRow', $command([])));
 	}
 
 	public function testTheDriversWithoutDefinitionsKeepTheirSql()

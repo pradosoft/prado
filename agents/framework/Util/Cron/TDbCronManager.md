@@ -87,7 +87,7 @@ Active rows (`active IS NOT NULL`) are task definitions; rows with `active IS NU
 | Inserted `tabuid` (`getLastInsertTaskUID()`, `executeInsert()`) | `CURRVAL` of the identity sequence in `user_tab_identity_cols` | `lastInsertId()` | `IDENTITY_VAL_LOCAL()` | `INSERT ... RETURNING tabuid` |
 | New maximum seconds (`updateTaskResult()`) | `TO_NUMBER(:newmax)` | `CAST(:newmax AS FLOAT)` | `CAST(:newmax AS DOUBLE)` | `CAST(:newmax AS DOUBLE PRECISION)` |
 
-The run seconds are bound as a fixed-point string on these drivers. IBM DB2 binds integers untyped (`getIntParamType()`). `readRows()` and `readRow()` lower-case the column names that Oracle, IBM DB2, and Firebird report in upper case, and read each stream (`normalizeRow()`). `TOracleDbCommand` writes bound values into the SQL as literals, so a serialized task on Oracle is limited to the 4,000-byte literal; before Oracle 12.2, a table name has at most 22 bytes, so its index names fit 30 bytes.
+The run seconds are bound as a fixed-point string on these drivers. IBM DB2 binds integers untyped (`getIntParamType()`). `readRows()` and `readRow()` lower-case the column names that Oracle, IBM DB2, and Firebird report in upper case, and read each stream as its row is fetched (`normalizeRow()`), since IBM DB2 ends a LOB stream at the next fetch or when the cursor closes. `TOracleDbCommand` writes bound values into the SQL as literals, so a serialized task on Oracle is limited to the 4,000-byte literal; before Oracle 12.2, a table name has at most 22 bytes, so its index names fit 30 bytes.
 
 ## Key Properties
 
