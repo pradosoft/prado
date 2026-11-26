@@ -185,6 +185,40 @@ class TPanelStyleTest extends TestCase
 		$this->assertStringContainsString('text-align:justify;', $this->renderStyle($style));
 	}
 
+	public function testRenderLeavesTheStyleFieldsUnchanged()
+	{
+		$style = $this->createFullStyle();
+		$style->setStyleField('color', 'red');
+		$fields = $style->getStyleFields();
+
+		$first = $this->renderStyle($style);
+		$this->assertSame($fields, $style->getStyleFields());
+		$this->assertSame($first, $this->renderStyle($style));
+	}
+
+	public function testSecondRenderDropsCssOfPropertiesUnsetSinceTheFirst()
+	{
+		$style = new TPanelStyle();
+		$style->setWrap(false);
+		$style->setHorizontalAlign(THorizontalAlign::Center);
+		$this->assertStringContainsString('text-align:center;white-space:nowrap', $this->renderStyle($style));
+
+		$style->setWrap(true);
+		$style->setHorizontalAlign(THorizontalAlign::NotSet);
+		$this->assertSame('<div></div>', $this->renderStyle($style));
+	}
+
+	public function testDerivedCssReplacesAFieldOfTheSameNameInPlace()
+	{
+		$style = new TPanelStyle();
+		$style->setStyleField('text-align', 'left');
+		$style->setStyleField('color', 'red');
+		$style->setHorizontalAlign(THorizontalAlign::Right);
+
+		$this->assertStringContainsString('style="text-align:right;color:red;"', $this->renderStyle($style));
+		$this->assertSame('left', $style->getStyleField('text-align'));
+	}
+
 	public function testRenderKeepsBaseStyle()
 	{
 		$style = new TPanelStyle();

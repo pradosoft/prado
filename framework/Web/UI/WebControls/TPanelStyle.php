@@ -77,47 +77,46 @@ class TPanelStyle extends TStyle
 	}
 
 	/**
-	 * Adds attributes related to CSS styles to renderer.
-	 * This method overrides the parent implementation.
-	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
+	 * Returns the style fields with the CSS derived from the panel properties: `background-image`,
+	 * the `overflow` fields, `text-align`, `white-space`, `direction`, and `box-shadow`. The derived
+	 * CSS is computed at each render and leaves the style's own fields unchanged.
+	 * @return array<string, string> CSS property names and values to render.
+	 * @since 4.4.0
 	 */
-	public function addAttributesToRender($writer)
+	protected function getRenderStyleFields(): array
 	{
+		$derived = [];
 		if (($url = trim($this->getBackImageUrl())) !== '') {
-			$this->setStyleField('background-image', 'url(' . $url . ')');
+			$derived['background-image'] = 'url(' . $url . ')';
 		}
 
 		switch ($this->getScrollBars()) {
-			case TScrollBars::Horizontal: $this->setStyleField('overflow-x', 'scroll');
+			case TScrollBars::Horizontal: $derived['overflow-x'] = 'scroll';
 				break;
-			case TScrollBars::Vertical: $this->setStyleField('overflow-y', 'scroll');
+			case TScrollBars::Vertical: $derived['overflow-y'] = 'scroll';
 				break;
-			case TScrollBars::Both: $this->setStyleField('overflow', 'scroll');
+			case TScrollBars::Both: $derived['overflow'] = 'scroll';
 				break;
-			case TScrollBars::Auto: $this->setStyleField('overflow', 'auto');
+			case TScrollBars::Auto: $derived['overflow'] = 'auto';
 				break;
 		}
 
 		if (($align = $this->getHorizontalAlign()) !== THorizontalAlign::NotSet) {
-			$this->setStyleField('text-align', strtolower($align));
+			$derived['text-align'] = strtolower($align);
 		}
 
 		if (!$this->getWrap()) {
-			$this->setStyleField('white-space', 'nowrap');
+			$derived['white-space'] = 'nowrap';
 		}
 
 		if (($direction = $this->getDirection()) !== TContentDirection::NotSet) {
-			if ($direction === TContentDirection::LeftToRight) {
-				$this->setStyleField('direction', 'ltr');
-			} else {
-				$this->setStyleField('direction', 'rtl');
-			}
+			$derived['direction'] = $direction === TContentDirection::LeftToRight ? 'ltr' : 'rtl';
 		}
-		if ($boxShadow = $this->getBoxShadow()) {
-			$this->setStyleField('box-shadow', $boxShadow);
+		if (($boxShadow = $this->getBoxShadow()) && ($boxShadow = trim($boxShadow)) !== '') {
+			$derived['box-shadow'] = $boxShadow;
 		}
 
-		parent::addAttributesToRender($writer);
+		return array_merge(parent::getRenderStyleFields(), $derived);
 	}
 
 	/**

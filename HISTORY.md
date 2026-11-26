@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TPanelStyle` computes its derived CSS at each render through the new `TStyle::getRenderStyleFields()`; it wrote the CSS into its own style fields, so a property unset after a render kept its CSS. (belisoful)
 BUG: Issue #1497 - `TView::getVisible(false)` returns the view's own `Active` state, as other controls return their own `Visible`; it returned its parent's `Visible`. (belisoful)
 BUG: Issue #1640 - `TException::__construct()` documents `$errorMessage` and `...$args` as `mixed`; with a message key first, `$errorMessage` is the first message argument. (belisoful)
 BUG: Issue #1497 - `TDatePicker` in DropDownList mode renders its wrapper `<span>` with the web control attributes only; it carried the text box's `value`, `maxlength`, `placeholder`, `required`, and other input attributes. (belisoful)

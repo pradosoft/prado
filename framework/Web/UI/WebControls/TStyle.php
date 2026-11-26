@@ -608,6 +608,18 @@ class TStyle extends \Prado\TComponent implements \ArrayAccess
 	}
 
 	/**
+	 * Returns the CSS fields that {@see addAttributesToRender} writes. A subclass adds the CSS
+	 * derived from its properties with `array_merge()`, so rendering leaves the style's own
+	 * fields unchanged. A derived field replaces a same-named field in place.
+	 * @return array<string, string> CSS property names and values to render.
+	 * @since 4.4.0
+	 */
+	protected function getRenderStyleFields(): array
+	{
+		return $this->getStyleFields();
+	}
+
+	/**
 	 * Resets all style data to the constructor default.
 	 * All fields, font, CSS class, and custom style are cleared.
 	 * `_displayStyle` is restored to {@see DEFAULT_DISPLAY_STYLE}.
@@ -694,8 +706,8 @@ class TStyle extends \Prado\TComponent implements \ArrayAccess
 	/**
 	 * Writes all style data to an HTML writer.
 	 *
-	 * Render order: custom style string → named fields → font attributes → CSS class.
-	 * Named fields override any same-named property in the custom style string.
+	 * Render order: custom style string → named fields ({@see getRenderStyleFields}) → font
+	 * attributes → CSS class. Named fields override any same-named property in the custom style string.
 	 *
 	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for rendering
 	 */
@@ -710,8 +722,8 @@ class TStyle extends \Prado\TComponent implements \ArrayAccess
 				}
 			}
 		}
-		if ($this->getHasStyleFields()) {
-			$writer->addStyleAttributes($this->getStyleFields());
+		if ($fields = $this->getRenderStyleFields()) {
+			$writer->addStyleAttributes($fields);
 		}
 		if ($this->getHasFont()) {
 			$this->getFont()->addAttributesToRender($writer);
