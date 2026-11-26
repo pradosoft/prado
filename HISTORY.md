@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TJuiDialog` raises each jQuery UI dialog event it lists, such as `OnClose`, `OnBeforeClose`, `OnFocus`, and `OnResizeStop`; only `OnOpen` could be attached. (belisoful)
 BUG: Issue #1497 - `TJuiEventParameter` reads a component property such as `CallbackParameter` by name; only a name ending in `Control` looks up a control, and every other name returned null. (belisoful)
 BUG: Issue #1497 - `TJuiControlOptions` stores an option value set in PHP that is not a string, such as an array or null, as is; it threw a `TypeError` or `TPhpErrorException`. (belisoful)
 BUG: Issue #1497 - `TMapCollectionDiff` compares an array item by its elements, so a callback that changes an array-valued jQuery UI option sends it; it threw `TPhpErrorException` for the array. (belisoful)
