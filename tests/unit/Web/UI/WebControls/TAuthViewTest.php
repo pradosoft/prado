@@ -28,6 +28,54 @@ class TAuthViewTestUser extends TUser
 	}
 }
 
+/**
+ * Signed-in user that implements IUser without being a TComponent.
+ */
+class TAuthViewTestPlainUser implements \Prado\Security\IUser
+{
+	public function getName()
+	{
+		return 'plain';
+	}
+
+	public function setName($value)
+	{
+	}
+
+	public function getIsGuest()
+	{
+		return false;
+	}
+
+	public function setIsGuest($value)
+	{
+	}
+
+	public function getRoles()
+	{
+		return [];
+	}
+
+	public function setRoles($value)
+	{
+	}
+
+	public function isInRole($role)
+	{
+		return false;
+	}
+
+	public function saveToString()
+	{
+		return '';
+	}
+
+	public function loadFromString($string)
+	{
+		return $this;
+	}
+}
+
 class TAuthViewTest extends TestCase
 {
 	use TWebControlRenderTrait;
@@ -195,6 +243,18 @@ class TAuthViewTest extends TestCase
 		$template->setPermissions('blog.edit');
 		$this->expectException(TConfigurationException::class);
 		$template->isUserMatched($this->signIn('joe'));
+	}
+
+	public function testTemplatePermissionsNeedAComponentUser()
+	{
+		$template = new TAuthViewTemplate();
+		$template->setPermissions('blog.edit');
+		try {
+			$template->isUserMatched(new TAuthViewTestPlainUser());
+			$this->fail('Expected TConfigurationException');
+		} catch (TConfigurationException $e) {
+			$this->assertSame('authviewtemplate_permissions_unsupported', $e->getErrorCode());
+		}
 	}
 
 	public function testTemplatePermissionsNotCheckedWhenUsersFail()

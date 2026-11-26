@@ -91,4 +91,28 @@ class THeaderTest extends TestCase
 		$this->assertStringContainsString('Header content', $output);
 		$this->assertStringContainsString('<header', $output);
 	}
+
+	public static function headingLevelProvider(): array
+	{
+		return [
+			'h1' => [\Prado\Web\UI\WebControls\THeader1::class, 'h1'],
+			'h2' => [\Prado\Web\UI\WebControls\THeader2::class, 'h2'],
+			'h3' => [\Prado\Web\UI\WebControls\THeader3::class, 'h3'],
+			'h4' => [\Prado\Web\UI\WebControls\THeader4::class, 'h4'],
+			'h5' => [\Prado\Web\UI\WebControls\THeader5::class, 'h5'],
+			'h6' => [\Prado\Web\UI\WebControls\THeader6::class, 'h6'],
+		];
+	}
+
+	/**
+	 * @dataProvider headingLevelProvider
+	 */
+	public function testHeadingLevelsRenderTheirTag(string $class, string $tag)
+	{
+		$control = new $class();
+		$this->assertInstanceOf(THtmlElement::class, $control);
+		$this->assertSame($tag, $control->getDefaultTagName());
+		$control->getControls()->add('Title');
+		$this->assertSame("<$tag>Title</$tag>", $this->render($control));
+	}
 }
