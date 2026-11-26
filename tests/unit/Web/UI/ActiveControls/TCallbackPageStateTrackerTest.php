@@ -509,6 +509,28 @@ class TCallbackPageStateTrackerTest extends TestCase
 		$this->assertSame(['aria-disabled'], array_map(fn ($call) => $call[1], $removes), 'an own role stays');
 	}
 
+	/**
+	 * A link without its own role gains and loses `role="link"` with `aria-disabled`;
+	 * a link with its own role keeps it in both directions.
+	 * @dataProvider linkProvider
+	 */
+	public function testEnabledOfALinkTogglesTheRoleOnlyWithoutItsOwn(string $class)
+	{
+		$link = new $class();
+		$tracker = new TCallbackPageStateTrackerTestable($link, $this->client);
+		$link->setEnabled(false);
+		$tracker->trackChanges();
+		$link->setEnabled(true);
+		$tracker->respondToChanges();
+		$this->assertSame(['aria-disabled', 'role'], array_column($this->client->getCollectedCalls('removeAttribute'), 1));
+
+		$link->setRole('button');
+		$tracker->trackChanges();
+		$link->setEnabled(false);
+		$tracker->respondToChanges();
+		$this->assertSame([['aria-disabled', 'true']], array_map(fn ($call) => [$call[1], $call[2]], $this->client->getCollectedCalls('setAttribute')));
+	}
+
 	public function testUpdateStyleWithoutAStyleArraySetsOnlyTheClass()
 	{
 		$this->tracker->exposedUpdateStyle(['CssClass' => 'c', 'Style' => null]);

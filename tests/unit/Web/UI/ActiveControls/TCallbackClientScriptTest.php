@@ -242,11 +242,13 @@ class TCallbackClientScriptTest extends TestCase
 		$client->callClientFunction('g');
 		$client->callClientFunction('h', [$label, $box]);
 		$client->callClientFunction('i', [$box]);
+		$client->callClientFunction('j', ['plain', $label]);
 		$this->assertSame([
 			['f' => ['x']],
 			['g' => []],
 			['h' => [$label->getClientID(), $box]],
 			['i' => [$box->getSurroundingTagID()]],
+			['j' => ['plain', $label]],
 		], $page->getClientFunctions());
 	}
 
