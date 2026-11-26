@@ -21,6 +21,8 @@ namespace Prado\Web\UI\ActiveControls;
 class TMapCollectionDiff extends TViewStateDiff
 {
 	/**
+	 * Returns the items that are new or changed. Items compare as strings; an
+	 * array item, such as a jQuery UI option, compares by its elements and type.
 	 * @return array updates to the attributes collection.
 	 */
 	public function getDifference()
@@ -30,7 +32,11 @@ class TMapCollectionDiff extends TViewStateDiff
 		} else {
 			$new = $this->_new->toArray();
 			$old = $this->_old->toArray();
-			$diff = array_diff_assoc($new, $old);
+			$diff = array_udiff_assoc(
+				$new,
+				$old,
+				fn ($a, $b) => (is_array($a) || is_array($b)) ? (int) ($a !== $b) : strcmp((string) $a, (string) $b)
+			);
 			return count($diff) > 0 ? $diff : $this->_null;
 		}
 	}
