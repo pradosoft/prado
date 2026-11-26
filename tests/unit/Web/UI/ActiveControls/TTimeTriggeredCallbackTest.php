@@ -116,4 +116,25 @@ class TTimeTriggeredCallbackTest extends TestCase
 		$timer->setPauseWhenHidden(1);
 		$this->assertTrue($timer->getPauseWhenHidden());
 	}
+
+	public function testIntervalChangeInACallbackUpdatesTheClientTimer()
+	{
+		[$page, $timer] = $this->createTimer();
+		$timer->setInterval('2.5');
+		$timer->setInterval(2.5);
+		$timer->setInterval('2.5');
+		$this->assertSame(2.5, $timer->getInterval());
+		$this->assertSame(
+			[['Prado.WebUI.TTimeTriggeredCallback.setTimerInterval' => ['timer', 2.5]]],
+			$page->getClientFunctions()
+		);
+	}
+
+	public function testDefaultIntervalSendsNothing()
+	{
+		[$page, $timer] = $this->createTimer();
+		$timer->setInterval('1');
+		$this->assertSame(1, $timer->getInterval());
+		$this->assertSame([], $page->getClientFunctions());
+	}
 }

@@ -46,6 +46,8 @@ class TTimeTriggeredCallback extends TCallback
 	}
 
 	/**
+	 * Sets the seconds between callback requests. In a callback, a changed interval
+	 * updates the client timer; an unchanged interval sends nothing.
 	 * @param float $value seconds between callback requests, must be a positive number, default is 1 second.
 	 */
 	public function setInterval($value)
@@ -55,7 +57,7 @@ class TTimeTriggeredCallback extends TCallback
 			throw new TConfigurationException('callback_interval_be_positive', $this->getID());
 		}
 
-		if ($this->getInterval() === $value) {
+		if ((float) $this->getInterval() === $interval) {
 			return;
 		}
 
