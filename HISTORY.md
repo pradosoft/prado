@@ -21,6 +21,7 @@ BUG: Issue #1497 - `TCallbackClientScript::toggle()` without an effect toggles a
 BUG: Issue #1497 - `TActiveCheckBox` and `TActiveRadioButton` keep the label ID when `LabelAttributes` are set; the label lost its ID, and `TActiveRadioButton` recursed without end. (belisoful)
 BUG: Issue #1497 - `TActiveHyperLink` sets or removes `href` when `Enabled` changes in a callback, as `TActiveLinkButton` does, and removes it for an empty `NavigateUrl` or a disabled link. (belisoful)
 BUG: Issue #1497 - `TActiveLabel` removes `for` when `ForControl` is cleared in a callback, and throws `TInvalidDataValueException` for a control it does not find; both threw an `Error`. (belisoful)
+BUG: Issue #1497 - `TActiveHtmlArea` and `TActiveHtmlArea5` quote the text in their editor script in a callback; a quote in the text broke the script. (belisoful)
 BUG: Issue #1497 - `TBulletedList` LinkButton item links have the ID `{ClientID}_c{index}`; `{ClientID}{index}` let two lists share an ID. UPGRADE.md lists the change. (belisoful)
 BUG: Issue #1497 - `TBulletedList` in the HyperLink and LinkButton modes renders its `AccessKey` on the first enabled item link only; the list and every item link carried it. (belisoful)
 BUG: Issue #1497 - A `TDataList` selected or edit item inherits `ItemStyle` or `AlternatingItemStyle` by its index, as its docblock states and as in `TDataGrid`; it took only its own style. (belisoful)

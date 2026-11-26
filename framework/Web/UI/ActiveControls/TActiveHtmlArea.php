@@ -10,6 +10,7 @@
 
 namespace Prado\Web\UI\ActiveControls;
 
+use Prado\Web\Javascripts\TJavaScript;
 use Prado\Web\UI\WebControls\THtmlArea;
 use Prado\Web\UI\ActiveControls\ICallbackEventHandler;
 use Prado\Web\UI\ActiveControls\IActiveControl;
@@ -68,7 +69,7 @@ class TActiveHtmlArea extends THtmlArea implements IActiveControl, ICallbackEven
 		if ($this->getActiveControl()->canUpdateClientSide() && $this->getHasLoadedPostData()) {
 			if ($this->getEnableVisualEdit()) {
 				$value = str_ireplace(["\r\n", "\n"], "", $value);
-				$command = "tinyMCE.getInstanceById('{$this->getClientID()}').execCommand('mceSetContent',false,'{$value}')";
+				$command = 'tinyMCE.getInstanceById(' . TJavaScript::quoteString($this->getClientID()) . ").execCommand('mceSetContent',false," . TJavaScript::quoteString($value) . ')';
 				$this->getPage()->getCallbackClient()->evaluateScript($command);
 			} else {
 				$this->getPage()->getCallbackClient()->setValue($this, $value);
