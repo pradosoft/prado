@@ -11,6 +11,7 @@ use Prado\Web\UI\ActiveControls\TActivePanel;
 use Prado\Web\UI\ActiveControls\TCallbackResponseWriter;
 use Prado\Web\UI\TControl;
 use Prado\Web\UI\THtmlWriter;
+use Prado\Web\UI\TRenderFilterContext;
 use Prado\Web\UI\TRenderFilterParameter;
 use Prado\Web\UI\WebControls\TAbbr;
 use Prado\Web\UI\WebControls\THtmlElement;
@@ -397,6 +398,13 @@ class TActivePageAdapterTest extends TestCase
 			'comment' => ['<!-- <pre> -->', []],
 			'raw text' => ['<script>var s = "<pre>";</script><style>p{}</style>', []],
 			'uppercase' => ['<PRE>', [['pre', '<PRE>']]],
+			'empty' => ['', []],
+			'only an end tag' => ['</b>', []],
+			'only a void element' => ['<br>', []],
+			'only a self-closed tag' => ['<x/>', []],
+			'only a start tag' => ['<b>', [['b', '<b>']]],
+			'end of the last start tag' => ['<b></b>', []],
+			'end tag skips an inner tag' => ['<b><i></b>', []],
 		];
 	}
 
@@ -414,5 +422,55 @@ class TActivePageAdapterTest extends TestCase
 		$inner = new TTextWriter();
 		$this->renderDeferred($this->filter($panel), new THtmlWriter($inner));
 		$this->assertSame('<div id="Live">html</div>', $inner->flush());
+	}
+
+	public function testControlDepthOfAControlOutsideTheAncestorCountsItsAncestors()
+	{
+		[$page, $panel] = $this->createPanel();
+		$this->assertSame(0, PradoUnit::invoke($this->adapter(), 'getControlDepth', $panel, $panel));
+		$this->assertSame(1, PradoUnit::invoke($this->adapter(), 'getControlDepth', $page, $panel));
+		$this->assertSame(2, PradoUnit::invoke($this->adapter(), 'getControlDepth', new TControl(), $panel));
+		$this->assertSame(1, PradoUnit::invoke($this->adapter(), 'getControlDepth', $page, new TControl()));
+		$this->assertSame(0, PradoUnit::invoke($this->adapter(), 'getControlDepth', $page, null));
+	}
+
+	public static function filterFragmentProvider(): array
+	{
+		return [
+			'intact' => [false, null, 'html-f'],
+			'begin removed' => [false, 'begin', 'html'],
+			'end removed' => [false, 'end', 'html'],
+			'intact in a context' => [true, null, 'html-f'],
+			'begin removed in a context' => [true, 'begin', 'html'],
+			'end removed in a context' => [true, 'end', 'html'],
+			'intact in a depth context' => [true, null, 'html-f', 1],
+			'begin removed in a depth context' => [true, 'begin', 'html', 1],
+			'end removed in a depth context' => [true, 'end', 'html', 1],
+		];
+	}
+
+	/**
+	 * A handler that removes a marker comment leaves the fragment unfiltered.
+	 * @dataProvider filterFragmentProvider
+	 */
+	public function testFilterFragment(bool $withContext, ?string $remove, string $expected, int $depthLimit = 0)
+	{
+		[$page, $panel] = $this->createPanel();
+		$ancestor = $page;
+		$ancestor->onRenderFilter[] = function ($sender, TRenderFilterParameter $param) use ($remove) {
+			$text = preg_replace('/\bhtml\b/', 'html-f', $param->getFilterText());
+			if ($remove === 'begin') {
+				$text = preg_replace('/<!--prado-fragment-[0-9a-f]+-->/', '', $text);
+			} elseif ($remove === 'end') {
+				$text = preg_replace('/<!--\/prado-fragment-[0-9a-f]+-->/', '', $text);
+			}
+			$param->setFilterText($text);
+		};
+		$context = null;
+		if ($withContext) {
+			$context = new TRenderFilterContext();
+			$context->beginCapture($depthLimit, $depthLimit);
+		}
+		$this->assertSame($expected, PradoUnit::invoke($this->adapter(), 'filterFragment', $ancestor, $panel, 'html', $context));
 	}
 }
