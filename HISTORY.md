@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TJuiEventParameter` reads a component property such as `CallbackParameter` by name; only a name ending in `Control` looks up a control, and every other name returned null. (belisoful)
 BUG: Issue #1497 - `TLinkButton` with `EnableClientScript` false renders a `<button type="submit">` named with its `UniqueID`, which posts back without javascript; it rendered an inert anchor. `TActiveLinkButton` still renders an anchor. (belisoful)
 BUG: Issue #1497 - `TApplicationStatePersister` writes `global.cache` to a temporary file and renames it into place, and loads an empty file as no state; a concurrent read during a write threw `TPhpErrorException` from `unserialize()`. (belisoful)
 BUG: Issue #1497 - `TDataGrid` with `CaptionAlign` `Left` or `Right` renders `caption-side:top` with `text-align:left` or `text-align:right`, as `TTable` does; it rendered `caption-side:left` or `right`, which are not CSS values. (belisoful)
