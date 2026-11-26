@@ -1,5 +1,9 @@
 ## Version 4.4.0 - TBA
 ENH: Issue #1497 - `TButton` with `ButtonTag` Button, `TActiveButton`, and `TInPlaceTextBox` have the opt-in `Encode` property, which HTML-encodes `Text` in the render and the callback update; `TInPlaceTextBox` also encodes the edited label text on the client. (belisoful)
+BUG: Issue #1497 - `TActivePager` image buttons of an unavailable page render disabled, as in `TPager`; they were hidden. See UPGRADE.md. (belisoful)
+BUG: Issue #1497 - `TJuiEventParameter` reads a component property such as `CallbackParameter` by name; only a name ending in `Control` looks up a control, and every other name returned null. (belisoful)
+BUG: Issue #1497 - `TJuiControlOptions` stores an option value set in PHP that is not a string, such as an array or null, as is; it threw a `TypeError` or `TPhpErrorException`. (belisoful)
+BUG: Issue #1497 - `TMapCollectionDiff` compares an array item by its elements, so a callback that changes an array-valued jQuery UI option sends it; it threw `TPhpErrorException` for the array. (belisoful)
 BUG: Issue #1497 - `TLinkButton` with `EnableClientScript` false renders a `<button type="submit">` named with its `UniqueID`, which posts back without javascript; it rendered an inert anchor. `TActiveLinkButton` still renders an anchor. (belisoful)
 BUG: Issue #1497 - `TApplicationStatePersister` writes `global.cache` to a temporary file and renames it into place, and loads an empty file as no state; a concurrent read during a write threw `TPhpErrorException` from `unserialize()`. (belisoful)
 BUG: Issue #1497 - `TDataGrid` with `CaptionAlign` `Left` or `Right` renders `caption-side:top` with `text-align:left` or `text-align:right`, as `TTable` does; it rendered `caption-side:left` or `right`, which are not CSS values. (belisoful)
@@ -101,6 +105,7 @@ BUG: Issue #1497 - `TShellDbCronAction` `cron/add` and `cron/update` keep an `=`
 BUG: Issue #1497 - The cron log period of `TDbCronCleanLogTask::setTimePeriod()`, `TDbCronManager::clearCronLog()`, and `cron/flush` reaches back in time (`TDbCronManager::parsePeriod()`); a negative period such as `"-1 week"` or `"yesterday"` deleted every log row, and one that names a day such as `"last week"` stopped the task with an error. (belisoful)
 BUG: Issue #1497 - `TDbCronManager` skips a task row that does not unserialize to a task, such as one of a removed task class, with a WARNING; the row stopped every sweep with an `Error`. (belisoful)
 BUG: Issue #1497 - `TDbCronManager` works on Oracle 12c and later: it creates, indexes, and migrates its table with Oracle types and syntax, pages with `FETCH NEXT`, and reads Oracle rows and row IDs. (belisoful)
+BUG: Issue #1497 - `TDbCronManager` works on SQL Server, IBM DB2, and Firebird: it creates, indexes, and migrates its table with each driver's types and syntax, pages with `FETCH NEXT`, and reads their rows and row IDs. (belisoful)
 BUG: Issue #1497 - `TDbCronManager::taskExists()` aggregates the user name; PostgreSQL, Oracle, and MySQL with `ONLY_FULL_GROUP_BY` rejected its query. (belisoful)
 BUG: Issue #1497 - The `TDbCronManager` column `nextexectime` is `BIGINT`, so MySQL and PostgreSQL store a trigger after January 2038; a 32-bit `INT` rejected the task. (belisoful)
 BUG: Issue #1497 - `TCronModule::runDaemon()` releases its lease, cancels its watchers, and raises `onDaemonEnd` when the start fails, such as an `onDaemonStart` handler that throws; it kept the lease. (belisoful)

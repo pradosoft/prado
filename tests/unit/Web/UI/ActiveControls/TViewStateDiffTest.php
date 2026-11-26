@@ -63,6 +63,19 @@ class TViewStateDiffTest extends TestCase
 		$this->assertSame($this->null, (new TMapCollectionDiff(new TMap(['a' => 1, 'b' => 2]), $old, $this->null))->getDifference());
 	}
 
+	/**
+	 * An array item, such as a jQuery UI option, compares by its elements.
+	 */
+	public function testMapDiffComparesArrayItemsByTheirElements()
+	{
+		$old = new TMap(['a' => [1, 2], 'b' => ['x' => 1], 'c' => 'v']);
+		$this->assertSame(
+			['a' => [1, 3], 'b' => 'x', 'c' => ['v']],
+			(new TMapCollectionDiff(new TMap(['a' => [1, 3], 'b' => 'x', 'c' => ['v']]), $old, $this->null))->getDifference()
+		);
+		$this->assertSame($this->null, (new TMapCollectionDiff(new TMap(['a' => [1, 2], 'b' => ['x' => 1], 'c' => 'v']), $old, $this->null))->getDifference());
+	}
+
 	public function testStyleFromStringOfANonStringIsEmpty()
 	{
 		$diff = new TStyleDiff(null, null, $this->null);

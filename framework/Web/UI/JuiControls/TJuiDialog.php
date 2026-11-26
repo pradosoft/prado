@@ -143,7 +143,7 @@ class TJuiDialog extends TActivePanel implements IJuiOptions, ICallbackEventHand
 	}
 
 	/**
-	 * Raises the OnCreate event
+	 * Raises the OnOpen event
 	 * @param object $params event parameters
 	 */
 	public function onOpen($params)

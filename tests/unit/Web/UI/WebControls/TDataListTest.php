@@ -2106,4 +2106,12 @@ class TDataListTest extends TestCase
 		$this->assertSame('red', $items->itemAt(2)->getStyle()->getForeColor(), 'an even edit item takes ItemStyle');
 		$this->assertSame('', $items->itemAt(2)->getStyle()->getBackColor());
 	}
+
+	public function testDeselectingAnEvenItemReturnsItToAnItem(): void
+	{
+		$list = $this->newBoundList(['a', 'b', 'c']);
+		$list->setSelectedItemIndex(2);
+		$list->setSelectedItemIndex(1);
+		$this->assertSame(['Item0', 'SelectedItem1', 'Item2'], $this->controlTypes($list));
+	}
 }

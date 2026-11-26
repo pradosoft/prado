@@ -8,7 +8,7 @@
 **Namespace:** `Prado\Web\UI\ActiveControls`
 
 ## Overview
-Active counterpart to TPager that uses callbacks instead of postbacks for page navigation. Raises OnCallback event after OnPageIndexChanged. Creates [TActiveDropDownList](./TActiveDropDownList.md) for dropdown mode and [TActiveLinkButton](./TActiveLinkButton.md)/[TActiveButton](./TActiveButton.md)/[TActiveImageButton](./TActiveImageButton.md) for button modes. An image button shows the page image URL of its command (`TPager::getPageImageUrl()`, from `NumericPageImageUrl`, `NextPageImageUrl`, and the other image URLs) and is hidden, not disabled, when its page is unavailable.
+Active counterpart to TPager that uses callbacks instead of postbacks for page navigation. Raises OnCallback event after OnPageIndexChanged. Creates [TActiveDropDownList](./TActiveDropDownList.md) for dropdown mode and [TActiveLinkButton](./TActiveLinkButton.md)/[TActiveButton](./TActiveButton.md)/[TActiveImageButton](./TActiveImageButton.md) for button modes. An image button shows the page image URL of its command (`TPager::getPageImageUrl()`, from `NumericPageImageUrl`, `NextPageImageUrl`, and the other image URLs) and is disabled, as in TPager, when its page is unavailable (4.4.0; it was hidden).
 
 ## Key Properties/Methods
 

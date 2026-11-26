@@ -32,6 +32,7 @@ if (PHP_SAPI !== 'cli') {
 
 const TICK = 3.0;            // seconds between cron/run ticks
 const SLACK = 1.5;           // allowed lateness of a run, in seconds
+const CLAIM_SLACK = 5.0;     // allowed seconds from a tick's tstart to its run: the claim and log writes to the SQLite file
 const QUICK_EXIT = 10.0;     // a tick that is not elected exits within this many seconds
 
 final class CronDaemonE2E
@@ -549,6 +550,10 @@ final class CronDaemonE2E
 	private function scenarioTick(): void
 	{
 		$this->makeApp('Daemon="false"', '<job name="every5" schedule="*:*/5 * * * *" task="Application.CronE2ETask" />');
+		// The ticks share one SQLite file.  In WAL mode a tick's read does not wait for another tick's commit.
+		$pdo = new \PDO('sqlite:' . $this->dir . DIRECTORY_SEPARATOR . 'cron.db');
+		$this->check($pdo->query('PRAGMA journal_mode=WAL')->fetchColumn() === 'wal', 'the cron database is in WAL mode');
+		$pdo = null;
 		$start = microtime(true);
 		// Tick until 12 s into the next minute, so the ticks cross a minute boundary.
 		$until = max($start + 24.0, floor($start / 60) * 60 + 72.0);
@@ -578,6 +583,7 @@ final class CronDaemonE2E
 		$runs = $this->runs($events, 'every5');
 		$pids = array_unique(array_column($runs, 'pid'));
 		$this->line('   every5 ran ' . count($runs) . ' time(s) in ' . count($pids) . ' tick(s)');
+		$this->line(sprintf('   longest claim %.2fs', $runs ? max(array_map(fn ($run) => $run['t'] - $run['started'], $runs)) : 0.0));
 		$this->check(count($pids) >= 2, 'more than one tick ran the task');
 		$this->check(count($runs) >= 6, 'the task ran on its schedule; ' . count($runs) . ' runs');
 		$seen = [];
@@ -588,9 +594,13 @@ final class CronDaemonE2E
 			$this->check(!isset($seen[(string) $trigger]), "the trigger at {$at} ran once (again by {$run['pid']})");
 			$seen[(string) $trigger] = true;
 			// No tick lives across a minute boundary, so the :00 trigger waits for the minute's first tick,
-			// which a crontab starts at :00 and this harness up to TICK later.
+			// which a crontab starts at :00 and this harness up to TICK later.  The tick starts the run on time;
+			// its claim and log writes then wait on the SQLite file, whose commits wait on the disk.
 			$allowed = (((int) $trigger) % 60 === 0) ? TICK + SLACK : SLACK;
-			$this->check($run['t'] - $trigger <= $allowed, sprintf('the trigger at %s ran on time (%.2fs late by %d)', $at, $run['t'] - $trigger, $run['pid']));
+			$late = $run['started'] - $trigger;
+			$claim = $run['t'] - $run['started'];
+			$this->check($late <= $allowed, sprintf('the trigger at %s started on time (%.2fs late by %d)', $at, $late, $run['pid']));
+			$this->check($claim <= CLAIM_SLACK, sprintf('the trigger at %s ran after its claim (%.2fs after its start by %d)', $at, $claim, $run['pid']));
 			if ($previous !== null) {
 				$this->check($trigger - $previous <= 5.0, sprintf('no trigger was skipped before %s', $at));
 			}
@@ -941,10 +951,10 @@ final class CronDaemonE2E
 				continue;
 			}
 			if ($e['e'] === 'tstart') {
-				$triggers[$e['pid']] = $e['trigger'];
+				$triggers[$e['pid']] = ['trigger' => $e['trigger'], 'started' => $e['t']];
 			} elseif ($e['e'] === 'run') {
 				$this->check(isset($triggers[$e['pid']]), "a run of {$task} by {$e['pid']} has a tstart event");
-				$runs[] = $e + ['trigger' => $triggers[$e['pid']] ?? $e['t']];
+				$runs[] = $e + ($triggers[$e['pid']] ?? ['trigger' => $e['t'], 'started' => $e['t']]);
 				unset($triggers[$e['pid']]);
 			}
 		}
