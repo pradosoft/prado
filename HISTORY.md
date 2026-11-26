@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+ENH: Issue #1497 - `TAccordionView.Encode` HTML-encodes `Text` and `Caption`, as on TTabView; off by default. (belisoful)
 BUG: Issue #1497 - `TBulletedList` LinkButton item links have the ID `{ClientID}_c{index}`; `{ClientID}{index}` let two lists share an ID. UPGRADE.md lists the change. (belisoful)
 BUG: Issue #1497 - `TBulletedList` in the HyperLink and LinkButton modes renders its `AccessKey` on the first enabled item link only; the list and every item link carried it. (belisoful)
 BUG: Issue #1497 - A `TDataList` selected or edit item inherits `ItemStyle` or `AlternatingItemStyle` by its index, as its docblock states and as in `TDataGrid`; it took only its own style. (belisoful)
