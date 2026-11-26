@@ -243,6 +243,9 @@ Upgrading from v4.3.3
   `<a role="link" aria-disabled="true">` without `href`; in 4.3 it rendered `disabled="disabled"`, which `<a>` does not
   have, so assistive technology did not announce it. An active link toggles the same attributes in a callback. CSS
   that selects `a[disabled]` selects `a[aria-disabled="true"]`. A disabled `TBulletedList` Text item is a plain `<span>`.
+- Issue #1497 - An enabled `TLinkButton` with `EnableClientScript` false renders `<button type="submit" name="{UniqueID}">`,
+  which posts back without javascript; in 4.3 it rendered an anchor marked `disabled` that performed no postback. CSS
+  that styles the link button by `a` selects the `button` in this mode. `TActiveLinkButton` still renders an anchor.
 - Issue #1497 - `TXmlElement` array access throws `TInvalidDataTypeException` for an offset that is not null, an int,
   a string, or a `Stringable`. In 4.3 a float or bool offset addressed the attribute named by its string, or raised a
   PHP error. Use an int child index or a string attribute name.

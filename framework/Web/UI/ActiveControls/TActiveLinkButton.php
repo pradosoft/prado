@@ -121,6 +121,16 @@ class TActiveLinkButton extends TLinkButton implements IActiveControl, ICallback
 	}
 
 	/**
+	 * Returns false: an active link button posts back through its callback script and renders an anchor.
+	 * @return bool false.
+	 * @since 4.4.0
+	 */
+	protected function getRenderSubmitButton(): bool
+	{
+		return false;
+	}
+
+	/**
 	 * Ensure that the ID attribute is rendered and registers the javascript code
 	 * for initializing the active control.
 	 * @param mixed $writer
