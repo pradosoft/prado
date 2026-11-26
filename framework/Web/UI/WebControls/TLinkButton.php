@@ -54,9 +54,11 @@ use Prado\TPropertyValue;
  * {@see setText Text} renders as HTML unless {@see setEncode Encode} is true.
  *
  * TLinkButton posts back through javascript. The anchor renders a no-op href
- * and the postback script only when {@see setEnableClientScript EnableClientScript}
- * is true, which is the default. Setting it to false renders a plain anchor
- * that performs no postback.
+ * and the postback script when {@see setEnableClientScript EnableClientScript}
+ * is true, which is the default. When it is false, an enabled TLinkButton renders
+ * a `<button type="submit">` named with its {@see getUniqueID UniqueID}, which posts
+ * back without javascript; see {@see getRenderSubmitButton}. A disabled TLinkButton
+ * renders an anchor with `aria-disabled="true"` and no href.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
@@ -70,7 +72,19 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 */
 	protected function getTagName()
 	{
-		return 'a';
+		return $this->getRenderSubmitButton() ? 'button' : 'a';
+	}
+
+	/**
+	 * Returns whether the button renders as a `<button type="submit">`: it is enabled and
+	 * {@see getEnableClientScript EnableClientScript} is false. The posted name raises the
+	 * postback event, so the button works without javascript.
+	 * @return bool whether the button renders as a submit button.
+	 * @since 4.4.0
+	 */
+	protected function getRenderSubmitButton(): bool
+	{
+		return !$this->getEnableClientScript() && $this->getEnabled(true);
 	}
 
 	/**
@@ -105,7 +119,10 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 		// may be overwritten in the following
 		parent::addAttributesToRender($writer);
 
-		if ($this->getEnabled(true) && $this->getEnableClientScript()) {
+		if ($this->getRenderSubmitButton()) {
+			$writer->addAttribute('type', 'submit');
+			$writer->addAttribute('name', $this->getUniqueID());
+		} elseif ($this->getEnabled(true) && $this->getEnableClientScript()) {
 			$this->renderLinkButtonHref($writer);
 			$this->renderClientControlScript($writer);
 		} else {

@@ -3,6 +3,7 @@
 namespace Prado\Test\Unit\Web\UI\WebControls;
 
 use PHPUnit\Framework\TestCase;
+use Prado\Collections\TMap;
 use Prado\Test\Unit\Harness\Traits\TWebControlRenderTrait;
 use Prado\Test\Unit\PradoUnit;
 use Prado\Web\UI\TClientScriptManager;
@@ -125,14 +126,34 @@ class TLinkButtonTest extends TestCase
 		$this->assertSame('<a id="go" role="link" aria-disabled="true"></a>', $this->render($button));
 	}
 
-	public function testWithoutClientScriptRendersNoHref()
+	public function testWithoutClientScriptRendersASubmitButton()
 	{
 		[$button, $cs] = $this->createButton();
 		$button->setEnableClientScript(false);
+		$button->setText('Go');
+		$button->setCssClass('link');
 		$cs->expects($this->never())->method('registerPostBackControl');
-		$output = $this->render($button);
-		$this->assertStringNotContainsString('href=', $output);
-		$this->assertStringContainsString('aria-disabled="true"', $output);
+		$this->assertSame('<button id="go" class="link" type="submit" name="go">Go</button>', $this->render($button));
+	}
+
+	public function testWithoutClientScriptDisabledRendersAnInertAnchor()
+	{
+		[$button, $cs] = $this->createButton();
+		$button->setEnableClientScript(false);
+		$button->setEnabled(false);
+		$cs->expects($this->never())->method('registerPostBackControl');
+		$this->assertSame('<a id="go" role="link" aria-disabled="true"></a>', $this->render($button));
+	}
+
+	public function testThePostedSubmitButtonNameIsThePostBackTarget()
+	{
+		[$button] = $this->createButton();
+		$page = $button->getPage();
+		$postData = new TMap([$button->getUniqueID() => '']);
+		PradoUnit::setProp($page, '_postData', $postData);
+
+		PradoUnit::invoke($page, 'processPostData', $postData, true);
+		$this->assertSame($button->getUniqueID(), $postData[TPage::FIELD_POSTBACK_TARGET]);
 	}
 
 	public function testDisabledKeepsItsRole()
