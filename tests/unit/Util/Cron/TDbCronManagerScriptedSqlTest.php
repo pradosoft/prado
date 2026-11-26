@@ -10,10 +10,10 @@ use Prado\Test\Unit\PradoUnit;
 use Prado\Util\Cron\TDbCronManager;
 
 /**
- * Command of {@see TDbCronManagerOracleSqlConnection}: a query returns the scripted rows, and a
+ * Command of {@see TDbCronManagerScriptedSqlConnection}: a query returns the scripted rows, and a
  * query of a missing table or column throws.
  */
-class TDbCronManagerOracleSqlCommand extends TTestLockCommand
+class TDbCronManagerScriptedSqlCommand extends TTestLockCommand
 {
 	public function __construct(string $sql, public array $rows = [], mixed $scalar = null, public bool $fails = false)
 	{
@@ -51,11 +51,11 @@ class TDbCronManagerOracleSqlCommand extends TTestLockCommand
 }
 
 /**
- * Oracle connection that records the SQL of each command.  {@see $answers} scripts the result of
+ * Connection of a driver, Oracle by default, that records the SQL of each command.  {@see $answers} scripts the result of
  * a command by a fragment of its SQL: an array of rows, or a scalar.  A command whose SQL holds a
  * fragment of {@see $missing} fails its query, as for a missing table or column.
  */
-class TDbCronManagerOracleSqlConnection extends TTestLockConnection
+class TDbCronManagerScriptedSqlConnection extends TTestLockConnection
 {
 	/** @var array<string, mixed> the results by SQL fragment. */
 	public array $answers = [];
@@ -63,9 +63,9 @@ class TDbCronManagerOracleSqlConnection extends TTestLockConnection
 	/** @var string[] the SQL fragments of failing queries. */
 	public array $missing = [];
 
-	public function __construct()
+	public function __construct(string $driver = TDbDriver::DRIVER_OCI)
 	{
-		parent::__construct(TDbDriver::DRIVER_OCI);
+		parent::__construct($driver);
 	}
 
 	public function createCommand($query)
@@ -81,7 +81,7 @@ class TDbCronManagerOracleSqlConnection extends TTestLockConnection
 		foreach ($this->missing as $fragment) {
 			$fails = $fails || str_contains($query, $fragment);
 		}
-		return $this->commands[] = new TDbCronManagerOracleSqlCommand($query, is_array($answer) ? $answer : [], is_array($answer) ? null : $answer, $fails);
+		return $this->commands[] = new TDbCronManagerScriptedSqlCommand($query, is_array($answer) ? $answer : [], is_array($answer) ? null : $answer, $fails);
 	}
 
 	/**
@@ -94,11 +94,11 @@ class TDbCronManagerOracleSqlConnection extends TTestLockConnection
 }
 
 /**
- * TDbCronManager on a {@see TDbCronManagerOracleSqlConnection}.
+ * TDbCronManager on a {@see TDbCronManagerScriptedSqlConnection}.
  */
-class TDbCronManagerOracleSqlManager extends TDbCronManager
+class TDbCronManagerScriptedSqlManager extends TDbCronManager
 {
-	public ?TDbCronManagerOracleSqlConnection $recorder = null;
+	public ?TDbCronManagerScriptedSqlConnection $recorder = null;
 
 	public function getDbConnection(): IDataConnection
 	{
@@ -107,12 +107,12 @@ class TDbCronManagerOracleSqlManager extends TDbCronManager
 }
 
 /**
- * The SQL that TDbCronManager runs on Oracle: the table, its indexes, its migration, paging, the
- * inserted row's id, and the rows it reads.
+ * The SQL that TDbCronManager runs on Oracle, SQL Server, IBM DB2, and Firebird: the table, its indexes,
+ * its migration, paging, the inserted row's id, and the rows it reads.
  */
-class TDbCronManagerOracleSqlTest extends \PHPUnit\Framework\TestCase
+class TDbCronManagerScriptedSqlTest extends \PHPUnit\Framework\TestCase
 {
-	private ?TDbCronManagerOracleSqlManager $_manager = null;
+	private ?TDbCronManagerScriptedSqlManager $_manager = null;
 
 	protected function tearDown(): void
 	{
@@ -120,10 +120,10 @@ class TDbCronManagerOracleSqlTest extends \PHPUnit\Framework\TestCase
 		$this->_manager = null;
 	}
 
-	private function newManager(): TDbCronManagerOracleSqlManager
+	private function newManager(string $driver = TDbDriver::DRIVER_OCI): TDbCronManagerScriptedSqlManager
 	{
-		$this->_manager = new TDbCronManagerOracleSqlManager();
-		$this->_manager->recorder = new TDbCronManagerOracleSqlConnection();
+		$this->_manager = new TDbCronManagerScriptedSqlManager();
+		$this->_manager->recorder = new TDbCronManagerScriptedSqlConnection($driver);
 		return $this->_manager;
 	}
 
@@ -242,9 +242,9 @@ class TDbCronManagerOracleSqlTest extends \PHPUnit\Framework\TestCase
 	public function testTaskExistsAggregatesTheUserName()
 	{
 		$manager = $this->newManager();
-		$manager->recorder->answers = ['SELECT COUNT(*) AS count' => [['COUNT' => '1', 'USERNAME' => 'admin']]];
+		$manager->recorder->answers = ['SELECT COUNT(*) AS taskcount' => [['TASKCOUNT' => '1', 'USERNAME' => 'admin']]];
 		self::assertTrue($manager->taskExists('named'));
-		self::assertSame('SELECT COUNT(*) AS count, MAX(username) AS username FROM crontabs WHERE name=:name AND active IS NOT NULL', end($manager->recorder->commands)->sql);
+		self::assertSame('SELECT COUNT(*) AS taskcount, MAX(username) AS username FROM crontabs WHERE name=:name AND active IS NOT NULL', end($manager->recorder->commands)->sql);
 	}
 
 	public function testRunStatisticsAreNumbersOnOracle()
@@ -284,5 +284,148 @@ class TDbCronManagerOracleSqlTest extends \PHPUnit\Framework\TestCase
 
 		$manager->recorder->answers = [];
 		self::assertNull(PradoUnit::invoke($manager, 'getLastInsertTaskUID'), 'no identity sequence');
+	}
+
+	public static function typedDriverProvider(): array
+	{
+		return [
+			'sqlsrv' => [TDbDriver::DRIVER_SQLSRV, TDbCronManager::SQLSRV_COLUMNS, 'ADD ', 'CAST(:newmax AS FLOAT)'],
+			'dblib' => [TDbDriver::DRIVER_DBLIB, TDbCronManager::SQLSRV_COLUMNS, 'ADD ', 'CAST(:newmax AS FLOAT)'],
+			'ibm' => [TDbDriver::DRIVER_IBM, TDbCronManager::IBM_COLUMNS, 'ADD COLUMN ', 'CAST(:newmax AS DOUBLE)'],
+			'firebird' => [TDbDriver::DRIVER_FIREBIRD, TDbCronManager::FIREBIRD_COLUMNS, 'ADD ', 'CAST(:newmax AS DOUBLE PRECISION)'],
+		];
+	}
+
+	/**
+	 * @dataProvider typedDriverProvider
+	 */
+	public function testCreatesTheTableWithTheDriverTypes(string $driver, array $columns)
+	{
+		$manager = $this->newManager($driver);
+		$manager->recorder->missing = ['SELECT * FROM crontabs WHERE 0=1'];
+		self::assertSame(['created' => true, 'column' => null, 'run' => false], $manager->migrateTable());
+
+		$sql = $manager->recorder->sql();
+		$definitions = [];
+		foreach ($columns as $column => $definition) {
+			$definitions[] = $column . ' ' . $definition;
+		}
+		self::assertSame('CREATE TABLE crontabs (' . implode(', ', $definitions) . ')', $sql[1]);
+		foreach (['IF NOT EXISTS', 'MEDIUMTEXT', 'BOOLEAN', 'AUTO_INCREMENT', 'DEFAULT NULL'] as $absent) {
+			self::assertStringNotContainsString($absent, $sql[1]);
+		}
+		self::assertSame([
+			'CREATE INDEX crontabs_tname ON crontabs (name)',
+			'CREATE INDEX crontabs_tclass ON crontabs (task)',
+			'CREATE INDEX crontabs_tnext ON crontabs (nextexectime)',
+			'CREATE INDEX crontabs_tuser ON crontabs (username)',
+			'CREATE INDEX crontabs_tactive ON crontabs (active)',
+		], array_slice($sql, 2, 5));
+	}
+
+	/**
+	 * @dataProvider typedDriverProvider
+	 */
+	public function testMigratesWithTheDriverSyntax(string $driver, array $columns, string $add)
+	{
+		$manager = $this->newManager($driver);
+		$manager->recorder->missing = array_map(fn ($column) => 'SELECT ' . $column . ' FROM', array_merge(['nextexectime'], array_keys(TDbCronManager::RUN_COLUMNS)));
+		self::assertSame(['created' => false, 'column' => 0, 'run' => true], $manager->migrateTable());
+
+		$sql = $manager->recorder->sql();
+		self::assertContains('ALTER TABLE crontabs ' . $add . 'nextexectime ' . $columns['nextexectime'], $sql);
+		foreach (array_keys(TDbCronManager::RUN_COLUMNS) as $column) {
+			self::assertContains('ALTER TABLE crontabs ' . $add . $column . ' ' . $columns[$column], $sql);
+		}
+	}
+
+	/**
+	 * @dataProvider typedDriverProvider
+	 */
+	public function testRunStatisticsCastTheNewMaximum(string $driver, array $columns, string $add, string $newMax)
+	{
+		$manager = $this->newManager($driver);
+		PradoUnit::invoke($manager, 'updateTaskResult', $this->newTask('stats'), TDbCronManager::RESULT_OK, 0.00002);
+		$cmd = $manager->recorder->commands[0];
+		self::assertStringContainsString('THEN ' . $newMax . ' ELSE maxduration END', $cmd->sql);
+		self::assertSame('0.000020', $cmd->bound[':newmax']);
+	}
+
+	/**
+	 * @dataProvider typedDriverProvider
+	 */
+	public function testTaskOptionsAreBase64(string $driver)
+	{
+		$manager = $this->newManager($driver);
+		$options = PradoUnit::invoke($manager, 'serializeTask', $this->newTask('encoded'));
+		self::assertStringNotContainsString("\0", $options);
+		self::assertSame(serialize($this->newTask('encoded')), PradoUnit::invoke($manager, 'decodeTaskOptions', $options));
+	}
+
+	public function testSqlServerPagesAnOrderedQuery()
+	{
+		$manager = $this->newManager(TDbDriver::DRIVER_SQLSRV);
+		self::assertSame(' OFFSET 0 ROWS FETCH NEXT 3 ROWS ONLY', PradoUnit::invoke($manager, 'limitClause', 3, 0));
+		self::assertSame(' ORDER BY (SELECT NULL) OFFSET 4 ROWS FETCH NEXT 2 ROWS ONLY', PradoUnit::invoke($manager, 'limitClause', 2, 4, false));
+		$manager->getTask('unordered', false);
+		self::assertStringEndsWith('active IS NOT NULL ORDER BY (SELECT NULL) OFFSET 0 ROWS FETCH NEXT 1 ROWS ONLY', end($manager->recorder->commands)->sql);
+		$manager->getTasks(null, 2, 4, null);
+		self::assertStringEndsWith('active IS NOT NULL ORDER BY (SELECT NULL) OFFSET 4 ROWS FETCH NEXT 2 ROWS ONLY', end($manager->recorder->commands)->sql);
+		$manager->getTasks(null, 2, 4, true);
+		self::assertStringEndsWith('ORDER BY name ASC OFFSET 4 ROWS FETCH NEXT 2 ROWS ONLY', end($manager->recorder->commands)->sql);
+	}
+
+	public function testIbmAndFirebirdPageWithOffsetFetch()
+	{
+		foreach ([TDbDriver::DRIVER_IBM, TDbDriver::DRIVER_FIREBIRD] as $driver) {
+			$manager = $this->newManager($driver);
+			self::assertSame(' FETCH NEXT 3 ROWS ONLY', PradoUnit::invoke($manager, 'limitClause', 3, 0, false));
+			self::assertSame(' OFFSET 4 ROWS FETCH NEXT 2 ROWS ONLY', PradoUnit::invoke($manager, 'limitClause', 2, 4));
+			$manager->unlisten();
+		}
+	}
+
+	public function testIbmBindsIntegersUntypedAndReadsTheIdentity()
+	{
+		$manager = $this->newManager(TDbDriver::DRIVER_IBM);
+		self::assertNull(PradoUnit::invoke($manager, 'getIntParamType'));
+		$manager->recorder->answers = ['IDENTITY_VAL_LOCAL()' => '17'];
+		self::assertSame('17', PradoUnit::invoke($manager, 'getLastInsertTaskUID'));
+		self::assertSame('SELECT IDENTITY_VAL_LOCAL() FROM SYSIBM.SYSDUMMY1', $manager->recorder->commands[0]->sql);
+
+		$manager->recorder->commands = [];
+		$manager->recorder->answers = ['SELECT COUNT(*) FROM' => '0'];
+		self::assertTrue($manager->addTask($this->newTask('untyped')));
+		$insert = array_values(array_filter($manager->recorder->commands, fn ($cmd) => str_starts_with($cmd->sql, 'INSERT')))[0];
+		self::assertNull($insert->types[':count']);
+		self::assertNull($insert->types[':active']);
+		self::assertStringEndsWith(':active)', $insert->sql, 'no RETURNING clause');
+	}
+
+	public function testFirebirdReadsTheInsertedIdFromReturning()
+	{
+		$manager = $this->newManager(TDbDriver::DRIVER_FIREBIRD);
+		self::assertSame(' RETURNING tabuid', PradoUnit::invoke($manager, 'getInsertReturningSql'));
+		$manager->recorder->answers = ['SELECT COUNT(*) FROM' => '0', 'RETURNING tabuid' => '23'];
+		self::assertTrue($manager->addTask($this->newTask('returning')));
+		$insert = array_values(array_filter($manager->recorder->commands, fn ($cmd) => str_starts_with($cmd->sql, 'INSERT')))[0];
+		self::assertStringEndsWith(':active) RETURNING tabuid', $insert->sql);
+		self::assertSame('23', $manager->getTask('returning', true, false)['tabuid']);
+		self::assertSame(1, $insert->runs, 'the insert runs once, as a query');
+	}
+
+	public function testTheDriversWithoutDefinitionsKeepTheirSql()
+	{
+		foreach ([TDbDriver::DRIVER_MYSQL, TDbDriver::DRIVER_PGSQL, TDbDriver::DRIVER_SQLITE] as $driver) {
+			$manager = $this->newManager($driver);
+			self::assertNull(PradoUnit::invoke($manager, 'getColumnDefinitions'));
+			self::assertSame('', PradoUnit::invoke($manager, 'getInsertReturningSql'));
+			self::assertSame(' LIMIT 1', PradoUnit::invoke($manager, 'limitClause', 1, 0, false));
+			self::assertSame(IDataConnection::PARAM_INT, PradoUnit::invoke($manager, 'getIntParamType'));
+			PradoUnit::invoke($manager, 'updateTaskResult', $this->newTask('stats'), TDbCronManager::RESULT_OK, 0.5);
+			self::assertStringContainsString('THEN :newmax ELSE', $manager->recorder->commands[0]->sql);
+			self::assertSame(0.5, $manager->recorder->commands[0]->bound[':newmax']);
+			$manager->unlisten();
+		}
 	}
 }

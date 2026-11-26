@@ -1269,7 +1269,7 @@ class TDbCronManagerTest extends TCronModuleTest
 	{
 		$manager = new TDbCronManagerTestPgsqlManager();
 		$manager->recorder = new TDbCronManagerTestPgsqlConnection('sqlite::memory:');
-		foreach (['mysql', 'pgsql', 'sqlsrv'] as $driver) {
+		foreach (['mysql', 'pgsql', 'odbc'] as $driver) {
 			$manager->recorder->driver = $driver;
 			try {
 				PradoUnit::invoke($manager, 'createDbTable');
