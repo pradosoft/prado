@@ -146,6 +146,18 @@ class TActiveDataBoundCallbackTest extends TestCase
 		$this->assertSame(['List' => $list], $this->registered($page));
 	}
 
+	/**
+	 * @dataProvider controlProvider
+	 */
+	public function testRenderBeforePreRenderOutsideACallbackRendersAtOnce(string $class, string $begin, string $end)
+	{
+		[$page, $list] = $this->createList($class, false, TControl::CS_LOADED);
+		$output = $this->render($list);
+		$this->assertStringStartsWith($begin, $output);
+		$this->assertStringEndsWith($end, $output);
+		$this->assertNull($page->getAdapter());
+	}
+
 	public function testDataGridRenderInACallbackFocusesTheSortControl()
 	{
 		[$page, $grid] = $this->createList(TActiveDataGrid::class, true);

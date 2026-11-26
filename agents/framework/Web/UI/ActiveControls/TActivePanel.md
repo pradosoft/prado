@@ -12,7 +12,7 @@ Active counterpart to TPanel. Allows client-side content updates during callback
 
 ## Key Properties/Methods
 
-- `render($writer)` - Renders and replaces panel content on client-side
+- `render($writer)` - In a callback before prerender, defers the render and disables the inner active updates; after prerender, disables them, renders, and replaces the panel on the client; outside a callback, only renders. TActiveTableCell, TActiveTableRow, TActiveSvg, and the data-bound active controls render the same way
 - `getActiveControl()` - Returns [TBaseActiveControl](./TBaseActiveControl.md) options
 
 ## See Also

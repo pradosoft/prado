@@ -151,6 +151,18 @@ class TActiveCallbackRequestTest extends TestCase
 		$this->assertSame([], $this->actions($parts));
 	}
 
+	/**
+	 * A handler may set a target without callback client-side options; the response
+	 * then sends the page state.
+	 */
+	public function testCallbackRetargetedToAControlWithoutClientSideSendsThePageState()
+	{
+		$this->onCallback = fn ($page) => $page->getAdapter()->setCallbackEventTarget($page->findControl('Panel'));
+		$this->runActCallback();
+		$parts = $this->getCallbackParts();
+		$this->assertSame(TTestPageStatePersister::CLIENT_STATE, $parts[TActivePageAdapter::CALLBACK_PAGESTATE_HEADER]);
+	}
+
 	public function testCallbackSendsAFreshCsrfToken()
 	{
 		$request = Prado::getApplication()->getRequest();

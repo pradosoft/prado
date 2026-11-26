@@ -181,16 +181,18 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 	 */
 	public function render($writer)
 	{
-		if ($this->getHasPreRendered()) {
+		$active = $this->getActiveControl();
+		if ($active->getDefersRender()) {
+			$this->getPage()->getAdapter()->registerControlToRender($this, $writer);
+		} elseif ($active->canUpdateClientSide()) {
+			$active->disableInnerUpdates();
 			$this->renderDataGrid($writer);
-			if ($this->getActiveControl()->canUpdateClientSide()) {
-				$this->getActiveControl()->replaceClientContent($this->getSurroundingTagId(), $writer);
-				if (($focus = $this->getSortFocusID()) !== null) {
-					$this->getPage()->getCallbackClient()->focus($focus);
-				}
+			$active->replaceClientContent($this->getSurroundingTagId(), $writer);
+			if (($focus = $this->getSortFocusID()) !== null) {
+				$this->getPage()->getCallbackClient()->focus($focus);
 			}
 		} else {
-			$this->getPage()->getAdapter()->registerControlToRender($this, $writer);
+			$this->renderDataGrid($writer);
 		}
 	}
 

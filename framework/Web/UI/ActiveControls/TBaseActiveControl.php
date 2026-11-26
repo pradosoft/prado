@@ -194,6 +194,33 @@ class TBaseActiveControl extends \Prado\TComponent
 	}
 
 	/**
+	 * Returns whether a render of the control waits for the callback response, which
+	 * renders it again after prerender. Outside a callback, and after prerender, the
+	 * control renders at once.
+	 * @return bool whether the render is deferred to the callback response
+	 * @since 4.4.0
+	 */
+	public function getDefersRender(): bool
+	{
+		return !$this->getControl()->getHasPreRendered() && $this->getPage()?->getIsCallback() === true;
+	}
+
+	/**
+	 * Stops the client updates of the active controls inside the control, since a
+	 * replacement of the control's client element includes their content.
+	 * @since 4.4.0
+	 */
+	public function disableInnerUpdates(): void
+	{
+		$control = $this->getControl();
+		if ($control->getHasControls()) {
+			foreach ($control->findControlsByType(IActiveControl::class, false) as $inner) {
+				$inner->getActiveControl()->setEnableUpdate(false);
+			}
+		}
+	}
+
+	/**
 	 * Sends the markup of the control rendered again to the client. The update
 	 * morphs when {@see getIsMorphUpdate()} is true, and a
 	 * {@see getViewTransition ViewTransition} control turns on the response's

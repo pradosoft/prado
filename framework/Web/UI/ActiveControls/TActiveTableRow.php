@@ -160,20 +160,16 @@ class TActiveTableRow extends TTableRow implements IActiveControl, ICallbackEven
 	 */
 	public function render($writer)
 	{
-		if ($this->getHasPreRendered()) {
-			parent::render($writer);
-			if ($this->getActiveControl()->canUpdateClientSide()) {
-				$this->getActiveControl()->replaceClientContent($this, $writer);
-			}
-		} else {
+		$active = $this->getActiveControl();
+		if ($active->getDefersRender()) {
 			$this->getPage()->getAdapter()->registerControlToRender($this, $writer);
-			// If we update a TActiveTableRow on callback, we shouldn't update all childs,
-			// because the whole content will be replaced by the parent.
-			if ($this->getHasControls()) {
-				foreach ($this->findControlsByType(\Prado\Web\UI\ActiveControls\IActiveControl::class, false) as $control) {
-					$control->getActiveControl()->setEnableUpdate(false);
-				}
-			}
+			$active->disableInnerUpdates();
+		} elseif ($active->canUpdateClientSide()) {
+			$active->disableInnerUpdates();
+			parent::render($writer);
+			$active->replaceClientContent($this, $writer);
+		} else {
+			parent::render($writer);
 		}
 	}
 

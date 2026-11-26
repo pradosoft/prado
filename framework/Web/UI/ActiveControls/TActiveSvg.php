@@ -193,13 +193,15 @@ class TActiveSvg extends TSvg implements IActiveControl
 	 */
 	public function render($writer)
 	{
-		if ($this->getHasPreRendered()) {
-			parent::render($writer);
-			if ($this->getActiveControl()->canUpdateClientSide()) {
-				$this->getActiveControl()->replaceClientContent($this, $writer);
-			}
-		} else {
+		$active = $this->getActiveControl();
+		if ($active->getDefersRender()) {
 			$this->registerUpdate($writer);
+		} elseif ($active->canUpdateClientSide()) {
+			$active->disableInnerUpdates();
+			parent::render($writer);
+			$active->replaceClientContent($this, $writer);
+		} else {
+			parent::render($writer);
 		}
 	}
 
@@ -223,10 +225,6 @@ class TActiveSvg extends TSvg implements IActiveControl
 	protected function registerUpdate($writer): void
 	{
 		$this->getPage()->getAdapter()->registerControlToRender($this, $writer);
-		if ($this->getHasControls()) {
-			foreach ($this->findControlsByType(IActiveControl::class, false) as $control) {
-				$control->getActiveControl()->setEnableUpdate(false);
-			}
-		}
+		$this->getActiveControl()->disableInnerUpdates();
 	}
 }

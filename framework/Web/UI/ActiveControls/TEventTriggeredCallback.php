@@ -61,8 +61,8 @@ class TEventTriggeredCallback extends TTriggeredCallback
 	}
 
 	/**
-	 * Returns the client-side options. The event name loses an `on` prefix in any case
-	 * and is lower case. Without an event name, the client listens to `change` on a text
+	 * Returns the client-side options. The event name is lower case and loses an `on`
+	 * prefix in any case; `online` is a DOM event name and keeps it. Without an event name, the client listens to `change` on a text
 	 * input or a list, and to `click` otherwise.
 	 * @return array list of trigger options for client-side.
 	 */
@@ -70,7 +70,7 @@ class TEventTriggeredCallback extends TTriggeredCallback
 	{
 		$options = parent::getTriggerOptions();
 		if (($name = $this->getEventName()) !== '') {
-			$options['EventName'] = strtolower(preg_replace('/^on/i', '', $name));
+			$options['EventName'] = strtolower(preg_replace('/^on(?!line$)/i', '', $name));
 		}
 		$options['StopEvent'] = $this->getPreventDefaultAction();
 		return $options;

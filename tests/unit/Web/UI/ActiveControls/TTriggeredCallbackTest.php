@@ -140,4 +140,27 @@ class TTriggeredCallbackTest extends TestCase
 		$trigger->setEventName('onclick');
 		$this->assertSame('click', PradoUnit::invoke($trigger, 'getTriggerOptions')['EventName']);
 	}
+
+	public static function onPrefixProvider(): array
+	{
+		return [
+			'Prado event' => ['OnKeyUp', 'keyup'],
+			'attribute name' => ['onclick', 'click'],
+			'online' => ['online', 'online'],
+			'OnLine' => ['OnLine', 'online'],
+			'offline' => ['offline', 'offline'],
+		];
+	}
+
+	/**
+	 * @dataProvider onPrefixProvider
+	 */
+	public function testEventTriggerStripsAnOnPrefixButNotOfOnline(string $name, string $expected)
+	{
+		$trigger = new TEventTriggeredCallback();
+		$this->place($trigger);
+		$trigger->setControlID('Name');
+		$trigger->setEventName($name);
+		$this->assertSame($expected, PradoUnit::invoke($trigger, 'getTriggerOptions')['EventName']);
+	}
 }

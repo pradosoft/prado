@@ -16,7 +16,7 @@ Common options and functionality for active controls that perform callback reque
 - `getCausesValidation()` / `setCausesValidation($value)` - Trigger validation on callback
 - `getValidationGroup()` / `setValidationGroup($value)` - Validator group
 - `getCallbackParameter()` / `setCallbackParameter($value)` - Parameter sent with callback
-- `getCallbackOptions()` / `setCallbackOptions($value)` - ID of [TCallbackOptions](./TCallbackOptions.md) to clone
+- `getCallbackOptions()` / `setCallbackOptions($value)` - ID of [TCallbackOptions](./TCallbackOptions.md) to clone; `findCallbackOptions()` searches the control's naming container, then each enclosing one (4.4.0). A path such as `Page.Options` names an object
 - `registerCallbackClientScript($class, $options)` - Register callback JavaScript
 - `getJavascript()` - Get JavaScript callback request instance
 - `canCauseValidation()` - Check if validation can be triggered

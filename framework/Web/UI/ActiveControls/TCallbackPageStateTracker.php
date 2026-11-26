@@ -337,14 +337,19 @@ class TCallbackPageStateTracker
 	}
 
 	/**
-	 * Sets each attribute in the diff map on the tracked control.
+	 * Sets each attribute in the diff map on the tracked control, and removes each
+	 * attribute whose value is null.
 	 *
 	 * @param array $attributes attribute name-value pairs to apply
 	 */
 	protected function updateAttributes($attributes)
 	{
 		foreach ($attributes as $name => $value) {
-			$this->client()->setAttribute($this->_control, $name, $value);
+			if ($value === null) {
+				$this->client()->removeAttribute($this->_control, $name);
+			} else {
+				$this->client()->setAttribute($this->_control, $name, $value);
+			}
 		}
 	}
 }

@@ -83,6 +83,8 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	 * component to duplicate the client-side
 	 * options for this control. The {@see getClientSide ClientSide}
 	 * subproperties takes precedence over the CallbackOptions property.
+	 * The ID is searched in the naming container of the control and then in each
+	 * enclosing naming container; a path such as `Page.Options` names an object.
 	 * @param string $value ID of a TCallbackOptions control from which ClientSide
 	 * options are cloned.
 	 */
@@ -116,13 +118,7 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 					$control = $control->$newid;
 				}
 			} else {
-				if ($this->getControl() instanceof \Prado\Web\UI\WebControls\TCheckBoxList) {
-					// TCheckBoxList overrides findControl() with a fake implementation
-					// but accepts a second parameter to use the standard one
-					$control = $this->getControl()->findControl($id, true);
-				} else {
-					$control = $this->getControl()->findControl($id);
-				}
+				$control = $this->findCallbackOptions($id);
 			}
 
 			if ($control instanceof TCallbackOptions) {
@@ -133,6 +129,30 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 		}
 
 		return [];
+	}
+
+	/**
+	 * Finds the control with an ID in the naming container of the control, then in each
+	 * enclosing naming container. A naming container control, such as a list or a
+	 * data-bound control, first searches its own child controls.
+	 * @param string $id the ID of the control
+	 * @return ?\Prado\Web\UI\TControl the control found, null if none
+	 * @since 4.4.0
+	 */
+	protected function findCallbackOptions(string $id)
+	{
+		$owner = $this->getControl();
+		if ($owner instanceof \Prado\Web\UI\WebControls\TCheckBoxList) {
+			// TCheckBoxList overrides findControl() with a fake implementation
+			// but accepts a second parameter to use the standard one
+			$control = $owner->findControl($id, true);
+		} else {
+			$control = $owner->findControl($id);
+		}
+		while ($control === null && ($owner = $owner->getNamingContainer()) !== null) {
+			$control = $owner->findControl($id);
+		}
+		return $control;
 	}
 
 	/**
