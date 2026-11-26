@@ -12,7 +12,7 @@ test('QuickstartWizard5TestCase', async ({ page }) => {
   await h.assertSourceContains('Please let us know your preference');
   await h.assertVisible('ctl0_body_Wizard1_SideBarList_ctl0_SideBarButton');
   await h.assertVisible('ctl0_body_Wizard1_SideBarList_ctl1_SideBarButton');
-  await h.assertAttribute('ctl0_body_Wizard1_SideBarList_ctl2_SideBarButton@disabled', 'regexp:true|disabled');
+  await h.assertAttribute('ctl0_body_Wizard1_SideBarList_ctl2_SideBarButton@aria-disabled', 'true');
   await h.select('ctl0_body_Wizard1_DropDownList1', 'Cyan');
   await h.byName('ctl0:body:Wizard1:ctl4:ctl0').click();
   await h.pause(50);

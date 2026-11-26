@@ -15,7 +15,7 @@ THtmlArea5 wraps TinyMCE version 5 to provide a WYSIWYG HTML text editor. It is 
 - `getTextMode()` - Always returns 'MultiLine'
 - `getEnableVisualEdit()` / `setEnableVisualEdit()` - Gets or sets whether to show WYSIWYG editor (default true)
 - `getCulture()` / `setCulture()` - Gets or sets language/culture for the editor
-- `getOptions()` / `setOptions()` - Gets or sets TinyMCE configuration options
+- `getOptions()` / `setOptions()` - Gets or sets TinyMCE configuration options; the default `extended_valid_elements` allow no event handler attributes
 - `getCustomPluginPath()` / `setCustomPluginPath()` - Gets or sets path to custom plugins
 - `getAvailableLanguages()` - Returns list of available language files
 - `getAvailablePlugins()` - Returns list of available plugins

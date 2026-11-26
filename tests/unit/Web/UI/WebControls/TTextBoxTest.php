@@ -722,4 +722,14 @@ class TTextBoxTest extends TestCase
 		$this->assertStringContainsString('type="text"', $output);
 		$this->assertStringNotContainsString('autocomplete', $output);
 	}
+
+	public function testLoadPostDataIgnoresAnArrayValue()
+	{
+		$textbox = new TTextBox();
+		$textbox->setText('Paris');
+		$textbox->setAutoTrim(true);
+		$this->assertFalse($textbox->loadPostData('City', ['City' => ['x']]));
+		$this->assertSame('Paris', $textbox->getText());
+		$this->assertFalse($textbox->loadPostData('City', []));
+	}
 }

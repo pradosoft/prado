@@ -1011,4 +1011,52 @@ class TDatePickerTest extends TestCase
 		$picker->setUpToYear(2041);
 		$this->assertSame(2041, $picker->getUpToYear());
 	}
+
+	public static function dayPatternProvider(): array
+	{
+		return [
+			'dd' => ['dd-MM-yyyy', true],
+			'd' => ['d/M/yyyy', true],
+			'month and year' => ['MMMM yyyy', false],
+		];
+	}
+
+	/**
+	 * @dataProvider dayPatternProvider
+	 */
+	public function testHasDayPattern(string $format, bool $expected)
+	{
+		$picker = new TDatePicker();
+		$picker->setDateFormat($format);
+		$this->assertSame($expected, PradoUnit::invoke($picker, 'hasDayPattern'));
+	}
+
+	public function testAMonthYearDropDownPickerKeepsThePopupCalendar()
+	{
+		[$picker, $cs] = $this->createPicker();
+		$picker->setDateInputMode(TDatePickerInputMode::DropDownList);
+		$picker->setDateFormat('MMMM yyyy');
+		$picker->setText('03 2026');
+		$cs->method('isEndScriptRegistered')->willReturn(false);
+		$cs->expects($this->exactly(2))->method('registerEndScript');
+		$this->assertStringEndsWith('TDatePickerImageButton" type="image" onclick="return false;" />', $this->renderPicker($picker));
+	}
+
+	public function testDropDownWrapperHasNoInputAttributes()
+	{
+		[$picker] = $this->createPicker();
+		$picker->setDateInputMode(TDatePickerInputMode::DropDownList);
+		$picker->setText('09-03-2026');
+		$picker->setColumns(10);
+		$picker->setMaxLength(10);
+		$picker->setPlaceholder('date');
+		$picker->setRequired(true);
+		$picker->setAutoCompleteType('Disabled');
+		$picker->setLang('fr');
+		$picker->setShowCalendar(false);
+		$output = $this->renderPicker($picker);
+		$span = substr($output, 0, strpos($output, '>') + 1);
+		$this->assertSame('<span id="d" lang="fr">', $span);
+		$this->assertStringContainsString('<input name="d" type="hidden" value="09-03-2026" />', $output);
+	}
 }

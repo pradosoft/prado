@@ -22,6 +22,8 @@ use Prado\Web\THttpUtility;
  * TAccordionView is represented inside the {@see \Prado\Web\UI\WebControls\TAccordion} with an header label whose text is defined by
  * the {@see setCaption Caption} property; optionally the label can be an hyperlink: use the
  * {@see setNavigateUrl NavigateUrl} property to define the destination url.
+ * {@see setText Text} and {@see setCaption Caption} render as HTML unless
+ * {@see setEncode Encode} is true, which HTML-encodes both.
  *
  * @author Gabor Berczi, DevWorx Hungary <gabor.berczi@devworx.hu>
  * @since 3.2
@@ -29,6 +31,8 @@ use Prado\Web\THttpUtility;
  */
 class TAccordionView extends \Prado\Web\UI\WebControls\TWebControl
 {
+	use TEncodeTrait;
+
 	private $_active = false;
 
 	/**
@@ -137,7 +141,7 @@ class TAccordionView extends \Prado\Web\UI\WebControls\TWebControl
 	public function renderContents($writer)
 	{
 		if (($text = $this->getText()) !== '') {
-			$writer->write($text);
+			$writer->write($this->encodeText($text));
 		} elseif ($this->getHasControls()) {
 			parent::renderContents($writer);
 		}
@@ -176,6 +180,7 @@ class TAccordionView extends \Prado\Web\UI\WebControls\TWebControl
 	/**
 	 * Renders the content in the header.
 	 * By default, a hyperlink is displayed. The URL is attribute-encoded.
+	 * The caption is HTML-encoded when {@see getEncode Encode} is true.
 	 * @param \Prado\Web\UI\THtmlWriter $writer the HTML writer
 	 */
 	protected function renderHeaderContent($writer)
@@ -183,6 +188,8 @@ class TAccordionView extends \Prado\Web\UI\WebControls\TWebControl
 		$url = $this->getNavigateUrl();
 		if (($caption = $this->getCaption()) === '') {
 			$caption = '&nbsp;';
+		} else {
+			$caption = $this->encodeText($caption);
 		}
 
 		if ($url != '') {
