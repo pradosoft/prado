@@ -117,4 +117,11 @@ class TCustomValidatorTest extends TestCase
 		$this->assertTrue($params[0]->getIsValid());
 		$this->assertSame('Prado.WebUI.TCustomValidator', \Prado\Test\Unit\PradoUnit::invoke($validator, 'getClientClassName'));
 	}
+
+	public function testWithoutClientValidationFunctionRegistersNoScript()
+	{
+		$validator = $this->createPageValidator();
+		PradoUnit::invoke($validator, 'registerClientScriptValidator');
+		$this->assertFalse($validator->getPage()->getClientScript()->isEndScriptRegistered('prado:Valid'));
+	}
 }

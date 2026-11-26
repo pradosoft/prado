@@ -104,4 +104,25 @@ class TLuhnValidatorTest extends TestCase
 
 		$this->assertFalse(PradoUnit::invoke($validator, 'evaluateIsValid'));
 	}
+
+	public static function provideTwoDigits(): array
+	{
+		return [
+			'doubled digit under 10' => ['18', true],
+			'doubled digit over 9' => ['59', true],
+			'doubled digit under 10, wrong check digit' => ['17', false],
+			'doubled digit over 9, wrong check digit' => ['58', false],
+			'three digits' => ['125', true],
+		];
+	}
+
+	/**
+	 * @param string $digits the digits.
+	 * @param bool $expected whether the checksum passes.
+	 */
+	#[\PHPUnit\Framework\Attributes\DataProvider('provideTwoDigits')]
+	public function testShortNumbers(string $digits, bool $expected)
+	{
+		$this->assertSame($expected, TLuhnValidator::isValidLuhn($digits));
+	}
 }
