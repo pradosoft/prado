@@ -13,7 +13,7 @@ Active counterpart to TLabel. Text and ForControl properties can be updated duri
 ## Key Properties/Methods
 
 - `setText($value)` - Sets text with client-side update, HTML-encoded when `Encode` is true (4.4.0)
-- `setForControl($value)` - Sets associated control ID with client-side update
+- `setForControl($value)` - Sets associated control ID with client-side update; an empty ID removes `for`, and an ID that locates no control throws `TInvalidDataValueException` in a callback
 - `getActiveControl()` - Returns [TBaseActiveControl](./TBaseActiveControl.md) options
 
 ## See Also
