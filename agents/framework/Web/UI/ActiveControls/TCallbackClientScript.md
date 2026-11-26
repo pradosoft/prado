@@ -22,7 +22,7 @@ Server-side API for client-side DOM updates during callback responses. Provides 
 - `setValue($input, $text)` - Set input element value
 - `setListItems($control, $items)` - Update select dropdown options; a `TSuggestionList` delegates to `setSuggestionListItems()`
 - `setSuggestionListItems($control, $items)` - Replace `<datalist>` options through `Prado.Element.setDataListOptions` (labels escape `<` and `>` and decode entities, as the page render does) (@since 4.4.0)
-- `show($element)` / `hide($element)` / `toggle($element)` - Visibility
+- `show($element)` / `hide($element)` / `toggle($element, $effect = null, $options = [])` - Visibility; `toggle()` with `fade` or `slide` animates, otherwise it toggles at once unless `$options` sets a `duration`
 - `focus($element)` / `scrollTo($element, $options)` - Focus and scroll; `scrollTo` options are `duration` (ms, default 500; 0 or reduced motion jumps) and `offset` (px, default 50)
 - `addCssClass($element, $cssClass)` / `removeCssClass($element, $cssClass)` - CSS classes
 - `setStyle($element, $styles)` - Set CSS styles

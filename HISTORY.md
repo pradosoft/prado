@@ -8,6 +8,7 @@ BUG: Issue #1497 - `THtmlArea` and `THtmlArea5` allow no event handler attribute
 BUG: Issue #1497 - `TColorPicker` shows `Text` as its button's background only when it is a CSS color (`isCssColor()`); posted text such as `red;background-image:url(...)` added CSS declarations to the button's style. (belisoful)
 BUG: Issue #1497 - A disabled `THyperLink`, `TLinkButton`, or `TBulletedList` link renders `role="link"` and `aria-disabled="true"` instead of `disabled`, which `<a>` does not have, also when an active link is disabled in a callback. UPGRADE.md lists the change. (belisoful)
 ENH: Issue #1497 - `TAccordionView.Encode` HTML-encodes `Text` and `Caption`, as on TTabView; off by default. (belisoful)
+BUG: Issue #1497 - `TCallbackClientScript::toggle()` without an effect toggles at once; it threw `TPhpErrorException` for passing null to `strtolower()`. (belisoful)
 BUG: Issue #1497 - `TBulletedList` LinkButton item links have the ID `{ClientID}_c{index}`; `{ClientID}{index}` let two lists share an ID. UPGRADE.md lists the change. (belisoful)
 BUG: Issue #1497 - `TBulletedList` in the HyperLink and LinkButton modes renders its `AccessKey` on the first enabled item link only; the list and every item link carried it. (belisoful)
 BUG: Issue #1497 - A `TDataList` selected or edit item inherits `ItemStyle` or `AlternatingItemStyle` by its index, as its docblock states and as in `TDataGrid`; it took only its own style. (belisoful)

@@ -613,4 +613,11 @@ class TCallbackClientScriptTest extends TestCase
 		$this->assertTrue($functions[0]['Prado.Element.replace'][4]);
 		$this->assertNotNull($functions[0]['Prado.Element.replace'][2]);
 	}
+
+	public function testToggleWithoutAnEffectTogglesAtOnce()
+	{
+		$page = new TTestCallbackPage();
+		$page->getCallbackClient()->toggle('E');
+		$this->assertSame([['Prado.Element.j' => ['E', 'toggle', ['duration' => 0]]]], $page->getClientFunctions());
+	}
 }
