@@ -57,4 +57,12 @@ class TMediaSourceTest extends TestCase
 		$this->assertSame(-1, $control->getWidth());
 		$this->assertSame(-1, $control->getHeight());
 	}
+
+	public function testNegativeHeightUnsets()
+	{
+		$source = new \Prado\Web\UI\WebControls\TMediaSource();
+		$source->setHeight(10);
+		$source->setHeight(-3);
+		$this->assertSame(-1, $source->getHeight());
+	}
 }

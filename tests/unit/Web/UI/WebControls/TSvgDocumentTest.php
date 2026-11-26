@@ -171,4 +171,46 @@ class TSvgDocumentTest extends TestCase
 		$doc->scopeStyles('#p');
 		$this->assertSame('<style>#p .a {fill:red}</style><circle class="a"/>', $doc->getInnerMarkup());
 	}
+
+	public function testEmptyMarkupThrows()
+	{
+		$this->assertSame('svgdocument_invalid', $this->errorCode(fn () => new TSvgDocument('')));
+		$this->assertSame('svgdocument_invalid', $this->errorCode(fn () => new TSvgDocument(" \n ")));
+	}
+
+	public function testScopeCssKeepsTrailingTextWithoutABlock()
+	{
+		$this->assertSame('#s .a {x:1} tail', TSvgDocument::scopeCss('.a{x:1} tail', '#s'));
+	}
+
+	public function testEmptyRootHasNoAttributesContentOrTitle()
+	{
+		$doc = new TSvgDocument('<svg/>');
+		$this->assertSame([], $doc->getRootAttributes());
+		$this->assertSame('', $doc->getInnerMarkup());
+		$this->assertNull($doc->getTitle());
+		$this->assertSame([], $doc->extractStyles());
+		$doc->removeTitles();
+		$doc->scopeStyles('#s');
+		$this->assertSame('', $doc->getInnerMarkup());
+	}
+
+	public function testUnreadableFileThrows()
+	{
+		if (PHP_OS_FAMILY === 'Windows') {
+			$this->markTestSkipped('Windows reads a file whose permission bits are cleared');
+		}
+		if (function_exists('posix_geteuid') && posix_geteuid() === 0) {
+			$this->markTestSkipped('root reads a file without read permission');
+		}
+		$path = tempnam(sys_get_temp_dir(), 'svg');
+		file_put_contents($path, '<svg/>');
+		chmod($path, 0);
+		try {
+			$this->assertSame('svgdocument_file_invalid', $this->errorCode(fn () => TSvgDocument::fromFile($path)));
+		} finally {
+			chmod($path, 0600);
+			unlink($path);
+		}
+	}
 }

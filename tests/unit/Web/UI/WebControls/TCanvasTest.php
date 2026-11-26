@@ -199,4 +199,37 @@ class TCanvasTest extends TestCase
 		$control->onPreRender(null);
 		$this->assertSame([], $control->getPage()->getClientScript()->endScripts);
 	}
+
+	public function testNegativePixelHeightUnsets()
+	{
+		$control = new TCanvas();
+		$control->setPixelHeight(10);
+		$control->setPixelHeight(-3);
+		$this->assertSame(-1, $control->getPixelHeight());
+	}
+
+	public function testAttributeCombinations()
+	{
+		foreach (['', 'Sales chart'] as $text) {
+			foreach ([null, 'presentation'] as $role) {
+				foreach ([-1, 400] as $width) {
+					foreach ([-1, 300] as $height) {
+						$control = new TCanvas();
+						$control->setAlternateText($text);
+						if ($role !== null) {
+							$control->setRole($role);
+						}
+						$control->setPixelWidth($width);
+						$control->setPixelHeight($height);
+						$html = $this->render($control);
+						$label = "text '$text', role " . var_export($role, true) . ", $width x $height";
+						$this->assertSame($text !== '' && $role === null, str_contains($html, 'role="img"'), $label);
+						$this->assertSame($text !== '', str_contains($html, 'aria-label="Sales chart"'), $label);
+						$this->assertSame($width !== -1, str_contains($html, 'width="400"'), $label);
+						$this->assertSame($height !== -1, str_contains($html, 'height="300"'), $label);
+					}
+				}
+			}
+		}
+	}
 }

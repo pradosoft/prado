@@ -125,4 +125,44 @@ class TImageTest extends TestCase
 	{
 		$this->assertSame($attribute, TReferrerPolicy::toAttributeValue($policy));
 	}
+
+	public function testCrossOriginAcceptsEachKeyword()
+	{
+		$image = new TImage();
+		foreach (['anonymous' => 'anonymous', ' USE-Credentials ' => 'use-credentials', '' => ''] as $value => $expected) {
+			$image->setCrossOrigin($value);
+			$this->assertSame($expected, $image->getCrossOrigin());
+		}
+	}
+
+	public function testDataIsTheImageUrl()
+	{
+		$image = new TImage();
+		$image->setData('a.png');
+		$this->assertSame('a.png', $image->getImageUrl());
+		$this->assertSame('a.png', $image->getData());
+	}
+
+	public function testDescriptionUrlAndAlignRender()
+	{
+		$image = new TImage();
+		$image->setImageUrl('a.png');
+		$image->setAlternateText('A');
+		$image->setDescriptionUrl('/about-a');
+		$image->setImageAlign('right');
+		$this->assertSame('/about-a', $image->getDescriptionUrl());
+		$this->assertSame('right', $image->getImageAlign());
+		$this->assertSame('<img src="a.png" alt="A" longdesc="/about-a" align="right" />', $this->render($image));
+	}
+
+	public function testIntrinsicHeightRendersAndNegativeUnsets()
+	{
+		$image = new TImage();
+		$image->setIntrinsicHeight('24');
+		$this->assertSame(24, $image->getIntrinsicHeight());
+		$this->assertStringContainsString('height="24"', $this->render($image));
+		$image->setIntrinsicHeight(-3);
+		$this->assertSame(-1, $image->getIntrinsicHeight());
+		$this->assertStringNotContainsString('height', $this->render($image));
+	}
 }

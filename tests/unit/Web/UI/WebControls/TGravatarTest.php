@@ -281,6 +281,12 @@ class TGravatarTest extends TestCase
 		$this->assertNull($this->gravatar->getDefaultImageStyle());
 	}
 
+	public function testSetDefaultImageStyleAcceptsAnImageUrl()
+	{
+		$this->gravatar->setDefaultImageStyle('HTTPS://example.com/Default.png');
+		$this->assertSame('HTTPS://example.com/Default.png', $this->gravatar->getDefaultImageStyle());
+	}
+
 	public function testSetDefaultImageStyleInvalidThrows()
 	{
 		$this->expectException(TInvalidDataValueException::class);

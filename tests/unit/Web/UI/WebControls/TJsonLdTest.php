@@ -238,4 +238,26 @@ class TJsonLdTestThrowingControl extends \Prado\Web\UI\TControl
 		$writer->write('{"partial": ');
 		throw new \RuntimeException('child failed');
 	}
+
+	public function testRenderCombinationsOfSourceAndNonce()
+	{
+		foreach ([null, 'n0nce'] as $nonce) {
+			TJavaScript::setScriptNonce($nonce);
+			$attributes = 'type="application/ld+json"' . ($nonce !== null ? ' nonce="n0nce"' : '');
+
+			$data = new TJsonLd();
+			$data->setStructuredData(['@type' => 'Thing']);
+			$this->assertSame('<script ' . $attributes . '>{"@context":"https://schema.org","@type":"Thing"}</script>', $this->renderControl($data));
+
+			$body = new TJsonLd();
+			$body->addParsedObject('{"@type": "Place"}');
+			$this->assertSame('<script ' . $attributes . '>{"@context":"https://schema.org","@type":"Place"}</script>', $this->renderControl($body));
+
+			$emptyBody = new TJsonLd();
+			$emptyBody->addParsedObject('[]');
+			$this->assertSame('', $this->renderControl($emptyBody));
+
+			$this->assertSame('', $this->renderControl(new TJsonLd()));
+		}
+	}
 }
