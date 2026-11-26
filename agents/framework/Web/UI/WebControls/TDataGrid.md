@@ -65,6 +65,7 @@ TDataGrid::CMD_PAGE_LAST  = 'Last'
 | `ShowFooter` | bool | Show column footers (default: false) |
 | `Caption` | string | Table caption text, rendered as HTML unless `Encode` is true |
 | `Encode` | bool | Whether `Caption` is HTML-encoded when rendered (default: false; 4.4.0) |
+| `CaptionAlign` | TTableCaptionAlign | `<caption>` placement: Top or Bottom sets `caption-side`; Left or Right render `caption-side:top` with `text-align`, as on `TTable` (4.4.0) |
 | `EmptyTemplate` | ITemplate | Rendered when no data |
 | `StickyHeader` | bool | `<thead>` renders `position:sticky; top:0; z-index:1`, with `background-color:Canvas` unless `TableHeadStyle` sets one (default false; 4.4.0) |
 | `ResponsiveMode` | [`TDataGridResponsiveMode`](./TDataGridResponsiveMode.md) | `Scroll` wraps the table in `<div role="region" tabindex="0" style="overflow-x:auto">` (default `None`; 4.4.0) |
