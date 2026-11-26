@@ -66,6 +66,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 
 	/**
 	 * Loads user input data.
+	 * A posted value that is not a scalar, such as an array from a `name[]` field, changes nothing.
 	 * This method is primarly used by framework developers.
 	 * @param string $key the key that can be used to retrieve data from the input data collection
 	 * @param array $values the input data collection
@@ -73,6 +74,9 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function loadPostData($key, $values)
 	{
+		if (isset($values[$key]) && !is_scalar($values[$key])) {
+			return false;
+		}
 		$checked = $this->getChecked();
 		if ($newChecked = isset($values[$key])) {
 			$this->setValue($values[$key]);
@@ -366,6 +370,9 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 * Renders the checkbox control.
 	 * This method overrides the parent implementation by rendering a checkbox input element
 	 * and a span element if needed.
+	 * Style, ToolTip, the global attributes, the `data-*` Dataset, and custom Attributes render on
+	 * the span when {@see getText Text} is set, otherwise on the input; `autofocus`, Aria, AccessKey,
+	 * and TabIndex always render on the input.
 	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function render($writer)
@@ -376,6 +383,10 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 		}
 		if (($tooltip = $this->getToolTip()) !== '') {
 			$writer->addAttribute('title', $tooltip);
+		}
+		$this->addGlobalAttributesToRender($writer);
+		if ($dataset = $this->getViewState('Dataset', null)) {
+			$dataset->addAttributesToRender($writer);
 		}
 		if ($this->getHasAttributes()) {
 			$attributes = $this->getAttributes();
@@ -397,6 +408,8 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 			$onclick = '';
 		}
 		if ($needspan = $this->getSpanNeeded()) {
+			// autofocus belongs to the input
+			$writer->removeAttribute('autofocus');
 			$writer->addAttribute('id', $this->getSurroundingTagID());
 			$writer->renderBeginTag($this->getSurroundingTag());
 		}
@@ -555,6 +568,9 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 
 		if (($accesskey = $this->getAccessKey()) !== '') {
 			$writer->addAttribute('accesskey', $accesskey);
+		}
+		if ($this->getAutoFocus()) {
+			$writer->addAttribute('autofocus', 'autofocus');
 		}
 		$this->addKeyShortcutsAttributesToRender($writer);
 		if (($tabindex = $this->getTabIndex()) !== null) {

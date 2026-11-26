@@ -215,6 +215,9 @@ Upgrading from v4.3.3
 - TCaptcha derives tokens and signs the image options with HMAC-SHA256 instead of MD5. A page rendered before the
   upgrade shows a token that no longer validates; the user receives a new one on the next postback. Republish
   `captcha.php`, which the asset manager does when the framework version changes.
+- THtmlArea and THtmlArea5 no longer allow `onclick` on `a`, or `onmouseover` and `onmouseout` on `img`, in their default
+  `extended_valid_elements`, so editor content carries no event handlers. A page that needs them sets
+  `extended_valid_elements` in `Options`.
 - TReCaptcha and TReCaptchaValidator are removed; 4.3.3 deprecates them. Google retired reCAPTCHA v1, so they
   could not validate. Replace them with TReCaptcha2 and TReCaptcha2Validator, using reCAPTCHA v2 keys:
   `PublicKey` becomes `SiteKey` and `PrivateKey` becomes `SecretKey`.

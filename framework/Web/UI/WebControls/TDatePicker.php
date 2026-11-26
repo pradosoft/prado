@@ -470,6 +470,7 @@ class TDatePicker extends TTextBox
 	 * Renders body content.
 	 * This method overrides parent implementation by adding
 	 * additional date picker button if Mode is Button or ImageButton.
+	 * In DropDownList mode the popup calendar is registered for every format, a month-year one included.
 	 * @param \Prado\Web\UI\THtmlWriter $writer writer
 	 */
 	public function render($writer)
@@ -479,10 +480,8 @@ class TDatePicker extends TTextBox
 			$this->renderDatePickerButtons($writer);
 		} else {
 			$this->renderDropDownListCalendar($writer);
-			if ($this->hasDayPattern()) {
-				$this->renderClientControlScript($writer);
-				$this->renderDatePickerButtons($writer);
-			}
+			$this->renderClientControlScript($writer);
+			$this->renderDatePickerButtons($writer);
 		}
 	}
 
@@ -682,6 +681,7 @@ class TDatePicker extends TTextBox
 	/**
 	 * Renders the drop down list date picker.
 	 * The lists select the date of {@see getText Text}, or today when Text does not parse.
+	 * The wrapping span carries the web control attributes, without the text box's input attributes.
 	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	protected function renderDropDownListCalendar($writer)
@@ -689,9 +689,9 @@ class TDatePicker extends TTextBox
 		if ($this->getMode() == TDatePickerMode::Basic) {
 			$this->setMode(TDatePickerMode::ImageButton);
 		}
-		parent::addAttributesToRender($writer);
-		$writer->removeAttribute('name');
-		$writer->removeAttribute('type');
+		$this->getPage()->ensureRenderInForm($this);
+		// the span takes the web control attributes; the text box's input attributes belong to no element here
+		TWebControl::addAttributesToRender($writer);
 		$writer->addAttribute('id', $this->getClientID());
 
 		if (strlen($class = $this->getCssClass()) > 0) {
@@ -715,10 +715,13 @@ class TDatePicker extends TTextBox
 		$writer->renderEndTag();
 	}
 
+	/**
+	 * @return bool whether {@see getDateFormat DateFormat} has a day.
+	 */
 	protected function hasDayPattern()
 	{
 		$formatter = new TSimpleDateFormatter($this->getDateFormat());
-		return ($formatter->getDayPattern() !== null);
+		return $formatter->getDayPattern() !== false;
 	}
 
 	/**

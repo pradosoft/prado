@@ -444,4 +444,33 @@ class TCheckBoxTest extends TestCase
 	{
 		$this->assertSame('input', PradoUnit::invoke(new TCheckBox(), 'getTagName'));
 	}
+
+	public function testLoadPostDataIgnoresAnArrayValue()
+	{
+		$checkBox = new TCheckBox();
+		$checkBox->setValue('yes');
+		$this->assertFalse($checkBox->loadPostData('cb', ['cb' => ['x']]));
+		$this->assertFalse($checkBox->getChecked());
+		$this->assertSame('yes', $checkBox->getValue());
+	}
+
+	public function testDatasetAndGlobalAttributesRenderWithTheAttributes()
+	{
+		foreach ([TCheckBox::class, TRadioButton::class] as $class) {
+			$box = $this->createCheckBox($class);
+			$box->setEnableClientScript(false);
+			$box->setAttribute('data-id', '7');
+			$box->setLang('fr');
+			$box->setAutoFocus(true);
+			$output = $this->renderControl($box);
+			$this->assertMatchesRegularExpression('/^<input [^>]*lang="fr"[^>]*data-id="7"/', $output, $class);
+			$this->assertMatchesRegularExpression('/^<input [^>]*autofocus="autofocus"/', $output, $class);
+
+			$box->setText('Agree');
+			$output = $this->renderControl($box);
+			$this->assertMatchesRegularExpression('/^<span lang="fr" data-id="7" id="cb_parent"><input [^>]*autofocus="autofocus"/', $output, $class);
+			$this->assertSame(1, substr_count($output, 'autofocus="'), $class);
+			$this->assertSame(1, substr_count($output, 'data-id'), $class);
+		}
+	}
 }

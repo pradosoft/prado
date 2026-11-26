@@ -1,4 +1,11 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TDatePicker` in DropDownList mode renders its wrapper `<span>` with the web control attributes only; it carried the text box's `value`, `maxlength`, `placeholder`, `required`, and other input attributes. (belisoful)
+BUG: Issue #1497 - `TCheckBox` and `TRadioButton` render their `data-*` Dataset and global attributes (`Lang`, `Hidden`, microdata, ...) with their custom Attributes, and `AutoFocus` on the input; they rendered none of them. `TWebControl::addGlobalAttributesToRender()` renders the global attributes. (belisoful)
+BUG: Issue #1497 - `TSlider::setStepSize()` throws `TInvalidDataValueException` for a step of 0 or less; a step of 0 threw `DivisionByZeroError` when the slider rendered. (belisoful)
+BUG: Issue #1497 - `TDatePicker::hasDayPattern()` is false for a format without a day; it compared with `null` and was always true. A month-year DropDownList picker keeps its popup calendar. (belisoful)
+BUG: Issue #1497 - `TTextBox`, `THiddenField`, `TCheckBox`, and `TSlider` treat a posted value that is not a scalar, such as an array from a `name[]` field, as no change; `TTextBox` with `AutoTrim` threw a `TypeError`. (belisoful)
+BUG: Issue #1497 - `THtmlArea` and `THtmlArea5` allow no event handler attributes in their default `extended_valid_elements`; `onclick` on `a` and `onmouseover`/`onmouseout` on `img` let editor content carry script. See UPGRADE.md. (belisoful)
+BUG: Issue #1497 - `TColorPicker` shows `Text` as its button's background only when it is a CSS color (`isCssColor()`); posted text such as `red;background-image:url(...)` added CSS declarations to the button's style. (belisoful)
 BUG: Issue #1497 - A disabled `THyperLink`, `TLinkButton`, or `TBulletedList` link renders `role="link"` and `aria-disabled="true"` instead of `disabled`, which `<a>` does not have, also when an active link is disabled in a callback. UPGRADE.md lists the change. (belisoful)
 ENH: Issue #1497 - `TAccordionView.Encode` HTML-encodes `Text` and `Caption`, as on TTabView; off by default. (belisoful)
 BUG: Issue #1497 - `TBulletedList` LinkButton item links have the ID `{ClientID}_c{index}`; `{ClientID}{index}` let two lists share an ID. UPGRADE.md lists the change. (belisoful)
