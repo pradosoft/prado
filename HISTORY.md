@@ -3,6 +3,7 @@ BUG: Issue #1497 - `TJuiEventParameter` reads a component property such as `Call
 BUG: Issue #1497 - `TJuiControlOptions` stores an option value set in PHP that is not a string, such as an array or null, as is; it threw a `TypeError` or `TPhpErrorException`. (belisoful)
 BUG: Issue #1497 - `TMapCollectionDiff` compares an array item by its elements, so a callback that changes an array-valued jQuery UI option sends it; it threw `TPhpErrorException` for the array. (belisoful)
 BUG: Issue #1497 - `TLinkButton` with `EnableClientScript` false renders a `<button type="submit">` named with its `UniqueID`, which posts back without javascript; it rendered an inert anchor. `TActiveLinkButton` still renders an anchor. (belisoful)
+BUG: Issue #1497 - A callback whose handler sets `TActivePageAdapter::setCallbackEventTarget()` to a control without callback options sends the page state; the response failed. (belisoful)
 BUG: Issue #1497 - `CallbackOptions` given as an ID is also found in the enclosing naming containers, so a list, a data-bound control, or a control in a repeater item finds a `TCallbackOptions` beside it. (belisoful)
 BUG: Issue #1497 - An attribute, `aria-*`, or `data-*` key removed during a callback is removed on the client; `TMapCollectionDiff` reports a removed key with a null value. (belisoful)
 BUG: Issue #1497 - `TEventTriggeredCallback` keeps the `on` of the `online` event; it sent `line`. (belisoful)

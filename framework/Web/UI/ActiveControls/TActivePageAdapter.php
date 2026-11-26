@@ -446,11 +446,9 @@ class TActivePageAdapter extends TControlAdapter
 		}
 
 		//sends page state in header
-		if (($handler = $this->getCallbackEventTarget()) !== null) {
-			if ($handler->getActiveControl()->getClientSide()->getEnablePageStateUpdate()) {
-				$pagestate = $this->getPage()->getClientState();
-				$this->appendContentPart($response, self::CALLBACK_PAGESTATE_HEADER, $pagestate);
-			}
+		if ($this->getSendsPageState()) {
+			$pagestate = $this->getPage()->getClientState();
+			$this->appendContentPart($response, self::CALLBACK_PAGESTATE_HEADER, $pagestate);
 		}
 
 		//sends a fresh CSRF token, since a login or logout during the callback replaces the secret
@@ -551,6 +549,24 @@ class TActivePageAdapter extends TControlAdapter
 			$target = $this->getRequest()->itemAt(TPage::FIELD_CALLBACK_TARGET);
 			throw new TInvalidCallbackException('callback_invalid_target', $target);
 		}
+	}
+
+	/**
+	 * Returns whether the callback response sends the page state. A callback control
+	 * target sends it when its {@see TCallbackClientSide::getEnablePageStateUpdate
+	 * EnablePageStateUpdate} is true; any other target always sends it.
+	 * @return bool whether the response sends the page state, false without a target
+	 * @since 4.4.0
+	 */
+	protected function getSendsPageState(): bool
+	{
+		if (($handler = $this->getCallbackEventTarget()) === null) {
+			return false;
+		}
+		if ($handler instanceof IActiveControl && ($active = $handler->getActiveControl()) instanceof TBaseActiveCallbackControl) {
+			return $active->getClientSide()->getEnablePageStateUpdate();
+		}
+		return true;
 	}
 
 	/**
