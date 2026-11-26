@@ -105,13 +105,15 @@ class TActiveRepeater extends TRepeater implements IActiveControl, ISurroundable
 	 */
 	public function render($writer)
 	{
-		if ($this->getHasPreRendered()) {
-			$this->renderRepeater($writer);
-			if ($this->getActiveControl()->canUpdateClientSide()) {
-				$this->getActiveControl()->replaceClientContent($this->getSurroundingTagId(), $writer);
-			}
-		} else {
+		$active = $this->getActiveControl();
+		if ($active->getDefersRender()) {
 			$this->getPage()->getAdapter()->registerControlToRender($this, $writer);
+		} elseif ($active->canUpdateClientSide()) {
+			$active->disableInnerUpdates();
+			$this->renderRepeater($writer);
+			$active->replaceClientContent($this->getSurroundingTagId(), $writer);
+		} else {
+			$this->renderRepeater($writer);
 		}
 	}
 

@@ -228,6 +228,28 @@ class TActiveTableCellTest extends TestCase
 		$this->assertSame([], $page->getClientFunctions());
 	}
 
+	public function testRowRenderedAfterPreRenderInACallbackReplacesOnlyItself()
+	{
+		[$page, $table] = $this->createTable(true, TControl::CS_PRERENDERED);
+		$table->getRows()->itemAt(0)->render($this->writer());
+		$functions = $page->getClientFunctions();
+		$this->assertCount(1, $functions);
+		$this->assertSame('R0', $functions[0]['Prado.Element.replace'][0]);
+	}
+
+	public function testRenderBeforePreRenderOutsideACallbackRendersAtOnce()
+	{
+		[$page, $table] = $this->createTable(false);
+		$row = $table->getRows()->itemAt(0);
+		$writer = $this->writer();
+		$row->render($writer);
+		$this->assertStringContainsString('<tr id="R0">', $writer->flush());
+		$row->getCells()->itemAt(0)->render($writer);
+		$this->assertStringContainsString('<td id="C00">', $writer->flush());
+		$this->assertSame([], $page->pageAdapter->rendered);
+		$this->assertSame([], $page->getClientFunctions());
+	}
+
 	public function testRenderBeforePreRenderDefersAndDisablesTheActiveChildUpdates()
 	{
 		[$page, $table] = $this->createTable();
