@@ -39,7 +39,7 @@ use Prado\TPropertyValue;
  * TButton by default renders an input tag; the {@see setButtonTag ButtonTag}
  * property can be used to render a button tag (introduced in html5). An input
  * tag carries the caption in its value attribute; a button tag carries it as
- * the body content of the tag.
+ * the body content of the tag, as HTML unless {@see setEncode Encode} is true.
  *
  * TButton can be one of three {@see setButtonType ButtonType}: Submit, Button and Reset.
  * By default, it is a Submit button and the form submission uses the browser's
@@ -81,6 +81,7 @@ use Prado\TPropertyValue;
  */
 class TButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web\UI\IPostBackEventHandler, \Prado\Web\UI\IButtonControl, \Prado\IDataRenderer
 {
+	use TEncodeTrait;
 	use TFormSubmitterTrait;
 
 	/**
@@ -238,14 +239,15 @@ class TButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 
 	/**
 	 * Renders the body content enclosed between the control tag.
-	 * An input tag has no body. A button tag renders its child controls followed by {@see getText Text}.
+	 * An input tag has no body. A button tag renders its child controls followed by {@see getText Text},
+	 * HTML-encoded when {@see getEncode Encode} is true.
 	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderContents($writer)
 	{
 		if ($this->getButtonTag() === TButtonTag::Button) {
 			parent::renderContents($writer);
-			$writer->write($this->getText());
+			$writer->write($this->encodeText($this->getText()));
 		}
 	}
 

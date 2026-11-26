@@ -12,6 +12,7 @@ namespace Prado\Web\UI\ActiveControls;
 
 use Prado\Prado;
 use Prado\TPropertyValue;
+use Prado\Web\UI\WebControls\TEncodeTrait;
 use Prado\Web\UI\WebControls\TTextBox;
 use Prado\Web\UI\WebControls\TWebControl;
 
@@ -44,12 +45,15 @@ use Prado\Web\UI\WebControls\TWebControl;
  *
  * Since 4.4.0, when the text is empty the label shows
  * {@see setEmptyDisplayText EmptyDisplayText}, keeping the label clickable.
+ * The label shows the text as HTML unless {@see setEncode Encode} is true; the
+ * text is what the user types, so set Encode when it is not trusted HTML.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @since 3.1
  */
 class TInPlaceTextBox extends TActiveTextBox
 {
+	use TEncodeTrait;
 	use TInPlaceControlTrait;
 
 	/**
@@ -106,8 +110,9 @@ class TInPlaceTextBox extends TActiveTextBox
 	}
 
 	/**
-	 * On callback response, the inner HTMl of the label and the
-	 * value of the textbox is updated
+	 * On callback response, the inner HTML of the label and the
+	 * value of the textbox is updated. The label gets the text HTML-encoded
+	 * when {@see getEncode Encode} is true.
 	 * @param string $value the text value of the label
 	 */
 	public function setText($value)
@@ -118,7 +123,7 @@ class TInPlaceTextBox extends TActiveTextBox
 
 		TTextBox::setText($value);
 		if ($this->getActiveControl()->canUpdateClientSide()) {
-			$this->callClientFunction('setLabelText', $value);
+			$this->callClientFunction('setLabelText', $this->encodeText($value));
 			$this->getPage()->getCallbackClient()->setValue($this, $value);
 		}
 	}
@@ -150,14 +155,15 @@ class TInPlaceTextBox extends TActiveTextBox
 	}
 
 	/**
-	 * Renders the body content of the label. An empty text renders
+	 * Renders the body content of the label: the text, HTML-encoded when
+	 * {@see getEncode Encode} is true. An empty text renders
 	 * {@see getEmptyDisplayText EmptyDisplayText} when set.
 	 * @param \Prado\Web\UI\THtmlWriter $writer the writer for rendering
 	 */
 	public function renderContents($writer)
 	{
 		if (($text = $this->getText()) !== '') {
-			$writer->write($text);
+			$writer->write($this->encodeText($text));
 		} elseif (($emptyText = $this->getEmptyDisplayText()) !== '') {
 			$writer->write($emptyText);
 		} else {
@@ -195,6 +201,7 @@ class TInPlaceTextBox extends TActiveTextBox
 		$options['AutoHide'] = $this->getAutoHideEditor() ? true : '';
 		$options['AutoPostBack'] = $this->getAutoPostBack() ? true : '';
 		$options['EmptyDisplayText'] = $this->getEmptyDisplayText();
+		$options['Encode'] = $this->getEncode() ? true : '';
 		$options['DisplayEditor'] = $this->getDisplayEditor();
 		// The created text input has no associated label element; ToolTip names
 		// it, with a localized default so the editor is never nameless.

@@ -261,6 +261,26 @@ class TJuiControlOptionsTest extends TestCase
 		$this->assertSame([null], $received);
 	}
 
+	/**
+	 * The client names the event, so an event the widget does not list, such as a
+	 * control life-cycle event with a handler, is not raised.
+	 */
+	public function testRaiseCallbackEventIgnoresAnEventNotValid(): void
+	{
+		$control = $this->newDraggable();
+		$received = [];
+		foreach (['OnLoad', 'OnDataBinding', 'OnStop'] as $event) {
+			$control->attachEventHandler($event, function () use (&$received, $event) {
+				$received[] = $event;
+			});
+		}
+		$options = new TJuiControlOptions($control);
+		foreach (['load', 'dataBinding', 'Stop', ['stop'], 5] as $event) {
+			$options->raiseCallbackEvent($this->callbackParameter((object) ['event' => $event]));
+		}
+		$this->assertSame([], $received);
+	}
+
 	public function testRaiseCallbackEventIgnoresAnEventWithoutHandler(): void
 	{
 		$control = $this->newDraggable();

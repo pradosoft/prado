@@ -200,7 +200,7 @@ class TActivePagerTest extends TestCase
 		$this->assertCount($rendered, $page->getClientFunctions());
 	}
 
-	public function testImageButtonShowsThePageImageAndHidesWhenDisabled()
+	public function testImageButtonShowsThePageImageAndIsDisabledForAnUnavailablePage()
 	{
 		$pager = new TActivePager();
 		$pager->setNextPageImageUrl('next.png');
@@ -208,8 +208,10 @@ class TActivePagerTest extends TestCase
 		$next = PradoUnit::invoke($pager, 'createPagerButton', TPagerButtonType::ImageButton, true, '>', TActivePager::CMD_PAGE_NEXT, '');
 		$this->assertSame('next.png', $next->getImageUrl());
 		$this->assertTrue($next->getVisible(false));
+		$this->assertTrue($next->getEnabled());
 		$numeric = PradoUnit::invoke($pager, 'createPagerButton', TPagerButtonType::ImageButton, false, '2', TActivePager::CMD_PAGE, '1');
 		$this->assertSame('page2.png', $numeric->getImageUrl());
-		$this->assertFalse($numeric->getVisible(false));
+		$this->assertTrue($numeric->getVisible(false));
+		$this->assertFalse($numeric->getEnabled());
 	}
 }

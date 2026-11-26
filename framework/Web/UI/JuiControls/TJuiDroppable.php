@@ -208,10 +208,9 @@ class TJuiDroppable extends TActivePanel implements IJuiOptions, ICallbackEventH
 	}
 
 	/**
-	 * This method is invoked when a callback is requested. The method raises
-	 * 'OnCallback' event to fire up the event handlers. If you override this
-	 * method, be sure to call the parent implementation so that the event
-	 * handler can be invoked.
+	 * Raises the OnCallback event.
+	 * `callback` is not a jQuery UI droppable event, so a droppable callback does not
+	 * raise it; a callback raises the droppable events, such as {@see onDrop OnDrop}.
 	 * @param TCallbackEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onCallback($param)

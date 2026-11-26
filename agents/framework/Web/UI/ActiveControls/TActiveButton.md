@@ -12,7 +12,7 @@ Active counterpart to TButton. Clicking triggers a callback instead of postback.
 
 ## Key Properties/Methods
 
-- `setText($value)` - Sets button text with client-side update
+- `setText($value)` - Sets button text with client-side update: the `value` of an input, or the content of a `ButtonTag` Button, HTML-encoded when `Encode` is true (4.4.0)
 - `raiseCallbackEvent($param)` - Raises OnClick then OnCallback
 - `onCallback($param)` - Event raised when callback is requested
 - `getClientClassName()` - Returns `Prado.WebUI.TActiveButton`
