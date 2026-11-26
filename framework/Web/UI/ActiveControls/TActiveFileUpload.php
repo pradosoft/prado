@@ -14,7 +14,6 @@ namespace Prado\Web\UI\ActiveControls;
 /**
  * Load TActiveControlAdapter and TFileUpload.
  */
-use Exception;
 use Prado\Exceptions\TExitException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Prado;
@@ -332,12 +331,6 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	{
 		parent::onInit($sender);
 
-		if (!$this->getApplication()->getCache()) {
-			if (!$this->getApplication()->getSecurityManager()) {
-				throw new Exception('TActiveFileUpload needs either an application level cache or a security manager to work securely');
-			}
-		}
-
 		if (!is_writable(Prado::getPathOfNamespace($this->getTempPath()))) {
 			throw new TInvalidDataValueException("activefileupload_temppath_invalid", $this->getTempPath());
 		}
@@ -389,11 +382,9 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 			// this is the most secure method, file info can't be forged from client side, no matter what
 			$token = md5('TActiveFileUpload::Params::' . $this->getClientID() . '::' . rand(1000 * 1000, 9999 * 1000));
 			$cache->set($token, serialize($params), 5 * 60); // expire in 5 minutes - the callback should arrive back in seconds, actually
-		} elseif ($mgr = $this->getApplication()->getSecurityManager()) {
-			// this is a less secure method, file info can be still forged from client side, but only if attacker knows the secret application key
-			$token = urlencode(base64_encode($mgr->encrypt(serialize($params))));
 		} else {
-			throw new Exception('TActiveFileUpload needs either an application level cache or a security manager to work securely');
+			// this is a less secure method, file info can be still forged from client side, but only if attacker knows the secret application key
+			$token = urlencode(base64_encode($this->getApplication()->getSecurityManager()->encrypt(serialize($params))));
 		}
 
 		return $token;
@@ -406,11 +397,9 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 			assert($v != '');
 			$cache->delete($token); // remove it from cache so it can't be used again and won't take up space either
 			$params = unserialize($v, ['allowed_classes' => [TActiveFileUploadCallbackParams::class]]);
-		} elseif ($mgr = $this->getApplication()->getSecurityManager()) {
-			$v = $mgr->decrypt(base64_decode(urldecode($token)));
-			$params = unserialize($v, ['allowed_classes' => [TActiveFileUploadCallbackParams::class]]);
 		} else {
-			throw new Exception('TActiveFileUpload needs either an application level cache or a security manager to work securely');
+			$v = $this->getApplication()->getSecurityManager()->decrypt(base64_decode(urldecode($token)));
+			$params = unserialize($v, ['allowed_classes' => [TActiveFileUploadCallbackParams::class]]);
 		}
 
 		assert($params instanceof TActiveFileUploadCallbackParams);
