@@ -1815,6 +1815,30 @@ class TDataGridTest extends TestCase
 		$this->assertSame([false, false, true], array_map(fn ($attributes) => str_contains($attributes, 'aria-sort="descending"'), $matches[1]));
 	}
 
+	/**
+	 * @return array<string, array{string, string}> caption alignment and the rendered caption tag.
+	 */
+	public static function captionAlignProvider(): array
+	{
+		return [
+			'NotSet' => [TTableCaptionAlign::NotSet, '<caption>Cities</caption>'],
+			'Top' => [TTableCaptionAlign::Top, '<caption style="caption-side:top;">Cities</caption>'],
+			'Left' => [TTableCaptionAlign::Left, '<caption style="caption-side:top;text-align:left;">Cities</caption>'],
+			'Right' => [TTableCaptionAlign::Right, '<caption style="caption-side:top;text-align:right;">Cities</caption>'],
+		];
+	}
+
+	#[\PHPUnit\Framework\Attributes\DataProvider('captionAlignProvider')]
+	public function testRenderCaptionAlign(string $align, string $expected)
+	{
+		$grid = $this->createGrid();
+		$grid->setCaption('Cities');
+		$grid->setCaptionAlign($align);
+		$this->bind($grid, $this->rows(1));
+		$this->attachToPage($grid);
+		$this->assertStringContainsString($expected, $this->render($grid));
+	}
+
 	public function testRenderFooterCaptionAndSectionStyles()
 	{
 		$grid = $this->createGrid();
