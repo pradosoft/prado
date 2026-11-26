@@ -72,26 +72,28 @@ class TActiveLabel extends TLabel implements IActiveControl
 	/**
 	 * Sets the ID of the control that the label is associated with.
 	 * The control must be locatable via {@see \Prado\Web\UI\TControl::findControl} using the ID.
-	 * On callback response, the For attribute of the label is updated, and an empty
-	 * ID removes it.
+	 * On callback response, the For attribute of the label is updated. The label
+	 * renders a `<label>` with an associated control and a `<span>` without one, so
+	 * a change between an empty and a non-empty ID replaces the client element.
 	 * @param string $value the associated control ID
 	 * @throws TInvalidDataValueException if the ID locates no control in a callback
 	 */
 	public function setForControl($value)
 	{
-		if (parent::getForControl() === $value) {
+		if (($old = parent::getForControl()) === $value) {
 			return;
 		}
 
 		parent::setForControl($value);
 		if ($this->getActiveControl()->canUpdateClientSide()) {
-			$client = $this->getPage()->getCallbackClient();
-			if ($value === '') {
-				$client->removeAttribute($this, 'for');
-			} elseif (($control = $this->findControl($value)) !== null) {
-				$client->setAttribute($this, 'for', $control->getClientID());
-			} else {
+			$control = ($value === '') ? null : $this->findControl($value);
+			if ($value !== '' && $control === null) {
 				throw new TInvalidDataValueException('label_associatedcontrol_invalid', $value);
+			}
+			if ($control !== null && $old !== '') {
+				$this->getPage()->getCallbackClient()->setAttribute($this, 'for', $control->getClientID());
+			} else {
+				$this->getActiveControl()->replaceClientContent($this, $this);
 			}
 		}
 	}
