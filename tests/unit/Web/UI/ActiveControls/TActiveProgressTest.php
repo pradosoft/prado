@@ -6,6 +6,8 @@ use Prado\Web\UI\ActiveControls\IActiveControl;
 use Prado\Web\UI\ActiveControls\TActiveProgress;
 use Prado\Web\UI\WebControls\TProgress;
 use PHPUnit\Framework\TestCase;
+use Prado\IO\TTextWriter;
+use Prado\Web\UI\THtmlWriter;
 
 class TActiveProgressTest extends TestCase
 {
@@ -95,6 +97,38 @@ class TActiveProgressTest extends TestCase
 		$control->setMax(0);
 	}
 
-	// Note: rendering TActiveProgress requires a full page context; client-side
-	// attribute updates are covered by the ActiveProgressTestCase functional test.
+	public function testChangesUpdateTheClientAttributesInACallback()
+	{
+		$page = new TActiveTestPage();
+		$progress = $page->addControl(new TActiveProgress(), 'Bar');
+		$progress->setValue('5');
+		$progress->setValue(5);
+		$progress->setMax(10);
+		$progress->setMax('10');
+		$progress->setValue(null);
+		$this->assertSame([
+			['Prado.Element.setAttribute' => ['Bar', 'value', '5']],
+			['Prado.Element.setAttribute' => ['Bar', 'max', '10']],
+			['Prado.Element.removeAttribute' => ['Bar', 'value']],
+		], $page->getClientFunctions());
+	}
+
+	public function testChangesOutsideACallbackUpdateNothing()
+	{
+		$page = new TActiveTestPage(false);
+		$progress = $page->addControl(new TActiveProgress(), 'Bar');
+		$progress->setValue(5);
+		$progress->setMax(10);
+		$this->assertSame([], $page->getClientFunctions());
+		$this->assertSame(10.0, $progress->getMax());
+	}
+
+	public function testRenderAddsTheId()
+	{
+		$page = new TActiveTestPage();
+		$progress = $page->addControl(new TActiveProgress(), 'Bar');
+		$writer = new THtmlWriter(new TTextWriter());
+		$progress->render($writer);
+		$this->assertStringStartsWith('<progress id="Bar"', $writer->flush());
+	}
 }

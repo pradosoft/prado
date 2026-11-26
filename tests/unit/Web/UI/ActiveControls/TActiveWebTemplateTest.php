@@ -7,6 +7,8 @@ use Prado\Web\UI\ActiveControls\TActiveWebTemplate;
 use Prado\Web\UI\WebControls\TPanel;
 use Prado\Web\UI\WebControls\TWebTemplate;
 use PHPUnit\Framework\TestCase;
+use Prado\IO\TTextWriter;
+use Prado\Web\UI\THtmlWriter;
 use Prado\Test\Unit\PradoUnit;
 
 class TActiveWebTemplateTest extends TestCase
@@ -112,5 +114,41 @@ class TActiveWebTemplateTest extends TestCase
 		$control = new TActiveWebTemplate();
 		$control->setShadowRootMode(\Prado\Web\UI\WebControls\TShadowRootMode::Open);
 		$this->assertFalse(PradoUnit::invoke($control, 'getHasClientScript'));
+	}
+
+	public function testCommandsCallTheClientTemplateInACallback()
+	{
+		$page = new TActiveTestPage();
+		$template = $page->addControl(new TActiveWebTemplate(), 'Tpl');
+		$list = $page->addControl(new TPanel(), 'List');
+		$template->stampInto($list, ['a' => 1]);
+		$template->prependInto('Other');
+		$template->setContent('<b>x</b>', true);
+		$template->setContent('<i>y</i>');
+		$this->assertSame([
+			['Prado.WebUI.TWebTemplate.command' => ['Tpl', 'appendTo', ['List', ['a' => 1]]]],
+			['Prado.WebUI.TWebTemplate.command' => ['Tpl', 'prependTo', ['Other', []]]],
+			['Prado.WebUI.TWebTemplate.command' => ['Tpl', 'setContent', ['<b>x</b>']]],
+			['Prado.WebUI.TWebTemplate.command' => ['Tpl', 'refreshAll', []]],
+			['Prado.WebUI.TWebTemplate.command' => ['Tpl', 'setContent', ['<i>y</i>']]],
+		], $page->getClientFunctions());
+	}
+
+	public function testCommandsOutsideACallbackCallNothing()
+	{
+		$page = new TActiveTestPage(false);
+		$template = $page->addControl(new TActiveWebTemplate(), 'Tpl');
+		$template->refreshAll();
+		$this->assertSame([], $page->getClientFunctions());
+	}
+
+	public function testRenderAddsTheId()
+	{
+		$page = new TActiveTestPage();
+		$template = $page->addControl(new TActiveWebTemplate(), 'Tpl');
+		$writer = new THtmlWriter(new TTextWriter());
+		PradoUnit::invoke($template, 'addAttributesToRender', $writer);
+		$writer->renderBeginTag('template');
+		$this->assertStringContainsString('id="Tpl"', $writer->flush());
 	}
 }

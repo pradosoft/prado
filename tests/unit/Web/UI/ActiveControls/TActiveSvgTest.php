@@ -17,6 +17,7 @@ use Prado\Web\UI\TControl;
 use Prado\Web\UI\TControlAdapter;
 use Prado\Web\UI\THtmlWriter;
 use Prado\Web\UI\TPage;
+use Prado\Web\UI\WebControls\TLiteral;
 use Prado\Web\UI\WebControls\TSvg;
 
 /**
@@ -216,6 +217,24 @@ class TActiveSvgTest extends TestCase
 		$svg->render(new THtmlWriter(new TTextWriter()));
 		$this->assertTrue($page->getCallbackClient()->getViewTransition());
 		$this->assertTrue($page->getClientFunctions()[0]['Prado.Element.replace'][4], 'The graphic still morphs.');
+	}
+
+	public function testRenderAfterPreRenderOutsideACallbackOnlyRenders()
+	{
+		[$page, , $svg] = $this->createLoadedSvg(false);
+		PradoUnit::invoke($svg, 'setControlStage', TControl::CS_PRERENDERED);
+		$writer = new THtmlWriter(new TTextWriter());
+		$svg->render($writer);
+		$this->assertStringContainsString('id="Chart"', $writer->flush());
+		$this->assertSame([], $page->getClientFunctions());
+	}
+
+	public function testRenderBeforePreRenderWithoutActiveChildrenIsDeferred()
+	{
+		[, $adapter, $svg] = $this->createLoadedSvg();
+		$svg->getControls()->add(new TLiteral());
+		$svg->render(new THtmlWriter(new TTextWriter()));
+		$this->assertSame(['Chart' => $svg], $adapter->rendered);
 	}
 
 	public function testReplaceModeSendsNoMorphArgument()
