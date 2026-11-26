@@ -342,7 +342,7 @@ class TBulletedListTest extends TestCase
 		[, $list] = $this->createPageList(['a' => 'A', 'b' => 'B<']);
 		$list->getItems()->itemAt(1)->setEnabled(false);
 		$this->assertSame(
-			"\n" . '<li>A</li>' . "\n" . '<li><span disabled="disabled">B&lt;</span></li>' . "\n",
+			"\n" . '<li>A</li>' . "\n" . '<li><span>B&lt;</span></li>' . "\n",
 			$this->renderContents($list)
 		);
 	}
@@ -372,7 +372,7 @@ class TBulletedListTest extends TestCase
 		$list->setDisplayMode(TBulletedListDisplayMode::HyperLink);
 		$list->setTarget('_blank');
 		$list->getItems()->itemAt(0)->setEnabled(false);
-		$this->assertSame("\n" . '<li><a disabled="disabled">A</a></li>' . "\n", $this->renderContents($list));
+		$this->assertSame("\n" . '<li><a role="link" aria-disabled="true">A</a></li>' . "\n", $this->renderContents($list));
 	}
 
 	public function testRenderHyperLinkDisabledList()
@@ -380,7 +380,7 @@ class TBulletedListTest extends TestCase
 		[, $list] = $this->createPageList(['/a' => 'A']);
 		$list->setDisplayMode(TBulletedListDisplayMode::HyperLink);
 		$list->setEnabled(false);
-		$this->assertSame("\n" . '<li><a disabled="disabled">A</a></li>' . "\n", $this->renderContents($list));
+		$this->assertSame("\n" . '<li><a role="link" aria-disabled="true">A</a></li>' . "\n", $this->renderContents($list));
 	}
 
 	public function testRenderLinkButton()
@@ -419,7 +419,7 @@ class TBulletedListTest extends TestCase
 		$list->setDisplayMode(TBulletedListDisplayMode::LinkButton);
 		$list->getItems()->itemAt(0)->setEnabled(false);
 		$output = $this->renderContents($list);
-		$this->assertStringContainsString('<li><a disabled="disabled">A</a></li>', $output);
+		$this->assertStringContainsString('<li><a role="link" aria-disabled="true">A</a></li>', $output);
 		$this->assertStringContainsString('<li><a id="List_c1" href="javascript:;//List_c1">B</a></li>', $output);
 		$this->assertCount(1, $page->getClientScript()->getPostBackControls());
 	}
@@ -429,7 +429,7 @@ class TBulletedListTest extends TestCase
 		[$page, $list] = $this->createPageList(['a' => 'A']);
 		$list->setDisplayMode(TBulletedListDisplayMode::LinkButton);
 		$list->setEnabled(false);
-		$this->assertSame("\n" . '<li><a disabled="disabled">A</a></li>' . "\n", $this->renderContents($list));
+		$this->assertSame("\n" . '<li><a role="link" aria-disabled="true">A</a></li>' . "\n", $this->renderContents($list));
 		$this->assertSame([], $page->getClientScript()->getPostBackControls());
 	}
 

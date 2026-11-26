@@ -23,7 +23,7 @@ TEncodeTrait backs the `Encode` property of a control that renders a text proper
 | Class | Text the property covers |
 |---|---|
 | [TLabel](./TLabel.md), [TLinkButton](./TLinkButton.md), [TCheckBox](./TCheckBox.md) (and TRadioButton), [TTableCell](./TTableCell.md) (and TTableHeaderCell), [TLiteral](./TLiteral.md) | `Text` |
-| [TTabView](./TTabView.md) | `Text` and `Caption` |
+| [TTabView](./TTabView.md), [TAccordionView](./TAccordionView.md) | `Text` and `Caption` |
 | [TPanel](./TPanel.md) | `GroupingText` |
 | [TTable](./TTable.md), [TDataGrid](./TDataGrid.md), [TFigure](./TFigure.md) | `Caption` |
 | [TDetails](./TDetails.md) | `Summary` |
