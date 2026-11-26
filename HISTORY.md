@@ -3,6 +3,7 @@ BUG: Issue #1497 - `TJuiEventParameter` reads a component property such as `Call
 BUG: Issue #1497 - `TJuiControlOptions` stores an option value set in PHP that is not a string, such as an array or null, as is; it threw a `TypeError` or `TPhpErrorException`. (belisoful)
 BUG: Issue #1497 - `TMapCollectionDiff` compares an array item by its elements, so a callback that changes an array-valued jQuery UI option sends it; it threw `TPhpErrorException` for the array. (belisoful)
 BUG: Issue #1497 - `TLinkButton` with `EnableClientScript` false renders a `<button type="submit">` named with its `UniqueID`, which posts back without javascript; it rendered an inert anchor. `TActiveLinkButton` still renders an anchor. (belisoful)
+BUG: Issue #1497 - An attribute, `aria-*`, or `data-*` key removed during a callback is removed on the client; `TMapCollectionDiff` reports a removed key with a null value. (belisoful)
 BUG: Issue #1497 - `TEventTriggeredCallback` keeps the `on` of the `online` event; it sent `line`. (belisoful)
 BUG: Issue #1497 - `TApplicationStatePersister` writes `global.cache` to a temporary file and renames it into place, and loads an empty file as no state; a concurrent read during a write threw `TPhpErrorException` from `unserialize()`. (belisoful)
 BUG: Issue #1497 - `TDataGrid` with `CaptionAlign` `Left` or `Right` renders `caption-side:top` with `text-align:left` or `text-align:right`, as `TTable` does; it rendered `caption-side:left` or `right`, which are not CSS values. (belisoful)

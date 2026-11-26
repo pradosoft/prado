@@ -406,6 +406,24 @@ class TCallbackPageStateTrackerTest extends TestCase
 		$this->assertContains('data-id', $names);
 	}
 
+	public function testUpdateAttributesRemovesANullAttribute()
+	{
+		$this->tracker->exposedUpdateAttributes(['data-id' => '42', 'aria-label' => null]);
+		$this->assertSame(['data-id'], array_column($this->client->getCollectedCalls('setAttribute'), 1));
+		$this->assertSame(['aria-label'], array_column($this->client->getCollectedCalls('removeAttribute'), 1));
+	}
+
+	public function testAnAttributeRemovedInACallbackIsRemovedOnTheClient()
+	{
+		$map = new \Prado\Collections\TMap(['title' => 't', 'data-x' => '1']);
+		$this->control->setViewState('Attributes', $map);
+		$this->tracker->trackChanges();
+		$map->remove('data-x');
+		$this->tracker->respondToChanges();
+		$this->assertSame(0, $this->client->getCollectedCallCount('setAttribute'));
+		$this->assertSame(['data-x'], array_column($this->client->getCollectedCalls('removeAttribute'), 1));
+	}
+
 	public function testUpdateAttributesEmptyMapCallsNothing()
 	{
 		$this->tracker->exposedUpdateAttributes([]);
