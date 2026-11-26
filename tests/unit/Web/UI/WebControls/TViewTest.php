@@ -48,6 +48,18 @@ class TViewTest extends TestCase
 		$this->assertFalse($view->getVisible(false));
 	}
 
+	public function testVisibleWithoutParentsIsTheOwnActiveState()
+	{
+		$parent = new TControl();
+		$view = new TView();
+		$parent->getControls()->add($view);
+		$view->setActive(true);
+		$parent->setVisible(false);
+
+		$this->assertTrue($view->getVisible(false));
+		$this->assertFalse($view->getVisible());
+	}
+
 	public function testSetVisibleThrows()
 	{
 		$view = new TView();

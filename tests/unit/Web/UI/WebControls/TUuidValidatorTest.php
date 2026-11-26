@@ -109,4 +109,28 @@ class TUuidValidatorTest extends TestCase
 		$this->assertFalse($options['Strict']);
 		$this->assertTrue($options['AllowNil']);
 	}
+
+	public static function provideVersions(): array
+	{
+		return [
+			'empty' => ['', []],
+			'one version' => ['4', [4]],
+			'one version out of range' => ['9', []],
+			'zero' => ['0', []],
+			'two versions' => ['4, 7', [4, 7]],
+			'a blank and a version' => [' ,7', [7]],
+			'a version out of range and a version' => ['0,1', [1]],
+		];
+	}
+
+	/**
+	 * @param string $versions the Versions.
+	 * @param int[] $expected the version list.
+	 */
+	#[\PHPUnit\Framework\Attributes\DataProvider('provideVersions')]
+	public function testVersionList(string $versions, array $expected)
+	{
+		$this->validator->setVersions($versions);
+		$this->assertSame($expected, $this->validator->getVersionList());
+	}
 }

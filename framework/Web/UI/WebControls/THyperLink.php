@@ -59,10 +59,15 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	protected function addAttributesToRender($writer)
 	{
 		$isEnabled = $this->getEnabled(true);
-		if ($this->getEnabled() && !$isEnabled) {
-			$writer->addAttribute('disabled', 'disabled');
-		}
 		parent::addAttributesToRender($writer);
+		if (!$isEnabled) {
+			// `disabled` is not an attribute of <a>; a link without href is inert
+			$writer->removeAttribute('disabled');
+			if ($this->getRole() === null) {
+				$writer->addAttribute('role', 'link');
+			}
+			$writer->addAttribute('aria-disabled', 'true');
+		}
 		if (($url = $this->getNavigateUrl()) !== '' && $isEnabled) {
 			$writer->addAttribute('href', $url);
 		}

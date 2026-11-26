@@ -175,4 +175,33 @@ class TColorPickerTest extends TestCase
 			$this->assertStringContainsString('aria-label="' . ($toolTip !== '' ? $toolTip : 'Choose color') . '"', $output);
 		}
 	}
+
+	public static function colorProvider(): array
+	{
+		return [
+			'short hex' => ['#f00', true],
+			'hex with alpha' => ['#ff000080', true],
+			'rgb' => ['rgb(1, 2, 3)', true],
+			'hsl with alpha' => ['hsl(120 50% 50% / 0.5)', true],
+			'name' => ['red', true],
+			'empty' => ['', false],
+			'five hex digits' => ['#12345', false],
+			'added declaration' => ['red;background-image:url(//host/x)', false],
+			'function then declaration' => ['rgb(1);x:y', false],
+			'other function' => ['expression(alert(1))', false],
+			'trailing newline' => ["red\n", false],
+		];
+	}
+
+	/**
+	 * @dataProvider colorProvider
+	 */
+	public function testButtonShowsOnlyACssColor(string $color, bool $shown)
+	{
+		[$picker] = $this->createPicker();
+		$picker->setText($color);
+		$output = $this->render($picker);
+		$this->assertSame($shown, str_contains($output, 'background-color:'));
+		$this->assertStringNotContainsString('background-image', substr($output, strpos($output, 'TColorPicker_button')));
+	}
 }

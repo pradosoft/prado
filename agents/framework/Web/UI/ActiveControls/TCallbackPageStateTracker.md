@@ -15,7 +15,7 @@ Tracks viewstate changes during callback to enable fine-grained client-side upda
 - `trackChanges()` - Captures current viewstate values
 - `respondToChanges()` - Calls handlers for detected changes
 - `getStatesToTrack()` - Returns TMap of states being tracked
-- `updateVisible($visible)`, `updateEnabled($enable)` - Client update handlers
+- `updateVisible($visible)`, `updateEnabled($enable)` - Client update handlers; `updateEnabled()` toggles `disabled`, or `aria-disabled` and the default `role="link"` for a THyperLink or TLinkButton
 - `updateStyle($style)`, `updateAttributes($attributes)` - Client update handlers
 - `updateKeyShortcuts()` - Sends `TWebControl::getKeyShortcutsAttributes()` once per callback when `KeyShortcuts`, `KeyShortcutScope`, or `KeyShortcutAllowReserved` changes, targeting the ClientID element (the input of a TCheckBox), and registers the `keyshortcuts` package (4.4.0)
 

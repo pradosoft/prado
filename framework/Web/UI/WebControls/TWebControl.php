@@ -1509,10 +1509,8 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	/**
 	 * Adds attribute name-value pairs to the writer.
 	 *
-	 * Renders in order: id, accesskey, role, disabled, tabindex, title, translate, lang,
-	 * dir, hidden, spellcheck, draggable, contenteditable, inputmode, enterkeyhint, inert,
-	 * popover, slot, autofocus, autocapitalize, autocorrect, writingsuggestions, part,
-	 * exportparts, microdata, aria-*, aria-invalid, key shortcuts, data-*, style,
+	 * Renders in order: id, accesskey, role, disabled, tabindex, title, the global attributes of
+	 * {@see addGlobalAttributesToRender}, aria-*, aria-invalid, key shortcuts, data-*, style,
 	 * custom attributes.
 	 *
 	 * @param \Prado\Web\UI\THtmlWriter $writer the HTML writer
@@ -1537,6 +1535,39 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 		if (($toolTip = $this->getToolTip()) !== '') {
 			$writer->addAttribute('title', $toolTip);
 		}
+		$this->addGlobalAttributesToRender($writer);
+		if ($aria = $this->getViewState('Aria', null)) {
+			$aria->addAttributesToRender($writer);
+		}
+		$this->addAriaInvalidAttributeToRender($writer);
+		$this->addKeyShortcutsAttributesToRender($writer);
+		if ($dataset = $this->getViewState('Dataset', null)) {
+			$dataset->addAttributesToRender($writer);
+		}
+		if ($style = $this->getViewState('Style', null)) {
+			$style->addAttributesToRender($writer);
+		}
+		if ($this->getHasAttributes()) {
+			foreach ($this->getAttributes() as $name => $value) {
+				$writer->addAttribute($name, $value);
+			}
+		}
+	}
+
+	/**
+	 * Adds the HTML global attributes that have no fixed place in a control's markup.
+	 *
+	 * Renders in order: translate, lang, dir, hidden, spellcheck, draggable, contenteditable,
+	 * inputmode, enterkeyhint, inert, popover, slot, autofocus, autocapitalize, autocorrect,
+	 * writingsuggestions, part, exportparts, microdata.
+	 * A control that renders more than one element, such as {@see TCheckBox}, calls this for the
+	 * element that carries its custom attributes.
+	 *
+	 * @param \Prado\Web\UI\THtmlWriter $writer the HTML writer
+	 * @since 4.4.0
+	 */
+	protected function addGlobalAttributesToRender($writer)
+	{
 		if (($translate = $this->getTranslate()) !== null) {
 			$writer->addAttribute('translate', $translate);
 		}
@@ -1592,22 +1623,6 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 			$writer->addAttribute('exportparts', $exportParts);
 		}
 		$this->addMicrodataAttributesToRender($writer);
-		if ($aria = $this->getViewState('Aria', null)) {
-			$aria->addAttributesToRender($writer);
-		}
-		$this->addAriaInvalidAttributeToRender($writer);
-		$this->addKeyShortcutsAttributesToRender($writer);
-		if ($dataset = $this->getViewState('Dataset', null)) {
-			$dataset->addAttributesToRender($writer);
-		}
-		if ($style = $this->getViewState('Style', null)) {
-			$style->addAttributesToRender($writer);
-		}
-		if ($this->getHasAttributes()) {
-			foreach ($this->getAttributes() as $name => $value) {
-				$writer->addAttribute($name, $value);
-			}
-		}
 	}
 
 	/**

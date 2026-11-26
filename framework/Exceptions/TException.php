@@ -82,10 +82,11 @@ class TException extends \Exception
 	 * @param int|string $errorCode The Optional PHP Exception Error Code.  In old style
 	 *   Exceptions this is a string error Message Code.  If this is a string, then the
 	 *   $errorCode acts as and $errorMessage becomes a parameter in $args.
-	 * @param string $errorMessage The error message code when $errorCode is an integer.
+	 * @param mixed $errorMessage The error message code when $errorCode is an integer.
 	 *   This can be a string that is listed in a message file. If so, the listed
-	 *   message is the error message.
-	 * @param array $args These are the arguments of the placeholders ({0}, {1}, {2}, etc.)
+	 *   message is the error message.  When $errorCode is the message code, this is
+	 *   the first argument of the message and may be any value.
+	 * @param mixed ...$args These are the arguments of the placeholders ({0}, {1}, {2}, etc.)
 	 *   in the message except the last argument.  If the last argument is a Throwable
 	 *   it is treated as the $previous Exception for exception chaining.  Each argument
 	 *   is converted by {@see formatErrorArgument()}.

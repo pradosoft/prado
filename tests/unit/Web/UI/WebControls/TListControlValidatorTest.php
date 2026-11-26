@@ -290,4 +290,44 @@ class TListControlValidatorTest extends TestCase
 			$this->assertSame('listcontrolvalidator_invalid_control', $e->getErrorCode());
 		}
 	}
+
+	public static function provideClientScriptOptionBounds(): array
+	{
+		$data = [];
+		foreach ([-1, 1] as $min) {
+			foreach ([-1, 3] as $max) {
+				foreach (['', 'a'] as $required) {
+					$data["min $min, max $max, required '$required'"] = [$min, $max, $required];
+				}
+			}
+		}
+		return $data;
+	}
+
+	/**
+	 * @param int $min the MinSelection.
+	 * @param int $max the MaxSelection.
+	 * @param string $required the RequiredSelections.
+	 */
+	#[\PHPUnit\Framework\Attributes\DataProvider('provideClientScriptOptionBounds')]
+	public function testClientScriptOptionBounds(int $min, int $max, string $required)
+	{
+		[$validator, $list] = $this->createPageValidator();
+		$validator->setMinSelection($min);
+		$validator->setMaxSelection($max);
+		$validator->setRequiredSelections($required);
+		$options = PradoUnit::invoke($validator, 'getClientScriptOptions');
+		$this->assertSame($min === -1 ? null : $min, $options['Min'] ?? null);
+		$this->assertSame($max === -1 ? null : $max, $options['Max'] ?? null);
+		$this->assertSame($required === '' ? null : $required, $options['Required'] ?? null);
+		$this->assertSame(4, $options['TotalItems']);
+	}
+
+	public function testSelectionOfAOneItemList()
+	{
+		[$validator, $list] = $this->createPageValidator([], ['a' => 'A']);
+		$this->assertSame([], PradoUnit::invoke($validator, 'getSelection', $list));
+		$list->setSelectedValues(['a']);
+		$this->assertSame(['a'], PradoUnit::invoke($validator, 'getSelection', $list));
+	}
 }

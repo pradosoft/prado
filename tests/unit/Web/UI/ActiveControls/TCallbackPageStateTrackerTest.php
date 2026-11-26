@@ -481,4 +481,31 @@ class TCallbackPageStateTrackerTest extends TestCase
 		$this->tracker->respondToChanges();
 		$this->assertSame(0, $this->client->getCollectedCallCount());
 	}
+
+	public static function linkProvider(): array
+	{
+		return [[\Prado\Web\UI\WebControls\THyperLink::class], [\Prado\Web\UI\WebControls\TLinkButton::class]];
+	}
+
+	/**
+	 * @dataProvider linkProvider
+	 */
+	public function testEnabledOfALinkTogglesAriaDisabled(string $class)
+	{
+		$link = new $class();
+		$tracker = new TCallbackPageStateTrackerTestable($link, $this->client);
+		$link->setEnabled(true);
+		$tracker->trackChanges();
+		$link->setEnabled(false);
+		$tracker->respondToChanges();
+		$sets = $this->client->getCollectedCalls('setAttribute');
+		$this->assertSame([['aria-disabled', 'true'], ['role', 'link']], array_map(fn ($call) => [$call[1], $call[2]], $sets));
+
+		$link->setRole('button');
+		$tracker->trackChanges();
+		$link->setEnabled(true);
+		$tracker->respondToChanges();
+		$removes = $this->client->getCollectedCalls('removeAttribute');
+		$this->assertSame(['aria-disabled'], array_map(fn ($call) => $call[1], $removes), 'an own role stays');
+	}
 }

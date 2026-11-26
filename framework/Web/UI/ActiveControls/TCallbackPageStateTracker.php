@@ -11,6 +11,8 @@
 namespace Prado\Web\UI\ActiveControls;
 
 use Prado\Collections\TMap;
+use Prado\Web\UI\WebControls\THyperLink;
+use Prado\Web\UI\WebControls\TLinkButton;
 use stdClass;
 
 /**
@@ -220,10 +222,20 @@ class TCallbackPageStateTracker
 
 	/**
 	 * Enables or disables the control on the client side through the `disabled` attribute.
+	 * A {@see THyperLink} or {@see TLinkButton} renders as `<a>`, which has no `disabled`
+	 * attribute, so a link toggles `aria-disabled="true"`, and `role="link"` unless the
+	 * link sets its own role, as its server rendering does.
 	 * @param bool $enable true to enable the control, false to disable.
 	 */
 	protected function updateEnabled($enable)
 	{
+		if ($this->_control instanceof THyperLink || $this->_control instanceof TLinkButton) {
+			$this->updateOptionalAttribute('aria-disabled', $enable === false ? 'true' : null);
+			if ($this->_control->getRole() === null) {
+				$this->updateOptionalAttribute('role', $enable === false ? 'link' : null);
+			}
+			return;
+		}
 		$this->updatePresenceAttribute('disabled', $enable === false);
 	}
 
