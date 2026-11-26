@@ -28,6 +28,10 @@ Upgrading from v4.3.3
   `dbtablegateway_mismatch_column_name` unless its whole condition is column names joined by `And` or `Or`. In 4.3 the
   text that matched no column was ignored, so `findByFooAndName($a, $b)` searched by `Name` alone, and `deleteBy...`
   deleted by the columns it found. Rename such a call to the columns it means.
+- Issue #1497 - A JuiControl callback raises only an event its control lists in `getValidEvents()`. In 4.3 the
+  callback raised the `On` event of any name the client sent, so `Prado.JuiCallback(id, 'callback', ...)` reached
+  `TJuiDroppable.OnCallback`, which is not a droppable event. Handle a jQuery UI droppable event such as `OnDrop`
+  instead, or raise a `TCallback` for a custom callback.
 - Issue #1497 - `TJuiAutoComplete.MinChars` defaults to 1, so the client asks for suggestions once one character is
   typed. In 4.3 the default sent `minLength: ""`, and the client asked for suggestions for empty text. Set
   `MinChars="0"` for the 4.3 behavior.

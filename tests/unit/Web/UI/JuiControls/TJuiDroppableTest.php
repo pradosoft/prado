@@ -29,6 +29,20 @@ class TJuiDroppableTest extends TJuiWidgetTestCase
 		return ['tolerance', 'fit', '"fit"'];
 	}
 
+	/**
+	 * `callback` is not a droppable event, so a callback naming it does not raise OnCallback.
+	 */
+	public function testCallbackEventIsNotADroppableEvent(): void
+	{
+		$configure = function ($control, $page) {
+			$control->attachEventHandler('OnCallback', fn () => $page->events[] = 'callback');
+		};
+		$this->runPage($this->newPage($configure));
+		$page = $this->newPage($configure);
+		$this->runCallback($page, 'Widget', ['event' => 'callback']);
+		$this->assertSame([], $page->events);
+	}
+
 	public function testOnCallbackRaisesItsEvent(): void
 	{
 		$control = $this->newControl();
