@@ -896,6 +896,7 @@ response_status_reason_missing			= HTTP/1.1 requires a reason phrase for an exte
 response_status_reason_barchars			= The HTTP reason phrase cannot contain a carriage return or line feed.
 
 activefileupload_temppath_invalid		= TActiveFileUpload TempPath path ''{0}'' does not exist or is not writable by Web server process.
+activefileupload_callbacktoken_invalid	= TActiveFileUpload upload callback token is invalid or has expired.
 
 tactivetablecell_control_outoftable		= {0} ''{1}'' must be enclosed within a TTableRow control.
 tactivetablecell_control_notincollection = {0} ''{1}'' is not a member of the TTableCellCollection of the parent TTableRow control.

@@ -14,7 +14,6 @@ namespace Prado\Web\UI\ActiveControls;
 /**
  * Load TActiveControlAdapter and TFileUpload.
  */
-use Exception;
 use Prado\Exceptions\TExitException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Prado;
@@ -332,12 +331,6 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	{
 		parent::onInit($sender);
 
-		if (!$this->getApplication()->getCache()) {
-			if (!$this->getApplication()->getSecurityManager()) {
-				throw new Exception('TActiveFileUpload needs either an application level cache or a security manager to work securely');
-			}
-		}
-
 		if (!is_writable(Prado::getPathOfNamespace($this->getTempPath()))) {
 			throw new TInvalidDataValueException("activefileupload_temppath_invalid", $this->getTempPath());
 		}
@@ -353,7 +346,8 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	public function raiseCallbackEvent($param)
 	{
 		$cp = $param->getCallbackParameter();
-		if ($key = $cp->targetID == $this->_target->getUniqueID()) {
+		if ($cp->targetID == $this->_target->getUniqueID()) {
+			$key = $this->getUniqueID();
 			$params = $this->popParamsByToken($cp->callbackToken);
 			foreach ($params->files as $index => $file) {
 				$_FILES[$key]['name'][$index] = stripslashes($file['fileName']);
@@ -382,38 +376,49 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 		$this->onFileUpload($this->getPage()->getRequest()->itemAt('TActiveFileUpload_TargetId'));
 	}
 
+	/**
+	 * Keeps the parameters of the uploaded files for the upload callback. With an
+	 * application cache, the cache holds them for 5 minutes under a random token, so
+	 * the client cannot forge them. Otherwise, the token is the parameters encrypted by
+	 * the security manager, which a client can forge only with the application key.
+	 * @param TActiveFileUploadCallbackParams $params the parameters of the uploaded files
+	 * @return string the token of the parameters
+	 */
 	protected function pushParamsAndGetToken(TActiveFileUploadCallbackParams $params)
 	{
 		if ($cache = $this->getApplication()->getCache()) {
-			// this is the most secure method, file info can't be forged from client side, no matter what
-			$token = md5('TActiveFileUpload::Params::' . $this->getClientID() . '::' . rand(1000 * 1000, 9999 * 1000));
-			$cache->set($token, serialize($params), 5 * 60); // expire in 5 minutes - the callback should arrive back in seconds, actually
-		} elseif ($mgr = $this->getApplication()->getSecurityManager()) {
-			// this is a less secure method, file info can be still forged from client side, but only if attacker knows the secret application key
-			$token = urlencode(base64_encode($mgr->encrypt(serialize($params))));
+			$token = md5('TActiveFileUpload::Params::' . $this->getClientID() . '::' . bin2hex(random_bytes(16)));
+			$cache->set($token, serialize($params), 5 * 60);
 		} else {
-			throw new Exception('TActiveFileUpload needs either an application level cache or a security manager to work securely');
+			$token = urlencode(base64_encode($this->getApplication()->getSecurityManager()->encrypt(serialize($params))));
 		}
-
 		return $token;
 	}
 
+	/**
+	 * Returns the parameters of the uploaded files that {@see pushParamsAndGetToken} kept.
+	 * A cached token is removed, so it is used once.
+	 * @param mixed $token the token from the upload callback
+	 * @throws TInvalidCallbackException if the token is not a string, has expired, or does
+	 *   not decrypt to the parameters
+	 * @return TActiveFileUploadCallbackParams the parameters of the uploaded files
+	 */
 	protected function popParamsByToken($token)
 	{
-		if ($cache = $this->getApplication()->getCache()) {
-			$v = $cache->get($token);
-			assert($v != '');
-			$cache->delete($token); // remove it from cache so it can't be used again and won't take up space either
-			$params = unserialize($v, ['allowed_classes' => [TActiveFileUploadCallbackParams::class]]);
-		} elseif ($mgr = $this->getApplication()->getSecurityManager()) {
-			$v = $mgr->decrypt(base64_decode(urldecode($token)));
-			$params = unserialize($v, ['allowed_classes' => [TActiveFileUploadCallbackParams::class]]);
-		} else {
-			throw new Exception('TActiveFileUpload needs either an application level cache or a security manager to work securely');
+		$value = false;
+		if (is_string($token)) {
+			if ($cache = $this->getApplication()->getCache()) {
+				$value = $cache->get($token);
+				$cache->delete($token);
+			} else {
+				$value = $this->getApplication()->getSecurityManager()->decrypt(base64_decode(urldecode($token)));
+			}
 		}
-
-		assert($params instanceof TActiveFileUploadCallbackParams);
-
+		// A forged or truncated value warns; the result is checked below.
+		$params = is_string($value) ? @unserialize($value, ['allowed_classes' => [TActiveFileUploadCallbackParams::class]]) : false;
+		if (!($params instanceof TActiveFileUploadCallbackParams)) {
+			throw new TInvalidCallbackException('activefileupload_callbacktoken_invalid');
+		}
 		return $params;
 	}
 
