@@ -199,4 +199,17 @@ class TActivePagerTest extends TestCase
 		$single->handleCallback($single, new TCallbackEventParameter($page->getResponse(), null));
 		$this->assertCount($rendered, $page->getClientFunctions());
 	}
+
+	public function testImageButtonShowsThePageImageAndHidesWhenDisabled()
+	{
+		$pager = new TActivePager();
+		$pager->setNextPageImageUrl('next.png');
+		$pager->setNumericPageImageUrl('page{0}.png');
+		$next = PradoUnit::invoke($pager, 'createPagerButton', TPagerButtonType::ImageButton, true, '>', TActivePager::CMD_PAGE_NEXT, '');
+		$this->assertSame('next.png', $next->getImageUrl());
+		$this->assertTrue($next->getVisible(false));
+		$numeric = PradoUnit::invoke($pager, 'createPagerButton', TPagerButtonType::ImageButton, false, '2', TActivePager::CMD_PAGE, '1');
+		$this->assertSame('page2.png', $numeric->getImageUrl());
+		$this->assertFalse($numeric->getVisible(false));
+	}
 }
