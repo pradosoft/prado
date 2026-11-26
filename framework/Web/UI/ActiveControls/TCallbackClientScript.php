@@ -718,7 +718,8 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * Renders the control and return the content boundary from
 	 * TCallbackResponseWriter. This method should only be used by framework
 	 * component developers. The render() method is defered to be called in the
-	 * TActivePageAdapter class.
+	 * TActivePageAdapter class. A control already registered for rendering keeps
+	 * its writer, so its boundary is returned.
 	 * @param \Prado\Web\UI\TControl $control control to be rendered on callback response.
 	 * @return string the boundary for which the rendered content is wrapped.
 	 */
@@ -726,7 +727,9 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	{
 		$writer = $this->getResponse()->createHtmlWriter();
 		$adapter = $control->getPage()->getAdapter();
-		$adapter->registerControlToRender($control, $writer);
+		if (($registered = $adapter->registerControlToRender($control, $writer)) instanceof THtmlWriter) {
+			$writer = $registered;
+		}
 		return $writer->getWriter()->getBoundary();
 	}
 

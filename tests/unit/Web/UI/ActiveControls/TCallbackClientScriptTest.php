@@ -620,4 +620,41 @@ class TCallbackClientScriptTest extends TestCase
 		$page->getCallbackClient()->toggle('E');
 		$this->assertSame([['Prado.Element.j' => ['E', 'toggle', ['duration' => 0]]]], $page->getClientFunctions());
 	}
+
+	public function testReplaceWithAControlRegistersItForRenderingUnderANewBoundary()
+	{
+		[$page, $client] = $this->createAdaptedPage();
+		$label = $this->addLabel($page);
+		$client->replaceContent('E', $label);
+		$client->appendScriptBlock($label);
+		$controls = PradoUnit::getProp($page->getAdapter(), '_controlsToRender');
+		$this->assertCount(1, $controls);
+		$boundary = reset($controls)[1]->getWriter()->getBoundary();
+		$functions = $page->getClientFunctions();
+		$this->assertSame(['Prado.Element.replace' => ['E', null, $boundary, true]], $functions[0]);
+		$this->assertSame(['Prado.Element.appendScriptBlock' => [$boundary]], $functions[1]);
+	}
+
+	public function testRenderedContentBoundaryOfAnAdapterThatReturnsNoWriter()
+	{
+		Prado::getApplication()->setResponse(new TTestRecordingResponse());
+		$page = new TTestCallbackPage();
+		$page->setAdapter(new TCallbackClientScriptTestAdapter($page));
+		$label = $this->addLabel($page);
+		$page->getCallbackClient()->appendScriptBlock($label);
+		$this->assertSame($page->getAdapter()->writer->getWriter()->getBoundary(), $page->getClientFunctions()[0]['Prado.Element.appendScriptBlock'][0]);
+	}
+}
+
+/**
+ * A page adapter whose registerControlToRender() keeps the writer and returns nothing.
+ */
+class TCallbackClientScriptTestAdapter extends TActivePageAdapter
+{
+	public ?THtmlWriter $writer = null;
+
+	public function registerControlToRender($control, $writer)
+	{
+		$this->writer = $writer;
+	}
 }

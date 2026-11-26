@@ -134,9 +134,11 @@ class TActivePageAdapter extends TControlAdapter
 	}
 
 	/**
-	 * Register a control for defered render() call.
+	 * Register a control for defered render() call. A control registers once; a later
+	 * call keeps the first writer.
 	 * @param \Prado\Web\UI\TControl $control control for defered rendering
 	 * @param \Prado\Web\UI\THtmlWriter $writer the renderer
+	 * @return \Prado\Web\UI\THtmlWriter the writer the control renders into
 	 */
 	public function registerControlToRender($control, $writer)
 	{
@@ -144,6 +146,7 @@ class TActivePageAdapter extends TControlAdapter
 		if (!isset($this->_controlsToRender[$id])) {
 			$this->_controlsToRender[$id] = [$control, $writer];
 		}
+		return $this->_controlsToRender[$id][1];
 	}
 
 	/**
