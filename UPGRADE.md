@@ -32,6 +32,9 @@ Upgrading from v4.3.3
   callback raised the `On` event of any name the client sent, so `Prado.JuiCallback(id, 'callback', ...)` reached
   `TJuiDroppable.OnCallback`, which is not a droppable event. Handle a jQuery UI droppable event such as `OnDrop`
   instead, or raise a `TCallback` for a custom callback.
+- Issue #1497 - The default item of `TJuiSortable` and `TJuiSelectable` renders as `<li id="WidgetID_N" data-index="N">`;
+  in 4.3 it was `<li id="N">`. The `ui.index` of their callbacks still holds the indexes N. Style sheets and scripts
+  that select the items by `#N` select them by `[data-index="N"]` or by the new ID.
 - Issue #1497 - `TJuiAutoComplete.MinChars` defaults to 1, so the client asks for suggestions once one character is
   typed. In 4.3 the default sent `minLength: ""`, and the client asked for suggestions for empty text. Set
   `MinChars="0"` for the 4.3 behavior.

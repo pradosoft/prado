@@ -21,6 +21,7 @@ use Prado\Web\UI\ActiveControls\TCallbackEventParameter;
 use Prado\Web\UI\INamingContainer;
 use Prado\Web\UI\TTemplate;
 use Prado\Web\UI\WebControls\TRepeater;
+use Prado\Web\UI\WebControls\TEncodeTrait;
 use Prado\Web\UI\WebControls\TPanel;
 
 /**
@@ -83,11 +84,16 @@ use Prado\Web\UI\WebControls\TPanel;
  * are considered as text for the suggestion. Text within HTML elements with CSS class name
  * "informal" are ignored as text for suggestions.
  *
+ * The client shows each suggestion as HTML. The default item template writes the Data of
+ * the suggestion, HTML-encoded when {@see setEncode Encode} is true.
+ *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @since 3.1
  */
 class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiOptions
 {
+	use TEncodeTrait;
+
 	/**
 	 * @var TRepeater template for repeater items
 	 */
@@ -330,7 +336,10 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	protected function createRepeater()
 	{
 		$repeater = new TRepeater();
-		$repeater->setItemTemplate(new TTemplate('<%# $this->Data %>', null));
+		$repeater->setItemTemplate(new TTemplate(
+			'<%# $this->Parent->Parent->getEncode() ? \\Prado\\Web\\THttpUtility::htmlEncode($this->Data) : $this->Data %>',
+			null
+		));
 		$this->getControls()->add($repeater);
 		return $repeater;
 	}

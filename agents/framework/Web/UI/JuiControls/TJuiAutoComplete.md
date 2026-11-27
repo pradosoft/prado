@@ -12,7 +12,8 @@ Textbox with jQuery UI autocomplete suggestions. Extends [TActiveTextBox](../Act
 
 ## Key Properties/Methods
 
-- `getSuggestions()` - Returns the TRepeater for suggestion items
+- `getSuggestions()` - Returns the TRepeater for suggestion items; the client shows each rendered item as HTML
+- `getEncode()` / `setEncode($value)` - Whether the default suggestion item HTML-encodes its Data (`TEncodeTrait`, default false)
 - `getResultPanel()` - Returns the TPanel holding suggestion results
 - `setDataSource($data)` - Sets data source for suggestions
 - `getSeparator()` / `setSeparator($value)` - Token separators
