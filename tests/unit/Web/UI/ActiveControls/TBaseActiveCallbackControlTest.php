@@ -170,6 +170,21 @@ class TBaseActiveCallbackControlTest extends TestCase
 		$options = PradoUnit::invoke($callback->getActiveControl(), 'getClientSideOptions');
 		$this->assertSame('Other', $options['EventTarget']);
 		$this->assertSame('', $options['CausesValidation']);
+		$callback->getActiveControl()->setCausesValidation(false);
+		$options = PradoUnit::invoke($callback->getActiveControl(), 'getClientSideOptions');
+		$this->assertSame('Other', $options['EventTarget']);
+		$this->assertFalse($options['CausesValidation']);
+	}
+
+	public function testANullOptionTakesItsDefault()
+	{
+		[, $callback] = $this->createCallback();
+		$active = $callback->getActiveControl();
+		$active->setCallbackParameter('p');
+		$active->setCallbackParameter(null);
+		$this->assertSame('', $active->getCallbackParameter());
+		$active->setValidationGroup(null);
+		$this->assertSame('', $active->getValidationGroup());
 	}
 
 	public function testCallbackOptionsByPathReadANamedObject()
@@ -292,5 +307,21 @@ class TBaseActiveCallbackControlTest extends TestCase
 		$active->setCallbackOptions('Opts');
 		$this->expectException(TConfigurationException::class);
 		PradoUnit::invoke($active, 'getDefaultClientSideOptions');
+	}
+
+	/**
+	 * A control outside any naming container finds no callback options by ID.
+	 */
+	public function testCallbackOptionsOfADetachedControlThrow()
+	{
+		foreach ([new TCallback(), new TActiveCheckBoxList()] as $control) {
+			$control->getActiveControl()->setCallbackOptions('Opts');
+			try {
+				PradoUnit::invoke($control->getActiveControl(), 'getDefaultClientSideOptions');
+				$this->fail('no exception for ' . get_class($control));
+			} catch (TConfigurationException $e) {
+				$this->assertStringContainsString('Opts', $e->getMessage());
+			}
+		}
 	}
 }
