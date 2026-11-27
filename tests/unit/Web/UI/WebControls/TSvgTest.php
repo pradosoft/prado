@@ -242,4 +242,57 @@ class TSvgTest extends TestCase
 		$this->assertStringContainsString('id="a_g"', $this->render($a));
 		$this->assertStringContainsString('id="b_g"', $this->render($b));
 	}
+
+	public function testNegativePixelHeightUnsets()
+	{
+		$svg = new TSvg();
+		$svg->setPixelHeight(10);
+		$svg->setPixelHeight(-1);
+		$this->assertSame(-1, $svg->getPixelHeight());
+	}
+
+	public function testUnnamedGraphicWarnsInDebugMode()
+	{
+		$app = \Prado\Prado::getApplication();
+		$mode = $app->getMode();
+		$logger = \Prado\Prado::getLogger();
+		$logger->deleteLogs(\Prado\Util\Log\TLogger::WARNING, TSvg::class);
+		try {
+			$app->setMode(\Prado\TApplicationMode::Debug);
+			$this->svg()->onPreRender(null);
+			$logs = $logger->deleteLogs(\Prado\Util\Log\TLogger::WARNING, TSvg::class);
+			$this->assertCount(1, $logs);
+			$this->assertStringContainsString("TSvg 'icon' has no text alternative", $logs[0][0]);
+
+			$named = $this->svg();
+			$named->setAlternateText('Logo');
+			$named->onPreRender(null);
+			$this->assertSame([], $logger->deleteLogs(\Prado\Util\Log\TLogger::WARNING, TSvg::class));
+		} finally {
+			$app->setMode($mode);
+		}
+	}
+
+	public function testContentCombinationsOfDecorativeTextDescriptionAndDocument()
+	{
+		foreach ([false, true] as $decorative) {
+			foreach (['', 'Logo'] as $text) {
+				foreach (['', 'A round logo'] as $description) {
+					foreach (['', '<svg xmlns="http://www.w3.org/2000/svg"><circle r="1"/></svg>'] as $markup) {
+						$svg = $this->svg();
+						$svg->setDecorative($decorative);
+						$svg->setAlternateText($text);
+						$svg->setDescription($description);
+						$svg->setSvg($markup);
+						$html = $this->renderContents($svg);
+						$label = 'decorative ' . var_export($decorative, true) . ", text '$text', description '$description', document " . ($markup !== '' ? 'yes' : 'no');
+						$named = !$decorative && $text !== '';
+						$this->assertSame($named, str_contains($html, '>Logo</title>'), $label);
+						$this->assertSame($named && $description !== '', str_contains($html, '>A round logo</desc>'), $label);
+						$this->assertSame($markup !== '', str_contains($html, '<circle r="1"/>'), $label);
+					}
+				}
+			}
+		}
+	}
 }

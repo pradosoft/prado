@@ -174,4 +174,38 @@ class TLinkTagTest extends TestCase
 		$this->assertNotFalse($linkAt);
 		$this->assertGreaterThan($metaAt, $linkAt);
 	}
+
+	public function testIntegrityAndTitleRender()
+	{
+		$tag = new TLinkTag();
+		$tag->setRel('alternate');
+		$tag->setHref('/feed.xml');
+		$tag->setIntegrity('sha384-abc');
+		$tag->setTitle('News feed');
+		$this->assertSame('sha384-abc', $tag->getIntegrity());
+		$this->assertSame('News feed', $tag->getTitle());
+		$html = $this->renderTag($tag);
+		$this->assertStringContainsString('integrity="sha384-abc"', $html);
+		$this->assertStringContainsString('title="News feed"', $html);
+	}
+
+	public function testCollectionFindsTheSecondTagAndNoneInAnEmptyCollection()
+	{
+		$collection = new TLinkTagCollection();
+		$collection->add(new TLinkTag());
+		$tag = new TLinkTag();
+		$tag->setID('icon');
+		$collection->add($tag);
+		$this->assertSame(1, $collection->findIndexByID('icon'));
+		$this->assertSame(-1, (new TLinkTagCollection())->findIndexByID('icon'));
+	}
+
+	public function testCrossOriginAcceptsEachKeyword()
+	{
+		$tag = new TLinkTag();
+		foreach (['anonymous' => 'anonymous', ' USE-Credentials ' => 'use-credentials', '' => ''] as $value => $expected) {
+			$tag->setCrossOrigin($value);
+			$this->assertSame($expected, $tag->getCrossOrigin());
+		}
+	}
 }

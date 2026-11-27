@@ -69,6 +69,7 @@ class TJavascriptLogger extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function onPreRender($param)
 	{
+		parent::onPreRender($param);
 		$key = strtolower($this->getToggleKey());
 		$code = self::$_keyCodes[$key] ?? 74;
 		$js = "var logConsole; jQuery(function() { logConsole = new LogConsole($code)}); ";

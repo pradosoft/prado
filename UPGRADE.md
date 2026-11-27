@@ -256,6 +256,9 @@ Upgrading from v4.3.3
 - Issue #1497 - A `TActivePager` with `ButtonType` `ImageButton` renders the image button of an unavailable page, such
   as Previous on the first page, disabled, as `TPager` does; in 4.3 it hid the button, so the pager shifted between
   pages. CSS or script that relies on the missing button selects `input[type="image"][disabled]`.
+- Issue #1497 - A `TImageMap` with hot spots renders its `<img>` with its ClientID as the `id`; in 4.3 it rendered the
+  UniqueID. In a disabled `TImageMap` every hot spot renders without `href` and posts back nothing. A hot spot without
+  `AlternateText` renders no empty `title` or `alt`.
 - Issue #1497 - `TXmlElement` array access throws `TInvalidDataTypeException` for an offset that is not null, an int,
   a string, or a `Stringable`. In 4.3 a float or bool offset addressed the attribute named by its string, or raised a
   PHP error. Use an int child index or a string attribute name.
