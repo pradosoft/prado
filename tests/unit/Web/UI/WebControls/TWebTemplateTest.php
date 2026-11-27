@@ -335,4 +335,85 @@ class TWebTemplateTest extends TestCase
 		$control->renderControl(new \Prado\Web\UI\THtmlWriter($textWriter));
 		$this->assertSame('', $textWriter->flush());
 	}
+
+	/**
+	 * Creates a template with an ID on a page with a recording client script manager.
+	 * @return array{TWebTemplate, \Prado\Test\Unit\Harness\Web\UI\TTestRecordingClientScript} the template and the client script
+	 */
+	private function onPage(): array
+	{
+		$page = new \Prado\Web\UI\TPage();
+		$cs = \Prado\Test\Unit\Harness\Web\UI\TTestRecordingClientScript::attachTo($page);
+		$control = new TWebTemplate();
+		$control->setID('row');
+		$page->getControls()->add($control);
+		return [$control, $cs];
+	}
+
+	public function testPreRenderRegistersTheClientScript()
+	{
+		[$control, $cs] = $this->onPage();
+		$control->onPreRender(null);
+		$this->assertSame(['webtemplate'], $cs->pradoScripts);
+		$this->assertSame('Prado.WebUI.TWebTemplate', $cs->postBackControls[0][0]);
+		$this->assertSame([], $cs->getHiddenFields());
+		$this->assertStringStartsWith('<template id="row"', $this->render($control));
+	}
+
+	public function testPreRenderWithPersistenceRegistersTheStateField()
+	{
+		[$control, $cs] = $this->onPage();
+		$control->setPersistInstances(true);
+		$control->onPreRender(null);
+		$this->assertSame(['row_instances' => ''], $cs->getHiddenFields());
+		$this->assertArrayHasKey($control->getUniqueID(), PradoUnit::getProp($control->getPage(), '_controlsRegisteredForPostData'));
+	}
+
+	public function testPreRenderWithAShadowRootRegistersNoScript()
+	{
+		[$control, $cs] = $this->onPage();
+		$control->setShadowRootMode(TShadowRootMode::Open);
+		$control->onPreRender(null);
+		$this->assertSame([], $cs->pradoScripts);
+	}
+
+	public function testNestedTemplateContentIsValidated()
+	{
+		$control = $this->newTemplate();
+		$nested = new TWebTemplate();
+		$nested->getControls()->add(new \Prado\Web\UI\WebControls\TTextBox());
+		$control->getControls()->add($nested);
+		$this->expectException(\Prado\Exceptions\TConfigurationException::class);
+		$control->onPreRender(null);
+	}
+
+	public function testNestedTemplateWithMarkupPassesValidation()
+	{
+		$control = $this->newTemplate();
+		$nested = new TWebTemplate();
+		$nested->getControls()->add('{{name}}');
+		$control->getControls()->add($nested);
+		$control->onPreRender(null);
+		$this->assertSame($nested, $control->getControls()->itemAt(0));
+	}
+
+	public function testRaisePostDataChangedEventDoesNothing()
+	{
+		$control = $this->newTemplate();
+		$control->raisePostDataChangedEvent();
+		$this->assertSame('', $control->getPersistedInstances());
+	}
+
+	public function testPreRenderWithoutValidationStillRegistersTheScript()
+	{
+		foreach ([false, true] as $persist) {
+			[$control, $cs] = $this->onPage();
+			$control->setValidateContent(false);
+			$control->setPersistInstances($persist);
+			$control->getControls()->add(new \Prado\Web\UI\WebControls\TTextBox());
+			$control->onPreRender(null);
+			$this->assertSame(['webtemplate'], $cs->pradoScripts);
+			$this->assertSame($persist, $cs->getHiddenFields() !== []);
+		}
+	}
 }

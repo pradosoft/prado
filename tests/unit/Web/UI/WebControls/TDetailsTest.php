@@ -279,4 +279,14 @@ class TDetailsTest extends TestCase
 		$this->assertStringNotContainsString('<h2', $output);
 		$this->assertStringContainsString('<summary>', $output);
 	}
+
+	public function testOpenAndGroupRenderTogether()
+	{
+		$details = new \Prado\Web\UI\WebControls\TDetails();
+		$details->setOpen(true);
+		$details->setGroup('faq');
+		$html = $this->render($details);
+		$this->assertStringContainsString('open="open"', $html);
+		$this->assertStringContainsString('name="faq"', $html);
+	}
 }
