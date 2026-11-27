@@ -634,15 +634,6 @@ class TDbCronManager extends TCronModule implements IDbModule
 	}
 
 	/**
-	 * @return bool whether the connection is Oracle
-	 * @since 4.4.0
-	 */
-	protected function getIsOracle(): bool
-	{
-		return $this->getDbDriver() === TDbDriver::DRIVER_OCI;
-	}
-
-	/**
 	 * Returns the PDO type of an integer parameter.  pdo_ibm accepts only untyped parameters
 	 * ({@see TDbDriverCapabilities::requiresUntypedParameters}).
 	 * @return ?int `PARAM_INT`, or null for an untyped parameter
