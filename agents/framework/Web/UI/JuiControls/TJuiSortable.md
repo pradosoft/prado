@@ -13,7 +13,8 @@ Sortable list based on jQuery UI Sortable interaction. Extends [TActivePanel](..
 ## Key Properties/Methods
 
 - `setDataSource($data)` - Sets data source for sortable items
-- `getSortables()` - Returns the internal TRepeater
+- `getSortables()` - Returns the internal TRepeater; its default item is `<li id="WidgetID_N" data-index="N">` with the Data, HTML-encoded when `Encode` is true
+- `sort` / `stop` callbacks - send the item order as `ui.index`: each item's `data-index`, or its `id` for a custom ItemTemplate or AlternatingItemTemplate
 - `getOptions()` - Sortable options (connectWith, containment, cursor, handle, etc.)
 - `getValidOptions()` - Valid options: appendTo, axis, cancel, connectWith, containment, cursor, cursorAt, delay, disabled, distance, dropOnEmpty, forceHelperSize, forcePlaceholderSize, grid, handle, helper, items, opacity, placeholder, revert, scroll, scrollSensitivity, scrollSpeed, tolerance, zIndex
 - `getValidEvents()` - Events: activate, beforeStop, change, create, deactivate, out, over, receive, remove, sort, start, stop, update

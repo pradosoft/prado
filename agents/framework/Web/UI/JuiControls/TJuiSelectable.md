@@ -13,7 +13,8 @@ Selectable list based on jQuery UI Selectable interaction. Extends [TActivePanel
 ## Key Properties/Methods
 
 - `setDataSource($data)` - Sets data source for selectable items
-- `getSelectables()` - Returns the internal TRepeater
+- `getSelectables()` - Returns the internal TRepeater; its default item is `<li id="WidgetID_N" data-index="N">` with the Data, HTML-encoded when `Encode` is true
+- `stop` callback - sends the selected items as `ui.index`: each item's `data-index`, or its `id` for a custom ItemTemplate or AlternatingItemTemplate
 - `getOptions()` - Selectable options (filter, tolerance, etc.)
 - `getValidOptions()` - Valid options: appendTo, autoRefresh, cancel, delay, disabled, distance, filter, tolerance
 - `getValidEvents()` - Events: create, selected, selecting, start, stop, unselected, unselecting

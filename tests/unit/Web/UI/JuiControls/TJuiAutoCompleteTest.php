@@ -109,6 +109,14 @@ class TJuiAutoCompleteTest extends TestCase
 		$this->assertSame('word', $control->getTextCssClass());
 	}
 
+	public function testEncode(): void
+	{
+		$control = $this->newControl();
+		$this->assertFalse($control->getEncode());
+		$control->setEncode('true');
+		$this->assertTrue($control->getEncode());
+	}
+
 	public function testSeparator(): void
 	{
 		$control = $this->newControl();
@@ -318,6 +326,27 @@ class TJuiAutoCompleteTest extends TestCase
 			[['id' => 0, 'label' => 'ab1'], ['id' => 1, 'label' => 'ab2']],
 			json_decode($this->getCallbackParts()[TActivePageAdapter::CALLBACK_DATA_HEADER], true)
 		);
+	}
+
+	/**
+	 * Encode HTML-encodes the Data of the default suggestion item, which the client shows as HTML.
+	 */
+	public function testEncodeEncodesTheSuggestionData(): void
+	{
+		foreach ([false => '<b>x</b>', true => '&lt;b&gt;x&lt;/b&gt;'] as $encode => $label) {
+			$this->resetPageState();
+			$this->runAutoCallback(['x', '__TJuiAutoComplete_onSuggest__'], function ($control) use ($encode) {
+				$control->setEncode($encode);
+				$control->attachEventHandler('OnSuggest', function ($sender) {
+					$sender->setDataSource(['<b>x</b>']);
+					$sender->dataBind();
+				});
+			});
+			$this->assertSame(
+				[['id' => 0, 'label' => $label]],
+				json_decode($this->getCallbackParts()[TActivePageAdapter::CALLBACK_DATA_HEADER], true)
+			);
+		}
 	}
 
 	public function testSuggestCallbackWithOneSuggestion(): void

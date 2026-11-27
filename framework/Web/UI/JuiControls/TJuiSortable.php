@@ -36,6 +36,11 @@ use Prado\Web\UI\WebControls\TRepeater;
  * $this->repeater1->dataBind();
  * ```
  *
+ * The default item template renders each item as `<li id="WidgetID_N" data-index="N">`,
+ * with its Data HTML-encoded when {@see setEncode Encode} is true. The `sort` and `stop`
+ * callbacks send the item order as `ui.index`: the `data-index` of each item, or its
+ * `id` for a custom item template.
+ *
  * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
  * @since 3.3
  */
@@ -45,6 +50,10 @@ class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHa
 	 * @var TRepeater template for repeater items
 	 */
 	private $_repeater;
+	/**
+	 * @var ?TTemplate the default item template of the repeater
+	 */
+	private $_itemTemplate;
 
 	protected $_options;
 
@@ -115,7 +124,7 @@ class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHa
 		// overload some events to add information about the items order
 		foreach ($options as $event => $implementation) {
 			if ($event == 'sort' || $event == 'stop') {
-				$options[$event] = new TJavaScriptLiteral('function( event, ui ) { ui.index = jQuery(this).sortable(\'toArray\'); Prado.JuiCallback(' . TJavaScript::encode($this->getUniqueID()) . ', \'' . $event . '\', event, ui, this); }');
+				$options[$event] = new TJavaScriptLiteral('function( event, ui ) { ui.index = jQuery(this).sortable(\'toArray\', { attribute: ' . TJavaScript::encode($this->getItemIndexAttribute()) . ' }); Prado.JuiCallback(' . TJavaScript::encode($this->getUniqueID()) . ', \'' . $event . '\', event, ui, this); }');
 			}
 		}
 		return $options;
@@ -295,6 +304,21 @@ class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHa
 	}
 
 	/**
+	 * Returns the item attribute whose value the client sends for each item.
+	 * Items of the default item template carry their index in `data-index`; items of
+	 * a custom ItemTemplate or AlternatingItemTemplate send their `id`.
+	 * @return string `data-index` or `id`
+	 */
+	private function getItemIndexAttribute()
+	{
+		$repeater = $this->_repeater;
+		if ($repeater === null || ($repeater->getItemTemplate() === $this->_itemTemplate && $repeater->getAlternatingItemTemplate() === null)) {
+			return 'data-index';
+		}
+		return 'id';
+	}
+
+	/**
 	 * @return TRepeater new instance of TRepater to render the list of Sortables.
 	 */
 	protected function createRepeater()
@@ -302,7 +326,12 @@ class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHa
 		$repeater = new TRepeater();
 		$repeater->setHeaderTemplate(new TJuiSortableTemplate('<ul id="' . $this->getWidgetID() . '">'));
 		$repeater->setFooterTemplate(new TJuiSortableTemplate('</ul>'));
-		$repeater->setItemTemplate(new TTemplate('<li id="<%# $this->ItemIndex %>"><%# $this->Data %></li>', null));
+		$this->_itemTemplate = new TTemplate(
+			'<li id="<%# $this->Parent->Parent->getWidgetID() %>_<%# $this->ItemIndex %>" data-index="<%# $this->ItemIndex %>">'
+			. '<%# $this->Parent->Parent->getEncode() ? \\Prado\\Web\\THttpUtility::htmlEncode($this->Data) : $this->Data %></li>',
+			null
+		);
+		$repeater->setItemTemplate($this->_itemTemplate);
 		$repeater->setEmptyTemplate(new TJuiSortableTemplate('<ul></ul>'));
 		$this->getControls()->add($repeater);
 		return $repeater;
