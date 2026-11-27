@@ -24,11 +24,6 @@ class TJuiDialogTest extends TJuiWidgetTestCase
 
 	protected function events(): array
 	{
-		return ['open'];
-	}
-
-	protected function validEvents(): array
-	{
 		return ['beforeClose', 'close', 'create', 'drag', 'dragStart', 'dragStop', 'focus', 'open', 'resize', 'resizeStart', 'resizeStop'];
 	}
 

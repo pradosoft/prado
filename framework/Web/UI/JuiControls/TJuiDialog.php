@@ -31,6 +31,9 @@ use Prado\Web\UI\ActiveControls\TCallbackEventParameter;
  * </com:TJuiDialog>
  * ```
  *
+ * Each jQuery UI dialog event in {@see getValidEvents()} raises a callback event of the
+ * same name, such as `OnOpen`, `OnClose`, or `OnResizeStop`, when it has a handler.
+ *
  * @author David Otto <ottodavid[at]gmx[dot]net>
  * @since 3.3
  */
@@ -149,6 +152,106 @@ class TJuiDialog extends TActivePanel implements IJuiOptions, ICallbackEventHand
 	public function onOpen($params)
 	{
 		$this->raiseEvent('OnOpen', $this, $params);
+	}
+
+	/**
+	 * Raises the OnBeforeClose event
+	 * @param object $params event parameters
+	 * @since 4.4.0
+	 */
+	public function onBeforeClose($params)
+	{
+		$this->raiseEvent('OnBeforeClose', $this, $params);
+	}
+
+	/**
+	 * Raises the OnClose event
+	 * @param object $params event parameters
+	 * @since 4.4.0
+	 */
+	public function onClose($params)
+	{
+		$this->raiseEvent('OnClose', $this, $params);
+	}
+
+	/**
+	 * Raises the OnCreate event
+	 * @param object $params event parameters
+	 * @since 4.4.0
+	 */
+	public function onCreate($params)
+	{
+		$this->raiseEvent('OnCreate', $this, $params);
+	}
+
+	/**
+	 * Raises the OnDrag event
+	 * @param object $params event parameters
+	 * @since 4.4.0
+	 */
+	public function onDrag($params)
+	{
+		$this->raiseEvent('OnDrag', $this, $params);
+	}
+
+	/**
+	 * Raises the OnDragStart event
+	 * @param object $params event parameters
+	 * @since 4.4.0
+	 */
+	public function onDragStart($params)
+	{
+		$this->raiseEvent('OnDragStart', $this, $params);
+	}
+
+	/**
+	 * Raises the OnDragStop event
+	 * @param object $params event parameters
+	 * @since 4.4.0
+	 */
+	public function onDragStop($params)
+	{
+		$this->raiseEvent('OnDragStop', $this, $params);
+	}
+
+	/**
+	 * Raises the OnFocus event
+	 * @param object $params event parameters
+	 * @since 4.4.0
+	 */
+	public function onFocus($params)
+	{
+		$this->raiseEvent('OnFocus', $this, $params);
+	}
+
+	/**
+	 * Raises the OnResize event
+	 * @param object $params event parameters
+	 * @since 4.4.0
+	 */
+	public function onResize($params)
+	{
+		$this->raiseEvent('OnResize', $this, $params);
+	}
+
+	/**
+	 * Raises the OnResizeStart event
+	 * @param object $params event parameters
+	 * @since 4.4.0
+	 */
+	public function onResizeStart($params)
+	{
+		$this->raiseEvent('OnResizeStart', $this, $params);
+	}
+
+	/**
+	 * Raises the OnResizeStop event
+	 * @param object $params event parameters
+	 * @since 4.4.0
+	 */
+	public function onResizeStop($params)
+	{
+		$this->raiseEvent('OnResizeStop', $this, $params);
 	}
 
 	/**

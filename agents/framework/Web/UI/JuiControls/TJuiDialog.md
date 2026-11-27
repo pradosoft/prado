@@ -16,7 +16,7 @@ Modal/non-modal dialog widget based on jQuery UI Dialog. Extends [TActivePanel](
 - `close()` - Closes the dialog client-side
 - `getOptions()` - Dialog options (modal, title, buttons, etc.)
 - `getValidOptions()` - Valid options: appendTo, autoOpen, buttons, closeOnEscape, dialogClass, draggable, height, hide, minHeight, minWidth, maxHeight, maxWidth, modal, position, resizable, show, title, width
-- `getValidEvents()` - Events: beforeClose, close, create, drag, dragStart, dragStop, focus, open, resize, resizeStart, resizeStop
+- `getValidEvents()` - Events: beforeClose, close, create, drag, dragStart, dragStop, focus, open, resize, resizeStart, resizeStop; each is raised as the `On` event of the same name (`OnClose`, `OnResizeStop`, ...)
 - `setGroupingText($value)` - Not supported (throws TNotSupportedException)
 - `render($writer)` - Handles client-side updates without destroying dialog
 
