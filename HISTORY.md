@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TJuiDatePicker::getValidationPropertyValue()` returns the timestamp 0 for a date that parses to it; it returned the text. (belisoful)
 BUG: Issue #1497 - `TMarkdown` renders its HTML in a `div` and highlights each fenced code block on the client through the new `Prado.WebUI.TMarkdown`; it rendered the HTML inside `<pre><code>`, highlighted the whole document as PHP, dropped the language of fenced blocks, and wrote the last block's language into `Language`. `TTextHighlighter::getClientClassName()` names the client class. (belisoful)
 BUG: Issue #1497 - `TXmlTransform` names the given `TransformPath` or `DocumentPath` in the error for a path it cannot resolve; the message showed an empty path. (belisoful)
 BUG: Issue #1497 - `TJuiDialog` raises each jQuery UI dialog event it lists, such as `OnClose`, `OnBeforeClose`, `OnFocus`, and `OnResizeStop`; only `OnOpen` could be attached. (belisoful)
