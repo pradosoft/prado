@@ -117,4 +117,21 @@ class TVideoTest extends TestCase
 		$control->setWidth(-3);
 		$this->assertSame(-1, $control->getWidth());
 	}
+
+	public function testCrossOriginAcceptsEachKeyword()
+	{
+		$control = new TVideo();
+		foreach (['anonymous' => 'anonymous', ' USE-Credentials ' => 'use-credentials', '' => ''] as $value => $expected) {
+			$control->setCrossOrigin($value);
+			$this->assertSame($expected, $control->getCrossOrigin());
+		}
+	}
+
+	public function testNegativeHeightUnsets()
+	{
+		$control = new TVideo();
+		$control->setHeight(10);
+		$control->setHeight(-3);
+		$this->assertSame(-1, $control->getHeight());
+	}
 }

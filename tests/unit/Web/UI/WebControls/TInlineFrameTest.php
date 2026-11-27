@@ -6,6 +6,8 @@ use PHPUnit\Framework\TestCase;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Test\Unit\Harness\Traits\TWebControlRenderTrait;
 use Prado\Web\UI\WebControls\TInlineFrame;
+use Prado\Web\UI\WebControls\TInlineFrameAlign;
+use Prado\Web\UI\WebControls\TInlineFrameScrollBars;
 use Prado\Web\UI\WebControls\TLoadingMode;
 use Prado\Web\UI\WebControls\TReferrerPolicy;
 
@@ -77,5 +79,65 @@ class TInlineFrameTest extends TestCase
 	{
 		$this->expectException(TInvalidDataValueException::class);
 		(new TInlineFrame())->setLoading('soon');
+	}
+
+	public function testLegacyPropertyDefaults()
+	{
+		$frame = new TInlineFrame();
+		$this->assertSame(TInlineFrameAlign::NotSet, $frame->getAlign());
+		$this->assertSame('', $frame->getDescriptionUrl());
+		$this->assertTrue($frame->getShowBorder());
+		$this->assertSame('', $frame->getFrameUrl());
+		$this->assertSame(TInlineFrameScrollBars::Auto, $frame->getScrollBars());
+		foreach (['Width', 'Height', 'MarginWidth', 'MarginHeight'] as $property) {
+			$this->assertSame(-1, $frame->{'get' . $property}(), $property);
+		}
+	}
+
+	public function testLegacyPropertiesRender()
+	{
+		$frame = new TInlineFrame();
+		$frame->setID('map');
+		$frame->setData('/map');
+		$frame->setAlign(TInlineFrameAlign::Middle);
+		$frame->setScrollBars(TInlineFrameScrollBars::None);
+		$frame->setShowBorder('false');
+		$frame->setDescriptionUrl('/map-text');
+		$frame->setWidth('300');
+		$frame->setHeight(200);
+		$frame->setMarginHeight(4);
+		$frame->setMarginWidth(6);
+		$this->assertSame('/map', $frame->getData());
+		$this->assertSame(
+			'<iframe name="map" src="/map" align="middle" scrolling="no" frameborder="0" longdesc="/map-text"'
+			. ' width="300" height="200" marginheight="4" marginwidth="6" id="map"></iframe>',
+			$this->render($frame)
+		);
+		$frame->setScrollBars(TInlineFrameScrollBars::Both);
+		$this->assertStringContainsString('scrolling="yes"', $this->render($frame));
+	}
+
+	public function testNegativeSizesUnset()
+	{
+		$frame = new TInlineFrame();
+		foreach (['Width', 'Height', 'MarginWidth', 'MarginHeight'] as $property) {
+			$frame->{'set' . $property}(10);
+			$frame->{'set' . $property}(-2);
+			$this->assertSame(-1, $frame->{'get' . $property}(), $property);
+		}
+		$this->assertSame('<iframe></iframe>', $this->render($frame));
+	}
+
+	public function testEnumSettersRejectInvalidValues()
+	{
+		$frame = new TInlineFrame();
+		foreach (['setAlign', 'setScrollBars'] as $setter) {
+			try {
+				$frame->$setter('Sideways');
+				$this->fail("$setter accepted an invalid value");
+			} catch (TInvalidDataValueException $e) {
+				$this->assertStringContainsString('Sideways', $e->getMessage());
+			}
+		}
 	}
 }

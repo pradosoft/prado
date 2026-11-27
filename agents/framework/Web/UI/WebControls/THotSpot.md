@@ -23,7 +23,7 @@ THotSpot is the abstract base class for hot spot shapes in TImageMap. Provides b
 - `TabIndex` - Tab order
 - `CausesValidation` / `ValidationGroup` - Validation settings
 - `Attributes` - Custom HTML attributes
-- `render()` - Renders the hotspot area
+- `render()` - Renders the hotspot `<area>`; `title` and `alt` render only when `AlternateText` is not empty
 
 ## See Also
 

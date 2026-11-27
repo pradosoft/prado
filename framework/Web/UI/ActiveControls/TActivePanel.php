@@ -76,21 +76,16 @@ class TActivePanel extends TPanel implements IActiveControl
 	 */
 	public function render($writer)
 	{
-		if ($this->getHasPreRendered()) {
-			parent::render($writer);
-			if ($this->getActiveControl()->canUpdateClientSide()) {
-				$this->getActiveControl()->replaceClientContent($this, $writer);
-			}
-		} else {
+		$active = $this->getActiveControl();
+		if ($active->getDefersRender()) {
 			$this->getPage()->getAdapter()->registerControlToRender($this, $writer);
-			if ($this->getHasControls()) {
-				// If we update a TActivePanel on callback,
-				// We shouldn't update all childs, because the whole content will be replaced by
-				// the parent
-				foreach ($this->findControlsByType(\Prado\Web\UI\ActiveControls\IActiveControl::class, false) as $control) {
-					$control->getActiveControl()->setEnableUpdate(false);
-				}
-			}
+			$active->disableInnerUpdates();
+		} elseif ($active->canUpdateClientSide()) {
+			$active->disableInnerUpdates();
+			parent::render($writer);
+			$active->replaceClientContent($this, $writer);
+		} else {
+			parent::render($writer);
 		}
 	}
 }

@@ -207,6 +207,61 @@ class TDotTest extends \PHPUnit\Framework\TestCase
 		self::assertNotEquals('#007000', $this->obj->getMainColor());
 	}
 
+	public function testColorComputedForGrayAndBlueVioletHues()
+	{
+		// A gray has no hue or saturation; its depth shifts only the lightness.
+		$this->obj->setColor('#808080');
+		self::assertEquals('#666666', $this->obj->getMainColor());
+		self::assertEquals('#9B9B9B', $this->obj->getHighlightColor());
+
+		// A hue past two thirds wraps the red channel's hue offset past 1.
+		$this->obj->setColor('#8000FF');
+		self::assertEquals('#6B00DC', $this->obj->getMainColor());
+		self::assertEquals('#9524FF', $this->obj->getHighlightColor());
+	}
+
+	public static function shadedColorProvider(): array
+	{
+		// Each dominant channel, light and dark, and a red whose blue exceeds its green.
+		return [
+			'red over blue' => ['#FF0080', '#DC006B', '#FF2495'],
+			'light green' => ['#80FF80', '#67E367', '#99FF99'],
+			'light blue' => ['#8080FF', '#6767E3', '#9999FF'],
+			'dark red' => ['#800000', '#670000', '#9A1D1D'],
+			'dark green' => ['#008000', '#006700', '#1D9A1D'],
+			'dark blue' => ['#000080', '#000067', '#1D1D9A'],
+		];
+	}
+
+	/**
+	 * @dataProvider shadedColorProvider
+	 */
+	public function testColorComputedForEachDominantChannel(string $color, string $main, string $highlight)
+	{
+		$this->obj->setColor($color);
+		self::assertEquals($main, $this->obj->getMainColor());
+		self::assertEquals($highlight, $this->obj->getHighlightColor());
+	}
+
+	public function testFlatWithoutColorUsesMainAndHighlight()
+	{
+		$this->obj->setFlat(true);
+		$this->obj->setMainColor('#112233');
+		$this->obj->setHighlightColor('#445566');
+		self::assertNull($this->obj->getColor());
+		$svg = $this->decodeEmbed();
+		self::assertStringContainsString("fill='#112233'", $svg);
+		self::assertStringContainsString("stroke='#445566'", $svg);
+		self::assertStringContainsString('/tdot-112233-445566-5pct.svg', $this->obj->getAssetFilePath());
+	}
+
+	public function testGetImageUrlWithoutAnApplicationEmbeds()
+	{
+		$dot = new TDotTestNoApplication();
+		$dot->setPublishStyle('Publish');
+		self::assertStringStartsWith('data:image/svg+xml;base64,', $dot->getImageUrl());
+	}
+
 	public function testColorCascade()
 	{
 		// The computed (non-preset) path cascades a hue-preserving HSL-lightness shift into
@@ -813,5 +868,16 @@ class TDotTest extends \PHPUnit\Framework\TestCase
 		$publishedUrl = $this->obj->getImageUrl();
 		self::assertEquals($manager->getPublishedUrl($this->obj), $publishedUrl);
 		self::assertTrue(is_file($manager->getPublishedPath($this->obj)));
+	}
+}
+
+/**
+ * TDot without an application, as outside a request.
+ */
+class TDotTestNoApplication extends \Prado\Web\UI\WebControls\TDot
+{
+	public function getApplication()
+	{
+		return null;
 	}
 }

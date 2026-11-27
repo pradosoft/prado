@@ -4,6 +4,7 @@ namespace Prado\Test\Unit\Web\UI\ActiveControls;
 
 use PHPUnit\Framework\TestCase;
 use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Prado;
 use Prado\Test\Unit\Harness\Traits\TWebControlRenderTrait;
 use Prado\Test\Unit\Harness\Web\UI\TTestCallbackPage;
 use Prado\Test\Unit\PradoUnit;
@@ -11,6 +12,8 @@ use Prado\Web\UI\ActiveControls\TActiveCheckBox;
 use Prado\Web\UI\ActiveControls\TActiveLabel;
 use Prado\Web\UI\ActiveControls\TActiveLinkButton;
 use Prado\Web\UI\ActiveControls\TActiveRadioButton;
+use Prado\Web\UI\ActiveControls\TCallbackResponseAdapter;
+use Prado\Web\THttpResponse;
 use Prado\Web\UI\TControl;
 use Prado\Web\UI\WebControls\TTextBox;
 
@@ -83,21 +86,52 @@ class TActiveLabelTest extends TestCase
 		$this->assertSame([], $page->getClientFunctions());
 	}
 
-	public function testSetForControlSetsTheForAttributeOnce()
+	/**
+	 * Sets the application response to a callback response, so a control renders into
+	 * a response part, and returns the saved response.
+	 */
+	private function useCallbackResponse(): THttpResponse
 	{
-		[$page, $label] = $this->createLabel();
-		$label->setForControl('Name');
-		$label->setForControl('Name');
-		$this->assertSame([['Prado.Element.setAttribute' => ['Label', 'for', 'Name']]], $page->getClientFunctions());
+		$app = Prado::getApplication();
+		$saved = PradoUnit::invoke($app, 'getResponseDirect');
+		$response = new THttpResponse();
+		$response->setAdapter(new TCallbackResponseAdapter($response));
+		$app->setResponse($response);
+		return $saved;
 	}
 
-	public function testClearingForControlRemovesTheForAttribute()
+	public function testSetForControlChangingTheTagReplacesTheLabel()
+	{
+		$saved = $this->useCallbackResponse();
+		try {
+			[$page, $label] = $this->createLabel();
+			$label->setForControl('Name');
+			$label->setForControl('Name');
+			$functions = $page->getClientFunctions();
+			$this->assertCount(1, $functions);
+			$this->assertSame(['Label', null], array_slice($functions[0]['Prado.Element.replace'], 0, 2));
+			$this->assertSame(['Label' => $label], $page->pageAdapter->rendered);
+
+			[$page, $label] = $this->createLabel();
+			$label->setForControl('Name');
+			$label->setForControl('');
+			$this->assertCount(2, $page->getClientFunctions());
+			$this->assertSame('Label', $page->getClientFunctions()[1]['Prado.Element.replace'][0]);
+			$this->assertSame('', $label->getForControl());
+		} finally {
+			PradoUnit::setProp(Prado::getApplication(), '_response', $saved);
+		}
+	}
+
+	public function testSetForControlToAnotherControlSetsTheForAttribute()
 	{
 		[$page, $label] = $this->createLabel();
+		$page->addControl(new TTextBox(), 'Other');
+		$page->callback = false;
 		$label->setForControl('Name');
-		$label->setForControl('');
-		$this->assertSame(['Prado.Element.removeAttribute' => ['Label', 'for']], $page->getClientFunctions()[1]);
-		$this->assertSame('', $label->getForControl());
+		$page->callback = true;
+		$label->setForControl('Other');
+		$this->assertSame([['Prado.Element.setAttribute' => ['Label', 'for', 'Other']]], $page->getClientFunctions());
 	}
 
 	public function testSetForControlToAMissingControlThrows()

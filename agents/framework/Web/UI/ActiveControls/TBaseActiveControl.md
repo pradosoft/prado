@@ -19,6 +19,8 @@ Basic properties for every active control. Provides options management and deter
 - `getUpdateMode()` / `setUpdateMode($value)` - How a callback updates the control's markup, a [TActiveUpdateMode](./TActiveUpdateMode.md); defaults to Default (4.4.0)
 - `getIsMorphUpdate()` - Whether the update morphs: UpdateMode Morph, or Default on a page whose `CallbackUpdateMode` is Morph (4.4.0)
 - `getViewTransition()` / `setViewTransition($value)` - Whether a response that renders the control again applies its client actions inside a view transition; defaults to false. See [CallbackViewTransition](./CallbackViewTransition.md) (4.4.0)
+- `getDefersRender()` - Whether a render waits for the callback response: in a callback, before the control prerenders. Outside a callback a render before prerender renders at once (4.4.0)
+- `disableInnerUpdates()` - Sets `EnableUpdate` false on the active controls inside; a container calls it before a render that replaces its client element, so a nested container does not replace itself too (4.4.0)
 - `replaceClientContent($element, $content)` - Sends the re-rendered markup through `TCallbackClientScript::replaceContent()` with `getIsMorphUpdate()`, and turns on the response's view transition for a `ViewTransition` control; the render-in-callback active controls call it (4.4.0)
 
 ## See Also

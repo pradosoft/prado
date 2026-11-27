@@ -29,6 +29,11 @@ use Prado\TPropertyValue;
  *  </com:TImageMap>
  * ```
  *
+ * At render, each hot spot renders with its own HotSpotMode and Target, or else
+ * the image map's. A HotSpotMode of NotSet on both renders as Navigate. The hot
+ * spots keep their own values. In a disabled image map, every hot spot renders
+ * as Inactive, without `href`, and registers no postback script.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
  */
@@ -59,7 +64,6 @@ class TImageMap extends TImage implements \Prado\Web\UI\IPostBackEventHandler
 		parent::addAttributesToRender($writer);
 		if ($this->getHotSpots()->getCount() > 0) {
 			$writer->addAttribute('usemap', '#' . self::MAP_NAME_PREFIX . $this->getClientID());
-			$writer->addAttribute('id', $this->getUniqueID());
 		}
 		if ($this->getEnabled() && !$this->getEnabled(true)) {
 			$writer->addAttribute('disabled', 'disabled');
@@ -67,8 +71,9 @@ class TImageMap extends TImage implements \Prado\Web\UI\IPostBackEventHandler
 	}
 
 	/**
-	 * Renders this imagemap.
-	 * @param \Prado\Web\UI\THtmlWriter $writer
+	 * Renders this imagemap: the image, then a `<map>` of its hot spots.
+	 * A PostBack hot spot renders with the ID `{ClientID}_{index}` and registers its postback script.
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function render($writer)
 	{
@@ -78,42 +83,64 @@ class TImageMap extends TImage implements \Prado\Web\UI\IPostBackEventHandler
 
 		if ($hotspots->getCount() > 0) {
 			$clientID = $this->getClientID();
-			$cs = $this->getPage()->getClientScript();
 			$writer->writeLine();
 			$writer->addAttribute('name', self::MAP_NAME_PREFIX . $clientID);
 			$writer->renderBeginTag('map');
 			$writer->writeLine();
-			if (($mode = $this->getHotSpotMode()) === THotSpotMode::NotSet) {
-				$mode = THotSpotMode::Navigate;
-			}
-			$target = $this->getTarget();
+			$enabled = $this->getEnabled(true);
 			$i = 0;
-			$options['EventTarget'] = $this->getUniqueID();
-			$options['StopEvent'] = true;
-			$cs = $this->getPage()->getClientScript();
 			foreach ($hotspots as $hotspot) {
-				if ($hotspot->getHotSpotMode() === THotSpotMode::NotSet) {
-					$hotspot->setHotSpotMode($mode);
-				}
-				if ($target !== '' && $hotspot->getTarget() === '') {
-					$hotspot->setTarget($target);
-				}
-				if ($hotspot->getHotSpotMode() === THotSpotMode::PostBack) {
+				$area = $this->getRenderHotSpot($hotspot, $enabled);
+				if ($area->getHotSpotMode() === THotSpotMode::PostBack) {
 					$id = $clientID . '_' . $i;
 					$writer->addAttribute('id', $id);
 					$writer->addAttribute('href', '#' . $id); //create unique no-op url references
-					$options['ID'] = $id;
-					$options['EventParameter'] = "$i";
-					$options['CausesValidation'] = $hotspot->getCausesValidation();
-					$options['ValidationGroup'] = $hotspot->getValidationGroup();
-					$cs->registerPostBackControl($this->getClientClassName(), $options);
+					$this->getPage()->getClientScript()->registerPostBackControl($this->getClientClassName(), [
+						'EventTarget' => $this->getUniqueID(),
+						'StopEvent' => true,
+						'ID' => $id,
+						'EventParameter' => "$i",
+						'CausesValidation' => $area->getCausesValidation(),
+						'ValidationGroup' => $area->getValidationGroup(),
+					]);
 				}
-				$hotspot->render($writer);
+				$area->render($writer);
 				$writer->writeLine();
 				$i++;
 			}
 			$writer->renderEndTag();
 		}
+	}
+
+	/**
+	 * Returns a copy of a hot spot with the mode and target it renders with.
+	 *
+	 * | Condition | HotSpotMode of the copy |
+	 * |---|---|
+	 * | image map disabled | Inactive |
+	 * | hot spot mode set | the hot spot's |
+	 * | image map mode set | the image map's |
+	 * | neither set | Navigate |
+	 *
+	 * The copy takes the image map's Target when its own is empty. The hot spot is unchanged.
+	 * @param THotSpot $hotspot the hot spot
+	 * @param bool $enabled whether the image map and its parents are enabled
+	 * @return THotSpot the copy to render
+	 * @since 4.4.0
+	 */
+	protected function getRenderHotSpot(THotSpot $hotspot, bool $enabled): THotSpot
+	{
+		$area = clone $hotspot;
+		if (!$enabled) {
+			$area->setHotSpotMode(THotSpotMode::Inactive);
+		} elseif ($area->getHotSpotMode() === THotSpotMode::NotSet) {
+			$mode = $this->getHotSpotMode();
+			$area->setHotSpotMode($mode === THotSpotMode::NotSet ? THotSpotMode::Navigate : $mode);
+		}
+		if ($area->getTarget() === '') {
+			$area->setTarget($this->getTarget());
+		}
+		return $area;
 	}
 
 	/**

@@ -5,7 +5,10 @@ namespace Prado\Test\Unit\Web\UI\WebControls;
 use PHPUnit\Framework\TestCase;
 use Prado\IO\TTextWriter;
 use Prado\Web\UI\THtmlWriter;
+use Prado\Exceptions\TInvalidDataTypeException;
+use Prado\Web\UI\WebControls\TLinkTag;
 use Prado\Web\UI\WebControls\TMetaTag;
+use Prado\Web\UI\WebControls\TMetaTagCollection;
 
 class TMetaTagTest extends TestCase
 {
@@ -59,6 +62,29 @@ class TMetaTagTest extends TestCase
 		$tag = new TMetaTagTestOverride();
 		$tag->setName('description');
 		$this->assertSame('<meta name="description" content="from getter" />', $this->renderTag($tag));
+	}
+
+	public function testCollectionFindsTagsByID()
+	{
+		$collection = new TMetaTagCollection();
+		$first = new TMetaTag();
+		$first->setID('description');
+		$second = new TMetaTag();
+		$second->setID('keywords');
+		$collection->add($first);
+		$collection->add($second);
+		$this->assertSame(0, $collection->findIndexByID('description'));
+		$this->assertSame(1, $collection->findIndexByID('keywords'));
+		$this->assertSame($second, $collection->findMetaTagByID('keywords'));
+		$this->assertSame(-1, $collection->findIndexByID('none'));
+		$this->assertNull($collection->findMetaTagByID('none'));
+		$this->assertSame(-1, (new TMetaTagCollection())->findIndexByID('description'));
+	}
+
+	public function testCollectionAcceptsOnlyMetaTags()
+	{
+		$this->expectException(TInvalidDataTypeException::class);
+		(new TMetaTagCollection())->add(new TLinkTag());
 	}
 }
 

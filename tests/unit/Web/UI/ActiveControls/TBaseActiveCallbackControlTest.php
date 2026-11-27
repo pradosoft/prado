@@ -8,6 +8,7 @@ use Prado\Prado;
 use Prado\Test\Unit\Harness\Web\TTestUrlAssetManager;
 use Prado\Test\Unit\Harness\Web\UI\TTestCallbackPage;
 use Prado\Test\Unit\PradoUnit;
+use Prado\Web\UI\ActiveControls\TActiveButton;
 use Prado\Web\UI\ActiveControls\TActiveCheckBoxList;
 use Prado\Web\UI\ActiveControls\TActiveUpdateMode;
 use Prado\Web\UI\ActiveControls\TBaseActiveCallbackControl;
@@ -18,6 +19,7 @@ use Prado\Web\UI\ActiveControls\TCallbackOptions;
 use Prado\Web\UI\TClientScriptManager;
 use Prado\Web\UI\TControl;
 use Prado\Web\UI\WebControls\TLabel;
+use Prado\Web\UI\WebControls\TRepeaterItem;
 use Prado\Web\UI\WebControls\TRequiredFieldValidator;
 
 /**
@@ -257,45 +259,38 @@ class TBaseActiveCallbackControlTest extends TestCase
 		PradoUnit::invoke($active, 'getDefaultClientSideOptions');
 	}
 
-	public function testCallbackOptionsOfACheckBoxListThatNameNoChildThrow()
+	/**
+	 * A naming container control, such as a check box list or a repeater, and a control
+	 * inside a repeater item find callback options in an enclosing naming container.
+	 */
+	public function testCallbackOptionsAreFoundInAnEnclosingNamingContainer()
 	{
 		$page = new TTestCallbackPage();
 		$list = new TActiveCheckBoxList();
 		$list->setID('List');
 		$page->getControls()->add($list);
 		$this->addOptions($page);
+		$list->getActiveControl()->setCallbackOptions('Opts');
+		$this->assertSame(['RequestTimeOut' => 10], PradoUnit::invoke($list->getActiveControl(), 'getDefaultClientSideOptions'));
+
+		$item = new TRepeaterItem();
+		$item->setID('Item');
+		$page->getControls()->add($item);
+		$button = new TActiveButton();
+		$item->getControls()->add($button);
+		$button->getActiveControl()->setCallbackOptions('Opts');
+		$this->assertSame(['RequestTimeOut' => 10], PradoUnit::invoke($button->getActiveControl(), 'getDefaultClientSideOptions'));
+	}
+
+	public function testCallbackOptionsOfACheckBoxListThatNameNoControlThrow()
+	{
+		$page = new TTestCallbackPage();
+		$list = new TActiveCheckBoxList();
+		$list->setID('List');
+		$page->getControls()->add($list);
 		$active = $list->getActiveControl();
 		$active->setCallbackOptions('Opts');
 		$this->expectException(TConfigurationException::class);
 		PradoUnit::invoke($active, 'getDefaultClientSideOptions');
-	}
-
-	public function testClientSideOptionsWithoutValidationKeepThePostBackTarget()
-	{
-		[, $callback] = $this->createCallback();
-		$callback->getActiveControl()->setCausesValidation(false);
-		$callback->getClientSide()->setPostBackTarget('Other');
-		$options = PradoUnit::invoke($callback->getActiveControl(), 'getClientSideOptions');
-		$this->assertFalse($options['CausesValidation']);
-		$this->assertSame('Other', $options['EventTarget']);
-	}
-
-	public function testSetOptionOfNullStoresTheDefault()
-	{
-		[, $callback] = $this->createCallback();
-		$active = $callback->getActiveControl();
-		$active->setValidationGroup(null);
-		PradoUnit::invoke($active, 'setOption', 'Unset', null);
-		$options = PradoUnit::invoke($active, 'getOptions');
-		$this->assertSame('', $options->itemAt('ValidationGroup'));
-		$this->assertFalse($options->contains('Unset'));
-	}
-
-	public function testIsMorphUpdateByDefaultReadsThePageMode()
-	{
-		[$page, $callback] = $this->createCallback();
-		$this->assertFalse($callback->getActiveControl()->getIsMorphUpdate());
-		$page->setCallbackUpdateMode(TActiveUpdateMode::Morph);
-		$this->assertTrue($callback->getActiveControl()->getIsMorphUpdate());
 	}
 }

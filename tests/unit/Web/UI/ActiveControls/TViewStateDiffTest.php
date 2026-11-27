@@ -76,11 +76,41 @@ class TViewStateDiffTest extends TestCase
 		$this->assertSame($this->null, (new TMapCollectionDiff(new TMap(['a' => [1, 2], 'b' => ['x' => 1], 'c' => 'v']), $old, $this->null))->getDifference());
 	}
 
+	public function testMapDiffReportsARemovedKeyAsNull()
+	{
+		$old = new TMap(['a' => 1, 'b' => 2]);
+		$this->assertSame(
+			['c' => 3, 'b' => null],
+			(new TMapCollectionDiff(new TMap(['a' => 1, 'c' => 3]), $old, $this->null))->getDifference()
+		);
+		$this->assertSame(['a' => null, 'b' => null], (new TMapCollectionDiff(null, $old, $this->null))->getDifference());
+		$this->assertSame($this->null, (new TMapCollectionDiff(null, new TMap(), $this->null))->getDifference());
+	}
+
 	public function testStyleFromStringOfANonStringIsEmpty()
 	{
 		$diff = new TStyleDiff(null, null, $this->null);
 		$this->assertSame([], PradoUnit::invoke($diff, 'getStyleFromString', null));
 		$this->assertSame(['color' => 'red'], PradoUnit::invoke($diff, 'getStyleFromString', 'color: red; :x; y'));
+	}
+
+	public static function oneDeclarationProvider(): array
+	{
+		return [
+			'declaration' => ['color: red', ['color' => 'red']],
+			'no name' => [':x', []],
+			'no value' => ['y', []],
+			'empty' => ['', []],
+		];
+	}
+
+	/**
+	 * @dataProvider oneDeclarationProvider
+	 */
+	public function testStyleFromStringOfOneDeclaration(string $css, array $expected)
+	{
+		$diff = new TStyleDiff(null, null, $this->null);
+		$this->assertSame($expected, PradoUnit::invoke($diff, 'getStyleFromString', $css));
 	}
 
 	public function testCallbackEventParameterKeepsTheResponseDataInTheResponseAdapter()

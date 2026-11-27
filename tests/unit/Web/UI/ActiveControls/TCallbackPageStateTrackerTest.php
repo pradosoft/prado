@@ -406,6 +406,24 @@ class TCallbackPageStateTrackerTest extends TestCase
 		$this->assertContains('data-id', $names);
 	}
 
+	public function testUpdateAttributesRemovesANullAttribute()
+	{
+		$this->tracker->exposedUpdateAttributes(['data-id' => '42', 'aria-label' => null]);
+		$this->assertSame(['data-id'], array_column($this->client->getCollectedCalls('setAttribute'), 1));
+		$this->assertSame(['aria-label'], array_column($this->client->getCollectedCalls('removeAttribute'), 1));
+	}
+
+	public function testAnAttributeRemovedInACallbackIsRemovedOnTheClient()
+	{
+		$map = new \Prado\Collections\TMap(['title' => 't', 'data-x' => '1']);
+		$this->control->setViewState('Attributes', $map);
+		$this->tracker->trackChanges();
+		$map->remove('data-x');
+		$this->tracker->respondToChanges();
+		$this->assertSame(0, $this->client->getCollectedCallCount('setAttribute'));
+		$this->assertSame(['data-x'], array_column($this->client->getCollectedCalls('removeAttribute'), 1));
+	}
+
 	public function testUpdateAttributesEmptyMapCallsNothing()
 	{
 		$this->tracker->exposedUpdateAttributes([]);
@@ -507,6 +525,28 @@ class TCallbackPageStateTrackerTest extends TestCase
 		$tracker->respondToChanges();
 		$removes = $this->client->getCollectedCalls('removeAttribute');
 		$this->assertSame(['aria-disabled'], array_map(fn ($call) => $call[1], $removes), 'an own role stays');
+	}
+
+	/**
+	 * A link without its own role gains and loses `role="link"` with `aria-disabled`;
+	 * a link with its own role keeps it in both directions.
+	 * @dataProvider linkProvider
+	 */
+	public function testEnabledOfALinkTogglesTheRoleOnlyWithoutItsOwn(string $class)
+	{
+		$link = new $class();
+		$tracker = new TCallbackPageStateTrackerTestable($link, $this->client);
+		$link->setEnabled(false);
+		$tracker->trackChanges();
+		$link->setEnabled(true);
+		$tracker->respondToChanges();
+		$this->assertSame(['aria-disabled', 'role'], array_column($this->client->getCollectedCalls('removeAttribute'), 1));
+
+		$link->setRole('button');
+		$tracker->trackChanges();
+		$link->setEnabled(false);
+		$tracker->respondToChanges();
+		$this->assertSame([['aria-disabled', 'true']], array_map(fn ($call) => [$call[1], $call[2]], $this->client->getCollectedCalls('setAttribute')));
 	}
 
 	public function testUpdateStyleWithoutAStyleArraySetsOnlyTheClass()

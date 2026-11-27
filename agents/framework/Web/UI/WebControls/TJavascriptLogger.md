@@ -16,7 +16,7 @@ Extends `[TWebControl](./TWebControl.md)`.
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `ToggleKey` | string | '' | Key character to toggle the console (combined with ALT). E.g., `'L'` → ALT+L |
+| `ToggleKey` | string | 'j' | Letter or digit that toggles the console with ALT (CTRL on OS X). An unknown key uses `j`'s key code |
 
 ## Key Methods
 
@@ -34,16 +34,13 @@ $logger->setToggleKey(string $v): void
 
 ## Rendering
 
-On `onPreRender`, registers a JavaScript snippet:
+`onPreRender()` raises `OnPreRender`, registers the `logger` script package, and registers a begin script with the key code of `ToggleKey` (76 for `L`):
 
 ```js
-var logConsole;
-jQuery(function() {
-    logConsole = new LogConsole({ toggleKey: 'L' });
-});
+var logConsole; jQuery(function() { logConsole = new LogConsole(76)});
 ```
 
-`renderContents()` outputs the container `<div>` for the log console UI.
+The control renders a `<div>` with the usage text and a link that toggles the console.
 
 ## Patterns & Gotchas
 

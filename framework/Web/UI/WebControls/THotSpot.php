@@ -295,8 +295,10 @@ abstract class THotSpot extends \Prado\TComponent
 	}
 
 	/**
-	 * Renders this hotspot.
-	 * @param \Prado\Web\UI\THtmlWriter $writer
+	 * Renders this hotspot as an `<area>`.
+	 * A Navigate hot spot, or one whose HotSpotMode is NotSet, renders `href` and `target`.
+	 * `title` and `alt` render only when AlternateText is not empty.
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function render($writer)
 	{
@@ -311,9 +313,10 @@ abstract class THotSpot extends \Prado\TComponent
 				$writer->addAttribute('target', $target);
 			}
 		}
-		$text = $this->getAlternateText();
-		$writer->addAttribute('title', $text);
-		$writer->addAttribute('alt', $text);
+		if (($text = $this->getAlternateText()) !== '') {
+			$writer->addAttribute('title', $text);
+			$writer->addAttribute('alt', $text);
+		}
 		if (($accessKey = $this->getAccessKey()) !== '') {
 			$writer->addAttribute('accesskey', $accessKey);
 		}

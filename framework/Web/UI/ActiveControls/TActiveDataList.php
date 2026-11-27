@@ -79,13 +79,15 @@ class TActiveDataList extends TDataList implements IActiveControl
 	 */
 	public function render($writer)
 	{
-		if ($this->getHasPreRendered()) {
-			$this->renderDataList($writer);
-			if ($this->getActiveControl()->canUpdateClientSide()) {
-				$this->getActiveControl()->replaceClientContent($this->getContainerID(), $writer);
-			}
-		} else {
+		$active = $this->getActiveControl();
+		if ($active->getDefersRender()) {
 			$this->getPage()->getAdapter()->registerControlToRender($this, $writer);
+		} elseif ($active->canUpdateClientSide()) {
+			$active->disableInnerUpdates();
+			$this->renderDataList($writer);
+			$active->replaceClientContent($this->getContainerID(), $writer);
+		} else {
+			$this->renderDataList($writer);
 		}
 	}
 

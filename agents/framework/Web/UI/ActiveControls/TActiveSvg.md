@@ -23,8 +23,8 @@ Active counterpart of `TSvg`. During a callback, a change to the content or an S
 | `render($param->getNewWriter())` | re-render; for template content |
 
 - A changed setter calls `registerUpdate()`, which defers `render()` to the callback response through `TActivePageAdapter::registerControlToRender()` with a new writer, as `TActiveRepeater::setDataSource()` does. The adapter keys by unique ID, so several changes send one update.
-- `render()` after pre-render renders and calls `TCallbackClientScript::replaceContent($this, $writer, true, getIsMorphUpdate())`; before pre-render it registers the deferred render.
-- `registerUpdate()` sets `EnableUpdate` false on the active controls inside, as `TActivePanel` does.
+- `render()` after pre-render in a callback calls `disableInnerUpdates()`, renders, and calls `TCallbackClientScript::replaceContent($this, $writer, true, getIsMorphUpdate())`; before pre-render in a callback it registers the deferred render; outside a callback it only renders.
+- `registerUpdate()` calls `TBaseActiveControl::disableInnerUpdates()`, as `TActivePanel` does.
 - The constructor sets `ActiveControl.UpdateMode` to `Morph`, so the page's `CallbackUpdateMode` (Replace by default) does not apply. `Replace` replaces the element; `Default` follows the page. `TActiveControlAdapter` registers the `morph` script package.
 - `onPreRender()` runs in a callback, so new content is processed then: hoisted styles go out in the callback's stylesheet header, and IDs are prefixed with the client ID.
 - No hash of the rendered markup: the page state is saved before the callback render, so a hash cannot persist to the next request. The setter comparison and the morph, which leaves unchanged nodes alone, cover unchanged content.

@@ -107,6 +107,7 @@ class TStyleSheet extends \Prado\Web\UI\TControl
 	 */
 	public function onPreRender($param)
 	{
+		parent::onPreRender($param);
 		$cs = $this->getPage()->getClientScript();
 
 		$styles = preg_split('/,|\s+/', $this->getPradoStyles());
