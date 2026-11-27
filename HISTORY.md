@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - The first `TJuiDatePicker` of each page registers the jQuery UI regional defaults; a static registered them only once per PHP process, so later pages of a long-running worker had none. (belisoful)
 BUG: Issue #1497 - `TJuiDialog` raises each jQuery UI dialog event it lists, such as `OnClose`, `OnBeforeClose`, `OnFocus`, and `OnResizeStop`; only `OnOpen` could be attached. (belisoful)
 BUG: Issue #1497 - `TImageMap` renders its `<img>` with its ClientID, resolves each hot spot's mode and target at render without changing the hot spot, and renders the hot spots of a disabled image map as Inactive without postback scripts; `THotSpot` renders `title` and `alt` only when `AlternateText` is set. (belisoful)
 BUG: Issue #1497 - `THead` HTML-encodes `BaseUrl` and `ShortcutIcon`; a quote ended the `href` attribute. (belisoful)

@@ -24,19 +24,13 @@ class TJuiDatePickerTest extends TestCase
 {
 	use TPageLifecycleTrait;
 
-	/** @var array the static state of {@see TJuiDatePicker} before the test */
-	private array $_static = [];
-
 	protected function setUp(): void
 	{
 		$this->resetPageState();
-		$this->_static = PradoUnit::snapshotStatic(TJuiDatePicker::class);
-		PradoUnit::setStaticProp(TJuiDatePicker::class, '_first', true);
 	}
 
 	protected function tearDown(): void
 	{
-		PradoUnit::restoreStatic(TJuiDatePicker::class, $this->_static);
 		$this->resetPageState();
 	}
 
@@ -191,16 +185,28 @@ class TJuiDatePickerTest extends TestCase
 		$this->assertStringContainsString('/ui/i18n/datepicker-de.js', $output);
 		$this->assertStringNotContainsString('datepicker-fr.js', $output);
 		$this->assertSame(1, substr_count($output, 'jQuery.datepicker.setDefaults('));
-		$this->assertStringContainsString("jQuery(document).ready(function(){jQuery.datepicker.setDefaults(jQuery.datepicker.regional['de']);});", $output);
+		$this->assertStringContainsString("jQuery(document).ready(function(){jQuery.datepicker.setDefaults(jQuery.datepicker.regional[\"de\"]);});", $output);
 		$this->assertStringContainsString("jQuery('#A').datepicker([]);", $output);
 		$this->assertStringContainsString("jQuery('#B').datepicker([]);", $output);
+	}
+
+	/**
+	 * Each page sets the regional defaults, also when one process renders several pages.
+	 */
+	public function testEachPageSetsTheRegionalDefaults(): void
+	{
+		foreach (['de', 'fr'] as $culture) {
+			$output = $this->runPage($this->newPage([$culture]));
+			$this->assertStringContainsString('/ui/i18n/datepicker-' . $culture . '.js', $output);
+			$this->assertStringContainsString('jQuery.datepicker.regional["' . $culture . '"]', $output);
+		}
 	}
 
 	public function testRenderInEnglishLoadsNoTranslation(): void
 	{
 		$output = $this->runPage($this->newPage(['en']));
 		$this->assertStringNotContainsString('/ui/i18n/', $output);
-		$this->assertStringContainsString("jQuery.datepicker.regional['en']", $output);
+		$this->assertStringContainsString('jQuery.datepicker.regional["en"]', $output);
 	}
 
 	public function testRenderPassesTheOptions(): void

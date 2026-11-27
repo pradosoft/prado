@@ -13,7 +13,7 @@ Textbox with jQuery UI datepicker popup. Extends [TActiveTextBox](../ActiveContr
 ## Key Properties/Methods
 
 - `getDateFormat()` / `setDateFormat($value)` - Date format string (default: dd-MM-yyyy)
-- `getCulture()` / `setCulture($value)` - Culture/language setting
+- `getCulture()` / `setCulture($value)` - Culture/language setting; the first date picker of each page registers the jQuery UI regional defaults of its culture, and `datepicker-<culture>.js` for a culture other than `en`
 - `getDate()` / `setDate($value)` - Date string
 - `getTimeStamp()` / `setTimeStamp($value)` - Unix timestamp
 - `getData()` / `setData($value)` - IDataRenderer implementation
