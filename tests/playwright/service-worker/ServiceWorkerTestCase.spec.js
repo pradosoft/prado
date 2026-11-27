@@ -25,6 +25,15 @@ async function controlled(page) {
 	await page.waitForFunction(() => navigator.serviceWorker && navigator.serviceWorker.controller !== null);
 }
 
+// A page that loads under one worker's scope changes controller only once the
+// worker registered for it activates and claims the page.
+async function controlledBy(page, scriptPart) {
+	await page.waitForFunction(
+		(part) => navigator.serviceWorker && navigator.serviceWorker.controller !== null && navigator.serviceWorker.controller.scriptURL.includes(part),
+		scriptPart
+	);
+}
+
 async function cacheNames(page) {
 	return page.evaluate(() => caches.keys());
 }
@@ -73,8 +82,8 @@ test('the default worker registers, links its manifest, caches assets, and answe
 	await controlled(page);
 	const names = await cacheNames(page);
 	expect(names.some((name) => /^prado-default-[0-9a-f]{16}-precache$/.test(name))).toBe(true);
+	await expect.poll(async () => (await cachedUrls(page, 'prado-default-')).some((url) => url.includes(PATH + 'assets/'))).toBe(true);
 	const runtime = await cachedUrls(page, 'prado-default-');
-	expect(runtime.some((url) => url.includes(PATH + 'assets/'))).toBe(true);
 	expect(runtime.some((url) => url.endsWith('index.php/page,Offline'))).toBe(true);
 });
 
@@ -132,16 +141,15 @@ test('the admin worker controls its own pages and keeps its caches through a def
 	await controlled(page);
 
 	await page.goto(BASE + 'index.php/admin/home');
-	await controlled(page);
-	const admin = await page.evaluate(() => navigator.serviceWorker.controller.scriptURL);
-	expect(admin).toContain('index.php/sw,worker/w,admin');
+	await controlledBy(page, 'index.php/sw,worker/w,admin');
 	await expect(page.locator('link[rel="manifest"]')).toHaveAttribute('href', PATH + 'index.php/sw,manifest/w,admin');
 	const scopes = await page.evaluate(async () => (await navigator.serviceWorker.getRegistrations()).map((registration) => new URL(registration.scope).pathname).sort());
 	expect(scopes).toEqual([PATH, PATH + 'index.php/admin/']);
 	await page.reload();
-	await controlled(page);
+	await controlledBy(page, 'w,admin');
+	// The worker stores a runtime response after it answers the request.
+	await expect.poll(async () => (await cacheNames(page)).filter((name) => name.startsWith('prado-admin-')).length).toBeGreaterThan(0);
 	const adminCaches = (await cacheNames(page)).filter((name) => name.startsWith('prado-admin-'));
-	expect(adminCaches.length).toBeGreaterThan(0);
 
 	await page.goto(BASE + 'index.php');
 	await controlled(page);
@@ -151,6 +159,7 @@ test('the admin worker controls its own pages and keeps its caches through a def
 	await controlled(page);
 	await page.reload();
 	await controlled(page);
+	await expect.poll(async () => (await cacheNames(page)).filter((name) => name.startsWith('prado-default-') && !defaultBefore.includes(name)).length).toBeGreaterThan(0);
 
 	const names = await cacheNames(page);
 	expect(names.filter((name) => name.startsWith('prado-admin-'))).toEqual(adminCaches);
