@@ -198,4 +198,11 @@ class TProgressTest extends TestCase
 		$output = $this->render($control);
 		$this->assertStringContainsString('>35%</progress>', $output);
 	}
+
+	public function testMaxRendersWithoutAValue()
+	{
+		$progress = new \Prado\Web\UI\WebControls\TProgress();
+		$progress->setMax(10);
+		$this->assertSame('<progress max="10"></progress>', $this->render($progress));
+	}
 }

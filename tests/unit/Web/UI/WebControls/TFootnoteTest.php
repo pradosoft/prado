@@ -208,4 +208,45 @@ class TFootnoteTest extends TestCase
 		$letters = array_map(fn ($i) => \Prado\Test\Unit\PradoUnit::invoke($list, 'getReferenceLetter', $i), [0, 1, 25, 26, 27, 51, 52]);
 		$this->assertSame(['a', 'b', 'z', 'aa', 'ab', 'az', 'ba'], $letters);
 	}
+
+	public function testFootnoteWithoutAPageHasNoList()
+	{
+		$footnote = new TFootnote();
+		$footnote->getControls()->add('Lost.');
+		$this->expectException(TConfigurationException::class);
+		$footnote->getReferenceListControl();
+	}
+
+	public function testFootnoteWithoutANumberRendersNoReference()
+	{
+		$this->list();
+		$footnote = $this->footnote('a', 'Hidden.');
+		$footnote->setVisible(false);
+		$this->assertSame('', $this->renderContents($footnote));
+	}
+
+	public function testListSkipsAFootnoteWhoseListIsMissing()
+	{
+		$list = $this->list();
+		$this->footnote('a', 'Counted.');
+		$lost = $this->footnote('b', 'Lost.');
+		$lost->setReferenceList('missing');
+		$html = $this->render($list);
+		$this->assertStringContainsString('Counted.', $html);
+		$this->assertStringNotContainsString('Lost.', $html);
+		$this->assertNull($list->getNoteNumber($lost));
+	}
+
+	public function testListWithoutAPageHasNoNotes()
+	{
+		$this->assertSame([], (new TReferenceList())->getNotes());
+	}
+
+	public function testRenderContentsOfAnEmptyList()
+	{
+		$list = $this->list();
+		$this->assertSame('<h2 id="notes_label">Notes</h2><ol></ol>', $this->renderContents($list));
+		$list->setHeaderText('');
+		$this->assertSame('<ol></ol>', $this->renderContents($list));
+	}
 }

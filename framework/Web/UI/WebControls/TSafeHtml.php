@@ -37,6 +37,10 @@ class TSafeHtml extends \Prado\Web\UI\TControl
 	 * Sets a custom configuration for HTMLPurifier.
 	 * The configuration is kept in view state, so it persists across postbacks.
 	 * Its serialized form adds about 25 KB to the page state, and over 100 KB once it has purified text.
+	 * The page state is signed, but it is encrypted only when {@see \Prado\Web\UI\TPage::setEnableStateEncryption}
+	 * is set, so the client receives the configuration, including its `Cache.SerializerPath` on the server.
+	 * The configuration restored on a postback is finalized: `getConfig()->set()` throws, and a change
+	 * sets a new configuration.
 	 * @param \HTMLPurifier_Config $value custom configuration
 	 */
 	public function setConfig(\HTMLPurifier_Config $value)

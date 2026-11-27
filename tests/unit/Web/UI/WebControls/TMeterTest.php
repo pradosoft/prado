@@ -206,4 +206,15 @@ class TMeterTest extends TestCase
 		$output = $this->render($control);
 		$this->assertStringContainsString('>60%</meter>', $output);
 	}
+
+	public function testBlankThresholdsResetToUnset()
+	{
+		$meter = new \Prado\Web\UI\WebControls\TMeter();
+		foreach (['Low', 'High', 'Optimum'] as $property) {
+			$meter->{'set' . $property}('0.5');
+			$this->assertSame(0.5, $meter->{'get' . $property}(), $property);
+			$meter->{'set' . $property}('');
+			$this->assertNull($meter->{'get' . $property}(), $property);
+		}
+	}
 }

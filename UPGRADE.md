@@ -262,6 +262,8 @@ Upgrading from v4.3.3
 - Issue #1497 - A `TImageMap` with hot spots renders its `<img>` with its ClientID as the `id`; in 4.3 it rendered the
   UniqueID. In a disabled `TImageMap` every hot spot renders without `href` and posts back nothing. A hot spot without
   `AlternateText` renders no empty `title` or `alt`.
+- Issue #1497 - `TMarkdown` renders a `<div>` with its ClientID instead of `<pre><code>`, and each fenced code block keeps
+  its `<pre><code class="language-x">`. CSS that styled the Markdown through `pre` or `code` styles the `div`.
 - Issue #1497 - `TXmlElement` array access throws `TInvalidDataTypeException` for an offset that is not null, an int,
   a string, or a `Stringable`. In 4.3 a float or bool offset addressed the attribute named by its string, or raised a
   PHP error. Use an int child index or a string attribute name.

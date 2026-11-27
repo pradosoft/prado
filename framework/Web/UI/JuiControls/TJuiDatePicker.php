@@ -36,11 +36,9 @@ use Prado\Util\TSimpleDateFormatter;
 class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOptions
 {
 	/**
-	 * The static variable is used to determine if this is the first instance of TJuiDatePicker. If true,
-	 * it will register an additional clientscript to set the language specific global default settings.
-	 * @var bool true, if this is the first instance of TJuiDatePicker, false otherwise
+	 * The end script key of the regional defaults, which the first date picker of a page registers.
 	 */
-	private static $_first = true;
+	private const REGIONAL_SCRIPT_KEY = 'TJuiDatePicker.regional';
 
 	/**
 	 * Creates a new callback control, sets the adapter to
@@ -108,22 +106,21 @@ class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOpt
 
 	/**
 	 * Ensure that the ID attribute is rendered and registers the javascript code
-	 * for initializing the active control. Also registers language specific global
-	 * settings for the first used date picker.
+	 * for initializing the active control. The first date picker of a page also
+	 * registers the regional default settings of its culture.
 	 * @param mixed $writer
 	 */
 	protected function addAttributesToRender($writer)
 	{
 		$cs = $this->getPage()->getClientScript();
-		if (self::$_first) {
+		if (!$cs->isEndScriptRegistered(self::REGIONAL_SCRIPT_KEY)) {
 			$culture = $this->getCurrentCulture();
 			if ($culture != 'en') {
-				$url = $this->getPage()->getClientScript()->getPradoScriptAssetUrl('jquery-ui') . "/ui/i18n/datepicker-{$culture}.js";
+				$url = $cs->getPradoScriptAssetUrl('jquery-ui') . "/ui/i18n/datepicker-{$culture}.js";
 				$cs->registerScriptFile(sprintf('%08X', crc32($url)), $url);
 			}
-			$code = "jQuery(document).ready(function(){jQuery.datepicker.setDefaults(jQuery.datepicker.regional['{$culture}']);});";
-			$cs->registerEndScript(sprintf('%08X', crc32($code)), $code);
-			self::$_first = false;
+			$code = 'jQuery(document).ready(function(){jQuery.datepicker.setDefaults(jQuery.datepicker.regional[' . TJavaScript::encode($culture) . ']);});';
+			$cs->registerEndScript(self::REGIONAL_SCRIPT_KEY, $code);
 		}
 		parent::addAttributesToRender($writer);
 		$options = TJavaScript::encode($this->getOptions()->toArray());
@@ -278,8 +275,8 @@ class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOpt
 
 	/**
 	 * Returns the value to be validated.
-	 * This methid is required by IValidatable interface.
-	 * @return string the integer timestamp if valid, otherwise the original text.
+	 * This method is required by IValidatable interface.
+	 * @return int|string the integer timestamp if valid, including 0, otherwise the original text.
 	 */
 	public function getValidationPropertyValue()
 	{
@@ -287,6 +284,6 @@ class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOpt
 			return '';
 		}
 		$date = $this->getTimeStamp();
-		return $date == null ? $text : $date;
+		return $date === null ? $text : $date;
 	}
 }

@@ -229,4 +229,9 @@ class TTeleportTest extends TestCase
 		$this->assertTrue($form->getHasTeleportContent());
 		$this->assertSame(['a' => '<i>3</i>', 'b' => '<i>2</i>'], $form->getTeleportContents());
 	}
+
+	public function testATeleportWithoutAParentIsNotInsideATeleport()
+	{
+		$this->assertFalse(PradoUnit::invoke(new TTeleport(), 'getIsInsideTeleport'));
+	}
 }

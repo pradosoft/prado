@@ -19,6 +19,7 @@ TTextHighlighter performs syntax highlighting on its body content using highligh
 - `getTabSize()` / `setTabSize(int)` - Tab size (default: 4)
 - `getEncodeHtml()` / `setEncodeHtml(bool)` - HTML encode content (default: true)
 - `processText($text)` - Processes text for highlighting
+- `getClientClassName()` - Client class the end script constructs, `Prado.WebUI.TTextHighlighter`; [TMarkdown](./TMarkdown.md) returns `Prado.WebUI.TMarkdown` (@since 4.4.0)
 
 ## See Also
 

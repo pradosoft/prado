@@ -29,9 +29,51 @@ class TSafetyCoverTestTemplate implements ITemplate
 	}
 }
 
+/**
+ * Renderable child that is not a control.
+ */
+class TSafetyCoverTestRenderable implements \Prado\Web\UI\IRenderable
+{
+	public function render($writer)
+	{
+		$writer->write('[renderable]');
+	}
+}
+
+/**
+ * Renderable child with an optional render filter that uppercases its output.
+ */
+class TSafetyCoverTestFilterRenderable implements \Prado\Web\UI\IFilterRenderable
+{
+	public function __construct(public bool $filtered)
+	{
+	}
+
+	public function render($writer)
+	{
+		$writer->write('[filterable]');
+	}
+
+	public function hasEventHandler($name)
+	{
+		return $this->filtered && strcasecmp($name, 'onRenderFilter') === 0;
+	}
+
+	public function onRenderFilter($renderedText)
+	{
+		return strtoupper($renderedText);
+	}
+}
+
 class TSafetyCoverTest extends TestCase
 {
+	use \Prado\Test\Unit\Harness\Traits\TAssetManagerMockTrait;
 	use TWebControlRenderTrait;
+
+	protected function tearDown(): void
+	{
+		$this->restoreAssetManager();
+	}
 
 	private function newControl(): TSafetyCover
 	{
@@ -639,5 +681,124 @@ class TSafetyCoverTest extends TestCase
 	public function testClientClassName()
 	{
 		$this->assertSame('Prado.WebUI.TSafetyCover', PradoUnit::invoke($this->newControl(), 'getClientClassName'));
+	}
+
+	public function testSetOverlayTemplateAfterInitializationInstantiatesIt()
+	{
+		$page = new \Prado\Web\UI\TPage();
+		$control = $this->newControl();
+		$page->getControls()->add($control);
+		PradoUnit::invoke($control, 'initRecursive');
+		$this->assertTrue($control->getHasInitialized());
+		$control->setOverlayTemplate(new TSafetyCoverTestTemplate());
+		$this->assertSame(1, substr_count($this->render($control), 'OVERLAY-CONTENT'));
+	}
+
+	public function testBodyRendersStringsAndRenderableChildren()
+	{
+		$control = $this->newControl();
+		$control->getControls()->add('[text]');
+		$control->getControls()->add(new TSafetyCoverTestRenderable());
+		$control->getControls()->add(new TSafetyCoverTestFilterRenderable(false));
+		$control->getControls()->add(new TSafetyCoverTestFilterRenderable(true));
+		$this->assertStringContainsString('[text][renderable][filterable][FILTERABLE]', $this->render($control));
+	}
+
+	/**
+	 * Pre-renders a cover with a CssUrl on a page with a recording client script manager.
+	 * @param ?string $cssUrl the CssUrl, or null for the default
+	 * @return \Prado\Test\Unit\Harness\Web\UI\TTestRecordingClientScript the client script
+	 */
+	private function preRender(?string $cssUrl): \Prado\Test\Unit\Harness\Web\UI\TTestRecordingClientScript
+	{
+		$this->mockAssetManager();
+		$page = new \Prado\Web\UI\TPage();
+		$cs = \Prado\Test\Unit\Harness\Web\UI\TTestRecordingClientScript::attachTo($page);
+		$control = $this->newControl();
+		$page->getControls()->add($control);
+		if ($cssUrl !== null) {
+			$control->setCssUrl($cssUrl);
+		}
+		$control->onPreRender(null);
+		return $cs;
+	}
+
+	public function testPreRenderPublishesTheDefaultStyleSheetAndRegistersTheScript()
+	{
+		$cs = $this->preRender(null);
+		$this->assertTrue($cs->isStyleSheetFileRegistered('/assets/safetycover.css'));
+		$this->assertSame(['safetycover'], $cs->pradoScripts);
+		$this->assertCount(1, $cs->postBackControls);
+		$this->assertSame('guard', $cs->postBackControls[0][1]['ID']);
+	}
+
+	public function testPreRenderRegistersACustomStyleSheet()
+	{
+		$cs = $this->preRender('/css/cover.css');
+		$this->assertTrue($cs->isStyleSheetFileRegistered('/css/cover.css'));
+		$this->assertFalse($cs->isStyleSheetFileRegistered('/assets/safetycover.css'));
+	}
+
+	public function testPreRenderWithoutCssUrlRegistersNoStyleSheet()
+	{
+		$cs = $this->preRender('');
+		$this->assertFalse($cs->isStyleSheetFileRegistered('/assets/safetycover.css'));
+		$this->assertSame(['safetycover'], $cs->pradoScripts);
+	}
+
+	public function testSetOverlayTemplateAfterInitializationReplacesTheOverlay()
+	{
+		$page = new \Prado\Web\UI\TPage();
+		$control = $this->newControl();
+		$page->getControls()->add($control);
+		$control->setOverlayTemplate(new TSafetyCoverTestTemplate());
+		PradoUnit::invoke($control, 'initRecursive');
+		$control->setOverlayTemplate(new TSafetyCoverTestTemplate());
+		$this->assertSame(1, substr_count($this->render($control), 'OVERLAY-CONTENT'));
+		$control->setOverlayTemplate(null);
+		$this->assertStringNotContainsString('OVERLAY-CONTENT', $this->render($control));
+	}
+
+	public static function directionProvider(): array
+	{
+		return [
+			'up' => [TSafetyCoverDirection::Up, TContentDirection::NotSet, 'up'],
+			'down' => [TSafetyCoverDirection::Down, TContentDirection::RightToLeft, 'down'],
+			'left' => [TSafetyCoverDirection::Left, TContentDirection::NotSet, 'left'],
+			'right' => [TSafetyCoverDirection::Right, TContentDirection::RightToLeft, 'right'],
+			'forward ltr' => [TSafetyCoverDirection::Forward, TContentDirection::LeftToRight, 'right'],
+			'forward rtl' => [TSafetyCoverDirection::Forward, TContentDirection::RightToLeft, 'left'],
+			'backward ltr' => [TSafetyCoverDirection::Backward, TContentDirection::NotSet, 'left'],
+			'backward rtl' => [TSafetyCoverDirection::Backward, TContentDirection::RightToLeft, 'right'],
+		];
+	}
+
+	/**
+	 * @dataProvider directionProvider
+	 */
+	public function testResolvedDirection(string $direction, string $content, string $expected)
+	{
+		$control = $this->newControl();
+		$control->setOverlayDirection($direction);
+		$control->setDirection($content);
+		$this->assertSame($expected, PradoUnit::invoke($control, 'getResolvedDirection'));
+	}
+
+	public function testCssClassCombinationsOfEffectFadeAndAuthoredClass()
+	{
+		foreach ([TSafetyCoverEffect::Slide, TSafetyCoverEffect::None] as $effect) {
+			foreach ([false, true] as $fade) {
+				foreach (['', 'mine safety-cover'] as $authored) {
+					$control = $this->newControl();
+					$control->setOverlayEffect($effect);
+					$control->setOverlayFade($fade);
+					$expected = 'safety-cover safety-cover-' . strtolower($effect)
+						. ($effect !== TSafetyCoverEffect::None ? ' safety-cover-up' : '')
+						. ($fade ? ' safety-cover-fade' : '')
+						. ($authored !== '' ? ' mine' : '');
+					$this->assertSame($expected, PradoUnit::invoke($control, 'buildCssClass', $authored), "$effect, fade " . var_export($fade, true) . ", '$authored'");
+				}
+			}
+		}
 	}
 }

@@ -228,9 +228,13 @@ class TRelativeTimeTest extends TestCase
 	 */
 	private function makeAtOffset(int $offset, string $culture = 'en_US'): TRelativeTime
 	{
+		$now = time();
+		$clock = new TMockClock();
+		$clock->setTime($now);
 		$control = new TRelativeTime();
 		$control->setCulture($culture);
-		$control->setDateTime(time() + $offset);
+		$control->setClock($clock);
+		$control->setDateTime($now + $offset);
 		return $control;
 	}
 
@@ -671,5 +675,29 @@ class TRelativeTimeTest extends TestCase
 		$this->assertSame(9, $partial[0]);
 		$this->assertSame(7, $partial[5]);
 		$this->assertSame(5, $partial[6]);
+	}
+
+	public function testAttributeCombinationsOfDateTimeToolTipAndEnhancement()
+	{
+		foreach ([false, true] as $setDateTime) {
+			foreach (['', 'When'] as $toolTip) {
+				foreach ([false, true] as $enhanced) {
+					$control = $this->makeAtOffset(-60);
+					if (!$setDateTime) {
+						$control->setDateTime('');
+					}
+					$control->setToolTip($toolTip);
+					if ($enhanced) {
+						$control->setID('ago');
+						(new TPage())->getControls()->add($control);
+					}
+					$html = $this->render($control);
+					$label = 'datetime ' . var_export($setDateTime, true) . ", tooltip '$toolTip', enhanced " . var_export($enhanced, true);
+					$this->assertStringContainsString('datetime="', $html, $label);
+					$this->assertSame($toolTip === 'When', str_contains($html, 'title="When"'), $label);
+					$this->assertSame($enhanced, str_contains($html, 'id="ago"'), $label);
+				}
+			}
+		}
 	}
 }
