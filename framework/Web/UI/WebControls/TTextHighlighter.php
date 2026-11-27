@@ -226,13 +226,22 @@ class TTextHighlighter extends TTextProcessor
 		parent::renderEndTag($writer);
 	}
 
+	/**
+	 * @return string the client-side JavaScript class that highlights the control
+	 * @since 4.4.0
+	 */
+	protected function getClientClassName()
+	{
+		return 'Prado.WebUI.TTextHighlighter';
+	}
+
 	protected function renderClientControlScript($writer)
 	{
 		$cs = $this->getPage()->getClientScript();
 		$cs->registerPradoScript('texthighlight');
 
 		$options = TJavaScript::encode($this->getTextHighlightOptions());
-		$code = "new Prado.WebUI.TTextHighlighter($options);";
+		$code = 'new ' . $this->getClientClassName() . "($options);";
 		$cs->registerEndScript("prado:" . $this->getClientID(), $code);
 	}
 }
