@@ -155,4 +155,13 @@ class TOutputTest extends TestCase
 		$this->assertStringNotContainsString('role=', $html);
 		$this->assertStringNotContainsString('aria-', $html);
 	}
+
+	public function testMissingFirstForControlThrows()
+	{
+		[, $output] = $this->createPage();
+		$output->setForControl('Missing Price');
+		$this->expectException(TInvalidDataValueException::class);
+		$this->expectExceptionMessage("TOutput.ForControl 'Missing' cannot be found.");
+		\Prado\Test\Unit\PradoUnit::invoke($output, 'getForAttributeValue');
+	}
 }

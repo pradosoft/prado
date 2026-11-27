@@ -15,24 +15,28 @@ use Parsedown;
 /**
  * TMarkdown class
  *
- * TMarkdown is a control that produces HTML from code with markdown syntax.
+ * TMarkdown renders its Markdown body, or {@see setText Text}, as HTML in a `div`.
+ * {@see https://parsedown.org Parsedown} converts the Markdown; see
+ * https://daringfireball.net/projects/markdown/basics for the syntax.
  *
- * Markdown is a text-to-HTML conversion tool for web writers. Markdown allows
- * you to write using an easy-to-read, easy-to-write plain text format, then
- * convert it to structurally valid XHTML (or HTML).
- * Further documentation regarding Markdown can be found at
- * http://daringfireball.net/projects/markdown/
+ * A fenced code block renders as `<pre><code class="language-x">`, and the client
+ * highlights each block with highlight.js. {@see setSyntaxStyle SyntaxStyle},
+ * {@see setTabSize TabSize}, {@see setShowLineNumbers ShowLineNumbers}, and
+ * {@see setEnableCopyCode EnableCopyCode} apply to every block. A block without a
+ * language has its language detected. {@see setLanguage Language} and
+ * {@see setEncodeHtml EncodeHtml} do not apply.
  *
- * To use TMarkdown, simply enclose the content to be rendered within
- * the body of TMarkdown in a template.
+ * ```xml
+ * <com:TMarkdown>
+ * # Title
+ * ~~~php
+ * echo 'Hello';
+ * ~~~
+ * </com:TMarkdown>
+ * ```
  *
- * See https://daringfireball.net/projects/markdown/basics for
- * details on the Markdown syntax usage.
- *
- * TMarkdown also performs syntax highlighting for code blocks whose language
- * is recognized by {@see \Prado\Web\UI\WebControls\TTextHighlighter}.
- * The language of a code block must be specified in the first line of the block
- * and enclosed within a pair of square brackets (e.g. [php]).
+ * Parsedown renders HTML written in the Markdown as is. Markdown from users is
+ * rendered inside a {@see \Prado\Web\UI\WebControls\TSafeHtml}.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @since 3.0.1
@@ -40,25 +44,57 @@ use Parsedown;
 class TMarkdown extends TTextHighlighter
 {
 	/**
-	 * Processes a text string.
-	 * This method is required by the parent class.
-	 * @param string $text text string to be processed
-	 * @return string the processed text result
+	 * @return string the tag of the control, `div`
 	 */
-	public function processText($text)
+	protected function getTagName()
 	{
-		$result = Parsedown::instance()->parse($text);
-		return preg_replace_callback(
-			'/<pre><code class="language-(\w+)">((.|\n)*?)<\\/code><\\/pre>/im',
-			[$this, 'highlightCode'],
-			$result
-		);
+		return 'div';
 	}
 
 	/**
-	 * Highlights source code using TTextHighlighter
+	 * @return string the client-side JavaScript class that highlights the code blocks
+	 * @since 4.4.0
+	 */
+	protected function getClientClassName()
+	{
+		return 'Prado.WebUI.TMarkdown';
+	}
+
+	/**
+	 * Registers the client script and renders the opening `div` with the ClientID.
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
+	 */
+	public function renderBeginTag($writer)
+	{
+		$this->renderClientControlScript($writer);
+		$writer->addAttribute('id', $this->getClientID());
+		TWebControl::renderBeginTag($writer);
+	}
+
+	/**
+	 * Renders the closing `div`.
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
+	 */
+	public function renderEndTag($writer)
+	{
+		TWebControl::renderEndTag($writer);
+	}
+
+	/**
+	 * Converts the Markdown text to HTML.
+	 * @param string $text the Markdown text
+	 * @return string the HTML
+	 */
+	public function processText($text)
+	{
+		return Parsedown::instance()->parse($text);
+	}
+
+	/**
+	 * Highlights source code using TTextHighlighter.
 	 * @param array $matches matches of code blocks
 	 * @return string highlighted code.
+	 * @deprecated 4.4.0 TMarkdown keeps the code blocks of Parsedown, which the client highlights.
 	 */
 	protected function highlightCode($matches)
 	{

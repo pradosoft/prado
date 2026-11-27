@@ -38,6 +38,7 @@ export const TListBox         = global.Prado.WebUI.TListBox;
 export const TDropDownList    = global.Prado.WebUI.TDropDownList;
 export const DefaultButton    = global.Prado.WebUI.DefaultButton;
 export const TTextHighlighter = global.Prado.WebUI.TTextHighlighter;
+export const TMarkdown        = global.Prado.WebUI.TMarkdown;
 export const TCheckBoxList    = global.Prado.WebUI.TCheckBoxList;
 export const TRadioButtonList = global.Prado.WebUI.TRadioButtonList;
 

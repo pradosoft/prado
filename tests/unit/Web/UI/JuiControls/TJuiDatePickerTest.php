@@ -176,6 +176,22 @@ class TJuiDatePickerTest extends TestCase
 	}
 
 	/**
+	 * A date that parses to the timestamp 0 is a valid date.
+	 */
+	public function testValidationPropertyValueOfTheTimestampZero(): void
+	{
+		$zone = date_default_timezone_get();
+		date_default_timezone_set('UTC');
+		try {
+			$control = $this->newControl();
+			$control->setText('01-01-1970');
+			$this->assertSame(0, $control->getValidationPropertyValue());
+		} finally {
+			date_default_timezone_set($zone);
+		}
+	}
+
+	/**
 	 * The first date picker of a page sets the regional defaults of the date pickers; a
 	 * culture other than `en` loads its translation.
 	 */

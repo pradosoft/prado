@@ -515,6 +515,50 @@ Prado.WebUI.TTextHighlighter = Prado.Class(Prado.WebUI.Control,
 	}
 });
 
+/**
+ * TMarkdown client-side behaviour: highlights each fenced code block
+ * (`pre > code`) of the rendered Markdown with highlight.js. Line numbers and
+ * the copy button apply to every block.
+ */
+Prado.WebUI.TMarkdown = Prado.Class(Prado.WebUI.Control,
+{
+	onInit(options) {
+		this.options = options;
+
+		const host = document.getElementById(this.options.ID);
+		if (!host) {
+			return;
+		}
+
+		hljs.configure({
+			tabReplace: options.tabsize || '    '
+		});
+		host.querySelectorAll('pre > code').forEach((code, index) => {
+			const text = code.textContent;
+			hljs.highlightBlock(code);
+			if (this.options.linenum) {
+				hljs.lineNumbersBlock(code);
+			}
+			if (this.options.copycode) {
+				const pre = code.parentNode;
+				const btn = document.createElement('input');
+				btn.type = 'button';
+				btn.className = 'copycode';
+				btn.value = 'Copy code';
+				btn.id = `${this.options.ID}_copy${index}`;
+				btn.setAttribute('data-clipboard-text', text);
+				btn.style.position = 'absolute';
+				btn.style.margin = '5px';
+				btn.style.right = '0';
+				// Constructed for its side effect (binding clipboard behavior to btn).
+				new ClipboardJS(btn);
+				pre.style.position = 'relative';
+				pre.insertBefore(btn, pre.firstChild);
+			}
+		});
+	}
+});
+
 
 Prado.WebUI.TCheckBoxList = Prado.Class(Prado.WebUI.Control,
 {

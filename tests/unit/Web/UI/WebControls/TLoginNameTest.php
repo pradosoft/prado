@@ -198,4 +198,22 @@ class TLoginNameTest extends TestCase
 		$control->setCssClass('user');
 		$this->assertSame('<span id="who" class="user">joe</span>', $this->render($control));
 	}
+
+	public function testGuestShownWhenDisplayGuest()
+	{
+		$user = $this->signIn('Visitor', true, TLoginNameTestUser::class);
+		$control = new TLoginName();
+		$control->setDisplayGuest(true);
+		$this->assertSame($user->getName(), $this->renderContents($control));
+		$this->assertNotSame('', $this->renderContents($control));
+	}
+
+	public function testGuestShownThroughANameProperty()
+	{
+		$user = $this->signIn('Visitor', true, TLoginNameTestUser::class);
+		$control = new TLoginName();
+		$control->setDisplayGuest(true);
+		$control->setNameProperty('IsGuest');
+		$this->assertSame('true', $this->renderContents($control));
+	}
 }

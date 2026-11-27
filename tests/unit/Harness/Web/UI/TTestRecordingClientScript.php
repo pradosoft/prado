@@ -28,6 +28,7 @@ use Prado\Web\UI\TPage;
  * | `$beginScripts` | {@see registerBeginScript} |
  * | `$endScripts` | {@see registerEndScript} |
  * | `$postBackControls` | {@see registerPostBackControl} |
+ * | `$defaultButtons` | {@see registerDefaultButton} |
  * | `$flushedControls` | {@see flushScriptFiles} |
  *
  * @author Brad Anderson <belisoful@icloud.com>
@@ -59,6 +60,11 @@ class TTestRecordingClientScript extends TClientScriptManager
 	 * @var array<int, array{string, array}> the registered postback controls as [client class, options]
 	 */
 	public array $postBackControls = [];
+
+	/**
+	 * @var array<int, array{mixed, mixed}> the registered default buttons as [panel, button]
+	 */
+	public array $defaultButtons = [];
 
 	/**
 	 * @var array<int, ?\Prado\Web\UI\TControl> the controls that flushed the script files
@@ -123,6 +129,16 @@ class TTestRecordingClientScript extends TClientScriptManager
 	public function registerPostBackControl($jsClass, $options)
 	{
 		$this->postBackControls[] = [$jsClass, $options];
+	}
+
+	/**
+	 * Records a default button.
+	 * @param mixed $panel the panel, or its unique ID
+	 * @param mixed $button the button, or its unique ID
+	 */
+	public function registerDefaultButton($panel, $button)
+	{
+		$this->defaultButtons[] = [$panel, $button];
 	}
 
 	/**

@@ -275,8 +275,8 @@ class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOpt
 
 	/**
 	 * Returns the value to be validated.
-	 * This methid is required by IValidatable interface.
-	 * @return string the integer timestamp if valid, otherwise the original text.
+	 * This method is required by IValidatable interface.
+	 * @return int|string the integer timestamp if valid, including 0, otherwise the original text.
 	 */
 	public function getValidationPropertyValue()
 	{
@@ -284,6 +284,6 @@ class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOpt
 			return '';
 		}
 		$date = $this->getTimeStamp();
-		return $date == null ? $text : $date;
+		return $date === null ? $text : $date;
 	}
 }

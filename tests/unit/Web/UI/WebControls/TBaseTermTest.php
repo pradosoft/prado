@@ -619,4 +619,113 @@ class TBaseTermTest extends TestCase
 		(new TAbbr())->markTerms(null, $param);
 		$this->assertSame('HTML<br/>', $param->getFilterText());
 	}
+
+	public function testTermInsideItsTargetIsInTarget()
+	{
+		$page = new TPage();
+		$box = new TPanel();
+		$box->setID('Box');
+		$page->getControls()->add($box);
+		$abbr = $this->abbr();
+		$abbr->setTargetControl('Box');
+		$box->getControls()->add($abbr);
+		$this->assertTrue(PradoUnit::invoke($abbr, 'getIsInTarget'));
+	}
+
+	public function testTextWhoseMatchesAreAllOverTheLimitIsUnchanged()
+	{
+		$abbr = new TAbbr();
+		$abbr->setTerms(['HTML' => self::EXPANSION]);
+		$abbr->setMarkLimit(1);
+		$this->assertSame(
+			'<p>' . $this->marked('HTML') . '</p><p>HTML</p>',
+			$this->renderTree($this->parent($abbr, '<p>HTML</p><p>HTML</p>'))
+		);
+	}
+
+	public function testTermSources()
+	{
+		$this->assertSame('HTML', $this->abbr(' HTML ')->getTerm());
+		$this->assertSame('', (new TAbbr())->getTerm());
+
+		$strings = new TAbbr();
+		$strings->getControls()->add(' <b>A &amp;</b>');
+		$strings->getControls()->add(' B ');
+		$this->assertSame('A & B', $strings->getTerm());
+
+		$control = new TAbbr();
+		$control->getControls()->add(new TPanel());
+		$this->assertSame('', $control->getTerm());
+
+		$mixed = new TAbbr();
+		$mixed->getControls()->add('A');
+		$mixed->getControls()->add(new TPanel());
+		$this->assertSame('', $mixed->getTerm());
+	}
+
+	public function testMarkedTermTitlesDropTheOwnTermOnlyWhenMarkedOnceInTarget()
+	{
+		$terms = ['CSS' => 'Cascading Style Sheets'];
+
+		$termless = new TAbbr();
+		$termless->setTerms($terms);
+		$termless->setMarkLimit(1);
+		$this->assertSame($terms, PradoUnit::invoke($termless, 'getMarkedTermTitles'));
+
+		$inTarget = $this->abbr();
+		$inTarget->setTerms($terms);
+		$inTarget->setMarkLimit(1);
+		$this->assertSame($terms, PradoUnit::invoke($inTarget, 'getMarkedTermTitles'));
+
+		$everyOccurrence = $this->abbr();
+		$everyOccurrence->setMarkLimit(0);
+		$this->assertSame(['HTML' => self::EXPANSION], PradoUnit::invoke($everyOccurrence, 'getMarkedTermTitles'));
+
+		$page = new TPage();
+		$box = new TPanel();
+		$box->setID('Box');
+		$page->getControls()->add($box);
+		$outside = $this->abbr();
+		$outside->setTargetControl('Box');
+		$outside->setMarkLimit(1);
+		$page->getControls()->add($outside);
+		$this->assertSame(['HTML' => self::EXPANSION], PradoUnit::invoke($outside, 'getMarkedTermTitles'));
+	}
+
+	public function testMarkCountsCountTheExistingTags()
+	{
+		$abbr = $this->abbr();
+		$keys = ['html' => self::EXPANSION, 'css' => ''];
+		$dom = new \DOMDocument();
+		$dom->loadHTML('<p><abbr>HTML</abbr><abbr>Other</abbr><abbr>html</abbr></p>');
+		$abbr->setMarkLimit(0);
+		$this->assertSame(['html' => 0, 'css' => 0], PradoUnit::invoke($abbr, 'getMarkCounts', $dom, $keys));
+		$abbr->setMarkLimit(2);
+		$this->assertSame(['html' => 1, 'css' => 0], PradoUnit::invoke($abbr, 'getMarkCounts', $dom, $keys));
+		$empty = new \DOMDocument();
+		$empty->loadHTML('<p>none</p>');
+		$this->assertSame(['html' => 0, 'css' => 0], PradoUnit::invoke($abbr, 'getMarkCounts', $empty, $keys));
+	}
+
+	public function testPreRenderAttachesTheFilterOnceAndOnlyWhenMarking()
+	{
+		$orphan = $this->abbr();
+		$orphan->onPreRender(null);
+		$this->assertNull($orphan->getParent());
+
+		$off = $this->abbr();
+		$offParent = $this->parent($off);
+		$off->setMarkOccurrences(false);
+		$off->onPreRender(null);
+		$this->assertFalse($offParent->hasEventHandler('onRenderFilter'));
+
+		$abbr = $this->abbr();
+		$parent = $this->parent($abbr);
+		$parent->setRenderFilterDepth(3);
+		$abbr->setDepthLimit(2);
+		$abbr->onPreRender(null);
+		$abbr->onPreRender(null);
+		$this->assertCount(1, $parent->getEventHandlers('onRenderFilter'));
+		$this->assertSame(3, $parent->getRenderFilterDepth());
+	}
 }
