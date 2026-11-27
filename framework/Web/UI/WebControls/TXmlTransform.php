@@ -75,10 +75,10 @@ class TXmlTransform extends \Prado\Web\UI\TControl
 	public function setTransformPath($value)
 	{
 		if (!is_file($value)) {
-			$value = Prado::getPathOfNamespace($value, self::EXT_XSL_FILE);
-			if ($value === null) {
+			if (($path = Prado::getPathOfNamespace($value, self::EXT_XSL_FILE)) === null) {
 				throw new TInvalidDataValueException('xmltransform_transformpath_invalid', $value);
 			}
+			$value = $path;
 		}
 		$this->setViewState('TransformPath', $value, '');
 	}
@@ -114,10 +114,10 @@ class TXmlTransform extends \Prado\Web\UI\TControl
 	public function setDocumentPath($value)
 	{
 		if (!is_file($value)) {
-			$value = Prado::getPathOfNamespace($value, self::EXT_XML_FILE);
-			if ($value === null) {
+			if (($path = Prado::getPathOfNamespace($value, self::EXT_XML_FILE)) === null) {
 				throw new TInvalidDataValueException('xmltransform_documentpath_invalid', $value);
 			}
+			$value = $path;
 		}
 		$this->setViewState('DocumentPath', $value, '');
 	}

@@ -169,4 +169,52 @@ class TXmlTransformTest extends \PHPUnit\Framework\TestCase
 		}
 		$this->assertEquals('', $textWriter->flush());
 	}
+
+	public function testInvalidPathsNameTheGivenPath()
+	{
+		foreach (['setTransformPath' => 'xmltransform_transformpath_invalid', 'setDocumentPath' => 'xmltransform_documentpath_invalid'] as $setter => $code) {
+			try {
+				(new TXmlTransform())->$setter('NoSuchAlias.missing');
+				$this->fail("$setter accepted an invalid path");
+			} catch (\Prado\Exceptions\TInvalidDataValueException $e) {
+				$this->assertSame($code, $e->getErrorCode());
+				$this->assertStringContainsString("'NoSuchAlias.missing'", $e->getMessage());
+			}
+		}
+	}
+
+	public function testRenderWithoutATransformThrows()
+	{
+		$transform = new TXmlTransform();
+		$transform->setDocumentContent($this->documentContent);
+		$this->expectException(\Prado\Exceptions\TConfigurationException::class);
+		$this->expectExceptionMessage('Either TransformContent or TransformPath');
+		$transform->render(new \Prado\Web\UI\THtmlWriter(new TTextWriter()));
+	}
+
+	public function testRenderPassesTheParameters()
+	{
+		$transform = new TXmlTransform();
+		$transform->setDocumentContent($this->documentContent);
+		$transform->setTransformContent('<?xml version="1.0"?><xsl:transform xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">'
+			. '<xsl:output method="xml" omit-xml-declaration="yes"/><xsl:param name="who"/>'
+			. '<xsl:template match="/"><b><xsl:value-of select="$who"/></b></xsl:template></xsl:transform>');
+		$transform->getParameters()->add('who', 'Prado');
+		$textWriter = new TTextWriter();
+		$transform->render(new THtmlWriter($textWriter));
+		$this->assertSame("<b>Prado</b>\n", $textWriter->flush());
+	}
+
+	public function testRenderBodyDocumentWithParameters()
+	{
+		$transform = new TXmlTransform();
+		$transform->setTransformContent('<?xml version="1.0"?><xsl:transform xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">'
+			. '<xsl:output method="xml" omit-xml-declaration="yes"/><xsl:param name="who"/>'
+			. '<xsl:template match="/"><b><xsl:value-of select="greeting"/> <xsl:value-of select="$who"/></b></xsl:template></xsl:transform>');
+		$transform->getParameters()->add('who', 'Prado');
+		$transform->getControls()->add('<greeting>Hello</greeting>');
+		$textWriter = new TTextWriter();
+		$transform->render(new THtmlWriter($textWriter));
+		$this->assertSame("<b>HelloPrado</b>\n", $textWriter->flush());
+	}
 }

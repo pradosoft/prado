@@ -100,4 +100,21 @@ class TRubyTest extends TestCase
 		$control->setEncode(true);
 		$this->assertSame('<ruby>&lt;b&gt;A&lt;/b&gt;<rp>&lt;</rp><rt>&quot;a&quot;</rt><rp>)</rp></ruby>', $this->render($control));
 	}
+
+	public function testContentCombinationsOfBaseAnnotationAndParentheses()
+	{
+		foreach (['', '漢字'] as $base) {
+			foreach (['', 'かんじ'] as $annotation) {
+				foreach ([true, false] as $parentheses) {
+					$control = new TRuby();
+					$control->setBase($base);
+					$control->setAnnotation($annotation);
+					$control->setShowParentheses($parentheses);
+					$expected = $base
+						. ($annotation !== '' ? ($parentheses ? '<rp>(</rp>' : '') . '<rt>かんじ</rt>' . ($parentheses ? '<rp>)</rp>' : '') : '');
+					$this->assertSame('<ruby>' . $expected . '</ruby>', $this->render($control), "base '$base', annotation '$annotation', parentheses " . var_export($parentheses, true));
+				}
+			}
+		}
+	}
 }

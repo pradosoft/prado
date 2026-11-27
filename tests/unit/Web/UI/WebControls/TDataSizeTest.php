@@ -1022,4 +1022,29 @@ class TDataSizeTest extends \PHPUnit\Framework\TestCase
 			self::assertEquals(1, preg_match('/[^a-zA-Z]quebibytes[^a-zA-Z]*/i', $output));
 		}
 	}
+
+	public function testWithoutCultureInfoFormatsWithNumberFormat()
+	{
+		$writer = new TTextWriter();
+		$size = new TDataSizeTestNoCulture();
+		$size->setSize(1536);
+		$size->setAbbreviate(true);
+		$size->renderContents($writer);
+		self::assertEquals('1.54 KB', $writer->flush());
+
+		$size->setAbbreviate(false);
+		$size->renderContents($writer);
+		self::assertStringStartsWith('1.54 ', $writer->flush());
+	}
+}
+
+/**
+ * TDataSize without culture information, which formats numbers with number_format().
+ */
+class TDataSizeTestNoCulture extends \Prado\Web\UI\WebControls\TDataSize
+{
+	protected function getCultureInfo($culture = null)
+	{
+		return null;
+	}
 }

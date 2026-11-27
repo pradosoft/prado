@@ -13,7 +13,13 @@ use Prado\Test\Unit\PradoUnit;
 
 class TDialogTest extends TestCase
 {
+	use \Prado\Test\Unit\Harness\Traits\TAssetManagerMockTrait;
 	use TWebControlRenderTrait;
+
+	protected function tearDown(): void
+	{
+		$this->restoreAssetManager();
+	}
 
 	public function testRendersDialogTag()
 	{
@@ -272,5 +278,31 @@ class TDialogTest extends TestCase
 		$control->setID('notice');
 		$page->getControls()->add($control);
 		return [$page, $control];
+	}
+
+	public function testDefaultCssUrlPublishesTheBundledStyleSheet()
+	{
+		$this->mockAssetManager();
+		[$page, $control] = $this->createPageDialog();
+		$control->setHeaderText('Notice');
+		$control->onPreRender(null);
+		$this->assertSame(['/assets/dialog.css'], $this->styleSheetFiles($page));
+	}
+
+	public function testRenderHeaderWithTitleAndCloseButtonOrNeither()
+	{
+		[, $control] = $this->createPageDialog();
+		$control->setHeaderText('Notice');
+		$control->setShowCloseButton(true);
+		$writer = new \Prado\Web\UI\THtmlWriter(new \Prado\IO\TTextWriter());
+		PradoUnit::invoke($control, 'renderHeader', $writer);
+		$html = $writer->flush();
+		$this->assertStringContainsString('<h2 id="notice_header" class="dialog-title">Notice</h2>', $html);
+		$this->assertStringContainsString('class="dialog-close"', $html);
+
+		[, $empty] = $this->createPageDialog();
+		$writer = new \Prado\Web\UI\THtmlWriter(new \Prado\IO\TTextWriter());
+		PradoUnit::invoke($empty, 'renderHeader', $writer);
+		$this->assertSame('<div class="dialog-header"></div>', $writer->flush());
 	}
 }

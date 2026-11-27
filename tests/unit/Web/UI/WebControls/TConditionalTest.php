@@ -469,4 +469,29 @@ class TConditionalTest extends TestCase
 		$this->assertNotNull($conditional->findControl('FalseLabel'));
 		$this->assertEquals(1, $conditional->getControls()->count());
 	}
+
+	public function testCreateChildControls_InvalidConditionThrows()
+	{
+		$conditional = new TConditional();
+		$conditional->setCondition('$this->noSuchMethod()');
+		$this->_page->getControls()->add($conditional);
+		$this->setupConditional($conditional);
+		try {
+			$conditional->createChildControls();
+			$this->fail('Expected TInvalidDataValueException');
+		} catch (\Prado\Exceptions\TInvalidDataValueException $e) {
+			$this->assertSame('conditional_condition_invalid', $e->getErrorCode());
+		}
+	}
+
+	public function testCreateChildControls_FalseWithoutFalseTemplateCreatesNothing()
+	{
+		$conditional = new TConditional();
+		$conditional->setCondition('false');
+		$conditional->setTrueTemplate($this->newTemplate('<com:TLabel ID="TrueLabel" />'));
+		$this->_page->getControls()->add($conditional);
+		$this->setupConditional($conditional);
+		$conditional->createChildControls();
+		$this->assertSame(0, $conditional->getControls()->count());
+	}
 }
