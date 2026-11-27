@@ -155,9 +155,20 @@ class TActiveCallbackRequestTest extends TestCase
 	 * A handler may set a target without callback client-side options; the response
 	 * then sends the page state.
 	 */
-	public function testCallbackRetargetedToAControlWithoutClientSideSendsThePageState()
+	public static function retargetProvider(): array
 	{
-		$this->onCallback = fn ($page) => $page->getAdapter()->setCallbackEventTarget($page->findControl('Panel'));
+		return [
+			'active control' => ['Panel'],
+			'plain control' => ['Form'],
+		];
+	}
+
+	/**
+	 * @dataProvider retargetProvider
+	 */
+	public function testCallbackRetargetedToAControlWithoutClientSideSendsThePageState(string $target)
+	{
+		$this->onCallback = fn ($page) => $page->getAdapter()->setCallbackEventTarget($page->findControl($target));
 		$this->runActCallback();
 		$parts = $this->getCallbackParts();
 		$this->assertSame(TTestPageStatePersister::CLIENT_STATE, $parts[TActivePageAdapter::CALLBACK_PAGESTATE_HEADER]);
