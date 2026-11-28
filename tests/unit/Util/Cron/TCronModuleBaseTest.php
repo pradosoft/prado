@@ -618,6 +618,49 @@ class TCronModuleBaseTest extends \PHPUnit\Framework\TestCase
 		}
 	}
 
+	public function testRequestDaemonRetriesTheLockTheDaemonProbes()
+	{
+		$module = $this->_modules[] = new class () extends TCronModule {
+			public array $states = [];
+
+			public function getDaemonState(): ?string
+			{
+				return (count($this->states) > 1) ? array_shift($this->states) : ($this->states[0] ?? null);
+			}
+
+			public function signalWake(): bool
+			{
+				return false;
+			}
+		};
+		$module->setID('cronBaseRequestRetry' . bin2hex(random_bytes(3)));
+		$module->setDaemonMutex($mutex = new class () extends TMemoryMutex {
+			public int $busy = 0;
+
+			protected function acquireLock(string $name): bool
+			{
+				if ($this->busy > 0) {
+					$this->busy--;
+					return false;
+				}
+				return parent::acquireLock($name);
+			}
+		});
+		$mutex->setRetryDelay(10);
+		$lock = $module->getDaemonLockName() . ':test';
+		$retired = static fn (?string $state): bool => $state === TCronModule::DAEMON_STATE_RETIRING;
+		$mutex->busy = 2;
+		$module->states = [TCronModule::DAEMON_STATE_RUNNING, TCronModule::DAEMON_STATE_RETIRING];
+		self::assertTrue(PradoUnit::invoke($module, 'requestDaemon', $lock, $retired, 2.0), 'the request takes the lock after the probe releases it');
+		self::assertSame(0, $mutex->busy, 'the request retried the lock');
+		self::assertFalse($mutex->isAcquired($lock), 'the request lock is released');
+		$mutex->busy = PHP_INT_MAX;
+		$module->states = [TCronModule::DAEMON_STATE_RUNNING];
+		$start = microtime(true);
+		self::assertFalse(PradoUnit::invoke($module, 'requestDaemon', $lock, $retired, 0.1), 'the lock is not free within the timeout');
+		self::assertGreaterThanOrEqual(0.09, microtime(true) - $start, 'the request waits out its timeout for the lock');
+	}
+
 	public function testTaskProcessCommandOfEachSapiAndMemoryLimit()
 	{
 		$module = $this->newTestModule([$this->job('procCommand')]);

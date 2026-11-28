@@ -3361,11 +3361,12 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 
 	/**
 	 * Holds a request lock, wakes the daemon, and waits until {@see getDaemonState} satisfies the
-	 * acknowledgment or the timeout passes.
+	 * acknowledgment or the timeout passes.  The daemon's probe of the request lock holds it for a
+	 * moment, so the request retries the lock within the timeout.
 	 * @param string $lockName the request lock
 	 * @param callable $acknowledged `(?string $state): bool`, whether the state is the requested one
 	 * @param ?float $timeout the seconds to wait, null for {@see DEFAULT_DAEMON_REQUEST_TIMEOUT}
-	 * @return ?bool true when acknowledged, false when not in time, null when no daemon runs
+	 * @return ?bool true when acknowledged, false when the lock or the acknowledgment is not in time, null when no daemon runs
 	 * @since 4.4.0
 	 */
 	protected function requestDaemon(string $lockName, callable $acknowledged, ?float $timeout): ?bool
@@ -3377,14 +3378,14 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 		if ($acknowledged($state)) {
 			return true;
 		}
+		$clock = $this->getMonotonicClock();
+		$deadline = $clock->seconds() + ($timeout ?? (float) static::DEFAULT_DAEMON_REQUEST_TIMEOUT);
 		$mutex = $this->getDaemonMutex();
-		if (!$mutex->acquire($lockName)) {
+		if (!$mutex->acquire($lockName, max(0, $deadline - $clock->seconds()))) {
 			return false;
 		}
 		try {
 			$this->signalWake();
-			$clock = $this->getMonotonicClock();
-			$deadline = $clock->seconds() + ($timeout ?? (float) static::DEFAULT_DAEMON_REQUEST_TIMEOUT);
 			while (true) {
 				if ($acknowledged($this->getDaemonState())) {
 					return true;

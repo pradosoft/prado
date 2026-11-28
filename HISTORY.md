@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Issue #1497 - `TCronModule::requestDaemonStop()` and `requestDaemonRetire()` retry the request lock within the timeout; a request that met the daemon's probe of the lock failed at once, so `cron/stop` reported a timeout and the daemon kept running. (belisoful)
 BUG: Issue #1497 - The default items of `TJuiSortable` and `TJuiSelectable` are `<li id="WidgetID_N" data-index="N">`, unique on the page, and their callbacks still send the index N; `Encode` HTML-encodes their Data, and `TJuiAutoComplete.Encode` its default suggestion. Items had the IDs `0`, `1`, ... on every list, and the Data was never encoded. UPGRADE.md lists the change. (belisoful)
 BUG: Issue #1497 - The first `TJuiDatePicker` of each page registers the jQuery UI regional defaults; a static registered them only once per PHP process, so later pages of a long-running worker had none. (belisoful)
 BUG: Issue #1497 - `TJuiDatePicker::getValidationPropertyValue()` returns the timestamp 0 for a date that parses to it; it returned the text. (belisoful)
