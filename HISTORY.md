@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: `Prado::using()` and `Prado::usingClass()` load a namespaced class, interface, or trait that is not loaded yet and that no class map or path alias names, such as one Composer autoloads; they returned null for it, so a component configured by such a class name was rejected. (belisoful)
 BUG: Issue #1497 - The default items of `TJuiSortable` and `TJuiSelectable` are `<li id="WidgetID_N" data-index="N">`, unique on the page, and their callbacks still send the index N; `Encode` HTML-encodes their Data, and `TJuiAutoComplete.Encode` its default suggestion. Items had the IDs `0`, `1`, ... on every list, and the Data was never encoded. UPGRADE.md lists the change. (belisoful)
 BUG: Issue #1497 - The first `TJuiDatePicker` of each page registers the jQuery UI regional defaults; a static registered them only once per PHP process, so later pages of a long-running worker had none. (belisoful)
 BUG: Issue #1497 - `TJuiDatePicker::getValidationPropertyValue()` returns the timestamp 0 for a date that parses to it; it returned the text. (belisoful)
