@@ -91,6 +91,15 @@ class TStyleSheetTest extends TestCase
 		$this->assertSame(['jquery-ui', 'bootstrap'], $cs->pradoStyles);
 	}
 
+	public function testPreRenderRegistersAPradoStyleWithoutAUrl()
+	{
+		[$control, $cs] = $this->onPage();
+		$control->setPradoStyles('jquery-ui');
+		$control->onPreRender(null);
+		$this->assertSame(['jquery-ui'], $cs->pradoStyles);
+		$this->assertSame('', $this->renderStyleSheetFiles($cs));
+	}
+
 	/**
 	 * Renders the registered style sheet files of a client script.
 	 * @param TTestRecordingClientScript $cs the client script

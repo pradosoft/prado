@@ -184,6 +184,12 @@ class TFootnoteTest extends TestCase
 
 	public function testHeaderLevelOutOfRangeThrows()
 	{
+		try {
+			(new TReferenceList())->setHeaderLevel(0);
+			$this->fail('Expected TInvalidDataValueException');
+		} catch (TInvalidDataValueException $e) {
+			$this->assertSame('referencelist_headerlevel_invalid', $e->getErrorCode());
+		}
 		$this->expectException(TInvalidDataValueException::class);
 		(new TReferenceList())->setHeaderLevel(7);
 	}
@@ -207,6 +213,14 @@ class TFootnoteTest extends TestCase
 		$list = new TReferenceList();
 		$letters = array_map(fn ($i) => \Prado\Test\Unit\PradoUnit::invoke($list, 'getReferenceLetter', $i), [0, 1, 25, 26, 27, 51, 52]);
 		$this->assertSame(['a', 'b', 'z', 'aa', 'ab', 'az', 'ba'], $letters);
+		$this->assertSame('', \Prado\Test\Unit\PradoUnit::invoke($list, 'getReferenceLetter', -1));
+	}
+
+	public function testBackLinksWithoutReferencesRenderNothing()
+	{
+		$tw = new \Prado\IO\TTextWriter();
+		\Prado\Test\Unit\PradoUnit::invoke(new TReferenceList(), 'renderBackLinks', new \Prado\Web\UI\THtmlWriter($tw), 1, []);
+		$this->assertSame('', $tw->flush());
 	}
 
 	public function testFootnoteWithoutAPageHasNoList()

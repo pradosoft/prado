@@ -190,6 +190,17 @@ class TLoginNameTest extends TestCase
 		$this->assertSame('<span>plain</span>', $this->render($control));
 	}
 
+	public function testDisplayGuestOnPlainGuestUsesGetName()
+	{
+		Prado::getApplication()->setUser(new class () extends TLoginNamePlainUser {
+			public function getIsGuest() { return true; }
+		});
+		$control = new TLoginName();
+		$control->setDisplayGuest(true);
+		$control->setNameProperty('DisplayName');
+		$this->assertSame('<span>plain</span>', $this->render($control));
+	}
+
 	public function testAttributesRender()
 	{
 		$this->signIn('joe');

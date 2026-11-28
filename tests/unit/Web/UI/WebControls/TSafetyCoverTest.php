@@ -704,6 +704,56 @@ class TSafetyCoverTest extends TestCase
 		$this->assertStringContainsString('[text][renderable][filterable][FILTERABLE]', $this->render($control));
 	}
 
+	public function testBodyRendersChildrenOfOneKind()
+	{
+		$kinds = [
+			'[a][b]' => ['[a]', '[b]'],
+			'[renderable][renderable]' => [new TSafetyCoverTestRenderable(), new TSafetyCoverTestRenderable()],
+			'[FILTERABLE][FILTERABLE]' => [new TSafetyCoverTestFilterRenderable(true), new TSafetyCoverTestFilterRenderable(true)],
+		];
+		foreach ($kinds as $expected => $children) {
+			$control = $this->newControl();
+			foreach ($children as $child) {
+				$control->getControls()->add($child);
+			}
+			$this->assertStringContainsString('class="safety-cover-content">' . $expected . '</div>', $this->render($control));
+		}
+	}
+
+	public function testSetOverlayTemplateNullWithoutOverlay()
+	{
+		$control = $this->newControl();
+		$control->setOverlayTemplate(null);
+		$this->assertNull($control->getOverlayTemplate());
+		$this->assertSame(0, $control->getControls()->getCount());
+	}
+
+	public function testFaceCombinationsOfLabelCssClassColorAndOverlay()
+	{
+		foreach (['', 'Reveal'] as $label) {
+			foreach (['', 'warn'] as $cssClass) {
+				foreach (['', '#ff0000'] as $color) {
+					foreach ([false, true] as $overlay) {
+						$control = $this->newControl();
+						$control->setAccessibleLabel($label);
+						$control->setOverlayCssClass($cssClass);
+						$control->setOverlayColor($color);
+						if ($overlay) {
+							$control->setOverlayTemplate(new TSafetyCoverTestTemplate());
+						}
+						$html = $this->render($control);
+						$case = "label '$label', class '$cssClass', color '$color', overlay " . var_export($overlay, true);
+						$this->assertSame($label !== '', str_contains($html, 'aria-label="Reveal"'), $case);
+						$this->assertSame($label === '', str_contains($html, 'aria-labelledby="guard_face"'), $case);
+						$this->assertStringContainsString('class="safety-cover-face' . ($cssClass === '' ? '' : ' warn') . '"', $html, $case);
+						$this->assertSame($color !== '', str_contains($html, 'background-color:#ff0000'), $case);
+						$this->assertSame($overlay, str_contains($html, 'OVERLAY-CONTENT'), $case);
+					}
+				}
+			}
+		}
+	}
+
 	/**
 	 * Pre-renders a cover with a CssUrl on a page with a recording client script manager.
 	 * @param ?string $cssUrl the CssUrl, or null for the default

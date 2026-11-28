@@ -55,6 +55,14 @@ class TClientScriptTest extends TestCase
 		$this->assertSame(['ajax', 'effects', 'validator'], $this->cs->pradoScripts);
 	}
 
+	public function testPreRenderRegistersASinglePradoScript()
+	{
+		$control = $this->onPage();
+		$control->setPradoScripts('ajax');
+		$control->onPreRender(null);
+		$this->assertSame(['ajax'], $this->cs->pradoScripts);
+	}
+
 	public function testPreRenderWithoutScriptsRegistersNone()
 	{
 		$control = $this->onPage();

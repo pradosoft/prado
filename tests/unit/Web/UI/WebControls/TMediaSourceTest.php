@@ -48,6 +48,32 @@ class TMediaSourceTest extends TestCase
 		$this->assertSame(-1, $control->getWidth());
 	}
 
+	public function testSourceAttributeCombinations()
+	{
+		foreach ([false, true] as $all) {
+			foreach ([-1, 640] as $width) {
+				foreach ([-1, 360] as $height) {
+					$control = new TMediaSource();
+					if ($all) {
+						$control->setSrc('a.webm');
+						$control->setType('video/webm');
+						$control->setMedia('print');
+						$control->setSrcset('a.webp');
+						$control->setSizes('100vw');
+					}
+					$control->setWidth($width);
+					$control->setHeight($height);
+					$expected = '<source'
+						. ($all ? ' src="a.webm" type="video/webm" media="print" srcset="a.webp" sizes="100vw"' : '')
+						. ($width === -1 ? '' : ' width="640"')
+						. ($height === -1 ? '' : ' height="360"')
+						. ' />';
+					$this->assertSame($expected, $this->render($control));
+				}
+			}
+		}
+	}
+
 	public function testDefaults()
 	{
 		$control = new TMediaSource();

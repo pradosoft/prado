@@ -118,6 +118,8 @@ class TSvgTest extends TestCase
 		$svg->setDecorative(true);
 		$svg->setAlternateText('ignored');
 		$this->assertSame('<svg aria-hidden="true" id="icon"></svg>', $this->render($svg));
+		$svg->setAlternateText('');
+		$this->assertFalse(PradoUnit::invoke($svg, 'getNeedsTextAlternative'));
 	}
 
 	public function testUnnamedGraphicRendersAsWritten()

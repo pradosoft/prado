@@ -191,6 +191,22 @@ class TCanvasTest extends TestCase
 		$this->assertTrue($control->getEnsureId());
 	}
 
+	public function testClientEnhancedNeedsOnDrawPageScriptAndEnabled()
+	{
+		$control = $this->pageCanvas();
+		$this->assertFalse(PradoUnit::invoke($control, 'getClientEnhanced'));
+		$control->getClientSide();
+		$this->assertFalse(PradoUnit::invoke($control, 'getClientEnhanced'));
+		$control->getClientSide()->setOnDraw('draw();');
+		$this->assertTrue(PradoUnit::invoke($control, 'getClientEnhanced'));
+		$control->getPage()->setClientSupportsJavaScript(false);
+		$this->assertFalse(PradoUnit::invoke($control, 'getClientEnhanced'));
+
+		$detached = new TCanvas();
+		$detached->getClientSide()->setOnDraw('draw();');
+		$this->assertFalse(PradoUnit::invoke($detached, 'getClientEnhanced'));
+	}
+
 	public function testDisabledRegistersNoScript()
 	{
 		$control = $this->pageCanvas();

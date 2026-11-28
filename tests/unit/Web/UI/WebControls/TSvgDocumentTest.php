@@ -76,6 +76,22 @@ class TSvgDocumentTest extends TestCase
 		$this->assertNull($doc->ensureTitleId('t3'));
 	}
 
+	public function testTitleAndRemoveTitlesOverUniformChildren()
+	{
+		$text = $this->doc('plain text');
+		$this->assertNull($text->getTitle());
+		$text->removeTitles();
+		$this->assertSame('plain text', $text->getInnerMarkup());
+
+		$titles = $this->doc('<title>A</title><title>B</title>');
+		$titles->removeTitles();
+		$this->assertSame('', $titles->getInnerMarkup());
+
+		$descriptions = $this->doc('<desc>A</desc><desc>B</desc>');
+		$descriptions->removeTitles();
+		$this->assertSame('', $descriptions->getInnerMarkup());
+	}
+
 	public function testSanitizeRemovesScriptAndEvents()
 	{
 		$doc = $this->doc('<script>alert(1)</script><foreignObject><div/></foreignObject><circle r="1" onclick="x()" onload="y()" fill="red"/>', ' onload="z()"');
