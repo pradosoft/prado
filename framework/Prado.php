@@ -422,6 +422,8 @@ class Prado
 	 * A namespace ending with an asterisk '*' refers to a directory, otherwise it represents a PHP file.
 	 * If the namespace corresponds to a directory, the directory will be appended
 	 * to the include path. If the namespace corresponds to a file, it will be included (include_once).
+	 * A namespaced class that is not loaded yet and that no class map or path alias names, such
+	 * as one Composer autoloads, is loaded through the registered autoloaders.
 	 * @param string $namespace namespace to be used
 	 * @return ?string The resolved PHP fully-qualified class, interface, or trait name when the
 	 *   namespace identifies a loadable class. Returns a string ending in '\' when a directory
@@ -514,6 +516,15 @@ class Prado
 					return $namespace;
 				}
 			}
+		}
+
+		// A namespaced class, interface, or trait that no class map or path alias names, such
+		// as one Composer autoloads, is loaded through the autoloaders; one attempt loads any of
+		// the three. A name being autoloaded is not autoloaded again, so Prado::autoload()
+		// calling this method returns null here.
+		if (str_contains($namespace, '\\') && !str_ends_with($namespace, '*') &&
+			(class_exists($namespace) || interface_exists($namespace, false) || trait_exists($namespace, false))) {
+			return static::using($namespace);
 		}
 
 		return null;
