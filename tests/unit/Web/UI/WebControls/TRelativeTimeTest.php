@@ -682,9 +682,11 @@ class TRelativeTimeTest extends TestCase
 		foreach ([false, true] as $setDateTime) {
 			foreach (['', 'When'] as $toolTip) {
 				foreach ([false, true] as $enhanced) {
-					$control = $this->makeAtOffset(-60);
-					if (!$setDateTime) {
-						$control->setDateTime('');
+					if ($setDateTime) {
+						$control = $this->makeAtOffset(-60);
+					} else {
+						$control = new TRelativeTime();
+						$control->setCulture('en_US');
 					}
 					$control->setToolTip($toolTip);
 					if ($enhanced) {
