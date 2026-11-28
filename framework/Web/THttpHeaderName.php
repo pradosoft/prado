@@ -40,6 +40,7 @@ use Prado\Web\HttpHeaders\THttpHeaderCsp;
  * - **Security** — CSP, HSTS, framing, CORS, and related protective headers.
  * - **CORS** — Cross-origin resource sharing negotiation headers.
  * - **WebDAV** — RFC 4918 extensions for distributed authoring and versioning.
+ * - **Service worker** — Worker scope, navigation preload, and clearing site data.
  * - **Reporting** — Endpoints for browser-generated violation and error reports.
  * - **Deprecated** — Retained for backward-compatibility documentation only.
  *
@@ -1097,6 +1098,47 @@ class THttpHeaderName extends \Prado\TEnumerable
 	 * ```
 	 */
 	public const SecWebSocketExtensions = 'Sec-WebSocket-Extensions';
+
+	// =========================================================================
+	// Service worker headers
+	// =========================================================================
+
+	/**
+	 * `Service-Worker-Allowed` — Widens the scope a service worker script may
+	 * register beyond the directory of the script's URL.
+	 *
+	 * Example:
+	 * ```
+	 * Service-Worker-Allowed: /
+	 * ```
+	 * @since 4.4.0
+	 */
+	public const ServiceWorkerAllowed = 'Service-Worker-Allowed';
+
+	/**
+	 * `Service-Worker-Navigation-Preload` — Sent on a navigation request that a
+	 * service worker's navigation preload started.
+	 *
+	 * Example:
+	 * ```
+	 * Service-Worker-Navigation-Preload: true
+	 * ```
+	 * @since 4.4.0
+	 */
+	public const ServiceWorkerNavigationPreload = 'Service-Worker-Navigation-Preload';
+
+	/**
+	 * `Clear-Site-Data` — Clears the browser's stored data of the origin, such as
+	 * caches, cookies, and storage, which unregisters service workers.
+	 *
+	 * Examples:
+	 * ```
+	 * Clear-Site-Data: "cache"
+	 * Clear-Site-Data: "cache", "storage"
+	 * ```
+	 * @since 4.4.0
+	 */
+	public const ClearSiteData = 'Clear-Site-Data';
 
 	// =========================================================================
 	// Reporting headers

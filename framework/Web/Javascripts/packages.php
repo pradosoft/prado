@@ -135,6 +135,14 @@ $packages = [
 		'prado/ratings/ratings.js',
 	],
 
+	'serviceworker' => [
+		'prado/serviceworker/serviceworker.js',
+	],
+
+	'sharedconnection' => [
+		'prado/sharedconnection/sharedconnection.js',
+	],
+
 	// jquery
 	'jquery' => [
 		'jquery/jquery.js',
@@ -199,6 +207,8 @@ $dependencies = [
 	'inlineeditor' => ['jquery', 'prado', 'ajax', 'inlineeditor'],
 	'accordion' => ['jquery', 'prado', 'accordion'],
 	'ratings' => ['jquery', 'prado', 'ajax', 'ratings'],
+	'serviceworker' => ['jquery', 'prado', 'serviceworker'],
+	'sharedconnection' => ['jquery', 'prado', 'sharedconnection'],
 	'jqueryui' => ['jquery', 'jqueryui'],
 	'texthighlight' => ['jquery', 'prado', 'highlightjs', 'clipboard'],
 ];

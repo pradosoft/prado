@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html lang="en">
+<com:THead Title="Shared Connection" />
+<body>
+<com:TForm>
+	<h1>Shared Connection</h1>
+	<p>Leader: <span id="leader">no</span></p>
+	<p>Received: <span id="log"></span></p>
+</com:TForm>
+</body>
+</html>

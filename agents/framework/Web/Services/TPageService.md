@@ -50,6 +50,7 @@ Activated when the URL contains no special service parameter, or when `ServiceID
 | `DefaultPage` | Page to serve when no page specified (default: `'Home'`) |
 | `IdSeparator` | Character between the IDs of a control UniqueID, which names the posted fields (default: `':'`). Reads and sets `TControl::getIdSeparator()`; refused after `init()`. `IdSeparator="$"` restores the separator of 4.3 (#1612) |
 | `ServiceParameter` | URL parameter identifying the page path |
+| `ServiceWorker` | Worker of `TServiceWorkerModule` for the service's pages, unless a page sets `TPage::ServiceWorker`; empty selects the module's `DefaultWorker` (4.4.0) |
 
 ### Page Resolution
 
