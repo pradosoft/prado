@@ -27,9 +27,9 @@ and upgrades without them. The 4.4 UPGRADE.md lists every change.
     write a name with `$` change to `:`. Code that builds or parses a name reads `TControl::getIdSeparator()`.
 - 4.4 refuses a postback or callback without the page's CSRF token. A form or script outside Prado that
   posts to a page adds the token when it moves to 4.4.
-- ActiveRecord, SqlMap, and RPC leave the framework in 4.4. An application that uses them requires
-  `pradosoft/prado-activerecord`, `pradosoft/prado-sqlmap`, or `pradosoft/prado-rpc` when it moves to 4.4.
-  Namespaces and class names are unchanged.
+- ActiveRecord and SqlMap leave the framework in 4.4. An application that uses them requires
+  `pradosoft/prado-activerecord` or `pradosoft/prado-sqlmap` when it moves to 4.4. Namespaces and class names
+  are unchanged. RPC has already left the framework in 4.3.3; see below.
 - 4.4 moves the logging classes from `Prado\Util` to `Prado\Util\Log` without aliases. Short class names in
   configuration (`class="TLogRouter"`) resolve on both versions; `use` statements change at the upgrade.
 - Use the 4.4 names, which 4.3.3 provides: `TDatePicker.DateInputMode` for `InputMode`,
@@ -69,6 +69,17 @@ Upgrading from v4.3.2
 - The ActiveRecord scaffold input class for SQL Server is renamed: `TMssqlScaffoldInput` → `TSqlSrvScaffoldInput`.
   `TScaffoldInputBase::createInputBuilder()` returns it for the `mssql`, `sqlsrv`, and `dblib` drivers; code that
   names or extends `TMssqlScaffoldInput` uses the new name.
+- The RPC service and clients are removed from the framework; they are in the `pradosoft/prado-rpc` package,
+  which supports 4.3.3 and 4.4. An application that uses RPC requires it: `composer require pradosoft/prado-rpc`.
+  The XML-RPC client depended on the PECL `xmlrpc` extension, which PHP 8 does not ship; the package encodes
+  XML-RPC in PHP.
+  - The service classes keep their names and namespace: `TRpcService`, `TRpcServer`, `TRpcProtocol`,
+    `TJsonRpcProtocol`, `TXmlRpcProtocol`, `TRpcApiProvider`, and `TRpcException` in `Prado\Web\Services`. A
+    service configured as `class="TRpcService"` or `class="Prado\Web\Services\TRpcService"` is unchanged.
+  - The clients move from `Prado\Util` to `Prado\IO\Rpc`: `TRpcClient`, `TJsonRpcClient`, `TXmlRpcClient`,
+    `TRpcClientRequestException`, and `TRpcClientResponseException`. Short class names resolve as before; `use`
+    statements and fully qualified names change.
+  - `TRpcClientTypesEnumerable` is removed. `TRpcClient::create()` takes `'json'` or `'xml'`.
 
 Upgrading from v4.2.2
 ---------------------

@@ -83,7 +83,6 @@ class MyApiService extends TService
 |-------|-----------|---------|
 | `TPageService` | `page` | Template-based web pages |
 | `TJsonService` | `json` | JSON responses |
-| `TRpcService` | `rpc` | JSON-RPC / XML-RPC |
 | `TSoapService` | `soap` | SOAP / WSDL |
 | `TFeedService` | `feed` | RSS / Atom feeds |
 

@@ -1,6 +1,6 @@
 # PRADO Framework Classes
 
-**Total Classes: 771**
+**Total Classes: 758**
 
 This document lists all classes in the PRADO framework as defined in `classes.php`.
 
@@ -8,7 +8,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 | Directory | Classes | Interfaces | Total | Recursive |
 |-----------|---------|------------|-------|-----------|
-| [Prado](./INDEX.md) | 17 | 7 | 24 | 771 |
+| [Prado](./INDEX.md) | 17 | 7 | 24 | 758 |
 | [Prado\\Caching](./Caching/INDEX.md) | 11 | 2 | 13 | 13 |
 | [Prado\\Collections](./Collections/INDEX.md) | 27 | 7 | 34 | 34 |
 | [Prado\\Data](./Data/INDEX.md) | 10 | 5 | 15 | 132 |
@@ -39,16 +39,16 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 | [Prado\\Security\\Permissions](./Security/Permissions/INDEX.md) | 8 | 1 | 9 | 9 |
 | [Prado\\Shell](./Shell/INDEX.md) | 4 | 0 | 4 | 10 |
 | [Prado\\Shell\\Actions](./Shell/Actions/INDEX.md) | 6 | 0 | 6 | 6 |
-| [Prado\\Util](./Util/INDEX.md) | 34 | 8 | 42 | 76 |
+| [Prado\\Util](./Util/INDEX.md) | 28 | 8 | 36 | 70 |
 | [Prado\\Util\\Behaviors](./Util/Behaviors/INDEX.md) | 14 | 0 | 14 | 14 |
 | [Prado\\Util\\Cron](./Util/Cron/INDEX.md) | 11 | 0 | 11 | 11 |
 | [Prado\\Util\\Helpers](./Util/Helpers/INDEX.md) | 6 | 0 | 6 | 6 |
 | [Prado\\Util\\Math](./Util/Math/INDEX.md) | 2 | 0 | 2 | 2 |
 | [Prado\\Util\\Traits](./Util/Traits/INDEX.md) | 2 | 0 | 2 | 2 |
-| [Prado\\Web](./Web/INDEX.md) | 21 | 0 | 21 | 418 |
+| [Prado\\Web](./Web/INDEX.md) | 21 | 0 | 21 | 411 |
 | [Prado\\Web\\Behaviors](./Web/Behaviors/INDEX.md) | 1 | 0 | 1 | 1 |
 | [Prado\\Web\\Javascripts](./Web/Javascripts/INDEX.md) | 4 | 0 | 4 | 4 |
-| [Prado\\Web\\Services](./Web/Services/INDEX.md) | 14 | 1 | 15 | 15 |
+| [Prado\\Web\\Services](./Web/Services/INDEX.md) | 7 | 1 | 8 | 8 |
 | [Prado\\Web\\UI](./Web/UI/INDEX.md) | 28 | 15 | 43 | 361 |
 | [Prado\\Web\\UI\\ActiveControls](./Web/UI/ActiveControls/INDEX.md) | 72 | 2 | 74 | 74 |
 | [Prado\\Web\\UI\\JuiControls](./Web/UI/JuiControls/INDEX.md) | 19 | 1 | 20 | 20 |
@@ -60,7 +60,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 ## Class Listings
 
-## [Prado](./INDEX.md) - Classes: 17, Interfaces: 7, Total: 24, Recursive: 771
+## [Prado](./INDEX.md) - Classes: 17, Interfaces: 7, Total: 24, Recursive: 758
 
 ### Interfaces (6)
 
@@ -613,7 +613,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 ---
 
-## [Prado\Util](./Util/INDEX.md) - Classes: 34, Interfaces: 8, Total: 42, Recursive: 76
+## [Prado\Util](./Util/INDEX.md) - Classes: 28, Interfaces: 8, Total: 36, Recursive: 70
 
 ### Interfaces (8)
 
@@ -626,7 +626,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 - [IOutputLogRoute](./Util/IOutputLogRoute.md)
 - [IPluginModule](./Util/IPluginModule.md)
 
-### Classes (33)
+### Classes (28)
 
 - [TBaseBehavior](./Util/TBaseBehavior.md)
 - [TBehavior](./Util/TBehavior.md)
@@ -644,16 +644,11 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 - [TFileLogRoute](./Util/TFileLogRoute.md)
 - [TFirebugLogRoute](./Util/TFirebugLogRoute.md)
 - [TFirePhpLogRoute](./Util/TFirePhpLogRoute.md)
-- [TJsonRpcClient](./Util/TJsonRpcClient.md)
 - [TLogger](./Util/TLogger.md)
 - [TLogRoute](./Util/TLogRoute.md)
 - [TLogRouter](./Util/TLogRouter.md)
 - [TParameterModule](./Util/TParameterModule.md)
 - [TPluginModule](./Util/TPluginModule.md)
-- [TRpcClient](./Util/TRpcClient.md)
-- [TRpcClientRequestException](./Util/TRpcClientRequestException.md)
-- [TRpcClientResponseException](./Util/TRpcClientResponseException.md)
-- [TRpcClientTypesEnumerable](./Util/TRpcClientTypesEnumerable.md)
 - [TSignalParameter](./Util/TSignalParameter.md)
 - [TSignalsDispatcher](./Util/TSignalsDispatcher.md)
 - [TSimpleDateFormatter](./Util/TSimpleDateFormatter.md)
@@ -661,7 +656,6 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 - [TSysLogRoute](./Util/TSysLogRoute.md)
 - [TUtf8Converter](./Util/TUtf8Converter.md)
 - [TVarDumper](./Util/TVarDumper.md)
-- [TXmlRpcClient](./Util/TXmlRpcClient.md)
 
 ---
 
@@ -735,7 +729,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 ---
 
-## [Prado\Web](./Web/INDEX.md) - Classes: 21, Interfaces: 0, Total: 21, Recursive: 418
+## [Prado\Web](./Web/INDEX.md) - Classes: 21, Interfaces: 0, Total: 21, Recursive: 411
 
 ### Classes (20)
 
@@ -782,28 +776,21 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 ---
 
-## [Prado\Web\Services](./Web/Services/INDEX.md) - Classes: 14, Interfaces: 1, Total: 15, Recursive: 15
+## [Prado\Web\Services](./Web/Services/INDEX.md) - Classes: 7, Interfaces: 1, Total: 8, Recursive: 8
 
 ### Interfaces (1)
 
 - [IFeedContentProvider](./Web/Services/IFeedContentProvider.md)
 
-### Classes (14)
+### Classes (7)
 
 - [TFeedService](./Web/Services/TFeedService.md)
 - [TJsonResponse](./Web/Services/TJsonResponse.md)
-- [TJsonRpcProtocol](./Web/Services/TJsonRpcProtocol.md)
 - [TJsonService](./Web/Services/TJsonService.md)
 - [TPageConfiguration](./Web/Services/TPageConfiguration.md)
 - [TPageService](./Web/Services/TPageService.md)
-- [TRpcApiProvider](./Web/Services/TRpcApiProvider.md)
-- [TRpcException](./Web/Services/TRpcException.md)
-- [TRpcProtocol](./Web/Services/TRpcProtocol.md)
-- [TRpcServer](./Web/Services/TRpcServer.md)
-- [TRpcService](./Web/Services/TRpcService.md)
 - [TSoapServer](./Web/Services/TSoapServer.md)
 - [TSoapService](./Web/Services/TSoapService.md)
-- [TXmlRpcProtocol](./Web/Services/TXmlRpcProtocol.md)
 
 ---
 

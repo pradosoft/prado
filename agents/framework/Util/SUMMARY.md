@@ -1,6 +1,6 @@
 # Util/SUMMARY.md
 
-Cross-cutting utilities: behavior/mixin system, logging, scheduled tasks, RPC clients, POSIX signal handling, parameter modules, and helpers.
+Cross-cutting utilities: behavior/mixin system, logging, scheduled tasks, POSIX signal handling, parameter modules, and helpers.
 
 ## Classes
 
@@ -29,12 +29,6 @@ Cross-cutting utilities: behavior/mixin system, logging, scheduled tasks, RPC cl
 - **`TPluginModule`** — Base class for Prado 4 composer-based extensions.
 
 - **`TDbPluginModule`** — Plugin module with a database connection.
-
-- **`TJsonRpcClient`** — JSON-RPC 2.0 client.
-
-- **`TXmlRpcClient`** — XML-RPC client.
-
-- **`TRpcClient`** — Base RPC implementation.
 
 - **`TVarDumper`** — Human-readable variable dump for `TComponent` objects.
 
