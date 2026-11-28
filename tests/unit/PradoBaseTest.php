@@ -672,6 +672,59 @@ class PradoBaseTest extends \PHPUnit\Framework\TestCase
 	}
 
 	/**
+	 * A namespaced class that no class map or path alias names, and that is not loaded
+	 * yet, is loaded through Composer's autoloader → its FQN.
+	 */
+	public function testUsingClass_withAutoloadedFqn_loadsTheClass(): void
+	{
+		$class = 'Prado\\Test\\Unit\\Harness\\Autoload\\TUsingAutoloadClass';
+		$this->assertFalse(class_exists($class, false));
+		$this->assertSame($class, Prado::usingClass($class));
+		$this->assertTrue(class_exists($class, false));
+	}
+
+	/**
+	 * An interface only an autoloader loads → its FQN.
+	 */
+	public function testUsingClass_withAutoloadedInterfaceFqn_loadsTheInterface(): void
+	{
+		$interface = 'Prado\\Test\\Unit\\Harness\\Autoload\\IUsingAutoloadInterface';
+		$this->assertFalse(interface_exists($interface, false));
+		$this->assertSame($interface, Prado::usingClass($interface));
+		$this->assertTrue(interface_exists($interface, false));
+	}
+
+	/**
+	 * A trait only an autoloader loads → its FQN.
+	 */
+	public function testUsingClass_withAutoloadedTraitFqn_loadsTheTrait(): void
+	{
+		$trait = 'Prado\\Test\\Unit\\Harness\\Autoload\\TUsingAutoloadTrait';
+		$this->assertFalse(trait_exists($trait, false));
+		$this->assertSame($trait, Prado::usingClass($trait));
+		$this->assertTrue(trait_exists($trait, false));
+	}
+
+	/**
+	 * Prado::autoload() calls using(), which autoloads a namespaced name; the name being
+	 * autoloaded is not autoloaded again, so an unknown name ends without recursion.
+	 */
+	public function testAutoload_withUnknownFqn_endsWithoutLoading(): void
+	{
+		Prado::autoload('Prado\\NonExistent\\TFakeAutoloadXYZ99999');
+		$this->assertFalse(class_exists('Prado\\NonExistent\\TFakeAutoloadXYZ99999', false));
+		$this->assertFalse(class_exists('Prado\\NonExistent\\TFakeAutoloadXYZ99999'));
+	}
+
+	/**
+	 * A namespace that names a directory without a trailing '*' loads no class → null, as before.
+	 */
+	public function testUsingClass_withDirectoryFqnWithoutAsterisk_returnsNull(): void
+	{
+		$this->assertNull(Prado::usingClass('Prado\\Test\\Unit\\Harness\\Autoload'));
+	}
+
+	/**
 	 * A Prado3 System.* name that converts to a non-existent class → null.
 	 */
 	public function testUsingClass_withUnknownPrado3SystemDotNotation_returnsNull(): void
