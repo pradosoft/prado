@@ -114,7 +114,7 @@ Each `on` event of the module is also broadcast as a global event, so a module d
 
 ### Requests from another process (4.4.0)
 
-`getDaemonState()` reports `running`, `retiring`, or null by probing the lease and retiring locks, from any process. `requestDaemonRetire($timeout)` holds the `…:retire` lock, wakes the daemon, and waits for the retiring lock to appear; `requestDaemonStop($timeout)` holds the `…:stop` lock and waits for the lease to be released. The daemon checks both request locks on every loop turn (`checkDaemonRequests()`). Both return true on acknowledgment, false on timeout (`DEFAULT_DAEMON_REQUEST_TIMEOUT`, 10 s), and null when no daemon runs. The shell exposes them as `cron/daemon`, `cron/retire`, and `cron/stop`.
+`getDaemonState()` reports `running`, `retiring`, or null by probing the lease and retiring locks, from any process. `requestDaemonRetire($timeout)` holds the `…:retire` lock, wakes the daemon, and waits for the retiring lock to appear; `requestDaemonStop($timeout)` holds the `…:stop` lock and waits for the lease to be released. The daemon checks both request locks on every loop turn (`checkDaemonRequests()`). That check takes and releases each lock for a moment, so a request retries its lock within the timeout. Both return true on acknowledgment, false on timeout (`DEFAULT_DAEMON_REQUEST_TIMEOUT`, 10 s), and null when no daemon runs. The shell exposes them as `cron/daemon`, `cron/retire`, and `cron/stop`.
 
 ```xml
 <module id="cron" class="Prado\Util\Cron\TDbCronManager" Daemon="true" DaemonLifetime="1800" DaemonMutex="dbmutex" WakeTransport="cronwake" />
