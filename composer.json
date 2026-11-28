@@ -76,8 +76,8 @@
 		"php-webdriver/webdriver": "^1",
 		"phpdocumentor/shim": "^3",
 		"pradosoft/prado-phpdoc-template": "*",
-		"friendsofphp/php-cs-fixer": "3.95.31",
-		"phpstan/phpstan": "2.3.6",
+		"friendsofphp/php-cs-fixer": "3.95.32",
+		"phpstan/phpstan": "2.3.7",
 		"psy/psysh": "^0"
 	},
 	"suggest" : {
