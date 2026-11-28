@@ -8,7 +8,58 @@ use Prado\Util\Cron\Wake\TCronWakeSocket;
 
 class TCronWakeSocketTest extends \PHPUnit\Framework\TestCase
 {
+	/** @var ?int a base port whose even, odd, and daemon udp ports bind on this host */
+	private static ?int $basePort = null;
+
 	private string $runtime;
+
+	/**
+	 * Returns a base port whose three udp ports bind. Windows reserves port ranges at boot,
+	 * so {@see TCronWakeSocket::DEFAULT_WAKE_PORT} does not bind on every runner.
+	 * @return int the base port
+	 */
+	private static function basePort(): int
+	{
+		if (self::$basePort !== null) {
+			return self::$basePort;
+		}
+		self::$basePort = (int) TCronWakeSocket::DEFAULT_WAKE_PORT;
+		if (!in_array('udp', stream_get_transports(), true)) {
+			return self::$basePort;
+		}
+		for ($try = 0; $try < 20; $try++) {
+			if (($probe = @stream_socket_server('udp://127.0.0.1:0', $errno, $errstr, STREAM_SERVER_BIND)) === false) {
+				break;
+			}
+			$port = (int) substr((string) strrchr((string) stream_socket_get_name($probe, false), ':'), 1);
+			fclose($probe);
+			if ($port > 0 && $port + 2 <= 65535 && self::portsBind($port)) {
+				self::$basePort = $port;
+				break;
+			}
+		}
+		return self::$basePort;
+	}
+
+	/**
+	 * Returns whether the base port and the two after it bind as udp loopback ports.
+	 * @param int $port the base port
+	 * @return bool whether all three bind
+	 */
+	private static function portsBind(int $port): bool
+	{
+		$servers = [];
+		for ($i = 0; $i < 3; $i++) {
+			if (($server = @stream_socket_server('udp://127.0.0.1:' . ($port + $i), $errno, $errstr, STREAM_SERVER_BIND)) === false) {
+				break;
+			}
+			$servers[] = $server;
+		}
+		foreach ($servers as $server) {
+			fclose($server);
+		}
+		return count($servers) === 3;
+	}
 
 	protected function setUp(): void
 	{
@@ -40,7 +91,7 @@ class TCronWakeSocketTest extends \PHPUnit\Framework\TestCase
 
 	public function testTransportResolves()
 	{
-		$t = (new TCronWakeSocket($this->runtime))->getTransport();
+		$t = (new TCronWakeSocket($this->runtime, self::basePort()))->getTransport();
 		self::assertTrue($t === null || $t === 'udg' || $t === 'udp');
 	}
 
@@ -60,7 +111,7 @@ class TCronWakeSocketTest extends \PHPUnit\Framework\TestCase
 	public function testKeyIsSharedThroughTheKeyFile()
 	{
 		$file = $this->runtime . DIRECTORY_SEPARATOR . TCronWakeSocket::KEY_FILE;
-		$s = new TCronWakeSocket($this->runtime);
+		$s = new TCronWakeSocket($this->runtime, self::basePort());
 		self::assertFileDoesNotExist($file);
 		$key = $s->getKey();
 		self::assertSame(64, strlen($key), 'the first transport creates a random key');
@@ -68,14 +119,14 @@ class TCronWakeSocketTest extends \PHPUnit\Framework\TestCase
 		if (DIRECTORY_SEPARATOR === '/') {
 			self::assertSame(0o600, fileperms($file) & 0o777, 'the key file is owner-only');
 		}
-		self::assertSame($key, (new TCronWakeSocket($this->runtime))->getKey(), 'another transport, as in another process, reads the same key');
+		self::assertSame($key, (new TCronWakeSocket($this->runtime, self::basePort()))->getKey(), 'another transport, as in another process, reads the same key');
 		$s->setKey('secret');
 		self::assertSame('secret', $s->getKey());
 		$s->setKey('');
 		self::assertSame($key, $s->getKey(), "'' returns to the key file");
 
 		file_put_contents($file, '');
-		$rewritten = (new TCronWakeSocket($this->runtime))->getKey();
+		$rewritten = (new TCronWakeSocket($this->runtime, self::basePort()))->getKey();
 		self::assertSame(64, strlen($rewritten), 'a file left empty is rewritten');
 		self::assertSame($rewritten, file_get_contents($file));
 
@@ -91,22 +142,22 @@ class TCronWakeSocketTest extends \PHPUnit\Framework\TestCase
 		file_put_contents($file, '');
 		$key = str_repeat('ab', 32);
 		TAsync::getLoop()->defer(static fn () => file_put_contents($file, $key));
-		self::assertSame($key, (new TCronWakeSocket($this->runtime))->getKey(), 'the pause between reads runs the deferred writer, so the next read returns its key');
+		self::assertSame($key, (new TCronWakeSocket($this->runtime, self::basePort()))->getKey(), 'the pause between reads runs the deferred writer, so the next read returns its key');
 	}
 
 	public function testKeyFileSignsAcrossTransports()
 	{
-		$sender = new TCronWakeSocket($this->runtime);
-		$receiver = new TCronWakeSocket($this->runtime);
+		$sender = new TCronWakeSocket($this->runtime, self::basePort());
+		$receiver = new TCronWakeSocket($this->runtime, self::basePort());
 		self::assertTrue($receiver->verifyToken($sender->createToken()), 'a message from another transport of the application verifies');
-		$foreign = new TCronWakeSocket($this->runtime);
+		$foreign = new TCronWakeSocket($this->runtime, self::basePort());
 		$foreign->setKey('other');
 		self::assertFalse($receiver->verifyToken($foreign->createToken()), 'a message signed with another key does not');
 	}
 
 	public function testAddressKeyedByMinuteParityAndTheDaemon()
 	{
-		$s = new TCronWakeSocket($this->runtime);
+		$s = new TCronWakeSocket($this->runtime, self::basePort());
 		$this->skipWithoutTransport($s);
 		self::assertSame($s->getAddress(2), $s->getAddress(4));    // even == even
 		self::assertSame($s->getAddress(3), $s->getAddress(5));    // odd == odd
@@ -117,7 +168,7 @@ class TCronWakeSocketTest extends \PHPUnit\Framework\TestCase
 
 	public function testSignalReachesTheMinuteAndTheDaemonSockets()
 	{
-		$s = new TCronWakeSocket($this->runtime);
+		$s = new TCronWakeSocket($this->runtime, self::basePort());
 		$this->skipWithoutTransport($s);
 		$minute = 8;
 		$addresses = [$s->getAddress($minute), $s->getDaemonAddress()];
@@ -145,7 +196,7 @@ class TCronWakeSocketTest extends \PHPUnit\Framework\TestCase
 
 	public function testWaitReturnsTrueWhenWoken()
 	{
-		$base = new TCronWakeSocket($this->runtime);
+		$base = new TCronWakeSocket($this->runtime, self::basePort());
 		$this->skipWithoutTransport($base);
 		$now = 10 * 60 + 1.0;
 		$address = $base->getAddress(10);
@@ -155,7 +206,7 @@ class TCronWakeSocketTest extends \PHPUnit\Framework\TestCase
 		fwrite($client, $base->createToken()); // queue a wake datagram
 		fclose($client);
 
-		$socket = new class ($this->runtime) extends TCronWakeSocket {
+		$socket = new class ($this->runtime, self::basePort()) extends TCronWakeSocket {
 			public $injected;
 			protected function bind($address)
 			{
@@ -169,14 +220,14 @@ class TCronWakeSocketTest extends \PHPUnit\Framework\TestCase
 
 	public function testWaitReturnsFalseWhenTimedOut()
 	{
-		$base = new TCronWakeSocket($this->runtime);
+		$base = new TCronWakeSocket($this->runtime, self::basePort());
 		$this->skipWithoutTransport($base);
 		$now = 12 * 60 + 1.0;
 		$address = $base->getAddress(12);
 		$this->unlinkUdg($address);
 		$server = stream_socket_server($address, $errno, $errstr, STREAM_SERVER_BIND);
 
-		$socket = new class ($this->runtime) extends TCronWakeSocket {
+		$socket = new class ($this->runtime, self::basePort()) extends TCronWakeSocket {
 			public $injected;
 			protected function bind($address)
 			{
@@ -191,7 +242,7 @@ class TCronWakeSocketTest extends \PHPUnit\Framework\TestCase
 
 	public function testPersistentSocketBuffersSignalBetweenWaits()
 	{
-		$socket = new TCronWakeSocket($this->runtime);
+		$socket = new TCronWakeSocket($this->runtime, self::basePort());
 		$this->skipWithoutTransport($socket);
 		$now = 14 * 60 + 1.0;
 		$this->unlinkUdg($socket->getAddress(14));
@@ -211,13 +262,13 @@ class TCronWakeSocketTest extends \PHPUnit\Framework\TestCase
 
 	public function testAForeignDatagramDoesNotWake()
 	{
-		$base = new TCronWakeSocket($this->runtime);
+		$base = new TCronWakeSocket($this->runtime, self::basePort());
 		$this->skipWithoutTransport($base);
 		$now = 16 * 60 + 1.0;
 		$address = $base->getAddress(16);
 		$this->unlinkUdg($address);
 		$server = stream_socket_server($address, $errno, $errstr, STREAM_SERVER_BIND);
-		$socket = new class ($this->runtime) extends TCronWakeSocket {
+		$socket = new class ($this->runtime, self::basePort()) extends TCronWakeSocket {
 			public $injected;
 			protected function bind($address)
 			{
@@ -242,14 +293,14 @@ class TCronWakeSocketTest extends \PHPUnit\Framework\TestCase
 
 	public function testTokensAreSignedFreshAndNotReplayable()
 	{
-		$s = (new TCronWakeSocket($this->runtime))->setKey('k1');
+		$s = (new TCronWakeSocket($this->runtime, self::basePort()))->setKey('k1');
 		$a = $s->createToken();
 		$b = $s->createToken();
 		self::assertNotSame($a, $b, 'every wake message differs');
 		self::assertTrue($s->verifyToken($a));
 		self::assertFalse($s->verifyToken($a), 'a message is accepted once');
 		self::assertTrue($s->verifyToken($b));
-		self::assertFalse((new TCronWakeSocket($this->runtime))->setKey('k2')->verifyToken($s->createToken()), 'another key rejects the signature');
+		self::assertFalse((new TCronWakeSocket($this->runtime, self::basePort()))->setKey('k2')->verifyToken($s->createToken()), 'another key rejects the signature');
 		[$time, $nonce] = explode(':', $s->createToken());
 		$stale = (time() - TCronWakeSocket::TOKEN_WINDOW - 5) . ':' . $nonce;
 		self::assertFalse($s->verifyToken($stale . ':' . hash_hmac('sha256', $stale, 'k1')), 'a message older than the window is rejected');
@@ -259,7 +310,7 @@ class TCronWakeSocketTest extends \PHPUnit\Framework\TestCase
 
 	public function testWatchDeliversWakesOnTheLoop()
 	{
-		$socket = new TCronWakeSocket($this->runtime);
+		$socket = new TCronWakeSocket($this->runtime, self::basePort());
 		$this->skipWithoutTransport($socket);
 		$this->unlinkUdg($socket->getDaemonAddress());
 		$loop = TAsync::getLoop();
@@ -317,7 +368,7 @@ class TCronWakeSocketTest extends \PHPUnit\Framework\TestCase
 
 	public function testWithoutAnAddressOrABindableSocket()
 	{
-		$s = new TCronWakeSocket($this->runtime);
+		$s = new TCronWakeSocket($this->runtime, self::basePort());
 		\Prado\Test\Unit\PradoUnit::setProp($s, '_transport', null);
 		self::assertFalse($s->watch(TAsync::getLoop(), static fn () => null), 'without a transport there is no daemon address');
 
@@ -333,7 +384,7 @@ class TCronWakeSocketTest extends \PHPUnit\Framework\TestCase
 
 	public function testSetKeyNullReturnsToTheKeyFile()
 	{
-		$s = new TCronWakeSocket($this->runtime);
+		$s = new TCronWakeSocket($this->runtime, self::basePort());
 		$key = $s->getKey();
 		self::assertSame('secret', $s->setKey('secret')->getKey());
 		self::assertSame($key, $s->setKey(null)->getKey(), 'null returns to the key file');
@@ -342,7 +393,7 @@ class TCronWakeSocketTest extends \PHPUnit\Framework\TestCase
 	public function testKeyFileWithoutRetries()
 	{
 		$file = $this->runtime . DIRECTORY_SEPARATOR . TCronWakeSocket::KEY_FILE;
-		$none = new class ($this->runtime) extends TCronWakeSocket {
+		$none = new class ($this->runtime, self::basePort()) extends TCronWakeSocket {
 			protected const KEY_FILE_ATTEMPTS = 0;
 		};
 		$key = $none->getKey();
@@ -360,7 +411,7 @@ class TCronWakeSocketTest extends \PHPUnit\Framework\TestCase
 	{
 		$file = $this->runtime . DIRECTORY_SEPARATOR . TCronWakeSocket::KEY_FILE;
 		file_put_contents($file, '');
-		$once = new class ($this->runtime) extends TCronWakeSocket {
+		$once = new class ($this->runtime, self::basePort()) extends TCronWakeSocket {
 			protected const KEY_FILE_ATTEMPTS = 1;
 			protected const KEY_FILE_RETRY_DELAY = 0.0;
 		};
@@ -382,7 +433,7 @@ class TCronWakeSocketTest extends \PHPUnit\Framework\TestCase
 			self::markTestSkipped('file permissions bind a process that is not root on a POSIX system');
 		}
 		$file = $this->runtime . DIRECTORY_SEPARATOR . TCronWakeSocket::KEY_FILE;
-		$make = fn () => new class ($this->runtime) extends TCronWakeSocket {
+		$make = fn () => new class ($this->runtime, self::basePort()) extends TCronWakeSocket {
 			protected const KEY_FILE_ATTEMPTS = 1;
 			protected const KEY_FILE_RETRY_DELAY = 0.0;
 		};
@@ -405,7 +456,7 @@ class TCronWakeSocketTest extends \PHPUnit\Framework\TestCase
 		if (!in_array('udp', stream_get_transports(), true)) {
 			self::markTestSkipped('no udp transport');
 		}
-		$s = new TCronWakeSocket($this->runtime);
+		$s = new TCronWakeSocket($this->runtime, self::basePort());
 		$server = PradoUnit::invoke($s, 'bind', 'udp://127.0.0.1:0');
 		self::assertIsResource($server, 'a udp address binds');
 		$address = 'udp://' . stream_socket_get_name($server, false);
@@ -417,7 +468,7 @@ class TCronWakeSocketTest extends \PHPUnit\Framework\TestCase
 
 	public function testReleaseOfAClosedUdgSocketRemovesItsFile()
 	{
-		$s = new TCronWakeSocket($this->runtime);
+		$s = new TCronWakeSocket($this->runtime, self::basePort());
 		$path = $this->runtime . DIRECTORY_SEPARATOR . 'closed.sock';
 		touch($path);
 		$closed = fopen('php://memory', 'r');
@@ -428,7 +479,7 @@ class TCronWakeSocketTest extends \PHPUnit\Framework\TestCase
 
 	public function testEnsureBoundRebindsOnANewAddress()
 	{
-		$socket = new class ($this->runtime) extends TCronWakeSocket {
+		$socket = new class ($this->runtime, self::basePort()) extends TCronWakeSocket {
 			public bool $failBind = false;
 
 			protected function bind(string $address)
@@ -452,7 +503,7 @@ class TCronWakeSocketTest extends \PHPUnit\Framework\TestCase
 
 	public function testSignalWithoutAListenerOrATransport()
 	{
-		$s = new TCronWakeSocket($this->runtime);
+		$s = new TCronWakeSocket($this->runtime, self::basePort());
 		$this->skipWithoutTransport($s);
 		if ($s->getTransport() === 'udg') {
 			self::assertFalse($s->signal(22 * 60 + 1.0), 'a udg socket file without a listener receives nothing');
@@ -463,7 +514,7 @@ class TCronWakeSocketTest extends \PHPUnit\Framework\TestCase
 
 	public function testWatchIgnoresAForeignDatagram()
 	{
-		$socket = new TCronWakeSocket($this->runtime);
+		$socket = new TCronWakeSocket($this->runtime, self::basePort());
 		$this->skipWithoutTransport($socket);
 		$address = $socket->getDaemonAddress();
 		$this->unlinkUdg($address);
