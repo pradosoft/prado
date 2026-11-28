@@ -30,6 +30,9 @@ and upgrades without them. The 4.4 UPGRADE.md lists every change.
 - ActiveRecord, SqlMap, and RPC leave the framework in 4.4. An application that uses them requires
   `pradosoft/prado-activerecord`, `pradosoft/prado-sqlmap`, or `pradosoft/prado-rpc` when it moves to 4.4.
   Namespaces and class names are unchanged.
+- 4.4 renders a message file pattern that quotes a placeholder in single apostrophes, `'{0}'`, as the literal
+  text `{0}`; 4.3.3 still replaces its placeholders. Double the apostrophes beside the braces, `''{0}''`, in the
+  message files of the application and its extensions.
 - 4.4 moves the logging classes from `Prado\Util` to `Prado\Util\Log` without aliases. Short class names in
   configuration (`class="TLogRouter"`) resolve on both versions; `use` statements change at the upgrade.
 - Use the 4.4 names, which 4.3.3 provides: `TDatePicker.DateInputMode` for `InputMode`,
@@ -43,6 +46,13 @@ and upgrades without them. The 4.4 UPGRADE.md lists every change.
 
 Upgrading from v4.3.2
 ---------------------
+- Error message files are ICU MessageFormat patterns, as in 4.4, formatted in the language of the file, so a
+  message can use `plural`, `select`, and `number` arguments. ICU quotes literal text with apostrophes: an
+  apostrophe beside a brace is doubled, so `''{0}''` renders the argument in single quotes, and an apostrophe
+  elsewhere, as in "can't", is literal. The framework message files are converted and render as before. A
+  pattern that quotes a placeholder in single apostrophes, `'{0}'`, has its placeholders replaced as before.
+- `TSqlMapException::getErrorCode()` returns the message code; it returned the message text. The constructor
+  takes an integer error code first, and a trailing `Throwable` is the previous exception, as in `TException`.
 - The `id` of a hidden field registered with `TClientScriptManager::registerHiddenField()` is its name, as in
   4.4; before, a `:` in the name was `_` in the `id`. A script that finds such a field by the `_` form of its
   `id` uses the name.

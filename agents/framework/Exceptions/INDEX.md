@@ -16,7 +16,7 @@ Exception hierarchy and error display for the Prado framework. Provides multilin
 - **[`TException`](TException.md)** — Base exception class. Supports two usage styles:
   - *Old style:* `throw new TException('error_code', $param1, $param2)`
   - *New style:* `throw new TException($intCode, 'error_code', $param1, $param2)`
-  - Message parameters use `{0}`, `{1}`, … placeholders.
+  - Message parameters are the `{0}`, `{1}`, … arguments of an ICU MessageFormat pattern.
   - Loads messages from `messages/messages.txt` (English master) or `messages/messages-<lang>.txt`.
   - Static cache `TException::$_messageCache` — loaded once per language per request.
   - Last constructor argument may be a `Throwable` for exception chaining.
@@ -48,7 +48,7 @@ Exception hierarchy and error display for the Prado framework. Provides multilin
 - **Location:** `framework/Exceptions/messages/`
 - **Master (English):** `messages.txt`
 - **Language variants:** `messages-<lang>.txt` (e.g., `messages-de.txt`, `messages-zh.txt`)
-- **Format:** `error_code=Human readable message with {0} placeholders`
+- **Format:** `error_code=ICU MessageFormat pattern`, such as `module_not_found=Module ''{0}'' has {1, plural, one{# error} other{# errors}}.` `TException::formatErrorMessage()` formats a file message with `\MessageFormatter` in the language of the file (`getMessageFileLanguage()`: `-xx` suffix, else `en`). An apostrophe before or after a brace is doubled (`''{0}''`), and `'{}'` is a literal brace pair. A code defined in no file is the message itself, with `{0}`, `{1}`, ... replaced; so is a pattern written before 4.3.3 that quotes a placeholder as `'{0}'`. `TExceptionMessageFilesTest` checks that every framework entry parses and renders each argument.
 - **Adding new error codes:** Add to `messages.txt` first, then add translations as needed.
 - **Display only:** The messages file content is for user display. The error code string is the canonical identifier in code.
 

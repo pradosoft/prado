@@ -4,7 +4,6 @@ namespace Prado\Data\SqlMap\DataMapper;
 
 use Prado\Exceptions\TException;
 use Prado\Prado;
-use Prado\TPropertyValue;
 use SimpleXMLElement;
 
 /**
@@ -16,27 +15,32 @@ use SimpleXMLElement;
 class TSqlMapException extends TException
 {
 	/**
-	 * Constructor, similar to the parent constructor. For parameters that
-	 * are of SimpleXmlElement, the tag name and its attribute names and values
-	 * are expanded into a string.
-	 * @param mixed $errorMessage
+	 * Constructor. The arguments follow {@see \Prado\Exceptions\TException::__construct()}.
+	 * - `new TSqlMapException('message_code', $param0, ...)` → error code 0.
+	 * - `new TSqlMapException($errorCode, 'message_code', $param0, ...)` → integer error code.
+	 * - A trailing {@see \Throwable} argument is the previous exception in the chain.
+	 * - A {@see \SimpleXMLElement} parameter expands to its tag name with attribute names and values.
+	 * @param int|string $errorCode the integer error code, or the message code in the old style.
+	 * @param mixed $errorMessage the message code when $errorCode is an integer, otherwise
+	 *   the first message parameter.
+	 * @param mixed ...$args the remaining message parameters, optionally followed by the
+	 *   previous exception.
 	 */
-	public function __construct($errorMessage)
+	public function __construct($errorCode, $errorMessage = null, ...$args)
 	{
-		$this->setErrorCode($errorMessage);
-		$errorMessage = $this->translateErrorMessage($errorMessage);
-		$args = func_get_args();
-		array_shift($args);
-		$n = count($args);
-		$tokens = [];
-		for ($i = 0; $i < $n; ++$i) {
-			if ($args[$i] instanceof SimpleXMLElement) {
-				$tokens['{' . $i . '}'] = $this->implodeNode($args[$i]);
-			} else {
-				$tokens['{' . $i . '}'] = TPropertyValue::ensureString($args[$i]);
+		if (!is_int($errorCode)) {
+			if (func_num_args() > 1) {
+				array_unshift($args, $errorMessage);
+			}
+			$errorMessage = $errorCode;
+			$errorCode = 0;
+		}
+		foreach ($args as $i => $arg) {
+			if ($arg instanceof SimpleXMLElement) {
+				$args[$i] = $this->implodeNode($arg);
 			}
 		}
-		parent::__construct(strtr($errorMessage, $tokens));
+		parent::__construct($errorCode, $errorMessage, ...$args);
 	}
 
 	/**

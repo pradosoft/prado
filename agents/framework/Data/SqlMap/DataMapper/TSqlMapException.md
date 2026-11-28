@@ -16,6 +16,8 @@ Base SqlMap exception.
 
 `TSqlMapException` is the base exception for all SqlMap errors.
 
+Its constructor follows `TException`: `new TSqlMapException('message_code', $param0, ...)`, or an integer error code first, `new TSqlMapException($errorCode, 'message_code', ...)`; a trailing `Throwable` is the previous exception. A `SimpleXMLElement` parameter expands to its tag name with attribute names and values. Messages come from `DataMapper/messages.txt`, ICU MessageFormat patterns like the framework files. Since 4.3.3, `getErrorCode()` returns the message code; it returned the message text.
+
 ## See Also
 
 - [TSqlMapConfigurationException](./TSqlMapConfigurationException.md)
