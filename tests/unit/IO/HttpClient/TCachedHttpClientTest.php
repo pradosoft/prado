@@ -2,214 +2,168 @@
 
 namespace Prado\Test\Unit\IO\HttpClient;
 
+use Prado\Caching\TCache;
+use Prado\IO\Http\TRequest;
+use Prado\IO\Http\TResponse;
 use Prado\IO\HttpClient\TCachedHttpClient;
-use Prado\IO\HttpClient\THttpClient;
-use Prado\IO\HttpClient\THttpClientResponse;
+use Prado\Test\Unit\Harness\IO\TTestHttpClient;
+use Psr\Http\Client\ClientInterface;
 
 /**
- * Minimal in-memory ICache for testing.
+ * An in-memory cache that records each stored time to live.
  */
-class CachedClientTestCache implements \Prado\Caching\ICache
+class TCachedHttpClientTestCache extends TCache
 {
 	public array $store = [];
-	public array $ttls = [];
-	public int $getCalls = 0;
-	public int $setCalls = 0;
-	public int $deleteCalls = 0;
 
-	public static function getIsAvailable(): bool
+	public array $ttls = [];
+
+	protected function getValue($key)
 	{
+		return $this->store[$key] ?? false;
+	}
+
+	protected function setValue($key, $value, $expire)
+	{
+		$this->store[$key] = $value;
+		$this->ttls[$key] = $expire;
 		return true;
 	}
-	public function get($id)
+
+	protected function addValue($key, $value, $expire)
 	{
-		$this->getCalls++;
-		return $this->store[$id] ?? false;
+		return isset($this->store[$key]) ? false : $this->setValue($key, $value, $expire);
 	}
-	public function set($id, $value, $expire = 0, $dependency = null)
+
+	protected function deleteValue($key)
 	{
-		$this->setCalls++;
-		$this->store[$id] = $value;
-		$this->ttls[$id] = $expire;
+		unset($this->store[$key]);
 		return true;
 	}
-	public function add($id, $value, $expire = 0, $dependency = null)
-	{
-		if (isset($this->store[$id])) {
-			return false;
-		}
-		return $this->set($id, $value, $expire, $dependency);
-	}
-	public function delete($id)
-	{
-		$this->deleteCalls++;
-		unset($this->store[$id]);
-		return true;
-	}
-	public function flush()
+
+	protected function flushValues()
 	{
 		$this->store = [];
 		return true;
 	}
 }
 
-/**
- * Recording downloader for cache-wrapper tests.
- */
-class RecordingHttpClient extends THttpClient
-{
-	public array $calls = [];
-	/** @var THttpClientResponse[] */
-	public array $responses = [];
-
-	public function queue(THttpClientResponse $r): void { $this->responses[] = $r; }
-
-	public function download(string $method, string $url, array $headers = [], ?string $body = null): THttpClientResponse
-	{
-		$this->calls[] = ['method' => $method, 'url' => $url, 'headers' => $headers, 'body' => $body];
-		return array_shift($this->responses) ?? new THttpClientResponse(200, [], '');
-	}
-}
-
-/**
- * Cache wrapper subclass that exposes cacheKey() for direct testing.
- */
-class ExposedCachedHttpClient extends TCachedHttpClient
-{
-	public function exposeCacheKey(string $verb, string $url, array $headers): string
-	{
-		return $this->cacheKey($verb, $url, $headers);
-	}
-}
-
-/**
- * Tests for TCachedHttpClient.
- */
 class TCachedHttpClientTest extends \PHPUnit\Framework\TestCase
 {
-	private RecordingHttpClient $inner;
-	private CachedClientTestCache $cache;
-	private TCachedHttpClient $wrapped;
+	private TTestHttpClient $inner;
+
+	private TCachedHttpClientTestCache $cache;
+
+	private TCachedHttpClient $client;
 
 	protected function setUp(): void
 	{
-		$this->inner = new RecordingHttpClient();
-		$this->cache = new CachedClientTestCache();
-		$this->wrapped = new TCachedHttpClient($this->inner, $this->cache, 120);
+		$this->inner = new TTestHttpClient();
+		$this->cache = new TCachedHttpClientTestCache();
+		$this->client = new TCachedHttpClient($this->inner, $this->cache, 300);
 	}
 
-	public function testConstructorStoresDependencies(): void
+	private function get(string $uri = 'http://a.test/r', array $headers = []): string
 	{
-		$this->assertSame($this->inner, $this->wrapped->getInner());
-		$this->assertSame($this->cache, $this->wrapped->getCache());
-		$this->assertSame(120, $this->wrapped->getTtl());
+		return (string) $this->client->sendRequest(new TRequest('GET', $uri, $headers))->getBody();
 	}
 
-	public function testGetIsCachedAfterFirstSuccess(): void
+	public function testImplementsPsr18AndExposesItsParts(): void
 	{
-		$this->inner->queue(new THttpClientResponse(200, [], '{"v":1}'));
-		$r1 = $this->wrapped->download('GET', 'https://x.test/a');
-		$r2 = $this->wrapped->download('GET', 'https://x.test/a');
-
-		$this->assertSame($r1, $r2);
-		$this->assertCount(1, $this->inner->calls);
-		$this->assertSame(1, $this->cache->setCalls);
+		self::assertInstanceOf(ClientInterface::class, $this->client);
+		self::assertSame($this->inner, $this->client->getInner());
+		self::assertSame($this->cache, $this->client->getCache());
+		self::assertSame(300, $this->client->getTtl());
 	}
 
-	public function testHeadIsCachedLikeGet(): void
+	public function testCachesASuccessfulGet(): void
 	{
-		$this->inner->queue(new THttpClientResponse(200, [], ''));
-		$this->wrapped->download('HEAD', 'https://x.test/a');
-		$this->wrapped->download('HEAD', 'https://x.test/a');
-		$this->assertCount(1, $this->inner->calls);
+		$this->inner->responses[] = new TResponse(200, ['X-A' => 'a'], 'first');
+		self::assertSame('first', $this->get());
+		$cached = $this->client->sendRequest(new TRequest('GET', 'http://a.test/r'));
+		self::assertSame('first', (string) $cached->getBody());
+		self::assertSame(['a'], $cached->getHeader('X-A'));
+		self::assertCount(1, $this->inner->calls);
+		self::assertNotSame($cached->getBody(), $this->client->sendRequest(new TRequest('GET', 'http://a.test/r'))->getBody(), 'Each hit has its own body stream');
 	}
 
-	public function testMethodCasingIsNormalised(): void
+	public function testOtherMethodsPassThrough(): void
 	{
-		$this->inner->queue(new THttpClientResponse(200, [], 'X'));
-		$this->wrapped->download('get', 'https://x.test/a');
-		$this->wrapped->download('GET', 'https://x.test/a');
-		$this->assertCount(1, $this->inner->calls);
+		$this->client->sendRequest(new TRequest('POST', 'http://a.test/r', [], 'x'));
+		$this->client->sendRequest(new TRequest('POST', 'http://a.test/r', [], 'x'));
+		self::assertCount(2, $this->inner->calls);
+		self::assertSame([], $this->cache->store);
 	}
 
-	public function testNonIdempotentVerbsBypassCache(): void
+	public function testErrorResponsesAreNotStored(): void
 	{
-		foreach (['POST', 'PUT', 'PATCH', 'DELETE'] as $verb) {
-			$this->inner->queue(new THttpClientResponse(200, [], '{}'));
-			$this->inner->queue(new THttpClientResponse(200, [], '{}'));
-			$this->wrapped->download($verb, "https://x.test/{$verb}");
-			$this->wrapped->download($verb, "https://x.test/{$verb}");
-		}
-		// 4 verbs × 2 calls = 8 inner calls, 0 cache writes
-		$this->assertCount(8, $this->inner->calls);
-		$this->assertSame(0, $this->cache->setCalls);
+		$this->inner->responses = [new TResponse(500, [], 'err'), new TResponse(200, [], 'ok')];
+		self::assertSame('err', $this->get());
+		self::assertSame('ok', $this->get());
 	}
 
-	public function testUnsuccessfulGetsAreNotCached(): void
+	public static function provideUncacheableResponses(): array
 	{
-		$this->inner->queue(new THttpClientResponse(404, [], ''));
-		$this->inner->queue(new THttpClientResponse(404, [], ''));
-		$this->wrapped->download('GET', 'https://x.test/a');
-		$this->wrapped->download('GET', 'https://x.test/a');
-		$this->assertCount(2, $this->inner->calls);
-		$this->assertSame(0, $this->cache->setCalls);
+		return [
+			'no-store' => [['Cache-Control' => 'no-store']],
+			'no-cache' => [['Cache-Control' => 'public, no-cache']],
+			'max-age 0' => [['Cache-Control' => 'max-age=0']],
+			'vary star' => [['Vary' => '*']],
+		];
 	}
 
-	public function testDifferentHeadersProduceDifferentCacheKeys(): void
+	/**
+	 * @dataProvider provideUncacheableResponses
+	 */
+	public function testUncacheableResponsesAreNotStored(array $headers): void
 	{
-		$this->inner->queue(new THttpClientResponse(200, [], '{"who":"v1"}'));
-		$this->inner->queue(new THttpClientResponse(200, [], '{"who":"v2"}'));
-
-		$r1 = $this->wrapped->download('GET', 'https://x.test/a', ['Accept' => 'application/json']);
-		$r2 = $this->wrapped->download('GET', 'https://x.test/a', ['Accept' => 'application/xml']);
-
-		$this->assertNotSame($r1, $r2);
-		$this->assertCount(2, $this->inner->calls);
+		$this->inner->responses = [new TResponse(200, $headers, 'one'), new TResponse(200, [], 'two')];
+		self::assertSame('one', $this->get());
+		self::assertSame('two', $this->get());
 	}
 
-	public function testTtlPassedToCache(): void
+	public function testRequestNoCacheBypassesTheCache(): void
 	{
-		$this->inner->queue(new THttpClientResponse(200, [], 'x'));
-		$this->wrapped->download('GET', 'https://x.test/a');
-		$ttls = array_values($this->cache->ttls);
-		$this->assertSame(120, $ttls[0]);
+		$this->inner->responses = [new TResponse(200, [], 'one'), new TResponse(200, [], 'two')];
+		$this->get();
+		self::assertSame('two', $this->get('http://a.test/r', ['Cache-Control' => 'no-cache']));
 	}
 
-	public function testInvalidateRemovesEntry(): void
+	public function testMaxAgeShortensTheTtl(): void
 	{
-		$this->inner->queue(new THttpClientResponse(200, [], 'first'));
-		$this->inner->queue(new THttpClientResponse(200, [], 'second'));
-
-		$r1 = $this->wrapped->download('GET', 'https://x.test/a');
-		$this->wrapped->invalidate('GET', 'https://x.test/a');
-		$r2 = $this->wrapped->download('GET', 'https://x.test/a');
-
-		$this->assertSame('first', $r1->getBody());
-		$this->assertSame('second', $r2->getBody());
-		$this->assertSame(1, $this->cache->deleteCalls);
+		$this->inner->responses[] = new TResponse(200, ['Cache-Control' => 'public, max-age=60'], 'x');
+		$this->get();
+		self::assertContains(60, $this->cache->ttls);
+		$this->inner->responses[] = new TResponse(200, ['Cache-Control' => 'max-age=9999'], 'y');
+		$this->get('http://a.test/other');
+		self::assertContains(300, $this->cache->ttls);
 	}
 
-	public function testCacheKeyIsStableAcrossHeaderOrder(): void
+	public function testVaryHeadersSeparateVariants(): void
 	{
-		$exposed = new ExposedCachedHttpClient($this->inner, $this->cache);
-		$k1 = $exposed->exposeCacheKey('GET', 'https://x.test/a', ['A' => '1', 'B' => '2']);
-		$k2 = $exposed->exposeCacheKey('GET', 'https://x.test/a', ['B' => '2', 'A' => '1']);
-		$this->assertSame($k1, $k2);
+		$this->inner->responses = [
+			new TResponse(200, ['Vary' => 'Accept-Language'], 'english'),
+			new TResponse(200, ['Vary' => 'Accept-Language'], 'french'),
+		];
+		self::assertSame('english', $this->get('http://a.test/r', ['Accept-Language' => 'en']));
+		self::assertSame('french', $this->get('http://a.test/r', ['Accept-Language' => 'fr']));
+		self::assertSame('english', $this->get('http://a.test/r', ['Accept-Language' => 'en']));
+		self::assertCount(2, $this->inner->calls);
 	}
 
-	public function testCacheKeyChangesWithUrl(): void
+	public function testCredentialsAlwaysSeparateVariants(): void
 	{
-		$exposed = new ExposedCachedHttpClient($this->inner, $this->cache);
-		$k1 = $exposed->exposeCacheKey('GET', 'https://x.test/a', []);
-		$k2 = $exposed->exposeCacheKey('GET', 'https://x.test/b', []);
-		$this->assertNotSame($k1, $k2);
+		$this->inner->responses = [new TResponse(200, [], 'alice'), new TResponse(200, [], 'bob')];
+		self::assertSame('alice', $this->get('http://a.test/me', ['Authorization' => 'Bearer a']));
+		self::assertSame('bob', $this->get('http://a.test/me', ['Authorization' => 'Bearer b']));
+		self::assertSame('alice', $this->get('http://a.test/me', ['Authorization' => 'Bearer a']));
 	}
 
-	public function testCacheKeyChangesWithVerb(): void
+	public function testInvalidate(): void
 	{
-		$exposed = new ExposedCachedHttpClient($this->inner, $this->cache);
-		$k1 = $exposed->exposeCacheKey('GET', 'https://x.test/a', []);
-		$k2 = $exposed->exposeCacheKey('HEAD', 'https://x.test/a', []);
-		$this->assertNotSame($k1, $k2);
+		$this->inner->responses = [new TResponse(200, [], 'one'), new TResponse(200, [], 'two')];
+		$this->get();
+		$this->client->invalidate('get', 'http://a.test/r');
+		self::assertSame('two', $this->get());
 	}
 }

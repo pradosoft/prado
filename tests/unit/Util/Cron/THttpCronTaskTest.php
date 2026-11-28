@@ -5,10 +5,14 @@ namespace Prado\Test\Unit\Util\Cron;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TIOException;
+use Prado\IO\Http\TResponse;
 use Prado\IO\HttpClient\THttpClient;
-use Prado\IO\HttpClient\THttpClientResponse;
+use Prado\IO\HttpClient\THttpClientOption;
+use Prado\Test\Unit\Harness\IO\TTestHttpClient;
 use Prado\Util\Cron\TCronModule;
 use Prado\Util\Cron\THttpCronTask;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Records the requests of a THttpCronTask and answers with a set status and body.
@@ -19,10 +23,10 @@ class THttpCronTaskTestClient extends THttpClient
 	public int $status = 200;
 	public string $body = 'done';
 
-	public function download(string $method, string $url, array $headers = [], ?string $body = null): THttpClientResponse
+	public function send(RequestInterface $request, array $options = []): ResponseInterface
 	{
-		$this->requests[] = [$method, $url, $headers, $body, $this->getTimeout()];
-		return new THttpClientResponse($this->status, [], $this->body);
+		$this->requests[] = [$request->getMethod(), (string) $request->getUri(), $request->getHeaderLine('X-Run'), (string) $request->getBody(), $options[THttpClientOption::TIMEOUT] ?? null];
+		return new TResponse($this->status, [], $this->body);
 	}
 }
 
@@ -68,8 +72,26 @@ class THttpCronTaskTest extends \PHPUnit\Framework\TestCase
 		$this->task->setUrl('https://example.test/hook')->setMethod('POST')->setBody('payload')->setHeaders('X-Run: 1');
 		$this->task->setTimeout(2.5);
 		$this->task->execute(new TCronModule());
-		self::assertSame([['POST', 'https://example.test/hook', ['X-Run' => '1'], 'payload', 3]], $this->client->requests, 'the timeout rounds up to whole seconds');
+		self::assertSame([['POST', 'https://example.test/hook', '1', 'payload', 2.5]], $this->client->requests, 'the timeout is the request option');
 		self::assertSame(200, $this->task->getStatusCode());
+	}
+
+	public function testExecute_AnyPsr18Client()
+	{
+		$client = new TTestHttpClient();
+		$client->responses[] = new TResponse(500, [], 'down');
+		$this->task->setHttpClient($client)->setUrl('https://example.test/hook')->setMethod('PUT')->setBody('x');
+		try {
+			$this->task->execute(new TCronModule());
+			self::fail('a 500 did not throw');
+		} catch (TIOException $e) {
+			self::assertStringContainsString('500', $e->getMessage());
+		}
+		self::assertSame('PUT', $client->calls[0]['method']);
+		self::assertSame('x', $client->calls[0]['body']);
+		self::assertSame(500, $this->task->getStatusCode());
+		$this->task->setHttpClient(null);
+		self::assertInstanceOf(THttpClient::class, $this->task->getHttpClient(), 'null restores the default');
 	}
 
 	public function testExecute_ANon2xxStatusThrows()
@@ -143,8 +165,7 @@ class THttpCronTaskTest extends \PHPUnit\Framework\TestCase
 		$log = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'prado-httptask-' . bin2hex(random_bytes(4)) . '.log';
 		$timed = new TCronModule();
 		$timed->setTaskTimeout(4.2);
-		$default = (new THttpCronTaskTestClient())->getTimeout();
-		$modules = ['TaskTimeout' => [$timed, 5], 'no TaskTimeout' => [new TCronModule(), $default], 'no module' => [null, $default]];
+		$modules = ['TaskTimeout' => [$timed, 4.2], 'no TaskTimeout' => [new TCronModule(), null], 'no module' => [null, null]];
 		try {
 			foreach ($modules as $label => [$module, $timeout]) {
 				foreach ([null, $log] as $logFile) {
@@ -162,7 +183,7 @@ class THttpCronTaskTest extends \PHPUnit\Framework\TestCase
 							self::assertSame(500, $status, $label . ': a non-2xx status throws');
 						}
 						self::assertSame($status, $task->getStatusCode());
-						self::assertSame($timeout, $client->requests[0][4], $label . ': the client timeout');
+						self::assertSame($timeout, $client->requests[0][4], $label . ': the request timeout option');
 						self::assertSame($logFile !== null, is_file($log), $label . ': the log file');
 					}
 				}

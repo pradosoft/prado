@@ -36,7 +36,7 @@ return [
 - `Host` - etcd server host (default: `localhost`)
 - `Port` - etcd server port (default: `2379`)
 - `Dir` - Key prefix directory (default: `pradocache`)
-- `Downloader` - `THttpClient` transport; created on first use by `createDownloader()` from `THttpClient::create()` with `FollowRedirects` off. Settable at any time, e.g. to change `Timeout` (default 30 s).
+- `HttpClient` - The PSR-18 client; created on first use by `createHttpClient()` as a `THttpClient` with `FollowRedirects` off. Settable at any time, e.g. to change `Timeout` (default 30 s).
 
 `Host`, `Port` and `Dir` are frozen after `init()`.
 
@@ -51,17 +51,17 @@ return [
 | flush | `DELETE /v2/keys/{Dir}?recursive=true` | always `true` |
 
 - `request()` returns the decoded `\stdClass`. A body that is not a JSON object → `(object)['errorCode' => <HTTP status>, ...]`, so it reads as a miss/failure.
-- Unreachable server → `THttpClientException` propagates.
+- Unreachable server → the client's `ClientExceptionInterface` (a `THttpNetworkException` by default) propagates.
 - Form body and `Content-Type: application/x-www-form-urlencoded` are sent only when parameters exist.
 
 ## Requirements
 
-- An HTTP transport, unless a `Downloader` is set. `getIsAvailable()` asks `THttpClient::getHasAvailableTransport()`, which is true when any transport in `THttpClient::TRANSPORTS` reports itself available: `TCurlHttpClient` needs the cURL extension and `TFopenHttpClient` needs `allow_url_fopen`. Without one, `init()` throws `etcdcache_transport_required`.
+- An HTTP handler, unless an `HttpClient` is set. `getIsAvailable()` asks `THttpClient::getHasAvailableHandler()`, which is true when any handler in `THttpClient::HANDLERS` reports itself available; `TSocketHttpHandler` needs only `stream_socket_client()`. Without one, `init()` throws `etcdcache_transport_required`.
 - etcd v2 server running
 
 ## Testing
 
-`tests/unit/Caching/TEtcdCacheTest.php` drives the protocol through a recording `THttpClient` fixture injected with `setDownloader()`; no etcd server is needed.
+`tests/unit/Caching/TEtcdCacheTest.php` drives the protocol through the recording `TTestHttpClient` harness injected with `setHttpClient()`; no etcd server is needed.
 
 ## See Also
 

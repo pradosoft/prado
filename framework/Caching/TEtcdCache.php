@@ -13,9 +13,10 @@ namespace Prado\Caching;
 use Prado\TPropertyValue;
 use Prado\Exceptions\TConfigurationException;
 use Prado\IO\HttpClient\THttpClient;
-use Prado\IO\HttpClient\THttpClientException;
+use Prado\IO\Http\TRequest;
 use Prado\Web\THttpHeaderName;
 use Prado\Web\TMediaType;
+use Psr\Http\Client\ClientInterface;
 
 /**
  * TEtcdCache class
@@ -34,9 +35,8 @@ use Prado\Web\TMediaType;
  * {@see setDir} which defaults to 'pradocache'.
  *
  * TEtcdCache only supports etcd API v2. It sends the HTTP GET/PUT/DELETE
- * commands through a {@see THttpClient}, which uses cURL when the extension is
- * loaded and PHP stream wrappers (`allow_url_fopen`) otherwise. Set
- * {@see setDownloader Downloader} to configure the transport, such as its Timeout.
+ * commands through a PSR-18 {@see setHttpClient HttpClient}, by default a {@see THttpClient}
+ * with redirects off.  Set HttpClient to configure the transport, such as its Timeout.
  *
  * Some usage examples of TEtcdCache are as follows,
  * ```php
@@ -93,31 +93,31 @@ class TEtcdCache extends TSerializingCache
 	protected $_dir = 'pradocache';
 
 	/**
-	 * @var ?THttpClient the transport for etcd requests, created on first use when null.
+	 * @var ?ClientInterface the HTTP client for etcd requests, created on first use when null.
 	 */
-	private ?THttpClient $_downloader = null;
+	private ?ClientInterface $_httpClient = null;
 
 	/**
-	 * @return bool whether {@see THttpClient::create()} has a transport to build, so the
-	 *   default {@see getDownloader() Downloader} can be created.
+	 * @return bool whether a {@see THttpClient} handler can run, so the default
+	 *   {@see getHttpClient() HttpClient} can send requests.
 	 * @since 4.4.0
 	 */
 	public static function getIsAvailable(): bool
 	{
-		return THttpClient::getHasAvailableTransport();
+		return THttpClient::getHasAvailableHandler();
 	}
 
 	/**
 	 * Initializes this module.
 	 * This method is required by the IModule interface.  A configured
-	 * {@see setDownloader() Downloader} is taken as able to run; without one, the default
-	 * transport must be available.
+	 * {@see setHttpClient() HttpClient} is taken as able to run; without one, a
+	 * {@see THttpClient} handler must be available.
 	 * @param null|array|\Prado\Xml\TXmlElement $config configuration for this module, can be null
-	 * @throws TConfigurationException if no Downloader is set and no HTTP transport is available
+	 * @throws TConfigurationException if no HttpClient is set and no HTTP handler is available
 	 */
 	public function init($config)
 	{
-		if ($this->_downloader === null && !static::getIsAvailable()) {
+		if ($this->_httpClient === null && !static::getIsAvailable()) {
 			throw new TConfigurationException('etcdcache_transport_required');
 		}
 		parent::init($config);
@@ -179,36 +179,36 @@ class TEtcdCache extends TSerializingCache
 	}
 
 	/**
-	 * Returns the HTTP client for etcd requests, creating one with {@see createDownloader()} on first access.
-	 * @return THttpClient the transport for etcd requests.
+	 * Returns the HTTP client for etcd requests, creating one with {@see createHttpClient()} on first access.
+	 * @return ClientInterface the HTTP client for etcd requests.
 	 * @since 4.4.0
 	 */
-	public function getDownloader(): THttpClient
+	public function getHttpClient(): ClientInterface
 	{
-		if ($this->_downloader === null) {
-			$this->_downloader = $this->createDownloader();
+		if ($this->_httpClient === null) {
+			$this->_httpClient = $this->createHttpClient();
 		}
-		return $this->_downloader;
+		return $this->_httpClient;
 	}
 
 	/**
 	 * Sets the HTTP client for etcd requests.
-	 * @param THttpClient $value the transport for etcd requests.
+	 * @param ClientInterface $value the HTTP client for etcd requests.
 	 * @since 4.4.0
 	 */
-	public function setDownloader(THttpClient $value): void
+	public function setHttpClient(ClientInterface $value): void
 	{
-		$this->_downloader = $value;
+		$this->_httpClient = $value;
 	}
 
 	/**
-	 * Creates the default HTTP client from {@see THttpClient::create()} with redirects disabled.
-	 * @return THttpClient the default transport for etcd requests.
+	 * Creates the default HTTP client, a {@see THttpClient} with redirects disabled.
+	 * @return ClientInterface the default HTTP client for etcd requests.
 	 * @since 4.4.0
 	 */
-	protected function createDownloader(): THttpClient
+	protected function createHttpClient(): ClientInterface
 	{
-		$client = THttpClient::create();
+		$client = new THttpClient();
 		$client->setFollowRedirects(false);
 		return $client;
 	}
@@ -285,7 +285,7 @@ class TEtcdCache extends TSerializingCache
 	 * @param string $method the HTTP method for the request (GET,PUT,DELETE)
 	 * @param string $key the key to perform the action on (includes the directory)
 	 * @param array $value the additional form parameters to send with the request
-	 * @throws THttpClientException when the etcd instance cannot be reached
+	 * @throws \Psr\Http\Client\ClientExceptionInterface when the etcd instance cannot be reached
 	 * @return \stdClass the response from the etcd instance
 	 */
 	protected function request($method, $key, $value = [])
@@ -297,8 +297,8 @@ class TEtcdCache extends TSerializingCache
 			$body = http_build_query($value);
 		}
 		$url = "http://{$this->getHost()}:{$this->getPort()}/v2/keys/{$key}";
-		$response = $this->getDownloader()->download($method, $url, $headers, $body);
-		$result = json_decode($response->getBody());
+		$response = $this->getHttpClient()->sendRequest(new TRequest($method, $url, $headers, $body));
+		$result = json_decode((string) $response->getBody());
 		if (!($result instanceof \stdClass)) {
 			$result = (object) ['errorCode' => $response->getStatusCode(), 'message' => 'Invalid etcd response.'];
 		}

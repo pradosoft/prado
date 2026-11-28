@@ -10,71 +10,51 @@
 
 namespace Prado\IO\HttpClient;
 
-use Prado\Exceptions\TException;
+use Prado\Exceptions\TNetworkException;
+use Psr\Http\Client\ClientExceptionInterface;
+use Psr\Http\Message\RequestInterface;
 
 /**
  * THttpClientException class.
  *
- * THttpClientException reports a failure during a {@see THttpClient} call (or
- * any wrapper built on top, such as {@see \Prado\IO\Rest\TRestClient}). Two
- * distinct failure shapes share this single type:
+ * THttpClientException is the PSR-18 {@see ClientExceptionInterface} base of every
+ * failure of a {@see THttpClient} or a client built on it, such as
+ * {@see \Prado\IO\Rest\TRestClient}.  A client throws one of its subclasses:
  *
- *  - **Transport failure** — DNS resolution failed, the connection timed out,
- *    the server refused the connection, etc. The HTTP exchange never
- *    completed; {@see getResponse()} returns `null` and {@see getStatusCode()}
- *    returns `0`.
- *  - **HTTP error** — a response was received, but its status code falls
- *    outside the 2xx range and the caller is configured to throw on errors.
- *    {@see getResponse()} returns the full {@see THttpClientResponse}.
+ * | Exception | Failure |
+ * |---|---|
+ * | {@see THttpNetworkException} | No response: DNS failure, refused connection, timeout, or a broken transfer. |
+ * | {@see THttpRequestException} | The request cannot be sent: an unsupported scheme, a malformed request, or too many redirects. |
+ * | {@see THttpResponseException} | A 4xx or 5xx response, thrown only by layers that ask for it, such as `TRestClient`. |
+ *
+ * {@see getRequest()} returns the request that failed, or null when there is none.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0
  */
-class THttpClientException extends TException
+class THttpClientException extends TNetworkException implements ClientExceptionInterface
 {
-	/**
-	 * @var ?THttpClientResponse Response object for HTTP errors; null for
-	 *   transport failures.
-	 */
-	private ?THttpClientResponse $_response = null;
+	/** @var ?RequestInterface The request that failed. */
+	private ?RequestInterface $_request = null;
 
 	/**
-	 * Constructor.
-	 * @param string $errorMessage Error message key or text.
-	 * @param mixed ...$parameters Message parameters forwarded to {@see TException}.
+	 * Returns the request that failed.
+	 * @return ?RequestInterface The request, or null when there is none.
 	 */
-	public function __construct($errorMessage, ...$parameters)
+	public function getRequest(): ?RequestInterface
 	{
-		parent::__construct($errorMessage, ...$parameters);
+		return $this->getRequestDirect();
 	}
 
-	/**
-	 * Creates an exception representing an unsuccessful HTTP response.
-	 * @param THttpClientResponse $response Response that triggered the failure.
-	 * @return self
-	 */
-	public static function fromResponse(THttpClientResponse $response): self
+	/** @return ?RequestInterface Returns the stored request. */
+	protected function getRequestDirect(): ?RequestInterface
 	{
-		$e = new self('httpclient_http_error', $response->getStatusCode());
-		$e->_response = $response;
-		$e->code = $response->getStatusCode();
-		return $e;
+		return $this->_request;
 	}
 
-	/**
-	 * @return ?THttpClientResponse Response for HTTP errors, or null for
-	 *   transport-level failures.
-	 */
-	public function getResponse(): ?THttpClientResponse
+	/** @param ?RequestInterface $value Stores the request that failed. */
+	protected function setRequestDirect(?RequestInterface $value): void
 	{
-		return $this->_response;
-	}
-
-	/**
-	 * @return int HTTP status code for HTTP errors, or 0 for transport failures.
-	 */
-	public function getStatusCode(): int
-	{
-		return $this->_response?->getStatusCode() ?? 0;
+		$this->_request = $value;
 	}
 }

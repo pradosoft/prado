@@ -24,6 +24,7 @@ use Prado\IO\Async\TAsync;
 use Prado\IO\Async\TCancellationToken;
 use Prado\IO\Async\TFiberContext;
 use Prado\IO\Async\TFuture;
+use Prado\IO\Http\TRequest;
 use Prado\IO\HttpClient\THttpClient;
 use Prado\IO\Process\TProcess;
 use Prado\Prado;
@@ -47,6 +48,7 @@ use Prado\Util\Mutex\TFileMutex;
 use Prado\Util\Traits\TInitializedTrait;
 use Prado\Xml\TXmlElement;
 use Prado\Xml\TXmlDocument;
+use Psr\Http\Client\ClientInterface;
 
 /**
  * TCronModule class.
@@ -455,8 +457,8 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	/** @var int the last run ID of the status */
 	private int $_statusRunId = 0;
 
-	/** @var ?THttpClient the client that sends the task pings */
-	private ?THttpClient $_httpClient = null;
+	/** @var ?ClientInterface the PSR-18 client that sends the task pings */
+	private ?ClientInterface $_httpClient = null;
 
 	/** @var ?string the time zone of the tasks without their own, or null for the application time zone */
 	private ?string $_timeZone = null;
@@ -1864,32 +1866,34 @@ class TCronModule extends \Prado\TModule implements IPermissions, IClock
 	 * Sends a ping as an HTTP GET request through the {@see getHttpClient HttpClient}.  A response
 	 * other than 2xx is a warning log entry.
 	 * @param TCronTaskEventParameter $param the ping, with its task, point, and URL
-	 * @throws \Prado\IO\HttpClient\THttpClientException when the request fails
+	 * @throws \Psr\Http\Client\ClientExceptionInterface when the request fails
 	 * @since 4.4.0
 	 */
 	protected function sendPing(TCronTaskEventParameter $param): void
 	{
-		$response = $this->getHttpClient()->download('GET', (string) $param->getUrl());
-		if (!$response->isSuccess()) {
+		$response = $this->getHttpClient()->sendRequest(new TRequest('GET', (string) $param->getUrl()));
+		$status = $response->getStatusCode();
+		if ($status < 200 || $status >= 300) {
 			Prado::log('Cron task (' . $param->getTask()->getName() . ') ' . $param->getPing() . ' ping to ' . parse_url((string) $param->getUrl(), PHP_URL_HOST) . ' answered ' . $response->getStatusCode(), TLogger::WARNING, TCronModule::class);
 		}
 	}
 
 	/**
-	 * @throws \Prado\IO\HttpClient\THttpClientException when no HTTP transport is available
-	 * @return THttpClient the client that sends the task pings; defaults to {@see THttpClient::create()}
+	 * Returns the PSR-18 client that sends the task pings.  A {@see THttpClient} is created on first use.
+	 * @return ClientInterface the client that sends the task pings
 	 * @since 4.4.0
 	 */
-	public function getHttpClient(): THttpClient
+	public function getHttpClient(): ClientInterface
 	{
-		return $this->_httpClient ??= THttpClient::create();
+		return $this->_httpClient ??= new THttpClient();
 	}
 
 	/**
-	 * @param ?THttpClient $client the client that sends the task pings; null restores the default
+	 * Sets the PSR-18 client that sends the task pings.
+	 * @param ?ClientInterface $client the client that sends the task pings; null restores the default
 	 * @since 4.4.0
 	 */
-	public function setHttpClient(?THttpClient $client): void
+	public function setHttpClient(?ClientInterface $client): void
 	{
 		$this->_httpClient = $client;
 	}

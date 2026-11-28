@@ -11,12 +11,16 @@
 namespace Prado\IO\Rest;
 
 use Prado\Exceptions\TInvalidDataValueException;
-use Prado\IO\HttpClient\THttpClientException;
-use Prado\IO\HttpClient\THttpClientResponse;
+use Prado\IO\Http\TRequest;
 use Prado\IO\HttpClient\THttpClient;
+use Prado\IO\HttpClient\THttpClientException;
+use Prado\IO\HttpClient\THttpResponseException;
 use Prado\TApplicationComponent;
 use Prado\Web\THttpHeaderName;
 use Prado\Web\TMediaType;
+use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * TRestClient class
@@ -66,27 +70,22 @@ use Prado\Web\TMediaType;
  *
  * ## Transport
  *
- * The default transport is whatever {@see THttpClient::create()} chooses
- * (cURL when available, PHP stream wrappers otherwise). Replace it via
- * {@see setDownloader()} — for example, to enable response caching:
+ * Requests go through a PSR-18 {@see ClientInterface}, a {@see THttpClient} by default.
+ * Replace it with {@see setHttpClient()}, for example to cache responses:
  *
  * ```php
  * $api = new GitHubApi();
- * $api->setDownloader(THttpClient::newCacheWrapper(
- *     THttpClient::create(),
- *     $application->getModule('cache'),
- *     ttl: 600,
- * ));
+ * $api->setHttpClient(new TCachedHttpClient(new THttpClient(), $application->getCache(), 600));
  * ```
  *
  * ## Error handling
  *
- * The verb helpers throw {@see THttpClientException} when the response status
+ * The verb helpers throw {@see THttpResponseException} when the response status
  * falls outside 2xx. When the status code itself is part of the expected
  * flow (e.g. probing for existence via 404), use {@see requestRaw()}, which
- * returns the raw {@see THttpClientResponse} for any status without throwing.
- * Network-level failures (DNS, timeout) always surface as exceptions because
- * no response exists.
+ * returns the PSR-7 response for any status without throwing.
+ * Network-level failures (DNS, timeout) always surface as a
+ * {@see THttpClientException} because no response exists.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0
@@ -100,10 +99,9 @@ abstract class TRestClient extends TApplicationComponent
 	private string $_baseUrl = '';
 
 	/**
-	 * @var ?THttpClient Transport instance. Lazily created on first
-	 *   call to {@see getDownloader()} when null.
+	 * @var ?ClientInterface The HTTP client, created on first use when null.
 	 */
-	private ?THttpClient $_downloader = null;
+	private ?ClientInterface $_httpClient = null;
 
 	/**
 	 * @var array<string,string> Headers added to every request, unless the
@@ -220,17 +218,18 @@ abstract class TRestClient extends TApplicationComponent
 		mixed $body,
 		array $perCallHeaders
 	): mixed {
-		return $this->handleResponse($this->requestRaw($method, $path, $pathParams, $query, $body, $perCallHeaders));
+		$request = $this->createRequest($method, $path, $pathParams, $query, $body, $perCallHeaders);
+		return $this->handleResponse($this->getHttpClient()->sendRequest($request), $request);
 	}
 
 	/**
-	 * Executes an HTTP request and returns the raw response for any status code.
+	 * Executes an HTTP request and returns the response for any status code.
 	 *
-	 * Unlike the verb helpers, this method has never thrown on 4xx/5xx
-	 * statuses — the caller inspects {@see THttpClientResponse::getStatusCode()
-	 * getStatusCode()} itself, which suits flows where an error status is an
-	 * expected outcome (e.g. probing for existence via 404). Network-level
-	 * failures still throw because no response exists.
+	 * Unlike the verb helpers, this method does not throw on 4xx/5xx
+	 * statuses.  The caller inspects {@see ResponseInterface::getStatusCode()},
+	 * which suits flows where an error status is an expected outcome (e.g.
+	 * probing for existence via 404).  Network-level failures still throw
+	 * because no response exists.
 	 *
 	 * @param string $method HTTP verb.
 	 * @param string $path Path pattern, possibly containing `{name}` placeholders.
@@ -240,7 +239,7 @@ abstract class TRestClient extends TApplicationComponent
 	 * @param array<string,string> $headers Per-call headers; merged with defaults.
 	 * @throws THttpClientException on transport (network-level) failure.
 	 * @throws \JsonException when the body cannot be JSON-encoded.
-	 * @return THttpClientResponse Raw response, regardless of status code.
+	 * @return ResponseInterface The response, regardless of status code.
 	 */
 	public function requestRaw(
 		string $method,
@@ -249,12 +248,29 @@ abstract class TRestClient extends TApplicationComponent
 		array $query = [],
 		mixed $body = null,
 		array $headers = []
-	): THttpClientResponse {
+	): ResponseInterface {
+		return $this->getHttpClient()->sendRequest($this->createRequest($method, $path, $pathParams, $query, $body, $headers));
+	}
+
+	/**
+	 * Builds the PSR-7 request of a call: the URL from {@see buildUrl()}, the headers
+	 * from {@see mergeHeaders()}, and the body from {@see encodeBody()}.
+	 * @param string $method HTTP verb.
+	 * @param string $path Path pattern, possibly containing `{name}` placeholders.
+	 * @param array<string,scalar> $pathParams Placeholder values keyed by name.
+	 * @param array<string,array|scalar> $query Query string parameters.
+	 * @param mixed $body Request body (JSON-encoded when non-null).
+	 * @param array<string,string> $headers Per-call headers; merged with defaults.
+	 * @throws TInvalidDataValueException when a per-call header is unsafe.
+	 * @throws \JsonException when the body cannot be JSON-encoded.
+	 * @return RequestInterface The request.
+	 */
+	protected function createRequest(string $method, string $path, array $pathParams, array $query, mixed $body, array $headers): RequestInterface
+	{
 		$url = $this->buildUrl($path, $pathParams, $query);
 		$headers = $this->mergeHeaders($headers);
 		$rawBody = $this->encodeBody($body, $headers);
-
-		return $this->getDownloader()->download($method, $url, $headers, $rawBody);
+		return new TRequest($method, $url, $headers, $rawBody);
 	}
 
 	/**
@@ -414,28 +430,33 @@ abstract class TRestClient extends TApplicationComponent
 	}
 
 	/**
-	 * Decodes a successful downloader response or throws on HTTP error.
+	 * Decodes a successful response or throws on HTTP error.
 	 *
-	 * Non-2xx responses are converted to {@see THttpClientException}. An
+	 * Non-2xx responses are converted to {@see THttpResponseException}. An
 	 * empty body (e.g. `204 No Content`) decodes to `null`. A non-empty body
 	 * that is not valid JSON is returned as the raw body string so non-JSON
 	 * endpoints (plain text, HTML) are not silently lost.
 	 *
-	 * @param THttpClientResponse $response Response from the downloader.
-	 * @throws THttpClientException when the response status is outside 2xx.
+	 * @param ResponseInterface $response The response.
+	 * @param RequestInterface $request The request it answers.
+	 * @throws THttpResponseException when the response status is outside 2xx.
 	 * @return mixed Decoded JSON value, raw body string, or null for an empty body.
 	 */
-	protected function handleResponse(THttpClientResponse $response): mixed
+	protected function handleResponse(ResponseInterface $response, RequestInterface $request): mixed
 	{
-		if (!$response->isSuccess()) {
-			throw THttpClientException::fromResponse($response);
+		$status = $response->getStatusCode();
+		if ($status < 200 || $status >= 300) {
+			throw new THttpResponseException($request, $response);
 		}
-		if ($response->getBody() === '') {
+		$body = (string) $response->getBody();
+		if ($body === '') {
 			return null;
 		}
-		$failed = new \stdClass();
-		$decoded = $response->getJson(true, $failed);
-		return $decoded === $failed ? $response->getBody() : $decoded;
+		try {
+			return json_decode($body, true, 512, JSON_THROW_ON_ERROR);
+		} catch (\JsonException $e) {
+			return $body;
+		}
 	}
 
 	// ── Direct accessors (UAP-SE) ─────────────────────────────────────────────
@@ -457,19 +478,19 @@ abstract class TRestClient extends TApplicationComponent
 	}
 
 	/**
-	 * @return ?THttpClient Stored downloader, or null when unset.
+	 * @return ?ClientInterface Stored HTTP client, or null when unset.
 	 */
-	protected function getDownloaderDirect(): ?THttpClient
+	protected function getHttpClientDirect(): ?ClientInterface
 	{
-		return $this->_downloader;
+		return $this->_httpClient;
 	}
 
 	/**
-	 * @param ?THttpClient $value Downloader to store, or null to clear.
+	 * @param ?ClientInterface $value HTTP client to store, or null to clear.
 	 */
-	protected function setDownloaderDirect(?THttpClient $value): void
+	protected function setHttpClientDirect(?ClientInterface $value): void
 	{
-		$this->_downloader = $value;
+		$this->_httpClient = $value;
 	}
 
 	/**
@@ -508,25 +529,26 @@ abstract class TRestClient extends TApplicationComponent
 	}
 
 	/**
-	 * Returns the active downloader, creating a default one on first access.
-	 * @return THttpClient The transport instance used for requests.
+	 * Returns the PSR-18 client requests are sent through, creating a {@see THttpClient}
+	 * on first access.
+	 * @return ClientInterface The HTTP client.
 	 */
-	public function getDownloader(): THttpClient
+	public function getHttpClient(): ClientInterface
 	{
-		if ($this->getDownloaderDirect() === null) {
-			$this->setDownloaderDirect(THttpClient::create());
+		if ($this->getHttpClientDirect() === null) {
+			$this->setHttpClientDirect(new THttpClient());
 		}
-		/** @var THttpClient */
-		return $this->getDownloaderDirect();
+		/** @var ClientInterface */
+		return $this->getHttpClientDirect();
 	}
 
 	/**
-	 * Replaces the active downloader.
-	 * @param THttpClient $value Downloader instance.
+	 * Replaces the PSR-18 client requests are sent through.
+	 * @param ClientInterface $value The HTTP client.
 	 */
-	public function setDownloader(THttpClient $value): void
+	public function setHttpClient(ClientInterface $value): void
 	{
-		$this->setDownloaderDirect($value);
+		$this->setHttpClientDirect($value);
 	}
 
 	/**

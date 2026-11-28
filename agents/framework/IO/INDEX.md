@@ -12,7 +12,8 @@ Input/output utilities for the Prado framework: text writer abstractions, archiv
 | Directory | Purpose |
 |---|---|
 | [Async/](Async/INDEX.md) | The async API: [`IEventLoop`](Async/IEventLoop.md), [`ITickableEventLoop`](Async/ITickableEventLoop.md), the default [`TRevoltEventLoop`](Async/TRevoltEventLoop.md) over `revolt/event-loop`, [`TLoopSuspension`](Async/TLoopSuspension.md); the primitives [`TFuture`](Async/TFuture.md), [`TDeferred`](Async/TDeferred.md), [`TCancellationToken`](Async/TCancellationToken.md), [`TFiberContext`](Async/TFiberContext.md), the [`TAsync`](Async/TAsync.md) facade (`run`, `all`, `any`, `timeout`, `sleep`), [`TAsyncStream`](Async/TAsyncStream.md) for readiness-driven reads and writes, and [`TChannel`](Async/TChannel.md) for values between fibers. `TProcess::wait()` and `TProcessFork::wait()` suspend on the loop. |
-| [HttpClient/](HttpClient/INDEX.md) | HTTP transports: `THttpClient` with `TCurlHttpClient`, `TFopenHttpClient`, `TCachedHttpClient`, `THttpClientResponse`, and the async [`TCurlMultiHttpClient`](HttpClient/TCurlMultiHttpClient.md) on the event loop. |
+| [Http/](Http/INDEX.md) | PSR-7 HTTP messages (`TMessage`, `TRequest`, `TResponse`) and the PSR-17 `THttpFactory`. |
+| [HttpClient/](HttpClient/INDEX.md) | The PSR-18 `THttpClient`, its `IHttpHandler` transports (`TCurlHttpHandler`, `TCurlMultiHttpHandler`, `TSocketHttpHandler`, `TStreamHttpHandler`), `TCachedHttpClient`, and the PSR-18 exceptions. |
 | [Socket/](Socket/INDEX.md) | Socket streams, servers, the dependency-free [`TSocketReactor`](Socket/TSocketReactor.md) event loop, and `TSocketServerModule`. |
 
 `Prado\IO\Rpc` (the JSON-RPC and XML-RPC clients `TRpcClient`, `TJsonRpcClient`, `TXmlRpcClient` and the `TXmlRpcCodec`) is the `pradosoft/prado-rpc` package, built on `HttpClient/`; see [Web/Services](../Web/Services/INDEX.md#rpc-the-pradosoftprado-rpc-package).
