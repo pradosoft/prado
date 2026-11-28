@@ -37,6 +37,26 @@ class TTextTrackTest extends TestCase
 		$this->assertSame('<track kind="captions" src="intro.en.vtt" srclang="en" label="English" default="default" />', $this->render($control));
 	}
 
+	public function testTrackAttributeCombinations()
+	{
+		foreach ([false, true] as $all) {
+			foreach ([false, true] as $isDefault) {
+				$control = new TTextTrack();
+				if ($all) {
+					$control->setSrc('a.vtt');
+					$control->setSrcLang('en');
+					$control->setLabel('English');
+				}
+				$control->setIsDefault($isDefault);
+				$expected = '<track kind="subtitles"'
+					. ($all ? ' src="a.vtt" srclang="en" label="English"' : '')
+					. ($isDefault ? ' default="default"' : '')
+					. ' />';
+				$this->assertSame($expected, $this->render($control));
+			}
+		}
+	}
+
 	public function testEachKindRendersLowercase()
 	{
 		$control = new TTextTrack();

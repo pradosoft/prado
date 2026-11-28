@@ -83,6 +83,9 @@ class TMeterTest extends TestCase
 		$control->setHigh(85);
 		$control->setHigh('');
 		$this->assertNull($control->getHigh());
+		$control->setHigh(85);
+		$control->setHigh(null);
+		$this->assertNull($control->getHigh());
 
 		$control->setOptimum(10);
 		$control->setOptimum(null);

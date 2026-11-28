@@ -1552,6 +1552,13 @@ class TWebControlTest extends TestCase
 		$scoped = new TWebControl();
 		$scoped->setItemScope(true);
 		$this->assertSame('<span itemscope="itemscope"></span>', $this->render($scoped));
+
+		$unscoped = new TWebControl();
+		$unscoped->setItemScopeType('https://schema.org/Book');
+		$unscoped->setItemId('urn:isbn:1');
+		$unscoped->setItemRef('a b');
+		$unscoped->setItemProp('book');
+		$this->assertSame('<span itemtype="https://schema.org/Book" itemid="urn:isbn:1" itemref="a b" itemprop="book"></span>', $this->render($unscoped));
 	}
 
 	// ================================================================================

@@ -56,6 +56,15 @@ class TDataSizeTest extends \PHPUnit\Framework\TestCase
 		self::assertTrue($this->obj->getUseMarketingSize());
 	}
 	
+	public function testUnitFromMagnitude()
+	{
+		$this->obj->setUseMarketingSize(false);
+		$this->assertNull(\Prado\Test\Unit\PradoUnit::invoke($this->obj, 'unitFromMagnitude', 0));
+		$this->obj->setUseMarketingSize(true);
+		$this->assertNotNull(\Prado\Test\Unit\PradoUnit::invoke($this->obj, 'unitFromMagnitude', 10));
+		$this->assertNull(\Prado\Test\Unit\PradoUnit::invoke($this->obj, 'unitFromMagnitude', 11));
+	}
+
 	public function testAbbreviate()
 	{	
 		$this->obj->setAbbreviate(false);

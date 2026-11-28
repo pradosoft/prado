@@ -221,23 +221,6 @@ class TJsonLdTest extends TestCase
 		$head->render(new THtmlWriter($tw));
 		$this->assertStringContainsString('<script type="application/ld+json">{"@context":"https://schema.org","@type":"Thing"}</script>', $tw->flush());
 	}
-}
-
-class TJsonLdTestThing implements \JsonSerializable
-{
-	public function jsonSerialize(): mixed
-	{
-		return ['@type' => 'Thing', 'name' => 'Widget'];
-	}
-}
-
-class TJsonLdTestThrowingControl extends \Prado\Web\UI\TControl
-{
-	public function render($writer)
-	{
-		$writer->write('{"partial": ');
-		throw new \RuntimeException('child failed');
-	}
 
 	public function testRenderCombinationsOfSourceAndNonce()
 	{
@@ -259,5 +242,22 @@ class TJsonLdTestThrowingControl extends \Prado\Web\UI\TControl
 
 			$this->assertSame('', $this->renderControl(new TJsonLd()));
 		}
+	}
+}
+
+class TJsonLdTestThing implements \JsonSerializable
+{
+	public function jsonSerialize(): mixed
+	{
+		return ['@type' => 'Thing', 'name' => 'Widget'];
+	}
+}
+
+class TJsonLdTestThrowingControl extends \Prado\Web\UI\TControl
+{
+	public function render($writer)
+	{
+		$writer->write('{"partial": ');
+		throw new \RuntimeException('child failed');
 	}
 }

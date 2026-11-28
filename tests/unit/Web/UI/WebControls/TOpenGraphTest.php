@@ -109,6 +109,17 @@ class TOpenGraphTest extends TestCase
 		);
 	}
 
+	public function testMetaTagsRenderWithoutProperties()
+	{
+		$control = new TOpenGraph();
+		$control->setType('');
+		$meta = new TMetaTag();
+		$meta->setProperty('article:author');
+		$meta->setContent('Ann');
+		$control->addParsedObject($meta);
+		$this->assertSame("<meta property=\"article:author\" content=\"Ann\" />\n", $this->renderControl($control));
+	}
+
 	public function testBodyContentRendersAfterMetaTags()
 	{
 		$control = new TOpenGraph();

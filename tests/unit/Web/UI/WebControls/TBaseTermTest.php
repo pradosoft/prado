@@ -228,6 +228,18 @@ class TBaseTermTest extends TestCase
 		$this->assertSame(['HTML' => self::EXPANSION, 'CSS' => 'Cascading Style Sheets', 'URL' => ''], $abbr->getTermTitles());
 	}
 
+	public function testTermTitlesSkipEmptyTerms()
+	{
+		foreach ([[' ', ''], [' ' => 'x']] as $terms) {
+			$abbr = new TAbbr();
+			$abbr->setTerms($terms);
+			$this->assertSame([], $abbr->getTermTitles());
+			$abbr->setText('HTML');
+			$abbr->setTitle(self::EXPANSION);
+			$this->assertSame(['HTML' => self::EXPANSION], $abbr->getTermTitles());
+		}
+	}
+
 	public function testTermKey()
 	{
 		$abbr = new TAbbr();
@@ -382,6 +394,35 @@ class TBaseTermTest extends TestCase
 			'<abbr>HTML</abbr> ' . $this->marked('HTML') . ' HTML ' . $this->marked('CSS', '') . ' ' . $this->marked('CSS', '') . ' CSS',
 			$this->renderTree($this->parent('<abbr>HTML</abbr> HTML HTML CSS', $abbr, ' CSS CSS'))
 		);
+	}
+
+	public function testMarkLimitWithUntitledTerm()
+	{
+		$abbr = new TAbbr();
+		$abbr->setTerms(['CSS' => '']);
+		$abbr->setMarkLimit(2);
+		$this->assertSame('A ' . $this->marked('CSS', '') . ' b', $this->renderTree($this->parent('A CSS b', $abbr)));
+	}
+
+	public function testMarkCountsIgnoreOtherElements()
+	{
+		$abbr = new TAbbr();
+		$abbr->setMarkLimit(1);
+		$dom = new \DOMDocument();
+		$dom->loadHTML('<p><abbr>Other</abbr></p>');
+		$this->assertSame(['html' => 0], PradoUnit::invoke($abbr, 'getMarkCounts', $dom, ['html' => '']));
+	}
+
+	public function testMarkTextWithoutAMatchLeavesTheNode()
+	{
+		$dom = new \DOMDocument();
+		$p = $dom->appendChild($dom->createElement('p'));
+		$node = $p->appendChild($dom->createTextNode('plain'));
+		$counts = [];
+		$markText = new \ReflectionMethod(TBaseTerm::class, 'markText');
+		$this->assertFalse($markText->invokeArgs(new TAbbr(), [$node, '/HTML/u', ['html' => ''], &$counts]));
+		$this->assertSame([], $counts);
+		$this->assertSame('<p>plain</p>', $dom->saveHTML($p));
 	}
 
 	/**

@@ -154,6 +154,12 @@ class TDotTest extends \PHPUnit\Framework\TestCase
 		$this->obj->setColor('#998877');
 		self::assertEquals('#998877', $this->obj->getColor());
 
+		// A '-' prefix on a value without a preset computes the same color.
+		$main = $this->obj->getMainColor();
+		$this->obj->setColor('-#998877');
+		self::assertEquals('#998877', $this->obj->getColor());
+		self::assertEquals($main, $this->obj->getMainColor());
+
 		// The published file name prefers the color name when set.
 		$this->obj->setColor('DeepSkyBlue');
 		self::assertEquals(1, preg_match('/tdot\-deepskyblue\-/i', $this->obj->getAssetFilePath()));
@@ -162,6 +168,13 @@ class TDotTest extends \PHPUnit\Framework\TestCase
 		try {
 			$this->obj->setColor('NotAColor');
 			self::fail('Expected TInvalidDataValueException for an unsupported color');
+		} catch (TInvalidDataValueException $e) {
+		}
+
+		// An empty color throws.
+		try {
+			$this->obj->setColor('  ');
+			self::fail('Expected TInvalidDataValueException for an empty color');
 		} catch (TInvalidDataValueException $e) {
 		}
 	}
@@ -328,6 +341,8 @@ class TDotTest extends \PHPUnit\Framework\TestCase
 		// A null style follows the sign of the change: negative is top-exaggerated, positive bottom.
 		self::assertEquals(0, $nudge->invoke($this->obj, 0, -10, null));    // darken at the floor stays 0
 		self::assertEquals(20, $nudge->invoke($this->obj, 0, 10, null));    // lighten at the floor doubles
+		self::assertEquals(235, $nudge->invoke($this->obj, 255, -10, null)); // darken at the ceiling doubles
+		self::assertEquals(255, $nudge->invoke($this->obj, 255, 10, null));  // lighten at the ceiling stays 255
 
 		// true (top-exaggerated) makes no change at the channel floor.
 		self::assertEquals(0, $nudge->invoke($this->obj, 0, -10, true));

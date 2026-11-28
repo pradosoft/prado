@@ -217,4 +217,16 @@ class TXmlTransformTest extends \PHPUnit\Framework\TestCase
 		$transform->render(new THtmlWriter($textWriter));
 		$this->assertSame("<b>HelloPrado</b>\n", $textWriter->flush());
 	}
+
+	public function testRenderBodyDocumentWithoutParameters()
+	{
+		$transform = new TXmlTransform();
+		$transform->setTransformContent('<?xml version="1.0"?><xsl:transform xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">'
+			. '<xsl:output method="xml" omit-xml-declaration="yes"/>'
+			. '<xsl:template match="/"><b><xsl:value-of select="greeting"/></b></xsl:template></xsl:transform>');
+		$transform->getControls()->add('<greeting>Hello</greeting>');
+		$textWriter = new TTextWriter();
+		$transform->render(new THtmlWriter($textWriter));
+		$this->assertSame("<b>Hello</b>\n", $textWriter->flush());
+	}
 }

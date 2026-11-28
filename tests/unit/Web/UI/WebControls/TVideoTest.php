@@ -107,6 +107,30 @@ class TVideoTest extends TestCase
 		$this->assertSame('<video controls="controls" width="640" height="360" poster="intro.jpg" playsinline="playsinline"></video>', $this->render($control));
 	}
 
+	public function testVideoAttributeCombinations()
+	{
+		foreach ([-1, 640] as $width) {
+			foreach ([-1, 360] as $height) {
+				foreach (['', 'intro.jpg'] as $poster) {
+					foreach ([false, true] as $inline) {
+						$control = new TVideo();
+						$control->setWidth($width);
+						$control->setHeight($height);
+						$control->setPoster($poster);
+						$control->setPlaysInline($inline);
+						$expected = '<video controls="controls"'
+							. ($width === -1 ? '' : ' width="640"')
+							. ($height === -1 ? '' : ' height="360"')
+							. ($poster === '' ? '' : ' poster="intro.jpg"')
+							. ($inline ? ' playsinline="playsinline"' : '')
+							. '></video>';
+						$this->assertSame($expected, $this->render($control));
+					}
+				}
+			}
+		}
+	}
+
 	public function testVideoDefaults()
 	{
 		$control = new TVideo();

@@ -48,6 +48,19 @@ class TMetaTagTest extends TestCase
 		$this->assertSame('<meta charset="utf-8" />', $this->renderTag($tag));
 	}
 
+	public function testEveryAttributeWithCharset()
+	{
+		$tag = new TMetaTag();
+		$tag->setID('m');
+		$tag->setName('n');
+		$tag->setProperty('og:x');
+		$tag->setHttpEquiv('Pragma');
+		$tag->setScheme('s');
+		$tag->setCharset('utf-8');
+		$tag->setContent('ignored');
+		$this->assertSame('<meta id="m" name="n" property="og:x" http-equiv="Pragma" scheme="s" charset="utf-8" />', $this->renderTag($tag));
+	}
+
 	public function testSettersEnsureString()
 	{
 		$tag = new TMetaTag();

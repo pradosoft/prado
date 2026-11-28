@@ -237,6 +237,13 @@ class TAuthViewTest extends TestCase
 		$this->assertFalse($template->isUserMatched($user));
 	}
 
+	public function testCanAnyWithoutPermissionsIsFalse()
+	{
+		$user = $this->signIn('joe', [], false, TAuthViewTestUser::class);
+		$user->granted = ['blog.edit'];
+		$this->assertFalse(PradoUnit::invoke(new TAuthViewTemplate(), 'canAny', $user, []));
+	}
+
 	public function testTemplatePermissionsWithoutCanThrows()
 	{
 		$template = new TAuthViewTemplate();
