@@ -140,6 +140,8 @@ $cron->executeRuntimeTasks($sender, $param): int   // handler called by onEndReq
 $cron->deferTask(\Closure $closure, ?string $name = null): TClosureCronTask   // 4.4.0
 ```
 
+`addSystemTask(TCronTask $task): bool` (4.4.0) adds a self-removing task for the application's own code, such as `TEmailModule` waking cron for a queued email. It sets `AutoRemove`, adds the row without the `dyAddTask` permission check, as `deferTask()` does, and signals the wake when the task is the earliest due. It returns false for a name in use. The task runs as its `UserName`, else the default user.
+
 The first call to `addRuntimeTask()` automatically attaches `executeRuntimeTasks` to `TApplication::onEndRequest`. `addRuntimeTask()` alone does not persist the task, so it has no cron fallback; `addTask($task, true)` or `deferTask()` persists it as well, so a missed `onEndRequest` is run by the next shell cron. A task with `AutoRemove` is deleted from the table once it runs (`updateTaskInfo()`), so it does not run twice.
 
 ## Multi-host and daemon

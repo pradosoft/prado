@@ -1,0 +1,2 @@
+<%@ Email.Subject="Hello {{NAME}}" Email.List="news" %>
+<html><head><style>p.note { color: #333333; }</style></head><body><p class="note">Hello {{NAME}}</p><com:TLabel Text="Label text" /></body></html>

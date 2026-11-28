@@ -75,6 +75,7 @@ TApplication
       TDbConnection  (PDO wrapper)
       DataGateway/
  └─ Caching        framework/Caching/    (APC, Database, Etcd, Memcached, Redis, file-based)
+ └─ Email          framework/Email/      (TEmailModule, TEmail, TEmailBody templates, SMTP transport, store, tracking service)
  └─ Security       framework/Security/   (RBAC, TAuthManager, TSecurityManager, TPermissionsManager)
  └─ I18N           framework/I18N/       (TGlobalization, MessageSource, CultureInfo)
  └─ Xml            framework/Xml/        (TXmlDocument/TXmlElement with XPath, DOM compat, ArrayAccess)

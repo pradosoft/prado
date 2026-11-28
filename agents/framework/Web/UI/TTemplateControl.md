@@ -36,7 +36,7 @@ TTemplateControl is the base class for all controls that use templates in PRADO 
 ### Template Loading
 - `getTemplate()`: Gets parsed template for control instance
 - `setTemplate($value)`: Sets parsed template for control
-- `loadTemplate()`: Loads and parses template file
+- `loadTemplate()`: Loads and parses the template of the class through the template manager of the current service, or of the application when the service has none (cron, shell, emails)
 - `getTemplateFile()`: Gets template file path
 - `setTemplateFile($value)`: Sets template file path
 - `loadTemplateFromFile()`: Loads template from file

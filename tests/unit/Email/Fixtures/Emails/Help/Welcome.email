@@ -1,0 +1,2 @@
+<%@ MasterClass="Prado\Test\Unit\Email\Fixtures\EmailLayout" %>
+<com:TContent ID="Main"><p>Welcome inside the layout.</p></com:TContent>
