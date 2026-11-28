@@ -1219,7 +1219,7 @@ class TDbCronManagerTest extends TCronModuleTest
 		self::assertTrue($this->obj->runTask($this->obj->getTask('dbDenied')));
 		$uid = $this->obj->getCronLog()[0]['tabuid'];
 
-		$this->obj->attachBehavior('denies', new TTestCronDenyingBehavior(['dyAddTask', 'dyAddTaskGlobal', 'dyUpdateTask', 'dyGetUserTasks', 'dyRemoveCronLogItem', 'dyGetCronLog']));
+		$this->obj->attachBehavior('denies', new TTestCronDenyingBehavior(['dyAddTask', 'dyAddTaskGlobal', 'dyUpdateTask', 'dyGetUserTasks', 'dyRemoveCronLogItem', 'dyGetCronLog', 'dyGetCronLogCount', 'dyClearCronLog']));
 		$another = new TTestCronModuleTask();
 		$another->setName('dbDeniedToo');
 		$another->setSchedule('0 0 1 1 ? 2099');
@@ -1230,8 +1230,10 @@ class TDbCronManagerTest extends TCronModuleTest
 		self::assertNull($this->obj->removeCronLogItem($uid));
 		self::assertNull($this->obj->removeCronLogItem(999999), 'an unknown item is the default user');
 		self::assertNull($this->obj->getCronLog());
+		self::assertNull($this->obj->getCronLogCount());
+		self::assertNull($this->obj->clearCronLog());
 		$this->obj->detachBehavior('denies');
-		self::assertSame(1, $this->obj->getCronLogCount(), 'a denied removal removes nothing');
+		self::assertSame(1, $this->obj->getCronLogCount(), 'a denied removal or flush removes nothing');
 		$this->obj->removeTask('dbDenied');
 	}
 

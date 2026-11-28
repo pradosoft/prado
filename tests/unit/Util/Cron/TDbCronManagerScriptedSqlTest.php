@@ -277,6 +277,8 @@ class TDbCronManagerScriptedSqlTest extends \PHPUnit\Framework\TestCase
 		$options = PradoUnit::invoke($manager, 'serializeTask', $task);
 		self::assertStringNotContainsString("\0", $options);
 		self::assertSame(serialize($task), PradoUnit::invoke($manager, 'decodeTaskOptions', $options));
+		self::assertNull(PradoUnit::invoke($manager, 'decodeTaskOptions', null));
+		self::assertSame(serialize($task), PradoUnit::invoke($manager, 'decodeTaskOptions', serialize($task)), 'a value that is not base64 is read as is');
 	}
 
 	public function testInsertIdIsTheIdentitySequenceValue()
@@ -291,6 +293,8 @@ class TDbCronManagerScriptedSqlTest extends \PHPUnit\Framework\TestCase
 
 		$manager->recorder->answers = [];
 		self::assertNull(PradoUnit::invoke($manager, 'getLastInsertTaskUID'), 'no identity sequence');
+		$manager->recorder->answers = ['FROM user_tab_identity_cols' => ''];
+		self::assertNull(PradoUnit::invoke($manager, 'getLastInsertTaskUID'), 'an empty sequence name');
 	}
 
 	public static function typedDriverProvider(): array
@@ -419,6 +423,18 @@ class TDbCronManagerScriptedSqlTest extends \PHPUnit\Framework\TestCase
 		self::assertStringEndsWith(':active) RETURNING tabuid', $insert->sql);
 		self::assertSame('23', $manager->getTask('returning', true, false)['tabuid']);
 		self::assertSame(1, $insert->runs, 'the insert runs once, as a query');
+
+		$manager->recorder->answers = ['RETURNING tabuid' => false];
+		self::assertNull(PradoUnit::invoke($manager, 'executeInsert', $manager->recorder->createCommand('INSERT INTO crontabs (name) VALUES (:name) RETURNING tabuid')), 'no returned row');
+	}
+
+	public function testEarliestPendingTimeIsAnIntegerOrNull()
+	{
+		$manager = $this->newManager();
+		foreach ([[null, null], [false, null], ['4070908800', 4070908800]] as [$scalar, $expected]) {
+			$manager->recorder->answers = ['SELECT MIN(nextexectime) FROM crontabs WHERE active IS NOT NULL' => $scalar];
+			self::assertSame($expected, PradoUnit::invoke($manager, 'getEarliestPendingTime'));
+		}
 	}
 
 	public function testRowsAreReadBeforeTheirStreamsEnd()
@@ -500,5 +516,36 @@ class TDbCronManagerScriptedSqlTest extends \PHPUnit\Framework\TestCase
 			self::assertSame(0.5, $manager->recorder->commands[0]->bound[':newmax']);
 			$manager->unlisten();
 		}
+	}
+
+	public static function untypedDriverProvider(): array
+	{
+		return [
+			'mysql' => [TDbDriver::DRIVER_MYSQL, 'tabuid INTEGER PRIMARY KEY AUTO_INCREMENT,', 'MEDIUMTEXT', 'BOOLEAN'],
+			'sqlite' => [TDbDriver::DRIVER_SQLITE, 'tabuid INTEGER PRIMARY KEY AUTOINCREMENT,', 'MEDIUMTEXT', 'BOOLEAN'],
+			'pgsql' => [TDbDriver::DRIVER_PGSQL, 'tabuid SERIAL PRIMARY KEY,', 'TEXT', 'SMALLINT'],
+			'odbc' => [TDbDriver::DRIVER_ODBC, 'tabuid INTEGER PRIMARY KEY,', 'MEDIUMTEXT', 'BOOLEAN'],
+		];
+	}
+
+	/**
+	 * @dataProvider untypedDriverProvider
+	 */
+	public function testTheDriversWithoutDefinitionsCreateTheirTable(string $driver, string $id, string $text, string $active)
+	{
+		$manager = $this->newManager($driver);
+		PradoUnit::invoke($manager, 'createDbTable');
+
+		$sql = $manager->recorder->sql();
+		self::assertStringStartsWith('CREATE TABLE IF NOT EXISTS crontabs ( ' . $id . ' ', $sql[0]);
+		self::assertStringContainsString('options ' . $text . ' NULL,', $sql[0]);
+		self::assertStringContainsString('active ' . $active . ' NULL )', $sql[0]);
+		self::assertSame([
+			'CREATE INDEX crontabs_tname ON crontabs (name)',
+			'CREATE INDEX crontabs_tclass ON crontabs (task)',
+			'CREATE INDEX crontabs_tnext ON crontabs (nextexectime)',
+			'CREATE INDEX crontabs_tuser ON crontabs (username)',
+			'CREATE INDEX crontabs_tactive ON crontabs (active)',
+		], array_slice($sql, 1));
 	}
 }
